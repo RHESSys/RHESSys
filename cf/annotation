@@ -1,0 +1,43 @@
+This file identifies the calculation discrepancies between version 5.3 and
+5.4 of createflowpaths.  
+add_roads                  - NONE
+adjust_pit.c               - (1) line 83 in 6.0 and line 84 in 5.3
+                             (2) line 89 in 6.0 and line 91 in 5.3
+blender.h                  - NONE
+build_flow_table.c         - (1) line 95 in 6.0 and line 96 in 5.3
+check_neighbours.c         - NONE
+compute_dist_from_road.c   - NONE
+compute_drainage_density.c - NONE
+compute_gamma.c            - (1) line 76 in 6.0 and line 76 in 5.3
+                             (2) some initialization in 5.3 lines 64-65
+                             (3) some initialization in 5.3 lines 77-80
+                             (4) some initialization in 5.3 line 84
+                             (5) line 95 in 6.0 and line 101 in 5.3
+                             (6) line 143 in 6.0 and line 150 in 5.3
+compute_upslope_area.c     - NONE
+fileio.c                   - NONE
+fileio.h                   - NONE
+find_max_flna.c            - NONE
+find_min_flna.c            - NONE
+find_patch.c               - NONE
+find_sewer.c               - NONE (duh)
+find_top.c                 - NONE
+glb.h                      - NONE
+in_list.c                  - NONE
+main.c                     - NONE
+makefile                   - NONE (again, duh)
+path_lengths.c             - NONE
+print_drain_stats.c        - NONE
+print_flow_table.c         - (1) line 79 in 6.0 and line 78 in 5.3
+                             (2) line 85 in 6.0 and line 91 in 5.3
+                             (3) line 87 in 6.0 and line 93 in 5.3
+                             (4) line 101 in 6.0 and line 106 in 5.3
+read_flow_table.c          - NONE
+remove_pits.c              - NONE
+route_roads_to_patches.c   - NONE
+route_roads_to_sewers.c    - NONE (once again, duh)
+sort_flow_table.c          - NONE
+sub.h                      - NONE
+tech.h                     - SHOULDN'T BE HERE
+worldfile.h                - SHOULDN'T BE HERE
+zero_flow_table.c          - NONE

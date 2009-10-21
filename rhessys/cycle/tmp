@@ -1,0 +1,18 @@
+	potential_evaporation_rate = penman_monteith(
+		command_line[0].verbose_flag,
+		zone[0].metv.tday,
+		zone[0].metv.pa,
+		zone[0].metv.vpd,
+		rnet_evap,
+		1/patch[0].litter.gsurf,
+		1/(patch[0].ga),
+		2) ;
+	potential_rainy_evaporation_rate = penman_monteith(
+		command_line[0].verbose_flag,
+		zone[0].metv.tday,
+		zone[0].metv.pa,
+		10,
+		rnet_evap,
+		1/patch[0].litter.gsurf,
+		1/(patch[0].ga),
+		2) ;

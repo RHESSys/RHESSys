@@ -1,0 +1,5 @@
+	double compute_varbased_returnflow(
+		double,
+		double,
+		double,
+		struct litter_object *);
