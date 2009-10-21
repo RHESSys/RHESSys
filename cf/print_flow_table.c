@@ -78,8 +78,7 @@ void	print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,  scale_t
 
 		if (((flow_table[i].land == 1) || (flow_table[i].total_gamma < ZERO)) && (sc_flag > 0))  {
 
-				mult = ( float )( flow_table[i].K * flow_table[i].m_par *
-							sqrt(flow_table[i].area) ); 	
+				mult = ( float )( flow_table[i].K * flow_table[i].m_par * flow_table[i].area * cell * cell);
 	
 				if (sc_flag == 2)	
 					tmp = ( float )( rand()/(pow(2.0,15.0)-1) );	
@@ -103,9 +102,9 @@ void	print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,  scale_t
 				}
 
 				if (slp_flag == 1)
-					tmp = flow_table[i].internal_slope * sqrt(flow_table[i].area) * cell;
+					tmp = flow_table[i].internal_slope;
 				if (slp_flag == 2)
-					tmp = flow_table[i].max_slope * sqrt(flow_table[i].area) * cell;
+					tmp = flow_table[i].max_slope;
 
 				flow_table[i].total_gamma = (float)( mult * tmp * scale_trans );
 					

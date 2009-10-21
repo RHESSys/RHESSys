@@ -69,7 +69,6 @@ int compute_upslope_area(flow_table, num_patches, f1, rflag)
 
 		
 		flow_table[pch].acc_area += flow_table[pch].area;
-		printf("\n patch %d initial area %f ", flow_table[pch].patchID, flow_table[pch].acc_area);
 
 /* process roads as all accumulated area going to stream (or receiving patch) */
 		if ( (flow_table[pch].land == 2) && (rflag == 1) )

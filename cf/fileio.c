@@ -343,8 +343,8 @@ void input_ascii_sint(array, filename, mc, mr, arc_flag)
     }
  
 
-	/*-------------------------------------------------------------------------
-        input_ascii_float() - input an ascii image into an float array using the
+/*-------------------------------------------------------------------------
+       input_ascii_float() - input an ascii image into an float array using the
                         (row, col) coordinates maxr and maxc.
  
 -------------------------------------------------------------------------*/
@@ -387,6 +387,44 @@ void input_ascii_float(float *array, char *filename, int mc, int mr, int arc_fla
 		   }
 		
 		 printf("\n Max for %s is %f",filename, max);
+         fclose(in1);
+		
+        }
+
+    return;
+    }
+ 
+
+/*-------------------------------------------------------------------------
+       output_ascii_float() - output an ascii image into an float array using the
+                        (row, col) coordinates maxr and maxc.
+ 
+-------------------------------------------------------------------------*/
+ 
+void output_ascii_float(float *array, char *filename, int mc, int mr)
+    
+
+{
+    FILE *in1, *fopen();
+	
+   int  r;
+   float max, new;
+
+    max=0.0;
+    if ( (in1 = fopen(filename, "w")) == NULL)
+        {
+        printf("cannot open file %s\n",filename);
+		pause();
+        }
+    else 
+        {
+	for (r=0; r < mr*mc; r++) {
+		  new = array[r];
+		  if (new > max) max = new;
+		  fprintf(in1,"%f ",array[r]);
+		}
+
+	printf("\n Max for ew horizon is %lf", max);
          fclose(in1);
 		
         }
@@ -585,6 +623,7 @@ input_header(maxr, maxc, fndem, arc_flag)
    
     }
 
+
 /*-------------------------------------------------------------------------
 	header_help() - inform user they need a [root].header file
   -------------------------------------------------------------------------*/
@@ -624,11 +663,11 @@ void header_help(maxr, maxc, fnhdr)
 
 void	input_prompt(maxr, maxc,filename, fndem,fnslope, fnK, fnflna, fnpatch,fnzone,fnhill,
 			fnstream, fnroads, fnsewers, fnmpar,fnpartition,
-			fntable,fnroot, f_flag, sewer_flag, arc_flag)
+			fntable,fnroot, fnehr, fnwhr, f_flag, sewer_flag, arc_flag)
 	int *maxr, *maxc;
 	char *filename;
 	char *fndem, *fnK, *fnpatch, *fnzone, *fnhill, *fnstream, *fnroads, *fnmpar, *fnpartition,
-		*fntable, *fnroot, *fnflna, *fnslope, *fnsewers;
+		*fntable, *fnroot, *fnflna, *fnslope, *fnsewers, *fnehr, *fnwhr;
 	int f_flag, arc_flag, sewer_flag;
 	
     {
@@ -648,6 +687,8 @@ void	input_prompt(maxr, maxc,filename, fndem,fnslope, fnK, fnflna, fnpatch,fnzon
     strcpy(fnmpar,filename);
     strcpy(fnpartition,filename);
     strcpy(fntable,filename);
+    strcpy(fnehr,filename);
+    strcpy(fnwhr,filename);
     strcpy(fnroot,filename);	/* store root filename as global variable */
 
     
@@ -664,6 +705,8 @@ void	input_prompt(maxr, maxc,filename, fndem,fnslope, fnK, fnflna, fnpatch,fnzon
     strcat(fnstream,".stream");
     strcat(fnroads,".road");
     strcat(fntable,".table");
+    strcat(fnwhr,".whr");
+    strcat(fnehr,".ehr");
 
 /* add flna image if requested */
 	if (f_flag) {

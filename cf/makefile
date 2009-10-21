@@ -1,4 +1,4 @@
-PGM = cf61
+PGM = cf7
 CC  = gcc 
 CFLAGS  = -O -I include
 
@@ -7,7 +7,7 @@ OBJECTS = main.o build_flow_table.o fileio.o find_patch.o check_neighbours.o zer
 print_flow_table.o sort_flow_table.o compute_gamma.o remove_pits.o \
 find_top.o in_list.o adjust_pit.o add_roads.o find_stream.o \
 find_max_flna.o find_min_flna.o route_roads_to_patches.o compute_upslope_area.o \
-print_drain_stats.o compute_drainage_density.o compute_dist_from_road.o print_stream_table.o
+print_drain_stats.o compute_drainage_density.o compute_dist_from_road.o print_stream_table.o ew_horizon.o
 
 LIBES = -lm
 
@@ -32,6 +32,8 @@ in_list.o:
 	$(CC) $(CFLAGS) -c in_list.c
 adjust_pit.o:
 	$(CC) $(CFLAGS) -c adjust_pit.c
+ew_horizon.o:
+	$(CC) $(CFLAGS) -c ew_horizon.c
 add_roads.o:
 	$(CC) $(CFLAGS) -c add_roads.c
 find_top.o:

@@ -64,7 +64,7 @@ main(int argc, char *argv[])  {
 	double	cell, width;
 	int		pst_flag, f_flag, fl_flag, fh_flag, vflag;
 	int		s_flag, r_flag, slp_flag, sc_flag, arc_flag;
-	int		st_flag, sewer_flag;
+	int		st_flag, sewer_flag, ewhr_flag;
 	int		prefix_flag;
 	int		suffix_flag;
 	double	scale_trans, scale_dem;
@@ -81,6 +81,7 @@ char    fndem[MAXS],  fnpartition[MAXS],    fnK[MAXS],     fnmpar[MAXS],
 char	fnstream[MAXS];
 char	fnroads[MAXS], fnsewers[MAXS];
 char	fnflna[MAXS];
+char	fnehr[MAXS], fnwhr[MAXS];
 char	name[MAXS], name2[MAXS];
 
 
@@ -97,12 +98,15 @@ char	name[MAXS], name2[MAXS];
     float		 *K;
 	float		 *m_par;
 	float		 *flna;
+	float		 *ehr;
+	float		 *whr;
 
 	struct		flow_struct	*flow_table;
 
     vflag    = 0;		/* verbose flag					 */
     fl_flag  = 0;		/* roads to lowest flna			 */
     fh_flag  = 0;		/* roads to highest flna		 */
+	ewhr_flag	 = 0;	/* printing ew horizon flag			 */
 	s_flag	 = 0;		/* printing stats flag			 */
 	r_flag 	 = 0;		/* road stats flag				 */
 	sc_flag  = 1;		/* stream connectivity flag		 */
@@ -138,6 +142,10 @@ char	name[MAXS], name2[MAXS];
 		if (strcmp(argv[i], "-fh") == 0 )
 			{
 			fh_flag = 1;
+			}
+		if (strcmp(argv[i], "-ewhr") == 0 )
+			{
+			ewhr_flag = 1;
 			}
 		if (strcmp(argv[i], "-sw") == 0 )
 			{
@@ -299,7 +307,7 @@ char	name[MAXS], name2[MAXS];
 	
     input_prompt(&maxr, &maxc, input_prefix, fndem,fnslope,fnK,fnflna,
 					fnpatch, fnzone,fnhill, fnstream, fnroads, fnsewers, fnmpar,fnpartition,
-		 fntable,fnroot, f_flag, sewer_flag, arc_flag);
+		 fntable,fnroot, fnehr, fnwhr, f_flag, sewer_flag, arc_flag);
 
 	/* open some diagnostic output files */
 
@@ -373,6 +381,13 @@ char	name[MAXS], name2[MAXS];
 		}
 	else flna = NULL;
 
+
+	/* create data structure and files for ew horizon if needed */
+	if (ewhr_flag) {
+		ehr = (float *)  malloc(maxr*maxc*sizeof(float));
+		whr = (float *)  malloc(maxr*maxc*sizeof(float));
+		}
+
 	/* allocate flow table */
 	flow_table = (struct flow_struct *)calloc((maxr*maxc),sizeof(struct flow_struct));
 /*
@@ -386,6 +401,13 @@ char	name[MAXS], name2[MAXS];
 		}
 */
 
+	if (ewhr_flag) {
+		ew_horizon(dem, ehr, whr, maxr, maxc, cell, scale_dem);
+		output_ascii_float(ehr, fnehr, maxc, maxr);
+		output_ascii_float(whr, fnwhr, maxc, maxr);
+		exit(0);
+	}	
+
 	printf("\n Building flow table");
 	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch, 
 					stream, roads, sewers, K, m_par, flna, out1, maxr, 
@@ -398,6 +420,7 @@ char	name[MAXS], name2[MAXS];
 	printf("\n Computing gamma");
 	num_stream = compute_gamma(flow_table, num_patches, out2,scale_trans,cell,sc_flag,
                         slp_flag);
+
 
 	
 	 /* remove pits and re-order patches appropriately */
@@ -414,10 +437,10 @@ char	name[MAXS], name2[MAXS];
 		route_roads_to_patches(flow_table, num_patches, fl_flag);
 	
 
+	printf("\n Computing upslope area");
+ 		tmp = compute_upslope_area(flow_table, num_patches, out2, r_flag,cell);
 
 	if (s_flag == 1) {
-		printf("\n Computing upslope area");
- 		tmp = compute_upslope_area(flow_table, num_patches, out2, r_flag,cell);
 		printf("\n Printing drainage stats");
 		print_drain_stats(num_patches, flow_table);
 		tmp = compute_dist_from_road(flow_table, num_patches, out2, cell);	

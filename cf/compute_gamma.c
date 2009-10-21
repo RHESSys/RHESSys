@@ -64,6 +64,7 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 	struct adj_struct *str_aptr;
 	struct ID_struct max_ID;
 
+	printf("\n Compute_gamma");
 
 	num_str = 0;
 	/* compute mean pch values */
@@ -82,12 +83,16 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 		flow_table[pch].m_par = flow_table[pch].m_par / flow_table[pch].area;
 		flow_table[pch].flna = flow_table[pch].flna / flow_table[pch].area;
 		flow_table[pch].total_gamma = 0.0;
+		flow_table[pch].acc_area = 0.0;
 		flow_table[pch].total_perimeter = 0.0;
 		flow_table[pch].total_str_gamma = 0.0;
 		flow_table[pch].num_str = 0;
 		flow_table[pch].road_dist = 0.0;
 		flow_table[pch].inflow_cnt = 0;
-		if (flow_table[pch].land == 1) num_str += 1;
+		if (flow_table[pch].land == 1) {
+			num_str += 1;
+			 /* printf("\nid %d nstr %d", flow_table[pch].patchID, num_str); */
+			}
 		}
 
 	max_ID = sort_flow_table(flow_table, num_patches);
@@ -98,6 +103,10 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 	/* calculate gamma for each neighbour */
 	for (pch = 1; pch <= num_patches; pch++) 
 		{
+
+		printf("\n nex pch %d", pch);
+		printf("\n Processing patch %ld", flow_table[pch].patchID);
+		printf("\n Processing patch %ld", flow_table[pch].patchID);
 		aptr = flow_table[pch].adj_list;
 		str_aptr = flow_table[pch].adj_str_list;
 
@@ -105,13 +114,19 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 
 		flow_table[pch].slope = 0.0;
 
+		printf("\n number of neighbours %d", flow_table[pch].num_dsa);
+		printf("\n number of neighbours %d", flow_table[pch].num_dsa);
 		/* first do processing for stream table */
+	/*
 		for (neigh = 1; neigh <= flow_table[pch].num_dsa; neigh ++)
 			{
+
 			p = str_aptr->patchID;
 			z = str_aptr->zoneID;
 			h = str_aptr->hillID;
 
+				printf("\n neigh %d is %d", neigh, p);
+				printf("\n neigh %d is %d", neigh, p);
 			inx = find_patch(num_patches, flow_table, p, z, h);
 			if (inx == 0) {
 				printf("\n For patch %d %d %d Neighbour not found %d %d %d\n", 
@@ -124,17 +139,17 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			rise = flow_table[pch].z - flow_table[inx].z;
 			if (rise > 0.0) {
 				str_aptr->gamma = rise;
-				flow_table[pch].num_str += 1;
 				}
 			else 
 				str_aptr->gamma = 0.0;
-
 			flow_table[pch].total_str_gamma += str_aptr->gamma;
 			str_aptr = str_aptr->next;
 
 			}
 
-
+*/
+		printf("\n number of  aneighbours %d", flow_table[pch].num_adjacent);
+		printf("\n number of a neighbours %d", flow_table[pch].num_adjacent);
 		/* now do processing for flow table */
 		for (neigh = 1; neigh <= flow_table[pch].num_adjacent; neigh ++)
 			{
@@ -143,8 +158,11 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			z = aptr->zoneID;
 			h = aptr->hillID;
 
+			printf("\n neigh %d is %d", neigh, p);
+			printf("\n neigh %d is %d", neigh, p);
 
 			inx = find_patch(num_patches, flow_table, p, z, h);
+
 			if (inx == 0) {
 				printf("\n For patch %d %d %d Neighbour not found %d %d %d\n", 
 						flow_table[pch].hillID, flow_table[pch].zoneID,
@@ -161,6 +179,7 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			yrun =  pow( (flow_table[pch].y - flow_table[inx].y), 2.0);
 
 			run =  sqrt(xrun+yrun) * (cell);
+			printf(" \nrise %lf run %lf", rise, run);
 
 			if ( run <= 0) {
 				printf("\n Slope is zero for ( %d, %d, %d) to (%d, %d, %d)",
@@ -218,13 +237,16 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 
 			}
 
+
 		if (slp_flag == 1) {
-			flow_table[pch].total_gamma = mult * flow_table[pch].internal_slope * flow_table[pch].total_perimeter;
+			flow_table[pch].total_gamma = mult * flow_table[pch].internal_slope * flow_table[pch].area *cell* cell;;
 			}
 
 		if (slp_flag == 2) {
-			flow_table[pch].total_gamma = mult * flow_table[pch].max_slope * flow_table[pch].total_perimeter;
+			flow_table[pch].total_gamma = mult * flow_table[pch].max_slope * flow_table[pch].area *cell* cell;;
 			}
+
+		printf("\n Total gamma for %d is %lf", flow_table[pch].patchID, flow_table[pch].total_gamma);
 
 		}
 

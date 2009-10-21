@@ -1,0 +1,1 @@
+			flow_table[aptr->inx].acc_area += flow_table[aptr->inx].acc_area + aptr->gamma*flow_table[pch].area;

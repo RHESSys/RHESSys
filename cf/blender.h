@@ -94,10 +94,10 @@ struct	flow_struct
 	float K ;
 	float flna;
 	float m_par ;
+	float acc_area;
 	float total_str_gamma;
 	float total_gamma;
 	float total_perimeter;
-	float acc_area;
 	float road_dist;    
 	float slope;
 	float internal_slope;

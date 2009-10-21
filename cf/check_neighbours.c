@@ -59,8 +59,6 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 	/* for now streams don't point anywhere 			*/
 	if ((flow_entry->land != 1) || (sc_flag > 0) ){ 
 
-
-
 	for (r=-1; r <= 1; r++) {
 		for (c=-1; c<=1; c++) {
 			/* don't look at neighbours beyond the edge */
@@ -85,7 +83,7 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 
 					/* if stream  add in stream network processing */
 					/* create a list of downstream neighbours if it does not exist already */
-					if ((flow_entry->land == 1) && (stream_neigh == 1)) {
+					if ((flow_entry->land == 1) && (stream_neigh > 0)) {
 					if ( (flow_entry->num_dsa == 0)  ) {
 						flow_entry->num_dsa = 1;
 						if ( (flow_entry->adj_str_list = (struct adj_struct *)malloc(
@@ -134,7 +132,7 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 					}
 					} /* end if stream */
 
-
+					else {
 					/* now do regular flowtable processing */
 					/* create a list of neighbours if it does not exist already */
 					if ( (num_adj == 0)  ) {
@@ -215,6 +213,8 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 						flow_entry->adj_ptr->perimeter += cell*1.0/sqrt(2.0);
 
 				} /* end is neigh */
+
+				}
 
 			} /* end edges if */
 

@@ -81,6 +81,7 @@ int build_flow_table(flow_table, dem, slope, hill, zone, patch, stream, roads, s
 					num_patches += 1;
 					pch = num_patches;
 					}
+
 				flow_table[pch].patchID = patch[inx];
 				flow_table[pch].hillID = hill[inx];
 				flow_table[pch].zoneID = zone[inx];
