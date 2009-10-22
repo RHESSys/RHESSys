@@ -65,8 +65,8 @@
 */
 
 
-#include	"gis.h"
-#include	"gisdefs.h"
+#include	<grass/gis.h>
+#include	<grass/gisdefs.h>
 #include	<stdio.h>        //chu
 #include	<stdlib.h>       //chu
 #include	<string.h>       //chu

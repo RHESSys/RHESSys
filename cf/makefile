@@ -1,7 +1,7 @@
 PGM = cf7
 CC  = gcc 
 CFLAGS  = -O -I include
-
+RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = main.o build_flow_table.o fileio.o find_patch.o check_neighbours.o zero_flow_table.o \
 print_flow_table.o sort_flow_table.o compute_gamma.o remove_pits.o \
@@ -67,5 +67,6 @@ fileio.o:
 main.o:
 	$(CC) $(CFLAGS) -c main.c
 
-
+install:
+	cp $(PGM) $(RHESSYS_BIN)
 

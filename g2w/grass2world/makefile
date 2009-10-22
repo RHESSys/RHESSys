@@ -1,7 +1,7 @@
 PGM = g2w 
 CC  = gcc 
 CFLAGS  = 
-
+RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = grass2world.o sys.o unit.o 
 
@@ -17,5 +17,12 @@ sys.o:
 unit.o:
 	$(CC) $(CFLAGS) -c unit.c
 
+clean:
+	rm $(OBJECTS)
 
+clobber:
+	rm $(PGM) $(OBJECTS)
+
+install: $(PGM)
+	cp $(PGM) $(RHESSYS_BIN)	
 

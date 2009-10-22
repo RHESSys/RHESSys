@@ -1,6 +1,7 @@
 PGM  = rhessys5.12.4
 CC = gcc 
 CFLAGS = -O -I include
+RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
 OBJECTS = \
@@ -793,3 +794,6 @@ clean:
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)
+
+install:
+	cp $(PGM) $(RHESSYS_BIN)
