@@ -72,6 +72,11 @@ int main(int argc, char** argv)
 	file_flag->key = 'f';
 	file_flag->description = "Set for a text printout of the horizon maps";
 
+	struct Flag* debug_flag;
+	debug_flag = G_define_flag();
+	debug_flag->key = 'g';
+	debug_flag->description = "Print out human readable horizon files for debugging";
+	
 	// Parse GRASS arguments
 	if (G_parser(argc, argv) )
 		exit(1);
@@ -96,6 +101,7 @@ int main(int argc, char** argv)
 	}
 
 	int save_files = file_flag->answer;
+	int debug = debug_flag->answer;
 
 	// Load the array into a double raster for use
 	int maxr;
@@ -197,6 +203,14 @@ int main(int argc, char** argv)
 	if (save_files) {
 		output_ascii_double(ehr, fnehr, maxc, maxr);
 		output_ascii_double(whr, fnwhr, maxc, maxr);
+		printf("\n");
+		printf("Writing out %s\n", fnehr);
+		printf("Writing out %s\n", fnwhr);
+	}
+
+	if (debug) {
+		output_ascii_double_debug(ehr, fnehr, maxc, maxr);
+		output_ascii_double_debug(whr, fnwhr, maxc, maxr);
 		printf("\n");
 		printf("Writing out %s\n", fnehr);
 		printf("Writing out %s\n", fnwhr);
