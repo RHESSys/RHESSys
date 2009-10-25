@@ -1,24 +1,34 @@
 PGM = cf7
+EW_PGM = ew_horizon
 CC  = gcc 
-CFLAGS  = -O -I include
+CFLAGS  = 
 RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = main.o build_flow_table.o fileio.o find_patch.o check_neighbours.o zero_flow_table.o \
 print_flow_table.o sort_flow_table.o compute_gamma.o remove_pits.o \
 find_top.o in_list.o adjust_pit.o add_roads.o find_stream.o \
 find_max_flna.o find_min_flna.o route_roads_to_patches.o compute_upslope_area.o \
-print_drain_stats.o compute_drainage_density.o compute_dist_from_road.o print_stream_table.o ew_horizon.o
+print_drain_stats.o compute_drainage_density.o compute_dist_from_road.o print_stream_table.o \
+grassio.o
 
-LIBES = -lm
+LIBS = -lm
+GIS_LIBS = -lgrass_gis
 
-$(PGM): $(OBJECTS)
-	$(CC) $(OBJECTS) $(LIBES) $(CFLAGS) -o $(PGM) 
+$(PGM): $(EW_PGM) $(OBJECTS)
+	$(CC) $(OBJECTS) -L$(GISBASE)/lib $(GIS_LIBS) $(LIBS) $(CFLAGS) -o $(PGM) 
+
+$(EW_PGM): ew_horizon.o fileio.o grassio.o
+	$(CC) ew_horizon.o fileio.o grassio.o $(CFLAGS) -L$(GISBASE)/lib $(LIBS) $(GIS_LIBS) -o $(EW_PGM)	
+
+install: $(PGM) $(EW_PGM)
+	cp $(PGM) $(RHESSYS_BIN)
+	cp $(EW_PGM) $(RHESSYS_BIN)
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f $(OBJECTS) ew_horizon.o 
 
 clobber:	clean
-	rm -f $(PGM)
+	rm -f $(PGM) $(EW_PGM)
 
 print_drain_stats.o:
 	$(CC) $(CFLAGS) -c print_drain_stats.c
@@ -32,8 +42,8 @@ in_list.o:
 	$(CC) $(CFLAGS) -c in_list.c
 adjust_pit.o:
 	$(CC) $(CFLAGS) -c adjust_pit.c
-ew_horizon.o:
-	$(CC) $(CFLAGS) -c ew_horizon.c
+ew_horizon.o: ew_horizon.c
+	$(CC) -I$(GISBASE)/include $(CFLAGS) -c ew_horizon.c
 add_roads.o:
 	$(CC) $(CFLAGS) -c add_roads.c
 find_top.o:
@@ -64,9 +74,8 @@ find_patch.o:
 	$(CC) $(CFLAGS) -c find_patch.c
 fileio.o:
 	$(CC) $(CFLAGS) -c fileio.c
+grassio.o:
+	$(CC) $(CFLAGS) -I$(GISBASE)/include -c grassio.c
 main.o:
 	$(CC) $(CFLAGS) -c main.c
-
-install:
-	cp $(PGM) $(RHESSYS_BIN)
 

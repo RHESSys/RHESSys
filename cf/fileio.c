@@ -431,7 +431,36 @@ void output_ascii_float(float *array, char *filename, int mc, int mr)
 
     return;
     }
- 
+
+void output_ascii_double(double *array, char *filename, int mc, int mr)
+{
+    FILE *in1, *fopen();
+	
+   int  r;
+   double max, new;
+
+    max=0.0;
+    if ( (in1 = fopen(filename, "w")) == NULL)
+        {
+        printf("cannot open file %s\n",filename);
+		pause();
+        }
+    else 
+        {
+	for (r=0; r < mr*mc; r++) {
+		  new = array[r];
+		  if (new > max) max = new;
+		  fprintf(in1,"%f ", array[r]);
+		}
+
+	printf("\n Max for ew horizon is %lf", max);
+         fclose(in1);
+		
+        }
+
+    return;
+}
+    
 /*-------------------------------------------------------------------------
         input_int() - input a binary image, sizeof(int) using the
                         (row, col) coordinates maxr and maxc.

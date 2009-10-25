@@ -64,7 +64,7 @@ main(int argc, char *argv[])  {
 	double	cell, width;
 	int		pst_flag, f_flag, fl_flag, fh_flag, vflag;
 	int		s_flag, r_flag, slp_flag, sc_flag, arc_flag;
-	int		st_flag, sewer_flag, ewhr_flag;
+	int		st_flag, sewer_flag;
 	int		prefix_flag;
 	int		suffix_flag;
 	double	scale_trans, scale_dem;
@@ -106,7 +106,6 @@ char	name[MAXS], name2[MAXS];
     vflag    = 0;		/* verbose flag					 */
     fl_flag  = 0;		/* roads to lowest flna			 */
     fh_flag  = 0;		/* roads to highest flna		 */
-	ewhr_flag	 = 0;	/* printing ew horizon flag			 */
 	s_flag	 = 0;		/* printing stats flag			 */
 	r_flag 	 = 0;		/* road stats flag				 */
 	sc_flag  = 1;		/* stream connectivity flag		 */
@@ -142,10 +141,6 @@ char	name[MAXS], name2[MAXS];
 		if (strcmp(argv[i], "-fh") == 0 )
 			{
 			fh_flag = 1;
-			}
-		if (strcmp(argv[i], "-ewhr") == 0 )
-			{
-			ewhr_flag = 1;
 			}
 		if (strcmp(argv[i], "-sw") == 0 )
 			{
@@ -382,12 +377,6 @@ char	name[MAXS], name2[MAXS];
 	else flna = NULL;
 
 
-	/* create data structure and files for ew horizon if needed */
-	if (ewhr_flag) {
-		ehr = (float *)  malloc(maxr*maxc*sizeof(float));
-		whr = (float *)  malloc(maxr*maxc*sizeof(float));
-		}
-
 	/* allocate flow table */
 	flow_table = (struct flow_struct *)calloc((maxr*maxc),sizeof(struct flow_struct));
 /*
@@ -401,12 +390,6 @@ char	name[MAXS], name2[MAXS];
 		}
 */
 
-	if (ewhr_flag) {
-		ew_horizon(dem, ehr, whr, maxr, maxc, cell, scale_dem);
-		output_ascii_float(ehr, fnehr, maxc, maxr);
-		output_ascii_float(whr, fnwhr, maxc, maxr);
-		exit(0);
-	}	
 
 	printf("\n Building flow table");
 	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch, 
