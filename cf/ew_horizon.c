@@ -38,9 +38,13 @@ const RASTER_MAP_TYPE OUTPUT_TYPE = DCELL_TYPE; // Force raster output
 
 int main(int argc, char** argv)
 {
-
 	// GRASS init
 	G_gisinit(argv[0]);
+
+	// GRASS module header
+	struct GModule* module = G_define_module();
+	module->keywords = "RHESSys";
+	module->description = "Calculates the east and west horizons for a DEM";
 
 	// GRASS arguments
 	struct Option* input_opt;

@@ -12,16 +12,16 @@
 /*  OPTIONS                                                     */
 /*                                                              */
 /*		-v 	Verbose Option										*/
-/*		-fl    roads to lowest flna interval 					*/
-/*		-fh  	roads to highest flna interval					*/
+/*		-l    roads to lowest flna interval 					*/
+/*		-h  	roads to highest flna interval					*/
 /*		-s print drainage statistics							*/
 /*		-r 	road flag for drainage statistics					*/
-/*		-sc	stream connectivity is assumed						*/
+/*		-stream	stream connectivity is assumed						*/
 /*			1	random slope value								*/
 /*			2	internal slope value							*/
 /*			0	no connectivity (default)						*/
-/*		-sd scale dem values by this amount                     */
-/*		-st	scale streamside transmissivity						*/
+/*		-scaledem scale dem values by this amount                     */
+/*		-scaletrans	scale streamside transmissivity						*/
 /*		-bi	basin ID				*/
 /*		-sw	use a sewer image to route water from roads     	*/
 /*		-pst	print stream table	*/
@@ -45,6 +45,7 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h>
+#include <grass/gis.h>
 
 #include "blender.h"
 #include "glb.h"
@@ -53,10 +54,8 @@
 
 
 
-main(int argc, char *argv[])  {
-  
-
-	
+main(int argc, char *argv[])  
+{
 /* local variable declarations */
     int		i/*j*/ /*r*/ /*c*/ /*area*/, num_stream, num_patches;   
 	FILE	/**in1*/ *out1, *out2;    
@@ -68,8 +67,8 @@ main(int argc, char *argv[])  {
 	int		prefix_flag;
 	int		suffix_flag;
 	double	scale_trans, scale_dem;
-	char    *input_prefix;
-	char    *output_suffix;
+	char    input_prefix[MAXS];
+	char    output_suffix[MAXS];
 	float	scale_factor;
 
 
@@ -122,180 +121,169 @@ char	name[MAXS], name2[MAXS];
 	width = 5;			/* default road width            */
 	basinid = 1;
 
-	i = 1;
+	// GRASS init
+	G_gisinit(argv[0]);
 
-	while (i < argc) 
-	{
-		if (strcmp(argv[i],"-v") == 0 )
-			{
-			vflag = 1;
-			}
-		if (strcmp(argv[i], "-fl") == 0 )
-			{
-			fl_flag = 1;
-			}
-		if (strcmp(argv[i], "-pst") == 0 )
-			{
-			pst_flag = 1;
-			}
-		if (strcmp(argv[i], "-fh") == 0 )
-			{
-			fh_flag = 1;
-			}
-		if (strcmp(argv[i], "-sw") == 0 )
-			{
-			sewer_flag = 1;
-			}
-			
-		if (strcmp(argv[i], "-bi") == 0 )
-			{
-			i += 1;
-			if   (i == argc)  {
-                           fprintf(stderr,
-				"FATAL ERROR: Basin ID not specified\n");
-                                    exit(1);
-                            } /*end if*/
-			basinid = (int)atoi(argv[i]);
-			}
-		if (strcmp(argv[i], "-sc") == 0 )
-			{
-			i += 1;
-			if   (i == argc)  {
-                           fprintf(stderr,
-				"FATAL ERROR: Output prefix not specified\n");
-                                    exit(1);
-                            } /*end if*/
-			sc_flag = (int)atoi(argv[i]);
-			}
-		if (strcmp(argv[i], "-sd") == 0 )
-			{
-			i += 1;
-			if (strncmp(argv[i], "-",1) != 0) 
-				scale_dem = (double)atof(argv[i]); 
-				printf("\n Using dem scaling of %s as %lf \n",
-					argv[i], scale_dem);
-			}
-		if (strcmp(argv[i], "-slp") == 0 )
-			{
-			i += 1;
-			if   (i == argc)  {
-                           fprintf(stderr,
-				"FATAL ERROR: Slope flag not specified\n");
-                                    exit(1);
-                            } /*end if*/
-			slp_flag = (int)atoi(argv[i]);
-			}
-		if (strcmp(argv[i], "-st") == 0 )
-			{
-			st_flag = 1;
-			i += 1;
-			if (strncmp(argv[i], "-",1) != 0) 
-				scale_trans = (double)atof(argv[i]); 
-			printf("\n Using streamside scaling of %s as %lf \n",
-					argv[i], scale_trans);
-			}
-		if (strcmp(argv[i], "-s") == 0 )
-			{
-			s_flag = 1;
-			}
+	// GRASS module header
+	struct GModule* module;
+	module = G_define_module();
+	module->keywords = "RHESSys";
+	module->description = "Creates a flowpaths file for input into RHESSys";
 
-		if (strcmp(argv[i], "-w") == 0 )
-			{
-			i += 1;
-			if   (i == argc)  {
-                           fprintf(stderr,
-				"FATAL ERROR: Output prefix not specified\n");
-                                    exit(1);
-                            } /*end if*/
-			width = (double)atof(argv[i]);
-			}
+	// GRASS arguments
+	struct Flag* lowest_flna_flag = G_define_flag();
+	lowest_flna_flag->key = 'l';
+	lowest_flna_flag->description = "Roads to lowest flna interval";
 
-		if (strcmp(argv[i], "-res") == 0 )
-			{
-			i += 1;
-			if   (i == argc)  {
-                           fprintf(stderr,
-				"FATAL ERROR: Output prefix not specified\n");
-                                    exit(1);
-                            } /*end if*/
-			cell = (double)atof(argv[i]);
-			}
+	struct Flag* highest_flna_flag = G_define_flag();
+	highest_flna_flag->key = 'h';
+	highest_flna_flag->description = "Roads to highest flna interval";
 
-		if (strcmp(argv[i], "-o") == 0 )
-		{
-				i += 1;
-				if (i == argc) {
-						fprintf(stderr, "FATAL ERROR: Output file name not specified\n");
-						exit(1);
-				} /* end if */
-				/* allocate an array for the output suffix andread in output */
-				/* suffix */
-				if ((output_suffix = (char *)malloc((1+strlen(argv[i]))*sizeof(char))) == NULL)
-				{
-						fprintf(stderr, "FATAL ERROR: Cannot allocate output_suffix\n");
-						exit(1);
-				} /* end if */
+	struct Flag* drainage_stats_flag = G_define_flag();
+	drainage_stats_flag->key = 'd';
+	drainage_stats_flag->description = "Print drainage statistics";
 
-				strcpy(output_suffix, argv[i]);
-				suffix_flag = 1;
-		} /* end if */
+	struct Flag* road_drainage_stats_flag = G_define_flag();
+	road_drainage_stats_flag->key = 'r';
+	road_drainage_stats_flag->description = "Road flag for drainage statistics";
 
-		if (strcmp(argv[i], "-pre") == 0 )
-			{
-			i += 1;
-			if   (i == argc)  {
-                           fprintf(stderr,
-				"FATAL ERROR: Output prefix not specified\n");
-                                    exit(1);
-                            } /*end if*/
+	struct Option* stream_connectivity_opt = G_define_option();
+	stream_connectivity_opt->key = "stream";
+	stream_connectivity_opt->type = TYPE_STRING;
+	stream_connectivity_opt->required = NO;
+	stream_connectivity_opt->description = "Stream connectivity type: [random(default), internal, none]";
+	stream_connectivity_opt->multiple=NO;
 
-			
-/*--------------------------------------------------------------*/
-/*                      Allocate an array for the output prefix and */
-/*                      Read in the output prefix   */
-/*--------------------------------------------------------------*/
-   if ((input_prefix =(char *)malloc((1+strlen(argv[i]))*sizeof(char))) ==	NULL) 
-	{ 
-	  	fprintf(stderr,	"FATAL ERROR: Cannot allocat output_prefix\n");
-        exit(1);
-              } /*end if*/
+	struct Option* scale_dem_opt = G_define_option();
+	scale_dem_opt->key = "scaledem";
+	scale_dem_opt->type = TYPE_DOUBLE;
+	scale_dem_opt->required = NO;
+	scale_dem_opt->description = "DEM scaling factor";
 
-         strcpy(input_prefix,argv[i]);
-         prefix_flag = 1;
-			}
+	struct Option* scale_stream_trans = G_define_option();
+	scale_stream_trans->key = "scaletrans";
+	scale_stream_trans->type = TYPE_DOUBLE;
+	scale_stream_trans->required = NO;
+	scale_stream_trans->description = "Scaleing factor for streamside transmissivity";
 
-		if (strcmp(argv[i], "-r") == 0 )
-			{
-			r_flag = 1;
-			}
-		if (strcmp(argv[i], "-a") == 0 )
-			{
-			arc_flag = 1;
-			}
+	struct Flag* use_sewer_flag = G_define_flag();
+	use_sewer_flag->key = 's';
+	use_sewer_flag->description = "Use a sewer image to route water from roads";
 
-		i += 1;
+	struct Flag* print_stream_table_flag = G_define_flag();
+	print_stream_table_flag->key = 'p';
+	print_stream_table_flag->description = "Print stream table";
 
+	struct Option* prefix_opt = G_define_option();
+	prefix_opt->key = "prefix";
+	prefix_opt->type = TYPE_STRING;
+	prefix_opt->required = YES;
+	prefix_opt->description = "Prefix for reading in ASCII files, this will go away.";
+
+	struct Option* road_width_opt = G_define_option();
+	road_width_opt->key = "roadwidth";
+	road_width_opt->type = TYPE_DOUBLE;
+	road_width_opt->required = NO;
+	road_width_opt->description = "Road width(m). [Default 5m]";
+	
+	struct Option* slope_use_opt = G_define_option();
+	slope_use_opt->key = "slopeuse";
+	slope_use_opt->type = TYPE_STRING;
+	slope_use_opt->required = NO;
+	slope_use_opt->description = "Change the use of slope in the compuation of gamma [standard(default), internal, max]";
+
+	struct Option* basin_id_opt = G_define_option();
+	basin_id_opt->key = "basinid";
+	basin_id_opt->type = TYPE_INTEGER;
+	basin_id_opt->required = NO;
+	basin_id_opt->description = "Basin ID";
+
+	struct Option* output_suffix_opt = G_define_option();
+	output_suffix_opt->key = "output";
+	output_suffix_opt->type = TYPE_STRING;
+	output_suffix_opt->required = NO;
+	output_suffix_opt->description = "Output suffix";
+
+	// Parse GRASS arguments
+	if (G_parser(argc, argv))
+		exit(1);
+
+	// Get values from GRASS arguments
+	fl_flag = lowest_flna_flag->answer;
+	fh_flag = highest_flna_flag->answer;
+	if (fl_flag || fh_flag) {
+		f_flag = 1;
+	} else {
+		f_flag = 0;
+	}
+	s_flag = drainage_stats_flag->answer;
+	r_flag = road_drainage_stats_flag->answer;
+
+	if (stream_connectivity_opt->answer != NULL) {  
+		// Default is 1, random connectivity. See sc_flag declaration for setting default.
+		if (strcmp("random",stream_connectivity_opt->answer)) {
+			sc_flag = 1;
+		} else if (strcmp("internal", stream_connectivity_opt->answer)) {
+			sc_flag = 2;
+		} else if (strcmp("none", stream_connectivity_opt->answer)) {
+			sc_flag = 0;
+		} else {
+			G_fatal_error("\"%s\" is not a valid argument to stream", stream_connectivity_opt->answer);
+		}
 	}
 
+	if (scale_dem_opt->answer != NULL) {	
+		// Default is set at declaration, only modify if set
+		if (sscanf(scale_dem_opt->answer, "%lf", &scale_dem) != 1) {
+			G_fatal_error("Error setting the scale dem value");
+		}
+	}
+	
+	if (scale_stream_trans->answer != NULL) {
+		// Default is set at declaration, only modify if set
+		if (sscanf(scale_stream_trans->answer, "%lf", &scale_trans) != 1) {
+			G_fatal_error("Error setting the scale trans value");
+		}
+	}
 
-	if (prefix_flag == 0) {
-                fprintf(stderr,
-			"\nFATAL ERROR: You must specify a prefix for image files\n");
-                         exit(1);
-         } /*end if*/
-		
-	if (suffix_flag == 0) {
-			if ((output_suffix = (char *)malloc((1+strlen("_flow_table.dat"))*sizeof(char))) == NULL) {
-					fprintf(stderr, "FATAL ERROR: Cannot allocate output_suffix\n");
-					exit(1);
-			}  /* end if */
-			strcpy(output_suffix, "_flow_table.dat");
-	} /* end if */
+	sewer_flag = use_sewer_flag->answer;
+	pst_flag = print_stream_table_flag->answer;
+	strcpy(input_prefix, prefix_opt->answer);
 
-	if ((fl_flag) || (fh_flag))
-		f_flag = 1;
-	else
-		f_flag = 0;
+	if (road_width_opt->answer != NULL) {
+		// Default is set at declaration
+		if (sscanf(road_width_opt->answer, "%lf", &width) != 1) {
+			G_fatal_error("Error setting the road width value");
+		}
+	}
+
+	if (slope_use_opt->answer != NULL) {
+		if (strcmp("standard", slope_use_opt->answer)) {
+			slp_flag = 0;
+		} else if (strcmp("internal", slope_use_opt->answer)) {
+			slp_flag = 1;
+		} else if (strcmp("max", slope_use_opt->answer)) {
+			slp_flag = 2;
+		} else {
+			G_fatal_error("\"%s\" is not a valid argument to slopeuse", slope_use_opt->answer);
+		}
+	}
+
+	if (basin_id_opt->answer != NULL) {
+		// Default set at declaration
+		if (sscanf(basin_id_opt->answer, "%d", &basinid) != 1) {
+			G_fatal_error("Error setting the basin ID value");
+		}
+	}
+
+	if (output_suffix_opt->answer != NULL) {
+		strcpy(output_suffix, output_suffix_opt->answer);	
+		suffix_flag = 1;	
+	} else {
+		strcpy(output_suffix, "_flow_table.dat");
+	}
+	
+		// Need to implement verbose	
 
     printf("Create_flowpaths.C\n\n");
 
