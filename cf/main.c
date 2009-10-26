@@ -82,7 +82,13 @@ char	fnroads[MAXS], fnsewers[MAXS];
 char	fnflna[MAXS];
 char	fnehr[MAXS], fnwhr[MAXS];
 char	name[MAXS], name2[MAXS];
+char	fntemplate[MAXS];
 
+/* raster names for maps */
+char	rnbasin[MAXS];
+char	rnhillslope[MAXS];
+char	rnzone[MAXS];
+char	rnpatch[MAXS];
 
 /* set pointers for images */
 
@@ -148,7 +154,7 @@ char	name[MAXS], name2[MAXS];
 	road_drainage_stats_flag->description = "Road flag for drainage statistics";
 
 	struct Option* stream_connectivity_opt = G_define_option();
-	stream_connectivity_opt->key = "stream";
+	stream_connectivity_opt->key = "streamcon";
 	stream_connectivity_opt->type = TYPE_STRING;
 	stream_connectivity_opt->required = NO;
 	stream_connectivity_opt->description = "Stream connectivity type: [random(default), internal, none]";
@@ -204,6 +210,50 @@ char	name[MAXS], name2[MAXS];
 	output_suffix_opt->required = NO;
 	output_suffix_opt->description = "Output suffix";
 
+
+	// Arguments that specify the names of required raster maps
+	struct Option* m_raster_opt = G_define_option();
+	m_raster_opt->key = "m";
+	m_raster_opt->type = TYPE_STRING;
+	m_raster_opt->required = YES;
+	m_raster_opt->description = "m";
+
+	struct Option* K_raster_opt = G_define_option();
+	K_raster_opt->key = "K";
+	K_raster_opt->type = TYPE_STRING;
+	K_raster_opt->required = YES;
+	K_raster_opt->description = "K";
+
+	struct Option* stream_raster_opt = G_define_option();
+	stream_raster_opt->key = "stream";
+	stream_raster_opt->type = TYPE_STRING;
+	stream_raster_opt->required = YES;
+	stream_raster_opt->description = "stream";
+
+	struct Option* road_raster_opt = G_define_option();
+	road_raster_opt->key = "road";
+	road_raster_opt->type = TYPE_STRING;
+	road_raster_opt->required = YES;
+	road_raster_opt->description = "road";
+
+	struct Option* dem_raster_opt = G_define_option();
+	dem_raster_opt->key = "dem";
+	dem_raster_opt->type = TYPE_STRING;
+	dem_raster_opt->required = YES;
+	dem_raster_opt->description = "dem";
+
+	struct Option* slope_raster_opt = G_define_option();
+	slope_raster_opt->key = "slope";
+	slope_raster_opt->type = TYPE_STRING;
+	slope_raster_opt->required = YES;
+	slope_raster_opt->description = "slope";
+
+	struct Option* template_opt = G_define_option();
+	template_opt->key = "template";
+	template_opt->type = TYPE_STRING;
+	template_opt->required = YES;
+	template_opt->description = "REHSSys template file from which to extract the basin, hill, zone, and patch GRASS rasters";
+	
 	// Parse GRASS arguments
 	if (G_parser(argc, argv))
 		exit(1);
@@ -287,10 +337,50 @@ char	name[MAXS], name2[MAXS];
 
     printf("Create_flowpaths.C\n\n");
 
-	
+
+	// Replace the results from input_prompt with the results from the GRASS command line
     input_prompt(&maxr, &maxc, input_prefix, fndem,fnslope,fnK,fnflna,
 					fnpatch, fnzone,fnhill, fnstream, fnroads, fnsewers, fnmpar,fnpartition,
 		 fntable,fnroot, fnehr, fnwhr, f_flag, sewer_flag, arc_flag);
+//   
+//   	strcpy(fndem, dem_raster_opt->answer);
+//   	strcpy(fnK, K_raster_opt->answer);
+//   	strcpy(fnstream, stream_raster_opt->answer);
+//   	strcpy(fnroads, road_raster_opt->answer);
+//   	strcpy(fnmpar, m_raster_opt->answer);
+//   	strcpy(fnslope, slope_raster_opt->answer);
+		strcpy(fntemplate, template_opt->answer);
+
+	// Read in the names of the basin, hill, zone, and patch maps from the
+	// template file.
+	FILE* template_fp = fopen(fntemplate, "r");
+	if (template_fp == NULL) {
+		G_fatal_error("Can not open template file <%s>", fntemplate);
+	}
+
+	char	template_buffer[MAXS];
+	char	first[MAXS];
+	char	second[MAXS];
+	while (fgets(template_buffer, sizeof(template_buffer), template_fp) != NULL) {
+		sscanf(template_buffer, "%s %s", first, second);
+
+		// Check if the token is anything we are looking for
+		if (strcmp("_basin", first) == 0 ) {
+			strcpy(rnbasin, second);
+		} else if (strcmp("_hillslope", first) == 0 ) {
+			strcpy(rnhillslope, second);
+		} else if (strcmp("_zone", first) == 0 ) {
+			strcpy(rnzone, second);
+		} else if (strcmp("_patch", first) == 0 ) {
+			strcpy(rnpatch, second);
+		}
+	}
+	fclose (template_fp);
+	printf("Basin: %s\n", rnbasin);
+	printf("Hillslope: %s\n", rnhillslope);
+	printf("Zone: %s\n", rnzone);
+	printf("Patch: %s\n", rnpatch);
+
 
 	/* open some diagnostic output files */
 
