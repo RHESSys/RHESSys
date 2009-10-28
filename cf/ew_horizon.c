@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	input_opt->key = "input";
 	input_opt->type = TYPE_STRING;
 	input_opt->required = YES;
-	input_opt->description = "input raster name";
+	input_opt->description = "Input raster name";
 	input_opt->multiple = NO;
 
 	struct Option* output_opt;
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 	output_opt->key = "output";
 	output_opt->type = TYPE_STRING;
 	output_opt->required = NO;
-	output_opt->description = "Optional file";
+	output_opt->description = "Optional output prefix";
 	output_opt->multiple = NO;
 
 	struct Option* scale_opt;
@@ -70,6 +70,14 @@ int main(int argc, char** argv)
 	scale_opt->required = NO;
 	scale_opt->description = "Factor to scale the DEM by before processing";
 	scale_opt->multiple = NO;
+
+	struct Option* null_opt;
+	null_opt = G_define_option();
+	null_opt->key = "null";
+	null_opt->type = TYPE_DOUBLE;
+	null_opt->required = NO;
+	null_opt->description = "Number representing NULL value data cell";
+	null_opt->multiple = NO;
 
 	struct Flag* file_flag;
 	file_flag = G_define_flag();
@@ -102,6 +110,15 @@ int main(int argc, char** argv)
 	} else {
 		printf("No DEM scaling specified, setting to 1.0\n");
 		scale_dem = 1.0; 
+	}
+
+	double null;
+	int null_set = 0;
+	if (null_opt->answer != NULL) {
+		if ( sscanf(null_opt->answer, "%lf", &null) != 1) {
+			G_fatal_error("Error setting the null value");
+		}
+		null_set = 1;
 	}
 
 	int save_files = file_flag->answer;
@@ -150,6 +167,23 @@ int main(int argc, char** argv)
 			curr_whr = 0.0;
 			maxe_elev = 0.0;
 			maxw_elev = 0.0;
+
+			// Check for NULL value at this cell. Try to preserve the initial 
+			// null settings of the input raster, so if we find an integer null,
+			// use the argument null value. Else if null is from a GRASS support
+			// file, use the GRASS null functions.
+			if (null_set) {
+				if (dem[inx] == null ) {
+					ehr[inx] = null;
+					whr[inx] = null;
+					continue;
+				}
+			} else if (G_is_null_value(&dem[inx], DCELL_TYPE)) {
+				ehr[inx] = dem[inx];
+				whr[inx] = dem[inx];
+				continue;
+			}
+
 			curr_elev = dem[inx]*scale_dem;
 
 			for (cr = 0; cr < maxc; cr++) {
@@ -226,5 +260,4 @@ int main(int argc, char** argv)
 
 	exit(EXIT_SUCCESS);
 }
-
 

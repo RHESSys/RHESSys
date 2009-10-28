@@ -85,6 +85,12 @@ char	name[MAXS], name2[MAXS];
 char	fntemplate[MAXS];
 
 /* raster names for maps */
+char	rndem[MAXS];
+char	rnK[MAXS];
+char	rnmpar[MAXS];
+char	rnslope[MAXS];
+char	rnstream[MAXS];
+char	rnroads[MAXS];
 char	rnbasin[MAXS];
 char	rnhillslope[MAXS];
 char	rnzone[MAXS];
@@ -92,7 +98,7 @@ char	rnpatch[MAXS];
 
 /* set pointers for images */
 
-    int    *dem;
+    double 	   *dem;
     int          *patch;	
     float        *slope;	
     int          *hill;	
@@ -343,7 +349,7 @@ char	rnpatch[MAXS];
 					fnpatch, fnzone,fnhill, fnstream, fnroads, fnsewers, fnmpar,fnpartition,
 		 fntable,fnroot, fnehr, fnwhr, f_flag, sewer_flag, arc_flag);
 //   
-//   	strcpy(fndem, dem_raster_opt->answer);
+   		strcpy(rndem, dem_raster_opt->answer);
 //   	strcpy(fnK, K_raster_opt->answer);
 //   	strcpy(fnstream, stream_raster_opt->answer);
 //   	strcpy(fnroads, road_raster_opt->answer);
@@ -401,10 +407,17 @@ char	rnpatch[MAXS];
        	} 
 
 	/* allocate and input map images */
-
-
+	struct Cell_head dem_head;
+//	dem = raster2array(rndem, &dem_head, &maxr, &maxc);
 	dem = (int *)malloc(maxr*maxc*sizeof(int));
 	input_ascii_int(dem, fndem, maxr, maxc, arc_flag);
+	if (dem != NULL) {
+		printf("dem != NULL\n");
+		printf("dem[0] = %fl\n", dem[0]);
+	} else {
+		printf("WTF IS GOING ON?!!!!\n");
+		exit(1);
+	}
 
 	patch   = (int *) calloc(maxr*maxc, sizeof(int));      
     	input_ascii_int(patch, fnpatch, maxr, maxc, arc_flag);	
@@ -469,6 +482,7 @@ char	rnpatch[MAXS];
 */
 
 
+	// Reset maxr and maxc to the 
 	printf("\n Building flow table");
 	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch, 
 					stream, roads, sewers, K, m_par, flna, out1, maxr, 
@@ -522,6 +536,10 @@ char	rnpatch[MAXS];
 	
 	fclose(out2);
 	printf("\n Finished Createflowpaths \n\n");
+
+	// Pointers to memory allocated by raster2array must be freed manually
+	//free(dem);
+
     exit(0);
 
 
