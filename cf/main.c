@@ -82,23 +82,17 @@ char	fnroads[MAXS], fnsewers[MAXS];
 char	fnflna[MAXS];
 char	fnehr[MAXS], fnwhr[MAXS];
 char	name[MAXS], name2[MAXS];
-char	fntemplate[MAXS];
 
-/* raster names for maps */
-char	rndem[MAXS];
-char	rnK[MAXS];
-char	rnmpar[MAXS];
-char	rnslope[MAXS];
-char	rnstream[MAXS];
-char	rnroads[MAXS];
+char	fntemplate[MAXS];
 char	rnbasin[MAXS];
 char	rnhillslope[MAXS];
 char	rnzone[MAXS];
 char	rnpatch[MAXS];
 
+
 /* set pointers for images */
 
-    double 	   *dem;
+    int    *dem;
     int          *patch;	
     float        *slope;	
     int          *hill;	
@@ -215,7 +209,6 @@ char	rnpatch[MAXS];
 	output_suffix_opt->type = TYPE_STRING;
 	output_suffix_opt->required = NO;
 	output_suffix_opt->description = "Output suffix";
-
 
 	// Arguments that specify the names of required raster maps
 	struct Option* m_raster_opt = G_define_option();
@@ -341,21 +334,16 @@ char	rnpatch[MAXS];
 	
 		// Need to implement verbose	
 
+	strcpy(fntemplate, template_opt->answer);
+
+
     printf("Create_flowpaths.C\n\n");
 
-
-	// Replace the results from input_prompt with the results from the GRASS command line
+	
     input_prompt(&maxr, &maxc, input_prefix, fndem,fnslope,fnK,fnflna,
 					fnpatch, fnzone,fnhill, fnstream, fnroads, fnsewers, fnmpar,fnpartition,
 		 fntable,fnroot, fnehr, fnwhr, f_flag, sewer_flag, arc_flag);
-//   
-   		strcpy(rndem, dem_raster_opt->answer);
-//   	strcpy(fnK, K_raster_opt->answer);
-//   	strcpy(fnstream, stream_raster_opt->answer);
-//   	strcpy(fnroads, road_raster_opt->answer);
-//   	strcpy(fnmpar, m_raster_opt->answer);
-//   	strcpy(fnslope, slope_raster_opt->answer);
-		strcpy(fntemplate, template_opt->answer);
+
 
 	// Read in the names of the basin, hill, zone, and patch maps from the
 	// template file.
@@ -388,6 +376,7 @@ char	rnpatch[MAXS];
 	printf("Patch: %s\n", rnpatch);
 
 
+
 	/* open some diagnostic output files */
 
   strcpy(name, input_prefix);
@@ -407,17 +396,10 @@ char	rnpatch[MAXS];
        	} 
 
 	/* allocate and input map images */
-	struct Cell_head dem_head;
-//	dem = raster2array(rndem, &dem_head, &maxr, &maxc);
+
+
 	dem = (int *)malloc(maxr*maxc*sizeof(int));
 	input_ascii_int(dem, fndem, maxr, maxc, arc_flag);
-	if (dem != NULL) {
-		printf("dem != NULL\n");
-		printf("dem[0] = %fl\n", dem[0]);
-	} else {
-		printf("WTF IS GOING ON?!!!!\n");
-		exit(1);
-	}
 
 	patch   = (int *) calloc(maxr*maxc, sizeof(int));      
     	input_ascii_int(patch, fnpatch, maxr, maxc, arc_flag);	
@@ -482,7 +464,6 @@ char	rnpatch[MAXS];
 */
 
 
-	// Reset maxr and maxc to the 
 	printf("\n Building flow table");
 	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch, 
 					stream, roads, sewers, K, m_par, flna, out1, maxr, 
@@ -536,10 +517,6 @@ char	rnpatch[MAXS];
 	
 	fclose(out2);
 	printf("\n Finished Createflowpaths \n\n");
-
-	// Pointers to memory allocated by raster2array must be freed manually
-	//free(dem);
-
     exit(0);
 
 
