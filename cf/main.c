@@ -85,6 +85,7 @@ char	fnflna[MAXS];
 char	fnehr[MAXS], fnwhr[MAXS];
 char	name[MAXS], name2[MAXS];
 
+char*	rnflna;
 char*	fntemplate;
 char	rnbasin[MAXS];
 char	rnhillslope[MAXS];
@@ -108,7 +109,7 @@ char*	rnstream;
     int			 *sewers;
     double		 *K;
 	double		 *m_par;
-	float		 *flna;
+	double		 *flna;
 	float		 *ehr;
 	float		 *whr;
 
@@ -263,6 +264,12 @@ char*	rnstream;
 	template_opt->type = TYPE_STRING;
 	template_opt->required = YES;
 	template_opt->description = "REHSSys template file from which to extract the basin, hill, zone, and patch GRASS rasters";
+
+	struct Option* flna_raster_opt = G_define_option();
+	flna_raster_opt->key = "flna";
+	flna_raster_opt->type = TYPE_STRING;
+	flna_raster_opt->required = NO;
+	flna_raster_opt->description = "FLNA map";
 	
 	// Parse GRASS arguments
 	if (G_parser(argc, argv))
@@ -342,7 +349,10 @@ char*	rnstream;
 	} else {
 		strcpy(output_suffix, "_flow_table.dat");
 	}
-	
+
+	if (flna_raster_opt->answer != NULL) {
+		rnflna = flna_raster_opt->answer;
+	}
 		// Need to implement verbose	
 	rndem = dem_raster_opt->answer;
 	fntemplate = template_opt->answer;
@@ -350,7 +360,6 @@ char*	rnstream;
 	rnmpar = m_raster_opt->answer;
 	rnroads = road_raster_opt->answer;
 	rnstream = stream_raster_opt->answer;
-
 
 
     printf("Create_flowpaths.C\n\n");
@@ -457,10 +466,9 @@ char*	rnstream;
 	m_par = raster2array(rnmpar, &mpar_header, NULL, NULL);
 	
 	if (f_flag) {
-		scale_factor = 1.0;
-		flna = (float *)  malloc(maxr*maxc*sizeof(float));
-		input_ascii_float(flna, fnflna, maxr, maxc, arc_flag, scale_factor);
-		}
+		struct Cell_head flna_header;
+		flna = raster2array(rnflna, &flna_header, NULL, NULL);
+	}
 	else flna = NULL;
 
 

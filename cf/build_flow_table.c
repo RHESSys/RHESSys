@@ -38,7 +38,7 @@ int build_flow_table(struct flow_struct* flow_table,
 					 int* sewers,
 					 double* K,
 					 double* m_par,
-					 float* flna,
+					 double* flna,
 					 FILE* f1,
 					 int maxr, int maxc,
 					 int f_flag, int sc_flag, int sewer_flag, int slp_flag, 
@@ -102,7 +102,7 @@ int build_flow_table(struct flow_struct* flow_table,
 	
 			
 				if (f_flag)
-					flow_table[pch].flna += ( float ) (1.0 * flna[inx]);
+					flow_table[pch].flna += ( float )flna[inx];
 				else
 					flow_table[pch].flna = 0.0;
 
