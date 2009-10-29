@@ -86,9 +86,10 @@ char	fnehr[MAXS], fnwhr[MAXS];
 char	name[MAXS], name2[MAXS];
 
 char*	rnflna;
+char* 	rnslope;
 char*	fntemplate;
 char	rnbasin[MAXS];
-char	rnhillslope[MAXS];
+char	rnhill[MAXS];
 char	rnzone[MAXS];
 char	rnpatch[MAXS];
 char*	rndem;
@@ -96,6 +97,7 @@ char*	rnK;
 char*	rnmpar;
 char*	rnroads;
 char*	rnstream;
+char*	rnsewers;
 
 /* set pointers for images */
 
@@ -270,7 +272,13 @@ char*	rnstream;
 	flna_raster_opt->type = TYPE_STRING;
 	flna_raster_opt->required = NO;
 	flna_raster_opt->description = "FLNA map";
-	
+
+	struct Option* sewers_raster_opt = G_define_option();
+	sewers_raster_opt->key = "sewer";
+	sewers_raster_opt->type = TYPE_STRING;
+	sewers_raster_opt->required = NO;
+	sewers_raster_opt->description = "Sewer map";
+
 	// Parse GRASS arguments
 	if (G_parser(argc, argv))
 		exit(1);
@@ -353,6 +361,10 @@ char*	rnstream;
 	if (flna_raster_opt->answer != NULL) {
 		rnflna = flna_raster_opt->answer;
 	}
+
+	if (sewers_raster_opt->answer != NULL) {
+		rnsewers = sewers_raster_opt->answer;
+	}
 		// Need to implement verbose	
 	rndem = dem_raster_opt->answer;
 	fntemplate = template_opt->answer;
@@ -360,7 +372,7 @@ char*	rnstream;
 	rnmpar = m_raster_opt->answer;
 	rnroads = road_raster_opt->answer;
 	rnstream = stream_raster_opt->answer;
-
+	rnslope = slope_raster_opt->answer;
 
     printf("Create_flowpaths.C\n\n");
 
@@ -387,7 +399,7 @@ char*	rnstream;
 		if (strcmp("_basin", first) == 0 ) {
 			strcpy(rnbasin, second);
 		} else if (strcmp("_hillslope", first) == 0 ) {
-			strcpy(rnhillslope, second);
+			strcpy(rnhill, second);
 		} else if (strcmp("_zone", first) == 0 ) {
 			strcpy(rnzone, second);
 		} else if (strcmp("_patch", first) == 0 ) {
@@ -396,7 +408,7 @@ char*	rnstream;
 	}
 	fclose (template_fp);
 	printf("Basin: %s\n", rnbasin);
-	printf("Hillslope: %s\n", rnhillslope);
+	printf("Hillslope: %s\n", rnhill);
 	printf("Zone: %s\n", rnzone);
 	printf("Patch: %s\n", rnpatch);
 
@@ -425,49 +437,44 @@ char*	rnstream;
 	// figure out what's happening with maxr, maxc, possible raster
 	// size mismatch
 	struct Cell_head dem_header;
-	dem = raster2array(rndem, &dem_header, &maxr, &maxc);
+	dem = (double*)raster2array(rndem, &dem_header, &maxr, &maxc, DCELL_TYPE);
 
 	struct Cell_head patch_header;
-	patch   = (int *) calloc(maxr*maxc, sizeof(int));      
-    input_ascii_int(patch, fnpatch, maxr, maxc, arc_flag);	
+	patch = (int*)raster2array(rnpatch, &patch_header, NULL, NULL, CELL_TYPE);
 
 	struct Cell_head zone_header;
-	zone   = (int *) malloc(maxr*maxc*sizeof(int));
-    input_ascii_int(zone, fnzone, maxr, maxc, arc_flag);	
+	zone = (int*)raster2array(rnzone, &zone_header, NULL, NULL, CELL_TYPE);
 
 	struct Cell_head hill_header;
-    hill   = (int *) malloc(maxr*maxc*sizeof(int));
-    input_ascii_int(hill, fnhill, maxr, maxc, arc_flag);	
+	hill = (int*)raster2array(rnhill, &hill_header, NULL, NULL, CELL_TYPE);
 
 	struct Cell_head stream_header;
-    stream   = (int *) malloc(maxr*maxc*sizeof(int));
-    input_ascii_int(stream, fnstream, maxr, maxc, arc_flag);	
+	stream = (int*)raster2array(rnstream, &stream_header, NULL, NULL, CELL_TYPE);
 
-   if ((sc_flag == 1) || (slp_flag > 0) ){ 
-
-    	slope   = (float *) malloc(maxr*maxc*sizeof(int));
-		scale_factor = 1;
-    	input_ascii_float(slope, fnslope, maxr, maxc, arc_flag, scale_factor);	
+    if ((sc_flag == 1) || (slp_flag > 0) ){ 
+		struct Cell_head slope_header;
+		slope = (float*)raster2array(rnslope, &slope_header, NULL, NULL, FCELL_TYPE);
 	}
 
 	struct Cell_head roads_header;
-    roads = (int *) malloc(maxr*maxc*sizeof(int));
-    input_ascii_int(roads, fnroads, maxr, maxc, arc_flag);	
+	roads = (int*)raster2array(rnroads, &roads_header, NULL, NULL, CELL_TYPE);
 
     if (sewer_flag == 1) {
-    	sewers = (int *) malloc(maxr*maxc*sizeof(int));
-    	input_ascii_int(sewers, fnsewers, maxr, maxc, arc_flag);	
+		struct Cell_head sewers_header;
+		sewers = (int*)raster2array(rnsewers, &sewers_header, NULL, NULL, CELL_TYPE);
+//    	sewers = (int *) malloc(maxr*maxc*sizeof(int));
+ //   	input_ascii_int(sewers, fnsewers, maxr, maxc, arc_flag);	
 	}
 
 	struct Cell_head K_header;
-	K = raster2array(rnK, &K_header, NULL, NULL);
+	K = (double*)raster2array(rnK, &K_header, NULL, NULL, DCELL_TYPE);
 
 	struct Cell_head mpar_header;
-	m_par = raster2array(rnmpar, &mpar_header, NULL, NULL);
+	m_par = (double*)raster2array(rnmpar, &mpar_header, NULL, NULL, DCELL_TYPE);
 	
 	if (f_flag) {
 		struct Cell_head flna_header;
-		flna = raster2array(rnflna, &flna_header, NULL, NULL);
+		flna = (double*)raster2array(rnflna, &flna_header, NULL, NULL, DCELL_TYPE);
 	}
 	else flna = NULL;
 
@@ -488,7 +495,6 @@ char*	rnstream;
 	printf("\n Computing gamma");
 	num_stream = compute_gamma(flow_table, num_patches, out2,scale_trans,cell,sc_flag,
                         slp_flag, d_flag);
-
 
 	
 	 /* remove pits and re-order patches appropriately */

@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 	int maxr;
 	int maxc;
 	struct Cell_head	dem_head;
-	double* dem = raster2array(dem_name, &dem_head, &maxr, &maxc);
+	double* dem = (double*)raster2array(dem_name, &dem_head, &maxr, &maxc, DCELL_TYPE);
 
 
 	// Actual data processing part starts here

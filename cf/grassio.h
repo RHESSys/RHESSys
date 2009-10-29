@@ -4,10 +4,11 @@
 #include <grass/gis.h>
 
 
-double* raster2array(const char* name, 
+void* raster2array(const char* name, 
 				  	 struct Cell_head* header,
 					 int* rows,
-					 int* cols);
+					 int* cols,
+					 RASTER_MAP_TYPE out_type);
 				
 
 void array2raster(const void* data, 

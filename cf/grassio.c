@@ -4,10 +4,11 @@
 #include "grassio.h"
 
 
-double* raster2array(const char* name, 
+void* raster2array(const char* name, 
 					 struct Cell_head* header, 
 					 int* rows, 
-					 int* cols) 
+					 int* cols,
+					 RASTER_MAP_TYPE out_type) 
 {
 	// Open the raster map and load the dem
 	// for simplicity sake, the dem will be an array of
@@ -39,7 +40,19 @@ double* raster2array(const char* name,
 
 	// Read in the raster line by line, copying it into the double array
 	// rast for return.
-	double* rast = (double*)calloc(maxr * maxc, sizeof(double));
+	void* rast;
+	switch (out_type) {
+		case CELL_TYPE:
+			rast = (int*)calloc(maxr * maxc, sizeof(int));
+			break;
+		case FCELL_TYPE:
+			rast = (float*)calloc(maxr * maxc, sizeof(float));
+			break;
+		case DCELL_TYPE:
+			rast = (double*)calloc(maxr * maxc, sizeof(double));
+			break;
+
+	}
 
 	if (rast == NULL) {
 		G_fatal_error("Unable to allocate memory for raster map <%s>", name);
@@ -52,19 +65,56 @@ double* raster2array(const char* name,
 
 		for (col = 0; col < maxc; ++col) {
 			int index= col + row*maxc;
-			switch (type) {
-				case CELL_TYPE:
-					((double*)rast)[index] = (double)((int *) inrast)[col];
-					break;
-				case FCELL_TYPE:
-					((double*)rast)[index] = (double)((float *) inrast)[col];
-					break;
-				case DCELL_TYPE:
-					((double*)rast)[index] = ((double *) inrast)[col];
-					break;
-				default:
-					G_fatal_error("Unknown cell type");
-					break;
+
+			if (out_type == CELL_TYPE) {
+				switch (type) {
+					case CELL_TYPE:
+						((int*)rast)[index] = ((int *) inrast)[col];
+						break;
+					case FCELL_TYPE:
+						((int*)rast)[index] = (int)((float *) inrast)[col];
+						break;
+					case DCELL_TYPE:
+						((int*)rast)[index] = (int)((double *) inrast)[col];
+						break;
+					default:
+						G_fatal_error("Unknown cell type");
+						break;
+				}
+			}
+
+			if (out_type == FCELL_TYPE) {
+				switch (type) {
+					case CELL_TYPE:
+						((float*)rast)[index] = (float)((int *) inrast)[col];
+						break;
+					case FCELL_TYPE:
+						((float*)rast)[index] = ((float *) inrast)[col];
+						break;
+					case DCELL_TYPE:
+						((float*)rast)[index] = (float)((double *) inrast)[col];
+						break;
+					default:
+						G_fatal_error("Unknown cell type");
+						break;
+				}
+			}
+
+			if (out_type == DCELL_TYPE) {
+				switch (type) {
+					case CELL_TYPE:
+						((double*)rast)[index] = (double)((int *) inrast)[col];
+						break;
+					case FCELL_TYPE:
+						((double*)rast)[index] = (double)((float *) inrast)[col];
+						break;
+					case DCELL_TYPE:
+						((double*)rast)[index] = ((double *) inrast)[col];
+						break;
+					default:
+						G_fatal_error("Unknown cell type");
+						break;
+				}
 			}
 		}
 	}
