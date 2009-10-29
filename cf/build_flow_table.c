@@ -30,7 +30,7 @@
 int build_flow_table(flow_table, dem, slope, hill, zone, patch, stream, roads, sewers, K, m_par, flna, f1,
 			maxr, maxc, f_flag, sc_flag, sewer_flag, slp_flag, cell, scale_dem)
 	struct flow_struct *flow_table;
-	int *dem;
+	double *dem;
 	int *patch;
 	int *zone;
 	int *hill;
@@ -88,7 +88,7 @@ int build_flow_table(flow_table, dem, slope, hill, zone, patch, stream, roads, s
 				flow_table[pch].area += 1;
 				flow_table[pch].x += ( float ) (1.0 * r);
 				flow_table[pch].y += ( float ) (1.0 * c);
-				flow_table[pch].z += ( float ) (scale_dem * dem[inx]);
+				flow_table[pch].z += ( float ) dem[inx];
 				flow_table[pch].K += ( float ) (1.0 * K[inx]);
 				if (sewer_flag == 1)
 					flow_table[pch].sewer += (int)sewers[inx];

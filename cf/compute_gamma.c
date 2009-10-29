@@ -33,7 +33,7 @@
  
 
 int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
-                  slp_flag)
+                  slp_flag, d_flag)
 	struct flow_struct *flow_table;
 	int num_patches;
 	int sc_flag;
@@ -41,8 +41,9 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 	float scale_trans;
 	double cell;
 	FILE *f1;
+	int d_flag;
 
-    {
+{
 
  	/* local fuction declarations */
 	struct ID_struct  sort_flow_table();
@@ -64,7 +65,8 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 	struct adj_struct *str_aptr;
 	struct ID_struct max_ID;
 
-	printf("\n Compute_gamma");
+	printf("\n Compute_gamma\n");
+	printf("This will take a long time, please be patient...\n");
 
 	num_str = 0;
 	/* compute mean pch values */
@@ -104,9 +106,10 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 	for (pch = 1; pch <= num_patches; pch++) 
 		{
 
-		printf("\n nex pch %d", pch);
-		printf("\n Processing patch %ld", flow_table[pch].patchID);
-		printf("\n Processing patch %ld", flow_table[pch].patchID);
+		if (d_flag) {
+			printf("\n nex pch %d", pch);
+			printf("\n Processing patch %ld", flow_table[pch].patchID);
+		}
 		aptr = flow_table[pch].adj_list;
 		str_aptr = flow_table[pch].adj_str_list;
 
@@ -114,8 +117,9 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 
 		flow_table[pch].slope = 0.0;
 
-		printf("\n number of neighbours %d", flow_table[pch].num_dsa);
-		printf("\n number of neighbours %d", flow_table[pch].num_dsa);
+		if (d_flag)
+			printf("\n number of neighbours %d", flow_table[pch].num_dsa);
+
 		/* first do processing for stream table */
 	/*
 		for (neigh = 1; neigh <= flow_table[pch].num_dsa; neigh ++)
@@ -148,8 +152,9 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			}
 
 */
-		printf("\n number of  aneighbours %d", flow_table[pch].num_adjacent);
-		printf("\n number of a neighbours %d", flow_table[pch].num_adjacent);
+		if (d_flag)
+			printf("\n number of adj neighbours %d", flow_table[pch].num_adjacent);
+
 		/* now do processing for flow table */
 		for (neigh = 1; neigh <= flow_table[pch].num_adjacent; neigh ++)
 			{
@@ -158,15 +163,16 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			z = aptr->zoneID;
 			h = aptr->hillID;
 
-			printf("\n neigh %d is %d", neigh, p);
-			printf("\n neigh %d is %d", neigh, p);
+			if (d_flag)
+				printf("\n neigh %d is %d", neigh, p);
 
 			inx = find_patch(num_patches, flow_table, p, z, h);
 
 			if (inx == 0) {
-				printf("\n For patch %d %d %d Neighbour not found %d %d %d\n", 
-						flow_table[pch].hillID, flow_table[pch].zoneID,
-						flow_table[pch].patchID, p, z, h);
+				if (d_flag)
+					printf("\n For patch %d %d %d Neighbour not found %d %d %d\n", 
+							flow_table[pch].hillID, flow_table[pch].zoneID,
+							flow_table[pch].patchID, p, z, h);
 				exit(1);
 				}
 
@@ -179,18 +185,22 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			yrun =  pow( (flow_table[pch].y - flow_table[inx].y), 2.0);
 
 			run =  sqrt(xrun+yrun) * (cell);
-			printf(" \nrise %lf run %lf", rise, run);
+			
+			if (d_flag)
+				printf(" \nrise %lf run %lf", rise, run);
 
 			if ( run <= 0) {
-				printf("\n Slope is zero for ( %d, %d, %d) to (%d, %d, %d)",
-					flow_table[pch].hillID,
-					flow_table[pch].zoneID,
-					flow_table[pch].patchID,
-					flow_table[inx].hillID,
-					flow_table[inx].zoneID,
-					flow_table[inx].patchID);
-				run = 0.01;
+				if (d_flag) {
+					printf("\n Slope is zero for ( %d, %d, %d) to (%d, %d, %d)",
+						flow_table[pch].hillID,
+						flow_table[pch].zoneID,
+						flow_table[pch].patchID,
+						flow_table[inx].hillID,
+						flow_table[inx].zoneID,
+						flow_table[inx].patchID);
 				}
+				run = 0.01;
+			}
 
 
 			aptr->slope = ( float )(rise / run );
@@ -246,7 +256,8 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			flow_table[pch].total_gamma = mult * flow_table[pch].max_slope * flow_table[pch].area *cell* cell;;
 			}
 
-		printf("\n Total gamma for %d is %lf", flow_table[pch].patchID, flow_table[pch].total_gamma);
+		if (d_flag) 
+			printf("\n Total gamma for %d is %lf", flow_table[pch].patchID, flow_table[pch].total_gamma);
 
 		}
 
@@ -256,7 +267,7 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 	return(num_str);
 
 
-    }
+}
 
 
 

@@ -41,6 +41,10 @@ double* raster2array(const char* name,
 	// rast for return.
 	double* rast = (double*)calloc(maxr * maxc, sizeof(double));
 
+	if (rast == NULL) {
+		G_fatal_error("Unable to allocate memory for raster map <%s>", name);
+	}
+
 	int row, col;
 	for (row = 0; row < maxr; ++row) {
 		if (G_get_raster_row(infd, inrast, row, type) < 0)
