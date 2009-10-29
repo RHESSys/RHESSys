@@ -58,12 +58,12 @@
 main(int argc, char *argv[])  
 {
 /* local variable declarations */
-    int		i/*j*/ /*r*/ /*c*/ /*area*/, num_stream, num_patches;   
-	FILE	/**in1*/ *out1, *out2;    
+    int		i, num_stream, num_patches;   
+	FILE	*out1, *out2;    
 	int		basinid, tmp, maxr, maxc;
 	double	cell, width;
 	int		pst_flag, f_flag, fl_flag, fh_flag, vflag;
-	int		s_flag, r_flag, slp_flag, sc_flag, arc_flag;
+	int		s_flag, r_flag, slp_flag, sc_flag;
 	int		st_flag, sewer_flag;
 	int		prefix_flag;
 	int		suffix_flag;
@@ -71,33 +71,24 @@ main(int argc, char *argv[])
 	double	scale_trans, scale_dem;
 	char    input_prefix[MAXS];
 	char    output_suffix[MAXS];
-	float	scale_factor;
-
 
 
 /* filenames for each image and file */
 
-char    fndem[MAXS],  fnpartition[MAXS],    fnK[MAXS],     fnmpar[MAXS],
-        fntable[MAXS], fnroot[MAXS], fnpatch[MAXS], fnhill[MAXS], fnzone[MAXS], fnslope[MAXS];
-char	fnstream[MAXS];
-char	fnroads[MAXS], fnsewers[MAXS];
-char	fnflna[MAXS];
-char	fnehr[MAXS], fnwhr[MAXS];
-char	name[MAXS], name2[MAXS];
-
-char*	rnflna;
-char* 	rnslope;
-char*	fntemplate;
-char	rnbasin[MAXS];
-char	rnhill[MAXS];
-char	rnzone[MAXS];
-char	rnpatch[MAXS];
-char*	rndem;
-char*	rnK;
-char*	rnmpar;
-char*	rnroads;
-char*	rnstream;
-char*	rnsewers;
+	char	name[MAXS], name2[MAXS];
+	char*	rnflna;
+	char* 	rnslope;
+	char*	fntemplate;
+	char	rnbasin[MAXS];
+	char	rnhill[MAXS];
+	char	rnzone[MAXS];
+	char	rnpatch[MAXS];
+	char*	rndem;
+	char*	rnK;
+	char*	rnmpar;
+	char*	rnroads;
+	char*	rnstream;
+	char*	rnsewers;
 
 /* set pointers for images */
 
@@ -114,7 +105,6 @@ char*	rnsewers;
 	double		 *flna;
 	float		 *ehr;
 	float		 *whr;
-
 	struct		flow_struct	*flow_table;
 
 	d_flag 	 = 0;		/* debuf flag					 */
@@ -127,7 +117,6 @@ char*	rnsewers;
 	slp_flag = 0;		/* slope use flag		         */
 	st_flag  = 0;		/* scaling stream side patches 	 */
 	sewer_flag = 0;		/* route through a sewer network */
-    arc_flag = 0;		/* arcview input data flag		 */
 	scale_trans = 1.0;
 	scale_dem = 1.0;	/* scaling for dem values        */
 	prefix_flag = 0;	/* input prefix flag             */
@@ -193,12 +182,6 @@ char*	rnsewers;
 	struct Flag* print_stream_table_flag = G_define_flag();
 	print_stream_table_flag->key = 'p';
 	print_stream_table_flag->description = "Print stream table";
-
-	struct Option* prefix_opt = G_define_option();
-	prefix_opt->key = "prefix";
-	prefix_opt->type = TYPE_STRING;
-	prefix_opt->required = YES;
-	prefix_opt->description = "Prefix for reading in ASCII files, this will go away.";
 
 	struct Option* road_width_opt = G_define_option();
 	road_width_opt->key = "roadwidth";
@@ -323,7 +306,6 @@ char*	rnsewers;
 
 	sewer_flag = use_sewer_flag->answer;
 	pst_flag = print_stream_table_flag->answer;
-	strcpy(input_prefix, prefix_opt->answer);
 
 	if (road_width_opt->answer != NULL) {
 		// Default is set at declaration
@@ -375,11 +357,6 @@ char*	rnsewers;
 	rnslope = slope_raster_opt->answer;
 
     printf("Create_flowpaths.C\n\n");
-
-	
-    input_prompt(&maxr, &maxc, input_prefix, fndem,fnslope,fnK,fnflna,
-					fnpatch, fnzone,fnhill, fnstream, fnroads, fnsewers, fnmpar,fnpartition,
-		 fntable,fnroot, fnehr, fnwhr, f_flag, sewer_flag, arc_flag);
 
 
 	// Read in the names of the basin, hill, zone, and patch maps from the
