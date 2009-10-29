@@ -47,6 +47,7 @@
 #include <string.h>
 #include <grass/gis.h>
 
+#include "grassio.h"
 #include "blender.h"
 #include "glb.h"
 #include "sub.h"
@@ -84,16 +85,16 @@ char	fnflna[MAXS];
 char	fnehr[MAXS], fnwhr[MAXS];
 char	name[MAXS], name2[MAXS];
 
-char	fntemplate[MAXS];
+char*	fntemplate;
 char	rnbasin[MAXS];
 char	rnhillslope[MAXS];
 char	rnzone[MAXS];
 char	rnpatch[MAXS];
 char*	rndem;
-char	rnK[MAXS];
-char	rnmpar[MAXS];
-char	rnroads[MAXS];
-char	rnstream[MAXS];
+char*	rnK;
+char*	rnmpar;
+char*	rnroads;
+char*	rnstream;
 
 /* set pointers for images */
 
@@ -344,11 +345,11 @@ char	rnstream[MAXS];
 	
 		// Need to implement verbose	
 	rndem = dem_raster_opt->answer;
-	strcpy(fntemplate, template_opt->answer);
-	strcpy(rnK, K_raster_opt->answer);
-	strcpy(rnmpar, m_raster_opt->answer);
-	strcpy(rnroads, road_raster_opt->answer);
-	strcpy(rnstream, stream_raster_opt->answer);
+	fntemplate = template_opt->answer;
+	rnK = K_raster_opt->answer;
+	rnmpar = m_raster_opt->answer;
+	rnroads = road_raster_opt->answer;
+	rnstream = stream_raster_opt->answer;
 
 
 
@@ -411,93 +412,14 @@ char	rnstream[MAXS];
        	} 
 
 
-	/******** WTF *****/
-	// Copy and paste of the contents of the rast2array function trying
-	// to figure out why it won't work correctly
-
-	// Open the raster map and load the dem
-	// for simplicity sake, the dem will be an array of
-	// doubles, converted from any possible GRASS CELL type.
-	char* mapset = G_find_cell2(rndem, "");
-	if (mapset == NULL)
-		G_fatal_error("Raster map <%s> not found", rndem);
-
-	// Find out the cell type of the DEM
-	RASTER_MAP_TYPE type = G_raster_map_type(rndem, mapset);
-
-	// Get a file descriptor for the DEM raster map
-	int infd;
-	if ((infd = G_open_cell_old(rndem, mapset)) < 0)
-		G_fatal_error("Unable to open raster map <%s>", rndem);
-
-	// Get header info for the DEM raster map
-	struct Cell_head cellhd;
-	if (G_get_cellhd(rndem, mapset, &cellhd) < 0)
-		G_fatal_error("Unable to open raster map <%s>", rndem);
-
-	// Create a GRASS buffer for the DEM raster
-	void* inrast = G_allocate_raster_buf(type);
-
-	// Get the max rows and max cols from the window information, since the 
-	// header gives the values for the full raster
-	maxr = G_window_rows();
-	maxc = G_window_cols();
-
-	// Read in the raster line by line, copying it into the double array
-	// rast for return.
-	double* rast = (double*)calloc(maxr * maxc, sizeof(double));
-
-	if (rast == NULL) {
-		G_fatal_error("Unable to allocate memory for raster map <%s>", rndem);
-	}
-
-	int row, col;
-	for (row = 0; row < maxr; ++row) {
-		if (G_get_raster_row(infd, inrast, row, type) < 0)
-			G_fatal_error("Unable to read raster map <%s> row %d", rndem, row);
-
-		for (col = 0; col < maxc; ++col) {
-			int index= col + row*maxc;
-			switch (type) {
-				case CELL_TYPE:
-					((double*)rast)[index] = (double)((int *) inrast)[col];
-					break;
-				case FCELL_TYPE:
-					((double*)rast)[index] = (double)((float *) inrast)[col];
-					break;
-				case DCELL_TYPE:
-					((double*)rast)[index] = ((double *) inrast)[col];
-					break;
-				default:
-					G_fatal_error("Unknown cell type");
-					break;
-			}
-		}
-	}
-
-	// End copy and paste of rast2array
-	dem = rast;
-
 	/* allocate and input map images */
 	// figure out what's happening with maxr, maxc, possible raster
 	// size mismatch
-	printf("Before raster2array()\nmaxr: %d, maxc: %d\n", maxr, maxc);
-	//struct Cell_head dem_header;
-	printf("Attempting to open raster %s\n", rndem);
-//	dem = raster2array(rndem, &dem_header, &maxr, &maxc);
+	struct Cell_head dem_header;
+	dem = raster2array(rndem, &dem_header, &maxr, &maxc);
 
 	//dem = (double *)malloc(maxr*maxc*sizeof(double));
 //	input_ascii_int(dem, fndem, maxr, maxc, arc_flag);
-	if (dem == NULL) 
-		printf("dem is a null pointer\n");
-	else 
-		printf("dem is not null\n");
-
-
-	printf("some random dem value: %lf\n", dem[256]);
-	printf("After raster2array()\nmaxr: %d, maxc: %d\n", maxr, maxc);
-
-
 
 	patch   = (int *) calloc(maxr*maxc, sizeof(int));      
     	input_ascii_int(patch, fnpatch, maxr, maxc, arc_flag);	

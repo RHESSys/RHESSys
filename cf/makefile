@@ -76,6 +76,6 @@ fileio.o:
 	$(CC) $(CFLAGS) -c fileio.c
 grassio.o:
 	$(CC) $(CFLAGS) -I$(GISBASE)/include -c grassio.c
-main.o:
+main.o: main.c
 	$(CC) $(CFLAGS) -I$(GISBASE)/include -c main.c
 
