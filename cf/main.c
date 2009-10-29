@@ -88,7 +88,11 @@ char	rnbasin[MAXS];
 char	rnhillslope[MAXS];
 char	rnzone[MAXS];
 char	rnpatch[MAXS];
-
+char	rndem[MAXS];
+char	rnK[MAXS];
+char	rnmpar[MAXS];
+char	rnroads[MAXS];
+char	rnstream[MAXS];
 
 /* set pointers for images */
 
@@ -335,6 +339,12 @@ char	rnpatch[MAXS];
 		// Need to implement verbose	
 
 	strcpy(fntemplate, template_opt->answer);
+	strcpy(rndem, dem_raster_opt->answer);
+	strcpy(rnK, K_raster_opt->answer);
+	strcpy(rnmpar, m_raster_opt->answer);
+	strcpy(rnroads, road_raster_opt->answer);
+	strcpy(rnstream, stream_raster_opt->answer);
+
 
 
     printf("Create_flowpaths.C\n\n");
@@ -452,16 +462,6 @@ char	rnpatch[MAXS];
 
 	/* allocate flow table */
 	flow_table = (struct flow_struct *)calloc((maxr*maxc),sizeof(struct flow_struct));
-/*
-	for (j=0; j< maxr*maxc; j++) {
-		flow_table[j].adj_list = (struct adj_struct *)W_malloc(sizeof(struct adj_struct));
-		flow_table[j].adj_ptr =  flow_table[j].adj_list;
-		for (i=0; i< 100; i++) {
-			flow_table[j].adj_ptr->next = (struct adj_struct *)W_malloc(sizeof(struct adj_struct));
-			flow_table[j].adj_ptr = flow_table[j].adj_ptr->next;
-			}
-		}
-*/
 
 
 	printf("\n Building flow table");
