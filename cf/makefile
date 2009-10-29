@@ -58,7 +58,7 @@ remove_pits.o:
 	$(CC) $(CFLAGS) -c remove_pits.c
 sort_flow_table.o:
 	$(CC) $(CFLAGS) -c sort_flow_table.c
-build_flow_table.o:
+build_flow_table.o: build_flow_table.c
 	$(CC) $(CFLAGS) -c build_flow_table.c
 compute_upslope_area.o:
 	$(CC) $(CFLAGS) -c compute_upslope_area.c

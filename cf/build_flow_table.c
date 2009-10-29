@@ -27,26 +27,24 @@
 #include "blender.h"
 #include "fileio.h"
 
-int build_flow_table(flow_table, dem, slope, hill, zone, patch, stream, roads, sewers, K, m_par, flna, f1,
-			maxr, maxc, f_flag, sc_flag, sewer_flag, slp_flag, cell, scale_dem)
-	struct flow_struct *flow_table;
-	double *dem;
-	int *patch;
-	int *zone;
-	int *hill;
-	int *stream;
-	int *roads;
-	int *sewers;
-	float *slope;
-	float *flna;
-	float *K;
-	float	*m_par;
-	double cell, scale_dem;
-	int maxr, maxc;
-	int f_flag, sewer_flag, slp_flag, sc_flag;
-	FILE *f1;
-
-    {
+int build_flow_table(struct flow_struct* flow_table,
+					 double* dem,
+					 float* slope,
+					 int* hill,
+					 int* zone,
+					 int* patch,
+					 int* stream,
+					 int* roads,
+					 int* sewers,
+					 double* K,
+					 double* m_par,
+					 float* flna,
+					 FILE* f1,
+					 int maxr, int maxc,
+					 int f_flag, int sc_flag, int sewer_flag, int slp_flag, 
+					 double cell,
+					 double scale_dem)
+{
 
  	/* local variable declarations */
 	int num_patches;
@@ -89,7 +87,7 @@ int build_flow_table(flow_table, dem, slope, hill, zone, patch, stream, roads, s
 				flow_table[pch].x += ( float ) (1.0 * r);
 				flow_table[pch].y += ( float ) (1.0 * c);
 				flow_table[pch].z += ( float ) dem[inx];
-				flow_table[pch].K += ( float ) (1.0 * K[inx]);
+				flow_table[pch].K += ( float ) K[inx];
 				if (sewer_flag == 1)
 					flow_table[pch].sewer += (int)sewers[inx];
 				if ((sc_flag == 1) || (slp_flag > 0)) {
@@ -108,7 +106,7 @@ int build_flow_table(flow_table, dem, slope, hill, zone, patch, stream, roads, s
 				else
 					flow_table[pch].flna = 0.0;
 
-				flow_table[pch].m_par += m_par[inx];
+				flow_table[pch].m_par += (float)m_par[inx];
 				flow_table[pch].num_adjacent += check_neighbours(r,c, patch, 
 								zone, hill, stream,
 								&flow_table[pch],

@@ -106,8 +106,8 @@ char*	rnstream;
     int			 *stream;
     int			 *roads;
     int			 *sewers;
-    float		 *K;
-	float		 *m_par;
+    double		 *K;
+	double		 *m_par;
 	float		 *flna;
 	float		 *ehr;
 	float		 *whr;
@@ -418,22 +418,19 @@ char*	rnstream;
 	struct Cell_head dem_header;
 	dem = raster2array(rndem, &dem_header, &maxr, &maxc);
 
-	//dem = (double *)malloc(maxr*maxc*sizeof(double));
-//	input_ascii_int(dem, fndem, maxr, maxc, arc_flag);
-
+	struct Cell_head patch_header;
 	patch   = (int *) calloc(maxr*maxc, sizeof(int));      
-    	input_ascii_int(patch, fnpatch, maxr, maxc, arc_flag);	
+    input_ascii_int(patch, fnpatch, maxr, maxc, arc_flag);	
 
-
+	struct Cell_head zone_header;
 	zone   = (int *) malloc(maxr*maxc*sizeof(int));
-
     input_ascii_int(zone, fnzone, maxr, maxc, arc_flag);	
 
-
+	struct Cell_head hill_header;
     hill   = (int *) malloc(maxr*maxc*sizeof(int));
     input_ascii_int(hill, fnhill, maxr, maxc, arc_flag);	
 
-
+	struct Cell_head stream_header;
     stream   = (int *) malloc(maxr*maxc*sizeof(int));
     input_ascii_int(stream, fnstream, maxr, maxc, arc_flag);	
 
@@ -444,7 +441,7 @@ char*	rnstream;
     	input_ascii_float(slope, fnslope, maxr, maxc, arc_flag, scale_factor);	
 	}
 
-
+	struct Cell_head roads_header;
     roads = (int *) malloc(maxr*maxc*sizeof(int));
     input_ascii_int(roads, fnroads, maxr, maxc, arc_flag);	
 
@@ -453,15 +450,12 @@ char*	rnstream;
     	input_ascii_int(sewers, fnsewers, maxr, maxc, arc_flag);	
 	}
 
-	K = (float *) malloc(maxr*maxc*sizeof(float));
-	scale_factor = (float)0.001;
-    input_ascii_float(K, fnK, maxr, maxc, arc_flag, scale_factor);	
+	struct Cell_head K_header;
+	K = raster2array(rnK, &K_header, NULL, NULL);
 
-
-    m_par = (float *) malloc(maxr*maxc*sizeof(float));
-	scale_factor = (float)0.001;
-    input_ascii_float(m_par, fnmpar, maxr, maxc, arc_flag, scale_factor);	
-
+	struct Cell_head mpar_header;
+	m_par = raster2array(rnmpar, &mpar_header, NULL, NULL);
+	
 	if (f_flag) {
 		scale_factor = 1.0;
 		flna = (float *)  malloc(maxr*maxc*sizeof(float));

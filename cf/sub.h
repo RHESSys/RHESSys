@@ -18,6 +18,22 @@
 	void	print_flow_table(int, struct flow_struct *, int, int, double, double, char *, char *, double);
 	void	print_stream_table(int, int, struct flow_struct *, int, int, double, double, char *, char *, double, int);
 	void	print_drain_stats(int, struct flow_struct *);
-	int		build_flow_table(struct flow_struct *,  double *, float *, int *, int *, int *,
-			int *, int *, int *, float *, float *, float *, FILE *, int, int, int, int, int, int,
-			double, double);
+
+int build_flow_table(struct flow_struct* flow_table,
+					 double* dem,
+					 float* slope,
+					 int* hill,
+					 int* zone,
+					 int* patch,
+					 int* stream,
+					 int* roads,
+					 int* sewers,
+					 double* K,
+					 double* m_par,
+					 float* flna,
+					 FILE* f1,
+					 int maxr, int maxc,
+					 int f_flag, int sc_flag, int sewer_flag, int slp_flag, 
+					 double cell,
+					 double scale_dem);
+
