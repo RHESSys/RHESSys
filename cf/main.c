@@ -65,8 +65,6 @@ main(int argc, char *argv[])
 	int		pst_flag, f_flag, fl_flag, fh_flag, vflag;
 	int		s_flag, r_flag, slp_flag, sc_flag;
 	int		st_flag, sewer_flag;
-	int		prefix_flag;
-	int		suffix_flag;
 	int		d_flag;
 	double	scale_trans, scale_dem;
 	char    input_prefix[MAXS];
@@ -119,8 +117,6 @@ main(int argc, char *argv[])
 	sewer_flag = 0;		/* route through a sewer network */
 	scale_trans = 1.0;
 	scale_dem = 1.0;	/* scaling for dem values        */
-	prefix_flag = 0;	/* input prefix flag             */
-	suffix_flag = 0;	/* output suffix flag            */
 	pst_flag = 0;		/* print stream table flag            */
 	cell = 30.0;		/* default resolution            */
 	width = 5;			/* default road width            */
@@ -201,11 +197,11 @@ main(int argc, char *argv[])
 	basin_id_opt->required = NO;
 	basin_id_opt->description = "Basin ID";
 
-	struct Option* output_suffix_opt = G_define_option();
-	output_suffix_opt->key = "output";
-	output_suffix_opt->type = TYPE_STRING;
-	output_suffix_opt->required = NO;
-	output_suffix_opt->description = "Output suffix";
+	struct Option* output_name_opt = G_define_option();
+	output_name_opt->key = "output";
+	output_name_opt->type = TYPE_STRING;
+	output_name_opt->required = NO;
+	output_name_opt->description = "Output name";
 
 	// Arguments that specify the names of required raster maps
 	struct Option* m_raster_opt = G_define_option();
@@ -333,12 +329,9 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (output_suffix_opt->answer != NULL) {
-		strcpy(output_suffix, output_suffix_opt->answer);	
-		suffix_flag = 1;	
-	} else {
-		strcpy(output_suffix, "_flow_table.dat");
-	}
+	// Name for output files, default to template file name
+	strcpy(input_prefix, output_name_opt->answer);	
+	strcpy(output_suffix, "_flow_table.dat");
 
 	if (flna_raster_opt->answer != NULL) {
 		rnflna = flna_raster_opt->answer;
