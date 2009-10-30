@@ -3,6 +3,7 @@ CC = gcc
 CFLAGS = -O -I include
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
+RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = \
 $(OBJ)/Ksat_z_curve.o \
@@ -788,6 +789,9 @@ $(OBJ)/output_template_structure.o: output/output_template_structure.c
 
 $(OBJ)/main.o: main.c
 	$(CC) -c $(CFLAGS) main.c -o $(OBJ)/main.o
+
+install:
+	cp $(PGM) $(RHESSYS_BIN)
 
 clean:
 	rm -f $(OBJECTS)

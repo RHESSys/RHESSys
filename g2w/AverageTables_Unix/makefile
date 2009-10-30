@@ -1,19 +1,21 @@
 PGM = rat
 CC  = gcc 
-GISLIB = -lgrass_gis
 RHESSYS_BIN = /usr/local/bin
+GISLIB = -lgrass_gis
 
 OBJECTS = \
 main.o \
 log.o
 
 $(PGM): $(OBJECTS)
-	$(CC) $(OBJECTS) -I$(GISBASE)/include -L$(GISBASE)/lib -o $(PGM) $(GISLIB) $(XDRLIB) -lm
+	$(CC) $(OBJECTS) -L$(GISBASE)/lib -o $(PGM) $(GISLIB) $(XDRLIB) -lm
 
-main.o: main.c
-	$(CC) -c main.c -I$(GISBASE)/include -o main.o
-log.o: log.c
-	$(CC) -c log.c -o log.o
+main.o:
+	$(CC) -I$(GISBASE)/include -c main.c -o main.o
+log.o:
+
+install:
+	cp $(PGM) $(RHESSYS_BIN)
 
 clean:
 	rm -f $(OBJECTS)
