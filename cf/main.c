@@ -200,7 +200,7 @@ main(int argc, char *argv[])
 	struct Option* output_name_opt = G_define_option();
 	output_name_opt->key = "output";
 	output_name_opt->type = TYPE_STRING;
-	output_name_opt->required = NO;
+	output_name_opt->required = YES;
 	output_name_opt->description = "Output name";
 
 	// Arguments that specify the names of required raster maps
