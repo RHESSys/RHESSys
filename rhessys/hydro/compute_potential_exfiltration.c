@@ -85,7 +85,7 @@ double	compute_potential_exfiltration(
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
 	double	porosity_average;
-	double	Ksat_average;
+	double	Ksat_average, wilting_point;
 	double	potential_exfiltration;
 	
 	/*--------------------------------------------------------------*/
@@ -109,6 +109,13 @@ double	compute_potential_exfiltration(
 		pow(S,(1/(2*pore_size_index))+2) * sqrt(  (8 * porosity_average
 		* Ksat_average * psi_air_entry ) / (3 * (1 + 3 * pore_size_index)
 		* (1 + 4 * pore_size_index) ) );
-	potential_exfiltration = min(0.001,potential_exfiltration);
+
+
+	wilting_point = exp(-1.0*log(2.5/psi_air_entry) 
+			* pore_size_index) * porosity_average;
+
+
+	potential_exfiltration = min(max((S-wilting_point)*porosity_average,0.0), potential_exfiltration);
+
 	return(potential_exfiltration);
 } /*potential_exfiltration*/

@@ -52,8 +52,9 @@ struct soil_default *construct_soil_defaults(
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int		i;
-	double 		soil;
+	double 		ftmp,soil;
 	FILE	*default_file;
+	char		*newrecord;
 	char	record[MAXSTR];
 	struct 	soil_default *default_object_list;
 	
@@ -222,8 +223,34 @@ struct soil_default *construct_soil_defaults(
 		/*--------------------------------------------------------------*/
 			default_object_list[i].gl_c = 0.0062;
 			default_object_list[i].gsurf_slope = 0.01;
-			default_object_list[i].gsurf_intercept = 0.002;
+			default_object_list[i].gsurf_intercept = 0.001;
 
+
+		/*--------------------------------------------------------------*/
+		/* non-critical parameter changes				*/
+		/*--------------------------------------------------------------*/
+		while (!feof(default_file)) {
+			fscanf(default_file,"%lf", &(ftmp));
+			read_record(default_file, record);
+			newrecord = strchr(record,'g');
+			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"gl_c") == 0) {	
+				default_object_list[i].gl_c = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			if (strcasecmp(newrecord,"gsurf_slope") == 0) {	
+				default_object_list[i].gsurf_slope = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			if (strcasecmp(newrecord,"gsurf_intercept") == 0) {	
+				default_object_list[i].gsurf_intercept = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+		}
+		}
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/

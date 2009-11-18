@@ -382,7 +382,7 @@ void		patch_daily_F(
 		patch[0].snow_stored,
 		patch[0].unsat_storage,
 		patch[0].sat_deficit,
-		zone[0].metv.tmin,
+		zone[0].metv.tavg,
 		zone[0].metv.tnightmax,
 		zone[0].metv.tsoil,
 		patch[0].soil_defaults[0][0].deltaz,
@@ -985,7 +985,7 @@ void		patch_daily_F(
 		/* 	we do not do this once sat def is below 0.9 soil depth	*/
 		/*     we use 0.9 to prevent numerical instability		*/
 		/*--------------------------------------------------------------*/
-		if (available_sat_water > 0) {
+		if (available_sat_water > ZERO) {
 	       		add_field_capacity = compute_layer_field_capacity(
 				command_line[0].verbose_flag,
 				patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -1017,8 +1017,9 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	water_above_field_cap =
 		max((patch[0].rz_storage - patch[0].rootzone.field_capacity), 0);
-	patch[0].rz_storage -= min(unsat_zone_patch_demand, water_above_field_cap);
-	unsat_zone_patch_demand = max(0, unsat_zone_patch_demand - water_above_field_cap); 
+	water_above_field_cap = min(unsat_zone_patch_demand, water_above_field_cap);
+	patch[0].rz_storage = patch[0].rz_storage - water_above_field_cap;
+	unsat_zone_patch_demand = unsat_zone_patch_demand - water_above_field_cap;
 
 	/*--------------------------------------------------------------*/
 	/*	compute new field capacity				*/
@@ -1072,7 +1073,6 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	fill the leftover demand with cap rise.			*/
 	/*--------------------------------------------------------------*/
-	/*
 	cap_rise = max(min(patch[0].potential_cap_rise, min(unsat_zone_patch_demand, water_below_field_cap)), 0.0);
 	cap_rise = min((compute_delta_water(
 			0, 
@@ -1086,7 +1086,6 @@ void		patch_daily_F(
 	patch[0].cap_rise += cap_rise;
 	patch[0].potential_cap_rise -= cap_rise;
 	patch[0].sat_deficit += cap_rise;				
-	*/
 	/*--------------------------------------------------------------*/
 	/*	Now supply the remaining demand with water left in	*/
 	/*	the unsat zone.  We are going below field cap now!!	*/
@@ -1101,9 +1100,10 @@ void		patch_daily_F(
 			 < wilting_point) delta_unsat_zone_storage = 0.0;
 	}
 
-	patch[0].rz_storage += delta_unsat_zone_storage;
-	unsat_zone_patch_demand += delta_unsat_zone_storage;			
+	patch[0].rz_storage = patch[0].rz_storage + delta_unsat_zone_storage;
+	unsat_zone_patch_demand = unsat_zone_patch_demand + delta_unsat_zone_storage;			
 
+	/*--------------------------------------------------------------*/
 	
 	/*--------------------------------------------------------------*/
 	/* 	Resolve plant uptake and soil microbial N demands	*/
@@ -1118,12 +1118,19 @@ void		patch_daily_F(
 	/*	of available C and N (if growth flag is on)		*/
 	/*	Note that this will not reduce CO2 flux as well.	*/
 	/*--------------------------------------------------------------*/
-	if ( unsat_zone_patch_demand_initial > 0 )
+	if ( unsat_zone_patch_demand_initial > 0 ){
 		patch[0].exfiltration_unsat_zone = patch[0].exfiltration_unsat_zone
 		* (1 - unsat_zone_patch_demand / unsat_zone_patch_demand_initial );
-	if ( sat_zone_patch_demand_initial > 0 )
+		patch[0].transpiration_unsat_zone = patch[0].transpiration_unsat_zone
+		* (1 - unsat_zone_patch_demand / unsat_zone_patch_demand_initial );
+		}
+	if ( sat_zone_patch_demand_initial > 0 ) {
 		patch[0].exfiltration_sat_zone = patch[0].exfiltration_sat_zone
 		* (1 - sat_zone_patch_demand /  sat_zone_patch_demand_initial );
+		patch[0].transpiration_sat_zone = patch[0].transpiration_sat_zone
+		* (1 - sat_zone_patch_demand /  sat_zone_patch_demand_initial );
+		}
+
 	/*--------------------------------------------------------------*/
 	/* in order to restrict denitri/nitrific on non-veg patches type */
 	/* 	tag vegtype							*/	

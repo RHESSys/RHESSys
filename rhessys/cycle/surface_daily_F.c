@@ -107,7 +107,7 @@ void		surface_daily_F(
 	double	potential_evaporation_rate;
 	double	potential_rainy_evaporation_rate;
 	double	rainy_evaporation;
-	double	rnet_evap;
+	double	rnet_evap, rnet_evap_litter, rnet_evap_soil;
 	double	PE_rate, PE_rainy_rate;
 	double	soil_potential_evaporation;
 	double	soil_potential_dry_evaporation_rate;
@@ -135,6 +135,8 @@ void		surface_daily_F(
 	else
 		albedo = LITTER_ALBEDO * litter->proj_pai
 		+ patch[0].soil_defaults[0][0].albedo * (1-litter->proj_pai);
+
+
 	/*--------------------------------------------------------------*/
 	/*  Intercept diffuse radiation.                                */
 	/*  We assume that the zone slope == patch slope.               */
@@ -155,8 +157,8 @@ void		surface_daily_F(
 		&(patch[0].Kdown_diffuse),
 		patch[0].Kdown_direct,
 		-10000.0,
+		0.0,
 		1.0,
-		litter->proj_pai,
 		basin[0].theta_noon,
 		albedo);
 	
@@ -165,8 +167,8 @@ void		surface_daily_F(
 		&(patch[0].PAR_diffuse),
 		patch[0].PAR_direct,
 		-10000.0,
+		0.0,
 		1.0,
-		litter->proj_pai,
 		basin[0].theta_noon,
 		albedo);
 	/*--------------------------------------------------------------*/
@@ -194,8 +196,8 @@ void		surface_daily_F(
 		command_line[0].verbose_flag,
 		&(patch[0].Kdown_direct),
 		-10000,
+		0.0,
 		1.0,
-		litter->proj_pai,
 		basin[0].theta_noon,
 		albedo,
 		albedo);
@@ -203,12 +205,11 @@ void		surface_daily_F(
 		command_line[0].verbose_flag,
 		&(patch[0].PAR_direct),
 		-10000,
+		0.0,
 		1.0,
-		litter->proj_pai,
 		basin[0].theta_noon,
 		albedo,
 		albedo);
-
 	/*--------------------------------------------------------------*/
 	/*	Determine non-vascular condductance to evaporation.		*/
 	/*	This conductance represnets the inverse of an additional 	*/
@@ -257,12 +258,17 @@ void		surface_daily_F(
 	if(zone[0].metv.dayl > ZERO)
 	rnet_evap = 1000 * (Kstar_direct + Kstar_diffuse + patch[0].Lstar_soil
 		+ patch[0].surface_heat_flux) / zone[0].metv.dayl;
+
 	else rnet_evap = 0.0;
+
+	rnet_evap_litter = min(litter->proj_pai,1)*rnet_evap;
+	rnet_evap_soil = max(0.0, rnet_evap-rnet_evap_litter);
+
 	if (rnet_evap < 0.0) rnet_evap = 0.0;
 	/*--------------------------------------------------------------*/
 	/*	Make sure ga and gsurf are non-zero.			*/
 	/*--------------------------------------------------------------*/
-	patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0000000000001);
+	patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
 	/*--------------------------------------------------------------*/
 	/*	Estimate potential evap rates.				*/
 	/*--------------------------------------------------------------*/
@@ -271,7 +277,7 @@ void		surface_daily_F(
 		zone[0].metv.tday,
 		zone[0].metv.pa,
 		zone[0].metv.vpd,
-		rnet_evap,
+		rnet_evap_litter,
 		1/patch[0].litter.gsurf,
 		1/(patch[0].ga),
 		2) ;
@@ -280,7 +286,7 @@ void		surface_daily_F(
 		zone[0].metv.tday,
 		zone[0].metv.pa,
 		10,
-		rnet_evap,
+		rnet_evap_litter,
 		1/patch[0].litter.gsurf,
 		1/(patch[0].ga),
 		2) ;
@@ -289,7 +295,7 @@ void		surface_daily_F(
 		zone[0].metv.tday,
 		zone[0].metv.pa,
 		zone[0].metv.vpd,
-		rnet_evap,
+		rnet_evap_litter,
 		0.0,
 		1/(patch[0].ga),
 		2) ;
@@ -298,7 +304,7 @@ void		surface_daily_F(
 		zone[0].metv.tday,
 		zone[0].metv.pa,
 		10,
-		rnet_evap,
+		rnet_evap_litter,
 		0.0,
 		1/(patch[0].ga),
 		2) ;
@@ -327,7 +333,6 @@ void		surface_daily_F(
 	patch[0].potential_evaporation  = potential_evaporation_rate
 		* (zone[0].metv.dayl - zone[0].daytime_rain_duration )
 		+ potential_rainy_evaporation_rate * zone[0].daytime_rain_duration;
-
 	patch[0].PE  = PE_rate 
 		* (zone[0].metv.dayl - zone[0].daytime_rain_duration )
 		+ PE_rainy_rate * zone[0].daytime_rain_duration;
@@ -358,19 +363,19 @@ void		surface_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
-			10,
-			rnet_evap,
-			1/patch[0].gsurf,
-			1/patch[0].ga,
+			10.0,
+			rnet_evap_soil,
+			1.0/patch[0].gsurf,
+			1.0/patch[0].ga,
 			2);
 		soil_potential_dry_evaporation_rate = penman_monteith(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
 			zone[0].metv.vpd,
-			rnet_evap,
-			1/patch[0].gsurf,
-			1/patch[0].ga,
+			rnet_evap_soil,
+			1.0/patch[0].gsurf,
+			1.0/patch[0].ga,
 			2);
 		soil_potential_evaporation  = soil_potential_dry_evaporation_rate
 			* (zone[0].metv.dayl - zone[0].daytime_rain_duration )
@@ -381,8 +386,6 @@ void		surface_daily_F(
 		/*	base soil evapotration/ exfiltration will only occur 	*/
 		/*	on exposed soil layers					*/
 		/*--------------------------------------------------------------*/
-		soil_potential_evaporation = soil_potential_evaporation * (max(0, 1-litter->proj_pai));
-
 		exfiltration =	min(soil_potential_evaporation,
 			patch[0].potential_exfiltration);
 	
