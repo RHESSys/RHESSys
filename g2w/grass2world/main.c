@@ -4,15 +4,15 @@
    derived from grass2macaque (C), October 1996, by Fred Watson.
    Modifications from January 1997 by Christina Tague
 */
-#include <stdio.h>  //chu
-#include <stdlib.h> //chu
-#include <string.h> //chu
+#include <stdio.h>  
+#include <stdlib.h> 
+#include <string.h>
 #include <math.h>
-#include <errno.h>  //chu
+#include <errno.h>
 
-#include "world.h"  //chu
+#include "world.h"
 #include "macaque.h"
-#include "fun.h"    //chu
+#include "fun.h" 
 
 
 
@@ -73,7 +73,7 @@
   char **VARNAME;
   char tmpstr[MAXFILENAME];
   char v;
-	char c, ch;
+  char c, ch;
 
 
 	/* initial allocation */

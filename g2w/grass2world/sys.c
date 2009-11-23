@@ -135,7 +135,7 @@ void 	outputheader(outfile, header)
 
   int i,j;
 
-	fprintf(outfile,"\n%-20d start_year\n%-20d month\n%-20d day \n%-20d hour",
+	fprintf(outfile,"%-20d start_year\n%-20d month\n%-20d day \n%-20d hour",
 		header->start_date.year,
 		header->start_date.month,
 		header->start_date.day,
