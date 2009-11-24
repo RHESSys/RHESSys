@@ -212,6 +212,8 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	/*	Variables for the dynamic version are included here     */
 	/*--------------------------------------------------------------*/
+	fscanf(world_file,"%lf",&(patch[0].litter.cover_fraction));
+	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(patch[0].litter.rain_stored));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(patch[0].litter_cs.litr1c));

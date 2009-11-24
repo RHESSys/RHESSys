@@ -49,10 +49,10 @@ void	update_litter_interception_capacity(						double litter_moist_coef,
 		+ litr_cs->litr3c + litr_cs->litr4c;
 
 
-	litter->rain_capacity =  total_litter_C * litter_moist_coef; 
+	litter->rain_capacity =  total_litter_C * litter_moist_coef * litter->cover_fraction; 
 
 	if (total_litter_C > ZERO){
-		litter->proj_pai = 0.8;
+		litter->proj_pai = 1.0*litter->cover_fraction;
 	}
 	else{
 		litter->proj_pai = 0.0;

@@ -1,4 +1,4 @@
-PGM  = rhessys5.12.4
+PGM  = rhessys5.12.5
 CC = gcc 
 CFLAGS = -O -I include
 RHESSYS_BIN = /usr/local/bin

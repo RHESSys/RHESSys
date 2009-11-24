@@ -1064,7 +1064,8 @@ struct	ndayflux_patch_struct
 struct  litter_object
 	{
 	
-	double rain_stored;
+	double cover_fraction; 			/* 0-1 */
+	double rain_stored;		/* m */
 	double gsurf;
 	double proj_pai;
 	double rain_capacity;
