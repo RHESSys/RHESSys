@@ -105,6 +105,8 @@ void	output_patch_state(
 		fprintf(outfile,"\n          ");
 		}
 
+	fprintf(outfile,"%-30.8f %s",patch[0].litter.cover_fraction,
+		"litter.cover_fraction");
 	fprintf(outfile,"%-30.8f %s",patch[0].litter.rain_stored,
 		"litter.rain_stored");
 	fprintf(outfile,"\n          ");

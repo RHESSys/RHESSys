@@ -152,6 +152,9 @@
 
  	fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);
+	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.cover_fraction = ltmp;
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.rain_stored = ltmp;
  	fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);
