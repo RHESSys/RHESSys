@@ -369,8 +369,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_tmax = 5.0;
 		default_object_list[i].epc.gs_vpd_min = 900;
 		default_object_list[i].epc.gs_vpd_max = 4100;
-
-	        default_object_list[i].epc.gs_dayl_min = 36000;
+	    default_object_list[i].epc.gs_dayl_min = 36000;
 		default_object_list[i].epc.gs_dayl_max = 39600;
 	/*--------------------------------------------------------------*/
 	/*	 litter is assumed to have a mositure capacity of 	*/

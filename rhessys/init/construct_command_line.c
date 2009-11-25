@@ -65,6 +65,8 @@ struct	command_line_object	*construct_command_line(
 	/*--------------------------------------------------------------*/
 	/*	Initialize the options as null				*/
 	/*--------------------------------------------------------------*/
+	command_line[0].gridded_ascii_flag = 0;
+	command_line[0].gridded_netcdf_flag = 0;
 	command_line[0].grow_flag = 0;
 	command_line[0].std_scale = 0;
 	command_line[0].std_flag = 0;
@@ -889,6 +891,17 @@ struct	command_line_object	*construct_command_line(
 						} /*end if*/
 					} /*end if*/
 				} /*end if*/
+			/*--------------------------------------------------------------*/
+			/*		Check if the gridded climate input flag is next		    */
+			/*--------------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"--asciigrid") == 0 ){
+				command_line[0].gridded_ascii_flag = 1;
+				i++;
+				} /*end if*/
+			else if (strcmp(main_argv[i],"--netcdfgrid") == 0 ){
+				command_line[0].gridded_netcdf_flag = 1;
+				i++;
+			}
 			/*--------------------------------------------------------------*/
 			/*	NOTE:  ADD MORE OPTION PARSING HERE.						*/
 			/*--------------------------------------------------------------*/

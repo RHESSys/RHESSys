@@ -391,14 +391,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	read_record(world_file, record);
 	fscanf( world_file , "%ld", &world[0].start_date.hour);
 	read_record(world_file, record);
-	
-	/*--------------------------------------------------------------*/
-	/*	Verify that the hour was between 0 and 24.					*/
-	/*--------------------------------------------------------------*/
-	if ( (world[0].start_date.hour<=0) || (world[0].start_date.hour>24)){
-		fprintf(stderr,"FATAL ERROR:  Start hour must be >0 and<=24.\n");
-		exit(0);
-	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Read in the end calendar date (year, month, day, hour )	*/
 	/*--------------------------------------------------------------*/
@@ -420,8 +412,16 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	if (command_line[0].end_flag == 1) {
 		world[0].end_date = command_line[0].end_date;
 	}
+	
 	/*--------------------------------------------------------------*/
-	/*	Verify that the hour was between 1 and 24.					*/
+	/*	Verify that the start hour was between 0 and 24.			*/
+	/*--------------------------------------------------------------*/
+	if ( (world[0].start_date.hour<=0) || (world[0].start_date.hour>24)){
+		fprintf(stderr,"FATAL ERROR:  Start hour must be >0 and<=24.\n");
+		exit(0);
+	} /*end if*/
+	/*--------------------------------------------------------------*/
+	/*	Verify that the end hour was between 1 and 24.				*/
 	/*--------------------------------------------------------------*/
 	if ( (world[0].end_date.hour<=0) || (world[0].end_date.hour>24)){
 		fprintf(stderr,"FATAL ERROR:  End hour must be >0 and<=24.\n");
