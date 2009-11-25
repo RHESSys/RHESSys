@@ -1499,7 +1499,8 @@ struct	output_flag
 /*----------------------------------------------------------*/
 struct	command_line_object
 	{
-	int		gridded_flag;
+	int		gridded_ascii_flag;
+	int		gridded_netcdf_flag;
 	int		grow_flag;
 	int		routing_flag;
 	int		ddn_routing_flag;
