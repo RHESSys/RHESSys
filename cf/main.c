@@ -331,7 +331,7 @@ main(int argc, char *argv[])
 
 	// Name for output files, default to template file name
 	strcpy(input_prefix, output_name_opt->answer);	
-	strcpy(output_suffix, "_flow_table.dat");
+	strcpy(output_suffix, "");
 
 	if (flna_raster_opt->answer != NULL) {
 		rnflna = flna_raster_opt->answer;
@@ -432,8 +432,6 @@ main(int argc, char *argv[])
     if (sewer_flag == 1) {
 		struct Cell_head sewers_header;
 		sewers = (int*)raster2array(rnsewers, &sewers_header, NULL, NULL, CELL_TYPE);
-//    	sewers = (int *) malloc(maxr*maxc*sizeof(int));
- //   	input_ascii_int(sewers, fnsewers, maxr, maxc, arc_flag);	
 	}
 
 	struct Cell_head K_header;
@@ -453,7 +451,7 @@ main(int argc, char *argv[])
 	flow_table = (struct flow_struct *)calloc((maxr*maxc),sizeof(struct flow_struct));
 
 
-	printf("\n Building flow table");
+	printf("Building flow table\n");
 	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch, 
 					stream, roads, sewers, K, m_par, flna, out1, maxr, 
 					maxc,f_flag, sc_flag, sewer_flag, slp_flag, cell, 
