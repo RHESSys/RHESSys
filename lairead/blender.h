@@ -42,7 +42,7 @@
 #define NUMDEFLEVELS 6
 #define BOTTOMLEVEL 5
 
-static int  NUMVARS[6]= {0,6,7,12,31,54};
+static int  NUMVARS[6]= {0,6,7,12,32,54};
 
 static char *LEVELNAME[NUMLEVELS] = {"world","basin","hillslope","zone","patch","stratum"};
 static char *DEFLEVELNAME[NUMDEFLEVELS] = {"basin","hillslope","zone","soil","landuse","veg"};
