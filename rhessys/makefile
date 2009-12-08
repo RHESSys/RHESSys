@@ -1,6 +1,6 @@
 PGM  = rhessys5.13
 CC = gcc 
-CFLAGS = -O -I include
+CFLAGS = -g -I include
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 RHESSYS_BIN = /usr/local/bin
@@ -262,7 +262,8 @@ $(OBJ)/zero_stratum_annual_flux.o \
 $(OBJ)/zero_stratum_daily_flux.o \
 $(OBJ)/zone_daily_F.o \
 $(OBJ)/zone_daily_I.o \
-$(OBJ)/zone_hourly.o
+$(OBJ)/zone_hourly.o \
+$(OBJ)/construct_ascii_grid.o
 
 all:	dir rhessys
 
@@ -786,6 +787,8 @@ $(OBJ)/update_phenology.o: cn/update_phenology.c
 	$(CC) -c $(CFLAGS) cn/update_phenology.c -o $(OBJ)/update_phenology.o
 $(OBJ)/output_template_structure.o: output/output_template_structure.c 
 	$(CC) -c $(CFLAGS) output/output_template_structure.c -o $(OBJ)/output_template_structure.o
+$(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
+	$(CC) -c $(CFLAGS) init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
 
 $(OBJ)/main.o: main.c
 	$(CC) -c $(CFLAGS) main.c -o $(OBJ)/main.o
@@ -798,6 +801,3 @@ clean:
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)
-
-install:
-	cp $(PGM) $(RHESSYS_BIN)

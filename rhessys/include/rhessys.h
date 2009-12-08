@@ -130,6 +130,9 @@
 /*	removed obsolete default variables 			*/
 /*--------------------------------------------------------------*/
 
+#ifndef RHESSYS_H
+#define RHESSYS_H
+
 /*----------------------------------------------------------*/
 /*	Declare shared libraries.							 	*/				
 /*----------------------------------------------------------*/
@@ -2195,8 +2198,5 @@ struct	canopy_strata_hourly_object
 	int i;
 	};
 
-
-
-
-
+#endif
 

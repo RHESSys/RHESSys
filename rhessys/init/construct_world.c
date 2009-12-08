@@ -338,6 +338,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
+#include "init.h"
 
 struct world_object *construct_world(struct command_line_object *command_line){
 	/*----------------------------------------------------*/
@@ -428,7 +429,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		exit(0);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
-	/*	Compute the length of teh worlds existance in each time step*/
+	/*	Compute the length of the worlds existance in each time step*/
 	/*	Note that we use julday to compute the start and end days	*/
 	/*	in absolute terms; and that we subtract the start and end	*/
 	/*	days from the number of 24 hour days when finding the		*/
@@ -462,6 +463,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].defaults[0].num_basin_default_files));
 	read_record(world_file, record);
+	
 	/*--------------------------------------------------------------*/
 	/*	Read in the basin default files.						*/
 	/*--------------------------------------------------------------*/
@@ -503,7 +505,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	world[0].soil_default_files = construct_filename_list( world_file,
 		world[0].defaults[0].num_soil_default_files);
-
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of land cover default files.				*/
@@ -531,18 +532,37 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of base_station files.					*/
+	/*  In the case of gridded climate input, there will only be    */
+	/*  one entry in the world file, so we must get the number      */
+	/*  of stations from the climate file instead of the worldfile. */
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].num_base_stations));
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	read in list of base_station files.			*/
+	/*	read in list of base_station files.							*/
 	/*--------------------------------------------------------------*/
 	world[0].base_station_files = construct_filename_list( world_file,
 		world[0].num_base_stations);
-	
+
+	// If the file is an ascii gridded climate file, then the number
+	// of base stations from the world file is wrong, and we need to
+	// reset num_base_stations from the climate file
+	if ( command_line[0].gridded_ascii_flag == 1) {
+		printf("Opening climate grid %s\n", world[0].base_station_files[0]);
+		FILE* grid_base;
+		if ( (grid_base = fopen(world[0].base_station_files[0], "r")) == NULL ) {
+			fprintf(stderr,
+					"Unable to open climate grid file %s\n", 
+					world[0].base_station_files[0]);
+			exit(0);
+		}
+
+		fscanf(grid_base, "%d", &world[0].num_base_stations);
+	}
+
 	/*--------------------------------------------------------------*/
-	/*	Construct the basin_defaults objects.					*/
+	/*	Construct the basin_defaults objects.						*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].basin = construct_basin_defaults(
 		world[0].defaults[0].num_basin_default_files,
@@ -570,18 +590,11 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].soil_default_files, command_line);
 	
 	/*--------------------------------------------------------------*/
-	/*--------------------------------------------------------------*/
 	/*	Construct the land_defaults objects.					*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].landuse = construct_landuse_defaults(
 		world[0].defaults[0].num_landuse_default_files,
 		world[0].landuse_default_files, command_line);
-	
-	/*--------------------------------------------------------------*/
-	
-	
-	/*--------------------------------------------------------------*/
-	/*--------------------------------------------------------------*/
 	
 	/*--------------------------------------------------------------*/
 	/*	Construct the stratum_defaults objects.					*/
@@ -590,29 +603,33 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].defaults[0].num_stratum_default_files,
 		world[0].stratum_default_files, command_line);
 
-	
-
-/*--------------------------------------------------------------*/
-	
+	/*--------------------------------------------------------------*/
 	/*	Construct the list of base stations.					*/
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].dclim_flag == 0) {
-	world[0].base_stations = (struct base_station_object **)
-		alloc(world[0].num_base_stations *
-		sizeof(struct base_station_object *),"base_stations","construct_world" );
-	/*--------------------------------------------------------------*/
-	/*	Construct the base_stations.								*/
-	/*--------------------------------------------------------------*/
-	printf("\n Constructing base stations");
-	for (i=0; i<world[0].num_base_stations; i++ ){
-		world[0].base_stations[i] = construct_base_station(
-			world[0].base_station_files[i],
-			world[0].start_date,	world[0].duration);
-	} /*end for*/
-	}
+		world[0].base_stations = (struct base_station_object **)
+			alloc(world[0].num_base_stations *
+			sizeof(struct base_station_object *),"base_stations","construct_world" );
 
-	else
+		/*--------------------------------------------------------------*/
+		/*	Construct the base_stations.								*/
+		/*--------------------------------------------------------------*/
+		printf("\n Constructing base stations\n");
+		
+		if ( command_line[0].gridded_ascii_flag == 1) {
+			construct_ascii_grid( world[0].base_station_files[0],
+								  world[0].start_date, 
+								  world[0].duration,
+								  world[0].base_stations);
+		} else {
+			for (i=0; i<world[0].num_base_stations; i++ ) {
+				world[0].base_stations[i] = construct_base_station(
+					world[0].base_station_files[i],
+					world[0].start_date, world[0].duration);
+			} /*end for*/
+		}
+	} /*end if dclim_flag*/
 /*
 		construct_dclim(world);
 */
@@ -632,7 +649,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	fscanf(world_file,"%d",&(world[0].num_basin_files));
 	read_record(world_file, record);
 
-	printf("\n Constructing basins");
+	printf("\n Constructing basins\n");
 	/*--------------------------------------------------------------*/
 	/*	Construct the list of basins. 								*/
 	/*--------------------------------------------------------------*/

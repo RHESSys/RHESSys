@@ -385,6 +385,9 @@ struct stratum_default *construct_stratum_defaults(
 		while (!feof(default_file)) {
 			fscanf(default_file,"%lf", &(ftmp));
 			read_record(default_file, record);
+			// This strchr splitting method works since all tagged
+			// entries are labled epc.*.  This must change before
+			// we can make the whole file tagged
 			newrecord = strchr(record,'e');
 			if (newrecord != NULL) {
 			if (strcasecmp(newrecord,"epc.min_leaf_carbon") == 0) {	

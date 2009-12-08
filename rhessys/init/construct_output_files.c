@@ -23,10 +23,10 @@
 /*	We only permit one fileset per spatial modelling level.     */
 /*	Each fileset has one file for each timestep.  				*/
 /*																*/
-/*	March 14, 1997 - RAF					*/
-/*	The stratum fileset is constructed if either stratuim or*/
-/*	patch output is requested since a patch output may	*/
-/*	include a moss stratum.					*/
+/*	March 14, 1997 - RAF										*/
+/*	The stratum fileset is constructed if either stratuim or	*/
+/*	patch output is requested since a patch output may			*/
+/*	include a moss stratum.										*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <string.h>
