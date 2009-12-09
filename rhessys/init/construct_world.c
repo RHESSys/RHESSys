@@ -19,7 +19,7 @@
 /*		  (for which all climate files must have daily data)	*/
 /*		- the number of basins in the world.					*/
 /*		- the number and names of default files for				*/
-/*			hillslopes, zones, and stratums.			*/
+/*			hillslopes, zones, and stratums.					*/
 /*		- the number of base_stations in the world.				*/
 /*																*/
 /*	Below is documentation for ALL input files required with	*/
@@ -76,21 +76,22 @@
 /*		.														*/
 /*		.														*/
 /*	zone_default_file_name_(number_of_zone_def_files)			*/
-/*	number_of_landuse_default_files (an integer)					*/
+/*	number_of_landuse_default_files (an integer)				*/
 /*	soil_default_file_name_1									*/
 /*	soil_default_file_name_2									*/
 /*	soil_default_file_name_3									*/
 /*		.														*/
 /*		.														*/
 /*		.														*/
-/*	soil_default_file_name_(number_of_patch_def_files)			*//*	number_of_soil_default_files (an integer)					*/
+/*	soil_default_file_name_(number_of_patch_def_files)			*/
+/*	number_of_soil_default_files (an integer)					*/
 /*	soil_default_file_name_1									*/
 /*	soil_default_file_name_2									*/
 /*	soil_default_file_name_3									*/
 /*		.														*/
 /*		.														*/
 /*		.														*/
-/*	landuse_default_file_name_(number_of_patch_def_files)			*/
+/*	landuse_default_file_name_(number_of_patch_def_files)		*/
 /*	number_of_stratum_default_files (an integer)				*/
 /*	stratum_default_file_name_1									*/
 /*	stratum_default_file_name_2									*/
@@ -242,7 +243,7 @@
 /*	base_station_ID#2 - same as ID#1 but for second 			*/
 /*					base station assigned to the hillslope.		*/
 /*	  ... for (num_base_stations) fields.						*/
-/*	num_zones - number of zones in hillslope - no units	*/
+/*	num_zones - number of zones in hillslope - no units			*/
 /*	  ... zone records for the hillslope						*/
 /*	<end hillslope record>										*/
 /*																*/
@@ -287,8 +288,8 @@
 /*	snowpack_T													*/
 /*	snowpack_surface_age										*/
 /*	albedo														*/
-/* 	surface_capacity	- 											*/
-/* 	surface_depth		- 											*/
+/* 	surface_capacity	- 										*/
+/* 	surface_depth		- 										*/
 /*	humic_capacity	- 											*/
 /*	humic_depth		- 											*/
 /*	humic_ko		- 											*/
@@ -304,15 +305,15 @@
 /*	<end patch record>											*/
 /*																*/
 /*	<start stratum record>										*/
-/*	ID - stratum   ID - no units									*/
+/*	ID - stratum   ID - no units								*/
 /*	default_object_ID - stratum defalut file 				    */
 /*	height														*/
 /*	total_pai - surface area of all plants in stratum			*/
 /*	total_lai - surface area of all leaves/needles in stratum 	*/
 /*	gap_fraction - fraction of non-random gaps in canopy		*/
 /*	rooting_depth												*/
-/*	snow_stored			*/
-/*	rain_stored			*/
+/*	snow_stored													*/
+/*	rain_stored													*/
 /*	num_base_stations - number of base stations assigned		*/
 /*			to patch	- must match size of base station list	*/
 /*	base_station_ID#1 - ID  of first base station- must be		*/
@@ -342,7 +343,7 @@
 
 struct world_object *construct_world(struct command_line_object *command_line){
 	/*----------------------------------------------------*/
-	/*	Local function definition.									*/
+	/*	Local function definition.			     		  */
 	/*----------------------------------------------------*/
 	char	**construct_filename_list( FILE *, int);
 	long	julday( struct date );
