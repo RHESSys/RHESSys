@@ -76,12 +76,23 @@ int allocate_annual_growth(				int id,
 	double delta_livecrootc, delta_deadcrootc;
 	double delta_frootc, delta_frootn;
 	double delta_nitrogen, delta_carbon;
-	double cnl, cnlw, cndw, cnfr;
+	double cnl, cnlw, cndw, cnfr, mean_cn;
+	double fcroot, flive, fdead, fleaf, froot, fwood;
 	double total_wood_c, total_wood_n, wood_cn;
 	double rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
 	double plantc, excess_lai, excess_leaf_carbon, stemc, leafc;
 	double delta_leaf, leaf_growth_deficit;
-	double total_store, ratio;
+	double total_store, ratio, total_biomass, carbohydrate_transfer;
+
+
+	fcroot = epc.alloc_crootc_stemc;
+	flive = epc.alloc_livewoodc_woodc;
+	fdead = (1-flive);
+	cnl = epc.leaf_cn;
+	cnfr = epc.froot_cn;
+	cnlw = epc.livewood_cn;
+	cndw = epc.deadwood_cn;
+
 	/*--------------------------------------------------------------*/
 	/* carbon store transfers */
 	/* Move store material into transfer compartments on the annual
@@ -166,15 +177,72 @@ int allocate_annual_growth(				int id,
  		}
          }
 
-	storage_transfer_prop = epc.storage_transfer_prop;
+	total_store =  cs->cpool;
+	total_biomass =  (cs->leafc+cs->frootc+cs->dead_stemc+cs->live_stemc+
+			cs->dead_crootc+cs->live_crootc);
+
+	if (total_biomass > ZERO)
+		ratio = (total_store/total_biomass);
+	else
+		ratio = 1.0;
+
+	if (ratio > epc.max_storage_percent)			
+		storage_transfer_prop = 1.0;
+	else
+		storage_transfer_prop = epc.storage_transfer_prop;
 	
 
 	/*--------------------------------------------------------------*/
-	/*	respiration thinning			*/
-	/*  	if carbon debt is getting large we need to start thinning */
+	/* use carbohydrates if stressed				*/
 	/*--------------------------------------------------------------*/
+	if (cs->leafc_store < ZERO) {
+		carbohydrate_transfer = max(cs->cpool, 0.0);		
+		carbohydrate_transfer = min(cs->cpool, cs->live_stemc);		
+		 
+		fleaf = exp(-0.25 * epv->proj_lai);
+		fleaf = min(fleaf, 1.0);
 
-	if ((cs->cpool < -ZERO) && (vmort_flag == 1)) {
+		if (epc.veg_type==TREE) {
+			froot = 0.5*(1-fleaf);
+			fwood = 0.5*(1-fleaf);
+		}
+		else {
+			fwood = 0;
+			froot = (1-fleaf);
+		}
+
+		
+		if (epc.veg_type == TREE){
+	   	mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
+		}
+		else{
+	   	mean_cn = (fleaf * cnl + froot * cnfr);
+		}
+		storage_transfer_prop = 1.0;
+		cs->leafc_store += carbohydrate_transfer * fleaf;
+		cs->frootc_store += carbohydrate_transfer * froot;
+		cs->livestemc_store += carbohydrate_transfer * fwood * (1.0-fcroot) * flive;
+		cs->livecrootc_store += carbohydrate_transfer * fwood * fcroot * flive;
+		cs->deadstemc_store += carbohydrate_transfer * fwood * (1.0-fcroot) * fdead;
+		cs->deadcrootc_store += carbohydrate_transfer * fwood * fcroot * fdead;
+	
+		ns->leafn_store += (carbohydrate_transfer * fleaf) / cnl;
+		ns->frootn_store += (carbohydrate_transfer * froot) / cnfr ;
+		ns->livestemn_store += (carbohydrate_transfer * fwood * (1.0-fcroot) * flive) / cnlw;
+		ns->livecrootn_store += (carbohydrate_transfer * fwood * fcroot * flive) / cnlw;
+		ns->deadstemn_store += (carbohydrate_transfer * fwood * (1.0-fcroot) * fdead) / cndw;
+		ns->deadcrootn_store += (carbohydrate_transfer * fwood * fcroot * fdead) / cndw;
+			
+
+		cs->cpool -= carbohydrate_transfer;
+		ns->npool -= carbohydrate_transfer/mean_cn;
+	}
+
+	/*--------------------------------------------------------------*/
+	/*	respiration thinning			*/
+	/*--------------------------------------------------------------*/
+	if ((cs->cpool < -ZERO)  && (vmort_flag == 1) && (cs->leafc_store < ZERO) ) {
+
 		plantc =  (cs->live_crootc
 			+ cs->live_stemc + cs->dead_crootc
 			+ cs->dead_stemc + cs->livecrootc_store
@@ -187,35 +255,12 @@ int allocate_annual_growth(				int id,
 			+ cs->leafc + cs->leafc_transfer + cs->leafc_store
 			+ cs->frootc + cs->frootc_transfer + cs->frootc_store);
 
-		total_store =  (cs->leafc_store+cs->frootc_store+cs->deadstemc_store+cs->livestemc_store+
-			cs->deadcrootc_store+cs->livecrootc_store);
-
-	/* first get rid of any storage */
-		if (total_store > -cs->cpool) {
-			ratio = -cs->cpool/total_store;
-			cs->cpool += ratio*total_store;
-			cs->leafc_store -= ratio*cs->leafc_store;
-			cs->frootc_store -= ratio*cs->frootc_store;
-			cs->deadstemc_store -= ratio*cs->deadstemc_store;
-			cs->livestemc_store -= ratio*cs->livestemc_store;
-			cs->deadcrootc_store -= ratio*cs->deadcrootc_store;
-			cs->livecrootc_store -= ratio*cs->livecrootc_store;
-			}
-		else {
-			cs->cpool += total_store;
-			cs->leafc_store=0.0;
-			cs->frootc_store=0.0;
-			cs->deadstemc_store=0.0;
-			cs->livestemc_store=0.0;
-			cs->deadcrootc_store=0.0;
-			cs->livecrootc_store=0.0;
-		}
 
 		leafc =	 cs->leafc;
 		stemc = 
 			 cs->live_stemc 
 			+ cs->dead_stemc ;
-
+		
 		if (leafc/stemc > 0.6)
 			excess_leaf_carbon = stemc*(leafc/stemc - 0.6); 
 		else
@@ -227,18 +272,18 @@ int allocate_annual_growth(				int id,
 
 		excess_carbon = min(1.0, -1.0*cs->cpool/plantc - excess_leaf_carbon);
 
-		/* excess_leaf_carbon should be added to litter store as this is leaf drop */
 		cs->leafc -= excess_leaf_carbon;
 		ns->leafn -= excess_leaf_carbon/epc.leaf_cn;
+
+		cs->cpool += excess_leaf_carbon;
+		ns->npool += excess_leaf_carbon/epc.leaf_cn;
 
 		update_mortality(epc,
 			cs, cdf, cdf_patch,
 			ns, ndf, ndf_patch, 
 			cs_litr, ns_litr, cover_fraction, excess_carbon);
-
-		cs->cpool = 0.0;
-		ns->npool = 0.0;
 		}
+
 
 	/*--------------------------------------------------------------*
 	/*  we include a delay on storage output so that the
@@ -363,6 +408,10 @@ int allocate_annual_growth(				int id,
 	cs->frootc_store    -= cdf->frootc_store_to_frootc_transfer;
 	cs->gresp_transfer    += cdf->gresp_store_to_gresp_transfer;
 	cs->gresp_store     -= cdf->gresp_store_to_gresp_transfer;
+	/* remaining store goes back to cpool - carbohydrate pool */
+	cs->cpool += cs->leafc_store+cs->frootc_store;
+	cs->leafc_store=0.0;
+	cs->frootc_store=0.0;
 	epv->prev_leafcalloc = cs->leafc_transfer;
 	if (epc.veg_type == TREE){
 		cs->livestemc_transfer  += cdf->livestemc_store_to_livestemc_transfer;
@@ -373,6 +422,11 @@ int allocate_annual_growth(				int id,
 		cs->livecrootc_store  -= cdf->livecrootc_store_to_livecrootc_transfer;
 		cs->deadcrootc_transfer += cdf->deadcrootc_store_to_deadcrootc_transfer;
 		cs->deadcrootc_store  -= cdf->deadcrootc_store_to_deadcrootc_transfer;
+		cs->cpool += cs->livecrootc_store+cs->deadcrootc_store+ cs->livestemc_store+cs->deadstemc_store;
+		cs->deadcrootc_store=0.0;
+		cs->livecrootc_store=0.0;
+		cs->deadstemc_store=0.0;
+		cs->livestemc_store=0.0;
 	}
 
 
@@ -381,6 +435,9 @@ int allocate_annual_growth(				int id,
 	ns->leafn_store     -= ndf->leafn_store_to_leafn_transfer;
 	ns->frootn_transfer   += ndf->frootn_store_to_frootn_transfer;
 	ns->frootn_store    -= ndf->frootn_store_to_frootn_transfer;
+	ns->npool += ns->leafn_store+ns->frootn_store;
+	ns->leafn_store=0.0;
+	ns->frootn_store=0.0;
 	if (epc.veg_type == TREE){
 		ns->livestemn_transfer  += ndf->livestemn_store_to_livestemn_transfer;
 		ns->livestemn_store   -= ndf->livestemn_store_to_livestemn_transfer;
@@ -390,6 +447,10 @@ int allocate_annual_growth(				int id,
 		ns->livecrootn_store  -= ndf->livecrootn_store_to_livecrootn_transfer;
 		ns->deadcrootn_transfer += ndf->deadcrootn_store_to_deadcrootn_transfer;
 		ns->deadcrootn_store  -= ndf->deadcrootn_store_to_deadcrootn_transfer;
+		ns->npool += ns->livecrootn_store+ns->deadcrootn_store+ ns->livestemn_store+ns->deadstemn_store;
+		ns->deadcrootn_store=0.0;
+		ns->livecrootn_store=0.0;
+		ns->deadstemn_store=0.0;
 	}
 	
 	/* for deciduous system, force leafc and frootc to exactly 0.0 on the
