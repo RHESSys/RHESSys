@@ -1,16 +1,16 @@
 <?php
 //require_once 'include/header.php';
-//$path = $_SERVER['DOCUMENT_ROOT'];
-//required "$path/Smarty/Smarty.class.php";
-//
-//$smarty = new Smarty();
-//$smarty->template_dir = "$path/rhessys_defs/smarty/templates";
-//$smarty->compile_dir = "$path/rhessys_defs/smarty/templates_c";
-//$smarty->cache_dir = "$path/rhessys_defs/smarty/cache";
-//$smarty->config_dir = "$path/rhessys_defs/smarty/configs";
+$path = $_SERVER['DOCUMENT_ROOT'];
+require "$path/Smarty/Smarty.class.php";
+
+$smarty = new Smarty();
+$smarty->template_dir = "$path/rhessys_defs/smarty/templates";
+$smarty->compile_dir = "$path/rhessys_defs/smarty/templates_c";
+$smarty->cache_dir = "$path/rhessys_defs/smarty/cache";
+$smarty->config_dir = "$path/rhessys_defs/smarty/configs";
 
 mysql_connect('localhost', 'root', '') or die(mysql_error());
-mysql_select_db('rhessys_defs') or die(mysql_error());
+$db_server = mysql_select_db('rhessys_defs') or die(mysql_error());
 
 $cols = 'name';
 $vals = '"' . $_FILES['filename']['name'] . '"';
@@ -50,8 +50,21 @@ while (!feof($fh)) {
 	$items = preg_split("/[\s,]+/", $line);
 	echo "1: " . $items[1] . "<br />";
 	echo "0: " . $items[0] . "<br />";
-	$cols = $cols . ', ' . $items[1];
-	$vals = $vals . ", " . $items[0];
+
+	// For field names with a '.' in them, SQL requires the name
+	// be in backticks
+	if (strstr($items[1], '.')) {
+		$cols = $cols . ', `' . $items[1] . '`';
+	} else {
+		$cols = $cols . ', ' . $items[1];
+	}
+	
+	if (is_numeric($items[0])) {
+		$vals = $vals . ", " . $items[0];
+	} else {
+		$vals = $vals . ", '" . $items[0] . "'";
+	}
+	
 	$line = fgets($fh);
 } 
 
@@ -62,6 +75,7 @@ echo $query;
 $result = mysql_query($query);
 if (!$result) die("Database access failed: " . mysql_error());
 
+mysql_close($db_server);
 
-//$smarty->display("$path/rhessys_defs/smarty/templates/upload_def.php");
+$smarty->display("$path/rhessys_defs/smarty/templates/upload_def.tpl");
 ?>
