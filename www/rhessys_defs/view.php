@@ -1,18 +1,29 @@
 <?php
 $path = $_SERVER['DOCUMENT_ROOT'];
-require "$path/Smarty/Smarty.class.php";
-
-$smarty = new Smarty();
-$smarty->template_dir = "$path/rhessys_defs/smarty/templates";
-$smarty->compile_dir = "$path/rhessys_defs/smarty/templates_c";
-$smarty->cache_dir = "$path/rhessys_defs/smarty/cache";
-$smarty->config_dir = "$path/rhessys_defs/smarty/configs";
-
-mysql_connect('localhost', 'root', '') or die(mysql_error());
-$db_server = mysql_select_db('rhessys_defs') or die(mysql_error());
-
+require "$path/rhessys_defs/include/smarty.php";
+require_once "$path/rhessys_defs/include/login.php";
+require_once "$path/rhessys_defs/include/util.php";
+echo "HERE<br />\n";
 $table_name = $_POST['type'];
-$id = $_POST['list'];
+
+// Check if this view was called from update.php, if it was,
+// create a SQL query to update the database before viewing
+if (isset($_POST['save'])) { 
+	$original_id = $_POST['id'];
+	$names = getNames($table_name);
+
+	foreach ($name in $names) {
+		$query = "UPDATE $table_name SET $var='' WHERE $id_field=$id";
+		mysql_query($query);
+	}	
+} else if (isset($_POST['cancel'])) {
+	// Called from update.php, but do not update the db. Get
+	// the current id from the $id var
+	$id = $_POST['id'];	
+} else {
+	$id = $_POST['list'];
+}
+
 $reference_name = $table_name . "_Reference";
 switch ($table_name) {
 	case "Land_Use":
@@ -31,13 +42,7 @@ switch ($table_name) {
 		die("Invalid database table");
 }
 
-$names_query = "SELECT column_name FROM information_schema.columns WHERE table_name=\"$table_name\"";
-$names_result = mysql_query($names_query);
-$rows = mysql_num_rows($names_result);
-for ($j=0; $j < $rows; ++$j) {
-	$names[] = mysql_fetch_array($names_result);
-}
-
+$names = getNames($table_name);
 $values_query = "SELECT * FROM $table_name WHERE $id_field=$id";
 $ref_query = "SELECT * FROM $reference_name WHERE $id_field=$id";
 

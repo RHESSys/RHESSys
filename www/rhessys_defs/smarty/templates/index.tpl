@@ -1,5 +1,5 @@
 {include file='header.tpl'}
-
+<div style="background-color:lightgrey">
 Land Use:
 <form action="view.php" method="post">
 <input type="hidden" name="type" value="Land_Use" />
@@ -21,7 +21,9 @@ Land Use:
 <input name="filename" type="file" /><br />
 <input type="submit" value="Upload File" />
 </form>
+</div>
 
+<div style="background-color:lightgrey">
 Soil:
 <form action="view.php" method="post">
 <input type="hidden" name="type" value="Soil" />
@@ -44,7 +46,9 @@ Soil:
 <input name="filename" type="file" /><br />
 <input type="submit" value="Upload File" />
 </form>
+</div>
 
+<div style="background-color:lightgrey">
 Strata:
 <form action="view.php" method="post">
 <input type="hidden" name="type" value="Stratum">
@@ -66,7 +70,9 @@ Strata:
 <input name="filename" type="file" /><br />
 <input type="submit" value="Upload File" />
 </form>
+</div>
 
+<div style="background-color:lightgrey">
 Zones:
 <form action="view.php" method="post">
 <input type="hidden" name="type" value="Zone">
@@ -88,5 +94,6 @@ Zones:
 <input name="filename" type="file" /><br />
 <input type="submit" value="Upload File" />
 </form>
+</div>
 
 {include file='footer.tpl'}

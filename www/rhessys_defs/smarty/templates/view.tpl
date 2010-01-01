@@ -8,15 +8,23 @@
 </tr>
 {section name=row loop=$names}
 <tr>
-<td>{$names[row][0]}</td>
-<td>{$values[$names[row][0]]}</td>
-<td>{$refs[$names[row][0]]}</td>
+<td>{$names[row]}</td>
+<td>{$values[$names[row]]}</td>
+<td>{$refs[$names[row]]}</td>
 </tr>
 {/section}
 </table>
-<form method="post" action="save_def.php">
+
+<form method="post" action="download_def.php">
 <input type="hidden" name="type" value="{$type}">
 <input type="hidden" name="id" value="{$id}">
 <input type="submit" value="Download this definition">
 </form>
+
+<form method="post" action="update_def.php">
+<input type="hidden" name="type" value="{$type}">
+<input type="hidden" name="id" value="{$id}">
+<input type="submit" value="Update">
+</form>
+
 {include file='footer.tpl'}

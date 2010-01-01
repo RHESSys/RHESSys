@@ -1,15 +1,7 @@
 <?php
 $path = $_SERVER['DOCUMENT_ROOT'];
-require "$path/Smarty/Smarty.class.php";
-
-$smarty = new Smarty();
-$smarty->template_dir = "$path/rhessys_defs/smarty/templates";
-$smarty->compile_dir = "$path/rhessys_defs/smarty/templates_c";
-$smarty->cache_dir = "$path/rhessys_defs/smarty/cache";
-$smarty->config_dir = "$path/rhessys_defs/smarty/configs";
-
-mysql_connect('localhost', 'root', '') or die(mysql_error());
-$db_server = mysql_select_db('rhessys_defs') or die(mysql_error());
+require_once "$path/rhessys_defs/include/login.php"
+require_once "$path/rhessys_defs/include/util.php"
 
 $table_name = $_POST['type'];
 $id = $_POST['list'];

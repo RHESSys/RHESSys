@@ -4,7 +4,7 @@ USE rhessys_defs;
 GRANT ALL ON rhessys_defs.* TO "rhessys" IDENTIFIED BY "rhessys";
 
 CREATE TABLE Zone ( 
-zone_default_ID INTEGER, 
+PRIMARY KEY zone_default_ID INTEGER, 
 rhessys_version CHAR(20),
 name CHAR(255), 
 atm_trans_lapse_rate FLOAT, 
@@ -23,7 +23,7 @@ ndep_NO3 FLOAT
 );
 
 CREATE TABLE Zone_Reference ( 
-zone_default_ID INTEGER, 
+PRIMARY KEY zone_default_ID INTEGER, 
 atm_trans_lapse_rate CHAR(255), 
 dewpoint_lapse_rate CHAR(255), 
 max_effective_lai CHAR(255), 
@@ -40,7 +40,7 @@ ndep_NO3 CHAR(255)
 );
 
 CREATE TABLE Soil (  
-patch_default_ID INTEGER, 
+PRIMARY KEY patch_default_ID INTEGER, 
 rhessy_version CHAR(20),
 name CHAR(255),
 theta_psi_curve INTEGER, 
@@ -72,7 +72,7 @@ silt FLOAT
 );
 
 CREATE TABLE Soil_Reference (  
-patch_default_ID INTEGER, 
+PRIMARY KEY patch_default_ID INTEGER, 
 theta_psi_curve CHAR(255), 
 Ksat_0 CHAR(255), 
 m CHAR(255), 
@@ -102,7 +102,7 @@ silt CHAR(255)
 );
 
 CREATE TABLE Land_Use ( 
-landuse_default_ID INTEGER,
+PRIMARY KEY landuse_default_ID INTEGER,
 rhessys_version CHAR(20),
 name CHAR(255),
 irrigation FLOAT, 
@@ -114,7 +114,7 @@ detention_store_size FLOAT
 );
 
 CREATE TABLE Land_Use_Reference ( 
-landuse_default_ID INTEGER, 
+PRIMARY KEY landuse_default_ID INTEGER, 
 irrigation CHAR(255), 
 fertilizer_NO3 CHAR(255), 
 fertilizer_NH4 CHAR(255), 
@@ -124,7 +124,7 @@ detention_store_size CHAR(255)
 );
 
 CREATE TABLE Stratum ( 
-stratum_default_ID INTEGER,
+PRIMARY KEY stratum_default_ID INTEGER,
 rhessys_version CHAR(20),
 name CHAR(255),
 K_absorptance FLOAT, 
@@ -217,7 +217,7 @@ mortality FLOAT
 );
 
 CREATE TABLE Stratum_Reference ( 
-stratum_default_ID INTEGER, 
+PRIMARY KEY stratum_default_ID INTEGER, 
 K_absorptance CHAR(255), 
 K_reflectance CHAR(255), 
 K_transmittance CHAR(255), 
