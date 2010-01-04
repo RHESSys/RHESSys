@@ -3,19 +3,21 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 require "$path/rhessys_defs/include/smarty.php";
 require_once "$path/rhessys_defs/include/login.php";
 require_once "$path/rhessys_defs/include/util.php";
-echo "HERE<br />\n";
 $table_name = $_POST['type'];
 
 // Check if this view was called from update.php, if it was,
 // create a SQL query to update the database before viewing
-if (isset($_POST['save'])) { 
+if (isset($_POST['save'])) {
 	$original_id = $_POST['id'];
 	$names = getNames($table_name);
 
-	foreach ($name in $names) {
+	echo "Updating...<br />\n";	
+	foreach ($names as $name) {
 		$query = "UPDATE $table_name SET $var='' WHERE $id_field=$id";
 		mysql_query($query);
 	}	
+	
+	$id = $_POST['id'];	
 } else if (isset($_POST['cancel'])) {
 	// Called from update.php, but do not update the db. Get
 	// the current id from the $id var

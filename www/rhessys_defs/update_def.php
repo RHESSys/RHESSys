@@ -31,6 +31,7 @@ $names = getNames($table_name);
 // the main page.
 if (isset($id)) {
 	// Populate default values 
+	$rows = count($names);
 	for ($j=0; $j < $rows; ++$j) {
 		$query = "SELECT $names[$j] FROM $table_name WHERE $id_field=$id";
 		$result = mysql_query($query);
@@ -43,9 +44,6 @@ if (isset($id)) {
 		$refs[] = $record[0];
 	}
 }
-
-print_r($values);
-print_r($refs);
 
 mysql_close($db_server);
 
