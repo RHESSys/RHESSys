@@ -14,7 +14,7 @@
 <tr>
 <td>{$names[row]}</td>
 <td><input type="text" name="{$names[row]}_value" value="{$values[row]}" /></td>
-<td><input type="text" name="{$names[row]}_ref" />{$refs[row]}</td>
+<td><input type="text" name="{$names[row]}_ref" value="{$refs[row]}" /></td>
 </tr>
 {/section}
 </table>

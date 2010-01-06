@@ -15,16 +15,16 @@
 {/section}
 </table>
 
-<form method="post" action="download_def.php">
-<input type="hidden" name="type" value="{$type}">
-<input type="hidden" name="id" value="{$id}">
-<input type="submit" value="Download this definition">
-</form>
-
 <form method="post" action="update_def.php">
 <input type="hidden" name="type" value="{$type}">
 <input type="hidden" name="id" value="{$id}">
 <input type="submit" value="Update">
+</form>
+
+<form method="post" action="download_def.php">
+<input type="hidden" name="type" value="{$type}">
+<input type="hidden" name="id" value="{$id}">
+<input type="submit" value="Download this definition">
 </form>
 
 {include file='footer.tpl'}

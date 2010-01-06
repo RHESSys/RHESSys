@@ -1,19 +1,13 @@
 <?php
-//require_once 'include/header.php';
 $path = $_SERVER['DOCUMENT_ROOT'];
-require "$path/Smarty/Smarty.class.php";
+require "$path/rhessys_defs/include/smarty.php";
+require_once "$path/rhessys_defs/include/login.php";
+require_once "$path/rhessys_defs/include/util.php";
 
-$smarty = new Smarty();
-$smarty->template_dir = "$path/rhessys_defs/smarty/templates";
-$smarty->compile_dir = "$path/rhessys_defs/smarty/templates_c";
-$smarty->cache_dir = "$path/rhessys_defs/smarty/cache";
-$smarty->config_dir = "$path/rhessys_defs/smarty/configs";
-
-mysql_connect('localhost', 'root', '') or die(mysql_error());
-$db_server = mysql_select_db('rhessys_defs') or die(mysql_error());
 
 $cols = 'name';
-$vals = '"' . $_FILES['filename']['name'] . '"';
+$filename = explode(".", $_FILES['filename']['name']);
+$vals = '"' . $filename[0] . '"';
 $table_name = $_POST['type'];
 
 if ($fh = fopen($_FILES['filename']['tmp_name'], 'r')) 
@@ -50,6 +44,12 @@ while (!feof($fh)) {
 	$items = preg_split("/[\s,]+/", $line);
 	echo "1: " . $items[1] . "<br />";
 	echo "0: " . $items[0] . "<br />";
+	
+	// Capture the ID entry for creating the reference row
+	if (strstr($items[1], "_default_ID")) {
+		$ref_id_name = $items[1];
+		$ref_id_value = $items[0];
+	}
 
 	// For field names with a '.' in them, SQL requires the name
 	// be in backticks
@@ -58,7 +58,8 @@ while (!feof($fh)) {
 	} else {
 		$cols = $cols . ', ' . $items[1];
 	}
-	
+
+	// Quote string values	
 	if (is_numeric($items[0])) {
 		$vals = $vals . ", " . $items[0];
 	} else {
@@ -70,10 +71,17 @@ while (!feof($fh)) {
 
 fclose($fh);
 
+// Create the data entry
 $query = "INSERT INTO $table_name (" . $cols . ") VALUES(" . $vals . ");";
 echo $query;
 $result = mysql_query($query);
 if (!$result) die("Database access failed: " . mysql_error());
+
+// Create the reference entry
+$ref_table_name = $table_name . "_Reference";
+$query = "INSERT INTO $ref_table_name ($ref_id_name) VALUES($ref_id_value)";
+echo $query;
+mysql_query($query);
 
 mysql_close($db_server);
 

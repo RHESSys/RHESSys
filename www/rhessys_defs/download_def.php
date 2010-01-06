@@ -1,10 +1,10 @@
 <?php
 $path = $_SERVER['DOCUMENT_ROOT'];
-require_once "$path/rhessys_defs/include/login.php"
-require_once "$path/rhessys_defs/include/util.php"
+require_once "$path/rhessys_defs/include/login.php";
+require_once "$path/rhessys_defs/include/util.php";
 
 $table_name = $_POST['type'];
-$id = $_POST['list'];
+$id = $_POST['id'];
 switch ($table_name) {
 	case "Land_Use":
 		$id_field = "landuse_default_ID";
@@ -22,20 +22,23 @@ switch ($table_name) {
 		die("Invalid database table");
 }
 
-$names_query = "SELECT column_name FROM information_schema.columns WHERE table_name=\"$table_name\"";
-$names_result = mysql_query($names_query);
-$rows = mysql_num_rows($names_result);
-for ($j=0; $j < $rows; ++$j) {
-	$names[] = mysql_fetch_array($names_result);
-}
+$names = getNames($table_name);
 
 $values_query = "SELECT * FROM $table_name WHERE $id_field=$id";
 $values_result = mysql_query($values_query);
 $values = mysql_fetch_array($values_result);
 
 mysql_close($db_server);
+$outfile_name = $values['name'] . '.def';
 
-header('Content-disposition: attachment; filename=thingy.def');
-header('Content-type: text/plain');
-readfile('thingy.def');
+$IGNORE_NAMES = array('rhessys_version', 'name');
+foreach ($names as $name) {
+	if (!in_array($name, $IGNORE_NAMES)) {
+		$line = $values[$name] . " " . $name;
+		echo $line . "\n";
+	}
+}
+
+header("Content-disposition: attachment; filename=$outfile_name");
+header("Content-type: text/unknown");
 ?>
