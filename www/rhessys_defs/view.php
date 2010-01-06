@@ -6,24 +6,7 @@ require_once "$path/rhessys_defs/include/util.php";
 
 
 $table_name = $_POST['type'];
-
-switch ($table_name) {
-	case "Land_Use":
-		$id_field = "landuse_default_ID";
-		break;
-	case "Stratum":
-		$id_field = "stratum_default_ID";
-		break;
-	case "Soil":
-		$id_field = "patch_default_ID";
-		break;
-	case "Zone":
-		$id_field = "zone_default_ID";
-		break;
-	default:
-		die("Invalid database table");
-}
-
+$id_field = getIDField($table_name);
 $names = getNames($table_name);
 
 // Check if this view was called from update.php, if it was,
@@ -37,13 +20,12 @@ if (isset($_POST['save'])) {
 		$var_value = $name . "_value";
 		$var_ref = $name . "_ref";
 
-		$query = "UPDATE $table_name SET $name=$_POST[$var_value] WHERE $id_field=$id";
+		$query = "UPDATE $table_name SET $name=\"$_POST[$var_value]\" WHERE $id_field=$id";
 		mysql_query($query);
 		
 		// Update the reference next
 		$ref_table_name = $table_name . "_Reference";
 		$query = "UPDATE $ref_table_name SET $name=\"$_POST[$var_ref]\" WHERE $id_field=$id";
-		echo $query . "<br />\n";
 		mysql_query($query);
 
 		// If ID was updated, then we need to reassign ID for use in future
@@ -52,11 +34,10 @@ if (isset($_POST['save'])) {
 			$id = $_POST[$var_value];
 		}
 	}	
-	
-	$id = $_POST['id'];	
 } else if (isset($_POST['cancel'])) {
 	// Called from update.php, but do not update the db. Get
 	// the current id from the $id var
+	echo "Cancelled Update<br />\n";
 	$id = $_POST['id'];	
 } else {
 	$id = $_POST['list'];

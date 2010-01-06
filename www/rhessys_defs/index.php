@@ -1,8 +1,10 @@
 <?php
 $path = $_SERVER['DOCUMENT_ROOT'];
-require "$path/rhessys_defs/include/smarty.php";
-require_once "$path/rhessys_defs/include/login.php";
-require_once "$path/rhessys_defs/include/util.php";
+$include_path = $path . "/rhessys_defs/include";
+require "$include_path/smarty.php";
+require_once "$include_path/login.php";
+require_once "$include_path/util.php";
+require "$include_path/session.php";
 
 $land_use_query = "SELECT landuse_default_ID,name FROM Land_Use WHERE 1=1";
 $stratum_query = "SELECT stratum_default_ID,name FROM Stratum WHERE 1=1";
@@ -34,12 +36,10 @@ for ($j = 0; $j < $rows; ++$j) {
 	$zones[] = mysql_fetch_array($zone_result);
 }
 
-mysql_close($db_server);
-
 $smarty->assign("land_uses", $land_uses);
 $smarty->assign("strata", $strata);
 $smarty->assign("soils", $soils);
 $smarty->assign("zones", $zones);
-
+$smarty->assign("username", $username);
 $smarty->display("$path/rhessys_defs/smarty/templates/index.tpl");
 ?>

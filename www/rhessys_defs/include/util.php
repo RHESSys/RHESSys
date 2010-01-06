@@ -11,4 +11,25 @@ function getNames($var) {
 
 	return $names;
 }
+
+function getIDField($table_name) {
+	switch ($table_name) {
+		case "Land_Use":
+			$id_field = "landuse_default_ID";
+			break;
+		case "Stratum":
+			$id_field = "stratum_default_ID";
+			break;
+		case "Soil":
+			$id_field = "patch_default_ID";
+			break;
+		case "Zone":
+			$id_field = "zone_default_ID";
+			break;
+		default:
+			return FALSE;	
+	}
+
+	return $id_field;
+}
 ?>

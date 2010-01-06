@@ -5,23 +5,7 @@ require_once "$path/rhessys_defs/include/util.php";
 
 $table_name = $_POST['type'];
 $id = $_POST['id'];
-switch ($table_name) {
-	case "Land_Use":
-		$id_field = "landuse_default_ID";
-		break;
-	case "Stratum":
-		$id_field = "stratum_default_ID";
-		break;
-	case "Soil":
-		$id_field = "patch_default_ID";
-		break;
-	case "Zone":
-		$id_field = "zone_default_ID";
-		break;
-	default:
-		die("Invalid database table");
-}
-
+$id_field = getIDField($table_name);
 $names = getNames($table_name);
 
 $values_query = "SELECT * FROM $table_name WHERE $id_field=$id";
@@ -31,7 +15,7 @@ $values = mysql_fetch_array($values_result);
 mysql_close($db_server);
 $outfile_name = $values['name'] . '.def';
 
-$IGNORE_NAMES = array('rhessys_version', 'name');
+$IGNORE_NAMES = array('rhessys_version', 'name', 'username');
 foreach ($names as $name) {
 	if (!in_array($name, $IGNORE_NAMES)) {
 		$line = $values[$name] . " " . $name;
