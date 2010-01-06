@@ -40,6 +40,5 @@ $smarty->assign("land_uses", $land_uses);
 $smarty->assign("strata", $strata);
 $smarty->assign("soils", $soils);
 $smarty->assign("zones", $zones);
-$smarty->assign("username", $username);
 $smarty->display("$path/rhessys_defs/smarty/templates/index.tpl");
 ?>

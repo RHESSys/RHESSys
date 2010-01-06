@@ -1,8 +1,10 @@
 <?php
 $path = $_SERVER['DOCUMENT_ROOT']; 
-require "$path/rhessys_defs/include/smarty.php"; 
-require_once "$path/rhessys_defs/include/login.php";
-require_once "$path/rhessys_defs/include/util.php";
+$include_path = $path . "/rhessys_defs/include";
+require "$include_path/smarty.php"; 
+require_once "$include_path/login.php";
+require_once "$include_path/util.php";
+require "$include_path/session.php";
 
 $table_name = $_POST['type'];
 $id = $_POST['id'];

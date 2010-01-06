@@ -11,6 +11,7 @@ Land Use:
 <input type="submit" value="View">
 </form>
 
+{if $loggedin}
 <form action="update_def.php" method="post">
 <input type="hidden" name="type" value="Land_Use">
 <input type="submit" value="Create New Land Use" />
@@ -21,6 +22,7 @@ Land Use:
 <input name="filename" type="file" /><br />
 <input type="submit" value="Upload File" />
 </form>
+{/if}
 </div>
 
 <div style="background-color:lightgrey">
@@ -35,17 +37,18 @@ Soil:
 <input type="submit" value="View">
 </form>
 
+{if $loggedin}
 <form action="update_def.php" method="post">
 <input type="hidden" name="type" value="Soil">
 <input type="submit" value="Create New Soil" />
 </form>
-
 
 <form action="upload_def.php" method="post" enctype="multipart/form-data">
 <input type="hidden" name="type" value="Soil" />
 <input name="filename" type="file" /><br />
 <input type="submit" value="Upload File" />
 </form>
+{/if}
 </div>
 
 <div style="background-color:lightgrey">
@@ -60,6 +63,7 @@ Strata:
 <input type="submit" value="View">
 </form>
 
+{if $loggedin}
 <form action="update_def.php" method="post">
 <input type="hidden" name="type" value="Stratum">
 <input type="submit" value="Create New Stratum" />
@@ -70,6 +74,7 @@ Strata:
 <input name="filename" type="file" /><br />
 <input type="submit" value="Upload File" />
 </form>
+{/if}
 </div>
 
 <div style="background-color:lightgrey">
@@ -84,6 +89,7 @@ Zones:
 <input type="submit" value="View">
 </form>
 
+{if $loggedin}
 <form action="update_def.php" method="post">
 <input type="hidden" name="type" value="Zone">
 <input type="submit" value="Create New Zone" />
@@ -94,6 +100,7 @@ Zones:
 <input name="filename" type="file" /><br />
 <input type="submit" value="Upload File" />
 </form>
+{/if}
 </div>
 
 {include file='footer.tpl'}

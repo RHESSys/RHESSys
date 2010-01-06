@@ -1,11 +1,13 @@
 <?php
 $path = $_SERVER['DOCUMENT_ROOT'];
-require "$path/rhessys_defs/include/smarty.php";
-require_once "$path/rhessys_defs/include/login.php";
-require_once "$path/rhessys_defs/include/util.php";
-
+$include_path = $path . "/rhessys_defs/include";
+require "$include_path/smarty.php";
+require_once "$include_path/login.php";
+require_once "$include_path/util.php";
+require "$include_path/session.php";
 
 $table_name = $_POST['type'];
+$ref_table_name = $table_name . "_Reference";
 $id_field = getIDField($table_name);
 $names = getNames($table_name);
 
@@ -13,8 +15,6 @@ $names = getNames($table_name);
 // create a SQL query to update the database before viewing
 if (isset($_POST['save'])) {
 	$id = $_POST['id'];
-
-	echo "Updating...<br />\n";	
 
 	foreach ($names as $name) {
 		$var_value = $name . "_value";
@@ -43,10 +43,9 @@ if (isset($_POST['save'])) {
 	$id = $_POST['list'];
 }
 
-$reference_name = $table_name . "_Reference";
 
 $values_query = "SELECT * FROM $table_name WHERE $id_field=$id";
-$ref_query = "SELECT * FROM $reference_name WHERE $id_field=$id";
+$ref_query = "SELECT * FROM $ref_table_name WHERE $id_field=$id";
 
 $values_result = mysql_query($values_query);
 $values = mysql_fetch_array($values_result);
@@ -56,10 +55,19 @@ $refs = mysql_fetch_array($refs_result);
 
 mysql_close($db_server);
 
+// Compare the owner of this record to the logged in user to
+// see if we should enable the update button
+if ($username == $values['username']) {
+	$mutable = TRUE;
+} else {
+	$mutable = FALSE;
+}
+
 $smarty->assign("type", $table_name);
 $smarty->assign("names", $names);
 $smarty->assign("values", $values);
 $smarty->assign("refs", $refs);
 $smarty->assign("id", $id);
+$smarty->assign("mutable", $mutable);
 $smarty->display("$path/rhessys_defs/smarty/templates/view.tpl");
 ?>

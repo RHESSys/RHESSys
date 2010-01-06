@@ -12,8 +12,9 @@ RHESSys Definition File Database
 </div>
 
 <div>
-{if $user != ""}
-{$user}
+{if $username != ""}
+{$username} 
+<a href="logout.php">Logout</a>
 {else}
 <a href="authenticate.php">Login</a>
 {/if}
