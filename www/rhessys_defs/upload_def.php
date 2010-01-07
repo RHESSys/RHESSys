@@ -6,7 +6,7 @@ require_once "$include_path/login.php";
 require_once "$include_path/util.php";
 require "$include_path/session.php";
 
-$cols = 'name, username';
+$cols = 'filename, username';
 $filename = explode(".", $_FILES['filename']['name']);
 $vals = '"' . $filename[0] . '", "' . $username . '"';
 $table_name = $_POST['type'];
@@ -86,5 +86,5 @@ mysql_query($query);
 
 mysql_close($db_server);
 
-$smarty->display("$path/rhessys_defs/smarty/templates/upload_def.tpl");
+$smarty->display("$path/rhessys_defs/smarty/templates/index.tpl");
 ?>

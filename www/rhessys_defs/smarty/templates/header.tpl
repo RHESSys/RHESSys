@@ -6,15 +6,13 @@ RHESSys Definition File Database
 </head>
 
 <body>
-
 <div>
 <a href="index.php">Main</a>
 </div>
 
 <div>
-{if $username != ""}
-{$username} 
-<a href="logout.php">Logout</a>
+{if $loggedin}
+{$username} | <a href="logout.php">Logout</a>
 {else}
 <a href="authenticate.php">Login</a>
 {/if}

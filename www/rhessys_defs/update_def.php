@@ -31,8 +31,6 @@ if (isset($id)) {
 	}
 }
 
-mysql_close($db_server);
-
 $smarty->assign("names", $names);
 $smarty->assign("values", $values);
 $smarty->assign("refs", $refs);

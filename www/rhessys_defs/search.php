@@ -1,10 +1,30 @@
 <?php
 $path = $_SERVER['DOCUMENT_ROOT']; 
-require "$path/rhessy_defs/include/smarty.php"; 
-require_once "$path/rhessys_defs/include/login.php";
-require_once "$path/rhessys_defs/include/util.php";
+$include_path = $path . "/rhessys_defs/include";
+require "$include_path/smarty.php"; 
+require_once "$include_path/login.php";
+require_once "$include_path/util.php";
+require "$include_path/session.php";
 
-mysql_close($db_server);
+$table_name = $_POST['type'];
+$id_field = getIDField($table_name);
+$names = getNames($table_name);
 
-$smarty->display("$path/rhessys_defs/smarty/templates/search.tpl");
+if (isset($_POST['searching'])) {
+	// Assemble the query
+	foreach ($names as $name) {
+			
+	}
+	$query = "SELECT $id_field,filename FROM $table_name WHERE conditions";
+	$result = mysql_query($query);
+
+	$smarty->assign("type", $table_name);	
+	$smarty->display("$path/rhessys_defs/smarty/templates/results.tpl");	
+} else {
+	$names = getNames($table_name);
+
+	$smarty->assign("type", $table_name);
+	$smarty->assign("names", $names);
+	$smarty->display("$path/rhessys_defs/smarty/templates/search.tpl");
+}
 ?>

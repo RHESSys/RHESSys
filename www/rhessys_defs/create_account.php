@@ -6,11 +6,9 @@ require_once "$include_path/login.php";
 require_once "$include_path/util.php";
 
 if (isset($_POST['username']) && isset($_POST['password'])) {
-	echo "things are set<br />\n";
 	$temp_username = $_POST['username'];
 	$temp_password = $_POST['password'];
 	$query = "INSERT INTO Users VALUES(\"$temp_username\", \"$temp_password\")";
-	echo $query . "<br />\n";
 	mysql_query($query);
 	$smarty->display("$path/rhessys_defs/smarty/templates/authenticate.tpl");
 } else {

@@ -5,10 +5,15 @@ Land Use:
 <input type="hidden" name="type" value="Land_Use" />
 <select name="list" multiple="multiple">
 {section name=row loop=$land_uses}
-<option value="{$land_uses[row].landuse_default_ID}">{$land_uses[row].name}</option>
+<option value="{$land_uses[row].landuse_default_ID}">{$land_uses[row].filename}</option>
 {/section}
 </select>
 <input type="submit" value="View">
+</form>
+
+<form action="search.php" method="post">
+<input type="hidden" name="type" value="Land_Use">
+<input type="submit" value="Search" />
 </form>
 
 {if $loggedin}
@@ -37,6 +42,11 @@ Soil:
 <input type="submit" value="View">
 </form>
 
+<form action="search.php" method="post">
+<input type="hidden" name="type" value="Soil">
+<input type="submit" value="Search" />
+</form>
+
 {if $loggedin}
 <form action="update_def.php" method="post">
 <input type="hidden" name="type" value="Soil">
@@ -63,6 +73,11 @@ Strata:
 <input type="submit" value="View">
 </form>
 
+<form action="search.php" method="post">
+<input type="hidden" name="type" value="Stratum">
+<input type="submit" value="Search" />
+</form>
+
 {if $loggedin}
 <form action="update_def.php" method="post">
 <input type="hidden" name="type" value="Stratum">
@@ -87,6 +102,11 @@ Zones:
 {/section}
 </select>
 <input type="submit" value="View">
+</form>
+
+<form action="search.php" method="post">
+<input type="hidden" name="type" value="Zone">
+<input type="submit" value="Search" />
 </form>
 
 {if $loggedin}

@@ -6,7 +6,7 @@ GRANT ALL ON rhessys_defs.* TO "rhessys" IDENTIFIED BY "rhessys";
 CREATE TABLE Zone ( 
 zone_default_ID INTEGER, 
 rhessys_version CHAR(20),
-name CHAR(255),
+filename CHAR(255),
 username CHAR(32), 
 atm_trans_lapse_rate FLOAT, 
 dewpoint_lapse_rate FLOAT, 
@@ -43,7 +43,7 @@ ndep_NO3 CHAR(255)
 CREATE TABLE Soil (  
 patch_default_ID INTEGER, 
 rhessy_version CHAR(20),
-name CHAR(255),
+filename CHAR(255),
 username CHAR(32),
 theta_psi_curve INTEGER, 
 Ksat_0 FLOAT, 
@@ -106,7 +106,7 @@ silt CHAR(255)
 CREATE TABLE Land_Use ( 
 landuse_default_ID INTEGER,
 rhessys_version CHAR(20),
-name CHAR(255),
+filename CHAR(255),
 username CHAR(32),
 irrigation FLOAT, 
 fertilizer_NO3 FLOAT, 
@@ -129,7 +129,7 @@ detention_store_size CHAR(255)
 CREATE TABLE Stratum ( 
 stratum_default_ID INTEGER,
 rhessys_version CHAR(20),
-name CHAR(255),
+filename CHAR(255),
 username CHAR(32),
 K_absorptance FLOAT, 
 K_reflectance FLOAT, 
