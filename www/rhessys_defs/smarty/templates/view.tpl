@@ -1,14 +1,14 @@
 {include file='header.tpl'}
 <h2>{$type}</h2>
-<table border="2">
+<table>
 <tr>
-<td>Name:</td>
-<td>Value:</td>
-<td>Reference:</td>
+<th>Name:</th>
+<th>Value:</th>
+<th>Reference:</th>
 </tr>
 {section name=row loop=$names}
 <tr>
-<td>{$names[row]}</td>
+<th>{$names[row]}</th>
 <td>{$values[$names[row]]}</td>
 <td>{$refs[$names[row]]}</td>
 </tr>

@@ -315,3 +315,29 @@ CREATE TABLE Users(
 username CHAR(32) UNIQUE,
 password CHAR(32)
 );
+
+CREATE TABLE Watershed(
+name CHAR(255),
+username CHAR(32),
+notes TEXT,
+);
+
+CREATE TABLE Watershed_Zones(
+name CHAR(255),
+zone_default_ID INTEGER
+);
+
+CREATE TABLE Watershed_Soils(
+name CHAR(255),
+soil_default_ID INTEGER
+);
+
+CREATE TABLE Watershed_Strata(
+name CHAR(255),
+stratum_default_ID CHAR(255)
+);
+
+CREATE TABLE Watershed_Land_Uses(
+name CHAR(255),
+landuse_default_ID INTEGER
+);

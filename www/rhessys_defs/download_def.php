@@ -18,8 +18,10 @@ $outfile_name = $values['name'] . '.def';
 $IGNORE_NAMES = array('rhessys_version', 'name', 'username');
 foreach ($names as $name) {
 	if (!in_array($name, $IGNORE_NAMES)) {
-		$line = $values[$name] . " " . $name;
-		echo $line . "\n";
+		if ($values[$name] != '') {
+			$line = $values[$name] . " " . $name;
+			echo $line . "\n";
+		}
 	}
 }
 

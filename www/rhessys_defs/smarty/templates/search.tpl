@@ -7,9 +7,9 @@
 <input type="hidden" name="type" value="{$type}" />
 {section name=row loop=$names}
 <div>
+<input type="checkbox" name="filter[]" value="{$names[row]}" />
 {$names[row]}
-<input type="checkbox" name="filter" value="{$names[row]}" />
-<select name="$names[row]">
+<select name="{$names[row]}_test">
 <option value="eq">is equal to</option>
 <option value="gt">is greater than</option>
 <option value="lt">is less than</option>

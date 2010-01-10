@@ -6,13 +6,13 @@
 <input type="hidden" name="id" value="{$id}" />
 <table border="2">
 <tr>
-<td>Name:</td>
-<td>Value:</td>
-<td>Reference:</td>
+<th>Name:</th>
+<th>Value:</th>
+<th>Reference:</th>
 </tr>
 {section name=row loop=$names}
 <tr>
-<td>{$names[row]}</td>
+<th>{$names[row]}</td>
 <td><input type="text" name="{$names[row]}_value" value="{$values[row]}" /></td>
 <td><input type="text" name="{$names[row]}_ref" value="{$refs[row]}" /></td>
 </tr>

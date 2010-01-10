@@ -11,7 +11,7 @@ $filename = explode(".", $_FILES['filename']['name']);
 $vals = '"' . $filename[0] . '", "' . $username . '"';
 $table_name = $_POST['type'];
 
-if ($fh = fopen($_FILES['filename']['tmp_name'], 'r')) 
+$fh = fopen($_FILES['filename']['tmp_name'], 'r'); 
 
 $line = fgets($fh);
 // Check that this def file is of the proper type by checking
@@ -84,7 +84,6 @@ $query = "INSERT INTO $ref_table_name ($ref_id_name) VALUES($ref_id_value)";
 echo $query;
 mysql_query($query);
 
-mysql_close($db_server);
-
-$smarty->display("$path/rhessys_defs/smarty/templates/index.tpl");
+header("Location: index.php");
+exit;
 ?>

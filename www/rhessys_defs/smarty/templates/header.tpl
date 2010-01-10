@@ -3,17 +3,20 @@
 <title>
 RHESSys Definition File Database
 </title>
+<link rel="stylesheet" type="text/css" href="styles/global.css" />
 </head>
 
 <body>
-<div>
+<div id="header">
+<div id="left_header">
 <a href="index.php">Main</a>
 </div>
 
-<div>
+<div id="right_header">
 {if $loggedin}
 {$username} | <a href="logout.php">Logout</a>
 {else}
 <a href="authenticate.php">Login</a>
 {/if}
 </div>
+</div> <!-- End of id="header"-->

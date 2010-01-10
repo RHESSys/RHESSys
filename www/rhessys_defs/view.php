@@ -6,7 +6,12 @@ require_once "$include_path/login.php";
 require_once "$include_path/util.php";
 require "$include_path/session.php";
 
-$table_name = $_POST['type'];
+if (isset($_POST['type'])) {
+	$table_name = $_POST['type'];
+} else {
+	$table_name = $_GET['type'];
+}
+
 $ref_table_name = $table_name . "_Reference";
 $id_field = getIDField($table_name);
 $names = getNames($table_name);
@@ -39,10 +44,11 @@ if (isset($_POST['save'])) {
 	// the current id from the $id var
 	echo "Cancelled Update<br />\n";
 	$id = $_POST['id'];	
-} else {
+} else if (isset($_POST['list'])) {
 	$id = $_POST['list'];
+} else {
+	$id = $_GET['id'];
 }
-
 
 $values_query = "SELECT * FROM $table_name WHERE $id_field=$id";
 $ref_query = "SELECT * FROM $ref_table_name WHERE $id_field=$id";
