@@ -12,6 +12,7 @@ $reference_name = $table_name . "_Reference";
 $id_field = getIDField($table_name);
 $names = getNames($table_name);
 
+
 // If id is set, then this is updating an existing one.  If id is
 // not set, then this page was reached by selecting new def from
 // the main page.

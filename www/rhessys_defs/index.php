@@ -6,11 +6,11 @@ require_once "$include_path/login.php";
 require_once "$include_path/util.php";
 require "$include_path/session.php";
 
-$land_use_query = "SELECT landuse_default_ID,filename FROM Land_Use WHERE 1=1";
-$stratum_query = "SELECT stratum_default_ID,filename FROM Stratum WHERE 1=1";
-$soil_query = "SELECT patch_default_ID,filename FROM Soil WHERE 1=1";
-$zone_query = "SELECT zone_default_ID,filename FROM Zone WHERE 1=1";
-$watershed_query = "SELECT name, username FROM Watershed WHERE 1=1";
+$land_use_query = "SELECT landuse_default_ID,filename FROM Land_Use";
+$stratum_query = "SELECT stratum_default_ID,filename FROM Stratum";
+$soil_query = "SELECT patch_default_ID,filename FROM Soil";
+$zone_query = "SELECT zone_default_ID,filename FROM Zone";
+$watershed_query = "SELECT watershed_name,username FROM Watershed";
 $land_use_result = mysql_query($land_use_query);
 $stratum_result = mysql_query($stratum_query);
 $soil_result = mysql_query($soil_query);

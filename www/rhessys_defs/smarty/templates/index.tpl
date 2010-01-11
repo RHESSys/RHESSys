@@ -129,11 +129,16 @@ Zones:
 <tr>
 <td colspan='2'>
 Watersheds:
-<form action="" method="post">
+<form action="view_watershed.php" method="post">
+<p>
 <select name="list" multiple="multiple">
 {section name=row loop=$watersheds}
-<option value="{$watersheds[row].name}">{$watersheds[row].name}</option>
+<option value="{$watersheds[row].watershed_name}">{$watersheds[row].watershed_name}</option>
 {/section}
+</select>
+</p>
+<p><input type="submit" name="watershed_submit" value="View Watershed" /></p>
+<p><input type="submit" name="watershed_submit" value="Activate Watershed" /></p>
 </form>
 
 {if $loggedin}
@@ -141,9 +146,6 @@ Watersheds:
 <input type="submit" value="Create New Watershed" />
 </form>
 {/if}
-<form action="view_watershed.php" method="post">
-<input type="submit" value="View Watershed" />
-</form>
 </td>
 </tr>
 </table>

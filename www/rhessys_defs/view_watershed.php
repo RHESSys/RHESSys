@@ -6,38 +6,42 @@ require_once "$include_path/login.php";
 require_once "$include_path/util.php";
 require "$include_path/session.php";
 
-$land_use_query = "SELECT landuse_default_ID,filename FROM Watershed_Land_Uses";
-$stratum_query = "SELECT stratum_default_ID,filename FROM Watershed_Strata";
-$soil_query = "SELECT soil_default_ID,filename FROM Watershed_Soils";
-$zone_query = "SELECT zone_default_ID,filename FROM Watershed_Zones";
-$land_use_result = mysql_query($land_use_query);
-$stratum_result = mysql_query($stratum_query);
-$soil_result = mysql_query($soil_query);
-$zone_result = mysql_query($zone_query);
+if ($_POST['watershed_submit'] == "Activate Watershed") {
+	$_SESSION['watershed'] = $_POST['list'];
+	header("Location: index.php");
+} else if ($_POST['watershed_submit'] = "View Watershed") {
 
-$rows = mysql_num_rows($land_use_result);
-for ($j = 0; $j < $rows; ++$j) {
-	$land_uses[] = mysql_fetch_array($land_use_result);
+	$selected_watershed = $_POST['list'];
+	$table_namess = array("Land_Use", "Soil", "Stratum", "Zone");
+
+	foreach ($table_namess as $table_name) {
+		$id_field = getIDField($table_name);
+		$query = "SELECT $id_field,filename FROM $table_name NATURAL JOIN Watershed_$table_name WHERE watershed_name=\"$selected_watershed\"";
+		$result = mysql_query($query);
+
+		$rows = mysql_num_rows($result);
+		for ($j=0; $j < $rows; ++$j) {
+			$things[] = mysql_fetch_array($result);	
+		}
+
+		switch ($table_name) {
+			case "Zone":
+				$smarty->assign("zones", $things);
+				break;
+			case "Soil":
+				$smarty->assign("soils", $things);
+				break;
+			case "Land_Use":
+				$smarty->assign("land_uses", $things);
+				break;
+			case "Stratum":
+				$smarty->assign("strata", $things);
+				break;
+		}
+		unset($things);
+	}
+
+	$smarty->assign("selected_watershed", $selected_watershed);
+	$smarty->display("$path/rhessys_defs/smarty/templates/view_watershed.tpl");
 }
-
-$rows = mysql_num_rows($stratum_result);
-for ($j = 0; $j < $rows; ++$j) {
-	$strata[] = mysql_fetch_array($stratum_result);
-}
-
-$rows = mysql_num_rows($soil_result);
-for ($j = 0; $j < $rows; ++$j) {
-	$soils[] = mysql_fetch_array($soil_result);	
-}
-
-$rows = mysql_num_rows($zone_result);
-for ($j = 0; $j < $rows; ++$j) {
-	$zones[] = mysql_fetch_array($zone_result);
-}
-
-$smarty->assign("zones", $zones);
-$smarty->assign("strata", $strata);
-$smarty->assign("soils", $soils);
-$smarty->assign("land_uses", $land_uses);
-$smarty->display("$path/rhessys_defs/smarty/templates/view_watershed.tpl");
 ?>

@@ -22,6 +22,14 @@
 <input type="submit" value="Update" />
 </form>
 {/if}
+{if $active_watershed}
+<form method="post" action="view.php">
+<input type="hidden" name="type" value="{$type}" />
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="add_to_watershed" value="add_to_watershed" />
+<input type="submit" value="Add to Watershed" />
+</form>
+{/if}
 
 <form method="post" action="download_def.php">
 <input type="hidden" name="type" value="{$type}" />

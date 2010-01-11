@@ -4,7 +4,7 @@ USE rhessys_defs;
 GRANT ALL ON rhessys_defs.* TO "rhessys" IDENTIFIED BY "rhessys";
 
 CREATE TABLE Zone ( 
-zone_default_ID INTEGER, 
+zone_default_ID INTEGER UNIQUE, 
 rhessys_version CHAR(20),
 filename CHAR(255),
 username CHAR(32), 
@@ -41,7 +41,7 @@ ndep_NO3 CHAR(255)
 );
 
 CREATE TABLE Soil (  
-patch_default_ID INTEGER, 
+patch_default_ID INTEGER UNIQUE, 
 rhessy_version CHAR(20),
 filename CHAR(255),
 username CHAR(32),
@@ -104,7 +104,7 @@ silt CHAR(255)
 );
 
 CREATE TABLE Land_Use ( 
-landuse_default_ID INTEGER,
+landuse_default_ID INTEGER UNIQUE,
 rhessys_version CHAR(20),
 filename CHAR(255),
 username CHAR(32),
@@ -127,7 +127,7 @@ detention_store_size CHAR(255)
 );
 
 CREATE TABLE Stratum ( 
-stratum_default_ID INTEGER,
+stratum_default_ID INTEGER UNIQUE,
 rhessys_version CHAR(20),
 filename CHAR(255),
 username CHAR(32),
@@ -317,27 +317,27 @@ password CHAR(32)
 );
 
 CREATE TABLE Watershed(
-name CHAR(255),
+watershed_name CHAR(255) UNIQUE,
 username CHAR(32),
-notes TEXT,
+notes TEXT
 );
 
-CREATE TABLE Watershed_Zones(
-name CHAR(255),
+CREATE TABLE Watershed_Zone(
+watershed_name CHAR(255),
 zone_default_ID INTEGER
 );
 
-CREATE TABLE Watershed_Soils(
-name CHAR(255),
-soil_default_ID INTEGER
+CREATE TABLE Watershed_Soil(
+watershed_name CHAR(255),
+patch_default_ID INTEGER
 );
 
-CREATE TABLE Watershed_Strata(
-name CHAR(255),
+CREATE TABLE Watershed_Stratum(
+watershed_name CHAR(255),
 stratum_default_ID CHAR(255)
 );
 
-CREATE TABLE Watershed_Land_Uses(
-name CHAR(255),
+CREATE TABLE Watershed_Land_Use(
+watershed_name CHAR(255),
 landuse_default_ID INTEGER
 );

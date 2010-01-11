@@ -13,6 +13,9 @@ RHESSys Definition File Database
 </div>
 
 <div id="right_header">
+{if $active_watershed}
+{$active_watershed} |
+{/if}
 {if $loggedin}
 {$username} | <a href="logout.php">Logout</a>
 {else}

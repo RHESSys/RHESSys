@@ -8,4 +8,9 @@ if (isset($_SESSION['username'])) {
 	$loggedin = FALSE;
 	$smarty->assign("loggedin", $loggedin);
 }
+
+if (isset($_SESSION['watershed'])) {
+	$active_watershed = $_SESSION['watershed'];
+	$smarty->assign("active_watershed", $active_watershed);
+}
 ?>

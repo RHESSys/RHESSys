@@ -12,13 +12,13 @@
 
 #left_side {
 	position: absolute;
-	top: 25px;
+	top: 75px;
 	margin-right: 50%;
 }
 
 #right_side {
 	position: absolute;
-	top: 25px;
+	top: 75px;
 	margin-left: 50%;
 }
 

@@ -15,10 +15,11 @@
 <td>{$results[row].username}</td>
 </tr>
 {/section}
-<table>
+</table>
 
 <form action="search.php" method="post">
 <input type="hidden" name="type" value="{$type}" />
-<input type="submit" value="Search Again" />
+<input type="submit" name="action" value="Search Again" />
+<input type="submit" name="action" value="Add Marked to Watershed" />
 </form>
 {include file='footer.tpl'}
