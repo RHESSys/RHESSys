@@ -359,11 +359,15 @@ char	name[MAXS], name2[MAXS];
 	/* now read in and change the worldfile */
 	change_world(oldworld, redefine, flow_table, num_patches);
 
-//	printf("\n Ready to print flowtable");
-//	print_flow_table(num_patches, flow_table, input_prefix, output_suffix);
+	printf("\n Ready to print flowtable");
+	print_flow_table(num_patches, flow_table, input_prefix, output_suffix);
+
+
 
 	printf("\n Finished Lairead \n\n");
     exit(0);
+
+
 } /* end lairead.c */
 
 

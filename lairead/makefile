@@ -1,6 +1,6 @@
 PGM = lairead
 CC  = gcc 
-CFLAGS  = -g -I include
+CFLAGS  = -O -I include
 
 
 OBJECTS = main.o read_allom_table.o build_flow_table.o sys.o fileio.o \
