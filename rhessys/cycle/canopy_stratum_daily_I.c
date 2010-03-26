@@ -50,6 +50,8 @@ void	canopy_stratum_daily_I(
 		double,
 		double,
 		double,
+		double,
+		double,
 		double);
 	
 	int 	compute_annual_turnover(
@@ -146,6 +148,8 @@ void	canopy_stratum_daily_I(
 		stratum[0].defaults[0][0].epc.psi_close,
 		patch[0].soil_defaults[0][0].psi_air_entry,
 		patch[0].soil_defaults[0][0].pore_size_index,
+		patch[0].soil_defaults[0][0].p3,
+		patch[0].soil_defaults[0][0].p4,
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		stratum[0].rootzone.S);
