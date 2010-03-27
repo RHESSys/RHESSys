@@ -105,6 +105,7 @@ void		patch_daily_F(
 		double,
 		double,
 		double,
+		double,
 		double);
 	
 	void canopy_stratum_daily_F(
@@ -992,6 +993,7 @@ void		patch_daily_F(
 				patch[0].soil_defaults[0][0].psi_air_entry,
 				patch[0].soil_defaults[0][0].pore_size_index,
 				patch[0].soil_defaults[0][0].p3,
+				patch[0].soil_defaults[0][0].p4,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].sat_deficit,
@@ -1032,6 +1034,7 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].psi_air_entry,
 			patch[0].soil_defaults[0][0].pore_size_index,
 			patch[0].soil_defaults[0][0].p3,
+			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit,
@@ -1046,6 +1049,7 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].psi_air_entry,
 			patch[0].soil_defaults[0][0].pore_size_index,
 			patch[0].soil_defaults[0][0].p3,
+			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit,
@@ -1057,6 +1061,7 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].psi_air_entry,
 			patch[0].soil_defaults[0][0].pore_size_index,
 			patch[0].soil_defaults[0][0].p3,
+			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit,
@@ -1091,14 +1096,16 @@ void		patch_daily_F(
 	/*	the unsat zone.  We are going below field cap now!!	*/
 	/*	First guess at change in sat storage to meet demand.	*/
 	/*--------------------------------------------------------------*/
-	delta_unsat_zone_storage = -1 * min(unsat_zone_patch_demand, patch[0].rz_storage);
+	delta_unsat_zone_storage = -1.0 * min(unsat_zone_patch_demand, patch[0].rz_storage);
 
+	/*
 	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO)) {
 	wilting_point = exp(-1.0*log(-1.0*patch[0].soil_defaults[0][0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
 	if (patch[0].rz_storage/(min(patch[0].sat_deficit, patch[0].rootzone.potential_sat)) 
 			 < wilting_point) delta_unsat_zone_storage = 0.0;
 	}
+	*/
 
 	patch[0].rz_storage = patch[0].rz_storage + delta_unsat_zone_storage;
 	unsat_zone_patch_demand = unsat_zone_patch_demand + delta_unsat_zone_storage;			
