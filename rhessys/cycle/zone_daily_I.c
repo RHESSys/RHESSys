@@ -190,7 +190,13 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 		/*		compute isohyet difference adjustment					*/
 		/*--------------------------------------------------------------*/
-		isohyet_adjustment = zone[0].precip_lapse_rate;
+
+		if (zone[0].defaults[0][0].lapse_rate_precip_default != -999.0)
+			isohyet_adjustment = zone[0].defaults[0][0].lapse_rate_precip_default*z_delta+1.0;
+		else
+			isohyet_adjustment = zone[0].precip_lapse_rate;
+
+		isohyet_adjustment = max(0.0, isohyet_adjustment);
 		/*--------------------------------------------------------------*/
 		/*		if the base station's value for a parameter is present	*/
 		/*			replace it.											*/
@@ -206,7 +212,7 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 		temp = zone[0].base_stations[i][0].daily_clim[0].rain[day];
 		if ( temp != -999.0 ){
-			zone[0].rain =  temp * zone[0].precip_lapse_rate;
+			zone[0].rain =  temp * isohyet_adjustment;
 			flag++;
 		}
 		temp = zone[0].base_stations[i][0].daily_clim[0].tmin[day];
@@ -304,7 +310,7 @@ void zone_daily_I(
 	if ( zone[0].base_stations[0][0].daily_clim[0].snow != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].snow[day];
 		if ( temp != -999.0 ){
-			zone[0].snow = temp * zone[0].precip_lapse_rate;
+			zone[0].snow = temp * isohyet_adjustment;
 		}
 	}
 	/*--------------------------------------------------------------*/
