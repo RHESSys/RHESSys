@@ -96,6 +96,7 @@ void		patch_daily_I(
 		double,
 		double,
 		double,
+		double,
 		double);
 	
 	
@@ -150,6 +151,8 @@ void		patch_daily_I(
 		double,
 		double,
 		double,
+		double,
+		double,
 		double);
 	
 	int  compute_potential_decomp(
@@ -182,7 +185,7 @@ void		patch_daily_I(
 	/*--------------------------------------------------------------*/
 	int	layer;
 	int	stratum;
-	double	count,rzm;
+	double	count;
 	struct  canopy_strata_object *strata;
 	/*--------------------------------------------------------------*/
 	/*	zero out daily fluxes					*/
@@ -196,16 +199,28 @@ void		patch_daily_I(
 	/*-----------------------------------------------------*/
 	/*  Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/			
-	if (patch[0].rootzone.depth > ZERO) 
+	if (patch[0].rootzone.depth > ZERO)  {
 	patch[0].rootzone.potential_sat = compute_delta_water(
 		command_line[0].verbose_flag,
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
 		patch[0].rootzone.depth, 0.0);			
-	else patch[0].rootzone.potential_sat = 0.0;
+	 if (patch[0].rootzone.potential_sat > ZERO)
+		patch[0].rootzone.S = patch[0].rz_storage/patch[0].rootzone.potential_sat;
+	else
+		patch[0].rootzone.S = 0.0;
+	}
+	else  {
+		patch[0].rootzone.potential_sat = 0.0;
+		patch[0].rootzone.S = 0.0;
+		}
 
-
+	if (patch[0].sat_deficit > ZERO) 
+		patch[0].S = 1.0;
+	else
+		patch[0].S = (patch[0].rz_storage+patch[0].unsat_storage)/patch[0].sat_deficit;
+	
 	/*--------------------------------------------------------------*/
 	/*	compute new field capacity				*/
 	/*--------------------------------------------------------------*/
@@ -217,6 +232,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].psi_air_entry,
 			patch[0].soil_defaults[0][0].pore_size_index,
 			patch[0].soil_defaults[0][0].p3,
+			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit,
@@ -231,6 +247,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].psi_air_entry,
 			patch[0].soil_defaults[0][0].pore_size_index,
 			patch[0].soil_defaults[0][0].p3,
+			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit,
@@ -242,6 +259,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].psi_air_entry,
 			patch[0].soil_defaults[0][0].pore_size_index,
 			patch[0].soil_defaults[0][0].p3,
+			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit,
@@ -384,23 +402,19 @@ void		patch_daily_I(
 	/*	compute current soil moisture potential					*/
 	/*	do this before nitrogen updake occurs later in the day			*/
 	/*------------------------------------------------------------------------*/
-
-	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
-		rzm = patch[0].rz_storage;
-	else
-		rzm = patch[0].rz_storage+patch[0].rootzone.potential_sat-patch[0].sat_deficit;
-
 	patch[0].psi = compute_soil_water_potential(
 		command_line[0].verbose_flag,
 		patch[0].soil_defaults[0][0].theta_psi_curve,
+		patch[0].Tsoil,
+		-1.0*patch[0].soil_defaults[0][0].psi_max,
+		-10.0,
 		patch[0].soil_defaults[0][0].psi_air_entry,
 		patch[0].soil_defaults[0][0].pore_size_index,
+		patch[0].soil_defaults[0][0].p3,
+		patch[0].soil_defaults[0][0].p4,
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
-		patch[0].soil_defaults[0][0].psi_max,
-		patch[0].rootzone.potential_sat,
-		rzm,
-		patch[0].Tsoil);
+		patch[0].S);
 
 
 	if (command_line[0].grow_flag > 0) {
