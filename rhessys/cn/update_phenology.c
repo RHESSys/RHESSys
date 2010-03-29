@@ -184,7 +184,8 @@ void update_phenology(struct zone_object  *zone,
 
 	phen->gsi = compute_growingseason_index(zone, epc);
 	
-	
+
+
 	/* first are we before last possible date for leaf onset */
 	if (day < epc.day_leafon) {
 		/* are we already in a leaf onset condition */
@@ -204,7 +205,7 @@ void update_phenology(struct zone_object  *zone,
 	     /* if we are after the last possible date for leaf onset */
 		/* trigger leaf on if needed							*/
 		if ((phen->gwseasonday < 0) && (phen->lfseasonday < 0)) {
-		            phen->gwseasonday = 1;
+		            		phen->gwseasonday = 1;
 					expand_flag=1;
 					phen->expand_startday = day;
 					phen->expand_stopday = day + epc.ndays_expand;
@@ -215,31 +216,30 @@ void update_phenology(struct zone_object  *zone,
 	if (day < epc.day_leafoff) {		
 			/* are we already in a leaf offset */
 			if (phen->lfseasonday > -1 ) {
+					phen->gwseasonday = -1;
 					if  (phen->lfseasonday < epc.ndays_litfall)
 							litfall_flag=1;
 					}
 			else if ((phen->gsi < 0.5) && (phen->gwseasonday > 0) && (day > phen->expand_stopday)) {
-			        phen->lfseasonday = 1;
+			        	phen->lfseasonday = 1;
 					phen->gwseasonday = -1;
 					litfall_flag=1;
 					phen->litfall_startday = day;
 					phen->litfall_stopday = day + epc.ndays_litfall;
 					}
 			}
+			
 	else {			
-		if (phen->lfseasonday > -1 ) {
-                                        if  (phen->lfseasonday < epc.ndays_litfall)
-                                                        litfall_flag=1;
-                                        }
-		/* if we are after the last possible date for leaf drop */
-		/* trigger leaf drop if needed                                                  */
-		if ((phen->lfseasonday < 0) && (phen->gwseasonday > 0)) {
-		            phen->lfseasonday = 1;
+		if ((day == epc.day_leafoff) && (phen->lfseasonday < 0) )
+				phen->lfseasonday = 0;
+                if  (phen->lfseasonday < epc.ndays_litfall) {
+                                       litfall_flag=1;
 					phen->gwseasonday = -1;
-					litfall_flag=1;
-					phen->litfall_startday = day;
-					phen->litfall_stopday = day + epc.ndays_expand;
-					}
+		}
+		else {
+				phen->lfseasonday = -1;	
+				phen->gwseasonday = -1;	
+		}
 	}
 	
 
