@@ -195,6 +195,8 @@ double	snowpack_daily_F(
 		snowpack[0].PAR_absorptance);
 	/*--------------------------------------------------------------*/
 	/*	Compute Lstar snow					*/
+	/*	FROM DINGMAN (p189-90) with unit coversion from cal/cm2		*/
+	/*	to kJ/m2 and then from sec to day							*/
 	/*								*/
 	/*	net Lstar into snowpack is estimate assuming		*/
 	/* 	temperature of snowpack = air temperature		*/
@@ -213,11 +215,12 @@ double	snowpack_daily_F(
 		* pow(ea / 100.0, 0.5) ) * ( 1 + 0.4 * cloud_fraction)
 		+ snowpack[0].overstory_fraction;
 	if ((T_air > 0.0) && (snowpack[0].energy_deficit >= 0.0))
-		Lstar_snow =  41.868 * ( (ess_at) * SBC * pow((T_air+273), 4.0) - 663);
+		/* Dingman 663 cal/cm2/day converted to 315 kJ/m2/s to match SBC units */
+		Lstar_snow =  86400 * ((ess_at) * SBC * pow((T_air+273), 4.0) - 315);
 	else
-		Lstar_snow =  41.868 * (ess_at - 1.0) * SBC * pow((T_air+273), 4.0);
+		Lstar_snow =  86400 * ((ess_at - 1.0) * SBC * pow((T_air+273), 4.0));
 	Q_radiation_net = snowpack[0].Kstar_direct
-		+ snowpack[0].Kstar_diffuse +	Lstar_snow;
+		+ snowpack[0].Kstar_diffuse + Lstar_snow;
 	if (verbose_flag > 1) {
 		printf("\n%4d %4d %4d -777.5 ",current_date.day, current_date.month,
 			current_date.year);
