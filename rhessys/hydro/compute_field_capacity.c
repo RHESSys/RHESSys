@@ -25,9 +25,10 @@
 /*	OPTIONS							*/
 /*	int verbose_flag 					*/
 /*	int	curve - psi-theta curve selector		*/
-/*	double	pore_size_index - curve parameter 2				*/
-/*	double	p3 - curve parameter 3				*/
-/*	double	psi_air_entry (Pa) -  air entry pressure.	*/
+/*   double	psi_air_entry,					*/
+/*    double	pore_size_index,				*/
+/*   double	p3,						*/
+/*   double	p4,						*/
 /*	double	p_0 - porosity at the surface			*/
 /*	double	p - porosity decay parameter			*/
 /*	double	z - (m) water table depth			*/
@@ -83,6 +84,7 @@ double	compute_field_capacity(
 							   double	psi_air_entry,
 							   double	pore_size_index,
 							   double	p3,
+							   double	p4,
 							   double	p_0,
 							   double	p,
 							   double	z_water_table,
@@ -137,14 +139,16 @@ double	compute_field_capacity(
 				/*		Switch between differnt theta-psi curves	*/
 				/*--------------------------------------------------------------*/
 				if ( psi > psi_air_entry ){
-					if ( curve == 1 ){
+					switch(curve) {
+					case 1:
 						theta = pow((psi_air_entry /psi),pore_size_index);
-					}
-					else{
-						/*--------------------------------------------------------*/
-						/*v-g curve - note theta is relative effective saturation */
-						/*--------------------------------------------------------*/
+						break;
+					case 2:
 						theta = pow(1+pow(psi/psi_air_entry,p3),-pore_size_index);
+						break;
+					case 3: 
+						theta = exp((log(psi)-p3)/p4);
+						break;
 					}
 				}
 				else{
