@@ -291,6 +291,8 @@ int allocate_daily_growth(int nlimit,
 		     ns->npool += excess_allocation_to_leaf / cnl;
 		}
 	}
+
+	
 	/*---------------------------------------------------------------------------
 	if ((current_date.month == 5) && (current_date.day < 10))
 	printf(" \n %lf %lf %lf %lf %lf %lf ",
