@@ -41,11 +41,18 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 	/*------------------------------------------------------*/
 	int ok=1;
 
-	ns->preday_totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
+	
+	if (epc.veg_type == TREE){
+		ns->preday_totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
 		ns->live_stemn + ns->livestemn_transfer + ns->livestemn_store +
 		ns->dead_stemn + ns->deadstemn_transfer + ns->deadstemn_store +
 		ns->live_crootn + ns->livecrootn_transfer + ns->livecrootn_store +
 		ns->dead_crootn + ns->deadcrootn_transfer + ns->deadcrootn_store + ns->cwdn + ns->retransn);
+	}
+	else {
+		ns->preday_totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
+		ns->cwdn + ns->retransn);
+	}
 
 	/* Plant allocation flux, from N retrans pool and soil mineral N pool */
 	ns->npool      += ndf->retransn_to_npool;
@@ -89,20 +96,19 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 	/*------------------------------------------------------*/
 	/*	return any excess nitrogen to the soil		*/
 	/*------------------------------------------------------*/
-
-	ns->totaln  = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
+	if (epc.veg_type == TREE){
+		ns->totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
 		ns->live_stemn + ns->livestemn_transfer + ns->livestemn_store +
 		ns->dead_stemn + ns->deadstemn_transfer + ns->deadstemn_store +
 		ns->live_crootn + ns->livecrootn_transfer + ns->livecrootn_store +
 		ns->dead_crootn + ns->deadcrootn_transfer + ns->deadcrootn_store + ns->cwdn + ns->retransn);
-
-
-	/*
-	if (ns->npool > ZERO) {
-		ns_soil->sminn = ns_soil->sminn + ns->npool;
-		ns->npool = 0.0;
 	}
-	*/
+	else {
+		ns->totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
+		ns->cwdn + ns->retransn);
+	}
+
+
 	return (!ok);
 }/*end update_N_stratum_daily.c*/		
 
