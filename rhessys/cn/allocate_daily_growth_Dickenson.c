@@ -96,6 +96,8 @@ int allocate_daily_growth_Dickenson(int nlimit,
 	preday_npool = ns->npool;
 	preday_cpool = cs->cpool;
 
+
+
 	/*--------------------------------------------------------------*/
 	/*	Determine allocation partitioning			*/
 	/*      from Dickenson et al, 1998, Journal of Climate          */
@@ -109,18 +111,9 @@ int allocate_daily_growth_Dickenson(int nlimit,
 	/*	the only impact of these pools is change in height for competition	*/
 	/*----------------------------------------------------------------*/
 	C = 30;
-
 	fleaf = exp(-0.25 *sen * epv->proj_lai);
 	fleaf = min(fleaf, 1.0);
 	total_wood = (cs->live_crootc + cs->dead_crootc + cs->live_stemc + cs->dead_stemc);
-	/*
-	if (total_wood < ZERO)
-		froot = 0.5*(1-fleaf);
-	else
-		froot = (1-fleaf) * 1/B * exp(-C*B*(cs->frootc)/total_wood);
-	fwood = (1-froot-fleaf);
-	*/
-
 
 	if (epc.veg_type==TREE) {
 		froot = 0.5*(1-fleaf);
@@ -217,7 +210,6 @@ int allocate_daily_growth_Dickenson(int nlimit,
 	the remainder going into storage for display next year through the
 	transfer pools */
 	nlc = plant_calloc * fleaf;
-
 
 	/* daily C fluxes out of cpool and into new growth or storage */
 	cdf->cpool_to_leafc              = nlc * pnow;
@@ -348,6 +340,8 @@ int allocate_daily_growth_Dickenson(int nlimit,
 	gresp_store, cdf->cpool_to_leafc, cdf->cpool_to_leafc_store, cs->leafc,
 	cs->leafc_store, cdf->psn_to_cpool);
 	---------------------------------------------------------------------------*/
+
+	
 	return(!ok);
 } /* end daily_allocation.c */
 
