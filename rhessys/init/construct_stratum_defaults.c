@@ -373,6 +373,7 @@ struct stratum_default *construct_stratum_defaults(
 	        default_object_list[i].epc.gs_dayl_min = 36000;
 		default_object_list[i].epc.gs_dayl_max = 39600;
 		default_object_list[i].epc.max_storage_percent = 0.2;
+		default_object_list[i].epc.min_percent_leafg = 0.01;
 	/*--------------------------------------------------------------*/
 	/*	 litter is assumed to have a mositure capacity of 	*/
 	/*	given by litter_moist_coef default assumes			*/
@@ -392,6 +393,11 @@ struct stratum_default *construct_stratum_defaults(
 			// we can make the whole file tagged
 			newrecord = strchr(record,'e');
 			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"epc.min_percent_leafg") == 0) {	
+				default_object_list[i].epc.min_percent_leafg = ftmp;
+				printf("\n Using %lf for %s for veg default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
 			if (strcasecmp(newrecord,"epc.max_storage_percent") == 0) {	
 				default_object_list[i].epc.max_storage_percent = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
@@ -483,6 +489,13 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_vpd_range = default_object_list[i].epc.gs_vpd_max-default_object_list[i].epc.gs_vpd_min;
 		default_object_list[i].epc.gs_trange = default_object_list[i].epc.gs_tmax-default_object_list[i].epc.gs_tmin;
 
+
+		if (default_object_list[i].epc.min_percent_leafg > default_object_list[i].epc.leaf_turnover) {
+			printf("\n In veg default file %s", default_files[i]);
+			printf("\n min percent leafg is greater than leaf turnover you probably don't want that");
+			printf("\n Resetting min % gleaf to leaf turnover to avoid instability");
+			default_object_list[i].epc.min_percent_leafg = default_object_list[i].epc.leaf_turnover;
+			}
 		/*--------------------------------------------------------------*/
 		/* set sunlit sla multiplier	this should be an input		*/
 		/*--------------------------------------------------------------*/
