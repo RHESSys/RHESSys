@@ -126,18 +126,15 @@ double compute_potential_N_uptake(
 	given the available C, use constant allometric relationships to
 	determine how much N is required to meet this potential growth
 	demand */
-	/* since we now allow f1 and f2 to vary we need to determine max
-	nitrogen uptake - so use the maximum of cnl and cnfr
-	----------------------------------------------------------------*/
-	cnmax = max(cnl, cnfr);
+	/* ----------------------------------------------------------------*/
 	if (epc.veg_type == TREE){
 		c_allometry = ((1.0+g1)*(1.0 + f1 + f3*(1.0+f2)));
-		n_allometry = (1.0/cnmax + f1/cnmax + (f3*f4*(1.0+f2))/cnlw
+		n_allometry = (1.0/cnl + f1/cnfr + (f3*f4*(1.0+f2))/cnlw
 			+ (f3*(1.0-f4)*(1.0+f2))/cndw);
 	}
 	else{
 		c_allometry = (1.0 + g1 + f1 + f1*g1);
-		n_allometry = (1.0/cnmax + f1/cnmax);
+		n_allometry = (1.0/cnl + f1/cnfr);
 	}
 	plant_ndemand = cs->availc * (n_allometry / c_allometry);
 	return(plant_ndemand);
