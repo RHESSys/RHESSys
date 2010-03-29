@@ -180,26 +180,10 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].mz_v *= command_line[0].vsen[M];
 				default_object_list[i].Ksat_0_v *= command_line[0].vsen[K];
 		}
-		/*--------------------------------------------------------------*/
-		/* sensitivity adjustment of vertical drainage  soil paramters	*/
-		/* an alternative is to scale Pore size index and psi air entry	*/
-		/*--------------------------------------------------------------*/
-		if (command_line[0].vsen_alt_flag > 0) {
-				default_object_list[i].psi_air_entry *= command_line[0].vsen_alt[PA];
-				default_object_list[i].pore_size_index *= command_line[0].vsen_alt[PO];
-				if (default_object_list[0].pore_size_index >= 1.0) {
-					printf("\n Sensitivity analysis giving Pore Size Index > 1.0, not allowed, setting to 1.0\n");
-					default_object_list[i].pore_size_index = 0.999;
-					}
-
-		}
-		/*--------------------------------------------------------------*/
-		/* changes with sensitivity analysis				*/
-		/*--------------------------------------------------------------*/
 
 		default_object_list[i].original_m = default_object_list[i].m;   
 		/*--------------------------------------------------------------*/
-		/* sensitivity adjustment of soil 	paramters		*/
+		/* sensitivity adjustment of soil drainage paramters		*/
 		/*--------------------------------------------------------------*/
 		if (command_line[0].sen_flag > 0) {
 				default_object_list[i].m *= command_line[0].sen[M];
@@ -224,6 +208,7 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].gl_c = 0.0062;
 			default_object_list[i].gsurf_slope = 0.01;
 			default_object_list[i].gsurf_intercept = 0.001;
+			default_object_list[i].p4 = -1.5;
 
 
 		/*--------------------------------------------------------------*/
@@ -249,8 +234,38 @@ struct soil_default *construct_soil_defaults(
 				printf("\n Using %lf for %s for soil default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
+			}
+			newrecord = strchr(record,'p');
+			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"p4") == 0) {	
+				default_object_list[i].p4 = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
 		}
+
+		/*--------------------------------------------------------------*/
+		/* sensitivity adjustment of vertical drainage  soil paramters	*/
+		/* an  scale Pore size index and psi air entry or other parameters	*/
+		/* that control moisture retention (if curve 3 is used)		*/
+		/*--------------------------------------------------------------*/
+		if (command_line[0].vsen_alt_flag > 0) {
+			if (default_object_list[i].theta_psi_curve != 3)  {
+				default_object_list[i].psi_air_entry *= command_line[0].vsen_alt[PA];
+				default_object_list[i].pore_size_index *= command_line[0].vsen_alt[PO];
+				if (default_object_list[0].pore_size_index >= 1.0) {
+					printf("\n Sensitivity analysis giving Pore Size Index > 1.0, not allowed, setting to 1.0\n");
+					default_object_list[i].pore_size_index = 0.999;
+					}
+			}
+			else {
+				default_object_list[i].p3 *= command_line[0].vsen_alt[PA];
+				default_object_list[i].p4 *= command_line[0].vsen_alt[PO];
+			}
+
 		}
+
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
