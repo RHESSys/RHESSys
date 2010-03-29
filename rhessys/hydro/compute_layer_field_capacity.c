@@ -27,6 +27,7 @@
 /*	int	curve - psi-theta curve selector		*/
 /*	double	pore_size_index - curve parameter 2				*/
 /*	double	p3 - curve parameter 3				*/
+/*	double	p4 - curve parameter 4				*/
 /*	double	psi_air_entry (Pa) -  air entry pressure.	*/
 /*	double	p_0 - porosity at the surface			*/
 /*	double	p - porosity decay parameter			*/
@@ -83,6 +84,7 @@ double	compute_layer_field_capacity(
 							   double	psi_air_entry,
 							   double	pore_size_index,
 							   double	p3,
+							   double	p4,
 							   double	p_0,
 							   double	p,
 							   double	z_water_table,
@@ -95,6 +97,7 @@ double	compute_layer_field_capacity(
 	double	compute_field_capacity(
 		int,
 		int,
+		double,
 		double,
 		double,
 		double,
@@ -124,6 +127,7 @@ double	compute_layer_field_capacity(
 						psi_air_entry,
 						pore_size_index,
 						p3,
+						p4,
 						p_0,
 						p,
 						z_water_table,
@@ -136,6 +140,7 @@ double	compute_layer_field_capacity(
 						psi_air_entry,
 						pore_size_index,
 						p3,
+						p4,
 						p_0,
 						p,
 						z_water_table,
@@ -148,6 +153,7 @@ double	compute_layer_field_capacity(
 						psi_air_entry,
 						pore_size_index,
 						p3,
+						p4,
 						p_0,
 						p,
 						z_water_table,
