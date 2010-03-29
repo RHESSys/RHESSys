@@ -160,6 +160,7 @@ double	top_model(
 		double,
 		double,
 		double,
+		double,
 		double);
 
 	double	compute_unsat_zone_drainage(
@@ -428,6 +429,7 @@ double	top_model(
 					patch[0].soil_defaults[0][0].psi_air_entry,
 					patch[0].soil_defaults[0][0].pore_size_index,
 					patch[0].soil_defaults[0][0].p3,
+					patch[0].soil_defaults[0][0].p4,
 					patch[0].soil_defaults[0][0].porosity_0,
 					patch[0].soil_defaults[0][0].porosity_decay,
 					patch[0].sat_deficit_z,
@@ -442,6 +444,7 @@ double	top_model(
 					patch[0].soil_defaults[0][0].psi_air_entry,
 					patch[0].soil_defaults[0][0].pore_size_index,
 					patch[0].soil_defaults[0][0].p3,
+					patch[0].soil_defaults[0][0].p4,
 					patch[0].soil_defaults[0][0].porosity_0,
 					patch[0].soil_defaults[0][0].porosity_decay,
 					patch[0].sat_deficit_z,
@@ -453,6 +456,7 @@ double	top_model(
 					patch[0].soil_defaults[0][0].psi_air_entry,
 					patch[0].soil_defaults[0][0].pore_size_index,
 					patch[0].soil_defaults[0][0].p3,
+					patch[0].soil_defaults[0][0].p4,
 					patch[0].soil_defaults[0][0].porosity_0,
 					patch[0].soil_defaults[0][0].porosity_decay,
 					patch[0].sat_deficit_z,
@@ -592,6 +596,7 @@ double	top_model(
 					patch[0].soil_defaults[0][0].psi_air_entry,
 					patch[0].soil_defaults[0][0].pore_size_index,
 					patch[0].soil_defaults[0][0].p3,
+					patch[0].soil_defaults[0][0].p4,
 					patch[0].soil_defaults[0][0].porosity_0,
 					patch[0].soil_defaults[0][0].porosity_decay,
 					patch[0].sat_deficit_z,
