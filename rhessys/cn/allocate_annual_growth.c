@@ -190,14 +190,16 @@ int allocate_annual_growth(				int id,
 		storage_transfer_prop = 1.0;
 	else
 		storage_transfer_prop = epc.storage_transfer_prop;
-	
 
+	
 	/*--------------------------------------------------------------*/
 	/* use carbohydrates if stressed				*/
 	/*--------------------------------------------------------------*/
-	if (cs->leafc_store < ZERO) {
-		carbohydrate_transfer = max(cs->cpool, 0.0);		
-		carbohydrate_transfer = min(cs->cpool, cs->live_stemc);		
+	if (cs->leafc_store*storage_transfer_prop < epc.min_percent_leafg*cs->leafc) {
+
+		carbohydrate_transfer = (epc.min_percent_leafg*cs->leafc - cs->leafc_store*storage_transfer_prop);
+		carbohydrate_transfer = min(cs->cpool, carbohydrate_transfer);		
+		carbohydrate_transfer = max(carbohydrate_transfer, 0.0);		
 		 
 		fleaf = exp(-0.25 * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
@@ -218,21 +220,27 @@ int allocate_annual_growth(				int id,
 		else{
 	   	mean_cn = (fleaf * cnl + froot * cnfr);
 		}
+
+		if (carbohydrate_transfer/mean_cn > ns->npool)
+			carbohydrate_transfer = ns->npool*mean_cn;
+
 		storage_transfer_prop = 1.0;
 		cs->leafc_store += carbohydrate_transfer * fleaf;
 		cs->frootc_store += carbohydrate_transfer * froot;
-		cs->livestemc_store += carbohydrate_transfer * fwood * (1.0-fcroot) * flive;
-		cs->livecrootc_store += carbohydrate_transfer * fwood * fcroot * flive;
-		cs->deadstemc_store += carbohydrate_transfer * fwood * (1.0-fcroot) * fdead;
-		cs->deadcrootc_store += carbohydrate_transfer * fwood * fcroot * fdead;
 	
 		ns->leafn_store += (carbohydrate_transfer * fleaf) / cnl;
 		ns->frootn_store += (carbohydrate_transfer * froot) / cnfr ;
-		ns->livestemn_store += (carbohydrate_transfer * fwood * (1.0-fcroot) * flive) / cnlw;
-		ns->livecrootn_store += (carbohydrate_transfer * fwood * fcroot * flive) / cnlw;
-		ns->deadstemn_store += (carbohydrate_transfer * fwood * (1.0-fcroot) * fdead) / cndw;
-		ns->deadcrootn_store += (carbohydrate_transfer * fwood * fcroot * fdead) / cndw;
 			
+		if (epc.veg_type == TREE){
+			cs->livestemc_store += carbohydrate_transfer * fwood * (1.0-fcroot) * flive;
+			cs->livecrootc_store += carbohydrate_transfer * fwood * fcroot * flive;
+			cs->deadstemc_store += carbohydrate_transfer * fwood * (1.0-fcroot) * fdead;
+			cs->deadcrootc_store += carbohydrate_transfer * fwood * fcroot * fdead;
+			ns->livestemn_store += (carbohydrate_transfer * fwood * (1.0-fcroot) * flive) / cnlw;
+			ns->livecrootn_store += (carbohydrate_transfer * fwood * fcroot * flive) / cnlw;
+			ns->deadstemn_store += (carbohydrate_transfer * fwood * (1.0-fcroot) * fdead) / cndw;
+			ns->deadcrootn_store += (carbohydrate_transfer * fwood * fcroot * fdead) / cndw;
+		}
 
 		cs->cpool -= carbohydrate_transfer;
 		ns->npool -= carbohydrate_transfer/mean_cn;
@@ -325,9 +333,10 @@ int allocate_annual_growth(				int id,
 	/*	we allow only a certain amount of resprouting based on 	*/
 	/*	a stratum default file parameterization 		*/
 	/*--------------------------------------------------------------*/
-	if ((cs->leafc_transfer + cs->leafc_store + cs->leafc) < epc.min_leaf_carbon) {
+	if ((cs->cpool+cs->leafc_transfer + cs->leafc_store + cs->leafc) < epc.min_leaf_carbon) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
+		printf("\n Resprouting stratum %d", id);
 		cs->num_resprout += 1;
 		cs->age = 0;
 		cs->cpool = 0.0;
