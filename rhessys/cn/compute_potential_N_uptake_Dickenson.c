@@ -58,7 +58,7 @@ double compute_potential_N_uptake_Dickenson( int sen,
 	double cnfr;        /* RATIO   fine root C:N */
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
-	double fleaf, froot, flive, fdead; 	/* fraction allocate to each component */
+	double fwood, fleaf, froot, flive, fdead; 	/* fraction allocate to each component */
 	double total_wood, B,C;
 	double mean_cn;
 	double plant_ndemand;
@@ -95,20 +95,17 @@ double compute_potential_N_uptake_Dickenson( int sen,
 		of the amount of daily GPP-MR that is not needed
 		to restore a negative cpool.
 			-----------------------------------------------*/
-			cs->availc += cs->cpool;
+			 cs->availc += cs->cpool; 
 		}
 		else{
 		/*---------------------------------------------------------
 		cpool deficit is >= available C, so all of the
 		daily GPP, if any, is used to alleviate negative cpool
 			------------------------------------------------------------*/
-			cs->availc = 0.0;
+			  cs->availc = 0.0; 
 		}
 	} /* end if negative cpool */
 
-	else {
-		cs->availc += cs->cpool;
-	}
 	/* assign local values for the allocation control parameters */
 	cnl = epc.leaf_cn;
 	cnfr = epc.froot_cn;
@@ -117,26 +114,31 @@ double compute_potential_N_uptake_Dickenson( int sen,
 	/*---------------------------------------------------------------*/
 	/* constant B and C are currently set for forests from Dickenson et al. */	
 	/*----------------------------------------------------------------*/
-	B = 0.9;
 	C = 30;
+	fleaf = exp(-0.25 *sen * epv->proj_lai);
+	fleaf = min(fleaf, 1.0);
+	total_wood = (cs->live_crootc + cs->dead_crootc + cs->live_stemc + cs->dead_stemc);
 
-	fleaf = exp(-0.25* sen * epv->proj_lai);
-	total_wood = (cs->live_crootc +cs->dead_crootc +  cs->live_stemc + cs->dead_stemc);
-	if (total_wood < ZERO)
+	if (epc.veg_type==TREE) {
 		froot = 0.5*(1-fleaf);
-	else
-		froot = (1-fleaf) * 1/B * exp(-C*B*(cs->frootc)/total_wood);
+		fwood = 0.5*(1-fleaf);
+		}
+	else {
+		fwood = 0;
+		froot = (1-fleaf);
+		}
 
 	flive = (1-froot-fleaf)*epc.alloc_livewoodc_woodc;
 	fdead = 1-froot-fleaf-flive;
 
 	if (epc.veg_type == TREE){
-		mean_cn = (fleaf * cnl + froot * cnfr + flive * cnlw + fdead * cndw);
+	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
 	}
 	else{
-		mean_cn = (fleaf * cnl + froot * cnfr);
+	   mean_cn = (fleaf * cnl + froot * cnfr);
 	}
 
+	
 	/* add in nitrogen for plants and for nitrogen deficit in pool */
 	plant_ndemand = cs->availc * (1-epc.gr_perc) / mean_cn;
 	return(plant_ndemand);
