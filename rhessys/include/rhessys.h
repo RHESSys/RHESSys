@@ -648,6 +648,7 @@ struct	zone_default
 	double	dewpoint_lapse_rate;	/* 	degrees C / m	 	*/
 	double	lapse_rate;		/* Celcius degrees/m	*/	
 	double	wet_lapse_rate;		/* Celcius degrees/m	*/	
+	double	lapse_rate_precip_default;		/* k by m	*/	
 	double	lapse_rate_tmin;		/* Celcius degrees/m	*/	
 	double	lapse_rate_tmax;		/* Celcius degrees/m	*/	
 	double	max_effective_lai;	/* m^2/m^2	*/
@@ -815,6 +816,7 @@ struct	soil_default
 	double	porosity_0;						/* unitless */
 	double	porosity_decay;						/* m^-1 */
 	double	p3;						/* unitless */
+	double	p4;						/* unitless */
 	double	pore_size_index;				/* unitless */
 	double	psi_air_entry;					/* m */
 	double	psi_max;					/* m */
@@ -2001,6 +2003,7 @@ struct epconst_struct
 
         double max_lai;       /* (m2/m2) maximum leaf area */
 	double max_storage_percent; /* 0-1 */
+	double min_percent_leafg; /* 0-1 */
         double proj_sla;   /* (m2/kgC) projected specific leaf area */
         double shade_sla_mult;   /* (DIM) ratio of shade sla to sunlit sla */
 	double proj_swa;        /* (m2/kgC) all-sided specific stem wood area */
