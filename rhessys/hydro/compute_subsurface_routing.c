@@ -237,15 +237,6 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 	/*	calculate Qout for each patch and add appropriate	*/
 	/*	proportion of subsurface outflow to each neighbour	*/
 	/*--------------------------------------------------------------*/
-	if (verbose_flag > 3) {
-		printf("\n 888.1 on %d %d %d \n   initial %f %f %f\n",
-										  current_date.day,
-										  current_date.month,
-										  current_date.year,
-										  preday_basin_unsat_storage,
-										  preday_basin_sat_deficit,
-										  preday_basin_return_flow);
-	}
 	for (k = 0; k < n_timesteps; k++) {
 		for ( i = 0; i < basin[0].route_list.num_patches; i++) {
 			patch = basin[0].route_list.list[i];
@@ -857,13 +848,6 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 
 			tmp  = (patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone);
 			patch[0].acc_year.trans += tmp;
-			/*
-			if (tmp > 0.1*patch[0].acc_year.day7trans ) {
-					patch[0].acc_year.day7trans = (tmp/14 + 13/14*patch[0].acc_year.day7trans);
-					patch[0].acc_year.day7pet = (patch[0].PET+patch[0].PE)/14 + 13/14*patch[0].acc_year.day7pet;
-					}
-			*/
-
 			patch[0].acc_year.day7trans = (tmp/14 + 13/14*patch[0].acc_year.day7trans);
 			patch[0].acc_year.day7pet = (patch[0].PET+patch[0].PE)/14 + 13/14*patch[0].acc_year.day7pet;
 			if (patch[0].acc_year.day7pet > patch[0].acc_year.maxpet)
@@ -873,23 +857,22 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].acc_year.max_pet_wyd = patch[0].acc_year.wyd;
 				}
 
-			if ((patch[0].acc_year.day7trans > patch[0].acc_year.maxtrans) && (patch[0].acc_year.wyd <= patch[0].acc_year.max_pet_wyd))
+			if ((patch[0].acc_year.day7trans > patch[0].acc_year.maxtrans) )
 				{
 				patch[0].acc_year.maxtrans = patch[0].acc_year.day7trans;
 				patch[0].acc_year.rec_wyd = 0;
 				}
 
-			if ((patch[0].acc_year.rec_wyd == 0) && (patch[0].acc_year.day7trans < patch[0].acc_year.maxtrans*0.8))
+			if ((patch[0].acc_year.rec_wyd == 0) && (patch[0].acc_year.day7trans < patch[0].acc_year.maxtrans*0.5))
 				{
 				patch[0].acc_year.rec_wyd = patch[0].acc_year.wyd;
 				}
 
-			if ((patch[0].acc_year.rec_pet_wyd == 0) && (patch[0].acc_year.day7pet < patch[0].acc_year.maxpet*0.8))
+			if ((patch[0].acc_year.rec_pet_wyd == 0) && (patch[0].acc_year.day7pet < patch[0].acc_year.maxpet*0.5))
 				{
 				patch[0].acc_year.rec_pet_wyd = patch[0].acc_year.wyd;
 				}
 
-			patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
 
 
 			tmp = (patch[0].transpiration_unsat_zone
@@ -900,7 +883,24 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			if ((patch[0].PET+patch[0].PE-tmp) > patch[0].acc_year.sm_deficit)
 				patch[0].acc_year.sm_deficit = (patch[0].PET+patch[0].PE-tmp);
 			patch[0].acc_year.lai = max(patch[0].acc_year.lai, patch[0].lai);
-			
+
+			tmp = patch[0].sat_deficit-patch[0].unsat_storage-patch[0].rz_storage;
+			if (tmp <= 0)
+				patch[0].acc_year.ndays_sat += 1;
+
+			if (patch[0].rootzone.S > 0.7)
+				patch[0].acc_year.ndays_sat70 +=1;
+		
+			tmp = max(0.0, (patch[0].rootzone.field_capacity/patch[0].rootzone.potential_sat - 
+				patch[0].wilting_point*patch[0].soil_defaults[0][0].porosity_0)) / 2.0 +
+				patch[0].wilting_point*patch[0].soil_defaults[0][0].porosity_0;
+
+			if ((patch[0].rootzone.S < tmp) && (current_date.month < 10) && 
+				(patch[0].acc_year.midsm_wyd == 0) &&
+				(patch[0].snowpack.water_equivalent_depth <= 0.0))
+					patch[0].acc_year.midsm_wyd = patch[0].acc_year.wyd;
+
+			patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
 		}
 
 		}
