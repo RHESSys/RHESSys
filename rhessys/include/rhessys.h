@@ -302,6 +302,9 @@ struct accumulate_patch_object
    int rec_pet_wyd;
    int max_pet_wyd;
    int  num_threshold;
+   int ndays_sat;
+   int ndays_sat70;
+   int midsm_wyd;
    double et;
    double trans;
    double day7trans;
@@ -1277,6 +1280,7 @@ struct patch_object
 	double	rz_drainage;		/* m water by Taehee Hwang */
 	double  wind;			/* m/s		*/
 	double  wind_final;		/* m/s		*/
+	double  wilting_point;		/* 0-1 */
 	struct	base_station_object	**base_stations;
 	struct	soil_default		**soil_defaults;
 	struct	landuse_default		**landuse_defaults;
