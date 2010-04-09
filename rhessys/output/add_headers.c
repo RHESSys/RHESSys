@@ -332,7 +332,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 			"year",
 			"basinID",
 			"hillID",
@@ -346,7 +346,9 @@ void add_headers(struct world_output_file_object *world_output_files,
 			"DOC_loss",
 			"DON_loss",
 			"psn", "trans",
-			"et","lai","nitrif","mineralized","uptake","Theta","sd","pkswe", "pktrans", "pkpet", "rec.wyd","rec.pet.wyd", "area","pet"
+			"et","lai","nitrif","mineralized","uptake","Theta","sd","pkswe", "pktrans", "pkpet", "rec.wyd","rec.pet.wyd", 
+			"ndays_sat", "ndays_sat70", "midsm_wyd",
+			"area","pet"
 			);
 	}
 
