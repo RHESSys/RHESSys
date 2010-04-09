@@ -47,7 +47,7 @@ void	output_yearly_patch(
 		patch[0].acc_year.theta /= patch[0].acc_year.length;
 
 
-	fprintf(outfile,"%4d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %lf %lf\n",
+	fprintf(outfile,"%4d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf\n",
 			current_date.year,
 			basinID,
 			hillID,
@@ -74,6 +74,8 @@ void	output_yearly_patch(
 			patch[0].acc_year.maxpet * 1000.0,
 			patch[0].acc_year.rec_wyd,
 			patch[0].acc_year.rec_pet_wyd,
+			patch[0].acc_year.ndays_sat, patch[0].acc_year.ndays_sat70, 
+			patch[0].acc_year.midsm_wyd,
 			patch[0].area, patch[0].acc_year.PET*1000.0);
 
 	/*--------------------------------------------------------------*/
@@ -102,6 +104,10 @@ void	output_yearly_patch(
 	patch[0].acc_year.rec_wyd = 0;
 	patch[0].acc_year.day7trans = 0;
 	patch[0].acc_year.maxtrans = 0;
+	patch[0].acc_year.midsm_wyd = 0;
+	patch[0].acc_year.ndays_sat = 0;
+	patch[0].acc_year.ndays_sat70 = 0;
+
 	return;
 
 } /*end output_csv_yearly_patch*/
