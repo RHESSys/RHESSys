@@ -452,6 +452,16 @@ struct patch_object *construct_patch(
 			 patch[0].canopy_strata[i][0].rootzone.depth);
 	} /*end for*/
 
+
+	
+	patch[0].wilting_point = exp(-1.0*log(-1.0*patch[0].soil_defaults[0][0].psi_max_veg/
+						patch[0].soil_defaults[0][0].psi_air_entry) 
+			* patch[0].soil_defaults[0][0].pore_size_index);
+
+
+
+
+
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
 	/*--------------------------------------------------------------*/
