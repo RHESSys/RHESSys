@@ -44,7 +44,7 @@ double	compute_litter_rain_stored(
 	double	potential_interception;
 	double	potential_evaporation;
 	double	rain_storage;
-	double	storage_evaporated;
+	double	storage_evaporated, actual_evaporated;
 	double	potential_interception_evaporated;
 	double	throughfall;
 	struct	litter_object *litter;
@@ -103,12 +103,17 @@ double	compute_litter_rain_stored(
 	/*	Compute amount of evaporation that happened.		*/
 	/* 	m = m + m						*/
 	/*--------------------------------------------------------------*/
-	patch[0].evaporation_surf =  storage_evaporated +
-		potential_interception_evaporated;
+	actual_evaporated = storage_evaporated+potential_interception_evaporated;
+	if (patch[0].snowpack.water_equivalent_depth > ZERO) {
+		patch[0].snowpack.water_equivalent_depth += actual_evaporated;
+	}
+	else {
+		patch[0].evaporation_surf +=  actual_evaporated;
+		}
 	/*--------------------------------------------------------------*/
 	/*	Adjust the amount of remaining potential evaporation	*/
 	/*--------------------------------------------------------------*/
-	patch[0].potential_evaporation -= patch[0].evaporation_surf;
+	patch[0].potential_evaporation -= actual_evaporated;
 	if( verbose_flag >2)
 		printf("%8.6f ",patch[0].evaporation_surf);
 	if( verbose_flag >2)

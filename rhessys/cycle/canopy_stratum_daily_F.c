@@ -247,7 +247,6 @@ void	canopy_stratum_daily_F(
 	struct	psnout_struct	psnout;
 
 
-	
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.1 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
@@ -299,6 +298,12 @@ void	canopy_stratum_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	total_incoming_PAR = PAR_diffuse + PAR_direct;
+	
+	/*	NEW CHECK TO SEE IF STRATUM IS VEGETATED, OTHERWISE SKIP	*/
+	/*	TO END TO UPDATE RADIATION BY COVER FRACTION				*/
+	
+	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) {
+	
 	/*--------------------------------------------------------------*/
 	/*  Intercept diffuse radiation.                                */
 	/*  We assume that the zone slope == patch slope.               */
@@ -1290,6 +1295,9 @@ void	canopy_stratum_daily_F(
 			break;
 		} /* end switch */
 	}
+	
+	}
+	
 	/*--------------------------------------------------------------*/
 	/*	Increment the transmitted fluxes from this patch layer	*/
 	/*	by weighting the fluxes in this stratum by its cover	*/

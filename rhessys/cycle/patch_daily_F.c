@@ -67,6 +67,11 @@
 /*	patch level sum of canopy evaporation		*/
 /*							*/
 /*	added check_zero_stores				*/
+/*							*/
+/*	Feb 2010 AD											*/
+/*	Added detention store evaporation, including more	*/
+/*	substantial updates to surface daily F				*/
+/*														*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
@@ -129,6 +134,15 @@ void		patch_daily_F(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
+		
+	void	update_soil_moisture(
+		int	verbose_flag,
+		double	infiltration,
+		double	net_inflow,
+		struct	patch_object	*patch,
+		struct 	command_line_object *command_line,
+		struct	date 			current_date); 
+
 	
 	double	snowpack_daily_F (
 		struct date,
@@ -287,6 +301,37 @@ void		patch_daily_F(
 			struct hillslope_object *,
 			struct command_line_object *,
 			struct date);
+			
+	double	penman_monteith(
+		int,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		int);
+		
+	double	compute_diffuse_radiative_fluxes(
+		int,
+		double *,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double);
+
+	
+	double	compute_direct_radiative_fluxes(
+		int,
+		double *,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double);		
 
 	long julday( struct date);
 	/*--------------------------------------------------------------*/
@@ -297,8 +342,9 @@ void		patch_daily_F(
 	int	vegtype;
 	double	cap_rise, tmp, wilting_point;
 	double	delta_unsat_zone_storage;
-	double  detention_store_evaporation;
 	double  infiltration;
+	double	infiltration_ini;
+	double	infiltration_fin;
 	double	net_inflow;
 	double	preday_snowpack_height;
 	double	sat_zone_patch_demand;
@@ -315,7 +361,9 @@ void		patch_daily_F(
 	double	resp;
 	double 	surfaceN_to_soil;
 	double	FERT_TO_SOIL;
+	double	pond_height;
 	struct	canopy_strata_object	*strata;
+	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
 	/*--------------------------------------------------------------*/
 	/*	We assume the zone soil temp applies to the patch as well.	*/
@@ -327,6 +375,8 @@ void		patch_daily_F(
 	patch[0].Kdown_diffuse = zone[0].Kdown_diffuse;
 	patch[0].PAR_direct = zone[0].PAR_direct;
 	patch[0].PAR_diffuse = zone[0].PAR_diffuse;
+	patch[0].evaporation_surf = 0.0;
+	patch[0].potential_evaporation = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	Set the patch rain and snow throughfall equivalent to the	*/
@@ -389,6 +439,7 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].deltaz,
 		patch[0].soil_defaults[0][0].min_heat_capacity,
 		patch[0].soil_defaults[0][0].max_heat_capacity);
+	
 	/*--------------------------------------------------------------*/
 	/*	Compute patch level long wave radiation processes.			*/
 	/*--------------------------------------------------------------*/
@@ -397,15 +448,23 @@ void		patch_daily_F(
 		basin,
 		zone,
 		patch );
+	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height greater than the	*/
 	/*	snowpack.						*/
+	/*--------------------------------------------------------------*/
+	
+	/*	Calculate initial pond height		*/
+	pond_height = max(0.0,-1 * patch[0].sat_deficit_z + patch[0].detention_store);
+	
+	/*--------------------------------------------------------------*/
+	/* Layers above snowpack and pond */
 	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		patch[0].snowpack.overstory_fraction = 0.0;
 		patch[0].snowpack.overstory_height = zone[0].base_stations[0][0].screen_height;
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) &&
-			(patch[0].layers[layer].height > -1 * patch[0].sat_deficit_z) ){
+			(patch[0].layers[layer].height > pond_height) ){
 			patch[0].snowpack.overstory_fraction = 1.0;
 			patch[0].snowpack.overstory_height = min(patch[0].snowpack.overstory_height,
 				patch[0].layers[layer].height);
@@ -421,17 +480,17 @@ void		patch_daily_F(
 			/*		Cycle through the canopy strata in this layer	*/
 			/*--------------------------------------------------------------*/
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
-				canopy_stratum_daily_F(
-					world,
-					basin,
-					hillslope,
-					zone,
-					patch,
-					&(patch[0].layers[layer]),
-					patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
-					command_line,
-					event,
-					current_date );
+					canopy_stratum_daily_F(
+						world,
+						basin,
+						hillslope,
+						zone,
+						patch,
+						&(patch[0].layers[layer]),
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						command_line,
+						event,
+						current_date );
 			}
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
 			patch[0].Kdown_diffuse = patch[0].Kdown_diffuse_final;
@@ -443,6 +502,7 @@ void		patch_daily_F(
 			patch[0].wind = patch[0].wind_final;
 		}
 	}
+	
 	/*--------------------------------------------------------------*/
 	/*	We assume the snowpack is conceptually over the		*/
 	/*	current ponded water.					*/
@@ -456,35 +516,50 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	preday_snowpack_height = patch[0].snowpack.height;
 	patch[0].snowpack.water_equivalent_depth += patch[0].snow_throughfall;
+	
+
 	if (patch[0].snow_throughfall > 0.0 )
 		patch[0].snowpack.surface_age = 0.0;
 	if ( patch[0].snowpack.water_equivalent_depth > ZERO ) {
 		/*--------------------------------------------------------------*/
 		/*	Calculate snowmelt 											*/
 		/*--------------------------------------------------------------*/
-		patch[0].snow_melt = snowpack_daily_F(
-			current_date,
-			command_line[0].verbose_flag,
-			&patch[0].snowpack,
-			zone[0].metv.tavg,
-			zone[0].e_dewpoint,
-			patch[0].wind,
-			zone[0].metv.pa,
-			zone[0].cloud_fraction,
-			patch[0].rain_throughfall,
-			patch[0].snow_throughfall,
-			&patch[0].Kdown_direct,
-			&patch[0].Kdown_diffuse,
-			&patch[0].PAR_direct,
-			&patch[0].PAR_diffuse,
-			patch[0].soil_defaults[0][0].maximum_snow_energy_deficit,
-			patch[0].soil_defaults[0][0].snow_water_capacity,
-			patch[0].soil_defaults[0][0].snow_light_ext_coef,
-			patch[0].soil_defaults[0][0].snow_melt_Tcoef,
-			patch[0].Lstar_snow);
-		patch[0].rain_throughfall += patch[0].snow_melt;
-		patch[0].snow_throughfall = 0.0;
-		patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;
+		/*	Check to see if snowpack is above pond. If so, proceed 	*/
+		/*	with snowpack daily F.  Otherwise, melt all snow and add 	*/
+		/*	to rain throughfall.										*/
+		/*--------------------------------------------------------------*/
+		
+		if ( patch[0].snowpack.water_equivalent_depth > pond_height ) {
+			patch[0].snow_melt = snowpack_daily_F(
+				current_date,
+				command_line[0].verbose_flag,
+				&patch[0].snowpack,
+				zone[0].metv.tavg,
+				zone[0].e_dewpoint,
+				patch[0].wind,
+				zone[0].metv.pa,
+				zone[0].cloud_fraction,
+				patch[0].rain_throughfall,
+				patch[0].snow_throughfall,
+				&patch[0].Kdown_direct,
+				&patch[0].Kdown_diffuse,
+				&patch[0].PAR_direct,
+				&patch[0].PAR_diffuse,
+				patch[0].soil_defaults[0][0].maximum_snow_energy_deficit,
+				patch[0].soil_defaults[0][0].snow_water_capacity,
+				patch[0].soil_defaults[0][0].snow_light_ext_coef,
+				patch[0].soil_defaults[0][0].snow_melt_Tcoef,
+				patch[0].Lstar_snow);
+			patch[0].rain_throughfall += patch[0].snow_melt;
+			patch[0].snow_throughfall = 0.0;
+			patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;
+		}
+		else {
+			patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
+			patch[0].snow_throughfall = 0.0;
+			patch[0].snowpack.water_equivalent_depth = 0.0;
+			patch[0].snowpack.height = 0.0;
+		}
 	}
 	else{
 		/*--------------------------------------------------------------*/
@@ -499,6 +574,7 @@ void		patch_daily_F(
 		patch[0].snow_melt = 0.0;
 		patch[0].snowpack.energy_deficit = 0.001;
 	}
+	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height less than the	*/
 	/*	snowpack but more than  0				*/
@@ -519,9 +595,11 @@ void		patch_daily_F(
 	/*	snowpack height to avoid processing some strata		*/
 	/*	twice							*/
 	/*--------------------------------------------------------------*/
+	/* Layers below snowpack and above pond */
+	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		if ( (patch[0].layers[layer].height <= preday_snowpack_height) &&
-			(patch[0].layers[layer].height > -1 * patch[0].sat_deficit_z) ){
+			(patch[0].layers[layer].height > pond_height) ){
 			patch[0].Tday_surface_offset_final = 0.0;
 			patch[0].Kdown_direct_final = patch[0].layers[layer].null_cover * patch[0].Kdown_direct;
 			patch[0].Kdown_diffuse_final = patch[0].layers[layer].null_cover * patch[0].Kdown_diffuse;
@@ -532,17 +610,17 @@ void		patch_daily_F(
 			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			for ( stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
-				canopy_stratum_daily_F(
-					world,
-					basin,
-					hillslope,
-					zone,
-					patch,
-					&(patch[0].layers[layer]),
-					patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
-					command_line,
-					event,
-					current_date );
+					canopy_stratum_daily_F(
+						world,
+						basin,
+						hillslope,
+						zone,
+						patch,
+						&(patch[0].layers[layer]),
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						command_line,
+						event,
+						current_date );
 			}
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
 			patch[0].Kdown_diffuse = patch[0].Kdown_diffuse_final;
@@ -555,11 +633,12 @@ void		patch_daily_F(
 			patch[0].wind = patch[0].wind_final;
 		}
 	}
+		
 	/*--------------------------------------------------------------*/
-	/*	Patches below the pond.					*/
+	/*	Layers below the pond.					*/
 	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-		if (patch[0].layers[layer].height <= -1 * patch[0].sat_deficit_z){
+		if (patch[0].layers[layer].height <= pond_height){
 			patch[0].Tday_surface_offset_final = 0.0;
 			patch[0].Kdown_direct_final = patch[0].layers[layer].null_cover * patch[0].Kdown_direct;
 			patch[0].Kdown_diffuse_final = patch[0].layers[layer].null_cover * patch[0].Kdown_diffuse;
@@ -570,17 +649,17 @@ void		patch_daily_F(
 			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
-				canopy_stratum_daily_F(
-					world,
-					basin,
-					hillslope,
-					zone,
-					patch,
-					&(patch[0].layers[layer]),
-					patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
-					command_line,
-					event,
-					current_date );
+					canopy_stratum_daily_F(
+						world,
+						basin,
+						hillslope,
+						zone,
+						patch,
+						&(patch[0].layers[layer]),
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						command_line,
+						event,
+						current_date );
 			}
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
 			patch[0].Kdown_diffuse = patch[0].Kdown_diffuse_final;
@@ -593,6 +672,7 @@ void		patch_daily_F(
 			patch[0].wind = patch[0].wind_final;
 		}
 	}
+	
 
 	/*--------------------------------------------------------------*/
 	/*	Need to account for snow "throughfall" that is a result	*/
@@ -609,7 +689,6 @@ void		patch_daily_F(
 	/* 	before adding in detention store, determine input	*/
 	/*	due to atm N wet dep concentration			*/
 	/*--------------------------------------------------------------*/
-
 
 	/*--------------------------------------------------------------*/
 	/*      added in nitrogen deposition                            */
@@ -685,21 +764,12 @@ void		patch_daily_F(
 		}
 
 
+	/*	Add detention store to rain throughfall for infiltration	*/
+	/*	and evaporation routines.									*/
+	
 	patch[0].rain_throughfall += patch[0].detention_store;
 	patch[0].detention_store = 0.0;
-	/*--------------------------------------------------------------*/
-	/*	finally process surface or litter layer			*/
-	/*--------------------------------------------------------------*/
-	surface_daily_F(
-		world,
-		basin,
-		hillslope,
-		zone,
-		patch,
-		command_line,
-		event,
-		current_date );
-
+		
 	/*--------------------------------------------------------------*/
 	/* 	Above ground Hydrologic Processes			*/
 	/* 	compute infiltration into the soil			*/
@@ -728,10 +798,10 @@ void		patch_daily_F(
 		/*      - if rain duration is zero, then input is from snow     */
 		/*      melt  assume full daytime duration                      */
 		/*--------------------------------------------------------------*/
-		if (zone[0].daytime_rain_duration <= ZERO)
+		if (zone[0].daytime_rain_duration <= ZERO) {
 			duration = zone[0].metv.dayl/(86400);
-		else
-			duration = zone[0].daytime_rain_duration/(86400);
+			}
+		else duration = zone[0].daytime_rain_duration/(86400);
 	
 		if (patch[0].rootzone.depth > ZERO)	{
 	        	infiltration = compute_infiltration(
@@ -766,87 +836,79 @@ void		patch_daily_F(
 	}
 	else infiltration = 0.0;
 
-	if (infiltration < 0.0)
+	if (infiltration < 0.0) {
 		printf("\nInfiltration %lf < 0 for %d on %d",
 			infiltration,
 			patch[0].ID, current_date.day);
+	}
 	/*--------------------------------------------------------------*/
 	/* determine fate of hold infiltration excess in detention store */
 	/* infiltration excess will removed during routing portion	*/
 	/*--------------------------------------------------------------*/
-	patch[0].detention_store = (net_inflow - infiltration);
-	/*--------------------------------------------------------------*/
-	/* allow evaporation of any detention store			*/
-	/*--------------------------------------------------------------*/
-	detention_store_evaporation = min(patch[0].potential_evaporation, patch[0].detention_store);
-	patch[0].evaporation_surf += detention_store_evaporation;
-	patch[0].potential_evaporation -= detention_store_evaporation;
-	patch[0].detention_store -= detention_store_evaporation;
-
 	
-	/*--------------------------------------------------------------*/
-	/* allow infiltration of surface N				*/
-	/*--------------------------------------------------------------*/
-	if ((command_line[0].grow_flag > 0) && (infiltration > ZERO)) {
-		patch[0].soil_ns.nitrate += infiltration / net_inflow * patch[0].surface_NO3;
-		patch[0].soil_ns.sminn += infiltration / net_inflow * patch[0].surface_NH4;
-		patch[0].surface_NO3 -= infiltration / net_inflow * patch[0].surface_NO3;
-		patch[0].surface_NH4 -= infiltration / net_inflow * patch[0].surface_NH4;
-		}
-
-
-	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%4d %2d %2d  -333.1 ",
-		current_date.year, current_date.month, current_date.day);
-	/*--------------------------------------------------------------*/
-	/*	Determine if the infifltration will fill up the unsat	*/
-	/*	zone or not.						*/
-	/*	We use the strict assumption that sat deficit is the	*/
-	/*	amount of water needed to saturate the soil.		*/
-	/*--------------------------------------------------------------*/
-	if ( infiltration > patch[0].sat_deficit - patch[0].unsat_storage - patch[0].rz_storage) {
+	/*------------------------------------------------------------------*/
+	/*	Which comes first - ponded water evaporation or infiltration?	*/
+	/*  As a compromise, first move half of infiltration water into		*/
+	/*	soil column.  Then allow other half to evaporate before moving	*/
+	/*	into soil column.												*/
+	/*------------------------------------------------------------------*/
+	
+	infiltration_ini = 0.0;
+	infiltration_fin = 0.0;
+	
+	if (infiltration > ZERO) {
+	
+		infiltration_ini = 0.5 * infiltration;		/* initial half of infiltration water */
+		infiltration_fin = infiltration - infiltration_ini;		/* balance of infiltration water */
 		/*--------------------------------------------------------------*/
-		/*		Yes the unsat zone will be filled so we may	*/
-		/*		as well treat the unsat_storage and infiltration*/
-		/*		as water added to the water table.		*/
+		/*	Update patch level soil moisture with initial infiltration.	*/
 		/*--------------------------------------------------------------*/
-		patch[0].sat_deficit -= (infiltration + patch[0].unsat_storage + patch[0].rz_storage);
-		/*--------------------------------------------------------------*/
-		/*		There is no unsat_storage left.			*/
-		/*--------------------------------------------------------------*/
-		patch[0].unsat_storage = 0;
-		patch[0].rz_storage = 0;
-		patch[0].field_capacity = 0;
-		/*--------------------------------------------------------------*/
-		/*		Reverse the cap rise as it likely did not happen*/
-		/*--------------------------------------------------------------*/
-		patch[0].potential_cap_rise += patch[0].cap_rise;
-		patch[0].cap_rise = 0;
-	}									
-	else if ((patch[0].sat_deficit > patch[0].rootzone.potential_sat) &&
-		(infiltration > patch[0].rootzone.potential_sat - patch[0].rz_storage)) {
-		/*------------------------------------------------------------------------------*/
-		/*		Just add the infiltration to the rz_storage and unsat_storage	*/
-		/*------------------------------------------------------------------------------*/
-		patch[0].unsat_storage += infiltration - (patch[0].rootzone.potential_sat - patch[0].rz_storage);
-		patch[0].rz_storage = patch[0].rootzone.potential_sat;
-	}								
-		/* Only rootzone layer saturated - perched water table case */
-	else if ((patch[0].sat_deficit > patch[0].rootzone.potential_sat) &&
-		(infiltration <= patch[0].rootzone.potential_sat - patch[0].rz_storage)) {
-		/*--------------------------------------------------------------*/
-		/*		Just add the infiltration to the rz_storage	*/
-		/*--------------------------------------------------------------*/
-		patch[0].rz_storage += infiltration;
+		update_soil_moisture(
+			command_line[0].verbose_flag,
+			infiltration_ini,
+			net_inflow,
+			patch,
+			command_line,
+			current_date );
 	}
-	else if ((patch[0].sat_deficit <= patch[0].rootzone.potential_sat) &&
-		(infiltration <= patch[0].sat_deficit - patch[0].rz_storage - patch[0].unsat_storage)) {
-		patch[0].rz_storage += patch[0].unsat_storage;		/* transfer left water in unsat storage to rootzone layer */
-		patch[0].unsat_storage = 0;
-		patch[0].rz_storage += infiltration;
-		patch[0].field_capacity = 0;
-	}
+	
+	patch[0].detention_store = (net_inflow - infiltration_ini);
 
+	/*--------------------------------------------------------------*/
+	/* After infiltration, call surface daily F to allow detention	*/
+	/* store, litter, and soil evaporation.							*/
+	/*--------------------------------------------------------------*/
+
+	surface_daily_F(
+			world,
+			basin,
+			hillslope,
+			zone,
+			patch,
+			command_line,
+			event,
+			current_date );
+			
+	/*--------------------------------------------------------------*/
+	/* Allow remaining infiltration water to infiltrate */
+	/*--------------------------------------------------------------*/
+	
+	infiltration_fin = min(infiltration_fin,patch[0].detention_store);
+	patch[0].detention_store -= infiltration_fin;
+	
+	if (infiltration_fin > ZERO) {
+		/*--------------------------------------------------------------*/
+		/*	Update patch level soil moisture with final infiltration.	*/
+		/*--------------------------------------------------------------*/
+		update_soil_moisture(
+			command_line[0].verbose_flag,
+			infiltration_fin,
+			net_inflow,
+			patch,
+			command_line,
+			current_date );
+	}
+	
 	
 	/*--------------------------------------------------------------*/
 	/*	Calculate patch level transpiration			*/
@@ -1097,15 +1159,15 @@ void		patch_daily_F(
 	/*	First guess at change in sat storage to meet demand.	*/
 	/*--------------------------------------------------------------*/
 	delta_unsat_zone_storage = -1.0 * min(unsat_zone_patch_demand, patch[0].rz_storage);
-
-	/*
+	
+	/***  NOTE THAT CT LATEST CODE COMMENTS THIS SECTION OUT 
 	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO)) {
 	wilting_point = exp(-1.0*log(-1.0*patch[0].soil_defaults[0][0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
 	if (patch[0].rz_storage/(min(patch[0].sat_deficit, patch[0].rootzone.potential_sat)) 
 			 < wilting_point) delta_unsat_zone_storage = 0.0;
 	}
-	*/
+	***/
 
 	patch[0].rz_storage = patch[0].rz_storage + delta_unsat_zone_storage;
 	unsat_zone_patch_demand = unsat_zone_patch_demand + delta_unsat_zone_storage;			
