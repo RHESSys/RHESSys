@@ -252,6 +252,7 @@ $(OBJ)/update_nitrif.o \
 $(OBJ)/update_phenology.o \
 $(OBJ)/update_rooting_depth.o \
 $(OBJ)/update_septic.o \
+$(OBJ)/update_soil_moisture.o \
 $(OBJ)/valid_option.o \
 $(OBJ)/world_daily_F.o \
 $(OBJ)/world_daily_I.o \
@@ -711,6 +712,8 @@ $(OBJ)/update_drainage_road.o: hydro/update_drainage_road.c
 	$(CC) -c $(CFLAGS) hydro/update_drainage_road.c -o $(OBJ)/update_drainage_road.o
 $(OBJ)/update_drainage_land.o: hydro/update_drainage_land.c 
 	$(CC) -c $(CFLAGS) hydro/update_drainage_land.c -o $(OBJ)/update_drainage_land.o
+$(OBJ)/update_soil_moisture.o: hydro/update_soil_moisture.c 
+	$(CC) -c $(CFLAGS) hydro/update_soil_moisture.c -o $(OBJ)/update_soil_moisture.o
 
 # dynamic bgc routines
 $(OBJ)/allocate_annual_growth.o: cn/allocate_annual_growth.c 
