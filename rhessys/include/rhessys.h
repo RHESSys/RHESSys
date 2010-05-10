@@ -1280,7 +1280,7 @@ struct patch_object
 	double	rz_drainage;		/* m water by Taehee Hwang */
 	double  wind;			/* m/s		*/
 	double  wind_final;		/* m/s		*/
-	double  wilting_point;		/* 0-1 */
+	double  wilting_point;		/* mm */
 	struct	base_station_object	**base_stations;
 	struct	soil_default		**soil_defaults;
 	struct	landuse_default		**landuse_defaults;
@@ -1882,7 +1882,8 @@ struct epvar_struct
 
 /* nitrogen state variables (including sums for sources and sinks) */ 
  struct nstate_struct
-{
+{	
+    int    nlimit;	    /* (0-1) 0 is not limited on that day */
     double preday_totaln;   /* (kgN/m2) previous days plant nitrogen total */
     double totaln;  	    /* (kgN/m2) previous days plant nitrogen total */
     double npool;           /* (kgN/m2) temporary plant N pool */
