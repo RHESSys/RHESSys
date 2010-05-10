@@ -199,7 +199,6 @@ int allocate_annual_growth(				int id,
 
 		carbohydrate_transfer = (epc.min_percent_leafg*cs->leafc - cs->leafc_store*storage_transfer_prop);
 		carbohydrate_transfer = min(cs->cpool, carbohydrate_transfer);		
-		carbohydrate_transfer = max(carbohydrate_transfer, 0.0);		
 		 
 		fleaf = exp(-0.25 * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
@@ -223,6 +222,7 @@ int allocate_annual_growth(				int id,
 
 		if (carbohydrate_transfer/mean_cn > ns->npool)
 			carbohydrate_transfer = ns->npool*mean_cn;
+		carbohydrate_transfer = max(carbohydrate_transfer, 0.0);		
 
 		storage_transfer_prop = 1.0;
 		cs->leafc_store += carbohydrate_transfer * fleaf;
@@ -298,6 +298,7 @@ int allocate_annual_growth(				int id,
 		veg does not die in a bad year -esp. for Grasses	*/
 	/*--------------------------------------------------------------*/
 	cdf->leafc_store_to_leafc_transfer = cs->leafc_store * storage_transfer_prop;
+
 	cdf->frootc_store_to_frootc_transfer=cs->frootc_store* storage_transfer_prop;
 	cdf->gresp_store_to_gresp_transfer = cs->gresp_store * storage_transfer_prop;
 	if (epc.veg_type == TREE){
@@ -437,8 +438,8 @@ int allocate_annual_growth(				int id,
 		cs->deadstemc_store=0.0;
 		cs->livestemc_store=0.0;
 	}
-
-
+	
+		
 	/* update states variables */
 	ns->leafn_transfer    += ndf->leafn_store_to_leafn_transfer;
 	ns->leafn_store     -= ndf->leafn_store_to_leafn_transfer;
