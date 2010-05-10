@@ -74,7 +74,7 @@ int allocate_daily_growth_Waring(int nlimit,
 	double plant_ndemand;
 	double sum_plant_nsupply, soil_nsupply;
 	double plant_nalloc, plant_calloc;
-	double closs, nloss;
+	double closs, nloss, ratio;
 	double plant_remaining_ndemand;
 	double excess_allocation_to_leaf, excess_c, excess_n, excess_lai;
 	double sminn_to_npool;
@@ -108,6 +108,7 @@ int allocate_daily_growth_Waring(int nlimit,
 			soil_nsupply = ndf->potential_N_uptake;
 	else
 		soil_nsupply = ndf->potential_N_uptake;
+
 	/*----------------------------------------------------------------
 		now compare the combined decomposition immobilization and plant
 		growth_Waring N demands against the available soil mineral N pool.
@@ -127,6 +128,7 @@ int allocate_daily_growth_Waring(int nlimit,
 		}
 		sminn_to_npool = ndf->potential_N_uptake - ndf->retransn_to_npool;
 		plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+		ns->nlimit = 0;
 	}
 	else{
 	/* N availability can not satisfy the sum of immobiliation and
@@ -141,6 +143,7 @@ int allocate_daily_growth_Waring(int nlimit,
 			satisfy the remaining plant N demand */
 			ndf->retransn_to_npool = plant_remaining_ndemand;
 			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+			ns->nlimit = 0;
 		}
 		else{
 		/* there is not enough retranslocation N left to satisfy the
@@ -151,15 +154,16 @@ int allocate_daily_growth_Waring(int nlimit,
 			sminn_to_npool = soil_nsupply;
 			ndf->retransn_to_npool = ns->retransn;
 			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+			ns->nlimit = 1;
 		}
 	}
 
 
 
+	/*--------------------------------------------------------------*/
 	/* calculate the amount of new leaf C dictated by these allocation
 	decisions, and figure the daily fluxes of C and N to current
 	growth_Waring and storage pools */
-	/*--------------------------------------------------------------*/
 	/* given the available N, use allometric relationships to
 		  determine how much N is required to meet this potential growth_Waring
 		  demand 							*/
@@ -173,36 +177,25 @@ int allocate_daily_growth_Waring(int nlimit,
 	/*--------------------------------------------------------------*/
 	/*	constants a and b are taken from Landsberg and Waring, 1997 */
 	/*--------------------------------------------------------------*/
+
+	if (ndf->potential_N_uptake > ZERO)
+        	ratio = plant_nalloc / ndf->potential_N_uptake;
+	else 
+		ratio = 0.0;
+
+	ratio = min(1.0, ratio);
+	plant_calloc = cs->availc * ratio;
+
+	
+
+	
 	a = 0.8;
 	b = 2.5;
-	c = cdf->potential_psn_to_cpool;
-	if (epc.veg_type == TREE){
-		k2 = (1 + f3 +f3*f2)/(cnl+(f3 + f3*f2)*f4*cnlw +(f3 +f3*f2)*(1-f4)*cndw);
-	}
-	else{
-		k2 = 1.0/cnl;
-	}
-	if ((plant_nalloc > ZERO) && (c > ZERO))
-		plant_calloc = plant_nalloc * b - k2 + k2*a - 1.0/cnfr*a
-		+ sqrt( pow(((1.0/cnfr*a-k2*a) + k2 - plant_nalloc * b / c), 2.0)
-		+ 4.0 * k2 * b / c * plant_nalloc) / 2.0 * k2 * b /c;
-	else
-		plant_calloc = 0.0;
-
-	if (plant_calloc < 0.0) {
-		plant_calloc = 0.0;
-		plant_nalloc = 0.0;
-	}
-	
-	if (plant_calloc > cs->availc) plant_calloc = cs->availc;
-	excess_c = cs->availc - plant_calloc;
-	cdf->psn_to_cpool -= excess_c;
-	cdf->psn_to_cpool = max(cdf->psn_to_cpool, 0.0);
-
-	if (plant_calloc > ZERO){
+	c = max(cdf->potential_psn_to_cpool, cdf->psn_to_cpool);
+	if ((plant_calloc > ZERO) && (c > 0)){
 		froot = a / (1.0 + b * (cdf->psn_to_cpool) / c);
 		if (epc.veg_type == TREE)
-			fleaf = (1.0 - froot) / (1 + f3 + f3*f2);
+			fleaf = (1.0 - froot) / (1 + (1+f2)*f3);
 		else
 			fleaf = 1.0 - froot;
 	}
@@ -211,10 +204,16 @@ int allocate_daily_growth_Waring(int nlimit,
 		fleaf = 0.0;
 	}
 
+
+	 excess_c = max((cs->availc -plant_calloc),0.0);
+         cdf->psn_to_cpool -= excess_c;
+	
+
+	
 	/* pnow is the proportion of this day's growth_Waring that is displayed now,
 	the remainder going into storage for display next year through the
 	transfer pools */
-	nlc = plant_calloc * fleaf;
+	nlc = plant_calloc * (1.0-epc.gr_perc)  * fleaf;
 
 
 	/* daily C fluxes out of cpool and into new growth_Waring or storage */
