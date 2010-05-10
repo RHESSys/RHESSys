@@ -109,9 +109,6 @@ double compute_potential_N_uptake_Waring(
 			cs->availc = 0.0;
 		}
 	} /* end if negative cpool */
-	else {
-		cs->availc += cs->cpool;
-	}
 	/* assign local values for the allocation control parameters */
 	f2 = epc.alloc_crootc_stemc;
 	f3 = epc.alloc_stemc_leafc;
