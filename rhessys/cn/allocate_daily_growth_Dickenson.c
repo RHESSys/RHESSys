@@ -115,9 +115,14 @@ int allocate_daily_growth_Dickenson(int nlimit,
 	fleaf = min(fleaf, 1.0);
 	total_wood = (cs->live_crootc + cs->dead_crootc + cs->live_stemc + cs->dead_stemc);
 
+	
 	if (epc.veg_type==TREE) {
-		froot = 0.5*(1-fleaf);
-		fwood = 0.5*(1-fleaf);
+		if (2*fleaf < 0.8)
+			froot = fleaf;
+		else {
+			froot = 0.5*(1-fleaf);
+			fwood = 0.5*(1-fleaf);
+			}
 		}
 	else {
 		fwood = 0;
@@ -169,6 +174,7 @@ int allocate_daily_growth_Dickenson(int nlimit,
 		sminn_to_npool = ndf->potential_N_uptake - ndf->retransn_to_npool;
 		plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 		plant_calloc = cs->availc*(1-epc.gr_perc);
+		ns->nlimit = 0;
 	}
 	else{
 	/* N availability can not satisfy the sum of immobiliation and
@@ -184,6 +190,7 @@ int allocate_daily_growth_Dickenson(int nlimit,
 			ndf->retransn_to_npool = plant_remaining_ndemand;
 			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 			plant_calloc = cs->availc*(1-epc.gr_perc);
+			ns->nlimit = 0;
 		}
 		else{
 		/* there is not enough retranslocation N left to satisfy the
@@ -194,8 +201,9 @@ int allocate_daily_growth_Dickenson(int nlimit,
 			ndf->retransn_to_npool = ns->retransn;
 			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 			plant_calloc = plant_nalloc / (1-epc.gr_perc) * mean_cn;
-			excess_c = max(cs->availc - plant_calloc,0.0);
+			excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 			cdf->psn_to_cpool -= excess_c;
+			ns->nlimit = 1;
 		}
 	}
 	/* calculate the amount of new leaf C dictated by these allocation
@@ -281,13 +289,6 @@ int allocate_daily_growth_Dickenson(int nlimit,
 		cdf->cpool_to_livecrootc_store +
 		cdf->cpool_to_deadcrootc         +
 		cdf->cpool_to_deadcrootc_store;
-
-	if (abs(total_used - ndf->sminn_to_npool - ndf->retransn_to_npool) > ZERO)
-	printf("\n\n nlimt %d new sminn %lf retrans %lf plant_nalloc %lf total %lf, potential_uptake %lf total used %lf cused %lf calloc %lf cavail %lf psn_to_cpool %lf mean_cn %lf actual mean cn %lf %lf", nlimit,
-		ndf->sminn_to_npool, ndf->retransn_to_npool, plant_nalloc, ndf->sminn_to_npool+ndf->retransn_to_npool, 
-		ndf->potential_N_uptake, total_used, totalc_used, plant_calloc, cs->availc, cdf->psn_to_cpool, mean_cn, totalc_used/total_used, plant_calloc/plant_nalloc);
-
-
 
 		 
 	/* calculate the amount of carbon that needs to go into growth
