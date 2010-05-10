@@ -125,6 +125,7 @@ int allocate_daily_growth(int nlimit,
 		}
 		sminn_to_npool = ndf->potential_N_uptake - ndf->retransn_to_npool;
 		plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+		ns->nlimit = 0;
 	}
 	else{
 	/* N availability can not satisfy the sum of immobiliation and
@@ -139,6 +140,7 @@ int allocate_daily_growth(int nlimit,
 			satisfy the remaining plant N demand */
 			ndf->retransn_to_npool = plant_remaining_ndemand;
 			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+			ns->nlimit = 0;
 		}
 		else{
 		/* there is not enough retranslocation N left to satisfy the
@@ -148,6 +150,7 @@ int allocate_daily_growth(int nlimit,
 			photosynthesis source */
 			ndf->retransn_to_npool = ns->retransn;
 			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+			ns->nlimit = 1;
 		}
 	}
 
@@ -193,29 +196,6 @@ int allocate_daily_growth(int nlimit,
 	if (excess_c > ZERO)
 		cdf->psn_to_cpool -= excess_c;
 
-	/*--------------------------------------------------------------*/
-	/* if possible get rid of carbon deficits building up in cpools */
-	/* note that extra carbon to meet cpool deficit was already taken out of */
-	/* availc in compute_potential_N_uptake				*/
-	/*--------------------------------------------------------------*/
-	/*
-	if (epc.veg_type == TREE){
-		resp = cdf->leaf_day_mr + cdf->leaf_night_mr + cdf->froot_mr
-			+ cdf->livestem_mr + cdf->livecroot_mr ;
-	}
-	else{
-		resp = cdf->leaf_day_mr + cdf->leaf_night_mr + cdf->froot_mr ;
-	}
-
-	excess_c = cdf->psn_to_cpool-resp-plant_calloc;
-	if (cs->cpool < 0.0 && excess_c > ZERO) {
-		add_to_cpool = min(-cs->cpool, excess_c);
-		cs->cpool += add_to_cpool;
-		} 
-	*/
-
-	/* daily C fluxes out of cpool and into new growth or storage */
-	/* pnow reflects the amount that is allocated now versus kept for annual allocation */
 
 	cdf->cpool_to_leafc              = nlc * pnow;
 	cdf->cpool_to_leafc_store      = nlc * (1.0-pnow);
