@@ -213,7 +213,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].daily;
 	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -224,18 +224,26 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"stratumID",
 		"proj_lai",
 		"leafc",
+		"leafn",
 		"cpool",
+		"npool",
 		"dead_leafc",
 		"frootc",
+		"frootn",
 		"live_stemc",
+		"live_stemn",
 		"leafc_store",
+		"leafn_store",
 		"dead_stemc",
+		"dead_stemn",
 		"live_crootc",
+		"live_crootn",
 		"dead_crootc",
+		"dead_crootn",
 		"cwdc",
 		"mresp",
 		"gresp",
-		"psn_to_cpool","age","root_depth","gwseasonday","lfseasonday","gsi");
+		"psn_to_cpool","age","root_depth","gwseasonday","lfseasonday","gsi", "nlimit");
 
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
