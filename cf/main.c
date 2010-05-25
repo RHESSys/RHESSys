@@ -390,7 +390,7 @@ main(int argc, char *argv[])
   strcat(name, ".build"); 
   if ( (out1 = fopen(name, "w")) == NULL)
         {
-        printf("cannot open file \n");
+        printf("cannot open build file\n");
         exit(1);
        	} 
 
@@ -398,7 +398,7 @@ main(int argc, char *argv[])
   strcat(name2, ".pit"); 
   if ( (out2 = fopen(name2, "w")) == NULL)
         {
-        printf("cannot open file \n");
+        printf("cannot open pit file\n");
         exit(1);
        	} 
 
@@ -411,6 +411,14 @@ main(int argc, char *argv[])
 
 	struct Cell_head patch_header;
 	patch = (int*)raster2array(rnpatch, &patch_header, NULL, NULL, CELL_TYPE);
+
+	// Get cell size based off of that in the patchmap
+	// Assuming square cells, otherwise fixes deeper in cf will need to be made.
+	if (patch_header.ew_res != patch_header.ns_res) {
+		printf("Attempting to use non-square cells\n");
+		exit(1);
+	}
+	cell = patch_header.ew_res;
 
 	struct Cell_head zone_header;
 	zone = (int*)raster2array(rnzone, &zone_header, NULL, NULL, CELL_TYPE);
