@@ -128,7 +128,10 @@ int allocate_daily_growth_Dickenson(int nlimit,
 		fwood = 0;
 		froot = (1-fleaf);
 		}
+
 	
+	flive = (1-froot-fleaf)*epc.alloc_livewoodc_woodc;
+	fdead = 1-froot-fleaf-flive;
 
 	if (epc.veg_type == TREE){
 	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
@@ -165,7 +168,7 @@ int allocate_daily_growth_Dickenson(int nlimit,
 		N to meet the plant demand */
 		sum_plant_nsupply = ns->retransn + soil_nsupply;
 		if (sum_plant_nsupply > 0.0){
-			ndf->retransn_to_npool = max(ns->retransn,ndf->potential_N_uptake
+			ndf->retransn_to_npool = min(ns->retransn,ndf->potential_N_uptake
 				* (ns->retransn/sum_plant_nsupply));
 		}
 		else{
@@ -260,7 +263,6 @@ int allocate_daily_growth_Dickenson(int nlimit,
 
 
 	total_used = 
-		ns->npool - preday_npool +
 		ndf->npool_to_leafn +
 		ndf->npool_to_leafn_store+
 		ndf->npool_to_frootn +
@@ -273,6 +275,13 @@ int allocate_daily_growth_Dickenson(int nlimit,
 		ndf->npool_to_livecrootn_store +
 		ndf->npool_to_deadcrootn         +
 		ndf->npool_to_deadcrootn_store;
+
+	/*
+	printf("\nused %lf sminn_to_npool %lf npool %lf soil %lf ret %lf both %lf uptake %lf  limit %d", 
+			total_used, sminn_to_npool, ns->npool, soil_nsupply, ns->retransn, ns->retransn+soil_nsupply, 
+				ndf->potential_N_uptake, nlimit);
+	*/
+
 
 
 	totalc_used = 
