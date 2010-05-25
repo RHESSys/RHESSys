@@ -114,20 +114,26 @@ double compute_potential_N_uptake_Dickenson( int sen,
 	/*---------------------------------------------------------------*/
 	/* constant B and C are currently set for forests from Dickenson et al. */	
 	/*----------------------------------------------------------------*/
-	C = 30;
+
+
 	fleaf = exp(-0.25 *sen * epv->proj_lai);
 	fleaf = min(fleaf, 1.0);
 	total_wood = (cs->live_crootc + cs->dead_crootc + cs->live_stemc + cs->dead_stemc);
 
+	
 	if (epc.veg_type==TREE) {
-		froot = 0.5*(1-fleaf);
-		fwood = 0.5*(1-fleaf);
+		if (2*fleaf < 0.8)
+			froot = fleaf;
+		else {
+			froot = 0.5*(1-fleaf);
+			fwood = 0.5*(1-fleaf);
+			}
 		}
 	else {
 		fwood = 0;
 		froot = (1-fleaf);
 		}
-
+	
 	flive = (1-froot-fleaf)*epc.alloc_livewoodc_woodc;
 	fdead = 1-froot-fleaf-flive;
 
