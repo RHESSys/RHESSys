@@ -122,8 +122,10 @@ double compute_potential_N_uptake_Dickenson( int sen,
 
 	
 	if (epc.veg_type==TREE) {
-		if (2*fleaf < 0.8)
+		if (2*fleaf < 0.8) {
 			froot = fleaf;
+			fwood= 1.0-fleaf-froot;
+			}
 		else {
 			froot = 0.5*(1-fleaf);
 			fwood = 0.5*(1-fleaf);
@@ -134,8 +136,8 @@ double compute_potential_N_uptake_Dickenson( int sen,
 		froot = (1-fleaf);
 		}
 	
-	flive = (1-froot-fleaf)*epc.alloc_livewoodc_woodc;
-	fdead = 1-froot-fleaf-flive;
+	flive = epc.alloc_livewoodc_woodc;
+	fdead = 1-flive;
 
 	if (epc.veg_type == TREE){
 	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
@@ -146,6 +148,6 @@ double compute_potential_N_uptake_Dickenson( int sen,
 
 	
 	/* add in nitrogen for plants and for nitrogen deficit in pool */
-	plant_ndemand = cs->availc * (1-epc.gr_perc) / mean_cn;
+	plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake */
