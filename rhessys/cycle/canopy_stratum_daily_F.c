@@ -1127,7 +1127,7 @@ void	canopy_stratum_daily_F(
 			/* note multiply by 1000; accounted for in compute_farq_psn by a /1000 */
 			/*	this is done for numerical precision			*/
 			/*--------------------------------------------------------------*/
-			psnin.g = min(stratum[0].defaults[0][0].epc.gl_smax ,
+			psnin.g = max(stratum[0].defaults[0][0].epc.gl_smax ,
 				stratum[0].defaults[0][0].epc.gl_c ) *
 				stratum[0].defaults[0][0].lai_stomatal_fraction * 1000 / 1.6;
 			if ((psnin.lnc > 0.0) && (psnin.irad > 0.0))
