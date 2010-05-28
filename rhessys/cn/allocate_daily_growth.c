@@ -91,6 +91,7 @@ int allocate_daily_growth(int nlimit,
 	resp = 0.0;
 	add_to_cpool = 0.0;
 	plant_ndemand = ndf->potential_N_uptake;
+
 	/*--------------------------------------------------------------*/
 	/*	the amount available from the soil is potential_N_uptake adjusted */
 	/*	by fract_potential_uptake which is calculated in resolve_N_competition */
@@ -188,6 +189,21 @@ int allocate_daily_growth(int nlimit,
 		plant_nalloc = nlc * (1.0/cnl + f1/cnfr);
 		}
 
+	if (plant_calloc > 0.0) {
+		cdf->fleaf = 1.0/(1.0+f1+f3+f2*f3);
+		cdf->froot = cdf->fleaf*f1;
+		cdf->fwood = cdf->fleaf*f3*(1.0+f2);
+		}
+	else
+	{
+		cdf->fleaf = 0.0;
+		cdf->fwood = 0.0;
+		cdf->froot = 0.0;
+	}
+
+	
+
+	ndf->actual_N_uptake = plant_nalloc;
 
 	/*--------------------------------------------------------------*/
 	/* Nitrogen availabiliy limited photosynethesis so reduce	*/
