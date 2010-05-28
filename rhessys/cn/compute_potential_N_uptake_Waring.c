@@ -141,6 +141,11 @@ double compute_potential_N_uptake_Waring(
 		fleaf = 0.0;
 	}
 
+	if (fleaf > ZERO)
+		f3 = (1.0-fleaf-froot)/ (fleaf*(1.0+f2));
+	else
+		f3 = 0.0;
+	
 	if (epc.veg_type == TREE){
 		c_allometry = ((1.0+g1)*(fleaf + froot + f3*(1.0+f2)));
 		n_allometry = (fleaf/cnl + froot/cnfr + (f3*f4*(1.0+f2))/cnlw
@@ -150,10 +155,16 @@ double compute_potential_N_uptake_Waring(
 		c_allometry = (1.0+g1)*(fleaf + froot );
 		n_allometry = (fleaf/cnl + froot/cnfr);
 	}
-	plant_ndemand = cs->availc * (n_allometry / c_allometry);
+	
+	if (c_allometry > ZERO)
+		plant_ndemand = cs->availc * (n_allometry / c_allometry);
+	else
+		plant_ndemand = 0.0;
+
 	}
 	else
 		plant_ndemand = 0.0;
+
 	
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake_Waring */
