@@ -955,7 +955,6 @@ struct	cdayflux_patch_struct
     double m_gresp_transfer_to_litr1c;     /* (kgC/m2/d) */
 
 
-
 	};
 
 struct	ndayflux_patch_struct
@@ -1661,6 +1660,7 @@ struct cstate_struct
 {
 	int	age; /* (num years) */
 	int 	num_resprout; /* (num years) running index of years of resprouting */	
+    
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
     double totalc;  	    /* (kgC/m2) previous days plant carbon total */
     double net_psn;	    /* (kgC/m2)  net photosynthesis (psn-respiration) */
@@ -1790,6 +1790,12 @@ struct epvar_struct
 
  struct cdayflux_struct
 {
+
+
+	double fleaf; /* 0-1 */
+	double froot; /* 0-1 */
+	double fwood; /* 0-1 */
+	
 	/* gross PSN input */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
@@ -1937,6 +1943,7 @@ struct epvar_struct
 
     /* daily growth fluxes */
     	double potential_N_uptake; /* (kgN/m2) potential uptake from soil */
+    	double actual_N_uptake; /* (kgN/m2) potential uptake from soil */
  	double retransn_to_npool;             /* (kgN/m2/d) */
         double npool_to_leafn;                /* (kgN/m2/d) */
         double npool_to_leafn_store;        /* (kgN/m2/d) */
