@@ -60,6 +60,7 @@ int allocate_daily_growth_Waring(int nlimit,
 	int ok=1;
 	double fleaf;          /* RATIO   new leaf C: new total C     */
 	double froot;          /* RATIO   new fine root C : new total C     */
+	double fwood;          /* RATIO   new fine root C : new total C     */
 	double f1;          /* RATIO   new fine root C : new leaf C     */
 	double f2;          /* RATIO   new coarse root C : new stem C   */
 	double f3;          /* RATIO   new stem C : new leaf C          */
@@ -73,11 +74,11 @@ int allocate_daily_growth_Waring(int nlimit,
 	double gresp_store;
 	double plant_ndemand;
 	double sum_plant_nsupply, soil_nsupply;
-	double plant_nalloc, plant_calloc;
+	double plant_nalloc, plant_calloc, old_calloc;
 	double closs, nloss, ratio;
 	double plant_remaining_ndemand;
 	double excess_allocation_to_leaf, excess_c, excess_n, excess_lai;
-	double sminn_to_npool;
+	double sminn_to_npool, mean_cn;
 	double k2, a, b, c; /* working variables */
 	/* assign local values for the allocation control parameters */
 	f1 = epc.alloc_frootc_leafc;
@@ -184,9 +185,11 @@ int allocate_daily_growth_Waring(int nlimit,
 		ratio = 0.0;
 
 	ratio = min(1.0, ratio);
-	plant_calloc = cs->availc * ratio;
+	plant_calloc = cs->availc / (1+epc.gr_perc) * ratio;
 
-	
+	 excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
+	 cdf->psn_to_cpool -= excess_c;
+
 
 	
 	a = 0.8;
@@ -205,15 +208,46 @@ int allocate_daily_growth_Waring(int nlimit,
 	}
 
 
-	 excess_c = max((cs->availc -plant_calloc),0.0);
-         cdf->psn_to_cpool -= excess_c;
-	
+	if (fleaf > ZERO)	
+		f3 = (1.0-fleaf-froot)/ (fleaf*(1.0+f2));
+	else	
+		f3 = 0.0;
 
+	fwood = fleaf*f3*(1.0+f2);
+
+	cdf->froot = froot;
+	cdf->fleaf = fleaf;
+	cdf->fwood = fwood;
+
+
+	if (epc.veg_type == TREE){
+	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
+	}
+	else{
+	   mean_cn = (fleaf * cnl + froot * cnfr);
+	}
+
+
+	if (mean_cn > ZERO) {
+	if (plant_calloc / mean_cn > plant_nalloc) {
+		old_calloc = plant_calloc;
+		plant_calloc = plant_nalloc * mean_cn;
+	 	cdf->psn_to_cpool -= (old_calloc-plant_calloc);
+		}
+	if (plant_calloc / mean_cn < plant_nalloc) 
+		sminn_to_npool -= (plant_nalloc - plant_calloc/mean_cn);
+	}
+	else {
+		plant_calloc = 0.0;
+		plant_nalloc = 0.0;
+		}
+	
+	
 	
 	/* pnow is the proportion of this day's growth_Waring that is displayed now,
 	the remainder going into storage for display next year through the
 	transfer pools */
-	nlc = plant_calloc * (1.0-epc.gr_perc)  * fleaf;
+	nlc = plant_calloc  * fleaf;
 
 
 	/* daily C fluxes out of cpool and into new growth_Waring or storage */
@@ -256,6 +290,21 @@ int allocate_daily_growth_Waring(int nlimit,
 		ndf->npool_to_deadcrootn_store  = cdf->cpool_to_deadcrootc_store / cndw; 
 
 	}
+
+
+	ndf->actual_N_uptake  = 
+		ndf->npool_to_leafn +
+		ndf->npool_to_leafn_store+
+		ndf->npool_to_frootn +
+		ndf->npool_to_frootn_store +
+		ndf->npool_to_livestemn  +
+		ndf->npool_to_livestemn_store  +
+		ndf->npool_to_deadstemn         +
+		ndf->npool_to_deadstemn_store  +
+		ndf->npool_to_livecrootn         +
+		ndf->npool_to_livecrootn_store +
+		ndf->npool_to_deadcrootn         +
+		ndf->npool_to_deadcrootn_store;
 
 
 	/* calculate the amount of carbon that needs to go into growth_Waring
