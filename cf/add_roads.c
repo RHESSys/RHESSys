@@ -59,19 +59,27 @@ void add_roads(flow_table, num_patches, f1, cell)
 		{
 		aptr = flow_table[pch].adj_list;
 
-		
 		if (flow_table[pch].land == 2) {
+
+			/*
 			fnd = ( int )find_stream(flow_table, pch, &inx);
+			
 			if (fnd == 0) {
-				exit(1);
+				printf("\n Cannot find a stream below this road %d %d", flow_table[pch].patchID, flow_table[pch].hillID);
+				printf("\n so we will just link the road runoff with the patch itself");
+				inx = flow_table[pch].adj_list->inx; 
 				}
-			if (flow_table[inx].land == 1) {
+			*/
+
+			/* so now we always route road/sewer network flow to basin outlet - a trick to avoid flat area issues */
+			/* once we actually route in the stream this will no longer work and a better fix is needed */
+				inx = num_patches;
 				flow_table[pch].stream_ID.hill = flow_table[inx].hillID;
 				flow_table[pch].stream_ID.zone = flow_table[inx].zoneID;
 				flow_table[pch].stream_ID.patch = flow_table[inx].patchID;
 				flow_table[pch].stream_inx = inx;
-				neigh = flow_table[pch].num_adjacent + 1;
-				}
+
+/* 				neigh = flow_table[pch].num_adjacent + 1; */
 
                    } /* end if road */
 
