@@ -43,8 +43,6 @@ int read_flow_table(flow_table, maxr, maxc, cell)
 	int* zone=0; //CHRIS
     int* hill=0;  //chu
 	int* dem=0;  //chu
-	int* K=0;     //chu
-	int* m_par=0;  //chu
 	int *stream=0;   //chu
 	int sc_flag=0; //chu
 	FILE *fl=0;  //chu
@@ -83,10 +81,6 @@ int read_flow_table(flow_table, maxr, maxc, cell)
 			flow_table[pch].x += (float) (1.0 * r);
 			flow_table[pch].y += (float) (1.0 * c);
 			flow_table[pch].z += (float) (1.0 * dem[inx]);
-			flow_table[pch].K += (float)(1.0 * K[inx]);
-			flow_table[pch].m_par += (float)(m_par[inx]);
-	/*	flow_table[pch].num_adjacent += check_neighbours(r,c, patch, zone, hill, &flow_table[pch], 
-			flow_table[pch].num_adjacent, (int)cell) ;  */   //chu
 
 
 		flow_table[pch].num_adjacent += check_neighbours(r, c, patch, zone, hill, stream, &flow_table[pch], 
