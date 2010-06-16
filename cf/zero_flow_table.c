@@ -51,9 +51,7 @@ void	zero_flow_table(flow_table, maxr, maxc)
 		 flow_table[inx].x = 0.0;
 		 flow_table[inx].y = 0.0;
 		 flow_table[inx].z = 0.0;
-		 flow_table[inx].K = 0.0;
 		 flow_table[inx].land = 0;
-		 flow_table[inx].m_par = 0.0;
 		 flow_table[inx].flna = 0.0;
 		 flow_table[inx].total_gamma = 0.0;
 		 flow_table[inx].acc_area = 0.0;
