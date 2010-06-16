@@ -82,8 +82,6 @@ main(int argc, char *argv[])
 	char	rnzone[MAXS];
 	char	rnpatch[MAXS];
 	char*	rndem;
-	char*	rnK;
-	char*	rnmpar;
 	char*	rnroads;
 	char*	rnstream;
 	char*	rnsewers;
@@ -98,8 +96,6 @@ main(int argc, char *argv[])
     int			 *stream;
     int			 *roads;
     int			 *sewers;
-    double		 *K;
-	double		 *m_par;
 	double		 *flna;
 	float		 *ehr;
 	float		 *whr;
@@ -118,7 +114,7 @@ main(int argc, char *argv[])
 	scale_trans = 1.0;
 	scale_dem = 1.0;	/* scaling for dem values        */
 	pst_flag = 0;		/* print stream table flag            */
-	cell = 30.0;		/* default resolution            */
+	cell = 10.0;		/* default resolution            */
 	width = 5;			/* default road width            */
 	basinid = 1;
 
@@ -204,17 +200,6 @@ main(int argc, char *argv[])
 	output_name_opt->description = "Output name";
 
 	// Arguments that specify the names of required raster maps
-	struct Option* m_raster_opt = G_define_option();
-	m_raster_opt->key = "m";
-	m_raster_opt->type = TYPE_STRING;
-	m_raster_opt->required = YES;
-	m_raster_opt->description = "m";
-
-	struct Option* K_raster_opt = G_define_option();
-	K_raster_opt->key = "K";
-	K_raster_opt->type = TYPE_STRING;
-	K_raster_opt->required = YES;
-	K_raster_opt->description = "K";
 
 	struct Option* stream_raster_opt = G_define_option();
 	stream_raster_opt->key = "stream";
@@ -244,7 +229,7 @@ main(int argc, char *argv[])
 	template_opt->key = "template";
 	template_opt->type = TYPE_STRING;
 	template_opt->required = YES;
-	template_opt->description = "REHSSys template file from which to extract the basin, hill, zone, and patch GRASS rasters";
+	template_opt->description = "RHESSys template file from which to extract the basin, hill, zone, and patch GRASS rasters";
 
 	struct Option* flna_raster_opt = G_define_option();
 	flna_raster_opt->key = "flna";
@@ -343,12 +328,11 @@ main(int argc, char *argv[])
 		// Need to implement verbose	
 	rndem = dem_raster_opt->answer;
 	fntemplate = template_opt->answer;
-	rnK = K_raster_opt->answer;
-	rnmpar = m_raster_opt->answer;
 	rnroads = road_raster_opt->answer;
 	rnstream = stream_raster_opt->answer;
 	rnslope = slope_raster_opt->answer;
 
+    printf("Create_flowpaths.C\n\n");
     printf("Create_flowpaths.C\n\n");
 
 
@@ -362,18 +346,26 @@ main(int argc, char *argv[])
 	char	template_buffer[MAXS];
 	char	first[MAXS];
 	char	second[MAXS];
+
+	printf("\n Reading template file %s", fntemplate);
+	printf("\n Reading template file %s", fntemplate);
+
 	while (fgets(template_buffer, sizeof(template_buffer), template_fp) != NULL) {
 		sscanf(template_buffer, "%s %s", first, second);
 
 		// Check if the token is anything we are looking for
 		if (strcmp("_basin", first) == 0 ) {
 			strcpy(rnbasin, second);
+			printf("Basin: %s\n", rnbasin);
 		} else if (strcmp("_hillslope", first) == 0 ) {
 			strcpy(rnhill, second);
+			printf("Hillslope: %s\n", rnhill);
 		} else if (strcmp("_zone", first) == 0 ) {
 			strcpy(rnzone, second);
+			printf("Zone: %s\n", rnzone);
 		} else if (strcmp("_patch", first) == 0 ) {
 			strcpy(rnpatch, second);
+			printf("Patch: %s\n", rnpatch);
 		}
 	}
 	fclose (template_fp);
@@ -414,11 +406,14 @@ main(int argc, char *argv[])
 
 	// Get cell size based off of that in the patchmap
 	// Assuming square cells, otherwise fixes deeper in cf will need to be made.
+	/*
 	if (patch_header.ew_res != patch_header.ns_res) {
 		printf("Attempting to use non-square cells\n");
 		exit(1);
 	}
+	*/
 	cell = patch_header.ew_res;
+	cell = 30;
 
 	struct Cell_head zone_header;
 	zone = (int*)raster2array(rnzone, &zone_header, NULL, NULL, CELL_TYPE);
@@ -442,11 +437,6 @@ main(int argc, char *argv[])
 		sewers = (int*)raster2array(rnsewers, &sewers_header, NULL, NULL, CELL_TYPE);
 	}
 
-	struct Cell_head K_header;
-	K = (double*)raster2array(rnK, &K_header, NULL, NULL, DCELL_TYPE);
-
-	struct Cell_head mpar_header;
-	m_par = (double*)raster2array(rnmpar, &mpar_header, NULL, NULL, DCELL_TYPE);
 	
 	if (f_flag) {
 		struct Cell_head flna_header;
@@ -461,7 +451,7 @@ main(int argc, char *argv[])
 
 	printf("Building flow table\n");
 	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch, 
-					stream, roads, sewers, K, m_par, flna, out1, maxr, 
+					stream, roads, sewers, flna, out1, maxr, 
 					maxc,f_flag, sc_flag, sewer_flag, slp_flag, cell, 
                     scale_dem);
 
