@@ -56,8 +56,6 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 	int stream_neigh;
 	int new_adj = 0;
 
-	/* for now streams don't point anywhere 			*/
-	if ((flow_entry->land != 1) || (sc_flag > 0) ){ 
 
 	for (r=-1; r <= 1; r++) {
 		for (c=-1; c<=1; c++) {
@@ -80,9 +78,9 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 					(( p_neigh > 0) && (z_neigh > 0) && (h_neigh > 0)))
 				{
 
-
 					/* if stream  add in stream network processing */
 					/* create a list of downstream neighbours if it does not exist already */
+
 					if ((flow_entry->land == 1) && (stream_neigh > 0)) {
 					if ( (flow_entry->num_dsa == 0)  ) {
 						flow_entry->num_dsa = 1;
@@ -97,13 +95,13 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 						flow_entry->adj_str_list->hillID = h_neigh;
 						flow_entry->adj_str_list->perimeter = 0.0; 
 						flow_entry->adj_str_list->next = NULL; 
-						flow_entry->adj_str_ptr = flow_entry->adj_list;
+						flow_entry->adj_str_ptr = flow_entry->adj_str_list;
 						}
 					else {
 						/* search list for other entries for this neighbour */
 						flow_entry->adj_str_ptr = flow_entry->adj_str_list;
 						flow_entry->adj_str_ptr = (struct adj_struct *)check_list( 
-									p_neigh, z_neigh, h_neigh, num_adj, flow_entry->adj_str_ptr);
+									p_neigh, z_neigh, h_neigh, flow_entry->num_dsa, flow_entry->adj_str_list);
 									
 						/* is this the first instance of the neighbour */
 					 	if ((( flow_entry->adj_str_ptr->patchID != p_neigh) || 
@@ -125,14 +123,18 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 							flow_entry->adj_str_ptr->patchID = p_neigh;
 							flow_entry->adj_str_ptr->zoneID = z_neigh;
 							flow_entry->adj_str_ptr->hillID = h_neigh;
-							flow_entry->adj_str_ptr->perimeter = 0.0; 
 							flow_entry->adj_str_ptr->next = NULL;
+							flow_entry->adj_str_ptr->perimeter = 0.0; 
 
 							} /* end new entry */
 					}
+						
+						if (abs((c+r)/ 2)*1.0/1.0== 0.5 )
+							flow_entry->adj_str_ptr->perimeter += cell*0.5;
+						else
+							flow_entry->adj_str_ptr->perimeter += cell*1.0/sqrt(2.0);
 					} /* end if stream */
 
-					else {
 					/* now do regular flowtable processing */
 					/* create a list of neighbours if it does not exist already */
 					if ( (num_adj == 0)  ) {
@@ -154,7 +156,7 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 						/* search list for other entries for this neighbour */
 						flow_entry->adj_ptr = flow_entry->adj_list;
 						flow_entry->adj_ptr = (struct adj_struct *)check_list( 
-									p_neigh, z_neigh, h_neigh, num_adj, flow_entry->adj_ptr);
+									p_neigh, z_neigh, h_neigh, num_adj, flow_entry->adj_list);
 									
 						/* is this the first instance of the neighbour */
 					 	if ((( flow_entry->adj_ptr->patchID != p_neigh) || 
@@ -184,6 +186,7 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 
 							} /* end land processing */
 							else { 		/* stream processing */
+
 								if ( ( flow_entry->adj_ptr->next = (struct adj_struct *)malloc(
 									sizeof(struct adj_struct))) == NULL)
 
@@ -204,7 +207,7 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 
 
 							} /* end new entry */
-						}
+					}
 
 					/* add perimeter length */
 					if (abs((c+r)/ 2)*1.0/1.0== 0.5 )
@@ -214,7 +217,6 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 
 				} /* end is neigh */
 
-				}
 
 			} /* end edges if */
 
@@ -225,8 +227,8 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 
 
 	flow_entry->adj_ptr = flow_entry->adj_list;	
+	flow_entry->adj_str_ptr = flow_entry->adj_str_list;	
 
-	}  /* end if land */
 	return(new_adj);
 
     }
