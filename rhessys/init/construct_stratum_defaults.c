@@ -373,7 +373,7 @@ struct stratum_default *construct_stratum_defaults(
 	        default_object_list[i].epc.gs_dayl_min = 36000;
 		default_object_list[i].epc.gs_dayl_max = 39600;
 		default_object_list[i].epc.max_storage_percent = 0.2;
-		default_object_list[i].epc.min_percent_leafg = 0.01;
+		default_object_list[i].epc.min_percent_leafg = default_object_list[i].epc.leaf_turnover; 
 	/*--------------------------------------------------------------*/
 	/*	 litter is assumed to have a mositure capacity of 	*/
 	/*	given by litter_moist_coef default assumes			*/

@@ -147,7 +147,7 @@ void  update_drainage_road(
 	/*------------------------------------------------------------*/
 	/*	calculate amuount of water output to patches			*/
 	/*-----------------------------------------------------------*/
-		route_to_patch = sen_K *  total_gamma
+		route_to_patch = total_gamma
 			* compute_transmissivity_curve( m, 
 				patch[0].soil_defaults[0][0].active_zone_z,
 				road_int_depth,
@@ -156,7 +156,7 @@ void  update_drainage_road(
 		/*-----------------------------------------------------------*/
 		/*	calculate amuount of water output to stream		*/
 		/*-----------------------------------------------------------*/
-		route_to_stream = sen_K * total_gamma
+		route_to_stream = total_gamma
 			* compute_transmissivity_curve( m, 
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].sat_deficit,
@@ -165,7 +165,7 @@ void  update_drainage_road(
 		if (route_to_patch < 0.0) route_to_patch = 0.0;
 		if (route_to_stream < 0.0) route_to_stream = 0.0;
 		if ((route_to_stream + route_to_patch) > available_sat_water) {
-			route_to_patch*= (available_sat_water)/(route_to_patch + route_to_stream);
+			route_to_patch *= (available_sat_water)/(route_to_patch + route_to_stream);
 			route_to_stream *= (available_sat_water)/(route_to_patch + route_to_stream);
 		}
 		/*--------------------------------------------------------------*/
@@ -179,7 +179,7 @@ void  update_drainage_road(
 				road_int_depth,
 				patch[0].soil_defaults[0][0].soil_water_cap,
 				m,
-				sen_K * total_gamma / patch[0].area * time_int,
+				total_gamma / patch[0].area * time_int,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].soil_defaults[0][0].N_decay_rate,
@@ -193,7 +193,7 @@ void  update_drainage_road(
 				patch[0].sat_deficit,
 				patch[0].soil_defaults[0][0].soil_water_cap,
 				m,
-				sen_K * total_gamma / patch[0].area * time_int,
+				total_gamma / patch[0].area * time_int,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].soil_defaults[0][0].N_decay_rate,
@@ -211,7 +211,7 @@ void  update_drainage_road(
 	/*--------------------------------------------------------------*/
 	else {
 		route_to_stream = 0.0;
-		route_to_patch = sen_K *  total_gamma
+		route_to_patch = total_gamma
 			* compute_transmissivity_curve( m, 
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].sat_deficit,
@@ -231,7 +231,7 @@ void  update_drainage_road(
 				patch[0].sat_deficit,
 				patch[0].soil_defaults[0][0].soil_water_cap,
 				m,
-				sen_K * total_gamma / patch[0].area * time_int,
+				total_gamma / patch[0].area * time_int,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].soil_defaults[0][0].N_decay_rate,
@@ -279,7 +279,7 @@ void  update_drainage_road(
 			0.0,
 			0.0,
 			m,
-			sen_K * total_gamma / patch[0].area * time_int,
+			total_gamma / patch[0].area * time_int,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].soil_defaults[0][0].N_decay_rate,

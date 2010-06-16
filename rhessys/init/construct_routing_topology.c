@@ -81,11 +81,12 @@ struct routing_list_object construct_routing_topology(
 	/*	otherwise add it to the hillslope level routing list		*/
 	/*--------------------------------------------------------------*/
 	for (i=0; i< num_patches; ++i) {
-		fscanf(routing_file,"%d %d %d %lf %lf %lf %lf %d %lf %d",
+		fscanf(routing_file,"%d %d %d %lf %lf %lf %lf %lf %d %lf %d",
 			&patch_ID,
 			&zone_ID,
 			&hill_ID,
 			&x,&y,&z,
+			&area,
 			&area,
 			&drainage_type,
 			&gamma,
@@ -96,6 +97,8 @@ struct routing_list_object construct_routing_topology(
 		else
 			patch = basin[0].outside_region;
 		rlist.list[i] = patch;
+		
+		gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
 
 		/*--------------------------------------------------------------*/
 		/*  Allocate innundation list array				*/

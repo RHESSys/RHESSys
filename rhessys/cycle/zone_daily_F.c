@@ -438,7 +438,7 @@ void		zone_daily_F(
 		zone[0].metv.vpd = max(es - zone[0].e_dewpoint,0.0);
 		if (zone[0].relative_humidity == -999.0) {
 			if (es > ZERO)
-				zone[0].relative_humidity = 1.0 - zone[0].metv.vpd / es;
+				zone[0].relative_humidity = zone[0].e_dewpoint / es;
 			else
 				zone[0].relative_humidity = -999.0;
 			}

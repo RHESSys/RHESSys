@@ -83,6 +83,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].sen_flag = 0;
 	command_line[0].vsen_flag = 0;
 	command_line[0].vsen_alt_flag = 0;
+	command_line[0].precip_scale_flag = 0;
 	command_line[0].snow_scale_flag = 0;
 	command_line[0].vgsen_flag = 0;
 	command_line[0].veg_sen1 = 1.0;
@@ -368,6 +369,73 @@ struct	command_line_object	*construct_command_line(
 				i++;
 			} /* end if */
 
+
+			/*-------------------------------------------------------*/
+			/*Check if the precip scaling (using random dist) flag is next.           */
+			/*-------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-precip") == 0 ){
+				printf("\n Running wiith stochastic precipitation scaling ");
+				command_line[0].precip_scale_flag = 1;
+				i++;
+				/*--------------------------------------------------------------*/
+				/*			Read in the sensitivity parameter values. */
+				/*--------------------------------------------------------------*/
+				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,
+						"FATAL ERROR: Sensitivity perturbation not specified\n");
+					exit(0);
+				}/*end if*/
+				command_line[0].psen[PTHRESH] = (double)atof(main_argv[i]);
+				i++;
+
+				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,
+						"FATAL ERROR: Sensitivity perturbation not specified\n");
+					exit(0);
+				}/*end if*/
+				command_line[0].psen[PTYPELOW] = (double)atof(main_argv[i]);
+				i++;
+
+				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,
+						"FATAL ERROR: Sensitivity perturbation not specified\n");
+					exit(0);
+				}/*end if*/
+				command_line[0].psen[P1LOW] = (double)atof(main_argv[i]);
+				i++;
+				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,
+						"FATAL ERROR: Sensitivity perturbation not specified\n");
+					exit(0);
+				}/*end if*/
+				command_line[0].psen[P2LOW] = (double)atof(main_argv[i]);
+				i++;
+
+
+				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,
+						"FATAL ERROR: Sensitivity perturbation not specified\n");
+					exit(0);
+				}/*end if*/
+				command_line[0].psen[PTYPEHIGH] = (double)atof(main_argv[i]);
+				i++;
+				
+				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,
+						"FATAL ERROR: Sensitivity perturbation not specified\n");
+					exit(0);
+				}/*end if*/
+				command_line[0].psen[P1HIGH] = (double)atof(main_argv[i]);
+				i++;
+				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,
+						"FATAL ERROR: Sensitivity perturbation not specified\n");
+					exit(0);
+				}/*end if*/
+				command_line[0].psen[P2HIGH] = (double)atof(main_argv[i]);
+				i++;
+
+			} /* end if */
 
 			/*-----------------------------------------------------------*/
 			/*alternatively use pore size inidex and psi air entry				*/

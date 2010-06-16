@@ -1,4 +1,4 @@
-PGM  = rhessys5.13.3
+PGM  = rhessys5.14.2
 CC = gcc 
 CFLAGS = -g -I include
 RHESSYS_BIN = /usr/local/bin
@@ -264,7 +264,8 @@ $(OBJ)/zero_stratum_daily_flux.o \
 $(OBJ)/zone_daily_F.o \
 $(OBJ)/zone_daily_I.o \
 $(OBJ)/zone_hourly.o \
-$(OBJ)/construct_ascii_grid.o
+$(OBJ)/construct_ascii_grid.o \
+$(OBJ)/create_random_distrb.o
 
 all:	dir rhessys
 
@@ -500,6 +501,8 @@ $(OBJ)/yearday.o: util/yearday.c
 	$(CC) -c $(CFLAGS) util/yearday.c -o $(OBJ)/yearday.o
 $(OBJ)/julday.o: util/julday.c
 	$(CC) -c $(CFLAGS) util/julday.c -o $(OBJ)/julday.o
+$(OBJ)/create_random_distrb.o: util/create_random_distrb.c
+	$(CC) -c $(CFLAGS) util/create_random_distrb.c -o $(OBJ)/create_random_distrb.o
 $(OBJ)/compute_mean_hillslope_parameters.o: init/compute_mean_hillslope_parameters.c
 	$(CC) -c $(CFLAGS) init/compute_mean_hillslope_parameters.c -o $(OBJ)/compute_mean_hillslope_parameters.o
 $(OBJ)/compute_radiative_fluxes.o: rad/compute_radiative_fluxes.c

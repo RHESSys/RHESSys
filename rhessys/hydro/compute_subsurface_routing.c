@@ -355,7 +355,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 						0.0,
 						0.0,
 						patch[0].soil_defaults[0][0].m,
-						command_line[0].sen[K] * patch[0].innundation_list[d].gamma / patch[0].area * time_int,
+						patch[0].innundation_list[d].gamma / patch[0].area * time_int,
 						patch[0].soil_defaults[0][0].porosity_0,
 						patch[0].soil_defaults[0][0].porosity_decay,
 						patch[0].soil_defaults[0][0].N_decay_rate,
@@ -670,7 +670,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].rootzone.depth,
 				patch[0].soil_defaults[0][0].Ksat_0 / n_timesteps / 2,	
 				patch[0].rz_storage - patch[0].rootzone.field_capacity);
-
+				
 			patch[0].rz_storage -=  rz_drainage;
 			patch[0].unsat_storage +=  rz_drainage;	
 									

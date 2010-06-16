@@ -183,6 +183,15 @@
 #define SOIL_DEPTH 2
 #define SATDEF 0
 #define STREAMFLOW 1
+#define PTHRESH 0
+#define PTYPELOW 1
+#define P1LOW 2
+#define P2LOW 3
+#define PTYPEHIGH 4
+#define P1HIGH 5
+#define P2HIGH 6
+
+
 /*----------------------------------------------------------*/
 /*      Define min and max functions                                                    */
 /*----------------------------------------------------------*/
@@ -1530,6 +1539,7 @@ struct	command_line_object
 	int		gw_flag;
 	int		tchange_flag;
 	int		std_flag;
+	int		precip_scale_flag;
 	int		snow_scale_flag;
 	int		vmort_flag;
 	char	*output_prefix;
@@ -1546,6 +1556,7 @@ struct	command_line_object
 	double	sat_to_gw_coeff_mult;
 	double	gw_loss_coeff_mult;
 	double	snow_scale_tol;
+	double	psen[7];
 	double	sen[3];
 	double	vsen[2];
 	double	vsen_alt[2];

@@ -137,11 +137,11 @@ void  update_drainage_stream(
 	/*	calculate amuount of water output to stream as baseflow */
 	/*-----------------------------------------------------------*/
 	if (total_gamma < ZERO ) {
-		gamma = sen_K * Ksat * m * 2.0 * sqrt(patch[0].area)
+		gamma = Ksat * m * 2.0 * sqrt(patch[0].area)
 			* time_int;
 	}
 	else {
-		gamma = sen_K * total_gamma * time_int;
+		gamma = total_gamma * time_int;
 
 	}
 

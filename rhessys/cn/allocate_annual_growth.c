@@ -80,6 +80,7 @@ int allocate_annual_growth(				int id,
 	double fcroot, flive, fdead, fleaf, froot, fwood;
 	double total_wood_c, total_wood_n, wood_cn;
 	double rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
+	double unmetn, carbohydrate_transfer_n;
 	double plantc, excess_lai, excess_leaf_carbon, stemc, leafc;
 	double delta_leaf, leaf_growth_deficit;
 	double total_store, ratio, total_biomass, carbohydrate_transfer;
@@ -220,8 +221,23 @@ int allocate_annual_growth(				int id,
 	   	mean_cn = (fleaf * cnl + froot * cnfr);
 		}
 
-		if (carbohydrate_transfer/mean_cn > ns->npool)
-			carbohydrate_transfer = ns->npool*mean_cn;
+		carbohydrate_transfer_n = carbohydrate_transfer/mean_cn;
+
+		unmetn = carbohydrate_transfer_n - ns->npool;
+		unmetn = max(unmetn, 0.0);
+
+		if (unmetn > ns->retransn)   {
+			ns->npool += ns->retransn;
+			ns->retransn = 0.0;
+			carbohydrate_transfer = (ns->npool)*mean_cn;
+			}
+			else {
+			ns->npool += unmetn;
+			ns->retransn -= unmetn;
+			}	
+				
+
+
 		carbohydrate_transfer = max(carbohydrate_transfer, 0.0);		
 
 		storage_transfer_prop = 1.0;
@@ -249,7 +265,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	/*	respiration thinning			*/
 	/*--------------------------------------------------------------*/
-	if ((cs->cpool < -ZERO)  && (vmort_flag == 1) && (cs->leafc_store < ZERO) ) {
+	if ((cs->cpool < ZERO)  && (vmort_flag == 1) && (cs->leafc_store < epc.min_percent_leafg*cs->leafc) ) {
 
 		plantc =  (cs->live_crootc
 			+ cs->live_stemc + cs->dead_crootc

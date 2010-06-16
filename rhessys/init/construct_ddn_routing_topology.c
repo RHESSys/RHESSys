@@ -86,6 +86,7 @@ struct routing_list_object construct_ddn_routing_topology(
 		fscanf(routing_file,"%lf %lf %lf", &x,&y,&z);
 		fscanf(routing_file,"%lf %d %d", 
 			&area,
+			&area,
 			&drainage_type,
 			&num_innundation_depths);
 
@@ -111,6 +112,8 @@ struct routing_list_object construct_ddn_routing_topology(
 			else
 				patch[0].innundation_list[d].critical_depth = NULLVAL;
 
+			gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
+			
 			patch[0].innundation_list[d].gamma	 = gamma;
 			/*--------------------------------------------------------------*/
 			/*  Allocate neighbour array									*/

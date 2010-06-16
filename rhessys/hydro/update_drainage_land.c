@@ -155,7 +155,7 @@ void  update_drainage_land(
 	/*-----------------------------------------------------------*/
 
 
-	route_to_patch = sen_K * time_int * compute_varbased_flow(patch[0].std * std_scale, total_gamma, m,
+	route_to_patch =  time_int * compute_varbased_flow(patch[0].std * std_scale, total_gamma, m,
 		patch[0].soil_defaults[0][0].active_zone_z,
 		patch[0].sat_deficit,
 		patch[0].soil_defaults[0][0].soil_water_cap) ;
@@ -174,7 +174,7 @@ void  update_drainage_land(
 			patch[0].sat_deficit,
 			patch[0].soil_defaults[0][0].soil_water_cap,
 			m,
-			sen_K * total_gamma / patch[0].area * time_int,
+			total_gamma / patch[0].area * time_int,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].soil_defaults[0][0].N_decay_rate,
@@ -224,7 +224,7 @@ void  update_drainage_land(
 				0.0,
 				0.0,
 				m,
-				sen_K * total_gamma / patch[0].area * time_int,
+				total_gamma / patch[0].area * time_int,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].soil_defaults[0][0].N_decay_rate,

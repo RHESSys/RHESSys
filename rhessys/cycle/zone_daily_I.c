@@ -211,6 +211,30 @@ void zone_daily_I(
 		/*		we do not adjust for slope, cloudyness or lai as yet	*/
 		/*--------------------------------------------------------------*/
 		temp = zone[0].base_stations[i][0].daily_clim[0].rain[day];
+
+		/*--------------------------------------------------------------*/
+		/* 	allow for stocastic noise in precip scaling 		*/
+		/*--------------------------------------------------------------*/
+		if ((command_line[0].precip_scale_flag > 0) && (temp > 0.0)) {
+
+			if (temp < command_line[0].psen[PTHRESH])   {
+				if (command_line[0].psen[PTYPELOW] > 0)
+					isohyet_adjustment = z_delta * exp(normdist(command_line[0].psen[P1LOW], command_line[0].psen[P2LOW])) + 1;
+				else
+					isohyet_adjustment = z_delta * unifdist(command_line[0].psen[P1LOW], command_line[0].psen[P2LOW]) + 1;
+			}
+			else {
+				if (command_line[0].psen[PTYPEHIGH] > 0)
+					isohyet_adjustment = z_delta * exp(normdist(command_line[0].psen[P1HIGH], command_line[0].psen[P2HIGH])) + 1;
+				else
+					isohyet_adjustment = z_delta * unifdist(command_line[0].psen[P1HIGH], command_line[0].psen[P2HIGH]) + 1;
+			}
+
+			if (isohyet_adjustment < ZERO) 
+				isohyet_adjustment = 0.0;
+		} /* end stocastic noise addition */
+
+
 		if ( temp != -999.0 ){
 			zone[0].rain =  temp * isohyet_adjustment;
 			flag++;
