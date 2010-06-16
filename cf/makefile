@@ -1,4 +1,4 @@
-PGM = cf7
+PGM = cf9
 EW_PGM = ew_horizon
 CC  = gcc 
 CFLAGS  = 
