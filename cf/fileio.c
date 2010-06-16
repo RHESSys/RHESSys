@@ -719,12 +719,12 @@ void header_help(maxr, maxc, fnhdr)
 	input_prompt() - input root filename, create full filenames
   -------------------------------------------------------------------------*/
 
-void	input_prompt(maxr, maxc,filename, fndem,fnslope, fnK, fnflna, fnpatch,fnzone,fnhill,
-			fnstream, fnroads, fnsewers, fnmpar,fnpartition,
+void	input_prompt(maxr, maxc,filename, fndem,fnslope,  fnflna, fnpatch,fnzone,fnhill,
+			fnstream, fnroads, fnsewers, fnpartition,
 			fntable,fnroot, fnehr, fnwhr, f_flag, sewer_flag, arc_flag)
 	int *maxr, *maxc;
 	char *filename;
-	char *fndem, *fnK, *fnpatch, *fnzone, *fnhill, *fnstream, *fnroads, *fnmpar, *fnpartition,
+	char *fndem, *fnpatch, *fnzone, *fnhill, *fnstream, *fnroads, *fnpartition,
 		*fntable, *fnroot, *fnflna, *fnslope, *fnsewers, *fnehr, *fnwhr;
 	int f_flag, arc_flag, sewer_flag;
 	
@@ -736,13 +736,11 @@ void	input_prompt(maxr, maxc,filename, fndem,fnslope, fnK, fnflna, fnpatch,fnzon
    
     strcpy(fndem,filename);
     strcpy(fnslope,filename);
-    strcpy(fnK,filename);
     strcpy(fnpatch,filename);
     strcpy(fnzone,filename);
     strcpy(fnhill,filename);
     strcpy(fnstream,filename);
     strcpy(fnroads,filename);
-    strcpy(fnmpar,filename);
     strcpy(fnpartition,filename);
     strcpy(fntable,filename);
     strcpy(fnehr,filename);
@@ -755,8 +753,6 @@ void	input_prompt(maxr, maxc,filename, fndem,fnslope, fnK, fnflna, fnpatch,fnzon
   
     strcat(fndem,".dem");
     strcat(fnslope,".slope");
-    strcat(fnK,".K");
-    strcat(fnmpar,".m");
     strcat(fnpatch,".patch");
     strcat(fnzone,".zone");
     strcat(fnhill,".hill");
