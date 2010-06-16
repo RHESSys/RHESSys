@@ -75,16 +75,13 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 		flow_table[pch].x = flow_table[pch].x / flow_table[pch].area;
 		flow_table[pch].y = flow_table[pch].y / flow_table[pch].area;
 		flow_table[pch].z = flow_table[pch].z / flow_table[pch].area;
-		flow_table[pch].K = flow_table[pch].K / flow_table[pch].area;
-		if ((sc_flag == 1) || (slp_flag == 1)) {
-			flow_table[pch].internal_slope = flow_table[pch].internal_slope
-						 / flow_table[pch].area;
-			flow_table[pch].internal_slope = ( float )( tan(flow_table[pch].internal_slope) );
-			flow_table[pch].max_slope = ( float )( tan(flow_table[pch].max_slope * DtoR) );
-		}
-		flow_table[pch].m_par = flow_table[pch].m_par / flow_table[pch].area;
+		flow_table[pch].internal_slope = flow_table[pch].internal_slope
+					 / flow_table[pch].area;
+		flow_table[pch].internal_slope = ( float )( tan(flow_table[pch].internal_slope) );
+		flow_table[pch].max_slope = ( float )( tan(flow_table[pch].max_slope * DtoR) );
 		flow_table[pch].flna = flow_table[pch].flna / flow_table[pch].area;
 		flow_table[pch].total_gamma = 0.0;
+		flow_table[pch].gamma_neigh = 0.0;
 		flow_table[pch].acc_area = 0.0;
 		flow_table[pch].total_perimeter = 0.0;
 		flow_table[pch].total_str_gamma = 0.0;
@@ -113,7 +110,7 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 		aptr = flow_table[pch].adj_list;
 		str_aptr = flow_table[pch].adj_str_list;
 
-		mult = flow_table[pch].m_par * flow_table[pch].K;
+		mult = 1.0;
 
 		flow_table[pch].slope = 0.0;
 
@@ -121,7 +118,6 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			printf("\n number of neighbours %d", flow_table[pch].num_dsa);
 
 		/* first do processing for stream table */
-	/*
 		for (neigh = 1; neigh <= flow_table[pch].num_dsa; neigh ++)
 			{
 
@@ -129,8 +125,7 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			z = str_aptr->zoneID;
 			h = str_aptr->hillID;
 
-				printf("\n neigh %d is %d", neigh, p);
-				printf("\n neigh %d is %d", neigh, p);
+			printf("\n for patch %d  neigh %d of %d is %d", flow_table[pch].patchID, neigh, flow_table[pch].num_dsa, p);
 			inx = find_patch(num_patches, flow_table, p, z, h);
 			if (inx == 0) {
 				printf("\n For patch %d %d %d Neighbour not found %d %d %d\n", 
@@ -143,6 +138,7 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			rise = flow_table[pch].z - flow_table[inx].z;
 			if (rise > 0.0) {
 				str_aptr->gamma = rise;
+				 flow_table[pch].num_str += 1;
 				}
 			else 
 				str_aptr->gamma = 0.0;
@@ -151,10 +147,8 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 
 			}
 
-*/
 		if (d_flag)
 			printf("\n number of adj neighbours %d", flow_table[pch].num_adjacent);
-
 		/* now do processing for flow table */
 		for (neigh = 1; neigh <= flow_table[pch].num_adjacent; neigh ++)
 			{
@@ -208,7 +202,7 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 
 
 
-			aptr->gamma = ( float )( aptr->perimeter * mult * aptr->slope / (cell) );
+			aptr->gamma = ( float )( aptr->perimeter * mult * aptr->slope );
 
 			if (aptr->gamma < 0.0) aptr->gamma = 0.0;
 
@@ -221,8 +215,7 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 
 			flow_table[pch].total_gamma += aptr->gamma;
 			flow_table[pch].total_perimeter += aptr->perimeter;
-
-			flow_table[pch].slope += aptr->slope * aptr->gamma;
+			flow_table[pch].slope += aptr->slope * aptr->perimeter;
 
 			aptr = aptr->next;
 			}
@@ -230,12 +223,11 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 
 		/*  divided by total_gamma */
 		aptr = flow_table[pch].adj_list;
-
 	
 		if (flow_table[pch].total_gamma == 0.0)
 			flow_table[pch].slope = 0.0;
 		else
-			flow_table[pch].slope = flow_table[pch].slope / flow_table[pch].total_gamma;
+			flow_table[pch].slope = flow_table[pch].slope / flow_table[pch].total_perimeter;
 
 		for (neigh = 1; neigh <= flow_table[pch].num_adjacent; neigh ++)
 			{
@@ -246,6 +238,13 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			aptr = aptr->next;
 
 			}
+
+		flow_table[pch].gamma_neigh = flow_table[pch].total_gamma;
+
+		if (slp_flag == 0) {
+			flow_table[pch].total_gamma = mult * flow_table[pch].slope * flow_table[pch].area *cell* cell;;
+			}
+
 
 
 		if (slp_flag == 1) {
