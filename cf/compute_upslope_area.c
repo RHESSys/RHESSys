@@ -58,8 +58,6 @@ int compute_upslope_area(flow_table, num_patches, f1, rflag)
 
 	/* max_ID = sort_flow_table(flow_table, num_patches); */
 
-	cell = 30.0;
-
 
 	/* send area to  each upslope neighbour for each patch in the sort list  */
 
