@@ -1,5 +1,5 @@
 	void	input_prompt(int *, int *, char *, char *, char *,  char *, char *,
-				char *, char *, char *, char *, char *, char *, char *, char *, char *, char*, char *,
+				char *, char *, char *, char *, char *, char *, char *, char*, char *,
 				char *, int, int, int );
   
 
@@ -28,8 +28,6 @@ int build_flow_table(struct flow_struct* flow_table,
 					 int* stream,
 					 int* roads,
 					 int* sewers,
-					 double* K,
-					 double* m_par,
 					 double* flna,
 					 FILE* f1,
 					 int maxr, int maxc,
