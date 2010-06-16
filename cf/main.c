@@ -413,7 +413,7 @@ main(int argc, char *argv[])
 	}
 	*/
 	cell = patch_header.ew_res;
-	cell = 30;
+	printf("\n cell resolution is %lf", cell);
 
 	struct Cell_head zone_header;
 	zone = (int*)raster2array(rnzone, &zone_header, NULL, NULL, CELL_TYPE);
