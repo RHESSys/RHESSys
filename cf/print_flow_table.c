@@ -69,7 +69,7 @@ void	print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,  scale_t
 		exit(1);
 		}
 
-	fprintf(outfile,"%8d",num_patches); 
+	fprintf(outfile,"%8d",num_patches ); 
 
 	for (i=1; i<= num_patches; i++) {
 
@@ -78,7 +78,7 @@ void	print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,  scale_t
 
 		if (((flow_table[i].land == 1) || (flow_table[i].total_gamma < ZERO)) && (sc_flag > 0))  {
 
-				mult = ( float )( flow_table[i].K * flow_table[i].m_par * flow_table[i].area * cell * cell);
+				mult = ( float )( 1.0 );
 	
 				if (sc_flag == 2)	
 					tmp = ( float )( rand()/(pow(2.0,15.0)-1) );	
@@ -106,7 +106,7 @@ void	print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,  scale_t
 				if (slp_flag == 2)
 					tmp = flow_table[i].max_slope;
 
-				flow_table[i].total_gamma = (float)( mult * tmp * scale_trans );
+				flow_table[i].total_gamma = (float)( mult * tmp * scale_trans * cell * cell * flow_table[i].area );
 					
 		
 		}
@@ -118,7 +118,7 @@ void	print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,  scale_t
 				flow_table[i].total_gamma);
 
 	
-		fprintf(outfile,"\n %6d %6d %6d %6.1f %6.1f %6.1f %10f %4d %f %4d",  
+		fprintf(outfile,"\n %6d %6d %6d %6.1f %6.1f %6.1f %10f %d %4d %f %4d",  
 						flow_table[i].patchID,  
 						flow_table[i].zoneID,  
 						flow_table[i].hillID,  
@@ -126,6 +126,7 @@ void	print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,  scale_t
 						flow_table[i].y,
 						flow_table[i].z,
 						flow_table[i].acc_area,
+						flow_table[i].area,
 						flow_table[i].land,
 						flow_table[i].total_gamma,
 						flow_table[i].num_adjacent);
