@@ -70,7 +70,7 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
 
 
 		/* check to see if it is a pit */
-		if ( (flow_table[pch].total_gamma == 0) &&
+		if ( (flow_table[pch].gamma_neigh == 0) &&
 				 ((flow_table[pch].land != 1) )  ) {
 
 		
@@ -92,8 +92,15 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
 				}
 		}
 
+	 if ((flow_table[pch].gamma_neigh == 0) && (flow_table[pch].land != 1))
+                printf("\n Cannot resolve pit for %d", flow_table[pch].patchID);
+
+
+
 
 	} /* end patch for */
+
+
 
 	printf("\n Number of pits %d", num_pit);
 	fprintf(f1,"\n Number of pits  %d", num_pit);
