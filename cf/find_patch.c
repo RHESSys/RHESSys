@@ -37,7 +37,7 @@ int	find_patch(num_patches, flow_table,  patchID,  zoneID,  hillID)
 	int fnd,inx;
 
 	fnd = 0;
-	inx = 0;
+	inx = 1;
 
 	while ( (fnd == 0) && (inx <= num_patches) ) {
 		 if ( (flow_table[inx].patchID == patchID) &&
@@ -47,7 +47,7 @@ int	find_patch(num_patches, flow_table,  patchID,  zoneID,  hillID)
 		 else	inx += 1;
 		 }
 
-	
+
 	return(fnd);
 
     }
