@@ -91,12 +91,11 @@ struct	flow_struct
 	float x ;
 	float y ;
 	float z ;
-	float K ;
 	float flna;
-	float m_par ;
 	float acc_area;
 	float total_str_gamma;
 	float total_gamma;
+	float gamma_neigh;
 	float total_perimeter;
 	float road_dist;    
 	float slope;
