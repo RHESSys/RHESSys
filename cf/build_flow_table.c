@@ -36,8 +36,6 @@ int build_flow_table(struct flow_struct* flow_table,
 					 int* stream,
 					 int* roads,
 					 int* sewers,
-					 double* K,
-					 double* m_par,
 					 double* flna,
 					 FILE* f1,
 					 int maxr, int maxc,
@@ -63,7 +61,6 @@ int build_flow_table(struct flow_struct* flow_table,
 
 	for (r=0; r< maxr; r++) 
 	{	
-		printf("Building row %d of %d\n", r, maxr);
 
 		for (c=0; c< maxc; c++)
 			{
@@ -89,7 +86,6 @@ int build_flow_table(struct flow_struct* flow_table,
 				flow_table[pch].x += ( float ) (1.0 * r);
 				flow_table[pch].y += ( float ) (1.0 * c);
 				flow_table[pch].z += ( float ) dem[inx];
-				flow_table[pch].K += ( float ) K[inx];
 				if (sewer_flag == 1)
 					flow_table[pch].sewer += (int)sewers[inx];
 				if ((sc_flag == 1) || (slp_flag > 0)) {
@@ -108,7 +104,6 @@ int build_flow_table(struct flow_struct* flow_table,
 				else
 					flow_table[pch].flna = 0.0;
 
-				flow_table[pch].m_par += (float)m_par[inx];
 				flow_table[pch].num_adjacent += check_neighbours(r,c, patch, 
 								zone, hill, stream,
 								&flow_table[pch],
