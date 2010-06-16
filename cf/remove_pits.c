@@ -90,10 +90,12 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
 			if (top_elev != 0.0) {
 				adjust_pit(flow_table, pch, edge_inx, edge_elev, cell, slp_flag); 
 				}
+			else {
+                		printf("\n Cannot resolve pit for %d", flow_table[pch].patchID);
+				printf("\n for now will route it to outlet so it had somewhere to go");
+				adjust_pit(flow_table, pch, num_patches, flow_table[pch].z-0.5, cell, slp_flag);
+				}
 		}
-
-	 if ((flow_table[pch].gamma_neigh == 0) && (flow_table[pch].land != 1))
-                printf("\n Cannot resolve pit for %d", flow_table[pch].patchID);
 
 
 

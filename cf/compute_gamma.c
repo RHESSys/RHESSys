@@ -124,8 +124,9 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 			p = str_aptr->patchID;
 			z = str_aptr->zoneID;
 			h = str_aptr->hillID;
-
+			/*
 			printf("\n for patch %d  neigh %d of %d is %d", flow_table[pch].patchID, neigh, flow_table[pch].num_dsa, p);
+			*/
 			inx = find_patch(num_patches, flow_table, p, z, h);
 			if (inx == 0) {
 				printf("\n For patch %d %d %d Neighbour not found %d %d %d\n", 

@@ -54,10 +54,14 @@
 				total_perimeter += aptr->perimeter;
 				}
 
+
 			if ((aptr->next = (struct adj_struct *)malloc(sizeof(struct adj_struct))) == NULL) {
 				printf("\n Not enough memory");
 				exit(1);
 			}
+
+			if (flow_table[curr].num_adjacent == 0)
+				flow_table[curr].adj_list = aptr->next;
 
 			aptr = aptr->next;
 			aptr->patchID = flow_table[edge_inx].patchID;
@@ -70,7 +74,7 @@
 
 			xrun =  (flow_table[curr].x - flow_table[edge_inx].x);
 			xrun = xrun * xrun;
-		    yrun =   (flow_table[curr].y - flow_table[edge_inx].y);
+		   	 yrun =   (flow_table[curr].y - flow_table[edge_inx].y);
 			yrun = yrun * yrun;
 			
 

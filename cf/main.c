@@ -161,6 +161,13 @@ main(int argc, char *argv[])
 	scale_dem_opt->required = NO;
 	scale_dem_opt->description = "DEM scaling factor";
 
+	struct Option* cell_size = G_define_option();
+	cell_size->key = "cellsize";
+	cell_size->type = TYPE_DOUBLE;
+	cell_size->required = NO;
+	cell_size->description = "cell size";
+
+
 	struct Option* scale_stream_trans = G_define_option();
 	scale_stream_trans->key = "scaletrans";
 	scale_stream_trans->type = TYPE_DOUBLE;
@@ -275,6 +282,13 @@ main(int argc, char *argv[])
 		// Default is set at declaration, only modify if set
 		if (sscanf(scale_dem_opt->answer, "%lf", &scale_dem) != 1) {
 			G_fatal_error("Error setting the scale dem value");
+		}
+	}
+
+	if (cell_size->answer != NULL) {	
+		// Default is set at declaration, only modify if set
+		if (sscanf(cell_size->answer, "%lf", &cell) != 1) {
+			G_fatal_error("Error setting the cell size value");
 		}
 	}
 	
@@ -411,9 +425,10 @@ main(int argc, char *argv[])
 		printf("Attempting to use non-square cells\n");
 		exit(1);
 	}
-	*/
 	cell = patch_header.ew_res;
-	printf("\n cell resolution is %lf", cell);
+	cell = 10.0;
+	*/
+	printf("\n cell resolution is %lf\n", cell);
 
 	struct Cell_head zone_header;
 	zone = (int*)raster2array(rnzone, &zone_header, NULL, NULL, CELL_TYPE);
