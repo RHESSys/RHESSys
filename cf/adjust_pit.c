@@ -82,23 +82,23 @@
 			else
 				aptr->slope = ( float )(rise / (sqrt(xrun+yrun) * (cell) ) );
 
+
 			aptr->gamma = 1.0;
 
-			if (flow_table[curr].patchID == 27971)
-				printf("\n total gamma %f", flow_table[curr].total_gamma);
-			flow_table[curr].total_gamma = 	( float )(aptr->perimeter * flow_table[curr].K * 
-							aptr->slope * flow_table[curr].m_par / (cell) );
+			flow_table[curr].gamma_neigh = 	( float )(aptr->perimeter *  aptr->slope  );
 
-			if (flow_table[curr].patchID == 27971) printf("\n total gamma %f", flow_table[curr].total_gamma);
+
+		if (slp_flag == 0) {
+			flow_table[curr].total_gamma = 	( float )(flow_table[curr].area* aptr->slope * cell * cell  );
+			}
+
 
 		if (slp_flag == 1) {
-			flow_table[curr].total_gamma = 	( float )(aptr->perimeter * flow_table[curr].K * 
-							flow_table[curr].internal_slope * flow_table[curr].m_par   );
+			flow_table[curr].total_gamma = 	( float )(flow_table[curr].area* flow_table[curr].internal_slope * cell * cell  );
 			}
 
 		if (slp_flag == 2) {
-			flow_table[curr].total_gamma = 	( float )(aptr->perimeter * flow_table[curr].K * 
-							flow_table[curr].max_slope * flow_table[curr].m_par   );
+			flow_table[curr].total_gamma = 	( float )(flow_table[curr].area * flow_table[curr].max_slope * cell * cell  );
 			}
 
 			flow_table[curr].z = ( float )( edge_elev+MIN_RISE );
