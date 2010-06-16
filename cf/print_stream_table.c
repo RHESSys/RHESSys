@@ -93,17 +93,37 @@ void	print_stream_table(num_patches, num_stream, flow_table, sc_flag, slp_flag, 
 						flow_table[i].area,
 						flow_table[i].land,
 						flow_table[i].num_dsa);
+
+
+		fprintf(streamout2,"\n\n %d %d %d %f %f %f %d %f %d %f %d",  
+						flow_table[i].patchID,  
+						flow_table[i].zoneID,  
+						flow_table[i].hillID,  
+						flow_table[i].x,
+						flow_table[i].y,
+						flow_table[i].z,
+						flow_table[i].area,
+						flow_table[i].internal_slope,
+						flow_table[i].num_str,
+						flow_table[i].total_str_gamma,
+						flow_table[i].num_dsa);
 	
 		adj_str_ptr = flow_table[i].adj_str_list;
 
 
 		for (j=1; j<= flow_table[i].num_dsa; j++) {
-/*			if (adj_str_ptr->gamma > 0.0) */
+			if (flow_table[i].total_str_gamma > ZERO)
 				fprintf(streamout2, "\n%16d %6d %6d %8.8f  ", 
 							adj_str_ptr->patchID,  
 							adj_str_ptr->zoneID,  
 							adj_str_ptr->hillID,  
 							adj_str_ptr->gamma/flow_table[i].total_str_gamma);
+			else
+				fprintf(streamout2, "\n%16d %6d %6d %8.8f  ", 
+							adj_str_ptr->patchID,  
+							adj_str_ptr->zoneID,  
+							adj_str_ptr->hillID,  
+							adj_str_ptr->gamma);
 			adj_str_ptr = adj_str_ptr->next;
 			}
 
