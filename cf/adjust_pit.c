@@ -60,8 +60,6 @@
 				exit(1);
 			}
 
-			if (flow_table[curr].num_adjacent == 0)
-				flow_table[curr].adj_list = aptr->next;
 
 			aptr = aptr->next;
 			aptr->patchID = flow_table[edge_inx].patchID;
