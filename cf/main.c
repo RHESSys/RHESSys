@@ -165,7 +165,7 @@ main(int argc, char *argv[])
 	cell_size->key = "cellsize";
 	cell_size->type = TYPE_DOUBLE;
 	cell_size->required = NO;
-	cell_size->description = "cell size";
+	cell_size->description = "cell size [Default 10m]";
 
 
 	struct Option* scale_stream_trans = G_define_option();
@@ -347,8 +347,6 @@ main(int argc, char *argv[])
 	rnslope = slope_raster_opt->answer;
 
     printf("Create_flowpaths.C\n\n");
-    printf("Create_flowpaths.C\n\n");
-
 
 	// Read in the names of the basin, hill, zone, and patch maps from the
 	// template file.
@@ -361,8 +359,7 @@ main(int argc, char *argv[])
 	char	first[MAXS];
 	char	second[MAXS];
 
-	printf("\n Reading template file %s", fntemplate);
-	printf("\n Reading template file %s", fntemplate);
+	printf("Reading template file %s\n", fntemplate);
 
 	while (fgets(template_buffer, sizeof(template_buffer), template_fp) != NULL) {
 		sscanf(template_buffer, "%s %s", first, second);
@@ -419,15 +416,10 @@ main(int argc, char *argv[])
 	patch = (int*)raster2array(rnpatch, &patch_header, NULL, NULL, CELL_TYPE);
 
 	// Get cell size based off of that in the patchmap
-	// Assuming square cells, otherwise fixes deeper in cf will need to be made.
-	/*
-	if (patch_header.ew_res != patch_header.ns_res) {
-		printf("Attempting to use non-square cells\n");
-		exit(1);
-	}
-	cell = patch_header.ew_res;
-	cell = 10.0;
-	*/
+	// Does not assume pixels are square, instead takes the root of their
+	// square.
+	cell = sqrt(patch_header.ew_res * patch_header.ns_res);
+	
 	printf("\n cell resolution is %lf\n", cell);
 
 	struct Cell_head zone_header;
