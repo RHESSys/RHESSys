@@ -116,7 +116,7 @@ void	output_basin(			int routing_flag,
 		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
-			apcp = (zone[0].rain+zone[0].snow)*zone[0].area;
+			apcp += (zone[0].rain+zone[0].snow)*zone[0].area;
 			zone_area += zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
