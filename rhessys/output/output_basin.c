@@ -62,10 +62,10 @@ void	output_basin(			int routing_flag,
 	double apsn, alai, acrain;
 	double abase_flow, hbase_flow,  hstreamflow_N;
 	double	aacctrans, var_acctrans, var_trans;
-	double apet, adC13;
+	double apet, adC13, apcp;
 	double	hgw, hgwN;
 	double	hgwQout, hgwNout;
-	double aarea, hill_area, basin_area;
+	double aarea, hill_area, zone_area, basin_area;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -105,8 +105,10 @@ void	output_basin(			int routing_flag,
 	astreamflow_N = 0.0;
 	aacctrans = 0.0; 
 	basin_area = 0.0;
+	zone_area = 0.0;
 	apet = 0.0;
 	adC13 = 0.0;
+	apcp = 0.0;
 
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
@@ -114,6 +116,8 @@ void	output_basin(			int routing_flag,
 		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
+			apcp = (zone[0].rain+zone[0].snow)*zone[0].area;
+			zone_area += zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
 				arain_throughfall += patch[0].rain_throughfall * patch[0].area;
@@ -185,6 +189,7 @@ void	output_basin(			int routing_flag,
 		basin_area += hill_area;
 	}
 	adC13 /=  aarea;
+	apcp /= zone_area;
 	apet /=  aarea;
 	acrain /=  aarea;
 	arain_throughfall /=  aarea;
@@ -192,9 +197,9 @@ void	output_basin(			int routing_flag,
 	asnow_throughfall /= aarea ;
 	asat_deficit_z /= aarea ;
 	asat_deficit /= aarea ;
-	arz_storage /= aarea ;		/* Taehee Hwang */
+	arz_storage /= aarea ;
 	aunsat_storage /= aarea ;
-	arz_drainage /= aarea ;		/* Taehee Hwang */
+	arz_drainage /= aarea ;	
 	aunsat_drainage /= aarea ;
 	acap_rise /= aarea ;
 	areturn_flow /= aarea ;
@@ -244,7 +249,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 		date.day,
 		date.month,
 		date.year,
@@ -279,7 +284,7 @@ void	output_basin(			int routing_flag,
 		var_trans,
 		aacctrans*1000,
 		var_acctrans,
-		apet*1000, adC13
+		apet*1000, adC13, apcp*1000.0
 		);
 
 	return;
