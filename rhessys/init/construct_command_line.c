@@ -377,63 +377,6 @@ struct	command_line_object	*construct_command_line(
 				printf("\n Running wiith stochastic precipitation scaling ");
 				command_line[0].precip_scale_flag = 1;
 				i++;
-				/*--------------------------------------------------------------*/
-				/*			Read in the sensitivity parameter values. */
-				/*--------------------------------------------------------------*/
-				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,
-						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
-				}/*end if*/
-				command_line[0].psen[PTHRESH] = (double)atof(main_argv[i]);
-				i++;
-
-				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,
-						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
-				}/*end if*/
-				command_line[0].psen[PTYPELOW] = (double)atof(main_argv[i]);
-				i++;
-
-				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,
-						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
-				}/*end if*/
-				command_line[0].psen[P1LOW] = (double)atof(main_argv[i]);
-				i++;
-				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,
-						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
-				}/*end if*/
-				command_line[0].psen[P2LOW] = (double)atof(main_argv[i]);
-				i++;
-
-
-				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,
-						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
-				}/*end if*/
-				command_line[0].psen[PTYPEHIGH] = (double)atof(main_argv[i]);
-				i++;
-				
-				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,
-						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
-				}/*end if*/
-				command_line[0].psen[P1HIGH] = (double)atof(main_argv[i]);
-				i++;
-				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,
-						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
-				}/*end if*/
-				command_line[0].psen[P2HIGH] = (double)atof(main_argv[i]);
-				i++;
 
 			} /* end if */
 

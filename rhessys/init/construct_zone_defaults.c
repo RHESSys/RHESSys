@@ -111,6 +111,13 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].lapse_rate_tmax = default_object_list[i].lapse_rate; 
 		default_object_list[i].wet_lapse_rate = 0.0049; 
 		default_object_list[i].lapse_rate_precip_default = -999.0; 
+		default_object_list[i].psen[PTHRESH] = 0.0;
+		default_object_list[i].psen[PTYPELOW] = 1;
+		default_object_list[i].psen[P1LOW] = 0.0;
+		default_object_list[i].psen[P2LOW] = 0.0;
+		default_object_list[i].psen[PTYPEHIGH] = 1;
+		default_object_list[i].psen[P1HIGH] = 0.0;
+		default_object_list[i].psen[P2HIGH] = 0.0;
 
 
 		/*--------------------------------------------------------------*/
@@ -158,6 +165,62 @@ struct zone_default *construct_zone_defaults(
 			if (newrecord != NULL)  {
 			if (strcasecmp(newrecord,"atm_CO2") == 0) {	
 				default_object_list[i].atm_CO2 = ftmp;
+				printf("\n Using %lf for %s for zone default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'p');
+			if (newrecord != NULL)  {
+			if (strcasecmp(newrecord,"psen.pthresh") == 0) {	
+				default_object_list[i].psen[PTHRESH] = ftmp;
+				printf("\n Using %lf for %s for zone default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'p');
+			if (newrecord != NULL)  {
+			if (strcasecmp(newrecord,"psen.ptypelow") == 0) {	
+				default_object_list[i].psen[PTYPELOW] = ftmp;
+				printf("\n Using %lf for %s for zone default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'p');
+			if (newrecord != NULL)  {
+			if (strcasecmp(newrecord,"psen.p1low") == 0) {	
+				default_object_list[i].psen[P1LOW] = ftmp;
+				printf("\n Using %lf for %s for zone default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'p');
+			if (newrecord != NULL)  {
+			if (strcasecmp(newrecord,"psen.p2low") == 0) {	
+				default_object_list[i].psen[P2LOW] = ftmp;
+				printf("\n Using %lf for %s for zone default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'p');
+			if (newrecord != NULL)  {
+			if (strcasecmp(newrecord,"psen.ptypehigh") == 0) {	
+				default_object_list[i].psen[PTYPELOW] = ftmp;
+				printf("\n Using %lf for %s for zone default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'p');
+			if (newrecord != NULL)  {
+			if (strcasecmp(newrecord,"psen.p1high") == 0) {	
+				default_object_list[i].psen[P1LOW] = ftmp;
+				printf("\n Using %lf for %s for zone default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'p');
+			if (newrecord != NULL)  {
+			if (strcasecmp(newrecord,"psen.p2high") == 0) {	
+				default_object_list[i].psen[P2LOW] = ftmp;
 				printf("\n Using %lf for %s for zone default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}

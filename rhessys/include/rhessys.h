@@ -674,6 +674,7 @@ struct	zone_default
         double  min_rain_temp;                                          /* degrees C */
 	double  ndep_NO3;		/* kgN/m2/day	*/
 	double  atm_CO2;		/* ppm */ 
+	double	psen[7];
 	struct	zone_grow_default	*grow_defaults;
 	};
 
@@ -1556,7 +1557,6 @@ struct	command_line_object
 	double	sat_to_gw_coeff_mult;
 	double	gw_loss_coeff_mult;
 	double	snow_scale_tol;
-	double	psen[7];
 	double	sen[3];
 	double	vsen[2];
 	double	vsen_alt[2];

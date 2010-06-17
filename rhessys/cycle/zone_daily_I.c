@@ -217,17 +217,17 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 		if ((command_line[0].precip_scale_flag > 0) && (temp > 0.0)) {
 
-			if (temp < command_line[0].psen[PTHRESH])   {
-				if (command_line[0].psen[PTYPELOW] > 0)
-					isohyet_adjustment = z_delta * exp(normdist(command_line[0].psen[P1LOW], command_line[0].psen[P2LOW])) + 1;
+			if (temp < zone[0].defaults[0][0].psen[PTHRESH])   {
+				if (zone[0].defaults[0][0].psen[PTYPELOW] > 0)
+					isohyet_adjustment = z_delta * exp(normdist(zone[0].defaults[0][0].psen[P1LOW], zone[0].defaults[0][0].psen[P2LOW])) + 1;
 				else
-					isohyet_adjustment = z_delta * unifdist(command_line[0].psen[P1LOW], command_line[0].psen[P2LOW]) + 1;
+					isohyet_adjustment = z_delta * unifdist(zone[0].defaults[0][0].psen[P1LOW], zone[0].defaults[0][0].psen[P2LOW]) + 1;
 			}
 			else {
-				if (command_line[0].psen[PTYPEHIGH] > 0)
-					isohyet_adjustment = z_delta * exp(normdist(command_line[0].psen[P1HIGH], command_line[0].psen[P2HIGH])) + 1;
+				if (zone[0].defaults[0][0].psen[PTYPEHIGH] > 0)
+					isohyet_adjustment = z_delta * exp(normdist(zone[0].defaults[0][0].psen[P1HIGH], zone[0].defaults[0][0].psen[P2HIGH])) + 1;
 				else
-					isohyet_adjustment = z_delta * unifdist(command_line[0].psen[P1HIGH], command_line[0].psen[P2HIGH]) + 1;
+					isohyet_adjustment = z_delta * unifdist(zone[0].defaults[0][0].psen[P1HIGH], zone[0].defaults[0][0].psen[P2HIGH]) + 1;
 			}
 
 			if (isohyet_adjustment < ZERO) 
