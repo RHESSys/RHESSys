@@ -157,7 +157,13 @@ void zone_daily_I(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
-	
+
+
+	double normdist(double, double);
+
+	double unifdist(double, double);
+
+		
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/

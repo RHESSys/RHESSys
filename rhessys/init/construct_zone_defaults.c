@@ -112,10 +112,10 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].wet_lapse_rate = 0.0049; 
 		default_object_list[i].lapse_rate_precip_default = -999.0; 
 		default_object_list[i].psen[PTHRESH] = 0.0;
-		default_object_list[i].psen[PTYPELOW] = 1;
+		default_object_list[i].psen[PTYPELOW] = 1.0;
 		default_object_list[i].psen[P1LOW] = 0.0;
 		default_object_list[i].psen[P2LOW] = 0.0;
-		default_object_list[i].psen[PTYPEHIGH] = 1;
+		default_object_list[i].psen[PTYPEHIGH] = 1.0;
 		default_object_list[i].psen[P1HIGH] = 0.0;
 		default_object_list[i].psen[P2HIGH] = 0.0;
 
