@@ -286,6 +286,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "rhessys.h"
+#include <time.h>
 
 /*--------------------------------------------------------------*/
 /*	Main line of code.											*/
@@ -359,6 +360,9 @@ int	main( int main_argc, char **main_argv)
 	void   add_growth_headers(
 		struct world_output_file_object *,
 		struct command_line_object * );
+
+	
+	srand((unsigned)(time(0)));
 
 	/*--------------------------------------------------------------*/
 	/*	Command line parsing.										*/

@@ -212,7 +212,7 @@ struct zone_default *construct_zone_defaults(
 			newrecord = strchr(record,'p');
 			if (newrecord != NULL)  {
 			if (strcasecmp(newrecord,"psen.p1high") == 0) {	
-				default_object_list[i].psen[P1LOW] = ftmp;
+				default_object_list[i].psen[P1HIGH] = ftmp;
 				printf("\n Using %lf for %s for zone default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
@@ -220,7 +220,7 @@ struct zone_default *construct_zone_defaults(
 			newrecord = strchr(record,'p');
 			if (newrecord != NULL)  {
 			if (strcasecmp(newrecord,"psen.p2high") == 0) {	
-				default_object_list[i].psen[P2LOW] = ftmp;
+				default_object_list[i].psen[P2HIGH] = ftmp;
 				printf("\n Using %lf for %s for zone default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
