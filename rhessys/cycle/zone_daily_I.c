@@ -247,23 +247,45 @@ void zone_daily_I(
 			zone[0].rain =  temp * isohyet_adjustment;
 			flag++;
 		}
+
+		/*--------------------------------------------------------------*/
+		/* 	temperature lapse rates with elevation can be daily values or constant (zone defaults) 		*/
+		/*--------------------------------------------------------------*/
+
+		
 		temp = zone[0].base_stations[i][0].daily_clim[0].tmin[day];
-		if ( temp != -999.0 ){
+		if (temp != -999.0) {
+		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin == NULL) {
 			if (zone[0].rain > ZERO)
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
 			else
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tmin;
-			temp = zone[0].metv.tmin = temp - Tlapse_adjustment;
+			zone[0].metv.tmin = temp - Tlapse_adjustment;
 			flag++;
 		}
+		else {
+			Tlapse_adjustment = z_delta * 
+				zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin[day];
+			zone[0].metv.tmin = temp - Tlapse_adjustment;
+		}
+		}
+			
+		
 		temp = zone[0].base_stations[i][0].daily_clim[0].tmax[day];
-		if ( temp != -999.0 ){
+		if (temp != -999.0) {
+		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax == NULL) {
 			if (zone[0].rain > ZERO)
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
 			else
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tmax;
 			zone[0].metv.tmax = temp - Tlapse_adjustment;
 			flag++;
+		}
+		else {
+			Tlapse_adjustment = z_delta * 
+				zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax[day];
+			zone[0].metv.tmax = temp - Tlapse_adjustment;
+		}
 		}
 
 		if (command_line[0].tchange_flag > 0)  {
