@@ -285,6 +285,9 @@ main(int argc, char *argv[])
 		}
 	}
 
+	// Currently cf9 will ALWAYS take the cell size directly from
+	// the patch raster map info, both the default and the command line
+	// argument will never be used.
 	if (cell_size->answer != NULL) {	
 		// Default is set at declaration, only modify if set
 		if (sscanf(cell_size->answer, "%lf", &cell) != 1) {
@@ -329,8 +332,9 @@ main(int argc, char *argv[])
 	}
 
 	// Name for output files, default to template file name
+	// Input prefix is left over from pre-grass version.
 	strcpy(input_prefix, output_name_opt->answer);	
-	strcpy(output_suffix, "");
+	strcpy(output_suffix, ".flow");
 
 	if (flna_raster_opt->answer != NULL) {
 		rnflna = flna_raster_opt->answer;
@@ -380,12 +384,6 @@ main(int argc, char *argv[])
 		}
 	}
 	fclose (template_fp);
-	printf("Basin: %s\n", rnbasin);
-	printf("Hillslope: %s\n", rnhill);
-	printf("Zone: %s\n", rnzone);
-	printf("Patch: %s\n", rnpatch);
-
-
 
 	/* open some diagnostic output files */
 
@@ -456,7 +454,7 @@ main(int argc, char *argv[])
 	flow_table = (struct flow_struct *)calloc((maxr*maxc),sizeof(struct flow_struct));
 
 
-	printf("Building flow table\n");
+	printf("\n Building flow table");
 	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch, 
 					stream, roads, sewers, flna, out1, maxr, 
 					maxc,f_flag, sc_flag, sewer_flag, slp_flag, cell, 
