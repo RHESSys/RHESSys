@@ -49,7 +49,9 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
  	/* local fuction declarations */
 	struct ID_struct  sort_flow_table();
 	int	find_patch();
-	double find_top();
+
+ 	double	find_top( struct flow_struct *, int, double, int *, int *, int *);
+
 	void adjust_pit();
 
 
@@ -65,6 +67,7 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
 	/* allocate list */
 	upslope_list = (int *)malloc(num_patches * sizeof(int));
 	num_pit = 0;
+	top_elev=0.0;
 
 	for (pch = 1; pch <= num_patches; pch++) {
 
@@ -80,19 +83,20 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
 			num_pit += 1;
 			num_in_pit = 1;
 			upslope_list[1] = pch;
-			edge_inx = 0;
+			edge_inx = 0.0;
+			top_elev = 0.0;
 
 			top_elev = find_top(flow_table, pch, flow_table[pch].z,
-						&num_in_pit, upslope_list, &edge_inx);
+						&num_in_pit, &upslope_list, &edge_inx);
 
-			edge_elev = flow_table[edge_inx].z;
 
-			if (top_elev != 0.0) {
+			if (top_elev > 0.0) {
+				edge_elev = flow_table[edge_inx].z;
 				adjust_pit(flow_table, pch, edge_inx, edge_elev, cell, slp_flag); 
 				}
 			else {
                 		printf("\n Cannot resolve pit for %d", flow_table[pch].patchID);
-				printf("\n for now will route it to outlet so it had somewhere to go");
+				printf(" for now will route it to outlet");
 				adjust_pit(flow_table, pch, num_patches, flow_table[pch].z-0.5, cell, slp_flag);
 				}
 		}

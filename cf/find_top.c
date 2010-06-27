@@ -34,7 +34,7 @@
 #include "blender.h"
  
 
- double	find_top( 
+double	find_top( 
 					struct flow_struct *flow_table,
 					int curr, 
 					double pit_elev,
@@ -56,11 +56,12 @@
 	min_elev = 0.0;
 	top_elev = 0.0;
 
-	aptr = flow_table[curr].adj_list;
-
 	/* check to see if we are at the edge of the pit, find min elevation of */
 	/*  apixel draining from the pit 										*/
 
+	if (flow_table[curr].num_adjacent > 0) {
+	
+	aptr = flow_table[curr].adj_list;
 	if ( ( *edge_inx == 0.0) || ( flow_table[curr].z < flow_table[*edge_inx].z) ) {
 
 
@@ -102,7 +103,8 @@
 
 	} /* end if */
 
-	return(min_elev);
+	}
 
-	} /* end find_top */
+	return(min_elev);
+} /* end find_top */
 

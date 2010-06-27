@@ -54,14 +54,24 @@
 				total_perimeter += aptr->perimeter;
 				}
 
+			if (flow_table[curr].num_adjacent == 0) {
+				
+			if ((flow_table[curr].adj_list = (struct adj_struct *)malloc(sizeof(struct adj_struct))) == NULL) {
+				printf("\n Not enough memory");
+				exit(1);
+				}
+				aptr = flow_table[curr].adj_list;
+			}
 
+			else {
 			if ((aptr->next = (struct adj_struct *)malloc(sizeof(struct adj_struct))) == NULL) {
 				printf("\n Not enough memory");
 				exit(1);
+				}
+			aptr = aptr->next;
 			}
 
 
-			aptr = aptr->next;
 			aptr->patchID = flow_table[edge_inx].patchID;
 			aptr->zoneID = flow_table[edge_inx].zoneID;
 			aptr->hillID = flow_table[edge_inx].hillID;
@@ -106,6 +116,7 @@
 			flow_table[curr].z = ( float )( edge_elev+MIN_RISE );
 
 			flow_table[curr].num_adjacent += 1;
+
 
 
 	return(1) ;  
