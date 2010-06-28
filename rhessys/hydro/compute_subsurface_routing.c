@@ -370,7 +370,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 		/*--------------------------------------------------------------*/
 		/*	final overland flow routing				*/
 		/*--------------------------------------------------------------*/
-			if (((excess = patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size) > ZERO) && (patch[0].detention_store > ZERO)) {
+		if (((excess = patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size) > ZERO) && (patch[0].detention_store > ZERO)) {
 
 				if (patch[0].drainage_type == STREAM) {
 					if (grow_flag > 0) {
@@ -402,8 +402,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 					NH4_out = Qout / patch[0].detention_store * patch[0].surface_NH4;
 					Nout = NO3_out + NH4_out;
 					if (neigh[0].drainage_type == STREAM) {
-						neigh[0].return_flow
-						+=Qout*patch[0].area/neigh[0].area;
+						neigh[0].Qin_total += Qout * patch[0].area /  neigh[0].area;
+						neigh[0].return_flow +=Qout*patch[0].area/neigh[0].area;
 						if (grow_flag > 0) {
 							neigh[0].streamflow_N += 
 								(Nout * patch[0].area /neigh[0].area);
@@ -412,8 +412,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 							}
 					}
 					else { 
-						neigh[0].detention_store += 
-						Qout * patch[0].area /  neigh[0].area;
+						neigh[0].Qin_total += Qout * patch[0].area /  neigh[0].area;
+						neigh[0].detention_store += Qout * patch[0].area /  neigh[0].area;
 						if (grow_flag > 0) {
 							neigh[0].surface_NO3 += 
 								(NO3_out * patch[0].area / neigh[0].area);
@@ -433,6 +433,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].surface_ns_leach += (excess / patch[0].detention_store)*patch[0].surface_NO3;
 			}
 			patch[0].detention_store -= excess;
+			patch[0].Qout_total += excess;
 			}
 		}
 
@@ -455,7 +456,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 		/* 	we do not do this once sat def is below 0.9 soil depth	*/
 		/*     we use 0.9 to prevent numerical instability		*/
 		/*--------------------------------------------------------------*/
-		if ((patch[0].sat_deficit_z >patch[0].preday_sat_deficit_z) && (patch[0].sat_deficit_z < patch[0].soil_defaults[0][0].soil_depth*0.9)) {
+		if ((patch[0].sat_deficit_z >patch[0].preday_sat_deficit_z) && 
+			(patch[0].sat_deficit_z < patch[0].soil_defaults[0][0].soil_depth*0.9)) {
 	       		add_field_capacity = compute_layer_field_capacity(
 				command_line[0].verbose_flag,
 				patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -469,17 +471,49 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].sat_deficit,
 				preday_sat_deficit);
 
+			add_field_capacity = max(add_field_capacity, 0.0);
 			patch[0].sat_deficit += add_field_capacity;
-			if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) && (patch[0].preday_sat_deficit_z > patch[0].rootzone.depth))				
+
+			if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) && (patch[0].preday_sat_deficit_z > patch[0].rootzone.depth))
 				patch[0].unsat_storage += add_field_capacity;
-			
-			else if ((patch[0].sat_deficit_z <= patch[0].rootzone.depth) && (patch[0].preday_sat_deficit_z <= patch[0].rootzone.depth))
+			else
 				patch[0].rz_storage += add_field_capacity;
-			else  {
-				patch[0].rz_storage += add_field_capacity * (patch[0].rootzone.depth -patch[0].preday_sat_deficit_z) 
-					/ (patch[0].sat_deficit_z -patch[0].preday_sat_deficit_z);
-				patch[0].unsat_storage += add_field_capacity * (patch[0].sat_deficit_z - patch[0].rootzone.depth) 
-					/ (patch[0].sat_deficit_z -patch[0].preday_sat_deficit_z);					
+			}
+
+		if (patch[0].rootzone.depth > ZERO) {
+			if ((patch[0].sat_deficit > ZERO) && (patch[0].rz_storage == 0.0)) {
+	       			add_field_capacity = compute_layer_field_capacity(
+				command_line[0].verbose_flag,
+				patch[0].soil_defaults[0][0].theta_psi_curve,
+				patch[0].soil_defaults[0][0].psi_air_entry,
+				patch[0].soil_defaults[0][0].pore_size_index,
+				patch[0].soil_defaults[0][0].p3,
+				patch[0].soil_defaults[0][0].p4,
+				patch[0].soil_defaults[0][0].porosity_0,
+				patch[0].soil_defaults[0][0].porosity_decay,
+				patch[0].sat_deficit,
+				patch[0].sat_deficit, 0.0);
+			add_field_capacity = max(add_field_capacity, 0.0);
+			patch[0].sat_deficit += add_field_capacity;
+			patch[0].rz_storage += add_field_capacity;
+			}
+		}
+		else {
+			if ((patch[0].sat_deficit > ZERO) && (patch[0].unsat_storage == 0.0)) {
+	       			add_field_capacity = compute_layer_field_capacity(
+				command_line[0].verbose_flag,
+				patch[0].soil_defaults[0][0].theta_psi_curve,
+				patch[0].soil_defaults[0][0].psi_air_entry,
+				patch[0].soil_defaults[0][0].pore_size_index,
+				patch[0].soil_defaults[0][0].p3,
+				patch[0].soil_defaults[0][0].p4,
+				patch[0].soil_defaults[0][0].porosity_0,
+				patch[0].soil_defaults[0][0].porosity_decay,
+				patch[0].sat_deficit,
+				patch[0].sat_deficit, 0.0);
+			add_field_capacity = max(add_field_capacity, 0.0);
+			patch[0].sat_deficit += add_field_capacity;
+			patch[0].unsat_storage += add_field_capacity;
 			}
 		}
 
@@ -908,7 +942,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 
 	} /* end i */
 
-	} /* end k */
+	} /* end k  */
 
 
 	basin_outflow /= basin_area;

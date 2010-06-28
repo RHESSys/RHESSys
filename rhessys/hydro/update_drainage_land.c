@@ -206,7 +206,7 @@ void  update_drainage_land(
 			patch[0].rz_storage+patch[0].unsat_storage,
 			patch[0].sat_deficit, &(patch[0].litter));
 		patch[0].detention_store += return_flow;  
-		patch[0].sat_deficit = 0.0;
+		patch[0].sat_deficit += (return_flow - (patch[0].unsat_storage+patch[0].rz_storage));
 		patch[0].unsat_storage = 0.0;
 		patch[0].rz_storage = 0.0;
 	}

@@ -97,8 +97,12 @@ struct routing_list_object construct_routing_topology(
 		else
 			patch = basin[0].outside_region;
 		rlist.list[i] = patch;
+
+		if ((patch[0].soil_defaults[0][0].m < ZERO) || (patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
+			printf("\n WARNING m (%lf) or Ksat (%lf) are close to zero for patch %d",
+				patch[0].soil_defaults[0][0].m , patch[0].soil_defaults[0][0].Ksat_0);
 		
-		gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
+		 gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
 
 		/*--------------------------------------------------------------*/
 		/*  Allocate innundation list array				*/
@@ -117,15 +121,21 @@ struct routing_list_object construct_routing_topology(
 		patch[0].innundation_list[d].critical_depth = NULLVAL;
 		patch[0].stream_gamma = 0.0;
 		patch[0].drainage_type = drainage_type;
-		if ((patch[0].drainage_type != STREAM) && (patch[0].innundation_list[d].gamma < ZERO))
+		if ((patch[0].drainage_type != STREAM) && (patch[0].innundation_list[d].gamma < ZERO)) {
+			printf("\n non-stream patches with zero gamma %d switched to stream for now", patch[0].ID);
 			patch[0].drainage_type = STREAM;
+			}
 
 		/*--------------------------------------------------------------*/
 		/*  Allocate neighbour array									*/
 		/*--------------------------------------------------------------*/
 		patch[0].innundation_list[d].neighbours = (struct neighbour_object *)alloc(num_neighbours *
 		sizeof(struct neighbour_object), "neighbours", "construct_routing_topology");
-		patch[0].innundation_list[d].num_neighbours = assign_neighbours(patch[0].innundation_list[d].neighbours, num_neighbours, basin, routing_file);
+		num_neighbours = assign_neighbours(patch[0].innundation_list[d].neighbours, num_neighbours, basin, routing_file);
+		if ((num_neighbours == -9999) && (patch[0].drainage_type != STREAM))
+			printf("\n WARNING sum of patch %d neigh gamma is not equal to 1.0", patch[0].ID); 
+		else		
+			patch[0].innundation_list[d].num_neighbours = num_neighbours;
 		if (drainage_type == 2) {
 			fscanf(routing_file,"%d %d %d %lf",
 				&patch_ID,
