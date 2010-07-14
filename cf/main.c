@@ -471,7 +471,7 @@ main(int argc, char *argv[])
 	 /* remove pits and re-order patches appropriately */
 	 
 	printf("\n Removing pits");
-	   remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, out2); 
+	remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, out2); 
 	 
 	/* add roads */
 	printf("\n Adding roads");

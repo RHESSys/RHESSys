@@ -51,8 +51,7 @@ double	find_top(
 	 double	top_elev, min_elev;
 	 int	next_edge_inx;
 
-
-
+	
 	min_elev = 0.0;
 	top_elev = 0.0;
 
@@ -62,41 +61,22 @@ double	find_top(
 	if (flow_table[curr].num_adjacent > 0) {
 	
 	aptr = flow_table[curr].adj_list;
-	if ( ( *edge_inx == 0.0) || ( flow_table[curr].z < flow_table[*edge_inx].z) ) {
+	if ( ( *edge_inx == 0) || ( flow_table[curr].z < flow_table[*edge_inx].z) ) {
 
 
 
 	for (i = 1; i <= flow_table[curr].num_adjacent; i++)
 		{
-		inx = aptr->inx;
-
-		new = in_list(inx, upslope_list, *num_pit);
-
-		if ( ( aptr->gamma > 0) && (new  == 0) ) {
-			top_elev = flow_table[curr].z;
-			if (((top_elev < min_elev) || (min_elev == 0.0)) 
-					&& (top_elev > 0.0)
-					&& (aptr->z < pit_elev) )
-				{
-				*edge_inx = aptr->inx;
-				min_elev = top_elev;
-				}
-			}
-
-		else if  ( (aptr->gamma == 0) && (new == 0) ) { 
-			*num_pit += 1;
-			upslope_list[*num_pit] = inx;
-			next_edge_inx = *edge_inx;
-			top_elev = find_top( flow_table,inx, pit_elev,
-						num_pit, upslope_list, &(next_edge_inx));
-			if (((top_elev < min_elev) || (min_elev == 0.0)) && (top_elev > 0.0) )
-				{
-				*edge_inx = next_edge_inx;
-				min_elev = top_elev;
-				}
-			}
-
-
+		
+				
+			inx = aptr->inx;
+		
+			if ( ( aptr->gamma == 0) && (flow_table[aptr->inx].total_gamma > 0) ) {
+					*edge_inx = aptr->inx;
+					min_elev = aptr->z;
+					}
+			
+		
 		aptr = aptr->next;
 
 		} /* end first pass */

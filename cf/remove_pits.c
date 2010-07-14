@@ -70,26 +70,24 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
 	top_elev=0.0;
 
 	for (pch = 1; pch <= num_patches; pch++) {
-
-
+	
+	
 		/* check to see if it is a pit */
 		if ( (flow_table[pch].gamma_neigh == 0) &&
 				 ((flow_table[pch].land != 1) )  ) {
 
-		
-
+			
 			fprintf(f1,"\n %d ", flow_table[pch].patchID);
 
 			num_pit += 1;
 			num_in_pit = 1;
 			upslope_list[1] = pch;
-			edge_inx = 0.0;
+			edge_inx = 0;
 			top_elev = 0.0;
-
+			
 			top_elev = find_top(flow_table, pch, flow_table[pch].z,
 						&num_in_pit, &upslope_list, &edge_inx);
-
-
+		
 			if (top_elev > 0.0) {
 				edge_elev = flow_table[edge_inx].z;
 				adjust_pit(flow_table, pch, edge_inx, edge_elev, cell, slp_flag); 
@@ -101,9 +99,7 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
 				}
 		}
 
-
-
-
+  
 	} /* end patch for */
 
 
