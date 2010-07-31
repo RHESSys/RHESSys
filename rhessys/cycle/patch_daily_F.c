@@ -163,7 +163,7 @@ void		patch_daily_F(
 		double,
 		double,
 		double,
-		double);
+		double *);
 	
 	double	compute_infiltration(
 		int,
@@ -377,7 +377,7 @@ void		patch_daily_F(
 	patch[0].PAR_diffuse = zone[0].PAR_diffuse;
 	patch[0].evaporation_surf = 0.0;
 	patch[0].potential_evaporation = 0.0;
-
+	
 	/*--------------------------------------------------------------*/
 	/*	Set the patch rain and snow throughfall equivalent to the	*/
 	/*	rain and snow coming down over the zone.					*/
@@ -528,7 +528,6 @@ void		patch_daily_F(
 		/*	with snowpack daily F.  Otherwise, melt all snow and add 	*/
 		/*	to rain throughfall.										*/
 		/*--------------------------------------------------------------*/
-		
 		if ( patch[0].snowpack.water_equivalent_depth > pond_height ) {
 			patch[0].snow_melt = snowpack_daily_F(
 				current_date,
@@ -549,7 +548,7 @@ void		patch_daily_F(
 				patch[0].soil_defaults[0][0].snow_water_capacity,
 				patch[0].soil_defaults[0][0].snow_light_ext_coef,
 				patch[0].soil_defaults[0][0].snow_melt_Tcoef,
-				patch[0].Lstar_snow);
+				&patch[0].Lstar_snow);
 			patch[0].rain_throughfall += patch[0].snow_melt;
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;

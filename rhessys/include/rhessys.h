@@ -153,7 +153,7 @@
 #define DtoR	  0.01745329  	
 #define PI	3.14159265359
 #define seconds_per_day 86400
-#define	ess_snow	0.85
+#define	ess_snow	0.97
 #define	ess_soil	0.95
 #define ess_veg   	0.96
 #define PRE	"result"

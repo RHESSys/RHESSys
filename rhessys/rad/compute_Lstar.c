@@ -80,8 +80,8 @@ void	compute_Lstar(
 		/*	Compute with a snow layer									*/
 		/*--------------------------------------------------------------*/
 		patch[0].Lstar_soil = patch[0].Lup_snow - patch[0].Lup_soil;
-		patch[0].Lstar_snow = patch[0].Lup_canopy
-			+ patch[0].Lup_soil - 2 *patch[0].Lup_snow;
+	/*	patch[0].Lstar_snow = patch[0].Lup_canopy
+			+ patch[0].Lup_soil - 2 *patch[0].Lup_snow;*/
 		patch[0].Lstar_canopy = patch[0].Lup_snow
 			+ zone[0].Ldown - 2 * patch[0].Lup_canopy;
 	}
@@ -92,6 +92,6 @@ void	compute_Lstar(
 		patch[0].Lstar_soil = patch[0].Lup_canopy - patch[0].Lup_soil;
 		patch[0].Lstar_canopy = patch[0].Lup_soil + zone[0].Ldown
 			- 2 * patch[0].Lup_canopy;
-		patch[0].Lstar_snow = 0.0;
+	/*	patch[0].Lstar_snow = 0.0;*/
 	} /*end if - else snowpack */
 } /*end compute_Lstar*/

@@ -47,7 +47,7 @@ double	snowpack_daily_F(
 						 double	snow_water_capacity,
 						 double	light_ext_coef,
 						 double  melt_Tcoef,
-						 double	Lstar_snow)
+						 double	*Lstar_snow)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
@@ -84,7 +84,7 @@ double	snowpack_daily_F(
 	double	total_extinction;
 	double v_factor, ess_at;
 	double	optical_depth;
-
+	
 	/*--------------------------------------------------------------*/
 	/*  Fix heat capacity and density for air and water,ice for now */
 	/*																*/
@@ -195,8 +195,8 @@ double	snowpack_daily_F(
 		snowpack[0].PAR_absorptance);
 	/*--------------------------------------------------------------*/
 	/*	Compute Lstar snow					*/
-	/*	FROM DINGMAN (p189-90) with unit coversion from cal/cm2		*/
-	/*	to kJ/m2 and then from sec to day							*/
+	/*	FROM DINGMAN (p189-90) with unit coversion from sec to day	*/
+	/*	and from J to kJ							*/
 	/*								*/
 	/*	net Lstar into snowpack is estimate assuming		*/
 	/* 	temperature of snowpack = air temperature		*/
@@ -211,22 +211,31 @@ double	snowpack_daily_F(
 	/*	which is similar to US Army Corp of Engineers		*/
 	/*	calculation                                             */
 	/*--------------------------------------------------------------*/
-	ess_at = ( 1 - snowpack[0].overstory_fraction) * (0.53 + 0.065
+	
+	/* Dingman 1st edition p189 original emissivity equation: */
+	/*ess_at = ( 1 - snowpack[0].overstory_fraction) * (0.53 + 0.065
 		* pow(ea / 100.0, 0.5) ) * ( 1 + 0.4 * cloud_fraction)
+		+ snowpack[0].overstory_fraction;*/
+	
+	/* Dingman 2nd edition p196 updated emissivity equation: */
+	ess_at = ( 1 - snowpack[0].overstory_fraction) * 1.72
+		* pow( (ea/1000.0) / (T_air+273), 0.143 ) * ( 1 + 0.22 * pow(cloud_fraction,2))
 		+ snowpack[0].overstory_fraction;
 	if ((T_air > 0.0) && (snowpack[0].energy_deficit >= 0.0))
-		/* Dingman 663 cal/cm2/day converted to 315 kJ/m2/s to match SBC units */
-		Lstar_snow =  86400 * ((ess_at) * SBC * pow((T_air+273), 4.0) - 315);
+		*Lstar_snow =  86400 * (ess_at * ess_snow * SBC * pow((T_air+273), 4.0) 
+			- ess_snow * SBC * pow((273), 4.0)) / 1000.0;
 	else
-		Lstar_snow =  86400 * ((ess_at - 1.0) * SBC * pow((T_air+273), 4.0));
+		*Lstar_snow =  86400 * (ess_at - ess_snow) * SBC * pow((T_air+273), 4.0) / 1000;
 	Q_radiation_net = snowpack[0].Kstar_direct
-		+ snowpack[0].Kstar_diffuse + Lstar_snow;
+		+ snowpack[0].Kstar_diffuse + *Lstar_snow;
 	if (verbose_flag > 1) {
 		printf("\n%4d %4d %4d -777.5 ",current_date.day, current_date.month,
 			current_date.year);
-		printf("%10.3f %10.3f %10.3f %10.3f", snowpack[0].Kstar_direct,
-			snowpack[0].Kstar_diffuse, Lstar_snow, T_air);
+		printf("%10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f\n", snowpack[0].Kstar_direct,
+			   snowpack[0].Kstar_diffuse, *Lstar_snow, T_air, snowpack[0].overstory_fraction, 
+			   ea, cloud_fraction, ess_at);		
 	}
+
 
 	/*--------------------------------------------------------------*/
 	/*	Sublimation						*/
