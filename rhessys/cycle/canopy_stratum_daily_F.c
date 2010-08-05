@@ -1118,7 +1118,7 @@ void	canopy_stratum_daily_F(
 			psnin.flnr = stratum[0].defaults[0][0].epc.flnr;
 			psnin.t = zone[0].metv.tday;
 			psnin.irad = stratum[0].ppfd_sunlit;
-			if (stratum[0].cs.leafc > ZERO)
+			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_sla_sunlit > ZERO))
 				psnin.lnc = stratum[0].ns.leafn / (stratum[0].cs.leafc * 1.0)
 					/ stratum[0].epv.proj_sla_sunlit;
 			else
@@ -1147,7 +1147,7 @@ void	canopy_stratum_daily_F(
 				psnin.Rd = 0.0;
 
 			psnin.irad = stratum[0].ppfd_shade;
-			if (stratum[0].cs.leafc > ZERO)
+			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_sla_shade > ZERO))
 				psnin.lnc = stratum[0].ns.leafn / (stratum[0].cs.leafc * 1.0)
 					/ stratum[0].epv.proj_sla_shade ;
 			else
@@ -1185,9 +1185,12 @@ void	canopy_stratum_daily_F(
 			/* note multiply by 1000; accounted for in compute_farq_psn by a /1000 */
 			/*	this is done for numerical precision			*/
 			/*--------------------------------------------------------------*/
-			psnin.g = stratum[0].gs_sunlit * 1000 / 1.6 / stratum[0].epv.proj_lai_sunlit;
+			if (stratum[0].epv.proj_lai_sunlit > ZERO)
+				psnin.g = stratum[0].gs_sunlit * 1000 / 1.6 / stratum[0].epv.proj_lai_sunlit;
+			else
+				psnin.g = 0.0;
 			psnin.irad = stratum[0].ppfd_sunlit;
-			if (stratum[0].cs.leafc > ZERO)
+			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_lai_sunlit > ZERO))
 				psnin.lnc = stratum[0].ns.leafn / (stratum[0].cs.leafc * 1.0)
 					/ stratum[0].epv.proj_sla_sunlit;
 			else
@@ -1220,9 +1223,12 @@ void	canopy_stratum_daily_F(
 			/* note multiply by 1000; accounted for in compute_farq_psn by a /1000 */
 			/*	this is done for numerical precision			*/
 			/*--------------------------------------------------------------*/
-			psnin.g = stratum[0].gs_shade *1000 / 1.6 / stratum[0].epv.proj_lai_shade;
+			if (stratum[0].epv.proj_lai_shade > ZERO)
+				psnin.g = stratum[0].gs_shade *1000 / 1.6 / stratum[0].epv.proj_lai_shade;
+			else
+				psnin.g = 0.0;
 			psnin.irad = stratum[0].ppfd_shade;
-			if (stratum[0].cs.leafc > ZERO)
+			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_lai_shade > ZERO))
 				psnin.lnc = stratum[0].ns.leafn / (stratum[0].cs.leafc * 1.0)
 					/ stratum[0].epv.proj_sla_shade;
 			else
