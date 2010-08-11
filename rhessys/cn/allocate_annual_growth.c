@@ -200,7 +200,8 @@ int allocate_annual_growth(				int id,
 
 		carbohydrate_transfer = (epc.min_percent_leafg*cs->leafc - cs->leafc_store*storage_transfer_prop);
 		carbohydrate_transfer = min(cs->cpool, carbohydrate_transfer);		
-		 
+		carbohydrate_transfer = max(carbohydrate_transfer, 0.0);
+ 
 		fleaf = exp(-0.25 * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
 
@@ -221,19 +222,25 @@ int allocate_annual_growth(				int id,
 	   	mean_cn = (fleaf * cnl + froot * cnfr);
 		}
 
-		carbohydrate_transfer_n = carbohydrate_transfer/mean_cn;
+		if (mean_cn > ZERO)
+			carbohydrate_transfer_n = carbohydrate_transfer/mean_cn;
+		else	
+			carbohydrate_transfer_n = 0.0;
 
 		unmetn = carbohydrate_transfer_n - ns->npool;
 		unmetn = max(unmetn, 0.0);
 
+		ns->retransn = max(ns->retransn, 0.0);
 		if (unmetn > ns->retransn)   {
 			ns->npool += ns->retransn;
+			ndf->retransn_to_npool += ns->retransn;
 			ns->retransn = 0.0;
 			carbohydrate_transfer = (ns->npool)*mean_cn;
 			}
 			else {
 			ns->npool += unmetn;
 			ns->retransn -= unmetn;
+			ndf->retransn_to_npool += unmetn;
 			}	
 				
 
@@ -259,9 +266,9 @@ int allocate_annual_growth(				int id,
 		}
 
 		cs->cpool -= carbohydrate_transfer;
-		ns->npool -= carbohydrate_transfer/mean_cn;
+		if (mean_cn > ZERO)
+			ns->npool -= carbohydrate_transfer/mean_cn;
 	}
-
 	/*--------------------------------------------------------------*/
 	/*	respiration thinning			*/
 	/*--------------------------------------------------------------*/
