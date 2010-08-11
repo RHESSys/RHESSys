@@ -133,7 +133,7 @@ void	output_growth_patch(
 		patch[0].soil_ns.leach*1000.0,
 		patch[0].soil_ns.nitrate*1000.0,
 		patch[0].soil_ns.sminn*1000.0,
-		patch[0].streamflow_N,
+		patch[0].streamflow_N*1000.0,
 		patch[0].surface_NO3,
 		patch[0].surface_NH4,
 		aheight,
