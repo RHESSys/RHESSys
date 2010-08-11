@@ -82,7 +82,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		stratum[0].phen.lfseasonday,
 		stratum[0].phen.gsi,
 		stratum[0].ns.nlimit,
-		stratum[0].cdf.fleaf, stratum[0].cdf.froot, stratum[0].cdf.fwood, stratum[0].ndf.actual_N_uptake,
-		stratum[0].ndf.sminn_to_npool, stratum[0].ndf.retransn_to_npool);
+		stratum[0].cdf.fleaf, stratum[0].cdf.froot, stratum[0].cdf.fwood, stratum[0].ndf.actual_N_uptake*1000.0,
+		stratum[0].ndf.sminn_to_npool*1000.0, stratum[0].ndf.retransn_to_npool*1000.0);
 	return;
 } /*end output_growth_canopy_stratum*/
