@@ -192,6 +192,7 @@ int allocate_daily_growth_Waring(int nlimit,
 
 
 	
+	
 	a = 0.8;
 	b = 2.5;
 	c = max(cdf->potential_psn_to_cpool, cdf->psn_to_cpool);
@@ -220,13 +221,18 @@ int allocate_daily_growth_Waring(int nlimit,
 	cdf->fwood = fwood;
 
 
+	if (froot+fleaf+fwood < ZERO) {
+		mean_cn = 0.0;
+		}
+	else {
+		
 	if (epc.veg_type == TREE){
 	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
 	}
 	else{
 	   mean_cn = (fleaf * cnl + froot * cnfr);
 	}
-
+	}
 
 	if (mean_cn > ZERO) {
 	if (plant_calloc / mean_cn > plant_nalloc) {
@@ -240,9 +246,12 @@ int allocate_daily_growth_Waring(int nlimit,
 	else {
 		plant_calloc = 0.0;
 		plant_nalloc = 0.0;
+		cdf->psn_to_cpool = 0.0;
+		sminn_to_npool = 0.0;
+		ndf->retransn_to_npool = 0.0;
 		}
 	
-	
+
 	
 	/* pnow is the proportion of this day's growth_Waring that is displayed now,
 	the remainder going into storage for display next year through the
@@ -306,6 +315,12 @@ int allocate_daily_growth_Waring(int nlimit,
 		ndf->npool_to_deadcrootn         +
 		ndf->npool_to_deadcrootn_store;
 
+	/*
+	if (cdf->psn_to_cpool*1000.0 > ZERO)
+	printf("\n psn %lf cn %lf psn/cn %lf sminn+to %lf retrns %lf potential %lf actual %lf",
+		cdf->psn_to_cpool*1000.0, mean_cn, cdf->psn_to_cpool/mean_cn*1000.0, sminn_to_npool*1000.0, ndf->retransn_to_npool*1000.0, 
+		1000.0*ndf->potential_N_uptake, 1000.0*ndf->actual_N_uptake);	
+	*/
 
 	/* calculate the amount of carbon that needs to go into growth_Waring
 	respiration storage to satisfy all of the storage growth_Waring demands */
