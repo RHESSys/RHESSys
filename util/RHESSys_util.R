@@ -2,13 +2,22 @@ library(chron)
 
 
 cal.wyd = function(x) {
-	tmp = aggregate(x$yd, by=list(x$year), max)
-	colnames(tmp) = c("year","n")
-	tmp$year = as.integer(as.character(tmp$year))
-	x$wyd=0
-	tmp2 = subset(tmp, tmp$n == 365)
-	new = ifelse( (x$year %in% tmp2$year), ifelse(x$yd >= 274,x$yd-273, x$yd+91), ifelse(x$yd >=275, x$yd-274, x$yd+92))
-	new
+	nday = length(x$wy)
+	x$row = seq(from=1, to=nday)
+	x$wyd = 0.0
+	tmp = subset(x$row, x$month==10 & x$day == 1)
+	x$wyd[tmp] = 1
+	for (i in 2:nday)
+		x$wyd[i] = ifelse(x$wyd[i-1] != 0, ifelse(x$wyd[i]==1,1,x$wyd[i-1]+1),
+			ifelse(x$wyd[i]==1,1,0))
+
+	tmp = subset(x$row, x$wyd == 0)
+	nb = length(tmp)
+	lastday = ifelse(x$yd[nb]==273, 365,366)
+	firstday = lastdaystday-nb+1
+	x$wyd[tmp] = seq(from=firstday, to=lastday)
+ 
+	x$wyd
 }
 
 
