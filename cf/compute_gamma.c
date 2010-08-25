@@ -22,6 +22,9 @@
 /*  revision: 6.0  29 April, 2005                               */
 /*  PROGRAMMER NOTES                                            */
 /*                                                              */
+/*  Aug 2010 - AD turned off perimeter & slope updating when    */
+/*  gamma is negative (flow into patch).						*/
+/*                                                              */
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -102,7 +105,6 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 	/* calculate gamma for each neighbour */
 	for (pch = 1; pch <= num_patches; pch++) 
 		{
-
 		if (d_flag) {
 			printf("\n nex pch %d", pch);
 			printf("\n Processing patch %ld", flow_table[pch].patchID);
@@ -213,14 +215,19 @@ int compute_gamma(flow_table, num_patches, f1,scale_trans, cell, sc_flag,
 						aptr->gamma = 0.0;
 
 			*/
-
-			flow_table[pch].total_gamma += aptr->gamma;
-			flow_table[pch].total_perimeter += aptr->perimeter;
-			flow_table[pch].slope += aptr->slope * aptr->perimeter;
-
-			aptr = aptr->next;
+			
+			/****** AD ADDED IN ELSE STATEMENT HERE SO THAT FOR NEGATIVE GAMMAS *****/
+			/****** (FLOW INTO PATCH) NONE OF THE VARIABLES ARE UPDATED ******/
+			else {
+				flow_table[pch].total_gamma += aptr->gamma;
+				flow_table[pch].total_perimeter += aptr->perimeter;
+				flow_table[pch].slope += aptr->slope * aptr->perimeter;
 			}
-
+				
+			aptr = aptr->next;
+				
+			}
+			
 
 		/*  divided by total_gamma */
 		aptr = flow_table[pch].adj_list;

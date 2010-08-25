@@ -21,6 +21,9 @@
 /*  revision: 6.0  29 April, 2005                               */
 /*  PROGRAMMER NOTES                                            */
 /*                                                              */
+/*  Aug 2010 - AD changed perimeter calculation flag formula    */
+/*  and set new adjacent counter initial value to 1.			*/
+/*                                                              */
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -56,7 +59,6 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 	int stream_neigh;
 	int new_adj = 0;
 
-
 	for (r=-1; r <= 1; r++) {
 		for (c=-1; c<=1; c++) {
 			/* don't look at neighbours beyond the edge */
@@ -70,7 +72,6 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 				h_neigh = hill[(er+r)*maxc+(ec+c)];
 				z_neigh = zone[(er+r)*maxc+(ec+c)];
 				stream_neigh = stream[(er+r)*maxc+(ec+c)];
-
 
 				if ((( p_neigh != flow_entry->patchID) || 
 					( z_neigh != flow_entry->zoneID) || 
@@ -128,8 +129,9 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 
 							} /* end new entry */
 					}
-						
-						if (abs((c+r)/ 2)*1.0/1.0== 0.5 )
+						/******* AD CHANGED FROM abs((c+r)/ 2)*1.0/1.0== 0.5 TO BELOW *******/
+						/******* WAS YIELDING ONLY 1s and 0s IN ORIGINAL FORM??? ************/
+						if ( abs(c+r)*1.0/1.0 == 1.0 )
 							flow_entry->adj_str_ptr->perimeter += cell*0.5;
 						else
 							flow_entry->adj_str_ptr->perimeter += cell*1.0/sqrt(2.0);
@@ -139,6 +141,9 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 					/* create a list of neighbours if it does not exist already */
 					if ( (num_adj == 0)  ) {
 						num_adj = 1;
+						/******** AD ADDED new_adj=1 HERE BECAUSE WE WERE ALWAYS *******/
+						/******** MISSING LAST CORNER ADJ PATCH???				 *******/
+						new_adj = 1;
 						if ( (flow_entry->adj_list = (struct adj_struct *)malloc(
 									sizeof(struct adj_struct))) == NULL)
 						{
@@ -183,7 +188,6 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 							flow_entry->adj_ptr->hillID = h_neigh;
 							flow_entry->adj_ptr->perimeter = 0.0; 
 							flow_entry->adj_ptr->next = NULL;
-
 							} /* end land processing */
 							else { 		/* stream processing */
 
@@ -203,27 +207,29 @@ int	check_neighbours(er,ec, patch, zone, hill, stream, flow_entry, num_adj, f1,
 								flow_entry->adj_ptr->hillID = h_neigh;
 								flow_entry->adj_ptr->perimeter = 0.0;
 								flow_entry->adj_ptr->next = NULL;
-							}
+							} /* end stream processing */
 
 
 							} /* end new entry */
 					}
 
 					/* add perimeter length */
-					if (abs((c+r)/ 2)*1.0/1.0== 0.5 )
+					/******* AD CHANGED FROM abs((c+r)/ 2)*1.0/1.0== 0.5 TO BELOW *******/
+					/******* WAS YIELDING ONLY 1s and 0s IN ABOVE FORM ******************/
+					if ( abs(c+r)*1.0/1.0 == 1.0 ) {
 						flow_entry->adj_ptr->perimeter += cell*0.5;
-					else
+					}
+					else {
 						flow_entry->adj_ptr->perimeter += cell*1.0/sqrt(2.0);
+					}
 
 				} /* end is neigh */
-
 
 			} /* end edges if */
 
 		} /* end col */
+		
 	} /* end row */
-
-
 
 
 	flow_entry->adj_ptr = flow_entry->adj_list;	

@@ -1,7 +1,183 @@
- double	find_top( 
-					struct flow_struct *flow_table,
-					int curr, 
-					double pit_elev,
-					int *num_pit, int *upslope_list,
-					int *edge_inx)
+------------------------------------------------------------------------
+r155 | jschoate | 2010-07-14 10:19:48 -0700 (Wed, 14 Jul 2010) | 3 lines
 
+Committing Christina's fix for segfaults when pits cross patch boundaries.
+
+
+------------------------------------------------------------------------
+r152 | ctague | 2010-06-27 14:36:56 -0700 (Sun, 27 Jun 2010) | 1 line
+
+Revert to having users set cell size as automated (from header) does not use region cell size
+------------------------------------------------------------------------
+r151 | ctague | 2010-06-27 13:42:32 -0700 (Sun, 27 Jun 2010) | 1 line
+
+fixed issue with pits without neighbours
+------------------------------------------------------------------------
+r150 | groulx | 2010-06-22 11:56:57 -0700 (Tue, 22 Jun 2010) | 1 line
+
+cf9 now appends .flow to flowtable names
+------------------------------------------------------------------------
+r146 | adugger | 2010-06-17 16:29:41 -0700 (Thu, 17 Jun 2010) | 1 line
+
+corrected pointer initiation
+------------------------------------------------------------------------
+r143 | groulx | 2010-06-17 12:24:27 -0700 (Thu, 17 Jun 2010) | 1 line
+
+Moved back to getting the cell resolution from the DEM instead of a hardcoded value. Taken as sqrt of ns and ew resolutions, so no more non-square pixel failures.
+------------------------------------------------------------------------
+r139 | ctague | 2010-06-16 16:21:54 -0700 (Wed, 16 Jun 2010) | 1 line
+
+fixed issues with pits
+------------------------------------------------------------------------
+r138 | ctague | 2010-06-16 15:12:58 -0700 (Wed, 16 Jun 2010) | 1 line
+
+temporarily removed check on cell resolution
+------------------------------------------------------------------------
+r137 | ctague | 2010-06-16 15:11:23 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r136 | ctague | 2010-06-16 15:10:55 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r135 | ctague | 2010-06-16 15:10:23 -0700 (Wed, 16 Jun 2010) | 1 line
+
+cell size issues
+------------------------------------------------------------------------
+r134 | ctague | 2010-06-16 15:09:43 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed use of m and K maps
+------------------------------------------------------------------------
+r133 | ctague | 2010-06-16 15:09:24 -0700 (Wed, 16 Jun 2010) | 1 line
+
+mew stream table format for routing - coming
+------------------------------------------------------------------------
+r132 | ctague | 2010-06-16 15:09:00 -0700 (Wed, 16 Jun 2010) | 1 line
+
+remove m/k usage
+------------------------------------------------------------------------
+r131 | ctague | 2010-06-16 15:08:38 -0700 (Wed, 16 Jun 2010) | 1 line
+
+added processing for stream table
+------------------------------------------------------------------------
+r130 | ctague | 2010-06-16 15:06:34 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r129 | ctague | 2010-06-16 15:05:56 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r128 | ctague | 2010-06-16 15:05:30 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r127 | ctague | 2010-06-16 15:04:19 -0700 (Wed, 16 Jun 2010) | 1 line
+
+cycling from 1 rather than 0
+------------------------------------------------------------------------
+r126 | ctague | 2010-06-16 15:00:50 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r125 | ctague | 2010-06-16 15:00:18 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r124 | ctague | 2010-06-16 14:59:45 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r123 | ctague | 2010-06-16 14:59:27 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r122 | ctague | 2010-06-16 14:58:51 -0700 (Wed, 16 Jun 2010) | 1 line
+
+removed m and K as input maps - flowtable compatible with rhessys5.14 or later
+------------------------------------------------------------------------
+r121 | ctague | 2010-06-02 17:17:12 -0700 (Wed, 02 Jun 2010) | 1 line
+
+fix to route all road intercepted flow directly to basin outlet - for now avoids flat area issues
+------------------------------------------------------------------------
+r108 | groulx | 2010-05-25 10:54:15 -0700 (Tue, 25 May 2010) | 1 line
+
+Create flowpaths now takes the cell resolution from the patch map instead of having a hardcoded value.
+------------------------------------------------------------------------
+r38 | groulx | 2009-11-30 08:40:35 -0800 (Mon, 30 Nov 2009) | 1 line
+
+Adding lairead utility to subversion
+------------------------------------------------------------------------
+r27 | groulx | 2009-11-04 11:06:33 -0800 (Wed, 04 Nov 2009) | 1 line
+
+Made the output flag required
+------------------------------------------------------------------------
+r20 | groulx | 2009-10-29 16:59:32 -0700 (Thu, 29 Oct 2009) | 1 line
+
+cf7 now properly names output files
+------------------------------------------------------------------------
+r19 | groulx | 2009-10-29 16:15:33 -0700 (Thu, 29 Oct 2009) | 1 line
+
+Cleaned out left over code from main.c
+------------------------------------------------------------------------
+r18 | groulx | 2009-10-29 16:10:07 -0700 (Thu, 29 Oct 2009) | 1 line
+
+cf now takes all data from GRASS rasters, sewers and flna still untested due to lack of maps
+------------------------------------------------------------------------
+r17 | groulx | 2009-10-29 14:40:00 -0700 (Thu, 29 Oct 2009) | 1 line
+
+Importa flna raster maps from GRASS. Untested since I do not have access to any FLNA maps
+------------------------------------------------------------------------
+r16 | groulx | 2009-10-29 13:44:33 -0700 (Thu, 29 Oct 2009) | 1 line
+
+Uses raster maps for m and K, no longer necessary to multiply values by 1000
+------------------------------------------------------------------------
+r15 | groulx | 2009-10-29 12:35:08 -0700 (Thu, 29 Oct 2009) | 1 line
+
+Now reading DEM raster from GRASS using raster2array. Forgetting to #include grassio.h was causing a caste of the pointer to the dem which caused the EXC_BAD_ACCESS error.
+------------------------------------------------------------------------
+r14 | groulx | 2009-10-29 12:14:31 -0700 (Thu, 29 Oct 2009) | 1 line
+
+Added a -g flag to cf7 so that compute_gamma printf's are only seen when -g is set, this makes the output waaaay more quiet. Also copied and pasted the body of rast2array into main.c.  cf7 will work properly from a GRASS raster now, but no idea why it still won't work when calling rast2array.
+------------------------------------------------------------------------
+r13 | groulx | 2009-10-29 10:22:34 -0700 (Thu, 29 Oct 2009) | 1 line
+
+cf7 gets all values from GRASS now and produces same as original output. Going to start loading raster maps. If it begins to hang again, restart from this point
+------------------------------------------------------------------------
+r12 | groulx | 2009-10-29 09:29:45 -0700 (Thu, 29 Oct 2009) | 1 line
+
+main.c reverted to support all grass arguments and parse template for necessary files, but does not get stuck in an infinite loop like R11
+------------------------------------------------------------------------
+r11 | groulx | 2009-10-27 19:30:18 -0700 (Tue, 27 Oct 2009) | 1 line
+
+ew_horizon GRASS functionallity split off into new grassio.c file. cf7 is taking args from the command line but still not properly loading GRASS raster maps.
+------------------------------------------------------------------------
+r10 | groulx | 2009-10-26 10:51:42 -0700 (Mon, 26 Oct 2009) | 1 line
+
+cf7 gets filenames for basin, hill, zone, and patch from the template file
+------------------------------------------------------------------------
+r9 | groulx | 2009-10-26 09:38:10 -0700 (Mon, 26 Oct 2009) | 1 line
+
+Conversion of cf7 to a grass program. Takes arguments through GRASS but does not yet read in raster maps from GRASS.
+------------------------------------------------------------------------
+r8 | groulx | 2009-10-25 14:44:41 -0700 (Sun, 25 Oct 2009) | 1 line
+
+added a output_ascii_double_debug function to fileio.c to make it easier to check if results are the same after changes. Also tested some floating point raster maps, ew_horizon seems to work for all cell types now. Have yet to test with NULL values, suspect problems, but not a high priority just now.
+------------------------------------------------------------------------
+r7 | groulx | 2009-10-25 14:01:44 -0700 (Sun, 25 Oct 2009) | 1 line
+
+ew_horizon is now a stand-alone grass program. Works properly for CELL type DEMs, values for FCELL and DCELL DEMs are a bit off, doing more testing with those.
+------------------------------------------------------------------------
+r6 | groulx | 2009-10-22 16:18:35 -0700 (Thu, 22 Oct 2009) | 1 line
+
+Updated makefiles to have install targets
+------------------------------------------------------------------------
+r3 | groulx | 2009-10-21 14:31:45 -0700 (Wed, 21 Oct 2009) | 1 line
+
+Updated cf from v6 to v7
+------------------------------------------------------------------------
+r1 | groulx | 2009-10-21 13:53:09 -0700 (Wed, 21 Oct 2009) | 1 line
+
+Initial commit of RHESSys 5.12.4
+------------------------------------------------------------------------
