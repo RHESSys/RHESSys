@@ -54,6 +54,7 @@
 		-tmp		temporary value (CURRENTLY DON)a
 		-th		threshold sat deficit (for drought output)
 		-gw		include hillslope scale groundwater (sat_to_gw_coeff; gw_loss_coeff parameters scaled)
+		-version Prints the RHESSys version number, then exits immediately
 
 	DESCRIPTION
 
@@ -288,6 +289,10 @@
 #include "rhessys.h"
 #include <time.h>
 
+// The $$RHESSYS_VERSION$$ string will be replaced by the make
+// script to reflect the current RHESSys version.
+const char RHESSYS_VERSION[] = "5.14.3";
+
 /*--------------------------------------------------------------*/
 /*	Main line of code.											*/
 /*--------------------------------------------------------------*/
@@ -368,7 +373,17 @@ int	main( int main_argc, char **main_argv)
 	/*	Command line parsing.										*/
 	/*--------------------------------------------------------------*/
 	command_line = construct_command_line(main_argc, main_argv);
-	
+
+	/*--------------------------------------------------------------*/
+	/* Check if print version flag was set. If so, just print out   */
+	/* the version and return.                                      */
+	/*--------------------------------------------------------------*/
+	if (command_line[0].version_flag > 0 ) {
+		printf("RHESSys Version: %s\n", RHESSYS_VERSION);
+		return(1);
+	}
+
+
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED CON COMMAND LINE ***\n");
 	

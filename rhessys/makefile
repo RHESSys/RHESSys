@@ -1,9 +1,9 @@
 PGM  = rhessys5.14.3
+VERSION = 5.14.3
 CC = gcc 
 CFLAGS = -g -I include
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
-RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = \
 $(OBJ)/Ksat_z_curve.o \
@@ -796,8 +796,11 @@ $(OBJ)/output_template_structure.o: output/output_template_structure.c
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
 
-$(OBJ)/main.o: main.c
+$(OBJ)/main.o: main.c setversion
 	$(CC) -c $(CFLAGS) main.c -o $(OBJ)/main.o
+
+setversion:
+	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' -i '' ./main.c	
 
 install:
 	cp $(PGM) $(RHESSYS_BIN)

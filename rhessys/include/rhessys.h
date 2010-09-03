@@ -1545,6 +1545,7 @@ struct	command_line_object
 	int		precip_scale_flag;
 	int		snow_scale_flag;
 	int		vmort_flag;
+	int		version_flag;
 	char	*output_prefix;
 	char	routing_filename[256];
 	char	world_filename[256];

@@ -90,6 +90,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
 	command_line[0].vmort_flag = 0;
+	command_line[0].version_flag = 0;
 	command_line[0].vsen[M] = 1.0;
 	command_line[0].vsen[K] = 1.0;
 	command_line[0].sen[M] = 1.0;
@@ -115,13 +116,20 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].don_value = 0.0;
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
-	command_line[0].snow_scale_tol = 999999999; 
+	command_line[0].snow_scale_tol = 999999999;
 	
 	/*-------------------------------------------------*/
 	/*	Loop through each arguement in the command line.*/
 	/*-------------------------------------------------*/
 	i = 1;
 	while  ( i < main_argc){
+		/*------------------------------------------*/
+		/* Check for the print version flag         */
+		/*------------------------------------------*/
+		if ( strcmp(main_argv[i], "-version") == 0) {
+			command_line[0].version_flag = 1;
+			++i;
+		}
 		/*------------------------------------------*/
 		/*		Check if the verbose flag is next.    */
 		/*------------------------------------------*/
