@@ -178,11 +178,11 @@ $SENSBAND" > params.txt
 
 # Cap each map of LAI to laimax
 # hardcoded laimax to 12, since having issues with quotes
-	r.mapcalc 'LAIK = min(LAIK,${laimax})'
-	r.mapcalc 'LAIW = min(LAIW,${laimax})'
-	r.mapcalc 'LAIS = min(LAIS,${laimax})'
-	r.mapcalc 'LAIM = min(LAIM,${laimax})'
-	r.mapcalc 'LAIF = min(LAIF,${laimax})'
+	r.mapcalc "LAIK = min(LAIK,${laimax})"
+	r.mapcalc "LAIW = min(LAIW,${laimax})"
+	r.mapcalc "LAIS = min(LAIS,${laimax})"
+	r.mapcalc "LAIM = min(LAIM,${laimax})"
+	r.mapcalc "LAIF = min(LAIF,${laimax})"
 
 
 	# Calculate watershed-wide mean LAI for each model and output to file
