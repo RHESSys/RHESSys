@@ -2,31 +2,30 @@
 #######################
 # INPUTS
 # Location of landsat metadata files
-LANDDIR=/Work.capoeira/Projects/stehekin/landsat
-# Location of GRASS maps for landsat in native projection (may be different from working GRASS location)
-MAPSET=dgroulx
-LOC=stehekin
-GISDB=/Work.capoeira/Projects/stehekin
+LANDDIR=$1
 # Local maps needed
-DEM=DEM
-VEG=sfmw_vegdum
-WSH=stehekin_basin
+DEM=$2
+WSH=$3
+# Prefix of landsat images. Each should end in the number representing its band
+IMG_PREFIX=$4
+
 # Define extinction coefficient variable (dependent on veg type) and maximum LAI
 K=0.4
 laimax=6 # taken from conifer.def
 # Define ndvi value for background (ndvimin) and infinite veg (ndvimax)
 ndvimax=0.8
 ndvimin=0.05
+
 # Generate empty mean stats file
 echo   > mean.txt
-#
+
 #######################
 # Get file listing
 cd $LANDDIR
 PREFS=`ls *_MTL.txt| awk -F/ '{print $1}' | cut -d "_" -f1-2 | sort -u`
 # Make starting mean LAI file
 echo "DT LAI_K LAI_W LAI_S LAI_M LAI_F"> mean.txt
-#
+
 #######################
 # Loop for each specific landsat image (must be unique per date)
 for PREF in $PREFS; do
@@ -76,10 +75,10 @@ for PREF in $PREFS; do
 	fi
 	echo ATMOSPHERIC MODE=$ATMOD
 
-#######################
+	#######################
 	# Band-specific calculations
 	for BANDNO in 3 4 5; do
-		GISPREF=ls_46_26_band${BANDNO}
+		GISPREF=${IMG_PREFIX}${BANDNO}
 		LMAX=`grep -aw LMAX_BAND$BANDNO ${PREF}_MTL.txt | awk '{print $3}'`
 		LMIN=`grep -aw LMIN_BAND$BANDNO ${PREF}_MTL.txt | awk '{print $3}'`
 		# Import landsat band into current location
@@ -145,23 +144,25 @@ $SENSBAND" > params.txt
 		fi
 		echo Running atmospheric correction...
 		# Output is reflectance
+		# Output the command about to run
+		echo "i.atcorr ${abvar} -o ${GISPREF}.rad ialt=${DEM} icnd=params.txt oimg=${GISPREF}.atcor"
 		i.atcorr ${abvar} -o ${GISPREF}.rad ialt=${DEM} icnd=params.txt oimg=${GISPREF}.atcor
 		rm params.txt
 	done
 #######################
 	# Reset GISPREF to not include the _band prefix
-	GISPREF=ls_46_26
+#	GISPREF=ls_46_26
 	# Calculate NDVI
-	r.mapcalc "NDVI=(float(${GISPREF}_band4.atcor)-float(${GISPREF}_band3.atcor))/(float(${GISPREF}_band4.atcor)+float(${GISPREF}_band3.atcor))"
+	r.mapcalc "NDVI=(float(${IMG_PREFIX}4.atcor)-float(${IMG_PREFIX}3.atcor))/(float(${IMG_PREFIX}4.atcor)+float(${IMG_PREFIX}3.atcor))"
 	# Calculate PETI
-	r.mapcalc "PETI=(float(${GISPREF}_band4.atcor)-float(${GISPREF}_band5.atcor))/(float(${GISPREF}_band4.atcor)+float(${GISPREF}_band5.atcor))"
+	r.mapcalc "PETI=(float(${IMG_PREFIX}4.atcor)-float(${IMG_PREFIX}5.atcor))/(float(${IMG_PREFIX}4.atcor)+float(${IMG_PREFIX}5.atcor))"
 	# Calculate ISR
-	r.mapcalc "ISR=float(${GISPREF}_band4.atcor)/float(${GISPREF}_band5.atcor)"
+	r.mapcalc "ISR=float(${IMG_PREFIX}4.atcor)/float(${IMG_PREFIX}5.atcor)"
 	# Calculate RSR
 		# Obtain min and max Band 5 values
- 		eval `r.univar -e -g map=${GISPREF}_band5.atcor percentile=1`
-		eval `r.univar -e -g map=${GISPREF}_band5.atcor percentile=99`
-	r.mapcalc "RSR=(float(${GISPREF}_band4.atcor)/float(${GISPREF}_band3.atcor))*(${percentile_99}-float(${GISPREF}_band5.atcor))/(${percentile_99}-${percentile_1})"
+ 		eval `r.univar -e -g map=${IMG_PREFIX}5.atcor percentile=1`
+		eval `r.univar -e -g map=${IMG_PREFIX}5.atcor percentile=99`
+	r.mapcalc "RSR=(float(${IMG_PREFIX}4.atcor)/float(${IMG_PREFIX}3.atcor))*(${percentile_99}-float(${IMG_PREFIX}5.atcor))/(${percentile_99}-${percentile_1})"
 	# Calculate LAI from different models
 	# K parameter model
 		mindiff=$(echo "(${ndvimax}-${ndvimin})*e(-$K*${laimax})" | bc -l)
@@ -177,11 +178,11 @@ $SENSBAND" > params.txt
 
 # Cap each map of LAI to laimax
 # hardcoded laimax to 12, since having issues with quotes
-	r.mapcalc 'LAIK = min(LAIK,12)'
-	r.mapcalc 'LAIW = min(LAIW,12)'
-	r.mapcalc 'LAIS = min(LAIS,12)'
-	r.mapcalc 'LAIM = min(LAIM,12)'
-	r.mapcalc 'LAIF = min(LAIF,12)'
+	r.mapcalc 'LAIK = min(LAIK,${laimax})'
+	r.mapcalc 'LAIW = min(LAIW,${laimax})'
+	r.mapcalc 'LAIS = min(LAIS,${laimax})'
+	r.mapcalc 'LAIM = min(LAIM,${laimax})'
+	r.mapcalc 'LAIF = min(LAIF,${laimax})'
 
 
 	# Calculate watershed-wide mean LAI for each model and output to file
