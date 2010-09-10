@@ -267,11 +267,11 @@ main(int argc, char *argv[])
 
 	if (stream_connectivity_opt->answer != NULL) {  
 		// Default is 1, random connectivity. See sc_flag declaration for setting default.
-		if (strcmp("random",stream_connectivity_opt->answer)) {
+		if (strcmp("random",stream_connectivity_opt->answer) == 0) {
 			sc_flag = 1;
-		} else if (strcmp("internal", stream_connectivity_opt->answer)) {
+		} else if (strcmp("internal", stream_connectivity_opt->answer) == 0) {
 			sc_flag = 2;
-		} else if (strcmp("none", stream_connectivity_opt->answer)) {
+		} else if (strcmp("none", stream_connectivity_opt->answer) == 0) {
 			sc_flag = 0;
 		} else {
 			G_fatal_error("\"%s\" is not a valid argument to stream", stream_connectivity_opt->answer);
@@ -311,19 +311,19 @@ main(int argc, char *argv[])
 			G_fatal_error("Error setting the road width value");
 		}
 	}
-
+	
 	if (slope_use_opt->answer != NULL) {
-		if (strcmp("standard", slope_use_opt->answer)) {
+		if (strcmp("standard", slope_use_opt->answer) == 0) {
 			slp_flag = 0;
-		} else if (strcmp("internal", slope_use_opt->answer)) {
+		} else if (strcmp("internal", slope_use_opt->answer) == 0) {
 			slp_flag = 1;
-		} else if (strcmp("max", slope_use_opt->answer)) {
+		} else if (strcmp("max", slope_use_opt->answer) == 0) {
 			slp_flag = 2;
 		} else {
 			G_fatal_error("\"%s\" is not a valid argument to slopeuse", slope_use_opt->answer);
 		}
 	}
-
+	
 	if (basin_id_opt->answer != NULL) {
 		// Default set at declaration
 		if (sscanf(basin_id_opt->answer, "%d", &basinid) != 1) {
