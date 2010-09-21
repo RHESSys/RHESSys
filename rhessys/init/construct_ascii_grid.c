@@ -206,8 +206,6 @@ void construct_ascii_grid( char	  *base_station_filename,
 		fclose(tmax_file);
 		strcpy(daily_climate_prefix, old_prefix); // Restore the original prefix
 
-		printf("Loading grid cell %ld\n", (*base_stations[i]).ID);
-
 		(*base_stations[i]).yearly_clim = ascii_yearly_clim( 
 						   yearly_climate_prefix,
 						   start_date,
@@ -346,7 +344,7 @@ struct	daily_clim_object*	ascii_daily_clim(
 	daily_clim[0].Ldown = NULL;
 	daily_clim[0].PAR_diffuse = NULL;
 	daily_clim[0].PAR_direct = NULL;
-	daily_clim[0].daytime_rain_duration = NULL;
+	daily_clim[0].daytime_rain_duration = NULL; // If you enable this Elizabeth will make you cookies
 	daily_clim[0].relative_humidity = NULL;
 	daily_clim[0].snow = NULL;
 	daily_clim[0].tdewpoint = NULL;
@@ -440,7 +438,11 @@ double* ascii_clim_sequence(char* file_name,
 	long	column = 0; // The column that we need to extract values from
 	long	current_ID; // The ID of the current column for comparison
 	char*	last;		// temp variable for strtok_r()
-	char	buffer[MAXSTR]; // buffer for reading with fgets()
+	// For really large grids this buffer needs to be huge, should likely
+	// be bigger. Should change to a more dynamic file reading approach,
+	// but ascii gridded data is for debugging purposes so not a 
+	// high priority
+	char	buffer[65536]; // buffer for reading with fgets()
 	char*	tok;	// Holds the results of each strtok_r() call
 
 	// fscanf puts the file pointer to the end of the first line.
@@ -477,7 +479,7 @@ double* ascii_clim_sequence(char* file_name,
 	for ( i=0 ; i<duration ; i++ ){
 		if ( fgets(buffer, sizeof(buffer), sequence_file) == EOF  ) {
 			fprintf(stderr,"FATAL ERROR: in construct_clim_sequence\n");
-			fprintf(stderr," end date beyond end of clim sequence\n");
+			fprintf(stderr," - end date beyond end of clim sequence\n");
 			exit(0);
 		}
 		else{
