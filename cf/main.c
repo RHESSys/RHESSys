@@ -65,7 +65,7 @@ main(int argc, char *argv[])
 	int		pst_flag, f_flag, fl_flag, fh_flag, vflag;
 	int		s_flag, r_flag, slp_flag, sc_flag;
 	int		st_flag, sewer_flag;
-	int		d_flag;
+	int		d_flag, dbg_flag;
 	double	scale_trans, scale_dem;
 	char    input_prefix[MAXS];
 	char    output_suffix[MAXS];
@@ -111,6 +111,7 @@ main(int argc, char *argv[])
 	slp_flag = 0;		/* slope use flag		         */
 	st_flag  = 0;		/* scaling stream side patches 	 */
 	sewer_flag = 0;		/* route through a sewer network */
+	dbg_flag = 0;		/* debugging flat, set to not remove temp files */
 	scale_trans = 1.0;
 	scale_dem = 1.0;	/* scaling for dem values        */
 	pst_flag = 0;		/* print stream table flag            */
@@ -166,7 +167,6 @@ main(int argc, char *argv[])
 	cell_size->type = TYPE_DOUBLE;
 	cell_size->required = NO;
 	cell_size->description = "cell size [Default 10m]";
-
 
 	struct Option* scale_stream_trans = G_define_option();
 	scale_stream_trans->key = "scaletrans";
@@ -255,6 +255,7 @@ main(int argc, char *argv[])
 		exit(1);
 
 	// Get values from GRASS arguments
+	dbg_flag = debug_flag->answer;
 	fl_flag = lowest_flna_flag->answer;
 	fh_flag = highest_flna_flag->answer;
 	if (fl_flag || fh_flag) {
@@ -505,10 +506,30 @@ main(int argc, char *argv[])
 
 	
 	fclose(out2);
+
+	// Remove temporary files
+	char buildfn[MAXS];
+	char gammafn[MAXS];
+	char pitfn[MAXS];
+	strcpy(buildfn, input_prefix);
+	strcpy(gammafn, input_prefix);
+	strcpy(pitfn, input_prefix);
+	strcat(buildfn, ".build");
+	strcat(gammafn, ".gamma");
+	strcat(pitfn, ".pit");
+
+	if ( !dbg_flag ) { // Do not clean up temp files if debugging is enabled
+		printf("\n Cleaning up temporary files");
+		if (remove(buildfn) != 0)
+			printf("\n Unable to remove .build temp file");
+		if (remove(gammafn) != 0)
+			printf("\n Unable to remove .gamma temp file");
+		if (remove(pitfn) != 0)	
+			printf("\n Unable to remove .pit temp file");
+	}
+
 	printf("\n Finished Createflowpaths \n\n");
     exit(0);
-
-
 } /* end create_flowpaths.c */
 
 
