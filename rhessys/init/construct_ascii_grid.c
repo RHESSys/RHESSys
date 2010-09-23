@@ -327,6 +327,8 @@ struct	daily_clim_object*	ascii_daily_clim(
 		duration, 
 		ID);
 
+	
+			
 	/*--------------------------------------------------------------*/
 	/*	initialize the rest of the clim sequences as null	*/
 	/*--------------------------------------------------------------*/
@@ -357,7 +359,34 @@ struct	daily_clim_object*	ascii_daily_clim(
 	daily_clim[0].wind = NULL;
 	daily_clim[0].ndep_NO3 = NULL;
 	daily_clim[0].ndep_NH4 = NULL;
-	
+
+	// Read the still open base station file for the number of non-critical parameters 
+	fscanf(base_station_file, "%d", &num_non_critical_sequences);
+	read_record(base_station_file, record);
+
+	printf("\n Non critical sequences %d", num_non_critical_sequences);
+
+	// Loop through all non-critical sequences and attempt to contruct them
+	for ( i=0; i < num_non_critical_sequences; ++i) {
+		fscanf(base_station_file, "%s", sequence_name);
+		printf(" \n %s", sequence_name);
+		read_record(base_station_file, record);
+
+		// Test the sequence name and create if it is valid
+		if ( strcmp(sequence_name, "daytime_rain_duration") == 0 ) {
+			strcpy(file_name, file_prefix);
+			printf("\n Reading daytime rain duration sequence");
+			daily_clim[0].daytime_rain_duration = ascii_clim_sequence(
+				(char *)strcat(file_name, ".daytime_rain_duration"),
+				start_date,
+				duration,
+				ID);
+		}
+		else fprintf(stderr,
+			"WARNING - clim sequence %s not found.\n", sequence_name);
+
+	}
+
 	return daily_clim;
 }
 

@@ -293,6 +293,6 @@ struct	daily_clim_object *construct_daily_clim(
 		}
 		else  fprintf(stderr,
 			"WARNING -  clim sequence %s not found.\n",sequence_name);
-		} /*end for*/
-		return(daily_clim);
+	} /*end for*/
+	return(daily_clim);
 } /*end construct_daily_clim*/
