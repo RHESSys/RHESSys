@@ -102,6 +102,55 @@
 #include <string.h>
 #include "rhessys.h"
 
+struct yearly_optional_clim_sequence_flags
+	{
+
+	};
+
+struct monthly_optional_clim_sequence_flags
+	{
+
+	};
+
+struct daily_optional_clim_sequence_flags
+	{
+	int atm_trans;
+	int CO2;
+	int cloud_fration;
+	int cloud_opacity;
+	int dayl;
+	int Delta_T;
+	int dewpoint;
+	int base_station_effective_lai;
+	int Kdown_diffuse;
+	int Kdown_direct;
+	int LAI_scalar;
+	int Ldown;
+	int PAR_diffuse;
+	int PAR_direct;
+	int daytime_rain_duration;
+	int relative_humidity;
+	int snow;
+	int tdewpoint;
+	int tday;
+	int tnight;
+	int tnightmax;
+	int tavg;
+	int tsoil;
+	int vpd;
+	int wind;
+	int ndep_NO3;
+	int ndep_NH4;
+	int lapse_rate_tmax;
+	int lapse_rate_tmin;
+	};
+
+struct hourly_optional_clim_sequence_flags
+	{
+
+	};
+
+
 void construct_ascii_grid( char	  *base_station_filename,
       					   struct date start_date,
 					       struct date duration,
@@ -109,13 +158,13 @@ void construct_ascii_grid( char	  *base_station_filename,
 {
 	// Local functions for file parsing
 	struct	yearly_clim_object*	ascii_yearly_clim(
-		char*, struct date, long, int);
+		char*, struct date, long, int, struct yearly_optional_clim_sequence_flags);
 	struct	monthly_clim_object* ascii_monthly_clim(
-		char*, struct date, long, int);
+		char*, struct date, long, int, struct monthly_optional_clim_sequence_flags);
 	struct	daily_clim_object* ascii_daily_clim(
-		char*, struct date, long, int);
+		char*, struct date, long, int, struct daily_optional_clim_sequence_flags);
 	struct	hourly_clim_object*	ascii_hourly_clim(
-		char*, struct date, long, int);
+		char*, struct date, long, int, struct hourly_optional_clim_sequence_flags);
 
 	// Open the base station base file
 	FILE* base_station_file;
@@ -139,8 +188,18 @@ void construct_ascii_grid( char	  *base_station_filename,
 	char	daily_climate_prefix[MAXSTR];
 	char	hourly_climate_prefix[MAXSTR];
 
-	int i;
+	int i, j;
 	for ( i = 0; i < num_base_stations; ++i) {
+		struct yearly_optional_clim_sequence_flags yearly_flags;
+		struct monthly_optional_clim_sequence_flags monthly_flags;
+		struct daily_optional_clim_sequence_flags daily_flags;
+		struct hourly_optional_clim_sequence_flags hourly_flags;
+
+		memset(&yearly_flags, 0, sizeof(struct yearly_optional_clim_sequence_flags));
+		memset(&monthly_flags, 0, sizeof(struct monthly_optional_clim_sequence_flags));
+		memset(&daily_flags, 0, sizeof(struct daily_optional_clim_sequence_flags));
+		memset(&hourly_flags, 0, sizeof(struct hourly_optional_clim_sequence_flags));
+
 		base_stations[i] = (struct base_station_object*)
 							malloc(1 * sizeof(struct base_station_object) );
 
@@ -176,6 +235,30 @@ void construct_ascii_grid( char	  *base_station_filename,
 					sscanf(first, "%s", daily_climate_prefix);
 				} else if (strcmp(second, "hourly_climate_prefix") == 0) {
 					sscanf(first, "%s", hourly_climate_prefix);
+
+				// Checking for optional climate sequences, store those found in the
+				// optional_flag structs for sending to the appropriate create
+				// clim sequence functions.
+				} else if (strcmp(second, "number_non_critical_annual_sequences") == 0) {
+					int num_yearly_optional = strtod(first, NULL);
+				} else if (strcmp(second, "number_non_critical_monthly_sequences") == 0) {
+					int num_monthly_optional = strtod(first, NULL);
+				} else if (strcmp(second, "number_non_critical_daily_sequences") == 0) {
+					int num_daily_optional = strtod(first, NULL);
+					for ( j=0; j < num_daily_optional; ++j ) {
+						fgets(buffer, sizeof(buffer), (*base_stations[i]).base_station_file);
+						if (buffer != NULL) {
+							if (strcmp(buffer, "atm_trans") == 0) {
+								daily_flags.atm_trans = 1;
+							} else if (strcmp(buffer, "CO2") == 0) {
+								daily_flags.CO2 = 1;
+							} else if (strcmp(buffer, "daytime_rain_duration")) {
+								daily_flags.daytime_rain_duration = 1;
+							}
+						}  
+					}
+				} else if (strcmp(second, "number_non_critical_hourly_sequences") == 0) {
+					int num_hourly_optional = strtod(first, NULL);
 				}
 			}
 		}
@@ -210,25 +293,29 @@ void construct_ascii_grid( char	  *base_station_filename,
 						   yearly_climate_prefix,
 						   start_date,
 						   duration.year,
-						  (*base_stations[i]).ID);
+						   (*base_stations[i]).ID, 
+						   yearly_flags);
 
 		(*base_stations[i]).monthly_clim = ascii_monthly_clim( 
 		                    monthly_climate_prefix,
 							start_date,
 							duration.month,
-						  (*base_stations[i]).ID);
+						  	(*base_stations[i]).ID,
+						  	monthly_flags);
 
 		(*base_stations[i]).daily_clim = ascii_daily_clim(
 						  daily_climate_prefix,
 						  start_date,
 						  duration.day,
-						  (*base_stations[i]).ID);
+						  (*base_stations[i]).ID,
+						  daily_flags);
 
 		(*base_stations[i]).hourly_clim = ascii_hourly_clim( 
 				  		   hourly_climate_prefix,
 						   start_date,
 						   duration.hour,
-						  (*base_stations[i]).ID);
+						  (*base_stations[i]).ID,
+						  hourly_flags);
 
 		// Move the file pointer back to the head of the file to reparse
 		fseek(base_station_file, 0, SEEK_SET);
@@ -241,7 +328,8 @@ struct	yearly_clim_object*	ascii_yearly_clim(
 		char* file_prefix,
 		struct date start_date, 
 		long duration,
-		int ID) {
+		int ID, 
+		struct yearly_optional_clim_sequence_flags opt_flags) {
 
 	struct yearly_clim_object	*yearly_clim;
 	
@@ -263,8 +351,9 @@ struct	monthly_clim_object* ascii_monthly_clim(
 		char* file_prefix, 
 		struct date start_date, 
 		long duration,
-		int ID) {
-	
+		int ID,
+		struct monthly_optional_clim_sequence_flags opt_flags) {
+
 	struct monthly_clim_object	*monthly_clim;
 	
 	
@@ -286,7 +375,8 @@ struct	daily_clim_object*	ascii_daily_clim(
 		char* file_prefix, 
 		struct date start_date, 
 		long duration,
-		int ID) {
+		int ID,
+		struct daily_optional_clim_sequence_flags opt_flags) {
 
 	// Local function declarations
 	double* ascii_clim_sequence(char*, struct date, long, int);
@@ -326,8 +416,6 @@ struct	daily_clim_object*	ascii_daily_clim(
 		start_date,
 		duration, 
 		ID);
-
-	
 			
 	/*--------------------------------------------------------------*/
 	/*	initialize the rest of the clim sequences as null	*/
@@ -360,31 +448,15 @@ struct	daily_clim_object*	ascii_daily_clim(
 	daily_clim[0].ndep_NO3 = NULL;
 	daily_clim[0].ndep_NH4 = NULL;
 
-	// Read the still open base station file for the number of non-critical parameters 
-	fscanf(base_station_file, "%d", &num_non_critical_sequences);
-	read_record(base_station_file, record);
-
-	printf("\n Non critical sequences %d", num_non_critical_sequences);
-
-	// Loop through all non-critical sequences and attempt to contruct them
-	for ( i=0; i < num_non_critical_sequences; ++i) {
-		fscanf(base_station_file, "%s", sequence_name);
-		printf(" \n %s", sequence_name);
-		read_record(base_station_file, record);
-
-		// Test the sequence name and create if it is valid
-		if ( strcmp(sequence_name, "daytime_rain_duration") == 0 ) {
-			strcpy(file_name, file_prefix);
-			printf("\n Reading daytime rain duration sequence");
-			daily_clim[0].daytime_rain_duration = ascii_clim_sequence(
-				(char *)strcat(file_name, ".daytime_rain_duration"),
-				start_date,
-				duration,
-				ID);
-		}
-		else fprintf(stderr,
-			"WARNING - clim sequence %s not found.\n", sequence_name);
-
+	// Check if any flags are set in the optional clim sequence struct, load those
+	// files if they are
+	if ( opt_flags.daytime_rain_duration == 1 ) {
+		strcpy(file_name, file_prefix);
+		daily_clim[0].daytime_rain_duration = ascii_clim_sequence(
+			(char *)strcat(file_name,".daytime_rain_duration"),
+			start_date,
+			duration, 
+			ID);
 	}
 
 	return daily_clim;
@@ -394,7 +466,8 @@ struct	hourly_clim_object*	ascii_hourly_clim(
 		char* file_prefix, 
 		struct date start_date, 
 		long duration,
-		int ID) {
+		int ID,
+		struct hourly_optional_clim_sequence_flags opt_flags) {
 	
 	struct hourly_clim_object*	hourly_clim;
 	/*--------------------------------------------------------------*/
