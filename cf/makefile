@@ -1,5 +1,4 @@
 PGM = cf9.1
-EW_PGM = ew_horizon
 CC  = gcc 
 CFLAGS  = 
 RHESSYS_BIN = /usr/local/bin
@@ -17,18 +16,15 @@ GIS_LIBS = -lgrass_gis
 $(PGM): $(EW_PGM) $(OBJECTS)
 	$(CC) $(OBJECTS) -L$(GISBASE)/lib $(GIS_LIBS) $(LIBS) $(CFLAGS) -o $(PGM) 
 
-$(EW_PGM): ew_horizon.o fileio.o grassio.o
-	$(CC) ew_horizon.o fileio.o grassio.o $(CFLAGS) -L$(GISBASE)/lib $(LIBS) $(GIS_LIBS) -o $(EW_PGM)	
-
 install: $(PGM) $(EW_PGM)
 	cp $(PGM) $(RHESSYS_BIN)
 	cp $(EW_PGM) $(RHESSYS_BIN)
 
 clean:
-	rm -f $(OBJECTS) ew_horizon.o 
+	rm -f $(OBJECTS) 
 
 clobber:	clean
-	rm -f $(PGM) $(EW_PGM)
+	rm -f $(PGM) 
 
 print_drain_stats.o:
 	$(CC) $(CFLAGS) -c print_drain_stats.c
@@ -42,8 +38,6 @@ in_list.o:
 	$(CC) $(CFLAGS) -c in_list.c
 adjust_pit.o:
 	$(CC) $(CFLAGS) -c adjust_pit.c
-ew_horizon.o: ew_horizon.c
-	$(CC) -I$(GISBASE)/include $(CFLAGS) -c ew_horizon.c
 add_roads.o:
 	$(CC) $(CFLAGS) -c add_roads.c
 find_top.o:
