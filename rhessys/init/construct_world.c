@@ -460,79 +460,79 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		alloc( sizeof(struct default_object ),"defaults","construct_world");
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of basin default files.				*/
+	/*	Read in the number of basin default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].defaults[0].num_basin_default_files));
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the basin default files.						*/
+	/*	Read in the basin default files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].basin_default_files = construct_filename_list( world_file,
 		world[0].defaults[0].num_basin_default_files);
 	
 	/*-----------------------------------*/
-	/*	Read in the number of hillslope default files.				*/
+	/*	Read in the number of hillslope default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].defaults[0].num_hillslope_default_files));
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the hillslope default files.						*/
+	/*	Read in the hillslope default files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].hillslope_default_files = construct_filename_list(	world_file,
 		world[0].defaults[0].num_hillslope_default_files);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of zone default files.					*/
+	/*	Read in the number of zone default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].defaults[0].num_zone_default_files));
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the zone default files.								*/
+	/*	Read in the zone default files.				*/
 	/*--------------------------------------------------------------*/
 	world[0].zone_default_files = construct_filename_list( world_file,
 		world[0].defaults[0].num_zone_default_files);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of soil default files.				*/
+	/*	Read in the number of soil default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].defaults[0].num_soil_default_files));
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the soil default files.							*/
+	/*	Read in the soil default files.				*/
 	/*--------------------------------------------------------------*/
 	world[0].soil_default_files = construct_filename_list( world_file,
 		world[0].defaults[0].num_soil_default_files);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of land cover default files.				*/
+	/*	Read in the number of land cover default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].defaults[0].num_landuse_default_files));
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the land cover default files.							*/
+	/*	Read in the land cover default files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].landuse_default_files = construct_filename_list( world_file,
 		world[0].defaults[0].num_landuse_default_files);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of stratum default files.				*/
+	/*	Read in the number of stratum default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].defaults[0].num_stratum_default_files));
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the stratum default files.							*/
+	/*	Read in the stratum default files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].stratum_default_files = construct_filename_list( world_file,
 		world[0].defaults[0].num_stratum_default_files);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of base_station files.					*/
+	/*	Read in the number of base_station files.		*/
 	/*  In the case of gridded climate input, there will only be    */
 	/*  one entry in the world file, so we must get the number      */
 	/*  of stations from the climate file instead of the worldfile. */
@@ -541,7 +541,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	read in list of base_station files.							*/
+	/*	read in list of base_station files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].base_station_files = construct_filename_list( world_file,
 		world[0].num_base_stations);
@@ -563,49 +563,49 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	}
 
 	/*--------------------------------------------------------------*/
-	/*	Construct the basin_defaults objects.						*/
+	/*	Construct the basin_defaults objects.			*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].basin = construct_basin_defaults(
 		world[0].defaults[0].num_basin_default_files,
 		world[0].basin_default_files,	command_line[0].grow_flag);
 	
 	/*--------------------------------------------------------------*/
-	/*	Construct the hillslope_defaults objects.					*/
+	/*	Construct the hillslope_defaults objects.		*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].hillslope = construct_hillslope_defaults(
 		world[0].defaults[0].num_hillslope_default_files,
 		world[0].hillslope_default_files, command_line);
 	
 	/*--------------------------------------------------------------*/
-	/*	Construct the zones_defaults objects.					*/
+	/*	Construct the zones_defaults objects.			*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].zone = construct_zone_defaults(
 		world[0].defaults[0].num_zone_default_files,
 		world[0].zone_default_files, command_line[0].grow_flag);
 	
 	/*--------------------------------------------------------------*/
-	/*	Construct the soil_defaults objects.					*/
+	/*	Construct the soil_defaults objects.			*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].soil = construct_soil_defaults(
 		world[0].defaults[0].num_soil_default_files,
 		world[0].soil_default_files, command_line);
 	
 	/*--------------------------------------------------------------*/
-	/*	Construct the land_defaults objects.					*/
+	/*	Construct the land_defaults objects.			*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].landuse = construct_landuse_defaults(
 		world[0].defaults[0].num_landuse_default_files,
 		world[0].landuse_default_files, command_line);
 	
 	/*--------------------------------------------------------------*/
-	/*	Construct the stratum_defaults objects.					*/
+	/*	Construct the stratum_defaults objects.			*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].stratum = construct_stratum_defaults(
 		world[0].defaults[0].num_stratum_default_files,
 		world[0].stratum_default_files, command_line);
 
 	/*--------------------------------------------------------------*/
-	/*	Construct the list of base stations.					*/
+	/*	Construct the list of base stations.			*/
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].dclim_flag == 0) {
@@ -614,7 +614,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			sizeof(struct base_station_object *),"base_stations","construct_world" );
 
 		/*--------------------------------------------------------------*/
-		/*	Construct the base_stations.								*/
+		/*	Construct the base_stations.				*/
 		/*--------------------------------------------------------------*/
 		printf("\n Constructing base stations\n");
 		

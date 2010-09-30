@@ -171,7 +171,7 @@ void construct_ascii_grid( char	  *base_station_filename,
 	if ( (base_station_file = fopen(base_station_filename, "r")) == NULL ) {
 		fprintf(stderr,
 			"FATAL ERROR:in construct_ascii_grid unable to open base_station file %s\n",
-			base_station_filename);
+		base_station_filename);
 		exit(0);
 	}
 
@@ -396,6 +396,7 @@ struct	daily_clim_object*	ascii_daily_clim(
 	/*	critical clim parameter and read them in.					*/
 	/*--------------------------------------------------------------*/
 
+	printf("\n Reading in critical climate sequences");
 	strcpy(file_name, file_prefix);
 	daily_clim[0].tmin = ascii_clim_sequence(
 		(char *)strcat(file_name,".tmin"),
