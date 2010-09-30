@@ -186,7 +186,7 @@
       prev=thetvarlist;
       if ( (thetvarlist = (struct tvarliststruct*)malloc(sizeof(struct tvarliststruct)) ) ==
 	  		NULL) {
-			fprintf(stderr,"ERROR: Could not allocate thevarlist \n");
+			fprintf(stderr,"ERROR: Could not allocate the varlist \n");
 			exit(1);
 			}
       thetvarlist->next = NULL;
@@ -291,9 +291,14 @@
       sprintf(command2,"B%s,T0 file=%s",
         tlevel[lev].map,
         tmpname);
-    strcat(command,command2);
+    
+	strcat(command,command2);
     printf("\n Executing command %s", command);
-    system(command);
+    int ret = system(command);
+	if( ret != 0 )
+	{
+		return(1);
+	}
 
 
 	/*
@@ -311,8 +316,8 @@
 	ch = NULL;
 	ch = getchar(); } */
 
-
 /* read in ouput from rat and store the table */
+	printf("\n tmpfile: %s", tmpfile);
     tmpfile = fopen(tmpname,"r");
 
 	if ( (tlevel[lev].table = (struct tableliststruct *)malloc(
