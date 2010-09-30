@@ -118,9 +118,9 @@ void	execute_state_output_event(
 		fprintf(outfile, "\n%-30s %s", world[0].stratum_default_files[i],
 			"basin_default_file");
 	}
-	fprintf(outfile, "\n%-30ld %s", world[0].num_base_stations,
+	fprintf(outfile, "\n%-30ld %s", world[0].num_base_station_files,
 		"num_base_stations");
-	for (i=0; i<world[0].num_base_stations; i++){
+	for (i=0; i<world[0].num_base_station_files; i++){
 		fprintf(outfile, "\n%-30s %s", world[0].base_station_files[i],
 			"base_stations_file");
 	}

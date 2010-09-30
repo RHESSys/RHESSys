@@ -560,6 +560,13 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		}
 
 		fscanf(grid_base, "%d", &world[0].num_base_stations);
+
+		// Set the world.num_base_station_files to 1 for reference
+		// when printing out the world
+		world[0].num_base_station_files = 1;
+	} else {
+		// Non-gridded climate, num_base_station_files = num_base_stations
+		world[0].num_base_station_files = world[0].num_base_stations;
 	}
 
 	/*--------------------------------------------------------------*/

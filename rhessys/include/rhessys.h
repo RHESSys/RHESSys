@@ -237,7 +237,11 @@ struct	default_object
 /*----------------------------------------------------------*/
 struct world_object 
 	{
-	int		num_base_stations;				
+	int		num_base_stations;
+	// Since using gridded data will only have a single base station file but
+	// mutliple base stations, the new num_base_stations_files is necessary for
+	// proper output of a world file when using gridded climate data.			
+	int		num_base_station_files;
 	int		num_basin_files;
 	int		simulation_cycles;	
 	int		year_day;
