@@ -11,7 +11,7 @@ $(PGM): $(OBJECTS)
 	$(CC) $(OBJECTS) -L$(GISBASE)/lib -o $(PGM) $(GISLIB) $(XDRLIB) -lm
 
 main.o:
-	$(CC) -I$(GISBASE)/include -c main.c -o main.o
+	$(CC) $(CFLAGS) -I$(GISBASE)/include -c main.c -o main.o
 log.o:
 
 install:

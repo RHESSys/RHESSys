@@ -67,38 +67,38 @@
 
 #include	<grass/gis.h>
 #include	<grass/gisdefs.h>
-#include	<stdio.h>        //chu
-#include	<stdlib.h>       //chu
-#include	<string.h>       //chu
+#include	<stdio.h>        
+#include	<stdlib.h>       
+#include	<string.h>       
 
 #define	STATS		"r.stats -i"
 #define RECLASS		"r.reclass"
 #define MAXCOLS		20
 
-int iscovermap(int, char[MAXCOLS]);             //chu
-int isrealcovermap(int, char[MAXCOLS]);         //chu
-int isbasemap(int , char[MAXCOLS]);             //chu
-int isothertype(int , char[MAXCOLS]);           //chu
+int iscovermap(int, char[MAXCOLS]);             
+int isrealcovermap(int, char[MAXCOLS]);         
+int isbasemap(int , char[MAXCOLS]);             
+int isothertype(int , char[MAXCOLS]);           
 
 main(argc, argv)
 int		argc;
 char *argv[];
 {
-    char	*me = argv[0];  //chu initializes variable 'me' in here
+    char	*me = argv[0];   
     char	command[1024];
     char	newcommand[1024];
     char	*mapset;
     struct	Option		*tableopt;
 	struct	Option		*fileopt;
-	struct	Option		*logopt;	// LMF
-    struct	Flag		*zeroflag;	//chu
-    struct	Flag		*kflag;     //chu
-    struct	Flag		*fflag;     //chu
+	struct	Option		*logopt;	
+    struct	Flag		*zeroflag;	
+    struct	Flag		*kflag;     
+    struct	Flag		*fflag;     
     struct	Categories	cats;
-    long	basecat[MAXCOLS];		//chu
-    long	oldbasecat[MAXCOLS];	//chu
-    long	covercat;				//chu
-    long	sum3;				   //chu
+    long	basecat[MAXCOLS];		
+    long	oldbasecat[MAXCOLS];	
+    long	covercat;				
+    long	sum3;				   
     double	x;
     double	area;
     double	sum1;
@@ -114,15 +114,15 @@ char *argv[];
 	int		firstcovermap;
 	int		gotazero;
 	int		formattedoutput;
-	int		covermap;				//chu
-	int		basemap;				//chu
-	int		numrows;				//chu
-	int		finalnumrows;			//chu
-	int		changed_bases;			//chu
-	int		first_time;				//chu
-	int		hangin_in_there;		//chu
-	int		status;					// LMF
-	int		log_rat;				// LMF
+	int		covermap;				
+	int		basemap;				
+	int		numrows;				
+	int		finalnumrows;			
+	int		changed_bases;			
+	int		first_time;				
+	int		hangin_in_there;		
+	int		status;					
+	int		log_rat;				
 	char	*tempfile1;
 	char	*tempfile2[MAXCOLS];
 	char	*tempfile3;
@@ -182,7 +182,7 @@ char *argv[];
 	if (G_parser(argc,argv))
 		exit(1);  
 
-	// LMF open log
+	// open log
 	log_rat = 0;
 
 	/* if(strcmp(logopt->answer, ""))
@@ -210,7 +210,7 @@ char *argv[];
 		{
 			if(log_rat)
 			{
-				sprintf(temp_str1,"%s: Sorry bud. I can only work with up to %d columns\n", me, MAXCOLS);
+				sprintf(temp_str1,"%s: Only works with up to %d columns\n", me, MAXCOLS);
 				log_output(logfile, temp_str1);
 			}
 			exit(1);
@@ -244,15 +244,18 @@ char *argv[];
 					log_output(logfile, temp_str1);
 				}
 			}
-			/* have to use temp_tbale 'cos G_find_cell alters it (p.100 of pmanual)*/
+			// have to use temp_table because G_find_cell alters it (p.100 of manual)
 			strcpy(temp_table, table[i]);
 			if (!(mapset = G_find_cell(temp_table, "")))
 			{
+				printf("Raster map %s not found\n", table[i]);	
+				/* Logging is currently broken, but want to get this error message out
 				if(log_rat)
 				{
 					sprintf (temp_str1, "%s: %s - raster map not found\n", me, table[i]);
 					log_output(logfile, temp_str1);
 				}
+				*/
 				exit(1);
 			}
 			else
@@ -796,7 +799,7 @@ char *argv[];
 	fclose(fd3);
 
 	//if (nflag->answer)
-	//printf("%ld\n",finalnumrows);  //chu
+	//printf("%ld\n",finalnumrows);  
 	fflush(stdout);
 	sprintf(command, "cat %s", fileopt->answers[0]);
 	if(log_rat)
@@ -807,7 +810,7 @@ char *argv[];
 	system(command);
 	/*  unlink(tempfile3); */
 
-	exit(0);
+	return(0);
 }
 
 int iscovermap(map, type)
