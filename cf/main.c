@@ -16,15 +16,15 @@
 /*		-h  	roads to highest flna interval					*/
 /*		-s print drainage statistics							*/
 /*		-r 	road flag for drainage statistics					*/
-/*		-stream	stream connectivity is assumed						*/
+/*		-stream	stream connectivity is assumed					*/
 /*			1	random slope value								*/
 /*			2	internal slope value							*/
 /*			0	no connectivity (default)						*/
-/*		-scaledem scale dem values by this amount                     */
-/*		-scaletrans	scale streamside transmissivity						*/
-/*		-bi	basin ID				*/
+/*		-scaledem scale dem values by this amount               */
+/*		-scaletrans	scale streamside transmissivity				*/
+/*		-bi	basin ID											*/
 /*		-sw	use a sewer image to route water from roads     	*/
-/*		-pst	print stream table	*/
+/*		-pst	print stream table								*/
 /*		-pre	input image file name prefix					*/
 /*		-w 	road width (default is 5m)							*/
 /*		-a arcview ascii data files (default is GRASS ascii)	*/
@@ -165,7 +165,7 @@ main(int argc, char *argv[])
 	struct Option* cell_size = G_define_option();
 	cell_size->key = "cellsize";
 	cell_size->type = TYPE_DOUBLE;
-	cell_size->required = NO;
+	cell_size->required = YES;
 	cell_size->description = "cell size [Default 10m]";
 
 	struct Option* scale_stream_trans = G_define_option();
@@ -286,9 +286,6 @@ main(int argc, char *argv[])
 		}
 	}
 
-	// Currently cf9 will ALWAYS take the cell size directly from
-	// the patch raster map info, both the default and the command line
-	// argument will never be used.
 	if (cell_size->answer != NULL) {	
 		// Default is set at declaration, only modify if set
 		if (sscanf(cell_size->answer, "%lf", &cell) != 1) {
