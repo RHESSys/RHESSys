@@ -71,7 +71,7 @@ void	execute_state_output_event(
 	/*--------------------------------------------------------------*/
 	/*	output world information									*/
 	/*--------------------------------------------------------------*/
-	fprintf(outfile, "\n%-30ld %s", current_date.year, "current_year");
+	fprintf(outfile, "%-30ld %s", current_date.year, "current_year");
 	fprintf(outfile, "\n%-30ld %s", current_date.month, "current_month");
 	fprintf(outfile, "\n%-30ld %s", current_date.day, "current_day");
 	fprintf(outfile, "\n%-30ld %s", current_date.hour, "current_hour");
