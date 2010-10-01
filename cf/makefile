@@ -18,7 +18,6 @@ $(PGM): $(EW_PGM) $(OBJECTS)
 
 install: $(PGM) $(EW_PGM)
 	cp $(PGM) $(RHESSYS_BIN)
-	cp $(EW_PGM) $(RHESSYS_BIN)
 
 clean:
 	rm -f $(OBJECTS) 
