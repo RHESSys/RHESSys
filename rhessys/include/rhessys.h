@@ -561,7 +561,7 @@ struct hillslope_default
 struct	aggdefs_object
 	{
 	double	m;				/* DIM	*/
-	double Ksat_0;				/* m/day */
+	double  Ksat_0;				/* m/day */
 	double	porosity_0;				/* unitless */
 	double 	psi_air_entry;			/* m */
 	double	porosity_decay;						/* m^-1 */
