@@ -8,16 +8,14 @@
 #ifndef HDR
 #define HDR
 
-#include <stdio.h>    //chu add
-#include <stdlib.h>   //chu add
-#include <string.h>   //chu add
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #define PROGNAME "Macaque V2.6"
 #define MSGINTRO "Macaque V2.6\n\nCopyright (C) by Fred Waston, September, 1996\n\n"
 #define MAXFILENAME 80
-// #define min(a,b) ((a)<(b)?(a):(b))  //chu
-// #define max(a,b) ((a)>(b)?(a):(b))  //chu
 #define DOUBLEABS(a) ((a)>0?(a):-(a))
 #define SPLUSFIFOOUT "splusfifoout"
 #define SPLUSFIFOIN  "splusfifoin"
@@ -81,4 +79,4 @@ double sigmoid();
 double global_solar_energy_density();
 
 
-#endif /*HDR*/
+#endif

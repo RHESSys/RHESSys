@@ -80,15 +80,13 @@ int leapyear(year)
 
 /* Header Routines */
 
-#define MAXTEMPLATELINE 100
+#define MAXTEMPLATELINE 200
 
 void 	readheader(templatefile, header)
 	FILE	*templatefile;
 	struct 	headerstruct	*header;
 	
 {
-
-
 	struct date tm;
 	int num_def;
 	int i,j;
@@ -96,12 +94,12 @@ void 	readheader(templatefile, header)
 
 
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+		error("Reading template file.");
 	sscanf(line,"%d %d %d %d",&tm.year,&tm.month,&tm.day,&tm.hour);
 	header->start_date = tm;
 
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	  error("Reading template file.");
+		error("Reading template file.");
 	sscanf(line,"%d %d %d %d",&tm.year,&tm.month,&tm.day,&tm.hour);
 	header->end_date = tm;
 
@@ -112,8 +110,8 @@ void 	readheader(templatefile, header)
 		for (j=0; j<num_def; ++j)  {
 			header->defaults[i].filenames[j] = (char *)malloc(MAXFILENAME*sizeof(char));
 			fscanf(templatefile,"%s", header->defaults[i].filenames[j]);
-			}
 		}
+	}
 
 	fscanf(templatefile,"%d", &num_def);
 	header->num_base_stations= num_def;
@@ -121,9 +119,7 @@ void 	readheader(templatefile, header)
 	for (j=0; j<num_def; ++j) {
 		header->base_station_filenames[j] = (char *)malloc(MAXFILENAME*sizeof(char));
 		fscanf(templatefile,"%s\n", header->base_station_filenames[j]);
-		}
-
-
+	}
 }
 
 
@@ -132,8 +128,7 @@ void 	outputheader(outfile, header)
 	struct 	headerstruct	*header;
 
 {
-
-  int i,j;
+  	int i,j;
 
 	fprintf(outfile,"%-20d start_year\n%-20d month\n%-20d day \n%-20d hour",
 		header->start_date.year,
@@ -148,19 +143,41 @@ void 	outputheader(outfile, header)
 		header->end_date.hour);
 
 	for (i=0; i<NUMLEVELS; ++i) {
-		fprintf(outfile,"\n%-20d num_%s_files",	header->defaults[i].num_defaults,
+		
+		/*	Handle landuse. Somehow landuse got inserted into the template file
+			between patch and stratum, this results in the tags in the worldfile
+			being incorrect, where land_use is labled as stratum, and stratum as 
+			(null). Using the special case i=5 to deal with this works without
+			breaking existing template files, but makes the format more brittle.
+			The next time the template is updated, this should be re-ordered and
+			moved to handling land use defs down below along with climate base
+			stations
+		*/
+		if (i==4) { // landuse special case
+			fprintf(outfile, "\n%-20d num_landuse_files", header->defaults[i].num_defaults);
+			for (j=0; j < header->defaults[i].num_defaults; ++j)
+				fprintf(outfile, "\n%-20s landuse_default_filename", header->defaults[i].filenames[j]);
+		} else if (i==5) {
+			fprintf(outfile,"\n%-20d num_%s_files",	header->defaults[i].num_defaults,
+							LEVELNAME[i]);
+			for (j=0; j< header->defaults[i].num_defaults; ++j)  
+				fprintf(outfile,"\n%-20s %s_default_filename", header->defaults[i].filenames[j],
+						LEVELNAME[i]);
+		} else { // all others act like normal
+			fprintf(outfile,"\n%-20d num_%s_files",	header->defaults[i].num_defaults,
+							LEVELNAME[i+1]);
+			for (j=0; j< header->defaults[i].num_defaults; ++j)  
+				fprintf(outfile,"\n%-20s %s_default_filename", header->defaults[i].filenames[j],
 						LEVELNAME[i+1]);
-		for (j=0; j< header->defaults[i].num_defaults; ++j)  
-			fprintf(outfile,"\n%-20s %s_default_filename", header->defaults[i].filenames[j],
-					LEVELNAME[i+1]);
 		}
+	}
 
+	// Landuse should be done here
 	fprintf(outfile,"\n%-20d num_base_stations",	header->num_base_stations);
 	for (j=0; j< header->num_base_stations; ++j)  
 		fprintf(outfile,"\n%-20s base_station_filename", header->base_station_filenames[j]);
 
 	fprintf(outfile,"\n");
-	
 }
 
 
