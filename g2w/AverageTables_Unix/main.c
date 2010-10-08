@@ -73,7 +73,7 @@
 
 #define	STATS		"r.stats -i"
 #define RECLASS		"r.reclass"
-#define MAXCOLS		20
+#define MAXCOLS		500
 
 int iscovermap(int, char[MAXCOLS]);             
 int isrealcovermap(int, char[MAXCOLS]);         
