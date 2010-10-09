@@ -1,7 +1,7 @@
 PGM = lairead
 CC  = gcc 
 CFLAGS  = -O -I include
-
+RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = main.o read_allom_table.o build_flow_table.o sys.o fileio.o \
 	find_patch.o change_world.o print_flow_table.o  zero_flow_table.o link_patch_veg.o 
@@ -38,5 +38,6 @@ read_allom_table.o:
 main.o:
 	$(CC) $(CFLAGS) -c main.c
 
-
+install:
+	cp $(PGM) $(RHESSYS_BIN)
 
