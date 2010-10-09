@@ -33,13 +33,11 @@
 #include "glb.h"
 #include "sub.h"
 
-
+// Prints out program arguments documentation
+void usage(void);
 
 
 main(int argc, char *argv[])  {
-  
-
-	
 /* local variable declarations */
     int		i, nvegtype, num_patches;   
 	FILE	 *out1, *out2, *fac;    
@@ -371,3 +369,12 @@ char	name[MAXS], name2[MAXS];
 } /* end lairead.c */
 
 
+void usage(void) {
+	printf("\nOPTIONS\n\n");
+	printf("\t-pre	input image file name prefix\n");					
+	printf("\t-a arcview ascii data files (default is GRASS ascii)\n");	
+	printf("\tj-o output file name (default -pre opt + _flow_table.dat\n");	
+	printf("\t-allom name of allometric ratios file\n");
+	printf("\t-old	old worldfile name\n");
+	printf("\t-redef 	new redefine worldfile name\n");
+}
