@@ -913,12 +913,12 @@ struct	command_line_object	*construct_command_line(
 			/*--------------------------------------------------------------*/
 			/*		Check if the gridded climate input flag is next		    */
 			/*--------------------------------------------------------------*/
-			else if ( strcmp(main_argv[i],"--asciigrid") == 0 ){
+			else if ( strcmp(main_argv[i],"-asciigrid") == 0 ){
 				printf("Setting climate mode to gridded ascii\n");
 				command_line[0].gridded_ascii_flag = 1;
 				i++;
 				} /*end if*/
-			else if (strcmp(main_argv[i],"--netcdfgrid") == 0 ){
+			else if (strcmp(main_argv[i],"-netcdfgrid") == 0 ){
 				command_line[0].gridded_netcdf_flag = 1;
 				i++;
 			}
