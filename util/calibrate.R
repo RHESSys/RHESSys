@@ -1,180 +1,171 @@
+calibrate = function(runs, str_obs, firsttag=1, filterdays=3) {
 
-# start reading data here
-tmp1 = read.table("../scripts/caln/str1", skip=1)
-tmp2 = read.table("../scripts/caln/str2", skip=1)
-#tmp3 = read.table("../scripts/caln/str3", skip=1)
-#tmp4 = read.table("../scripts/caln/str4", skip=1)
-#tmp5 = read.table("../scripts/caln/str5", skip=1)
-#tmp6 = read.table("../scripts/caln/str6", skip=1)
-#tmp7 = read.table("../scripts/caln/str7", skip=1)
-#tmp8= read.table("../scripts/caln/str8", skip=1)
-#tmp9 = read.table("../scripts/caln/str9", skip=1)
-#tmp10 = read.table("../scripts/caln/str10", skip=1)
-#results=cbind(tmp,tmp2,tmp3,tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10)
-results=as.data.frame(cbind(tmp1, tmp2))
-results$date = seq.dates(from="10/1/1979", length=length(results$V1))
+# str_obs is a data.frame with two column named date and mm,
+# where mm is the precip normalized by basin area.
 
-# you must already have a file called obs, with a date, and year, month,day # columns
-# ncals = number of calibrations
-ncal = ncol(results)-1
-day3filter = rep(1/3,times=3)
+	# Combine all streamflow data from multiple runs into a single
+	# streamflow table
+	for (i in firsttag:runs) {
+		str_tmp = read.table( paste("str", i, sep="") )
+		par_tmp = read.table( paste("par", i, sep="") )
+		if (i != firsttag) {
+			str_results = cbind(str_results, str_tmp)
+			stats = rbind(stats, par_tmp)
+		} else {
+			str_results = str_tmp
+			stats = par_tmp
+		}
+	}
+	
+	# Add lables to the stats table
+ 	colnames(stats) = c("m","k","gw1","gw2")
 
-lc = ncol(results)
-lr = nrow(results)
-tmp = apply(results[,1:(lc-1)],2,filter, filter=day3filter, method="convolution", sides=2)
-tmp2 = as.data.frame(tmp[2:(lr-1),])
-tmp2$date = results[2:(lr-1),"date"]
+	# Find the starting date from one of the RHESSys basin daily output files
+	basin_file = paste("sen", firsttag, "_basin.daily", sep="")
+	basin_table = read.table(basin_file, skip=1)
+	start_day = basin_table[1,1]
+	start_month = basin_table[1,2]
+	start_year = basin_table[1,3]
+	start_date = paste(start_month, start_day, start_year, sep="/")
 
-result3d = tmp2
+	# Add a date column to the results
+	str_results$date = seq.dates(from=start_date, length=length(str_results$V1))
 
-lr = nrow(sagestr)
-tmp = filter(sagestr$mm, filter=day3filter, method="convolution", sides=2)
-tmp2 = as.data.frame(tmp[2:(lr-1)])
-colnames(tmp2) = c("mm")
-obs3d = tmp2
-obs3d$date = sagestr$date[2:(lr-1)]
+	# ncals = number of calibrations
+ 	ncal = ncol(str_results) - 1
 
-tmp1 = read.table("../scripts/caln/par1")
-tmp2 = read.table("../scripts/caln/par2")
-#tmp3 = read.table("../scripts/caln/par3")
-#tmp4 = read.table("../scripts/caln/par4")
-#tmp5 = read.table("../scripts/caln/par5")
-#tmp6 = read.table("../scripts/caln/par6")
-#tmp7 = read.table("../scripts/caln/par7")
-#tmp8= read.table("../scripts/caln/par8")
-#tmp9 = read.table("../scripts/caln/par9")
-#tmp10 = read.table("../scripts/caln/par10")
-#stats3d = rbind(tmp, tmp2, tmp3, tmp4,tmp5, tmp6, tmp7,tmp8,tmp9,tmp10)
-stats3d = as.data.frame(rbind(tmp1, tmp2))
-colnames(stats3d) = c("m","k","pa","po","gw1","gw2","rd")
+ 	filter = rep(1/filterdays,times=filterdays)
+	rear_offset = floor(filterdays / 2 )
+ 	lc = ncol(str_results)
+ 	lr = nrow(str_results)
+ 	tmp = apply(str_results[,1:(lc - rear_offset)], 2, filter, filter=filter, method="convolution", sides=2)
+ 	tmp2 = as.data.frame(tmp[2:(lr - rear_offset),])
+ 	tmp2$date = str_results[2:(lr - rear_offset),"date"]
+ 
+ 	filtered_str = tmp2
+ 
+ 	lr = nrow(str_obs)
+ 	tmp = filter(str_obs$mm, filter=filter, method="convolution", sides=2)
+ 	tmp2 = as.data.frame(tmp[2:(lr - rear_offset)])
+ 	colnames(tmp2) = c("mm")
+ 	filtered_obs = tmp2
+ 	filtered_obs$date = str_obs$date[2:(lr - rear_offset)]
 
-result3d$year = as.numeric(as.character(years(result3d$date)))
- result3d$month = as.numeric(months(result3d$date))
- result3d$day = as.numeric(days(result3d$date))
- result3d$wy = ifelse((result3d$month >= 10), result3d$year+1, result3d$year)
-stats3d$row = seq(from=1, length=length(stats3d$m))
+ 
+ 	filtered_str$year = as.numeric(as.character(years(filtered_str$date)))
+ 	filtered_str$month = as.numeric(months(filtered_str$date))
+ 	filtered_str$day = as.numeric(days(filtered_str$date))
+ 	filtered_str$wy = ifelse((filtered_str$month >= 10), filtered_str$year+1, filtered_str$year)
+ 	stats$row = seq(from=1, length=length(stats$m))
+ 
+ 	tmp = merge(filtered_str, filtered_obs, by=c("date"))
+ 	filtered_str = tmp
+ 
+ 	tmp2 = apply(tmp[,2:(ncal+1)],2, nselog, o=tmp$mm)
+ 	stats$nselog.sh = tmp2
+ 
+ 	tmp = apply(filtered_str[,2:(ncal+1)],2, nse, o=filtered_str$mm)
+ 	stats$nse = tmp
+ 
+ 	tmp = apply(filtered_str[,2:(ncal+1)], 2, nselog, o=filtered_str$mm)
+ 	stats$nselog = tmp
+# 
+# 	tmp = apply(filtered_str[,2:(ncal+1)],2, rmse, o=filtered_str$mm)
+# 	stats$rmse = tmp
+# 
+# 	tmp = apply(filtered_str[,2:(ncal+1)], 2, cor, y=filtered_str$mm)
+# 	tmp2 = tmp*tmp
+# 	stats$r2 = tmp2
+# 
+# 	tmp = apply(filtered_str[,2:(ncal+1)], 2, sum)
+# 	tmp2 = (tmp-sum(filtered_str$mm))/(sum(filtered_str$mm))*100
+# 	stats$perr.total = tmp2
+# 
+# 	filtered_str.mth = as.data.frame(matrix(nrow=12, ncol=ncal, 0.0))
+# 	for (i in 1:ncal) {
+# 		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$month), FUN=mean)
+# 		filtered_str.mth[,i] = tmp$x
+# 	}
+# 
+# 	tmp = aggregate(filtered_str$mm, by=list(filtered_str$month), FUN=mean)
+# 	filtered_str.mth$obs = tmp$x
+# 	tmp = apply(filtered_str.mth[,1:ncal],2, cor, y=filtered_str.mth$obs)
+# 	stats$mth.cor = tmp
+# 
+# 
+# 	filtered_str = mkdate(filtered_str)
+# 	filtered_str.wyd = as.data.frame(matrix(nrow=366, ncol=ncal, 0.0))
+# 	for (i in 1:ncal) {
+# 		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$wyd), FUN=mean)
+# 		filtered_str.wyd[,i] = tmp$x
+# 	}
+# 
+# 	tmp = aggregate(filtered_str$mm, by=list(filtered_str$wyd), FUN=mean)
+# 	filtered_str.wyd$obs = tmp$x
+# 	tmp = apply(filtered_str.wyd[,1:ncal],2, cor, y=filtered_str.wyd$obs)
+# 	stats$wyd.cor = tmp
+# 
+# 
+# 	tmp = range(filtered_str$wy)
+# 	nwy = tmp[2]-tmp[1]+1
+# 
+# 	filtered_str.min = as.data.frame(matrix(nrow=nwy, ncol=ncal, 0.0))
+# 	for (i in 1:ncal) {
+# 		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$wy), FUN=min)
+# 		filtered_str.min[,i] = tmp$x
+# 	}
+# 
+# 	tmp = aggregate(filtered_str$mm, by=list(filtered_str$wy), FUN=min)
+# 	filtered_str.min$obs = tmp$x
+# 	tmp = apply(filtered_str.min[,1:ncal],2, cor, y=filtered_str.min$obs)
+# 	stats$min.cor = tmp
+# 	tmp = apply(filtered_str.min[,1:ncal], 2, sum)
+# 	tmp2 = (tmp-sum(filtered_str.min$obs))/(sum(filtered_str.min$obs))*100
+# 	stats$min.perr = tmp2
+# 
+# 
+# 	tmp = apply(filtered_str.mth[,1:ncal],2, nse, o=filtered_str.mth$obs)
+# 	stats$mth.nse = tmp
+# 
+# 
+# 	filtered_str.wy = as.data.frame(matrix(nrow=nwy, ncol=ncal, 0.0))
+# 
+# 	for (i in 1:ncal) {
+# 		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$wy), FUN=sum)
+# 		filtered_str.wy[,i] = tmp$x
+# 	}
+# 
+# 	tmp = aggregate(filtered_str$mm, by=list(filtered_str$wy), FUN=sum)
+# 	filtered_str.wy$obs = tmp$x
+# 	filtered_str.wy$wy = as.numeric(as.character(tmp$Group.1))
+# 
+# 	tmp = apply(filtered_str.wy[,(1:ncal)],2,nse,o=filtered_str.wy$obs)
+# 	stats$wy.nse = tmp
+# 	tmp = apply(filtered_str.wy[,(1:ncal)],2,cor,y=filtered_str.wy$obs)
+# 	stats$wy.cor = tmp
+# 
+# 
+# 
+# 	filtered_str.mwy = as.data.frame(matrix(nrow=nwy*12, ncol=ncal, 0.0))
+# 
+# 	for (i in 1:ncal) {
+# 		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$wy, filtered_str$month), FUN=mean)
+# 		filtered_str.mwy[,i] = tmp$x
+# 	}
+# 
+# 	tmp = aggregate(filtered_str$mm, by=list(filtered_str$wy, filtered_str$month), FUN=mean)
+# 	filtered_str.mwy$obs = tmp$x
+# 	filtered_str.mwy$wy = as.numeric(as.character(tmp$Group.1))
+# 	filtered_str.mwy$month = as.numeric(tmp$Group.2)
+# 
+# 	filtered_str.aug = subset(filtered_str.mwy, filtered_str.mwy$month==8)
+# 
+# 	tmp = apply(filtered_str.aug[,(1:ncal)],2,nse,o=filtered_str.aug$obs)
+# 	stats$aug.nse = tmp
+# 
+# 	tmp = apply(filtered_str.aug[,(1:ncal)],2,cor,y=filtered_str.aug$obs)
+# 	stats$aug.cor = tmp
 
-tmp = merge(result3d, obs3d, by=c("date"))
-result3d = tmp
-
-# correction due to year with looks like overestimation of storm event
-tmp = subset(result3d, result3d$wy != 1986)
-tmp2 = apply(tmp[,2:(ncal+1)],2, nse, o=tmp$mm)
-stats3d$nse.sh = tmp2
-
-tmp2 = apply(tmp[,2:(ncal+1)],2, nselog, o=tmp$mm)
-stats3d$nselog.sh = tmp2
-
-
-tmp = apply(result3d[,2:(ncal+1)],2, nse, o=result3d$mm)
-stats3d$nse = tmp
-
-tmp = apply(result3d[,2:(ncal+1)], 2, nselog, o=result3d$mm)
-stats3d$nselog = tmp
-
-tmp = apply(result3d[,2:(ncal+1)],2, rmse, o=result3d$mm)
-stats3d$rmse = tmp
-
-tmp = apply(result3d[,2:(ncal+1)], 2, cor, y=result3d$mm)
-tmp2 = tmp*tmp
-stats3d$r2 = tmp2
-
-tmp = apply(result3d[,2:(ncal+1)], 2, sum)
-tmp2 = (tmp-sum(result3d$mm))/(sum(result3d$mm))*100
-stats3d$perr.total = tmp2
-
-
-result3d.mth = as.data.frame(matrix(nrow=12, ncol=ncal, 0.0))
-for (i in 1:ncal) {
-tmp = aggregate(result3d[,i+1], by=list(result3d$month), FUN=mean)
-result3d.mth[,i] = tmp$x
-}
-tmp = aggregate(result3d$mm, by=list(result3d$month), FUN=mean)
-result3d.mth$obs = tmp$x
-tmp = apply(result3d.mth[,1:ncal],2, cor, y=result3d.mth$obs)
-stats3d$mth.cor = tmp
-
-
-result3d = mkdate(result3d)
-result3d.wyd = as.data.frame(matrix(nrow=366, ncol=ncal, 0.0))
-for (i in 1:ncal) {
-tmp = aggregate(result3d[,i+1], by=list(result3d$wyd), FUN=mean)
-result3d.wyd[,i] = tmp$x
-}
-tmp = aggregate(result3d$mm, by=list(result3d$wyd), FUN=mean)
-result3d.wyd$obs = tmp$x
-tmp = apply(result3d.wyd[,1:ncal],2, cor, y=result3d.wyd$obs)
-stats3d$wyd.cor = tmp
-
-
-tmp = range(result3d$wy)
-nwy = tmp[2]-tmp[1]+1
-
-result3d.min = as.data.frame(matrix(nrow=nwy, ncol=ncal, 0.0))
-for (i in 1:ncal) {
-tmp = aggregate(result3d[,i+1], by=list(result3d$wy), FUN=min)
-result3d.min[,i] = tmp$x
-}
-tmp = aggregate(result3d$mm, by=list(result3d$wy), FUN=min)
-result3d.min$obs = tmp$x
-tmp = apply(result3d.min[,1:ncal],2, cor, y=result3d.min$obs)
-stats3d$min.cor = tmp
-tmp = apply(result3d.min[,1:ncal], 2, sum)
-tmp2 = (tmp-sum(result3d.min$obs))/(sum(result3d.min$obs))*100
-stats3d$min.perr = tmp2
-
-
-
-tmp = apply(result3d.mth[,1:ncal],2, nse, o=result3d.mth$obs)
-stats3d$mth.nse = tmp
-
-
-
-result3d.wy = as.data.frame(matrix(nrow=nwy, ncol=ncal, 0.0))
-
-for (i in 1:ncal) {
-tmp = aggregate(result3d[,i+1], by=list(result3d$wy), FUN=sum)
-result3d.wy[,i] = tmp$x
-}
-
-tmp = aggregate(result3d$mm, by=list(result3d$wy), FUN=sum)
-result3d.wy$obs = tmp$x
-result3d.wy$wy = as.numeric(as.character(tmp$Group.1))
-
-tmp = apply(result3d.wy[,(1:ncal)],2,nse,o=result3d.wy$obs)
-stats3d$wy.nse = tmp
-tmp = apply(result3d.wy[,(1:ncal)],2,cor,y=result3d.wy$obs)
-stats3d$wy.cor = tmp
-
-
-
-result3d.mwy = as.data.frame(matrix(nrow=nwy*12, ncol=ncal, 0.0))
-
-for (i in 1:ncal) {
-tmp = aggregate(result3d[,i+1], by=list(result3d$wy, result3d$month), FUN=mean)
-result3d.mwy[,i] = tmp$x
-}
-
-tmp = aggregate(result3d$mm, by=list(result3d$wy, result3d$month), FUN=mean)
-result3d.mwy$obs = tmp$x
-result3d.mwy$wy = as.numeric(as.character(tmp$Group.1))
-result3d.mwy$month = as.numeric(tmp$Group.2)
-
-result3d.aug = subset(result3d.mwy, result3d.mwy$month==8)
-
-tmp = apply(result3d.aug[,(1:ncal)],2,nse,o=result3d.aug$obs)
-stats3d$aug.nse = tmp
-
-tmp = apply(result3d.aug[,(1:ncal)],2,cor,y=result3d.aug$obs)
-stats3d$aug.cor = tmp
-
-#April Streamflows
-result3d.apr = subset(result3d.mwy, result3d.mwy$month==4)
-
-tmp = apply(result3d.apr[,(1:ncal)],2,nse,o=result3d.apr$obs)
-stats3d$apr.nse = tmp
-
-tmp = apply(result3d.apr[,(1:ncal)],2,cor,y=result3d.apr$obs)
-stats3d$apr.cor = tmp
-
-
+	# Assign various useful structures to the global scope
+	assign("stats", stats, envir=.GlobalEnv)
+ }

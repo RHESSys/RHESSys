@@ -22,98 +22,92 @@ cal.wyd = function(x) {
 
 
 mkdate = function(x) {
-x$date = as.Date(paste(x$year, x$month, x$day, sep="-"))
-x$wy = ifelse(x$month >=10, x$year+1, x$year)
-x$yd = as.integer(format(as.Date(x$date), format="%j"))
-x$wyd = cal.wyd(x)
-x
+	x$date = as.Date(paste(x$year, x$month, x$day, sep="-"))
+	x$wy = ifelse(x$month >=10, x$year+1, x$year)
+	x$yd = as.integer(format(as.Date(x$date), format="%j"))
+	x$wyd = cal.wyd(x)
+	x
 }
 
 
 read_rhessys_met = function(prename) {
+	tname = paste(prename,".tmin",sep="")
+	clim = read.table(tname,,skip=1, header=F)
+	colnames(clim) = c("tmin")
+	tname = paste(prename,".tmax",sep="")
+	tmp = read.table(tname,skip=1, header=F)
+	clim$tmax = tmp$V1
+	tmp = scan(file=tname, what="%d%d%d%d",n=4)
+	tmp2 = sprintf("%s/%s/%s", tmp[2], tmp[3], tmp[1])
+	clim$date = seq.dates(from=tmp2, length=length(clim$tmin))
 
- tname = paste(prename,".tmin",sep="")
- clim = read.table(tname,,skip=1, header=F)
- colnames(clim) = c("tmin")
- tname = paste(prename,".tmax",sep="")
- tmp = read.table(tname,skip=1, header=F)
- clim$tmax = tmp$V1
- tmp = scan(file=tname, what="%d%d%d%d",n=4)
- tmp2 = sprintf("%s/%s/%s", tmp[2], tmp[3], tmp[1])
- clim$date = seq.dates(from=tmp2, length=length(clim$tmin))
+	tname = paste(prename,".rain",sep="")
+	tmp = read.table(tname,skip=1, header=F)
+	 
+	tmp$rain = tmp$V1*1000.0
 
- tname = paste(prename,".rain",sep="")
- tmp = read.table(tname,skip=1, header=F)
- 
- tmp$rain = tmp$V1*1000.0
+	tmp2 = scan(file=tname, what="%d%d%d%d",n=4)
+	tmp3 = sprintf("%s/%s/%s", tmp2[2], tmp2[3], tmp2[1])
+	tmp$date = seq.dates(from=tmp3, length=length(tmp$rain))
 
+	new = merge(clim, tmp[,c("rain","date")], by=c("date"), all=TRUE)
 
- tmp2 = scan(file=tname, what="%d%d%d%d",n=4)
- tmp3 = sprintf("%s/%s/%s", tmp2[2], tmp2[3], tmp2[1])
-  tmp$date = seq.dates(from=tmp3, length=length(tmp$rain))
-
- new = merge(clim, tmp[,c("rain","date")], by=c("date"), all=TRUE)
-
- clim = new
-  rm(tmp, tmp2,tname,tmp3,new)
- clim$year = as.numeric(as.character(years(clim$date)))
- clim$month = as.numeric(months(clim$date))
- clim$day = as.numeric(days(clim$date))
- clim$wy = ifelse((clim$month >= 10), clim$year+1, clim$year)
- clim
+	clim = new
+	rm(tmp, tmp2,tname,tmp3,new)
+	clim$year = as.numeric(as.character(years(clim$date)))
+	clim$month = as.numeric(months(clim$date))
+	clim$day = as.numeric(days(clim$date))
+	clim$wy = ifelse((clim$month >= 10), clim$year+1, clim$year)
+	clim
 }
 
 
 nselog = function(m,o) {
-m = log(m+0.0001)
-o=(o+0.0001)
-err = m-o
- ns = 1-var(err)/var(o)
- ns
- }
+	m = log(m+0.0001)
+	o=(o+0.0001)
+	err = m-o
+	ns = 1-var(err)/var(o)
+	ns
+}
 
 nse = function(m,o) {
-err = m-o
- ns = 1-var(err)/var(o)
- ns
- }
-
-
+	err = m-o
+	ns = 1-var(err)/var(o)
+	ns
+}
 
 rmse = function(m,o) {
-        err = m-o
-        total = sum(err**2)
-        n = length(m)
-        rmse = sqrt(total)/n*100/mean(o)
-        rmse
+    err = m-o
+    total = sum(err**2)
+    n = length(m)
+    rmse = sqrt(total)/n*100/mean(o)
+    rmse
 }
-
-
 
 running_mean = function(n,x) {
-tmp = rep(0, times=n)
-lc = length(x)
-new = rep(0, times=lc)
-for (i in 1:lc) {
-tmp[2:n]=tmp[1:(n-1)]
-tmp[1]=x[i]
-tmp3 = subset(tmp, tmp > 0.01)
-tmp2 = ifelse(length(tmp3)==0, max(tmp), mean(tmp3)) 
-new[i] = (tmp2)
-}
-new
+	tmp = rep(0, times=n)
+	lc = length(x)
+	new = rep(0, times=lc)
+	for (i in 1:lc) {
+		tmp[2:n]=tmp[1:(n-1)]
+		tmp[1]=x[i]
+		tmp3 = subset(tmp, tmp > 0.01)
+		tmp2 = ifelse(length(tmp3)==0, max(tmp), mean(tmp3)) 
+		new[i] = (tmp2)
+	}
+	new
 }
 
 running_median = function(n,x) {
-tmp = rep(0, times=n)
-lc = length(x)
-new = rep(0, times=lc)
-for (i in 1:lc) {
-tmp[2:n]=tmp[1:(n-1)]
-tmp[1]=x[i]
-new[i] = median(tmp)
-}
-new
+	tmp = rep(0, times=n)
+	lc = length(x)
+	new = rep(0, times=lc)
+	for (i in 1:lc) {
+		tmp[2:n]=tmp[1:(n-1)]
+		tmp[1]=x[i]
+		new[i] = median(tmp)
+	}
+	new
 }
 
 
@@ -129,21 +123,20 @@ mthwyd = c(107,136,166,197,227,258,288,319,350,16,46,77)
 
 # function definition for moving window of NSE 
 nsmult = function(of,mf,df,len) {
-begin = floor(len %/% 2 + 1)
-final = floor(length(mf) - len/2 - 1)
-rnse = rep(0.0, times=(final-begin+1)) 
-rdate = seq.dates(from="1/1/1911", length=(final-begin+1))
-rdate = as.Date(rdate)
-for (i in begin:final) {
-
-	start = i - len %/% 2;
-	rdate[i-begin+1] = df[i];	
-	end = i+len/2-1;
-	rnse[i-begin+1] = nse(o=of[start:end], m=mf[start:end])
-}
-rnse = data.frame(rdate,rnse)
-colnames(rnse) = c("date","nse")
-rnse
+	begin = floor(len %/% 2 + 1)
+	final = floor(length(mf) - len/2 - 1)
+	rnse = rep(0.0, times=(final-begin+1)) 
+	rdate = seq.dates(from="1/1/1911", length=(final-begin+1))
+	rdate = as.Date(rdate)
+	for (i in begin:final) {
+		start = i - len %/% 2;
+		rdate[i-begin+1] = df[i];	
+		end = i+len/2-1;
+		rnse[i-begin+1] = nse(o=of[start:end], m=mf[start:end])
+	}
+	rnse = data.frame(rdate,rnse)
+	colnames(rnse) = c("date","nse")
+	rnse
 }
 
 spherical_mean = function(x) {
@@ -159,4 +152,33 @@ spherical_mean = function(x) {
 }
 
 
+randomParams <- function(
+	prefix, 
+	rows, 
+	procs=1, 
+	firsttag=1, 
+	rfunc=runif, 
+	seed=FALSE,
+	mrange=c(0,1),
+	Krange=c(1,400),
+	gw1range=c(0,0.6),
+	gw2range=c(0,0.5)
+	) 
+{
+	if (seed != FALSE) {
+		set.seed(seed)
+	}
+
+	row_per_proc = round(rows / procs)
+
+	for (tag in firsttag:(firsttag+procs-1) ) {
+		m <- rfunc(row_per_proc,0,1)
+		K <- rfunc(row_per_proc,1,400)
+		gw1 <- rfunc(row_per_proc,0,0.6)
+		gw2 <- rfunc(row_per_proc,0,0.5)
+		table <- cbind(m,K,gw1,gw2)
+		filename <- paste(prefix,tag,sep="")
+		write.table(table, file=filename,col.names=FALSE,row.names=FALSE)
+	}
+}
 
