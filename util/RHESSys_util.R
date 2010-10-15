@@ -172,13 +172,13 @@ randomParams <- function(
 	row_per_proc = round(rows / procs)
 
 	for (tag in firsttag:(firsttag+procs-1) ) {
-		m <- rfunc(row_per_proc,0,1)
-		K <- rfunc(row_per_proc,1,400)
-		gw1 <- rfunc(row_per_proc,0,0.6)
-		gw2 <- rfunc(row_per_proc,0,0.5)
-		table <- cbind(m,K,gw1,gw2)
-		filename <- paste(prefix,tag,sep="")
-		write.table(table, file=filename,col.names=FALSE,row.names=FALSE)
+		m <- rfunc(row_per_proc, mrange[1], mrange[2])
+		K <- rfunc(row_per_proc, Krange[1], Krange[2])
+		gw1 <- rfunc(row_per_proc, gw1range[1], gw1range[2])
+		gw2 <- rfunc(row_per_proc, gw2range[1], gw2range[2])
+		table <- cbind(m, K, gw1, gw2)
+		filename <- paste(prefix, tag, sep="")
+		write.table(table, file=filename, col.names=FALSE, row.names=FALSE)
 	}
 }
 
