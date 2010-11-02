@@ -217,8 +217,11 @@ struct stratum_default *construct_stratum_defaults(
 		fscanf(default_file,"%lf",&(default_object_list[i].epc.livewood_cn));
 		read_record(default_file, record);
 		fscanf(default_file,"%lf",&(default_object_list[i].epc.leaflitr_flab));
+
+		// Skipping epc.leaflitr_fcel
 		read_record(default_file, record);
 		fscanf(default_file,"%lf",&(fcel));
+
 		read_record(default_file, record);
 		fscanf(default_file,"%lf",&(default_object_list[i].epc.leaflitr_flig));
 		read_record(default_file, record);
@@ -246,8 +249,11 @@ struct stratum_default *construct_stratum_defaults(
 		}
 		fscanf(default_file,"%lf",&(default_object_list[i].epc.frootlitr_flab));
 		read_record(default_file, record);
+
+		// Skipping the mortality parameter
 		fscanf(default_file,"%lf",&(fcel));
 		read_record(default_file, record);
+
 		fscanf(default_file,"%lf",&(default_object_list[i].epc.frootlitr_flig));
 		read_record(default_file, record);
 		if ( (float)(epc->frootlitr_flab + epc->frootlitr_flig + fcel) != 1.0 ){

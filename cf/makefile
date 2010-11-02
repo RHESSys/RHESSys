@@ -1,6 +1,6 @@
 PGM = cf9.1
 CC  = gcc 
-CFLAGS  = 
+CFLAGS = -O
 RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = main.o build_flow_table.o fileio.o find_patch.o check_neighbours.o zero_flow_table.o \

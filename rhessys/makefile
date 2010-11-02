@@ -1,7 +1,7 @@
 PGM  = rhessys5.14.3
 VERSION = 5.14.3
 CC = gcc 
-CFLAGS = -I include
+CFLAGS = -O
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 

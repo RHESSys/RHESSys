@@ -1,6 +1,6 @@
 PGM = g2w 
 CC  = gcc 
-CFLAGS = 
+CFLAGS = -O
 RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = main.o sys.o unit.o 
