@@ -64,23 +64,23 @@ read_rhessys_met = function(prename) {
 
 nselog = function(m,o) {
 	m = log(m+0.0001)
-	o=(o+0.0001)
+	o = (o+0.0001)
 	err = m-o
-	ns = 1-var(err)/var(o)
+	ns = 1-var(err, rm.na=TRUE)/var(o, rm.na=TRUE)
 	ns
 }
 
 nse = function(m,o) {
-	err = m-o
-	ns = 1-var(err)/var(o)
+	err = m - o
+	ns = 1 - var(err, rm.na=TRUE)/var(o, rm.na=TRUE)
 	ns
 }
 
 rmse = function(m,o) {
-    err = m-o
+    err = m - o
     total = sum(err**2)
     n = length(m)
-    rmse = sqrt(total)/n*100/mean(o)
+    rmse = sqrt(total) / n*100 / mean(o)
     rmse
 }
 
@@ -92,7 +92,7 @@ running_mean = function(n,x) {
 		tmp[2:n]=tmp[1:(n-1)]
 		tmp[1]=x[i]
 		tmp3 = subset(tmp, tmp > 0.01)
-		tmp2 = ifelse(length(tmp3)==0, max(tmp), mean(tmp3)) 
+		tmp2 = ifelse(length(tmp3) == 0, max(tmp), mean(tmp3)) 
 		new[i] = (tmp2)
 	}
 	new
@@ -119,8 +119,6 @@ midmonthday = c(015,046,074,105,135,166,196,227,258,288,319,349)
 
 mthwyd = c(107,136,166,197,227,258,288,319,350,16,46,77)
 
-
-
 # function definition for moving window of NSE 
 nsmult = function(of,mf,df,len) {
 	begin = floor(len %/% 2 + 1)
@@ -140,15 +138,15 @@ nsmult = function(of,mf,df,len) {
 }
 
 spherical_mean = function(x) {
- alpharad = x*pi/180.0 
- sinalpha = sin(alpharad)
- cosalpha = cos(alpharad)
- n = length(x)
- mean = atan2(1/n*sum(sinalpha), 1/n*sum(cosalpha))
- #convert back to degrees
- mean = mean * 180.0/pi
- mean = ifelse(mean < 0.0, 360+mean, mean)
- mean
+	alpharad = x*pi/180.0 
+	sinalpha = sin(alpharad)
+	cosalpha = cos(alpharad)
+	n = length(x)
+	mean = atan2(1/n*sum(sinalpha), 1/n*sum(cosalpha))
+	#convert back to degrees
+	mean = mean * 180.0/pi
+	mean = ifelse(mean < 0.0, 360+mean, mean)
+	mean
 }
 
 

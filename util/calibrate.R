@@ -1,10 +1,12 @@
-calibrate = function(runs, str_obs, firsttag=1, filterdays=3) {
+#calibrate = function(runs, str_obs, firsttag=1, filterdays=3) {
 
 # str_obs is a data.frame with two column named date and mm,
-# where mm is the precip normalized by basin area.
+# where mm is the precip normalized by basin area, and date
+# is a chron date created with seq.dates (very important!!!!).
 
 	# Combine all streamflow data from multiple runs into a single
-	# streamflow table
+	# streamflow table, and copy parameters from multiple files into
+	# the statistics output table
 	for (i in firsttag:runs) {
 		str_tmp = read.table( paste("str", i, sep="") )
 		par_tmp = read.table( paste("par", i, sep="") )
@@ -19,10 +21,13 @@ calibrate = function(runs, str_obs, firsttag=1, filterdays=3) {
 	
 	# Add lables to the stats table
  	colnames(stats) = c("m","k","gw1","gw2")
+	
+	# Row information for the statistics output table
+ 	stats$row = seq(from=1, length=length(stats$m))
 
 	# Find the starting date from one of the RHESSys basin daily output files
 	basin_file = paste("sen", firsttag, "_basin.daily", sep="")
-	basin_table = read.table(basin_file, skip=1)
+	basin_table = read.table(basin_file, header=TRUE)
 	start_day = basin_table[1,1]
 	start_month = basin_table[1,2]
 	start_year = basin_table[1,3]
@@ -34,77 +39,76 @@ calibrate = function(runs, str_obs, firsttag=1, filterdays=3) {
 	# ncals = number of calibrations
  	ncal = ncol(str_results) - 1
 
- 	filter = rep(1/filterdays,times=filterdays)
-	rear_offset = floor(filterdays / 2 )
+	# Generate values for the convolution filter
+ 	filter_weights = rep(1 / filterdays, times=filterdays)
+	forward_lag = floor(filterdays / 2)
+	backward_lag = floor( (filterdays - 1) / 2)
+
+	# Filter the streamflow simulation predictions
  	lc = ncol(str_results)
  	lr = nrow(str_results)
- 	tmp = apply(str_results[,1:(lc - rear_offset)], 2, filter, filter=filter, method="convolution", sides=2)
- 	tmp2 = as.data.frame(tmp[2:(lr - rear_offset),])
- 	tmp2$date = str_results[2:(lr - rear_offset),"date"]
- 
- 	filtered_str = tmp2
- 
- 	lr = nrow(str_obs)
- 	tmp = filter(str_obs$mm, filter=filter, method="convolution", sides=2)
- 	tmp2 = as.data.frame(tmp[2:(lr - rear_offset)])
- 	colnames(tmp2) = c("mm")
- 	filtered_obs = tmp2
- 	filtered_obs$date = str_obs$date[2:(lr - rear_offset)]
+	# (lc-1) so the date column of str_results is not filtered
+ 	tmp = apply(str_results[,1:(lc - 1)], 2, filter, filter=filter_weights, method="convolution", sides=2)
+ 	filtered_str = as.data.frame(tmp[(1 + backward_lag):(lr - forward_lag),])
+ 	filtered_str$date = str_results[(1 + forward_lag):(lr - forward_lag), "date"]
 
- 
+	# Filter the observed streamflow data using the same filter as was used for
+	# the simulation streamflow output
+ 	lr = nrow(str_obs)
+ 	tmp = filter(str_obs$mm, filter=filter_weights, method="convolution", sides=2)
+ 	filtered_obs = as.data.frame(tmp[(1 + backward_lag):(lr - forward_lag)])
+ 	colnames(filtered_obs) = c("mm")
+ 	filtered_obs$date = str_obs$date[(1 + backward_lag):(lr - forward_lag)]
+
+	# Add year, month, day, and water year to filtered stream data. 
  	filtered_str$year = as.numeric(as.character(years(filtered_str$date)))
  	filtered_str$month = as.numeric(months(filtered_str$date))
  	filtered_str$day = as.numeric(days(filtered_str$date))
- 	filtered_str$wy = ifelse((filtered_str$month >= 10), filtered_str$year+1, filtered_str$year)
- 	stats$row = seq(from=1, length=length(stats$m))
- 
- 	tmp = merge(filtered_str, filtered_obs, by=c("date"))
- 	filtered_str = tmp
- 
- 	tmp2 = apply(tmp[,2:(ncal+1)],2, nselog, o=tmp$mm)
- 	stats$nselog.sh = tmp2
- 
- 	tmp = apply(filtered_str[,2:(ncal+1)],2, nse, o=filtered_str$mm)
- 	stats$nse = tmp
- 
- 	tmp = apply(filtered_str[,2:(ncal+1)], 2, nselog, o=filtered_str$mm)
- 	stats$nselog = tmp
-# 
-# 	tmp = apply(filtered_str[,2:(ncal+1)],2, rmse, o=filtered_str$mm)
-# 	stats$rmse = tmp
-# 
-# 	tmp = apply(filtered_str[,2:(ncal+1)], 2, cor, y=filtered_str$mm)
-# 	tmp2 = tmp*tmp
-# 	stats$r2 = tmp2
-# 
-# 	tmp = apply(filtered_str[,2:(ncal+1)], 2, sum)
-# 	tmp2 = (tmp-sum(filtered_str$mm))/(sum(filtered_str$mm))*100
-# 	stats$perr.total = tmp2
-# 
-# 	filtered_str.mth = as.data.frame(matrix(nrow=12, ncol=ncal, 0.0))
-# 	for (i in 1:ncal) {
-# 		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$month), FUN=mean)
-# 		filtered_str.mth[,i] = tmp$x
-# 	}
-# 
-# 	tmp = aggregate(filtered_str$mm, by=list(filtered_str$month), FUN=mean)
-# 	filtered_str.mth$obs = tmp$x
-# 	tmp = apply(filtered_str.mth[,1:ncal],2, cor, y=filtered_str.mth$obs)
-# 	stats$mth.cor = tmp
-# 
-# 
-# 	filtered_str = mkdate(filtered_str)
-# 	filtered_str.wyd = as.data.frame(matrix(nrow=366, ncol=ncal, 0.0))
-# 	for (i in 1:ncal) {
-# 		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$wyd), FUN=mean)
-# 		filtered_str.wyd[,i] = tmp$x
-# 	}
-# 
-# 	tmp = aggregate(filtered_str$mm, by=list(filtered_str$wyd), FUN=mean)
-# 	filtered_str.wyd$obs = tmp$x
-# 	tmp = apply(filtered_str.wyd[,1:ncal],2, cor, y=filtered_str.wyd$obs)
-# 	stats$wyd.cor = tmp
-# 
+	filtered_str$wy = ifelse((filtered_str$month >= 10), filtered_str$year+1, filtered_str$year)
+
+	# Create a single table with streamflow data and the observed data
+	filtered_str = merge(filtered_str, filtered_obs, by=c("date"))
+
+	# Compute nse
+	stats$nse = apply(filtered_str[,2:(ncal+1)],2, nse, o=filtered_str$mm)
+
+	# Compute nselog
+ 	stats$nselog = apply(filtered_str[,2:(ncal+1)], 2, nselog, o=filtered_str$mm)
+
+	# Compute rmse
+ 	stats$rmse = apply(filtered_str[,2:(ncal+1)],2, rmse, o=filtered_str$mm)
+
+	# Compute cor
+ 	tmp = apply(filtered_str[,2:(ncal+1)], 2, cor, y=filtered_str$mm)
+ 	tmp2 = tmp*tmp
+ 	stats$r2 = tmp2
+
+	# Compute total percent error
+ 	tmp = apply(filtered_str[,2:(ncal+1)], 2, sum, na.rm=TRUE)
+ 	stats$perr.total = (tmp-sum(filtered_str$mm, na.rm=TRUE))/(sum(filtered_str$mm, rm.na=TRUE))*100
+
+#	filtered_str.mth = as.data.frame(matrix(nrow=12, ncol=ncal, 0.0))
+#	for (i in 1:ncal) {
+#		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$month), FUN=mean)
+#		filtered_str.mth[,i] = tmp$x
+#	}
+#
+#	tmp = aggregate(filtered_str$mm, by=list(filtered_str$month), FUN=mean)
+#	filtered_str.mth$obs = tmp$x
+#	tmp = apply(filtered_str.mth[,1:ncal],2, cor, y=filtered_str.mth$obs)
+#	stats$mth.cor = tmp
+#
+#	filtered_str = mkdate(filtered_str)
+#	filtered_str.wyd = as.data.frame(matrix(nrow=366, ncol=ncal, 0.0))
+#	for (i in 1:ncal) {
+#		tmp = aggregate(filtered_str[,i+1], by=list(filtered_str$wyd), FUN=mean)
+#		filtered_str.wyd[,i] = tmp$x
+#	}
+#
+#	tmp = aggregate(filtered_str$mm, by=list(filtered_str$wyd), FUN=mean)
+#	filtered_str.wyd$obs = tmp$x
+#	tmp = apply(filtered_str.wyd[,1:ncal],2, cor, y=filtered_str.wyd$obs)
+#	stats$wyd.cor = tmp
 # 
 # 	tmp = range(filtered_str$wy)
 # 	nwy = tmp[2]-tmp[1]+1
@@ -121,12 +125,10 @@ calibrate = function(runs, str_obs, firsttag=1, filterdays=3) {
 # 	stats$min.cor = tmp
 # 	tmp = apply(filtered_str.min[,1:ncal], 2, sum)
 # 	tmp2 = (tmp-sum(filtered_str.min$obs))/(sum(filtered_str.min$obs))*100
-# 	stats$min.perr = tmp2
-# 
+#	stats$min.perr = tmp2
 # 
 # 	tmp = apply(filtered_str.mth[,1:ncal],2, nse, o=filtered_str.mth$obs)
 # 	stats$mth.nse = tmp
-# 
 # 
 # 	filtered_str.wy = as.data.frame(matrix(nrow=nwy, ncol=ncal, 0.0))
 # 
@@ -143,8 +145,6 @@ calibrate = function(runs, str_obs, firsttag=1, filterdays=3) {
 # 	stats$wy.nse = tmp
 # 	tmp = apply(filtered_str.wy[,(1:ncal)],2,cor,y=filtered_str.wy$obs)
 # 	stats$wy.cor = tmp
-# 
-# 
 # 
 # 	filtered_str.mwy = as.data.frame(matrix(nrow=nwy*12, ncol=ncal, 0.0))
 # 
@@ -167,5 +167,7 @@ calibrate = function(runs, str_obs, firsttag=1, filterdays=3) {
 # 	stats$aug.cor = tmp
 
 	# Assign various useful structures to the global scope
-	assign("stats", stats, envir=.GlobalEnv)
- }
+#	assign("stats", stats, envir=.GlobalEnv)
+#	assign("filtered_obs", filtered_obs, envir=.GlobalEnv)
+#	assign("filtered_results", filtered_results, envir=.GlobalEnv)
+# }

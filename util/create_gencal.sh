@@ -4,14 +4,15 @@ rhessys_bin=$1
 world=$2
 tec=$3
 flow=$4
-sty=$5
-stm=$6
-std=$7
-sth=$8
-edy=$9
-edm=${10}
-edd=${11}
-edh=${12}
+args=$5
+sty=$6
+stm=$7
+std=$8
+sth=$9
+edy=${10}
+edm=${11}
+edd=${12}
+edh=${13}
 
 cat <<EOF
 BEGIN {line=1;}
@@ -26,7 +27,7 @@ BEGIN {line=1;}
 {
 
 printf("cd %s/worldfiles\n", dir);
-printf("$rhessys_bin -t ../tec/$tec -w $world -b -p "); 
+printf("$rhessys_bin -t ../tec/$tec -w $world -b -p $args "); 
 printf("-r ../flow/$flow -pre ../out/cal/%s/sen%d -st $sty $stm $std $sth -ed $edy $edm $edd $edh ", name, tag);
 printf("-s %f %f -sv %f %f -gw %f %f\n",\$1,\$2,\$1,\$2,\$3,\$4);
 
