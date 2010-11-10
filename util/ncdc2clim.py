@@ -33,21 +33,121 @@ infile.readline()
 # to the top of the climate output files
 header = 1
 
+# Variables for checking if a whole month was skipped in the
+# data file. Need seperate for each possible data type
+prcpprevyear = 0
+prcpprevmonth = 0
+tmaxprevyear = 0
+tmaxprevmonth = 0
+tminprevyear = 0
+tminprevmonth = 0
+
 for line in infile:
 	fields = line.split(',')
 
 	data_type = fields[4]
 
 	yearmonth = fields[6]
-	year = yearmonth[0:4]
-	month = yearmonth[4:6]
-	(first_day, days) = calendar.monthrange(int(year), int(month)) 
+	year = int(yearmonth[0:4])
+	month = int(yearmonth[4:6])
+	(first_day, days) = calendar.monthrange(year, month) 
 
 	if header == 1:
 		header = 0
 		precipfile.write(''.join([str(year), ' ', str(month), ' 1 1\n']))
 		tmaxfile.write(''.join([str(year), ' ', str(month), ' 1 1\n']))
 		tminfile.write(''.join([str(year), ' ', str(month), ' 1 1\n']))
+		if month != 1:
+			prcpprevyear = year
+			prcpprevmonth = month - 1
+			tmaxprevyear = year 
+			tmaxprevmonth = month - 1
+			tminprevyear = year 
+			tminprevmonth = month - 1
+		else:
+			prcpprevyear = year - 1
+			prcpprevmonth = 12
+			tmaxprevyear = year - 1
+			tmaxprevmonth = 12
+			tminprevyear = year - 1
+			tminprevmonth = 12
+			
+		
+	# Check that there wasn't a missing month of data for any field
+	if data_type == 'PRCP':
+		if not (month == (prcpprevmonth+1) and prcpprevyear == year) or not (month == 1 and year == (prcpprevyear+1)):
+			# Missing month(s) found
+		
+			# Move forward one month, since we know a month is missing, and the original previous values
+			# were set for existing data
+			if prcpprevmonth == 12:
+				prcpprevmonth = 1
+				prcpprevyear = prcpprevyear + 1
+			else:
+				prcpprevmonth = prcpprevmonth + 1
+
+			# Loop from previous to current filling in with nulls
+			while (prcpprevyear != year and prcpprevmonth != month):
+				(first_day, missing_days) = calendar.monthrange(prcpprevyear, prcpprevmonth)
+				for current_day in range(1, missing_days+1):
+					precipfile.write('-99999\n')
+			
+				# Move forward one month
+				if prcpprevmonth == 12:
+					prcpprevmonth = 1
+					prcpprevyear = prcpprevyear + 1
+				else:
+					prcpprevmonth = prcpprevmonth + 1
+
+	if data_type == 'TMAX':
+		if not (month == (tmaxprevmonth+1) and tmaxprevyear == year) or not (month == 1 and year == (tmaxprevyear+1)):
+			# Missing month(s) found
+		
+			# Move forward one month, since we know a month is missing, and the original previous values
+			# were set for existing data
+			if tmaxprevmonth == 12:
+				tmaxprevmonth = 1
+				tmaxprevyear = tmaxprevyear + 1
+			else:
+				tmaxprevmonth = tmaxprevmonth + 1
+
+			# Loop from previous to current filling in with nulls
+			while (tmaxprevyear != year and tmaxprevmonth != month):
+				(first_day, missing_days) = calendar.monthrange(tmaxprevyear, tmaxprevmonth)
+				for current_day in range(1, missing_days+1):
+					precipfile.write('-99999\n')
+			
+				# Move forward one month
+				if tmaxprevmonth == 12:
+					tmaxprevmonth = 1
+					tmaxprevyear = tmaxprevyear + 1
+				else:
+					tmaxprevmonth = tmaxprevmonth + 1
+
+	if data_type == 'TMIN':
+		if not (month == (tminprevmonth+1) and tminprevyear == year) or not (month == 1 and year == (tminprevyear+1)):
+			# Missing month(s) found
+		
+			# Move forward one month, since we know a month is missing, and the original previous values
+			# were set for existing data
+			if tminprevmonth == 12:
+				tminprevmonth = 1
+				tminprevyear = tminprevyear + 1
+			else:
+				tminprevmonth = tminprevmonth + 1
+
+			# Loop from previous to current filling in with nulls
+			while (tminprevyear != year and tminprevmonth != month):
+				(first_day, missing_days) = calendar.monthrange(tminprevyear, tminprevmonth)
+				for current_day in range(1, missing_days+1):
+					precipfile.write('-99999\n')
+			
+				# Move forward one month
+				if tminprevmonth == 12:
+					tminprevmonth = 1
+					tminprevyear = tminprevyear + 1
+				else:
+					tminprevmonth = tminprevmonth + 1
 
 	for current_day in range(1, days+1):
 		# Get the array index for this day
@@ -56,12 +156,14 @@ for line in infile:
 			# convert from hundredths of inches to meters
 			precip = fields[index]
 			if precip.strip() == '-99999' or precip.strip() == '99999':
-				# Currently replacing NULL as zero for a
-				# first approximation
-				precipfile.write('0\n')
+				# Store NA as '-99999'
+				precipfile.write('-99999\n')
 			else:
 				precip = (int(precip)/100.0) / INCHES_PER_METER 
 				precipfile.write(''.join([str(precip).strip(), '\n']))
+			# Update previous dates
+			prcpprevyear = year
+			prcpprevmonth = month
 		elif data_type == 'TMAX':
 			# convert from F to C
 			temp = fields[index]
@@ -70,6 +172,9 @@ for line in infile:
 			else:
 				temp = (5.0/9)*(int(fields[index]) - 32)
 				tmaxfile.write(''.join([str(temp).strip(), '\n']))
+			# Update previous dates
+			tmaxprevyear = year
+			tmaxprevmonth = month
 		elif data_type == 'TMIN':
 			# convert from F to C
 			temp = fields[index]
@@ -78,6 +183,12 @@ for line in infile:
 			else:
 				temp = (5.0/9)*(int(fields[index]) - 32)
 				tminfile.write(''.join([str(temp).strip(), '\n']))
+			# Update previous dates
+			tminprevyear = year
+			tminprevmonth = month
+
+	prevyear = year
+	prevmonth = month
 
 precipfile.close()
 tmaxfile.close()
