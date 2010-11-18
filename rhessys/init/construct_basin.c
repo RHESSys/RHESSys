@@ -88,7 +88,8 @@ struct basin_object *construct_basin(
 
 	struct routing_list_object construct_routing_topology(
 		char *,
-		struct basin_object *);
+		struct basin_object *, 
+		struct	command_line_object *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
@@ -312,7 +313,8 @@ struct basin_object *construct_basin(
 		if (command_line[0].ddn_routing_flag == 1)
 			basin[0].route_list = construct_ddn_routing_topology( command_line[0].routing_filename, basin);
 		else
-			basin[0].route_list = construct_routing_topology( command_line[0].routing_filename, basin);
+			basin[0].route_list = construct_routing_topology( command_line[0].routing_filename, basin,
+						command_line);
 	}
 		else basin[0].route_list.num_patches = 0;
 	return(basin);

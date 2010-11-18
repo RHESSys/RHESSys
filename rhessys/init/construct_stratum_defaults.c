@@ -496,12 +496,14 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_trange = default_object_list[i].epc.gs_tmax-default_object_list[i].epc.gs_tmin;
 
 
+		/*
 		if (default_object_list[i].epc.min_percent_leafg > default_object_list[i].epc.leaf_turnover) {
 			printf("\n In veg default file %s", default_files[i]);
 			printf("\n min percent leafg is greater than leaf turnover you probably don't want that");
 			printf("\n Resetting min % gleaf to leaf turnover to avoid instability", default_object_list[i].epc.min_percent_leafg);
 			default_object_list[i].epc.min_percent_leafg = default_object_list[i].epc.leaf_turnover;
 			}
+		*/
 		/*--------------------------------------------------------------*/
 		/* set sunlit sla multiplier	this should be an input		*/
 		/*--------------------------------------------------------------*/

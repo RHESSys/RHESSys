@@ -58,6 +58,7 @@ struct soil_default *construct_soil_defaults(
 	char	record[MAXSTR];
 	struct 	soil_default *default_object_list;
 	
+	void	*alloc(	size_t, char *, char *);
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.						*/
 	/*--------------------------------------------------------------*/
@@ -181,7 +182,6 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].Ksat_0_v *= command_line[0].vsen[K];
 		}
 
-		default_object_list[i].original_m = default_object_list[i].m;   
 		/*--------------------------------------------------------------*/
 		/* sensitivity adjustment of soil drainage paramters		*/
 		/*--------------------------------------------------------------*/
@@ -266,6 +266,10 @@ struct soil_default *construct_soil_defaults(
 
 		}
 
+
+
+	
+		
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/

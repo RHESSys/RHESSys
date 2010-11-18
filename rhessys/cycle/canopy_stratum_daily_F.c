@@ -388,7 +388,7 @@ void	canopy_stratum_daily_F(
 
 
 	if ( command_line[0].verbose_flag >2  )
-		printf("\n%d %d %d %8d -444.3 ",
+		printf("\n%d %d %d  -444.3 ",
 		current_date.year, current_date.month, current_date.day);
 	stratum[0].APAR_direct = compute_direct_radiative_fluxes(
 		command_line[0].verbose_flag,

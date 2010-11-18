@@ -40,12 +40,12 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 
-double	compute_varbased_flow( double std,
+double	compute_varbased_flow(
+				int num_soil_intervals,
+				double std,
+				double s1,
 				double gamma,
-					double	m,
-					double  z_layer1,
-					double	s1,
-					double	smax
+				double *transmissivity
 					)
 {
 
@@ -53,18 +53,14 @@ double	compute_varbased_flow( double std,
 	/*--------------------------------------------------------------*/
 	/*	Local sub	definition				*/
 	/*--------------------------------------------------------------*/
-	double compute_transmissivity_curve(
-		double,
-		double,
-		double,
-		double);
 
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	double	route_to_stream, accum;
+	double	flow, accum;
 	double	normal[9], perc[9];
 	int i;
+	int didx;
 
 	normal[0] = 0;
 	normal[1] = 0.253;
@@ -80,28 +76,23 @@ double	compute_varbased_flow( double std,
 	for (i=1; i<9; i++)
 		perc[i] = 0.1;
 
-	route_to_stream = 0.0;
-
+	
+	flow = 0.0;
+	if (s1 < 0.0) s1 = 0.0;	
 
 	if (std > ZERO) {
 	for (i=0; i <9; i++) {
-		accum = compute_transmissivity_curve( m, 
-			z_layer1,
-			s1 + normal[i]*std,
-			smax) ; 
-		route_to_stream += accum * perc[i];
+		didx = (int) lround((s1 + normal[i]*std)/INTERVAL_SIZE);
+		if (didx > num_soil_intervals) didx = num_soil_intervals;
+		accum = transmissivity[didx];
+		flow += accum * perc[i];
 	}
 	}
 	else  {
-		route_to_stream = compute_transmissivity_curve( m, 
-			z_layer1,
-			s1,
-			smax) ; 
+		didx = (int) lround(s1/INTERVAL_SIZE);
+		if (didx > num_soil_intervals) didx = num_soil_intervals;
+		flow = transmissivity[didx];
 	}
-	
-
-	route_to_stream *= gamma;
-
-	
-	return(route_to_stream);
+	flow = flow*gamma; 
+	return(flow);
 } /*compute_varbased_flow*/

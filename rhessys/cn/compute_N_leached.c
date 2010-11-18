@@ -44,7 +44,8 @@ double	compute_N_leached(int verbose_flag,
 			double N_decay_rate, 
 			double z2_N, 
 			double z2_water, 
-			double mobile_N_proportion) 
+			double mobile_N_proportion,
+			double *transmissivity) 
 			
 	{ 
 	/*------------------------------------------------------*/ 
@@ -58,15 +59,11 @@ double	compute_N_leached(int verbose_flag,
                 double,
                 double);
 
-	double compute_transmissivity_curve(
-		double,
-		double,
-		double,
-		double);
 		
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	int didx_bot, didx_top;
 	double navail, nleached;
 	double theta, sat_deficit;
 	double Q, Qtotal;
@@ -153,10 +150,12 @@ double	compute_N_leached(int verbose_flag,
 		/*	note gamma is gamma per unit area, per time interval */ 
 		/*------------------------------------------------------*/
 
-		Q = gamma * compute_transmissivity_curve( m, 
-				z2_water,
-				sat_deficit,
-				min(sat_deficit + INTERVAL_SIZE,s2)); 
+	
+		didx_top = (int) lround(sat_deficit/INTERVAL_SIZE);
+		didx_bot = (int) lround(
+				min(sat_deficit + INTERVAL_SIZE,s2)/INTERVAL_SIZE); 
+		
+		Q = gamma * (transmissivity[didx_top]-transmissivity[didx_bot]);
 
 		if (Q > theta) {
 			Q = theta;

@@ -28,11 +28,13 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <math.h>
 #include "rhessys.h"
 
 struct routing_list_object construct_routing_topology(
 					  		  char *routing_filename,
-							  struct basin_object *basin)
+							  struct basin_object *basin,
+							  struct command_line_object *command_line)
 													  
 {
 	/*--------------------------------------------------------------*/
@@ -46,11 +48,13 @@ struct routing_list_object construct_routing_topology(
 		FILE *);
 	
 	void *alloc(size_t, char *, char *);
+
+	double * compute_transmissivity_curve( double, struct patch_object *, struct command_line_object *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int		i,d;
+	int		i,d,j;
 	int		num_patches, num_neighbours;
 	int		patch_ID, zone_ID, hill_ID;
 	int		drainage_type;
@@ -100,7 +104,7 @@ struct routing_list_object construct_routing_topology(
 
 		if ((patch[0].soil_defaults[0][0].m < ZERO) || (patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
 			printf("\n WARNING m (%lf) or Ksat (%lf) are close to zero for patch %d",
-				patch[0].soil_defaults[0][0].m , patch[0].soil_defaults[0][0].Ksat_0);
+				patch[0].soil_defaults[0][0].m , patch[0].soil_defaults[0][0].Ksat_0, patch[0].ID);
 		
 		 gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
 
@@ -147,6 +151,14 @@ struct routing_list_object construct_routing_topology(
 			stream = find_patch(patch_ID, zone_ID, hill_ID, basin);
 			patch[0].next_stream = stream;
 		}
+
+		/*--------------------------------------------------------------*/
+		/*	create a vector of transmssivities 			*/
+		/*--------------------------------------------------------------*/
+		patch[0].num_soil_intervals = (int) lround(patch[0].soil_defaults[0][0].soil_water_cap / INTERVAL_SIZE);
+		patch[0].transmissivity_profile = compute_transmissivity_curve(gamma, patch, command_line);
+
+
 	}
 	return(rlist);
 } /*end construct_routing_topology.c*/

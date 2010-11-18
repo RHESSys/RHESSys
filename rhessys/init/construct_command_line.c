@@ -85,6 +85,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].vsen_alt_flag = 0;
 	command_line[0].precip_scale_flag = 0;
 	command_line[0].snow_scale_flag = 0;
+	command_line[0].noredist_flag = 0;
 	command_line[0].vgsen_flag = 0;
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
@@ -172,6 +173,14 @@ struct	command_line_object	*construct_command_line(
 			/*------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-csv") == 0 ){
 				command_line[0].output_flags.csv = 1;
+				i++;
+			}
+			/*------------------------------------------*/
+			/*Check if the no redistribution flag is next.           */
+			/*------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-noredist") == 0 ){
+				printf("\n Running with no lateral redistribution - water balance not maintained ");
+				command_line[0].noredist_flag = 1;
 				i++;
 			}
 			/*------------------------------------------*/

@@ -104,7 +104,8 @@ void	canopy_stratum_growth(
 		struct ndayflux_patch_struct *,
 		struct	litter_c_object *,
 		struct	litter_n_object *,
-		struct	epconst_struct);
+		struct	epconst_struct,
+		struct	command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -214,7 +215,8 @@ void	canopy_stratum_growth(
 			&(patch[0].ndf),
 			&(patch[0].litter_cs),
 			&(patch[0].litter_ns),
-			stratum[0].defaults[0][0].epc) != 0){
+			stratum[0].defaults[0][0].epc,
+			command_line) != 0){
 			fprintf(stderr,"FATAL ERROR: in allocate_annual_growth");
 			exit(1);
 		}

@@ -67,6 +67,7 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-dor") == 0) ||
 		(strcmp(command_line,"-csv") == 0) ||
 		(strcmp(command_line,"-vgsen") == 0) ||
+		(strcmp(command_line,"-noredist") == 0) ||
 		(strcmp(command_line,"-vmort") == 0) ||
 		(strcmp(command_line,"-svalt") == 0) ||
 		(strcmp(command_line,"-precip") == 0) ||

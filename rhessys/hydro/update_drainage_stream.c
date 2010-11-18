@@ -36,12 +36,9 @@
 
 void  update_drainage_stream(
 								 struct patch_object *patch,
+								 struct command_line_object *command_line,
 								 double time_int,
-								 double	sen_m,
-								 double	sen_K,
-								 double std_scale,
-								 int verbose_flag,
-								 int grow_flag)
+								 int verbose_flag)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
@@ -72,27 +69,21 @@ void  update_drainage_stream(
 		double,
 		double,
 		double,
-		double);
+		double, double *);
 	
-	double compute_transmissivity_curve(
-		double,
-		double,
-		double,
-		double);
-
 	double compute_varbased_returnflow(
 		double,
 		double,
 		double,
 		struct litter_object *);
 
+
 	double compute_varbased_flow(
+		int,
 		double,
 		double,
 		double,
-		double,
-		double,
-		double);
+		double *);
 
 	double recompute_gamma(	
 		struct patch_object *,
@@ -105,7 +96,7 @@ void  update_drainage_stream(
 	double return_flow;  /* m */ 
 	double N_leached_total, N_leached_to_stream; /* kg/m2 */ 
 	double patch_int_depth;  /* m of H2O */
-	double available_sat_water, route_to_stream; /* m3 */
+	double  route_to_stream; /* m3 */
 	double route_to_surface;
 	double  Qin, Qout,Qstr_total;  /* m */
 	double gamma, total_gamma, percent_tobe_routed;
@@ -128,9 +119,6 @@ void  update_drainage_stream(
 	/*--------------------------------------------------------------*/
 	total_gamma =  patch[0].innundation_list[d].gamma;
 
-	available_sat_water = max(((patch[0].soil_defaults[0][0].soil_water_cap
-			- max(patch[0].sat_deficit,0.0))
-			* patch[0].area),0.0);
 
 
 	/*------------------------------------------------------------*/
@@ -145,20 +133,21 @@ void  update_drainage_stream(
 
 	}
 
-	
-	route_to_stream = compute_varbased_flow(patch[0].std * std_scale, gamma, m,
-		patch[0].soil_defaults[0][0].active_zone_z,
+	route_to_stream = compute_varbased_flow(
+		patch[0].num_soil_intervals,
+		patch[0].std * command_line[0].std_scale,
 		patch[0].sat_deficit,
-		patch[0].soil_defaults[0][0].soil_water_cap) ;
+		gamma,
+		patch[0].transmissivity_profile);
 
-	if (route_to_stream < 0.0) route_to_stream = 0.0;
-	if ( route_to_stream > available_sat_water) 
-		route_to_stream *= (available_sat_water)/(route_to_stream);
 	
+	if (route_to_stream < 0.0) route_to_stream = 0.0;
+
+		
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount with baseflow		*/
 	/*--------------------------------------------------------------*/
-	if (grow_flag > 0) {
+	if (command_line[0].grow_flag > 0) {
 
 		N_leached_to_stream = compute_N_leached(
 			verbose_flag,
@@ -173,7 +162,8 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_N_proportion);
+			patch[0].soil_defaults[0][0].mobile_N_proportion,
+			patch[0].transmissivity_profile);
 		patch[0].soil_ns.Qout += N_leached_to_stream;
 	}
 
@@ -187,7 +177,7 @@ void  update_drainage_stream(
 	/*	and route any infiltration excess			*/
 	/*--------------------------------------------------------------*/
 	if ((patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage) < -1.0*ZERO) {
-		return_flow = compute_varbased_returnflow(patch[0].std * std_scale, 
+		return_flow = compute_varbased_returnflow(patch[0].std * command_line[0].std_scale, 
 			patch[0].rz_storage+patch[0].unsat_storage,
 			patch[0].sat_deficit, &(patch[0].litter));
 		patch[0].detention_store += return_flow;  
@@ -216,7 +206,8 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_N_proportion);
+			patch[0].soil_defaults[0][0].mobile_N_proportion,
+			patch[0].transmissivity_profile);
 		patch[0].surface_NO3 += Nout;
 		patch[0].soil_ns.Qout += Nout;
 	}

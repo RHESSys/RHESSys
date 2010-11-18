@@ -44,27 +44,18 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 	/*--------------------------------------------------------------*/
 
 	void update_drainage_stream(struct patch_object *,
+				struct	command_line_object *,
 					double,
-					double,
-					double,
-					double,
-					int,
 					int);
 
 	void update_drainage_road(struct patch_object *,
+				struct	command_line_object *,
 					double,
-					double,
-					double,
-					double,
-					int,
 					int);
 
 	void update_drainage_land(struct patch_object *,
+				struct	command_line_object *,
 					double,
-					double,
-					double,
-					double,
-					int,
 					int);
 
 
@@ -249,17 +240,14 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			/*								*/
 			/*	regular land patches - route to downslope neighbours    */
 			/*--------------------------------------------------------------*/
-
 			if ((patch[0].drainage_type == ROAD ) && (command_line[0].road_flag == 1)) 
-				update_drainage_road(patch, time_int, command_line[0].sen[M], command_line[0].sen[K], command_line[0].std_scale, verbose_flag, grow_flag);
+				update_drainage_road(patch, command_line, time_int, verbose_flag);
 			else
+			
 				if (patch[0].drainage_type == STREAM)
-					update_drainage_stream(patch, time_int, command_line[0].sen[M], command_line[0].sen[K],  
-					command_line[0].std_scale, verbose_flag, grow_flag);
+					update_drainage_stream(patch, command_line, time_int, verbose_flag);
 				else
-					update_drainage_land(patch, time_int, command_line[0].sen[M], command_line[0].sen[K], 
-					command_line[0].std_scale, verbose_flag, grow_flag);
-
+					update_drainage_land(patch, command_line, time_int, verbose_flag);
 
 		} /* end i */
 
@@ -959,7 +947,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			- basin_outflow;
 
 	if (abs(water_balance) > ZERO) 
-		printf("\n Water Balance is %lf for %d %d %d", water_balance, current_date.day, current_date.month, current_date.year);
+	printf("\n Water Balance is %lf for %ld %ld %ld", water_balance, current_date.day, current_date.month, current_date.year);
 	if((command_line[0].output_flags.yearly == 1)&&(command_line[0].b != NULL)) {
 		if ( basin_outflow <=  command_line[0].thresholds[STREAMFLOW] )
 				basin[0].acc_year.num_threshold += 1;
