@@ -323,7 +323,7 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/
 	/*--------------------------------------------------------------*/
-	patch[0].soil_defaults[0][0].original_m = mpar;
+	patch[0].original_m = mpar;
 	if (mpar > ZERO) {
 		patch[0].soil_defaults[0][0].m = mpar * command_line[0].sen[M];
 		patch[0].soil_defaults[0][0].m_z = mpar * command_line[0].sen[M] / 
@@ -478,7 +478,9 @@ struct patch_object *construct_patch(
 		sizeof( struct layer_object ),"layers","construct_patch");
 	patch[0].num_layers = 0;
 	sort_patch_layers(patch);
-	
+
+		
+
 	/*--------------------------------------------------------------*/
 	/*	compute actual depth to water tablke			*/
 	/*--------------------------------------------------------------*/
