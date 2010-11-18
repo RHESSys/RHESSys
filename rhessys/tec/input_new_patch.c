@@ -288,7 +288,7 @@
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/
 	/*--------------------------------------------------------------*/
 	if (mpar > ZERO) {
-		patch[0].soil_defaults[0][0].original_m = mpar;
+		patch[0].original_m = mpar;
 		patch[0].soil_defaults[0][0].m = mpar * command_line[0].sen[M];
 		patch[0].soil_defaults[0][0].m_z = mpar * command_line[0].sen[M] / 
 				patch[0].soil_defaults[0][0].porosity_0;
