@@ -159,7 +159,7 @@
 #define PRE	"result"
 #define state_output_filename	"world_state"
 #define	MAXNAME	60
-#define INTERVAL_SIZE 0.1 
+#define INTERVAL_SIZE 0.001 
 #define STREAM 1
 #define ROAD 2
 #define NON_VEG 20
@@ -829,7 +829,6 @@ struct	soil_default
 	double	Ksat_0_v;					/* meters/day */
 	double	m;						/* m^-1	*/
 	double	m_v;						/* m^-1	*/
-	double  original_m;					/* m^-1 */
 	double	m_z;						/* m^-1	*/
 	double	mz_v;						/* m^-1	*/
 	double	porosity_0;						/* unitless */
@@ -1202,6 +1201,7 @@ struct patch_object
 	int		num_innundation_depths;
 	int		num_canopy_strata;
 	int		num_layers;
+	int		num_soil_intervals;				/* unitless */
 	double	x;									/* meters	*/
 	double	y;									/* meters	*/
 	double	z;									/* meters	*/
@@ -1245,6 +1245,7 @@ struct patch_object
 	double	Lstar_surface_night;	/* Kj/(m^2*day)	*/
 	double	Lstar_snow;		/* Kj/(m^2*day)	*/
 	double	Lstar_soil;		/* Kj/(m^2*day)	*/
+	double  original_m;		/* m^-1 */
 	double	PAR_direct;		/* umol/(m^2*day)	*/
 	double	PAR_diffuse;		/* umol/(m^2*day)	*/
 	double	PAR_direct_final;	/* umol/(m^2*day)	*/
@@ -1329,6 +1330,7 @@ struct patch_object
 	double	preday_sat_deficit_z;			/* meters		*/
 	double	sat_deficit;				/* meters water		*/
 	double	sat_deficit_z;				/* meters		*/
+	double	*transmissivity_profile;		/* array (m/day) */
 	struct	snowpack_object	snowpack;		/* meters		*/
 	double	preday_unsat_storage;			/* meters water		*/
 	double  preday_rz_storage;			/* meters water by Taehee Hwang */
@@ -1548,6 +1550,7 @@ struct	command_line_object
 	int		std_flag;
 	int		precip_scale_flag;
 	int		snow_scale_flag;
+	int		noredist_flag;
 	int		vmort_flag;
 	int		version_flag;
 	char	*output_prefix;
