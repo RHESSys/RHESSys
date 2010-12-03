@@ -138,7 +138,8 @@ double	snowpack_daily_F(
 	if (snowpack[0].surface_age > 0.0) {
 		if ( (snowpack[0].energy_deficit < 0.0)){
 			snowpack[0].K_reflectance = 0.85
-				* pow(0.94,pow(1.0*snowpack[0].surface_age, 0.58));
+				* pow(0.94,pow(1.0*snowpack[0].surface_age, 0.65));
+				/* temp change from 0.58 to 0.65 */
 		}
 		else{
 			snowpack[0].K_reflectance = 0.85
@@ -256,7 +257,7 @@ double	snowpack_daily_F(
 	/*  Compute Radiation Melt		                                */
 	/*--------------------------------------------------------------*/
 	if (Q_radiation_net < 0.0) Q_radiation_net = 0.0;
-	if ((T_air > 0.0) && (snowpack[0].energy_deficit >= 0.0))
+	if ( (T_air > 0.0) && (snowpack[0].energy_deficit >= 0.0))
 		rad_melt = max((Q_radiation_net / pho_water/latent_heat_melt), 0.0);
 	else
 		rad_melt = max((Q_radiation_net / pho_water / latent_heat_vapour), 0.0);

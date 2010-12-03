@@ -65,6 +65,7 @@ void	execute_daily_output_event(
 	void output_patch(
 		int, int, int,
 		struct	patch_object *,
+		struct	zone_object *,
 		struct	date,
 		FILE	*);
 	
@@ -187,6 +188,7 @@ void	execute_daily_output_event(
 															world[0].basins[b]->hillslopes[h]->ID,
 															world[0].basins[b]->hillslopes[h]->zones[z]->ID,
 															world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
+															world[0].basins[b]->hillslopes[h]->zones[z],
 															date,
 															outfile->patch->daily);
 													}

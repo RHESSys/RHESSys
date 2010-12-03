@@ -208,7 +208,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].zone[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n " ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n " ,
 		"day",
 		"month",
 		"year",
@@ -223,7 +223,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"Kdown_direct",
 		"Kdown_diffuse",
 		"PAR_direct",
-		"PAR_diffuse","relH");
+		"PAR_diffuse","relH","aspect","z","slope","ehr","whr");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
@@ -276,7 +276,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"%s %s %s %s %s %s %s %s %s %s  %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -301,6 +301,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"evap_surface",
 		"soil_evap",
 		"snow",
+		"snow_melt",
 		"trans_sat",
 		"trans_unsat",
 		"Qin",
@@ -309,7 +310,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"root_zone.S",
 		"root.depth",
 		"litter.rain_stor",
-		"litter.S","area","pet","lai","baseflow","streamflow");
+		"litter.S","area","pet","lai","baseflow","streamflow","pcp");
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/

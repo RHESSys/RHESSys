@@ -377,7 +377,7 @@ void		patch_daily_F(
 	patch[0].PAR_diffuse = zone[0].PAR_diffuse;
 	patch[0].evaporation_surf = 0.0;
 	patch[0].potential_evaporation = 0.0;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Set the patch rain and snow throughfall equivalent to the	*/
 	/*	rain and snow coming down over the zone.					*/

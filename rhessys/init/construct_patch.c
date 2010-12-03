@@ -325,10 +325,13 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	patch[0].original_m = mpar;
 	if (mpar > ZERO) {
-		patch[0].soil_defaults[0][0].m = mpar * command_line[0].sen[M];
-		patch[0].soil_defaults[0][0].m_z = mpar * command_line[0].sen[M] / 
-				patch[0].soil_defaults[0][0].porosity_0;
+		patch[0].m = mpar * command_line[0].sen[M];
+		patch[0].m_z = patch[0].soil_defaults[0][0].porosity_0 * mpar;
 	}
+	else {
+		patch[0].m = patch[0].soil_defaults[0][0].m;
+		patch[0].m_z = patch[0].soil_defaults[0][0].porosity_0 * patch[0].m;
+		}
 
 	/*--------------------------------------------------------------*/
 	/*	if landuse default files include a percent impervious	*/
@@ -457,7 +460,6 @@ struct patch_object *construct_patch(
 	patch[0].wilting_point = exp(-1.0*log(-1.0*patch[0].soil_defaults[0][0].psi_max_veg/
 						patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index);
-
 
 
 

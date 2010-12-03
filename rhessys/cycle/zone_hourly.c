@@ -263,6 +263,7 @@ void		zone_hourly(
 						+= zone[0].hourly[0].Kdown_direct_flat * 3600 / 1000;
 					zone[0].Kdown_direct
 						+= zone[0].hourly[0].Kdown_direct * 3600 / 1000;
+
 					zone[0].Kdown_diffuse_flat
 						+= zone[0].hourly[0].Kdown_diffuse_flat * 3600 / 1000;
 					zone[0].Kdown_diffuse

@@ -172,6 +172,7 @@ void		zone_daily_F(
 		/*--------------------------------------------------------------*/
 		/*		adjust the simulated radiation for new dayl	*/
 		/*--------------------------------------------------------------*/
+
 		if (zone[0].Kdown_direct_flag == 0){
 			zone[0].Kdown_direct = zone[0].Kdown_direct
 				* ( basin[0].daylength / zone[0].metv.dayl );

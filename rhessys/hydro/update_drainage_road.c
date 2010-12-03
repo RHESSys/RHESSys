@@ -113,7 +113,7 @@ void  update_drainage_road(
 	/*--------------------------------------------------------------*/
 	/*	m and K are multiplied by sensitivity analysis variables */
 	/*--------------------------------------------------------------*/
-	m = patch[0].soil_defaults[0][0].m  ;
+	m = patch[0].m  ;
 	Ksat = patch[0].soil_defaults[0][0].Ksat_0 ;
 	d=0;
 	/*--------------------------------------------------------------*/

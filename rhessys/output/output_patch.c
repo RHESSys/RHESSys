@@ -32,6 +32,7 @@
 void	output_patch(
 					 int basinID, int hillID, int zoneID,
 					 struct	patch_object	*patch,
+					 struct	zone_object	*zone,
 					 struct	date	current_date,
 					 FILE *outfile)
 {
@@ -69,7 +70,7 @@ void	output_patch(
 
 	
 	
-	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -94,6 +95,7 @@ void	output_patch(
 		patch[0].evaporation_surf*1000.0,
 		patch[0].exfiltration_sat_zone*1000.0 + patch[0].exfiltration_unsat_zone * 1000.0, 
 		patch[0].snowpack.water_equivalent_depth*1000.0,
+		patch[0].snow_melt*1000.0,
 		(patch[0].transpiration_sat_zone*1000.0), (patch[0].transpiration_unsat_zone)*1000.0,
 		patch[0].Qin_total * 1000.0,
 		patch[0].Qout_total * 1000.0,
@@ -102,7 +104,9 @@ void	output_patch(
 		patch[0].rootzone.depth*1000.0,
 		patch[0].litter.rain_stored*1000.0,
 		litterS,
-		patch[0].area, (patch[0].PET)*1000.0, alai, patch[0].base_flow*1000.0, patch[0].streamflow*1000.0);
+		patch[0].area, (patch[0].PET)*1000.0, alai, 
+		patch[0].base_flow*1000.0, 
+		patch[0].streamflow*1000.0, 1000.0*(zone[0].rain+zone[0].snow));
 
 	if (check <= 0) {
 		fprintf(stdout, "\nWARNING: output error has occured in output_patch");

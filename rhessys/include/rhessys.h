@@ -1245,6 +1245,8 @@ struct patch_object
 	double	Lstar_surface_night;	/* Kj/(m^2*day)	*/
 	double	Lstar_snow;		/* Kj/(m^2*day)	*/
 	double	Lstar_soil;		/* Kj/(m^2*day)	*/
+	double  m;		/* m^-1 */
+	double  m_z;		/* m^-1 */
 	double  original_m;		/* m^-1 */
 	double	PAR_direct;		/* umol/(m^2*day)	*/
 	double	PAR_diffuse;		/* umol/(m^2*day)	*/

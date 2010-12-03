@@ -64,7 +64,8 @@
 		double,
 		double,
 		double);
-	void	update_litter_interception_capacity (double, struct litter_c_object *,
+	void	update_litter_interception_capacity (double, 
+		struct litter_c_object *,
 		struct litter_object *);
 	
 	void	*alloc(	size_t, char *, char *);
@@ -216,11 +217,11 @@
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
 	/*--------------------------------------------------------------*/
-	
 	update_litter_interception_capacity(
 		patch[0].litter.moist_coef,
 		&(patch[0].litter_cs),
 		&(patch[0].litter));
+
 	/*--------------------------------------------------------------*/
 	/*	initialize sinks					*/
 	/*--------------------------------------------------------------*/
