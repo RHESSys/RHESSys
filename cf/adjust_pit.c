@@ -46,13 +46,19 @@
 
 	struct	adj_struct *aptr;
 
-			aptr = flow_table[curr].adj_list;
-			total_perimeter = aptr->perimeter;
 
-			for (j=1; j < flow_table[curr].num_adjacent; j++) {
-				aptr = aptr->next;
-				total_perimeter += aptr->perimeter;
+
+		if (flow_table[curr].num_adjacent > 0) {
+				aptr = flow_table[curr].adj_list;
+				total_perimeter = aptr->perimeter;
+
+				for (j=1; j < flow_table[curr].num_adjacent; j++) {
+					aptr = aptr->next;
+					total_perimeter += aptr->perimeter;
 				}
+			}
+			else total_perimeter = 0.0;
+
 
 			if (flow_table[curr].num_adjacent == 0) {
 				
