@@ -440,5 +440,8 @@ void		patch_daily_I(
 			exit(1);
 		}
 	}
+
+
+
 	return;
 }/*end patch_daily_I.c*/

@@ -189,6 +189,15 @@ struct	command_line_object	*construct_command_line(
 			else if ( strcmp(main_argv[i],"-vmort") == 0 ){
 				command_line[0].vmort_flag = 1;
 				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
+					fprintf(stderr,"FATAL ERROR: Value for vmort flag not specified\n");
+					exit(0);
+				} /*end if*/
+				/*-------------------------------*/
+				/*Read in the tmp value		*/
+				/*-------------------------------*/
+				command_line[0].cpool_mort_fract = (double)atof(main_argv[i]);
+				i++;
 			}
 			/*------------------------------------------*/
 			/*Check if the distributed climate flag is next.           */

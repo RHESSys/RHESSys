@@ -833,6 +833,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].acc_month.lai = max(patch[0].acc_month.lai, patch[0].lai);
 			patch[0].acc_month.leach += (patch[0].soil_ns.leach+patch[0].surface_ns_leach);
 			patch[0].acc_month.length += 1;
+
+
 		}
 		if((command_line[0].output_flags.yearly == 1)&&(command_line[0].p != NULL)){
 			patch[0].acc_year.length += 1;

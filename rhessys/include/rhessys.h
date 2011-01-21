@@ -339,6 +339,7 @@ struct accumulate_patch_object
    double theta;
    double uptake;
    double mineralized;
+   double pcp;
 };
 
 
@@ -1561,6 +1562,7 @@ struct	command_line_object
 	char	tec_filename[256];
 	double  tmp_value;
 	double  don_value;
+	double  cpool_mort_fract;
 	double	veg_sen1;
 	double	veg_sen2;
 	double	veg_sen3;
@@ -1684,6 +1686,7 @@ struct cstate_struct
 	int	age; /* (num years) */
 	int 	num_resprout; /* (num years) running index of years of resprouting */	
     
+    double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
     double totalc;  	    /* (kgC/m2) previous days plant carbon total */
     double net_psn;	    /* (kgC/m2)  net photosynthesis (psn-respiration) */

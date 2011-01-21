@@ -420,6 +420,13 @@ void		patch_daily_F(
 			exit(0);
 			}
 		}
+
+
+	if((command_line[0].output_flags.yearly == 1)&&(command_line[0].p != NULL)){
+		patch[0].acc_year.pcp += zone[0].rain + zone[0].snow + irrigation;
+		}
+
+
 	/*--------------------------------------------------------------*/
 	/*	Compute the stability correction factor for aero cond	*/
 	/*--------------------------------------------------------------*/
@@ -1252,6 +1259,7 @@ void		patch_daily_F(
 			patch[0].totalc += strata->cover_fraction * strata->cs.totalc;
 			patch[0].totaln += strata->cover_fraction * strata->ns.totaln;
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
+			strata->acc_year.psn += strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
 		}
 	}

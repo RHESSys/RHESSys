@@ -39,6 +39,7 @@ int allocate_annual_growth(				int id,
 							int default_ID,
 							int vmort_flag,
 							double cover_fraction,
+							double cpool_mort_fract,
 						   struct epvar_struct *epv,
 						   struct cdayflux_struct *cdf,
 						   struct cstate_struct *cs,
@@ -195,8 +196,29 @@ int allocate_annual_growth(				int id,
 	else
 		storage_transfer_prop = epc.storage_transfer_prop;
 	/*--------------------------------------------------------------*/
-	/*	respiration thinning			*/
+	/* 	carbohydrate starvation mortality 			*/
 	/*--------------------------------------------------------------*/
+
+	cs->mortality_fract = 0.0;
+	if ((total_store < cpool_mort_fract*total_biomass) && (total_biomass > ZERO) && (cs->age > 2) && (vmort_flag == 1)) {
+		printf("\n drought stress mortality for %d", id);
+		excess_carbon = 1.0 - total_store/(cpool_mort_fract*total_biomass);
+		excess_carbon = max(excess_carbon,0);
+		excess_carbon = min(1.0,excess_carbon);
+		cs->mortality_fract = excess_carbon;
+		update_mortality(epc,
+			cs, cdf, cdf_patch,
+			ns, ndf, ndf_patch, 
+			cs_litr, ns_litr, cover_fraction, excess_carbon);
+
+	}
+		
+	
+	/*--------------------------------------------------------------*/
+	/*	respiration thinning			*/
+	/*	now substituting carbon hydrat storage mortality 		*/
+	/*--------------------------------------------------------------*/
+/*
 	if ((vmort_flag == 1) && ((cs->leafc_store+cs->leafc) < epc.min_percent_leafg*epv->prev_leafcalloc) ) {
 
 		plantc =  (cs->live_crootc
@@ -238,6 +260,7 @@ int allocate_annual_growth(				int id,
 			ns, ndf, ndf_patch, 
 			cs_litr, ns_litr, cover_fraction, excess_carbon);
 		}
+*/
 
 
 

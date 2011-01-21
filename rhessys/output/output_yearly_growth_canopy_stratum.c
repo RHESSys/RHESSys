@@ -42,7 +42,7 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*--------------------------------------------------------------*/
 
   	fprintf(outfile,
-       		 "%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f  \n",
+       		 "%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f %f  \n",
 		
         	current_date.year,
         	basinID,
@@ -66,7 +66,8 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
         	stratum[0].ns.dead_stemn + stratum[0].ns.deadstemn_store + stratum[0].ns.deadstemn_transfer) ,
         	stratum[0].cs.cwdc,
         	stratum[0].ns.cwdn,
-		stratum[0].acc_year.psn);
+		stratum[0].acc_year.psn,
+		stratum[0].cs.mortality_fract);
 
 	stratum[0].acc_year.psn = 0.0;
 

@@ -183,6 +183,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.num_threshold = 0;
 
 
+	patch[0].acc_year.pcp = 0.0;
 	patch[0].acc_year_trans = 0.0;
 	patch[0].acc_year.trans = 0.0;
 	patch[0].acc_year.maxtrans = 0.0;
