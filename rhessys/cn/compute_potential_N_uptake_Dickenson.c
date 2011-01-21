@@ -127,6 +127,7 @@ double compute_potential_N_uptake_Dickenson( int sen,
 			fwood= 1.0-fleaf-froot;
 			}
 		else {
+			fleaf = min(fleaf, 0.6);
 			froot = 0.5*(1-fleaf);
 			fwood = 0.5*(1-fleaf);
 			}
