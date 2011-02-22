@@ -194,7 +194,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 
 	
 
-		preday_sat_deficit = patch[0].sat_deficit;
+		patch[0].preday_sat_deficit = patch[0].sat_deficit;
 
 
 		patch[0].preday_sat_deficit_z = compute_z_final(
@@ -457,7 +457,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].sat_deficit,
 				patch[0].sat_deficit,
-				preday_sat_deficit);
+				patch[0].preday_sat_deficit);
 
 			add_field_capacity = max(add_field_capacity, 0.0);
 			patch[0].sat_deficit += add_field_capacity;
