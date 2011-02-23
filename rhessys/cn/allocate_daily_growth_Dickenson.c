@@ -123,7 +123,7 @@ int allocate_daily_growth_Dickenson(int nlimit,
 			fwood= 1.0-fleaf-froot;
 			}
 		else {
-			fleaf = min(fleaf, 0.6);
+			fleaf = min(fleaf, 1.0);
 			froot = 0.5*(1-fleaf);
 			fwood = 0.5*(1-fleaf);
 			}

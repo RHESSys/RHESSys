@@ -1032,7 +1032,8 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
 		-1.0 * patch[0].sat_deficit);
-
+	temp = patch[0].sat_deficit_z;
+	
 	available_sat_water = min((compute_delta_water(
 			0, 
 			patch[0].soil_defaults[0][0].porosity_0,
@@ -1045,6 +1046,15 @@ void		patch_daily_F(
 
 	patch[0].sat_deficit += available_sat_water;
 	sat_zone_patch_demand -= available_sat_water;        
+
+	patch[0].sat_deficit_z = compute_z_final(
+		command_line[0].verbose_flag,
+		patch[0].soil_defaults[0][0].porosity_0,
+		patch[0].soil_defaults[0][0].porosity_decay,
+		patch[0].soil_defaults[0][0].soil_depth,
+		0.0,
+		-1.0 * patch[0].sat_deficit);
+
 
 		/*--------------------------------------------------------------*/
 		/* 	leave behind field capacity			*/
@@ -1064,9 +1074,9 @@ void		patch_daily_F(
 				patch[0].soil_defaults[0][0].p4,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].sat_deficit,
-				patch[0].sat_deficit,
-				patch[0].sat_deficit-available_sat_water);
+				patch[0].sat_deficit_z,
+				patch[0].sat_deficit_z,
+				patch[0].sat_deficit_z-temp);
 			add_field_capacity = max(add_field_capacity, 0.0);
 			patch[0].sat_deficit += add_field_capacity;
 			if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) && (patch[0].preday_sat_deficit_z > patch[0].rootzone.depth))				
@@ -1106,8 +1116,8 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].sat_deficit,
-			patch[0].rootzone.potential_sat, 0.0);				
+			patch[0].sat_deficit_z,
+			patch[0].rootzone.depth, 0.0);				
 			
 		patch[0].field_capacity = 0.0;
 	}
@@ -1121,8 +1131,8 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].sat_deficit,
-			patch[0].rootzone.potential_sat, 0.0);	
+			patch[0].sat_deficit_z,
+			patch[0].rootzone.depth, 0.0);	
 
 		patch[0].field_capacity = compute_layer_field_capacity(
 			command_line[0].verbose_flag,
@@ -1133,8 +1143,8 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].sat_deficit,
-			patch[0].sat_deficit, 0.0) - patch[0].rootzone.field_capacity;
+			patch[0].sat_deficit_z,
+			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.field_capacity;
 	}
 
 	if (patch[0].sat_deficit_z > patch[0].rootzone.depth) 

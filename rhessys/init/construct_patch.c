@@ -496,6 +496,7 @@ struct patch_object *construct_patch(
 		0,
 		-1*patch[0].sat_deficit);
 	patch[0].preday_sat_deficit_z = patch[0].sat_deficit_z;
+
 	return(patch);
 } /*end construct_patch.c*/
 

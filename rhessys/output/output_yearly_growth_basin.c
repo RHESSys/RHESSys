@@ -43,7 +43,7 @@ void	output_yearly_growth_basin(
 	/*------------------------------------------------------*/
 	int h,z,p,c;
 	int  layer;
-	double agpsn, aresp;
+	double amort, ard, agpsn, aresp;
 	double anewc, asoilhr;
 	double aarea, hill_area;
 	double astreamflow_N;
@@ -55,7 +55,7 @@ void	output_yearly_growth_basin(
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
-	agpsn = 0.0; aresp=0.0;
+	amort = 0.0; ard=0.0; agpsn = 0.0; aresp=0.0;
 	aarea =  0.0 ;
 	anewc = 0.0;
 	asoilhr = 0.0;
@@ -92,6 +92,12 @@ void	output_yearly_growth_basin(
 						agpsn += strata->cover_fraction
 							* strata->cs.gpsn_src
 							* patch[0].area;
+						amort += strata->cover_fraction
+							* strata->cs.mortality_fract
+							* patch[0].area;
+						ard += strata->cover_fraction
+							* strata->rootzone.depth
+							* patch[0].area;
 						aresp += strata->cover_fraction
 							* (strata->cs.leaf_mr_snk + strata->cs.leaf_gr_snk
 							+ strata->cs.livestem_mr_snk+strata->cs.livestem_gr_snk
@@ -118,13 +124,15 @@ void	output_yearly_growth_basin(
 			}
 		}
 	}
+	amort /= aarea ;
 	agpsn /= aarea ;
 	aresp /= aarea ;
 	anewc /= aarea;
 	asoilhr /= aarea;
 	astreamflow_N /= aarea;
 	adenitrif /= aarea;
-	fprintf(outfile,"%d %d %lf %lf %lf %lf %lf %lf \n",
+	ard /= aarea;
+	fprintf(outfile,"%d %d %lf %lf %lf %lf %lf %lf %lf %lf \n",
 		date.year,
 		basin[0].ID,
 		agpsn,
@@ -132,7 +140,9 @@ void	output_yearly_growth_basin(
 		anewc,
 		asoilhr,
 		basin[0].acc_year.stream_NO3*1000.0,
-		adenitrif*1000.0
+		adenitrif*1000.0,
+		ard*1000.0,
+		amort*100.0
 		);
 	return;
 } /*end output_yearly_growth_basin*/

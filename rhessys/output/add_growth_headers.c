@@ -75,7 +75,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s \n",
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s \n",
 		"year",
 		"basinID",
 		"gpsn",
@@ -83,7 +83,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"newC",
 		"soilhr",
 		"strN",
-		"denitrif","root_depth");
+		"denitrif","root_depth","mortf");
 		
 	}
 

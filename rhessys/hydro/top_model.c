@@ -179,7 +179,7 @@ double	top_model(
                 double,
                 double,
                 double,
-                double);		/* Taehee Hwang */
+                double);	
 	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -217,6 +217,7 @@ double	top_model(
 	/*--------------------------------------------------------------*/
 	/* compute initial conditions					*/
 	/*--------------------------------------------------------------*/
+
 	for (	i=0 ; i<hillslope[0].num_zones; i++ ){
 		for ( j=0; j< zones[i][0].num_patches; j++ ){
 			patch =  zones[i][0].patches[j];

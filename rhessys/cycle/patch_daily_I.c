@@ -187,6 +187,7 @@ void		patch_daily_I(
 	int	stratum;
 	double	count;
 	struct  canopy_strata_object *strata;
+
 	/*--------------------------------------------------------------*/
 	/*	zero out daily fluxes					*/
 	/*--------------------------------------------------------------*/
@@ -235,8 +236,8 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].sat_deficit,
-			patch[0].rootzone.potential_sat, 0.0);				
+			patch[0].sat_deficit_z,
+			patch[0].rootzone.depth, 0.0);				
 			
 		patch[0].field_capacity = 0.0;
 	}
@@ -250,8 +251,8 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].sat_deficit,
-			patch[0].rootzone.potential_sat, 0.0);	
+			patch[0].sat_deficit_z,
+			patch[0].rootzone.depth, 0.0);	
 
 		patch[0].field_capacity = compute_layer_field_capacity(
 			command_line[0].verbose_flag,
@@ -262,8 +263,8 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].sat_deficit,
-			patch[0].sat_deficit, 0.0) - patch[0].rootzone.field_capacity;
+			patch[0].sat_deficit_z,
+			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.depth;
 	}
 
 

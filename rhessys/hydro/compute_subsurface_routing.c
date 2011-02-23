@@ -455,9 +455,9 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].soil_defaults[0][0].p4,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].sat_deficit,
-				patch[0].sat_deficit,
-				patch[0].preday_sat_deficit);
+				patch[0].sat_deficit_z,
+				patch[0].sat_deficit_z,
+				patch[0].preday_sat_deficit_z);
 
 			add_field_capacity = max(add_field_capacity, 0.0);
 			patch[0].sat_deficit += add_field_capacity;
@@ -479,8 +479,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].soil_defaults[0][0].p4,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].sat_deficit,
-				patch[0].sat_deficit, 0.0);
+				patch[0].sat_deficit_z,
+				patch[0].sat_deficit_z, 0.0);
 			add_field_capacity = max(add_field_capacity, 0.0);
 			patch[0].sat_deficit += add_field_capacity;
 			patch[0].rz_storage += add_field_capacity;
@@ -497,8 +497,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].soil_defaults[0][0].p4,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].sat_deficit,
-				patch[0].sat_deficit, 0.0);
+				patch[0].sat_deficit_z,
+				patch[0].sat_deficit_z, 0.0);
 			add_field_capacity = max(add_field_capacity, 0.0);
 			patch[0].sat_deficit += add_field_capacity;
 			patch[0].unsat_storage += add_field_capacity;
@@ -636,8 +636,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].sat_deficit,
-			patch[0].rootzone.potential_sat, 0.0);				
+			patch[0].sat_deficit_z,
+			patch[0].rootzone.depth, 0.0);				
 			
 		patch[0].field_capacity = 0.0;
 	}
@@ -652,8 +652,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].sat_deficit,
-			patch[0].rootzone.potential_sat, 0.0);	
+			patch[0].sat_deficit_z,
+			patch[0].rootzone.depth, 0.0);	
 
 		patch[0].field_capacity = compute_layer_field_capacity(
 			command_line[0].verbose_flag,
