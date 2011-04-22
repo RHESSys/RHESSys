@@ -62,6 +62,8 @@
 	modified for PC Backland GRASS C.Tague June, 2000
 	(now includes mode function)
 	modified for erroneous hillslope Lynn Ford, 2003
+ 
+	Changed long to int for compatibility issues, AD, April 2011
 */
 
 
@@ -95,10 +97,10 @@ char *argv[];
     struct	Flag		*kflag;     
     struct	Flag		*fflag;     
     struct	Categories	cats;
-    long	basecat[MAXCOLS];		
-    long	oldbasecat[MAXCOLS];	
-    long	covercat;				
-    long	sum3;				   
+    int		basecat[MAXCOLS];		
+    int		oldbasecat[MAXCOLS];	
+    int		covercat;				
+    int		sum3;				   
     double	x;
     double	area;
     double	sum1;
@@ -585,7 +587,7 @@ char *argv[];
 			if (type[covermap] == 'L')
 				sscanf (G_get_cat((CELL)covercat, &cats), "%lf", &x);
 			else
-				x = covercat;
+				x = (double)covercat;
 			sum1 += x * area;
 			sum2 += area;
 			sum3 += 1;
@@ -807,7 +809,8 @@ char *argv[];
 		sprintf(temp_str1, "executing command - %s\n", command);
 		log_output(logfile, temp_str1);
 	}
-	system(command);
+	/*system(command); AD COMMENTED THIS OUT TO GET RID OF SCREEN NUMBER DUMP*/
+	
 	/*  unlink(tempfile3); */
 
 	return(0);
