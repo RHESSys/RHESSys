@@ -118,9 +118,6 @@ void	canopy_stratum_growth(
 
 
 	if (command_line[0].grow_flag > 0) {
-	switch(stratum[0].defaults[0][0].epc.allocation_flag) {
-
-		case CONSTANT: /* constant allocation */
 		if (allocate_daily_growth(
 			patch[0].soil_ns.nlimit,
 			stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop,
@@ -137,52 +134,6 @@ void	canopy_stratum_growth(
 			fprintf(stderr,"FATAL ERROR: in allocate_daily_growth");
 			exit(1);
 			}
-		break;
-
-		case WARING:  /* Waring allocation */
-		if (allocate_daily_growth_Waring(
-			patch[0].soil_ns.nlimit,
-			stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop,
-			patch[0].soil_cs.frootc,
-			stratum[0].cover_fraction,
-			&(stratum[0].cdf),
-			&(stratum[0].cs),
-			&(stratum[0].ndf),
-			&(stratum[0].ns),
-			&(patch[0].ndf),
-			&(stratum[0].epv),
-			stratum[0].defaults[0][0].epc,
-			current_date) != 0){
-			fprintf(stderr,"FATAL ERROR: in allocate_daily_growth");
-			exit(1);
-			}
-		break;
-
-		case DICKENSON:  /* Dickenson allocation */
-		if (allocate_daily_growth_Dickenson(
-			patch[0].soil_ns.nlimit,
-			command_line[0].veg_sen3,
-			stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop,
-			patch[0].soil_cs.frootc,
-			stratum[0].cover_fraction,
-			&(stratum[0].cdf),
-			&(stratum[0].cs),
-			&(stratum[0].ndf),
-			&(stratum[0].ns),
-			&(patch[0].ndf),
-			&(stratum[0].epv),
-			stratum[0].defaults[0][0].epc,
-			current_date) != 0){
-			fprintf(stderr,"FATAL ERROR: in allocate_daily_growth");
-			exit(1);
-			}
-		break;
-
-		case STATIC:
-		break;
-
-		} /* end switch */
-
 	}
 	/*--------------------------------------------------------------*/
 	/*	compute growth respiration (if grow option is on_)	*/

@@ -191,10 +191,17 @@ int allocate_annual_growth(				int id,
 	else
 		ratio = 1.0;
 
-	if (ratio > epc.max_storage_percent)			
+        if (epc.max_storage_percent > ZERO)
+              storage_transfer_prop = 1.0 - (1.0  - epc.storage_transfer_prop) * (epc.max_storage_percent - ratio)/ epc.max_storage_percent;
+        else
+              storage_transfer_prop = 1.0;
+	
+        if (ratio > epc.max_storage_percent)			
 		storage_transfer_prop = 1.0;
 	else
 		storage_transfer_prop = epc.storage_transfer_prop;
+
+
 	/*--------------------------------------------------------------*/
 	/* 	carbohydrate starvation mortality 			*/
 	/*--------------------------------------------------------------*/
@@ -272,6 +279,7 @@ int allocate_annual_growth(				int id,
 	cdf->leafc_store_to_leafc_transfer = cs->leafc_store * storage_transfer_prop;
 	cs->cpool += cs->leafc_store * (1.0-storage_transfer_prop);
 	cs->leafc_store = 0.0;
+
 	cdf->frootc_store_to_frootc_transfer=cs->frootc_store* storage_transfer_prop;
 	cs->cpool += cs->frootc_store * (1.0-storage_transfer_prop);
 	cs->frootc_store = 0.0;
@@ -332,7 +340,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	
 	if (total_above_biomass > ZERO)
-		excess_carbon = (cdf->leafc_store_to_leafc_transfer+cs->leafc) - epc.min_percent_leafg*total_above_biomass; 
+		 excess_carbon = (cdf->leafc_store_to_leafc_transfer+cs->leafc) - epc.min_percent_leafg*total_above_biomass;  
 	else
 		excess_carbon = 0.0;
 
@@ -340,7 +348,7 @@ int allocate_annual_growth(				int id,
 
 		carbohydrate_transfer = -1.0*excess_carbon; 
 
-		fleaf = exp(-0.25 * command_line[0].veg_sen3*epv->proj_lai);
+		fleaf = exp(epc.dickenson_pa * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
 
 		if (epc.veg_type==TREE) {

@@ -2122,6 +2122,9 @@ struct epconst_struct
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
     int	    max_years_resprout; /* num years of resprouting before death */
+    double waring_pa; /* parameter for Waring allometric equation */
+    double waring_pb; /* parameter for Waring allometric equation */
+    double dickenson_pa; /* parameter for Dickenson allometric equation */
 
 } ;
 

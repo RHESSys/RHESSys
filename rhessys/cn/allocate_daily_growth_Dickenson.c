@@ -101,41 +101,14 @@ int allocate_daily_growth_Dickenson(int nlimit,
 
 
 	/*--------------------------------------------------------------*/
-	/*	Determine allocation partitioning			*/
-	/*      from Dickenson et al, 1998, Journal of Climate          */
-	/*	ratio to leaves in an exponential function of LAI	*/
+	/*	allocation partitioning			*/
+	/* computed in compute_N_uptake routines for allocation specific models */
 	/*--------------------------------------------------------------*/
-
-	/*---------------------------------------------------------------*/
-	/* constant B and C are currently set for forests from Dickenson et al. */	
-	/*	we will now use the alloc_leafc_stemc to partition carbon between coarse roots and stem */
-	/*	similarly with dead stem and coarse root allocation 		*/
-	/*	the only impact of these pools is change in height for competition	*/
-	/*----------------------------------------------------------------*/
-	C = 30;
-	fleaf = exp(-0.25 *sen * epv->proj_lai);
-	fleaf = min(fleaf, 1.0);
-	total_wood = (cs->live_crootc + cs->dead_crootc + cs->live_stemc + cs->dead_stemc);
-
-	if (epc.veg_type==TREE) {
-		if (2*fleaf < 0.8) {
-			froot = fleaf;
-			fwood= 1.0-fleaf-froot;
-			}
-		else {
-			fleaf = min(fleaf, 1.0);
-			froot = 0.5*(1-fleaf);
-			fwood = 0.5*(1-fleaf);
-			}
-		}
-	else {
-		fwood = 0;
-		froot = (1-fleaf);
-		}
-
-	
 	flive = epc.alloc_livewoodc_woodc;
 	fdead = 1-flive;
+	fleaf = cdf->fleaf;
+	froot = cdf->froot;
+	fwood = cdf->fwood;
 
 	if (epc.veg_type == TREE){
 	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
@@ -145,9 +118,6 @@ int allocate_daily_growth_Dickenson(int nlimit,
 	}
 
 
-	cdf->fleaf = fleaf;
-	cdf->froot = froot;
-	cdf->fwood = fwood;
 
 	/*--------------------------------------------------------------*/
 	/*	the amount available from the soil is potential_N_uptake adjusted */
@@ -226,7 +196,7 @@ int allocate_daily_growth_Dickenson(int nlimit,
 	plant_nalloc = max(plant_nalloc, 0.0);
 	plant_calloc = max(plant_calloc, 0.0);
 	
-	
+printf("\n %lf %lf", cdf->psn_to_cpool, plant_calloc(1+epc.gr_perc));	
 
 	/* pnow is the proportion of this day's growth that is displayed now,
 	the remainder going into storage for display next year through the

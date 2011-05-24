@@ -380,6 +380,9 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_dayl_max = 39600;
 		default_object_list[i].epc.max_storage_percent = 0.2;
 		default_object_list[i].epc.min_percent_leafg = default_object_list[i].epc.leaf_turnover; 
+		default_object_list[i].epc.dickenson_pa = 0.25;
+		default_object_list[i].epc.waring_pa = 0.8;
+		default_object_list[i].epc.waring_pb = 2.5;
 	/*--------------------------------------------------------------*/
 	/*	 litter is assumed to have a mositure capacity of 	*/
 	/*	given by litter_moist_coef default assumes			*/
@@ -399,6 +402,21 @@ struct stratum_default *construct_stratum_defaults(
 			// we can make the whole file tagged
 			newrecord = strchr(record,'e');
 			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"epc.dickenson_pa") == 0) {	
+				default_object_list[i].epc.dickenson_pa = ftmp;
+				printf("\n Using %lf for %s for veg default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			if (strcasecmp(newrecord,"epc.waring_pb") == 0) {	
+				default_object_list[i].epc.waring_pb = ftmp;
+				printf("\n Using %lf for %s for veg default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			if (strcasecmp(newrecord,"epc.waring_pa") == 0) {	
+				default_object_list[i].epc.waring_pa = ftmp;
+				printf("\n Using %lf for %s for veg default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
 			if (strcasecmp(newrecord,"epc.min_percent_leafg") == 0) {	
 				default_object_list[i].epc.min_percent_leafg = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",

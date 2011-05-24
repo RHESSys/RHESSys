@@ -38,7 +38,7 @@
 #include <math.h>
 #include "rhessys.h"
 #include "phys_constants.h"
-double compute_potential_N_uptake_Dickenson( int sen,
+double compute_potential_N_uptake_Dickenson( 
 								  struct	epconst_struct epc,
 								  struct epvar_struct	*epv,
 								  struct cstate_struct *cs,
@@ -116,7 +116,7 @@ double compute_potential_N_uptake_Dickenson( int sen,
 	/*----------------------------------------------------------------*/
 
 
-	fleaf = exp(-0.25 *sen * epv->proj_lai);
+	fleaf = exp(epc.dickenson_pa * epv->proj_lai);
 	fleaf = min(fleaf, 1.0);
 	total_wood = (cs->live_crootc + cs->dead_crootc + cs->live_stemc + cs->dead_stemc);
 
@@ -140,14 +140,22 @@ double compute_potential_N_uptake_Dickenson( int sen,
 	flive = epc.alloc_livewoodc_woodc;
 	fdead = 1-flive;
 
+	if ((fleaf+froot) > ZERO) {
 	if (epc.veg_type == TREE){
 	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
 	}
 	else{
 	   mean_cn = (fleaf * cnl + froot * cnfr);
 	}
+	}
+	else mean_cn = 1.0;
 
-	
+
+
+	cdf->fleaf = fleaf;
+	cdf->froot = froot;
+	cdf->fwood = fwood;	
+
 	/* add in nitrogen for plants and for nitrogen deficit in pool */
 	plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
 	return(plant_ndemand);

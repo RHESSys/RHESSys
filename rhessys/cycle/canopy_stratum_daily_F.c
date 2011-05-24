@@ -176,7 +176,6 @@ void	canopy_stratum_daily_F(
 		int);
 	
 	double	compute_potential_N_uptake_Dickenson(
-		int, 
 		struct	epconst_struct,
 		struct	epvar_struct *,
 		struct cstate_struct *cs,
@@ -1284,7 +1283,6 @@ void	canopy_stratum_daily_F(
 			break;
 		case DICKENSON:
 			stratum[0].ndf.potential_N_uptake =compute_potential_N_uptake_Dickenson(
-				command_line[0].veg_sen3,
 				stratum[0].defaults[0][0].epc,
 				&(stratum[0].epv),
 				&(stratum[0].cs),

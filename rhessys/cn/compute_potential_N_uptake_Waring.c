@@ -53,7 +53,7 @@ double compute_potential_N_uptake_Waring(
 	/*------------------------------------------------------*/
 	double day_gpp;     /* daily gross production */
 	double day_mresp;   /* daily total maintenance respiration */
-	double froot, fleaf;          /* RATIO   new fine root C : new leaf C     */
+	double froot, fleaf, fwood;          /* RATIO   new fine root C : new leaf C     */
 	double f2;          /* RATIO   fraction to leaf and fraction to root*/
 	double f4;          /* RATIO   new live wood C : new wood C     */
 	double f3;          /* RATIO   new leaf C : new wood C     */
@@ -63,9 +63,9 @@ double compute_potential_N_uptake_Waring(
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
 	double cnmax;       /* RATIO   max of root and leaf C:N      */
-	double c_allometry, n_allometry;
+	double c_allometry, n_allometry, mean_cn, transfer;
 	double plant_calloc, plant_ndemand;
-	double k2, a, b, c; /* working variables */
+	double k2, c; /* working variables */
 	/*---------------------------------------------------------------
 	Assess the carbon availability on the basis of this day's
 	gross production and maintenance respiration costs
@@ -88,26 +88,15 @@ double compute_potential_N_uptake_Waring(
 	is to let today's available C accumulate in cpool.  The actual
 	accumulation in the cpool is resolved in day_carbon_state().
 		--------------------------------------------------------------*/
-		if (-cs->cpool < cs->availc){
 		/*------------------------------------------------
 		cpool deficit is less than the available
 		carbon for the day, so aleviate cpool deficit
 		and use the rest of the available carbon for
-		new growth and storage. Remember that fluxes in
-		and out of the cpool are reconciled at the end
-		of the daily loop, so for now, just keep track
-		of the amount of daily GPP-MR that is not needed
-		to restore a negative cpool.
+		new growth and storage.
 			-----------------------------------------------*/
-			cs->availc += cs->cpool;
-		}
-		else{
-		/*---------------------------------------------------------
-		cpool deficit is >= available C, so all of the
-		daily GPP, if any, is used to alleviate negative cpool
-			------------------------------------------------------------*/
-			cs->availc = 0.0;
-		}
+			transfer = min(cs->availc, -cs->cpool);
+			cs->availc -= transfer;
+			cs->cpool += transfer;
 	} /* end if negative cpool */
 	/* assign local values for the allocation control parameters */
 	f2 = epc.alloc_crootc_stemc;
@@ -125,12 +114,10 @@ double compute_potential_N_uptake_Waring(
 	/*--------------------------------------------------------------*/
 	
 	if (((cdf->potential_psn_to_cpool) > ZERO) && (cdf->psn_to_cpool > ZERO)) {
-	a = 0.8;
-	b = 2.5;
-	c = cdf->potential_psn_to_cpool;
+	c = max(cdf->potential_psn_to_cpool, cdf->psn_to_cpool);
 	plant_calloc = cs->availc;
-	if (plant_calloc > ZERO){
-		froot = a / (1.0 + b * (cdf->psn_to_cpool) / c);
+	if ((plant_calloc > ZERO) && (c > 0)){
+		froot = epc.waring_pa / (1.0 + epc.waring_pb * (cdf->psn_to_cpool) / c);
 		if (epc.veg_type == TREE)
 			fleaf = (1.0 - froot) / (1 + (1+f2)*f3);
 		else
@@ -145,26 +132,36 @@ double compute_potential_N_uptake_Waring(
 		f3 = (1.0-fleaf-froot)/ (fleaf*(1.0+f2));
 	else
 		f3 = 0.0;
-	
+
+	fwood = fleaf*f3*(1.0+f2);
+
+
+	if ((fleaf + froot) > ZERO) {	
 	if (epc.veg_type == TREE){
-		c_allometry = ((1.0+g1)*(fleaf + froot + f3*(1.0+f2)));
-		n_allometry = (fleaf/cnl + froot/cnfr + (f3*f4*(1.0+f2))/cnlw
-			+ (f3*(1.0-f4)*(1.0+f2))/cndw);
+           mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
+        }
+        else{
+           mean_cn = (fleaf * cnl + froot * cnfr);
+        }
 	}
-	else{
-		c_allometry = (1.0+g1)*(fleaf + froot );
-		n_allometry = (fleaf/cnl + froot/cnfr);
-	}
-	
+	else mean_cn = 0.0;
+
 	if (c_allometry > ZERO)
-		plant_ndemand = cs->availc * (n_allometry / c_allometry);
+		plant_ndemand = cs->availc * mean_cn;
 	else
 		plant_ndemand = 0.0;
 
 	}
-	else
+	else {
 		plant_ndemand = 0.0;
+		fleaf = 0.0;
+		froot = 0.0;
+		fwood = 0.0;
+	}
 
-	
+	cdf->fleaf = fleaf;
+	cdf->fwood = fwood;
+	cdf->froot = froot;
+
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake_Waring */

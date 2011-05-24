@@ -1,5 +1,5 @@
-PGM  = rhessys5.14.5
-VERSION = 5.14.4
+PGM  = rhessys5.14.6
+VERSION = 5.14.6
 CC = gcc 
 CFLAGS = -O
 RHESSYS_BIN = /usr/local/bin
@@ -14,8 +14,6 @@ $(OBJ)/add_headers.o \
 $(OBJ)/alloc.o \
 $(OBJ)/allocate_annual_growth.o \
 $(OBJ)/allocate_daily_growth.o \
-$(OBJ)/allocate_daily_growth_Dickenson.o \
-$(OBJ)/allocate_daily_growth_Waring.o \
 $(OBJ)/assign_base_station.o \
 $(OBJ)/assign_neighbours.o \
 $(OBJ)/basin_daily_F.o \
@@ -783,10 +781,6 @@ $(OBJ)/update_litter_interception_capacity.o: hydro/update_litter_interception_c
 	$(CC) -c $(CFLAGS) -I include hydro/update_litter_interception_capacity.c -o $(OBJ)/update_litter_interception_capacity.o
 $(OBJ)/allocate_daily_growth.o: cn/allocate_daily_growth.c 
 	$(CC) -c $(CFLAGS) -I include cn/allocate_daily_growth.c -o $(OBJ)/allocate_daily_growth.o
-$(OBJ)/allocate_daily_growth_Waring.o: cn/allocate_daily_growth_Waring.c 
-	$(CC) -c $(CFLAGS) -I include cn/allocate_daily_growth_Waring.c -o $(OBJ)/allocate_daily_growth_Waring.o
-$(OBJ)/allocate_daily_growth_Dickenson.o: cn/allocate_daily_growth_Dickenson.c 
-	$(CC) -c $(CFLAGS) -I include cn/allocate_daily_growth_Dickenson.c -o $(OBJ)/allocate_daily_growth_Dickenson.o
 $(OBJ)/update_rooting_depth.o: cn/update_rooting_depth.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_rooting_depth.c -o $(OBJ)/update_rooting_depth.o
 $(OBJ)/update_phenology.o: cn/update_phenology.c 

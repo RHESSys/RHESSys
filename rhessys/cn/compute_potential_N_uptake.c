@@ -134,5 +134,10 @@ double compute_potential_N_uptake(
 		n_allometry = (1.0/cnl + f1/cnfr);
 	}
 	plant_ndemand = cs->availc * (n_allometry / c_allometry);
+
+	cdf->fleaf =  1.0/(1.0+f1+f3+f2*f3);
+        cdf->froot = cdf->fleaf*f1;
+        cdf->fwood = cdf->fleaf*f3*(1.0+f2);
+
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake */
