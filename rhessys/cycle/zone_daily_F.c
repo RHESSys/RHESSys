@@ -211,11 +211,12 @@ void		zone_daily_F(
 		/*																*/
 		/*	Equation 2a & 2b , Page 5, "MTCLIM" 						*/
 		/*--------------------------------------------------------------*/
-		/*		zone[0].radrat = (zone[0].Kdown_direct +
-		zone[0].Kdown_diffuse) /
-		(zone[0].Kdown_direct_flat
-		+ zone[0].Kdown_diffuse_flat);      */
-		zone[0].radrat = 1.0;
+		if ( (zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat) != 0.0 ) {
+			zone[0].radrat = (zone[0].Kdown_direct + zone[0].Kdown_diffuse) /
+			(zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat);   
+		}
+		else zone[0].radrat = 1.0;
+		/*zone[0].radrat = 1.0;*/
 		/*--------------------------------------------------------------*/
 		/*	LAI compensation (unitless)									*/
 		/*																*/
