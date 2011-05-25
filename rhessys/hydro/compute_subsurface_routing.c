@@ -375,7 +375,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				/* determine which innundation depth to consider		*/
 				/*--------------------------------------------------------------*/
 				if (patch[0].num_innundation_depths > 0) {
-					innundation_depth = patch[0].detention_store + excess;
+					innundation_depth = patch[0].detention_store;
 					d=0;
 					while ((innundation_depth > patch[0].innundation_list[d].critical_depth) 
 						&& (d < patch[0].num_innundation_depths-1)) {
