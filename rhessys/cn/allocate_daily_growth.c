@@ -108,6 +108,8 @@ int allocate_daily_growth(int nlimit,
 	fleaf = cdf->fleaf;
 	froot = cdf->froot;
 	fwood = cdf->fwood;
+	
+	if ((fleaf + froot) > ZERO) {	
 
 	if (epc.veg_type == TREE){
 	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
@@ -115,6 +117,8 @@ int allocate_daily_growth(int nlimit,
 	else{
 	   mean_cn = (fleaf * cnl + froot * cnfr);
 	}
+	}
+	else mean_cn = 0.0;
 
 
 
@@ -179,7 +183,9 @@ int allocate_daily_growth(int nlimit,
 		back to a C excess, which is deducted from
 			photosynthesis source */
 			sminn_to_npool = soil_nsupply;
-			ndf->retransn_to_npool = ns->retransn;
+			if (ns->retransn > ZERO)
+				ndf->retransn_to_npool = ns->retransn;
+			else ndf->retransn_to_npool = 0.0;
 			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 			plant_calloc = plant_nalloc  * mean_cn;
 			excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
