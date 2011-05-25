@@ -195,11 +195,8 @@ int allocate_annual_growth(				int id,
               storage_transfer_prop = 1.0 - (1.0  - epc.storage_transfer_prop) * (epc.max_storage_percent - ratio)/ epc.max_storage_percent;
         else
               storage_transfer_prop = 1.0;
-	
-        if (ratio > epc.max_storage_percent)			
-		storage_transfer_prop = 1.0;
-	else
-		storage_transfer_prop = epc.storage_transfer_prop;
+
+	storage_transfer_prop = min(storage_transfer_prop,1.0);
 
 
 	/*--------------------------------------------------------------*/
@@ -348,7 +345,7 @@ int allocate_annual_growth(				int id,
 
 		carbohydrate_transfer = -1.0*excess_carbon; 
 
-		fleaf = exp(epc.dickenson_pa * epv->proj_lai);
+		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
 
 		if (epc.veg_type==TREE) {
@@ -379,19 +376,18 @@ int allocate_annual_growth(				int id,
 		else	
 			carbohydrate_transfer_n = 0.0;
 
+		if (carbohydrate_transfer > ZERO) {
 		unmetn = carbohydrate_transfer_n - ns->npool;
 		unmetn = max(unmetn, 0.0);
+		}
+		else unmetn=0.0;
 
 		ns->retransn = max(ns->retransn, 0.0);
 		if (unmetn > ns->retransn)   {
-			ns->npool += ns->retransn;
 			ndf->retransn_to_npool += ns->retransn;
-			ns->retransn = 0.0;
 			carbohydrate_transfer = (ns->npool)*mean_cn;
 			}
 			else {
-			ns->npool += unmetn;
-			ns->retransn -= unmetn;
 			ndf->retransn_to_npool += unmetn;
 			}	
 				
