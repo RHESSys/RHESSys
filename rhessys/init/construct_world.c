@@ -339,7 +339,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
-#include "init.h"
+
 
 struct world_object *construct_world(struct command_line_object *command_line){
 	/*----------------------------------------------------*/
@@ -358,6 +358,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		struct date, struct date);
 	struct basin_object *construct_basin(struct command_line_object *, FILE *,
 		int, struct base_station_object **, struct default_object *);
+	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	void *alloc(size_t, char *, char *);
 /*
 	void  construct_dclim(struct world_object *);
@@ -616,21 +617,23 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].dclim_flag == 0) {
-		world[0].base_stations = (struct base_station_object **)
-			alloc(world[0].num_base_stations *
-			sizeof(struct base_station_object *),"base_stations","construct_world" );
-
-		/*--------------------------------------------------------------*/
+				/*--------------------------------------------------------------*/
 		/*	Construct the base_stations.				*/
 		/*--------------------------------------------------------------*/
-		printf("\n Constructing base stations\n");
+		printf("\n Constructing base stations flag is %d\n", command_line[0].gridded_ascii_flag);
 		
 		if ( command_line[0].gridded_ascii_flag == 1) {
-			construct_ascii_grid( world[0].base_station_files[0],
+		   printf("\n starting construct_ascii_grid");
+			world[0].base_stations = construct_ascii_grid( world[0].base_station_files[0],
 								  world[0].start_date, 
-								  world[0].duration,
-								  world[0].base_stations);
+								  world[0].duration);
 		} else {
+			
+			world[0].base_stations = (struct base_station_object **)
+			alloc(world[0].num_base_stations *
+				  sizeof(struct base_station_object *),"base_stations","construct_world" );
+		
+			
 			for (i=0; i<world[0].num_base_stations; i++ ) {
 				world[0].base_stations[i] = construct_base_station(
 					world[0].base_station_files[i],
