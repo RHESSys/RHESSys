@@ -2085,6 +2085,7 @@ struct epconst_struct
     double froot_turnover;    /* (1/yr) annual fine root turnover fraction */
     double kfrag_base;	      /* (1/day) daily coarse woody debris fragmentation rate */
     double storage_transfer_prop; /* (DIM) percent of storage allocated in a given year */
+    double branch_turnover; /* (1/day) daily mortality turnover */
     double daily_mortality_turnover; /* (1/day) daily mortality turnover */
     double daily_fire_turnover; /* (1/day) daily fire loss */
     double froot_cn;     /* (kgC/kgN) C:N for fine roots */

@@ -75,6 +75,19 @@ void	canopy_stratum_daily_I(
 		struct litter_c_object *,
 		struct litter_n_object *,
 		double, double);
+
+
+	void	update_branch_mortality(
+		struct epconst_struct,
+		struct cstate_struct *,
+		struct cdayflux_struct *,
+		struct cdayflux_patch_struct *,
+		struct nstate_struct *,
+		struct ndayflux_struct *,
+		struct ndayflux_patch_struct *,
+		struct litter_c_object *,
+		struct litter_n_object *,
+		double, double);
 	
 	
 	void	update_phenology(
@@ -212,6 +225,19 @@ void	canopy_stratum_daily_I(
 			&(patch[0].litter_ns),
 			stratum[0].cover_fraction,
 			stratum[0].defaults[0][0].epc.daily_mortality_turnover);
+		if  ((stratum[0].defaults[0][0].epc.veg_type==TREE) && (stratum[0].defaults[0][0].epc.branch_turnover > ZERO)){
+		update_branch_mortality(stratum[0].defaults[0][0].epc,
+			&(stratum[0].cs),
+			&(stratum[0].cdf),
+			&(patch[0].cdf),
+			&(stratum[0].ns),
+			&(stratum[0].ndf),
+			&(patch[0].ndf),
+			&(patch[0].litter_cs),
+			&(patch[0].litter_ns),
+			stratum[0].cover_fraction,
+			stratum[0].defaults[0][0].epc.branch_turnover);
+		}
 	}
 	/*--------------------------------------------------------------*/
 	/*  perform seasonal leaf sens. and budding						*/
