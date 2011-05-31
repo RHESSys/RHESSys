@@ -190,6 +190,11 @@ void	canopy_stratum_daily_I(
 
 
 	/*--------------------------------------------------------------*/
+        /*  compute temperature for acclimation - currently just a running mean of air temperature */
+	/*--------------------------------------------------------------*/
+        stratum[0].cs.Tacc = stratum[0].cs.Tacc*(stratum[0].defaults[0][0].epc.Tacclim_days-1.0)/(stratum[0].defaults[0][0].epc.Tacclim_days) + 
+                              zone[0].metv.tavg * 1.0/stratum[0].defaults[0][0].epc.Tacclim_days;
+	/*--------------------------------------------------------------*/
 	/*	perform plant mortality losses				*/
 	/*	(if grow flag is on)					*/
 	/*--------------------------------------------------------------*/

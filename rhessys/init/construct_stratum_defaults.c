@@ -384,6 +384,8 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.waring_pa = 0.8;
 		default_object_list[i].epc.waring_pb = 2.5;
 		default_object_list[i].epc.branch_turnover = 0.0;
+		default_object_list[i].epc.Tacclim = 0.0;
+		default_object_list[i].epc.Tacclim_days = 10.0;
 	/*--------------------------------------------------------------*/
 	/*	 litter is assumed to have a mositure capacity of 	*/
 	/*	given by litter_moist_coef default assumes			*/
@@ -403,6 +405,16 @@ struct stratum_default *construct_stratum_defaults(
 			// we can make the whole file tagged
 			newrecord = strchr(record,'e');
 			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"epc.Tacclim_days") == 0) {	
+				default_object_list[i].epc.Tacclim_days = ftmp;
+				printf("\n Using %lf for %s for veg default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			if (strcasecmp(newrecord,"epc.Tacclim") == 0) {	
+				default_object_list[i].epc.Tacclim = ftmp;
+				printf("\n Using %lf for %s for veg default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
 			if (strcasecmp(newrecord,"epc.branch_turnover") == 0) {	
 				default_object_list[i].epc.branch_turnover = ftmp/365.0;
 				printf("\n Using %lf for %s for veg default ID %d",

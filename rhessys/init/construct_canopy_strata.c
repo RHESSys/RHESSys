@@ -318,7 +318,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_month.psn = 0.0;
 	canopy_strata[0].acc_month.lwp = 0.0;
 	canopy_strata[0].acc_month.length = 0;
-	
+
+        canopy_strata[0].cs.Tacc = 20.0;	
 	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
 	/* 	we need to initialize the sunlit/shaded proportions of LAI here */

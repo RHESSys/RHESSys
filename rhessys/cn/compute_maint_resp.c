@@ -64,18 +64,21 @@ tissue N content and respiration rate given in:
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	int ok=1;
-	double t1;
+	double t1,acc;
 	double exponent;
 
+        /* include acclimation factor based n Atkin et al., 2008, GCB */
+        /*  only applying to leaves and live_stem (above ground live tissues */
+                acc = pow(10, epc->Tacclim * (cs->Tacc - 20.0));
 	/* leaf day and night maintenance respiration when leaves on */
 	if (cs->leafc > ZERO){
 		t1 = ns->leafn * mrpern;
 		/* leaf, day */
 		exponent = (metv->tday - 20.0) / 10.0;
-		cdf->leaf_day_mr = t1 * pow(q10, exponent) * metv->dayl / 86400.0;
+		cdf->leaf_day_mr = t1 * pow(q10, exponent) * metv->dayl / 86400.0 * acc;
 		/* leaf, night */
 		exponent = (metv->tnight - 20.0) / 10.0;
-		cdf->leaf_night_mr = t1 * pow(q10, exponent)*(86400.0-metv->dayl)/86400.0;
+		cdf->leaf_night_mr = t1 * pow(q10, exponent)*(86400.0-metv->dayl)/86400.0 * acc;
 	}
 	else /* no leaves on */
 		cdf->leaf_day_mr = cdf->leaf_night_mr = 0.0;
@@ -94,7 +97,7 @@ tissue N content and respiration rate given in:
 		/* live stem maintenance respiration */
 		exponent = (metv->tavg - 20.0) / 10.0;
 		t1 = pow(q10, exponent);
-		cdf->livestem_mr = ns->live_stemn * mrpern * t1;
+		cdf->livestem_mr = ns->live_stemn * mrpern * t1 * acc;
 		/* live coarse root maintenance respiration */
 		exponent = (metv->tsoil - 20.0) / 10.0;
 		t1 = pow(q10, exponent);

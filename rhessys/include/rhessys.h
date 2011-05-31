@@ -1731,7 +1731,8 @@ struct cstate_struct
     double livecroot_mr_snk; /* (kgC/m2) SUM of live coarse root maint resp */
     double livecroot_gr_snk; /* (kgC/m2) SUM of live coarse root growth resp */
     double deadcroot_gr_snk; /* (kgC/m2) SUM of dead coarse root growth resp */
-
+ 
+    double Tacc;     /* degrees C, temperature during growth/acclimation period */
 } ;
 
 
@@ -2126,7 +2127,8 @@ struct epconst_struct
     double waring_pa; /* parameter for Waring allometric equation */
     double waring_pb; /* parameter for Waring allometric equation */
     double dickenson_pa; /* parameter for Dickenson allometric equation */
-
+    double Tacclim;  /* parameter for temperature acclimation 0 gives no acclimation -0.0078 Aiken value */
+    double Tacclim_days;  /* num days for temperature acclimation */
 } ;
 
 
