@@ -147,7 +147,7 @@ double compute_potential_N_uptake_Waring(
 	else mean_cn = 0.0;
 
 	if (c_allometry > ZERO)
-		plant_ndemand = cs->availc * mean_cn;
+		plant_ndemand = cs->availc / mean_cn;
 	else
 		plant_ndemand = 0.0;
 
