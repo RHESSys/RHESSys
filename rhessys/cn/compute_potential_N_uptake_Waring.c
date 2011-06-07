@@ -138,16 +138,17 @@ double compute_potential_N_uptake_Waring(
 
 	if ((fleaf + froot) > ZERO) {	
 	if (epc.veg_type == TREE){
-           mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
-        }
+		/*mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);*/
+		mean_cn = fleaf * cnl + froot * cnfr + f4 * fwood * cnlw + fwood * (1.0-f4) * cndw;
+		}
         else{
            mean_cn = (fleaf * cnl + froot * cnfr);
         }
 	}
-	else mean_cn = 0.0;
+	else mean_cn = 1.0;
 
 	if (c_allometry > ZERO)
-		plant_ndemand = cs->availc / mean_cn;
+		plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
 	else
 		plant_ndemand = 0.0;
 
