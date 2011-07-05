@@ -112,11 +112,11 @@ int allocate_daily_growth(int nlimit,
 	if ((fleaf + froot) > ZERO) {	
 
 	if (epc.veg_type == TREE){
-		/*mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);*/
-		mean_cn = fleaf * cnl + froot * cnfr + flive * fwood * cnlw + fdead * fwood * cndw;
+		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
+		/*mean_cn = fleaf * cnl + froot * cnfr + flive * fwood * cnlw + fdead * fwood * cndw;*/
 	}
 	else{
-	   mean_cn = (fleaf * cnl + froot * cnfr);
+	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
 	}
 	}
 	else mean_cn = 0.0;

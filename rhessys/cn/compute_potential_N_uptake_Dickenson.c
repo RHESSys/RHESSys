@@ -142,11 +142,11 @@ double compute_potential_N_uptake_Dickenson(
 
 	if ((fleaf+froot) > ZERO) {
 	if (epc.veg_type == TREE){
-		/*mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);*/
-		mean_cn = fleaf * cnl + froot * cnfr + flive * fwood * cnlw + fwood * fdead * cndw;
+		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
+		/*mean_cn = fleaf * cnl + froot * cnfr + flive * fwood * cnlw + fwood * fdead * cndw;*/
 	}
 	else{
-	   mean_cn = (fleaf * cnl + froot * cnfr);
+	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
 	}
 	}
 	else mean_cn = 1.0;
