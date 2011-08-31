@@ -61,7 +61,6 @@ int	compute_cwd_decay(
 	rate_scalar = max(rate_scalar, 0.0);
 	/* physical fragmentation of coarse woody debris */
 	kfrag = epc->kfrag_base * rate_scalar;
-	kfrag = 0.0;
 	cwdc_loss = kfrag * cs->cwdc;
 	cdf->cwdc_to_litr2c = cwdc_loss * epc->deadwood_fucel * cover_fraction;
 	cdf->cwdc_to_litr3c = cwdc_loss * epc->deadwood_fscel * cover_fraction;
