@@ -64,6 +64,7 @@ void	output_basin(			int routing_flag,
 	double	aacctrans, var_acctrans, var_trans;
 	double apet, adC13, amortality_fract, apcp;
 	double	hgw, hgwN;
+	double atmin, atmax, asnow;
 	double	hgwQout, hgwNout;
 	double aarea, hill_area, zone_area, basin_area;
 	struct	patch_object  *patch;
@@ -110,6 +111,10 @@ void	output_basin(			int routing_flag,
 	adC13 = 0.0;
 	amortality_fract = 0.0;
 	apcp = 0.0;
+  atmin = 0.0;
+  atmax = 0.0;
+  asnow = 0.0;
+
 
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
@@ -118,6 +123,9 @@ void	output_basin(			int routing_flag,
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			apcp += (zone[0].rain+zone[0].snow)*zone[0].area;
+      atmin += zone[0].metv.tmin * zone[0].area;
+      atmax += zone[0].metv.tmax * zone[0].area;
+      asnow += zone[0].snow * zone[0].area;
 			zone_area += zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
@@ -195,6 +203,10 @@ void	output_basin(			int routing_flag,
 	adC13 /=  aarea;
 	amortality_fract /=  aarea;
 	apcp /= zone_area;
+  atmin /= zone_area;
+  atmax /= zone_area;
+  asnow /= zone_area;
+
 	apet /=  aarea;
 	acrain /=  aarea;
 	arain_throughfall /=  aarea;
@@ -254,7 +266,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -289,7 +301,8 @@ void	output_basin(			int routing_flag,
 		var_trans,
 		aacctrans*1000,
 		var_acctrans,
-		apet*1000, adC13, apcp*1000.0, amortality_fract*100
+		apet*1000, adC13, apcp*1000.0, amortality_fract*100,
+	  atmax, atmin, asnow*1000.0 
 		);
 
 	return;
