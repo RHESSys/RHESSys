@@ -86,7 +86,7 @@ void  remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
 			top_elev = 0.0;
 			
 			top_elev = find_top(flow_table, pch, flow_table[pch].z,
-						&num_in_pit, &upslope_list, &edge_inx);
+						&num_in_pit, upslope_list, &edge_inx);
 		
 			if (top_elev > 0.0) {
 				edge_elev = flow_table[edge_inx].z;
