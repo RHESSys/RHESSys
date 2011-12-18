@@ -185,7 +185,7 @@ void		patch_daily_I(
 	/*--------------------------------------------------------------*/
 	int	layer;
 	int	stratum;
-	double	count;
+	double	count, theta;
 	struct  canopy_strata_object *strata;
 
 	/*--------------------------------------------------------------*/
@@ -197,6 +197,7 @@ void		patch_daily_I(
 		exit(1);
 	}
 
+	
 	/*-----------------------------------------------------*/
 	/*  Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/			
@@ -208,7 +209,10 @@ void		patch_daily_I(
 		patch[0].soil_defaults[0][0].soil_depth,
 		patch[0].rootzone.depth, 0.0);			
 	 if (patch[0].rootzone.potential_sat > ZERO)
+		if (patch[0].sat_deficit_z > patch[0].rootzone.depth)	
 		patch[0].rootzone.S = patch[0].rz_storage/patch[0].rootzone.potential_sat;
+		else
+		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)/patch[0].rootzone.potential_sat,1.0);
 	else
 		patch[0].rootzone.S = 0.0;
 	}
@@ -217,11 +221,19 @@ void		patch_daily_I(
 		patch[0].rootzone.S = 0.0;
 		}
 
-	if (patch[0].sat_deficit > ZERO) 
+	if (patch[0].sat_deficit < ZERO) 
 		patch[0].S = 1.0;
 	else
 		patch[0].S = (patch[0].rz_storage+patch[0].unsat_storage)/patch[0].sat_deficit;
 	
+	/*--------------------------------------------------------------*/
+	/*  compute standard deviation of theta based on soil parameters */
+	/* assume no decay of porosity here 				*/
+	/*--------------------------------------------------------------*/
+	theta = patch[0].S * patch[0].soil_defaults[0][0].porosity_0;
+	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
+				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
+
 	/*--------------------------------------------------------------*/
 	/*	compute new field capacity				*/
 	/*--------------------------------------------------------------*/
@@ -429,7 +441,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].psi_max,
 			patch[0].soil_defaults[0][0].psi_air_entry,
 			patch[0].rootzone.S,
-			patch[0].std,
+			patch[0].theta_std,
 			&(patch[0].soil_cs),
 			&(patch[0].soil_ns),
 			&(patch[0].litter_cs),

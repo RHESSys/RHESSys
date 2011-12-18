@@ -150,7 +150,6 @@ void  update_drainage_land(
 
 	std_scale = command_line[0].std_scale;
 
-
 	route_to_patch =  time_int * compute_varbased_flow(
 		patch[0].num_soil_intervals,
 		patch[0].std * std_scale, 
@@ -158,8 +157,6 @@ void  update_drainage_land(
 		total_gamma, 
 		patch[0].transmissivity_profile);
 
-
-	route_to_patch=0.0;
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 
 		route_to_patch *= (available_sat_water)/(route_to_patch);

@@ -62,7 +62,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	int ok;
 	double rate_scalar, t_scalar, w_scalar;
 	double a,b,c,d;
-	double tk;
+	double tk, thetai;
 	double rfl1s1, rfl2s2,rfl4s3,rfs1s2,rfs2s3,rfs3s4;
 	double kl1_base,kl2_base,kl4_base,ks1_base,ks2_base,ks3_base,ks4_base;
 	double kl1,kl2,kl4,ks1,ks2,ks3,ks4;
@@ -72,8 +72,10 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	double pmnf_l1s1,pmnf_l2s2,pmnf_l4s3,pmnf_s1s2,pmnf_s2s3,pmnf_s3s4,pmnf_s4;
 	double potential_immob,mineralized;
 	double weight1, weight2, theta1, theta2, water_scalar1, water_scalar2, water_scalar;
-	int nlimit;
-	
+	int nlimit, i;
+	#define NUM_NORMAL  10 	/* resolution of normal distribution */
+	double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
+
 	ok = 0;
 	/* calculate the rate constant scalar for soil temperature,
 	assuming that the base rate constants are assigned for non-moisture
@@ -97,16 +99,16 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	(Parton et al, 1996 Global Biogeochemical cycles, 10:3, 401-412 ) */
 
 	a=0.68; b=2.5; c=0.0012; d=2.84;
+	water_scalar = 0.0;
+
 	if (std > ZERO) {
-		theta1 = 1.0;
-		theta2 = 0.3;
-		water_scalar1  = pow( ((theta1 -b) / (a-b)), d*(b-a)/(a-c))
-		* pow( ((theta1-c)/ (a-c)), d);
-		water_scalar2  = pow( ((theta2 -b) / (a-b)), d*(b-a)/(a-c))
-		* pow( ((theta2-c)/ (a-c)), d);
-		weight1 = max(0, (-0.19 + 0.98*theta));
-		weight2 = 1.0 - weight1;
-		w_scalar = (weight1*water_scalar1 + weight2*water_scalar2);
+		for (i=0; i<NUM_NORMAL; i++) {
+			thetai = theta + NORMAL[i]*std*theta;
+			thetai = min(1.0, thetai);
+			thetai = max(0.1, thetai);
+			water_scalar  += (pow( ((theta1 -b) / (a-b)), d*(b-a)/(a-c))
+					* pow( ((theta1-c)/ (a-c)), d)) * 1.0/NUM_NORMAL;
+			}
 	}
 	else {
 		if ((theta <= ZERO) || (theta > 1.0))

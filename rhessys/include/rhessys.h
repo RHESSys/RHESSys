@@ -160,6 +160,7 @@
 #define state_output_filename	"world_state"
 #define	MAXNAME	60
 #define INTERVAL_SIZE 0.001 
+#define MAX_NUM_INTERVAL 5000 
 #define STREAM 1
 #define ROAD 2
 #define NON_VEG 20
@@ -861,6 +862,8 @@ struct	soil_default
 	double	gl_c;						/* m/s */
 	double	gsurf_slope;					/* (DIM) */
 	double  gsurf_intercept;				/* m/s */
+	double  theta_mean_std_p1;				/* DIM */
+	double  theta_mean_std_p2;				/* DIM */
 	struct soil_class	soil_type;
 	};
 
@@ -1274,6 +1277,7 @@ struct patch_object
 	double	sat_zone_storage;	/* m water 	*/
 	double	snow_redist_scale;	/* multiplier	*/ 
 	double	std;			/* m water	*/
+	double	theta_std;			/* m water	*/
 	double  surface_NO3;		/* kg/m2	*/
 	double  surface_NH4;		/* kg/m2	*/
 	double  fertilizer_NO3;		/* kg/m2	*/

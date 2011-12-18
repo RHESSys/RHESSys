@@ -112,6 +112,13 @@ struct soil_default *construct_soil_defaults(
 		read_record(default_file, record);
 		fscanf(default_file,"%lf",&(default_object_list[i].active_zone_z));
 		read_record(default_file, record);
+
+		if (abs(default_object_list[i].active_zone_z - default_object_list[i].soil_depth) > 0.5) {
+			printf("\n note that soil depth used for biogeochem cycling (active zone z)");
+ 			printf("\nis more than 0.5 meter different from hydrologic soil depth");
+ 			printf("\n for soil default file %s", default_files[i] );
+			}
+
 		fscanf(default_file,"%lf",
 			&(default_object_list[i].maximum_snow_energy_deficit));
 		read_record(default_file, record);
@@ -206,8 +213,10 @@ struct soil_default *construct_soil_defaults(
 			0.0);
 
 		/*--------------------------------------------------------------*/
-		/*	for the moment assign values for soil conductance computations */
+		/* initialization of optional default file parms		*/
 		/*--------------------------------------------------------------*/
+			default_object_list[i].theta_mean_std_p1 = 0.0;
+			default_object_list[i].theta_mean_std_p2 = 0.0;
 			default_object_list[i].gl_c = 0.0062;
 			default_object_list[i].gsurf_slope = 0.01;
 			default_object_list[i].gsurf_intercept = 0.001;
@@ -234,6 +243,19 @@ struct soil_default *construct_soil_defaults(
 				}
 			if (strcasecmp(newrecord,"gsurf_intercept") == 0) {	
 				default_object_list[i].gsurf_intercept = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'t');
+			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"theta_mean_std_p1") == 0) {	
+				default_object_list[i].theta_mean_std_p1 = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			if (strcasecmp(newrecord,"theta_mean_std_p2") == 0) {	
+				default_object_list[i].theta_mean_std_p2 = ftmp;
 				printf("\n Using %lf for %s for soil default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}

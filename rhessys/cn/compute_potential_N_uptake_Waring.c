@@ -139,7 +139,6 @@ double compute_potential_N_uptake_Waring(
 	if ((fleaf + froot) > ZERO) {	
 	if (epc.veg_type == TREE){
 		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
-		/*mean_cn = fleaf * cnl + froot * cnfr + f4 * fwood * cnlw + fwood * (1.0-f4) * cndw;*/
 		}
         else{
            mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);

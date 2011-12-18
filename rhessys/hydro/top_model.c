@@ -136,6 +136,7 @@ double	top_model(
 		double,
 		struct litter_object *);
 
+
 	double compute_N_leached(int,
 		double,
 		double,
@@ -148,7 +149,8 @@ double	top_model(
 		double,
 		double,
 		double,
-		double);
+		double,
+		double *);
 
 	double	compute_layer_field_capacity(
 		int,
@@ -372,7 +374,8 @@ double	top_model(
 					hillslope[0].aggdefs.N_decay_rate,
 					hillslope[0].aggdefs.active_zone_z,
 					hillslope[0].aggdefs.soil_depth,
-					hillslope[0].aggdefs.mobile_N_proportion);
+					hillslope[0].aggdefs.mobile_N_proportion,
+					NULL);
 		hillslope[0].streamflow_N += mean_N_leached;
 		mean_nitrate -= hillslope[0].streamflow_N;
 	}

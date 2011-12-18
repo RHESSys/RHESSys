@@ -191,10 +191,13 @@ int allocate_annual_growth(				int id,
 	else
 		ratio = 1.0;
 
-        if (epc.max_storage_percent > ZERO)
-              storage_transfer_prop = 1.0 - (1.0  - epc.storage_transfer_prop) * (epc.max_storage_percent - ratio)/ epc.max_storage_percent;
+        /* if (epc.max_storage_percent > ZERO)
+	              storage_transfer_prop = 1.0 - (1.0  - epc.storage_transfer_prop) * (epc.max_storage_percent - ratio)/ epc.max_storage_percent;
+	*/
+         if ((epc.max_storage_percent > ZERO) && (ratio < epc.max_storage_percent))
+		storage_transfer_prop = epc.storage_transfer_prop;
         else
-              storage_transfer_prop = 1.0;
+               storage_transfer_prop = 1.0;
 
 	storage_transfer_prop = min(storage_transfer_prop,1.0);
 
@@ -344,6 +347,7 @@ int allocate_annual_growth(				int id,
 	if (excess_carbon < -ZERO) {
 
 		carbohydrate_transfer = -1.0*excess_carbon; 
+
 
 		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);

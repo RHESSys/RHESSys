@@ -345,7 +345,7 @@ void		patch_daily_F(
 	double  infiltration;
 	double	infiltration_ini;
 	double	infiltration_fin;
-	double	net_inflow;
+	double	net_inflow, theta;
 	double	preday_snowpack_height;
 	double	sat_zone_patch_demand;
 	double	sat_zone_patch_demand_initial;
@@ -843,7 +843,7 @@ void		patch_daily_F(
 	else infiltration = 0.0;
 
 	if (infiltration < 0.0) {
-		printf("\nInfiltration %lf < 0 for %d on %d",
+		printf("\nInfiltration %lf < 0 for %d on %ld",
 			infiltration,
 			patch[0].ID, current_date.day);
 	}
@@ -969,7 +969,7 @@ void		patch_daily_F(
 			sat_zone_patch_demand += strata->cover_fraction
 				* strata->transpiration_sat_zone;
 			if ( command_line[0].verbose_flag > 1 ) {
-				printf("\n%4d %2d %2d  -334.1 ",
+				printf("\n%ld %ld %ld  -334.1 ",
 					current_date.year, current_date.month, current_date.day);
 				printf("\n %d %f %f %f %f %f %f %f", strata->ID,
 					strata->cover_fraction,	strata->evaporation,
@@ -980,7 +980,7 @@ void		patch_daily_F(
 		}
 	}
 	if ( command_line[0].verbose_flag > 1 ) {
-		printf("\n%4d %2d %2d  -335.1 ",
+		printf("\n%ld %ld %ld  -335.1 ",
 			current_date.year, current_date.month, current_date.day);
 		printf("\n %d %f %f %f %f %f %f",
 			patch[0].ID, patch[0].evaporation, patch[0].evaporation_surf,
@@ -1387,6 +1387,10 @@ void		patch_daily_F(
 		0.0,
 		-1.0 * patch[0].sat_deficit);
 
+
+	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
+				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
+
 	/*-------------------------------------------------------------------------*/
 	/*	finalized soil and litter decomposition					*/
 	/* 	and any septic losses							*/
@@ -1432,7 +1436,7 @@ void		patch_daily_F(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].porosity_0,
 			0.25,
-			patch[0].soil_defaults[0][0].mobile_N_proportion,patch[0].std) != 0){
+			patch[0].soil_defaults[0][0].mobile_N_proportion,patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
 			exit(1);
 		}
@@ -1444,7 +1448,7 @@ void		patch_daily_F(
 			&(patch[0].cdf),
 			&(patch[0].ndf),
 			patch[0].soil_defaults[0][0].soil_type,
-			patch[0].rootzone.S, patch[0].std) != 0){
+			patch[0].rootzone.S, patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_denitrif() ... Exiting\n");
 			exit(1);
 		}
@@ -1508,7 +1512,7 @@ void		patch_daily_F(
 	/*
 	if ((patch[0].water_balance > 0.00000001)||
 		(patch[0].water_balance < -0.00000001)){
-		printf("\n Water Balance is %12.8f on %d %d %d for patch %d of type %d",
+		printf("\n Water Balance is %12.8f on %ld %ld %ld for patch %d of type %d",
 			patch[0].water_balance,
 			current_date.day,
 			current_date.month,
@@ -1542,7 +1546,7 @@ void		patch_daily_F(
 			&(patch[0].litter_ns));
 
 	if ( command_line[0].verbose_flag > 1 ) {
-		printf("\n%4d %2d %2d  -335.2 ",
+		printf("\n%ld %ld %ld  -335.2 ",
 			current_date.year, current_date.month, current_date.day);
 		printf("\n   %8.5f %8.5f %8.5f %8.5f %8.5f %8.5f %8.5f %8.5f ",
 			infiltration,
@@ -1553,7 +1557,7 @@ void		patch_daily_F(
 			patch[0].unsat_storage,
 			patch[0].cap_rise,
 			patch[0].sat_deficit);
-		printf("\n%4d %2d %2d  -335.3 ",
+		printf("\n%ld %ld %ld  -335.3 ",
 			current_date.year, current_date.month, current_date.day);
 		printf("\n   %8.5f, %8.5f %8.5f %8.5f %8.5f %8.5f %8.5f %8.5f",
 			zone[0].rain + zone[0].snow,

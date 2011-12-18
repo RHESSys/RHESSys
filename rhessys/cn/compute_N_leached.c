@@ -59,6 +59,14 @@ double	compute_N_leached(int verbose_flag,
                 double,
                 double);
 
+
+	double  compute_z_final(
+		int,
+		double,
+		double,
+		double,
+		double,
+		double);
 		
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
@@ -68,7 +76,7 @@ double	compute_N_leached(int verbose_flag,
 	double theta, sat_deficit;
 	double Q, Qtotal;
 	double z1, z2;
-	double	septic_depth;
+	double	available_water,septic_depth;
 
 	nleached = 0.0;
 	Qtotal = 0.0;
@@ -108,74 +116,53 @@ double	compute_N_leached(int verbose_flag,
 	/*	now for regular subsurface flow			*/
 	/*	integrate through the saturated zone		*/
 	/*------------------------------------------------------*/
-	for (sat_deficit = s1; sat_deficit < s2; sat_deficit += INTERVAL_SIZE) {
-
-		/*------------------------------------------------------*/
-		/*	determine actual depth at this point		*/
-		/*------------------------------------------------------*/
-		z1 = -1.0 * p * log ( 1 - sat_deficit / (p * n_0));
-		z2 = -1.0 * p * log (1 - (min(s2,sat_deficit + INTERVAL_SIZE)) / (p * n_0));
-			
-		/*------------------------------------------------------*/
-		/* calculate mobile nitrate at this depth 	*/
-		/*------------------------------------------------------*/
-		if (z1 > z2_N)
-			z1 = z2_N;
-		if (z2 > z2_N)
-			z2 = z2_N;
-		if (z1 < 0.0)
-			z1 = 0.0;
-		if (N_decay_rate > 0.0) {	
-			navail = total_nitrate
-				/ (1.0 - exp(-1.0 * N_decay_rate * z2_N) )
-				* (exp(-1.0 * N_decay_rate * z1)
-				- exp(-1.0 * N_decay_rate * (z2)))
-				* mobile_N_proportion;
+	z2 = compute_z_final(
+			verbose_flag,
+			n_0,
+			p,
+			z2_water,		
+			s2,
+			0.0);
+	z1 = compute_z_final(
+			verbose_flag,
+			n_0,
+			p,
+			z2_water,		
+			s1,
+			0.0);
+	if (N_decay_rate > 0.0) {	
+		navail = total_nitrate
+			/ (1.0 - exp(-1.0 * N_decay_rate * z2_N) )
+			* (exp(-1.0 * N_decay_rate * z1)
+			- exp(-1.0 * N_decay_rate * (z2)))
+			* mobile_N_proportion;
 		}
-		else {
+
+	else {
 			septic_depth = -1.0*N_decay_rate;
 			if (z1 > septic_depth)
 				navail = 0.0;
 			else
 				navail = total_nitrate * (z2-z1)/(z2_N -  septic_depth) * mobile_N_proportion;
 		}
-				
-		/*------------------------------------------------------*/
-		/*	calculate total water in transport zone		*/ 
-		/*------------------------------------------------------*/
-		theta = min(INTERVAL_SIZE, s2-sat_deficit) ; 
-		/*------------------------------------------------------*/
-		/*	calculte lateral subsurface flow contributions  */      
-		/*	from this saturation depth			*/
-		/*	note gamma is gamma per unit area, per time interval */ 
-		/*------------------------------------------------------*/
-
 	
-		didx_top = (int) lround(sat_deficit/INTERVAL_SIZE);
-		didx_bot = (int) lround(
-				min(sat_deficit + INTERVAL_SIZE,s2)/INTERVAL_SIZE); 
-		
-		Q = gamma * (transmissivity[didx_top]-transmissivity[didx_bot]);
+				
+	/*------------------------------------------------------*/
+	/* N-leached is mass flux of soluble nitrate	*/
+	/* i.e n_avail / theta * outflow			*/
+	/*------------------------------------------------------*/
 
-		if (Q > theta) {
-			Q = theta;
-			}
+	available_water = compute_delta_water(
+		verbose_flag,
+		n_0,p,z2_water,
+		z2,
+		z1);
 
-		Qtotal += Q;
-		/*------------------------------------------------------*/
-		/* N-leached is mass flux of soluble nitrate	*/
-		/* i.e n_avail / theta * outflow			*/
-		/*------------------------------------------------------*/
-		if ((theta > ZERO) && (navail > ZERO) && (Q > ZERO))
-			nleached += navail * Q/theta;
-	} /* end for */
-		/*
-		if ((Qtotal - Qout) > 0.00000001) 
-			printf("\n Estimated flow is creater by %lf", Qtotal - Qout);
-			*/
-	} /* end else */ 
-	} /* end if Qout > 0 */
+	}
+	if ((theta > ZERO) && (navail > ZERO) && (Q > ZERO))
+			nleached = navail * Qout/available_water;
 
+	}
 	/*------------------------------------------------------*/
 	/* there may be enough flow to leach out more than 	*/
 	/*	availabe nitrate, so limit export by available	*/
