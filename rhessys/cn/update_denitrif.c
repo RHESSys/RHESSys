@@ -89,7 +89,7 @@ int update_denitrif(
 		water_scalar = 0.0;
 		if (std > 0) {
 			for (i =1; i< NUM_NORMAL; i++) {
-				thetai = theta + theta*std*NORMAL[i];
+				thetai = theta + std*NORMAL[i];
 				thetai = min(1.0, thetai);
 				thetai = max(0.0, thetai);
 				if (thetai > ZERO)
