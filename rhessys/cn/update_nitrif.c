@@ -120,7 +120,7 @@ int update_nitrif(
 		water_scalar = 0.0;
 		if (std > ZERO) {
 			for (i=0; i<NUM_NORMAL; i++) {
-				thetai = theta + NORMAL[i]*std*theta;
+				thetai = theta + NORMAL[i]*std;
 				thetai = min(1.0, thetai);
 				thetai = max(0.0, thetai);
 				water_scalar  += 1.0/NUM_NORMAL * (
