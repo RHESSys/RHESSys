@@ -103,7 +103,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 
 	if (std > ZERO) {
 		for (i=0; i<NUM_NORMAL; i++) {
-			thetai = theta + NORMAL[i]*std*theta;
+			thetai = theta + NORMAL[i]*std;
 			thetai = min(1.0, thetai);
 			thetai = max(0.1, thetai);
 			water_scalar  += (pow( ((theta1 -b) / (a-b)), d*(b-a)/(a-c))
