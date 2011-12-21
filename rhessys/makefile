@@ -1,5 +1,5 @@
-PGM  = rhessys5.14.6
-VERSION = 5.14.6
+PGM  = rhessys5.14.7
+VERSION = 5.14.7
 CC = gcc 
 CFLAGS = -O
 RHESSYS_BIN = /usr/local/bin
@@ -137,6 +137,8 @@ $(OBJ)/execute_hourly_output_event.o \
 $(OBJ)/execute_monthly_output_event.o \
 $(OBJ)/execute_redefine_strata_event.o \
 $(OBJ)/execute_redefine_world_event.o \
+$(OBJ)/execute_redefine_world_mult_event.o \
+$(OBJ)/execute_redefine_world_thin_event.o \
 $(OBJ)/execute_road_construction_event.o \
 $(OBJ)/execute_state_output_event.o \
 $(OBJ)/execute_tec.o \
@@ -154,10 +156,16 @@ $(OBJ)/hillslope_daily_F.o \
 $(OBJ)/hillslope_daily_I.o \
 $(OBJ)/hillslope_hourly.o \
 $(OBJ)/input_new_basin.o \
+$(OBJ)/input_new_basin_mult.o \
 $(OBJ)/input_new_hillslope.o \
+$(OBJ)/input_new_hillslope_mult.o \
 $(OBJ)/input_new_patch.o \
+$(OBJ)/input_new_patch_mult.o \
 $(OBJ)/input_new_strata.o \
+$(OBJ)/input_new_strata_mult.o \
+$(OBJ)/input_new_strata_thin.o \
 $(OBJ)/input_new_zone.o \
+$(OBJ)/input_new_zone_mult.o \
 $(OBJ)/julday.o \
 $(OBJ)/key_compare.o \
 $(OBJ)/leaf_conductance_APAR_curve.o \
@@ -264,7 +272,12 @@ $(OBJ)/zone_daily_F.o \
 $(OBJ)/zone_daily_I.o \
 $(OBJ)/zone_hourly.o \
 $(OBJ)/construct_ascii_grid.o \
-$(OBJ)/create_random_distrb.o
+$(OBJ)/create_random_distrb.o \
+$(OBJ)/skip_basin.o \
+$(OBJ)/skip_hillslope.o \
+$(OBJ)/skip_zone.o \
+$(OBJ)/skip_patch.o \
+$(OBJ)/skip_strata.o
 
 all:	dir rhessys
 
@@ -478,10 +491,26 @@ $(OBJ)/input_new_hillslope.o: tec/input_new_hillslope.c
 	$(CC) -c $(CFLAGS) -I include tec/input_new_hillslope.c -o $(OBJ)/input_new_hillslope.o
 $(OBJ)/input_new_basin.o: tec/input_new_basin.c
 	$(CC) -c $(CFLAGS) -I include tec/input_new_basin.c -o $(OBJ)/input_new_basin.o
+$(OBJ)/input_new_strata_mult.o: tec/input_new_strata_mult.c
+	$(CC) -c $(CFLAGS) -I include tec/input_new_strata_mult.c -o $(OBJ)/input_new_strata_mult.o
+$(OBJ)/input_new_strata_thin.o: tec/input_new_strata_thin.c
+	$(CC) -c $(CFLAGS) -I include tec/input_new_strata_thin.c -o $(OBJ)/input_new_strata_thin.o
+$(OBJ)/input_new_patch_mult.o: tec/input_new_patch_mult.c
+	$(CC) -c $(CFLAGS) -I include tec/input_new_patch_mult.c -o $(OBJ)/input_new_patch_mult.o
+$(OBJ)/input_new_zone_mult.o: tec/input_new_zone_mult.c
+	$(CC) -c $(CFLAGS) -I include tec/input_new_zone_mult.c -o $(OBJ)/input_new_zone_mult.o
+$(OBJ)/input_new_hillslope_mult.o: tec/input_new_hillslope_mult.c
+	$(CC) -c $(CFLAGS) -I include tec/input_new_hillslope_mult.c -o $(OBJ)/input_new_hillslope_mult.o
+$(OBJ)/input_new_basin_mult.o: tec/input_new_basin_mult.c
+	$(CC) -c $(CFLAGS) -I include tec/input_new_basin_mult.c -o $(OBJ)/input_new_basin_mult.o
 $(OBJ)/execute_redefine_strata_event.o: tec/execute_redefine_strata_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_redefine_strata_event.c -o $(OBJ)/execute_redefine_strata_event.o
 $(OBJ)/execute_redefine_world_event.o: tec/execute_redefine_world_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_redefine_world_event.c -o $(OBJ)/execute_redefine_world_event.o
+$(OBJ)/execute_redefine_world_mult_event.o: tec/execute_redefine_world_mult_event.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_redefine_world_mult_event.c -o $(OBJ)/execute_redefine_world_mult_event.o
+$(OBJ)/execute_redefine_world_thin_event.o: tec/execute_redefine_world_thin_event.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_redefine_world_thin_event.c -o $(OBJ)/execute_redefine_world_thin_event.o	
 $(OBJ)/execute_road_construction_event.o: tec/execute_road_construction_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_road_construction_event.c -o $(OBJ)/execute_road_construction_event.o
 $(OBJ)/find_basin.o: util/find_basin.c
@@ -716,6 +745,17 @@ $(OBJ)/update_drainage_land.o: hydro/update_drainage_land.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_land.c -o $(OBJ)/update_drainage_land.o
 $(OBJ)/update_soil_moisture.o: hydro/update_soil_moisture.c 
 	$(CC) -c $(CFLAGS) -I include hydro/update_soil_moisture.c -o $(OBJ)/update_soil_moisture.o
+$(OBJ)/skip_basin.o: tec/skip_basin.c
+	$(CC) -c $(CFLAGS) -I include tec/skip_basin.c -o $(OBJ)/skip_basin.o
+$(OBJ)/skip_hillslope.o: tec/skip_hillslope.c
+	$(CC) -c $(CFLAGS) -I include tec/skip_hillslope.c -o $(OBJ)/skip_hillslope.o
+$(OBJ)/skip_zone.o: tec/skip_zone.c
+	$(CC) -c $(CFLAGS) -I include tec/skip_zone.c -o $(OBJ)/skip_zone.o
+$(OBJ)/skip_patch.o: tec/skip_patch.c
+	$(CC) -c $(CFLAGS) -I include tec/skip_patch.c -o $(OBJ)/skip_patch.o
+$(OBJ)/skip_strata.o: tec/skip_strata.c
+	$(CC) -c $(CFLAGS) -I include tec/skip_strata.c -o $(OBJ)/skip_strata.o
+
 
 # dynamic bgc routines
 $(OBJ)/allocate_annual_growth.o: cn/allocate_annual_growth.c 

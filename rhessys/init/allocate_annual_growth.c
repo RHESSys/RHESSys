@@ -64,7 +64,8 @@ int allocate_annual_growth(				int id,
 		struct ndayflux_patch_struct *,
 		struct litter_c_object *,
 		struct litter_n_object *,
-		double, double);
+		int,
+		struct mortality_struct);
 	
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
@@ -203,10 +204,20 @@ int allocate_annual_growth(				int id,
 		excess_carbon = min(1.0, -1.0*cs->cpool/plantc - excess_leaf_carbon);
 
 		cs->leafc -= excess_leaf_carbon;
+		
+		mort.mort_cpool = excess_carbon;
+		mort.mort_leafc = excess_carbon;
+		mort.mort_deadleafc = excess_carbon;
+		mort.mort_livestemc = excess_carbon;
+		mort.mort_deadstemc = excess_carbon;
+		mort.mort_livecrootc = excess_carbon;
+		mort.mort_deadcrootc = excess_carbon;
+		mort.mort_frootc = excess_carbon;					
 		update_mortality(epc,
-			cs, cdf, cdf_patch,
-			ns, ndf, ndf_patch, 
-			cs_litr, ns_litr, cover_fraction, excess_carbon);
+						 cs, cdf, cdf_patch,
+						 ns, ndf, ndf_patch, 
+						 cs_litr, ns_litr, 1,
+						 mort);
 
 		cs->cpool = 0.0;
 		ns->npool = 0.0;

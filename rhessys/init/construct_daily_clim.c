@@ -237,7 +237,7 @@ struct	daily_clim_object *construct_daily_clim(
 		}
 		else if ( strcmp(sequence_name,"CO2") == 0 ){
 			strcpy(file_name, file_prefix);
-			daily_clim[0].vpd = construct_clim_sequence(
+			daily_clim[0].CO2 = construct_clim_sequence(
 				(char *)strcat(file_name,".CO2"),
 				start_date,
 				duration);

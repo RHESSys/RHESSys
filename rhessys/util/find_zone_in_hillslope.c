@@ -44,6 +44,8 @@ struct zone_object *find_zone_in_hillslope(
 	/*--------------------------------------------------------------*/
 	i = 0;
 	fnd = 0;
+	zone = NULL;
+	
 	while ( (fnd == 0) && (i >= 0) && (i < hillslope[0].num_zones)) {
 		if (hillslope[0].zones[i][0].ID == zone_ID) {
 			zone = hillslope[0].zones[i];
@@ -54,11 +56,12 @@ struct zone_object *find_zone_in_hillslope(
 		}
 	}
 	if (fnd == 0) {
-		fprintf(stderr,
+		/*fprintf(stderr,
 			"FATAL ERROR: Could not find zone %d in  hillslope %d \n",
 			zone_ID,
-			hillslope[0].ID);
-		exit(1);
+			hillslope[0].ID);*/
+		zone = NULL;
+		/*exit(1);*/
 	}
 	return(zone);
 }/*end find_zone_in_hillslope */

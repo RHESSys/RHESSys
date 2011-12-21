@@ -122,6 +122,7 @@ void input_new_hillslope(
  	fscanf(world_file,"%d",&(dtmp));
 	read_record(world_file, record);
 	if (dtmp > 0) {
+		hillslope[0].num_base_stations = dtmp;
 		hillslope[0].base_stations = (struct base_station_object **)
 			alloc(hillslope[0].num_base_stations *
 			sizeof(struct base_station_object *),"base_stations",

@@ -44,6 +44,8 @@ struct basin_object *find_basin(
 	/*--------------------------------------------------------------*/
 	i = 0;
 	fnd = 0;
+	basin = NULL;
+	
 	while ( (fnd == 0) && (i >= 0) && (i < world[0].num_basin_files)) {
 		if (world[0].basins[i][0].ID == basin_ID) {
 			basin = world[0].basins[i];
@@ -55,10 +57,11 @@ struct basin_object *find_basin(
 	}
 	if (fnd == 0) {
 		fprintf(stderr,
-			"FATAL ERROR: Could not find basin %d in  world %d \n",
-			basin_ID,
-			world[0].ID);
-		exit(1);
+				"\nCould not find basin %d in world %d. Skipping basin...\n",
+				basin_ID,
+				world[0].ID);
+		basin = NULL;
+		/*exit(1);*/
 	}
 	return(basin);
 }/*end find_basin_in_world */

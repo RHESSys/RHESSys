@@ -67,6 +67,39 @@ void	execute_redefine_world_event(struct world_object *world,
 		struct base_station_object **,
 		struct default_object *,
 		struct basin_object *);
+	
+	void skip_strata( struct command_line_object *,
+		FILE *,
+		int,
+		struct base_station_object **,
+		struct default_object *,
+		struct patch_object *,
+		struct canopy_strata_object *);
+	void skip_patch( struct command_line_object *,
+		FILE *,
+		int,
+		struct base_station_object **,
+		struct default_object *,
+		struct patch_object *);
+	void skip_zone( struct command_line_object *,
+		FILE *,
+		int,
+		struct base_station_object **,
+		struct default_object *,
+		struct zone_object *);
+	void skip_hillslope( struct command_line_object *,
+		FILE *,
+		int,
+		struct base_station_object **,
+		struct default_object *,
+		struct hillslope_object *);
+	void skip_basin( struct command_line_object *,
+		FILE *,
+		int,
+		struct base_station_object **,
+		struct default_object *,
+		struct basin_object *);	
+	
 	void compute_mean_hillslope_parameters( struct hillslope_object *);
 	struct canopy_strata_object	*find_stratum_in_patch( int, 
 		struct patch_object *);
@@ -93,6 +126,7 @@ void	execute_redefine_world_event(struct world_object *world,
 	struct	zone_object	*zone;
 	struct	hillslope_object	*hillslope;
 	struct	basin_object	*basin;
+		
 	/*--------------------------------------------------------------*/
 	/*	Try to open the world file in read mode.					*/
 	/*--------------------------------------------------------------*/
@@ -128,11 +162,12 @@ void	execute_redefine_world_event(struct world_object *world,
 		read_record(world_input_file, record);
 		basin = find_basin( basin_ID,
 			world);
-		input_new_basin(command_line, world_input_file,
-			world[0].num_base_stations,
-			world[0].base_stations,
-			world[0].defaults,
-			basin);
+		if (basin != NULL) {
+			input_new_basin(command_line, world_input_file,
+							world[0].num_base_stations,
+							world[0].base_stations,
+							world[0].defaults,
+							basin);
 		fscanf(world_input_file,"%d",&num_hill);
 		read_record(world_input_file, record);
 		for ( h = 0; h < num_hill; h++){
@@ -140,59 +175,229 @@ void	execute_redefine_world_event(struct world_object *world,
 			read_record(world_input_file, record);
 			hillslope = find_hillslope_in_basin( hill_ID,
 				basin);
-			input_new_hillslope(command_line, world_input_file,
-				world[0].num_base_stations,
-				world[0].base_stations,
-				world[0].defaults,
-				hillslope);
-			fscanf(world_input_file,"%d",&num_zone);
-			read_record(world_input_file, record);
-			for ( z=0; z < num_zone; z++) {
-				fscanf(world_input_file,"%d",&zone_ID);
+			if (hillslope != NULL) {
+				input_new_hillslope(command_line, world_input_file,
+									world[0].num_base_stations,
+									world[0].base_stations,
+									world[0].defaults,
+									hillslope);
+				fscanf(world_input_file,"%d",&num_zone);
 				read_record(world_input_file, record);
-				zone = find_zone_in_hillslope( zone_ID,
-					hillslope);
-				input_new_zone(command_line, world_input_file,
-					world[0].num_base_stations,
-					world[0].base_stations,
-					world[0].defaults,
-					zone);
-				fscanf(world_input_file, "%d",&num_patch);
-				read_record(world_input_file, record);
-				for (p=0; p < num_patch; p++) {
-					fscanf(world_input_file,"%d",&patch_ID);
+				for ( z=0; z < num_zone; z++) {
+					fscanf(world_input_file,"%d",&zone_ID);
 					read_record(world_input_file, record);
-					patch = find_patch_in_zone( patch_ID,
-						zone);
-					input_new_patch(command_line, world_input_file,
-						world[0].num_base_stations,
-						world[0].base_stations,
-						world[0].defaults,
-						patch);
-					fscanf(world_input_file, "%d",&num_stratum);
-					read_record(world_input_file, record);
-					for (c=0; c < num_stratum; c++) {
-						fscanf(world_input_file,"%d",&stratum_ID);
+					zone = find_zone_in_hillslope(zone_ID,hillslope);
+					if (zone != NULL) {
+						input_new_zone(command_line, world_input_file,
+								   world[0].num_base_stations,
+								   world[0].base_stations,
+								   world[0].defaults,
+								   zone);
+						fscanf(world_input_file, "%d",&num_patch);
 						read_record(world_input_file, record);
-						stratum = find_stratum_in_patch(stratum_ID,
-							patch);
-						input_new_strata(command_line, world_input_file,
-							world[0].num_base_stations,
-							world[0].base_stations,
-							world[0].defaults,
-							patch,
-							stratum);
-					} /* end c */
+						for (p=0; p < num_patch; p++) {
+							fscanf(world_input_file,"%d",&patch_ID);
+							read_record(world_input_file, record);
+							patch = find_patch_in_zone(patch_ID, zone);
+							if (patch != NULL) {
+								input_new_patch(command_line, world_input_file,
+										world[0].num_base_stations,
+										world[0].base_stations,
+										world[0].defaults,
+										patch);
+								fscanf(world_input_file, "%d",&num_stratum);
+								read_record(world_input_file, record);
+								for (c=0; c < num_stratum; c++) {
+									fscanf(world_input_file,"%d",&stratum_ID);
+									read_record(world_input_file, record);
+									stratum = find_stratum_in_patch(stratum_ID,patch);
+									if (stratum != NULL) {
+										input_new_strata(command_line, world_input_file,
+											 world[0].num_base_stations,
+											 world[0].base_stations,
+											 world[0].defaults,
+											 patch,
+											 stratum);
+										} /* end canopy if */
+									else {
+										skip_strata(command_line, world_input_file,
+											 world[0].num_base_stations,
+											 world[0].base_stations,
+											 world[0].defaults,
+											 patch,
+											 stratum);
+										}
+								} /* end canopy loop */
 			/*--------------------------------------------------------------*/
 			/*	re-sort patch layers to account for any changes in 	*/
 			/*	height							*/
 			/*--------------------------------------------------------------*/
-					sort_patch_layers(patch);
-				} /* end p */
-			} /* end z */
-		compute_mean_hillslope_parameters(hillslope);	  
-		} /* end h */
-	} /*end b */
+								sort_patch_layers(patch);
+								} /* end patch if */
+
+							else {
+								skip_patch(command_line, world_input_file,
+										   world[0].num_base_stations,
+										   world[0].base_stations,
+										   world[0].defaults,
+										   patch);
+								fscanf(world_input_file, "%d",&num_stratum);
+								read_record(world_input_file, record);
+								for (c=0; c < num_stratum; c++) {
+									fscanf(world_input_file,"%d",&stratum_ID);
+									read_record(world_input_file, record);
+									skip_strata(command_line, world_input_file,
+												world[0].num_base_stations,
+												world[0].base_stations,
+												world[0].defaults,
+												patch,
+												stratum);
+									} /* end NULL canopy loop */								
+								} /* end NULL patch else */
+					
+							} /* end patch loop */
+			
+						} /* end zone if */
+
+						else {
+							skip_zone(command_line, world_input_file,
+								  world[0].num_base_stations,
+								  world[0].base_stations,
+								  world[0].defaults,
+								  zone);
+							fscanf(world_input_file, "%d",&num_patch);
+							read_record(world_input_file, record);
+							for (p=0; p < num_patch; p++) {
+								fscanf(world_input_file,"%d",&patch_ID);
+								read_record(world_input_file, record);
+								skip_patch(command_line, world_input_file,
+										   world[0].num_base_stations,
+										   world[0].base_stations,
+										   world[0].defaults,
+										   patch);
+								fscanf(world_input_file, "%d",&num_stratum);
+								read_record(world_input_file, record);
+								for (c=0; c < num_stratum; c++) {
+									fscanf(world_input_file,"%d",&stratum_ID);
+									read_record(world_input_file, record);
+									skip_strata(command_line, world_input_file,
+												world[0].num_base_stations,
+												world[0].base_stations,
+												world[0].defaults,
+												patch,
+												stratum);
+									} /* end NULL canopy loop */
+								} /* end NULL patch loop */
+							} /* end NULL zone else */
+
+					} /* end zone loop */
+				
+				compute_mean_hillslope_parameters(hillslope);
+				
+			} /* end hillslope if */
+
+			else {
+				skip_hillslope(command_line, world_input_file,
+							   world[0].num_base_stations,
+							   world[0].base_stations,
+							   world[0].defaults,
+							   hillslope);
+				fscanf(world_input_file,"%d",&num_zone);
+				read_record(world_input_file, record);
+				for ( z=0; z < num_zone; z++) {
+					fscanf(world_input_file,"%d",&zone_ID);
+					read_record(world_input_file, record);
+					skip_zone(command_line, world_input_file,
+							  world[0].num_base_stations,
+							  world[0].base_stations,
+							  world[0].defaults,
+							  zone);
+					fscanf(world_input_file, "%d",&num_patch);
+					read_record(world_input_file, record);
+					for (p=0; p < num_patch; p++) {
+						fscanf(world_input_file,"%d",&patch_ID);
+						read_record(world_input_file, record);
+						skip_patch(command_line, world_input_file,
+								world[0].num_base_stations,
+								world[0].base_stations,
+								world[0].defaults,
+								patch);
+						fscanf(world_input_file, "%d",&num_stratum);
+						read_record(world_input_file, record);
+						for (c=0; c < num_stratum; c++) {
+							fscanf(world_input_file,"%d",&stratum_ID);
+							read_record(world_input_file, record);
+							skip_strata(command_line, world_input_file,
+									world[0].num_base_stations,
+									world[0].base_stations,
+									world[0].defaults,
+									patch,
+									stratum);
+							} /* end NULL canopy loop */
+						} /* end NULL patch loop */
+					} /* end NULL zone loop */
+				} /* end NULL hillslope else */
+			} /* end hillslope loop */
+			
+		} /* end basin if*/
+		
+		else {
+			skip_basin(command_line, world_input_file,
+					   world[0].num_base_stations,
+					   world[0].base_stations,
+					   world[0].defaults,
+					   basin);
+			fscanf(world_input_file,"%d",&num_hill);
+			read_record(world_input_file, record);
+			for ( h = 0; h < num_hill; h++){
+				fscanf(world_input_file,"%d",&hill_ID);
+				read_record(world_input_file, record);
+				hillslope = find_hillslope_in_basin( hill_ID,
+													basin);				
+				skip_hillslope(command_line, world_input_file,
+							   world[0].num_base_stations,
+							   world[0].base_stations,
+							   world[0].defaults,
+							   hillslope);
+				fscanf(world_input_file,"%d",&num_zone);
+				read_record(world_input_file, record);
+				for ( z=0; z < num_zone; z++) {
+					fscanf(world_input_file,"%d",&zone_ID);
+					read_record(world_input_file, record);
+					skip_zone(command_line, world_input_file,
+							  world[0].num_base_stations,
+							  world[0].base_stations,
+							  world[0].defaults,
+							  zone);
+					fscanf(world_input_file, "%d",&num_patch);
+					read_record(world_input_file, record);
+					for (p=0; p < num_patch; p++) {
+						fscanf(world_input_file,"%d",&patch_ID);
+						read_record(world_input_file, record);
+						skip_patch(command_line, world_input_file,
+								   world[0].num_base_stations,
+								   world[0].base_stations,
+								   world[0].defaults,
+								   patch);
+						fscanf(world_input_file, "%d",&num_stratum);
+						read_record(world_input_file, record);
+						for (c=0; c < num_stratum; c++) {
+							fscanf(world_input_file,"%d",&stratum_ID);
+							read_record(world_input_file, record);
+							skip_strata(command_line, world_input_file,
+										world[0].num_base_stations,
+										world[0].base_stations,
+										world[0].defaults,
+										patch,
+										stratum);
+							} /* end NULL canopy loop */
+						} /* end NULL patch loop */
+					} /* end NULL zone loop */	
+				} /* end NULL hillslope loop */
+			} /* end basin else */
+		
+		} /*end basin loop */
+	
 	/*--------------------------------------------------------------*/
 	/*	Close the world_input_file.										*/
 	/*--------------------------------------------------------------*/

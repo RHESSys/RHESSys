@@ -46,6 +46,8 @@ struct canopy_strata_object *find_stratum_in_patch(
 	/*--------------------------------------------------------------*/
 	i = 0;
 	fnd = 0;
+	stratum = NULL;
+	
 	while ( (fnd == 0) && (i >= 0) && (i < patch[0].num_canopy_strata)) {
 		if (patch[0].canopy_strata[i][0].ID == stratum_ID) {
 			stratum = patch[0].canopy_strata[i];
@@ -56,11 +58,12 @@ struct canopy_strata_object *find_stratum_in_patch(
 		}
 	}
 	if (fnd == 0) {
-		fprintf(stderr,
+		/*fprintf(stderr,
 			"FATAL ERROR: Could not find stratum %d in  patch %d \n",
 			stratum_ID,
-			patch[0].ID);
-		exit(1);
+			patch[0].ID);*/
+		stratum = NULL;
+		/*exit(1);*/
 	}
 	return(stratum);
 }/*end find.stratum*/

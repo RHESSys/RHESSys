@@ -59,6 +59,15 @@ void	handle_event(
 		struct world_object *,
 		struct command_line_object *,
 		struct	date);
+	void	execute_redefine_world_mult_event(
+		struct world_object *,
+		struct command_line_object *,
+		struct	date);
+	void	execute_redefine_world_thin_event(
+		struct world_object *,
+		struct command_line_object *,
+		struct	date,
+		int);
 	void	execute_road_construction_event(
 		struct world_object *,
 		struct command_line_object *,
@@ -155,6 +164,15 @@ void	handle_event(
 	else if ( !strcmp(event[0].command,"redefine_world") ){
 		execute_redefine_world_event(world, command_line, current_date);
 	}
+	else if ( !strcmp(event[0].command,"redefine_world_multiplier") ){
+		execute_redefine_world_mult_event(world, command_line, current_date);
+	}	
+	else if ( !strcmp(event[0].command,"redefine_world_thin_remain") ){
+		execute_redefine_world_thin_event(world, command_line, current_date, 1);
+	}		
+	else if ( !strcmp(event[0].command,"redefine_world_thin_harvest") ){
+		execute_redefine_world_thin_event(world, command_line, current_date, 2);
+	}		
 	else if ( !strcmp(event[0].command,"roads_on") ){
 		command_line[0].road_flag = 1;
 		execute_road_construction_event(world, command_line, current_date);

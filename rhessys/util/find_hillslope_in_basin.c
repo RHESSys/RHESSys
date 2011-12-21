@@ -44,6 +44,8 @@ struct hillslope_object *find_hillslope_in_basin(
 	/*--------------------------------------------------------------*/
 	i = 0;
 	fnd = 0;
+	hillslope = NULL;
+	
 	while ( (fnd == 0) && (i >= 0) && (i < basin[0].num_hillslopes)) {
 		if (basin[0].hillslopes[i][0].ID == hillslope_ID) {
 			hillslope = basin[0].hillslopes[i];
@@ -55,10 +57,12 @@ struct hillslope_object *find_hillslope_in_basin(
 	}
 	if (fnd == 0) {
 		fprintf(stderr,
-			"FATAL ERROR: Could not find hillslope %d in  basin %d \n",
-			hillslope_ID,
-			basin[0].ID);
-		exit(1);
+				"Could not find hillslope %d in  basin %d. Skipping hillslope...\n",
+				hillslope_ID,
+				basin[0].ID);		
+		hillslope = NULL;
+		/*exit(1);*/
 	}
+
 	return(hillslope);
 }/*end find_hillslope_in_basin */

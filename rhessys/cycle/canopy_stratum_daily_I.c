@@ -74,8 +74,9 @@ void	canopy_stratum_daily_I(
 		struct ndayflux_patch_struct *,
 		struct litter_c_object *,
 		struct litter_n_object *,
-		double, double);
-
+		int,
+		struct mortality_struct);
+	
 
 	void	update_branch_mortality(
 		struct epconst_struct,
@@ -124,7 +125,7 @@ void	canopy_stratum_daily_I(
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
 	double wilting_point;
-
+	struct mortality_struct mort;
 
 	/*--------------------------------------------------------------*/
 	/* no processing at present for non-veg types			*/
@@ -219,6 +220,16 @@ void	canopy_stratum_daily_I(
 			+ ns->livecrootn_transfer + ns->dead_crootn + ns->deadcrootn_store
 			+ ns->deadcrootn_transfer);
 		*/
+		
+		mort.mort_cpool = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		mort.mort_leafc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		mort.mort_deadleafc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		mort.mort_livestemc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		mort.mort_deadstemc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		mort.mort_livecrootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		mort.mort_deadcrootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		mort.mort_frootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		
 		update_mortality(stratum[0].defaults[0][0].epc,
 			&(stratum[0].cs),
 			&(stratum[0].cdf),
@@ -228,8 +239,8 @@ void	canopy_stratum_daily_I(
 			&(patch[0].ndf),
 			&(patch[0].litter_cs),
 			&(patch[0].litter_ns),
-			stratum[0].cover_fraction,
-			stratum[0].defaults[0][0].epc.daily_mortality_turnover);
+			1,
+			mort);
 		if  ((stratum[0].defaults[0][0].epc.veg_type==TREE) && (stratum[0].defaults[0][0].epc.branch_turnover > ZERO)){
 		update_branch_mortality(stratum[0].defaults[0][0].epc,
 			&(stratum[0].cs),

@@ -2250,5 +2250,22 @@ struct	canopy_strata_hourly_object
 	int i;
 	};
 
+
+/*----------------------------------------------------------*/
+/*	Define the mortality fraction structure.	*/
+/*----------------------------------------------------------*/
+struct mortality_struct
+{
+	double mort_cpool;
+	double mort_leafc;
+	double mort_deadleafc;
+	double mort_livestemc;
+	double mort_deadstemc;
+	double mort_livecrootc;
+	double mort_deadcrootc;
+	double mort_frootc;
+};
+
+
 #endif
 
