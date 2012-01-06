@@ -256,6 +256,14 @@ struct	daily_clim_object *construct_daily_clim(
 				start_date,
 				duration);
 		}
+		else if ( strcmp(sequence_name,"snow") == 0 ) {
+			strcpy(file_name, file_prefix);
+			daily_clim[0].snow = construct_clim_sequence(
+				(char *)strcat(file_name,".snow"),
+				start_date,
+				duration);
+		}
+
 		else if ( strcmp(sequence_name,"wind") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].wind = construct_clim_sequence(

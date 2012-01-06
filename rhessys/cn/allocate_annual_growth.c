@@ -210,7 +210,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 
 	cs->mortality_fract = 0.0;
-	if ((total_store < cpool_mort_fract*total_biomass) && (total_biomass > ZERO) && (cs->age > 2) && (vmort_flag == 1)) {
+	if ((total_store < cpool_mort_fract*total_biomass) && (total_biomass > ZERO) && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
 		excess_carbon = 1.0 - total_store/(cpool_mort_fract*total_biomass);
 		excess_carbon = max(excess_carbon,0);

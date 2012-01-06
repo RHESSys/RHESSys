@@ -2186,6 +2186,7 @@ struct	stratum_default
         double psn;
 	double lai;
         double lwp;
+	double minNSC;
         };
 
 
