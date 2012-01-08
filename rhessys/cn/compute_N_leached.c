@@ -159,10 +159,12 @@ double	compute_N_leached(int verbose_flag,
 		z1);
 
 	}
-	if ((theta > ZERO) && (navail > ZERO) && (Q > ZERO))
+	if (available_water > ZERO) {
 			nleached = navail * Qout/available_water;
-
+			}
+		else nleached = 0.0;
 	}
+	
 	/*------------------------------------------------------*/
 	/* there may be enough flow to leach out more than 	*/
 	/*	availabe nitrate, so limit export by available	*/
