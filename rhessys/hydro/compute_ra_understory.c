@@ -57,6 +57,7 @@
 /*	screen height or adjusted to a higher screen height.	*/ 
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -101,7 +102,7 @@ double	compute_ra_understory(
 	if ( h_o < d_o ){
 		fprintf(stderr,
 			"FATAL ERROR: screen height < zero plane stratum\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	Compute the resistance to momentum transfer from a sourc*/

@@ -19,6 +19,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -51,7 +52,7 @@ int	parse_veg_type( char *input_string)
 		fprintf(stderr,"\n FATAL ERROR - parse_veg_type");
 		fprintf(stderr,"\n %s Unknown veg type in stratum default file", input_string);
 		fprintf(stderr,"\n must be either TREE or GRASS");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	
 	return(veg_type);

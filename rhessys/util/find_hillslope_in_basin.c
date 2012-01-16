@@ -22,6 +22,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct hillslope_object *find_hillslope_in_basin(
@@ -61,7 +62,7 @@ struct hillslope_object *find_hillslope_in_basin(
 				hillslope_ID,
 				basin[0].ID);		
 		hillslope = NULL;
-		/*exit(1);*/
+		/*exit(EXIT_FAILURE);*/
 	}
 
 	return(hillslope);

@@ -19,6 +19,7 @@
 /*--------------------------------------------------------------*/
 
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include "rhessys.h"
 
@@ -50,7 +51,7 @@ int	parse_dyn_flag( char *input_string)
 	else {
 		fprintf(stderr,"\n FATAL ERROR - parse_dyn_flag");
 		fprintf(stderr,"\n Flag must be stati or dynamic and is %s" , input_string);
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	return(dyn_flag);
 }/*end parse_dyn_flag.c*/

@@ -32,6 +32,7 @@
 /*	routine but removed wilting point which was never used.	*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct landuse_default *construct_landuse_defaults(
@@ -75,7 +76,7 @@ struct landuse_default *construct_landuse_defaults(
 		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
 			fprintf(stderr,"FATAL ERROR:in construct_landuse_defaults",
 				"unable to open defaults file %d.\n",i);
-			exit(0);
+			exit(EXIT_FAILURE);
 		} /*end if*/
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/

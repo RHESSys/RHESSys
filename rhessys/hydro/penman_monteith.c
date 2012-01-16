@@ -50,6 +50,7 @@
 /*								*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "phys_constants.h"
 #include "rhessys.h"
@@ -162,6 +163,6 @@ double	penman_monteith(
 	}
 	else{
 		fprintf(stderr,"FATAL ERROR: in penman_monteith - invalid output flag");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 } /*end penman_monteith*/

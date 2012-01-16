@@ -28,6 +28,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -70,7 +71,7 @@ struct routing_list_object construct_routing_topology(
 	if ( (routing_file = fopen(routing_filename,"r")) == NULL ){
 		fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
 			routing_filename);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	fscanf(routing_file,"%d",&num_patches);
 	rlist.num_patches = num_patches;

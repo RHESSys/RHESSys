@@ -142,6 +142,7 @@
 /*	   for each zone is now used				*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -205,7 +206,7 @@ struct	base_station_object *construct_base_station(
 		fprintf(stderr,
 			"FATAL ERROR:in construct_base_stations unable to open base_station file %s\n",
 			base_station_filename);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	
 	/*--------------------------------------------------------------*/

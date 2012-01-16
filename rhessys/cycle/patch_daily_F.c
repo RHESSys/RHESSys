@@ -74,6 +74,7 @@
 /*														*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -417,7 +418,7 @@ void		patch_daily_F(
 		|| (patch[0].landuse_defaults[0][0].septic_NO3_load > ZERO)) {
 		if (update_septic( current_date, patch) != 0) {
 			printf("\n Error in update_septic ...exiting");
-			exit(0);
+			exit(EXIT_FAILURE);
 			}
 		}
 
@@ -796,7 +797,7 @@ void		patch_daily_F(
 			   	command_line,
 			   	current_date) != 0) {
 				fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 		}
 		net_inflow = patch[0].rain_throughfall;
@@ -1407,7 +1408,7 @@ void		patch_daily_F(
 			&(patch[0].ndf),
 			patch) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 
 
@@ -1422,7 +1423,7 @@ void		patch_daily_F(
 				&(patch[0].cdf),
 				&(patch[0].ndf)) != 0){
 				fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 		}
 
@@ -1438,7 +1439,7 @@ void		patch_daily_F(
 			0.25,
 			patch[0].soil_defaults[0][0].mobile_N_proportion,patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 
 			
@@ -1450,7 +1451,7 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].soil_type,
 			patch[0].rootzone.S, patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_denitrif() ... Exiting\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 
 	}

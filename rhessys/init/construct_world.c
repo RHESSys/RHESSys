@@ -338,6 +338,7 @@
 /*	Original code, January 15, 1996.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 
@@ -381,7 +382,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	if ( (world_file = fopen(command_line[0].world_filename,"r")) == NULL ){
 		fprintf(stderr,"FATAL ERROR:  Cannot open world file %s\n",
 			command_line[0].world_filename);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Read in the start calendar date (year, month, day, hour )	*/
@@ -421,14 +422,14 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	if ( (world[0].start_date.hour<=0) || (world[0].start_date.hour>24)){
 		fprintf(stderr,"FATAL ERROR:  Start hour must be >0 and<=24.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Verify that the end hour was between 1 and 24.				*/
 	/*--------------------------------------------------------------*/
 	if ( (world[0].end_date.hour<=0) || (world[0].end_date.hour>24)){
 		fprintf(stderr,"FATAL ERROR:  End hour must be >0 and<=24.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Compute the length of the worlds existance in each time step*/
@@ -452,7 +453,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		fprintf(stderr,
 			"FATAL ERROR: In construct_world, the end date given in %s world file is before the start date\n",
 			command_line[0].world_filename);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Allocate world defaults objects.							*/
@@ -557,7 +558,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			fprintf(stderr,
 					"Unable to open climate grid file %s\n", 
 					world[0].base_station_files[0]);
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 
 		fscanf(grid_base, "%d", &world[0].num_base_stations);
@@ -681,7 +682,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*	Close the world_file.										*/
 	/*--------------------------------------------------------------*/
 	if ( fclose(world_file) != 0 )
-		exit(0);
+		exit(EXIT_FAILURE);
 	
 	return(world);
 } /*end construct_world.c*/

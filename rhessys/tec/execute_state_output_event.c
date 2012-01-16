@@ -26,6 +26,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void	execute_state_output_event(
@@ -66,7 +67,7 @@ void	execute_state_output_event(
 	/*--------------------------------------------------------------*/
 	if ( ( outfile = fopen(filename, "w")) == NULL ){
 		fprintf(stderr,"FATAL ERROR: in execute_state_output_event.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	output world information									*/

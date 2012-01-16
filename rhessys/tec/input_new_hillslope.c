@@ -43,6 +43,7 @@
 /*	Original code, January 16, 1996.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void input_new_hillslope(
@@ -111,7 +112,7 @@ void input_new_hillslope(
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_hillslope,hillslope default ID %d not found.\n",
 					default_object_ID);
-				exit(0);
+				exit(EXIT_FAILURE);
 			}
 		} /* end-while */
 		hillslope[0].defaults[0] = &defaults[0].hillslope[i];

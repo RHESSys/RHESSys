@@ -25,6 +25,7 @@
 /*	duration													*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -130,7 +131,7 @@ struct base_station_object **construct_ascii_grid (
 		fprintf(stderr,
 				"FATAL ERROR:in construct_ascii_grid unable to open base_station file %s\n",
 				base_station_filename);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/	
 	
 	
@@ -189,7 +190,7 @@ struct base_station_object **construct_ascii_grid (
 		fprintf(stderr,
 				"FATAL ERROR: in construct_ascii_grid unable to open tmax file %s", 
 				(char*)strcat(daily_clim_prefix, ".tmax"));
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	strcpy(daily_clim_prefix, old_prefix);					// Restore the original daily_clim prefix
 	fgets(buffer, sizeof(buffer), tmax_file);
@@ -301,7 +302,7 @@ struct base_station_object **construct_ascii_grid (
 	{			   fprintf(stderr,
 					   "FATAL ERROR: in construct_construct_ascii_grid\n unable to open tmax sequence file\n");
 			   fprintf(stderr, "\nFile name %s", daily_clim_prefix);
-			   exit(0);
+			   exit(EXIT_FAILURE);
 	} /*end if*/
 	
 	strcpy(daily_clim_prefix, old_prefix);					// Restore the original daily_clim prefix	   
@@ -334,7 +335,7 @@ struct base_station_object **construct_ascii_grid (
 	if ( offset < 0 ){
 		fprintf(stderr,
 				"FATAL ERROR: start date before first date of a clim sequence.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}	
 	/*--------------------------------------------------------------*/
 	/*	open remaining clim seqs. a good programmer will generalize	*/
@@ -345,7 +346,7 @@ struct base_station_object **construct_ascii_grid (
 	/* TMIN */
 	if ( (tmin_file = fopen((char*)strcat(daily_clim_prefix, ".tmin"), "r"))  == NULL ){
 		fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\nunable to open tmin sequence file\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} else {
 		printf("Opened tmin file %s\n", daily_clim_prefix);
 		strcpy(daily_clim_prefix, old_prefix);				// Restore the original daily_clim prefix
@@ -356,7 +357,7 @@ struct base_station_object **construct_ascii_grid (
 	/* RAIN */
 	if ( (rain_file = fopen((char*)strcat(daily_clim_prefix, ".rain"), "r"))  == NULL ){
 		fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\nunable to open rain sequence file\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} else {
 		printf("Opened rain file %s\n", daily_clim_prefix);
 		strcpy(daily_clim_prefix, old_prefix);				// Restore the original daily_clim prefix
@@ -368,7 +369,7 @@ struct base_station_object **construct_ascii_grid (
 	/* ALT1 */
 	if ( (alt1_clim_file = fopen((char*)strcat(daily_clim_prefix, ".daytime_rain_duration"), "r"))  == NULL ){
 		fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\nunable to open alt1 sequence file\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} else {
 		printf("Opened rain duration file %s\n", daily_clim_prefix);
 		strcpy(daily_clim_prefix, old_prefix);			// Restore the original daily_clim prefix
@@ -384,16 +385,16 @@ struct base_station_object **construct_ascii_grid (
 	for ( i = 0 ; i<offset ; i++ ){
 		if ( fgets(buffer, sizeof(buffer), tmax_file) == NULL  ) {
 			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - tmax start date beyond eof"); 
-			exit(0);
+			exit(EXIT_FAILURE);
 		} else if ( fgets(buffer, sizeof(buffer), tmin_file) == NULL  ) {
 			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - tmin start date beyond eof"); 
-			exit(0);
+			exit(EXIT_FAILURE);
 		} else if ( fgets(buffer, sizeof(buffer), rain_file) == NULL  ) {
 			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - rain start date beyond eof"); 
-			exit(0);
+			exit(EXIT_FAILURE);
 		} else if ( fgets(buffer, sizeof(buffer), alt1_clim_file) == NULL  ) {
 			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - alt1 start date beyond eof"); 
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	}
 	
@@ -408,22 +409,22 @@ struct base_station_object **construct_ascii_grid (
 		if (fgets(buffertmax, sizeof(buffertmax), tmax_file)==NULL) {
 			fprintf(stderr,"FATAL ERROR: in construct_ascii_grid \n");
 			fprintf(stderr,"\n tmax end date beyond end of clim sequence\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		if (fgets(buffertmin, sizeof(buffertmin), tmin_file)==NULL) {
 			fprintf(stderr,"FATAL ERROR: in construct_ascii_grid \n");
 			fprintf(stderr,"\n tmin end date beyond end of clim sequence\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}	
 		if (fgets(bufferrain, sizeof(bufferrain), rain_file)==NULL) {
 			fprintf(stderr,"FATAL ERROR: in construct_ascii_grid \n");
 			fprintf(stderr,"\n rain end date beyond end of clim sequence\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		if (fgets(bufferalt1, sizeof(bufferalt1), alt1_clim_file)==NULL) {
 			fprintf(stderr,"FATAL ERROR: in construct_ascii_grid \n");
 			fprintf(stderr,"\n optional clim end date beyond end of clim sequence\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		for (i=0; i < num_base_stations; i++) {
 			

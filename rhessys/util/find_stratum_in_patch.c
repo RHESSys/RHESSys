@@ -24,6 +24,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct canopy_strata_object *find_stratum_in_patch(
@@ -63,7 +64,7 @@ struct canopy_strata_object *find_stratum_in_patch(
 			stratum_ID,
 			patch[0].ID);*/
 		stratum = NULL;
-		/*exit(1);*/
+		/*exit(EXIT_FAILURE);*/
 	}
 	return(stratum);
 }/*end find.stratum*/

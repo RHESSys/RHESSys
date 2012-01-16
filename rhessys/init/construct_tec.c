@@ -87,6 +87,7 @@
 /*	is not possible to print out a specified state variable).	*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -118,7 +119,7 @@ struct tec_object	*construct_tec(
 	if ((tecfile[0].tfile = fopen(command_line[0].tec_filename, "r")) == NULL){
 		fprintf(stderr,"\nERROR:  cannot open tec file %s",
 			command_line[0].tec_filename);
-		exit(1);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Read a line of the tec file if it exists.					*/
@@ -143,7 +144,7 @@ struct tec_object	*construct_tec(
 		if ( !check ){
 			fprintf(stderr,"\nERROR:  the tec file is corrupted.");
 			fclose(tecfile[0].tfile);
-			exit(1);
+			exit(EXIT_FAILURE);
 		} /*end if*/
 		
 		/*--------------------------------------------------------------*/
@@ -153,7 +154,7 @@ struct tec_object	*construct_tec(
 		if ( cal_date_lt(current_date,old_date)){
 			fprintf(stderr,"FATAL ERROR: in construct_tec ",
 				"dates not in sequence");
-			exit(0);
+			exit(EXIT_FAILURE);
 		} /*end if*/
 		/*--------------------------------------------------------------*/
 		/*		make sure that the control flag makes sense.			*/
@@ -191,7 +192,7 @@ struct tec_object	*construct_tec(
 				command, current_date.year,
 				current_date.month, current_date.day,
 				current_date.hour);
-			exit(0);
+			exit(EXIT_FAILURE);
 		} /*end if*/
 		/*--------------------------------------------------------------*/
 		/*	Read a line of the tec file if it exists.					*/

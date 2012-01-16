@@ -36,6 +36,7 @@
 /*	Original code, March 15, 1998.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -86,7 +87,7 @@ void	execute_redefine_strata_event(struct world_object *world,
 		fprintf(stderr,
 			"FATAL ERROR:  Cannot open stratum execute_redefine file %s\n",
 			stratum_filename);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Read in the world ID.							*/
@@ -145,6 +146,6 @@ void	execute_redefine_strata_event(struct world_object *world,
 	/*	Close the stratum_file.										*/
 	/*--------------------------------------------------------------*/
 	if ( fclose(stratum_file) != 0 )
-		exit(0);
+		exit(EXIT_FAILURE);
 	return;
 } /*end execute_redefine_strata_event.c*/

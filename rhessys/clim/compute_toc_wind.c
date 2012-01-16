@@ -39,6 +39,7 @@
 /*								*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -69,7 +70,7 @@ double	compute_toc_wind(
 	if ( h < d_o ){
 		fprintf(stderr,
 			"FATAL ERROR: screen height %d < zero plane of patch highest stratum %d \n", h, d_o);
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	u_z  = u_h * log((z-d_o)/z_o) / log((h-d_o)/z_o);
 	return(u_z);

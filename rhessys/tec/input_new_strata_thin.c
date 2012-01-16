@@ -36,6 +36,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 #define ONE 1.0
 void input_new_strata_thin(
@@ -284,7 +285,7 @@ void input_new_strata_thin(
 					fprintf(stderr,
 						"\nFATAL ERROR: in construct_canopy_strata, canopy_strata default ID %d not found.\n" ,
 						default_object_ID);
-					exit(0);
+					exit(EXIT_FAILURE);
 				}
 			} /* end-while */
 			canopy_strata[0].defaults[0] = &defaults[0].stratum[i];
@@ -384,14 +385,14 @@ void input_new_strata_thin(
 			&(canopy_strata[0].epv),
 			&(canopy_strata[0].cs)) ){
 			fprintf(stderr,"FATAL ERROR: in compute_annual_turnover() ... Exiting\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 
 		if (compute_annual_litfall(canopy_strata[0].defaults[0][0].epc,
 			&(canopy_strata[0].phen),
 			&(canopy_strata[0].cs), command_line[0].grow_flag) ){
 			fprintf(stderr,"FATAL ERROR: in compute_annual_litfall() ... Exiting\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 
 
@@ -409,7 +410,7 @@ void input_new_strata_thin(
 			patch[0].soil_defaults[0][0].effective_soil_depth)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from construct_canopy_strata()\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	}
 	}
@@ -443,7 +444,7 @@ void input_new_strata_thin(
 		fprintf(stderr,"\nFATAL ERROR - construct_canopy_stratum.c");
 		fprintf(stderr,"\n phenology flag must be set to 0 for STATIC");
 		fprintf(stderr,"\n since dynamic phenology timing not yet implemented");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 		/*--------------------------------------------------------------*/
 		/*	for now initialize these accumuling variables		*/

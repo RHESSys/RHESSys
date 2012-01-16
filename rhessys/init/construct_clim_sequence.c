@@ -50,6 +50,7 @@
 /*	dates increasing by one time step.  						*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 double *construct_clim_sequence(char *file, struct date start_date,
@@ -84,7 +85,7 @@ double *construct_clim_sequence(char *file, struct date start_date,
 		fprintf(stderr,
 			"\nFATAL ERROR: in construct_clim_sequence\nunable to open sequence file %s\n", file);
 		fprintf(stderr, "\nFile name %s", file);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Read in start date in clim file (calendar date to hour res)	*/
@@ -108,7 +109,7 @@ double *construct_clim_sequence(char *file, struct date start_date,
 	if ( offset < 0 ){
 		fprintf(stderr,
 			"FATAL ERROR: start date before first date of a clim sequence.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	Scan forwards in the sequence until the start date.			*/
@@ -116,7 +117,7 @@ double *construct_clim_sequence(char *file, struct date start_date,
 	for ( i = 0 ; i<offset ; i++ ){
 		if ( fscanf(sequence_file,"%lf",&value) == EOF  ) {
 			fprintf(stderr,"FATAL ERROR: in construct_clim_sequence\n - start date beyond eof"); 
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	}
 	/*--------------------------------------------------------------*/
@@ -126,7 +127,7 @@ double *construct_clim_sequence(char *file, struct date start_date,
 		if ( fscanf(sequence_file,"%lf",&value) == EOF  ) {
 			fprintf(stderr,"FATAL ERROR: in construct_clim_sequence\n");
 			fprintf(stderr,"\n end date beyond end of clim sequence\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		else{
 			*(sequence+i) = value;

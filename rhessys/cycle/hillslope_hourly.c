@@ -35,6 +35,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void		hillslope_hourly(
@@ -66,7 +67,7 @@ void		hillslope_hourly(
 	if ( (hillslope[0].hourly = (struct hillslope_hourly_object *)
 		calloc(1,sizeof(struct hillslope_hourly_object))) == NULL ){
 		fprintf(stderr,"FATAL ERROR: in hillslope_hourly\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/* do redistribution of saturated zone at patch level based on 	*/

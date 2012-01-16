@@ -24,6 +24,7 @@
 /*	Due to modification of porosity with depth.		*/ 
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void	canopy_stratum_daily_I(
@@ -137,7 +138,7 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	if (zero_stratum_daily_flux(&(stratum[0].cdf), &(stratum[0].ndf) )){
 		fprintf(stderr,"fATAL ERROR: in zero_day_flux() ... Exiting\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 
@@ -297,7 +298,7 @@ void	canopy_stratum_daily_I(
 				&(stratum[0].cs) ) ){
 				fprintf(stderr,
 					"FATAL ERROR: in compute_annual_turnover() ... Exiting\n");
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			/*--------------------------------------------------------------*/
 			/*	zero annual (season) accumulation variables			*/

@@ -33,6 +33,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -59,25 +60,25 @@ struct	output_files_object	*construct_output_fileset(
 	strcat(filename,".yearly");
 	if ( (fileset[0].yearly = fopen(filename , "w")) == NULL ){
 		fprintf(stderr,"FATAL ERROR: in construct_output_fileset.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	strcpy(filename, root);
 	strcat(filename,".monthly");
 	if ( (fileset[0].monthly = fopen(filename , "w"))== NULL ){
 		fprintf(stderr,"FATAL ERROR: in construct_output_fileset.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	strcpy(filename, root);
 	strcat(filename,".daily");
 	if ( (fileset[0].daily = fopen(filename , "w"))	== NULL ){
 		fprintf(stderr,"FATAL ERROR: in construct_output_file.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	strcpy(filename, root);
 	strcat(filename,".hourly");
 	if ( (fileset[0].hourly = fopen(filename , "w")) == NULL ) {
 		fprintf(stderr,"FATAL ERROR: in construct_output_file.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	return(fileset);
 } /*end construct_output_fileset*/

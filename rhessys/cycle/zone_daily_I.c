@@ -132,6 +132,7 @@
 /*	Removed elevation scaling of isohyet						*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -301,7 +302,7 @@ void zone_daily_I(
 		fprintf(stderr,
 			"\nFATAL ERROR: In zone_daily_I - missing critical data for day %d.\n",
 			day);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	/*	Repeat the same exercise for the non-critical parameters.	*/

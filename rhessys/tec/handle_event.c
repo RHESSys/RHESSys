@@ -39,6 +39,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -183,7 +184,7 @@ void	handle_event(
 	else{
 		fprintf(stderr,"FATAL ERROR: in handle event - event %s not recognized.\n",
 			event[0].command);
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 } /*end handle_event*/
 

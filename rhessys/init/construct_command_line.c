@@ -36,6 +36,7 @@
 /* 	added comma separated output option			*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 struct	command_line_object	*construct_command_line(
@@ -166,7 +167,7 @@ struct	command_line_object	*construct_command_line(
 			else if (strcmp(main_argv[i],"-template") == 0) {
 				printf("\n Outputting template file structure and Exiting\n");
 				output_template_structure();
-				exit(0);
+				exit(EXIT_FAILURE);
 			}
 			/*------------------------------------------*/
 			/*Check if the csv output flag is next.           */
@@ -191,7 +192,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Value for vmort flag not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*-------------------------------*/
 				/*Read in the tmp value		*/
@@ -221,7 +222,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Value for Tmp variable not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*-------------------------------*/
 				/*Read in the tmp value		*/
@@ -233,7 +234,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Value for  (DON) loss rate not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*-------------------------------*/
 				/*Read in the DON loss rate value		*/
@@ -266,7 +267,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].gw_flag = 1;
 				if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Values for gw coefficients not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*-------------------------------*/
 				/*Read in the loss to gw rate multiplier values		*/
@@ -286,7 +287,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].tchange_flag = 1;
 				if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Values for tchange not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*-------------------------------*/
 				/*Read in the loss to gw rate multiplier values		*/
@@ -306,7 +307,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].std_flag = 1;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Value for soil moisture std not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				command_line[0].std_scale = (double)atof(main_argv[i]);
 				i++;
@@ -318,7 +319,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Thresholds not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*-------------------------------*/
 				/*Read in the thresholds 	*/
@@ -345,7 +346,7 @@ struct	command_line_object	*construct_command_line(
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the sensitivity parameter values. */
@@ -355,7 +356,7 @@ struct	command_line_object	*construct_command_line(
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				command_line[0].sen[K] = (double)atof(main_argv[i]);
 				i++;
@@ -379,7 +380,7 @@ struct	command_line_object	*construct_command_line(
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the sensitivity parameter values. */
@@ -389,7 +390,7 @@ struct	command_line_object	*construct_command_line(
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				command_line[0].vsen[K] = (double)atof(main_argv[i]);
 				i++;
@@ -415,7 +416,7 @@ struct	command_line_object	*construct_command_line(
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the sensitivity parameter values. */
@@ -425,7 +426,7 @@ struct	command_line_object	*construct_command_line(
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				command_line[0].vsen_alt[PO] = (double)atof(main_argv[i]);
 				i++;
@@ -439,7 +440,7 @@ struct	command_line_object	*construct_command_line(
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the sensitivity parameter name. */
@@ -450,14 +451,14 @@ struct	command_line_object	*construct_command_line(
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				command_line[0].veg_sen2 = (double)atof(main_argv[i]);
 				i++;
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,
 						"FATAL ERROR: 3rd Vegetation Sensitivity perturbation not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				}/*end if*/
 				command_line[0].veg_sen3 = (double)atof(main_argv[i]);
 				i++;
@@ -473,7 +474,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Start date year not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*-------------------------------------------------*/
 				/*			Read in the start year.							*/
@@ -485,7 +486,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Start date month not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the start month.							*/
@@ -497,7 +498,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if (  (i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Start date day not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the start day.							*/
@@ -509,7 +510,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Start date hour not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the hour year.							*/
@@ -528,7 +529,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Start date year not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the end year.							*/
@@ -540,7 +541,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Start date month not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the end month.							*/
@@ -552,7 +553,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Start date day not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the end day.							*/
@@ -564,7 +565,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Start date hour not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the hour year.							*/
@@ -582,7 +583,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,"FATAL ERROR: Routing file name not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the routing file name.						*/
@@ -603,7 +604,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,"FATAL ERROR: Routing file name not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the routing file name.						*/
@@ -624,7 +625,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,"FATAL ERROR: World file name not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the world file name.						*/
@@ -643,7 +644,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
 					fprintf(stderr,"FATAL ERROR: TEC file name not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Read in the tec file name.							*/
@@ -662,7 +663,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Output prefix not specified\n");
-					exit(0);
+					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*--------------------------------------------------------------*/
 				/*			Allocate an array for the output prefix and			*/
@@ -950,7 +951,7 @@ struct	command_line_object	*construct_command_line(
 				fprintf(stderr,
 					"FATAL ERROR: in construct_command_line option #%d is invalid.\n",i);
 				fprintf(stderr,"for argument %s\n", main_argv[i]);
-				exit(0);
+				exit(EXIT_FAILURE);
 			} /*end if*/
 		} /*end if*/
 	} /*end while*/

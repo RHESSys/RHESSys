@@ -22,6 +22,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct patch_object *find_patch_in_zone(
@@ -61,7 +62,7 @@ struct patch_object *find_patch_in_zone(
 			patch_ID,
 			zone[0].ID);*/
 		patch = NULL;
-		/*exit(1);*/
+		/*exit(EXIT_FAILURE);*/
 	}
 	return(patch);
 }/*end find_patch_in_zone */

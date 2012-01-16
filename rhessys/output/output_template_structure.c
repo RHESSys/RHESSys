@@ -26,6 +26,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void	output_template_structure()
@@ -43,7 +44,7 @@ void	output_template_structure()
 	/*--------------------------------------------------------------*/
 	if ( ( outfile = fopen("template_structure.txt", "w")) == NULL ){
 		fprintf(stderr,"FATAL ERROR: in output_template_structure.\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	output world information									*/

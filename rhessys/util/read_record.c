@@ -58,7 +58,7 @@ int read_record(FILE *fp, char *record)
 
 	if (j >= MAXSTR) {
 		printf("\n Comment in default file is too long\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 		}
 	return(0);
 }

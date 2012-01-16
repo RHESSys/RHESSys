@@ -25,6 +25,7 @@
 /*	Original code, January 15, 1996.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct zone_default *construct_zone_defaults(
@@ -64,7 +65,7 @@ struct zone_default *construct_zone_defaults(
 		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
 			fprintf(stderr,
 				"FATAL ERROR:in construct_zone_defaults unable to open defaults file %d.\n",i);
-			exit(0);
+			exit(EXIT_FAILURE);
 		} /*end if*/
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/

@@ -39,6 +39,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -117,7 +118,7 @@ struct	hourly_clim_object *construct_hourly_clim(
 				start_date);
 		}
 		else  {fprintf(stderr,"WARNING-clim sequence %s not found.\n", sequence_name);
-			exit(0);
+			exit(EXIT_FAILURE);
 			}
 	} /*end for*/
 	return(hourly_clim);

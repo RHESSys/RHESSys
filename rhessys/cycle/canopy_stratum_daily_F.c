@@ -20,6 +20,7 @@
 /*								*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void	canopy_stratum_daily_F(
@@ -1081,7 +1082,7 @@ void	canopy_stratum_daily_F(
 			&(zone[0].metv),
 			&(stratum[0].cdf)	)){
 			fprintf(stderr,"Error in compute_maint_resp() from bbgc.c... Exiting\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		if ((stratum[0].epv.all_lai > ZERO) && (stratum[0].snow_stored < ZERO))  {
 			/*--------------------------------------------------------------*/
@@ -1198,7 +1199,7 @@ void	canopy_stratum_daily_F(
 				if ( compute_farq_psn(&psnin, &psnout, 1)){
 					fprintf(stderr,
 						"FATAL ERROR: in canopy_stratum_daily_F error in farquhar");
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 			}
 			else
@@ -1236,7 +1237,7 @@ void	canopy_stratum_daily_F(
 				if ( compute_farq_psn(&psnin, &psnout, 1)){
 					fprintf(stderr,
 						"FATAL ERROR: in canopy_stratum_daily_F error in farquhar");
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 			}
 			else

@@ -22,6 +22,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct basin_object *find_basin(
@@ -61,7 +62,7 @@ struct basin_object *find_basin(
 				basin_ID,
 				world[0].ID);
 		basin = NULL;
-		/*exit(1);*/
+		/*exit(EXIT_FAILURE);*/
 	}
 	return(basin);
 }/*end find_basin_in_world */

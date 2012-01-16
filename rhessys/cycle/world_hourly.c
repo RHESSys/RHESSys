@@ -29,6 +29,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void		world_hourly(
@@ -57,7 +58,7 @@ void		world_hourly(
 	if ( (world[0].hourly = (struct world_hourly_object *)
 		calloc(1,sizeof(struct world_hourly_object))) == NULL ){
 		fprintf(stderr,"FATAL ERROR: in simulate_world_hourly\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	Simulate the basins											*/

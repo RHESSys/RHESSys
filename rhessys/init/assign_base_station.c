@@ -16,6 +16,7 @@
 /*	Original code, January 15, 1996.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct base_station_object
@@ -46,7 +47,7 @@ struct base_station_object
 		if ( i >= num_base_stations ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in assign_base_stations, base station ID %d not found.\n",ID);
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	}  /* end-while */
 	base_station = base_stations[i];

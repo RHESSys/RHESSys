@@ -22,6 +22,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct zone_object *find_zone_in_hillslope(
@@ -61,7 +62,7 @@ struct zone_object *find_zone_in_hillslope(
 			zone_ID,
 			hillslope[0].ID);*/
 		zone = NULL;
-		/*exit(1);*/
+		/*exit(EXIT_FAILURE);*/
 	}
 	return(zone);
 }/*end find_zone_in_hillslope */

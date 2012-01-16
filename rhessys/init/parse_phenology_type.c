@@ -19,6 +19,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -42,7 +43,7 @@ int	parse_phenology_type( char *input_string)
 		fprintf(stderr,"\n FATAL ERROR - parse_phenology_type");
 		fprintf(stderr,"\n Unknown phenology type %s in stratum default file", input_string);
 		fprintf(stderr,"\n Must be either DECID or EVERGREEN");
-		exit(0);
+		exit(EXIT_FAILURE);
 		}
 	return(veg_type);
 }/*parse_phenology_type.c*/

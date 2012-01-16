@@ -38,6 +38,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 #include "phys_constants.h"
 #define ONE 1.0
@@ -255,7 +256,7 @@
 			fprintf(stderr,
 				"\nFATAL ERROR: in input_new_patch, soil default ID %d not found for patch %d\n" ,
 				soil_default_object_ID, patch[0].ID);
-			exit(0);
+			exit(EXIT_FAILURE);
 			}
 		} /* end-while */
 	
@@ -274,7 +275,7 @@
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_patch, landuse default ID %d not found for patch %d\n" ,
 					landuse_default_object_ID, patch[0].ID);
-				exit(0);
+				exit(EXIT_FAILURE);
 			}
 		} /* end-while */
 		patch[0].landuse_defaults[0] = &defaults[0].landuse[i];

@@ -89,6 +89,7 @@
 /*	14.		goto 2												*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void	execute_tec(
@@ -250,7 +251,7 @@ void	execute_tec(
 			if ( !check ){
 				fprintf(stderr,"\nERROR:  the tec file is corrupted.");
 				fclose(tecfile[0].tfile);
-				exit(1);
+				exit(EXIT_FAILURE);
 			} /*end if*/
 		} /*end if*/
 		/*--------------------------------------------------------------*/

@@ -29,6 +29,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 #include "phys_constants.h"
 
@@ -77,7 +78,7 @@ struct stratum_default *construct_stratum_defaults(
 			fprintf(stderr,
 				"FATAL ERROR:in construct_stratum_defaults,unable to open defaults file %d. - %s\n",
 				i, default_files[i]);
-			exit(0);
+			exit(EXIT_FAILURE);
 		} /*end if*/
 	
 		printf("\n Reading %s", default_files[i]);
@@ -229,7 +230,7 @@ struct stratum_default *construct_stratum_defaults(
 			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
 			fprintf(stderr,"\n  litter proportions of labile, cell. and lignin must sum to 1.0");
 			fprintf(stderr," \n for default ID %d \n", default_object_list[i].ID);
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		lig_cel_ratio = epc->leaflitr_flig/fcel;
 		/* calculate shielded and unshielded cellulose fraction */
@@ -259,7 +260,7 @@ struct stratum_default *construct_stratum_defaults(
 		if ( (float)(epc->frootlitr_flab + epc->frootlitr_flig + fcel) != 1.0 ){
 			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
 			fprintf(stderr,"\n  froot litter proportions of labile, cell. and lignin must sum to 1.0");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		lig_cel_ratio = epc->frootlitr_flig/fcel;
 		/* calculate shielded and unshielded cellulose fraction */
@@ -285,7 +286,7 @@ struct stratum_default *construct_stratum_defaults(
 			if ( (float)(epc->deadwood_flig + fcel) != 1.0 ){
 				fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
 				fprintf(stderr,"\n  dead wood proportions of labile, cell. and lignin must sum to 1.0");
-				exit(0);
+				exit(EXIT_FAILURE);
 			}
 			lig_cel_ratio = epc->deadwood_flig/fcel;
 			/* calculate shielded and unshielded cellulose fraction */
@@ -311,7 +312,7 @@ struct stratum_default *construct_stratum_defaults(
 			if (epc->deadwood_cn < epc->livewood_cn){
 				fprintf(stderr,"\nFATAL ERROR: construct_canopy_stratum");
 				fprintf(stderr,"\ndeadwood C:N must be > livewood C:N");
-				exit(0); 
+				exit(EXIT_FAILURE); 
 			}
 				*/
 			epc->deadwood_cn = (epc->deadwood_fucel + epc->deadwood_fscel) * CEL_CN

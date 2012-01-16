@@ -24,6 +24,7 @@
 /*	Original code, January 15, 1996.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 struct basin_default *construct_basin_defaults(
 											   int	num_default_files,
@@ -61,7 +62,7 @@ struct basin_default *construct_basin_defaults(
 		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
 			fprintf(stderr,
 				"FATAL ERROR:in construct basine defaults,unable to open defaults file %s.\n",default_files[i]);
-			exit(0);
+			exit(EXIT_FAILURE);
 		} /*end if*/
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/

@@ -50,6 +50,7 @@
 /*	dates increasing by one time step.  						*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct clim_event_sequence construct_dated_clim_sequence(
@@ -85,7 +86,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		fprintf(stderr,
 			"\nFATAL ERROR: in construct_dated_clim_sequence\nunable to open sequence file %s\n",
 			file);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 	
 	printf("\nReading dated sequence %s\n", file);
@@ -111,7 +112,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 			&cur_date.hour,
 			&value) == EOF){
 			fprintf(stderr,"FATAL ERROR: in construct_dated_clim_sequence\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		else{
 			if (julday(cur_date) >= start_date_julian){

@@ -30,6 +30,7 @@
 /*	Removed soil parameters due to new baseflow routine	*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct hillslope_default *construct_hillslope_defaults(
@@ -69,7 +70,7 @@ struct hillslope_default *construct_hillslope_defaults(
 		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
 			fprintf(stderr,
 				"FATAL ERROR:in construct hillslope defaults,unable to open defaults file %d.\n",i);
-			exit(0);
+			exit(EXIT_FAILURE);
 		} /*end if*/
 		
 		/*--------------------------------------------------------------*/

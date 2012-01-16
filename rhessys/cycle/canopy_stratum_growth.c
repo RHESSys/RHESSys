@@ -22,6 +22,7 @@
 /*								*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void	canopy_stratum_growth(
@@ -132,7 +133,7 @@ void	canopy_stratum_growth(
 			stratum[0].defaults[0][0].epc,
 			current_date) != 0){
 			fprintf(stderr,"FATAL ERROR: in allocate_daily_growth");
-			exit(1);
+			exit(EXIT_FAILURE);
 			}
 	}
 	/*--------------------------------------------------------------*/
@@ -144,7 +145,7 @@ void	canopy_stratum_growth(
 		&(stratum[0].cdf)
 		) != 0){
 		fprintf(stderr,"FATAL ERROR: in compute_growth_resp");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	/*--------------------------------------------------------------*/
@@ -171,7 +172,7 @@ void	canopy_stratum_growth(
 			stratum[0].defaults[0][0].epc,
 			command_line) != 0){
 			fprintf(stderr,"FATAL ERROR: in allocate_annual_growth");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -185,7 +186,7 @@ void	canopy_stratum_growth(
 		&(stratum[0].cs),
 		&(stratum[0].cdf))!= 0){
 		fprintf(stderr,"FATAL ERROR: in update_C_stratum_daily");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	/*--------------------------------------------------------------*/
@@ -197,7 +198,7 @@ void	canopy_stratum_growth(
 		&(stratum[0].ndf),
 		&(patch[0].soil_ns))!= 0){
 		fprintf(stderr,"FATAL ERROR: in update_N_stratum_daily");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	}
 	else  {

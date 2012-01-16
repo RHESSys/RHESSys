@@ -65,7 +65,7 @@ void	*alloc(size_t size, char *array_name, char *calling_function)
 			fprintf(stderr,
 				"FATAL ERROR: in malloc, unable to allocate %s for %s\n",
 				array_name, calling_function );
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		else{
 			/*--------------------------------------------------------------*/

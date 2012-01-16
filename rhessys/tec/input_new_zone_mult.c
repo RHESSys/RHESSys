@@ -47,6 +47,7 @@
 /*	grow objects in code.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -142,7 +143,7 @@
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_zone, zone default ID %d not found.\n",
 					default_object_ID);
-				exit(0);
+				exit(EXIT_FAILURE);
 			}
 		} /* end-while */
 		zone[0].defaults[0] = &defaults[0].zone[i];

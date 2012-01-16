@@ -26,6 +26,7 @@
 /*	Original code, January 15, 2003.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 
@@ -140,7 +141,7 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 		fprintf(stderr,
 			"FATAL ERROR:  Cannot open world  execute_redefine input file %s\n",
 			world_input_filename);
-		exit(0);
+		exit(EXIT_FAILURE);
 	} /*end if*/
 
 	printf("\n Redefine using %s", world_input_filename);
@@ -402,6 +403,6 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 	/*	Close the world_input_file.										*/
 	/*--------------------------------------------------------------*/
 	if ( fclose(world_input_file) != 0 )
-		exit(0);
+		exit(EXIT_FAILURE);
 	return;
 } /*end execute_redefine_world_event.c*/

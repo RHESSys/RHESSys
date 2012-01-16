@@ -45,6 +45,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void update_phenology(struct zone_object  *zone,
@@ -387,7 +388,7 @@ void update_phenology(struct zone_object  *zone,
 			cs,ns, cs_litr,ns_litr,cdf_patch,ndf_patch, cdf,ndf, grow_flag)){
 			fprintf(stderr,
 				"FATAL ERROR: in leaf_litfall() from update_phenology()\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		phen->leaflitfallc -= leaflitfallc;
 		if (phen->leaflitfallc < 0)
@@ -414,7 +415,7 @@ void update_phenology(struct zone_object  *zone,
 				cs,ns, cs_litr,ns_litr,cdf_patch,ndf_patch, cdf,ndf, grow_flag)){
 				fprintf(stderr,
 					"FATAL ERROR: in leaf_litfall() from update_phenology()\n");
-				exit(0);
+				exit(EXIT_FAILURE);
 				}
 		}
 	}
@@ -429,7 +430,7 @@ void update_phenology(struct zone_object  *zone,
 			ns_litr,cdf_patch,ndf_patch)){
 			fprintf(stderr,
 				"FATAL ERROR: in froot_litfall() from update_phenology()\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		phen->frootlitfallc -= frootlitfallc;
 		if (phen->frootlitfallc < 0)
@@ -444,7 +445,7 @@ void update_phenology(struct zone_object  *zone,
 		if (ok && compute_deadleaf_turnover(epc,epv, cover_fraction, cs,ns,
 			cs_litr,ns_litr,cdf_patch,ndf_patch,grow_flag)){
 			fprintf(stderr,"FATAL ERROR: in compute_deadleaf_turnover() from update_phenology()\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -457,7 +458,7 @@ void update_phenology(struct zone_object  *zone,
 				ns_litr,cdf_patch,ndf_patch, ndf)){
 				fprintf(stderr,
 					"FATAL ERROR: in cwd_decay() from update_phenology()\n");
-				exit(0);
+				exit(EXIT_FAILURE);
 			}
 		}
 		/*--------------------------------------------------------------*/
@@ -531,7 +532,7 @@ void update_phenology(struct zone_object  *zone,
 			effective_soil_depth)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from update_phenology()\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	}
 

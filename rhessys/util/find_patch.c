@@ -24,6 +24,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct patch_object *find_patch( int patch_ID, int zone_ID, int hill_ID,
@@ -58,7 +59,7 @@ struct patch_object *find_patch( int patch_ID, int zone_ID, int hill_ID,
 	if (fnd == 0){
 		fprintf(stderr,
 			"FATAL ERROR: Could not find hillslope %d in find_patch\n",hill_ID);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	find zones						*/
@@ -77,7 +78,7 @@ struct patch_object *find_patch( int patch_ID, int zone_ID, int hill_ID,
 	if (fnd == 0) {
 		fprintf(stderr,
 			"FATAL ERROR: Could not find zone %d in find_patch\n",zone_ID);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	find patches						*/
@@ -97,7 +98,7 @@ struct patch_object *find_patch( int patch_ID, int zone_ID, int hill_ID,
 		fprintf(stderr,
 			"FATAL ERROR: Could not find patch %d in zone %d hill %d\n",
 			patch_ID, zone_ID, hill_ID);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	return(patch);
 }/*end find.patch.c*/

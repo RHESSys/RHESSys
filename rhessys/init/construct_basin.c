@@ -53,6 +53,7 @@
 /* 		- added a routine to sort hierarchy by elevation 		*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -187,7 +188,7 @@ struct basin_object *construct_basin(
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_basin,basin default ID %d not found.\n",
 				default_object_ID);
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	} /* end-while */
 	basin[0].defaults[0] = &defaults[0].basin[i];
@@ -252,7 +253,7 @@ struct basin_object *construct_basin(
 				printf("Basin-wide  average snow scale %lf is outside tolerance %lf", 
 				check_snow_scale, command_line[0].snow_scale_tol);
 				printf("\n Exiting\n");
-				exit(0);
+				exit(EXIT_FAILURE);
 				}
 			}
 	}

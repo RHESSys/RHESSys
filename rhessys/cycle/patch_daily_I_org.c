@@ -60,6 +60,7 @@
 /*	Excluded stratum of height 0 from computation of	*/
 /*	effective LAI of site.					*/
 /*--------------------------------------------------------------*/
+#include <stdlib.h>
 #include "rhessys.h"
 
 void		patch_daily_I(
@@ -182,7 +183,7 @@ void		patch_daily_I(
 	if (zero_patch_daily_flux(patch, &(patch[0].cdf), &(patch[0].ndf))){
 		fprintf(stderr,
 			"Error in zero_patch_daily_flux() from patch_daily_I.c... Exiting\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if (command_line[0].grow_flag > 0) {
 		/*--------------------------------------------------------------*/
@@ -409,7 +410,7 @@ void		patch_daily_I(
 			command_line
 			) != 0){
 			fprintf(stderr,"fATAL ERROR: in compute_rootzone_moist() ... Exiting\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 			}
 
 
@@ -451,7 +452,7 @@ void		patch_daily_I(
 			&(patch[0].ndf)
 			) != 0){
 			fprintf(stderr,"fATAL ERROR: in compute_potential_decomp() ... Exiting\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 	}
 	return;

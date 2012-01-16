@@ -285,6 +285,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
 #include <time.h>
@@ -380,7 +381,7 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	if (command_line[0].version_flag > 0 ) {
 		printf("RHESSys Version: %s\n", RHESSYS_VERSION);
-		return(1);
+		return(EXIT_SUCCESS);
 	}
 
 
@@ -485,7 +486,7 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	/*	The end.													*/
 	/*--------------------------------------------------------------*/
-	return(1);
+	return(EXIT_SUCCESS);
 	
 } /*end main*/
 

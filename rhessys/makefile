@@ -5,6 +5,8 @@ CFLAGS = -O
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
+OS := $(shell uname)
+
 OBJECTS = \
 $(OBJ)/Ksat_z_curve.o \
 $(OBJ)/add_csv_growth_headers.o \
@@ -837,7 +839,13 @@ $(OBJ)/main.o: main.c setversion
 	$(CC) -c $(CFLAGS) -I include main.c -o $(OBJ)/main.o
 
 setversion:
+ifeq ($(OS), Darwin)
 	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' -i '' ./main.c	
+else ifeq ($(OS), Linux)
+	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
+else
+	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
+endif
 
 install:
 	cp $(PGM) $(RHESSYS_BIN)

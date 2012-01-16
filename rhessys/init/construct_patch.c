@@ -38,6 +38,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 #include "phys_constants.h"
 
@@ -291,7 +292,7 @@ struct patch_object *construct_patch(
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_patch, soil default ID %d not found for patch %d\n" ,
 				soil_default_object_ID, patch[0].ID);
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	} /* end-while */
 	patch[0].soil_defaults[0] = &defaults[0].soil[i];
@@ -311,7 +312,7 @@ struct patch_object *construct_patch(
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_patch, landuse default ID %d not found for patch %d\n" ,
 				landuse_default_object_ID, patch[0].ID);
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	} /* end-while */
 	patch[0].landuse_defaults[0] = &defaults[0].landuse[i];
@@ -402,7 +403,7 @@ struct patch_object *construct_patch(
 	if ((patch[0].hourly = (struct patch_hourly_object *) calloc(1,
 		sizeof(struct patch_hourly_object))) == NULL ){
 		fprintf(stderr,"FATAL ERROR: in patch_hourly\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	
 	/*--------------------------------------------------------------*/

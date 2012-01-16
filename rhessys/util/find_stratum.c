@@ -24,6 +24,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 struct canopy_strata_object *find_stratum(
@@ -65,7 +66,7 @@ struct canopy_strata_object *find_stratum(
 	if (fnd == 0) {
 		fprintf(stderr,
 			"FATAL ERROR: Could not find basin %d in find_stratum\n",basin_ID);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	find hillslopes												*/
@@ -85,7 +86,7 @@ struct canopy_strata_object *find_stratum(
 		fprintf(stderr,
 			"FATAL ERROR: Could not find hillslope %d in find_stratum\n",
 			hill_ID);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	find zones						*/
@@ -104,7 +105,7 @@ struct canopy_strata_object *find_stratum(
 	if (fnd == 0) {
 		fprintf(stderr,
 			"FATAL ERROR: Could not find zone %d in find_stratum\n",zone_ID);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	find patches						*/
@@ -126,7 +127,7 @@ struct canopy_strata_object *find_stratum(
 			patch_ID,
 			zone_ID,
 			hill_ID);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
 	/*	find stratum						*/
@@ -149,7 +150,7 @@ struct canopy_strata_object *find_stratum(
 			patch_ID,
 			zone_ID,
 			hill_ID);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	return(stratum);
 }/*end find.stratum*/
