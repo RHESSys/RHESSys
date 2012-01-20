@@ -1,5 +1,5 @@
 PGM  = rhessys5.14.7
-VERSION = 5.14.7
+VERSION = 5.14.6
 CC = gcc 
 CFLAGS = -O
 RHESSYS_BIN = /usr/local/bin

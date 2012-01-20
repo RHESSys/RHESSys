@@ -69,15 +69,7 @@ double compute_potential_N_uptake(
 	Assess the carbon availability on the basis of this day's
 	gross production and maintenance respiration costs
 	----------------------------------------------------------------*/
-	day_gpp = cdf->psn_to_cpool;
-	if (epc.veg_type == TREE){
-		day_mresp = cdf->leaf_day_mr + cdf->leaf_night_mr + cdf->froot_mr
-			+ cdf->livestem_mr + cdf->livecroot_mr;
-	}
-	else{
-		day_mresp = cdf->leaf_day_mr + cdf->leaf_night_mr + cdf->froot_mr;
-	}
-	cs->availc = day_gpp - day_mresp;
+	cs->availc = cdf->psn_to_cpool-cdf->total_mr;
 	/* no allocation when the daily C balance is negative */
 	if (cs->availc < 0.0) cs->availc = 0.0;
 	/* test for cpool deficit */

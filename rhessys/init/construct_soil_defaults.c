@@ -130,7 +130,7 @@ struct soil_default *construct_soil_defaults(
 		fscanf(default_file,"%lf",&(default_object_list[i].snow_melt_Tcoef));
 		read_record(default_file, record);
 
-			default_object_list[i].snow_melt_Tcoef *= command_line[0].tmp_value;
+			/* default_object_list[i].snow_melt_Tcoef *= command_line[0].tmp_value; */
 
 		fscanf(default_file,"%lf",&(default_object_list[i].max_heat_capacity));
 		read_record(default_file, record);
