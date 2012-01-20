@@ -118,11 +118,14 @@ double	compute_vascular_stratum_conductance(
 			LWP_min_spring,LWP_stom_closure);
 
 		if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > stratum[0].rootzone.potential_sat)) {
-			wilting_point = exp(-1.0*log(-1.0*LWP_stom_closure/patch[0].soil_defaults[0][0].psi_air_entry) 
+			patch[0].wilting_point = exp(-1.0*log(-1.0*LWP_stom_closure/patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
-			if (patch[0].rz_storage/(min(patch[0].sat_deficit, patch[0].rootzone.potential_sat)) 
-			 < wilting_point) m_LWP  = 0.0;
+			patch[0].wilting_point = patch[0].wilting_point * (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat)) ;
+			if (patch[0].rz_storage < patch[0].wilting_point) m_LWP = 0.0;
+
 			}
+
+		
 		}
 	else m_LWP=1.0;
 
