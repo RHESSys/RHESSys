@@ -641,6 +641,10 @@ void zone_daily_I(
 		if ( temp != -999.0 ){
 			zone[0].metv.tavg = temp-(zone[0].z - zone[0].base_stations[0][0].z )
 				* zone[0].defaults[0][0].lapse_rate;
+
+			if (command_line[0].tchange_flag > 0)  {
+				zone[0].metv.tavg += (command_line[0].tmax_add +  command_line[0].tmin_add)/2.0;
+			}
 		}
 		else{
 			zone[0].metv.tavg = (zone[0].metv.tmin + zone[0].metv.tmax) /2.0 ;
