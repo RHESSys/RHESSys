@@ -359,7 +359,7 @@ void		patch_daily_F(
 	double	water_below_field_cap;
 	double 	duration, irrigation;
 	double  fertilizer_NO3, fertilizer_NH4;
-	double	resp;
+	double	resp, transpiration_reduction_percent;
 	double 	surfaceN_to_soil;
 	double	FERT_TO_SOIL;
 	double	pond_height;
@@ -1177,15 +1177,16 @@ void		patch_daily_F(
 	/*	First guess at change in sat storage to meet demand.	*/
 	/*--------------------------------------------------------------*/
 	delta_unsat_zone_storage = min(unsat_zone_patch_demand, patch[0].rz_storage);
-	
+
 	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO)) {
 	patch[0].wilting_point = exp(-1.0*log(-1.0*patch[0].soil_defaults[0][0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
 	patch[0].wilting_point = patch[0].wilting_point * (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
 	delta_unsat_zone_storage = min(patch[0].rz_storage-patch[0].wilting_point, delta_unsat_zone_storage);
 	delta_unsat_zone_storage = max(delta_unsat_zone_storage, 0.0);
-	}
+	
 
+	}
 	patch[0].rz_storage = patch[0].rz_storage - delta_unsat_zone_storage;
 	unsat_zone_patch_demand = unsat_zone_patch_demand - delta_unsat_zone_storage;			
 
@@ -1202,8 +1203,14 @@ void		patch_daily_F(
 	/*	Reduce the stratum actual transpiration and compute 	*/
 	/*	final N-uptake and daily allocation as a function 	*/
 	/*	of available C and N (if growth flag is on)		*/
-	/*	Note that this will not reduce CO2 flux as well.	*/
+	/* 	we reduce carbon flux by current water use efficiency 	*/
 	/*--------------------------------------------------------------*/
+
+	if (( unsat_zone_patch_demand_initial + sat_zone_patch_demand_initial) > ZERO)
+		transpiration_reduction_percent = (1.0-(unsat_zone_patch_demand + sat_zone_patch_demand)/(unsat_zone_patch_demand_initial + sat_zone_patch_demand_initial));
+	else
+		transpiration_reduction_percent = 1.0;
+
 	if ( unsat_zone_patch_demand_initial > 0 ){
 		patch[0].exfiltration_unsat_zone = patch[0].exfiltration_unsat_zone
 		* (1 - unsat_zone_patch_demand / unsat_zone_patch_demand_initial );
@@ -1228,6 +1235,15 @@ void		patch_daily_F(
 				patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
 			if ( (strata[0].defaults[0][0].epc.veg_type != NON_VEG) )
 			 {
+
+				if (transpiration_reduction_percent < 1.0) {
+				strata->cdf.psn_to_cpool = strata->cdf.psn_to_cpool  * transpiration_reduction_percent;
+				strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
+				strata->gs_sunlit *= transpiration_reduction_percent;		
+				strata->gs_shade *= transpiration_reduction_percent;		
+				strata->mult_conductance.LWP *= transpiration_reduction_percent;
+				}
+
 				vegtype=1;
 				canopy_stratum_growth(
 					world,
