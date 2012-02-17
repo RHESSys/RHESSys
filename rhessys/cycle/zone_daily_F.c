@@ -217,7 +217,8 @@ void		zone_daily_F(
 		}
 		else zone[0].radrat = 1.0;
 		/*zone[0].radrat = 1.0;*/
-		if (zone[0].radrat < 0.4) {
+		/* EG edit: when radrat equals zero, tmax= -Inf and PSN=Nan */
+		if ( zone[0].radrat == 0.0) {
 			zone[0].radrat = 1.0;
 		}
 		/*--------------------------------------------------------------*/
@@ -251,6 +252,10 @@ void		zone_daily_F(
 		/*--------------------------------------------------------------*/
 		zone[0].metv.tmax = zone[0].metv.tmax + zone[0].LAI_temp_adjustment;
 	} /*end if*/
+	/* EG edit: LAI temp adjustment was pushing tmax below tmin*/
+	if (zone[0].metv.tmax < zone[0].metv.tmin) {
+		zone[0].metv.tmax = zone[0].metv.tmin + 1.0;
+	}
 	/*--------------------------------------------------------------*/
 	/*	If no PAR or only diffuse PAR is given get the other PAR's	*/
 	/*	We assume the ratio of diffuse to direct PAR is a closed 	*/

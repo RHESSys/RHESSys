@@ -1231,6 +1231,7 @@ struct patch_object
 	double	Kdown_diffuse_final;	/* Kj/(m^2*day)	*/
 	double	Ksat_0;			/* meteres/day  */
 	double  Ksat_vertical;		/* meters/day	*/
+	double  lcover_albedo; /* 0-1 */
 	double	lna;			/* unitless	*/
 	double  lai;			/* unitless	*/
 	double	Lup_canopy;		/* Kj/(m^2*day)	*/
@@ -1300,6 +1301,7 @@ struct patch_object
 	double	unsat_drainage;		/* m water	*/
 	double	PET;		/* m water	*/
 	double	PE;		/* m water	*/
+	double  PETrad; /* m water */
 	double	rz_drainage;		/* m water by Taehee Hwang */
 	double  wind;			/* m/s		*/
 	double  wind_final;		/* m/s		*/

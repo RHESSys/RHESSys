@@ -343,7 +343,7 @@ void		patch_daily_F(
 	int	vegtype;
 	double	cap_rise, tmp, wilting_point;
 	double	delta_unsat_zone_storage;
-	double  infiltration;
+	double  infiltration, lhvap;
 	double	infiltration_ini;
 	double	infiltration_fin;
 	double	net_inflow, theta;
@@ -378,6 +378,17 @@ void		patch_daily_F(
 	patch[0].PAR_diffuse = zone[0].PAR_diffuse;
 	patch[0].evaporation_surf = 0.0;
 	patch[0].potential_evaporation = 0.0;
+
+
+	
+	/*--------------------------------------------------------------*/
+	/* calculate a radiation based PET (for information/not used)		*/
+	/*--------------------------------------------------------------*/
+
+	lhvap =(2.5023e6 - 2430.54 * zone[0].metv.tavg);
+	patch[0].PETrad = (patch[0].Kdown_direct + patch[0].Kdown_diffuse) *
+								 (1.0 - patch[0].lcover_albedo) / lhvap ; 
+
 
 	/*--------------------------------------------------------------*/
 	/*	Set the patch rain and snow throughfall equivalent to the	*/
