@@ -217,6 +217,9 @@ void		zone_daily_F(
 		}
 		else zone[0].radrat = 1.0;
 		/*zone[0].radrat = 1.0;*/
+		if (zone[0].radrat < 0.4) {
+			zone[0].radrat = 1.0;
+		}
 		/*--------------------------------------------------------------*/
 		/*	LAI compensation (unitless)									*/
 		/*																*/

@@ -82,6 +82,7 @@ struct base_station_object **construct_ascii_grid (
 	int 	num_base_stations;
 	int		i;
 	int		j;
+		int tmp;
 
 	long	julday();
 	long	first_date_julian;
@@ -104,20 +105,26 @@ struct base_station_object **construct_ascii_grid (
 	char	buffertmax[MAXSTR*100];
 	char	buffertmin[MAXSTR*100];
 	char	bufferrain[MAXSTR*100];
-	char	bufferalt1[MAXSTR*100];
+	char	bufferdaytime_rain_duration[MAXSTR*100];
+	char	bufferndep_NO3[MAXSTR*100];
+	char	bufferndep_NH4[MAXSTR*100];
 	char	*tokc;
 	char	*last;
 	char	*laste;
 	char	*lasttmax;
 	char	*lasttmin;
 	char	*lastrain;
-	char	*lastalt1;
+	char	*lastndep_NO3;
+	char	*lastndep_NH4;
+	char	*lastdaytime_rain_duration;
 	
 	FILE*	base_station_file;
 	FILE*   tmax_file;
 	FILE*   tmin_file;
 	FILE*   rain_file;	
-	FILE*   alt1_clim_file;	
+	FILE*   daytime_rain_duration_file;	
+	FILE*   ndep_NO3_file;	
+	FILE*   ndep_NH4_file;	
 	
 
 	/* allocate daily_optional_clim_sequence_flags struct and make sure set to 0 */
@@ -164,13 +171,19 @@ struct base_station_object **construct_ascii_grid (
 				for ( j=0; j < num_daily_optional; ++j ) {
 					fgets(buffer, sizeof(buffer), base_station_file);
 					if (buffer != NULL) {
-						if (strcmp(buffer, "atm_trans") == 0 ) {
+						if (strncmp(buffer, "atm_trans",9) == 0 ) {
 							daily_flags.atm_trans = 1;
-						} else if (strcmp(buffer, "CO2") == 0) {
+						} else if (strncmp(buffer, "CO2",3) == 0) {
 							daily_flags.CO2 = 1;
 						} 
-						else if (strcmp(buffer, "daytime_rain_duration") ) {
+						else if (strncmp(buffer, "daytime_rain_duration",21) == 0 ) {
 							daily_flags.daytime_rain_duration = 1;
+						} 
+						else if (strncmp(buffer, "ndep_NH4",8) == 0 ) {
+							daily_flags.ndep_NH4 = 1;
+						} 
+						else if (strncmp(buffer, "ndep_NO3",8) == 0 ) {
+							daily_flags.ndep_NO3 = 1;
 						} 
 					}  
 				}
@@ -266,6 +279,14 @@ struct base_station_object **construct_ascii_grid (
 			   base_stations[i][0].daily_clim[0].daytime_rain_duration = (double *) 
 			alloc(duration.day * sizeof(double),"day_rain_dur", "construct_ascii_grid");
 
+		}
+		if ( daily_flags.ndep_NO3 == 1 ) {
+			   base_stations[i][0].daily_clim[0].ndep_NO3 = (double *) 
+			alloc(duration.day * sizeof(double),"ndep_NO3", "construct_ascii_grid");
+		}
+		if ( daily_flags.ndep_NH4 == 1 ) {
+			   base_stations[i][0].daily_clim[0].ndep_NH4 = (double *) 
+			alloc(duration.day * sizeof(double),"ndep_NH4", "construct_ascii_grid");
 		}
 		/*--------------------------------------------------------------*/
 		/*	Allocate the yearly clim object.								*/
@@ -366,9 +387,10 @@ struct base_station_object **construct_ascii_grid (
 		fgets(buffer, sizeof(buffer), rain_file);
 	}
 	
-	/* ALT1 */
-	if ( (alt1_clim_file = fopen((char*)strcat(daily_clim_prefix, ".daytime_rain_duration"), "r"))  == NULL ){
-		fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\nunable to open alt1 sequence file\n");
+	/* DAYTIME RAIN DURATION */
+	if (daily_flags.daytime_rain_duration==1) {
+	if ( (daytime_rain_duration_file = fopen((char*)strcat(daily_clim_prefix, ".daytime_rain_duration"), "r"))  == NULL ){
+		fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\nunable to open daytime_rain_duration sequence file\n");
 		exit(EXIT_FAILURE);
 	} else {
 		printf("Opened rain duration file %s\n", daily_clim_prefix);
@@ -376,8 +398,42 @@ struct base_station_object **construct_ascii_grid (
 	}
 	/* skip 4 lines: # grid cells, date, ID & elev */
 	for ( i = 0; i < 4; i++) {							
-		fgets(buffer, sizeof(buffer), alt1_clim_file);
+		fgets(buffer, sizeof(buffer), daytime_rain_duration_file);
 	}
+	}
+
+
+	/* NDEP_NH4 */
+
+	if (daily_flags.ndep_NH4==1) {
+	if ( (ndep_NH4_file = fopen((char*)strcat(daily_clim_prefix, ".ndep_NH4"), "r"))  == NULL ){
+		fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\nunable to open ndep_NH4 sequence file\n");
+		exit(EXIT_FAILURE);
+	} else {
+		printf("Opened ndep_NH4 file %s\n", daily_clim_prefix);
+		strcpy(daily_clim_prefix, old_prefix);			// Restore the original daily_clim prefix
+	}
+	/* skip 4 lines: # grid cells, date, ID & elev */
+	for ( i = 0; i < 4; i++) {							
+		fgets(buffer, sizeof(buffer), ndep_NH4_file);
+	}
+	}
+
+	/* NDEP_NO3 */
+	if (daily_flags.ndep_NH4==1) {
+	if ( (ndep_NO3_file = fopen((char*)strcat(daily_clim_prefix, ".ndep_NO3"), "r"))  == NULL ){
+		fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\nunable to open ndep_NO3 sequence file\n");
+		exit(EXIT_FAILURE);
+	} else {
+		printf("Opened ndep_NO3 file %s\n", daily_clim_prefix);
+		strcpy(daily_clim_prefix, old_prefix);			// Restore the original daily_clim prefix
+	}
+	/* skip 4 lines: # grid cells, date, ID & elev */
+	for ( i = 0; i < 4; i++) {							
+		fgets(buffer, sizeof(buffer), ndep_NO3_file);
+	}
+	}
+	
 	
 	/*--------------------------------------------------------------*/
 	/*	Scan forward in the sequences until the start date.			*/
@@ -392,9 +448,21 @@ struct base_station_object **construct_ascii_grid (
 		} else if ( fgets(buffer, sizeof(buffer), rain_file) == NULL  ) {
 			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - rain start date beyond eof"); 
 			exit(EXIT_FAILURE);
-		} else if ( fgets(buffer, sizeof(buffer), alt1_clim_file) == NULL  ) {
-			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - alt1 start date beyond eof"); 
+		} else if (daily_flags.daytime_rain_duration == 1) {
+			if ( fgets(buffer, sizeof(buffer), daytime_rain_duration_file) == NULL  ) {
+			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - daytime_rain_duration start date beyond eof"); 
 			exit(EXIT_FAILURE);
+			}
+		} else if (daily_flags.ndep_NO3 == 1) {
+		        if ( fgets(buffer, sizeof(buffer), ndep_NO3_file) == NULL  ) {
+			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - ndep_NO3 start date beyond eof"); 
+			exit(EXIT_FAILURE);
+			}
+		} else if (daily_flags.ndep_NH4 == 1) {
+			 if ( fgets(buffer, sizeof(buffer), ndep_NH4_file) == NULL  ) {
+			fprintf(stderr, "FATAL ERROR: in construct_ascii_grid\n - ndep_NH4 start date beyond eof"); 
+			exit(EXIT_FAILURE);
+			}
 		}
 	}
 	
@@ -421,11 +489,24 @@ struct base_station_object **construct_ascii_grid (
 			fprintf(stderr,"\n rain end date beyond end of clim sequence\n");
 			exit(EXIT_FAILURE);
 		}
-		if (fgets(bufferalt1, sizeof(bufferalt1), alt1_clim_file)==NULL) {
+		if (daily_flags.daytime_rain_duration == 1) {
+		if (fgets(bufferdaytime_rain_duration, sizeof(bufferdaytime_rain_duration), daytime_rain_duration_file)==NULL) {
 			fprintf(stderr,"FATAL ERROR: in construct_ascii_grid \n");
 			fprintf(stderr,"\n optional clim end date beyond end of clim sequence\n");
 			exit(EXIT_FAILURE);
-		}
+		} }
+		if (daily_flags.ndep_NH4 == 1) {
+		if (fgets(bufferndep_NH4, sizeof(bufferndep_NH4), ndep_NH4_file)==NULL) {
+			fprintf(stderr,"FATAL ERROR: in construct_ascii_grid \n");
+			fprintf(stderr,"\n optional clim end date beyond end of clim sequence\n");
+			exit(EXIT_FAILURE);
+		}}
+		if (daily_flags.ndep_NO3 == 1) {
+		if (fgets(bufferndep_NO3, sizeof(bufferndep_NO3), ndep_NO3_file)==NULL) {
+			fprintf(stderr,"FATAL ERROR: in construct_ascii_grid \n");
+			fprintf(stderr,"\n optional clim end date beyond end of clim sequence\n");
+			exit(EXIT_FAILURE);
+		}}
 		for (i=0; i < num_base_stations; i++) {
 			
 			if (i==0) {
@@ -435,8 +516,18 @@ struct base_station_object **construct_ascii_grid (
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmin[j]));
 				tokc = strtok_r(bufferrain, " ", &lastrain);
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].rain[j]));
-				tokc = strtok_r(bufferalt1, " ", &lastalt1);
-				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
+				if (daily_flags.daytime_rain_duration == 1) {
+					tokc = strtok_r(bufferdaytime_rain_duration, " ", &lastdaytime_rain_duration);
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
+				}
+				if (daily_flags.ndep_NO3 == 1) {
+					tokc = strtok_r(bufferndep_NO3, " ", &lastndep_NO3);
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NO3[j]));
+				}
+				if (daily_flags.ndep_NH4 == 1) {
+					tokc = strtok_r(bufferndep_NH4, " ", &lastndep_NH4);
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
+				}
 			} else {
 				tokc = strtok_r(NULL," ",&lasttmax);
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmax[j]));
@@ -444,8 +535,18 @@ struct base_station_object **construct_ascii_grid (
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmin[j]));
 				tokc = strtok_r(NULL," ",&lastrain);
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].rain[j]));
-				tokc = strtok_r(NULL," ",&lastalt1);
-				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
+				if (daily_flags.daytime_rain_duration == 1) {
+					tokc = strtok_r(NULL," ",&lastdaytime_rain_duration);
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
+				}
+				if (daily_flags.ndep_NO3 == 1) {
+					tokc = strtok_r(NULL," ",&lastndep_NO3);
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NO3[j]));
+				}
+				if (daily_flags.ndep_NH4 == 1) {
+					tokc = strtok_r(NULL," ",&lastndep_NH4);
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
+				}
 			}
 			
 
@@ -455,7 +556,9 @@ struct base_station_object **construct_ascii_grid (
 	fclose(tmax_file);
 	fclose(tmin_file);
 	fclose(rain_file);
-	fclose(alt1_clim_file);
+	if (daily_flags.daytime_rain_duration == 1) fclose(daytime_rain_duration_file);
+	if (daily_flags.ndep_NO3 == 1) fclose(ndep_NO3_file);
+	if (daily_flags.ndep_NH4 == 1) fclose(ndep_NH4_file);
 	return(base_stations);
 	
 }
