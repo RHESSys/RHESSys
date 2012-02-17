@@ -417,6 +417,7 @@ struct patch_object *construct_patch(
 	patch[0].litter.gsurf_slope = 0.0;
 	patch[0].litter.gsurf_intercept = 0.0;
 	patch[0].rootzone.depth =  0.0;
+  patch[0].lcover_albedo = 0.0;
 	
 	/*--------------------------------------------------------------*/
 	/*	Construct the strata in this patch.						*/
