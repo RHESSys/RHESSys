@@ -417,7 +417,6 @@ struct patch_object *construct_patch(
 	patch[0].litter.gsurf_slope = 0.0;
 	patch[0].litter.gsurf_intercept = 0.0;
 	patch[0].rootzone.depth =  0.0;
-  patch[0].lcover_albedo = 0.0;
 	
 	/*--------------------------------------------------------------*/
 	/*	Construct the strata in this patch.						*/
@@ -441,9 +440,6 @@ struct patch_object *construct_patch(
 			* patch[0].canopy_strata[i][0].cover_fraction;
 		patch[0].soil_defaults[0][0].psi_max_veg +=
 			patch[0].canopy_strata[i][0].defaults[0][0].epc.psi_close
-			* patch[0].canopy_strata[i][0].cover_fraction;
-		patch[0].lcover_albedo +=
-			patch[0].canopy_strata[i][0].defaults[0][0].K_reflectance
 			* patch[0].canopy_strata[i][0].cover_fraction;
 		patch[0].litter.gl_c +=
 			patch[0].canopy_strata[i][0].defaults[0][0].epc.gl_c

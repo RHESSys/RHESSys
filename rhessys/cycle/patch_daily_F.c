@@ -380,16 +380,6 @@ void		patch_daily_F(
 	patch[0].potential_evaporation = 0.0;
 
 
-	
-	/*--------------------------------------------------------------*/
-	/* calculate a radiation based PET (for information/not used)		*/
-	/*--------------------------------------------------------------*/
-
-	lhvap =(2.5023e6 - 2430.54 * zone[0].metv.tavg);
-	patch[0].PETrad = (patch[0].Kdown_direct + patch[0].Kdown_diffuse) *
-								 (1.0 - patch[0].lcover_albedo) / lhvap ; 
-
-
 	/*--------------------------------------------------------------*/
 	/*	Set the patch rain and snow throughfall equivalent to the	*/
 	/*	rain and snow coming down over the zone.					*/
@@ -965,9 +955,6 @@ void		patch_daily_F(
 			/*--------------------------------------------------------------*/
 			patch[0].evaporation +=	strata[0].cover_fraction
 				* (strata[0].evaporation +	strata[0].sublimation) ;
-			patch[0].PET +=	strata[0].cover_fraction
-				* (strata[0].evaporation +	strata[0].sublimation) ;
-			
 			/*--------------------------------------------------------------*/
 			/*      Add up canopy snow and rain stored for water balance.   */
 			/*--------------------------------------------------------------*/
@@ -991,6 +978,12 @@ void		patch_daily_F(
 			}
 		}
 	}
+
+			/*--------------------------------------------------------------*/
+		/* add canopy evaporation and snow sublimation to PET						*/
+			/*--------------------------------------------------------------*/
+		patch[0].PET = patch[0].evaporation;
+
 	if ( command_line[0].verbose_flag > 1 ) {
 		printf("\n%ld %ld %ld  -335.1 ",
 			current_date.year, current_date.month, current_date.day);
@@ -1234,6 +1227,13 @@ void		patch_daily_F(
 		patch[0].transpiration_sat_zone = patch[0].transpiration_sat_zone
 		* (1 - sat_zone_patch_demand /  sat_zone_patch_demand_initial );
 		}
+
+
+	/*--------------------------------------------------------------*/
+	/* add soil evap to PET																					*/
+	/*--------------------------------------------------------------*/
+
+	patch[0].PET += patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone;
 
 	/*--------------------------------------------------------------*/
 	/* in order to restrict denitri/nitrific on non-veg patches type */

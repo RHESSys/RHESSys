@@ -62,7 +62,7 @@ void	output_basin(			int routing_flag,
 	double apsn, alai, acrain;
 	double abase_flow, hbase_flow,  hstreamflow_N;
 	double	aacctrans, var_acctrans, var_trans;
-	double apetrad, apet, adC13, amortality_fract, apcp;
+	double aPET, adC13, amortality_fract, apcp;
 	double	hgw, hgwN;
 	double atmin, atmax, asnow;
 	double	hgwQout, hgwNout;
@@ -93,6 +93,7 @@ void	output_basin(			int routing_flag,
 	atranspiration = 0.0  ;
 	astreamflow = 0.0;
 	apsn = 0.0 ;
+	aPET = 0.0;
 	aarea =  0.0 ;
 	abase_flow = 0.0;
 	hbase_flow = 0.0;
@@ -107,8 +108,6 @@ void	output_basin(			int routing_flag,
 	aacctrans = 0.0; 
 	basin_area = 0.0;
 	zone_area = 0.0;
-	apet = 0.0;
-	apetrad = 0.0;
 	adC13 = 0.0;
 	amortality_fract = 0.0;
 	apcp = 0.0;
@@ -147,8 +146,7 @@ void	output_basin(			int routing_flag,
 				if (patch[0].snowpack.water_equivalent_depth > 0.001)
 					aperc_snow += patch[0].area;
 
-				apet += (patch[0].PET) * patch[0].area;
-				apetrad += (patch[0].PETrad) * patch[0].area;
+				aPET += (patch[0].PET) * patch[0].area;
 				alitter_store += patch[0].litter.rain_stored * patch[0].area;
 				adetention_store += patch[0].detention_store*patch[0].area;
 				aacctrans += patch[0].acc_year_trans * patch[0].area; 
@@ -209,8 +207,7 @@ void	output_basin(			int routing_flag,
   atmax /= zone_area;
   asnow /= zone_area;
 
-	apet /=  aarea;
-	apetrad /=  aarea;
+	aPET /=  aarea;
 	acrain /=  aarea;
 	arain_throughfall /=  aarea;
 	adetention_store /= aarea;
@@ -304,7 +301,7 @@ void	output_basin(			int routing_flag,
 		var_trans,
 		aacctrans*1000,
 		var_acctrans,
-		apet*1000, apetrad*1000,adC13, apcp*1000.0, amortality_fract*100,
+		aPET*1000,adC13, apcp*1000.0, amortality_fract*100,
 	  atmax, atmin, asnow*1000.0 
 		);
 
