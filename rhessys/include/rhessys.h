@@ -1554,7 +1554,7 @@ struct	command_line_object
 	int		prev_flag;
 	int		gw_flag;
 	int		tchange_flag;
-	int		std_flag;
+	int		stdev_flag;
 	int		precip_scale_flag;
 	int		snow_scale_flag;
 	int		noredist_flag;
