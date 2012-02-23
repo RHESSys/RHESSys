@@ -70,7 +70,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].gridded_netcdf_flag = 0;
 	command_line[0].grow_flag = 0;
 	command_line[0].std_scale = 0;
-	command_line[0].std_flag = 0;
+	command_line[0].stdev_flag = 0;
 	command_line[0].road_flag = 1;
 	command_line[0].prefix_flag = 0;
 	command_line[0].verbose_flag = 0;
@@ -304,7 +304,7 @@ struct	command_line_object	*construct_command_line(
 			/*-------------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-std") == 0 ){
 				i++;
-				command_line[0].std_flag = 1;
+				command_line[0].stdev_flag = 1;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
 					fprintf(stderr,"FATAL ERROR: Value for soil moisture std not specified\n");
 					exit(EXIT_FAILURE);
