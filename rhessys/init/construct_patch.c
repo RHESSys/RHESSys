@@ -120,7 +120,7 @@ struct patch_object *construct_patch(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(mpar));
 	read_record(world_file, record);
-	if (command_line[0].std_flag == 1) {
+	if (command_line[0].stdev_flag == 1) {
 		fscanf(world_file,"%lf",&(patch[0].std));
 		read_record(world_file, record);
 		patch[0].std = patch[0].std*command_line[0].std_scale;
