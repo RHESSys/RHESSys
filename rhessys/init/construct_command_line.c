@@ -302,7 +302,7 @@ struct	command_line_object	*construct_command_line(
 			/*	if this flag is set there must be an extra variable in the worldfile */
 			/*	at the patch level which inputs a std for that patch 	*/	
 			/*-------------------------------------------------*/
-			else if ( strcmp(main_argv[i],"-std") == 0 ){
+			else if ( strcmp(main_argv[i],"-stdev") == 0 ){
 				i++;
 				command_line[0].stdev_flag = 1;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
