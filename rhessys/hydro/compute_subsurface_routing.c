@@ -849,6 +849,9 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].acc_year.leach += (patch[0].soil_ns.leach+patch[0].surface_ns_leach);
 			patch[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss;
 			patch[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss;
+			patch[0].acc_year.streamflow += patch[0].streamflow;
+			patch[0].acc_year.Qout_total += patch[0].Qout_total;
+			patch[0].acc_year.Qin_total += patch[0].Qin_total;
 			patch[0].acc_year.psn += patch[0].net_plant_psn;
 			patch[0].acc_year.PET += (patch[0].PE+patch[0].PET);
 
@@ -859,9 +862,11 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 					}
 
 			if (patch[0].snowpack.water_equivalent_depth > patch[0].acc_year.snowpack) {
-				patch[0].acc_year.snowpack = patch[0].snowpack.water_equivalent_depth;
 				patch[0].acc_year.peaksweday = round(patch[0].acc_year.length);
 				}
+
+			patch[0].acc_year.snowpack = max(patch[0].snowpack.water_equivalent_depth, 
+						patch[0].acc_year.snowpack);
 
 			/* transpiration water stress computations */
 			tmp = (patch[0].transpiration_unsat_zone

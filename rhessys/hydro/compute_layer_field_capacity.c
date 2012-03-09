@@ -148,17 +148,6 @@ double	compute_layer_field_capacity(
 						z_layer);
 
 	field_capacity = full_field_capacity - partial_field_capacity;
-	field_capacity = compute_field_capacity( verbose_flag,
-						curve,
-						psi_air_entry,
-						pore_size_index,
-						p3,
-						p4,
-						p_0,
-						p,
-						z_water_table,
-						z_layer,
-						z_surface);
 
 	return(field_capacity);
 

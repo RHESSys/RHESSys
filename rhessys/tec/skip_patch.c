@@ -112,7 +112,7 @@
 	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].Ksat_vertical = ltmp;*/
  	fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);
-	if (command_line[0].std_flag == 1) {
+	if (command_line[0].stdev_flag == 1) {
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].std = ltmp;*/

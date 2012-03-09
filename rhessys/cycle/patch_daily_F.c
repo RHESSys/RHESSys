@@ -424,9 +424,7 @@ void		patch_daily_F(
 		}
 
 
-	if((command_line[0].output_flags.yearly == 1)&&(command_line[0].p != NULL)){
-		patch[0].acc_year.pcp += zone[0].rain + zone[0].snow + irrigation;
-		}
+	patch[0].acc_year.pcp += zone[0].rain + zone[0].snow + irrigation;
 
 
 	/*--------------------------------------------------------------*/

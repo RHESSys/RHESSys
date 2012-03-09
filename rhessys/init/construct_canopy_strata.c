@@ -107,7 +107,6 @@ struct canopy_strata_object *construct_canopy_strata(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].rootzone.depth));
 	read_record(world_file, record);
-
 		if (command_line[0].tmp_value > ZERO)
 			canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
 

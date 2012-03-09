@@ -73,7 +73,7 @@ void	output_patch_state(
 	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30.8f %s",patch[0].original_m, "m_par");
 	fprintf(outfile,"\n          ");
-	if (command_line[0].std_flag == 1) {
+	if (command_line[0].stdev_flag == 1) {
 		fprintf(outfile,"%-30.8f %s",patch[0].std, "std");
 		fprintf(outfile,"\n          ");
 	}

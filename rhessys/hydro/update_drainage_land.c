@@ -133,6 +133,7 @@ void  update_drainage_land(
 	m = patch[0].m ;
 	Ksat = patch[0].soil_defaults[0][0].Ksat_0 ;
 	d=0;
+
 	/*--------------------------------------------------------------*/
 	/*	recalculate gamma based on current saturation deficits  */
 	/*      to account the effect of changes in water table slope 	*/
@@ -270,7 +271,6 @@ void  update_drainage_land(
 	if (command_line[0].noredist_flag == 0) {
 	d=0;
 	for (j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
-
 		neigh = patch[0].innundation_list[d].neighbours[j].patch;  
 		/*--------------------------------------------------------------*/
 		/* first transfer subsurface water and nitrogen */

@@ -48,7 +48,7 @@ void	output_yearly_patch(
 
 
 
-	fprintf(outfile,"%4d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf \n",
 			current_date.year,
 			basinID,
 			hillID,
@@ -73,6 +73,9 @@ void	output_yearly_patch(
 			patch[0].acc_year.snowpack * 1000.0,
 			patch[0].acc_year.maxtrans * 1000.0,
 			patch[0].acc_year.maxpet * 1000.0,
+			patch[0].acc_year.streamflow * 1000.0,
+			patch[0].acc_year.Qin_total * 1000.0,
+			patch[0].acc_year.Qout_total * 1000.0,
 			patch[0].acc_year.rec_wyd,
 			patch[0].acc_year.rec_pet_wyd,
 			patch[0].acc_year.ndays_sat, patch[0].acc_year.ndays_sat70, 
@@ -109,7 +112,10 @@ void	output_yearly_patch(
 	patch[0].acc_year.midsm_wyd = 0;
 	patch[0].acc_year.ndays_sat = 0;
 	patch[0].acc_year.ndays_sat70 = 0;
+	patch[0].acc_year.Qin_total = 0.0;
+	patch[0].acc_year.Qout_total = 0.0;
 	patch[0].acc_year.pcp = 0.0;
+	patch[0].acc_year.streamflow = 0.0;
 
 	return;
 
