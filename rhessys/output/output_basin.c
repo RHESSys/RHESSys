@@ -266,7 +266,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf  %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -302,7 +302,7 @@ void	output_basin(			int routing_flag,
 		aacctrans*1000,
 		var_acctrans,
 		aPET*1000,adC13, apcp*1000.0, amortality_fract*100,
-	  atmax, atmin, asnow*1000.0 
+	  	atmax, atmin, asnow*1000.0 
 		);
 
 	return;

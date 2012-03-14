@@ -80,7 +80,7 @@ void	output_yearly_patch(
 			patch[0].acc_year.rec_pet_wyd,
 			patch[0].acc_year.ndays_sat, patch[0].acc_year.ndays_sat70, 
 			patch[0].acc_year.midsm_wyd,
-			patch[0].area, patch[0].acc_year.PET*1000.0, patch[0].acc_year.pcp*1000.0);
+			patch[0].z, patch[0].acc_year.PET*1000.0, patch[0].acc_year.pcp*1000.0);
 
 
 	/*--------------------------------------------------------------*/
