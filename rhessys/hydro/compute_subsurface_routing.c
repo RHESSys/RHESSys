@@ -128,7 +128,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 	double time_int, tmp;
 	double scale;
 	double theta, m, Ksat, Nout;
-	double NO3_out, NH4_out;
+	double NO3_out, NH4_out, DON_out, DOC_out;
 	double return_flow, excess;
 	double water_balance, infiltration;
 	double innundation_depth;
@@ -214,11 +214,29 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 		if (grow_flag > 0) {
 			patch[0].soil_ns.Qin = 0.0;
 			patch[0].soil_ns.Qout = 0.0;
+			patch[0].streamflow_DON = 0.0;
+			patch[0].streamflow_DOC = 0.0;
 			patch[0].streamflow_N = 0.0;
 			patch[0].surface_ns_Qin = 0.0;
 			patch[0].surface_ns_Qout = 0.0;
+			patch[0].soil_ns.DON_Qin_total = 0.0;
+			patch[0].soil_ns.DON_Qout_total = 0.0;
+			patch[0].soil_cs.DOC_Qin_total = 0.0;
+			patch[0].soil_cs.DOC_Qout_total = 0.0;
+			patch[0].surface_DON_Qin_total = 0.0;
+			patch[0].surface_DON_Qout_total = 0.0;
+			patch[0].surface_DOC_Qin_total = 0.0;
+			patch[0].surface_DOC_Qout_total = 0.0;
 			patch[0].soil_ns.leach = 0.0;
 			patch[0].surface_ns_leach = 0.0;
+			patch[0].soil_ns.DON_Qout = 0.0;
+			patch[0].soil_ns.DON_Qin = 0.0;
+			patch[0].soil_cs.DOC_Qout = 0.0;
+			patch[0].soil_cs.DOC_Qin = 0.0;
+			patch[0].surface_DON_Qout = 0.0;
+			patch[0].surface_DON_Qin = 0.0;
+			patch[0].surface_DOC_Qout = 0.0;
+			patch[0].surface_DOC_Qin = 0.0;
 
 
 		}
@@ -278,8 +296,12 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			-1.0 * patch[0].sat_deficit);
 		
 
-		if (grow_flag > 0)
+		if (grow_flag > 0) {
 			patch[0].soil_ns.nitrate += (patch[0].soil_ns.Qin - patch[0].soil_ns.Qout);
+
+			patch[0].soil_cs.DOC += (patch[0].soil_cs.DOC_Qin - patch[0].soil_cs.DOC_Qout);
+			patch[0].soil_ns.DON += (patch[0].soil_ns.DON_Qin - patch[0].soil_ns.DON_Qout);
+			}
 
 
 		/*--------------------------------------------------------------*/
@@ -309,8 +331,25 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].Qin = 0.0;
 		patch[0].Qout = 0.0;
 		if (grow_flag > 0) {
+			patch[0].soil_cs.DOC_Qout_total += patch[0].soil_cs.DOC_Qout;
+			patch[0].soil_ns.DON_Qout_total += patch[0].soil_ns.DON_Qout;
+			patch[0].soil_cs.DOC_Qin_total += patch[0].soil_cs.DOC_Qin;
+			patch[0].soil_ns.DON_Qin_total += patch[0].soil_ns.DON_Qin;
+			patch[0].surface_DOC_Qout_total += patch[0].surface_DOC_Qout;
+			patch[0].surface_DON_Qout_total += patch[0].surface_DON_Qout;
+			patch[0].surface_DOC_Qin_total += patch[0].surface_DOC_Qin;
+			patch[0].surface_DON_Qin_total += patch[0].surface_DON_Qin;
 			patch[0].soil_ns.Qin = 0.0;
 			patch[0].soil_ns.Qout = 0.0;
+			patch[0].soil_ns.DON_Qout = 0.0;
+			patch[0].soil_ns.DON_Qin = 0.0;
+			patch[0].soil_cs.DOC_Qout = 0.0;
+			patch[0].soil_cs.DOC_Qin = 0.0;
+			patch[0].surface_DON_Qout = 0.0;
+			patch[0].surface_DON_Qin = 0.0;
+			patch[0].surface_DOC_Qout = 0.0;
+			patch[0].surface_DOC_Qin = 0.0;
+			
 		}
 		/*--------------------------------------------------------------*/
 		/*	finalize streamflow and saturation deficits		*/
@@ -335,6 +374,43 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].sat_deficit = 0.0;
 				patch[0].unsat_storage = 0.0;
 				patch[0].rz_storage = 0.0;
+
+				if (grow_flag > 0) {
+					Nout = compute_N_leached(
+						verbose_flag,
+						patch[0].soil_cs.DOC,
+						excess,
+						0.0,
+						0.0,
+						patch[0].m,
+						patch[0].innundation_list[d].gamma / patch[0].area * time_int,
+						patch[0].soil_defaults[0][0].porosity_0,
+						patch[0].soil_defaults[0][0].porosity_decay,
+						patch[0].soil_defaults[0][0].DOM_decay_rate,
+						patch[0].soil_defaults[0][0].active_zone_z,
+						patch[0].soil_defaults[0][0].soil_depth,
+						patch[0].soil_defaults[0][0].mobile_DOC_proportion);
+					patch[0].surface_DOC += Nout;
+					patch[0].soil_cs.DOC -= Nout;
+				}
+				if (grow_flag > 0) {
+					Nout = compute_N_leached(
+						verbose_flag,
+						patch[0].soil_ns.DON,
+						excess,
+						0.0,
+						0.0,
+						patch[0].m,
+						patch[0].innundation_list[d].gamma / patch[0].area * time_int,
+						patch[0].soil_defaults[0][0].porosity_0,
+						patch[0].soil_defaults[0][0].porosity_decay,
+						patch[0].soil_defaults[0][0].DOM_decay_rate,
+						patch[0].soil_defaults[0][0].active_zone_z,
+						patch[0].soil_defaults[0][0].soil_depth,
+						patch[0].soil_defaults[0][0].mobile_DON_proportion);
+					patch[0].surface_DON += Nout;
+					patch[0].soil_ns.DON -= Nout;
+				}
 				if (grow_flag > 0) {
 					Nout = compute_N_leached(
 						verbose_flag,
@@ -362,8 +438,12 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 
 				if (patch[0].drainage_type == STREAM) {
 					if (grow_flag > 0) {
+						patch[0].streamflow_DON += (excess / patch[0].detention_store)*patch[0].surface_DON;
+						patch[0].streamflow_DOC += (excess / patch[0].detention_store)*patch[0].surface_DOC;
 						patch[0].streamflow_N += (excess / patch[0].detention_store)*
 									(patch[0].surface_NO3 + patch[0].surface_NH4);
+						patch[0].surface_DON -= (excess / patch[0].detention_store)*patch[0].surface_DON;
+						patch[0].surface_DOC -= (excess / patch[0].detention_store)*patch[0].surface_DOC;
 						patch[0].surface_NO3 -= (excess / patch[0].detention_store)*patch[0].surface_NO3;
 						patch[0].surface_NH4 -= (excess / patch[0].detention_store)*patch[0].surface_NH4;
 					}
@@ -388,11 +468,17 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 					Qout = excess * patch[0].innundation_list[d].neighbours[j].gamma;
 					NO3_out = Qout / patch[0].detention_store * patch[0].surface_NO3;
 					NH4_out = Qout / patch[0].detention_store * patch[0].surface_NH4;
+					DON_out = Qout / patch[0].detention_store * patch[0].surface_DON;
+					DOC_out = Qout / patch[0].detention_store * patch[0].surface_DOC;
 					Nout = NO3_out + NH4_out;
 					if (neigh[0].drainage_type == STREAM) {
 						neigh[0].Qin_total += Qout * patch[0].area /  neigh[0].area;
 						neigh[0].return_flow +=Qout*patch[0].area/neigh[0].area;
 						if (grow_flag > 0) {
+							neigh[0].streamflow_DOC += 
+								(DOC_out * patch[0].area /neigh[0].area);
+							neigh[0].streamflow_DON += 
+								(DON_out * patch[0].area /neigh[0].area);
 							neigh[0].streamflow_N += 
 								(Nout * patch[0].area /neigh[0].area);
 							neigh[0].surface_ns_leach += 
@@ -403,6 +489,10 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 						neigh[0].Qin_total += Qout * patch[0].area /  neigh[0].area;
 						neigh[0].detention_store += Qout * patch[0].area /  neigh[0].area;
 						if (grow_flag > 0) {
+							neigh[0].surface_DOC += 
+								(DOC_out * patch[0].area / neigh[0].area);
+							neigh[0].surface_DON += 
+								(DON_out * patch[0].area / neigh[0].area);
 							neigh[0].surface_NO3 += 
 								(NO3_out * patch[0].area / neigh[0].area);
 							neigh[0].surface_ns_leach -= 
@@ -416,6 +506,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 						}
 				}
 			if (grow_flag > 0) {
+				patch[0].surface_DOC -= (excess / patch[0].detention_store)*patch[0].surface_DOC;
+				patch[0].surface_DON -= (excess / patch[0].detention_store)*patch[0].surface_DON;
 				patch[0].surface_NO3 -= (excess / patch[0].detention_store)*patch[0].surface_NO3;
 				patch[0].surface_NH4 -= (excess / patch[0].detention_store)*patch[0].surface_NH4;
 				patch[0].surface_ns_leach += (excess / patch[0].detention_store)*patch[0].surface_NO3;
@@ -546,7 +638,11 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 		/* allow infiltration of surface N				*/
 		/*--------------------------------------------------------------*/
 		if ((grow_flag > 0 ) && (infiltration > ZERO)) {
-			patch[0].soil_ns.Qin += ((infiltration / patch[0].detention_store) * patch[0].surface_NO3);
+			patch[0].surface_DOC -= ((infiltration / patch[0].detention_store) * patch[0].surface_DOC);
+			patch[0].surface_DON -= ((infiltration / patch[0].detention_store) * patch[0].surface_DON);
+			patch[0].soil_ns.DON += ((infiltration / patch[0].detention_store) * patch[0].surface_DON);
+			patch[0].soil_cs.DOC += ((infiltration / patch[0].detention_store) * patch[0].surface_DOC);
+			patch[0].soil_ns.nitrate += ((infiltration / patch[0].detention_store) * patch[0].surface_NO3);
 			patch[0].surface_NO3 -= ((infiltration / patch[0].detention_store) * patch[0].surface_NO3);
 			patch[0].soil_ns.sminn += ((infiltration / patch[0].detention_store) * patch[0].surface_NH4);
 			patch[0].surface_NH4 -= ((infiltration / patch[0].detention_store) * patch[0].surface_NH4);
@@ -781,10 +877,12 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			basin[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
 			basin[0].acc_month.mineralized += patch[0].ndf.net_mineralized*scale;
 			basin[0].acc_month.uptake += patch[0].ndf.sminn_to_npool*scale;
-			basin[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
-			basin[0].acc_month.DON_loss+= patch[0].ndf.total_DON_loss * scale;
+			basin[0].acc_month.DON_loss += (patch[0].soil_ns.DON_Qout_total-patch[0].soil_ns.DON_Qout_total) * scale;
+			basin[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total-patch[0].soil_cs.DOC_Qout_total) * scale;
 			basin[0].acc_month.length += 1;
 			basin[0].acc_month.stream_NO3 += patch[0].streamflow_N * scale;
+			basin[0].acc_month.stream_DON += patch[0].streamflow_DON * scale;
+			basin[0].acc_month.stream_DOC += patch[0].streamflow_DOC * scale;
 			basin[0].acc_month.psn += patch[0].net_plant_psn * scale;
 			basin[0].acc_month.lai += patch[0].lai * scale;
 			basin[0].acc_month.leach += (patch[0].soil_ns.leach+patch[0].surface_ns_leach) * scale;
@@ -800,8 +898,10 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			basin[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
 			basin[0].acc_year.mineralized += patch[0].ndf.net_mineralized*scale;
 			basin[0].acc_year.uptake += patch[0].ndf.sminn_to_npool*scale;
-			basin[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
-			basin[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss * scale;
+			basin[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total-patch[0].soil_ns.DON_Qout_total) * scale;
+			basin[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total-patch[0].soil_cs.DOC_Qout_total) * scale;
+			basin[0].acc_year.stream_DON += patch[0].streamflow_DON * scale;
+			basin[0].acc_year.stream_DOC += patch[0].streamflow_DOC * scale;
 			basin[0].acc_year.psn += patch[0].net_plant_psn * scale;
 			basin[0].acc_year.PET += (patch[0].PE+patch[0].PET)*scale;
 
@@ -826,8 +926,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate;
 			patch[0].acc_month.mineralized += patch[0].ndf.net_mineralized;
 			patch[0].acc_month.uptake += patch[0].ndf.sminn_to_npool;
-			patch[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss;
-			patch[0].acc_month.DON_loss += patch[0].ndf.total_DON_loss;
+			patch[0].acc_month.DON_loss += (patch[0].soil_ns.DON_Qout_total-patch[0].soil_ns.DON_Qout_total);
+			patch[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total-patch[0].soil_cs.DOC_Qout_total);
 			patch[0].acc_month.psn += patch[0].net_plant_psn;
 			patch[0].acc_month.snowpack = max(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
 			patch[0].acc_month.lai = max(patch[0].acc_month.lai, patch[0].lai);
@@ -847,8 +947,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].acc_year.mineralized += patch[0].ndf.net_mineralized;
 			patch[0].acc_year.uptake += patch[0].ndf.sminn_to_npool;
 			patch[0].acc_year.leach += (patch[0].soil_ns.leach+patch[0].surface_ns_leach);
-			patch[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss;
-			patch[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss;
+			patch[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total-patch[0].soil_ns.DON_Qout_total);
+			patch[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total-patch[0].soil_cs.DOC_Qout_total);
 			patch[0].acc_year.streamflow += patch[0].streamflow;
 			patch[0].acc_year.Qout_total += patch[0].Qout_total;
 			patch[0].acc_year.Qin_total += patch[0].Qin_total;

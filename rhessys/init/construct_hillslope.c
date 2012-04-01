@@ -181,8 +181,10 @@ struct hillslope_object *construct_hillslope(
 		"zones","construct_hillslopes");
 	
 	hillslope[0].streamflow_N = 0.0;
-	hillslope[0].gw.NO3 = 0.0;
-	hillslope[0].gw.storage = 0.0;
+	hillslope[0].streamflow_DON = 0.0;
+	hillslope[0].streamflow_DOC = 0.0;
+	hillslope[0].gw.DOC = 0.0;
+	hillslope[0].gw.DON = 0.0;
 	/*--------------------------------------------------------------*/
 	/*	Construct the zones in this hillslope.						*/
 	/*	and calculate hillslope area								*/
@@ -196,10 +198,13 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.porosity_0 = 0.0;
 	hillslope[0].aggdefs.porosity_decay = 0.0;
 	hillslope[0].aggdefs.N_decay_rate = 0.0;
+	hillslope[0].aggdefs.DOM_decay_rate = 0.0;
 	hillslope[0].aggdefs.active_zone_z = 0.0;
 	hillslope[0].aggdefs.Ksat_0 = 0.0;
 	hillslope[0].aggdefs.soil_depth = 0.0;
 	hillslope[0].aggdefs.mobile_N_proportion = 0.0;
+	hillslope[0].aggdefs.mobile_DON_proportion = 0.0;
+	hillslope[0].aggdefs.mobile_DOC_proportion = 0.0;
 	
 	for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
 		hillslope[0].zones[i] = construct_zone( command_line,
@@ -228,6 +233,9 @@ struct hillslope_object *construct_hillslope(
 			hillslope[0].aggdefs.porosity_decay +=
 				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].porosity_decay *
 				hillslope[0].zones[i][0].patches[j][0].area;
+			hillslope[0].aggdefs.DOM_decay_rate +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].DOM_decay_rate *
+				hillslope[0].zones[i][0].patches[j][0].area;
 			hillslope[0].aggdefs.N_decay_rate +=
 				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].N_decay_rate *
 				hillslope[0].zones[i][0].patches[j][0].area;
@@ -240,6 +248,12 @@ struct hillslope_object *construct_hillslope(
 			hillslope[0].aggdefs.mobile_N_proportion +=
 				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_N_proportion *
 				hillslope[0].zones[i][0].patches[j][0].area;
+			hillslope[0].aggdefs.mobile_DON_proportion +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_DON_proportion *
+				hillslope[0].zones[i][0].patches[j][0].area;
+			hillslope[0].aggdefs.mobile_DOC_proportion +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_DOC_proportion *
+				hillslope[0].zones[i][0].patches[j][0].area;
 
 		}
 	}
@@ -250,10 +264,13 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.porosity_0 /= hillslope[0].area;
 	hillslope[0].aggdefs.porosity_decay /= hillslope[0].area;
 	hillslope[0].aggdefs.N_decay_rate /= hillslope[0].area;
+	hillslope[0].aggdefs.DOM_decay_rate /= hillslope[0].area;
 	hillslope[0].aggdefs.active_zone_z /= hillslope[0].area;
 	hillslope[0].aggdefs.soil_depth /= hillslope[0].area;
 	hillslope[0].aggdefs.soil_water_cap /= hillslope[0].area;
 	hillslope[0].aggdefs.mobile_N_proportion /= hillslope[0].area;
+	hillslope[0].aggdefs.mobile_DON_proportion /= hillslope[0].area;
+	hillslope[0].aggdefs.mobile_DOC_proportion /= hillslope[0].area;
 
 
 	/*--------------------------------------------------------------*/

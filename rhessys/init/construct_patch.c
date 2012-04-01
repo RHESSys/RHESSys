@@ -160,6 +160,8 @@ struct patch_object *construct_patch(
 	patch[0].snowpack.height = patch[0].snowpack.water_equivalent_depth *10.0;
 	patch[0].tmp = 0.0;
 	patch[0].detention_store = 0.0;	
+	patch[0].soil_ns.DON = 0.0;
+	patch[0].soil_cs.DOC = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables for this patch         */
@@ -271,6 +273,8 @@ struct patch_object *construct_patch(
 
 	patch[0].surface_NO3 = 0.0;
 	patch[0].surface_NH4 = 0.0;
+	patch[0].surface_DOC = 0.0;
+	patch[0].surface_DON = 0.0;
 	patch[0].fertilizer_NO3 = 0.0;
 	patch[0].fertilizer_NH4 = 0.0;
 	
@@ -316,11 +320,6 @@ struct patch_object *construct_patch(
 		}
 	} /* end-while */
 	patch[0].landuse_defaults[0] = &defaults[0].landuse[i];
-	/*--------------------------------------------------------------*/
-	/* FOR NOW, assign DON loss rate from command line		*/
-	/* this should be moved to a patch default parameter		*/
-	/*--------------------------------------------------------------*/
-	patch[0].soil_defaults[0][0].DON_loss_rate = command_line[0].don_value;
 	
 	/*--------------------------------------------------------------*/
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/

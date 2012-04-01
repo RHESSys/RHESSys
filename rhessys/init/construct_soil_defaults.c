@@ -222,6 +222,10 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].gsurf_slope = 0.01;
 			default_object_list[i].gsurf_intercept = 0.001;
 			default_object_list[i].p4 = -1.5;
+			default_object_list[i].DOM_decay_rate = 0.05;
+			default_object_list[i].mobile_DON_proportion = 1.0;
+			default_object_list[i].mobile_DOC_proportion = 1.0;
+			default_object_list[i].DON_production_rate = 0.03;
 
 
 		/*--------------------------------------------------------------*/
@@ -257,6 +261,37 @@ struct soil_default *construct_soil_defaults(
 				}
 			if (strcasecmp(newrecord,"theta_mean_std_p2") == 0) {	
 				default_object_list[i].theta_mean_std_p2 = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'D');
+			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"DON_production_rate") == 0) {	
+				default_object_list[i].DOM_decay_rate = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'D');
+			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"DOM_decay_rate") == 0) {	
+				default_object_list[i].DOM_decay_rate = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'m');
+			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"mobile_DOC_proportion") == 0) {	
+				default_object_list[i].mobile_DON_proportion = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"mobile_DON_proportion") == 0) {	
+				default_object_list[i].mobile_DON_proportion = ftmp;
 				printf("\n Using %lf for %s for soil default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}

@@ -46,6 +46,10 @@ void	update_soil_moisture(
 		patch[0].soil_ns.sminn += infiltration / net_inflow * patch[0].surface_NH4;
 		patch[0].surface_NO3 -= infiltration / net_inflow * patch[0].surface_NO3;
 		patch[0].surface_NH4 -= infiltration / net_inflow * patch[0].surface_NH4;
+		patch[0].soil_ns.DON += infiltration / net_inflow * patch[0].surface_DON;
+		patch[0].soil_cs.DOC += infiltration / net_inflow * patch[0].surface_DOC;
+		patch[0].surface_DOC -= infiltration /net_inflow * patch[0].surface_DOC;
+		patch[0].surface_DON -= infiltration /net_inflow * patch[0].surface_DON;
 		}
 
 	if ( command_line[0].verbose_flag > 1 )

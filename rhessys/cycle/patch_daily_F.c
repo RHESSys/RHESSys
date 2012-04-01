@@ -876,6 +876,7 @@ void		patch_daily_F(
 			patch,
 			command_line,
 			current_date );
+
 	}
 	
 	patch[0].detention_store = (net_inflow - infiltration_ini);
@@ -1437,10 +1438,10 @@ void		patch_daily_F(
 		}
 
 
-		if (patch[0].soil_defaults[0][0].DON_loss_rate > ZERO) {
+		if (patch[0].soil_defaults[0][0].DON_production_rate > ZERO) {
 			if ( update_dissolved_organic_losses(
 				current_date,
-				patch[0].soil_defaults[0][0].DON_loss_rate,
+				patch[0].soil_defaults[0][0].DON_production_rate,
 				&(patch[0].soil_cs),
 				&(patch[0].soil_ns),
 				&(patch[0].litter_cs),
@@ -1450,6 +1451,10 @@ void		patch_daily_F(
 				fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
 				exit(EXIT_FAILURE);
 			}
+		patch[0].surface_DOC += (patch[0].cdf.do_litr1c_loss + 
+				patch[0].cdf.do_litr2c_loss + patch[0].cdf.do_litr4c_loss);
+		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss +
+				 patch[0].ndf.do_litr4n_loss);
 		}
 
 		if ( update_nitrif(

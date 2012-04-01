@@ -55,9 +55,9 @@ void	output_growth_basin(
 	double alitrn, asoiln;
 	double aarea, hill_area, basin_area;
 	double acarbon_balance, anitrogen_balance;
-	double atotaln, adenitrif, astreamflow_N;
+	double atotaln, adenitrif, astreamflow_N, astreamflow_DON, astreamflow_DOC;
 	double anitrif, aDOC, aDON, arootdepth;
-	double hstreamflow_N;
+	double hstreamflow_N, hstreamflow_DON, hstreamflow_DOC;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -79,6 +79,10 @@ void	output_growth_basin(
 	asoilc = 0.0; asminn=0.0;
 	acarbon_balance = 0.0;
 	anitrogen_balance = 0.0;
+	astreamflow_DOC = 0.0;
+	hstreamflow_DOC = 0.0;
+	astreamflow_DON = 0.0;
+	hstreamflow_DON = 0.0;
 	astreamflow_N = 0.0;
 	hstreamflow_N = 0.0;
 	atotaln = 0.0;
@@ -90,7 +94,9 @@ void	output_growth_basin(
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
-		astreamflow_N += hillslope[0].streamflow_N * hillslope[0].area;
+		hstreamflow_N += hillslope[0].streamflow_N * hillslope[0].area;
+		hstreamflow_DON += hillslope[0].streamflow_DON * hillslope[0].area;
+		hstreamflow_DOC += hillslope[0].streamflow_DOC * hillslope[0].area;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			for (p=0; p< zone[0].num_patches; p++){
@@ -112,12 +118,14 @@ void	output_growth_basin(
 				asurfaceN += (patch[0].surface_NO3+patch[0].surface_NH4) * patch[0].area;
 				atotaln += (patch[0].totaln) * patch[0].area;
 				astreamflow_N += patch[0].streamflow_N * patch[0].area;
+				astreamflow_DON += patch[0].streamflow_DON * patch[0].area;
+				astreamflow_DOC += patch[0].streamflow_DOC * patch[0].area;
 				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
 				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
-				aDON += (patch[0].ndf.total_DON_loss) * patch[0].area;
-				aDOC += (patch[0].cdf.total_DOC_loss) * patch[0].area;
+				aDON += (patch[0].soil_ns.DON) * patch[0].area;
+				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
 
 				asoilhr += (
 					patch[0].cdf.litr1c_hr + 
@@ -190,7 +198,6 @@ void	output_growth_basin(
 				aarea +=  patch[0].area;
 				hill_area += patch[0].area;
 			}
-			hstreamflow_N += hillslope[0].streamflow_N * hill_area;
 			basin_area += hill_area;
 		}
 	}
@@ -217,6 +224,8 @@ void	output_growth_basin(
 	acarbon_balance /= aarea;
 	anitrogen_balance /= aarea;
 	astreamflow_N /= aarea;
+	astreamflow_DON /= aarea;
+	astreamflow_DOC /= aarea;
 	adenitrif /= aarea;
 	anitrif /= aarea;
 	aDON /= aarea;
@@ -224,8 +233,10 @@ void	output_growth_basin(
 	arootdepth /= aarea;
 
 	astreamflow_N += (hstreamflow_N)/ basin_area;
+	astreamflow_DON += (hstreamflow_DON)/ basin_area;
+	astreamflow_DOC += (hstreamflow_DOC)/ basin_area;
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %Lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -245,6 +256,8 @@ void	output_growth_basin(
 		asoilc,
 		asoiln,
 		astreamflow_N*1000.0,
+		astreamflow_DON*1000.0,
+		astreamflow_DOC*1000.0,
 		adenitrif*1000.0,
 		anitrif*1000.0,
 		aDOC*1000.0,

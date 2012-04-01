@@ -329,6 +329,8 @@ struct accumulate_patch_object
    double lai;
    double snowpack;
    double sm_deficit;
+   double stream_DOC;
+   double stream_DON;
    double stream_NO3;
    double streamflow;
    double leach;
@@ -573,6 +575,9 @@ struct	aggdefs_object
 	double  active_zone_z;					/* m */
 	double  N_decay_rate;					/* kg N /m */
 	double  mobile_N_proportion;				/* (DIM) 0-1 */
+	double  DOM_decay_rate;					/* kg N /m */
+	double  mobile_DON_proportion;				/* (DIM) 0-1 */
+	double  mobile_DOC_proportion;				/* (DIM) 0-1 */
 	};
 /*----------------------------------------------------------*/
 /*	Define a deep groundwater object			*/
@@ -582,8 +587,12 @@ struct 	gw_object
 	{
 	double	storage;		/* m (water) */
 	double 	NO3;		/* kgN/m2	*/
+	double 	DOC;		/* kgC/m2	*/
+	double 	DON;		/* kgN/m2	*/
 	double	Qout;			/* m/m2/day	*/
 	double	Nout;			/* kgN/m2/day	*/
+	double	DONout;			/* kgN/m2/day	*/
+	double	DOCout;			/* kgC/m2/day	*/
 	};
 /*----------------------------------------------------------*/
 /*	Define a hillslope object.								*/	
@@ -601,6 +610,8 @@ struct hillslope_object
 	double	slope;			/* degrees */
 	double	base_flow;		/* meters		*/
 	double	streamflow_N;		/* kgN/m2/day		*/
+	double	streamflow_DON;		/* kgN/m2/day		*/
+	double	streamflow_DOC;		/* kgC/m2/day		*/
 	struct	gw_object		gw;
 	struct	aggdefs_object		aggdefs;
 	struct	base_station_object	**base_stations;
@@ -856,10 +867,13 @@ struct	soil_default
 	double  snow_melt_Tcoef;				/* unitless */
 	double  active_zone_z;					/* m */
 	double  daily_fire_litter_turnover;			/* (DIM) 0-1 */
+	double  DOM_decay_rate;					/* kg N /m */
+	double  mobile_DON_proportion;				/* (DIM) 0-1 */
+	double  mobile_DOC_proportion;				/* (DIM) 0-1 */
 	double  N_decay_rate;					/* kg N /m */
 	double  mobile_N_proportion;				/* (DIM) 0-1 */
 	double  denitrif_proportion;				/* (DIM) 0-1 */
-	double	DON_loss_rate;					/* (DIM) 0-1 */
+	double	DON_production_rate;					/* (DIM) 0-1 */
 	double	gl_c;						/* m/s */
 	double	gsurf_slope;					/* (DIM) */
 	double  gsurf_intercept;				/* m/s */
@@ -904,7 +918,8 @@ struct	cdayflux_patch_struct
     double do_soil2c_loss;	/* (kgC/m2/day) medium soil DOC loss */ 
     double do_soil3c_loss;	/* (kgC/m2/day) slow DOC loss */ 
     double do_soil4c_loss;	/* (kgC/m2/day) recalcitrant DOC loss */ 
-    double total_DOC_loss;	/* (kgN/m2/day)	*/
+    double total_DOC_loss;	/* (kgC/m2/day)	*/
+    double DOC_to_gw;		/* (kgC/m2/day)	*/
 
 
     /* potential decomp fluxes */
@@ -992,6 +1007,7 @@ struct	ndayflux_patch_struct
     double do_soil4n_loss;	/* (kgN/m2/day) recalcitrant DON loss */ 
 
     double total_DON_loss;	/* (kgN/m2/day)	*/
+    double DON_to_gw;	/* (kgN/m2/day)	*/
 
     /* potential decomp fluxes */
     double mineralized;		/* (kgN/m2/d) total mineralized N */
@@ -1132,6 +1148,11 @@ struct	soil_c_object
 	{
 
     double frootc;	   /* (kgC/m2) total soil fine root C   	*/
+    double DOC;		   /* (kgC/m2) DOC */
+    double DOC_Qin;	/* (kgC/m2/day) DON */
+    double DOC_Qout;	/* (kgC/m2/day) DON */
+    double DOC_Qin_total;	/* (kgC/m2/day) DON */
+    double DOC_Qout_total;	/* (kgC/m2/day) DON */
     double totalc;	   /* (kgC/m2) total soil  C   	*/
     double soil_cpool;	   /* (kgC/m2) temporary soil carbon pool	*/
     double soil1c;         /* (kgC/m2) microbial recycling pool C (fast) */
@@ -1151,6 +1172,11 @@ struct	soil_n_object
     double fract_potential_uptake;				/* DIM (0-1) */
     double totaln;	   /* (kgN/m2) total soil  N   	*/
     double soil_npool;	    /* (kgN/m2) temporary soil nitrogen pool	*/
+    double DON;		   /* (kgN/m2) DON */
+    double DON_Qin;	/* (kgM/m2/day) DON */
+    double DON_Qout;	/* (kgN/m2/day) DON */
+    double DON_Qin_total;	/* (kgN/m2/day) DON */
+    double DON_Qout_total;	/* (kgN/m2/day) DON */
     double soil1n;          /* (kgN/m2) microbial recycling pool N (fast) */
     double soil2n;          /* (kgN/m2) microbial recycling pool N (medium) */
     double soil3n;          /* (kgN/m2) microbial recycling pool N (slow) */
@@ -1266,6 +1292,8 @@ struct patch_object
 	double  Qin;			/* m /day 	*/
 	double  Qout;			/* m /day 	*/
 	double  streamflow;		/* m /day 	*/
+	double  streamflow_DOC;		/* kgC/m2/day 	*/
+	double  streamflow_DON;		/* kgN/m2/day 	*/
 	double  streamflow_N;		/* kg/m2/day 	*/
 	double	road_cut_depth;		/* m */
 	double	rain_throughfall;	/* m water	*/	
@@ -1283,11 +1311,21 @@ struct patch_object
 	double  surface_NH4;		/* kg/m2	*/
 	double  fertilizer_NO3;		/* kg/m2	*/
 	double  fertilizer_NH4;		/* kg/m2	*/
+	double  surface_DOC_Qin_total;	/* kgC/m2 day	*/
+	double  surface_DOC_Qout_total;	/* kgC/m2 day	*/
+	double  surface_DON_Qin_total;	/* kgN/m2 day	*/
+	double  surface_DON_Qout_total;	/* kgN/m2 day	*/
+	double  surface_DOC_Qin;	/* kgC/m2 day	*/
+	double  surface_DOC_Qout;	/* kgC/m2 day	*/
+	double  surface_DON_Qin;	/* kgN/m2 day	*/
+	double  surface_DON_Qout;	/* kgN/m2 day	*/
 	double  surface_ns_Qin;		/* kg/m2 day	*/
 	double  surface_ns_Qout;	/* kg/m2 day	*/
 	double  surface_ns_leach;	/* kg/m2 day	*/
 	double  surface_Qin;		/* m day	*/
 	double  surface_Qout;		/* m day	*/
+	double  surface_DON;		/* kgN/m2	*/
+	double  surface_DOC;		/* kgC/m2	*/
 	double  infiltration_excess;    /* m water      */
 	double	snow_throughfall_final;	/* m water	*/	
 	double	snow_melt;		/* m water	*/
@@ -1566,7 +1604,6 @@ struct	command_line_object
 	char	world_filename[256];
 	char	tec_filename[256];
 	double  tmp_value;
-	double  don_value;
 	double  cpool_mort_fract;
 	double	veg_sen1;
 	double	veg_sen2;
@@ -1831,6 +1868,7 @@ struct epvar_struct
 	/* gross PSN input */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
+    double DOC_to_gw;	/* (kgC/m2/day)	*/
 
     /* daily phenology fluxes */
     double leafc_to_deadleafc;	   /* (kgC/m2/d) standing dead grass accumulation */

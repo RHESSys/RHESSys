@@ -89,6 +89,19 @@ int update_gw_drainage(
 	/*------------------------------------------------------*/
 	/*	determine associated N leached			*/
 	/*------------------------------------------------------*/
+	if (patch[0].surface_DON > ZERO) {
+		N_loss = patch[0].soil_defaults[0][0].sat_to_gw_coeff * patch[0].surface_DON;
+		hillslope[0].gw.DON += (N_loss * patch[0].area / hillslope[0].area);
+		patch[0].ndf.DON_to_gw = N_loss;
+		patch[0].surface_DON -= N_loss;
+		}
+	if (patch[0].surface_DOC > ZERO) {
+		N_loss = patch[0].soil_defaults[0][0].sat_to_gw_coeff * patch[0].surface_DOC;
+		hillslope[0].gw.DOC += (N_loss * patch[0].area / hillslope[0].area);
+		patch[0].cdf.DOC_to_gw = N_loss;
+		patch[0].surface_DOC -= N_loss;
+		}
+	
 	if (patch[0].surface_NO3 > ZERO) {
 		N_loss = patch[0].soil_defaults[0][0].sat_to_gw_coeff * patch[0].surface_NO3;
 		hillslope[0].gw.NO3 += (N_loss * patch[0].area / hillslope[0].area);

@@ -115,7 +115,6 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].p = NULL;
 	command_line[0].c = NULL;
 	command_line[0].tmp_value = 1.0;
-	command_line[0].don_value = 0.0;
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
@@ -228,18 +227,6 @@ struct	command_line_object	*construct_command_line(
 				/*Read in the tmp value		*/
 				/*-------------------------------*/
 				command_line[0].tmp_value = (double)atof(main_argv[i]);
-				i++;
-			}/* end if */
-			else if ( strcmp(main_argv[i],"-dor") == 0 ){
-				i++;
-				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
-					fprintf(stderr,"FATAL ERROR: Value for  (DON) loss rate not specified\n");
-					exit(EXIT_FAILURE);
-				} /*end if*/
-				/*-------------------------------*/
-				/*Read in the DON loss rate value		*/
-				/*-------------------------------*/
-				command_line[0].don_value = (double)atof(main_argv[i]);
 				i++;
 			}/* end if */
 

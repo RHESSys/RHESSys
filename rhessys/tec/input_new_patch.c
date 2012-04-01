@@ -281,12 +281,6 @@
 		patch[0].landuse_defaults[0] = &defaults[0].landuse[i];
 	}
 	/*--------------------------------------------------------------*/
-	/* FOR NOW, assign DON loss rate from command line		*/
-	/* this should be moved to a patch default parameter		*/
-	/*--------------------------------------------------------------*/
-	patch[0].soil_defaults[0][0].DON_loss_rate = command_line[0].don_value;
-	
-	/*--------------------------------------------------------------*/
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/
 	/*--------------------------------------------------------------*/
 	if (mpar > ZERO) {
