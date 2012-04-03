@@ -410,8 +410,8 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	patch[0].rain_stored = 0.0;
 	patch[0].snow_stored = 0.0;
-	patch[0].soil_defaults[0][0].daily_fire_litter_turnover = 0.0;
-	patch[0].soil_defaults[0][0].psi_max_veg = 0.0;
+	patch[0].daily_fire_litter_turnover = 0.0;
+	patch[0].psi_max_veg = 0.0;
 	patch[0].litter.gl_c = 0.0;
 	patch[0].litter.gsurf_slope = 0.0;
 	patch[0].litter.gsurf_intercept = 0.0;
@@ -434,12 +434,12 @@ struct patch_object *construct_patch(
 			* patch[0].canopy_strata[i][0].cover_fraction;
 		patch[0].snow_stored += patch[0].canopy_strata[i][0].snow_stored
 			* patch[0].canopy_strata[i][0].cover_fraction;
-		patch[0].soil_defaults[0][0].daily_fire_litter_turnover +=
+		patch[0].daily_fire_litter_turnover +=
 			patch[0].canopy_strata[i][0].defaults[0][0].epc.daily_fire_turnover
-			* patch[0].canopy_strata[i][0].cover_fraction;
-		patch[0].soil_defaults[0][0].psi_max_veg +=
-			patch[0].canopy_strata[i][0].defaults[0][0].epc.psi_close
-			* patch[0].canopy_strata[i][0].cover_fraction;
+				* patch[0].canopy_strata[i][0].cover_fraction;		
+		patch[0].psi_max_veg =
+			min(patch[0].canopy_strata[i][0].defaults[0][0].epc.psi_close,
+				patch[0].psi_max_veg);	
 		patch[0].litter.gl_c +=
 			patch[0].canopy_strata[i][0].defaults[0][0].epc.gl_c
 			* patch[0].canopy_strata[i][0].cover_fraction;
@@ -458,9 +458,9 @@ struct patch_object *construct_patch(
 
 
 	
-	patch[0].wilting_point = exp(-1.0*log(-1.0*patch[0].soil_defaults[0][0].psi_max_veg/
+	patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/
 						patch[0].soil_defaults[0][0].psi_air_entry) 
-			* patch[0].soil_defaults[0][0].pore_size_index);
+			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
 
 
 

@@ -1080,7 +1080,7 @@ void		patch_daily_F(
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].sat_deficit_z,
 				patch[0].sat_deficit_z,
-				patch[0].sat_deficit_z-temp);
+				temp);
 			add_field_capacity = max(add_field_capacity, 0.0);
 			patch[0].sat_deficit += add_field_capacity;
 			if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) && (patch[0].preday_sat_deficit_z > patch[0].rootzone.depth))				
@@ -1182,7 +1182,7 @@ void		patch_daily_F(
 	delta_unsat_zone_storage = min(unsat_zone_patch_demand, patch[0].rz_storage);
 
 	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO)) {
-	patch[0].wilting_point = exp(-1.0*log(-1.0*patch[0].soil_defaults[0][0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry) 
+	patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
 	patch[0].wilting_point = patch[0].wilting_point * (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
 	delta_unsat_zone_storage = min(patch[0].rz_storage-patch[0].wilting_point, delta_unsat_zone_storage);

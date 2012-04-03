@@ -852,7 +852,6 @@ struct	soil_default
 	double	pore_size_index;				/* unitless */
 	double	psi_air_entry;					/* m */
 	double	psi_max;					/* m */
-	double	psi_max_veg;					/* m */
 	double	sat_to_gw_coeff;				/* percent/day */
 	double	soil_depth;					/* m */
 	double	effective_soil_depth;					/* m */
@@ -866,7 +865,6 @@ struct	soil_default
 	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
 	double  snow_melt_Tcoef;				/* unitless */
 	double  active_zone_z;					/* m */
-	double  daily_fire_litter_turnover;			/* (DIM) 0-1 */
 	double  DOM_decay_rate;					/* kg N /m */
 	double  mobile_DON_proportion;				/* (DIM) 0-1 */
 	double  mobile_DOC_proportion;				/* (DIM) 0-1 */
@@ -1241,6 +1239,7 @@ struct patch_object
 	double  base_flow;		/* m water */
 	double	cap_rise;		/* m water / day */
 	double	tmp; 			/* diagnostic variable - open units */
+	double  daily_fire_litter_turnover;			/* (DIM) 0-1 */
 	double	delta_rain_stored;	/* m water	*/
 	double	delta_snow_stored;	/* m water	*/
 	double  detention_store;	/* m water	*/
@@ -1287,6 +1286,7 @@ struct patch_object
 	double	potential_exfiltration;	/* m water/ day */
 	double	potential_evaporation;	/* m water/ day */
 	double	psi;			/* MPa		*/
+	double  psi_max_veg; /* MPa */
 	double  Qin_total;			/* m /day 	*/
 	double  Qout_total;			/* m /day 	*/
 	double  Qin;			/* m /day 	*/
