@@ -103,12 +103,14 @@ struct routing_list_object construct_routing_topology(
 			patch = basin[0].outside_region;
 		rlist.list[i] = patch;
 
-		if ((patch[0].soil_defaults[0][0].m < ZERO) || (patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
-			printf("\n WARNING m (%lf) or Ksat (%lf) are close to zero for patch %d",
+		if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
+			printf("\n WARNING lateral Ksat (%lf) are close to zero for patch %d",
 				patch[0].soil_defaults[0][0].m , patch[0].soil_defaults[0][0].Ksat_0, patch[0].ID);
 		
-		 gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
-
+		if (patch[0].soil_defaults[0][0].m < ZERO)
+		 	gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0;
+		else	
+		 	gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
 		/*--------------------------------------------------------------*/
 		/*  Allocate innundation list array				*/
 		/*	note for this routing there is only one innundation depth 	*/
