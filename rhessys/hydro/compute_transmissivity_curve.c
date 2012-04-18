@@ -120,7 +120,6 @@ double 	*compute_transmissivity_curve(
 			lower = depth;
 			depth = depth-INTERVAL_SIZE;
 
-		/*	
 			
 			lower_z = compute_z_final(
 				command_line[0].verbose_flag,
@@ -137,7 +136,7 @@ double 	*compute_transmissivity_curve(
 				patch[0].soil_defaults[0][0].soil_depth,
 				0.0,
 				-1.0*depth);
-*/
+
 	       		fclayer = compute_field_capacity(
 				command_line[0].verbose_flag,
 				patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -148,8 +147,8 @@ double 	*compute_transmissivity_curve(
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].soil_defaults[0][0].soil_depth,
-				lower,
-				depth);
+				lower_z,
+				depth_z);
 
 
 		if (m > ZERO)

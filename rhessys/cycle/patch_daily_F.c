@@ -270,6 +270,7 @@ void		patch_daily_F(
 		double,
 		double,
 		double,
+		double,
 		double);
 	
 	int	update_denitrif(
@@ -767,6 +768,24 @@ void		patch_daily_F(
 		surfaceN_to_soil = FERT_TO_SOIL * patch[0].fertilizer_NO3;
 		patch[0].fertilizer_NO3 -= surfaceN_to_soil;
 		patch[0].soil_ns.nitrate += surfaceN_to_soil;
+		}
+
+	/*--------------------------------------------------------------*/
+	/* adjust PH using data patch level inputs			*/
+	/*--------------------------------------------------------------*/
+	if (patch[0].base_stations != NULL) {
+		inx = patch[0].base_stations[0][0].dated_input[0].PH.inx;
+		if (inx > -999) {
+			clim_event = patch[0].base_stations[0][0].dated_input[0].PH.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].PH.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].PH.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].PH.seq[inx];
+				}
+			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+				patch[0].PH = clim_event.value;
+				}
+			} 
 		}
 
 
@@ -1463,6 +1482,7 @@ void		patch_daily_F(
 			&(patch[0].cdf),
 			&(patch[0].ndf),
 			patch[0].soil_defaults[0][0].soil_type,
+			patch[0].PH, 
 			patch[0].rootzone.S,
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].porosity_0,

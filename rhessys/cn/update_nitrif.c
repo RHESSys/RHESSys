@@ -56,6 +56,7 @@ int update_nitrif(
 				  struct cdayflux_patch_struct *cdf,
 				  struct ndayflux_patch_struct *ndf,
 				  struct  soil_class   soil_type,
+				  double  pH, 
 				  double  theta,
 				  double soilT,
 				  double porosity,

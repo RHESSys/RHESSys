@@ -488,6 +488,7 @@ struct	dated_input_object
 	struct clim_event_sequence  fertilizer_NO3;					/* kg/m2/day	*/
 	struct clim_event_sequence  fertilizer_NH4;					/* kg/m2/day	*/
 	struct clim_event_sequence  irrigation;					/* m/day	*/
+	struct clim_event_sequence  PH;					/* DIM	*/
 	};
 
 /*----------------------------------------------------------*/
@@ -825,6 +826,7 @@ struct	landuse_default
 	double  fertilizer_NO3;					/* kg/m2/day	*/
 	double  fertilizer_NH4;					/* kg/m2/day	*/
 	double  irrigation;					/* m/day	*/
+	double  PH;					/* DIM	*/
 	double  septic_NO3_load;					/* kg/m2/day */
 	double  septic_water_load;					/* m/m2/day */
 	double	detention_store_size;			/* m */
@@ -1282,6 +1284,7 @@ struct patch_object
 	double	PAR_diffuse;		/* umol/(m^2*day)	*/
 	double	PAR_direct_final;	/* umol/(m^2*day)	*/
 	double	PAR_diffuse_final;	/* umol(m^2*day)	*/
+	double  PH;			/* DIM */
 	double	potential_cap_rise;	/* m water/ day */
 	double	potential_exfiltration;	/* m water/ day */
 	double	potential_evaporation;	/* m water/ day */

@@ -105,10 +105,18 @@ struct landuse_default *construct_landuse_defaults(
 			default_object_list[i].detention_store_size /= 365;
 
 			default_object_list[i].percent_impervious = 0.0;
+			default_object_list[i].PH = 7.0;
 			while (!feof(default_file)) {
 				fscanf(default_file,"%lf", &(ftmp));
 				read_record(default_file, record);
 				newrecord = strchr(record,'l');
+				if (newrecord != NULL) {
+				if (strcasecmp(newrecord,"PH") == 0) {	
+					default_object_list[i].PH = ftmp;
+					printf("\n Using %lf for %s for landuse default ID %d",
+						ftmp, newrecord, default_object_list[i].ID);
+					}
+				}
 				if (newrecord != NULL) {
 				if (strcasecmp(newrecord,"landuse.percent_impervious") == 0) {	
 					default_object_list[i].percent_impervious = ftmp;

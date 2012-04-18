@@ -342,6 +342,11 @@ struct patch_object *construct_patch(
 		patch[0].Ksat_vertical = 1.0-patch[0].landuse_defaults[0][0].percent_impervious;
 
 	/*--------------------------------------------------------------*/
+ 	/* initialize PH to land use default value			*/
+	/*--------------------------------------------------------------*/
+	patch[0].PH = patch[0].landuse_defaults[0][0].PH;
+
+	/*--------------------------------------------------------------*/
 	/* compute a biological soil depth based on the minimum of soil depth */
 	/* and m, K parameters defining conductivity < 0.1% original value */
 	/*--------------------------------------------------------------*/
