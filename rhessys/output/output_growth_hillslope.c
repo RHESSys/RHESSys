@@ -82,6 +82,8 @@ void	output_growth_hillslope(			int basinID,
 	anitrif = 0.0;
 	aDOC = 0.0; aDON = 0.0;
 	hillslope_area = 0.0;
+	hill_area = 0.0;
+
 
 	astreamflow_N += hillslope[0].streamflow_N * hillslope[0].area;
 	for (z=0; z< hillslope[0].num_zones; z++){
