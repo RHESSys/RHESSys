@@ -236,7 +236,7 @@ void	output_growth_basin(
 	astreamflow_DON += (hstreamflow_DON)/ basin_area;
 	astreamflow_DOC += (hstreamflow_DOC)/ basin_area;
 
-	fprintf(outfile,"%d %d %d %d %lf %Lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
