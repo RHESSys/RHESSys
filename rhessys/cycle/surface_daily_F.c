@@ -213,8 +213,6 @@ void		surface_daily_F(
 	
 	patch[0].evaporation_surf += detention_store_evaporation;
 	
-	patch[0].rain_throughfall = patch[0].detention_store;
-	patch[0].detention_store = 0.0;
 	
 	/*** Update patch radiation to remove any radiation used to evaporate pond. ***/
 	/*** Assume same proportions as original 4 energy sources. ***/
@@ -248,7 +246,7 @@ void		surface_daily_F(
 	/*	remaining surface water can be held by the litter.			*/
 	/*--------------------------------------------------------------*/
 	
-	if ( patch[0].rain_throughfall <= (litter[0].rain_capacity - litter[0].rain_stored) ) {
+	if ( patch[0].detention_store <= (litter[0].rain_capacity - litter[0].rain_stored) ) {
 		
 		/*--------------------------------------------------------------*/
 		/*	calculate surface albedo as a function of amount of	*/
@@ -350,7 +348,7 @@ void		surface_daily_F(
 		/*--------------------------------------------------------------*/
 		litter[0].gsurf = compute_nonvascular_stratum_conductance(
 				command_line[0].verbose_flag,
-				litter[0].rain_stored + patch[0].rain_throughfall,
+				litter[0].rain_stored + patch[0].detention_store,
 				litter[0].rain_capacity,
 				litter[0].gl_c,	
 				litter[0].gsurf_slope,
@@ -359,7 +357,7 @@ void		surface_daily_F(
 		if (patch[0].rootzone.depth > ZERO) {
 			patch[0].gsurf = compute_nonvascular_stratum_conductance(
 				command_line[0].verbose_flag,
-				patch[0].rz_storage + patch[0].rain_throughfall,
+				patch[0].rz_storage + patch[0].detention_store,
 				patch[0].sat_deficit,
 				patch[0].soil_defaults[0][0].gl_c,	
 				patch[0].soil_defaults[0][0].gsurf_slope,
@@ -369,7 +367,7 @@ void		surface_daily_F(
 		else {
 			patch[0].gsurf = compute_nonvascular_stratum_conductance(
 				command_line[0].verbose_flag,
-				patch[0].unsat_storage + patch[0].rain_throughfall,
+				patch[0].unsat_storage + patch[0].detention_store,
 				patch[0].sat_deficit,
 				patch[0].soil_defaults[0][0].gl_c,	
 				patch[0].soil_defaults[0][0].gsurf_slope,
@@ -471,7 +469,7 @@ void		surface_daily_F(
 
 		/*--------------------------------------------------------------*/
 		/*	Update rain storage ( this also updates the patch level	*/
-		/*	rain_throughfall and potential_evaporation	*/
+		/*	detention store and potential_evaporation	*/
 		/*--------------------------------------------------------------*/
 		litter[0].rain_stored  = compute_litter_rain_stored(
 			command_line[0].verbose_flag,
@@ -533,10 +531,7 @@ void		surface_daily_F(
 		}
 		
 	}
-	
-	/*** Update the detention store to be anything not evaporated ***/
-	patch[0].detention_store = patch[0].rain_throughfall;
-	
+		
 	
 	return;
 }/*end surface_daily_F.c*/

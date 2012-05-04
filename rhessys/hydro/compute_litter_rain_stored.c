@@ -15,7 +15,7 @@
 /*	rain_storage (m) - amount of rain left in canopy	*/
 /*								*/
 /*								*/
-/*	also updates rain_throughfall, and litter evaporation 	*/
+/*	also updates detention store, and litter evaporation 	*/
 /*		for the patch					*/
 /*	DESCRIPTION						*/
 /*								*/
@@ -60,7 +60,7 @@ double	compute_litter_rain_stored(
 	/*	m = m2PlANT / m2ground *  ( (kg  / m2 * day * m2PLANT )	*/
 	/*		* ( 1 m3 H20 / 1000 kg H20 )			*/
 	/*--------------------------------------------------------------*/
-	potential_interception = min(  patch[0].rain_throughfall,
+	potential_interception = min(  patch[0].detention_store,
 		 litter[0].rain_capacity
 		- litter[0].rain_stored);
 
@@ -70,7 +70,7 @@ double	compute_litter_rain_stored(
 	/*	Add amount not potentially intercepted to throughfall.	*/
 	/*	m = m - m 						*/
 	/*--------------------------------------------------------------*/
-	throughfall  = patch[0].rain_throughfall - potential_interception;
+	throughfall  = patch[0].detention_store - potential_interception;
 	/*--------------------------------------------------------------*/
 	/*	Compute amount of storage evaporated.			*/
 	/*	m = m							*/
@@ -136,7 +136,7 @@ double	compute_litter_rain_stored(
 		- litter[0].rain_stored),0);
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);
-	patch[0].rain_throughfall = throughfall;
+	patch[0].detention_store = throughfall;
 
 	return( rain_storage);
 } /*end compute_litter_rain_stored*/

@@ -81,8 +81,8 @@ int update_gw_drainage(
 	/*------------------------------------------------------*/
 	/*		assume percent of incoming precip	*/
 	/*------------------------------------------------------*/
-	drainage = patch[0].soil_defaults[0][0].sat_to_gw_coeff * patch[0].rain_throughfall;
-	patch[0].rain_throughfall -= drainage;
+	drainage = patch[0].soil_defaults[0][0].sat_to_gw_coeff * patch[0].detention_store;
+	patch[0].detention_store -= drainage;
 	patch[0].gw_drainage = drainage;
 	hillslope[0].gw.storage += (drainage * patch[0].area / hillslope[0].area);
 

@@ -218,6 +218,9 @@ void		zone_hourly(
 					/*-------------------------------------------------------------*/
 					if (zone[0].hourly[0].cos_beam_slope < 0.0)
 						zone[0].hourly[0].cos_beam_slope = 0.0;
+					if (isnan(zone[0].hourly[0].cos_beam_slope))
+						zone[0].hourly[0].cos_beam_slope = 0.0;
+
 					/*----------------------------------------------------------*/
 					/*		Kdown_direct	(W/(m2*day))							*/
 					/*----------------------------------------------------------*/

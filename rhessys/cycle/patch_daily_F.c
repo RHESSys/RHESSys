@@ -789,12 +789,22 @@ void		patch_daily_F(
 		}
 
 
-	/*	Add detention store to rain throughfall for infiltration	*/
+	/*	Add rain throughfall to detention store for infiltration	*/
 	/*	and evaporation routines.									*/
 	
-	patch[0].rain_throughfall += patch[0].detention_store;
-	patch[0].detention_store = 0.0;
-		
+	patch[0].detention_store += patch[0].rain_throughfall;
+	
+	/* Calculate det store, litter, and bare soil evap first */
+	surface_daily_F(
+					world,
+					basin,
+					hillslope,
+					zone,
+					patch,
+					command_line,
+					event,
+					current_date );	
+	
 	/*--------------------------------------------------------------*/
 	/* 	Above ground Hydrologic Processes			*/
 	/* 	compute infiltration into the soil			*/
@@ -804,7 +814,7 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	net_inflow = 0.0;
 	duration = 0.0;
-	if (patch[0].rain_throughfall > ZERO) {
+	if (patch[0].detention_store > ZERO) {
 		/*------------------------------------------------------------------------*/
 		/*	drainage to a deeper groundwater store				  */
 		/*	move both nitrogen and water				    	*/
@@ -818,7 +828,7 @@ void		patch_daily_F(
 				exit(EXIT_FAILURE);
 			}
 		}
-		net_inflow = patch[0].rain_throughfall;
+		net_inflow = patch[0].detention_store;
 		/*--------------------------------------------------------------*/
 		/*      - if rain duration is zero, then input is from snow     */
 		/*      melt  assume full daytime duration                      */
@@ -871,64 +881,16 @@ void		patch_daily_F(
 	/* infiltration excess will removed during routing portion	*/
 	/*--------------------------------------------------------------*/
 	
-	/*------------------------------------------------------------------*/
-	/*	Which comes first - ponded water evaporation or infiltration?	*/
-	/*  As a compromise, first move half of infiltration water into		*/
-	/*	soil column.  Then allow other half to evaporate before moving	*/
-	/*	into soil column.												*/
-	/*------------------------------------------------------------------*/
-	
-	infiltration_ini = 0.0;
-	infiltration_fin = 0.0;
+	infiltration = min(infiltration,patch[0].detention_store);
+	patch[0].detention_store -= infiltration;
 	
 	if (infiltration > ZERO) {
-	
-		infiltration_ini = 0.5 * infiltration;		/* initial half of infiltration water */
-		infiltration_fin = infiltration - infiltration_ini;		/* balance of infiltration water */
-		/*--------------------------------------------------------------*/
-		/*	Update patch level soil moisture with initial infiltration.	*/
-		/*--------------------------------------------------------------*/
-		update_soil_moisture(
-			command_line[0].verbose_flag,
-			infiltration_ini,
-			net_inflow,
-			patch,
-			command_line,
-			current_date );
-
-	}
-	
-	patch[0].detention_store = (net_inflow - infiltration_ini);
-
-	/*--------------------------------------------------------------*/
-	/* After infiltration, call surface daily F to allow detention	*/
-	/* store, litter, and soil evaporation.							*/
-	/*--------------------------------------------------------------*/
-
-	surface_daily_F(
-			world,
-			basin,
-			hillslope,
-			zone,
-			patch,
-			command_line,
-			event,
-			current_date );
-			
-	/*--------------------------------------------------------------*/
-	/* Allow remaining infiltration water to infiltrate */
-	/*--------------------------------------------------------------*/
-	
-	infiltration_fin = min(infiltration_fin,patch[0].detention_store);
-	patch[0].detention_store -= infiltration_fin;
-	
-	if (infiltration_fin > ZERO) {
 		/*--------------------------------------------------------------*/
 		/*	Update patch level soil moisture with final infiltration.	*/
 		/*--------------------------------------------------------------*/
 		update_soil_moisture(
 			command_line[0].verbose_flag,
-			infiltration_fin,
+			infiltration,
 			net_inflow,
 			patch,
 			command_line,
