@@ -1300,6 +1300,7 @@ struct patch_object
 	double  streamflow_N;		/* kg/m2/day 	*/
 	double	road_cut_depth;		/* m */
 	double	rain_throughfall;	/* m water	*/	
+	double	recharge;	/* m water	*/	
 	double	return_flow;		/* m water	*/
 	double	snow_throughfall;	/* m water	*/	
 	double	rain_throughfall_final;	/* m water	*/	

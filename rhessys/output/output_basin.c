@@ -52,6 +52,7 @@ void	output_basin(			int routing_flag,
 	double aunsat_storage, arz_storage;
 	double aunsat_drainage, arz_drainage;
 	double acap_rise;
+	double arecharge;
 	double areturn_flow;
 	double aevaporation;
 	double asnowpack, aperc_snow;
@@ -92,6 +93,7 @@ void	output_basin(			int routing_flag,
 	alitter_store = 0.0  ;
 	atranspiration = 0.0  ;
 	astreamflow = 0.0;
+	arecharge = 0.0;
 	apsn = 0.0 ;
 	aPET = 0.0;
 	aarea =  0.0 ;
@@ -133,6 +135,7 @@ void	output_basin(			int routing_flag,
 				asnow_throughfall += patch[0].snow_throughfall * patch[0].area;
 				asat_deficit_z += patch[0].sat_deficit_z * patch[0].area;
 				asat_deficit += patch[0].sat_deficit * patch[0].area;
+				arecharge += patch[0].recharge * patch[0].area;
 				arz_storage += patch[0].rz_storage * patch[0].area;		
 				aunsat_storage += patch[0].unsat_storage * patch[0].area;
 				arz_drainage += patch[0].rz_drainage * patch[0].area;	
@@ -209,6 +212,7 @@ void	output_basin(			int routing_flag,
 
 	aPET /=  aarea;
 	acrain /=  aarea;
+	arecharge /= aarea;
 	arain_throughfall /=  aarea;
 	adetention_store /= aarea;
 	asnow_throughfall /= aarea ;
@@ -266,7 +270,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf  %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -302,7 +306,7 @@ void	output_basin(			int routing_flag,
 		aacctrans*1000,
 		var_acctrans,
 		aPET*1000,adC13, apcp*1000.0, amortality_fract*100,
-	  	atmax, atmin, asnow*1000.0 
+	  	atmax, atmin, asnow*1000.0, arecharge*1000.0 
 		);
 
 	return;

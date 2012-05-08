@@ -897,7 +897,7 @@ void		patch_daily_F(
 			current_date );
 	}
 	
-	
+	patch[0].recharge = infiltration;	
 	/*--------------------------------------------------------------*/
 	/*	Calculate patch level transpiration			*/
 	/*--------------------------------------------------------------*/
