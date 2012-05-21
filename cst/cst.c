@@ -1,19 +1,16 @@
 /*--------------------------------------------------------------*/
 /*                                                              */
-/*		 create_stream_table				*/
 /*                                                              */
 /*  NAME                                                        */
 /*		 create_stream_table				*/
 /*                                                              */
 /*                                                              */
 /*  SYNOPSIS                                                    */
-/* 		 create_stream_table			        */
+/* 		 create_stream_table (cst)                      */
 /*                                                              */
 /*  OPTIONS                                                     */
 /*                                                              */
 /*		-v Verbose Option				*/
-/*		-i input filename 				*/
-/*		-o output file name 				*/
 /*                                                              */
 /*  DESCRIPTION                                                 */
 /*                                                              */
@@ -32,10 +29,11 @@
 #include "glb.h"
 #include "sub.h"
 #include "stream.h"
+#include "limits.h"
 
 /* Function prototypes */
 streamEntry* findStreamEntry(int, streamEntry**, int*);
-int  checkStreamIntxns(streamEntry*, int, int, int, int, streamEntry*, int, int*, unresolvedStreamIntxn**, int*);
+int  checkStreamIntxns(streamEntry*, int, int, int, int, streamEntry*, int, int*, int);
 int  addStreamIntxn(streamEntry*, streamEntry*, int, int, int);
 void addBasinDivision(streamEntry*, int, int*, int*, int*);
 basinDivision* findBasinDivision(streamEntry*, int, int*, int*, int*);
@@ -55,16 +53,13 @@ main(int argc, char *argv[])
 
     /* local variable declarations */
     int	    i;
+    int j;
+    int k;
     int	    maxr, maxc;
-    char    input_prefix[MAXS];
-    char    output_suffix[MAXS];
     int streamCnt = 0;
 
     streamEntry *nStreamPtr = NULL;
     streamEntry *streamEntryPtr = NULL;
-
-    unresolvedStreamIntxn *unresolvedStreamIntxnPtr = NULL;
-    int unresolvedCnt = 0;
 
     /* filenames for each image and file */
     char   name[MAXS], name2[MAXS];
@@ -75,8 +70,10 @@ main(int argc, char *argv[])
     char*  rnstream;
     char*  rnbasin;
     char*  rnManningsN;
-    char*  rnStreamWidth;
+    char*  rnStreamTopWidth;
+    char*  rnStreamBottomWidth;
     char*  rnStreamDepth;
+    char* tmpStr;
 
     /* set pointers for images */
 
@@ -87,9 +84,12 @@ main(int argc, char *argv[])
     int    *zone;
     int	   *stream;
     int	   *basin;
+    int    iPass;
+    int    maxPasses;
     float  *ManningsN_map;
     float  *streamDepth_map;
-    float  *streamWidth_map;
+    float  *streamTopWidth_map;
+    float  *streamBottomWidth_map;
 
     // GRASS init
     G_gisinit(argv[0]);
@@ -151,11 +151,17 @@ main(int argc, char *argv[])
     ManningsN_raster_opt->required = NO;
     ManningsN_raster_opt->description = "ManningsN";
 
-    struct Option* streamWidth_raster_opt = G_define_option();
-    streamWidth_raster_opt->key = "streamWidth";
-    streamWidth_raster_opt->type = TYPE_STRING;
-    streamWidth_raster_opt->required = NO;
-    streamWidth_raster_opt->description = "streamWidth";
+    struct Option* streamTopWidth_raster_opt = G_define_option();
+    streamTopWidth_raster_opt->key = "streamTopWidth";
+    streamTopWidth_raster_opt->type = TYPE_STRING;
+    streamTopWidth_raster_opt->required = NO;
+    streamTopWidth_raster_opt->description = "streamTopWidth";
+
+    struct Option* streamBottomWidth_raster_opt = G_define_option();
+    streamBottomWidth_raster_opt->key = "streamBottomWidth";
+    streamBottomWidth_raster_opt->type = TYPE_STRING;
+    streamBottomWidth_raster_opt->required = NO;
+    streamBottomWidth_raster_opt->description = "streamBottomWidth";
 
     struct Option* streamDepth_raster_opt = G_define_option();
     streamDepth_raster_opt->key = "streamDepth";
@@ -163,14 +169,19 @@ main(int argc, char *argv[])
     streamDepth_raster_opt->required = NO;
     streamDepth_raster_opt->description = "streamDepth";
 
+    /* Max passes to make through the list of streams in order to determine downstream reaches. */
+    struct Option* maxPasses_opt = G_define_option();
+    maxPasses_opt->key = "maxPasses";
+    maxPasses_opt->type = TYPE_STRING;
+    maxPasses_opt->required = NO;
+    maxPasses_opt->description = "maxPasses";
+
     // Parse GRASS arguments
     if (G_parser(argc, argv))
         exit(1);
 
     // Get values from GRASS arguments
     // Name for output files, default to template file name
-    strcpy(input_prefix, output_name_opt->answer);
-    strcpy(output_suffix, "_stream_table.dat");
 
     rndem    = dem_raster_opt->answer;
     rnpatch  = patch_raster_opt->answer;
@@ -178,12 +189,52 @@ main(int argc, char *argv[])
     rnhill   = hill_raster_opt->answer;
     rnstream = stream_raster_opt->answer;
     rnbasin  = basin_raster_opt->answer;
+
+    // For the arguments streamTopWidth, streamBottomWidth, streamDepth, ManningsN,
+    // either a constant value or a map name can be specified. If a constant value (a float)
+    // is specified, then this value will be used for every cell in the map. If a mapname is
+    // specified, then values from the map will be used.
+
     rnManningsN = ManningsN_raster_opt->answer;
-    rnStreamWidth = streamWidth_raster_opt->answer;
+    rnStreamTopWidth = streamTopWidth_raster_opt->answer;
+    rnStreamBottomWidth = streamBottomWidth_raster_opt->answer;
     rnStreamDepth = streamDepth_raster_opt->answer;
+    tmpStr = maxPasses_opt->answer;
+
+    char *endPtr;
+    maxPasses = strtod(tmpStr, &endPtr);
+    if (maxPasses == 0)
+        maxPasses = 1;
+
+    printf("Max passes: %d\n", maxPasses);
+
+    if (rnbasin != NULL) {
+        struct Cell_head basin_header;
+        basin = (int*)raster2array(rnbasin, &basin_header, NULL, NULL, CELL_TYPE);
+    }
+
+    if (rnManningsN != NULL) {
+        struct Cell_head ManningsN_header;
+        ManningsN_map = (float*)raster2array(rnManningsN, &ManningsN_header, NULL, NULL, CELL_TYPE);
+    }
+
+    if (rnStreamTopWidth != NULL) {
+        struct Cell_head streamTopWidth_header;
+        streamTopWidth_map = (float*)raster2array(rnStreamTopWidth, &streamTopWidth_header, NULL, NULL, CELL_TYPE);
+    }
+
+    if (rnStreamBottomWidth != NULL) {
+        struct Cell_head streamBottomWidth_header;
+        streamBottomWidth_map = (float*)raster2array(rnStreamBottomWidth, &streamBottomWidth_header, NULL, NULL, CELL_TYPE);
+    }
+
+    if (rnStreamDepth != NULL) {
+        struct Cell_head streamDepth_header;
+        streamDepth_map = (float*)raster2array(rnStreamDepth, &streamDepth_header, NULL, NULL, CELL_TYPE);
+    }
 
     //printf("Reading input data for %s...\n\n", rndem);
-    
+
     struct Cell_head patch_header;
     patch = (int*)raster2array(rnpatch, &patch_header, NULL, NULL, CELL_TYPE);
 
@@ -199,28 +250,8 @@ main(int argc, char *argv[])
     struct Cell_head dem_header;
     dem = (double*)raster2array(rndem, &dem_header, NULL, NULL, DCELL_TYPE);
 
-    if (rnbasin != NULL) {
-        struct Cell_head basin_header;
-        basin = (int*)raster2array(rnbasin, &basin_header, NULL, NULL, CELL_TYPE);
-    }
-
-    if (rnManningsN != NULL) {
-        struct Cell_head ManningsN_header;
-        ManningsN_map = (float*)raster2array(rnManningsN, &ManningsN_header, NULL, NULL, CELL_TYPE);
-    }
-
-    if (rnStreamWidth != NULL) {
-        struct Cell_head streamWidth_header;
-        streamWidth_map = (float*)raster2array(rnStreamWidth, &streamWidth_header, NULL, NULL, CELL_TYPE);
-    }
-
-    if (rnStreamDepth != NULL) {
-        struct Cell_head streamDepth_header;
-        streamDepth_map = (float*)raster2array(rnStreamDepth, &streamDepth_header, NULL, NULL, CELL_TYPE);
-    }
-
-    printf("maxr: %d\n", maxr);
-    printf("maxc: %d\n", maxc);
+    //printf("maxr: %d\n", maxr);
+    //printf("maxc: %d\n", maxc);
     printf("Cataloging streams...\n\n");
 
     int row, col;
@@ -234,20 +265,22 @@ main(int argc, char *argv[])
     /* Loop though the stream raster map and collect info on each stream reach that is found.
        Only include stream reaches that are within the basin boundaries.
      */
-    
+
     for (row = 0; row < maxr; ++row) {
         for (col = 0; col < maxc; ++col) {
             index = col + row*maxc;
 
             /* If a basin name was provided on the command line, only process cells within the basin. */
             if (rnbasin != NULL) {
-                basinMaskValue = ((int*)basin)[index];
+                basinMaskValue = basin[index];
                 if ((basinMaskValue == -2147483648) || (basinMaskValue == 0))
                     continue;
             }
 
-            streamId = ((int*)stream)[index];
+            //streamId = ((int*)stream)[index];
+            streamId = stream[index];
             if (streamId != -2147483648) {
+                //printf("streamid: %i\n", streamId);
                 newStreamPtr = findStreamEntry(streamId, &streamEntryPtr, &streamCnt);
                 (newStreamPtr->pixelCount)++;
 
@@ -255,7 +288,7 @@ main(int argc, char *argv[])
 
                 // Adding .5 to col, row causes position of center of cell to be returned.
                 xPos = G_col_to_easting((double) col + .5, &stream_header);
-                yPos = G_row_to_northing((double) row + .5, &stream_header); 
+                yPos = G_row_to_northing((double) row + .5, &stream_header);
                 //printf("streamId: %d, xPos: %7.2f, yPos: %7.2f\n", streamId, xPos, yPos);
 
                 demValue = dem[index];
@@ -283,29 +316,27 @@ main(int argc, char *argv[])
     streamEntry *adjacentStreamPtr;
     int nRow, nCol;
 
-    /* Loop though the raster map, and look for stream intersections, determining only
-       the downstream intersections from the current raster cell. 
+    /* Loop though the raster map, and look for stream intersections, on this pass determining only
+       the downstream intersections from the current raster cell.
      */
     for (row = 0; row < maxr; ++row) {
-    //for (row = 0; row < 5; ++row) {
-        //printf("row %d\n", row);
         for (col = 0; col < maxc; ++col) {
             index = col + row*maxc;
 
             /* If a basin name was provided on the command line, only process cells within the basin. */
             if (rnbasin != NULL) {
-                basinMaskValue = ((int*)basin)[index];
+                basinMaskValue = basin[index];
                 if ((basinMaskValue == -2147483648) || (basinMaskValue == 0))
                     continue;
             }
 
             streamId = ((int*)stream)[index];
             if (streamId != -2147483648) {
-                //printf("Checking intersections for stream %d\n", streamId);
                 currentStreamPtr = findStreamEntry(streamId, &streamEntryPtr, &streamCnt);
+                //printf("Checking intersections for stream %d, min elev: %f, max elev: %f\n", streamId, currentStreamPtr->minElevation, currentStreamPtr->maxElevation);
 
                 /* Check adjacent cells (8) of current raster cell and check for stream intersections, i.e.
-                
+
                         A  A  A
                         A  C  A
                         A  A  A
@@ -318,81 +349,79 @@ main(int argc, char *argv[])
                    intersecting downstream reaches, and we will select the lowest one.
                  */
 
+                int relaxedRules = 0;
                 /* Check upper left adjacent cell */
-                checkStreamIntxns(currentStreamPtr, streamId, row - 1, col -1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, &unresolvedCnt);
+                checkStreamIntxns(currentStreamPtr, streamId, row + 1, col - 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
 
                 /* Check upper center adjacent cell */
-                checkStreamIntxns(currentStreamPtr, streamId, row - 1, col, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, &unresolvedCnt);
+                checkStreamIntxns(currentStreamPtr, streamId, row + 1, col,     maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
 
                 /* Check upper right adjacent cell */
-                checkStreamIntxns(currentStreamPtr, streamId, row - 1, col + 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, &unresolvedCnt);
+                checkStreamIntxns(currentStreamPtr, streamId, row + 1, col + 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
 
                 /* Check center right adjacent cell */
-                checkStreamIntxns(currentStreamPtr, streamId, row, col + 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, &unresolvedCnt);
+                checkStreamIntxns(currentStreamPtr, streamId, row,     col + 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
 
                 /* Check lower right adjacent cell */
-                checkStreamIntxns(currentStreamPtr, streamId, row + 1, col + 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, &unresolvedCnt);
+                checkStreamIntxns(currentStreamPtr, streamId, row - 1, col + 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
 
                 /* Check lower center adjacent cell */
-                checkStreamIntxns(currentStreamPtr, streamId, row + 1, col, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, &unresolvedCnt);
+                checkStreamIntxns(currentStreamPtr, streamId, row - 1, col,     maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
 
                 /* Check lower left adjacent cell */
-                checkStreamIntxns(currentStreamPtr, streamId, row + 1, col - 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, &unresolvedCnt);
+                checkStreamIntxns(currentStreamPtr, streamId, row - 1, col - 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
 
                 /* Check center left adjacent cell */
-                checkStreamIntxns(currentStreamPtr, streamId, row, col - 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, &unresolvedCnt);
+                checkStreamIntxns(currentStreamPtr, streamId, row,     col - 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
             }
         }
     }
 
+    for (iPass = 1; iPass <= maxPasses; iPass++) {
+        int noDownstreamReach = 0;
+        for (i = 0; i < streamCnt ; i++) {
+            currentStreamPtr = streamEntryPtr + i;
+            //printf("high: %f, low: %f\n", currentStreamPtr->maxElevation, currentStreamPtr->minElevation);
+            if (currentStreamPtr->downstreamReach.streamId == 0)
+                printf("no downstream reach for stream %d\n", currentStreamPtr->streamId);
+            noDownstreamReach++;
+        }
 
-    /* Resolve any stream intersections which could not be resolved on the first pass */
-    unresolvedStreamIntxn *currentUnresolvedStreamIntxnPtr;
+        if (noDownstreamReach <= 1)
+            break;
 
-    //printf("fixing %d unresolved stream cells\n", unresolvedCnt);
+        printf("Rechecking intersections for streams where a downstream reach was not found, pass %d.\n", iPass);
+        for (row = 0; row < maxr; ++row) {
+            for (col = 0; col < maxc; ++col) {
+                index = col + row*maxc;
 
-    //for (i = 0; i = 0; i++) {
-    for (i = 0; i < unresolvedCnt; i++) {
-        //printf("i %d, unresolved count %d\n", i, unresolvedCnt);
-        currentUnresolvedStreamIntxnPtr = unresolvedStreamIntxnPtr + i;
-        streamId = currentUnresolvedStreamIntxnPtr->streamId;
-        currentStreamPtr = findStreamEntry(streamId, &streamEntryPtr, &streamCnt);
+                /* If a basin name was provided on the command line, only process cells within the basin. */
+                if (rnbasin != NULL) {
+                    basinMaskValue = basin[index];
+                    if (basinMaskValue == -2147483648)
+                        continue;
+                }
 
-        if (currentStreamPtr->downstreamReach.streamId != 0)
-            continue;
+                streamId = stream[index];
 
-        //printf("streamId: %d, undetermined downstream reach.\n", streamId);
-
-        row = currentUnresolvedStreamIntxnPtr->row;
-        col = currentUnresolvedStreamIntxnPtr->col;
-
-        /* Check upper left adjacent cell */
-        checkStreamIntxns(currentStreamPtr, streamId, row - 1, col -1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, NULL);
-
-        /* Check upper center adjacent cell */
-        checkStreamIntxns(currentStreamPtr, streamId, row - 1, col, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, NULL);
-
-        /* Check upper right adjacent cell */
-        checkStreamIntxns(currentStreamPtr, streamId, row - 1, col + 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, NULL);
-
-        /* Check center right adjacent cell */
-        checkStreamIntxns(currentStreamPtr, streamId, row, col + 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, NULL);
-
-        /* Check lower right adjacent cell */
-        checkStreamIntxns(currentStreamPtr, streamId, row + 1, col + 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, NULL);
-
-        /* Check lower center adjacent cell */
-        checkStreamIntxns(currentStreamPtr, streamId, row + 1, col, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, NULL);
-
-        /* Check lower left adjacent cell */
-        checkStreamIntxns(currentStreamPtr, streamId, row + 1, col - 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, NULL);
-
-        /* Check center left adjacent cell */
-        checkStreamIntxns(currentStreamPtr, streamId, row, col - 1, maxc, streamEntryPtr, streamCnt, stream, &unresolvedStreamIntxnPtr, NULL);
-        
-        //if (currentUnresolvedStreamIntxnPtr->.downstreamReach)
+                if (streamId != -2147483648) {
+                    currentStreamPtr = findStreamEntry(streamId, &streamEntryPtr, &streamCnt);
+                    if (currentStreamPtr->downstreamReach.streamId == 0) {
+                        printf("Rechecking stream %d, min elev: %f, max elev: %f\n", streamId, currentStreamPtr->minElevation, currentStreamPtr->maxElevation);
+                        int relaxedRules = 1;
+                        checkStreamIntxns(currentStreamPtr, streamId, row + 1, col - 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
+                        checkStreamIntxns(currentStreamPtr, streamId, row + 1, col,     maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
+                        checkStreamIntxns(currentStreamPtr, streamId, row + 1, col + 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
+                        checkStreamIntxns(currentStreamPtr, streamId, row,     col + 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
+                        checkStreamIntxns(currentStreamPtr, streamId, row - 1, col + 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
+                        checkStreamIntxns(currentStreamPtr, streamId, row - 1, col,     maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
+                        checkStreamIntxns(currentStreamPtr, streamId, row - 1, col - 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
+                        checkStreamIntxns(currentStreamPtr, streamId, row,     col - 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
+                    }
+                }
+            }
+        }
     }
-
 
     /* Now that all the downstream reaches have been defined, we must make one final pass through the stream array in
        order to determine all the upstream reaches, simply by check where the downstream reaches have been assigned
@@ -403,6 +432,7 @@ main(int argc, char *argv[])
     streamEntry *downstreamPtr = NULL;
     int downstreamId;
 
+    printf("Assigning upstream reaches\n");
     for (i = 0; i < streamCnt ; i++) {
         currentStreamPtr = streamEntryPtr + i;
         streamId = currentStreamPtr->streamId;
@@ -425,19 +455,19 @@ main(int argc, char *argv[])
     /* Loop through all streams and print info out to a file */
     FILE *streamOutFile = fopen(output_name_opt->answer, "w");
     printf("Writing out file %s\n", output_name_opt->answer);
+    fprintf(streamOutFile, "%i\n", streamCnt);
     double distance;
     double slopeValue;
     basinDivision *currentBasinDivisionPtr;
     streamIntxn *currentStreamIntxnPtr;
 
     G_begin_distance_calculations();
-    int j;
-    int k;
+
     for (i = 0; i < streamCnt ; i++) {
         currentStreamPtr = streamEntryPtr + i;
-        
+
         distance = G_distance(currentStreamPtr->headXpos, currentStreamPtr->headYpos, currentStreamPtr->outletXpos, currentStreamPtr->outletYpos);
-        // If the stream only contains one or two pixels, distance will be calculated to be 0.0. 
+        // If the stream only contains one or two pixels, distance will be calculated to be 0.0.
         // If this is the case, then artificially set distance to 30, the width of one pixel.
         if (distance == 0.0 && currentStreamPtr->pixelCount == 2)
             distance = 30;
@@ -447,24 +477,31 @@ main(int argc, char *argv[])
         else
             // Calculate slope: m = (y2 - y1)/(x2 - x1)
             slopeValue = distance / (currentStreamPtr->maxElevation - currentStreamPtr->minElevation);
-  
-        //printf("streamId: %d, downstreamId: %d, max height: %6.2f, min height: %6.2f, distance: %7.2f, slope: %7.2f, pixel count: %d, division count: %d\n", 
-        //     currentStreamPtr->streamId, currentStreamPtr->downstreamReach.streamId, currentStreamPtr->maxElevation, currentStreamPtr->minElevation, 
+
+        //printf("streamId: %d, downstreamId: %d, max height: %6.2f, min height: %6.2f, distance: %7.2f, slope: %7.2f, pixel count: %d, division count: %d\n",
+        //     currentStreamPtr->streamId, currentStreamPtr->downstreamReach.streamId, currentStreamPtr->maxElevation, currentStreamPtr->minElevation,
         //     distance, slopeValue, currentStreamPtr->pixelCount, currentStreamPtr->basinDivisionCnt);
 
-        fprintf(streamOutFile, "%d %7.2f %7.2f %7.2f %7.2f %7.2f %d\n", currentStreamPtr->streamId, streamBottomWidth, 
-           streamTopWidth, streamDepth, slopeValue, ManningsN, currentStreamPtr->pixelCount);
+        fprintf(streamOutFile, "%d %7.2f %7.2f %7.2f %7.2f %7.2f %d\n", currentStreamPtr->streamId, streamBottomWidth,
+                streamTopWidth, streamDepth, slopeValue, ManningsN, currentStreamPtr->pixelCount);
         fprintf(streamOutFile, "%d\n", currentStreamPtr->basinDivisionCnt);
 
-        for (j = 0; j < currentStreamPtr->basinDivisionCnt; j++) {
-            currentBasinDivisionPtr = currentStreamPtr->basinDivisions + j;
-            //printf("patch: %d, zone%d, hill%d\n", currentBasinDivisionPtr->patchId, currentBasinDivisionPtr->zoneId, currentBasinDivisionPtr->hillId);
+        for (j = 0; j < currentStreamPtr->basinDivisionCnt; ++j) {
+            currentBasinDivisionPtr = (currentStreamPtr->basinDivisions) + j;
+            //    //printf("j: %d, patch: %d, zone: %d, hill: %d\n", j, currentBasinDivisionPtr->patchId, currentBasinDivisionPtr->zoneId, currentBasinDivisionPtr->hillId);
+            //    if ((currentBasinDivisionPtr->patchId < INT_MIN) || (currentBasinDivisionPtr->patchId > INT_MAX))
+            //        printf("patchId value out of range %d\n", currentBasinDivisionPtr->patchId);
+            //    if ((currentBasinDivisionPtr->zoneId  < INT_MIN) || (currentBasinDivisionPtr->zoneId  > INT_MAX))
+            //        printf("zoneId value out of range\n");
+            //    if ((currentBasinDivisionPtr->hillId  < INT_MIN) || (currentBasinDivisionPtr->hillId  > INT_MAX))
+            //        printf("hillId value out of range\n");
+
             fprintf(streamOutFile, "    %d, %d, %d\n", currentBasinDivisionPtr->patchId, currentBasinDivisionPtr->zoneId, currentBasinDivisionPtr->hillId);
         }
 
         /* Now print out upstream reaches */
         fprintf(streamOutFile, "%d\n", currentStreamPtr->upstreamCnt);
-        for (k = 0; k < currentStreamPtr->upstreamCnt; k++) {
+        for (k = 0; k < currentStreamPtr->upstreamCnt; ++k) {
             currentStreamIntxnPtr = currentStreamPtr->upstreamReaches + k;
             fprintf(streamOutFile, "    %d\n", currentStreamIntxnPtr->streamId);
         }
@@ -483,10 +520,11 @@ main(int argc, char *argv[])
     //printf("stream count %d\n", streamCnt);
 
     fclose(streamOutFile);
+    printf("Done\n");
 
     exit(0);
 
- /* end cst.c */
+    /* end cst.c */
 }
 
 streamEntry* findStreamEntry(int streamId, streamEntry **streamEntryPtr, int *streamCnt) {
@@ -507,9 +545,10 @@ streamEntry* findStreamEntry(int streamId, streamEntry **streamEntryPtr, int *st
         newStreamPtr->streamId = streamId;
         newStreamPtr->minElevation = DBL_MAX;
         newStreamPtr->maxElevation = -DBL_MAX;
-        newStreamPtr->adjacentStreamMinElevation = DBL_MAX;
+        newStreamPtr->downstreamReachMinElevation = DBL_MAX;
+        newStreamPtr->downstreamReachMaxElevation = -DBL_MAX;
         found = 1;
-        newStreamPtr->pixelCount = 1;
+        newStreamPtr->pixelCount = 0;
         newStreamPtr->upstreamCnt = 0;
         newStreamPtr->downstreamReach.streamId = 0;
         newStreamPtr->basinDivisions = NULL;
@@ -518,7 +557,7 @@ streamEntry* findStreamEntry(int streamId, streamEntry **streamEntryPtr, int *st
         //printf("searching for streamId: %d\n", streamId);
         for(i=0; i < *streamCnt; i++) {
             currentStreamPtr = *streamEntryPtr + i;
-            
+
             //printf("  current stream %d\n", currentStreamPtr->streamId);
             if (currentStreamPtr->streamId == streamId) {
                 //printf("Found stream id: %d\n", streamId);
@@ -529,6 +568,7 @@ streamEntry* findStreamEntry(int streamId, streamEntry **streamEntryPtr, int *st
         }
     }
 
+    /* The streamId was not found, so make a new entry for this stream */
     if (found == 0) {
         (*streamCnt)++;
         //printf("Allocating new stream entry for streamId: %d, count %d\n", streamId, *streamCnt);
@@ -539,9 +579,11 @@ streamEntry* findStreamEntry(int streamId, streamEntry **streamEntryPtr, int *st
         currentStreamPtr = newStreamPtr + ((*streamCnt) - 1);
         currentStreamPtr->minElevation = DBL_MAX;
         currentStreamPtr->maxElevation = -DBL_MAX;
-        currentStreamPtr->adjacentStreamMinElevation = DBL_MAX;
+        currentStreamPtr->downstreamReachMinElevation = DBL_MAX;
+        currentStreamPtr->downstreamReachMaxElevation = -DBL_MAX;
+        currentStreamPtr->downstreamReach.streamId = 0;
         currentStreamPtr->streamId = streamId;
-        currentStreamPtr->pixelCount = 1;
+        currentStreamPtr->pixelCount = 0;
         currentStreamPtr->upstreamCnt = 0;
         currentStreamPtr->basinDivisions = NULL;
     } else {
@@ -551,12 +593,12 @@ streamEntry* findStreamEntry(int streamId, streamEntry **streamEntryPtr, int *st
     return currentStreamPtr;
 }
 
-int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int nCol, int maxc, streamEntry *streamEntryPtr, int streamCnt, 
-    int *stream, unresolvedStreamIntxn **unresolvedStreamIntxnPtr, int *unresolvedCnt) {
+int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int nCol, int maxc, streamEntry *streamEntryPtr, int streamCnt,
+                      int *stream, int relaxedRules) {
     /*
       If an intersection is found, then modify the stream intersection structure for the current stream raster cell.
 
-      The stream reaches in the 'stream' mapset are created such that a stream can have only one upstream reach and
+      The stream reaches in the 'stream' mapset are created such that a stream can have more than one upstream reach and
       only one downstream reach. A stream reach is "upstream" from another reach if it's max. elevation is higher than
       it's adjacent cell.
     */
@@ -566,15 +608,13 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
     int retStat = 0;
     streamEntry *adjacentStreamPtr = NULL;
     streamEntry *currentDownStreamPtr = NULL;
-    unresolvedStreamIntxn *newUnresolvedStreamIntxnPtr = NULL;
-    unresolvedStreamIntxn *currentUnresolvedStreamIntxnPtr = NULL;
 
     // Raster cell that we are checking is out of bounds (off the map)
     if (nRow < 0 || nCol < 0)
         return 0;
 
     index = nCol + nRow*maxc;
-    adjacentStreamId = ((int*)stream)[index];
+    adjacentStreamId = stream[index];
 
     // The cell we are checking is not a stream
     if (adjacentStreamId == -2147483648)
@@ -588,9 +628,15 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
     adjacentStreamPtr = findStreamEntry(adjacentStreamId, &streamEntryPtr, &streamCnt);
 
     // Determine if the adjacent stream is downstream in relation to the current stream.
-    if (adjacentStreamPtr->minElevation < currentStreamPtr->minElevation) {
+    //printf("adjacentStreamPtr->streamId: %d\n", adjacentStreamPtr->streamId);
+    //printf("adjacentStreaPtr->minElevation: %f\n", adjacentStreamPtr->minElevation);
+    //printf("adjacentStreamPtr->downstreamReachMinElevation: %f\n", adjacentStreamPtr->downstreamReachMinElevation);
+    //printf("adjacentStreamPtr->downstreamReachMaxElevation: %f\n", adjacentStreamPtr->downstreamReachMaxElevation);
+
+    if ( (adjacentStreamPtr->minElevation < currentStreamPtr->minElevation)
+            && (currentStreamPtr->maxElevation > adjacentStreamPtr->maxElevation) )  {
         /* Check if we have added a downstream reach before .
-           If no downstream reach has been added before, then add the current one now. 
+           If no downstream reach has been added before, then add the current one now.
          */
         if (currentStreamPtr->downstreamReach.streamId == 0)
             addStreamIntxn(currentStreamPtr, adjacentStreamPtr, nRow, nCol, index);
@@ -600,54 +646,39 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
             if (adjacentStreamPtr->minElevation < currentDownStreamPtr->minElevation ) {
                 addStreamIntxn(currentStreamPtr, adjacentStreamPtr, nRow, nCol, index);
             }
-        } 
-    } else if (adjacentStreamPtr->minElevation == currentStreamPtr->minElevation) {
-         //printf("child min elevation: %7.2f\n", adjacentStreamPtr->adjacentStreamMinElevation);
-         /* The adjacent stream has same elevation as current stream, so check the adjacent
-            streams lowest outlet stream and see if it is lower. 
-          */
-         if (adjacentStreamPtr->adjacentStreamMinElevation < currentStreamPtr->minElevation) {
-             addStreamIntxn(currentStreamPtr, adjacentStreamPtr, nRow, nCol, index);
-             //printf("found lower grandchild\n");
-        } else if (unresolvedCnt != NULL) {
-            if (*unresolvedStreamIntxnPtr == NULL) {
-                *unresolvedCnt = 1;
-                newUnresolvedStreamIntxnPtr = (unresolvedStreamIntxn *) malloc(sizeof(unresolvedStreamIntxn));
-                newUnresolvedStreamIntxnPtr->streamId = streamId;
-                newUnresolvedStreamIntxnPtr->row = nRow;
-                newUnresolvedStreamIntxnPtr->col = nCol;
-                *unresolvedStreamIntxnPtr = newUnresolvedStreamIntxnPtr;
-                //printf("found first unresolved streamId: %d\n", streamId);
-            } else {
-                (*unresolvedCnt)++;
-                newUnresolvedStreamIntxnPtr = (unresolvedStreamIntxn *) realloc(*unresolvedStreamIntxnPtr, sizeof(unresolvedStreamIntxn) * (*unresolvedCnt));
-                *unresolvedStreamIntxnPtr = newUnresolvedStreamIntxnPtr;
-                currentUnresolvedStreamIntxnPtr = newUnresolvedStreamIntxnPtr + ((*unresolvedCnt) - 1);
-                currentUnresolvedStreamIntxnPtr->streamId = streamId;
-                currentUnresolvedStreamIntxnPtr->row = nRow;
-                currentUnresolvedStreamIntxnPtr->col = nCol;
-                //printf("found another unresolved streamId: %d\n", streamId);
+        }
+    }
+    else if (relaxedRules == 1) {
+        if ( (adjacentStreamPtr->downstreamReachMinElevation <= currentStreamPtr->minElevation) &&
+                currentStreamPtr->maxElevation > adjacentStreamPtr->downstreamReachMaxElevation)  {
+            if (currentStreamPtr->downstreamReach.streamId == 0)
+                addStreamIntxn(currentStreamPtr, adjacentStreamPtr, nRow, nCol, index);
+            /* else if this stream has been added before, then replace the previous entry if the new one has a lower elevation. */
+            else {
+                currentDownStreamPtr = findStreamEntry(currentStreamPtr->downstreamReach.streamId, &streamEntryPtr, &streamCnt);
+                if (adjacentStreamPtr->minElevation < currentDownStreamPtr->minElevation ) {
+                    addStreamIntxn(currentStreamPtr, adjacentStreamPtr, nRow, nCol, index);
+                }
             }
         }
     }
-    
+
     //printf("Stream %d, elevation: %7.2f, Found intersecting stream %d, elevation %7.2f\n", streamId, currentStreamPtr->maxElevation, adjacentStreamId, adjacentStreamPtr->maxElevation);
-    // Check if we have intersected this stream before
-    
 
-    // First, find the stream entry for the adjacent stream
+    if (currentStreamPtr->downstreamReach.streamId == 0)
+        return 0;
+    else
+        return 1;
 
-    // 
-    return 0;
 }
 
 int addStreamIntxn(streamEntry *currentStreamPtr, streamEntry *adjacentStreamPtr, int nRow, int nCol, int index) {
 
-    //printf("Stream %d: adding intxn to stream %d, row: %d, col: %d\n", currentStreamPtr->streamId, adjacentStreamPtr->streamId, nRow, nCol);
+    printf("Stream %d: adding intxn to stream %d, row: %d, col: %d\n", currentStreamPtr->streamId, adjacentStreamPtr->streamId, nRow, nCol);
     currentStreamPtr->downstreamReach.streamId = adjacentStreamPtr->streamId;
     currentStreamPtr->downstreamReach.row = nRow;
     currentStreamPtr->downstreamReach.col = nCol;
-    /* Store the adjacent stream's min elevation with the current stream for convienence when we resolve 
+    /* Store the adjacent stream's min elevation with the current stream for convienence when we resolve
        stream reaches that don't have an obvious downstream reach. We store the adjacent stream's min elevation
        in the pathological case where a stream has no obvious outlet because all the possible downstream reaches
        that it connects to are flat and of the same elevation as the current stream. This can be the case with
@@ -655,11 +686,8 @@ int addStreamIntxn(streamEntry *currentStreamPtr, streamEntry *adjacentStreamPtr
        flat reaches connect to, in order to determine which 'flat' reaches would provide an outlet for streams connected
        to them. */
 
-    if (currentStreamPtr->adjacentStreamMinElevation == DBL_MAX) {
-        currentStreamPtr->adjacentStreamMinElevation = adjacentStreamPtr->minElevation;
-    } else if (adjacentStreamPtr->minElevation < currentStreamPtr->adjacentStreamMinElevation) {
-        currentStreamPtr->adjacentStreamMinElevation = adjacentStreamPtr->minElevation;
-    }
+    currentStreamPtr->downstreamReachMinElevation = adjacentStreamPtr->minElevation;
+    currentStreamPtr->downstreamReachMaxElevation = adjacentStreamPtr->maxElevation;
 }
 
 void addBasinDivision(streamEntry *streamPtr, int index, int* zone, int* hill, int* patch) {
@@ -670,10 +698,11 @@ void addBasinDivision(streamEntry *streamPtr, int index, int* zone, int* hill, i
     if (streamPtr->basinDivisions == NULL) {
         //printf("adding initial division for stream %d\n", streamPtr->streamId);
         streamPtr->basinDivisions = (basinDivision *) malloc(sizeof(basinDivision));
-        streamPtr->basinDivisions->zoneId  = ((int*)zone)[index];
-        streamPtr->basinDivisions->hillId  = ((int*)hill)[index];
-        streamPtr->basinDivisions->patchId = ((int*)patch)[index];
-        streamPtr->basinDivisionCnt = 1;
+        streamPtr->basinDivisions->zoneId  = zone[index];
+        streamPtr->basinDivisions->hillId  = hill[index];
+        streamPtr->basinDivisions->patchId = patch[index];
+        streamPtr->basinDivisionCnt = 0;
+        //printf("index: %d, stream: %d, zone: %d, hill %d, patch: %d\n", index, streamPtr->streamId, streamPtr->basinDivisions->zoneId, streamPtr->basinDivisions->hillId, streamPtr->basinDivisions->patchId);
     } else {
         newBasinDivision = findBasinDivision(streamPtr, index, zone, hill, patch);
         /* Basin division wasn't found, so add it */
@@ -682,9 +711,10 @@ void addBasinDivision(streamEntry *streamPtr, int index, int* zone, int* hill, i
             //printf("adding additional division %d for stream %d\n", streamPtr->basinDivisionCnt, streamPtr->streamId);
             streamPtr->basinDivisions = (basinDivision *) realloc(streamPtr->basinDivisions, sizeof(basinDivision) * (streamPtr->basinDivisionCnt));
             newBasinDivision = streamPtr->basinDivisions + ((streamPtr->basinDivisionCnt) - 1);
-            newBasinDivision->zoneId = ((int*)zone)[index];
-            newBasinDivision->hillId = ((int*)hill)[index];
-            newBasinDivision->patchId = ((int*)patch)[index];
+            newBasinDivision->zoneId = zone[index];
+            newBasinDivision->hillId = hill[index];
+            newBasinDivision->patchId = patch[index];
+            //printf("index: %d, stream: %d, zone: %d, hill %d, patch: %d\n", index, streamPtr->streamId, newBasinDivision->zoneId, newBasinDivision->hillId, newBasinDivision->patchId);
             //printf("done\n");
         }
     }
@@ -704,9 +734,9 @@ basinDivision* findBasinDivision(streamEntry *streamPtr, int index, int *zone, i
         return NULL;
     }
 
-    zoneId  = ((int*)zone)[index];
-    hillId  = ((int*)hill)[index];
-    patchId = ((int*)patch)[index];
+    zoneId  = zone[index];
+    hillId  = hill[index];
+    patchId = patch[index];
 
     /* Search all basin divisions for this stream and see if we have already added the current one. */
     for (i = 0; i < streamPtr->basinDivisionCnt; i++) {
@@ -714,8 +744,8 @@ basinDivision* findBasinDivision(streamEntry *streamPtr, int index, int *zone, i
         //printf("i %d, zone %d, hill %d, patch %d\n", i, zoneId, hillId, patchId);
 
         if ((currentBasinDivision->zoneId == zoneId ) &&
-            (currentBasinDivision->hillId == hillId) &&
-            (currentBasinDivision->patchId == patchId)) {
+                (currentBasinDivision->hillId == hillId) &&
+                (currentBasinDivision->patchId == patchId)) {
             //printf("Found zoneId %d, hillId %d, patchId %d\n", zoneId, hillId, patchId);
             return currentBasinDivision;
         }
@@ -728,7 +758,7 @@ basinDivision* findBasinDivision(streamEntry *streamPtr, int index, int *zone, i
 void addUpstreamIntxn(streamEntry *downstreamPtr, streamEntry *upstreamPtr, int row, int col) {
 
     int i;
-    int upstreamId; 
+    int upstreamId;
 
     streamIntxn *currentUpstreamIntxnPtr;
     upstreamId = upstreamPtr->streamId;
@@ -740,18 +770,18 @@ void addUpstreamIntxn(streamEntry *downstreamPtr, streamEntry *upstreamPtr, int 
             //printf("upstreamId %d already added to stream %d\n", upstreamId, downstreamPtr->streamId);
             return;
         }
-    } 
-   
+    }
+
     /* We made it to this point, so the upstreamId was not found and we have to add it.*/
     if (downstreamPtr->upstreamCnt == 0) {
-        //printf("Adding upstream id %d to stream %d\n", upstreamId, downstreamPtr->streamId);
+        printf("Adding upstream id %d to stream %d\n", upstreamId, downstreamPtr->streamId);
         downstreamPtr->upstreamReaches = (streamIntxn *) malloc(sizeof(streamIntxn));
         (downstreamPtr->upstreamCnt)++;
         downstreamPtr->upstreamReaches->streamId = upstreamId;
         downstreamPtr->upstreamReaches->row = row;
         downstreamPtr->upstreamReaches->col = col;
     } else {
-        //printf("adding upstream id %d to stream %d\n", upstreamId, downstreamPtr->streamId);
+        printf("adding upstream id %d to stream %d\n", upstreamId, downstreamPtr->streamId);
         (downstreamPtr->upstreamCnt)++;
         downstreamPtr->upstreamReaches = (streamIntxn *) realloc(downstreamPtr->upstreamReaches, sizeof(streamIntxn) * (downstreamPtr->upstreamCnt));
 
