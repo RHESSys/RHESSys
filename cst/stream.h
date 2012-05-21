@@ -26,7 +26,8 @@
         float topWidth;		/* width of stream channel at head */
         double maxElevation;	/* max elevation of stream */
         double minElevation;	/* max elevation of stream */
-        double adjacentStreamMinElevation;
+        double downstreamReachMinElevation;
+        double downstreamReachMaxElevation;
         double maxHeight;	/* max channel height of stream, i.e. from LIDAR */
         float headXpos;		/* x location (easting) of stream head */
         float headYpos;		/* y location (northing) of stream head */
