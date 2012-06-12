@@ -92,17 +92,17 @@ main(int argc, char *argv[])
     streamEntry *streamEntryPtr = NULL;
 
     /* filenames for each image and file */
-    char   name[MAXS], name2[MAXS];
-    char*  rnhill;
-    char*  rnzone;
-    char*  rnpatch;
-    char*  rndem;
-    char*  rnstream;
-    char*  rnbasin;
-    char*  rnManningsN;
-    char*  rnStreamTopWidth;
-    char*  rnStreamBottomWidth;
-    char*  rnStreamDepth;
+    char  name[MAXS], name2[MAXS];
+    char* rnhill;
+    char* rnzone;
+    char* rnpatch;
+    char* rndem;
+    char* rnstream;
+    char* rnbasin;
+    char* rnManningsN;
+    char* rnStreamTopWidth;
+    char* rnStreamBottomWidth;
+    char* rnStreamDepth;
     char* tmpStr;
 
     /* set pointers for images */
@@ -243,7 +243,7 @@ main(int argc, char *argv[])
     if (maxPasses == 0)
         maxPasses = 1;
 
-    if (verbose == 1)
+    if (verbose)
         printf("Max passes: %d\n", maxPasses);
 
     if (rnbasin != NULL) {
@@ -258,7 +258,7 @@ main(int argc, char *argv[])
         inVal = strtof(rnManningsN, &pEnd);
         if (pEnd != rnManningsN) {
             ManningsN = inVal;
-            if (verbose == 1)
+            if (verbose)
                 printf("Using constant value from command line for ManningsN: %7.3f\n", ManningsN);
         } else {
             ManningsN_map = (float*)raster2array(rnManningsN, &ManningsN_header, NULL, NULL, CELL_TYPE);
@@ -269,7 +269,7 @@ main(int argc, char *argv[])
         inVal = strtof(rnStreamTopWidth, &pEnd);
         if (pEnd != rnStreamTopWidth) {
             streamTopWidth = inVal;
-            if (verbose == 1)
+            if (verbose)
                 printf("Using constant value from command line for stream top width: %7.3f\n", streamTopWidth);
         } else {
             streamTopWidth_map = (float*)raster2array(rnStreamTopWidth, &streamTopWidth_header, NULL, NULL, CELL_TYPE);
@@ -280,7 +280,7 @@ main(int argc, char *argv[])
         inVal = strtof(rnStreamBottomWidth, &pEnd);
         if (pEnd != rnStreamBottomWidth) {
             streamBottomWidth = inVal;
-            if (verbose == 1)
+            if (verbose)
                 printf("Using constant value from command line for stream bottom width: %7.3f\n", streamBottomWidth);
         } else {
             streamBottomWidth_map = (float*)raster2array(rnStreamBottomWidth, &streamBottomWidth_header, NULL, NULL, CELL_TYPE);
@@ -291,7 +291,7 @@ main(int argc, char *argv[])
         inVal = strtof(rnStreamDepth, &pEnd);
         if (pEnd != rnStreamDepth) {
             streamDepth = inVal;
-            if (verbose == 1)
+            if (verbose)
                 printf("Using constant value from command line for stream depth: %7.3f\n", streamDepth);
         } else {
             streamDepth_map = (float*)raster2array(rnStreamDepth, &streamDepth_header, NULL, NULL, CELL_TYPE);
@@ -308,11 +308,11 @@ main(int argc, char *argv[])
 
     //cellResolution = (dem_header.ew_res + dem_header.ns_res)/2.0;
     cellResolution = dem_header.ew_res;
-    if (verbose == 1)
+    if (verbose)
         printf("DEM raster cell resolution: %7.2f\n", cellResolution);
 
 
-    if (verbose == 1) {
+    if (verbose) {
         printf("maxr: %d\n", maxr);
         printf("maxc: %d\n", maxc);
         printf("Cataloging streams...\n");
@@ -381,7 +381,7 @@ main(int argc, char *argv[])
         }
     }
 
-    if (verbose == 1)
+    if (verbose)
         printf("Searching for stream intersections...\n");
 
     streamEntry *currentStreamPtr;
@@ -408,7 +408,7 @@ main(int argc, char *argv[])
             patchCnt += 1;
             if (streamId != -2147483648) {
                 currentStreamPtr = findStreamEntry(streamId, &streamEntryPtr, &streamCnt);
-                if (debug == 1)
+                if (debug)
                     printf("Checking intersections for stream %d, min elev: %f, max elev: %f\n", streamId, currentStreamPtr->minElevation, currentStreamPtr->maxElevation);
 
                 /* Check adjacent cells (8) of current raster cell and check for stream intersections, i.e.
@@ -456,7 +456,7 @@ main(int argc, char *argv[])
     /* Loop through streams, assign stream wide values */
     for (i = 0; i < streamCnt ; i++) {
         currentStreamPtr = streamEntryPtr + i;
-        if (debug == 1)
+        if (debug)
             printf("high: %f, low: %f\n", currentStreamPtr->maxElevation, currentStreamPtr->minElevation);
 
         //G_begin_distance_calculations();
@@ -509,7 +509,7 @@ main(int argc, char *argv[])
 
     relaxedRules = true;
     for (iPass = 1; iPass <= maxPasses; iPass++) {
-        if (debug == 1)
+        if (debug)
             printf("pass: %d\n", iPass);
         int noDownstreamReach = 0;
         for (i = 0; i < streamCnt ; i++) {
@@ -522,7 +522,7 @@ main(int argc, char *argv[])
         if (noDownstreamReach == 1)
             break;
 
-        if (debug == 1)
+        if (debug)
             printf("%d streams have no outlet.\n", noDownstreamReach);
 
         for (row = 0; row < maxr; ++row) {
@@ -541,7 +541,7 @@ main(int argc, char *argv[])
                 if (streamId != -2147483648) {
                     currentStreamPtr = findStreamEntry(streamId, &streamEntryPtr, &streamCnt);
                     if (currentStreamPtr->downstreamReach.streamId == -1) {
-                        if (debug == 1)
+                        if (debug)
                             printf("Rechecking stream %d, min elev: %f, max elev: %f\n", streamId, currentStreamPtr->minElevation, currentStreamPtr->maxElevation);
                         checkStreamIntxns(currentStreamPtr, streamId, row + 1, col - 1, maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
                         checkStreamIntxns(currentStreamPtr, streamId, row + 1, col,     maxc, streamEntryPtr, streamCnt, stream, relaxedRules);
@@ -564,7 +564,7 @@ main(int argc, char *argv[])
             noDownstreamReach++;
     }
 
-    if (verbose == 1)
+    if (verbose)
         printf("Final count of stream reaches without an outlet: %d\n", noDownstreamReach);
 
     /* Now that all possible downstream reaches have been defined, we must make another pass through the stream array in
@@ -602,7 +602,7 @@ main(int argc, char *argv[])
 
     /* Loop through all streams and print info out to a file */
     FILE *streamOutFile = fopen(output_name_opt->answer, "w");
-    if (verbose == 1)
+    if (verbose)
         printf("Writing out file %s\n", output_name_opt->answer);
 
     fprintf(streamOutFile, "%i\n", streamCnt);
@@ -628,7 +628,7 @@ main(int argc, char *argv[])
     }
 
     fclose(streamOutFile);
-    if (verbose == 1)
+    if (verbose)
         printf("Program %s Done\n", argv[0]);
 
     exit(0);
@@ -649,7 +649,7 @@ bool printStream(streamEntry *currentStreamPtr, FILE *streamOutFile, streamEntry
         currentStreamPtr->printed = true;
     }
 
-    if (debug == 1)
+    if (debug)
         printf("Printing stream %d\n", currentStreamPtr->streamId);
 
     fprintf(streamOutFile, "\n%d %7.2f %7.2f %7.2f %7.2f %7.2f %7.2f\n", currentStreamPtr->streamId, currentStreamPtr->streamBottomWidth,
@@ -791,17 +791,17 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
     adjacentStreamPtr = findStreamEntry(adjacentStreamId, &streamEntryPtr, &streamCnt);
 
     currentDownstreamPtr = adjacentStreamPtr;
-    if (debug == 1)
+    if (debug)
         printf("Checking downstream connection to stream %d, min: %7.2f, max: %7.2f\n", currentStreamPtr->streamId, currentStreamPtr->minElevation, currentStreamPtr->maxElevation);
 
     for (downstreamReachCount = 1; downstreamReachCount <= maxDownstreamReachCount; downstreamReachCount++) {
 
-        if (debug == 1)
+        if (debug)
             printf("Trying downstream reach %d, min: %7.2f, max: %7.2f\n", currentDownstreamPtr->streamId, currentDownstreamPtr->minElevation, currentDownstreamPtr->maxElevation);
 
         /* Sanity check - are we looping? i.e. is the possible downstream reach actually upstream from current stream and we now have come back to ourselves */
         if (currentDownstreamPtr->streamId == currentStreamPtr->streamId) {
-            if (debug == 1)
+            if (debug)
                 printf("Whoa, we are looping, skipping adjacent stream %d\n", adjacentStreamPtr->streamId);
             return 0;
         }
@@ -811,7 +811,7 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
 
         /* First check if the candidate stream is actually upstream within our confidence interval for elevation. */
         if ((streamMidPoint - currentStreamPtr->maxElevation) > elevationDiffThreshold) {
-            if (debug == 1)
+            if (debug)
                 printf("Skipping uphill stream %d\n", currentDownstreamPtr->streamId);
             return 0;
         }
@@ -828,13 +828,13 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
             currentDownstreamPtr = findStreamEntry(currentDownstreamPtr->downstreamReach.streamId, &streamEntryPtr, &streamCnt);
         else {
             return 0;
-            if (debug == 1)
+            if (debug)
                 printf("No more downstream reaches\n");
         }
     }
 
     /* No suitable downstream reach found after max number of passes. */
-    if (debug == 1)
+    if (debug)
         printf("No suitable downstream reach found\n");
     return 0;
 
@@ -921,7 +921,7 @@ void addUpstreamIntxn(streamEntry *downstreamPtr, streamEntry *upstreamPtr, int 
         currentUpstreamIntxnPtr = (downstreamPtr->upstreamReaches) + i;
         /* If we find the current stream, then no need to add it again */
         if (currentUpstreamIntxnPtr->streamId == upstreamId) {
-            if (debug == 1)
+            if (debug)
                 printf("upstreamId %d already added to stream %d\n", upstreamId, downstreamPtr->streamId);
             return;
         }
@@ -929,7 +929,7 @@ void addUpstreamIntxn(streamEntry *downstreamPtr, streamEntry *upstreamPtr, int 
 
     /* We made it to this point, so the upstreamId was not found and we have to add it.*/
     if (downstreamPtr->upstreamCnt == 0) {
-        if (debug == 1)
+        if (debug)
             printf("Adding upstream id %d to stream %d\n", upstreamId, downstreamPtr->streamId);
         downstreamPtr->upstreamReaches = (streamIntxn *) malloc(sizeof(streamIntxn));
         (downstreamPtr->upstreamCnt)++;
@@ -937,7 +937,7 @@ void addUpstreamIntxn(streamEntry *downstreamPtr, streamEntry *upstreamPtr, int 
         downstreamPtr->upstreamReaches->row = row;
         downstreamPtr->upstreamReaches->col = col;
     } else {
-        if (debug == 1)
+        if (debug)
             printf("Adding upstream id %d to stream %d\n", upstreamId, downstreamPtr->streamId);
         (downstreamPtr->upstreamCnt)++;
         downstreamPtr->upstreamReaches = (streamIntxn *) realloc(downstreamPtr->upstreamReaches, sizeof(streamIntxn) * (downstreamPtr->upstreamCnt));
