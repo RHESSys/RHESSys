@@ -1,7 +1,7 @@
 PGM = cst
 CC  = gcc 
-#CFLAGS  = -g -O0
-CFLAGS  =
+CFLAGS  = -g -O0
+#CFLAGS  =
 RHESSYS_BIN = /usr/local/bin
 
 OBJECTS = cst.o ../cf/grassio.o

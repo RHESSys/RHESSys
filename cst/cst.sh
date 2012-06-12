@@ -1,19 +1,46 @@
 #!/bin/bash
-#
-# Simple shell script that calls 'cst' program with appropriate arguments
+# This shell script runs the cst (Create Stream Table) program
 
-# Run cst with basin specified - only streams inside basin will be processed
-#cst output=hja-stream-table.txt stream=stream dem=hjadem zone=zone hill=hillslope patch=patch basin=hjabasin
+debug_flag=
+verbose_flag=
 
-# No basin specified, entire map will be processed
-#cst output=new stream=stream dem=hjadem zone=zone hill=hillslope patch=patch
+USAGE="Usage: `basename $0` [-dhv]"
 
-# Specify input maps for stream width, depth, ManningsN
-#cst -q -v output=new stream=stream dem=hjadem zone=zone hill=hillslope patch=patch basin=hjabasin streamBottomWidth=streamBottomWidth streamTopWidth=streamTopWidth streamDepth=streamDepth ManningsN=ManningsN 
+# Parse command line options.
+while getopts dhv OPT; do
+    case "$OPT" in
+        d)
+            debug_flag='-d'
+            ;;
+        h)
+            echo $USAGE
+            ;;
+        v)
+            verbose_flag='-v'
+            ;;
+        \?)
+            # getopts issues an error message
+            echo $USAGE >&2
+            exit 1
+            ;;
+    esac
+done
 
-# Specify streamBottomWidth, streamTopWidth, streamDepth, ManningsN as constants
-cst -q -v output=new stream=stream dem=hjadem zone=zone hill=hillslope patch=patch basin=hjabasin streamBottomWidth=2.1 streamTopWidth=1.3 streamDepth=5.5 ManningsN=0.55 maxPasses=3
+# Remove the switches we parsed above.
+shift `expr $OPTIND - 1`
 
-# Debugging with valgrind
-#valgrind --track-origins=yes --leak-check=full --dsymutil=yes cst output=new stream=stream dem=hjadem zone=zone hill=hillslope patch=patch basin=hjabasin
-#valgrind --track-origins=yes --leak-check=full --dsymutil=yes cst output=stream.nxh stream=str.t100 dem=bigdem patch=p.dem90m.cl zone=h.t100 hill=h.t100
+# We want at least one non-option argument. 
+# Remove this block if you don't need it.
+#if [ $# -eq 0 ]; then
+#    echo $USAGE >&2
+#    exit 1
+#fi
+
+# Access additional arguments as usual through 
+# variables $@, $*, $1, $2, etc. or using this loop:
+#for PARAM; do
+#    echo $PARAM
+#done
+
+cst $debug_flag $verbose_flag output=hp-stream-table.txt stream=str.t100 dem=bigdem patch=p.dem90m.cl zone=h.t100 hill=h.t100 \
+  streamBottomWidth=2.1 streamTopWidth=1.3 streamDepth=5.5 ManningsN=0.55 maxPasses=20

@@ -3,14 +3,9 @@
         int streamId; //
         int row; //
         int col; //
+        double minElevation;
+        double maxElevation;
     } streamIntxn;
-
-    /* Stream intersections where no connected stream with a lower elevation was found. */
-    typedef struct {
-        int streamId;
-        int row;
-        int col;
-    } unresolvedStreamIntxn ;
 
     /* This struct holds info about which zone, hill, and patches a stream crosses over. */
     typedef struct {
@@ -22,18 +17,13 @@
     /* Struct that holds info for each stream */
     typedef struct {
         int streamId;
-        float bottomWidth;	/* width of stream at outlet */
-        float topWidth;		/* width of stream channel at head */
+        float streamBottomWidth;	/* width of stream at bottom of channel */
+        float streamTopWidth;		/* width of stream at top of channel */
         double maxElevation;	/* max elevation of stream */
         double minElevation;	/* max elevation of stream */
         double downstreamReachMinElevation;
-        double downstreamReachMaxElevation;
-        double maxHeight;	/* max channel height of stream, i.e. from LIDAR */
-        float headXpos;		/* x location (easting) of stream head */
-        float headYpos;		/* y location (northing) of stream head */
-        float outletXpos;	/* x location (easting) of stream at outlet */
-        float outletYpos;	/* y location (northin) of stream at outlet */
         float slope;
+        float streamDepth;
         float ManningsN;
         int   pixelCount;	/* count of pixels for this stream */
         int   intersectingUnitsCount;
@@ -43,4 +33,5 @@
         int upstreamCnt;
         basinDivision *basinDivisions;
         int basinDivisionCnt;
+        bool printed;
     } streamEntry ;
