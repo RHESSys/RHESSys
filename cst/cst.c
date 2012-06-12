@@ -46,6 +46,7 @@ bool printStream(streamEntry*, FILE*, streamEntry**, int*);
 /* Global variables */
 int    debug;
 int    verbose;
+float cellResolution;
 
 main(int argc, char *argv[])
 {
@@ -66,7 +67,6 @@ main(int argc, char *argv[])
     char *endPtr;
     double demValue;
     double distance;
-    float cellResolution;
     float inVal;
     int basinMaskValue;
     int	i;
@@ -470,7 +470,7 @@ main(int argc, char *argv[])
         else
             distance = currentStreamPtr->pixelCount * cellResolution;
 
-        // As of 6/4 we are calculating distance simply as ((max. elev. - min. elevation) / number of pixels in the stream reach).
+        // As of 6/4 we are calculating slope simply as ((max. elev. - min. elevation) / number of pixels in the stream reach).
         if (currentStreamPtr->maxElevation == currentStreamPtr->minElevation) {
             currentStreamPtr->slope = 0;
         } else {
@@ -652,8 +652,8 @@ bool printStream(streamEntry *currentStreamPtr, FILE *streamOutFile, streamEntry
     if (debug == 1)
         printf("Printing stream %d\n", currentStreamPtr->streamId);
 
-    fprintf(streamOutFile, "\n%d %7.2f %7.2f %7.2f %7.2f %7.2f %d\n", currentStreamPtr->streamId, currentStreamPtr->streamBottomWidth,
-            currentStreamPtr->streamTopWidth, currentStreamPtr->streamDepth, currentStreamPtr->slope, currentStreamPtr->ManningsN, currentStreamPtr->pixelCount);
+    fprintf(streamOutFile, "\n%d %7.2f %7.2f %7.2f %7.2f %7.2f %7.2f\n", currentStreamPtr->streamId, currentStreamPtr->streamBottomWidth,
+            currentStreamPtr->streamTopWidth, currentStreamPtr->streamDepth, currentStreamPtr->slope, currentStreamPtr->ManningsN, currentStreamPtr->pixelCount*cellResolution);
     fprintf(streamOutFile, "%d\n", currentStreamPtr->basinDivisionCnt);
 
     int j;
