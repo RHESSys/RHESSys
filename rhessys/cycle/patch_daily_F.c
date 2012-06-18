@@ -1170,7 +1170,10 @@ void		patch_daily_F(
 	delta_unsat_zone_storage = max(delta_unsat_zone_storage, 0.0);
 	
 
+	} else {
+	patch[0].wilting_point = 0;
 	}
+
 	patch[0].rz_storage = patch[0].rz_storage - delta_unsat_zone_storage;
 	unsat_zone_patch_demand = unsat_zone_patch_demand - delta_unsat_zone_storage;			
 
