@@ -35,7 +35,7 @@ int	parse_dyn_flag( char *input_string)
 	int dyn_flag;
 	if ((strncmp(input_string,"STATIC",6) == 0) ||
 		(strncmp(input_string, "static",6) == 0) )
-		dyn_flag = STATIC;
+		dyn_flag = CONSTANT;
 	else if ((strncmp(input_string,"DYNAMIC",7) == 0) ||
 		(strncmp(input_string, "dynamic",7) == 0) )
 		dyn_flag = DYNAMIC;
