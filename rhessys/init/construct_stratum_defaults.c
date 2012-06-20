@@ -46,6 +46,7 @@ struct stratum_default *construct_stratum_defaults(
 	int	parse_veg_type( char *);
 	int	parse_phenology_type( char *);
 	int	parse_dyn_flag( char *);
+	int	parse_alloc_flag( char *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -184,7 +185,7 @@ struct stratum_default *construct_stratum_defaults(
 		read_record(default_file, record);
 		fscanf(default_file,"%s",stmp);
 		read_record(default_file, record);
-		default_object_list[i].epc.allocation_flag = parse_dyn_flag(stmp);
+		default_object_list[i].epc.allocation_flag = parse_alloc_flag(stmp);
 		/*--------------------------------------------------------------*/
 		/*          NOTE: PLACE ANY GROW READING HERE.                  */
 		/*--------------------------------------------------------------*/

@@ -35,19 +35,13 @@ int	parse_dyn_flag( char *input_string)
 	int dyn_flag;
 	if ((strncmp(input_string,"STATIC",6) == 0) ||
 		(strncmp(input_string, "static",6) == 0) )
-		dyn_flag = CONSTANT;
+		dyn_flag = STATIC;
 	else if ((strncmp(input_string,"DYNAMIC",7) == 0) ||
 		(strncmp(input_string, "dynamic",7) == 0) )
 		dyn_flag = DYNAMIC;
 	else if ((strncmp(input_string,"CONSTANT",8) == 0) ||
 		(strncmp(input_string, "constant",8) == 0) )
-		dyn_flag = CONSTANT;
-	else if ((strncmp(input_string,"WARING",6) == 0) ||
-		(strncmp(input_string, "waring",6) == 0) )
-		dyn_flag = WARING;
-	else if ((strncmp(input_string,"DICKENSON",9) == 0) ||
-		(strncmp(input_string, "dickenson",9) == 0) )
-		dyn_flag = DICKENSON;
+		dyn_flag = STATIC;
 	else {
 		fprintf(stderr,"\n FATAL ERROR - parse_dyn_flag");
 		fprintf(stderr,"\n Flag must be stati or dynamic and is %s" , input_string);

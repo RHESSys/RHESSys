@@ -230,6 +230,7 @@ $(OBJ)/output_yearly_zone.o \
 $(OBJ)/output_zone.o \
 $(OBJ)/output_hourly_zone.o \
 $(OBJ)/output_zone_state.o \
+$(OBJ)/parse_alloc_flag.o \
 $(OBJ)/parse_dyn_flag.o \
 $(OBJ)/parse_phenology_type.o \
 $(OBJ)/parse_veg_type.o \
@@ -794,6 +795,8 @@ $(OBJ)/compute_litter_rain_stored.o: hydro/compute_litter_rain_stored.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_litter_rain_stored.c -o $(OBJ)/compute_litter_rain_stored.o
 $(OBJ)/surface_daily_F.o: cycle/surface_daily_F.c 
 	$(CC) -c $(CFLAGS) -I include cycle/surface_daily_F.c -o $(OBJ)/surface_daily_F.o
+$(OBJ)/parse_alloc_flag.o: init/parse_alloc_flag.c 
+	$(CC) -c $(CFLAGS) -I include init/parse_alloc_flag.c -o $(OBJ)/parse_alloc_flag.o
 $(OBJ)/parse_dyn_flag.o: init/parse_dyn_flag.c 
 	$(CC) -c $(CFLAGS) -I include init/parse_dyn_flag.c -o $(OBJ)/parse_dyn_flag.o
 $(OBJ)/parse_veg_type.o: init/parse_veg_type.c 
