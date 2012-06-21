@@ -261,7 +261,9 @@ main(int argc, char *argv[])
             if (verbose)
                 printf("Using constant value from command line for ManningsN: %7.3f\n", ManningsN);
         } else {
-            ManningsN_map = (float*)raster2array(rnManningsN, &ManningsN_header, NULL, NULL, CELL_TYPE);
+            if (verbose)
+                printf("Using map for ManningsN: %s\n", rnManningsN);
+            ManningsN_map = (float*)raster2array(rnManningsN, &ManningsN_header, NULL, NULL, FCELL_TYPE);
         }
     }
 
@@ -272,7 +274,9 @@ main(int argc, char *argv[])
             if (verbose)
                 printf("Using constant value from command line for stream top width: %7.3f\n", streamTopWidth);
         } else {
-            streamTopWidth_map = (float*)raster2array(rnStreamTopWidth, &streamTopWidth_header, NULL, NULL, CELL_TYPE);
+            if (verbose)
+                printf("Using map for top width: %s\n", rnStreamTopWidth);
+            streamTopWidth_map = (float*)raster2array(rnStreamTopWidth, &streamTopWidth_header, NULL, NULL, FCELL_TYPE);
         }
     }
 
@@ -283,7 +287,9 @@ main(int argc, char *argv[])
             if (verbose)
                 printf("Using constant value from command line for stream bottom width: %7.3f\n", streamBottomWidth);
         } else {
-            streamBottomWidth_map = (float*)raster2array(rnStreamBottomWidth, &streamBottomWidth_header, NULL, NULL, CELL_TYPE);
+            if (verbose)
+                printf("Using map for bottom width: %s\n", rnStreamBottomWidth);
+            streamBottomWidth_map = (float*)raster2array(rnStreamBottomWidth, &streamBottomWidth_header, NULL, NULL, FCELL_TYPE);
         }
     }
 
@@ -294,7 +300,9 @@ main(int argc, char *argv[])
             if (verbose)
                 printf("Using constant value from command line for stream depth: %7.3f\n", streamDepth);
         } else {
-            streamDepth_map = (float*)raster2array(rnStreamDepth, &streamDepth_header, NULL, NULL, CELL_TYPE);
+            if (verbose)
+                printf("Using map for stream depth: %s\n", rnStreamDepth);
+            streamDepth_map = (float*)raster2array(rnStreamDepth, &streamDepth_header, NULL, NULL, FCELL_TYPE);
         }
     }
 
@@ -705,6 +713,11 @@ streamEntry* findStreamEntry(int streamId, streamEntry **streamEntryPtr, int *st
         newStreamPtr->upstreamCnt = 0;
         newStreamPtr->downstreamReach.streamId = -1;
         newStreamPtr->basinDivisions = NULL;
+        newStreamPtr->streamBottomWidth = 0.0;
+        newStreamPtr->streamTopWidth = 0.0;
+        newStreamPtr->streamDepth = 0.0;
+        newStreamPtr->ManningsN = 0.0;
+
         return newStreamPtr;
     } else {
         //printf("searching for streamId: %d\n", streamId);
@@ -738,6 +751,10 @@ streamEntry* findStreamEntry(int streamId, streamEntry **streamEntryPtr, int *st
         currentStreamPtr->printed = false;
         currentStreamPtr->upstreamCnt = 0;
         currentStreamPtr->basinDivisions = NULL;
+        currentStreamPtr->streamBottomWidth = 0.0;
+        currentStreamPtr->streamTopWidth = 0.0;
+        currentStreamPtr->streamDepth = 0.0;
+        currentStreamPtr->ManningsN = 0.0;
     } else {
         printf("Error, streamId %d neither found nor newly allocated\n", streamId);
     }

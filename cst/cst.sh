@@ -42,5 +42,10 @@ shift `expr $OPTIND - 1`
 #    echo $PARAM
 #done
 
-cst $debug_flag $verbose_flag output=hp-stream-table.txt stream=str.t100 dem=bigdem patch=p.dem90m.cl zone=h.t100 hill=h.t100 \
-  streamBottomWidth=2.1 streamTopWidth=1.3 streamDepth=5.5 ManningsN=0.55 maxPasses=20
+#cst $debug_flag $verbose_flag output=hp-stream-table.txt basin=nanbasin stream=str.t100 dem=bigdem patch=p.dem90m.cl zone=h.t100 hill=h.t100 \
+#  streamBottomWidth=2.1 streamTopWidth=1.3 streamDepth=5.5 ManningsN=0.55 maxPasses=20
+
+# Hui's basin
+cst output=nan.stream stream=str.t100 dem=bigdem patch=p.dem90m.cl zone=h.t100 hill=h.t100 basin=nanbasin ManningsN=0.05 streamTopWidth=topwidth streamBottomWidth=bottomwidth streamDepth=depth maxPasses=10
+
+
