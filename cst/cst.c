@@ -596,7 +596,7 @@ main(int argc, char *argv[])
 
         downstreamId = currentStreamPtr->downstreamReach.streamId;
         /* There still may be reaches that are not connected to any other stream. */
-        if (downstreamId == 0)
+        if (downstreamId == -1)
             continue;
 
         /* Find the the stream reach entry that is downstream from the current stream. */
@@ -607,14 +607,13 @@ main(int argc, char *argv[])
         addUpstreamIntxn(downstreamPtr, currentStreamPtr, row, col);
     }
 
-
     /* Loop through all streams and print info out to a file */
     FILE *streamOutFile = fopen(output_name_opt->answer, "w");
     if (verbose)
         printf("Writing out file %s\n", output_name_opt->answer);
 
     fprintf(streamOutFile, "%i\n", streamCnt);
-    fprintf(streamOutFile, "%i\n", patchCnt);
+    //fprintf(streamOutFile, "%i\n", patchCnt);
     streamEntry *highestStreamPtr;
 
     /* The streams are printed out highest elevation to lowest. */
@@ -660,14 +659,14 @@ bool printStream(streamEntry *currentStreamPtr, FILE *streamOutFile, streamEntry
     if (debug)
         printf("Printing stream %d\n", currentStreamPtr->streamId);
 
-    fprintf(streamOutFile, "\n%d %7.2f %7.2f %7.2f %7.2f %7.2f %7.2f\n", currentStreamPtr->streamId, currentStreamPtr->streamBottomWidth,
+    fprintf(streamOutFile, "\n%d %7.2f %7.2f %7.2f %7.4f %7.4f %7.2f\n", currentStreamPtr->streamId, currentStreamPtr->streamBottomWidth,
             currentStreamPtr->streamTopWidth, currentStreamPtr->streamDepth, currentStreamPtr->slope, currentStreamPtr->ManningsN, currentStreamPtr->pixelCount*cellResolution);
     fprintf(streamOutFile, "%d\n", currentStreamPtr->basinDivisionCnt);
 
     int j;
     for (j = 0; j < currentStreamPtr->basinDivisionCnt; ++j) {
         currentBasinDivisionPtr = (currentStreamPtr->basinDivisions) + j;
-        fprintf(streamOutFile, "    %d, %d, %d\n", currentBasinDivisionPtr->patchId, currentBasinDivisionPtr->zoneId, currentBasinDivisionPtr->hillId);
+        fprintf(streamOutFile, "    %d %d %d\n", currentBasinDivisionPtr->patchId, currentBasinDivisionPtr->zoneId, currentBasinDivisionPtr->hillId);
     }
 
     /* Now print out upstream reaches */
