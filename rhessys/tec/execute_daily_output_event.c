@@ -86,31 +86,21 @@ void	execute_daily_output_event(
 	/*--------------------------------------------------------------*/
 	/*	check to see if there are any print options					*/
 	/*--------------------------------------------------------------*/
-                /*--------------------------------------------------------------*/
+		/*--------------------------------------------------------------*/
 		/*	output stream_routing												*/
 		/*--------------------------------------------------------------*/
-                                //printf("%s\n","before_outputstream");
+                             
 
           for (b=0; b < world[0].num_basin_files; ++ b ) {
-//              printf("%x\n",world[0].basins[b][0].stream_list.stream_network);
-
-   //              printf("%x\n",world[0].basins[b][0].stream_list.stream_network[0]); 
-     //            printf("%d\n",world[0].basins[b][0].stream_list.num_reaches);
                 for (s=0; s < world[0].basins[b][0].stream_list.num_reaches; ++s) {
 			/*--------------------------------------------------------------*/
 			/*	Construct the stream output files.							*/
 			/*--------------------------------------------------------------*/
-       //                                                  printf("%s\n","outputstream");
-
-			if ( command_line[0].stro != NULL ){
-	//			printf("%s\n","outputstream");
-                                reachID = command_line[0].stro->reachID;
-          //                     printf("%d\n",world[0].basins[b][0].stream_list.stream_network[0][0].reach_ID);
-                                if (( world[0].basins[b][0].stream_list.stream_network[s].reach_ID == reachID) || (reachID == -999))
+       			if ( command_line[0].stro != NULL ){
+							reachID = command_line[0].stro->reachID;
+							if (( world[0].basins[b][0].stream_list.stream_network[s].reach_ID == reachID) || (reachID == -999))
 				{   
-              //printf("%s\n","before_output_stream_routing");
-
-                                        output_stream_routing(
+                    output_stream_routing(
 					&(world[0].basins[b]->stream_list.stream_network[s]),
 					date,
 					outfile->stream_routing->daily);}

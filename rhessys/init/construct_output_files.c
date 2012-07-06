@@ -66,8 +66,7 @@ struct	world_output_file_object *construct_output_files(
 	/*	Construct the stream_routing output files.							*/
 	/*--------------------------------------------------------------*/
 	if ( command_line[0].stro != NULL ){
-		printf("%s\n","streamout");
-                strcpy(root,prefix);
+		strcpy(root,prefix);
 		strcat(root, "_streamrouting");
 		world_output_file[0].stream_routing = construct_output_fileset(root);
 	}

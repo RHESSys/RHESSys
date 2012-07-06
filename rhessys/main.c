@@ -25,7 +25,7 @@
 
 		-p		Patch output option.  Print out response variables for
 				specified patches.
-
+        
 		-r		Routing option. Gives name of flow_table to define explicit routing
 				connectivity.  Also trigger use of explicit routing over TOPMODEL
 				approach
@@ -54,6 +54,8 @@
 		-tmp		temporary value (CURRENTLY DON)a
 		-th		threshold sat deficit (for drought output)
 		-gw		include hillslope scale groundwater (sat_to_gw_coeff; gw_loss_coeff parameters scaled)
+        -str    Streamflow routing option. Gives name of stream_table to define explicit streamflow routing connectivit.     
+        -stro   Streamflow routing output option. Print out streamflow for specified stream reaches.
 		-version Prints the RHESSys version number, then exits immediately
 
 	DESCRIPTION
@@ -374,7 +376,7 @@ int	main( int main_argc, char **main_argv)
 	/*	Command line parsing.										*/
 	/*--------------------------------------------------------------*/
 	command_line = construct_command_line(main_argc, main_argv);
-        printf("%d\n",main_argc);
+      
 	/*--------------------------------------------------------------*/
 	/* Check if print version flag was set. If so, just print out   */
 	/* the version and return.                                      */

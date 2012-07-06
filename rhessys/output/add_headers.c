@@ -427,7 +427,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
-	//printf("%s\n","addheader");
+	
         outfile = world_output_files[0].stream_routing[0].daily;
 	fprintf(outfile,
 		"%s %s %s %s %s\n" ,
@@ -435,7 +435,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"month",
 		"year",
 		"reachID",
-		"routstreamflow");
+		"routedstreamflow");
   }
 	return;
 } /*end add_headers*/

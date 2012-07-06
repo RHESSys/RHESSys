@@ -110,7 +110,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].output_flags.daily = 0;
 	command_line[0].output_flags.csv = 0;
 	command_line[0].output_flags.hourly = 0;
-        command_line[0].stro = NULL;
+	command_line[0].stro = NULL;
 	command_line[0].b = NULL;
 	command_line[0].h = NULL;
 	command_line[0].z = NULL;
@@ -697,8 +697,8 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].stro = (struct stro_option *)
 					alloc(sizeof(struct stro_option), "stro","construct_command_line" );
 				command_line[0].stro[0].reachID 	= -999;
-				printf("%s\n","readinstro");
-                                /*--------------------------------------------------------------*/
+				
+				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
 				i++;
@@ -723,7 +723,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].b = (struct b_option *)
 					alloc(sizeof(struct b_option), "b","construct_command_line" );
 				command_line[0].b[0].basinID 	= -999;
-                                printf("%s\n","readin-b");
+                               
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/

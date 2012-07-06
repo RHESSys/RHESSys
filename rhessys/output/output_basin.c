@@ -244,7 +244,7 @@ void	output_basin(			int routing_flag,
 	hgwQout = hgwQout / basin_area;
 	abase_flow += (hbase_flow / basin_area);
 	astreamflow += (hbase_flow / basin_area);
-
+    
 	if (routing_flag == 0)
 		astreamflow += areturn_flow;
 
@@ -307,7 +307,7 @@ void	output_basin(			int routing_flag,
 		var_acctrans,
 		aPET*1000,adC13, apcp*1000.0, amortality_fract*100,
 	  	atmax, atmin, asnow*1000.0 ,
-		basin[0].stream_list.streamflow*1000.0/aarea
+		basin[0].stream_list.streamflow *1000.0*24*3600/aarea
 		);
 
 	return;
