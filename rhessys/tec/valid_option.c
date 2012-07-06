@@ -63,7 +63,7 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-tchange")  == 0) ||
 		(strcmp(command_line,"-pre") == 0) ||
 		(strcmp(command_line,"-rddn")  == 0) ||
-		(strcmp(command_line,"-std") == 0) ||
+		(strcmp(command_line,"-stdev") == 0) ||
 		(strcmp(command_line,"-dor") == 0) ||
 		(strcmp(command_line,"-csv") == 0) ||
 		(strcmp(command_line,"-vgsen") == 0) ||

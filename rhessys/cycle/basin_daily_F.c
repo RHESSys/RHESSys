@@ -63,10 +63,15 @@ void	basin_daily_F(
 		struct	command_line_object *, 
 		struct	tec_entry *,
 		struct	date );
-	
+
 	void	compute_subsurface_routing(
 		struct command_line_object *,
 		struct basin_object *,
+		int, struct	date);
+	
+	double	compute_stream_routing(
+		struct command_line_object *,
+		struct stream_network_object *,
 		int, struct	date);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -99,6 +104,19 @@ void	basin_daily_F(
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
 	}
+
+	/*--------------------------------------------------------------*/
+	/*  For stream routing option - route water between patches within     */
+	/*      the basin                                               */
+	/*--------------------------------------------------------------*/
+    	if ( command_line[0].stream_routing_flag == 1) {
+		 basin[0].stream_list.streamflow=compute_stream_routing(command_line,
+			basin[0].stream_list.stream_network,
+			basin[0].stream_list.num_reaches,
+                        current_date);
+	}
+
+
 	for ( h = 0 ; h < basin[0].num_hillslopes; h++ ){
 		hillslope = basin[0].hillslopes[h];
 		for (z = 0; z < hillslope[0].num_zones; z++) {

@@ -1317,7 +1317,7 @@ void		patch_daily_F(
 			patch[0].rootzone.S,
 			patch[0].soil_defaults[0][0].mz_v,
 			patch[0].rootzone.depth,
-			patch[0].soil_defaults[0][0].Ksat_0 / 2,
+			patch[0].soil_defaults[0][0].Ksat_0_v / 2,
 			patch[0].rz_storage - patch[0].rootzone.field_capacity);
 
 
@@ -1333,7 +1333,7 @@ void		patch_daily_F(
 			patch[0].S,
 			patch[0].soil_defaults[0][0].mz_v,
 			patch[0].sat_deficit_z,
-			patch[0].soil_defaults[0][0].Ksat_0 / 2,
+			patch[0].soil_defaults[0][0].Ksat_0_v / 2,
 			patch[0].unsat_storage - patch[0].field_capacity);
 
 		patch[0].unsat_storage -=  patch[0].unsat_drainage;

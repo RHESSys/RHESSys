@@ -52,7 +52,7 @@ struct	world_output_file_object *construct_output_files(
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].b != NULL) || (command_line[0].h != NULL) ||
 		(command_line[0].z != NULL) || (command_line[0].p != NULL) ||
-		(command_line[0].c != NULL)){
+		(command_line[0].c != NULL)|| (command_line[0].stro != NULL) ){
 		world_output_file = (struct world_output_file_object *)
 			alloc(1 * sizeof(struct world_output_file_object),
 			"world_output_file","construct_output_files");
@@ -61,6 +61,15 @@ struct	world_output_file_object *construct_output_files(
 		fprintf(stderr,
 			"WARNING: in construct_output_file no output has been selected.\n");
 		return(world_output_file);
+	}
+/*--------------------------------------------------------------*/
+	/*	Construct the stream_routing output files.							*/
+	/*--------------------------------------------------------------*/
+	if ( command_line[0].stro != NULL ){
+		printf("%s\n","streamout");
+                strcpy(root,prefix);
+		strcat(root, "_streamrouting");
+		world_output_file[0].stream_routing = construct_output_fileset(root);
 	}
 	/*--------------------------------------------------------------*/
 	/*	Construct the basin output files.							*/

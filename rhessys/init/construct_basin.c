@@ -92,6 +92,11 @@ struct basin_object *construct_basin(
 		struct basin_object *, 
 		struct	command_line_object *);
 	
+	struct stream_list_object construct_stream_routing_topology(
+		char *,
+		struct basin_object *, 
+		struct	command_line_object *);
+	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -322,5 +327,19 @@ struct basin_object *construct_basin(
 						command_line);
 	}
 		else basin[0].route_list.num_patches = 0;
+
+
+	/*--------------------------------------------------------------*/
+	/*	Read in stream routing topology if needed	*/
+	/*--------------------------------------------------------------*/
+	if ( command_line[0].stream_routing_flag == 1) {
+			basin[0].stream_list = construct_stream_routing_topology( command_line[0].stream_routing_filename, basin,
+						command_line);
+	}
+		else { 
+			basin[0].stream_list.stream_network = NULL;
+			basin[0].stream_list.streamflow = 0.0;
+		}
+
 	return(basin);
 } /*end construct_basin.c*/

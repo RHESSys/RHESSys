@@ -75,6 +75,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].prefix_flag = 0;
 	command_line[0].verbose_flag = 0;
 	command_line[0].routing_flag = 0;
+	command_line[0].stream_routing_flag = 0;
 	command_line[0].dclim_flag = 0;
 	command_line[0].ddn_routing_flag = 0;
 	command_line[0].tec_flag = 0;
@@ -109,6 +110,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].output_flags.daily = 0;
 	command_line[0].output_flags.csv = 0;
 	command_line[0].output_flags.hourly = 0;
+        command_line[0].stro = NULL;
 	command_line[0].b = NULL;
 	command_line[0].h = NULL;
 	command_line[0].z = NULL;
@@ -582,6 +584,28 @@ struct	command_line_object	*construct_command_line(
 
 
 			/*--------------------------------------------------------------*/
+			/*		Check if the stream routing option file is next.				*/
+			/*--------------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-str") == 0 ){
+				/*--------------------------------------------------------------*/
+				/*			Check that the next arguement exists.				*/
+				/*--------------------------------------------------------------*/
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,"FATAL ERROR: Routing file name not specified\n");
+					exit(EXIT_FAILURE);
+				} /*end if*/
+				/*--------------------------------------------------------------*/
+				/*			Read in the routing file name.						*/
+				/*--------------------------------------------------------------*/
+				command_line[0].stream_routing_flag = 1;
+				strcpy(command_line[0].stream_routing_filename,main_argv[i]);
+				i++;
+			} /*end if*/
+
+
+
+			/*--------------------------------------------------------------*/
 			/*		Check if the ddn routing option file is next.				*/
 			/*--------------------------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-rddn") == 0 ){
@@ -663,7 +687,33 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].prefix_flag = 1;
 				i++;
 			}/*end if*/
+                        /*--------------------------------------------------------------*/
+			/*		Check if the stream_routing output flag is next.    				*/
 			/*--------------------------------------------------------------*/
+			else if( strcmp(main_argv[i],"-stro") == 0 ){
+				/*--------------------------------------------------------------*/
+				/*			Allocate the stream_routing output specifier.				*/
+				/*--------------------------------------------------------------*/
+				command_line[0].stro = (struct stro_option *)
+					alloc(sizeof(struct stro_option), "stro","construct_command_line" );
+				command_line[0].stro[0].reachID 	= -999;
+				printf("%s\n","readinstro");
+                                /*--------------------------------------------------------------*/
+				/*			Check that the next arguement exists.				*/
+				/*--------------------------------------------------------------*/
+				i++;
+				if (i < main_argc){
+					/*----------------------------------------------*/
+					/*Check that the next arguement is a reachID		*/
+					/*----------------------------------------------*/
+					if ( valid_option(main_argv[i]) == 0){
+						command_line[0].stro[0].reachID = (int)atoi(main_argv[i]);
+						i++;
+					}/*end if*/
+				} /*end if*/
+			} /*end if*/
+			
+                        /*--------------------------------------------------------------*/
 			/*		Check if the basin output flag is next.    				*/
 			/*--------------------------------------------------------------*/
 			else if( strcmp(main_argv[i],"-b") == 0 ){
@@ -673,6 +723,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].b = (struct b_option *)
 					alloc(sizeof(struct b_option), "b","construct_command_line" );
 				command_line[0].b[0].basinID 	= -999;
+                                printf("%s\n","readin-b");
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/

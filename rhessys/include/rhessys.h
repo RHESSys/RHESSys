@@ -290,6 +290,7 @@ struct	world_output_file_object
 	struct	output_files_object		*zone;
 	struct	output_files_object		*patch;
 	struct	output_files_object		*canopy_stratum;
+        struct	output_files_object		*stream_routing;
 	};
 
 /*----------------------------------------------------------*/
@@ -371,6 +372,40 @@ struct routing_list_object
 	};
 
 /*----------------------------------------------------------*/
+/*	Define stream  routing list object.								*/
+/*----------------------------------------------------------*/
+
+struct stream_network_object
+{
+int reach_ID;
+int num_lateral_inputs;
+int num_downstream_neighbours;
+int num_upstream_neighbours;
+int *downstream_neighbours;
+int *upstream_neighbours;
+struct patch_object **lateral_inputs;
+double length;
+double manning;
+double bottom_width;
+double top_width;
+double max_height;
+double stream_slope;
+double initial_flow;
+double water_depth;
+double Qin;
+double previous_lateral_input;
+double Qout;
+};
+
+struct stream_list_object
+	{
+	int num_reaches;
+	double streamflow;
+	struct stream_network_object *stream_network;
+	};
+
+
+/*----------------------------------------------------------*/
 /*	Define basin object.									*/
 /*----------------------------------------------------------*/
 struct basin_object
@@ -394,6 +429,7 @@ struct basin_object
 	struct	grow_basin_object	*grow;
 	struct	hillslope_object	**hillslopes;
 	struct	patch_object 		*outside_region;
+	struct	stream_list_object	stream_list;
 	struct	routing_list_object	route_list;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
@@ -1504,6 +1540,14 @@ struct	patch_grow_default
 /*----------------------------------------------------------*/
 /*	Define valid options.									*/
 /*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
+/*	Define a stro_option object.								*/
+/*----------------------------------------------------------*/
+struct	stro_option
+	{
+	int		reachID;
+	};
+
 
 /*----------------------------------------------------------*/
 /*	Define a b_option object.								*/
@@ -1579,6 +1623,7 @@ struct	command_line_object
 	int		gridded_netcdf_flag;
 	int		grow_flag;
 	int		routing_flag;
+	int		stream_routing_flag;
 	int		ddn_routing_flag;
 	int		dclim_flag;
 	int		road_flag;
@@ -1605,6 +1650,7 @@ struct	command_line_object
 	int		version_flag;
 	char	*output_prefix;
 	char	routing_filename[256];
+	char	stream_routing_filename[256];
 	char	world_filename[256];
 	char	tec_filename[256];
 	double  tmp_value;
@@ -1628,6 +1674,7 @@ struct	command_line_object
 	struct	z_option	*z;
 	struct	p_option	*p;
 	struct	c_option	*c;
+	struct	stro_option	*stro;
 	struct	date		output_yearly_date;
 	struct	date		start_date;
 	struct	date		end_date;

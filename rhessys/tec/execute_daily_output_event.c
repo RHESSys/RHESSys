@@ -74,14 +74,50 @@ void	execute_daily_output_event(
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
+        void output_stream_routing(
+		struct	stream_network_object *,
+		struct	date,
+		FILE	*);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int	basinID, hillID, patchID, zoneID, stratumID;
-	int b,h,p,z,c;
+	int	basinID, hillID, patchID, zoneID, stratumID,reachID;
+	int b,h,p,z,c,s;
 	/*--------------------------------------------------------------*/
 	/*	check to see if there are any print options					*/
 	/*--------------------------------------------------------------*/
+                /*--------------------------------------------------------------*/
+		/*	output stream_routing												*/
+		/*--------------------------------------------------------------*/
+                                //printf("%s\n","before_outputstream");
+
+          for (b=0; b < world[0].num_basin_files; ++ b ) {
+//              printf("%x\n",world[0].basins[b][0].stream_list.stream_network);
+
+   //              printf("%x\n",world[0].basins[b][0].stream_list.stream_network[0]); 
+     //            printf("%d\n",world[0].basins[b][0].stream_list.num_reaches);
+                for (s=0; s < world[0].basins[b][0].stream_list.num_reaches; ++s) {
+			/*--------------------------------------------------------------*/
+			/*	Construct the stream output files.							*/
+			/*--------------------------------------------------------------*/
+       //                                                  printf("%s\n","outputstream");
+
+			if ( command_line[0].stro != NULL ){
+	//			printf("%s\n","outputstream");
+                                reachID = command_line[0].stro->reachID;
+          //                     printf("%d\n",world[0].basins[b][0].stream_list.stream_network[0][0].reach_ID);
+                                if (( world[0].basins[b][0].stream_list.stream_network[s].reach_ID == reachID) || (reachID == -999))
+				{   
+              //printf("%s\n","before_output_stream_routing");
+
+                                        output_stream_routing(
+					&(world[0].basins[b]->stream_list.stream_network[s]),
+					date,
+					outfile->stream_routing->daily);}
+			}
+           }
+
+         }
 	if ((command_line[0].b != NULL) || (command_line[0].h != NULL) ||
 		(command_line[0].z != NULL) || (command_line[0].p != NULL) ||
 		(command_line[0].c != NULL)){

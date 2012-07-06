@@ -374,7 +374,7 @@ int	main( int main_argc, char **main_argv)
 	/*	Command line parsing.										*/
 	/*--------------------------------------------------------------*/
 	command_line = construct_command_line(main_argc, main_argv);
-
+        printf("%d\n",main_argc);
 	/*--------------------------------------------------------------*/
 	/* Check if print version flag was set. If so, just print out   */
 	/* the version and return.                                      */

@@ -105,7 +105,7 @@ struct routing_list_object construct_routing_topology(
 
 		if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
 			printf("\n WARNING lateral Ksat (%lf) are close to zero for patch %d",
-				patch[0].soil_defaults[0][0].m , patch[0].soil_defaults[0][0].Ksat_0, patch[0].ID);
+				patch[0].soil_defaults[0][0].Ksat_0, patch[0].ID);
 		
 		if (patch[0].soil_defaults[0][0].m < ZERO)
 		 	gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0;

@@ -84,7 +84,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"acc_trans",
 		"acctransv_var",
 		"pet", "dC13", "precip",
-		"mortf","tmax","tmin","snowfall","recharge"
+		"mortf","tmax","tmin","snowfall","routedstreamflow"
 		);
 
 	/*--------------------------------------------------------------*/
@@ -420,5 +420,22 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"psn",
 		"lwp","root_depth");
 	}
+        /*--------------------------------------------------------------*/
+	/*	Stream routing file headers					*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].stro != NULL) {
+	/*--------------------------------------------------------------*/
+	/*	Daily 							*/
+	/*--------------------------------------------------------------*/
+	//printf("%s\n","addheader");
+        outfile = world_output_files[0].stream_routing[0].daily;
+	fprintf(outfile,
+		"%s %s %s %s %s\n" ,
+		"day",
+		"month",
+		"year",
+		"reachID",
+		"routstreamflow");
+  }
 	return;
 } /*end add_headers*/

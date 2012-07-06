@@ -75,6 +75,7 @@ $(OBJ)/compute_snow_sublimation.o \
 $(OBJ)/compute_soil_water_potential.o \
 $(OBJ)/compute_stability_correction.o \
 $(OBJ)/compute_subsurface_routing.o \
+$(OBJ)/compute_stream_routing.o \
 $(OBJ)/compute_surface_heat_flux.o \
 $(OBJ)/compute_toc_wind.o \
 $(OBJ)/compute_transmissivity_curve.o \
@@ -102,6 +103,7 @@ $(OBJ)/construct_output_files.o \
 $(OBJ)/construct_output_fileset.o \
 $(OBJ)/construct_patch.o \
 $(OBJ)/construct_routing_topology.o \
+$(OBJ)/construct_stream_routing_topology.o \
 $(OBJ)/construct_ddn_routing_topology.o \
 $(OBJ)/construct_soil_defaults.o \
 $(OBJ)/construct_stratum_defaults.o \
@@ -177,6 +179,7 @@ $(OBJ)/leaf_conductance_tavg_curve.o \
 $(OBJ)/leaf_conductance_tmin_curve.o \
 $(OBJ)/leaf_conductance_vpd_curve.o \
 $(OBJ)/main.o \
+$(OBJ)/output_stream_routing.o \
 $(OBJ)/output_basin.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
@@ -462,6 +465,8 @@ $(OBJ)/output_yearly_zone.o: output/output_yearly_zone.c
 	$(CC) -c $(CFLAGS) -I include output/output_yearly_zone.c -o $(OBJ)/output_yearly_zone.o
 $(OBJ)/output_yearly_canopy_stratum.o: output/output_yearly_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_yearly_canopy_stratum.c -o $(OBJ)/output_yearly_canopy_stratum.o
+$(OBJ)/output_stream_routing.o: output/output_stream_routing.c
+	$(CC) -c $(CFLAGS) -I include output/output_stream_routing.c -o $(OBJ)/output_stream_routing.o
 $(OBJ)/output_basin.o: output/output_basin.c
 	$(CC) -c $(CFLAGS) -I include output/output_basin.c -o $(OBJ)/output_basin.o
 $(OBJ)/output_hillslope.o: output/output_hillslope.c
@@ -556,6 +561,8 @@ $(OBJ)/construct_basin.o: init/construct_basin.c
 	$(CC) -c $(CFLAGS) -I include init/construct_basin.c -o $(OBJ)/construct_basin.o
 $(OBJ)/construct_ddn_routing_topology.o: init/construct_ddn_routing_topology.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ddn_routing_topology.c -o $(OBJ)/construct_ddn_routing_topology.o
+$(OBJ)/construct_stream_routing_topology.o: init/construct_stream_routing_topology.c
+	$(CC) -c $(CFLAGS) -I include init/construct_stream_routing_topology.c -o $(OBJ)/construct_stream_routing_topology.o
 $(OBJ)/construct_routing_topology.o: init/construct_routing_topology.c
 	$(CC) -c $(CFLAGS) -I include init/construct_routing_topology.c -o $(OBJ)/construct_routing_topology.o
 $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
@@ -652,6 +659,8 @@ $(OBJ)/compute_toc_wind.o: clim/compute_toc_wind.c
 	$(CC) -c $(CFLAGS) -I include clim/compute_toc_wind.c -o $(OBJ)/compute_toc_wind.o
 $(OBJ)/recompute_gamma.o: hydro/recompute_gamma.c
 	$(CC) -c $(CFLAGS) -I include hydro/recompute_gamma.c -o $(OBJ)/recompute_gamma.o
+$(OBJ)/compute_stream_routing.o: hydro/compute_stream_routing.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_stream_routing.c -o $(OBJ)/compute_stream_routing.o
 $(OBJ)/compute_subsurface_routing.o: hydro/compute_subsurface_routing.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_subsurface_routing.c -o $(OBJ)/compute_subsurface_routing.o
 $(OBJ)/compute_potential_exfiltration.o: hydro/compute_potential_exfiltration.c

@@ -313,7 +313,7 @@ void	execute_tec(
 					command_line,
 					event,
 					current_date);
-				
+			        // printf("%s\n","finish_daily_simulation");	
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested daily output					*/
 				/*--------------------------------------------------------------*/
@@ -339,13 +339,15 @@ void	execute_tec(
 						command_line,
 						current_date,
 						outfile);
-					else
+					else {
+                                                //printf("%s\n","before_daily_output");
 						execute_daily_output_event(
 						world,
 						command_line,
 						current_date,
 						outfile);
 				 }
+                               }
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested yearly output					*/
 				/*--------------------------------------------------------------*/
