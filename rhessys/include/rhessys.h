@@ -370,6 +370,20 @@ struct routing_list_object
 	int num_patches;
 	struct patch_object **list;
 	};
+/*----------------------------------------------------------*/
+/*	Define reservoir object.								*/
+/*----------------------------------------------------------*/
+
+struct reservoir_object
+{
+int reservoir_ID;
+int flag_min_flow_storage;/*If min_flow has higher priority than min_storage=0, else=1 */
+double month_max_storage[12];
+double min_storage;
+double min_outflow;
+double initial_storage;
+};
+
 
 /*----------------------------------------------------------*/
 /*	Define stream  routing list object.								*/
@@ -384,6 +398,8 @@ int num_upstream_neighbours;
 int num_neighbour_hills;
 int *downstream_neighbours;
 int *upstream_neighbours;
+int reservoir_ID;
+struct reservoir_object reservoir;
 struct patch_object **lateral_inputs;
 struct hillslope_object **neighbour_hill;
 double length;
@@ -1626,6 +1642,7 @@ struct	command_line_object
 	int		grow_flag;
 	int		routing_flag;
 	int		stream_routing_flag;
+	int     reservoir_operation_flag;
 	int		ddn_routing_flag;
 	int		dclim_flag;
 	int		road_flag;
@@ -1653,6 +1670,7 @@ struct	command_line_object
 	char	*output_prefix;
 	char	routing_filename[256];
 	char	stream_routing_filename[256];
+	char    reservoir_operation_filename[256];
 	char	world_filename[256];
 	char	tec_filename[256];
 	double  tmp_value;

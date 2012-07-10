@@ -49,16 +49,25 @@ double  compute_stream_routing(struct command_line_object *command_line,
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	
-    double nonlinear_kimetic_wave(double alfa,double Qin, double initial_flow,
-			double lateral_input,
-			double previous_lateral_input,double length, double dt);
+    double nonlinear_kimetic_wave(
+                        double ,
+                        double , 
+                        double ,
+			            double ,
+			            double ,
+                        double , 
+                        double );
+	double reservoir_operation(struct reservoir_object *,
+                                  double ,
+                                  double ,
+                                  struct date);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
 
 	int i;
 	int j;
-        int k;
+	int k;
     int downstream_neighbour;
     double alfa;
     double tangent;
@@ -77,7 +86,7 @@ double  compute_stream_routing(struct command_line_object *command_line,
 	/* route water from top to bottom				*/
 	/*--------------------------------------------------------------*/
 
-        dt=86400.0;
+	dt=86400.0;
 	streamflow=0.0;
 	sum=0.0;
 	for (i = 0; i < num_reaches; i++) {
@@ -132,7 +141,14 @@ double  compute_stream_routing(struct command_line_object *command_line,
 		/*calulate water depth for next time step */
 		xarea=alfa*pow(stream_network[i].Qin,0.6);
 		stream_network[i].water_depth=(-stream_network[i].bottom_width+sqrt(abs(stream_network[i].bottom_width*stream_network[i].bottom_width+4*tangent*xarea)))/(2*tangent);
-        
+        	
+		
+		/*If there is a reservoir in this reach, do reservoir operation */
+	
+		if(stream_network[i].reservoir_ID!=0){
+			   stream_network[i].Qout=reservoir_operation(&(stream_network[i].reservoir),stream_network[i].Qout,dt,current_date);
+			 
+					}
 
 		/*calulate initial flow and previous lateral input for next time step */
 		stream_network[i].initial_flow=Qout;
@@ -236,5 +252,56 @@ double nonlinear_kimetic_wave(double alfa,double Qin,double initial_flow,double 
 
 }
 
+	
+	double reservoir_operation(struct reservoir_object *current_reservoir,double inflow,double dt,struct date current_date)
+{
+	/*--------------------------------------------------------------*/
+	/*	Local function definition.				*/
+	/*--------------------------------------------------------------*/
 
+	/*--------------------------------------------------------------*/
+	/*	Local variable definition.				*/
+	/*--------------------------------------------------------------*/
+	
+	
+	double storage;
+	double outflow;
+
+	storage=current_reservoir->initial_storage;
+     
+	
+	outflow=current_reservoir->min_outflow;
+	
+	storage=current_reservoir->initial_storage+(inflow-outflow)*dt*86400;
+	
+        if(storage>current_reservoir->month_max_storage[current_date.month-1]){
+		
+            outflow=outflow+(storage-current_reservoir->month_max_storage[current_date.month-1])/(dt*86400);
+		
+		storage=current_reservoir->month_max_storage[current_date.month-1];
+		
+	}
+	if(storage<current_reservoir->min_storage){
+		if(current_reservoir->flag_min_flow_storage==0 && storage<0)/*min_flow has higher priority*/{
+			storage=0;
+			outflow=(current_reservoir->initial_storage-storage)/(dt*86400)+inflow;
+		}
+			
+		
+		if(current_reservoir->flag_min_flow_storage!=0) /*min_storage has higher priority*/{
+			storage=current_reservoir->min_storage;
+			outflow=(current_reservoir->initial_storage-storage)/(dt*86400)+inflow;
+		}
+			
+		
+	}
+	current_reservoir->initial_storage=storage;
+	
+	return(outflow);
+
+
+
+
+
+	 }
 

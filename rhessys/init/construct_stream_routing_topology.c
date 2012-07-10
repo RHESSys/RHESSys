@@ -67,10 +67,12 @@ struct stream_list_object construct_stream_routing_topology(
 	/*--------------------------------------------------------------*/
 	/*      Local variable definition.                                                                      */
 	/*--------------------------------------------------------------*/
-	int i, j, num_reaches,m,k;
+	int i, j, num_reaches,m,k,num_reservoir,reach_ID,reservoir_ID,flag_min_flow_storage;
 	int hillID, patchID, zoneID;
 	int neighbour_hill_num,neighbour_hill_count_0,neighbour_hill_count_1;    
+	double month_max_storage[12],min_storage, min_outflow;
 	FILE *stream_file;	
+	FILE *reservoir_file;
 	
 	struct stream_list_object stream_list;
 	struct stream_network_object *stream_network;
@@ -113,6 +115,7 @@ struct stream_list_object construct_stream_routing_topology(
 		neighbour_hill_num=0;
 		neighbour_hill_count_0=0;
 		neighbour_hill_count_1=0;
+		stream_network_ini[i].reservoir_ID=0;
 		fscanf(stream_file,"%d %lf %lf %lf %lf %lf %lf %d",
 			   &(stream_network_ini[i].reach_ID),
 			   &(stream_network_ini[i].top_width),
@@ -199,8 +202,7 @@ struct stream_list_object construct_stream_routing_topology(
 	for(i=num_reaches-1;i>=0;--i){
 		for (j=0; j< stream_network[i].num_upstream_neighbours; ++j) {
 			for(k=0; k< num_reaches; ++k){
-				/*tem1=stream_network[i].upstream_neighbours[j];
-				tem2=stream_network_ini[k].reach_ID;*/
+				
 				if(stream_network[i].upstream_neighbours[j]==stream_network_ini[k].reach_ID){
 					stream_network[m]=stream_network_ini[k];
 					m=m-1;
@@ -209,32 +211,45 @@ struct stream_list_object construct_stream_routing_topology(
 			}
 		} 
 	}
-		/*for (i=0; i< num_reaches; ++i){
-			printf("%d %lf %lf %lf %lf %lf %lf %d %d\n",
-				   (stream_network[i].reach_ID),
-				   (stream_network[i].top_width),
-				   (stream_network[i].bottom_width),
-				   (stream_network[i].max_height),
-				   (stream_network[i].stream_slope),
-				   (stream_network[i].manning),
-				   (stream_network[i].length),
-				   (stream_network[i].num_lateral_inputs),i);
-			for (j=0; j< stream_network[i].num_lateral_inputs; ++j)                                 
-				printf("%d\n", stream_network[i].lateral_inputs[j]->ID);
-			printf("%d\n",stream_network[i].num_neighbour_hills);
-			for (j=0; j< stream_network[i].num_neighbour_hills; ++j)                                 
-				printf("%d\n", stream_network[i].neighbour_hill[j]->ID);
-			printf("%d\n",stream_network[i].num_upstream_neighbours);
-			for (j=0; j< stream_network[i].num_upstream_neighbours; ++j) 
-				printf("%d\n",stream_network[i].upstream_neighbours[j]);
-			printf("%d\n",stream_network[i].num_downstream_neighbours);
-			for (j=0; j< stream_network[i].num_downstream_neighbours; ++j) 
-			    printf("%d\n",stream_network[i].downstream_neighbours[j]);
-			
 		
-	}*/
         /*--------------------------------------------------------------*/
-        /*   code to construct stream_list                                       */
+        /*   code to construct reservoir                                */
+        /*--------------------------------------------------------------*/
+        if ( command_line[0].reservoir_operation_flag == 1 ){
+          if ( (reservoir_file = fopen(command_line[0].reservoir_operation_filename,"r")) == NULL ){
+		        fprintf(stderr,"FATAL ERROR:  Cannot open reservoir file %s\n",
+				command_line[0].reservoir_operation_filename);
+		   exit(0);
+	      } /*end if*/
+	      fscanf(reservoir_file,"%d",&num_reservoir);
+			
+		  for(i=0;i<num_reservoir;i++){
+	      fscanf(reservoir_file,"%d %d %d %lf %lf",&reach_ID,&reservoir_ID,&flag_min_flow_storage, &min_storage, &min_outflow);
+			 
+			  for(j=0;j<12;j++){
+				fscanf(reservoir_file,"%lf",&month_max_storage[j]);
+							  }
+		      for(k=0;k<num_reaches;k++)
+			   if(stream_network[k].reach_ID==reach_ID){
+				  stream_network[k].reservoir_ID=reservoir_ID;
+                  stream_network[k].reservoir.reservoir_ID=reservoir_ID;
+                  stream_network[k].reservoir.flag_min_flow_storage=flag_min_flow_storage;
+                  stream_network[k].reservoir.min_storage=min_storage*10000.0;
+                  stream_network[k].reservoir.min_outflow=min_outflow;
+				  stream_network[k].reservoir.initial_storage=min_storage*10000.0;
+				 printf("%d %d %lf %lf\n",stream_network[k].reach_ID,stream_network[k].reservoir.reservoir_ID,stream_network[k].reservoir.min_storage,stream_network[k].reservoir.min_outflow);
+				  for(j=0;j<12;j++){
+				      stream_network[k].reservoir.month_max_storage[j]=month_max_storage[j]*10000.0;
+					  				  }
+				   
+
+			    }/*end if*/
+
+		  }
+		}/*end if*/
+
+        /*--------------------------------------------------------------*/
+        /*   code to construct stream_list                              */
         /*--------------------------------------------------------------*/
 		
         stream_list.stream_network = stream_network;

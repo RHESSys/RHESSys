@@ -76,6 +76,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].verbose_flag = 0;
 	command_line[0].routing_flag = 0;
 	command_line[0].stream_routing_flag = 0;
+	command_line[0].reservoir_operation_flag = 0;
 	command_line[0].dclim_flag = 0;
 	command_line[0].ddn_routing_flag = 0;
 	command_line[0].tec_flag = 0;
@@ -603,6 +604,26 @@ struct	command_line_object	*construct_command_line(
 				i++;
 			} /*end if*/
 
+
+			/*--------------------------------------------------------------*/
+			/*		Check if the reservoir option file is next.				*/
+			/*--------------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-res") == 0 ){
+				/*--------------------------------------------------------------*/
+				/*			Check that the next arguement exists.				*/
+				/*--------------------------------------------------------------*/
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,"FATAL ERROR: Routing file name not specified\n");
+					exit(EXIT_FAILURE);
+				} /*end if*/
+				/*--------------------------------------------------------------*/
+				/*			Read in the reservoir file name.						*/
+				/*--------------------------------------------------------------*/
+				command_line[0].reservoir_operation_flag = 1;
+				strcpy(command_line[0].reservoir_operation_filename,main_argv[i]);
+				i++;
+			} /*end if*/
 
 
 			/*--------------------------------------------------------------*/
