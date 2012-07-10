@@ -37,7 +37,7 @@ int	parse_alloc_flag( char *input_string)
 		(strncmp(input_string, "static",6) == 0) )
 		alloc_flag = CONSTANT;
 	else if ((strncmp(input_string,"DYNAMIC",7) == 0) ||
-		(strncmp(input_string, "allocamic",7) == 0) )
+		(strncmp(input_string, "dynamic",7) == 0) )
 		alloc_flag = DYNAMIC;
 	else if ((strncmp(input_string,"CONSTANT",8) == 0) ||
 		(strncmp(input_string, "constant",8) == 0) )
@@ -50,7 +50,7 @@ int	parse_alloc_flag( char *input_string)
 		alloc_flag = DICKENSON;
 	else {
 		fprintf(stderr,"\n FATAL ERROR - parse_alloc_flag");
-		fprintf(stderr,"\n Flag must be stati or allocamic and is %s" , input_string);
+		fprintf(stderr,"\n Flag must be static or dynamic and is %s" , input_string);
 		exit(EXIT_FAILURE);
 	}
 	return(alloc_flag);
