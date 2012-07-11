@@ -268,7 +268,7 @@ struct soil_default *construct_soil_defaults(
 			newrecord = strchr(record,'D');
 			if (newrecord != NULL) {
 			if (strcasecmp(newrecord,"DON_production_rate") == 0) {	
-				default_object_list[i].DOM_decay_rate = ftmp;
+				default_object_list[i].DON_production_rate = ftmp;
 				printf("\n Using %lf for %s for soil default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
