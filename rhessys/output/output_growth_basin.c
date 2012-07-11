@@ -170,7 +170,7 @@ void	output_growth_basin(
 							+ strata->ns.livestemn_transfer
 							+ strata->ns.deadcrootn_transfer
 							+ strata->ns.deadstemn_transfer
-							+ strata->ns.cwdn + strata->ns.npool ) * patch[0].area;
+							+ strata->ns.cwdn + strata->ns.retransn + strata->ns.npool ) * patch[0].area;
 						aleafc += strata->cover_fraction	* (strata->cs.leafc
 							+ strata->cs.leafc_store + strata->cs.leafc_transfer )
 							* patch[0].area;
