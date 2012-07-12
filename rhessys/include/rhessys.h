@@ -979,6 +979,7 @@ struct	cdayflux_patch_struct
     /* potential decomp fluxes */
     double plitr1c_loss;	/* (kgC/m2/d) microbial assim. of labile lit */
     double plitr2c_loss;	/* (kgC/m2/d) microbial assim. of cellulose lit */
+    double plitr3c_loss;	/* (kgC/m2/d) microbial assim. of shielded cellulose lit */
     double plitr4c_loss;	/* (kgC/m2/d) microbial assim. of lignin lit */
     double psoil1c_loss;	 /* (kgC/m2/d) fast microbial recycling */
     double psoil2c_loss;	/* (kgC/m2/d) slow microbial recycling */
@@ -1009,6 +1010,7 @@ struct	cdayflux_patch_struct
     /* daily heterotroph respiration fluxes */
     double litr1c_hr;         /* (kgC/m2/d) labile litter respiration */
     double litr2c_hr;         /* (kgC/m2/d) unshielded cellulose litter resp */
+    double litr3c_hr;         /* (kgC/m2/d) cellulose litter resp */
     double litr4c_hr;         /* (kgC/m2/d) lignin litter respiration */
     double soil1c_hr;         /* (kgC/m2/d) fast microbial recycling resp */
     double soil2c_hr;         /* (kgC/m2/d) medium microbial recycling resp */
@@ -1071,6 +1073,7 @@ struct	ndayflux_patch_struct
     /* potential mineralization */
     double pmnf_l1s1;		/* (kgN/m2/d) microbial assim. of labile lit */
     double pmnf_l2s2;		/* (kgN/m2/d) microbial assim. of cellulose lit */
+    double pmnf_l3l2;		/* (kgN/m2/d) microbial assim. of cellulose lit */
     double pmnf_l4s3;		/* (kgN/m2/d) microbial assim. of lignin lit */
     double pmnf_s1s2;		 /* (kgN/m2/d) fast microbial recycling */
     double pmnf_s2s3;		/* (kgN/m2/d) slow microbial recycling */
@@ -1103,6 +1106,7 @@ struct	ndayflux_patch_struct
     double plant_avail_uptake; /* (kgN/m2/d) available N uptake from plants	      */
     double sminn_to_soil1n_l1; /* (kgN/m2/d) N immob. between litr1 and soil1 */
     double sminn_to_soil2n_l2; /* (kgN/m2/d) N immob. between litr2 and soil2 */
+    double sminn_to_soil2n_l3; /* (kgN/m2/d) N immob. between litr3 and soil2 */
     double sminn_to_soil3n_l4; /* (kgN/m2/d) N immob. between litr4 and soil3 */
     double sminn_to_soil2n_s1; /* (kgN/m2/d) N immob. between soil1 and soil2 */
     double sminn_to_soil3n_s2; /* (kgN/m2/d) N immob. between soil2 and soil3 */

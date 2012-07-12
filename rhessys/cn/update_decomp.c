@@ -60,7 +60,7 @@ int update_decomp(
 	/*------------------------------------------------------*/
 	int ok = 1;
 	double rfl1s1, rfl2s2,rfl4s3,rfs1s2,rfs2s3,rfs3s4;
-	double cn_l1,cn_l2,cn_l4,cn_s1,cn_s2,cn_s3,cn_s4;
+	double cn_l1,cn_l3, cn_l2,cn_l4,cn_s1,cn_s2,cn_s3,cn_s4;
 	double daily_net_nmin;
 	double nlimit, fpi;
 	double total_N, total_preday_N, balance;
@@ -81,6 +81,8 @@ int update_decomp(
 		else cn_l1 = LIVELAB_CN;
 	if (ns_litr->litr2n > ZERO) cn_l2 = cs_litr->litr2c/ns_litr->litr2n;
 		else cn_l2 = CEL_CN;
+	if (ns_litr->litr3n > ZERO) cn_l3 = cs_litr->litr3c/ns_litr->litr3n;
+		else cn_l3 = LIG_CN;
 	if (ns_litr->litr4n > ZERO) cn_l4 = cs_litr->litr4c/ns_litr->litr4n;
 		else cn_l4 = LIG_CN;
 	cn_s1 = SOIL1_CN;
@@ -125,15 +127,19 @@ int update_decomp(
 	}
 	/* release of shielded cellulose litter, tied to the decay rate of
 	lignin litter */
+	/* actually going to litr 2 rather than soil but will use soil2 as repository for mineralized N */
 	if (cs_litr->litr3c > ZERO){
-		if (nlimit && ndf->pmnf_l4s3 > 0.0){
-			cdf->litr3c_to_litr2c = cdf->kl4 * cs_litr->litr3c * fpi;
-			ndf->litr3n_to_litr2n = cdf->kl4 * ns_litr->litr3n * fpi;
+		if (nlimit && ndf->pmnf_l3l2 > 0.0){
+			cdf->plitr3c_loss *= fpi;
+			ndf->pmnf_l3l2 *= fpi;
 		}
-		else{
-			cdf->litr3c_to_litr2c = cdf->kl4 * cs_litr->litr3c;
-			ndf->litr3n_to_litr2n = cdf->kl4 * ns_litr->litr3n;
-		}
+		cdf->litr3c_hr = rfl4s3 * cdf->plitr3c_loss;
+		cdf->litr3c_to_litr2c = (1.0 - rfl4s3) * cdf->plitr3c_loss;
+		if (ns_litr->litr3n > 0.000000001)
+			ndf->litr3n_to_litr2n = cdf->plitr3c_loss / cn_l3;
+		else ndf->litr3n_to_litr2n = 0.0;
+		ndf->sminn_to_soil2n_l3 = ndf->pmnf_l3l2;
+		daily_net_nmin -= ndf->pmnf_l3l2;
 	}
 	
 	/* lignin litter fluxes */
@@ -273,6 +279,8 @@ int update_decomp(
 	/* Fluxes from shielded to unshielded cellulose pools */
 	ns_litr->litr2n       += ndf->litr3n_to_litr2n;
 	ns_litr->litr3n       -= ndf->litr3n_to_litr2n;
+	/* this one is odd because we don't know where to get the N for shifting between litter 2 and 3 */
+	ns_soil->soil2n	      += ndf->sminn_to_soil2n_l3;
 	/* Fluxes out of lignin litter pool */
 	ns_soil->soil3n       += ndf->litr4n_to_soil3n;
 	ns_litr->litr4n       -= ndf->litr4n_to_soil3n;
@@ -296,14 +304,11 @@ int update_decomp(
 		ns_soil->sminn += daily_net_nmin;
 	else {
 		if (-1.0*daily_net_nmin > ns_soil->sminn + ns_soil->nitrate) {
-		/*
-			printf("\n %d %d %d soil %lf min %lf", 
-				current_date.day,
-				current_date.month,
-				current_date.year,
-				ns_soil->sminn+ns_soil->nitrate, daily_net_nmin);
-		*/
+		
+			/* this should not happen  but if it does warn user and but let sminn go negative*/	
+			printf("N-balance problem - in update decomp not enough for mineral N ");
 			daily_net_nmin = -1.0 * (ns_soil->sminn + ns_soil->nitrate);
+			
 		}
 		nitrate_immob = min(ns_soil->nitrate, -1.0*daily_net_nmin);
 		ns_soil->nitrate -= max(nitrate_immob,0.0);
@@ -339,7 +344,8 @@ int update_decomp(
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n
 		+ ns_soil->soil3n + ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate;
 	balance = (total_preday_N)  - (total_N + ndf->sminn_to_npool);
-
+	if (abs(balance) > ZERO) 
+		printf("\n Decomp N doesn't balancei by %lf ", balance);
 	
 	return (!ok);
 } /* end update_decomp.c */

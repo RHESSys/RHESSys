@@ -752,6 +752,7 @@ void		patch_daily_F(
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
 	patch[0].surface_NO3 += zone[0].ndep_NO3;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
+
 	/*--------------------------------------------------------------*/
 	/*	a certain amount of surface_N is incorporated into the */
 	/*	soil each day - we used 66% based on fertilizer experiments 	*/
@@ -1236,6 +1237,7 @@ void		patch_daily_F(
 				strata->gs_sunlit *= transpiration_reduction_percent;		
 				strata->gs_shade *= transpiration_reduction_percent;		
 				strata->mult_conductance.LWP *= transpiration_reduction_percent;
+				strata->ndf.potential_N_uptake *= transpiration_reduction_percent;
 				}
 
 				vegtype=1;
@@ -1436,8 +1438,8 @@ void		patch_daily_F(
 				exit(EXIT_FAILURE);
 			}
 		patch[0].surface_DOC += (patch[0].cdf.do_litr1c_loss + 
-				patch[0].cdf.do_litr2c_loss + patch[0].cdf.do_litr4c_loss);
-		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss +
+				patch[0].cdf.do_litr2c_loss + patch[0].cdf.do_litr3c_loss + patch[0].cdf.do_litr4c_loss);
+		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss + 
 				 patch[0].ndf.do_litr4n_loss);
 		}
 
@@ -1456,8 +1458,6 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
-
-			
 		if ( update_denitrif(
 			&(patch[0].soil_cs),
 			&(patch[0].soil_ns),
@@ -1486,6 +1486,7 @@ void		patch_daily_F(
 		+ (patch[0].litter_ns.litr4n));
 	patch[0].nitrogen_balance = patch[0].preday_totaln - patch[0].totaln - patch[0].ndf.N_to_gw
 		+ zone[0].ndep_NO3 + zone[0].ndep_NH4 - patch[0].ndf.denitrif + fertilizer_NO3 + fertilizer_NH4;
+
 	resp =  (patch[0].cdf.litr1c_hr + patch[0].cdf.litr2c_hr
 		+ patch[0].cdf.litr4c_hr + patch[0].cdf.soil1c_hr
 		+ patch[0].cdf.soil2c_hr + patch[0].cdf.soil3c_hr

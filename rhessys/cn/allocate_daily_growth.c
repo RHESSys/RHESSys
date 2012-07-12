@@ -122,7 +122,6 @@ int allocate_daily_growth(int nlimit,
 	else mean_cn = 0.0;
 
 
-
 	/*--------------------------------------------------------------*/
 	/*	the amount available from the soil is potential_N_uptake adjusted */
 	/*	by fract_potential_uptake which is calculated in resolve_N_competition */

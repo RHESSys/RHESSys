@@ -70,7 +70,7 @@ int update_dissolved_organic_losses(
 	if (ns_litr->litr2n > ZERO) cn_l2 = cs_litr->litr2c/ns_litr->litr2n;
 		else cn_l2 = CEL_CN;
 	if (ns_litr->litr3n > ZERO) cn_l3 = cs_litr->litr3c/ns_litr->litr3n;
-		else cn_l3 = CEL_CN;
+		else cn_l3 = LIG_CN;
 	if (ns_litr->litr4n > ZERO) cn_l4 = cs_litr->litr4c/ns_litr->litr4n;
 		else cn_l4 = LIG_CN;
 
@@ -93,7 +93,7 @@ int update_dissolved_organic_losses(
 	/* shielded cellulose litter fluxes */
 	/* note these are based on lignan decay */
 	if (-1.0*ndf->pmnf_l4s3 > ZERO) {
-		ndf->do_litr3n_loss = DON_production_rate * -1.0*ndf->pmnf_l4s3;
+		ndf->do_litr3n_loss = DON_production_rate * -1.0*ndf->pmnf_l3l2;
 		cdf->do_litr3c_loss = ndf->do_litr3n_loss * cn_l3;
 		}
 
@@ -129,6 +129,7 @@ int update_dissolved_organic_losses(
 
 	/* update soild and litter stores */
 	cs_litr->litr1c       -= cdf->do_litr1c_loss;
+	cs_litr->litr3c       -= cdf->do_litr3c_loss;
 	cs_litr->litr2c       -= cdf->do_litr2c_loss;
 	cs_litr->litr4c       -= cdf->do_litr4c_loss;
 	cs_soil->soil1c       -= cdf->do_soil1c_loss;
@@ -137,15 +138,17 @@ int update_dissolved_organic_losses(
 	cs_soil->soil4c       -= cdf->do_soil4c_loss;
 
 	ns_litr->litr1n       -= ndf->do_litr1n_loss;
-	ns_litr->litr2n       -= ndf->do_litr2n_loss;
+	cs_litr->litr2c       -= cdf->do_litr2c_loss;
+	ns_litr->litr3n       -= ndf->do_litr3n_loss;
 	ns_litr->litr4n       -= ndf->do_litr4n_loss;
 	ns_soil->soil1n       -= ndf->do_soil1n_loss;
 	ns_soil->soil2n       -= ndf->do_soil2n_loss;
 	ns_soil->soil3n       -= ndf->do_soil3n_loss;
 	ns_soil->soil4n       -= ndf->do_soil4n_loss;
 
-	cs_soil->DOC +=  (cdf->do_soil1c_loss + cdf->do_soil2c_loss + cdf->do_soil4c_loss);
-	ns_soil->DON  +=  ( ndf->do_soil1n_loss + ndf->do_soil2n_loss + ndf->do_soil4n_loss);
+
+	cs_soil->DOC +=  (cdf->do_soil1c_loss + cdf->do_soil2c_loss + cdf->do_soil3c_loss + cdf->do_soil4c_loss);
+	ns_soil->DON  +=  ( ndf->do_soil1n_loss + ndf->do_soil3n_loss + ndf->do_soil2n_loss + ndf->do_soil4n_loss);
 
 	
 

@@ -81,6 +81,7 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	cdf->litr1c_to_soil1c = 0.0;
 	cdf->litr2c_hr = 0.0;
 	cdf->litr2c_to_soil2c = 0.0;
+	cdf->litr3c_hr = 0.0;
 	cdf->litr3c_to_litr2c = 0.0;
 	cdf->litr4c_hr = 0.0;
 	cdf->litr4c_to_soil3c = 0.0;
@@ -94,7 +95,7 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	/*--------------------------------------------------------------*/
 	/* daily nitrogen fluxes */
 	/*--------------------------------------------------------------*/
-	/* daily  DOC fluxes */
+	/* daily  DON fluxes */
 	ndf->do_litr1n_loss = 0.0;
 	ndf->do_litr2n_loss = 0.0;
 	ndf->do_litr3n_loss = 0.0;
@@ -119,6 +120,7 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	ndf->litr2n_to_soil2n = 0.0;
 	ndf->sminn_to_soil2n_l2 = 0.0;
 	ndf->litr3n_to_litr2n = 0.0;
+	ndf->sminn_to_soil2n_l3 = 0.0;
 	ndf->litr4n_to_soil3n = 0.0;
 	ndf->sminn_to_soil3n_l4 = 0.0;
 	ndf->soil1n_to_soil2n = 0.0;

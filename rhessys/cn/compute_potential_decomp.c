@@ -67,9 +67,9 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	double kl1_base,kl2_base,kl4_base,ks1_base,ks2_base,ks3_base,ks4_base;
 	double kl1,kl2,kl4,ks1,ks2,ks3,ks4;
 	double cn_l1,cn_l2,cn_l4,cn_s1,cn_s2,cn_s3,cn_s4;
-	double plitr1c_loss, plitr2c_loss, plitr4c_loss;
+	double plitr1c_loss, plitr3c_loss, plitr2c_loss, plitr4c_loss;
 	double psoil1c_loss, psoil2c_loss, psoil3c_loss, psoil4c_loss;
-	double pmnf_l1s1,pmnf_l2s2,pmnf_l4s3,pmnf_s1s2,pmnf_s2s3,pmnf_s3s4,pmnf_s4;
+	double pmnf_l1s1,pmnf_l2s2,pmnf_l3l2, pmnf_l4s3,pmnf_s1s2,pmnf_s2s3,pmnf_s3s4,pmnf_s4;
 	double potential_immob,mineralized;
 	double weight1, weight2, theta1, theta2, water_scalar1, water_scalar2, water_scalar;
 	int nlimit, i;
@@ -169,9 +169,9 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	
 	
 	/* initialize the potential loss and mineral N flux variables */
-	plitr1c_loss = plitr2c_loss = plitr4c_loss = 0.0;
+	plitr1c_loss = plitr2c_loss = plitr3c_loss = plitr4c_loss = 0.0;
 	psoil1c_loss = psoil2c_loss = psoil3c_loss = psoil4c_loss = 0.0;
-	pmnf_l1s1 = pmnf_l2s2 = pmnf_l4s3 = 0.0;
+	pmnf_l1s1 = pmnf_l2s2 = pmnf_l3l2 = pmnf_l4s3 = 0.0;
 	pmnf_s1s2 = pmnf_s2s3 = pmnf_s3s4 = pmnf_s4 = 0.0;
 	
 	/* calculate the non-nitrogen limited fluxes between litter and
@@ -187,6 +187,12 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	if ((ns_litr->litr2n > ZERO) && (cs_litr->litr2c > ZERO)) {
 		plitr2c_loss = kl2 * cs_litr->litr2c;
 		pmnf_l2s2 = (plitr2c_loss * (1.0 - rfl2s2 - (cn_s2/cn_l2)))/cn_s2;
+	}
+	/* 2b. shield cellulose litter to goes to cellulose litter pool */
+	/* respiration fractions not available to assume the same as for lignan (the "shield") */
+	if ((ns_litr->litr3n > ZERO) && (cs_litr->litr3c > ZERO)) {
+		plitr3c_loss = kl4 * cs_litr->litr3c;
+		pmnf_l3l2 = (plitr3c_loss * (1.0 - rfl4s3 - (cn_l2/cn_l2)))/cn_l2;
 	}
 	/* 3. lignin litter to slow microbial recycling pool */
 	if ((ns_litr->litr4n > ZERO) && (cs_litr->litr4c > ZERO)) {
@@ -225,6 +231,9 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	
 	if (pmnf_l2s2 > 0.0) potential_immob += pmnf_l2s2;
 	else mineralized += -pmnf_l2s2;
+
+	if (pmnf_l3l2 > 0.0) potential_immob += pmnf_l3l2;
+	else mineralized += -pmnf_l3l2;
 	
 	if (pmnf_l4s3 > 0.0) potential_immob += pmnf_l4s3;
 	else mineralized += -pmnf_l4s3;
@@ -248,6 +257,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	ndf->pmnf_l1s1 = pmnf_l1s1;
 	cdf->plitr2c_loss = plitr2c_loss;
 	ndf->pmnf_l2s2 = pmnf_l2s2;
+	cdf->plitr3c_loss = plitr3c_loss;
+	ndf->pmnf_l3l2 = pmnf_l3l2;
 	cdf->plitr4c_loss = plitr4c_loss;
 	ndf->pmnf_l4s3 = pmnf_l4s3;
 	cdf->psoil1c_loss = psoil1c_loss;

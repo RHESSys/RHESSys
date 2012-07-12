@@ -110,6 +110,7 @@ int zero_stratum_daily_flux(
 	/* daily growth fluxes */
 	ndf->potential_N_uptake = 0.0;
 	ndf->sminn_to_npool = 0.0;
+	ndf->retransn_to_npool = 0.0;
 	ndf->npool_to_leafn = 0.0;
 	ndf->npool_to_leafn_store = 0.0;
 	ndf->npool_to_frootn = 0.0;
