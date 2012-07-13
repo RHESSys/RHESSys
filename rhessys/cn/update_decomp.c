@@ -307,7 +307,7 @@ int update_decomp(
 		
 			/* this should not happen  but if it does warn user and but let sminn go negative*/	
 			printf("In update decomp not enough for mineral N will reduce accordingly ");
-			balance = ns_soil->sminn + ns_soil->nitrate - daily_net_nmin;
+			balance = ns_soil->sminn + ns_soil->nitrate + daily_net_nmin;
 			printf("\n required %lf balance unmet %lf", -1.0*daily_net_nmin, balance);
 			daily_net_nmin = -1.0 * (ns_soil->sminn + ns_soil->nitrate);
 			
