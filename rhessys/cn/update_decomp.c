@@ -306,7 +306,9 @@ int update_decomp(
 		if (-1.0*daily_net_nmin > ns_soil->sminn + ns_soil->nitrate) {
 		
 			/* this should not happen  but if it does warn user and but let sminn go negative*/	
-			printf("N-balance problem - in update decomp not enough for mineral N ");
+			printf("In update decomp not enough for mineral N will reduce accordingly ");
+			balance = ns_soil->sminn + ns_soil->nitrate - daily_net_nmin;
+			printf("\n required %lf balance unmet %lf", -1.0*daily_net_nmin, balance);
 			daily_net_nmin = -1.0 * (ns_soil->sminn + ns_soil->nitrate);
 			
 		}
@@ -345,7 +347,7 @@ int update_decomp(
 		+ ns_soil->soil3n + ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate;
 	balance = (total_preday_N)  - (total_N + ndf->sminn_to_npool);
 	if (abs(balance) > ZERO) 
-		printf("\n Decomp N doesn't balancei by %lf ", balance);
+		printf("\n Decomp N doesn't balance by %lf ", balance);
 	
 	return (!ok);
 } /* end update_decomp.c */
