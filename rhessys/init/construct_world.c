@@ -353,12 +353,15 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct hillslope_default *construct_hillslope_defaults(int, char **, struct command_line_object *);
 	struct zone_default *construct_zone_defaults(int, char **, int);
 	struct soil_default *construct_soil_defaults(int, char **, struct command_line_object *);
+	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
+	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
 	struct landuse_default *construct_landuse_defaults(int, char **, struct command_line_object *);
 	struct stratum_default *construct_stratum_defaults(int, char **, struct command_line_object *);
 	struct base_station_object *construct_base_station(char *,
 		struct date, struct date);
 	struct basin_object *construct_basin(struct command_line_object *, FILE *,
 		int, struct base_station_object **, struct default_object *);
+	struct fire_struct **construct_fire_grid(struct world_object *, struct command_line_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	void *alloc(size_t, char *, char *);
 /*
@@ -522,16 +525,45 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].defaults[0].num_landuse_default_files);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of stratum default files.		*/
+	/*	Read in the number of veg default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(world[0].defaults[0].num_stratum_default_files));
 	read_record(world_file, record);
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the stratum default files.			*/
+	/*	Read in the veg default files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].stratum_default_files = construct_filename_list( world_file,
 		world[0].defaults[0].num_stratum_default_files);
+
+	
+	/*--------------------------------------------------------------*/
+	/*	If fire option has been set                             */
+	/* Read in the number of fire default files.		*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].firespread_flag == 1) {
+		fscanf(world_file,"%d",&(world[0].defaults[0].num_fire_default_files));
+		read_record(world_file, record);
+		/*--------------------------------------------------------------*/
+		/*	Read in the fire default files.			*/
+		/*--------------------------------------------------------------*/
+		world[0].fire_default_files= construct_filename_list( world_file,
+			world[0].defaults[0].num_fire_default_files);
+	}
+	
+	/*--------------------------------------------------------------*/
+	/*	If surface energy option has been set                             */
+	/* Read in the number of surface energy default files.		*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].surface_energy_flag == 1) {
+		fscanf(world_file,"%d",&(world[0].defaults[0].num_surface_energy_default_files));
+		read_record(world_file, record);
+		/*--------------------------------------------------------------*/
+		/*	Read in the surface energy default files.			*/
+		/*--------------------------------------------------------------*/
+		world[0].surface_energy_default_files= construct_filename_list( world_file,
+			world[0].defaults[0].num_fire_default_files);
+	}
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of base_station files.		*/
@@ -614,11 +646,32 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].stratum_default_files, command_line);
 
 	/*--------------------------------------------------------------*/
+	/* if fire spread flag is set					*/
+	/*	Construct the fire default objects.			*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].firespread_flag == 1) {
+		world[0].defaults[0].fire = construct_fire_defaults(
+			world[0].defaults[0].num_fire_default_files,
+			world[0].fire_default_files, command_line);
+	}
+
+	/*--------------------------------------------------------------*/
+	/* if surface_energy spread flag is set					*/
+	/*	Construct the fire default objects.			*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].surface_energy_flag == 1) {
+		world[0].defaults[0].surface_energy = construct_surface_energy_defaults(
+			world[0].defaults[0].num_surface_energy_default_files,
+			world[0].surface_energy_default_files, command_line);
+	}
+
+
+	/*--------------------------------------------------------------*/
 	/*	Construct the list of base stations.			*/
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].dclim_flag == 0) {
-				/*--------------------------------------------------------------*/
+		/*--------------------------------------------------------------*/
 		/*	Construct the base_stations.				*/
 		/*--------------------------------------------------------------*/
 		printf("\n Constructing base stations flag is %d\n", command_line[0].gridded_ascii_flag);
@@ -677,7 +730,16 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			command_line, world_file, world[0].num_base_stations,
 			world[0].base_stations,	world[0].defaults);
 	} /*end for*/
-	
+	/*--------------------------------------------------------------*/
+	/* if fire spread flag is set					*/
+	/*	Construct the fire grid object.				*/
+	/*--------------------------------------------------------------*/
+	world[0].num_fire_grid_row = 0;
+	world[0].num_fire_grid_col = 0;
+	if (command_line[0].firespread_flag == 1) {
+		world[0].fire_grid = construct_fire_grid(world, command_line);
+
+	}	
 	/*--------------------------------------------------------------*/
 	/*	Close the world_file.										*/
 	/*--------------------------------------------------------------*/

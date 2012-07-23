@@ -71,6 +71,7 @@ struct patch_object *construct_patch(
 		double);
 	void	update_litter_interception_capacity (
 		double, 
+		double, 
 		struct litter_c_object *,
 		struct litter_object *);
 	
@@ -84,6 +85,8 @@ struct patch_object *construct_patch(
 	int		i;
 	int		soil_default_object_ID;
 	int		landuse_default_object_ID;
+	int		fire_default_object_ID;
+	int		surface_energy_default_object_ID;
 	char		record[MAXSTR];
 	struct patch_object *patch;
 	double	mpar;
@@ -110,6 +113,17 @@ struct patch_object *construct_patch(
 	read_record(world_file, record);
 	fscanf(world_file,"%d",&(landuse_default_object_ID));
 	read_record(world_file, record);
+
+	if (command_line[0].firespread_flag == 1) {
+		fscanf(world_file,"%d",&(fire_default_object_ID));
+		read_record(world_file, record);
+		}
+
+	if (command_line[0].surface_energy_flag == 1) {
+		fscanf(world_file,"%d",&(surface_energy_default_object_ID));
+		read_record(world_file, record);
+		}
+
 	fscanf(world_file,"%lf",&(patch[0].area));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(patch[0].slope));
@@ -186,6 +200,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.num_threshold = 0;
 
 
+	patch[0].acc_year.burn = 0.0;
 	patch[0].acc_year.pcp = 0.0;
 	patch[0].acc_year_trans = 0.0;
 	patch[0].acc_year.trans = 0.0;
@@ -304,7 +319,6 @@ struct patch_object *construct_patch(
 	patch[0].landuse_defaults = (struct landuse_default **)
 		alloc( sizeof(struct landuse_default *),"defaults",
 		"construct_patch" );
-	
 	i = 0;
 	while (defaults[0].landuse[i].ID != landuse_default_object_ID) {
 		i++;
@@ -320,7 +334,97 @@ struct patch_object *construct_patch(
 		}
 	} /* end-while */
 	patch[0].landuse_defaults[0] = &defaults[0].landuse[i];
+
+
 	
+	/*--------------------------------------------------------------*/
+	/* if fire spread module is called assign fire defaults
+	/*--------------------------------------------------------------*/
+	if (command_line[0].firespread_flag == 1) {
+	patch[0].fire_defaults = (struct fire_default **)
+		alloc( sizeof(struct fire_default *),"defaults",
+		"construct_patch" );
+	i = 0;
+	while (defaults[0].fire[i].ID != fire_default_object_ID) {
+		i++;
+		/*--------------------------------------------------------------*/
+		/*  Report an error if no match was found.  Otherwise assign    */
+		/*  the default to point to this patch.						    */
+		/*--------------------------------------------------------------*/
+		if ( i>= defaults[0].num_fire_default_files ){
+			fprintf(stderr,
+				"\nFATAL ERROR: in construct_patch, fire default ID %d not found for patch %d\n" ,
+				fire_default_object_ID, patch[0].ID);
+			exit(EXIT_FAILURE);
+		}
+	} /* end-while */
+	patch[0].fire_defaults[0] = &defaults[0].fire[i];
+	}
+
+
+
+	/*--------------------------------------------------------------*/
+	/* if surface energy module is called assign fire defaults
+	/*--------------------------------------------------------------*/
+	if (command_line[0].surface_energy_flag == 1) {
+
+		patch[0].surface_energy_profile = (struct surface_energy_object *)
+		alloc(4* sizeof(struct surface_energy_object),"energy_object",
+		"construct_patch");
+
+		patch[0].surface_energy_defaults = (struct surface_energy_default **)
+		alloc( sizeof(struct surface_energy_default *),"defaults",
+		"construct_patch" );
+		i = 0;
+	while (defaults[0].surface_energy[i].ID != surface_energy_default_object_ID) {
+		i++;
+		/*--------------------------------------------------------------*/
+		/*  Report an error if no match was found.  Otherwise assign    */
+		/*  the default to point to this patch.						    */
+		/*--------------------------------------------------------------*/
+		if ( i>= defaults[0].num_surface_energy_default_files ){
+			fprintf(stderr,
+				"\nFATAL ERROR: in construct_patch, surface energy default ID %d not found for patch %d\n" ,
+				surface_energy_default_object_ID, patch[0].ID);
+			exit(EXIT_FAILURE);
+		}
+	} /* end-while */
+	patch[0].surface_energy_defaults[0] = &defaults[0].surface_energy[i];
+
+	patch[0].surface_energy_profile[0].organic = 1.0;
+	patch[0].surface_energy_profile[1].organic = 0.2;
+	patch[0].surface_energy_profile[2].organic = 0.0;
+	patch[0].surface_energy_profile[3].organic = 0.0;
+
+	patch[0].surface_energy_profile[0].quartz = 0.0;
+	patch[0].surface_energy_profile[1].quartz = patch[0].soil_defaults[0][0].soil_type.sand;
+	patch[0].surface_energy_profile[2].quartz = patch[0].soil_defaults[0][0].soil_type.sand;
+	patch[0].surface_energy_profile[3].quartz = patch[0].soil_defaults[0][0].soil_type.sand;
+
+	/*--------------------------------------------------------------*/
+	/* there are always 4 layers (corresponding to litter, rooting, unsat/sat and soil depth */
+	/* the first later is litter not sure what pore size, psi and porosity should be */
+	/*--------------------------------------------------------------*/
+	patch[0].surface_energy_profile[0].porosity = 0.8;
+	patch[0].surface_energy_profile[0].psi_air_entry = 0.20;
+	patch[0].surface_energy_profile[0].pore_size_index = 0.2;
+
+	patch[0].surface_energy_profile[1].psi_air_entry = patch[0].soil_defaults[0][0].psi_air_entry;
+	patch[0].surface_energy_profile[2].psi_air_entry = patch[0].soil_defaults[0][0].psi_air_entry;
+	patch[0].surface_energy_profile[3].psi_air_entry = patch[0].soil_defaults[0][0].psi_air_entry;
+
+	
+	patch[0].surface_energy_profile[1].pore_size_index = patch[0].soil_defaults[0][0].pore_size_index;
+	patch[0].surface_energy_profile[2].pore_size_index = patch[0].soil_defaults[0][0].pore_size_index;
+	patch[0].surface_energy_profile[3].pore_size_index = patch[0].soil_defaults[0][0].pore_size_index;
+
+	patch[0].surface_energy_profile[3].depth = patch[0].soil_defaults[0][0].soil_depth;
+	patch[0].litter.T = -999.0;
+	patch[0].rootzone.T = -999.0;
+		
+	}
+
+
 	/*--------------------------------------------------------------*/
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/
 	/*--------------------------------------------------------------*/
@@ -419,9 +523,10 @@ struct patch_object *construct_patch(
 	patch[0].psi_max_veg = 0.0;
 	patch[0].litter.gl_c = 0.0;
 	patch[0].litter.gsurf_slope = 0.0;
+	patch[0].litter.moist_coef = 0.0;
+	patch[0].litter.density = 0.0;	
 	patch[0].litter.gsurf_intercept = 0.0;
 	patch[0].rootzone.depth =  0.0;
-	
 	/*--------------------------------------------------------------*/
 	/*	Construct the strata in this patch.						*/
 	/*--------------------------------------------------------------*/
@@ -457,6 +562,9 @@ struct patch_object *construct_patch(
 		patch[0].litter.moist_coef +=
 			patch[0].canopy_strata[i][0].defaults[0][0].epc.litter_moist_coef
 			* patch[0].canopy_strata[i][0].cover_fraction;
+		patch[0].litter.density +=
+			patch[0].canopy_strata[i][0].defaults[0][0].epc.litter_density
+			* patch[0].canopy_strata[i][0].cover_fraction;
 		patch[0].rootzone.depth = max(patch[0].rootzone.depth, 
 			 patch[0].canopy_strata[i][0].rootzone.depth);
 	} /*end for*/
@@ -472,9 +580,11 @@ struct patch_object *construct_patch(
 
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
+	/* 	set litter temperature to -999 to trigger update	*/
 	/*--------------------------------------------------------------*/
 	update_litter_interception_capacity(
 		patch[0].litter.moist_coef,
+		patch[0].litter.density,
 		&(patch[0].litter_cs),
 		&(patch[0].litter));
 

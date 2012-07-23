@@ -41,7 +41,8 @@ int zero_stratum_daily_flux(
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	int ok=1;
-	
+
+		
 	/* sets all the daily flux variables to 0.0 at the beginning of the day */
 	/* carbon fluxes */
 	cdf->psn_to_cpool = 0.0;    /* (kgC/m2/d) gross photosynthesis */

@@ -954,7 +954,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].acc_year.Qin_total += patch[0].Qin_total;
 			patch[0].acc_year.psn += patch[0].net_plant_psn;
 			patch[0].acc_year.PET += (patch[0].PE+patch[0].PET);
-
+			patch[0].acc_year.burn += patch[0].burn;
 
 			if ((patch[0].snowpack.water_equivalent_depth == 0) && (patch[0].acc_year.snowpack > 0)) {
 					if (patch[0].acc_year.meltday < patch[0].acc_year.peaksweday)

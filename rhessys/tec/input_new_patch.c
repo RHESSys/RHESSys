@@ -66,6 +66,7 @@
 		double,
 		double);
 	void	update_litter_interception_capacity (double, 
+		double,
 		struct litter_c_object *,
 		struct litter_object *);
 	
@@ -220,6 +221,7 @@
 	/*--------------------------------------------------------------*/
 	update_litter_interception_capacity(
 		patch[0].litter.moist_coef,
+		patch[0].litter.density,
 		&(patch[0].litter_cs),
 		&(patch[0].litter));
 

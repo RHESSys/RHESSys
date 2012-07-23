@@ -397,8 +397,11 @@ struct stratum_default *construct_stratum_defaults(
 	/*	forest - 						*/
 	/* 	so capacity in m is 2*litter carbon * 2(carbon to biomass */
 	/*		 / density of water				*/
+	/* 	similarly for litter depth but we assume an organic 	*/
+	/* 	matter density						*/
 	/*--------------------------------------------------------------*/
 		default_object_list[i].epc.litter_moist_coef = 2.0/1000.0;
+		default_object_list[i].epc.litter_density = 100.0/2.0;
 		while (!feof(default_file)) {
 			fscanf(default_file,"%lf", &(ftmp));
 			read_record(default_file, record);
@@ -476,6 +479,11 @@ struct stratum_default *construct_stratum_defaults(
 				}
 			if (strcasecmp(newrecord,"epc.litter_moist_coef") == 0) { 
 				default_object_list[i].epc.litter_moist_coef = ftmp;
+				printf("\n Using %lf for %s for veg default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			if (strcasecmp(newrecord,"epc.litter_density") == 0) { 
+				default_object_list[i].epc.litter_density = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}

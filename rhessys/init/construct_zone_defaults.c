@@ -107,6 +107,7 @@ struct zone_default *construct_zone_defaults(
 		/*	(old)							*/
 		/*	currently a concentration				*/
 		/*--------------------------------------------------------------*/
+		default_object_list[i].wind_direction = 180; 
 		default_object_list[i].ndep_NO3 /= 365.0; 
 		default_object_list[i].lapse_rate_tmin = default_object_list[i].lapse_rate; 
 		default_object_list[i].lapse_rate_tmax = default_object_list[i].lapse_rate; 
@@ -158,6 +159,11 @@ struct zone_default *construct_zone_defaults(
 			if (newrecord != NULL)  {
 			if (strcasecmp(newrecord,"wet_lapse_rate") == 0) {	
 				default_object_list[i].wet_lapse_rate = ftmp;
+				printf("\n Using %lf for %s for zone default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			if (strcasecmp(newrecord,"wind_direction") == 0) {	
+				default_object_list[i].wind_direction = ftmp;
 				printf("\n Using %lf for %s for zone default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}

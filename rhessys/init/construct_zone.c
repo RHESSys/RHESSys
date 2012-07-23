@@ -202,10 +202,12 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Initialize any variables that should be initialized at	*/
 	/*	the start of a simulation run for the zone.				*/
+	/* for temperaturature we initialize to 999 so that they will be set on the first day based */
+	/* on air temperatures on that day - which we don't know at this point */
 	/*--------------------------------------------------------------*/
 	zone[0].metv.pa	= atm_pres( zone[0].z );
-	zone[0].metv.tsoil_sum = 0.0;
-	zone[0].metv.tsoil = 0.0;
+	zone[0].metv.tsoil_sum = -999;
+	zone[0].metv.tsoil = -999;
 	zone[0].metv.tmin_ravg = 3.0;
 	zone[0].metv.vpd_ravg = 900;
 	zone[0].metv.dayl_ravg = 38000;
@@ -219,6 +221,7 @@ struct zone_object *construct_zone(
 			num_world_base_stations,
 			world_base_stations,
 			defaults);
+		zone[0].patches[i][0].zone = zone;
 	} /*end for*/
 	return(zone);
 } /*end construct_zone.c*/

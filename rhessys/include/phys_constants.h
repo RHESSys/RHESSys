@@ -23,6 +23,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 #define KELVIN 273.16
 #define PI	3.14159265359
 #define seconds_per_day 86400
+#define ICE_DENSITY 917.0 	/* (kg/m3) density of ice */
 
 /*physiological constants	*/
 #define	RAD2PAR	0.5		/* (DIM) ratio PAR/ SWtotal			*/

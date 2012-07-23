@@ -369,10 +369,11 @@ void		patch_daily_F(
 	struct  dated_sequence	clim_event;
 	/*--------------------------------------------------------------*/
 	/*	We assume the zone soil temp applies to the patch as well.	*/
+	/* 	unless we are using the surface energy iteration code 	in which */
+	/* 	case we use the temperature from the previous day		*/
 	/*	alos for the Kdowns and PAR (for now Ldown can be kept )	*/
 	/*--------------------------------------------------------------*/
 
-	patch[0].Tsoil = zone[0].metv.tsoil;
 	patch[0].Kdown_direct = zone[0].Kdown_direct;
 	patch[0].Kdown_diffuse = zone[0].Kdown_diffuse;
 	patch[0].PAR_direct = zone[0].PAR_direct;
@@ -436,6 +437,7 @@ void		patch_daily_F(
 	/*      Determine patch SOIL heat flux.                         */
 	/*      (This is ignored if there is a 0 height stratum.        */
 	/*--------------------------------------------------------------*/
+
 	patch[0].surface_heat_flux = -1 * compute_surface_heat_flux(
 		command_line[0].verbose_flag,
 		patch[0].snow_stored,

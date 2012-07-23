@@ -60,6 +60,14 @@ void destroy_world(struct command_line_object *command_line,
 		int,
 		int,
 		struct landuse_default * );
+	void	destroy_surface_energy_defaults(
+		int,
+		int,
+		struct surface_energy_default * );
+	void	destroy_fire_defaults(
+		int,
+		int,
+		struct fire_default * );
 	void	destroy_stratum_defaults(
 		int,
 		int,
@@ -103,6 +111,16 @@ void destroy_world(struct command_line_object *command_line,
 		world[0].defaults[0].num_landuse_default_files,
 		command_line[0].grow_flag,
 		world[0].defaults[0].landuse);
+	if (command_line[0].surface_energy_flag == 1)
+		destroy_surface_energy_defaults(
+		world[0].defaults[0].num_surface_energy_default_files,
+		command_line[0].grow_flag,
+		world[0].defaults[0].surface_energy);
+	if (command_line[0].firespread_flag == 1)
+		destroy_fire_defaults(
+		world[0].defaults[0].num_fire_default_files,
+		command_line[0].grow_flag,
+		world[0].defaults[0].fire);
 	/*--------------------------------------------------------------*/
 	/*	Destroy the stratum_defaults objects.					*/
 	/*--------------------------------------------------------------*/
@@ -127,6 +145,9 @@ void destroy_world(struct command_line_object *command_line,
 			&(world[0].basins[i]) );
 	} /*end for*/
 	free( world[0].basins );
+
+	if (command_line[0].firespread_flag == 1)
+		free(world[0].fire_grid);
 	/*--------------------------------------------------------------*/
 	/*	Destroy the world.											*/
 	/*--------------------------------------------------------------*/

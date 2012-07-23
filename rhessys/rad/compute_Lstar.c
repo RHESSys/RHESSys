@@ -92,6 +92,5 @@ void	compute_Lstar(
 		patch[0].Lstar_soil = patch[0].Lup_canopy - patch[0].Lup_soil;
 		patch[0].Lstar_canopy = patch[0].Lup_soil + zone[0].Ldown
 			- 2 * patch[0].Lup_canopy;
-	/*	patch[0].Lstar_snow = 0.0;*/
 	} /*end if - else snowpack */
 } /*end compute_Lstar*/

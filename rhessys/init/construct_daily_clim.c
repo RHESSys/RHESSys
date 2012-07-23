@@ -121,6 +121,7 @@ struct	daily_clim_object *construct_daily_clim(
 	daily_clim[0].tsoil = NULL;
 	daily_clim[0].vpd = NULL;
 	daily_clim[0].wind = NULL;
+	daily_clim[0].wind_direction = NULL;
 	daily_clim[0].ndep_NO3 = NULL;
 	daily_clim[0].ndep_NH4 = NULL;
 	daily_clim[0].lapse_rate_tmax = NULL;
@@ -268,6 +269,13 @@ struct	daily_clim_object *construct_daily_clim(
 			strcpy(file_name, file_prefix);
 			daily_clim[0].wind = construct_clim_sequence(
 				(char *)strcat(file_name,".wind"),
+				start_date,
+				duration);
+		}
+		else if ( strcmp(sequence_name,"wind_direction") == 0 ){
+			strcpy(file_name, file_prefix);
+			daily_clim[0].wind_direction = construct_clim_sequence(
+				(char *)strcat(file_name,".wind_direction"),
 				start_date,
 				duration);
 		}

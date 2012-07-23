@@ -1,5 +1,5 @@
-PGM  = rhessys5.14.8
-VERSION = 5.14.8
+PGM  = rhessys5.15
+VERSION = 5.15
 CC = gcc 
 CFLAGS = -O
 RHESSYS_BIN = /usr/local/bin
@@ -77,6 +77,7 @@ $(OBJ)/compute_stability_correction.o \
 $(OBJ)/compute_subsurface_routing.o \
 $(OBJ)/compute_stream_routing.o \
 $(OBJ)/compute_surface_heat_flux.o \
+$(OBJ)/compute_subsurface_temperature_profile.o \
 $(OBJ)/compute_toc_wind.o \
 $(OBJ)/compute_transmissivity_curve.o \
 $(OBJ)/compute_unsat_zone_drainage.o \
@@ -102,9 +103,12 @@ $(OBJ)/construct_monthly_clim.o \
 $(OBJ)/construct_output_files.o \
 $(OBJ)/construct_output_fileset.o \
 $(OBJ)/construct_patch.o \
+$(OBJ)/construct_fire_grid.o \
 $(OBJ)/construct_routing_topology.o \
 $(OBJ)/construct_stream_routing_topology.o \
 $(OBJ)/construct_ddn_routing_topology.o \
+$(OBJ)/construct_surface_energy_defaults.o \
+$(OBJ)/construct_fire_defaults.o \
 $(OBJ)/construct_soil_defaults.o \
 $(OBJ)/construct_stratum_defaults.o \
 $(OBJ)/construct_tec.o \
@@ -124,6 +128,8 @@ $(OBJ)/destroy_landuse_defaults.o \
 $(OBJ)/destroy_output_files.o \
 $(OBJ)/destroy_output_fileset.o \
 $(OBJ)/destroy_patch.o \
+$(OBJ)/destroy_fire_defaults.o \
+$(OBJ)/destroy_surface_energy_defaults.o \
 $(OBJ)/destroy_soil_defaults.o \
 $(OBJ)/destroy_stratum_defaults.o \
 $(OBJ)/destroy_tec.o \
@@ -144,6 +150,7 @@ $(OBJ)/execute_redefine_world_event.o \
 $(OBJ)/execute_redefine_world_mult_event.o \
 $(OBJ)/execute_redefine_world_thin_event.o \
 $(OBJ)/execute_road_construction_event.o \
+$(OBJ)/execute_firespread_event.o \
 $(OBJ)/execute_state_output_event.o \
 $(OBJ)/execute_tec.o \
 $(OBJ)/execute_yearly_growth_output_event.o \
@@ -345,6 +352,8 @@ $(OBJ)/execute_hourly_output_event.o: tec/execute_hourly_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_hourly_output_event.c -o $(OBJ)/execute_hourly_output_event.o
 $(OBJ)/execute_state_output_event.o: tec/execute_state_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_state_output_event.c -o $(OBJ)/execute_state_output_event.o
+$(OBJ)/execute_firespread_event.o: tec/execute_firespread_event.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event.c -o $(OBJ)/execute_firespread_event.o
 $(OBJ)/execute_tec.o: tec/execute_tec.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_tec.c -o $(OBJ)/execute_tec.o
 $(OBJ)/construct_command_line.o: init/construct_command_line.c
@@ -361,6 +370,10 @@ $(OBJ)/construct_hillslope_defaults.o: init/construct_hillslope_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_hillslope_defaults.c -o $(OBJ)/construct_hillslope_defaults.o
 $(OBJ)/construct_zone_defaults.o: init/construct_zone_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_zone_defaults.c -o $(OBJ)/construct_zone_defaults.o
+$(OBJ)/construct_surface_energy_defaults.o: init/construct_surface_energy_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/construct_surface_energy_defaults.c -o $(OBJ)/construct_surface_energy_defaults.o
+$(OBJ)/construct_fire_defaults.o: init/construct_fire_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/construct_fire_defaults.c -o $(OBJ)/construct_fire_defaults.o
 $(OBJ)/construct_soil_defaults.o: init/construct_soil_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_soil_defaults.c -o $(OBJ)/construct_soil_defaults.o
 $(OBJ)/construct_landuse_defaults.o: init/construct_landuse_defaults.c
@@ -565,6 +578,8 @@ $(OBJ)/construct_stream_routing_topology.o: init/construct_stream_routing_topolo
 	$(CC) -c $(CFLAGS) -I include init/construct_stream_routing_topology.c -o $(OBJ)/construct_stream_routing_topology.o
 $(OBJ)/construct_routing_topology.o: init/construct_routing_topology.c
 	$(CC) -c $(CFLAGS) -I include init/construct_routing_topology.c -o $(OBJ)/construct_routing_topology.o
+$(OBJ)/construct_fire_grid.o: init/construct_fire_grid.c
+	$(CC) -c $(CFLAGS) -I include init/construct_fire_grid.c -o $(OBJ)/construct_fire_grid.o
 $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
 	$(CC) -c $(CFLAGS) -I include init/construct_hillslope.c -o $(OBJ)/construct_hillslope.o
 $(OBJ)/assign_neighbours.o: init/assign_neighbours.c
@@ -589,6 +604,10 @@ $(OBJ)/destroy_hillslope_defaults.o: init/destroy_hillslope_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/destroy_hillslope_defaults.c -o $(OBJ)/destroy_hillslope_defaults.o
 $(OBJ)/destroy_zone_defaults.o: init/destroy_zone_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/destroy_zone_defaults.c -o $(OBJ)/destroy_zone_defaults.o
+$(OBJ)/destroy_surface_energy_defaults.o: init/destroy_surface_energy_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/destroy_surface_energy_defaults.c -o $(OBJ)/destroy_surface_energy_defaults.o
+$(OBJ)/destroy_fire_defaults.o: init/destroy_fire_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/destroy_fire_defaults.c -o $(OBJ)/destroy_fire_defaults.o
 $(OBJ)/destroy_soil_defaults.o: init/destroy_soil_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/destroy_soil_defaults.c -o $(OBJ)/destroy_soil_defaults.o
 $(OBJ)/destroy_landuse_defaults.o: init/destroy_landuse_defaults.c
@@ -647,6 +666,8 @@ $(OBJ)/leaf_conductance_vpd_curve.o: cn/leaf_conductance_vpd_curve.c
 	$(CC) -c $(CFLAGS) -I include cn/leaf_conductance_vpd_curve.c -o $(OBJ)/leaf_conductance_vpd_curve.o
 $(OBJ)/penman_monteith.o: hydro/penman_monteith.c
 	$(CC) -c $(CFLAGS) -I include hydro/penman_monteith.c -o $(OBJ)/penman_monteith.o
+$(OBJ)/compute_subsurface_temperature_profile.o: rad/compute_subsurface_temperature_profile.c
+	$(CC) -c $(CFLAGS) -I include rad/compute_subsurface_temperature_profile.c -o $(OBJ)/compute_subsurface_temperature_profile.o
 $(OBJ)/compute_surface_heat_flux.o: rad/compute_surface_heat_flux.c
 	$(CC) -c $(CFLAGS) -I include rad/compute_surface_heat_flux.c -o $(OBJ)/compute_surface_heat_flux.o
 $(OBJ)/compute_nonvascular_stratum_conductance.o: hydro/compute_nonvascular_stratum_conductance.c

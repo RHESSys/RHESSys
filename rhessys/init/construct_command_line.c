@@ -89,6 +89,8 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].precip_scale_flag = 0;
 	command_line[0].snow_scale_flag = 0;
 	command_line[0].noredist_flag = 0;
+	command_line[0].surface_energy_flag = 0;
+	command_line[0].firespread_flag = 0;
 	command_line[0].vgsen_flag = 0;
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
@@ -248,6 +250,36 @@ struct	command_line_object	*construct_command_line(
 					command_line[0].snow_scale_tol = (double)atof(main_argv[i]);
 					i++;
 				}/*end if*/
+			}/* end if */
+			/*-------------------------------------------------*/
+			/*	fire spread option and coeffcients	  */
+			/*-------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-firespread") == 0 ){
+				i++;
+				printf("\n Running with FIRE SPREAD turned on");
+				command_line[0].firespread_flag = 1;
+				if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
+					fprintf(stderr,"FATAL ERROR: Values for fire grid parameters not specified\n");
+					exit(EXIT_FAILURE);
+				} /*end if*/
+				/*-------------------------------*/
+				/*Read in the fire spread grid parameters		*/
+				/*-------------------------------*/
+				command_line[0].fire_grid_res = (double)atof(main_argv[i]);
+				i++;
+			}/* end if */
+
+			/*-------------------------------------------------*/
+			/*	surface energy option */
+			/*-------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-surfaceenergy") == 0 ){
+				i++;
+				printf("\n Running with SURFACE ENERGY CALC turned on");
+				command_line[0].surface_energy_flag = 1;
+				if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
+					fprintf(stderr,"FATAL ERROR: Values for fire grid parameters not specified\n");
+					exit(EXIT_FAILURE);
+				} /*end if*/
 			}/* end if */
 			/*-------------------------------------------------*/
 			/*	groundwater flag and coeffcients	  */

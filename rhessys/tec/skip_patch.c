@@ -64,8 +64,6 @@
 		double,
 		double,
 		double);
-	void	update_litter_interception_capacity (double, struct litter_c_object *,
-		struct litter_object *);
 	
 	void	*alloc(	size_t, char *, char *);
 	

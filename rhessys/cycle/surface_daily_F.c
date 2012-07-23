@@ -98,6 +98,14 @@ void		surface_daily_F(
 		double,
 		double,
 		int);
+
+
+	double  compute_subsurface_temperature_profile(
+		struct	surface_energy_object *,
+		struct surface_energy_default *,
+		double,
+		double,
+		double *);
 	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -116,6 +124,7 @@ void		surface_daily_F(
 	double	potential_rainy_evaporation_rate;
 	double	rainy_evaporation;
 	double	rnet_evap, rnet_evap_pond, rnet_evap_litter, rnet_evap_soil;
+	double  rnet;
 	double	PE_rate, PE_rainy_rate;
 	double	soil_potential_evaporation;
 	double	soil_potential_dry_evaporation_rate;
@@ -142,6 +151,7 @@ void		surface_daily_F(
 	exfiltration = 0;
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
+	rnet = 0.0;
 	
 	litter = &(patch[0].litter);
 	hv = 2.495 * 1e3;	/* latent heat of vaporization for water (KJ/kg) */
@@ -531,7 +541,69 @@ void		surface_daily_F(
 		}
 		
 	}
+
+	/*--------------------------------------------------------------*/
+	/* if we want to solve surface temperature profile, determine 	*/
+	/* moistures and depths to send to solver			*/
+	/*	then call solver compute_subsurface_temperature_profile */
+	/* will also determine % of soil water that is frozen		*/
+	/* note that depth for layer 3 is always the soil depth so 	*/
+	/* this is set only once in construct_patch			*/
+	/*--------------------------------------------------------------*/
+	
+	if (command_line[0].surface_energy_flag == 1) {
+		patch[0].surface_energy_profile[0].depth = patch[0].litter.depth;
+		patch[0].surface_energy_profile[0].moisture = patch[0].litter.rain_stored;
+
+	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat) {
+		patch[0].surface_energy_profile[1].depth = 
+			patch[0].surface_energy_profile[0].depth + patch[0].rootzone.depth;
+		patch[0].surface_energy_profile[1].moisture = patch[0].rz_storage;
+		patch[0].surface_energy_profile[2].depth = 
+			patch[0].surface_energy_profile[0].depth + patch[0].sat_deficit_z;
+		patch[0].surface_energy_profile[2].moisture = patch[0].unsat_storage;
+		patch[0].surface_energy_profile[3].moisture = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;	
+		}
+	else {
+		patch[0].surface_energy_profile[1].depth = 
+			patch[0].surface_energy_profile[0].depth + patch[0].sat_deficit_z;
+		patch[0].surface_energy_profile[1].moisture = patch[0].rz_storage;
 		
+		patch[0].surface_energy_profile[2].depth = 
+			patch[0].surface_energy_profile[0].depth + patch[0].rootzone.depth;
+		patch[0].surface_energy_profile[2].moisture = patch[0].rootzone.potential_sat - patch[0].sat_deficit;
+		patch[0].surface_energy_profile[3].moisture = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].rootzone.potential_sat;	
+		}
+
+	compute_subsurface_temperature_profile(
+				patch[0].surface_energy_profile,
+				patch[0].surface_energy_defaults[0],
+				zone[0].metv.tavg,
+				rnet,
+				&(patch[0].percent_soil_water_unfrozen));
+
+	/*--------------------------------------------------------------*/
+	/* map iterative temperatures back to soil and litter, for now  */
+	/* we don't differentiate between unsat, rootzone and sat for temperature */
+	/*--------------------------------------------------------------*/
+
+	patch[0].litter.T = patch[0].surface_energy_profile[0].T;
+	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat) 
+		patch[0].rootzone.T = patch[0].surface_energy_profile[1].T;
+	else
+		patch[0].rootzone.T = (patch[0].surface_energy_profile[1].T * (patch[0].sat_deficit) + 
+					patch[0].surface_energy_profile[2].T * (patch[0].rootzone.potential_sat - patch[0].sat_deficit)) 
+					/ (patch[0].rootzone.potential_sat);
+
+	patch[0].Tsoil = (patch[0].surface_energy_profile[1].T * 
+			(patch[0].surface_energy_profile[1].depth - patch[0].surface_energy_profile[0].depth) +
+			patch[0].surface_energy_profile[2].T *
+			(patch[0].surface_energy_profile[2].depth - patch[0].surface_energy_profile[1].depth) +
+			patch[0].surface_energy_profile[3].T *
+			(patch[0].surface_energy_profile[3].depth - patch[0].surface_energy_profile[2].depth)) /
+			patch[0].surface_energy_profile[3].depth;
+		
+	}
 	
 	return;
 }/*end surface_daily_F.c*/

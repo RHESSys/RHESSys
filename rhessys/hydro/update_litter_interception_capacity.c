@@ -20,6 +20,7 @@
 /*	should be a function of the type of litter		*/
 /*	for now though a simple switch is implemented		*/
 /*	i.e no litter or litter					*/
+/*	also compute litter depth				*/
 /*								*/
 /*	PROGRAMMER NOTES					*/
 /*								*/
@@ -29,6 +30,7 @@
 #include "rhessys.h"
 
 void	update_litter_interception_capacity(						double litter_moist_coef,
+											double litter_density,
 											struct litter_c_object	*litr_cs,
 											struct litter_object	*litter)
 {
@@ -53,9 +55,11 @@ void	update_litter_interception_capacity(						double litter_moist_coef,
 
 	if (total_litter_C > ZERO){
 		litter->proj_pai = 1.0*litter->cover_fraction;
+		litter->depth = total_litter_C / litter_density;
 	}
 	else{
 		litter->proj_pai = 0.0;
+		litter->depth = 0.0;
 	}
 	return;
 } /*end update_litter_interception_capacity*/

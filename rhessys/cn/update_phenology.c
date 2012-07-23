@@ -81,9 +81,6 @@ void update_phenology(struct zone_object  *zone,
 		double,
 		double,
 		double);
-	void	update_litter_interception_capacity (double, 
-		struct litter_c_object *,
-		struct litter_object *);
 	int	compute_annual_litfall(
 		struct epconst_struct,
 		struct phenology_struct *,
@@ -620,14 +617,6 @@ void update_phenology(struct zone_object  *zone,
 	if ((day >= phen->expand_startday) && (day < phen->litfall_startday))
 		if (epv->proj_lai > epv->max_proj_lai)
 			epv->max_proj_lai = epv->proj_lai;
-	/*--------------------------------------------------------------*/
-	/*	update litter interception capacity			*/
-	/*--------------------------------------------------------------*/
-	update_litter_interception_capacity(
-		litter->moist_coef,
-		cs_litr,
-		litter);
-
 	
 
 	return;

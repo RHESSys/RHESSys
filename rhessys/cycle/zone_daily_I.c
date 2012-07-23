@@ -351,6 +351,7 @@ void zone_daily_I(
 	zone[0].ndep_NO3 = -999.0;
 	zone[0].ndep_NH4 = -999.0;
 	zone[0].wind = -999.0;
+	zone[0].wind_direction = -999.0;
 	zone[0].LAI_scalar = -999.0;
 	/*--------------------------------------------------------------*/
 	/*	Check if the first base station has the sequence.			*/
@@ -543,6 +544,14 @@ void zone_daily_I(
 		if ( temp != -999.0 ) zone[0].metv.tsoil = temp;
 	}
 	/*--------------------------------------------------------------*/
+	/* if it is the first day of the simulation running average of the tsoil */
+	/* will not yet be set so initialize to tavg */
+	/*--------------------------------------------------------------*/
+	if (zone[0].metv.tsoil_sum < -998)
+		zone[0].metv.tsoil_sum = zone[0].metv.tavg;
+	if (zone[0].metv.tsoil < -998)
+		zone[0].metv.tsoil = zone[0].metv.tavg;
+	/*--------------------------------------------------------------*/
 	/*	Wind speed at screen height.								*/
 	/*																*/
 	/*	It is up to the user to ensure that the windspeed makes		*/
@@ -567,6 +576,25 @@ void zone_daily_I(
 	else{
 		zone[0].wind = zone[0].defaults[0][0].wind;
 	}
+
+
+	/*--------------------------------------------------------------*/
+	/*	Wind direction at screen height.								*/
+	/*--------------------------------------------------------------*/
+	if ( zone[0].base_stations[0][0].daily_clim[0].wind_direction != NULL ){
+		temp = zone[0].base_stations[0][0].daily_clim[0].wind_direction[day];
+		if ( temp != -999.0 ){
+			zone[0].wind_direction = temp;
+		}
+		else{
+			zone[0].wind_direction = zone[0].defaults[0][0].wind_direction;
+		}
+	}
+	else{
+		zone[0].wind_direction = zone[0].defaults[0][0].wind_direction;
+	}
+
+
 	/*--------------------------------------------------------------*/
 	/*	Daily Nitrogen deposition				*/
 	/*--------------------------------------------------------------*/

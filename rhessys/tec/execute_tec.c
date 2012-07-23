@@ -195,6 +195,11 @@ void	execute_tec(
 		struct	command_line_object	*,
 		struct	date,
 		struct	world_output_file_object *);
+
+	void	execute_firespread_event(
+		struct	world_object	*,
+		struct	command_line_object	*,
+		struct	date);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local Variable Definition. 									*/
@@ -399,6 +404,16 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				Do monthly stuff.								*/
 				/*--------------------------------------------------------------*/
+
+				/*--------------------------------------------------------------*/
+				/* if fire spread is called - initiate fire spread routine 	*/
+				/*--------------------------------------------------------------*/
+				if (command_line[0].firespread_flag == 1) {
+					execute_firespread_event(
+						world,
+						command_line,
+						current_date);
+				}	
 				
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested monthly output				*/

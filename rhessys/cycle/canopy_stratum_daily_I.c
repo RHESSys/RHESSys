@@ -142,6 +142,9 @@ void	canopy_stratum_daily_I(
 	}
 
 
+	stratum[0].Kup_direct = 0.0;
+	stratum[0].Kup_diffuse = 0.0;
+
 	if (patch[0].sat_deficit < ZERO)
 		stratum[0].rootzone.S = 1.0;
 
@@ -184,7 +187,7 @@ void	canopy_stratum_daily_I(
 	if ( (command_line[0].grow_flag > 0) &&
 		(stratum[0].epv.psi <= stratum[0].defaults[0][0].epc.psi_close )) {
 		if (command_line[0].verbose_flag == -2)
-			printf("\n%4d %4d %4d -111.1 ws day %lf %lf",
+			printf("\n%4ld %4ld %4ld -111.1 ws day %lf %lf",
 			current_date.day, current_date.month, current_date.year,
 			stratum[0].epv.psi ,stratum[0].defaults[0][0].epc.psi_close);
 		stratum[0].epv.wstress_days += 1;
@@ -287,7 +290,7 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0) {
 		if ( command_line[0].verbose_flag == -2 )
-			printf("\n%4d %4d %4d -111.0 ",
+			printf("\n%4ld %4ld %4ld -111.0 ",
 			current_date.day, current_date.month, current_date.year);
 		if ( stratum[0].phen.annual_allocation == 1) {
 			/*--------------------------------------------------------------*/

@@ -230,6 +230,10 @@ struct	default_object
 	struct 	landuse_default		*landuse;
 	int		num_stratum_default_files;
 	struct	stratum_default		*stratum;
+	int		num_fire_default_files;
+	struct	fire_default		*fire;
+	int		num_surface_energy_default_files;
+	struct	surface_energy_default		*surface_energy;
 	};
 
 
@@ -247,6 +251,8 @@ struct world_object
 	int		simulation_cycles;	
 	int		year_day;
 	int		ID;    
+	int		num_fire_grid_row;
+	int		num_fire_grid_col;
 	long	num_years;
 	long 	num_days;
 	long	num_hours;
@@ -255,6 +261,8 @@ struct world_object
 	char	**basin_default_files;
 	char	**hillslope_default_files;
 	char	**soil_default_files;
+	char	**fire_default_files;
+	char	**surface_energy_default_files;
 	char	**landuse_default_files;
 	char	**stratum_default_files;
 	char	**zone_default_files;
@@ -269,6 +277,7 @@ struct world_object
 	struct	date			duration;				
 	struct	default_object		*defaults;
 	struct	world_hourly_object	*hourly;
+	struct  fire_object		**fire_grid;
 	};
 
 
@@ -320,6 +329,7 @@ struct accumulate_patch_object
    int ndays_sat;
    int ndays_sat70;
    int midsm_wyd;
+   double burn;
    double et;
    double trans;
    double day7trans;
@@ -359,6 +369,7 @@ struct rooting_zone_object
 	double unsat;
 	double depth;
 	double S;
+	double T;		/* degrees C */
 
 };
 
@@ -601,6 +612,7 @@ struct	daily_clim_object
 	double	*tsoil;				/* 	degrees C	*/
 	double	*vpd;				/* 	Pa		*/
 	double	*wind;				/*	m/s		*/
+	double	*wind_direction;		/*	degrees		*/
 	};    
 	
 
@@ -745,6 +757,7 @@ struct	zone_default
 	double	trans_coeff1;		/* 	DIM	*/
 	double	trans_coeff2;		/* 	DIM	*/
 	double	wind;			/* m/s		*/
+	double	wind_direction;			/* degrees		*/
 	double  max_snow_temp;                                          /* degrees C */
         double  min_rain_temp;                                          /* degrees C */
 	double  ndep_NO3;		/* kgN/m2/day	*/
@@ -826,6 +839,7 @@ struct zone_object
 	double	vpd_max;				/* Pa		*/
 	double	w_horizon;	/* cos of angle to normal of flat	*/
 	double  wind;            	                /* m/s  	*/
+	double  wind_direction;            	                /* degrees  	*/
 	struct	base_station_object	**base_stations;
 	struct	grow_zone_object	*grow;
 	struct	metvar_struct		metv;
@@ -1166,6 +1180,8 @@ struct  litter_object
 	{
 	
 	double cover_fraction; 			/* 0-1 */
+	double depth;			/* m */
+	double density;			/* m/kgC */
 	double rain_stored;		/* m */
 	double gsurf;
 	double proj_pai;
@@ -1174,6 +1190,8 @@ struct  litter_object
 	double	gsurf_slope;					/* (DIM) */
 	double  gsurf_intercept;				/* m/s */
 	double  moist_coef;					/* m/kg */
+	double T;		/* degress C */
+
 	};
 		
 struct	litter_c_object
@@ -1315,10 +1333,13 @@ struct patch_object
 	double	Kdown_diffuse;		/* Kj/(m^2*day)	*/
 	double	Kdown_direct_final;	/* Kj/(m^2*day)	*/
 	double	Kdown_diffuse_final;	/* Kj/(m^2*day)	*/
+	double	Kup_direct;		/* Kj/(m^2*day) */
+	double	Kup_diffuse;		/* Kj/(m^2*day) */
 	double	Ksat_0;			/* meteres/day  */
 	double  Ksat_vertical;		/* meters/day	*/
 	double	lna;			/* unitless	*/
 	double  lai;			/* unitless	*/
+	double  Lup_net;		/* Kj/(m^2*day) */
 	double	Lup_canopy;		/* Kj/(m^2*day)	*/
 	double	Lup_canopy_day;		/* Kj/(m^2*day)	*/
 	double	Lup_canopy_night;	/* Kj/(m^2*day)	*/
@@ -1327,12 +1348,14 @@ struct patch_object
 	double	Lup_surface_night;	/* Kj/(m^2*day)	*/
 	double	Lup_snow;		/* Kj/(m^2*day)	*/
 	double	Lup_soil;		/* Kj/(m^2*day)	*/
+	double	Lup_litter;		/* Kj/(m^2*day)	*/
 	double	Lstar_canopy;		/* Kj/(m^2*day)	*/
 	double	Lstar_canopy_day;	/* Kj/(m^2*day)	*/
 	double	Lstar_canopy_night;	/* Kj/(m^2*day)	*/
 	double	Lstar_surface;		/* Kj/(m^2*day)	*/
 	double	Lstar_surface_day;	/* Kj/(m^2*day)	*/
 	double	Lstar_surface_night;	/* Kj/(m^2*day)	*/
+	double	Lstar_litter;		/* Kj/(m^2*day)	*/
 	double	Lstar_snow;		/* Kj/(m^2*day)	*/
 	double	Lstar_soil;		/* Kj/(m^2*day)	*/
 	double  m;		/* m^-1 */
@@ -1408,6 +1431,8 @@ struct patch_object
 	struct	base_station_object	**base_stations;
 	struct	soil_default		**soil_defaults;
 	struct	landuse_default		**landuse_defaults;
+	struct	fire_default		**fire_defaults;
+	struct	surface_energy_default	**surface_energy_defaults;
 	struct	grow_patch_object	*grow;
 	struct	canopy_strata_object	**canopy_strata;
 	struct	patch_hourly_object	*hourly;
@@ -1415,9 +1440,11 @@ struct patch_object
 	struct	innundation_object 	*innundation_list;
 	struct	neighbour_object 	*neighbours;
 	struct	patch_object		*next_stream;
+	struct	surface_energy_object   *surface_energy_profile;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
 	struct  rooting_zone_object	rootzone;
+	struct  zone_object		*zone; /* parent zone */
 
 
 /*----------------------------------------------------------*/
@@ -1430,6 +1457,7 @@ struct patch_object
 	double	deltaS;					/* meters water		*/
 	double	evap_potential;				/* Joules		*/
 	double	field_capacity;				/* meters water 	*/
+	double  percent_soil_water_unfrozen;		/* 0-1		*/
 	double	preday_snow_stored;			/* meters water		*/
 	double  preday_detention_store;			/* meters water		*/
 	double	preday_rain_stored;			/* meters water		*/
@@ -1461,6 +1489,7 @@ struct patch_object
 /*	carbon and nitrogen objects for patch soil and litter */
 /*----------------------------------------------------------*/
 
+	double  burn;				/* 0-1 % burned */
 	double  net_plant_psn;			/* kgC/m2 net carbon flux into patch */
 	double  preday_totalc;			/* kgC/m2 total carbon */
 	double  totalc;				/* kgC/m2 total carbon */
@@ -1661,11 +1690,12 @@ struct	command_line_object
 	int		world_flag;
 	int		start_flag;
 	int		end_flag;
-	int		fire_flag;
+	int		firespread_flag;
 	int		prev_flag;
 	int		gw_flag;
 	int		tchange_flag;
 	int		stdev_flag;
+	int		surface_energy_flag;
 	int		precip_scale_flag;
 	int		snow_scale_flag;
 	int		noredist_flag;
@@ -1684,6 +1714,7 @@ struct	command_line_object
 	double	veg_sen3;
 	double  tmax_add;
 	double  tmin_add;
+	double  fire_grid_res;
 	double	sat_to_gw_coeff_mult;
 	double	gw_loss_coeff_mult;
 	double	snow_scale_tol;
@@ -2218,6 +2249,7 @@ struct epconst_struct
     double litter_gsurf_intercept;  /* m/2 - intercept of conductance vs litter theta */
     double litter_gsurf_slope;  /* (DIM) - slope of conductance vs litter theta */
     double litter_moist_coef;  /* m/kg  water holding capacity of litter in m/kg/m2 */
+    double litter_density;  /* kg/m  density of litter in kg/m/m2 */
     double frootlitr_flab;   /* (DIM) froot litter labile fraction */
     double frootlitr_fucel;  /* (DIM) froot litter unshielded cellulose fract */
     double frootlitr_fscel;  /* (DIM) froot litter shielded cellulose fract */
@@ -2327,6 +2359,8 @@ struct	canopy_strata_object
 	double	gsurf;						/* m/s		*/
 	double	Kstar_direct;					/* Kj/(m2*day)	*/
 	double	Kstar_diffuse;					/* Kj/(m2*day)	*/
+	double	Kup_direct;					/* Kj/(m2*day)	*/
+	double	Kup_diffuse;					/* Kj/(m2*day)	*/
 	double	Lstar;						/* Kj/(m2*day)	*/	
 	double	PAR_after_reflection;				/* (umol photon/m2*day) */
 	double  ppfd_sunlit;			/*  (umol/m2/s) PAR photon flux density */
@@ -2383,4 +2417,63 @@ struct mortality_struct
 
 
 #endif
+
+/*----------------------------------------------------------*/
+/*	Define the fire structure.	*/
+/*----------------------------------------------------------*/
+
+struct fire_default {
+	int ID;
+	double veg_fuel_weighting ;	
+	};
+
+struct fire_object 
+{
+	int num_patches;
+	int burn;			/* 0-1 */
+	struct patch_object **patches;
+	double *prop_patch_in_grid;
+	double *prop_grid_in_patch; 	/* 0-1 */
+	double fuel_veg;  		/* kgC/m2 */
+	double fuel_litter; 		/* kgC/m2 */
+	double fuel_moist; 		/* 0-1 */
+	double soil_moist; 		/* 0-1 */
+	double z; 			/* m */
+	double wind; 			/* m/s */
+	double wind_direction; 		/*degrees */
+	double relative_humidity;	/* 0-1 */
+	struct fire_default_object *defaults;
+};	
+
+
+/*----------------------------------------------------------*/
+/* Define Surface Temperature Object */
+/*----------------------------------------------------------*/
+
+
+struct surface_energy_object {
+
+	double T;		/* degrees C */
+	double depth; /* m */
+	double moisture; /* m of water */
+	double organic; 	/* 0-1 */
+	double quartz; /* 0-1 */
+	double porosity;	/* 0-1 */
+	double 	psi_air_entry;			/* m */
+	double	pore_size_index;				/* unitless */
+};
+
+
+	
+/*----------------------------------------------------------*/
+/* Define Surface Energy Default			*/
+/*----------------------------------------------------------*/
+struct surface_energy_default {
+	int ID;
+	int N_thermal_nodes;  
+	int exp_dist;		/* 0, 1 */
+	double damping_depth; /* m */
+	double iteration_threshold; /* degrees C */
+	};
+
 

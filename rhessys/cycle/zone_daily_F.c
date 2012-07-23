@@ -465,7 +465,6 @@ void		zone_daily_F(
 	/*								*/
 	/*	We always update a running average for metv.tsoil in		*/
 	/*	case we get a missing value.						*/
-	/*	Note: a soil heat model may be a better way .		*/
 	/*--------------------------------------------------------------*/
 	if ( zone[0].metv.tsoil == -999.0 ){
 		zone[0].metv.tsoil_sum = 0.9 * zone[0].metv.tsoil_sum +

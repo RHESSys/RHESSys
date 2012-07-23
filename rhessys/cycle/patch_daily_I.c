@@ -170,16 +170,18 @@ void		patch_daily_I(
 		struct  ndayflux_patch_struct *);
 	
 	void    sort_patch_layers(struct patch_object *);
-	
+
+		
+	void	update_litter_interception_capacity (double, 
+		double,
+		struct litter_c_object *,
+		struct litter_object *);
+
 	int	zero_patch_daily_flux(
 		struct	patch_object *,
 		struct  cdayflux_patch_struct *,
 		struct  ndayflux_patch_struct *);
 	
-	void	update_litter_interception_capacity(
-		double,
-		struct  litter_c_object *,
-		struct  litter_object *);
 	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -199,6 +201,23 @@ void		patch_daily_I(
 	}
 
 	
+	/*--------------------------------------------------------------*/
+	/* if we are not running a soil heat model use running average and air temperature */
+	/* to set these temperature					*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].surface_energy_flag == 0) {
+		patch[0].Tsoil = zone[0].metv.tsoil;
+		patch[0].litter.T = zone[0].metv.tavg;
+		patch[0].rootzone.T = zone[0].metv.tsoil;
+		}
+	else {
+		if (patch[0].Tsoil < -998)
+			patch[0].Tsoil = zone[0].metv.tavg;
+		if (patch[0].litter.T < -998)
+			patch[0].litter.T = zone[0].metv.tavg;
+		if (patch[0].rootzone.T < -998)
+			patch[0].rootzone.T = zone[0].metv.tavg;
+	}
 	/*-----------------------------------------------------*/
 	/*  Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/			
@@ -432,10 +451,16 @@ void		patch_daily_I(
 
 
 	if (command_line[0].grow_flag > 0) {
+
+		/*--------------------------------------------------------------*/
+		/*	update litter interception capacity			*/
+		/*--------------------------------------------------------------*/
 		update_litter_interception_capacity(
 			patch[0].litter.moist_coef,
+			patch[0].litter.density,
 			&(patch[0].litter_cs),
 			&(patch[0].litter));
+
 		if (compute_potential_decomp(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].psi_max,

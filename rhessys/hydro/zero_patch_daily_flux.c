@@ -53,6 +53,8 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	patch[0].gw_drainage = 0.0;
 	patch[0].snowpack.sublimation = 0.0;
 	patch[0].evaporation_surf = 0.0;
+	patch[0].Kup_direct = 0.0;
+	patch[0].Kup_diffuse = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/* daily carbon fluxes */
