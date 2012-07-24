@@ -374,6 +374,8 @@ void		patch_daily_F(
 	/*	alos for the Kdowns and PAR (for now Ldown can be kept )	*/
 	/*--------------------------------------------------------------*/
 
+	if (command_line[0].surface_energy_flag == 0) 
+		patch[0].Tsoil = zone[0].metv.tsoil;
 	patch[0].Kdown_direct = zone[0].Kdown_direct;
 	patch[0].Kdown_diffuse = zone[0].Kdown_diffuse;
 	patch[0].PAR_direct = zone[0].PAR_direct;
