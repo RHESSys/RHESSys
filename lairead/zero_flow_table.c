@@ -49,7 +49,7 @@ void	zero_flow_table(flow_table, maxr, maxc)
 		 flow_table[inx].ID_order = -99999;
 		 flow_table[inx].area = 0;
 		 flow_table[inx].vegid = 0;
-		 flow_table[inx].lai = 0.0;
+		 flow_table[inx].lai = -99999.0;
 		 flow_table[inx].veglink = NULL;
 		 }
 	  }

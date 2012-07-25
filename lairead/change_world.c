@@ -109,7 +109,7 @@ change_world(oldworld, redefine, flow_table, num_patches)
 		flow_table[i].worldlink = find_tlevel(tlevel[0].children[0], ID, 1);
 
 		if ((flow_table[i].worldlink != NULL)  && (flow_table[i].veglink != NULL) ) {
-			if (flow_table[i].veglink[0].sla > 0.0001) {
+			if ((flow_table[i].veglink[0].sla > 0.0001) && (flow_table[i].lai > -0.000)) {
 
 
 			if (flow_table[i].lai < 1.0) {
