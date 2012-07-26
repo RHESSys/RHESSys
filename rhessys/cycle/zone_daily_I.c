@@ -547,8 +547,8 @@ void zone_daily_I(
 	/* if it is the first day of the simulation running average of the tsoil */
 	/* will not yet be set so initialize to tavg */
 	/*--------------------------------------------------------------*/
-	/* if (zone[0].metv.tsoil_sum < -998)
-		zone[0].metv.tsoil_sum = zone[0].metv.tavg;*/
+	 if (zone[0].metv.tsoil_sum < -998.0)
+		zone[0].metv.tsoil_sum = zone[0].metv.tavg;
 	/*--------------------------------------------------------------*/
 	/*	Wind speed at screen height.								*/
 	/*																*/

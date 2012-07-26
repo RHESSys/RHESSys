@@ -201,23 +201,6 @@ void		patch_daily_I(
 	}
 
 	
-	/*--------------------------------------------------------------*/
-	/* if we are not running a soil heat model use running average and air temperature */
-	/* to set these temperature					*/
-	/*--------------------------------------------------------------*/
-	if (command_line[0].surface_energy_flag == 0) {
-		patch[0].Tsoil = zone[0].metv.tsoil;
-		patch[0].litter.T = zone[0].metv.tavg;
-		patch[0].rootzone.T = zone[0].metv.tsoil;
-		}
-	else {
-		if (patch[0].Tsoil < -998)
-			patch[0].Tsoil = zone[0].metv.tavg;
-		if (patch[0].litter.T < -998)
-			patch[0].litter.T = zone[0].metv.tavg;
-		if (patch[0].rootzone.T < -998)
-			patch[0].rootzone.T = zone[0].metv.tavg;
-	}
 	/*-----------------------------------------------------*/
 	/*  Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/			
