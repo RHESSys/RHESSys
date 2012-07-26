@@ -101,6 +101,15 @@ void input_new_strata_thin(
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
 	struct mortality_struct mort;
+	
+	mort.mort_cpool = 0.0;
+	mort.mort_leafc = 0.0;
+	mort.mort_deadleafc = 0.0;
+	mort.mort_livestemc = 0.0;
+	mort.mort_deadstemc = 0.0;
+	mort.mort_livecrootc = 0.0;
+	mort.mort_deadcrootc = 0.0;
+	mort.mort_frootc = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.		*/
