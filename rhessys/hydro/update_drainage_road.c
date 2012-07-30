@@ -72,6 +72,7 @@ void  update_drainage_road(
 		double,
 		double,
 		double,
+		double,
 		double *);
 
 	double recompute_gamma(	
@@ -160,6 +161,7 @@ void  update_drainage_road(
 			patch[0].std * command_line[0].std_scale, 
 			road_int_depth,
 			total_gamma, 
+			patch[0].soil_defaults[0][0].interval_size,
 			patch[0].transmissivity_profile);
 
 		/*-----------------------------------------------------------*/
@@ -170,6 +172,7 @@ void  update_drainage_road(
 			patch[0].std * command_line[0].std_scale, 
 			patch[0].sat_deficit,
 			total_gamma, 
+			patch[0].soil_defaults[0][0].interval_size,
 			patch[0].transmissivity_profile) - route_to_patch;
 
 		if (route_to_patch < 0.0) route_to_patch = 0.0;
@@ -296,6 +299,7 @@ void  update_drainage_road(
 			patch[0].std * command_line[0].std_scale, 
 			patch[0].sat_deficit,
 			total_gamma, 
+			patch[0].soil_defaults[0][0].interval_size,
 			patch[0].transmissivity_profile);
 
 		if (route_to_patch < 0.0) route_to_patch = 0.0;

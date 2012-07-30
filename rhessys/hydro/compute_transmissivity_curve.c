@@ -111,14 +111,14 @@ double 	*compute_transmissivity_curve(
 	/*	for do not include surface overland flow or detention   */
 	/*	storage here						*/
 	/*--------------------------------------------------------------*/
-	if (patch[0].soil_defaults[0][0].soil_water_cap > INTERVAL_SIZE) {
+	if (patch[0].soil_defaults[0][0].soil_water_cap > patch[0].soil_defaults[0][0].interval_size) {
 		initial = patch[0].num_soil_intervals;
 		depth = patch[0].soil_defaults[0][0].soil_water_cap;
 		transmissivity[initial]=0.0;
 		initial = initial-1;
 		for (didx=initial; didx >= 0; didx -= 1) {
 			lower = depth;
-			depth = depth-INTERVAL_SIZE;
+			depth = depth-patch[0].soil_defaults[0][0].interval_size;
 
 			
 			lower_z = compute_z_final(
@@ -157,7 +157,7 @@ double 	*compute_transmissivity_curve(
 		else
 			transmissivity_layer =  gamma * (lower-depth);
 
-		fclayer = max(INTERVAL_SIZE-fclayer,0.0);
+		fclayer = max(patch[0].soil_defaults[0][0].interval_size-fclayer,0.0);
 
 		transmissivity_layer = min(fclayer, transmissivity_layer/patch[0].area);  
 

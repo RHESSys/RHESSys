@@ -226,6 +226,7 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].mobile_DON_proportion = 1.0;
 			default_object_list[i].mobile_DOC_proportion = 1.0;
 			default_object_list[i].DON_production_rate = 0.03;
+			default_object_list[i].interval_size = INTERVAL_SIZE;
 
 
 		/*--------------------------------------------------------------*/
@@ -300,6 +301,14 @@ struct soil_default *construct_soil_defaults(
 			if (newrecord != NULL) {
 			if (strcasecmp(newrecord,"p4") == 0) {	
 				default_object_list[i].p4 = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'i');
+			if (newrecord != NULL) {
+			if (strcasecmp(newrecord,"interval_size") == 0) {	
+				default_object_list[i].interval_size = ftmp;
 				printf("\n Using %lf for %s for soil default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}

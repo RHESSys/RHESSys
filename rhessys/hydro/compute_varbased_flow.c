@@ -44,7 +44,8 @@ double	compute_varbased_flow(
 				int num_soil_intervals,
 				double std,
 				double s1,
-				double gamma,
+				double gamma,	
+				double interval_size,
 				double *transmissivity
 					)
 {
@@ -82,14 +83,14 @@ double	compute_varbased_flow(
 
 	if (std > ZERO) {
 	for (i=0; i <9; i++) {
-		didx = (int) lround((s1 + normal[i]*std)/INTERVAL_SIZE);
+		didx = (int) lround((s1 + normal[i]*std)/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
 		accum = transmissivity[didx];
 		flow += accum * perc[i];
 	}
 	}
 	else  {
-		didx = (int) lround(s1/INTERVAL_SIZE);
+		didx = (int) lround(s1/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
 		flow = transmissivity[didx];
 	}

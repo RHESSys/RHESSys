@@ -83,6 +83,7 @@ void  update_drainage_stream(
 		double,
 		double,
 		double,
+		double,
 		double *);
 
 	double recompute_gamma(	
@@ -142,6 +143,7 @@ void  update_drainage_stream(
 		patch[0].std * command_line[0].std_scale,
 		patch[0].sat_deficit,
 		gamma,
+		patch[0].soil_defaults[0][0].interval_size,
 		patch[0].transmissivity_profile);
 
 	

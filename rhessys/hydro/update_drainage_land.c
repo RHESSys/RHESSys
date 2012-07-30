@@ -63,6 +63,7 @@ void  update_drainage_land(
 		double,
 		double,
 		double,
+		double,
 		double *);
 
 
@@ -168,6 +169,7 @@ void  update_drainage_land(
 		patch[0].std * std_scale, 
 		patch[0].sat_deficit,
 		total_gamma, 
+		patch[0].soil_defaults[0][0].interval_size,
 		patch[0].transmissivity_profile);
 
 	if (route_to_patch < 0.0) route_to_patch = 0.0;

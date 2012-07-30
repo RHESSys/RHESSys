@@ -158,10 +158,12 @@ struct routing_list_object construct_routing_topology(
 		/*--------------------------------------------------------------*/
 		/*	create a vector of transmssivities 			*/
 		/*--------------------------------------------------------------*/
-		patch[0].num_soil_intervals = (int) lround(patch[0].soil_defaults[0][0].soil_water_cap / INTERVAL_SIZE);
+		patch[0].num_soil_intervals = (int) lround(patch[0].soil_defaults[0][0].soil_water_cap / patch[0].soil_defaults[0][0].interval_size);
 		if (patch[0].num_soil_intervals > MAX_NUM_INTERVAL) {
 			patch[0].num_soil_intervals = MAX_NUM_INTERVAL;
+			patch[0].soil_defaults[0][0].interval_size = patch[0].soil_defaults[0][0].soil_water_cap / MAX_NUM_INTERVAL;
 			}
+
 
 		patch[0].transmissivity_profile = compute_transmissivity_curve(gamma, patch, command_line);
 
