@@ -78,6 +78,8 @@ void		hillslope_daily_I(
 	/*--------------------------------------------------------------*/
 	hillslope[0].base_flow = 0.0;
 	hillslope[0].streamflow_N = 0.0;
+	hillslope[0].streamflow_DOC = 0.0;
+	hillslope[0].streamflow_DON = 0.0;
 	/*--------------------------------------------------------------*/
 	/*	We do one zone at a time for the whole day to save on		*/
 	/*	allocating sub-daily arrays for each zone.  Note that we	*/

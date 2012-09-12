@@ -877,8 +877,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			basin[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
 			basin[0].acc_month.mineralized += patch[0].ndf.net_mineralized*scale;
 			basin[0].acc_month.uptake += patch[0].ndf.sminn_to_npool*scale;
-			basin[0].acc_month.DON_loss += (patch[0].soil_ns.DON_Qout_total-patch[0].soil_ns.DON_Qout_total) * scale;
-			basin[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total-patch[0].soil_cs.DOC_Qout_total) * scale;
+			basin[0].acc_month.DON_loss += (patch[0].soil_ns.DON_Qout_total-patch[0].soil_ns.DON_Qin_total) * scale;
+			basin[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total-patch[0].soil_cs.DOC_Qin_total) * scale;
 			basin[0].acc_month.length += 1;
 			basin[0].acc_month.stream_NO3 += patch[0].streamflow_N * scale;
 			basin[0].acc_month.stream_DON += patch[0].streamflow_DON * scale;
@@ -898,8 +898,8 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			basin[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
 			basin[0].acc_year.mineralized += patch[0].ndf.net_mineralized*scale;
 			basin[0].acc_year.uptake += patch[0].ndf.sminn_to_npool*scale;
-			basin[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total-patch[0].soil_ns.DON_Qout_total) * scale;
-			basin[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total-patch[0].soil_cs.DOC_Qout_total) * scale;
+			basin[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total-patch[0].soil_ns.DON_Qin_total) * scale;
+			basin[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total-patch[0].soil_cs.DOC_Qin_total) * scale;
 			basin[0].acc_year.stream_DON += patch[0].streamflow_DON * scale;
 			basin[0].acc_year.stream_DOC += patch[0].streamflow_DOC * scale;
 			basin[0].acc_year.psn += patch[0].net_plant_psn * scale;
