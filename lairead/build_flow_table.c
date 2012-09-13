@@ -80,9 +80,9 @@ int build_flow_table(f1, flow_table, vegid, lai, hill, zone, patch, maxr, maxc )
 				flow_table[pch].zoneID = zone[inx];
 				flow_table[pch].area += 1;
 				flow_table[pch].vegid = vegid[inx];
-				if (isnan(lai[inx]) != 0) {
-					if (flow_table[pch].lai < ZERO)
+				if (flow_table[pch].lai < ZERO)
 						flow_table[pch].lai = 0.0;
+				if (lai[inx] > 0.0) {
 					flow_table[pch].lai += ( float ) (1.0 * lai[inx]);
 				}
 
