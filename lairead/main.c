@@ -1,21 +1,19 @@
 /*--------------------------------------------------------------*/
 /*                                                              */
-/*		lairead										*/
+/*		lairead						*/
 /*                                                              */
 /*  NAME                                                        */
-/*		 lairead										*/
+/*		 lairead					*/
 /*                                                              */
 /*                                                              */
 /*  SYNOPSIS                                                    */
-/* 		 lairead( 								        */
+/* 		 lairead( 					*/
 /*                                                              */
 /*  OPTIONS                                                     */
 /*                                                              */
-/*		-pre	input image file name prefix					*/
-/*		-a arcview ascii data files (default is GRASS ascii)	*/
-/*		-allom name of allometric ratios file		*/
-/*		-old	old worldfile name			*/
-/*		-redef 	new redefine worldfile name			*/
+/*	-allom  name of allometric ratios file			*/
+/*	-old    old worldfile name				*/
+/*	-redef  new redefine worldfile name			*/
 /*                                                              */
 /*  DESCRIPTION                                                 */
 /*                                                              */
@@ -24,10 +22,13 @@
 /*                                                              */
 /*--------------------------------------------------------------*/
 
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-
+#include <float.h>
+#include <limits.h>
+#include <grass/gis.h>
+#include "grassio.h"
 #include "blender.h"
 #include "glb.h"
 #include "sub.h"
@@ -36,299 +37,234 @@
 void usage(void);
 
 
-main(int argc, char *argv[]) 
+main(int argc, char *argv[])
 {
-	/* local variable declarations */
-    int		i, nvegtype, num_patches;   
-	FILE	 *out1, *out2, *fac;    
-	FILE	*oldworld, *redefine;
-	int	tmp, maxr, maxc;
-	double	cell, width;
-	int	prefix_flag, oldworld_flag, redefine_flag;
-	int	arc_flag, suffix_flag, allom_flag;
-	char    *input_prefix;
-	char    *output_suffix;
-	char	*allocate_fname, *oldworld_fname, *redefine_fname;
-	float	scale_factor;
+    /* local variable declarations */
+    int	 	i, nvegtype, num_patches;
+    FILE 	*out1, *out2, *fac;
+    FILE 	*fdWorld, *fdRedefWorld;
+    int		tmp, maxr, maxc;
 
+    /* filenames for each image and file */
+    char *fnAllom, *fnRedefWorld, *fnWorld;
+    char name[MAXS];
 
+    /* Raster names */
+    char *rnLAI, *rnVegid, *rnPatch, *rnHill, *rnZone;
 
-	/* filenames for each image and file */
+    /* set pointers for images */
+    int	     *vegid;
+    int      *mask;
+    int      *patch;
+    int      *hill;
+    int      *zone;
+    float *lai;
 
-	char    fnlai[MAXS], fnvegid[MAXS],  fntable[MAXS], fnroot[MAXS];
-	char    fnpatch[MAXS], fnhill[MAXS], fnzone[MAXS];
-	char	name[MAXS], name2[MAXS];
+    struct    allom_struct	*allometric_table;
+    struct    flow_struct	*flow_table;
 
+    struct Cell_head lai_header;
+    struct Cell_head vegid_header;
+    struct Cell_head mask_header;
+    struct Cell_head patch_header;
+    struct Cell_head zone_header;
+    struct Cell_head hill_header;
+    struct Cell_head root_header;
 
-	/* set pointers for images */
+    // GRASS init
+    G_gisinit(argv[0]);
 
-    int		*vegid;
-    int     *patch;	
-    int     *hill;	
-    int     *zone;	
-    float	*lai;
+    // GRASS module header
+    struct GModule* module;
+    module = G_define_module();
+    module->keywords = "RHESSys";
+    module->description = "Output a redefined worldfile with initialized or altered stratum state variables based on an LAI image";
 
-    struct	allom_struct	*allometric_table;
-	struct	flow_struct	*flow_table;
+    // GRASS arguments
+    struct Option* worldfile_name_opt = G_define_option();
+    worldfile_name_opt->key = "old";
+    worldfile_name_opt->type = TYPE_STRING;
+    worldfile_name_opt->required = YES;
+    worldfile_name_opt->description = "Existing worldfile name";
 
-   	arc_flag = 0;		/* arcview input data flag		 */
-	prefix_flag = 0;	/* input prefix flag             */
-	suffix_flag = 0;	/* output suffix flag            */
-	cell = 30.0;		/* default resolution            */
+    struct Option* redef_worldfile_name_opt = G_define_option();
+    redef_worldfile_name_opt->key = "redef";
+    redef_worldfile_name_opt->type = TYPE_STRING;
+    redef_worldfile_name_opt->required = YES;
+    redef_worldfile_name_opt->description = "Redefined worldfile name";
 
-	i = 1;
-	while (i < argc) {
-		if (strcmp(argv[i], "-allom") == 0 ) {
-			i += 1;
-			if (i == argc) {
-				fprintf(stderr, "FATAL ERROR: Output file name not specified\n");
-				usage();
-				exit(1);
-			}
-			/* allocate an array and read in allocation file name*/
-			if ((allocate_fname = (char *)malloc((1+strlen(argv[i]))*sizeof(char))) == NULL) {
-				fprintf(stderr, "FATAL ERROR: Cannot allocate output_suffix\n");
-				usage();
-				exit(1);
-			} 
+    struct Option* allom_filename_opt = G_define_option();
+    allom_filename_opt->key = "allom";
+    allom_filename_opt->type = TYPE_STRING;
+    allom_filename_opt->required = YES;
+    allom_filename_opt->description = "Allometric file name";
 
-				strcpy(allocate_fname, argv[i]);
-				allom_flag = 1;
-		}
+    // Arguments that specify the names of required raster maps
+    struct Option* lai_raster_opt = G_define_option();
+    lai_raster_opt->key = "lai";
+    lai_raster_opt->type = TYPE_STRING;
+    lai_raster_opt->required = YES;
+    lai_raster_opt->description = "Leaf Area Index (LAI) raster map name";
 
-		/* **************** */
-		/* worldfile flag */
-		/* **************** */
-		if (strcmp(argv[i], "-old") == 0 )
-		{
-			i += 1;
-			if (i == argc) {
-				fprintf(stderr, "FATAL ERROR: worldfile file name not specified\n");
-				usage();
-				exit(1);
-			} 
-	
-			/* allocate an array and read in allocation file name*/
-			if ((oldworld_fname = (char *)malloc((1+strlen(argv[i]))*sizeof(char))) == NULL) {
-				fprintf(stderr, "FATAL ERROR: Cannot allocate output_suffix\n");
-				usage();
-				exit(1);
-			}
-		
-		strcpy(oldworld_fname, argv[i]);
-			oldworld_flag = 1;
-		}
+    struct Option* vegid_raster_opt = G_define_option();
+    vegid_raster_opt->key = "vegid";
+    vegid_raster_opt->type = TYPE_STRING;
+    vegid_raster_opt->required = YES;
+    vegid_raster_opt->description = "VegId raster map name";
 
-		/* **************** */
-		/* redefine output worldfile flag */
-		/* **************** */
-		if (strcmp(argv[i], "-redef") == 0 )
-		{
-			i += 1;
-			if (i == argc) {
-				fprintf(stderr, "FATAL ERROR: redefine file name not specified\n");
-				usage();
-				exit(1);
-			}
+    struct Option* zone_raster_opt = G_define_option();
+    zone_raster_opt->key = "zone";
+    zone_raster_opt->type = TYPE_STRING;
+    zone_raster_opt->required = YES;
+    zone_raster_opt->description = "Zone raster map name";
 
-		/* allocate an array and read in allocation file name*/
-			if ((redefine_fname = (char *)malloc((1+strlen(argv[i]))*sizeof(char))) == NULL) {
-				fprintf(stderr, "FATAL ERROR: Cannot allocate output_suffix\n");
-				usage();
-				exit(1);
-			} 
+    struct Option* hill_raster_opt = G_define_option();
+    hill_raster_opt->key = "hill";
+    hill_raster_opt->type = TYPE_STRING;
+    hill_raster_opt->required = YES;
+    hill_raster_opt->description = "Hill raster map name";
 
-			strcpy(redefine_fname, argv[i]);
-			redefine_flag = 1;
-		}
+    struct Option* patch_raster_opt = G_define_option();
+    patch_raster_opt->key = "patch";
+    patch_raster_opt->type = TYPE_STRING;
+    patch_raster_opt->required = NO;
+    patch_raster_opt->description = "Patch raster map name";
 
-		/* **************** */
-		/* prefix flag */
-		/* **************** */
-		if (strcmp(argv[i], "-pre") == 0 ) {
-			i += 1;
-			if (i == argc) {
-            	fprintf(stderr, "FATAL ERROR: Output prefix not specified\n");
-				usage();
-                exit(1);
-            }
+    // Parse GRASS arguments
+    if (G_parser(argc, argv))
+        exit(1);
 
-		/*--------------------------------------------------------------*/
-		/*           Allocate an array for the input prefix and 		*/
-		/*             Read in the input  prefix  					 	*/
-		/*--------------------------------------------------------------*/
-		    if ((input_prefix =(char *)malloc((1+strlen(argv[i]))*sizeof(char))) ==	NULL) { 
-				fprintf(stderr,	"FATAL ERROR: Cannot allocat output_prefix\n");
-				exit(1);
-		  	}
+    // Get values from GRASS arguments
+    fnWorld    = worldfile_name_opt->answer;
+    fnRedefWorld  = redef_worldfile_name_opt->answer;
+    fnAllom       = allom_filename_opt->answer;
+    rnLAI         = lai_raster_opt->answer;
+    rnVegid       = vegid_raster_opt->answer;
+    rnZone        = zone_raster_opt->answer;
+    rnHill        = hill_raster_opt->answer;
+    rnPatch       = patch_raster_opt->answer;
 
-	 		strcpy(input_prefix,argv[i]);
-	 		prefix_flag = 1;
-		}
-
-		if (strcmp(argv[i], "-a") == 0 ) {
-			arc_flag = 1;
-		}
-
-		i += 1;
-	} /* end while */
-
-	/* **************** */
-	/*	deal with any missing filename inputs  */
-	/*	and open world, redefine and allometric files */
-	/* **************** */
-
-	if (prefix_flag == 0) {
-	    fprintf(stderr, "\nFATAL ERROR: You must specify a prefix for image files\n");	
-		usage();
+    /* allometric file */
+    if ( (fac = fopen(fnAllom, "r")) == NULL) {
+        printf("cannot open allometric ratio file \'%s\'\n", fnAllom);
         exit(1);
     }
-		
-	if (suffix_flag == 0) {
-		if ((output_suffix = (char *)malloc((1+strlen("_flow_table.dat"))*sizeof(char))) == NULL) {
-			fprintf(stderr, "FATAL ERROR: Cannot allocate output_suffix\n");
-			usage();
-			exit(1);
-		}
-		strcpy(output_suffix, "_flow_table.dat");
-	} 
 
-	/* allometric file */
-	if (allom_flag == 0) {
-                fprintf(stderr,
-			"\nFATAL ERROR: You must specify an allocation  file\n");
-                         exit(1);
+    if ( (fdWorld = fopen(fnWorld, "r")) == NULL) {
+        printf("cannot open world file \'%s\' for reading.\n", fnWorld);
+        usage();
+        exit(1);
     }
 
-  	if ( (fac = fopen(allocate_fname, "r")) == NULL) {
-        	printf("cannot open allometric ratio file %s\n", allocate_fname);
-        	exit(1);
-	} 
-
-	/* old worldfile */
-	if (oldworld_flag == 0) {
-		if ((oldworld_fname = (char *)malloc((1+strlen("worldfile"))*sizeof(char))) == NULL) {
-			fprintf(stderr, "FATAL ERROR: Cannot allocate oldworld\n");
-			usage();
-			exit(1);
-		} 
-		strcpy(oldworld_fname, "worldfile");
-	} 
-  	
-	if ( (oldworld = fopen(oldworld_fname, "r")) == NULL) {
-       	printf("cannot open old world file %s\n", oldworld_fname);
-		usage();
-       	exit(1);
-	} 
-
-	/* redefine world */
-	if (redefine_flag == 0) {
-		if ((redefine_fname = (char *)malloc((1+strlen("world.Y1990M1D1H1"))*sizeof(char))) == NULL) {
-			fprintf(stderr, "FATAL ERROR: Cannot allocate redefine\n");
-			exit(1);
-		} 
-		strcpy(redefine_fname, "world.Y1990M1D1H1");
-	} 
-  	
-	if ( (redefine = fopen(redefine_fname, "w")) == NULL) {
-       	printf("cannot open new redefine world %s\n", redefine_fname);
-		usage();
-       	exit(1);
-	} 
-	
-	/* suffix flag */	
-	if (suffix_flag == 0) {
-		if ((output_suffix = (char *)malloc((1+strlen("_flow_table.dat"))*sizeof(char))) == NULL) {
-			fprintf(stderr, "FATAL ERROR: Cannot allocate output_suffix\n");
-			usage();
-			exit(1);
-		}
-		strcpy(output_suffix, "_flow_table.dat");
-	} 
-
-	/*--------------------------------------------------------------*/
-	/*	created input files 										*/
-	/*--------------------------------------------------------------*/
-	
-    input_prompt(&maxr, &maxc, input_prefix, fnlai, fnvegid, fnpatch, fnzone,fnhill, fntable,fnroot, arc_flag);
-
-	/* open some diagnostic output files */
-
-	strcpy(name, input_prefix);
-	strcat(name, ".log"); 
-	if ( (out1 = fopen(name, "w")) == NULL) {
-        printf("cannot open file %s \n", name);
-		usage();
+    /* redefine world */
+    if ( (fdRedefWorld = fopen(fnRedefWorld, "w")) == NULL) {
+        printf("cannot open new world \'%s\' file for output.\n", fnRedefWorld);
+        usage();
         exit(1);
-   	} 
+    }
 
-    input_prompt(&maxr, &maxc, input_prefix, fnlai, fnvegid, fnpatch, fnzone,fnhill, fntable,fnroot, arc_flag);
-
-	/* open some diagnostic output files */
-	strcpy(name, input_prefix);
-	strcat(name, ".build"); 
-	if ( (out1 = fopen(name, "w")) == NULL) {
-        printf("cannot open file %s \n", name);
-		usage();
+    /* open some diagnostic output files */
+    strcpy(name, fnRedefWorld);
+    strcat(name, ".log");
+    if ( (out1 = fopen(name, "w")) == NULL) {
+        printf("cannot open diagnostic file %s for writing\n", name);
+        usage();
         exit(1);
-   	} 
+    }
 
-	/* allocate and input map images */
+    /* allocate and input map images */
+    //printf("Reading %s raster map\n", rnVegid);
 
-	printf("\nReading %s", fnvegid);
-	vegid = (int *)malloc(maxr*maxc*sizeof(int));
-	input_ascii_int(vegid, fnvegid, maxr, maxc, arc_flag);
+    if (rnVegid != NULL) {
+        vegid = (int*)raster2array(rnVegid, &vegid_header, &maxr, &maxc, CELL_TYPE);
+    }
 
-	printf("\nReading %s", fnpatch);
-	patch = (int *) calloc(maxr*maxc, sizeof(int));      
-   	input_ascii_int(patch, fnpatch, maxr, maxc, arc_flag);	
+    mask = (int *) calloc(maxr*maxc, sizeof(int));
+    mask = (int*)raster2array("mask", &patch_header, NULL, NULL, CELL_TYPE);
 
-	printf("\nReading %s", fnzone);
-	zone = (int *) malloc(maxr*maxc*sizeof(int));
-   	input_ascii_int(zone, fnzone, maxr, maxc, arc_flag);	
+    //printf("Reading %s raster map\n", rnPatch);
+    patch = (int *) calloc(maxr*maxc, sizeof(int));
 
-	printf("\nReading %s", fnhill);
+    if (rnPatch != NULL) {
+        patch = (int*)raster2array(rnPatch, &patch_header, NULL, NULL, CELL_TYPE);
+    }
+
+    //printf("Reading %s raster map\n", rnZone);
+    zone = (int *) malloc(maxr*maxc*sizeof(int));
+
+    if (rnZone != NULL) {
+        zone = (int*)raster2array(rnZone, &zone_header, NULL, NULL, CELL_TYPE);
+    }
+
+    //printf("Reading %s raster map\n", rnHill);
     hill = (int *) malloc(maxr*maxc*sizeof(int));
-    input_ascii_int(hill, fnhill, maxr, maxc, arc_flag);	
 
-	printf("\nReading %s", fnlai);
-	lai = (float *) malloc(maxr*maxc*sizeof(float));
-	scale_factor = 1.0;
-   	input_ascii_float(lai, fnlai, maxr, maxc, arc_flag, scale_factor);	
+    if (rnHill != NULL) {
+        hill = (int*)raster2array(rnHill, &hill_header, NULL, NULL, CELL_TYPE);
+    }
 
-	/* allocate flow table */
-	flow_table = (struct flow_struct *)calloc((maxr*maxc),sizeof(struct flow_struct));
+    //printf("Reading %s raster map\n", rnLAI);
+    lai = (float *) malloc(maxr*maxc*sizeof(float));
 
-	/* build representation of patches */
-	num_patches = build_flow_table(out1, flow_table, vegid, lai, hill, zone, patch, maxr, maxc);
+    if (rnLAI != NULL) {
+        printf("Converting lai raster map\n");
+        lai = (float*)raster2array(rnLAI, &lai_header, NULL, NULL, FCELL_TYPE);
+    }
 
-	/* read in allometric ratios table */
-	fscanf(fac,"%d", &nvegtype);
-	allometric_table = (struct allom_struct *)calloc(nvegtype, sizeof(struct allom_struct));	
-	read_allom_table(fac, nvegtype, allometric_table);
+    int row;
+    int col;
+    int index;
 
-	/* link patches with allometry */
-	printf("\n Linking vegetation and allometry");
-	link_patch_veg(flow_table, allometric_table, num_patches, nvegtype);
-	
-	/* now read in and change the worldfile */
-	change_world(oldworld, redefine, flow_table, num_patches);
+    // The non-Grass version of this program read in all data from ASCII files that were created by 
+    // exporting data from GRASS rasters using r.out.ascii, which would assign 0 to all NULL values.
+    for (row = 0; row < maxr; ++row) {
+        for (col = 0; col < maxc; ++col) {
+            index = col + row*maxc;
+            //printf("row: %d, col: %d, vegid: %d, lai: %7.2f, patch: %d, zone: %d, hill: %d\n", row, col, vegid[index], lai[index], patch[index], zone[index], hill[index]);
 
-//	printf("\n Ready to print flowtable");
-//	print_flow_table(num_patches, flow_table, input_prefix, output_suffix);
+            if (mask[index] != 1) {
+                lai[index] = 0.0;
+                hill[index] = 0;
+                zone[index] = 0;
+                patch[index] = 0;
+                vegid[index] = 0;
+            } else {
+                if (lai[index] < 0.0)
+                    lai[index] = 0.0;
+            }
+        }
+    }
 
-	printf("\n Finished Lairead \n\n");
+    /* allocate flow table */
+    flow_table = (struct flow_struct *)calloc((maxr*maxc),sizeof(struct flow_struct));
+
+    printf("Building flow table...\n");
+    /* build representation of patches */
+    num_patches = build_flow_table(out1, flow_table, vegid, lai, hill, zone, patch, maxr, maxc);
+
+    /* read in allometric ratios table */
+    fscanf(fac,"%d", &nvegtype);
+    allometric_table = (struct allom_struct *)calloc(nvegtype, sizeof(struct allom_struct));
+    read_allom_table(fac, nvegtype, allometric_table);
+    printf("number of vegetation types from allometric table: %d\n\n", nvegtype);
+
+    /* link patches with allometry */
+    printf("\n Linking vegetation and allometry...\n");
+    link_patch_veg(flow_table, allometric_table, num_patches, nvegtype);
+
+    /* now read in and change the worldfile */
+    change_world(fdWorld, fdRedefWorld, flow_table, num_patches);
+
+    printf("\n Finished LAIread \n\n");
     exit(0);
 } /* end lairead.c */
 
 
 void usage(void) {
-	printf("\nOPTIONS\n\n");
-	printf("\t-pre\tinput image file name prefix\n");					
-	printf("\t-a\tarcview ascii data files (default is GRASS ascii)\n");	
-	printf("\t-allom\tname of allometric ratios file\n");
-	printf("\t-old\told worldfile name\n");
-	printf("\t-redef\tnew redefine worldfile name\n");
+    printf("\nOPTIONS\n\n");
+    printf("\t-allom\tname of allometric ratios file\n");
+    printf("\t-old\told worldfile name\n");
+    printf("\t-redef\tnew redefine worldfile name\n");
 
-	return;
+    return;
 }

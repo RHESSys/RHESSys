@@ -1,15 +1,17 @@
 PGM = lairead
 CC  = gcc 
 CFLAGS  = -O -I include
+#CFLAGS  = -g -I include
 RHESSYS_BIN = /usr/local/bin
+GIS_LIBS = -lgrass_gis
 
 OBJECTS = main.o read_allom_table.o build_flow_table.o sys.o fileio.o \
-	find_patch.o change_world.o print_flow_table.o  zero_flow_table.o link_patch_veg.o 
+	find_patch.o change_world.o print_flow_table.o  zero_flow_table.o link_patch_veg.o ../cf/grassio.o
 
 LIBES = -lm
 
 $(PGM): $(OBJECTS)
-	$(CC) $(OBJECTS) $(LIBES) $(CFLAGS) -o $(PGM) 
+	$(CC) $(OBJECTS) -L$(GISBASE)/lib -L../cf $(GIS_LIBS) $(LIBS) $(CFLAGS) -o $(PGM) 
 
 clean:
 	rm -f $(OBJECTS)
@@ -35,8 +37,11 @@ sys.o:
 	$(CC) $(CFLAGS) -c sys.c
 read_allom_table.o:
 	$(CC) $(CFLAGS) -c read_allom_table.c
-main.o:
-	$(CC) $(CFLAGS) -c main.c
+main.o: main.c
+	$(CC) $(CFLAGS) -I$(GISBASE)/include -I../cf -c main.c
+
+../cf/grassio.o: ../cf/grassio.c
+	cd ../cf ; make grassio.o
 
 install:
 	cp $(PGM) $(RHESSYS_BIN)
