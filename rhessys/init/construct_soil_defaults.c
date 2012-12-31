@@ -285,7 +285,7 @@ struct soil_default *construct_soil_defaults(
 			newrecord = strchr(record,'m');
 			if (newrecord != NULL) {
 			if (strcasecmp(newrecord,"mobile_DOC_proportion") == 0) {	
-				default_object_list[i].mobile_DON_proportion = ftmp;
+				default_object_list[i].mobile_DOC_proportion = ftmp;
 				printf("\n Using %lf for %s for soil default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
