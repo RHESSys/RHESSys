@@ -216,6 +216,8 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].mobile_N_proportion,
 				patch[0].transmissivity_profile) -
 				N_leached_to_patch;
+			if (N_leached_to_stream < 0.0) N_leached_to_stream = 0.0;
+
 			patch[0].soil_ns.Qout += (N_leached_to_patch + N_leached_to_stream);
 
 
@@ -250,6 +252,8 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].mobile_DON_proportion,
 				patch[0].transmissivity_profile) -
 				DON_leached_to_patch;
+                     if (DON_leached_to_stream < 0.0) DON_leached_to_stream = 0.0;
+
 			patch[0].soil_ns.DON_Qout += (DON_leached_to_patch + DON_leached_to_stream);
 
 
@@ -284,10 +288,15 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].mobile_DOC_proportion,
 				patch[0].transmissivity_profile) -
 				DOC_leached_to_patch;
+
+			if (DOC_leached_to_stream < 0.0) DOC_leached_to_stream = 0.0;
+		      
 			patch[0].soil_cs.DOC_Qout += (DOC_leached_to_patch + DOC_leached_to_stream);
 					 
 		}
 		patch[0].Qout += ((route_to_patch + route_to_stream) / patch[0].area);
+
+		
 	}
 	/*--------------------------------------------------------------*/
 	/* if road is below the water_table - no routing to the stream  */
@@ -368,6 +377,7 @@ void  update_drainage_road(
 		}
 
 		patch[0].Qout += ((route_to_patch + route_to_stream) / patch[0].area);
+		
 	}
 
 	/*--------------------------------------------------------------*/
@@ -453,6 +463,7 @@ void  update_drainage_road(
 		patch[0].surface_DOC += Nout;
 		patch[0].soil_cs.DOC_Qout += Nout;
 
+		
 		}
 	
 	/*--------------------------------------------------------------*/
@@ -479,8 +490,7 @@ void  update_drainage_road(
 		patch[0].next_stream[0].streamflow += (Qout * patch[0].area / patch[0].next_stream[0].area);
 		patch[0].detention_store -= Qout;
 		}
-
-
+		
 
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/
@@ -503,6 +513,7 @@ void  update_drainage_road(
 		patch[0].next_stream[0].streamflow_N += Nin;
 		}
 
+		
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/
 	/*	route n_leaching if grow flag specfied			*/
