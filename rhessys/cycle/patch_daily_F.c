@@ -431,6 +431,7 @@ void		patch_daily_F(
 
 
 	patch[0].acc_year.pcp += zone[0].rain + zone[0].snow + irrigation;
+	patch[0].acc_year.snowin += zone[0].snow;
 
 
 	/*--------------------------------------------------------------*/

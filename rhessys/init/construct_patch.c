@@ -202,6 +202,7 @@ struct patch_object *construct_patch(
 
 	patch[0].acc_year.burn = 0.0;
 	patch[0].acc_year.pcp = 0.0;
+	patch[0].acc_year.snowin = 0.0;
 	patch[0].acc_year_trans = 0.0;
 	patch[0].acc_year.trans = 0.0;
 	patch[0].acc_year.maxtrans = 0.0;
@@ -227,6 +228,10 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.wyd = 0;
 	patch[0].acc_year.rec_wyd = 0;
 	patch[0].acc_year.peaksweday = 0;
+	patch[0].acc_year.potential_recharge = 0.0;
+	patch[0].acc_year.potential_recharge_wyd = 0.0;
+	patch[0].acc_year.recharge = 0.0;
+	patch[0].acc_year.recharge_wyd = 0.0;
 	
 	/*--------------------------------------------------------------*/
 	/*	Variables for the dynamic version are included here     */

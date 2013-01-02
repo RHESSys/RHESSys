@@ -354,7 +354,13 @@ struct accumulate_patch_object
    double uptake;
    double mineralized;
    double pcp;
-   double Qin_total, Qout_total;
+   double potential_recharge;
+   double potential_recharge_wyd;
+   double recharge;
+   double recharge_wyd;
+   double snowin;
+   double Qin_total; 
+   double Qout_total;
 };
 
 

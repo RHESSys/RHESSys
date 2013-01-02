@@ -955,11 +955,16 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].acc_year.psn += patch[0].net_plant_psn;
 			patch[0].acc_year.PET += (patch[0].PE+patch[0].PET);
 			patch[0].acc_year.burn += patch[0].burn;
+			patch[0].acc_year.potential_recharge += patch[0].rain_throughfall;
+			patch[0].acc_year.potential_recharge_wyd += patch[0].rain_throughfall * round(patch[0].acc_year.length);
+			patch[0].acc_year.recharge += patch[0].recharge;
+			patch[0].acc_year.recharge_wyd += patch[0].recharge * round(patch[0].acc_year.length);
 
 			if ((patch[0].snowpack.water_equivalent_depth == 0) && (patch[0].acc_year.snowpack > 0)) {
 					if (patch[0].acc_year.meltday < patch[0].acc_year.peaksweday)
 						patch[0].acc_year.meltday = round(patch[0].acc_year.length);
 					}
+
 
 			if (patch[0].snowpack.water_equivalent_depth > patch[0].acc_year.snowpack) {
 				patch[0].acc_year.peaksweday = round(patch[0].acc_year.length);
