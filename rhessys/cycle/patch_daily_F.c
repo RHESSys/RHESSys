@@ -1485,7 +1485,7 @@ void		patch_daily_F(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].porosity_0,
 			0.25,
-			patch[0].soil_defaults[0][0].mobile_N_proportion,patch[0].theta_std) != 0){
+			patch[0].soil_defaults[0][0].mobile_NO3_proportion,patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}

@@ -102,10 +102,18 @@ int update_gw_drainage(
 		patch[0].surface_DOC -= N_loss;
 		}
 	
+	
+	if (patch[0].surface_NH4 > ZERO) {
+		N_loss = patch[0].soil_defaults[0][0].sat_to_gw_coeff * patch[0].surface_NH4;
+		hillslope[0].gw.NH4 += (N_loss * patch[0].area / hillslope[0].area);
+		patch[0].ndf.N_to_gw += N_loss;
+		patch[0].surface_NH4 -= N_loss;
+		}
+	
 	if (patch[0].surface_NO3 > ZERO) {
 		N_loss = patch[0].soil_defaults[0][0].sat_to_gw_coeff * patch[0].surface_NO3;
 		hillslope[0].gw.NO3 += (N_loss * patch[0].area / hillslope[0].area);
-		patch[0].ndf.N_to_gw = N_loss;
+		patch[0].ndf.N_to_gw += N_loss;
 		patch[0].surface_NO3 -= N_loss;
 		}
 	

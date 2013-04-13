@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void	output_growth_hillslope(			int basinID,
+void	output_growth_hillslope(
 							struct	hillslope_object	*hillslope,
 							struct	date	current_date,
 							FILE *outfile)
@@ -50,13 +50,15 @@ void	output_growth_hillslope(			int basinID,
 	double acpool;
 	double anpool;
 	double alitrc;
-	double asoilc, asminn, anitrate;
+	double asoilhr;
+	double asoilc, asminn, anitrate, asurfaceN;
 	double alitrn, asoiln;
 	double aarea, hill_area, hillslope_area;
 	double acarbon_balance, anitrogen_balance;
-	double atotaln, adenitrif, astreamflow_N;
-	double anitrif, aDOC, aDON;
-	double astreamflow;
+	double atotaln, adenitrif;
+	double astreamflow_NO3, astreamflow_NH4, astreamflow_DON, astreamflow_DOC;
+	double anitrif, aDOC, aDON, arootdepth;
+	
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct  canopy_strata_object    *strata;
@@ -69,126 +71,132 @@ void	output_growth_hillslope(			int basinID,
 	aleafn = 0.0; afrootn=0.0; awoodn=0.0;
 	agpsn = 0.0; aresp=0.0;
 	aarea =  0.0 ;
+	asoilhr = 0.0;
 	alitrc = 0.0;
 	alitrn = 0.0; asoiln = 0.0;
 	anitrate = 0.0;
+	asurfaceN = 0.0;
 	asoilc = 0.0; asminn=0.0;
 	acarbon_balance = 0.0;
 	anitrogen_balance = 0.0;
-	astreamflow_N = 0.0;
-	astreamflow = 0.0;
+	astreamflow_DON = 0.0;
+	astreamflow_DOC = 0.0;
+	astreamflow_NH4 = 0.0;
+	astreamflow_NO3 = 0.0;
 	atotaln = 0.0;
 	adenitrif = 0.0;
 	anitrif = 0.0;
 	aDOC = 0.0; aDON = 0.0;
-	hillslope_area = 0.0;
-	hill_area = 0.0;
-
-
-	astreamflow_N += hillslope[0].streamflow_N * hillslope[0].area;
+	arootdepth = 0.0;
 	for (z=0; z< hillslope[0].num_zones; z++){
-		zone = hillslope[0].zones[z];
-		for (p=0; p< zone[0].num_patches; p++){
-			patch = zone[0].patches[p];
-			alitrn += (patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n
-				+ patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n)
-				* patch[0].area;
-			asoiln += (patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n
-				+ patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n)
-				* patch[0].area;
-			alitrc += (patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c
-				+ patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c)
-				* patch[0].area;
-			asoilc += (patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c
-				+ patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c)
-				* patch[0].area;
-			asminn += (patch[0].soil_ns.sminn) * patch[0].area;
-			anitrate += (patch[0].soil_ns.nitrate) * patch[0].area;
-			atotaln += (patch[0].totaln) * patch[0].area;
-			if (patch[0].drainage_type == STREAM)  {
-				astreamflow += patch[0].streamflow * patch[0].area;
-				astreamflow_N += patch[0].streamflow_N * patch[0].area;
-			}
-				
-			acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
-			anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
-			adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
-			anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
-			aDON += (patch[0].ndf.total_DON_loss) * patch[0].area;
-			aDOC += (patch[0].cdf.total_DOC_loss) * patch[0].area;
-			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-				for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
-					strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
-					agpsn += strata->cover_fraction * strata->cdf.psn_to_cpool
-						* patch[0].area;
-					/*---------------------------
-					agpsn += strata->cover_fraction
-						* strata->cs.net_psn
-						* patch[0].area;
-					------------------------------*/
-					aresp += strata->cover_fraction
-						* (strata->cdf.leaf_day_mr + strata->cdf.cpool_leaf_gr
-						+ strata->cdf.leaf_night_mr +	strata->cdf.livestem_mr
-						+ strata->cdf.cpool_livestem_gr + strata->cdf.livecroot_mr
-						+ strata->cdf.cpool_livecroot_gr
-						+ strata->cdf.cpool_deadcroot_gr
-						+ strata->cdf.froot_mr + strata->cdf.cpool_froot_gr
-						+ strata->cdf.cpool_to_gresp_store)	* patch[0].area;
-					aleafn += strata->cover_fraction	* (strata->ns.leafn
-						+ strata->ns.leafn_store + strata->ns.leafn_transfer)
-						* patch[0].area;
-					afrootn += strata->cover_fraction * (strata->ns.frootn
-						+ strata->ns.frootn_store + strata->ns.frootn_transfer)
-						* patch[0].area;
-					awoodn += strata->cover_fraction	* (strata->ns.live_crootn
-						+ strata->ns.live_stemn + strata->ns.dead_crootn
-						+ strata->ns.dead_stemn + strata->ns.livecrootn_store
-						+ strata->ns.livestemn_store + strata->ns.deadcrootn_store
-						+ strata->ns.deadstemn_store
-						+ strata->ns.livecrootn_transfer
-						+ strata->ns.livestemn_transfer
-						+ strata->ns.deadcrootn_transfer
-						+ strata->ns.deadstemn_transfer
-						+ strata->ns.cwdn ) * patch[0].area;
-					aleafc += strata->cover_fraction	* (strata->cs.leafc
-						+ strata->cs.leafc_store + strata->cs.leafc_transfer )
-						* patch[0].area;
-					afrootc += strata->cover_fraction * (strata->cs.frootc
-						+ strata->cs.frootc_store + strata->cs.frootc_transfer)
-						* patch[0].area;
-					awoodc += strata->cover_fraction	* (strata->cs.live_crootc
-						+ strata->cs.live_stemc + strata->cs.dead_crootc
-						+ strata->cs.dead_stemc + strata->cs.livecrootc_store
-						+ strata->cs.livestemc_store + strata->cs.deadcrootc_store
-						+ strata->cs.deadstemc_store
-						+ strata->cs.livecrootc_transfer
-						+ strata->cs.livestemc_transfer
-						+ strata->cs.deadcrootc_transfer
-						+ strata->cs.deadstemc_transfer
-						+ strata->cs.cwdc + strata->cs.cpool)* patch[0].area;
-					alai += strata->cover_fraction * (strata->epv.proj_lai)
-						* patch[0].area;
-					acpool += strata->cover_fraction*strata->cs.cpool*patch[0].area;
-					anpool += strata->cover_fraction*strata->ns.npool*patch[0].area;
-				}
-			}
-			aarea +=  patch[0].area;
-			hill_area += patch[0].area;
-		}
-		hillslope_area += hill_area;
-	}
+			zone = hillslope[0].zones[z];
+			for (p=0; p< zone[0].num_patches; p++){
+				patch = zone[0].patches[p];
+				alitrn += (patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n
+					+ patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n)
+					* patch[0].area;
+				asoiln += (patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n
+					+ patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n)
+					* patch[0].area;
+				alitrc += (patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c
+					+ patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c)
+					* patch[0].area;
+				asoilc += (patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c
+					+ patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c)
+					* patch[0].area;
+				asminn += (patch[0].soil_ns.sminn) * patch[0].area;
+				anitrate += (patch[0].soil_ns.nitrate) * patch[0].area;
+				asurfaceN += (patch[0].surface_DON+patch[0].surface_NO3+patch[0].surface_NH4) * patch[0].area;
+				atotaln += (patch[0].totaln) * patch[0].area;
+				astreamflow_NH4 += patch[0].streamflow_NH4 * patch[0].area;
+				astreamflow_NO3 += patch[0].streamflow_NO3 * patch[0].area;
+				astreamflow_DON += patch[0].streamflow_DON * patch[0].area;
+				astreamflow_DOC += patch[0].streamflow_DOC * patch[0].area;
+				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
+				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
+				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
+				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
+				aDON += (patch[0].soil_ns.DON) * patch[0].area;
+				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
 
-	if ((aarea == 0) || (hillslope_area == 0)) {
-		printf("\n Hillslope Area is Zero (%lf %lf) for Hill %d\n",
-			aarea, hillslope_area, hillslope[0].ID);
-		hillslope_area = 1;
-		aarea = 1;
-		}
+				asoilhr += (
+					patch[0].cdf.litr1c_hr + 
+					patch[0].cdf.litr2c_hr + 
+					patch[0].cdf.litr4c_hr + 
+					patch[0].cdf.soil1c_hr + 
+					patch[0].cdf.soil2c_hr + 
+					patch[0].cdf.soil3c_hr + 
+					patch[0].cdf.soil4c_hr) * patch[0].area;
+
+				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
+						strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+						agpsn += strata->cover_fraction * strata->cdf.psn_to_cpool
+							* patch[0].area;
+						/*---------------------------
+						agpsn += strata->cover_fraction
+							* strata->cs.net_psn
+							* patch[0].area;
+						------------------------------*/
+						anpool += strata->cover_fraction * (strata->ns.npool);
+						aresp += strata->cover_fraction
+							* (strata->cdf.leaf_day_mr + strata->cdf.cpool_leaf_gr
+							+ strata->cdf.leaf_night_mr +	strata->cdf.livestem_mr
+							+ strata->cdf.cpool_livestem_gr + strata->cdf.livecroot_mr
+							+ strata->cdf.cpool_livecroot_gr
+							+ strata->cdf.cpool_deadcroot_gr
+							+ strata->cdf.froot_mr + strata->cdf.cpool_froot_gr
+							+ strata->cdf.cpool_to_gresp_store)	* patch[0].area;
+						aleafn += strata->cover_fraction	* (strata->ns.leafn
+							+ strata->ns.leafn_store + strata->ns.leafn_transfer)
+							* patch[0].area;
+						afrootn += strata->cover_fraction * (strata->ns.frootn
+							+ strata->ns.frootn_store + strata->ns.frootn_transfer)
+							* patch[0].area;
+						awoodn += strata->cover_fraction	* (strata->ns.live_crootn
+							+ strata->ns.live_stemn + strata->ns.dead_crootn
+							+ strata->ns.dead_stemn + strata->ns.livecrootn_store
+							+ strata->ns.livestemn_store + strata->ns.deadcrootn_store
+							+ strata->ns.deadstemn_store
+							+ strata->ns.livecrootn_transfer
+							+ strata->ns.livestemn_transfer
+							+ strata->ns.deadcrootn_transfer
+							+ strata->ns.deadstemn_transfer
+							+ strata->ns.cwdn + strata->ns.retransn + strata->ns.npool ) * patch[0].area;
+						aleafc += strata->cover_fraction	* (strata->cs.leafc
+							+ strata->cs.leafc_store + strata->cs.leafc_transfer )
+							* patch[0].area;
+						afrootc += strata->cover_fraction * (strata->cs.frootc
+							+ strata->cs.frootc_store + strata->cs.frootc_transfer)
+							* patch[0].area;
+						awoodc += strata->cover_fraction	* (strata->cs.live_crootc
+							+ strata->cs.live_stemc + strata->cs.dead_crootc
+							+ strata->cs.dead_stemc + strata->cs.livecrootc_store
+							+ strata->cs.livestemc_store + strata->cs.deadcrootc_store
+							+ strata->cs.deadstemc_store
+							+ strata->cs.livecrootc_transfer
+							+ strata->cs.livestemc_transfer
+							+ strata->cs.deadcrootc_transfer
+							+ strata->cs.deadstemc_transfer
+							+ strata->cs.cwdc + strata->cs.cpool)* patch[0].area;
+						arootdepth += strata->cover_fraction * (strata->rootzone.depth)
+							* patch[0].area;
+						alai += strata->cover_fraction * (strata->epv.proj_lai)
+							* patch[0].area;
+						acpool += strata->cover_fraction*strata->cs.cpool*patch[0].area;
+						anpool += strata->cover_fraction*strata->ns.npool*patch[0].area;
+					}
+				}
+				aarea +=  patch[0].area;
+				hill_area += patch[0].area;
+			}
+	}
 
 	agpsn /= aarea ;
 	aresp /= aarea ;
 	alai /= aarea ;
 	anitrate /= aarea;
+	asurfaceN /= aarea;
 	acpool /= aarea ;
 	anpool /= aarea ;
 	aleafc /= aarea ;
@@ -199,43 +207,66 @@ void	output_growth_hillslope(			int basinID,
 	awoodn /= aarea;
 	alitrc /= aarea;
 	asoilc /= aarea;
+	asoilhr /= aarea;	
 	alitrn /= aarea;
 	asoiln /= aarea;
 	asminn /= aarea;
 	atotaln /= aarea;
 	acarbon_balance /= aarea;
 	anitrogen_balance /= aarea;
-	astreamflow_N /= aarea;
-	astreamflow /= aarea;
+	astreamflow_NH4 /= aarea;
+	astreamflow_NO3 /= aarea;
+	astreamflow_DON /= aarea;
+	astreamflow_DOC /= aarea;
 	adenitrif /= aarea;
 	anitrif /= aarea;
 	aDON /= aarea;
 	aDOC /= aarea;
+	arootdepth /= aarea;
+		
+
+	astreamflow_NH4 +=  hillslope[0].streamflow_NH4;
+	astreamflow_NO3 +=  hillslope[0].streamflow_NO3;
+	astreamflow_DON +=  hillslope[0].streamflow_DON;
+	astreamflow_DOC +=  hillslope[0].streamflow_DOC;
 
 
-	fprintf(outfile,"%4d %3d %3d %d %8d %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf %8.5lf\n",
+	fprintf(outfile,"%ld %ld %ld %l %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
-		basinID,
 		hillslope[0].ID,
+		alai,
 		agpsn * 1000,
 		aresp * 1000,
+		asoilhr * 1000,
 		anitrate * 1000,
 		asminn * 1000,
+		asurfaceN * 1000,
 		(aleafc + awoodc + afrootc),
 		(aleafn + awoodn + afrootn),
+		anpool,
 		alitrc,
 		alitrn,
 		asoilc,
 		asoiln,
-		astreamflow_N*1000.0,
-		astreamflow*1000.0,
+		hillslope[0].gw.NO3,
+		hillslope[0].gw.NH4,
+		hillslope[0].gw.DON,
+		hillslope[0].gw.DOC,
+		astreamflow_NO3*1000.0,
+		astreamflow_NH4*1000.0,
+		astreamflow_DON*1000.0,
+		astreamflow_DOC*1000.0,
+		hillslope[0].gw.NO3out*1000.0,
+		hillslope[0].gw.NH4out*1000.0,
+		hillslope[0].gw.DONout*1000.0,
+		hillslope[0].gw.DOCout*1000.0,
 		adenitrif*1000.0,
 		anitrif*1000.0,
-		aDOC*1000.0,
-		aDON*1000.0
-		);
+		aDOC,
+		aDON,
+		arootdepth*1000.0);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 
 	/*	hillslope[0].ID, date.year, date.month, date.day);*/

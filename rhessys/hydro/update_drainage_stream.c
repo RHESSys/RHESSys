@@ -95,7 +95,8 @@ void  update_drainage_stream(
 	int i, j,k, d; 
 	double m, Ksat; 
 	double return_flow;  /* m */ 
-	double N_leached_total, N_leached_to_stream; /* kg/m2 */ 
+	double NO3_leached_total, NO3_leached_to_stream; /* kg/m2 */ 
+	double NH4_leached_total, NH4_leached_to_stream; /* kg/m2 */ 
 	double DON_leached_total, DON_leached_to_stream; /* kg/m2 */ 
 	double DOC_leached_total, DOC_leached_to_stream; /* kg/m2 */ 
 	double patch_int_depth;  /* m of H2O */
@@ -108,7 +109,8 @@ void  update_drainage_stream(
 
 	d=0;
 	route_to_stream = 0.0;
-	N_leached_to_stream = 0.0;
+	NO3_leached_to_stream = 0.0;
+	NH4_leached_to_stream = 0.0;
 	DON_leached_to_stream = 0.0;
 	DOC_leached_to_stream = 0.0;
 	/*--------------------------------------------------------------*/
@@ -155,7 +157,7 @@ void  update_drainage_stream(
 	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0) {
 
-		N_leached_to_stream = compute_N_leached(
+		NO3_leached_to_stream = compute_N_leached(
 			verbose_flag,
 			patch[0].soil_ns.nitrate,
 			route_to_stream / patch[0].area,
@@ -168,9 +170,27 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_N_proportion,
+			patch[0].soil_defaults[0][0].mobile_NO3_proportion,
 			patch[0].transmissivity_profile);
-		patch[0].soil_ns.Qout += N_leached_to_stream;
+		patch[0].soil_ns.NO3_Qout += NO3_leached_to_stream;
+
+
+		NH4_leached_to_stream = compute_N_leached(
+			verbose_flag,
+			patch[0].soil_ns.sminn,
+			route_to_stream / patch[0].area,
+			patch[0].sat_deficit,
+			patch[0].soil_defaults[0][0].soil_water_cap,
+			m,
+			gamma / patch[0].area,
+			patch[0].soil_defaults[0][0].porosity_0,
+			patch[0].soil_defaults[0][0].porosity_decay,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].soil_depth,
+			patch[0].soil_defaults[0][0].mobile_NH4_proportion,
+			patch[0].transmissivity_profile);
+		patch[0].soil_ns.NH4_Qout += NH4_leached_to_stream;
 
 
 		DON_leached_to_stream = compute_N_leached(
@@ -211,7 +231,8 @@ void  update_drainage_stream(
 
 	patch[0].Qout += (route_to_stream / patch[0].area);
 	patch[0].base_flow += (route_to_stream / patch[0].area);
-	patch[0].streamflow_N += N_leached_to_stream;
+	patch[0].streamflow_NO3 += NO3_leached_to_stream;
+	patch[0].streamflow_NH4 += NH4_leached_to_stream;
 	patch[0].streamflow_DON += DON_leached_to_stream;
 	patch[0].streamflow_DOC += DOC_leached_to_stream;
 
@@ -238,7 +259,7 @@ void  update_drainage_stream(
 	if (return_flow > ZERO) {
 		Nout = compute_N_leached(
 			verbose_flag,
-			patch[0].soil_ns.nitrate - N_leached_to_stream,
+			patch[0].soil_ns.nitrate - NO3_leached_to_stream,
 			return_flow,
 			0.0,
 			0.0,
@@ -249,10 +270,28 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_N_proportion,
+			patch[0].soil_defaults[0][0].mobile_NO3_proportion,
 			patch[0].transmissivity_profile);
 		patch[0].surface_NO3 += Nout;
-		patch[0].soil_ns.Qout += Nout;
+		patch[0].soil_ns.NO3_Qout += Nout;
+
+		Nout = compute_N_leached(
+			verbose_flag,
+			patch[0].soil_ns.sminn - NH4_leached_to_stream,
+			return_flow,
+			0.0,
+			0.0,
+			m,
+			gamma / patch[0].area,
+			patch[0].soil_defaults[0][0].porosity_0,
+			patch[0].soil_defaults[0][0].porosity_decay,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].soil_depth,
+			patch[0].soil_defaults[0][0].mobile_NH4_proportion,
+			patch[0].transmissivity_profile);
+		patch[0].surface_NH4 += Nout;
+		patch[0].soil_ns.NH4_Qout += Nout;
 
 		Nout = compute_N_leached(
 			verbose_flag,
@@ -302,7 +341,7 @@ void  update_drainage_stream(
 		Qout = (patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size);
 		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_NO3;
 		patch[0].surface_NO3  -= Nout;
-		patch[0].streamflow_N += Nout;
+		patch[0].streamflow_NO3 += Nout;
 		patch[0].surface_ns_leach += Nout;
 		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_DOC;
 		patch[0].surface_DOC  -= Nout;
@@ -312,7 +351,7 @@ void  update_drainage_stream(
 		patch[0].streamflow_DON += Nout;
 		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_NH4;
 		patch[0].surface_NH4  -= Nout;
-		patch[0].streamflow_N += Nout;
+		patch[0].streamflow_NH4 += Nout;
 		patch[0].detention_store -= Qout;
 		patch[0].return_flow += Qout; 
 		}

@@ -139,13 +139,15 @@ void	basin_daily_F(
 			hillslope[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
 			hillslope[0].acc_month.DON_loss+= patch[0].ndf.total_DON_loss * scale;
 			hillslope[0].acc_month.length += 1;
-			hillslope[0].acc_month.stream_NO3 += patch[0].streamflow_N * scale;
+			hillslope[0].acc_month.stream_NO3 += patch[0].streamflow_NO3 * scale;
+			hillslope[0].acc_month.stream_NH4 += patch[0].streamflow_NH4 * scale;
 			hillslope[0].acc_month.psn += patch[0].net_plant_psn * scale;
 			hillslope[0].acc_month.lai += patch[0].lai * scale;
 		}
 		if((command_line[0].output_flags.yearly == 1)&&(command_line[0].h != NULL)){
 			hillslope[0].acc_year.length += 1;
-			hillslope[0].acc_year.stream_NO3 += patch[0].streamflow_N * scale;
+			hillslope[0].acc_year.stream_NO3 += patch[0].streamflow_NH4 * scale;
+			hillslope[0].acc_year.stream_NH4 += patch[0].streamflow_NO3 * scale;
 			hillslope[0].acc_year.denitrif += patch[0].ndf.denitrif * scale;
 			hillslope[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
 			hillslope[0].acc_year.mineralized += patch[0].ndf.net_mineralized*scale;

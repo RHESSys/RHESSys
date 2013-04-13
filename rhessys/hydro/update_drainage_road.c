@@ -91,7 +91,8 @@ void  update_drainage_road(
 	/*--------------------------------------------------------------*/
 	int i, j,k,d;
 	double m, Ksat, return_flow;
-	double N_leached_to_patch, N_leached_to_stream, N_surface_leached_to_stream; /* kg/m2 */
+	double NO3_leached_to_patch, NO3_leached_to_stream, NO3_surface_leached_to_stream; /* kg/m2 */
+	double NH4_leached_to_patch, NH4_leached_to_stream, NH4_surface_leached_to_stream; /* kg/m2 */
 	double N_leached_total; /* kg/m2 */
 	double DON_leached_to_patch, DON_leached_to_stream, DON_surface_leached_to_stream; /* kg/m2 */
 	double DON_leached_total; /* kg/m2 */
@@ -114,9 +115,12 @@ void  update_drainage_road(
 	DON_leached_to_patch = 0.0;
 	DON_leached_to_stream = 0.0;
 	DON_surface_leached_to_stream = 0.0;
-	N_leached_to_patch = 0.0;
-	N_leached_to_stream = 0.0;
-	N_surface_leached_to_stream = 0.0;
+	NH4_leached_to_patch = 0.0;
+	NH4_leached_to_stream = 0.0;
+	NH4_surface_leached_to_stream = 0.0;
+	NO3_leached_to_patch = 0.0;
+	NO3_leached_to_stream = 0.0;
+	NO3_surface_leached_to_stream = 0.0;
 	route_to_stream = 0.0;
 	route_to_patch = 0.0;
 
@@ -185,7 +189,7 @@ void  update_drainage_road(
 		/* compute Nitrogen leaching amount				*/
 		/*--------------------------------------------------------------*/
 		if (command_line[0].grow_flag > 0) {
-			N_leached_to_patch = compute_N_leached(
+			NO3_leached_to_patch = compute_N_leached(
 				verbose_flag,
 				patch[0].soil_ns.nitrate,
 				route_to_patch / patch[0].area,
@@ -198,9 +202,9 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].mobile_N_proportion,
+				patch[0].soil_defaults[0][0].mobile_NO3_proportion,
 				patch[0].transmissivity_profile);
-			N_leached_to_stream = compute_N_leached(
+			NO3_leached_to_stream = compute_N_leached(
 				verbose_flag,
 				patch[0].soil_ns.nitrate,
 				route_to_stream / patch[0].area,
@@ -213,12 +217,45 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].mobile_N_proportion,
+				patch[0].soil_defaults[0][0].mobile_NO3_proportion,
 				patch[0].transmissivity_profile) -
-				N_leached_to_patch;
-			if (N_leached_to_stream < 0.0) N_leached_to_stream = 0.0;
+				NO3_leached_to_patch;
+			if (NO3_leached_to_stream < 0.0) NO3_leached_to_stream = 0.0;
+			patch[0].soil_ns.NO3_Qout += (NO3_leached_to_patch + NO3_leached_to_stream);
 
-			patch[0].soil_ns.Qout += (N_leached_to_patch + N_leached_to_stream);
+			NH4_leached_to_patch = compute_N_leached(
+				verbose_flag,
+				patch[0].soil_ns.sminn,
+				route_to_patch / patch[0].area,
+				road_int_depth,
+				patch[0].soil_defaults[0][0].soil_water_cap,
+				m,
+				total_gamma / patch[0].area * time_int,
+				patch[0].soil_defaults[0][0].porosity_0,
+				patch[0].soil_defaults[0][0].porosity_decay,
+				patch[0].soil_defaults[0][0].N_decay_rate,
+				patch[0].soil_defaults[0][0].active_zone_z,
+				patch[0].soil_defaults[0][0].soil_depth,
+				patch[0].soil_defaults[0][0].mobile_NH4_proportion,
+				patch[0].transmissivity_profile);
+			NH4_leached_to_stream = compute_N_leached(
+				verbose_flag,
+				patch[0].soil_ns.nitrate,
+				route_to_stream / patch[0].area,
+				patch[0].sat_deficit,
+				patch[0].soil_defaults[0][0].soil_water_cap,
+				m,
+				total_gamma / patch[0].area * time_int,
+				patch[0].soil_defaults[0][0].porosity_0,
+				patch[0].soil_defaults[0][0].porosity_decay,
+				patch[0].soil_defaults[0][0].N_decay_rate,
+				patch[0].soil_defaults[0][0].active_zone_z,
+				patch[0].soil_defaults[0][0].soil_depth,
+				patch[0].soil_defaults[0][0].mobile_NH4_proportion,
+				patch[0].transmissivity_profile) -
+				NH4_leached_to_patch;
+			if (NH4_leached_to_stream < 0.0) NH4_leached_to_stream = 0.0;
+			patch[0].soil_ns.NH4_Qout += (NH4_leached_to_patch + NH4_leached_to_stream);
 
 
 			DON_leached_to_patch = compute_N_leached(
@@ -318,7 +355,7 @@ void  update_drainage_road(
 	/* compute Nitrogen leaching amount				*/
 	/*--------------------------------------------------------------*/
 		if (command_line[0].grow_flag > 0) {
-			N_leached_to_patch = compute_N_leached(
+			NO3_leached_to_patch = compute_N_leached(
 				verbose_flag,
 				patch[0].soil_ns.nitrate,
 				route_to_patch / patch[0].area,
@@ -331,10 +368,29 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].mobile_N_proportion,
+				patch[0].soil_defaults[0][0].mobile_NO3_proportion,
 				patch[0].transmissivity_profile);
-			N_leached_to_stream = 0.0;
-			patch[0].soil_ns.Qout += (N_leached_to_patch + N_leached_to_stream);
+			NO3_leached_to_stream = 0.0;
+			patch[0].soil_ns.NO3_Qout += (NO3_leached_to_patch + NO3_leached_to_stream);
+
+
+			NH4_leached_to_patch = compute_N_leached(
+				verbose_flag,
+				patch[0].soil_ns.sminn,
+				route_to_patch / patch[0].area,
+				patch[0].sat_deficit,
+				patch[0].soil_defaults[0][0].soil_water_cap,
+				m,
+				total_gamma / patch[0].area * time_int,
+				patch[0].soil_defaults[0][0].porosity_0,
+				patch[0].soil_defaults[0][0].porosity_decay,
+				patch[0].soil_defaults[0][0].N_decay_rate,
+				patch[0].soil_defaults[0][0].active_zone_z,
+				patch[0].soil_defaults[0][0].soil_depth,
+				patch[0].soil_defaults[0][0].mobile_NH4_proportion,
+				patch[0].transmissivity_profile);
+			NH4_leached_to_stream = 0.0;
+			patch[0].soil_ns.NH4_Qout += (NH4_leached_to_patch + NH4_leached_to_stream);
 
 
 			DON_leached_to_patch = compute_N_leached(
@@ -409,7 +465,7 @@ void  update_drainage_road(
 	if (command_line[0].grow_flag > 0) {
 		Nout = compute_N_leached(
 			verbose_flag,
-			patch[0].soil_ns.nitrate - N_leached_to_patch,
+			patch[0].soil_ns.nitrate - NO3_leached_to_patch,
 			return_flow,
 			0.0,
 			0.0,
@@ -420,10 +476,29 @@ void  update_drainage_road(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_N_proportion,
+			patch[0].soil_defaults[0][0].mobile_NO3_proportion,
 			patch[0].transmissivity_profile);
 		patch[0].surface_NO3 += Nout;
-		patch[0].soil_ns.Qout += Nout;
+		patch[0].soil_ns.NO3_Qout += Nout;
+
+
+		Nout = compute_N_leached(
+			verbose_flag,
+			patch[0].soil_ns.sminn- NH4_leached_to_patch,
+			return_flow,
+			0.0,
+			0.0,
+			m,
+			total_gamma / patch[0].area * time_int,
+			patch[0].soil_defaults[0][0].porosity_0,
+			patch[0].soil_defaults[0][0].porosity_decay,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].soil_depth,
+			patch[0].soil_defaults[0][0].mobile_NH4_proportion,
+			patch[0].transmissivity_profile);
+		patch[0].surface_NH4 += Nout;
+		patch[0].soil_ns.NH4_Qout += Nout;
 
 
 		Nout = compute_N_leached(
@@ -476,10 +551,10 @@ void  update_drainage_road(
 		if (command_line[0].grow_flag > 0) {
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
 			patch[0].surface_NO3  -= Nout;
-			patch[0].next_stream[0].streamflow_N += (Nout * patch[0].area / patch[0].next_stream[0].area);
+			patch[0].next_stream[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
 			patch[0].surface_NH4  -= Nout;
-			patch[0].next_stream[0].streamflow_N += (Nout * patch[0].area / patch[0].next_stream[0].area);
+			patch[0].next_stream[0].streamflow_NH4 += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
 			patch[0].surface_DON  -= Nout;
 			patch[0].next_stream[0].streamflow_DON += (Nout * patch[0].area / patch[0].next_stream[0].area);
@@ -509,8 +584,10 @@ void  update_drainage_road(
 		patch[0].next_stream[0].streamflow_DON += Nin;
 		Nin = (DOC_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_DOC += Nin;
-		Nin = (N_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
-		patch[0].next_stream[0].streamflow_N += Nin;
+		Nin = (NO3_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
+		patch[0].next_stream[0].streamflow_NO3 += Nin;
+		Nin = (NH4_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
+		patch[0].next_stream[0].streamflow_NH4 += Nin;
 		}
 
 		
@@ -529,10 +606,12 @@ void  update_drainage_road(
 		/*--------------------------------------------------------------*/
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
 		if (command_line[0].grow_flag > 0) {
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * N_leached_to_patch * patch[0].area) 
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NO3_leached_to_patch * patch[0].area) 
 				/ neigh[0].area;
-			neigh[0].soil_ns.Qin += Nin;
-			neigh[0].ndf.sminn_leached -= Nin;
+			neigh[0].soil_ns.NO3_Qin += Nin;
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch * patch[0].area) 
+				/ neigh[0].area;
+			neigh[0].soil_ns.NH4_Qin += Nin;
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch * patch[0].area) 
 				/ neigh[0].area;
 			neigh[0].soil_ns.DON_Qin += Nin;
@@ -542,21 +621,8 @@ void  update_drainage_road(
 			}
 		neigh[0].Qin += Qin;
 
-			if ((neigh[0].ID == 49) && (neigh[0].detention_store < -ZERO))
-				printf("\n  Qin %lf  dt %d, sat_def %lf, detention store %lf, dts %lf, returnflow %lf Qout %lf",
-					Qin,
-					neigh[0].drainage_type,
-					neigh[0].sat_deficit,
-					neigh[0].detention_store,
-					neigh[0].soil_defaults[0][0].detention_store_size,
-					neigh[0].return_flow,
-					neigh[0].Qout);
 
 	}
-
-	N_leached_total = (N_leached_to_patch + N_leached_to_stream + DON_leached_to_stream + DON_leached_to_patch );
-	patch[0].soil_ns.nleached_snk += N_leached_total;
-	patch[0].ndf.sminn_leached +=  N_leached_total; 
 
 
 } /*end update_drainage_road.c*/

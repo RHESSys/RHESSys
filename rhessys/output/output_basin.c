@@ -43,7 +43,6 @@ void	output_basin(			int routing_flag,
 	/*------------------------------------------------------*/
 	int h,z,p,c;
 	int var_flag, layer;
-	double astreamflow_N;
 	double arain_throughfall;
 	double asnow_throughfall;
 	double alitter_store;
@@ -61,10 +60,10 @@ void	output_basin(			int routing_flag,
 	double asublimation;
 	double asat_area, adetention_store;
 	double apsn, alai, acrain;
-	double abase_flow, hbase_flow,  hstreamflow_N;
+	double abase_flow, hbase_flow,  hstreamflow_NO3, hstreamflow_NH4;
 	double	aacctrans, var_acctrans, var_trans;
 	double aPET, adC13, amortality_fract, apcp;
-	double	hgw, hgwN, hgwDON;
+	double	hgw;
 	double atmin, atmax, asnow;
 	double	hgwQout, hgwNout;
 	double aarea, hill_area, zone_area, basin_area;
@@ -99,15 +98,12 @@ void	output_basin(			int routing_flag,
 	aarea =  0.0 ;
 	abase_flow = 0.0;
 	hbase_flow = 0.0;
-	hstreamflow_N = 0.0;
+	hstreamflow_NO3 = 0.0;
+	hstreamflow_NH4 = 0.0;
 	hgwQout = 0.0;
-	hgwNout = 0.0;
 	hgw = 0.0;
-	hgwN = 0.0;
-	hgwDON = 0.0;
 	alai = 0.0;
 	adetention_store = 0.0;
-	astreamflow_N = 0.0;
 	aacctrans = 0.0; 
 	basin_area = 0.0;
 	zone_area = 0.0;
@@ -163,7 +159,6 @@ void	output_basin(			int routing_flag,
 						astreamflow += patch[0].streamflow*patch[0].area;
 						areturn_flow += patch[0].return_flow * patch[0].area;
 						abase_flow += patch[0].base_flow * patch[0].area;
-						astreamflow_N += patch[0].streamflow_N * patch[0].area;
 				}
 				else {
 						/* for Topmodel version compute only return flow and later added to streamflow */
@@ -197,12 +192,8 @@ void	output_basin(			int routing_flag,
 			}
 		}
 		hbase_flow += hillslope[0].base_flow * hill_area;
-		hstreamflow_N += hillslope[0].streamflow_N * hill_area;
 		hgw += hillslope[0].gw.storage * hill_area;
-		hgwN += hillslope[0].gw.NO3 * hill_area;
-		hgwDON += hillslope[0].gw.DON * hill_area;
 		hgwQout += hillslope[0].gw.Qout * hill_area;
-		hgwNout += hillslope[0].gw.Nout * hill_area;
 		basin_area += hill_area;
 	}
 	adC13 /=  aarea;
@@ -236,14 +227,10 @@ void	output_basin(			int routing_flag,
 	apsn /= aarea ;
 	alai /= aarea;
 	abase_flow /= aarea;
-	astreamflow_N /= aarea;
 	asat_area /= aarea;
 	aacctrans /= aarea; 
 
-	hgwN = hgwN / basin_area;
-	hgwDON = hgwDON / basin_area;
 	hgw = hgw / basin_area;
-	hgwNout = hgwNout / basin_area;
 	hgwQout = hgwQout / basin_area;
 	abase_flow += (hbase_flow / basin_area);
 	astreamflow += (hbase_flow / basin_area);
@@ -273,7 +260,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf  %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -296,10 +283,7 @@ void	output_basin(			int routing_flag,
 		apsn,
 		alai,
 		hgwQout *1000.0,
-		hgwNout * 1000.0,
 		hgw *1000.0,
-		hgwN * 1000.0,
-		hgwDON * 1000.0,
 		adetention_store * 1000,
 		asat_area * 100,
 		alitter_store * 1000,
@@ -309,8 +293,13 @@ void	output_basin(			int routing_flag,
 		var_trans,
 		aacctrans*1000,
 		var_acctrans,
-		aPET*1000,adC13, apcp*1000.0, amortality_fract*100,
-	  	atmax, atmin, asnow*1000.0 ,
+		aPET*1000,
+		adC13, 
+		apcp*1000.0, 
+		amortality_fract*100,
+	  	atmax, 
+		atmin, 
+		asnow*1000.0 ,
 		basin[0].stream_list.streamflow *1000.0*24*3600/aarea
 		);
 

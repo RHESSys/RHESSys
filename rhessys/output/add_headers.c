@@ -48,7 +48,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s  %s \n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
 		"day",
 		"month",
 		"year",
@@ -71,10 +71,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"psn",
 		"lai",
 		"gw.Qout",
-		"gw.Nout",
 		"gw.storage",
-		"gw.NO3",
-		"gw.DON",
 		"detention_store",
 		"%sat_area",
 		"litter_store",
@@ -84,8 +81,14 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"trans_var",
 		"acc_trans",
 		"acctransv_var",
-		"pet", "dC13", "precip",
-		"mortf","tmax","tmin","snowfall","routedstreamflow"
+		"pet", 
+		"dC13", 
+		"precip",
+		"mortf",
+		"tmax",
+		"tmin",
+		"snowfall",
+		"routedstreamflow"
 		);
 
 	/*--------------------------------------------------------------*/
@@ -134,7 +137,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].hillslope[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -156,9 +159,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"psn",
 		"lai",
 		"gw.Qout",
-		"gw.Nout",
 		"gw.storage",
-		"gw.NO3",
 		"area"
 		);
 

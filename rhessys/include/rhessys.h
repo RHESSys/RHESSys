@@ -343,6 +343,7 @@ struct accumulate_patch_object
    double stream_DOC;
    double stream_DON;
    double stream_NO3;
+   double stream_NH4;
    double streamflow;
    double leach;
    double denitrif;
@@ -647,7 +648,8 @@ struct	aggdefs_object
 	double	soil_water_cap;					/* m */
 	double  active_zone_z;					/* m */
 	double  N_decay_rate;					/* kg N /m */
-	double  mobile_N_proportion;				/* (DIM) 0-1 */
+	double  mobile_NO3_proportion;				/* (DIM) 0-1 */
+	double  mobile_NH4_proportion;				/* (DIM) 0-1 */
 	double  DOM_decay_rate;					/* kg N /m */
 	double  mobile_DON_proportion;				/* (DIM) 0-1 */
 	double  mobile_DOC_proportion;				/* (DIM) 0-1 */
@@ -660,10 +662,12 @@ struct 	gw_object
 	{
 	double	storage;		/* m (water) */
 	double 	NO3;		/* kgN/m2	*/
+	double 	NH4;		/* kgN/m2	*/
 	double 	DOC;		/* kgC/m2	*/
 	double 	DON;		/* kgN/m2	*/
 	double	Qout;			/* m/m2/day	*/
-	double	Nout;			/* kgN/m2/day	*/
+	double	NO3out;			/* kgN/m2/day	*/
+	double	NH4out;			/* kgN/m2/day	*/
 	double	DONout;			/* kgN/m2/day	*/
 	double	DOCout;			/* kgC/m2/day	*/
 	};
@@ -682,7 +686,8 @@ struct hillslope_object
 	double	area;			/* sq meters */
 	double	slope;			/* degrees */
 	double	base_flow;		/* meters		*/
-	double	streamflow_N;		/* kgN/m2/day		*/
+	double	streamflow_NO3;		/* kgN/m2/day		*/
+	double	streamflow_NH4;		/* kgN/m2/day		*/
 	double	streamflow_DON;		/* kgN/m2/day		*/
 	double	streamflow_DOC;		/* kgC/m2/day		*/
 	struct	gw_object		gw;
@@ -946,7 +951,8 @@ struct	soil_default
 	double  mobile_DON_proportion;				/* (DIM) 0-1 */
 	double  mobile_DOC_proportion;				/* (DIM) 0-1 */
 	double  N_decay_rate;					/* kg N /m */
-	double  mobile_N_proportion;				/* (DIM) 0-1 */
+	double  mobile_NO3_proportion;				/* (DIM) 0-1 */
+	double  mobile_NH4_proportion;				/* (DIM) 0-1 */
 	double  denitrif_proportion;				/* (DIM) 0-1 */
 	double	DON_production_rate;					/* (DIM) 0-1 */
 	double	gl_c;						/* m/s */
@@ -1176,7 +1182,6 @@ struct	ndayflux_patch_struct
     /* daily N sources and sinks */
     double nfix_to_sminn;    /* (kgN/m2/d) bio-fixation to soil min N pool */
     double ndep_to_sminn;    /* (kgN/m2/d) deposition to soil min N pool */
-    double sminn_leached;   /* (kgN/m2/d) loss due to leaching  to satsubsurface throughflow */
     double N_to_gw;	   /* (kgN/m2/day) loss due to leaching to gw */
 	};
 /*----------------------------------------------------------*/
@@ -1266,8 +1271,14 @@ struct	soil_n_object
     double soil4n;          /* (kgN/m2) recalcitrant SOM N (humus, slowest) */
     double sminn;           /* (kgN/m2) soil mineral N */
     double nitrate;          /* (kgN/m2) soil mineral N in nitrate form */
-    double Qin;             /* (kgN/m2) soil mineral N output */
-    double Qout;            /* (kgN/m2) soil mineral N input */
+    double NO3_Qin_total;             /* (kgN/m2/day) soil mineral N output */
+    double NO3_Qout_total;            /* (kgN/m2/day) soil mineral N input */
+    double NO3_Qin;             /* (kgN/m2/day) soil mineral N output */
+    double NO3_Qout;            /* (kgN/m2/day) soil mineral N input */
+    double NH4_Qin;             /* (kgN/m2/day) soil mineral N output */
+    double NH4_Qout;            /* (kgN/m2/day) soil mineral N input */
+    double NH4_Qin_total;             /* (kgN/m2/day) soil mineral N output */
+    double NH4_Qout_total;            /* (kgN/m2/day) soil mineral N input */
     double leach;            /* (kgN/m2) soil mineral N input */
     double nfix_src;        /* (kgN/m2) SUM of biological N fixation */
     double ndep_src;        /* (kgN/m2) SUM of N deposition inputs */
@@ -1385,7 +1396,8 @@ struct patch_object
 	double  streamflow;		/* m /day 	*/
 	double  streamflow_DOC;		/* kgC/m2/day 	*/
 	double  streamflow_DON;		/* kgN/m2/day 	*/
-	double  streamflow_N;		/* kg/m2/day 	*/
+	double  streamflow_NO3;		/* kg/m2/day 	*/
+	double  streamflow_NH4;		/* kg/m2/day 	*/
 	double	road_cut_depth;		/* m */
 	double	rain_throughfall;	/* m water	*/	
 	double	recharge;	/* m water	*/	
@@ -1411,8 +1423,10 @@ struct patch_object
 	double  surface_DOC_Qout;	/* kgC/m2 day	*/
 	double  surface_DON_Qin;	/* kgN/m2 day	*/
 	double  surface_DON_Qout;	/* kgN/m2 day	*/
-	double  surface_ns_Qin;		/* kg/m2 day	*/
-	double  surface_ns_Qout;	/* kg/m2 day	*/
+	double  surface_NH4_Qin;		/* kg/m2 day	*/
+	double  surface_NH4_Qout;	/* kg/m2 day	*/
+	double  surface_NO3_Qin;		/* kg/m2 day	*/
+	double  surface_NO3_Qout;	/* kg/m2 day	*/
 	double  surface_ns_leach;	/* kg/m2 day	*/
 	double  surface_Qin;		/* m day	*/
 	double  surface_Qout;		/* m day	*/
@@ -1667,7 +1681,6 @@ struct	output_flag
 	int		yearly_growth;
 	int		monthly;
 	int		daily;
-	int		csv;
 	int		daily_growth;
 	int		hourly;
 	};

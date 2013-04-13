@@ -48,7 +48,8 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	/*--------------------------------------------------------------*/
 	patch[0].return_flow = 0.0;
 	patch[0].streamflow = 0.0;
-	patch[0].streamflow_N = 0.0;
+	patch[0].streamflow_NO3 = 0.0;
+	patch[0].streamflow_NH4 = 0.0;
 	patch[0].base_flow = 0.0;
 	patch[0].gw_drainage = 0.0;
 	patch[0].snowpack.sublimation = 0.0;
@@ -137,12 +138,12 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	/* deposition, fixation and leaching fluxes */
 	ndf->nfix_to_sminn = 0.0;
 	ndf->ndep_to_sminn = 0.0;
-	ndf->sminn_leached = 0.0;
 	/* denitrification fluxes */
 	ndf->sminn_to_nvol = 0.0;
 	ndf->denitrif = 0.0;
 	ndf->sminn_to_nitrate = 0.0;
 	ndf->N_to_gw = 0.0;
+	ndf->DON_to_gw = 0.0;
 	
 	/*-------------------------------
 	ndf->sminn_to_nvol_l1s1 = 0.0;

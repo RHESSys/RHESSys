@@ -107,7 +107,7 @@ void	output_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
-		"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -145,7 +145,8 @@ void	output_growth_patch(
 		(patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total)*1000.0,
 		patch[0].soil_ns.nitrate*1000.0,
 		patch[0].soil_ns.sminn*1000.0,
-		patch[0].streamflow_N*1000.0,
+		patch[0].streamflow_NO3*1000.0,
+		patch[0].streamflow_NH4*1000.0,
 		patch[0].streamflow_DON*1000.0,
 		patch[0].streamflow_DOC*1000.0,
 		patch[0].surface_NO3,
