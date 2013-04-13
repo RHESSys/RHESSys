@@ -388,6 +388,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.branch_turnover = 0.0;
 		default_object_list[i].epc.Tacclim = 0.0;
 		default_object_list[i].epc.Tacclim_days = 10.0;
+		default_object_list[i].epc.nfix = 0;
 	/*--------------------------------------------------------------*/
 	/*	 litter is assumed to have a mositure capacity of 	*/
 	/*	given by litter_moist_coef default assumes			*/
@@ -408,76 +409,76 @@ struct stratum_default *construct_stratum_defaults(
 			// This strchr splitting method works since all tagged
 			// entries are labled epc.*.  This must change before
 			// we can make the whole file tagged
-			newrecord = strchr(record,'e');
+			newrecord = strchr(record,'e'); 
 			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"epc.Tacclim_days") == 0) {	
+			if (strncasecmp(newrecord,"epc.Tacclim_days", 15) == 0) {	
 				default_object_list[i].epc.Tacclim_days = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.Tacclim") == 0) {	
+			if (strncasecmp(newrecord,"epc.Tacclim", 11) == 0) {	
 				default_object_list[i].epc.Tacclim = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.branch_turnover") == 0) {	
+			if (strncasecmp(newrecord,"epc.branch_turnover", 19) == 0) {	
 				default_object_list[i].epc.branch_turnover = ftmp/365.0;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.dickenson_pa") == 0) {	
+			if (strncasecmp(newrecord,"epc.dickenson_pa", 16) == 0) {	
 				default_object_list[i].epc.dickenson_pa = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.waring_pb") == 0) {	
+			if (strncasecmp(newrecord,"epc.waring_pb", 13) == 0) {	
 				default_object_list[i].epc.waring_pb = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.waring_pa") == 0) {	
+			if (strncasecmp(newrecord,"epc.waring_pa", 13) == 0) {	
 				default_object_list[i].epc.waring_pa = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.min_percent_leafg") == 0) {	
+			if (strncasecmp(newrecord,"epc.min_percent_leafg", 21) == 0) {	
 				default_object_list[i].epc.min_percent_leafg = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.max_storage_percent") == 0) {	
+			if (strncasecmp(newrecord,"epc.max_storage_percent", 23) == 0) {	
 				default_object_list[i].epc.max_storage_percent = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.min_leaf_carbon") == 0) {	
+			if (strncasecmp(newrecord,"epc.min_leaf_carbon", 19) == 0) {	
 				default_object_list[i].epc.min_leaf_carbon = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.max_years_resprout") == 0) {	
+			if (strncasecmp(newrecord,"epc.max_years_resprout", 22) == 0) {	
 			        default_object_list[i].epc.max_years_resprout = (int) ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
 
-			if (strcasecmp(newrecord,"epc.resprout_leaf_carbon") == 0) { 	
+			if (strncasecmp(newrecord,"epc.resprout_leaf_carbon", 24) == 0) { 	
 				default_object_list[i].epc.resprout_leaf_carbon = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
 
-			if (strcasecmp(newrecord,"epc.litter_gsurf_slope") == 0) {	
+			if (strncasecmp(newrecord,"epc.litter_gsurf_slope", 22) == 0) {	
 				default_object_list[i].epc.litter_gsurf_slope = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.coef_CO2") == 0) { 
+			if (strncasecmp(newrecord,"epc.coef_CO2", 12) == 0) { 
 				default_object_list[i].epc.coef_CO2 = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.litter_moist_coef") == 0) { 
+			if (strncasecmp(newrecord,"epc.litter_moist_coef", 21) == 0) { 
 				default_object_list[i].epc.litter_moist_coef = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
@@ -492,42 +493,47 @@ struct stratum_default *construct_stratum_defaults(
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.root_growth_direction") == 0) { 
+			if (strncasecmp(newrecord,"epc.root_growth_direction", 25) == 0) { 
 				default_object_list[i].epc.root_growth_direction = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.root_distrib_parm") == 0) { 
+			if (strncasecmp(newrecord,"epc.root_distrib_parm", 21) == 0) { 
 				default_object_list[i].epc.root_distrib_parm = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.gs_tmin") == 0) { 
+			if (strncasecmp(newrecord,"epc.gs_tmin", 11) == 0) { 
 				default_object_list[i].epc.gs_tmin = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.gs_tmax") == 0) { 
+			if (strncasecmp(newrecord,"epc.gs_tmax", 11) == 0) { 
 				default_object_list[i].epc.gs_tmax = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-            if (strcasecmp(newrecord,"epc.gs_vpd_min") == 0) { 
+            		if (strncasecmp(newrecord,"epc.gs_vpd_min", 14) == 0) { 
 				default_object_list[i].epc.gs_vpd_min = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.gs_vpd_max") == 0) { 
+			if (strncasecmp(newrecord,"epc.gs_vpd_max", 14) == 0) { 
 				default_object_list[i].epc.gs_vpd_max = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.gs_dayl_min") == 0) { 
+			if (strncasecmp(newrecord,"epc.gs_dayl_min", 15) == 0) { 
 				default_object_list[i].epc.gs_dayl_min = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
-			if (strcasecmp(newrecord,"epc.gs_dayl_max") == 0) { 
+			if (strncasecmp(newrecord,"epc.nfix", 8) == 0) { 
+				default_object_list[i].epc.nfix = (int) ftmp;
+				printf("\n Using %d for %s for veg default ID %d",
+					default_object_list[i].epc.nfix, newrecord, default_object_list[i].ID);
+				}
+			if (strncasecmp(newrecord,"epc.gs_dayl_max", 15) == 0) { 
 				default_object_list[i].epc.gs_dayl_max = ftmp;
 				printf("\n Using %lf for %s for veg default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);

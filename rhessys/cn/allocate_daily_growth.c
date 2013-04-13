@@ -7,7 +7,7 @@
 /*		allocate_daily_growth			*/
 /*								*/
 /*	SYNOPSIS						*/
-/*	int allocate_daily_growth( int , double, double,double,	*/
+/*	int allocate_daily_growth( int , double, double, double,double,	*/
 /*			    struct cdayflux_struct *,  		*/
 /*			    struct cstate_struct *,		*/
 /*			    struct ndayflux_struct *,	 	*/
@@ -37,6 +37,7 @@
 
 int allocate_daily_growth(int nlimit,
 						  double pnow,
+						  double Tsoil,
 						  double total_soil_frootc,
 						  double cover_fraction,
 						  struct cdayflux_struct *cdf,
@@ -69,7 +70,7 @@ int allocate_daily_growth(int nlimit,
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
 	double nlc;         /* actual new leaf C, minimum of C and N limits   */
-	double nloss, closs;
+	double nloss, amt_fix, cost_fix, closs;
 	double gresp_store, total_wood;
 	double plant_ndemand, mean_cn;
 	double sum_plant_nsupply, soil_nsupply;
@@ -96,7 +97,6 @@ int allocate_daily_growth(int nlimit,
 	plant_ndemand = ndf->potential_N_uptake;
 	preday_npool = ns->npool;
 	preday_cpool = cs->cpool;
-
 
 
 	/*--------------------------------------------------------------*/
@@ -177,20 +177,48 @@ int allocate_daily_growth(int nlimit,
 			ns->nlimit = 0;
 		}
 		else{
+
+
 		/* there is not enough retranslocation N left to satisfy the
 		entire demand. In this case, all remaing retranslocation N is
 		used, and the remaining unsatisfied N demand is translated
 		back to a C excess, which is deducted from
 			photosynthesis source */
-			sminn_to_npool = soil_nsupply;
-			if (ns->retransn > ZERO)
-				ndf->retransn_to_npool = ns->retransn;
-			else ndf->retransn_to_npool = 0.0;
-			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
-			plant_calloc = plant_nalloc  * mean_cn;
-			excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
-			cdf->psn_to_cpool -= excess_c;
-			ns->nlimit = 1;
+
+			/* If there is no remaning retranslocation N is available and if plants are N fixers, plants start N fixation at a cost of carbon  */
+			plant_calloc = plant_nalloc  *  mean_cn;
+			if  (epc.nfix == 1){
+				sminn_to_npool = soil_nsupply;
+				excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
+				cost_fix = -0.625*(exp(-3.62 + 0.27 * Tsoil*(1 - 0.5 * Tsoil / 25.15)) - 2);
+				if (cost_fix > ZERO) 
+					amt_fix = cost_fix/2.0 * excess_c / mean_cn;
+				else
+					amt_fix = 0.0;
+
+				amt_fix = min(excess_c, amt_fix);
+				plant_calloc = plant_calloc + excess_c - amt_fix;
+				plant_nalloc = plant_calloc/mean_cn;
+				ndf_patch->nfix_to_sminn = plant_nalloc - ndf->retransn_to_npool-sminn_to_npool;
+				excess_c = excess_c - amt_fix;
+				if (excess_c > ZERO) {
+					cdf->psn_to_cpool -= excess_c;
+					ns->nlimit = 1;
+				}
+				else ns->nlimit=0;
+			}
+			 else {
+				 /* if the plants are not N fixers, no N fixation is applied and previous strategy applies */	 
+					sminn_to_npool = soil_nsupply;
+					if (ns->retransn > ZERO)
+						ndf->retransn_to_npool = ns->retransn;
+					else ndf->retransn_to_npool = 0.0;
+					plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+					plant_calloc = plant_nalloc  * mean_cn;
+					excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
+					cdf->psn_to_cpool -= excess_c;
+					ns->nlimit = 1;
+				}
 		}
 	}
 	/* calculate the amount of new leaf C dictated by these allocation
@@ -262,14 +290,12 @@ int allocate_daily_growth(int nlimit,
 		ndf->npool_to_deadcrootn         +
 		ndf->npool_to_deadcrootn_store;
 
-
-	/*
+/*
 	printf("\nused %lf sminn_to_npool %lf npool %lf soil %lf ret %lf both %lf uptake %lf  limit %d", 
-			total_used, sminn_to_npool, ns->npool, soil_nsupply, ns->retransn, ns->retransn+soil_nsupply, 
+			ndf->actual_N_uptake, sminn_to_npool, ns->npool, soil_nsupply, ns->retransn, ns->retransn+soil_nsupply, 
 				ndf->potential_N_uptake, nlimit);
-	*/
 
-
+*/
 
 	totalc_used = 
 		cdf->cpool_to_leafc +

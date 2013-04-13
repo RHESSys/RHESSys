@@ -51,35 +51,9 @@ void	canopy_stratum_growth(
 		struct nstate_struct *,
 		struct ndayflux_struct *,
 		struct soil_n_object *);
-	int	allocate_daily_growth_Waring(
-		int,
-		double,
-		double,
-		double,
-		struct cdayflux_struct *,
-		struct cstate_struct *,
-		struct ndayflux_struct *,
-		struct nstate_struct *,
-		struct ndayflux_patch_struct *,
-		struct	epvar_struct *,
-		struct	epconst_struct,
-		struct	date);
-	int	allocate_daily_growth_Dickenson(
-		int,
-		double,
-		double,
-		double,
-		double,
-		struct cdayflux_struct *,
-		struct cstate_struct *,
-		struct ndayflux_struct *,
-		struct nstate_struct *,
-		struct ndayflux_patch_struct *,
-		struct	epvar_struct *,
-		struct	epconst_struct,
-		struct	date);
 	int	allocate_daily_growth(
 		int,
+		double,
 		double,
 		double,
 		double,
@@ -122,6 +96,7 @@ void	canopy_stratum_growth(
 		if (allocate_daily_growth(
 			patch[0].soil_ns.nlimit,
 			stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop,
+			patch[0].Tsoil,
 			patch[0].soil_cs.frootc,
 			stratum[0].cover_fraction,
 			&(stratum[0].cdf),

@@ -52,7 +52,7 @@ void	output_growth_basin(
 	double alitrc;
 	double asoilhr;
 	double asoilc, asminn, anitrate, asurfaceN;
-	double alitrn, asoiln;
+	double alitrn, asoiln, anfix, anuptake;
 	double aarea, hill_area, basin_area;
 	double acarbon_balance, anitrogen_balance;
 	double atotaln, adenitrif;
@@ -73,7 +73,7 @@ void	output_growth_basin(
 	alai = 0.0; acpool=0.0; anpool = 0.0;
 	aleafc = 0.0; afrootc=0.0; awoodc=0.0;
 	aleafn = 0.0; afrootn=0.0; awoodn=0.0;
-	agpsn = 0.0; aresp=0.0;
+	agpsn = 0.0; aresp=0.0; anfix=0.0; anuptake=0.0;
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
@@ -138,6 +138,8 @@ void	output_growth_basin(
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
 				aDON += (patch[0].soil_ns.DON) * patch[0].area;
 				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
+				anfix += (patch[0].ndf.nfix_to_sminn) * patch[0].area;
+				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area,
 
 				asoilhr += (
 					patch[0].cdf.litr1c_hr + 
@@ -258,6 +260,8 @@ void	output_growth_basin(
 	aDON /= aarea;
 	aDOC /= aarea;
 	arootdepth /= aarea;
+	anfix /= aarea;
+	anuptake /= aarea;
 
 	astreamflow_NH4 += (hstreamflow_NH4/ basin_area);
 	astreamflow_NO3 += (hstreamflow_NO3/ basin_area);
@@ -272,7 +276,7 @@ void	output_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -307,7 +311,9 @@ void	output_growth_basin(
 		anitrif*1000.0,
 		aDOC,
 		aDON,
-		arootdepth*1000.0
+		arootdepth*1000.0,
+		anfix * 1000.0,
+		anuptake * 1000.0
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 

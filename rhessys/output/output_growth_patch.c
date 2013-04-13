@@ -107,7 +107,7 @@ void	output_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
-		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -156,6 +156,7 @@ void	output_growth_patch(
 		aheight,
 		patch[0].ndf.sminn_to_npool*1000.0,
 		patch[0].rootzone.depth*1000.0,
+		patch[0].ndf.nfix_to_sminn * 1000.0,
 		patch[0].area);
 	if (check <= 0) {
 		fprintf(stdout, "\nWARNING: output_growth error has occured in output_growth_patch");

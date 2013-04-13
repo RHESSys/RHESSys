@@ -1177,11 +1177,9 @@ struct	ndayflux_patch_struct
 	double denitrif;			/* (kgN/m2/day) */
 
 
-
-
     /* daily N sources and sinks */
-    double nfix_to_sminn;    /* (kgN/m2/d) bio-fixation to soil min N pool */
     double ndep_to_sminn;    /* (kgN/m2/d) deposition to soil min N pool */
+    double nfix_to_sminn;             /* (kgN/m2/d) biological n fixation */
     double N_to_gw;	   /* (kgN/m2/day) loss due to leaching to gw */
 	};
 /*----------------------------------------------------------*/
@@ -2248,6 +2246,7 @@ struct epconst_struct
 	int allocation_flag;	/* (DIM) set as 1 for dynamic allocation */
 	int veg_type;		/* (DIM) set as 1 for tree; 0 for grass	*/
 	int phenology_type;	/* (DIM) set as 1 for decid; 0 for evergreen	*/
+	int nfix;		/* (DIM) set a 1 for n-fixers; 0 for not nfixers */
     double gr_perc;	   /* (DIM 0-1) percent of growth allocated to respiration */
     double leaf_turnover;     /* (1/yr) annual leaf turnover fraction */
     double livewood_turnover; /* (1/yr) annual live wood turnover fraction */
