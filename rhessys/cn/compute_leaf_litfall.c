@@ -117,6 +117,7 @@ int	compute_leaf_litfall(
 	}
 	else{
 		/* set fluxes in daily flux structure */
+		if (grow_flag > 0) {
 		cdf->leafc_to_litr1c += c1 * cover_fraction;
 		cdf->leafc_to_litr2c += c2 * cover_fraction;
 		cdf->leafc_to_litr3c += c3 * cover_fraction;
@@ -125,14 +126,17 @@ int	compute_leaf_litfall(
 		ndf->leafn_to_litr2n += n2 * cover_fraction;
 		ndf->leafn_to_litr3n += n3 * cover_fraction;
 		ndf->leafn_to_litr4n += n4 * cover_fraction;
+		}
 		/* update state variables */
 		cs->leafc -= litfallc;
 		if ((epc.allocation_flag == STATIC) || (grow_flag == 0) )
 			cs->leafc_store += litfallc;
+		if (grow_flag > 0) {
 		cs_litr->litr1c += c1 * cover_fraction;
 		cs_litr->litr2c += c2 * cover_fraction;
 		cs_litr->litr3c += c3 * cover_fraction;
 		cs_litr->litr4c += c4 * cover_fraction;
+		}
 		/* nitrogen state variable updates */
 		if (grow_flag > 0)
 			nloss = n1+n2+n3+n4+nretrans;
@@ -142,10 +146,12 @@ int	compute_leaf_litfall(
 		ns->leafn -= nloss;
 		if ((epc.allocation_flag == STATIC) || (grow_flag == 0) )
 			ns->leafn_store += nloss;
+		if (grow_flag > 0) {
 		ns_litr->litr1n += n1 * cover_fraction;
 		ns_litr->litr2n += n2 * cover_fraction;
 		ns_litr->litr3n += n3 * cover_fraction;
 		ns_litr->litr4n += n4 * cover_fraction;
+		}
 	}
 	return(0);
 } /*compute_leaf_litfall*/ 
