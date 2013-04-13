@@ -1,74 +1,77 @@
-PGM = cf9.1
-CC  = gcc 
-CFLAGS = -O
+PGM = cf10.0a1
+DOCDIR = docs
 RHESSYS_BIN = /usr/local/bin
+CC  = gcc 
+INCLUDES = -Iinclude
+CFLAGS = -I$(GISBASE)/include -g -Wall -O -std=c99
+CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -O -std=c99
+LDLIBS = -L$(GISBASE)/lib -lm -lgrass_gis
+LDLIBS_TESTS = `pkg-config --libs glib-2.0` -L$(GISBASE)/lib -lm -lgrass_gis
 
-OBJECTS = main.o build_flow_table.o fileio.o find_patch.o check_neighbours.o zero_flow_table.o \
-print_flow_table.o sort_flow_table.o compute_gamma.o remove_pits.o \
-find_top.o in_list.o adjust_pit.o add_roads.o find_stream.o \
-find_max_flna.o find_min_flna.o route_roads_to_patches.o compute_upslope_area.o \
-print_drain_stats.o compute_drainage_density.o compute_dist_from_road.o print_stream_table.o \
-grassio.o
+SRCDIR = src
+SRCS := $(shell find $(SRCDIR) -name '*.c')
+OBJDIR = objects
+OBJECTS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
 
-LIBS = -lm
-GIS_LIBS = -lgrass_gis
+TESTS_ROOTDIR = test
+SRCDIR_TESTS = $(TESTS_ROOTDIR)/src
+SRCS_TESTS := $(shell find $(SRCDIR_TESTS) -name '*.c')
+TESTSDIR = $(TESTS_ROOTDIR)
+OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
+OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
+TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
+OBJECTS_NO_MAIN := $(patsubst $(OBJDIR)/main.o,,$(OBJECTS))
+TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
 
-$(PGM): $(EW_PGM) $(OBJECTS)
-	$(CC) $(OBJECTS) -L$(GISBASE)/lib $(GIS_LIBS) $(LIBS) $(CFLAGS) -o $(PGM) 
+OS := $(shell uname)
 
-install: $(PGM) $(EW_PGM)
+all: dir $(PGM)
+
+dir:
+	mkdir -p $(DOCDIR)
+	mkdir -p $(OBJDIR)
+	mkdir -p $(OBJDIR_TESTS)
+
+$(PGM): $(OBJECTS)
+ifeq ($(OS), Darwin)
+	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) $(LDLIBS) -o $(PGM)
+else ifeq ($(OS), Linux)
+	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) $(LDLIBS) -Wl,-rpath=$(GISBASE)/lib -o $(PGM)
+else
+	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) $(LDLIBS) -Wl,-rpath=$(GISBASE)/lib -o $(PGM)
+endif
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $< 
+
+test: $(TESTS) 
+	# Run each test
+	$(patsubst %,%;,$(TESTS_TO_RUN))
+
+$(TESTS): $(OBJECTS) $(OBJECTS_TESTS) 
+ifeq ($(OS), Darwin)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+else ifeq ($(OS), Linux)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -Wl,-rpath=$(GISBASE)/lib -o $@
+else
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -Wl,-rpath=$(GISBASE)/lib -o $@
+endif
+	cp $@ $(TESTS_ROOTDIR)
+	
+$(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
+	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $< 
+
+doc:
+	doxygen
+
+install: $(PGM)
 	cp $(PGM) $(RHESSYS_BIN)
 
 clean:
-	rm -f $(OBJECTS) 
+	rm -f $(PGM) $(OBJECTS) $(TESTS) $(OBJECTS_TESTS) $(TESTS_TO_RUN)
+	
+docclean:
+	rm -rf $(DOCDIR)/html
 
-clobber:	clean
-	rm -f $(PGM) 
 
-print_drain_stats.o:
-	$(CC) $(CFLAGS) -c print_drain_stats.c
-print_stream_table.o:
-	$(CC) $(CFLAGS) -c print_stream_table.c
-print_flow_table.o:
-	$(CC) $(CFLAGS) -c print_flow_table.c
-zero_flow_table.o:
-	$(CC) $(CFLAGS) -c zero_flow_table.c
-in_list.o:
-	$(CC) $(CFLAGS) -c in_list.c
-adjust_pit.o:
-	$(CC) $(CFLAGS) -c adjust_pit.c
-add_roads.o:
-	$(CC) $(CFLAGS) -c add_roads.c
-find_top.o:
-	$(CC) $(CFLAGS) -c find_top.c
-find_stream.o:
-	$(CC) $(CFLAGS) -c find_stream.c
-find_min_flna.o:
-	$(CC) $(CFLAGS) -c find_min_flna.c
-find_max_flna.o:
-	$(CC) $(CFLAGS) -c find_max_flna.c
-remove_pits.o:
-	$(CC) $(CFLAGS) -c remove_pits.c
-sort_flow_table.o:
-	$(CC) $(CFLAGS) -c sort_flow_table.c
-build_flow_table.o: build_flow_table.c
-	$(CC) $(CFLAGS) -c build_flow_table.c
-compute_upslope_area.o:
-	$(CC) $(CFLAGS) -c compute_upslope_area.c
-compute_dist_from_road.o:
-	$(CC) $(CFLAGS) -c compute_dist_from_road.c
-compute_drainage_density.o:
-	$(CC) $(CFLAGS) -c compute_drainage_density.c
-compute_gamma.o:
-	$(CC) $(CFLAGS) -c compute_gamma.c
-route_roads_to_patches.o:
-	$(CC) $(CFLAGS) -c route_roads_to_patches.c
-find_patch.o:
-	$(CC) $(CFLAGS) -c find_patch.c
-fileio.o:
-	$(CC) $(CFLAGS) -c fileio.c
-grassio.o:
-	$(CC) $(CFLAGS) -I$(GISBASE)/include -c grassio.c
-main.o: main.c
-	$(CC) $(CFLAGS) -I$(GISBASE)/include -c main.c
 
