@@ -353,14 +353,6 @@ int	main( int main_argc, char **main_argv)
 	void	destroy_command_line(
 		struct command_line_object * );
 
-	void   add_csv_headers(
-		struct world_output_file_object *,
-		struct command_line_object * );
-
-	void   add_csv_growth_headers(
-		struct world_output_file_object *,
-		struct command_line_object * );
-
 	void   add_headers(
 		struct world_output_file_object *,
 		struct command_line_object * );
@@ -417,16 +409,9 @@ int	main( int main_argc, char **main_argv)
 	}
 	else growth_output = NULL;
 
-	if (command_line[0].output_flags.csv == 1) {
-		add_csv_headers(output, command_line);
-		if (command_line[0].grow_flag > 0)
-			add_csv_growth_headers(growth_output, command_line);
-		}	
-	else {
-		add_headers(output, command_line);
+	add_headers(output, command_line);
 		if (command_line[0].grow_flag > 0)
 			add_growth_headers(growth_output, command_line);
-		}	
 
 
 

@@ -120,7 +120,8 @@ struct hillslope_object *construct_hillslope(
 	fscanf(world_file,"%d",&(hillslope[0].num_base_stations));
 	read_record(world_file, record);
 
-	hillslope[0].streamflow_N = 0.0;	
+	hillslope[0].streamflow_NO3 = 0.0;	
+	hillslope[0].streamflow_NH4 = 0.0;	
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this hillslope                             */
 	/*--------------------------------------------------------------*/
@@ -180,11 +181,13 @@ struct hillslope_object *construct_hillslope(
 		alloc( hillslope[0].num_zones * sizeof( struct zone_object *),
 		"zones","construct_hillslopes");
 	
-	hillslope[0].streamflow_N = 0.0;
+	hillslope[0].streamflow_NO3 = 0.0;
+	hillslope[0].streamflow_NH4 = 0.0;
 	hillslope[0].streamflow_DON = 0.0;
 	hillslope[0].streamflow_DOC = 0.0;
-	hillslope[0].gw.DOC = 0.0;
 	hillslope[0].gw.DON = 0.0;
+	hillslope[0].gw.DOC = 0.0;
+	hillslope[0].gw.NH4 = 0.0;
 	/*--------------------------------------------------------------*/
 	/*	Construct the zones in this hillslope.						*/
 	/*	and calculate hillslope area								*/
@@ -202,7 +205,8 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.active_zone_z = 0.0;
 	hillslope[0].aggdefs.Ksat_0 = 0.0;
 	hillslope[0].aggdefs.soil_depth = 0.0;
-	hillslope[0].aggdefs.mobile_N_proportion = 0.0;
+	hillslope[0].aggdefs.mobile_NO3_proportion = 0.0;
+	hillslope[0].aggdefs.mobile_NH4_proportion = 0.0;
 	hillslope[0].aggdefs.mobile_DON_proportion = 0.0;
 	hillslope[0].aggdefs.mobile_DOC_proportion = 0.0;
 	
@@ -245,8 +249,11 @@ struct hillslope_object *construct_hillslope(
 			hillslope[0].aggdefs.soil_depth +=
 				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].soil_depth *
 				hillslope[0].zones[i][0].patches[j][0].area;
-			hillslope[0].aggdefs.mobile_N_proportion +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_N_proportion *
+			hillslope[0].aggdefs.mobile_NO3_proportion +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_NO3_proportion *
+				hillslope[0].zones[i][0].patches[j][0].area;
+			hillslope[0].aggdefs.mobile_NH4_proportion +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_NH4_proportion *
 				hillslope[0].zones[i][0].patches[j][0].area;
 			hillslope[0].aggdefs.mobile_DON_proportion +=
 				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_DON_proportion *
@@ -268,7 +275,8 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.active_zone_z /= hillslope[0].area;
 	hillslope[0].aggdefs.soil_depth /= hillslope[0].area;
 	hillslope[0].aggdefs.soil_water_cap /= hillslope[0].area;
-	hillslope[0].aggdefs.mobile_N_proportion /= hillslope[0].area;
+	hillslope[0].aggdefs.mobile_NO3_proportion /= hillslope[0].area;
+	hillslope[0].aggdefs.mobile_NH4_proportion /= hillslope[0].area;
 	hillslope[0].aggdefs.mobile_DON_proportion /= hillslope[0].area;
 	hillslope[0].aggdefs.mobile_DOC_proportion /= hillslope[0].area;
 
@@ -284,6 +292,7 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].acc_month.DOC_loss = 0.0;
 	hillslope[0].acc_month.DON_loss = 0.0;
 	hillslope[0].acc_month.stream_NO3 = 0.0;
+	hillslope[0].acc_month.stream_NH4 = 0.0;
 	hillslope[0].acc_month.psn = 0.0;
 
 	hillslope[0].acc_year.num_threshold = 0;
@@ -294,6 +303,7 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].acc_year.DOC_loss = 0.0;
 	hillslope[0].acc_year.DON_loss = 0.0;
 	hillslope[0].acc_year.stream_NO3 = 0.0;
+	hillslope[0].acc_year.stream_NH4 = 0.0;
 	hillslope[0].acc_year.psn = 0.0;
 
 	return(hillslope);

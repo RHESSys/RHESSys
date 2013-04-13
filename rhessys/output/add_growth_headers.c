@@ -47,7 +47,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -66,13 +66,22 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"litrn",
 		"soilc",
 		"soiln",
+		"gwNO3",
+		"gwNH4",
+		"gwDON",
+		"gwDOC",
 		"streamflow_NO3",
+		"streamflow_NH4",
 		"streamflow_DON",
 		"streamflow_DOC",
+		"gwNO3out",
+		"gwNH4out",
+		"gwDONout",
+		"gwDOCout",
 		"denitrif",
 		"nitrif",
 		"DOC",
-		"DON","root_depth");
+		"DON","root_depth","nfix","nuptake");
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
@@ -97,28 +106,41 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].hillslope[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
 		"day",
 		"month",
 		"year",
 		"basinID",
-		"hillID",
+		"lai",
 		"gpsn",
-		"resp",
+		"plant_resp",
+		"soil_resp",
 		"nitrate",
 		"sminn",
+		"surfaceN",
 		"plantc",
 		"plantn",
+		"npool",
 		"litrc",
 		"litrn",
 		"soilc",
 		"soiln",
+		"gwNO3",
+		"gwNH4",
+		"gwDON",
+		"gwDOC",
 		"streamflow_NO3",
-		"streamflow",
+		"streamflow_NH4",
+		"streamflow_DON",
+		"streamflow_DOC",
+		"gwNO3out",
+		"gwNH4out",
+		"gwDONout",
+		"gwDOCout",
 		"denitrif",
 		"nitrif",
 		"DOC",
-		"DON");
+		"DON","root_depth");
 	}
 
 	/*--------------------------------------------------------------*/
@@ -155,7 +177,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"day",
 		"month",
 		"year",
@@ -194,6 +216,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"soilNO3",
 		"soilNH4",
 		"streamNO3",
+		"streamNH4",
 		"streamDON",
 		"streamDOC",
 		"surfaceNO3",
@@ -201,8 +224,9 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"surfaceDOC",
 		"surfaceDON",
 		"height",
-		"N-uptake",
+		"nuptake",
 		"root_depth",
+		"nfix",
 		"area");
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/

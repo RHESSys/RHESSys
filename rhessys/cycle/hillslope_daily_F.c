@@ -127,16 +127,19 @@ void		hillslope_daily_F(
 		
 		hillslope[0].gw.Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
 					hillslope[0].defaults[0][0].gw_loss_coeff;
-		hillslope[0].gw.Nout = hillslope[0].gw.Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
+		hillslope[0].gw.NH4out = hillslope[0].gw.Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
+		hillslope[0].gw.NO3out = hillslope[0].gw.Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
 		hillslope[0].gw.DONout = hillslope[0].gw.Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;
 		hillslope[0].gw.DOCout = hillslope[0].gw.Qout * hillslope[0].gw.DOC / hillslope[0].gw.storage;
 
-		hillslope[0].streamflow_N += hillslope[0].gw.Nout;
+		hillslope[0].streamflow_NO3 += hillslope[0].gw.NO3out;
+		hillslope[0].streamflow_NH4 += hillslope[0].gw.NH4out;
 		hillslope[0].streamflow_DON += hillslope[0].gw.DONout;
 		hillslope[0].streamflow_DOC += hillslope[0].gw.DOCout;
 		hillslope[0].base_flow += hillslope[0].gw.Qout;
 		hillslope[0].gw.storage -= hillslope[0].gw.Qout;
-		hillslope[0].gw.NO3 -= hillslope[0].gw.Nout;
+		hillslope[0].gw.NH4 -= hillslope[0].gw.NH4out;
+		hillslope[0].gw.NO3 -= hillslope[0].gw.NO3out;
 		hillslope[0].gw.DON -= hillslope[0].gw.DONout;
 		hillslope[0].gw.DOC -= hillslope[0].gw.DOCout;
 		}
@@ -146,13 +149,15 @@ void		hillslope_daily_F(
 	scale = hillslope[0].area / basin[0].area;
 	if((command_line[0].output_flags.monthly == 1)&&(command_line[0].b != NULL)){
 		basin[0].acc_month.streamflow += (hillslope[0].base_flow) * scale;
-		basin[0].acc_month.stream_NO3 += (hillslope[0].streamflow_N) * scale;
+		basin[0].acc_month.stream_NO3 += (hillslope[0].streamflow_NO3) * scale;
+		basin[0].acc_month.stream_NH4 += (hillslope[0].streamflow_NH4) * scale;
 		basin[0].acc_month.stream_DON += (hillslope[0].streamflow_DON) * scale;
 		basin[0].acc_month.stream_DOC += (hillslope[0].streamflow_DOC) * scale;
 		}
 	if((command_line[0].output_flags.yearly == 1)&&(command_line[0].b != NULL)){
 		basin[0].acc_year.streamflow += (hillslope[0].base_flow) * scale;
-		basin[0].acc_year.stream_NO3 += (hillslope[0].streamflow_N) * scale;
+		basin[0].acc_year.stream_NO3 += (hillslope[0].streamflow_NO3) * scale;
+		basin[0].acc_year.stream_NH4 += (hillslope[0].streamflow_NH4) * scale;
 		basin[0].acc_year.stream_DON += (hillslope[0].streamflow_DON) * scale;
 		basin[0].acc_year.stream_DOC += (hillslope[0].streamflow_DOC) * scale;
 		}

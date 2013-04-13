@@ -27,7 +27,9 @@
 /*	soil texture, and C substrate, N avaiilability		*/
 /*	based on relationships derived in			*/ 
 /*								*/
-/*	effect of PH currently and excess NH4			*/
+/*	effect of pH from Parton et al 2004			*/
+/*      pH equation from tropical acidic soils                  */
+/*      effect of excess NH4                                    */
 /*      currently ignored					*/
 /*								*/
 /*	Parton et al. 1996. Generalized model of N2 and N20 	*/
@@ -56,7 +58,7 @@ int update_nitrif(
 				  struct cdayflux_patch_struct *cdf,
 				  struct ndayflux_patch_struct *ndf,
 				  struct  soil_class   soil_type,
-				  double  pH, 
+				  double  PH, 
 				  double  theta,
 				  double soilT,
 				  double porosity,
@@ -75,7 +77,7 @@ int update_nitrif(
 	double nitrify;
 	double a, b, c, d;
 	double nh4_conc, bulk_density, kg_soil;
-	double N_scalar, water_scalar, T_scalar;
+	double N_scalar, water_scalar, T_scalar, pH_scalar;
 	double thetai;
 	double max_nit_rate; /* kg/m2/day */
 
@@ -139,12 +141,18 @@ int update_nitrif(
 	
 		T_scalar = -0.06 + 0.13 * exp(0.07 * soilT);
 		if (T_scalar < ZERO) T_scalar = 0.0;
+                /*--------------------------------------------------------------*/
+                /* effect of pH on nitrification                                */
+                /*--------------------------------------------------------------*/
+                pH_scalar = 0.56 + (atan(PI*0.45*(-5+PH))/PI);
+
+
 		/*--------------------------------------------------------------*/
 		/*	estimate nitrification				*/
 		/* 	by scaling a maximum rate suggested by Parton et al.		*/
 		/*--------------------------------------------------------------*/
 		
-		nitrify = water_scalar * T_scalar * N_scalar * MAX_RATE * ns_soil->sminn * 1000.0; 
+		nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * ns_soil->sminn * 1000.0; 
 
 	} /* end mineralized N available */
 	else

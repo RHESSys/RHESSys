@@ -170,7 +170,8 @@ struct patch_object *construct_patch(
 	patch[0].return_flow = 0.0;
 	patch[0].gw_drainage = 0.0;
 	patch[0].infiltration_excess = 0.0;
-	patch[0].streamflow_N = 0.0;
+	patch[0].streamflow_NH4 = 0.0;
+	patch[0].streamflow_NO3 = 0.0;
 	patch[0].snowpack.height = patch[0].snowpack.water_equivalent_depth *10.0;
 	patch[0].tmp = 0.0;
 	patch[0].detention_store = 0.0;	
@@ -195,6 +196,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.DOC_loss = 0.0;
 	patch[0].acc_month.DON_loss = 0.0;
 	patch[0].acc_month.stream_NO3 = 0.0;
+	patch[0].acc_month.stream_NH4 = 0.0;
 	patch[0].acc_month.PET = 0.0;
 	patch[0].acc_month.psn = 0.0;
 	patch[0].acc_month.num_threshold = 0;
@@ -221,6 +223,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.DOC_loss = 0.0;
 	patch[0].acc_year.DON_loss = 0.0;
 	patch[0].acc_year.stream_NO3 = 0.0;
+	patch[0].acc_year.stream_NH4 = 0.0;
 	patch[0].acc_year.PET = 0.0;
 	patch[0].acc_year.psn = 0.0;
 	patch[0].acc_year.num_threshold = 0;
@@ -458,9 +461,14 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	/* compute a biological soil depth based on the minimum of soil depth */
 	/* and m, K parameters defining conductivity < 0.1% original value */
+	/* turn this off for now */
 	/*--------------------------------------------------------------*/
+	patch[0].soil_defaults[0][0].effective_soil_depth = patch[0].soil_defaults[0][0].soil_depth;
+	/*
 	patch[0].soil_defaults[0][0].effective_soil_depth = min(patch[0].soil_defaults[0][0].soil_depth,
 				6.9*patch[0].soil_defaults[0][0].m_z);	
+	*/
+
 	/*--------------------------------------------------------------*/
 	/* detention store size can vary with both soil and landuse		*/
 	/*	use the maximum of the two									*/

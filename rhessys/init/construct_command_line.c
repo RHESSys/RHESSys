@@ -111,7 +111,6 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].output_flags.yearly = 0;
 	command_line[0].output_flags.monthly = 0;
 	command_line[0].output_flags.daily = 0;
-	command_line[0].output_flags.csv = 0;
 	command_line[0].output_flags.hourly = 0;
 	command_line[0].stro = NULL;
 	command_line[0].b = NULL;
@@ -172,13 +171,6 @@ struct	command_line_object	*construct_command_line(
 				printf("\n Outputting template file structure and Exiting\n");
 				output_template_structure();
 				exit(EXIT_FAILURE);
-			}
-			/*------------------------------------------*/
-			/*Check if the csv output flag is next.           */
-			/*------------------------------------------*/
-			else if ( strcmp(main_argv[i],"-csv") == 0 ){
-				command_line[0].output_flags.csv = 1;
-				i++;
 			}
 			/*------------------------------------------*/
 			/*Check if the no redistribution flag is next.           */

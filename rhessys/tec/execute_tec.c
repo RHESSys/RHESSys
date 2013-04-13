@@ -148,12 +148,6 @@ void	execute_tec(
 		struct	date,
 		struct	world_output_file_object *);
 	
-	void	execute_csv_yearly_output_event(
-		struct	world_object	*,
-		struct	command_line_object	*,
-		struct	date,
-		struct	world_output_file_object *);
-	
 	void	execute_daily_output_event(
 		struct	world_object	*,
 		struct	command_line_object	*,
@@ -166,25 +160,7 @@ void	execute_tec(
 		struct	date,
 		struct	world_output_file_object *);
 
-	void	execute_csv_daily_output_event(
-		struct	world_object	*,
-		struct	command_line_object	*,
-		struct	date,
-		struct	world_output_file_object *);
-
-	void	execute_csv_daily_growth_output_event(
-		struct	world_object	*,
-		struct	command_line_object	*,
-		struct	date,
-		struct	world_output_file_object *);
-	
 	void	execute_monthly_output_event(
-		struct	world_object	*,
-		struct	command_line_object	*,
-		struct	date,
-		struct	world_output_file_object *);
-	
-	void	execute_csv_monthly_output_event(
 		struct	world_object	*,
 		struct	command_line_object	*,
 		struct	date,
@@ -324,13 +300,6 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				if ((command_line[0].output_flags.daily_growth == 1) &&
 							(command_line[0].grow_flag > 0) ) {
-					if (command_line[0].output_flags.csv == 1) 
-						execute_csv_daily_growth_output_event(
-						world,
-						command_line,
-						current_date,
-						growth_outfile);
-					else
 						execute_daily_growth_output_event(
 						world,
 						command_line,
@@ -338,20 +307,12 @@ void	execute_tec(
 						growth_outfile);
 				}
 				if (command_line[0].output_flags.daily == 1) {
-					if (command_line[0].output_flags.csv == 1)
-						execute_csv_daily_output_event(
-						world,
-						command_line,
-						current_date,
-						outfile);
-					else {
                                                 //printf("%s\n","before_daily_output");
 						execute_daily_output_event(
 						world,
 						command_line,
 						current_date,
 						outfile);
-				 }
                                }
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested yearly output					*/
@@ -359,13 +320,6 @@ void	execute_tec(
 				if ((command_line[0].output_flags.yearly == 1) &&
 					(command_line[0].output_yearly_date.month==current_date.month)&&
 					(command_line[0].output_yearly_date.day == current_date.day))
-						if (command_line[0].output_flags.csv == 1)
-							execute_csv_yearly_output_event(
-							world,
-							command_line,
-							current_date,
-							outfile);
-						else
 							execute_yearly_output_event(
 							world,
 							command_line,
@@ -419,13 +373,6 @@ void	execute_tec(
 				/*			Perform any requested monthly output				*/
 				/*--------------------------------------------------------------*/
 				if (command_line[0].output_flags.monthly == 1)
-					if (command_line[0].output_flags.csv == 1)
-						execute_csv_monthly_output_event(
-						world,
-						command_line,
-						current_date,
-						outfile);
-					else	
 						execute_monthly_output_event(
 						world,
 						command_line,
@@ -436,7 +383,7 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				month = month + 1;
 				current_date.month = next_date.month;
-			}  /*end if*/
+			} /* end if */
 			/*--------------------------------------------------------------*/
 			/*			Check if this is a year end.						*/
 			/*--------------------------------------------------------------*/

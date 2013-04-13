@@ -71,7 +71,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	double psoil1c_loss, psoil2c_loss, psoil3c_loss, psoil4c_loss;
 	double pmnf_l1s1,pmnf_l2s2,pmnf_l3l2, pmnf_l4s3,pmnf_s1s2,pmnf_s2s3,pmnf_s3s4,pmnf_s4;
 	double potential_immob,mineralized;
-	double weight1, weight2, theta1, theta2, water_scalar1, water_scalar2, water_scalar;
+	double weight1, weight2, theta1, theta2;
 	int nlimit, i;
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
 	double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
@@ -99,27 +99,28 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	(Parton et al, 1996 Global Biogeochemical cycles, 10:3, 401-412 ) */
 
 	a=0.68; b=2.5; c=0.0012; d=2.84;
-	water_scalar = 0.0;
-
+	w_scalar = 0.0;
 	if (std > ZERO) {
 		for (i=0; i<NUM_NORMAL; i++) {
 			thetai = theta + NORMAL[i]*std;
 			thetai = min(1.0, thetai);
 			thetai = max(0.1, thetai);
-			water_scalar  += (pow( ((theta1 -b) / (a-b)), d*(b-a)/(a-c))
-					* pow( ((theta1-c)/ (a-c)), d)) * 1.0/NUM_NORMAL;
+			w_scalar  += (pow( ((thetai -b) / (a-b)), d*(b-a)/(a-c))
+					* pow( ((thetai-c)/ (a-c)), d)) * 1.0/NUM_NORMAL;
 			}
 	}
 	else {
 		if ((theta <= ZERO) || (theta > 1.0))
 			theta = 1.0;
-		if (theta  > c)
+		if (theta  > c) {
 			w_scalar  = pow( ((theta -b) / (a-b)), d*(b-a)/(a-c))
 			* pow( ((theta-c)/ (a-c)), d);
+				}
 		else
 			w_scalar = 0.000001;
 	}
 
+	
 	if (w_scalar > ZERO)
 		w_scalar = sqrt(w_scalar);
 	else

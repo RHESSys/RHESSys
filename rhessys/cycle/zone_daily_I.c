@@ -261,17 +261,18 @@ void zone_daily_I(
 			else
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tmin;
 			zone[0].metv.tmin = temp - Tlapse_adjustment;
-			flag++;
 		}
 		else {
 			Tlapse_adjustment = z_delta * 
 				zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin[day];
 			zone[0].metv.tmin = temp - Tlapse_adjustment;
 		}
+			flag++;
 		}
 			
-		
+	
 		temp = zone[0].base_stations[i][0].daily_clim[0].tmax[day];
+
 		if (temp != -999.0) {
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax == NULL) {
 			if (zone[0].rain > ZERO)
@@ -285,6 +286,7 @@ void zone_daily_I(
 			Tlapse_adjustment = z_delta * 
 				zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax[day];
 			zone[0].metv.tmax = temp - Tlapse_adjustment;
+			flag++;
 		}
 		}
 
@@ -299,8 +301,8 @@ void zone_daily_I(
 	if ( flag != 3 ){
 		fprintf(stderr, "\n For zone %d", zone[0].ID);
 		fprintf(stderr,
-			"\nFATAL ERROR: In zone_daily_I - missing critical data for day %d.\n",
-			day);
+			"\nFATAL ERROR: In zone_daily_I - missing critical data for %ld %ld %ld\n",
+			current_date.year, current_date.month, current_date.day);
 		exit(EXIT_FAILURE);
 	} /*end if*/
 	/*--------------------------------------------------------------*/

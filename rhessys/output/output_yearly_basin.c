@@ -51,7 +51,7 @@ void	output_yearly_basin(
 
 	check = fprintf(outfile,
 		"%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf\n",
-		current_date.year-1,
+		current_date.year,
 		basin[0].ID,
 		basin[0].acc_year.streamflow * 1000.0,
 		basin[0].acc_year.stream_NO3 * 1000.0,

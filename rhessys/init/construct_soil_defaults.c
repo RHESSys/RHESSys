@@ -138,7 +138,7 @@ struct soil_default *construct_soil_defaults(
 		read_record(default_file, record);
 		fscanf(default_file,"%lf",&(default_object_list[i].albedo));
 		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].mobile_N_proportion));
+		fscanf(default_file,"%lf",&(default_object_list[i].mobile_NO3_proportion));
 		read_record(default_file, record);
 		fscanf(default_file,"%lf",&(default_object_list[i].N_decay_rate));
 		read_record(default_file, record);
@@ -223,6 +223,7 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].gsurf_intercept = 0.001;
 			default_object_list[i].p4 = -1.5;
 			default_object_list[i].DOM_decay_rate = 0.05;
+			default_object_list[i].mobile_NH4_proportion = 0.1;
 			default_object_list[i].mobile_DON_proportion = 1.0;
 			default_object_list[i].mobile_DOC_proportion = 1.0;
 			default_object_list[i].DON_production_rate = 0.03;
@@ -284,14 +285,22 @@ struct soil_default *construct_soil_defaults(
 			}
 			newrecord = strchr(record,'m');
 			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"mobile_DOC_proportion") == 0) {	
-				default_object_list[i].mobile_DOC_proportion = ftmp;
+			if (strncasecmp(newrecord,"mobile_NH4_proportion", 21) == 0) {	
+				default_object_list[i].mobile_NH4_proportion = ftmp;
 				printf("\n Using %lf for %s for soil default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);
 				}
 			}
 			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"mobile_DON_proportion") == 0) {	
+			if (strncasecmp(newrecord,"mobile_DOC_proportion",21) == 0) {	
+				default_object_list[i].mobile_DOC_proportion = ftmp;
+				printf("\n Using %lf for %s for soil default ID %d",
+					ftmp, newrecord, default_object_list[i].ID);
+				}
+			}
+			newrecord = strchr(record,'m');
+			if (newrecord != NULL) {
+			if (strncasecmp(newrecord,"mobile_DON_proportion",21) == 0) {	
 				default_object_list[i].mobile_DON_proportion = ftmp;
 				printf("\n Using %lf for %s for soil default ID %d",
 					ftmp, newrecord, default_object_list[i].ID);

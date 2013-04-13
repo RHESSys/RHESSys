@@ -374,10 +374,10 @@ double	top_model(
 					hillslope[0].aggdefs.N_decay_rate,
 					hillslope[0].aggdefs.active_zone_z,
 					hillslope[0].aggdefs.soil_depth,
-					hillslope[0].aggdefs.mobile_N_proportion,
+					hillslope[0].aggdefs.mobile_NO3_proportion,
 					NULL);
-		hillslope[0].streamflow_N += mean_N_leached;
-		mean_nitrate -= hillslope[0].streamflow_N;
+		hillslope[0].streamflow_NO3 += mean_N_leached;
+		mean_nitrate -= hillslope[0].streamflow_NO3;
 	}
 	/*--------------------------------------------------------------*/
 	/*	Adjust the mean_sat_deficit for the base_flow.		*/
@@ -766,8 +766,8 @@ double	top_model(
 	   }
 	}
 
-	basin[0].acc_month.stream_NO3 += (hillslope[0].streamflow_N * hillslope[0].area / basin[0].area);
-	basin[0].acc_year.stream_NO3 += (hillslope[0].streamflow_N * hillslope[0].area / basin[0].area);
+	basin[0].acc_month.stream_NO3 += (hillslope[0].streamflow_NO3 * hillslope[0].area / basin[0].area);
+	basin[0].acc_year.stream_NO3 += (hillslope[0].streamflow_NO3 * hillslope[0].area / basin[0].area);
 	basin[0].acc_month.streamflow += (total_baseflow * hillslope[0].area / basin[0].area);
 	basin[0].acc_year.streamflow += (total_baseflow * hillslope[0].area / basin[0].area);
 

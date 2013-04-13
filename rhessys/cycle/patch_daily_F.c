@@ -890,7 +890,31 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	
 	infiltration = min(infiltration,patch[0].detention_store);
+	/*--------------------------------------------------------------*/
+	/* added an surface N flux to surface N pool	and		*/
+	/* allow infiltration of surface N				*/
+	/*--------------------------------------------------------------*/
+	if ((command_line[0].grow_flag > 0 ) && (infiltration > ZERO)) {
+		patch[0].surface_DOC -= ((infiltration / patch[0].detention_store) * patch[0].surface_DOC);
+		patch[0].surface_DON -= ((infiltration / patch[0].detention_store) * patch[0].surface_DON);
+		patch[0].soil_ns.DON += ((infiltration / patch[0].detention_store) * patch[0].surface_DON);
+		patch[0].soil_cs.DOC += ((infiltration / patch[0].detention_store) * patch[0].surface_DOC);
+		patch[0].soil_ns.nitrate += ((infiltration / patch[0].detention_store) * patch[0].surface_NO3);
+		patch[0].surface_NO3 -= ((infiltration / patch[0].detention_store) * patch[0].surface_NO3);
+		patch[0].soil_ns.sminn += ((infiltration / patch[0].detention_store) * patch[0].surface_NH4);
+		patch[0].surface_NH4 -= ((infiltration / patch[0].detention_store) * patch[0].surface_NH4);
+	}
+	/*--------------------------------------------------------------*/
+	/* now take infiltration out of detention store 	*/
+	/*--------------------------------------------------------------*/
+	
 	patch[0].detention_store -= infiltration;
+		/*--------------------------------------------------------------*/
+		/*	Determine if the infifltration will fill up the unsat	*/
+		/*	zone or not.						*/
+		/*	We use the strict assumption that sat deficit is the	*/
+		/*	amount of water needed to saturate the soil.		*/
+		/*--------------------------------------------------------------*/
 	
 	if (infiltration > ZERO) {
 		/*--------------------------------------------------------------*/
@@ -1461,7 +1485,7 @@ void		patch_daily_F(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].porosity_0,
 			0.25,
-			patch[0].soil_defaults[0][0].mobile_N_proportion,patch[0].theta_std) != 0){
+			patch[0].soil_defaults[0][0].mobile_NO3_proportion,patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
