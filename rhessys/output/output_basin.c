@@ -64,7 +64,7 @@ void	output_basin(			int routing_flag,
 	double abase_flow, hbase_flow,  hstreamflow_N;
 	double	aacctrans, var_acctrans, var_trans;
 	double aPET, adC13, amortality_fract, apcp;
-	double	hgw, hgwN;
+	double	hgw, hgwN, hgwDON;
 	double atmin, atmax, asnow;
 	double	hgwQout, hgwNout;
 	double aarea, hill_area, zone_area, basin_area;
@@ -104,6 +104,7 @@ void	output_basin(			int routing_flag,
 	hgwNout = 0.0;
 	hgw = 0.0;
 	hgwN = 0.0;
+	hgwDON = 0.0;
 	alai = 0.0;
 	adetention_store = 0.0;
 	astreamflow_N = 0.0;
@@ -199,6 +200,7 @@ void	output_basin(			int routing_flag,
 		hstreamflow_N += hillslope[0].streamflow_N * hill_area;
 		hgw += hillslope[0].gw.storage * hill_area;
 		hgwN += hillslope[0].gw.NO3 * hill_area;
+		hgwDON += hillslope[0].gw.DON * hill_area;
 		hgwQout += hillslope[0].gw.Qout * hill_area;
 		hgwNout += hillslope[0].gw.Nout * hill_area;
 		basin_area += hill_area;
@@ -239,6 +241,7 @@ void	output_basin(			int routing_flag,
 	aacctrans /= aarea; 
 
 	hgwN = hgwN / basin_area;
+	hgwDON = hgwDON / basin_area;
 	hgw = hgw / basin_area;
 	hgwNout = hgwNout / basin_area;
 	hgwQout = hgwQout / basin_area;
@@ -270,7 +273,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf  %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf  %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -296,6 +299,7 @@ void	output_basin(			int routing_flag,
 		hgwNout * 1000.0,
 		hgw *1000.0,
 		hgwN * 1000.0,
+		hgwDON * 1000.0,
 		adetention_store * 1000,
 		asat_area * 100,
 		alitter_store * 1000,

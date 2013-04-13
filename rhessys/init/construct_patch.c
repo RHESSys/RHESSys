@@ -458,9 +458,14 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	/* compute a biological soil depth based on the minimum of soil depth */
 	/* and m, K parameters defining conductivity < 0.1% original value */
+	/* turn this off for now */
 	/*--------------------------------------------------------------*/
+	patch[0].soil_defaults[0][0].effective_soil_depth = patch[0].soil_defaults[0][0].soil_depth;
+	/*
 	patch[0].soil_defaults[0][0].effective_soil_depth = min(patch[0].soil_defaults[0][0].soil_depth,
 				6.9*patch[0].soil_defaults[0][0].m_z);	
+	*/
+
 	/*--------------------------------------------------------------*/
 	/* detention store size can vary with both soil and landuse		*/
 	/*	use the maximum of the two									*/

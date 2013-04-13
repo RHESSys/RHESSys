@@ -318,7 +318,6 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].S = min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
 		}	
 
-
 		/*--------------------------------------------------------------*/
 		/*	reset iterative  patch fluxes to zero			*/
 		/*--------------------------------------------------------------*/
@@ -326,6 +325,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].surface_ns_leach += (patch[0].surface_ns_Qout - patch[0].surface_ns_Qin);
 		patch[0].Qin_total +=  patch[0].Qin + patch[0].surface_Qin;
 		patch[0].Qout_total +=  patch[0].Qout + patch[0].surface_Qout;
+
 		patch[0].surface_Qin = 0.0;
 		patch[0].surface_Qout = 0.0;
 		patch[0].Qin = 0.0;
@@ -365,7 +365,6 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 		/*	that it accumulates flux in from patches		*/
 		/*	(roads) that direct water to the stream			*/
 		/*--------------------------------------------------------------*/
-
 		if (k == (n_timesteps-1)) {
 
 			if ((patch[0].sat_deficit - (patch[0].unsat_storage + patch[0].rz_storage)) < -1.0*ZERO){
@@ -449,6 +448,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 					}
 					patch[0].return_flow += excess;
 					patch[0].detention_store -= excess;
+					patch[0].Qout_total += excess; 
 				}
 				else {
 				/*--------------------------------------------------------------*/
@@ -513,7 +513,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].surface_ns_leach += (excess / patch[0].detention_store)*patch[0].surface_NO3;
 			}
 			patch[0].detention_store -= excess;
-			patch[0].Qout_total += excess;
+			patch[0].Qout_total += excess; 
 			}
 		}
 
@@ -851,7 +851,7 @@ void  compute_subsurface_routing(struct command_line_object *command_line,
 		/*--------------------------------------------------------------*/
 		/* final stream flow calculations				*/
 		/*--------------------------------------------------------------*/
-
+	
 			if (patch[0].drainage_type == STREAM) { 
 				patch[0].streamflow += patch[0].return_flow + patch[0].base_flow;
 				}

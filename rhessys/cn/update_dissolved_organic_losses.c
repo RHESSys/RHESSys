@@ -138,7 +138,7 @@ int update_dissolved_organic_losses(
 	cs_soil->soil4c       -= cdf->do_soil4c_loss;
 
 	ns_litr->litr1n       -= ndf->do_litr1n_loss;
-	cs_litr->litr2c       -= cdf->do_litr2c_loss;
+	ns_litr->litr2n       -= ndf->do_litr2n_loss;
 	ns_litr->litr3n       -= ndf->do_litr3n_loss;
 	ns_litr->litr4n       -= ndf->do_litr4n_loss;
 	ns_soil->soil1n       -= ndf->do_soil1n_loss;

@@ -48,7 +48,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s  %s \n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s  %s \n" ,
 		"day",
 		"month",
 		"year",
@@ -74,6 +74,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"gw.Nout",
 		"gw.storage",
 		"gw.NO3",
+		"gw.DON",
 		"detention_store",
 		"%sat_area",
 		"litter_store",

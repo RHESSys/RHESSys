@@ -444,6 +444,7 @@ void		patch_daily_I(
 			&(patch[0].litter_cs),
 			&(patch[0].litter));
 
+	
 		if (compute_potential_decomp(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].psi_max,

@@ -210,7 +210,7 @@ void  update_drainage_stream(
 
 
 	patch[0].Qout += (route_to_stream / patch[0].area);
-	patch[0].base_flow += route_to_stream / patch[0].area;
+	patch[0].base_flow += (route_to_stream / patch[0].area);
 	patch[0].streamflow_N += N_leached_to_stream;
 	patch[0].streamflow_DON += DON_leached_to_stream;
 	patch[0].streamflow_DOC += DOC_leached_to_stream;
