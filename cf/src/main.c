@@ -243,6 +243,12 @@ int main(int argc, char *argv[]) {
 	sewers_raster_opt->required = NO;
 	sewers_raster_opt->description = "Sewer map";
 
+	struct Option* roof_opt = G_define_option();
+	roof_opt->key = "roof";
+	roof_opt->type = TYPE_STRING;
+	roof_opt->required = NO;
+	roof_opt->description = "Roof map";
+	
 	// Parse GRASS arguments
 	if (G_parser(argc, argv)) exit(EXIT_FAILURE);
 
