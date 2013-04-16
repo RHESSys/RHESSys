@@ -1,8 +1,8 @@
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq grass grass-dev
+ - sudo apt-get install -qq grass grass-dev libgtk2.0
 
 env: GISBASE=/usr/lib/grass64
 
-script: "make"
+script: "make; cd cf; make test"
 
