@@ -39,18 +39,12 @@ int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
 
 			/* ignore areas outside the basin */
 			if ((patch[inx] > 0) && (zone[inx] > 0) && (hill[inx] > 0)) {
-				// Why are we calling this at all here?  It appears to do nothing in this case
-				// where the flow table has initial values for all values. In this case
-				// find_patch should always return zero, so pch = num_patches++
-				// When commented out, the output flow table is the same
-//				pch = find_patch(num_patches, flow_table, patch[inx], zone[inx],
-//						hill[inx]);
-//				if (pch == 0) {
-//					num_patches += 1;
-//					pch = num_patches;
-//				}
-				num_patches += 1;
-				pch = num_patches;
+				pch = find_patch(num_patches, flow_table, patch[inx], zone[inx],
+						hill[inx]);
+				if (pch == 0) {
+					num_patches += 1;
+					pch = num_patches;
+				}
 
 				flow_table[pch].patchID = patch[inx];
 				flow_table[pch].hillID = hill[inx];

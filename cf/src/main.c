@@ -39,6 +39,7 @@
 #include "blender.h"
 #include "glb.h"
 #include "sub.h"
+#include "route_roofs.h"
 
 int main(int argc, char *argv[]) {
 	/* local variable declarations */
@@ -76,7 +77,8 @@ int main(int argc, char *argv[]) {
 	char* rnroads;
 	char* rnstream;
 	char* rnsewers;
-
+	char* rnroofs;
+	
 	/* set pointers for images */
 	double *dem;
 	int *patch;
@@ -87,6 +89,8 @@ int main(int argc, char *argv[]) {
 	int *roads;
 	int *sewers;
 	double *flna;
+	double* roofs;
+	
 	//float		 *ehr;
 	//float		 *whr;
 	struct flow_struct *flow_table;
@@ -347,7 +351,8 @@ int main(int argc, char *argv[]) {
 	rnroads = road_raster_opt->answer;
 	rnstream = stream_raster_opt->answer;
 	rnslope = slope_raster_opt->answer;
-
+	rnroofs = roof_opt->answer;
+	
 	printf("Create_flowpaths.C\n\n");
 
 	// Read in the names of the basin, hill, zone, and patch maps from the
@@ -436,6 +441,10 @@ int main(int argc, char *argv[]) {
 	struct Cell_head roads_header;
 	roads = (int*) raster2array(rnroads, &roads_header, NULL, NULL, CELL_TYPE);
 
+	// Added to support roof raster map - hcj
+	struct Cell_head roofs_header;
+	roofs = (double*) raster2array(rnroofs, &roofs_header, NULL, NULL, CELL_TYPE);
+	
 	if (sewer_flag) {
 		struct Cell_head sewers_header;
 		sewers = (int*) raster2array(rnsewers, &sewers_header, NULL, NULL,
@@ -455,11 +464,15 @@ int main(int argc, char *argv[]) {
 
 	printf("\n Building flow table");
 	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch,
-			stream, roads, sewers, flna, out1, maxr, maxc, f_flag, sc_flag,
-			sewer_flag, slp_flag, cell, scale_dem);
+				       stream, roads, sewers, flna, out1, maxr, maxc, f_flag, sc_flag,
+				       sewer_flag, slp_flag, cell, scale_dem);
 
 	fclose(out1);
 
+	// Short circuit roof patches to the nearest road patches
+	printf("\n Route roofs to roads");
+	bool success = route_roofs_to_roads(flow_table, roofs, maxr, maxc);
+	
 	/* processes patches - computing means and neighbour slopes and gammas */
 	printf("\n Computing gamma");
 	num_stream = compute_gamma(flow_table, num_patches, out2, scale_trans, cell,
