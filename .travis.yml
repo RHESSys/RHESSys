@@ -4,5 +4,5 @@ before_install:
 
 env: GISBASE=/usr/lib/grass64
 
-script: "cd cf; make"
+script: "make"
 
