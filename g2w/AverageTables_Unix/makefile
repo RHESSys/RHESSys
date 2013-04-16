@@ -8,7 +8,13 @@ main.o \
 log.o
 
 $(PGM): $(OBJECTS)
+ifeq ($(OS), Darwin)
 	$(CC) $(CFLAGS) $(OBJECTS) -L$(GISBASE)/lib -o $(PGM) $(GISLIB) $(XDRLIB) -lm
+else ifeq ($(OS), Linux)
+	$(CC) $(CFLAGS) $(OBJECTS) -L$(GISBASE)/lib -Wl,-rpath=$(GISBASE)/lib -o $(PGM) $(GISLIB) $(XDRLIB) -lm
+else
+	$(CC) $(CFLAGS) $(OBJECTS) -L$(GISBASE)/lib -Wl,-rpath=$(GISBASE)/lib -o $(PGM) $(GISLIB) $(XDRLIB) -lm
+endif
 
 main.o:
 	$(CC) $(CFLAGS) -I$(GISBASE)/include -c main.c -o main.o
