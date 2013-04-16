@@ -1,4 +1,4 @@
-PGM  = rhessys5.15.r326
+PGM  = rhessys5.15.r331
 VERSION = 5.15
 CC = gcc 
 CFLAGS = -O
@@ -9,8 +9,6 @@ OS := $(shell uname)
 
 OBJECTS = \
 $(OBJ)/Ksat_z_curve.o \
-$(OBJ)/add_csv_growth_headers.o \
-$(OBJ)/add_csv_headers.o \
 $(OBJ)/add_growth_headers.o \
 $(OBJ)/add_headers.o \
 $(OBJ)/alloc.o \
@@ -136,11 +134,6 @@ $(OBJ)/destroy_tec.o \
 $(OBJ)/destroy_world.o \
 $(OBJ)/destroy_zone.o \
 $(OBJ)/destroy_zone_defaults.o \
-$(OBJ)/execute_csv_daily_growth_output_event.o \
-$(OBJ)/execute_csv_daily_output_event.o \
-$(OBJ)/execute_csv_monthly_output_event.o \
-$(OBJ)/execute_csv_yearly_output_event.o \
-$(OBJ)/execute_csv_yearly_growth_output_event.o \
 $(OBJ)/execute_daily_growth_output_event.o \
 $(OBJ)/execute_daily_output_event.o \
 $(OBJ)/execute_hourly_output_event.o \
@@ -191,27 +184,6 @@ $(OBJ)/output_basin.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
 $(OBJ)/output_canopy_stratum.o \
-$(OBJ)/output_csv_basin.o \
-$(OBJ)/output_csv_canopy_stratum.o \
-$(OBJ)/output_csv_growth_basin.o \
-$(OBJ)/output_csv_growth_canopy_stratum.o \
-$(OBJ)/output_csv_growth_hillslope.o \
-$(OBJ)/output_csv_growth_patch.o \
-$(OBJ)/output_csv_growth_zone.o \
-$(OBJ)/output_csv_hillslope.o \
-$(OBJ)/output_csv_monthly_basin.o \
-$(OBJ)/output_csv_monthly_canopy_stratum.o \
-$(OBJ)/output_csv_monthly_hillslope.o \
-$(OBJ)/output_csv_monthly_patch.o \
-$(OBJ)/output_csv_monthly_zone.o \
-$(OBJ)/output_csv_patch.o \
-$(OBJ)/output_csv_yearly_basin.o \
-$(OBJ)/output_csv_yearly_growth_basin.o \
-$(OBJ)/output_csv_yearly_canopy_stratum.o \
-$(OBJ)/output_csv_yearly_hillslope.o\
-$(OBJ)/output_csv_yearly_patch.o \
-$(OBJ)/output_csv_yearly_zone.o \
-$(OBJ)/output_csv_zone.o\
 $(OBJ)/output_growth_basin.o \
 $(OBJ)/output_growth_canopy_stratum.o \
 $(OBJ)/output_growth_hillslope.o \
@@ -302,10 +274,6 @@ rhessys: $(OBJECTS)
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
-$(OBJ)/add_csv_headers.o: output/add_csv_headers.c
-	$(CC) -c $(CFLAGS) -I include output/add_csv_headers.c -o $(OBJ)/add_csv_headers.o
-$(OBJ)/add_csv_growth_headers.o: output/add_csv_growth_headers.c
-	$(CC) -c $(CFLAGS) -I include output/add_csv_growth_headers.c -o $(OBJ)/add_csv_growth_headers.o
 $(OBJ)/add_headers.o: output/add_headers.c
 	$(CC) -c $(CFLAGS) -I include output/add_headers.c -o $(OBJ)/add_headers.o
 $(OBJ)/add_growth_headers.o: output/add_growth_headers.c
@@ -332,22 +300,12 @@ $(OBJ)/execute_yearly_output_event.o: tec/execute_yearly_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_yearly_output_event.c -o $(OBJ)/execute_yearly_output_event.o
 $(OBJ)/execute_yearly_growth_output_event.o: tec/execute_yearly_growth_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_yearly_growth_output_event.c -o $(OBJ)/execute_yearly_growth_output_event.o
-$(OBJ)/execute_csv_yearly_growth_output_event.o: tec/execute_csv_yearly_growth_output_event.c
-	$(CC) -c $(CFLAGS) -I include tec/execute_csv_yearly_growth_output_event.c -o $(OBJ)/execute_csv_yearly_growth_output_event.o
 $(OBJ)/execute_monthly_output_event.o: tec/execute_monthly_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_monthly_output_event.c -o $(OBJ)/execute_monthly_output_event.o
 $(OBJ)/execute_daily_output_event.o: tec/execute_daily_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_daily_output_event.c -o $(OBJ)/execute_daily_output_event.o
 $(OBJ)/execute_daily_growth_output_event.o: tec/execute_daily_growth_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_daily_growth_output_event.c -o $(OBJ)/execute_daily_growth_output_event.o
-$(OBJ)/execute_csv_daily_output_event.o: tec/execute_csv_daily_output_event.c
-	$(CC) -c $(CFLAGS) -I include tec/execute_csv_daily_output_event.c -o $(OBJ)/execute_csv_daily_output_event.o
-$(OBJ)/execute_csv_monthly_output_event.o: tec/execute_csv_monthly_output_event.c
-	$(CC) -c $(CFLAGS) -I include tec/execute_csv_monthly_output_event.c -o $(OBJ)/execute_csv_monthly_output_event.o
-$(OBJ)/execute_csv_yearly_output_event.o: tec/execute_csv_yearly_output_event.c
-	$(CC) -c $(CFLAGS) -I include tec/execute_csv_yearly_output_event.c -o $(OBJ)/execute_csv_yearly_output_event.o
-$(OBJ)/execute_csv_daily_growth_output_event.o: tec/execute_csv_daily_growth_output_event.c
-	$(CC) -c $(CFLAGS) -I include tec/execute_csv_daily_growth_output_event.c -o $(OBJ)/execute_csv_daily_growth_output_event.o
 $(OBJ)/execute_hourly_output_event.o: tec/execute_hourly_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_hourly_output_event.c -o $(OBJ)/execute_hourly_output_event.o
 $(OBJ)/execute_state_output_event.o: tec/execute_state_output_event.c
@@ -406,46 +364,6 @@ $(OBJ)/output_growth_zone.o: output/output_growth_zone.c
 	$(CC) -c $(CFLAGS) -I include output/output_growth_zone.c -o $(OBJ)/output_growth_zone.o
 $(OBJ)/output_growth_canopy_stratum.o: output/output_growth_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_growth_canopy_stratum.c -o $(OBJ)/output_growth_canopy_stratum.o
-$(OBJ)/output_csv_patch.o: output/output_csv_patch.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_patch.c -o $(OBJ)/output_csv_patch.o
-$(OBJ)/output_csv_basin.o: output/output_csv_basin.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_basin.c -o $(OBJ)/output_csv_basin.o
-$(OBJ)/output_csv_hillslope.o: output/output_csv_hillslope.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_hillslope.c -o $(OBJ)/output_csv_hillslope.o
-$(OBJ)/output_csv_zone.o: output/output_csv_zone.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_zone.c -o $(OBJ)/output_csv_zone.o
-$(OBJ)/output_csv_canopy_stratum.o: output/output_csv_canopy_stratum.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_canopy_stratum.c -o $(OBJ)/output_csv_canopy_stratum.o
-$(OBJ)/output_csv_growth_patch.o: output/output_csv_growth_patch.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_growth_patch.c -o $(OBJ)/output_csv_growth_patch.o
-$(OBJ)/output_csv_growth_basin.o: output/output_csv_growth_basin.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_growth_basin.c -o $(OBJ)/output_csv_growth_basin.o
-$(OBJ)/output_csv_growth_hillslope.o: output/output_csv_growth_hillslope.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_growth_hillslope.c -o $(OBJ)/output_csv_growth_hillslope.o
-$(OBJ)/output_csv_growth_zone.o: output/output_csv_growth_zone.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_growth_zone.c -o $(OBJ)/output_csv_growth_zone.o
-$(OBJ)/output_csv_growth_canopy_stratum.o: output/output_csv_growth_canopy_stratum.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_growth_canopy_stratum.c -o $(OBJ)/output_csv_growth_canopy_stratum.o
-$(OBJ)/output_csv_monthly_basin.o: output/output_csv_monthly_basin.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_monthly_basin.c -o $(OBJ)/output_csv_monthly_basin.o
-$(OBJ)/output_csv_monthly_hillslope.o: output/output_csv_monthly_hillslope.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_monthly_hillslope.c -o $(OBJ)/output_csv_monthly_hillslope.o
-$(OBJ)/output_csv_monthly_zone.o: output/output_csv_monthly_zone.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_monthly_zone.c -o $(OBJ)/output_csv_monthly_zone.o
-$(OBJ)/output_csv_monthly_patch.o: output/output_csv_monthly_patch.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_monthly_patch.c -o $(OBJ)/output_csv_monthly_patch.o
-$(OBJ)/output_csv_monthly_canopy_stratum.o: output/output_csv_monthly_canopy_stratum.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_monthly_canopy_stratum.c -o $(OBJ)/output_csv_monthly_canopy_stratum.o
-$(OBJ)/output_csv_yearly_basin.o: output/output_csv_yearly_basin.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_yearly_basin.c -o $(OBJ)/output_csv_yearly_basin.o
-$(OBJ)/output_csv_yearly_hillslope.o: output/output_csv_yearly_hillslope.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_yearly_hillslope.c -o $(OBJ)/output_csv_yearly_hillslope.o
-$(OBJ)/output_csv_yearly_zone.o: output/output_csv_yearly_zone.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_yearly_zone.c -o $(OBJ)/output_csv_yearly_zone.o
-$(OBJ)/output_csv_yearly_patch.o: output/output_csv_yearly_patch.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_yearly_patch.c -o $(OBJ)/output_csv_yearly_patch.o
-$(OBJ)/output_csv_yearly_canopy_stratum.o: output/output_csv_yearly_canopy_stratum.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_yearly_canopy_stratum.c -o $(OBJ)/output_csv_yearly_canopy_stratum.o
 $(OBJ)/output_monthly_basin.o: output/output_monthly_basin.c
 	$(CC) -c $(CFLAGS) -I include output/output_monthly_basin.c -o $(OBJ)/output_monthly_basin.o
 $(OBJ)/output_monthly_hillslope.o: output/output_monthly_hillslope.c
@@ -456,8 +374,6 @@ $(OBJ)/output_monthly_patch.o: output/output_monthly_patch.c
 	$(CC) -c $(CFLAGS) -I include output/output_monthly_patch.c -o $(OBJ)/output_monthly_patch.o
 $(OBJ)/output_monthly_canopy_stratum.o: output/output_monthly_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_monthly_canopy_stratum.c -o $(OBJ)/output_monthly_canopy_stratum.o
-$(OBJ)/output_csv_yearly_growth_basin.o: output/output_csv_yearly_growth_basin.c
-	$(CC) -c $(CFLAGS) -I include output/output_csv_yearly_growth_basin.c -o $(OBJ)/output_csv_yearly_growth_basin.o
 $(OBJ)/output_yearly_growth_basin.o: output/output_yearly_growth_basin.c
 	$(CC) -c $(CFLAGS) -I include output/output_yearly_growth_basin.c -o $(OBJ)/output_yearly_growth_basin.o
 $(OBJ)/output_yearly_growth_hillslope.o: output/output_yearly_growth_hillslope.c
