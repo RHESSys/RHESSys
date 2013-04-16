@@ -1,0 +1,8 @@
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq grass grass-dev
+
+env: GISBASE=/usr/lib/grass64
+
+script: "cd cf; make"
+
