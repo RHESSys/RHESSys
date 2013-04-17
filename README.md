@@ -35,4 +35,18 @@ Run the code coverage script:
 
 This will generate an HTML report in the newly formed `cf/coverage_report/` directory.  This new directory can be copied to a webserver or opened directly in your web browser.
 
+Static Analysis
+---------------
 
+RHESSys can be analyzed by [cppcheck](http://cppcheck.sourceforge.net/) in a few seconds with the following command:
+
+    ./cppcheck . --quiet
+
+OR to see the output, and save the errors out to a textfile,
+
+    ./cppcheck . 2> err.txt
+    cat err.txt
+
+Static analysis will show things like memory leaks, out-of-bound references, and null pointers.  It is generally assumed to have your code be "static analysis clean".
+
+As of this commit, RHESSys shows 16 errors.
