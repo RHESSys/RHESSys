@@ -18,6 +18,11 @@ The above icon should be clickable and point to the latest build at Travis-CI: h
 
 The `.travis.yml` configuration file defines how this project is hooked to Travis-CI.  Github has a post-commit hook that is fired upon every commit to this repository.  This post-commit hook uses an authentication token to login to Travis-CI and run the configured steps on a virtual machine.  A return value of 0 means success and generates a 'green' status indicator (hopefully illustrated in the previous paragraph).
 
+While the code is successfully compiling and running, there are a significant number of compiler warnings at this time:
+
+    $ GISBASE=/usr/lib/grass64 make 2>&1 | grep warning | wc -l
+    1233
+
 Tests
 -----
 
@@ -46,8 +51,8 @@ OR to see the output, and save the errors out to a textfile:
 
     cppcheck . 2> err.txt
     cat err.txt
-    wc -l err.txt
+
+    $ wc -l err.txt
+    16
 
 Static analysis will show things like memory leaks, out-of-bound references, and null pointers.  It is generally assumed a good thing to have your code be "static analysis clean".
-
-As of this commit, RHESSys shows 16 errors.
