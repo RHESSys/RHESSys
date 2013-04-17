@@ -42,11 +42,12 @@ RHESSys can be analyzed by [cppcheck](http://cppcheck.sourceforge.net/) in a few
 
     ./cppcheck . --quiet
 
-OR to see the output, and save the errors out to a textfile,
+OR to see the output, and save the errors out to a textfile:
 
     ./cppcheck . 2> err.txt
     cat err.txt
+    wc -l err.txt
 
-Static analysis will show things like memory leaks, out-of-bound references, and null pointers.  It is generally assumed to have your code be "static analysis clean".
+Static analysis will show things like memory leaks, out-of-bound references, and null pointers.  It is generally assumed a good thing to have your code be "static analysis clean".
 
 As of this commit, RHESSys shows 16 errors.
