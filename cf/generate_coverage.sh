@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # variables
 OUTDIR="coverage_report"
@@ -69,4 +69,12 @@ genhtml -o $OUTDIR $TOTALINFOFILE                                   # generate h
 rm -f $BASEINFOFILE
 rm -f $TESTINFOFILE
 rm -f $TOTALINFOFILE
+
+# print out helpful information
+FULLOUTDIR=`readlink -f $OUTDIR`/
+echo ""
+echo "--------------------------------------"
+echo "lcov report generated and saved into:"
+echo "  $FULLOUTDIR"
+echo ""
 
