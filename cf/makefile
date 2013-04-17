@@ -1,12 +1,20 @@
 PGM = cf10.0a1
 DOCDIR = docs
 RHESSYS_BIN = /usr/local/bin
-CC  = gcc 
+CC  = gcc
 INCLUDES = -Iinclude
 CFLAGS = -I$(GISBASE)/include -g -Wall -O -std=c99
 CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -O -std=c99
 LDLIBS = -L$(GISBASE)/lib -lm -lgrass_gis
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -L$(GISBASE)/lib -lm -lgrass_gis
+
+ifdef COVERAGE
+CFLAGS += -fprofile-arcs -ftest-coverage
+CFLAGS_TESTS += -fprofile-arcs -ftest-coverage
+LDLIBS += -lgcov
+LDLIBS_TESTS += -lgcov
+endif
+COVERAGE_FILES = *.gcov
 
 SRCDIR = src
 SRCS := $(shell find $(SRCDIR) -name '*.c')
@@ -68,7 +76,7 @@ install: $(PGM)
 	cp $(PGM) $(RHESSYS_BIN)
 
 clean:
-	rm -f $(PGM) $(OBJECTS) $(TESTS) $(OBJECTS_TESTS) $(TESTS_TO_RUN)
+	rm -f $(PGM) $(OBJECTS) $(TESTS) $(OBJECTS_TESTS) $(TESTS_TO_RUN) $(COVERAGE_FILES)
 	
 docclean:
 	rm -rf $(DOCDIR)/html
