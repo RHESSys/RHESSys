@@ -40,11 +40,11 @@ Static Analysis
 
 RHESSys can be analyzed by [cppcheck](http://cppcheck.sourceforge.net/) in a few seconds with the following command:
 
-    ./cppcheck . --quiet
+    cppcheck . --quiet
 
 OR to see the output, and save the errors out to a textfile:
 
-    ./cppcheck . 2> err.txt
+    cppcheck . 2> err.txt
     cat err.txt
     wc -l err.txt
 
