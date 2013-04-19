@@ -5,6 +5,7 @@
 #define BUILD_FLOW_TABLE_H
 
 #include "blender.h"
+#include "util.h"
 
 /** @brief Build the overall structure of a flow table
  *
@@ -17,6 +18,7 @@
  *	@param stream Array of type int, the stream map
  *	@param roads Array of type int, the road map
  *	@param sewers Array of type int, the sewer map
+ *      @param roofs Array of type double, the roofs map
  *	@param flna Array of type double, the map of natural log (ln) of a
  *	@param f1 File handle of output flow table. (check_nieghbours does not appear to use f1)
  *	@param maxr Int, the maximum index of rows in the study area
@@ -27,6 +29,7 @@
  *	@param slp_flag Int defined in main.h. Determines method that should be used for calculating the slope of a patch
  *	@param cell Double, raster resolution of DEM
  *	@param scale_dem Double, DEM scaling factor (is not used)
+ *      @param surface boolean indicating we are processing a surface flow table
  *
  *	@deprecated
  *		Parameter flna, flna mode will be removed in a future version (?)
@@ -37,8 +40,8 @@
  *	@return The number of patches in the flow table
  */
 int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
-		int* hill, int* zone, int* patch, int* stream, int* roads, int* sewers,
-		double* flna, FILE* f1, int maxr, int maxc, int f_flag, int sc_flag,
-		int sewer_flag, int slp_flag, double cell, double scale_dem);
+		     int* hill, int* zone, int* patch, int* stream, int* roads, int* sewers, double* roofs,
+		     double* flna, FILE* f1, int maxr, int maxc, int f_flag, int sc_flag,
+		     int sewer_flag, int slp_flag, double cell, double scale_dem, bool surface);
 
 #endif

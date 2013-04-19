@@ -32,7 +32,8 @@
 
 void print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,
 		scale_trans, input_prefix, output_suffix, width)
-	struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;double cell;double width;double scale_trans;char *input_prefix;char *output_suffix;
+    struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;double cell;double width;double scale_trans;
+    char *input_prefix;char *output_suffix;
 
 {
 	int i, j, cnt;
