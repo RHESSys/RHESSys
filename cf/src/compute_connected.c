@@ -3,6 +3,8 @@
 #include "nearest_neighbor_grid_search.h"
 #include "impervious_search_predicate.h"
 #include "roof_geometry.h"
+#include "blender.h"
+#include "add_flow_to_table.h"
 
 /// @brief Route the roof to the nearest impervious surfaces.
 bool compute_roof_connected_routing(

@@ -7,6 +7,7 @@
 #include "pervious_search_predicate.h"
 #include "roof_geometry.h"
 #include "add_flow_to_table.h"
+#include "blender.h"
 
 bool compute_roof_non_connected_routing(
     struct flow_struct* _flow_table,

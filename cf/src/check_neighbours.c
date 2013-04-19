@@ -19,8 +19,8 @@
 #include "check_neighbours.h"
 
 int check_neighbours(int inputRow, int inputCol, int *patch, int *zone, int *hill,
-                     int *stream, struct flow_struct *flow_entry, int num_adj, FILE *f1,
-                     int maxr, int maxc, int sc_flag, double cell) {
+                     int *stream, double* roofs, struct flow_struct *flow_entry, int num_adj, FILE *f1,
+                     int maxr, int maxc, int sc_flag, double cell, bool surface) {
 
     /* local function declarations */
 
@@ -42,11 +42,22 @@ int check_neighbours(int inputRow, int inputCol, int *patch, int *zone, int *hil
                 /* is the neighbour a different patch*/
                 /* or is it outside the basin - in which case we ignore it */
                 /* also, for stream pixels, ignore non-stream neighbours */
-                p_neigh = patch[(inputRow + r) * maxc + (inputCol + c)];
-                h_neigh = hill[(inputRow + r) * maxc + (inputCol + c)];
-                z_neigh = zone[(inputRow + r) * maxc + (inputCol + c)];
-                stream_neigh = stream[(inputRow + r) * maxc + (inputCol + c)];
+                int index;
+                if(!row_col_to_index(inputRow + r, inputCol + c, maxr, maxc, &index)) {
+                    fprintf(stderr, "ERROR: Failed to compute an index from row: %d, and column: %d\n",
+                            inputRow + r, inputCol + c);
+                    return -1;
+                }
+                p_neigh = patch[index];
+                h_neigh = hill[index];
+                z_neigh = zone[index];
+                stream_neigh = stream[index];
 
+                // For surface water routing roof neighbors are determined elsewhere so skip them here - Brian
+                if(surface && is_roof(roofs[index])) {
+                    continue;
+                }
+                
                 if (((p_neigh != flow_entry->patchID)
                      || (z_neigh != flow_entry->zoneID)
                      || (h_neigh != flow_entry->hillID))

@@ -70,9 +70,14 @@ bool add_adjacency_to_contributor(
         fprintf(stderr, "ERROR: Contributor index is less than 0.\n");
         result = false;
     } else {
-        struct adj_struct* adjacency_tail = _flow_table[_index].adj_ptr;
-        _flow_table[_index].adj_ptr = _adjacency;
-        adjacency_tail->next = _adjacency;
+        // This assumes that the adj_ptr and adj_list are BOTH head pointers into the adjacency list. This does not instill
+        // confidence however since it seems less than useful to have two copies of the same pointer stored in a struct. This
+        // assumption comes out of two assignments at the bottom of check_neighbours.
+        struct adj_struct* adjacency_list = _flow_table[_index].adj_list;
+        _flow_table[_index].adj_list = _adjacency;
+        _adjacency->next = adjacency_list;
+        _flow_table[_index].adj_ptr = _flow_table[_index].adj_list;
+        ++_flow_table[_index].num_adjacent;
     }
     return result;
 }

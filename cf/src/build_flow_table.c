@@ -14,11 +14,12 @@
 #include "zero_flow_table.h"
 #include "find_patch.h"
 #include "build_flow_table.h"
+#include "util.h"
 
 int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
-                     int* hill, int* zone, int* patch, int* stream, int* roads, int* sewers,
+                     int* hill, int* zone, int* patch, int* stream, int* roads, int* sewers, double* roofs,
                      double* flna, FILE* f1, int maxr, int maxc, int f_flag, int sc_flag,
-                     int sewer_flag, int slp_flag, double cell, double scale_dem) {
+                     int sewer_flag, int slp_flag, double cell, double scale_dem, bool surface) {
 
     /* local variable declarations */
     int num_patches;
@@ -32,7 +33,11 @@ int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
     for (r = 0; r < maxr; r++) {
 
         for (c = 0; c < maxc; c++) {
-            inx = r * maxc + c;
+            if(!row_col_to_index(r, c, maxr, maxc, &inx)) {
+                fprintf(stderr, "ERROR: Failed to compute an index from row: %d and column: %d.\n", r, c);
+                return -1;
+            }
+            
             if (patch[inx] == NO_DATA) {
                 printf(
                     "error in patch file use of NO_DATA as a patch label not allowed \n");
@@ -64,20 +69,31 @@ int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
                     if (flow_table[pch].max_slope < slope[inx])
                         flow_table[pch].max_slope = (float) (1.0 * slope[inx]);
                 }
+                // land of type LANDTYPE_LAND is assumed
+                if (surface && is_roof(roofs[inx]))
+                    flow_table[pch].land = LANDTYPE_ROOF;
                 if (roads[inx] >= 1)
-                    flow_table[pch].land = 2;
+                    flow_table[pch].land = LANDTYPE_ROAD;
                 if (stream[inx] >= 1)
-                    flow_table[pch].land = 1;
+                    flow_table[pch].land = LANDTYPE_STREAM;
 
                 if (f_flag)
                     flow_table[pch].flna += (float) flna[inx];
                 else
                     flow_table[pch].flna = 0.0;
 
-                flow_table[pch].num_adjacent += check_neighbours(r, c, patch,
-                                                                 zone, hill, stream, &flow_table[pch],
-                                                                 flow_table[pch].num_adjacent, f1, maxr, maxc, sc_flag,
-                                                                 cell);
+                flow_table[pch].num_adjacent = 0;
+                if(!surface || flow_table[pch].land != LANDTYPE_ROOF) {
+                    int num_adj =  check_neighbours(r, c, patch, zone, hill, stream, roofs, &flow_table[pch],
+                                                    flow_table[pch].num_adjacent, f1, maxr, maxc, sc_flag,
+                                                    cell, surface);
+                    if(num_adj < 0) {
+                        fprintf(stderr, "ERROR: An error occurred while determing patch neighbors.\n");
+                        return -1;
+                    }
+                    flow_table[pch].num_adjacent += num_adj;
+                }
+                
             } /* end if */
         }
 

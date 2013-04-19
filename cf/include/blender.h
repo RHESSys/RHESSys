@@ -6,6 +6,8 @@
 #ifndef BLENDER_H
 #define BLENDER_H
 
+#include <limits.h>
+
 #define NAME   ("Create Flow Paths")
 
 #define PI   3.1415927
@@ -59,12 +61,13 @@
                       /
 */
 
-enum LandType {
-	LANDTYPE_ROAD,
-	LANDTYPE_LAND,
-	LANDTYPE_STREAM,
-	LANDTYPE_ROOF
-};
+typedef enum land_type_e {
+    LANDTYPE_LAND = 0,
+    LANDTYPE_ROAD = 2,
+    LANDTYPE_STREAM = 1,
+    LANDTYPE_ROOF = 4,
+    LANDTYPE_UNDEFINED = INT_MAX
+} land_type_t;
 
 /* STRUCTURE DEFINITIONS */
 

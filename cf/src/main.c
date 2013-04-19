@@ -44,7 +44,10 @@
 int main(int argc, char *argv[]) {
 	/* local variable declarations */
 	//int		i,
-	int num_stream, num_patches;
+        int surface_num_stream = 0;
+        int subsurface_num_stream = 0;
+	int surface_num_patches = 0;
+	int subsurface_num_patches = 0;
 	FILE *out1, *out2;
 	int basinid, tmp, maxr, maxc;
 	double cell, width;
@@ -95,8 +98,9 @@ int main(int argc, char *argv[]) {
 	
 	//float		 *ehr;
 	//float		 *whr;
-	struct flow_struct *flow_table;
-
+	struct flow_struct* surface_flow_table = 0;
+	struct flow_struct* subsurface_flow_table = 0;
+	
 	d_flag = FALSE; /**< debuf flag					 */
 	vflag = FALSE; /**< verbose flag					 */
 	fl_flag = FALSE; /**< roads to lowest flna			 */
@@ -471,56 +475,90 @@ int main(int argc, char *argv[]) {
 		flna = NULL;
 
 	/* allocate flow table */
-	flow_table = (struct flow_struct *) calloc((maxr * maxc),
-			sizeof(struct flow_struct));
+	surface_flow_table = (struct flow_struct *) calloc((maxr * maxc),
+							   sizeof(struct flow_struct));
 
-	printf("\n Building flow table");
-	num_patches = build_flow_table(flow_table, dem, slope, hill, zone, patch,
-				       stream, roads, sewers, flna, out1, maxr, maxc, f_flag, sc_flag,
-				       sewer_flag, slp_flag, cell, scale_dem);
+	subsurface_flow_table = (struct flow_struct *) calloc((maxr * maxc),
+							      sizeof(struct flow_struct));
 
+	printf("\n Building surface flow table");
+	surface_num_patches = build_flow_table(surface_flow_table, dem, slope, hill, zone, patch,
+					       stream, roads, sewers, roofs, flna, out1, maxr, maxc, f_flag, sc_flag,
+					       sewer_flag, slp_flag, cell, scale_dem, true);
+
+	printf("\n Building subsurface flow table");
+	subsurface_num_patches = build_flow_table(subsurface_flow_table, dem, slope, hill, zone, patch,
+						  stream, roads, sewers, roofs, flna, out1, maxr, maxc, f_flag, sc_flag,
+						  sewer_flag, slp_flag, cell, scale_dem, false);
+	
 	fclose(out1);
 
 	// Short circuit roof patches to the nearest road patches
 	printf("\n Route roofs to roads");
-	bool success = route_roofs_to_roads(flow_table, num_patches, roofs, impervious, patch, hill, zone, maxr, maxc);
+	bool success = route_roofs_to_roads(surface_flow_table, surface_num_patches, roofs, impervious, patch, hill, zone, maxr, maxc);
 	
 	/* processes patches - computing means and neighbour slopes and gammas */
-	printf("\n Computing gamma");
-	num_stream = compute_gamma(flow_table, num_patches, out2, scale_trans, cell,
-			sc_flag, slp_flag, d_flag);
+	printf("\n Computing surface gamma");
+	surface_num_stream = compute_gamma(surface_flow_table, surface_num_patches, out2, scale_trans, cell, 
+					   sc_flag, slp_flag, d_flag, true);
+
+	printf("\n Computing subsurface gamma");
+	subsurface_num_stream = compute_gamma(subsurface_flow_table, subsurface_num_patches, out2, scale_trans, cell,
+					      sc_flag, slp_flag, d_flag, false);
 
 	/* remove pits and re-order patches appropriately */
 
-	printf("\n Removing pits");
-	remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, out2);
+	// TODO - Does this need to be done for both flow tables - harry
+	printf("\n Removing surface pits");
+	remove_pits(surface_flow_table, surface_num_patches, sc_flag, slp_flag, cell, out2);
 
 	/* add roads */
-	printf("\n Adding roads");
-	add_roads(flow_table, num_patches, out2, cell);
+	printf("\n Adding roads to surface");
+	add_roads(surface_flow_table, surface_num_patches, out2, cell);
+
+	printf("\n Adding roads to subsurface");
+	add_roads(subsurface_flow_table, subsurface_num_patches, out2, cell);
 
 	/* find_receiving patch for flna options */
-	if (f_flag) route_roads_to_patches(flow_table, num_patches, fl_flag);
+	if (f_flag) route_roads_to_patches(surface_flow_table, surface_num_patches, fl_flag);
+	if (f_flag) route_roads_to_patches(subsurface_flow_table, subsurface_num_patches, fl_flag);
 
-	printf("\n Computing upslope area");
-	tmp = compute_upslope_area(flow_table, num_patches, out2, r_flag, cell);
+	printf("\n Computing surface upslope area");
+	tmp = compute_upslope_area(surface_flow_table, surface_num_patches, out2, r_flag, cell);
+
+	printf("\n Computing subsurface upslope area");
+	tmp = compute_upslope_area(subsurface_flow_table, subsurface_num_patches, out2, r_flag, cell);
 
 	if (s_flag) {
-		printf("\n Printing drainage stats");
-		print_drain_stats(num_patches, flow_table);
-		tmp = compute_dist_from_road(flow_table, num_patches, out2, cell);
-		tmp = compute_drainage_density(flow_table, num_patches, cell);
+	    // TODO - Is this surface only - harry
+		printf("\n Printing surface drainage stats");
+		print_drain_stats(surface_num_patches, surface_flow_table);
+		tmp = compute_dist_from_road(surface_flow_table, surface_num_patches, out2, cell);
+		tmp = compute_drainage_density(surface_flow_table, surface_num_patches, cell);
 	}
 
-	printf("\n Printing flowtable");
-	print_flow_table(num_patches, flow_table, sc_flag, slp_flag, cell,
-			scale_trans, input_prefix, output_suffix, width);
+	printf("\n Printing surface flowtable");
+	strncpy(output_suffix, "_surface.flow", MAXS);
+	print_flow_table(surface_num_patches, surface_flow_table, sc_flag, slp_flag, cell,
+			 scale_trans, input_prefix, output_suffix, width);
+
+	printf("\n Printing subsurface flowtable");
+	strncpy(output_suffix, "_subsurface.flow", MAXS);
+	print_flow_table(subsurface_num_patches, subsurface_flow_table, sc_flag, slp_flag, cell,
+			 scale_trans, input_prefix, output_suffix, width);
 
 	if (pst_flag) {
-		printf("\n Printing  stream table");
-		print_stream_table(num_patches, num_stream, flow_table, sc_flag,
-				slp_flag, cell, scale_trans, input_prefix, output_suffix, width,
-				basinid);
+		printf("\n Printing surface stream table");
+		strncpy(output_suffix, "_surface.flow", MAXS);
+		print_stream_table(surface_num_patches, surface_num_stream, surface_flow_table, sc_flag,
+				   slp_flag, cell, scale_trans, input_prefix, output_suffix, width,
+				   basinid);
+
+		printf("\n Printing subsurface stream table");
+		strncpy(output_suffix, "_subsurface.flow", MAXS);
+		print_stream_table(subsurface_num_patches, subsurface_num_stream, subsurface_flow_table, sc_flag,
+				   slp_flag, cell, scale_trans, input_prefix, output_suffix, width,
+				   basinid);
 	}
 
 	fclose(out2);

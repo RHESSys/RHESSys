@@ -62,9 +62,9 @@ int read_flow_table(flow_table, maxr, maxc, cell)
 			flow_table[pch].z += (float) (1.0 * dem[inx]);
 
 			flow_table[pch].num_adjacent += check_neighbours(r, c, patch, zone,
-					hill, stream, &flow_table[pch],
-					flow_table[pch].num_adjacent, fl, maxr, maxc, sc_flag,
-					cell);  //chu
+									 hill, stream, &flow_table[pch],
+									 flow_table[pch].num_adjacent, fl, maxr, maxc, sc_flag,
+									 cell);  //chu
 
 		}
 
