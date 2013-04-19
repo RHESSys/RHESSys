@@ -5,11 +5,11 @@
 #include "roof_geometry.h"
 #include "util.h"
 
-typedef struct roof_square_s {
+struct roof_square_s {
     int row_;
     int col_;
     struct roof_square_s* next_;
-} roof_square_t;
+};
 
 /* Typedef in header */
 struct roof_geometry_s {
@@ -25,17 +25,22 @@ struct roof_geometry_s {
 static bool construct_roof_square(
     int _row,
     int _col,
-    roof_square_t* _rtn_square)
+    roof_square_t** _rtn_square)
 {
     bool result = true;
-    roof_square_t* square = (roof_square_t*)calloc(1, sizeof(roof_square_t));
-    if(square == 0) {
-	fprintf(stderr, "ERROR: Failed allocating memory for a roof grid square.\n");
+    if(_rtn_square == 0) {
+	fprintf(stderr, "ERROR: Roof square return pointer is NULL.\n");
 	result = false;
     } else {
-	square->row_ = _row;
-	square->col_ = _col;
-	_rtn_square = square;
+	roof_square_t* square = (roof_square_t*)calloc(1, sizeof(roof_square_t));
+	if(square == 0) {
+	    fprintf(stderr, "ERROR: Failed allocating memory for a roof grid square.\n");
+	    result = false;
+	} else {
+	    square->row_ = _row;
+	    square->col_ = _col;
+	    *_rtn_square = square;
+	}
     }
     return result;
 }
@@ -113,7 +118,7 @@ bool add_roof_square(
 	    _roof_geometry->min_col_ = _col;
 	}
 	roof_square_t* square = 0;
-	if(!construct_roof_square(_row, _col, square)) {
+	if(!construct_roof_square(_row, _col, &square)) {
 	    fprintf(stderr, "ERROR: Failed to construct a new roof square.\n");
 	    result = false;
 	} else {
@@ -124,6 +129,106 @@ bool add_roof_square(
     } else {
 	fprintf(stderr, "ERROR: Roof geometry pointer is NULL.\n");
 	result = false;
+    }
+    return result;
+}
+
+/// @brief Print roof geometry to the specified file
+bool print_roof_geometry(
+    FILE* _fid,
+    roof_geometry_t* _roof_geometry)
+{
+    bool result = true;
+    if(_fid == 0) {
+	fprintf(stderr, "ERROR: File pointer is NULL.\n");
+	result = false;
+    } else if(_roof_geometry == 0) {
+	fprintf(stderr, "ERROR: Roof geometry pointer is NULL.\n");
+	result = false;
+    } else if(_roof_geometry->num_squares_ == 0) {
+	fprintf(stderr, "ERROR: Roof geometry has zero squares.\n");
+	result = false;
+    } else if(_roof_geometry->squares_ == 0) {
+	fprintf(stderr, "ERROR: Roof geometry square list is NULL but count not zero.\n");
+	result = false;
+    } else {
+	fprintf(_fid, "\nPrinting roof geometry with %d squares:\n", _roof_geometry->num_squares_);
+	int count = 0;
+	roof_square_t* square = _roof_geometry->squares_;
+	while(square) {
+	    fprintf(_fid, "\tSquare %d:\tRow: %d\tColumn: %d\n", count, square->row_, square->col_);
+	    ++count;
+	    square = square->next_;
+	}
+	fprintf(_fid, "Done with roof geometry.\n\n");
+    }
+    return result;
+}
+
+bool roof_square_row(
+    roof_square_t* _square,
+    int* _rtn_row)
+{
+    bool result = true;
+    if(_square == 0) {
+	fprintf(stderr, "ERROR: Roof square pointer is NULL.\n");
+	result = false;
+    } else if(_rtn_row == 0) {
+	fprintf(stderr, "ERROR: Return row pointer is NULL.\n");
+	result = false;
+    } else {
+	*_rtn_row = _square->row_;
+    }
+    return result;
+}
+
+bool roof_square_col(
+    roof_square_t* _square,
+    int* _rtn_col)
+{
+    bool result = true;
+    if(_square == 0) {
+	fprintf(stderr, "ERROR: Roof square pointer is NULL.\n");
+	result = false;
+    } else if(_rtn_col == 0) {
+	fprintf(stderr, "ERROR: Return col pointer is NULL.\n");
+	result = false;
+    } else {
+	*_rtn_col = _square->col_;
+    }
+    return result;
+}
+
+bool roof_square_next(
+    roof_square_t* _square,
+    roof_square_t** _rtn_next)
+{
+    bool result = true;
+    if(_square == 0) {
+	fprintf(stderr, "ERROR: Roof square pointer is NULL.\n");
+	result = false;
+    } else if(_rtn_next == 0) {
+	fprintf(stderr, "ERROR: Return next pointer is NULL.\n");
+	result = false;
+    } else {
+	*_rtn_next = _square->next_;
+    }
+    return result;
+}
+
+bool roof_geometry_squares(
+    roof_geometry_t* _geometry,
+    roof_square_t** _rtn_squares)
+{
+    bool result = true;
+    if(_geometry == 0) {
+	fprintf(stderr, "ERROR: Roof geometry pointer is NULL.\n");
+	result = false;
+    } else if(_rtn_squares == 0) {
+	fprintf(stderr, "ERROR: Return next pointer is NULL.\n");
+	result = false;
+    } else {
+	*_rtn_squares = _geometry->squares_;
     }
     return result;
 }

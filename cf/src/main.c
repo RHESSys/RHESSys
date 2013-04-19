@@ -75,6 +75,7 @@ int main(int argc, char *argv[]) {
 	char rnpatch[MAXS];
 	char* rndem;
 	char* rnroads;
+	char* rnimpervious;
 	char* rnstream;
 	char* rnsewers;
 	char* rnroofs;
@@ -87,6 +88,7 @@ int main(int argc, char *argv[]) {
 	int *zone;
 	int *stream;
 	int *roads;
+	int *impervious;
 	int *sewers;
 	double *flna;
 	double* roofs;
@@ -215,6 +217,12 @@ int main(int argc, char *argv[]) {
 	road_raster_opt->type = TYPE_STRING;
 	road_raster_opt->required = YES;
 	road_raster_opt->description = "road";
+
+	struct Option* impervious_raster_opt = G_define_option();
+	impervious_raster_opt->key = "impervious";
+	impervious_raster_opt->type = TYPE_STRING;
+	impervious_raster_opt->required = YES;
+	impervious_raster_opt->description = "impervious";
 
 	struct Option* dem_raster_opt = G_define_option();
 	dem_raster_opt->key = "dem";
@@ -349,6 +357,7 @@ int main(int argc, char *argv[]) {
 	rndem = dem_raster_opt->answer;
 	fntemplate = template_opt->answer;
 	rnroads = road_raster_opt->answer;
+	rnimpervious = impervious_raster_opt->answer;
 	rnstream = stream_raster_opt->answer;
 	rnslope = slope_raster_opt->answer;
 	rnroofs = roof_opt->answer;
@@ -441,9 +450,12 @@ int main(int argc, char *argv[]) {
 	struct Cell_head roads_header;
 	roads = (int*) raster2array(rnroads, &roads_header, NULL, NULL, CELL_TYPE);
 
+	struct Cell_head impervious_header;
+	impervious = (int*) raster2array(rnimpervious, &impervious_header, NULL, NULL, CELL_TYPE);
+	
 	// Added to support roof raster map - hcj
 	struct Cell_head roofs_header;
-	roofs = (double*) raster2array(rnroofs, &roofs_header, NULL, NULL, CELL_TYPE);
+	roofs = (double*) raster2array(rnroofs, &roofs_header, NULL, NULL, DCELL_TYPE);
 	
 	if (sewer_flag) {
 		struct Cell_head sewers_header;
@@ -471,7 +483,7 @@ int main(int argc, char *argv[]) {
 
 	// Short circuit roof patches to the nearest road patches
 	printf("\n Route roofs to roads");
-	bool success = route_roofs_to_roads(flow_table, roofs, maxr, maxc);
+	bool success = route_roofs_to_roads(flow_table, num_patches, roofs, impervious, patch, hill, zone, maxr, maxc);
 	
 	/* processes patches - computing means and neighbour slopes and gammas */
 	printf("\n Computing gamma");

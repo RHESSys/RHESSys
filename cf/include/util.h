@@ -19,5 +19,9 @@ extern bool index_to_row_col(
     int* _rtn_row,		// Pointer to the row that will be returned
     int* _rtn_col);		// Pointer to the column that will be returned
 
+/// @brief Returns true if roof value indicates the presence of a roof
+extern bool is_roof(
+    double _roof_value);	// The value from the roof array
+
 #endif // _UTIL_H_
 
