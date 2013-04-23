@@ -11,6 +11,7 @@ static int grid_dist(
     int _col2)
 {
     int result = 0;
+    /* Use the sqr distance because we just need relative measure of distance */
     result = (_row1 - _row2) * (_row1 - _row2) + (_col1 - _col2) * (_col1 - _col2);
     return result;
 }

@@ -4,7 +4,11 @@
 #include "util.h"
 
 /// @brief Interface for the search comparison callback function.
-typedef bool (*search_predicate_t)(int, int, void*, int*);
+typedef bool (*search_predicate_t)(
+    int,			// The row
+    int,			// The column
+    void*,			// Pointer to the predicate context
+    int*);			// Returned vote value
 
 /// @brief Do a nearest neighbor search over the grid squares using a callback to determine when a square is selected.
 bool grid_search(
