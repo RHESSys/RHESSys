@@ -103,6 +103,8 @@ struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;float sc
             
         /* For surface flow, neighbors of roofs are handled elsewhere so skip it - Brian */
         if(flow_table[pch].land == LANDTYPE_ROOF && surface) {
+            // Fix up the gamma_neigh and total_gamma per Naomi to prevent remove_pits from treating the roof patch as a pit
+            flow_table[pch].gamma_neigh = flow_table[pch].total_gamma = 1.0;
             continue;
         }
             

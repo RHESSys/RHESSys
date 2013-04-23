@@ -81,10 +81,8 @@ static bool normalize_receivers(
         // normalize each receivers gamma over the sum
         for(struct adj_struct* adjacency = _flow_table[_patch].adj_list; result && adjacency; adjacency = adjacency->next) {
             float new_gamma = adjacency->gamma / total_gamma;
-            printf("Total gamma: %f\tAdjacency gamma: %f\tNew gamma: %f\n", total_gamma, adjacency->gamma, new_gamma);
             adjacency->gamma = new_gamma;
-            printf("New gamma: %f\n", adjacency->gamma);
-            fprintf(patch_file, "\t%f\n", adjacency->gamma);
+            // fprintf(patch_file, "\t%f\n", adjacency->gamma);
         }
     }
     return result;
@@ -104,7 +102,7 @@ bool normalize_roof_patches(
     } else {
 
         // for debugging
-        patch_file = fopen("RoofPatches.txt", "w");
+        // patch_file = fopen("RoofPatches.txt", "w");
         
         for(int index = 0; result && index < _num_patches; ++index) {
             if(_flow_table[index].land == LANDTYPE_ROOF) {
@@ -116,18 +114,16 @@ bool normalize_roof_patches(
                     result = false;
                 }
 
-                fprintf(patch_file, "Roof patch: %d\tNum Adjacent: %d\n", _flow_table[index].patchID, _flow_table[index].num_adjacent);
-
                 // Normalize the receivers
-                if(!normalize_receivers(_flow_table, index)) {
+                else if(!normalize_receivers(_flow_table, index)) {
                     fprintf(stderr, "ERROR: Failed to normalize the receivers for patch, %d.\n", index);
                     result = false;
                 }
-
             }
         }
 
-        fclose(patch_file);
+        // for debugging
+        // fclose(patch_file);
     }
     return result;
 }
