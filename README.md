@@ -10,7 +10,8 @@ The old SVN repository was at http://sourceforge.net/projects/rhessys/
 Branches
 --------
 The "develop" branch should be used for day-to-day development, with
-RHESSys releases pushed to the "master" branch periodically.
+RHESSys releases pushed to the "master" branch periodically (for example
+yearly).
 
 
 Continuous Build and Test
