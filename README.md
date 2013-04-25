@@ -7,6 +7,12 @@ The project homepage is at http://fiesta.bren.ucsb.edu/~rhessys/
 
 The old SVN repository was at http://sourceforge.net/projects/rhessys/ 
 
+Branches
+--------
+The "develop" branch should be used for day-to-day development, with
+RHESSys releases pushed to the "master" branch periodically.
+
+
 Continuous Build and Test
 -------------------------
 
