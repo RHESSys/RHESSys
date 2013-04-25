@@ -42,3 +42,4 @@ clobber:
 		cd $$current_dir/$$dir; \
 		$(MAKE) -$(MAKEFLAGS) clobber; \
 	done
+
