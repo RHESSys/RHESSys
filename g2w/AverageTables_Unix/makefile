@@ -7,6 +7,8 @@ OBJECTS = \
 main.o \
 log.o
 
+OS := $(shell uname)
+
 $(PGM): $(OBJECTS)
 ifeq ($(OS), Darwin)
 	$(CC) $(CFLAGS) $(OBJECTS) -L$(GISBASE)/lib -o $(PGM) $(GISLIB) $(XDRLIB) -lm
