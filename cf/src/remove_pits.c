@@ -36,18 +36,12 @@
 #include <string.h>
 
 #include "blender.h"
+#include "patch_hash_table.h"
 
-void remove_pits(flow_table, num_patches, sc_flag, slp_flag, cell, f1)
-struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;double cell;FILE *f1;
-
-{
+void remove_pits(struct flow_struct *flow_table, int num_patches,
+			int sc_flag, int slp_flag, double cell, FILE *f1) {
 
     /* local fuction declarations */
-    struct ID_struct sort_flow_table();
-
-    // Not called
-    //int find_patch();
-
     double find_top(struct flow_struct *, int, double, int *, int *, int *);
 
     void adjust_pit();

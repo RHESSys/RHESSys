@@ -44,6 +44,7 @@
 #include "route_roofs.h"
 #include "normalize_roof_patches.h"
 #include "verify.h"
+#include "patch_hash_table.h"
 
 int main(int argc, char *argv[]) {
     /* local variable declarations */
@@ -107,8 +108,11 @@ int main(int argc, char *argv[]) {
     
     //float          *ehr;
     //float          *whr;
-    struct flow_struct* surface_flow_table = 0;
-    struct flow_struct* subsurface_flow_table = 0;
+
+    PatchTable_t *surfacePatchTable = NULL;
+    PatchTable_t *subsurfacePatchTable = NULL;
+    struct flow_struct* surface_flow_table = NULL;
+    struct flow_struct* subsurface_flow_table = NULL;
         
     d_flag = FALSE; /**< debuf flag                                  */
     vflag = FALSE; /**< verbose flag                                         */
@@ -500,16 +504,26 @@ int main(int argc, char *argv[]) {
     } else
         flna = NULL;
 
-    /* allocate flow table */
-    surface_flow_table = (struct flow_struct *) calloc((maxr * maxc),
-                                                       sizeof(struct flow_struct));
+    /* allocate patch tables */
+    // Use a relatively large tables, some users may need to make the table larger
+    // for very large numbers of patches (>100k) to improve performance (table size is currently static)
+    if (!singleFlowtable_flag) {
+    	surfacePatchTable = allocatePatchHashTable(PATCH_HASH_TABLE_DEFAULT_SIZE);
+    }
+    subsurfacePatchTable = allocatePatchHashTable(PATCH_HASH_TABLE_DEFAULT_SIZE);
 
+
+    /* allocate flow table */
+    if (!singleFlowtable_flag) {
+		surface_flow_table = (struct flow_struct *) calloc((maxr * maxc),
+														   sizeof(struct flow_struct));
+    }
     subsurface_flow_table = (struct flow_struct *) calloc((maxr * maxc),
                                                           sizeof(struct flow_struct));
 
     if (!singleFlowtable_flag) {
 		printf("\n Building surface flow table");
-		surface_num_patches = build_flow_table(surface_flow_table, dem, slope, hill, zone, patch,
+		surface_num_patches = build_flow_table(surface_flow_table, surfacePatchTable, dem, slope, hill, zone, patch,
 											   stream, roads, sewers, roofs, flna, out1, maxr, maxc, f_flag, sc_flag,
 											   sewer_flag, slp_flag, cell, scale_dem, true);
 
@@ -517,7 +531,7 @@ int main(int argc, char *argv[]) {
     } else {
     	printf("\n Building flow table");
     }
-    subsurface_num_patches = build_flow_table(subsurface_flow_table, dem, slope, hill, zone, patch,
+    subsurface_num_patches = build_flow_table(subsurface_flow_table, subsurfacePatchTable, dem, slope, hill, zone, patch,
                                               stream, roads, sewers, roofs, flna, out1, maxr, maxc, f_flag, sc_flag,
                                               sewer_flag, slp_flag, cell, scale_dem, false);
         
@@ -544,14 +558,14 @@ int main(int argc, char *argv[]) {
     if (!singleFlowtable_flag) {
 		/* processes patches - computing means and neighbour slopes and gammas */
 		printf("\n Computing surface gamma");
-		surface_num_stream = compute_gamma(surface_flow_table, surface_num_patches, out2, scale_trans, cell,
+		surface_num_stream = compute_gamma(surface_flow_table, surface_num_patches, surfacePatchTable, out2, scale_trans, cell,
 										   sc_flag, slp_flag, d_flag, true);
 
 		printf("\n Computing subsurface gamma");
     } else {
     	printf("\n Computing gamma");
     }
-    subsurface_num_stream = compute_gamma(subsurface_flow_table, subsurface_num_patches, out2, scale_trans, cell,
+    subsurface_num_stream = compute_gamma(subsurface_flow_table, subsurface_num_patches, subsurfacePatchTable, out2, scale_trans, cell,
                                           sc_flag, slp_flag, d_flag, false);
 
     /* remove pits and re-order patches appropriately */
@@ -666,6 +680,11 @@ int main(int argc, char *argv[]) {
         if (remove(pitfn) != 0)
             printf("\n Unable to remove .pit temp file");
     }
+
+    if (!singleFlowtable_flag) {
+    	freePatchHashTable(surfacePatchTable);
+    }
+    freePatchHashTable(subsurfacePatchTable);
 
     printf("\n Finished Createflowpaths \n\n");
     return (EXIT_SUCCESS);

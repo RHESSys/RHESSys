@@ -34,12 +34,6 @@ int compute_upslope_area(flow_table, num_patches, f1, rflag)
 
 {
 
-	/* local fuction declarations */
-	struct ID_struct sort_flow_table();
-
-	// Not called
-	//int find_patch();
-
 	/* local variable declarations */
 
 	int inx;

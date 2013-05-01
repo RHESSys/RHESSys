@@ -3,7 +3,8 @@
 
 #include "util.h"
 
-#define PATCH_HASH_TABLE_DEFAULT_SIZE 4099
+#define PATCH_HASH_TABLE_DEFAULT_SIZE 25013
+//#define PATCH_HASH_TABLE_DEFAULT_SIZE 94007
 #define PATCH_HASH_TABLE_LOAD_FACTOR 0.75
 #define PATCH_HASH_TABLE_EMPTY -1
 
@@ -11,40 +12,33 @@
 // often passed by value
 typedef struct key_s {
 	int patchID;
-	int hillID;
 	int zoneID;
-} KeyType;
+	int hillID;
+} PatchKey_t;
 
-typedef size_t TableKeyType;
+typedef size_t PatchTableKey_t;
 
-typedef int ValueType;
-
-//typedef struct {
-//	KeyType originKey;
-//	ValueType value;
-//} EntryType;
+typedef int PatchTableValue_t;
 
 typedef struct table_entry_s {
-//	TableKeyType	key;
-	KeyType	originKey;
-	ValueType value;
+	PatchKey_t	originKey;
+	PatchTableValue_t value;
 	struct table_entry_s *next;
-} TableEntry;
+} PatchTableEntry_t;
 
 typedef struct table_s {
 	size_t tableSize;
 	size_t numEntries;
-	TableEntry *entries;
-} Table;
+	PatchTableEntry_t *entries;
+} PatchTable_t;
 
 
-Table *allocatePatchHashTable(size_t tableSize);
-void freePatchHashTable(Table *table);
+PatchTable_t *allocatePatchHashTable(size_t tableSize);
+void freePatchHashTable(PatchTable_t *table);
 
-void patchHashTableInsert(Table *table, KeyType key, ValueType value);
-ValueType patchHashTableGet(Table *table, KeyType key);
+void patchHashTableInsert(PatchTable_t *table, PatchKey_t key, PatchTableValue_t value);
+PatchTableValue_t patchHashTableGet(PatchTable_t *table, PatchKey_t key);
 
-void printPatchHashTable(Table *table);
-//bool patchHashTableContainsKey(Table* table, KeyType key);
+void printPatchHashTable(PatchTable_t *table);
 
 #endif

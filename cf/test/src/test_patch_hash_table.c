@@ -4,19 +4,19 @@
 #include "patch_hash_table.h"
 
 void test_patch_hash_table() {
-	Table *table = allocatePatchHashTable(7);
+	PatchTable_t *table = allocatePatchHashTable(7);
 
-	KeyType k1 = { 1, 2, 3 };
-	ValueType v1 = 86;
-	ValueType v1a = 87;
-	KeyType k2 = { 2, 3, 4 };
-	ValueType v2 = 43;
-	KeyType k3 = { 3, 4, 5 };
-	ValueType v3 = 25;
-	KeyType k4 = { 3, 2, 1 };
-	ValueType v4 = 66;
-	KeyType k5 = { 4, 3, 2 };
-	ValueType v5 = 52;
+	PatchKey_t k1 = { 1, 2, 3 };
+	PatchTableValue_t v1 = 86;
+	PatchTableValue_t v1a = 87;
+	PatchKey_t k2 = { 2, 3, 4 };
+	PatchTableValue_t v2 = 43;
+	PatchKey_t k3 = { 3, 4, 5 };
+	PatchTableValue_t v3 = 25;
+	PatchKey_t k4 = { 3, 2, 1 };
+	PatchTableValue_t v4 = 66;
+	PatchKey_t k5 = { 4, 3, 2 };
+	PatchTableValue_t v5 = 52;
 
 	patchHashTableInsert(table, k1, v1);
 	//printPatchHashTable(table);

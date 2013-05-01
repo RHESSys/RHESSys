@@ -6,6 +6,7 @@
 
 #include "blender.h"
 #include "util.h"
+#include "patch_hash_table.h"
 
 /** @brief Build the overall structure of a flow table
  *
@@ -39,7 +40,7 @@
  *
  *	@return The number of patches in the flow table
  */
-int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
+int build_flow_table(struct flow_struct* flow_table, PatchTable_t *patchTable, double* dem, float* slope,
 		     int* hill, int* zone, int* patch, int* stream, int* roads, int* sewers, double* roofs,
 		     double* flna, FILE* f1, int maxr, int maxc, int f_flag, int sc_flag,
 		     int sewer_flag, int slp_flag, double cell, double scale_dem, bool surface);

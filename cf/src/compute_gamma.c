@@ -33,22 +33,17 @@
 #include <math.h>
 #include <stdlib.h> 
 #include <string.h>
+#include <assert.h>
 
 #include "main.h"
 #include "blender.h"
 #include "find_patch.h"
 #include "util.h"
+#include "sub.h"
+#include "patch_hash_table.h"
 
-int compute_gamma(flow_table, num_patches, f1, scale_trans, cell, sc_flag,
-                  slp_flag, d_flag, surface)
-struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;float scale_trans;double cell;FILE *f1;int d_flag; bool surface;
-
-{
-
-    /* local fuction declarations */
-    struct ID_struct sort_flow_table();
-
-    //int find_patch();
+int compute_gamma(struct flow_struct *flow_table, int num_patches, PatchTable_t *patchTable, FILE *f1,
+		float scale_trans, double cell, int sc_flag, int slp_flag, int d_flag, bool surface) {
 
     /* local variable declarations */
     int p, z, h;
@@ -62,9 +57,6 @@ struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;float sc
     struct adj_struct *aptr;
     struct adj_struct *str_aptr;
     struct ID_struct max_ID;
-
-    printf("\n Compute_gamma\n");
-    printf("This will take a long time, please be patient...\n");
 
     num_str = 0;
     /* compute mean pch values */
@@ -93,7 +85,7 @@ struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;float sc
         }
     }
 
-    max_ID = sort_flow_table(flow_table, num_patches);
+    max_ID = sort_flow_table(flow_table, num_patches, patchTable);
 
     /* create a mapping between ID's and partition name ID's 
        printf("\n Max's %d %d %d\n", max_ID.hill, max_ID.zone, max_ID.patch); */
@@ -110,7 +102,7 @@ struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;float sc
             
         if (d_flag) {
             printf("\n nex pch %d", pch);
-            printf("\n Processing patch %ld", flow_table[pch].patchID);
+            printf("\n Processing patch %d", flow_table[pch].patchID);
         }
         aptr = flow_table[pch].adj_list;
         str_aptr = flow_table[pch].adj_str_list;
@@ -119,8 +111,11 @@ struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;float sc
 
         flow_table[pch].slope = 0.0;
 
-        if (d_flag)
+        if (d_flag) {
             printf("\n number of neighbours %d", flow_table[pch].num_dsa);
+            printf("\n");
+        }
+
 
         /* first do processing for stream table */
         for (neigh = 1; neigh <= flow_table[pch].num_dsa; neigh++) {
@@ -128,11 +123,13 @@ struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;float sc
             p = str_aptr->patchID;
             z = str_aptr->zoneID;
             h = str_aptr->hillID;
+        	PatchKey_t k = { p, z, h };
+
             /*
               printf("\n for patch %d  neigh %d of %d is %d", flow_table[pch].patchID, neigh, flow_table[pch].num_dsa, p);
             */
-            inx = find_patch(num_patches, flow_table, p, z, h);
-            if (inx == 0) {
+        	inx = patchHashTableGet(patchTable, k);
+        	if ( PATCH_HASH_TABLE_EMPTY == inx ) {
                 printf("\n For patch %d %d %d Neighbour not found %d %d %d\n",
                        flow_table[pch].hillID, flow_table[pch].zoneID,
                        flow_table[pch].patchID, p, z, h);
@@ -160,13 +157,13 @@ struct flow_struct *flow_table;int num_patches;int sc_flag;int slp_flag;float sc
             p = aptr->patchID;
             z = aptr->zoneID;
             h = aptr->hillID;
+        	PatchKey_t k = { p, z, h };
 
             if (d_flag)
                 printf("\n neigh %d is %d", neigh, p);
 
-            inx = find_patch(num_patches, flow_table, p, z, h);
-
-            if (inx == 0) {
+            inx = patchHashTableGet(patchTable, k);
+            if ( PATCH_HASH_TABLE_EMPTY == inx ) {
                 if (d_flag) {
                     printf(
                         "\n For patch %d %d %d Neighbour not found %d %d %d\n",

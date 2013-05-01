@@ -15,6 +15,8 @@
  * 	@param patchID Int, ID of current patch
  * 	@param zoneID Int, zone ID of current patch
  * 	@param hillID Int, hillslope ID of current patch
+ *
+ * 	@return The index in the flow table of the patch
  */
 int find_patch(int num_patches, struct flow_struct *flow_table,
 		int patchID, int zoneID, int hillID);
