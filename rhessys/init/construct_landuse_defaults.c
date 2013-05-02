@@ -1,30 +1,31 @@
 /*--------------------------------------------------------------*/
-/* 																*/
-/*					construct_landuse_defaults						*/
-/*																*/
-/*	construct_landuse_defaults.c - makes patch default				*/
-/*										objects.				*/
-/*																*/
-/*	NAME														*/
-/*	construct_landuse_defaults.c - makes patch default				*/
-/*										objects.				*/
-/*																*/
-/*	SYNOPSIS													*/
-/*	struct patch_default *construct_landuse_defaults(             */
-/*								num_default_files,				*/
-/*								  default_files,				*/
-/*								  grow_flag,					*/
-/*								  default_object_list )			*/
-/*																*/
-/*	OPTIONS														*/
-/*																*/
-/*	DESCRIPTION													*/
-/*																*/
-/*	PROGRAMMER NOTES											*/
-/*																*/
-/*	Original code, January 15, 1996.							*/
+/* 								*/
+/*	construct_landuse_defaults				*/
+/*								*/
+/*	construct_landuse_defaults.c - makes patch default	*/
+/*			objects.				*/
+/*								*/
+/*	NAME							*/
+/*	construct_landuse_defaults.c - makes patch default	*/
+/*			objects.				*/
+/*								*/
+/*	SYNOPSIS						*/
+/*	struct patch_default *construct_landuse_defaults(       */
+/*			num_default_files,			*/
+/*			default_files,				*/
+/*			grow_flag,				*/
+/*			default_object_list )			*/
+/*								*/
+/*	OPTIONS							*/
+/*								*/
+/*	DESCRIPTION						*/
+/*								*/
+/*	PROGRAMMER NOTES					*/
+/*								*/
+/*	Original code, January 15, 1996.			*/
 /*	July 28, 1997	C.Tague					*/
-/*	removed capillary rise landuse variables i.e rooting depth */
+/*	removed capillary rise landuse variables 		*/
+/*	i.e rooting depth 					*/		
 /*	pore size index and suction				*/
 /*								*/
 /*	Sep 15 97 RAF						*/
@@ -34,14 +35,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "params.h"
 
 struct landuse_default *construct_landuse_defaults(
-											   int	num_default_files,
-											   char	**default_files,
-											   struct command_line_object *command_line) 
+	int	num_default_files,
+	char	**default_files,
+	struct command_line_object *command_line) 
 {
 	/*--------------------------------------------------------------*/
-	/*	Local function definition.									*/
+	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t,
 		char	*,
@@ -49,17 +51,23 @@ struct landuse_default *construct_landuse_defaults(
 	
 	
 	/*--------------------------------------------------------------*/
-	/*	Local variable definition.									*/
+	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	int		i;
-	double 		landuse, ftmp;
+	int	i;
+        int strbufLen = 256;
+        int filenameLen = 1024;
+	double 	landuse, ftmp;
 	FILE	*default_file;
+        char	strbuf[strbufLen];
+        char	outFilename[filenameLen];
 	char	record[MAXSTR];
 	char	*newrecord;
 	struct 	landuse_default *default_object_list;
+        param *paramPtr = NULL;
+        int paramCnt = 0;
 	
 	/*--------------------------------------------------------------*/
-	/*	Allocate an array of default objects.						*/
+	/*	Allocate an array of default objects.			*/
 	/*--------------------------------------------------------------*/
 	default_object_list = (struct landuse_default *)
 		alloc(num_default_files *
@@ -67,69 +75,73 @@ struct landuse_default *construct_landuse_defaults(
 		"construct_landuse_defaults");
 	
 	/*--------------------------------------------------------------*/
-	/*	Loop through the default files list.						*/
+	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
 	for (i=0 ; i<num_default_files; i++){
 		/*--------------------------------------------------------------*/
-		/*		Try to open the ith default file.						*/
+		/*		Try to open the ith default file.		*/
 		/*--------------------------------------------------------------*/
-		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
-			fprintf(stderr,"FATAL ERROR:in construct_landuse_defaults",
-				"unable to open defaults file %d.\n",i);
-			exit(EXIT_FAILURE);
-		} /*end if*/
+		printf("Reading %s\n", default_files[i]);
+                paramCnt = 0;
+                if (paramPtr != NULL)
+                    free(paramPtr);
+
+                paramPtr = readParamFile(&paramCnt, default_files[i]);
+
 		/*--------------------------------------------------------------*/
-		/*		read the ith default file into the ith object.			*/
+		/*		read the ith default file into the ith object.	*/
 		/*--------------------------------------------------------------*/
 
-
-			fscanf(default_file,"%d",&(default_object_list[i].ID));
-			read_record(default_file, record);
-			fscanf(default_file,"%lf",&(default_object_list[i].irrigation));
-			read_record(default_file, record);
-			default_object_list[i].irrigation /= 365;
-			fscanf(default_file,"%lf",&(default_object_list[i].fertilizer_NO3));
-			read_record(default_file, record);
-			default_object_list[i].fertilizer_NO3 /= 365;
-			fscanf(default_file,"%lf",&(default_object_list[i].fertilizer_NH4));
-			read_record(default_file, record);
-			default_object_list[i].fertilizer_NH4 /= 365;
-			fscanf(default_file,"%lf",&(default_object_list[i].septic_NO3_load));
-			read_record(default_file, record);
-			default_object_list[i].septic_NO3_load /= 365;
-			fscanf(default_file,"%lf",&(default_object_list[i].septic_water_load));
-			read_record(default_file, record);
-			default_object_list[i].septic_water_load /= 365;
-			fscanf(default_file,"%lf",&(default_object_list[i].detention_store_size));
-			read_record(default_file, record);
-			default_object_list[i].detention_store_size /= 365;
-
-			default_object_list[i].percent_impervious = 0.0;
-			default_object_list[i].PH = 7.0;
-			while (!feof(default_file)) {
-				fscanf(default_file,"%lf", &(ftmp));
-				read_record(default_file, record);
-				newrecord = strchr(record,'l');
-				if (newrecord != NULL) {
-				if (strcasecmp(newrecord,"PH") == 0) {	
-					default_object_list[i].PH = ftmp;
-					printf("\n Using %lf for %s for landuse default ID %d",
-						ftmp, newrecord, default_object_list[i].ID);
-					}
-				}
-				if (newrecord != NULL) {
-				if (strcasecmp(newrecord,"landuse.percent_impervious") == 0) {	
-					default_object_list[i].percent_impervious = ftmp;
-					printf("\n Using %lf for %s for landuse default ID %d",
-						ftmp, newrecord, default_object_list[i].ID);
-					}
-				}
-			}
+		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "landuse_default_ID", "%d", 0, 0);
+		default_object_list[i].irrigation = 		getDoubleParam(&paramCnt, &paramPtr, "irrigation", "%lf", 0.0, 0) / 365;
+		default_object_list[i].fertilizer_NO3 = 	getDoubleParam(&paramCnt, &paramPtr, "fertilizer_NO3", "%lf", 0.0, 0) / 365;
+		default_object_list[i].fertilizer_NH4 = 	getDoubleParam(&paramCnt, &paramPtr, "fertilizer_NH4", "%lf", 0.0, 0) / 365;
+		default_object_list[i].septic_NO3_load = 	getDoubleParam(&paramCnt, &paramPtr, "septic_NO3_load", "%lf", 0.0, 0) / 365;
+		default_object_list[i].septic_water_load = 	getDoubleParam(&paramCnt, &paramPtr, "septic_water_load", "%lf", 0.0, 0) / 365;
+		default_object_list[i].detention_store_size = 	getDoubleParam(&paramCnt, &paramPtr, "detention_store_size", "%lf", 0.0, 0) / 365;
+		default_object_list[i].PH = 			getDoubleParam(&paramCnt, &paramPtr, "PH", "%lf", 7.0, 1);
+		default_object_list[i].percent_impervious = 	getDoubleParam(&paramCnt, &paramPtr, "landuse.percent_impervious", "%lf", 0.0, 1);
 
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
-		fclose(default_file);
+
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, default_files[i]);
+                char *s = strbuf;
+                char *y = NULL;
+                char *token = NULL;
+                char filename[256];
+    
+                // Store filename portion of path in 't'
+                while ((token = strtok(s, "/")) != NULL) {
+                    // Save the latest component of the filename
+                    strcpy(filename, token);
+                    s = NULL;
+                } 
+    
+                // Remove the file extension, if one exists
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, filename);
+                free(s);
+                s = strbuf;
+                token = strtok(s, ".");
+                if (token != NULL) {
+                    strcpy(filename, token);
+                }
+        
+                memset(outFilename, '\0', filenameLen);
+
+                if (command_line[0].output_prefix != NULL) {
+                    outFilename[0] = '\0';
+                    strcat(outFilename, command_line[0].output_prefix);
+                    strcat(outFilename, "_landuse.params");
+                } 
+                else {
+                    strcat(outFilename, "landuse.params");
+                }
+        
+                printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 	return(default_object_list);
 } /*end construct_landuse_defaults*/

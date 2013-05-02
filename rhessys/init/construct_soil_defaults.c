@@ -1,28 +1,28 @@
 /*--------------------------------------------------------------*/
-/* 																*/
-/*					construct_soil_defaults						*/
-/*																*/
-/*	construct_soil_defaults.c - makes patch default				*/
-/*										objects.				*/
-/*																*/
-/*	NAME														*/
-/*	construct_soil_defaults.c - makes patch default				*/
-/*										objects.				*/
-/*																*/
-/*	SYNOPSIS													*/
-/*	struct soil_default *construct_soil_defaults(             */
-/*								num_default_files,				*/
-/*								  default_files,				*/
-/*								  grow_flag,					*/
-/*								  default_object_list )			*/
-/*																*/
-/*	OPTIONS														*/
-/*																*/
-/*	DESCRIPTION													*/
-/*																*/
-/*	PROGRAMMER NOTES											*/
-/*																*/
-/*	Original code, January 15, 1996.							*/
+/* 								*/
+/*	construct_soil_defaults					*/
+/*								*/
+/*	construct_soil_defaults.c - makes patch default		*/
+/*			objects.				*/
+/*								*/
+/*	NAME							*/
+/*	construct_soil_defaults.c - makes patch default		*/
+/*			objects.				*/
+/*								*/
+/*	SYNOPSIS						*/
+/*	struct soil_default *construct_soil_defaults(           */
+/*			num_default_files,			*/
+/*			default_files,				*/
+/*			grow_flag,				*/
+/*			default_object_list )			*/
+/*								*/
+/*	OPTIONS							*/
+/*								*/
+/*	DESCRIPTION						*/
+/*								*/
+/*	PROGRAMMER NOTES					*/
+/*								*/
+/*	Original code, January 15, 1996.			*/
 /*	July 28, 1997	C.Tague					*/
 /*	removed capillary rise soil variables i.e rooting depth */
 /*	pore size index and suction				*/
@@ -34,14 +34,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "params.h"
 
 struct soil_default *construct_soil_defaults(
-											   int	num_default_files,
-											   char	**default_files,
-											   struct command_line_object *command_line) 
+			int	num_default_files,
+			char	**default_files,
+			struct command_line_object *command_line) 
 {
 	/*--------------------------------------------------------------*/
-	/*	Local function definition.									*/
+	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t,
 		char	*,
@@ -50,108 +51,93 @@ struct soil_default *construct_soil_defaults(
 	double compute_delta_water(int, double, double,	double, double, double);
 	
 	/*--------------------------------------------------------------*/
-	/*	Local variable definition.									*/
+	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	int		i;
-	double 		ftmp,soil;
+        int strbufLen = 256;
+        int filenameLen = 1024;
+	int	i;
+	double 	ftmp,soil;
 	FILE	*default_file;
-	char		*newrecord;
+        char	strbuf[strbufLen];
+        char	outFilename[filenameLen];
+	char	*newrecord;
 	char	record[MAXSTR];
 	struct 	soil_default *default_object_list;
-	
 	void	*alloc(	size_t, char *, char *);
+        param *paramPtr = NULL;
+        int paramCnt = 0;
+
 	/*--------------------------------------------------------------*/
-	/*	Allocate an array of default objects.						*/
+	/*	Allocate an array of default objects.			*/
 	/*--------------------------------------------------------------*/
 	default_object_list = (struct soil_default *)
-		alloc(num_default_files *
-		sizeof(struct soil_default),"default_object_list",
+		alloc(num_default_files * sizeof(struct soil_default),"default_object_list",
 		"construct_soil_defaults");
 	
 	/*--------------------------------------------------------------*/
-	/*	Loop through the default files list.						*/
+	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
 	for (i=0 ; i<num_default_files; i++){
 		/*--------------------------------------------------------------*/
-		/*		Try to open the ith default file.						*/
+		/*		Try to open the ith default file.		*/
 		/*--------------------------------------------------------------*/
-		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
-			fprintf(stderr,"FATAL ERROR:in construct_soil_defaults",
-				"unable to open defaults file %d.\n",i);
-			exit(EXIT_FAILURE);
-		} /*end if*/
+		//if ( (default_file = fopen( default_files[i], "r")) == NULL ){
+		//	fprintf(stderr,"FATAL ERROR:in construct_soil_defaults",
+		//		"unable to open defaults file %d.\n",i);
+		//	exit(EXIT_FAILURE);
+		//} /*end if*/
+
+		printf("Reading %s\n", default_files[i]);
+                paramCnt = 0;
+                if (paramPtr != NULL)
+                    free(paramPtr);
+
+                paramPtr = readParamFile(&paramCnt, default_files[i]);
+
 		/*--------------------------------------------------------------*/
-		/*		read the ith default file into the ith object.			*/
+		/*		read the ith default file into the ith object.	*/
 		/*--------------------------------------------------------------*/
-		fscanf(default_file,"%d",&(default_object_list[i].ID));
-		read_record(default_file, record);
-		fscanf(default_file,"%d",&(default_object_list[i].theta_psi_curve));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].Ksat_0));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].m));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].porosity_0));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].porosity_decay));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].p3));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].pore_size_index));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].psi_air_entry));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].psi_max));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].soil_depth));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].m_z));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].detention_store_size));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].deltaz));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].active_zone_z));
-		read_record(default_file, record);
+		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "patch_default_ID", "%d", 0, 0); 
+		default_object_list[i].theta_psi_curve = 	getIntParam(&paramCnt, &paramPtr, "theta_psi_curve", "%d", 0, 0);
+		default_object_list[i].Ksat_0 = 		getDoubleParam(&paramCnt, &paramPtr, "Ksat_0", "%lf", 0.0, 0);
+		default_object_list[i].m = 			getDoubleParam(&paramCnt, &paramPtr, "m", "%lf", 0.0, 0);
+		default_object_list[i].porosity_0 = 		getDoubleParam(&paramCnt, &paramPtr, "porosity_0", "%lf", 0.0, 0);
+		default_object_list[i].porosity_decay = 	getDoubleParam(&paramCnt, &paramPtr, "porosity_decay", "%lf", 0.0, 0);
+		default_object_list[i].p3 = 			getDoubleParam(&paramCnt, &paramPtr, "P3", "%lf", 0.0, 0); // param name upper case in param file
+		default_object_list[i].pore_size_index = 	getDoubleParam(&paramCnt, &paramPtr, "pore_size_index", "%lf", 0.0, 0);
+		default_object_list[i].psi_air_entry = 		getDoubleParam(&paramCnt, &paramPtr, "psi_air_entry", "%lf", 0.0, 0);
+		default_object_list[i].psi_max = 		getDoubleParam(&paramCnt, &paramPtr, "psi_max", "%lf", 0.0, 0);
+		default_object_list[i].soil_depth = 		getDoubleParam(&paramCnt, &paramPtr, "soil_depth", "%lf", 0.0, 0);
+		default_object_list[i].m_z = 			getDoubleParam(&paramCnt, &paramPtr, "m_z", "%lf", 0.0, 0);
+		default_object_list[i].detention_store_size = 	getDoubleParam(&paramCnt, &paramPtr, "detention_store_size", "%lf", 0.0, 0);
+		default_object_list[i].deltaz = 		getDoubleParam(&paramCnt, &paramPtr, "deltaZ", "%lf", 0.0, 0); // param name contains uppercase "Z" in param file
+		default_object_list[i].active_zone_z = 		getDoubleParam(&paramCnt, &paramPtr, "active_zone_z", "%lf", 0.0, 0);
 
 		if (abs(default_object_list[i].active_zone_z - default_object_list[i].soil_depth) > 0.5) {
-			printf("\n note that soil depth used for biogeochem cycling (active zone z)");
+			printf("\nNote that soil depth used for biogeochem cycling (active zone z)");
  			printf("\nis more than 0.5 meter different from hydrologic soil depth");
- 			printf("\n for soil default file %s", default_files[i] );
+ 			printf("\nfor soil default file: %s\n", default_files[i] );
 			}
 
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].maximum_snow_energy_deficit));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].snow_water_capacity));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].snow_light_ext_coef));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].snow_melt_Tcoef));
-		read_record(default_file, record);
+		default_object_list[i].maximum_snow_energy_deficit = 	getDoubleParam(&paramCnt, &paramPtr, "maximum_snow_energy_deficit", "%lf", 0.0, 0);
+		default_object_list[i].snow_water_capacity = 		getDoubleParam(&paramCnt, &paramPtr, "snow_water_capacity", "%lf", 0.0, 0);
+		default_object_list[i].snow_light_ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_light_ext_coef", "%lf", 0.0, 0);
+		default_object_list[i].snow_melt_Tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_melt_Tcoef", "%lf", 0.0, 0);
 /*
 			 default_object_list[i].snow_melt_Tcoef *= command_line[0].tmp_value; 
 */
-		fscanf(default_file,"%lf",&(default_object_list[i].max_heat_capacity));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].min_heat_capacity));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].albedo));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].mobile_NO3_proportion));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].N_decay_rate));
-		read_record(default_file, record);
+		default_object_list[i].max_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "max_heat_capacity", "%lf", 0.0, 0);
+		default_object_list[i].min_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "min_heat_capacity", "%lf", 0.0, 0);
+		default_object_list[i].albedo = 		getDoubleParam(&paramCnt, &paramPtr, "albedo", "%lf", 0.0, 0);
+		default_object_list[i].mobile_NO3_proportion =	getDoubleParam(&paramCnt, &paramPtr, "mobile_N_proportion", "%lf", 0.0, 0); // param name "mobile_N_proportion' in param file
+		default_object_list[i].N_decay_rate = 		getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.0, 0); // param name "N_decay" in param file
 		/*
 		if (command_line[0].tmp_value > ZERO)
 			default_object_list[i].N_decay_rate *= command_line[0].tmp_value;
 		*/
-		fscanf(default_file,"%lf",&(default_object_list[i].soil_type.sand));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].soil_type.silt));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].soil_type.clay));
-		read_record(default_file, record);
+		default_object_list[i].soil_type.sand =		getDoubleParam(&paramCnt, &paramPtr, "sand", "%lf", 0.0, 0);
+		default_object_list[i].soil_type.silt =		getDoubleParam(&paramCnt, &paramPtr, "silt", "%lf", 0.0, 0);
+		default_object_list[i].soil_type.clay = 	getDoubleParam(&paramCnt, &paramPtr, "clay", "%lf", 0.0, 0);
 		soil =  default_object_list[i].soil_type.sand
 			+ default_object_list[i].soil_type.silt
 			+ default_object_list[i].soil_type.clay;
@@ -166,11 +152,8 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].soil_type.clay);
 		} /*end if*/
 
-		default_object_list[i].sat_to_gw_coeff = 0.0;
-
 		if (command_line[0].gw_flag > 0) {
-			fscanf(default_file,"%lf",&(default_object_list[i].sat_to_gw_coeff));
-			read_record(default_file, record);
+			default_object_list[i].sat_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "sat_to_gw_coeff", "%lf", 0.0, 1);
 			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
 			}
 
@@ -216,113 +199,18 @@ struct soil_default *construct_soil_defaults(
 		/*--------------------------------------------------------------*/
 		/* initialization of optional default file parms		*/
 		/*--------------------------------------------------------------*/
-			default_object_list[i].theta_mean_std_p1 = 0.0;
-			default_object_list[i].theta_mean_std_p2 = 0.0;
-			default_object_list[i].gl_c = 0.0062;
-			default_object_list[i].gsurf_slope = 0.01;
-			default_object_list[i].gsurf_intercept = 0.001;
-			default_object_list[i].p4 = -1.5;
-			default_object_list[i].DOM_decay_rate = 0.05;
-			default_object_list[i].mobile_NH4_proportion = 0.1;
-			default_object_list[i].mobile_DON_proportion = 1.0;
-			default_object_list[i].mobile_DOC_proportion = 1.0;
-			default_object_list[i].DON_production_rate = 0.03;
-			default_object_list[i].interval_size = INTERVAL_SIZE;
-
-
-		/*--------------------------------------------------------------*/
-		/* non-critical parameter changes				*/
-		/*--------------------------------------------------------------*/
-		while (!feof(default_file)) {
-			fscanf(default_file,"%lf", &(ftmp));
-			read_record(default_file, record);
-			newrecord = strchr(record,'g');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"gl_c") == 0) {	
-				default_object_list[i].gl_c = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strcasecmp(newrecord,"gsurf_slope") == 0) {	
-				default_object_list[i].gsurf_slope = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strcasecmp(newrecord,"gsurf_intercept") == 0) {	
-				default_object_list[i].gsurf_intercept = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'t');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"theta_mean_std_p1") == 0) {	
-				default_object_list[i].theta_mean_std_p1 = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strcasecmp(newrecord,"theta_mean_std_p2") == 0) {	
-				default_object_list[i].theta_mean_std_p2 = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'D');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"DON_production_rate") == 0) {	
-				default_object_list[i].DON_production_rate = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'D');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"DOM_decay_rate") == 0) {	
-				default_object_list[i].DOM_decay_rate = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'m');
-			if (newrecord != NULL) {
-			if (strncasecmp(newrecord,"mobile_NH4_proportion", 21) == 0) {	
-				default_object_list[i].mobile_NH4_proportion = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			if (newrecord != NULL) {
-			if (strncasecmp(newrecord,"mobile_DOC_proportion",21) == 0) {	
-				default_object_list[i].mobile_DOC_proportion = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'m');
-			if (newrecord != NULL) {
-			if (strncasecmp(newrecord,"mobile_DON_proportion",21) == 0) {	
-				default_object_list[i].mobile_DON_proportion = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'p');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"p4") == 0) {	
-				default_object_list[i].p4 = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'i');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"interval_size") == 0) {	
-				default_object_list[i].interval_size = ftmp;
-				printf("\n Using %lf for %s for soil default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-		}
+		default_object_list[i].theta_mean_std_p1 = 	getDoubleParam(&paramCnt, &paramPtr, "theta_mean_std_p1", "%lf", 0.0, 1);
+		default_object_list[i].theta_mean_std_p2 = 	getDoubleParam(&paramCnt, &paramPtr, "theta_mean_std_p2", "%lf", 0.0, 1);
+		default_object_list[i].gl_c = 			getDoubleParam(&paramCnt, &paramPtr, "gl_c", "%lf", 0.0062, 1);
+		default_object_list[i].gsurf_slope = 		getDoubleParam(&paramCnt, &paramPtr, "gsurf_slope ", "%lf", 0.01, 1);
+		default_object_list[i].gsurf_intercept = 	getDoubleParam(&paramCnt, &paramPtr, "gsurf_intercept", "%lf", 0.001, 1);
+		default_object_list[i].p4 = 			getDoubleParam(&paramCnt, &paramPtr, "p4", "%lf", -1.5, 1);
+		default_object_list[i].DOM_decay_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DOM_decay_rate", "%lf", 0.05, 1);
+		default_object_list[i].mobile_NH4_proportion =  getDoubleParam(&paramCnt, &paramPtr, "mobile_NH4_proportion", "%lf", 0.1, 1);
+		default_object_list[i].mobile_DOC_proportion = 	getDoubleParam(&paramCnt, &paramPtr, "mobile_DOC_proportion", "%lf", 0.8, 1);
+		default_object_list[i].mobile_DON_proportion = 	getDoubleParam(&paramCnt, &paramPtr, "mobile_DON_proportion", "%lf", 0.8, 1);
+		default_object_list[i].DON_production_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DON_production_rate", "%lf", 0.03, 1);
+		default_object_list[i].interval_size = 		getDoubleParam(&paramCnt, &paramPtr, "interval_size", "%lf", INTERVAL_SIZE, 1);
 
 		/*--------------------------------------------------------------*/
 		/* sensitivity adjustment of vertical drainage  soil paramters	*/
@@ -342,17 +230,52 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].p3 *= command_line[0].vsen_alt[PA];
 				default_object_list[i].p4 *= command_line[0].vsen_alt[PO];
 			}
-
 		}
-
-
-
-	
 		
+		default_object_list[i].active_zone_z = 		getDoubleParam(&paramCnt, &paramPtr, "active_zone_z", "%lf", 0.0, 0);
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
-		fclose(default_file);
+
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, default_files[i]);
+                char *s = strbuf;
+                char *y = NULL;
+                char *token = NULL;
+                char filename[256];
+    
+                // Store filename portion of path in 't'
+                while ((token = strtok(s, "/")) != NULL) {
+                    // Save the latest component of the filename
+                    strcpy(filename, token);
+                    s = NULL;
+                } 
+    
+                // Remove the file extension, if one exists
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, filename);
+                free(s);
+                s = strbuf;
+                token = strtok(s, ".");
+                if (token != NULL) {
+                    strcpy(filename, token);
+                }
+        
+                memset(outFilename, '\0', filenameLen);
+            
+                // Concatenate the output prefix with the filename of the input .def file
+                // and "_stratum.params"
+                if (command_line[0].output_prefix != NULL) {
+                    outFilename[0] = '\0';
+                    strcat(outFilename, command_line[0].output_prefix);
+                strcat(outFilename, "_soil.params");
+                } 
+                else {
+                    strcat(outFilename, "soil.params");
+                }
+
 	} /*end for*/
+
+        printParams(paramCnt, paramPtr, outFilename);
 	return(default_object_list);
 } /*end construct_soil_defaults*/

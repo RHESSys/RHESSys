@@ -1,125 +1,118 @@
 /*--------------------------------------------------------------*/
-/* 																*/
-/*					construct_zone_defaults						*/
-/*																*/
-/*	construct_zone_defaults.c - makes zone default				*/
-/*										objects.				*/
-/*																*/
-/*	NAME														*/
-/*	construct_zone_defaults.c - makes zone default				*/
-/*										objects.				*/
-/*																*/
-/*	SYNOPSIS													*/
-/*	struct zone_default *construct_zone_defaults(               */
-/*								num_default_files,				*/
-/*								  default_files,				*/
-/*								  grow_flag,					*/
-/*								  default_object_list )			*/
-/*																*/
-/*	OPTIONS														*/
-/*																*/
-/*	DESCRIPTION													*/
-/*																*/
-/*	PROGRAMMER NOTES											*/
-/*																*/
-/*	Original code, January 15, 1996.							*/
+/* 								*/
+/*	construct_zone_defaults					*/
+/*								*/
+/*	construct_zone_defaults.c - makes zone default		*/
+/*			objects.				*/
+/*								*/
+/*	NAME							*/
+/*	construct_zone_defaults.c - makes zone default		*/
+/*			objects.				*/
+/*								*/
+/*	SYNOPSIS						*/
+/*	struct zone_default *construct_zone_defaults(           */
+/*		num_default_files,				*/
+/*		default_files,					*/
+/*		command_line)					*/
+/*								*/
+/*	OPTIONS							*/
+/*								*/
+/*	DESCRIPTION						*/
+/*								*/
+/*	PROGRAMMER NOTES					*/
+/*								*/
+/*	Original code, January 15, 1996.			*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "params.h"
 
 struct zone_default *construct_zone_defaults(
-											 int	num_default_files,
-											 char	**default_files,
-											 int 	grow_flag)
+	int	num_default_files,
+	char	**default_files,
+	struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
-	/*	Local function definition.									*/
+	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t, char *, char *);
 	
 	/*--------------------------------------------------------------*/
-	/*	Local variable definition.									*/
+	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	int		i;
+	int	i;
+        int strbufLen = 256;
+        int filenameLen = 1024;
 	FILE	*default_file;
+        char	outFilename[filenameLen];
+        char	strbuf[strbufLen];
 	char	record[MAXSTR];
 	struct	zone_default	*default_object_list ;
 	char	*newrecord;
 	double	ftmp;
+        param *paramPtr = NULL;
+        int paramCnt = 0;
 	
 	/*--------------------------------------------------------------*/
-	/*	Allocate an array of default objects.						*/
+	/*	Allocate an array of default objects.			*/
 	/*--------------------------------------------------------------*/
 	default_object_list = (struct zone_default *)
 		alloc(num_default_files * sizeof(struct zone_default),
 		"default_object_list","construct_zone_defaults");
 	
 	/*--------------------------------------------------------------*/
-	/*	Loop through the default files list.						*/
+	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
 	for (i=0 ; i<num_default_files; i++) {
 		/*--------------------------------------------------------------*/
-		/*		Try to open the ith default file.						*/
+		/*		Try to open the ith default file.		*/
 		/*--------------------------------------------------------------*/
-		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
-			fprintf(stderr,
-				"FATAL ERROR:in construct_zone_defaults unable to open defaults file %d.\n",i);
-			exit(EXIT_FAILURE);
-		} /*end if*/
+		//if ( (default_file = fopen( default_files[i], "r")) == NULL ){
+		//	fprintf(stderr,
+		//		"FATAL ERROR:in construct_zone_defaults unable to open defaults file %d.\n",i);
+		//	exit(EXIT_FAILURE);
+		//} /*end if*/
+                paramCnt = 0;
+                printf("Reading %s\n", default_files[i]);
+                if (paramPtr != NULL)
+                    free(paramPtr);
+
+                paramPtr = readParamFile(&paramCnt, default_files[i]);
 		/*--------------------------------------------------------------*/
-		/*		read the ith default file into the ith object.			*/
+		/*		read the ith default file into the ith object.	*/
 		/*--------------------------------------------------------------*/
-		fscanf(default_file,"%d",&(default_object_list[i].ID));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].atm_trans_lapse_rate));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].dewpoint_lapse_rate));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].max_effective_lai));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].lapse_rate));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].pptmin));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].sea_level_clear_sky_trans));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].temcf));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].trans_coeff1));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].trans_coeff2));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].wind));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].max_snow_temp));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].min_rain_temp));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].ndep_NO3));
-		read_record(default_file, record);
+		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "zone_default_ID", "%d", 0, 0);
+		default_object_list[i].atm_trans_lapse_rate =	getDoubleParam(&paramCnt, &paramPtr, "atm_trans_lapse_rate", "%lf", 0.0, 0);
+		default_object_list[i].dewpoint_lapse_rate =	getDoubleParam(&paramCnt, &paramPtr, "dewpoint_lapse_rate", "%lf", 0.0, 0);
+		default_object_list[i].max_effective_lai =	getDoubleParam(&paramCnt, &paramPtr, "max_effective_lai", "%lf", 0.0, 0);
+		default_object_list[i].lapse_rate =		getDoubleParam(&paramCnt, &paramPtr, "lapse_rate", "%lf", 0.0, 0);
+		default_object_list[i].pptmin =			getDoubleParam(&paramCnt, &paramPtr, "pptmin", "%lf", 0.0, 0);
+		default_object_list[i].sea_level_clear_sky_trans = getDoubleParam(&paramCnt, &paramPtr, "sea_level_clear_sky_trans", "%lf", 0.0, 0);
+		default_object_list[i].temcf = 			getDoubleParam(&paramCnt, &paramPtr, "temcf", "%lf", 0.0, 0);
+		default_object_list[i].trans_coeff1 = 		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff1", "%lf", 0.0, 0);
+		default_object_list[i].trans_coeff2 =		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff2", "%lf", 0.0, 0);
+		default_object_list[i].wind =			getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 0.0, 0);
+		default_object_list[i].max_snow_temp =		getDoubleParam(&paramCnt, &paramPtr, "max_snow_temp", "%lf", 0.0, 0);
+		default_object_list[i].min_rain_temp =		getDoubleParam(&paramCnt, &paramPtr, "min_rain_temp", "%lf", 0.0, 0);
+		default_object_list[i].ndep_NO3 =		getDoubleParam(&paramCnt, &paramPtr, "n_deposition", "%lf", 0.0, 0) / 365.0; // variable name different than parameter name
 		/*--------------------------------------------------------------*/
 		/*	convert from annual to daily				*/
 		/*	(old)							*/
 		/*	currently a concentration				*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].wind_direction = 180; 
-		default_object_list[i].ndep_NO3 /= 365.0; 
-		default_object_list[i].lapse_rate_tmin = default_object_list[i].lapse_rate; 
-		default_object_list[i].lapse_rate_tmax = default_object_list[i].lapse_rate; 
-		default_object_list[i].wet_lapse_rate = 0.0049; 
-		default_object_list[i].lapse_rate_precip_default = -999.0; 
-		default_object_list[i].psen[PTHRESH] = 0.0;
-		default_object_list[i].psen[PTYPELOW] = 1.0;
-		default_object_list[i].psen[P1LOW] = 0.0;
-		default_object_list[i].psen[P2LOW] = 0.0;
-		default_object_list[i].psen[PTYPEHIGH] = 1.0;
-		default_object_list[i].psen[P1HIGH] = 0.0;
-		default_object_list[i].psen[P2HIGH] = 0.0;
+		default_object_list[i].wind_direction = getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 180.0, 1); // parameter name is "wind" in param file
+		default_object_list[i].lapse_rate_tmin = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmax", "%lf", default_object_list[i].lapse_rate, 1);
+		default_object_list[i].lapse_rate_tmax = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmin", "%lf", default_object_list[i].lapse_rate, 1);
+		default_object_list[i].wet_lapse_rate = 	getDoubleParam(&paramCnt, &paramPtr, "wet_lapse_rate", "%lf", 0.0049, 1);
+		default_object_list[i].lapse_rate_precip_default = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_precip_default", "%lf", -999.0, 1);
+		default_object_list[i].psen[PTHRESH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.pthresh", "%lf", 0.0, 1);
+		default_object_list[i].psen[PTYPELOW] = 	getDoubleParam(&paramCnt, &paramPtr, "psen.ptypelow", "%lf", 1.0, 1);
+		default_object_list[i].psen[P1LOW] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p1low", "%lf", 0.0, 1);
+		default_object_list[i].psen[P2LOW] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p2low", "%lf", 0.0, 1);
+		default_object_list[i].psen[PTYPEHIGH] =        getDoubleParam(&paramCnt, &paramPtr, "psen.ptypehigh", "%lf", 1.0, 1);
+		default_object_list[i].psen[P1HIGH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p1high", "%lf", 0.0, 1);
+		default_object_list[i].psen[P2HIGH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p2high", "%lf", 0.0, 1);
 
 
 		/*--------------------------------------------------------------*/
@@ -127,117 +120,12 @@ struct zone_default *construct_zone_defaults(
 		/*--------------------------------------------------------------*/
 		/*	CO2 is initialized/default to 322 ppm			*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].atm_CO2 = 322.0; 
-		while (!feof(default_file)) {
-			fscanf(default_file,"%lf", &(ftmp));
-			read_record(default_file, record);
-			newrecord = strchr(record,'l');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"lapse_rate_tmax") == 0) {	
-				default_object_list[i].lapse_rate_tmax = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'l');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"lapse_rate_tmin") == 0) {	
-				default_object_list[i].lapse_rate_tmin = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'l');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"lapse_rate_precip_default") == 0) {	
-				default_object_list[i].lapse_rate_precip_default = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'w');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"wet_lapse_rate") == 0) {	
-				default_object_list[i].wet_lapse_rate = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strcasecmp(newrecord,"wind_direction") == 0) {	
-				default_object_list[i].wind_direction = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'a');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"atm_CO2") == 0) {	
-				default_object_list[i].atm_CO2 = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'p');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"psen.pthresh") == 0) {	
-				default_object_list[i].psen[PTHRESH] = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'p');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"psen.ptypelow") == 0) {	
-				default_object_list[i].psen[PTYPELOW] = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'p');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"psen.p1low") == 0) {	
-				default_object_list[i].psen[P1LOW] = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'p');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"psen.p2low") == 0) {	
-				default_object_list[i].psen[P2LOW] = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'p');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"psen.ptypehigh") == 0) {	
-				default_object_list[i].psen[PTYPELOW] = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'p');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"psen.p1high") == 0) {	
-				default_object_list[i].psen[P1HIGH] = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'p');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"psen.p2high") == 0) {	
-				default_object_list[i].psen[P2HIGH] = ftmp;
-				printf("\n Using %lf for %s for zone default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-		}
+		default_object_list[i].atm_CO2 = 		getDoubleParam(&paramCnt, &paramPtr, "atm_CO2 ", "%lf", 322.0, 1);
 		/*--------------------------------------------------------------*/
 		/*      if grow flag allocate a grow default structure for the  */
 		/*      ith object.                                             */
 		/*--------------------------------------------------------------*/
-		if ( grow_flag ){
+		if ( command_line[0].grow_flag ){
 			default_object_list[i].grow_defaults = (struct
 				zone_grow_default *)
 				alloc(1 * sizeof(struct zone_grow_default),
@@ -246,10 +134,44 @@ struct zone_default *construct_zone_defaults(
 			/*          NOTE: PLACE ANY GROW READING HERE.                  */
 			/*--------------------------------------------------------------*/
 		} /*end if*/
-		/*--------------------------------------------------------------*/
-		/*		Close the ith default file.								*/
-		/*--------------------------------------------------------------*/
-		fclose(default_file);
+
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, default_files[i]);
+                char *s = strbuf;
+                char *y = NULL;
+                char *token = NULL;
+                char filename[256];
+    
+                // Store filename portion of path in 't'
+                while ((token = strtok(s, "/")) != NULL) {
+                    // Save the latest component of the filename
+                    strcpy(filename, token);
+                    s = NULL;
+                } 
+    
+                // Remove the file extension, if one exists
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, filename);
+                free(s);
+                s = strbuf;
+                token = strtok(s, ".");
+                if (token != NULL) {
+                    strcpy(filename, token);
+                }
+        
+                memset(outFilename, '\0', filenameLen);
+
+                if (command_line[0].output_prefix != NULL) {
+                    outFilename[0] = NULL;
+                    strcat(outFilename, command_line[0].output_prefix);
+                    strcat(outFilename, "_zone.params");
+                } 
+                else {
+                    strcat(outFilename, "zone.params");
+                }
+        
+                printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
+
 	return(default_object_list);
 } /*end construct_zone_defaults*/
