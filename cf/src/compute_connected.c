@@ -10,6 +10,7 @@
 bool compute_roof_connected_routing(
     struct flow_struct* _flow_table,
     int _num_patches,
+    PatchTable_t *_patchTable,
     roof_geometry_t* _roof_geometry,
     const double* _roofs,
     const int* _impervious,
@@ -79,7 +80,7 @@ bool compute_roof_connected_routing(
                                 result = false;
                             }
                             // The entry in the roofs table is the proportion that goes to impervious surfaces.
-                            else if(!add_flow_to_table(row, col, found_row, found_col, _maxr, _maxc, _flow_table, _num_patches, _patch, _hill, _zone,
+                            else if(!add_flow_to_table(row, col, found_row, found_col, _maxr, _maxc, _flow_table, _num_patches, _patchTable, _patch, _hill, _zone,
 						       _roofs[index])) {
                                 fprintf(stderr, "ERROR: Failed to add the roof flow to the flow table.\n");
                                 result = false;

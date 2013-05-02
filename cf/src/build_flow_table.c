@@ -12,7 +12,6 @@
 #include "fileio.h"
 #include "check_neighbours.h"
 #include "zero_flow_table.h"
-//#include "find_patch.h"
 #include "util.h"
 #include "patch_hash_table.h"
 #include "build_flow_table.h"
@@ -47,12 +46,6 @@ int build_flow_table(struct flow_struct* flow_table, PatchTable_t *patchTable, d
 
             /* ignore areas outside the basin */
             if ((patch[inx] > 0) && (zone[inx] > 0) && (hill[inx] > 0)) {
-//                pch = find_patch(num_patches, flow_table, patch[inx], zone[inx],
-//                                 hill[inx]);
-//                if (pch == 0) {
-//                    num_patches += 1;
-//                    pch = num_patches;
-//                }
             	PatchKey_t k = { patch[inx], zone[inx], hill[inx] };
             	pch = patchHashTableGet(patchTable, k);
             	if ( PATCH_HASH_TABLE_EMPTY == pch ) {

@@ -9,10 +9,12 @@
 #include "get_roof_geometry.h"
 #include "compute_non_connected.h"
 #include "compute_connected.h"
+#include "patch_hash_table.h"
 
 bool route_roofs_to_roads(
     struct flow_struct* _flow_table,
     int _num_patches,
+    PatchTable_t *_patchTable,
     const double* _roofs,
     const int* _impervious,
     const int* _patch,
@@ -59,13 +61,13 @@ bool route_roofs_to_roads(
 	    //
 	    
 	    // Compute routing for the non-connected (pervious) flow
-	    else if(!compute_roof_non_connected_routing(_flow_table, _num_patches, roof_geometry, _roofs, _impervious, _patch, _hill, _zone,_maxr, _maxc)) {
+	    else if(!compute_roof_non_connected_routing(_flow_table, _num_patches, _patchTable, roof_geometry, _roofs, _impervious, _patch, _hill, _zone,_maxr, _maxc)) {
 		fprintf(stderr, "ERROR: failed to perform non-connected roof routing");
 		result = false;
 	    }
 
 	    // Compute routing for the connected (impervious) flow
-	    else if(!compute_roof_connected_routing(_flow_table, _num_patches, roof_geometry, _roofs, _impervious, _patch, _hill, _zone, _maxr, _maxc)) {
+	    else if(!compute_roof_connected_routing(_flow_table, _num_patches, _patchTable, roof_geometry, _roofs, _impervious, _patch, _hill, _zone, _maxr, _maxc)) {
 		fprintf(stderr, "ERROR: failed to perform the connected roof routing");
 		result = false;
 	    }

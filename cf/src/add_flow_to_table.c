@@ -4,9 +4,8 @@
 #include <assert.h>
 
 #include "blender.h"
+#include "sub.h"
 #include "add_flow_to_table.h"
-//#include "find_patch.h"
-#include "patch_hash_table.h"
 
 bool create_flow_adjacency(
     struct flow_struct* _flow_table,
@@ -121,13 +120,9 @@ bool add_flow_to_table(
     }
     else {
         // do the sciences
-        //int contributor_patch = find_patch(_num_patches, _flow_table, _patch[contributor_index], _zone[contributor_index], _hill[contributor_index]);
-    	PatchKey_t k_contrib = { _patch[contributor_index], _zone[contributor_index], _hill[contributor_index] };
-    	int contributor_patch = patchHashTableGet(_patchTable, k_contrib);
+    	int contributor_patch = find_patch(_patchTable, _patch[contributor_index], _zone[contributor_index], _hill[contributor_index]);
     	assert( contributor_patch != PATCH_HASH_TABLE_EMPTY );
-        //int receiver_patch = find_patch(_num_patches, _flow_table, _patch[receiver_index], _zone[receiver_index], _hill[receiver_index]);
-    	PatchKey_t k_recv = { _patch[receiver_index], _zone[receiver_index], _hill[receiver_index] };
-    	int receiver_patch = patchHashTableGet(_patchTable, k_recv);
+    	int receiver_patch = find_patch(_patchTable, _patch[receiver_index], _zone[receiver_index], _hill[receiver_index]);
     	assert( receiver_patch != PATCH_HASH_TABLE_EMPTY );
 
         // Create an adjacency for the receiver

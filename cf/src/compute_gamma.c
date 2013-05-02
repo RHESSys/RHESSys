@@ -37,10 +37,8 @@
 
 #include "main.h"
 #include "blender.h"
-#include "find_patch.h"
 #include "util.h"
 #include "sub.h"
-#include "patch_hash_table.h"
 
 int compute_gamma(struct flow_struct *flow_table, int num_patches, PatchTable_t *patchTable, FILE *f1,
 		float scale_trans, double cell, int sc_flag, int slp_flag, int d_flag, bool surface) {
@@ -123,12 +121,7 @@ int compute_gamma(struct flow_struct *flow_table, int num_patches, PatchTable_t 
             p = str_aptr->patchID;
             z = str_aptr->zoneID;
             h = str_aptr->hillID;
-        	PatchKey_t k = { p, z, h };
-
-            /*
-              printf("\n for patch %d  neigh %d of %d is %d", flow_table[pch].patchID, neigh, flow_table[pch].num_dsa, p);
-            */
-        	inx = patchHashTableGet(patchTable, k);
+            inx = find_patch(patchTable, p, z, h);
         	if ( PATCH_HASH_TABLE_EMPTY == inx ) {
                 printf("\n For patch %d %d %d Neighbour not found %d %d %d\n",
                        flow_table[pch].hillID, flow_table[pch].zoneID,
@@ -157,12 +150,11 @@ int compute_gamma(struct flow_struct *flow_table, int num_patches, PatchTable_t 
             p = aptr->patchID;
             z = aptr->zoneID;
             h = aptr->hillID;
-        	PatchKey_t k = { p, z, h };
 
             if (d_flag)
                 printf("\n neigh %d is %d", neigh, p);
 
-            inx = patchHashTableGet(patchTable, k);
+            inx = find_patch(patchTable, p, z, h);
             if ( PATCH_HASH_TABLE_EMPTY == inx ) {
                 if (d_flag) {
                     printf(

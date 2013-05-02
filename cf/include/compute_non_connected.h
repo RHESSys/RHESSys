@@ -5,11 +5,13 @@
 
 #include "roof_geometry.h"
 #include "blender.h"
+#include "patch_hash_table.h"
 
 /// @brief Finds the nearest pervious surface and adds the appropriate entry to the flow table
 extern bool compute_roof_non_connected_routing(
     struct flow_struct* _flow_table, // The flow table
     int _num_patches,                // The number of patches in the flow table
+    PatchTable_t *_patchTable,		 // Hash table to speed lookups of flow table indices
     roof_geometry_t* _roof_geometry, // The geometry of the current roof
     const double* _roofs,            // The roof raster array
     const int* _impervious,          // The impervious surface raster array
