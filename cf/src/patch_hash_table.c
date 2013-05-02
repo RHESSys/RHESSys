@@ -1,3 +1,8 @@
+/** @file patch_hash_table.c
+ *  @brief Implements functions for a simple hash table to map
+ *  fully qualified patch IDs (a combination of patch, zone, and hill
+ *  IDs) to flow table indices.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -6,13 +11,13 @@
 #include "patch_hash_table.h"
 
 PatchTableKey_t _hash(PatchKey_t originKey, size_t tableSize) {
+	int mult = (originKey.patchID * originKey.hillID * originKey.zoneID);
+	PatchTableKey_t hash = (PatchTableKey_t) (mult % tableSize);
 #ifdef DEBUG
 	fprintf(stderr, "hash: tableSize: %d\n", tableSize);
 	fprintf(stderr, "hash: mult: %d\n", mult);
 	fprintf(stderr, "hash: %d\n", hash);
 #endif
-	int mult = (originKey.patchID * originKey.hillID * originKey.zoneID);
-	PatchTableKey_t hash = (PatchTableKey_t) (mult % tableSize);
 	return hash;
 }
 

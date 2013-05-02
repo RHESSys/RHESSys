@@ -1,3 +1,15 @@
+/** @file patch_hash_table.h
+ *  @brief Defines data and functions for a simple hash table to map
+ *  fully qualified patch IDs (a combination of patch, zone, and hill
+ *  IDs) to flow table indices.
+ *
+ *  @note Once allocated, the table size is fixed.  For large flow tables
+ *  (e.g. >100,000 entries) a table size larger than the default may be
+ *  needed to maintain performance.
+ *
+ *  @note Table size should be a prime number to minimize the number of
+ *  collisions.
+ */
 #ifndef PATCH_HASH_TABLE_H
 #define PATCH_HASH_TABLE_H
 
@@ -5,11 +17,10 @@
 
 #define PATCH_HASH_TABLE_DEFAULT_SIZE 25013
 //#define PATCH_HASH_TABLE_DEFAULT_SIZE 94007
-#define PATCH_HASH_TABLE_LOAD_FACTOR 0.75
 #define PATCH_HASH_TABLE_EMPTY -1
 
-// Think before changing KeyType to a much larger struct as KeyType is
-// often passed by value
+// Note: think before changing this to a much larger
+// struct as it is often passed by value
 typedef struct key_s {
 	int patchID;
 	int zoneID;

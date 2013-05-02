@@ -1,4 +1,6 @@
-/* -*- mode: c++; fill-column: 132; c-basic-offset: 4; indent-tabs-mode: nil -*- */
+/** @file add_flow_to_table.c
+ *
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
