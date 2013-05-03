@@ -19,7 +19,7 @@ Continuous Build and Test
 
 We are using Travis-CI (http://travis-ci.org) to host our continuous integration efforts.  Continuous integration helps us run our test suite upon every commit to this repository and let us know if and when we break the build.
 
-The current build status is: [![Build Status](https://travis-ci.org/RHESSys/RHESSys.png?branch=master)](https://travis-ci.org/RHESSys/RHESSys)
+The current build status is: [![Build Status](https://travis-ci.org/RHESSys/RHESSys.png?branch=develop)](https://travis-ci.org/RHESSys/RHESSys)
 
 The above icon should be clickable and point to the latest build at Travis-CI: https://travis-ci.org/RHESSys/RHESSys
 
