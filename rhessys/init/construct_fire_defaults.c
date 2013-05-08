@@ -26,10 +26,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "params.h"
+
 struct fire_default *construct_fire_defaults(
-											   int	num_default_files,
-											   char	**default_files,
-											   struct command_line_object *command_line)
+        int	num_default_files,
+        char	**default_files,
+        struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
@@ -40,11 +42,17 @@ struct fire_default *construct_fire_defaults(
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int 	i;
+        int strbufLen = 256;
+        int filenameLen = 1024;
+        int paramCnt = 0;
+        char	strbuf[strbufLen];
+        char	outFilename[filenameLen];
 	double  ftmp, soil;
 	FILE	*default_file;
 	char	*newrecord;
 	char	record[MAXSTR];
 	struct	fire_default	*default_object_list;
+        param *paramPtr = NULL;
 	
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.						*/
@@ -61,39 +69,71 @@ struct fire_default *construct_fire_defaults(
 		/*--------------------------------------------------------------*/
 		/*		Try to open the ith default file.						*/
 		/*--------------------------------------------------------------*/
-		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
-			fprintf(stderr,
-				"FATAL ERROR:in construct firee defaults,unable to open defaults file %s.\n",default_files[i]);
-			exit(EXIT_FAILURE);
-		} /*end if*/
+		printf("\n Reading %s\n", default_files[i]);
+                paramCnt = 0;
+                if (paramPtr != NULL)
+                    free(paramPtr);
+
+                paramPtr = readParamFile(&paramCnt, default_files[i]);
+
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/
 		/*--------------------------------------------------------------*/
-		fscanf(default_file,"%d",&(default_object_list[i].ID));
-		read_record(default_file, record);
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "fire_default_ID", "%d", 0, 0); // new param name
 		/*--------------------------------------------------------------*/
-		/*		assign parameters in  default */
+		/*		assign parameters in  default and read the      */
+                /*   optional parameter specification                           */
 		/*--------------------------------------------------------------*/
-		default_object_list[i].veg_fuel_weighting = 0.2;
-		/*--------------------------------------------------------------*/
-		/*		read the optional parameter specification in  default */
-		/*--------------------------------------------------------------*/
-		while (!feof(default_file)) {
-			fscanf(default_file,"%lf", &(ftmp));
-			read_record(default_file, record);
-			newrecord = strchr(record,'v');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"veg_fuel_weighting") == 0) {	
-				default_object_list[i].veg_fuel_weighting = ftmp;
-				printf("\n Using %lf for %s for fire default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-		}
+		default_object_list[i].veg_fuel_weighting = getDoubleParam(&paramCnt, &paramPtr, "veg_fuel_weighting", "%lf", 0.2, 1);
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
-		fclose(default_file);
+
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, default_files[i]);
+                char *s = strbuf;
+                char *y = NULL;
+                char *token = NULL;
+                char filename[256];
+    
+                // Store filename portion of path in 't'
+                while ((token = strtok(s, "/")) != NULL) {
+                    // Save the latest component of the filename
+                    strcpy(filename, token);
+                    s = NULL;
+                } 
+
+                // Remove the file extension, if one exists
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, filename);
+                free(s);
+                s = strbuf;
+                token = strtok(s, ".");
+                if (token != NULL) {
+                    strcpy(filename, token);
+                }
+
+                memset(outFilename, '\0', filenameLen);
+    
+                // Concatenate the output prefix with the filename of the input .def file
+                // and "_stratum.params"
+                if (command_line[0].output_prefix != NULL) {
+                    strcat(outFilename, command_line[0].output_prefix);
+                    if (filename != NULL) {
+                        strcat(outFilename, "_");
+                        strcat(outFilename, filename);
+                    }
+                    strcat(outFilename, "_fire.params");
+                } 
+                else {
+                    if (filename != NULL) {
+                        strcat(outFilename, "_");
+                        strcat(outFilename, filename);
+                    }
+                    strcat(outFilename, "fire.params");
+                }
+        
+            printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 	return(default_object_list);
 } /*end construct_fire_defaults*/

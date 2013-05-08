@@ -26,10 +26,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "params.h"
 struct surface_energy_default *construct_surface_energy_defaults(
-											   int	num_default_files,
-											   char	**default_files,
-											   int grow_flag)
+    int	num_default_files,
+    char	**default_files,
+    int grow_flag,
+    struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
@@ -40,11 +42,17 @@ struct surface_energy_default *construct_surface_energy_defaults(
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int 	i;
+        int strbufLen = 256;
+        int filenameLen = 1024;
 	double  ftmp, soil;
 	FILE	*default_file;
 	char	*newrecord;
+        char	outFilename[filenameLen];
+        char	strbuf[strbufLen];
 	char	record[MAXSTR];
 	struct	surface_energy_default	*default_object_list;
+        param *paramPtr = NULL;
+        int paramCnt = 0;
 	
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.						*/
@@ -57,67 +65,75 @@ struct surface_energy_default *construct_surface_energy_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Loop through the default files list.						*/
 	/*--------------------------------------------------------------*/
-	for (i=0 ; i<num_default_files; i++){
+	for (i=0 ; i<num_default_files; i++) {
 		/*--------------------------------------------------------------*/
 		/*		Try to open the ith default file.						*/
 		/*--------------------------------------------------------------*/
-		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
-			fprintf(stderr,
-				"FATAL ERROR:in construct surface_energye defaults,unable to open defaults file %s.\n",default_files[i]);
-			exit(EXIT_FAILURE);
-		} /*end if*/
+                paramCnt = 0;
+                printf("Reading %s\n", default_files[i]);
+                if (paramPtr != NULL)
+                    free(paramPtr);
+
+                paramPtr = readParamFile(&paramCnt, default_files[i]);
+
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/
 		/*--------------------------------------------------------------*/
-		fscanf(default_file,"%d",&(default_object_list[i].ID));
-		read_record(default_file, record);
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "surface_energy_ID", "%d", 0, 0);
 		/*--------------------------------------------------------------*/
 		/*		assign parameters in  default */
 		/*--------------------------------------------------------------*/
-		default_object_list[i].N_thermal_nodes = 10;
-		default_object_list[i].exp_dist = 0;
-		default_object_list[i].damping_depth = 4;
-		default_object_list[i].iteration_threshold = 0.01;
+		default_object_list[i].N_thermal_nodes     = getIntParam(&paramCnt, &paramPtr, "N_thermal_nodes", "%d", 10, 1);
+		default_object_list[i].exp_dist            = getIntParam(&paramCnt, &paramPtr, "exp_dist", "%d", 0, 1);
+		default_object_list[i].damping_depth       = getDoubleParam(&paramCnt, &paramPtr, "damping_depth", "%d", 4, 1);
+		default_object_list[i].iteration_threshold = getDoubleParam(&paramCnt, &paramPtr, "iteration_threshold", "%lf", 0.01, 1);
 
-		/*--------------------------------------------------------------*/
-		/*		read the optional parameter specification in  default */
-		/*--------------------------------------------------------------*/
-		while (!feof(default_file)) {
-			fscanf(default_file,"%lf", &(ftmp));
-			read_record(default_file, record);
-			newrecord = strchr(record,'N');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"N_thermal_nodes") == 0) {	
-				default_object_list[i].N_thermal_nodes = ftmp;
-				printf("\n Using %lf for %s for surface_energy default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'e');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"exp_dist") == 0) {	
-				default_object_list[i].exp_dist = ftmp;
-				printf("\n Using %lf for %s for surface_energy default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'d');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"damping_depth") == 0) {	
-				default_object_list[i].damping_depth = ftmp;
-				printf("\n Using %lf for %s for surface_energy default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'i');
-			if (newrecord != NULL) {
-			if (strcasecmp(newrecord,"iteration_threshold") == 0) {	
-				default_object_list[i].iteration_threshold = ftmp;
-				printf("\n Using %lf for %s for surface_energy default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-		}
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, default_files[i]);
+                char *s = strbuf;
+                char *y = NULL;
+                char *token = NULL;
+                char filename[256];
+
+                // Store filename portion of path in 't'
+                while ((token = strtok(s, "/")) != NULL) {
+                    // Save the latest component of the filename
+                    strcpy(filename, token);
+                    s = NULL;
+                } 
+
+                // Remove the file extension, if one exists
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, filename);
+                free(s);
+                s = strbuf;
+                token = strtok(s, ".");
+                if (token != NULL) {
+                    strcpy(filename, token);
+                }
+
+                memset(outFilename, '\0', filenameLen);
+    
+                // Concatenate the output prefix with the filename of the input .def file
+                // and "_stratum.params"
+                if (command_line[0].output_prefix != NULL) {
+                    strcat(outFilename, command_line[0].output_prefix);
+                    if (filename != NULL) {
+                        strcat(outFilename, "_");
+                        strcat(outFilename, filename);
+                    }
+                    strcat(outFilename, "_surface_energy.params");
+                } 
+                else {
+                    if (filename != NULL) {
+                        strcat(outFilename, "_");
+                        strcat(outFilename, filename);
+                    }
+                    strcat(outFilename, "surface_energy.params");
+                }
+    
+                printParams(paramCnt, paramPtr, outFilename);
+
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
