@@ -54,7 +54,7 @@ bool pervious_search_predicate(
 	pervious_context_t* context = (pervious_context_t*)_context;
 	int index;
 	if(!row_col_to_index(_row, _col, context->maxr_, context->maxc_, &index)) {
-	    fprintf(stderr, "ERROR: Failed to map the row: %d, and column: %d to an index.\n", _row, _col);
+//	    fprintf(stderr, "ERROR: Failed to map the row: %d, and column: %d to an index.\n", _row, _col);
 	    result = false;
 	} else {
 	    if(context->impervious_[index] != 1 && !is_roof(context->roofs_[index])) {
