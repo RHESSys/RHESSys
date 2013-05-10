@@ -12,13 +12,13 @@ class TestCF9vCF10(TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls.cfBinPath = os.path.abspath( os.path.join('..', 'cf10.0a1') )
+        cls.cfBinPath = os.path.abspath( os.path.join('.', 'cf10.0b1') )
         if not os.access(cls.cfBinPath, os.X_OK):
             raise IOError(errno.ENOEXEC, "Unable to execute CF binary %s" %
                           cls.cfBinPath)
         
         # We zip the GRASSData and RHESSys folders to be nice to GitHub, unzip it
-        cls.grassDBasePath = os.path.abspath('./data/GRASSData')
+        cls.grassDBasePath = os.path.abspath('./test/data/GRASSData')
         grassDBaseZip = "%s.zip" % (cls.grassDBasePath,)
         if not os.access(grassDBaseZip, os.R_OK):
             raise IOError(errno.EACCES, "Unable to read GRASS data zip %s" %
@@ -31,7 +31,7 @@ class TestCF9vCF10(TestCase):
         extractDir = os.path.split(cls.grassDBasePath)[0]
         zip.extractall(path=extractDir)
         
-        cls.rhessysPath = os.path.abspath('./data/RHESSys')
+        cls.rhessysPath = os.path.abspath('./test/data/RHESSys')
         rhessysZip = "%s.zip" % (cls.rhessysPath,)
         if not os.access(rhessysZip, os.R_OK):
             raise IOError(errno.EACCES, "Unable to read RHESSys data zip %s" %
