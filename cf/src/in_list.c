@@ -11,23 +11,17 @@
 #include "blender.h"
 #include "in_list.h"
 
-int in_list(int value, int *list, int length) {
+int in_list(int inx, int *list, int num_pit) {
 
-//	int i, fnd;
-//
-//	fnd = 0;
-//
-//	for (i = 1; i <= num_pit; i++) {
-//		if (inx == list[i])
-//			fnd = i;
-//	}
-//
-//	return (fnd);
+	int i, fnd;
 
-	for (int i = 1; i <= length; i++) {
-		if (value == list[i]) return i;
+	fnd = 0;
+
+	for (i = 1; i <= num_pit; i++) {
+		if (inx == list[i])
+			fnd = i;
 	}
-	return 0;
+
+	return (fnd);
 
 } /* end in_list */
-

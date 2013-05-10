@@ -33,11 +33,6 @@ int compute_drainage_density(flow_table, num_patches, cell)
 
 {
 
-	/* local fuction declarations */
-	struct ID_struct sort_flow_table();
-
-	// Not called
-	//int find_patch();
 
 	/* local variable declarations */
 

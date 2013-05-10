@@ -55,6 +55,7 @@ int check_neighbours(int inputRow, int inputCol, int *patch, int *zone, int *hil
 
                 // For surface water routing roof neighbors are determined elsewhere so skip them here - Brian
                 if(surface && is_roof(roofs[index])) {
+                	//fprintf(stderr, "check_neighbours: Skipping roof pixel\n");
                     continue;
                 }
                 

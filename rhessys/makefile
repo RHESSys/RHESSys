@@ -262,7 +262,8 @@ $(OBJ)/skip_basin.o \
 $(OBJ)/skip_hillslope.o \
 $(OBJ)/skip_zone.o \
 $(OBJ)/skip_patch.o \
-$(OBJ)/skip_strata.o
+$(OBJ)/skip_strata.o \
+$(OBJ)/params.o
 
 all:	dir rhessys
 
@@ -783,6 +784,8 @@ $(OBJ)/output_template_structure.o: output/output_template_structure.c
 	$(CC) -c $(CFLAGS) -I include output/output_template_structure.c -o $(OBJ)/output_template_structure.o
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
+$(OBJ)/params.o: util/params.c
+	$(CC) -c $(CFLAGS) -I include util/params.c -o $(OBJ)/params.o
 
 $(OBJ)/main.o: main.c setversion
 	$(CC) -c $(CFLAGS) -I include main.c -o $(OBJ)/main.o

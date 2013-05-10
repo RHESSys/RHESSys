@@ -1,10 +1,13 @@
-/* -*- mode: c++; fill-column: 132; c-basic-offset: 4; indent-tabs-mode: nil -*- */
+/** @file add_flow_to_table.c
+ *
+ */
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "blender.h"
+#include "sub.h"
 #include "add_flow_to_table.h"
-#include "find_patch.h"
 
 bool create_flow_adjacency(
     struct flow_struct* _flow_table,
@@ -91,6 +94,7 @@ bool add_flow_to_table(
     int _maxc,
     struct flow_struct* _flow_table,
     int _num_patches,
+    PatchTable_t *_patchTable,
     const int* _patch,
     const int* _hill,
     const int* _zone,
@@ -118,8 +122,10 @@ bool add_flow_to_table(
     }
     else {
         // do the sciences
-        int contributor_patch = find_patch(_num_patches, _flow_table, _patch[contributor_index], _zone[contributor_index], _hill[contributor_index]);
-        int receiver_patch = find_patch(_num_patches, _flow_table, _patch[receiver_index], _zone[receiver_index], _hill[receiver_index]);
+    	int contributor_patch = find_patch(_patchTable, _patch[contributor_index], _zone[contributor_index], _hill[contributor_index]);
+    	assert( contributor_patch != PATCH_HASH_TABLE_EMPTY );
+    	int receiver_patch = find_patch(_patchTable, _patch[receiver_index], _zone[receiver_index], _hill[receiver_index]);
+    	assert( receiver_patch != PATCH_HASH_TABLE_EMPTY );
 
         // Create an adjacency for the receiver
         struct adj_struct* adjacency = 0;

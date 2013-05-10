@@ -104,7 +104,7 @@ bool normalize_roof_patches(
         // for debugging
         // patch_file = fopen("RoofPatches.txt", "w");
         
-        for(int index = 0; result && index < _num_patches; ++index) {
+        for(int index = 0; result && index <= _num_patches; ++index) {
             if(_flow_table[index].land == LANDTYPE_ROOF) {
 
                 

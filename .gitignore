@@ -1,5 +1,6 @@
 # Compiled object files
 *.o
+*.pyc
 
 # Build directories
 objects/

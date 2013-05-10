@@ -1,30 +1,30 @@
 /*--------------------------------------------------------------*/
-/* 																*/
-/*					construct_hillslope_defaults				*/
-/*																*/
-/*	construct_hillslope_defaults.c - makes hillslope default	*/
-/*										objects.				*/
-/*																*/
-/*	NAME														*/
-/*	construct_hillslope_defaults.c - makes hillslope default	*/
-/*										objects.				*/
-/*																*/
-/*	SYNOPSIS													*/
-/*	struct hillslope_default *construct_hillslope_defaults(     */
-/*								  num_default_files,			*/
-/*								  default_files,				*/
-/*								command_line_object) 	*/
-/*																*/
-/*	OPTIONS														*/
-/*																*/
-/*	DESCRIPTION													*/
-/*																*/
-/*	PROGRAMMER NOTES											*/
-/*																*/
-/*	March 4/97 - C. Tague										*/
-/*	added soil parameters for baseflow routine					*/
-/*																*/
-/*	Original code, January 15, 1996.							*/
+/* 								*/
+/*	construct_hillslope_defaults				*/
+/*								*/
+/*	construct_hillslope_defaults.c - makes hillslope default*/
+/*			objects.				*/
+/*								*/
+/*	NAME							*/
+/*	construct_hillslope_defaults.c - makes hillslope default*/
+/*			objects.				*/
+/*								*/
+/*	SYNOPSIS						*/
+/*	struct hillslope_default *construct_hillslope_defaults( */
+/*			num_default_files,			*/
+/*			default_files,				*/
+/*			command_line_object) 			*/
+/*								*/
+/*	OPTIONS							*/
+/*								*/
+/*	DESCRIPTION						*/
+/*								*/
+/*	PROGRAMMER NOTES					*/
+/*								*/
+/*	March 4/97 - C. Tague					*/
+/*	added soil parameters for baseflow routine		*/
+/*								*/
+/*	Original code, January 15, 1996.			*/
 /*								*/
 /*	Sep 15 97 - RAF						*/
 /*	Removed soil parameters due to new baseflow routine	*/
@@ -32,79 +32,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "params.h"
 
 struct hillslope_default *construct_hillslope_defaults(
-							   int	num_default_files,
-							   char	**default_files,
-		  				           struct command_line_object *command_line)
+	int	num_default_files,
+	char	**default_files,
+	struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
-	/*	Local function definition.									*/
+	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t, char *, char *);
 	
 	/*--------------------------------------------------------------*/
-	/*	Local variable definition.									*/
+	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
 	int 	i;
+        int strbufLen = 256;
+        int filenameLen = 1024;
 	FILE	*default_file;
+        char	strbuf[strbufLen];
+        char	outFilename[filenameLen];
 	char	record[MAXSTR];
 	char	*newrecord;
 	double	ftmp;
 	struct	hillslope_default	*default_object_list;
+        param *paramPtr = NULL;
+        int paramCnt = 0;
 	
-	/*--------------------------------------------------------------*/
-	/*	Allocate an array of default objects.						*/
+	/*-------------------------------------------------------------*/
+	/*	Allocate an array of default objects.		       */
 	/*-------------------------------------------------------------*/
 	default_object_list   = (struct hillslope_default *)
 		alloc(num_default_files * sizeof(struct hillslope_default),
 		"default_object_list", "construct_hillslope_defaults");
 	
 	/*--------------------------------------------------------------*/
-	/*	Loop through the default files list.						*/
+	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
 	for (i=0 ; i<num_default_files; i++) {
 		/*--------------------------------------------------------------*/
-		/*		Try to open the ith default file.						*/
+		/*		read the ith default file into the ith object.	*/
 		/*--------------------------------------------------------------*/
-		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
-			fprintf(stderr,
-				"FATAL ERROR:in construct hillslope defaults,unable to open defaults file %d.\n",i);
-			exit(EXIT_FAILURE);
-		} /*end if*/
-		
-		/*--------------------------------------------------------------*/
-		/*		read the ith default file into the ith object.			*/
-		/*--------------------------------------------------------------*/
-		fscanf(default_file,"%d",&(default_object_list[i].ID));
-		read_record(default_file, record);
+		printf("Reading %s\n", default_files[i]);
+                paramCnt = 0;
+                if (paramPtr != NULL)
+                    free(paramPtr);
+
+                paramPtr = readParamFile(&paramCnt, default_files[i]);
+
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "hillslope_default_ID", "%d", 0, 0);
 
 		/*--------------------------------------------------------------*/
 		/* 	read in optional paramters				*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].gw_loss_coeff = 1.0;
-		default_object_list[i].n_routing_timesteps = 24;
-		while (!feof(default_file)) {
-			fscanf(default_file,"%lf", &(ftmp));
-			read_record(default_file, record);
-			newrecord = strchr(record,'g');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"gw_loss_coeff") == 0) {	
-				default_object_list[i].gw_loss_coeff = ftmp;
-				printf("\n Using %lf for %s for hillslope default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-			newrecord = strchr(record,'n');
-			if (newrecord != NULL)  {
-			if (strcasecmp(newrecord,"n_routing_timesteps") == 0) {	
-				default_object_list[i].n_routing_timesteps = (int) ftmp;
-				printf("\n Using %lf for %s for hillslope default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			}
-		}
-
+		default_object_list[i].gw_loss_coeff = 		getDoubleParam(&paramCnt, &paramPtr, "gw_loss_coeff", "%lf", 1.0, 1);
+		default_object_list[i].n_routing_timesteps = 	getIntParam(&paramCnt, &paramPtr, "n_routing_timesteps", "%d", 24, 1);
 
 		if (default_object_list[i].n_routing_timesteps < 1)
 			default_object_list[i].n_routing_timesteps = 1;
@@ -113,10 +96,42 @@ struct hillslope_default *construct_hillslope_defaults(
 			default_object_list[i].gw_loss_coeff *= command_line[0].gw_loss_coeff_mult;
 			}
 
-		/*--------------------------------------------------------------*/
-		/*		Close the ith default file.								*/
-		/*--------------------------------------------------------------*/
-		fclose(default_file);
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, default_files[i]);
+                char *s = strbuf;
+                char *y = NULL;
+                char *token = NULL;
+                char filename[256];
+    
+                // Store filename portion of path in 't'
+                while ((token = strtok(s, "/")) != NULL) {
+                    // Save the latest component of the filename
+                    strcpy(filename, token);
+                    s = NULL;
+                } 
+    
+                // Remove the file extension, if one exists
+                memset(strbuf, '\0', strbufLen);
+                strcpy(strbuf, filename);
+                free(s);
+                s = strbuf;
+                token = strtok(s, ".");
+                if (token != NULL) {
+                    strcpy(filename, token);
+                }
+        
+                memset(outFilename, '\0', filenameLen);
+
+                if (command_line[0].output_prefix != NULL) {
+                    outFilename[0] = '\0';
+                    strcat(outFilename, command_line[0].output_prefix);
+                    strcat(outFilename, "_hillslope.params");
+                } 
+                else {
+                    strcat(outFilename, "hillslope.params");
+                }
+        
+                printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 	return(default_object_list);
 } /*end construct_hillslope_defaults*/

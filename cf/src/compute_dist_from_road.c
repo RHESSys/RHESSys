@@ -34,12 +34,6 @@ int compute_dist_from_road(flow_table, num_patches, f1, cell)
 
 {
 
-	/* local fuction declarations */
-	struct ID_struct sort_flow_table();
-
-	// Not called
-	//int find_patch();
-
 	/* local variable declarations */
 	int inx;
 	int neigh;

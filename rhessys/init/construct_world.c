@@ -348,10 +348,9 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*----------------------------------------------------*/
 	char	**construct_filename_list( FILE *, int);
 	long	julday( struct date );
-	struct basin_default *construct_basin_defaults(int, char	**, int);
-	struct zone_default *construct_zone_defaults(int, char **, int);
+	struct basin_default *construct_basin_defaults(int, char **, struct command_line_object *);
+	struct zone_default *construct_zone_defaults(int, char **, struct command_line_object *);
 	struct hillslope_default *construct_hillslope_defaults(int, char **, struct command_line_object *);
-	struct zone_default *construct_zone_defaults(int, char **, int);
 	struct soil_default *construct_soil_defaults(int, char **, struct command_line_object *);
 	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
 	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
@@ -359,8 +358,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct stratum_default *construct_stratum_defaults(int, char **, struct command_line_object *);
 	struct base_station_object *construct_base_station(char *,
 		struct date, struct date);
-	struct basin_object *construct_basin(struct command_line_object *, FILE *,
-		int, struct base_station_object **, struct default_object *);
+	struct basin_object *construct_basin(struct command_line_object *, FILE *, int, struct base_station_object **, struct default_object *);
 	struct fire_struct **construct_fire_grid(struct world_object *, struct command_line_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	void *alloc(size_t, char *, char *);
@@ -608,7 +606,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].basin = construct_basin_defaults(
 		world[0].defaults[0].num_basin_default_files,
-		world[0].basin_default_files,	command_line[0].grow_flag);
+		world[0].basin_default_files, command_line);
 	
 	/*--------------------------------------------------------------*/
 	/*	Construct the hillslope_defaults objects.		*/
@@ -622,7 +620,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].zone = construct_zone_defaults(
 		world[0].defaults[0].num_zone_default_files,
-		world[0].zone_default_files, command_line[0].grow_flag);
+		world[0].zone_default_files, command_line);
 	
 	/*--------------------------------------------------------------*/
 	/*	Construct the soil_defaults objects.			*/

@@ -12,11 +12,11 @@
 #include "fileio.h"
 #include "check_neighbours.h"
 #include "zero_flow_table.h"
-#include "find_patch.h"
-#include "build_flow_table.h"
 #include "util.h"
+#include "patch_hash_table.h"
+#include "build_flow_table.h"
 
-int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
+int build_flow_table(struct flow_struct* flow_table, PatchTable_t *patchTable, double* dem, float* slope,
                      int* hill, int* zone, int* patch, int* stream, int* roads, int* sewers, double* roofs,
                      double* flna, FILE* f1, int maxr, int maxc, int f_flag, int sc_flag,
                      int sewer_flag, int slp_flag, double cell, double scale_dem, bool surface) {
@@ -46,12 +46,13 @@ int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
 
             /* ignore areas outside the basin */
             if ((patch[inx] > 0) && (zone[inx] > 0) && (hill[inx] > 0)) {
-                pch = find_patch(num_patches, flow_table, patch[inx], zone[inx],
-                                 hill[inx]);
-                if (pch == 0) {
-                    num_patches += 1;
-                    pch = num_patches;
-                }
+            	PatchKey_t k = { patch[inx], zone[inx], hill[inx] };
+            	pch = patchHashTableGet(patchTable, k);
+            	if ( PATCH_HASH_TABLE_EMPTY == pch ) {
+            		num_patches++;
+            		pch = num_patches;
+            		patchHashTableInsert(patchTable, k, pch);
+            	}
 
                 flow_table[pch].patchID = patch[inx];
                 flow_table[pch].hillID = hill[inx];
@@ -82,7 +83,16 @@ int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
                 else
                     flow_table[pch].flna = 0.0;
 
-                flow_table[pch].num_adjacent = 0;
+                // Debug
+				fprintf(f1, "patch[%d]: %d %d %d %d\n",
+						pch, flow_table[pch].patchID, flow_table[pch].hillID, flow_table[pch].zoneID,
+						flow_table[pch].land);
+
+				// num_adjacent should only be set once in zero_flow_table
+				// enabling the line below causes the adjacency list to
+				// be trashed by check_neighbours each time through this
+				// loop. (selimnairb)
+                //flow_table[pch].num_adjacent = 0;
                 if(!surface || flow_table[pch].land != LANDTYPE_ROOF) {
                     int num_adj =  check_neighbours(r, c, patch, zone, hill, stream, roofs, &flow_table[pch],
                                                     flow_table[pch].num_adjacent, f1, maxr, maxc, sc_flag,
@@ -92,6 +102,13 @@ int build_flow_table(struct flow_struct* flow_table, double* dem, float* slope,
                         return -1;
                     }
                     flow_table[pch].num_adjacent += num_adj;
+
+                    // Debug output
+                    struct adj_struct *adj = flow_table[pch].adj_list;
+                    while (adj != NULL) {
+                    	fprintf(f1, "\tadj: %d %d %d %d\n", adj->patchID, adj->hillID, adj->zoneID, adj->landtype);
+                    	adj = adj->next;
+                    }
                 }
                 
             } /* end if */

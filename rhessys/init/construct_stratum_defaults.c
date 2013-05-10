@@ -1,46 +1,47 @@
 /*--------------------------------------------------------------*/
-/* 																*/
-/*					construct_stratum_defaults					*/
-/*																*/
-/*	construct_stratum_defaults.c - makes stratum default		*/
-/*										objects.				*/
-/*																*/
-/*	NAME														*/
-/*	construct_stratum_defaults.c - makes stratum default		*/
-/*										objects.				*/
-/*																*/
-/*	SYNOPSIS													*/
-/*	struct stratum_default *construct_stratum_defaults(         */
-/*									num_default_files,			*/
-/*								  default_files,				*/
-/*								  grow_flag,					*/
-/*								  default_object_list )			*/
-/*																*/
-/*	OPTIONS														*/
-/*																*/
-/*	DESCRIPTION													*/
-/*																*/
-/*	PROGRAMMER NOTES											*/
-/*																*/
-/*	Original code, January 15, 1996.							*/
-/*																*/
-/* March 12, 1997   C. Tague								    */
-/* added seasonal leafon/off ramp variable		  				*/
-/*																*/
+/* 								*/
+/*	construct_stratum_defaults				*/
+/*								*/
+/*	construct_stratum_defaults.c - makes stratum default	*/
+/*					objects.		*/
+/*								*/
+/*	NAME							*/
+/*	construct_stratum_defaults.c - makes stratum default	*/
+/*					objects.		*/
+/*								*/
+/*	SYNOPSIS						*/
+/*	struct stratum_default *construct_stratum_defaults(    	*/
+/*					num_default_files,	*/
+/*					default_files,		*/
+/*					grow_flag,		*/
+/*					default_object_list )	*/
+/*								*/
+/*	OPTIONS							*/
+/*								*/
+/*	DESCRIPTION						*/
+/*								*/
+/*	PROGRAMMER NOTES					*/
+/*								*/
+/*	Original code, January 15, 1996.			*/
+/*								*/
+/* March 12, 1997   C. Tague					*/
+/* added seasonal leafon/off ramp variable		  	*/
+/*								*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
 #include "phys_constants.h"
+#include "params.h"
 
 struct stratum_default *construct_stratum_defaults(
-												   int	num_default_files,
-												   char	**default_files,
-												   struct command_line_object *command_line)
+		int	num_default_files,
+		char	**default_files,
+		struct command_line_object *command_line)
 												   
 {
 	/*--------------------------------------------------------------*/
-	/*	Local function definition.									*/
+	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t, char *, char *);
 	int	parse_veg_type( char *);
@@ -48,144 +49,95 @@ struct stratum_default *construct_stratum_defaults(
 	int	parse_dyn_flag( char *);
 	int	parse_alloc_flag( char *);
 	/*--------------------------------------------------------------*/
-	/*	Local variable definition.									*/
+	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
 	int		i, itmp;
+        int strbufLen = 256;
+        int filenameLen = 1024;
+        int paramCnt = 0;
 	char		record[MAXSTR];
 	char		*newrecord;
 	char		stmp[MAXSTR];
+        char	strbuf[strbufLen];
+        char	outFilename[filenameLen];
 	double		fcel, ftmp, lig_cel_ratio;
-	FILE	*default_file;
+	//FILE	*default_file;
+        param *paramPtr = NULL;
 	struct stratum_default	*default_object_list;
 	struct	epconst_struct	*epc;
-	
+
 	/*--------------------------------------------------------------*/
-	/*	Allocate an array of default objects.						*/
+	/*	Allocate an array of default objects.			*/
 	/*--------------------------------------------------------------*/
 	default_object_list = (struct stratum_default *)
 		alloc(num_default_files *
 		sizeof(struct stratum_default),"default_object_list",
 		"construct_stratum_defaults" );
-	
+
 	/*--------------------------------------------------------------*/
-	/*	Loop through the default files list.						*/
+	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
 	for (i=0 ; i<num_default_files; i++) {
 		epc = &(default_object_list[i].epc);
+
 		/*--------------------------------------------------------------*/
-		/*		Try to open the ith default file.						*/
+		/*		Try to open the ith default file.		*/
 		/*--------------------------------------------------------------*/
-		if ( (default_file = fopen( default_files[i], "r")) == NULL ){
-			fprintf(stderr,
-				"FATAL ERROR:in construct_stratum_defaults,unable to open defaults file %d. - %s\n",
-				i, default_files[i]);
-			exit(EXIT_FAILURE);
-		} /*end if*/
-	
-		printf("\n Reading %s", default_files[i]);
+		printf("Reading %s\n", default_files[i]);
+                paramCnt = 0;
+                if (paramPtr != NULL)
+                    free(paramPtr);
+
+                paramPtr = readParamFile(&paramCnt, default_files[i]);
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/
 		/*--------------------------------------------------------------*/
-		fscanf(default_file,"%d",&(default_object_list[i].ID));
-		read_record(default_file, record);
-		fscanf(default_file,"%s",stmp);
-		read_record(default_file, record);
-		default_object_list[i].epc.veg_type = parse_veg_type(stmp);
-		fscanf(default_file,"%lf",&(default_object_list[i].K_absorptance));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].K_reflectance));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].K_transmittance));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].PAR_absorptance));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].PAR_reflectance));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].PAR_transmittance));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.ext_coef));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].specific_rain_capacity));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].specific_snow_capacity));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].wind_attenuation_coeff));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].ustar_overu));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].mrc.q10));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].mrc.per_N));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.gr_perc));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].lai_stomatal_fraction));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.flnr));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.ppfd_coef));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.topt));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.tmax));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.tcoef));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.psi_open));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.psi_close));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.vpd_open));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.vpd_close));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.gl_smax));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.gl_c));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].gsurf_slope));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].gsurf_intercept));
-		read_record(default_file, record);
-		fscanf(default_file,"%s",stmp);
-		read_record(default_file, record);
-		default_object_list[i].epc.phenology_flag = parse_dyn_flag(stmp);
-		fscanf(default_file,"%s",stmp);
-		read_record(default_file, record);
-		default_object_list[i].epc.phenology_type = parse_phenology_type(stmp);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.max_lai));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.proj_sla));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.lai_ratio));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.proj_swa));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.leaf_turnover));
-		read_record(default_file, record);
-		fscanf(default_file,"%d",&(default_object_list[i].epc.day_leafon));
-		read_record(default_file, record);
-		fscanf(default_file,"%d",&(default_object_list[i].epc.day_leafoff));
-		read_record(default_file, record);
-		fscanf(default_file,"%d",&(default_object_list[i].epc.ndays_expand));
-		read_record(default_file, record);
-		fscanf(default_file,"%d",&(default_object_list[i].epc.ndays_litfall));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.leaf_cn));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.leaflitr_cn));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].min_heat_capacity));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].max_heat_capacity));
-		read_record(default_file, record);
-		fscanf(default_file,"%s",stmp);
-		read_record(default_file, record);
-		default_object_list[i].epc.allocation_flag = parse_alloc_flag(stmp);
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "stratum_default_ID", "%d", 0, 0); // new param name
+		default_object_list[i].epc.veg_type = 		parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.veg.type", "%s", "", 0)); // param name is "epc.veg.type" in param file
+		default_object_list[i].K_absorptance = 		getDoubleParam(&paramCnt, &paramPtr, "K_absorptance", "%lf", 0.0, 0); // parameter misspelled in file as "K_apsorbtance"
+		default_object_list[i].K_reflectance = 		getDoubleParam(&paramCnt, &paramPtr, "K_reflectance", "%lf", 0.0, 0);
+		default_object_list[i].K_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "K_transmittance", "%lf", 0.0, 0); 
+		default_object_list[i].PAR_absorptance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_absorptance", "%lf", 0.0, 0); // param misspelled in file "PAR_absrptance" 
+		default_object_list[i].PAR_reflectance =  	getDoubleParam(&paramCnt, &paramPtr, "PAR_reflectance", "%lf", 0.0, 0);
+		default_object_list[i].PAR_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_transmittance", "%lf", 0.0, 0);
+		default_object_list[i].epc.ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ext_coef", "%lf", 0.0, 0);
+		default_object_list[i].specific_rain_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_rain_capacity", "%lf", 0.0, 0);
+		default_object_list[i].specific_snow_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_snow_capacity", "%lf", 0.0, 0);
+		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.0, 0); // param name is "wind_attenuation_coef" in param file
+		default_object_list[i].ustar_overu = 		getDoubleParam(&paramCnt, &paramPtr, "ustar_overu", "%lf", 0.0, 0);
+		default_object_list[i].mrc.q10 = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.q10", "%lf", 0.0, 0);
+		default_object_list[i].mrc.per_N = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.per_N", "%lf", 0.0, 0);
+		default_object_list[i].epc.gr_perc = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gr_perc", "%lf", 0.0, 0);
+		default_object_list[i].lai_stomatal_fraction = 	getDoubleParam(&paramCnt, &paramPtr, "lai_stomatal_fraction", "%lf", 0.0, 0);
+		default_object_list[i].epc.flnr = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr", "%lf", 0.0, 0);
+		default_object_list[i].epc.ppfd_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ppfd_coef", "%lf", 0.0, 0);
+		default_object_list[i].epc.topt = 		getDoubleParam(&paramCnt, &paramPtr, "epc.topt", "%lf", 0.0, 0);
+		default_object_list[i].epc.tmax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.tmax", "%lf", 0.0, 0);
+		default_object_list[i].epc.tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.tcoef", "%lf", 0.0, 0);
+		default_object_list[i].epc.psi_open = 		getDoubleParam(&paramCnt, &paramPtr, "epc.psi_open", "%lf", 0.0, 0);
+		default_object_list[i].epc.psi_close = 		getDoubleParam(&paramCnt, &paramPtr, "epc.psi_close", "%lf", 0.0, 0);
+		default_object_list[i].epc.vpd_open = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_open", "%lf", 0.0, 0);
+		default_object_list[i].epc.vpd_close = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_close", "%lf", 0.0, 0);
+		default_object_list[i].epc.gl_smax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax", "%lf", 0.0, 0);
+		default_object_list[i].epc.gl_c = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_c", "%lf", 0.0, 0);
+		default_object_list[i].gsurf_slope = 		getDoubleParam(&paramCnt, &paramPtr, "gsurf_slope", "%lf", 0.0, 0);
+		default_object_list[i].gsurf_intercept = 	getDoubleParam(&paramCnt, &paramPtr, "gsurf_intercept", "%lf", 0, 0);
+		default_object_list[i].epc.phenology_flag = 	parse_dyn_flag(getStrParam(&paramCnt, &paramPtr, "epc.phenology_flag", "%s", "", 0));
+		default_object_list[i].epc.phenology_type = 	parse_phenology_type(getStrParam(&paramCnt, &paramPtr, "epc.phenology.type", "%s", "", 0));
+		default_object_list[i].epc.max_lai = 		getDoubleParam(&paramCnt, &paramPtr, "epc.max_lai", "%lf", 0.0, 0);
+		default_object_list[i].epc.proj_sla = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_sla", "%lf", 0.0, 0);
+		default_object_list[i].epc.lai_ratio = 		getDoubleParam(&paramCnt, &paramPtr, "epc.lai_ratio", "%lf", 0.0, 0);
+		default_object_list[i].epc.proj_swa = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_swa", "%lf", 0.0, 0);
+		default_object_list[i].epc.leaf_turnover = 	getDoubleParam(&paramCnt, &paramPtr, "epc.leaf_turnover", "%lf", 0.0, 0);
+		default_object_list[i].epc.day_leafon = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafon", "%d", 0, 0);
+		default_object_list[i].epc.day_leafoff = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafoff", "%d", 0, 0);
+		default_object_list[i].epc.ndays_expand = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_expand", "%d", 0, 0);
+		default_object_list[i].epc.ndays_litfall = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_litfall", "%d", 0, 0);
+		default_object_list[i].epc.leaf_cn = 		getDoubleParam(&paramCnt, &paramPtr, "epc.leaf_cn", "%lf", 45.0, 1);
+		default_object_list[i].epc.leaflitr_cn = 	getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_cn", "%lf", 70.0, 1);
+		default_object_list[i].min_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "min_heat_capacity", "%lf", 0.0, 1);
+		default_object_list[i].max_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "max_heat_capacity", "%lf", 0.0, 1);
+		default_object_list[i].epc.allocation_flag = 	parse_alloc_flag(getStrParam(&paramCnt, &paramPtr, "epc.allocation_flag", "%s", "waring", 1));
 		/*--------------------------------------------------------------*/
 		/*          NOTE: PLACE ANY GROW READING HERE.                  */
 		/*--------------------------------------------------------------*/
@@ -194,39 +146,27 @@ struct stratum_default *construct_stratum_defaults(
 			fprintf(stderr, "\nWARNING construct_stratum_defaults");
 			fprintf(stderr, "\n  leaf litter C:N < leaf C:N");
 		}
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.storage_transfer_prop));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.froot_turnover));
-		read_record(default_file, record);
+		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 0.0, 0);
+		default_object_list[i].epc.froot_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.froot_turnover", "%lf", 0.0, 0);
+
 		if  ((default_object_list[i].epc.veg_type == GRASS) || (default_object_list[i].epc.veg_type == C4GRASS)) {
-			fscanf(default_file,"%lf",
-				&(default_object_list[i].epc.deadleaf_turnover));
-			read_record(default_file, record);
+			default_object_list[i].epc.deadleaf_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.deadleaf_turnover", "%lf", 0.0, 0);
 		}
 		else {
-			fscanf(default_file,"%lf",
-				&(default_object_list[i].epc.livewood_turnover));
-			read_record(default_file, record);
+			default_object_list[i].epc.livewood_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_turnover", "%lf", 0.0, 0);
 		}
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.kfrag_base));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(ftmp));
-		read_record(default_file, record);
-		default_object_list[i].epc.daily_mortality_turnover = ftmp/365;
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.froot_cn));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.livewood_cn));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.leaflitr_flab));
 
-		// Skipping epc.leaflitr_fcel
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(fcel));
+		default_object_list[i].epc.kfrag_base = 		getDoubleParam(&paramCnt, &paramPtr, "epc.kfrag_base", "%lf", 0.0, 0);
+		default_object_list[i].epc.daily_mortality_turnover = 	getFloatParam(&paramCnt, &paramPtr, "epc.daily_mortality_turnover", "%f", 0.005, 1) / 365;
+		default_object_list[i].epc.froot_cn = 			getDoubleParam(&paramCnt, &paramPtr, "epc.froot_cn", "%lf", 0.0, 0);
+		default_object_list[i].epc.livewood_cn = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_cn", "%lf", 0.0, 0);
+		default_object_list[i].epc.leaflitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flab", "%lf", 0.0, 0);
 
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.leaflitr_flig));
-		read_record(default_file, record);
+		// Skipping epc.leaflitr_fcel (pcs 20130117 : comment or var name wrong in orig code: defs/veg_westhemlock.def has 'leaflitr_fcel')
+		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_fcel", "%lf", 0.0, 0); // param name in file is "leaflitr_fcel"
+
+		default_object_list[i].epc.leaflitr_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flig", "%lf", 0.0, 0);
+
 		if ( (float)(epc->leaflitr_flig + epc->leaflitr_flab + fcel) != 1.0 )	{
 			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
 			fprintf(stderr,"\n  litter proportions of labile, cell. and lignin must sum to 1.0");
@@ -249,15 +189,12 @@ struct stratum_default *construct_stratum_defaults(
 				epc->leaflitr_fucel = 0.2*fcel;
 			}
 		}
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.frootlitr_flab));
-		read_record(default_file, record);
+		default_object_list[i].epc.frootlitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_flab", "%lf", 0.0, 0);
 
 		// Skipping the mortality parameter
-		fscanf(default_file,"%lf",&(fcel));
-		read_record(default_file, record);
+		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_fcel", "%lf", 0.0, 0);
+		default_object_list[i].epc.frootlitr_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_flig", "%lf", 0.0, 0);
 
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.frootlitr_flig));
-		read_record(default_file, record);
 		if ( (float)(epc->frootlitr_flab + epc->frootlitr_flig + fcel) != 1.0 ){
 			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
 			fprintf(stderr,"\n  froot litter proportions of labile, cell. and lignin must sum to 1.0");
@@ -279,10 +216,8 @@ struct stratum_default *construct_stratum_defaults(
 				epc->frootlitr_fucel = 0.2*fcel;
 			}
 		}
-		fscanf(default_file,"%lf",&(fcel));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.deadwood_flig));
-		read_record(default_file, record);
+		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.deadwood_fcel", "%lf", 0.0, 0);
+		default_object_list[i].epc.deadwood_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.deadwood_flig", "%lf", 0.0, 0);
 		if (epc->veg_type == TREE) {
 			if ( (float)(epc->deadwood_flig + fcel) != 1.0 ){
 				fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
@@ -326,69 +261,51 @@ struct stratum_default *construct_stratum_defaults(
 			epc->deadwood_fscel = 0.0;
 			epc->deadwood_cn = 0.0;
 		}
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.alloc_frootc_leafc));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.alloc_crootc_stemc));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.alloc_stemc_leafc));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.alloc_livewoodc_woodc));
-		read_record(default_file, record);
+		default_object_list[i].epc.alloc_frootc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_frootc_leafc", "%lf", 0.0, 0);
+		default_object_list[i].epc.alloc_crootc_stemc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_crootc_stemc", "%lf", 0.0, 0);
+		default_object_list[i].epc.alloc_stemc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_stemc_leafc", "%lf", 0.0, 0);
+		default_object_list[i].epc.alloc_livewoodc_woodc = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_livewoodc_woodc", "%lf", 0.0, 0);
 		if (epc->veg_type != TREE){
 			epc->alloc_crootc_stemc = 0.0;
 			epc->phloemcsa_per_alllai = 0.0;
 		}
-		fscanf(default_file,"%lf",&(default_object_list[i].epc.alloc_maxlgf));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.alloc_prop_day_growth));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.daily_fire_turnover));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.height_to_stem_exp));
-		read_record(default_file, record);
-		fscanf(default_file,"%lf",
-			&(default_object_list[i].epc.height_to_stem_coef));
-		read_record(default_file, record);
+		default_object_list[i].epc.alloc_maxlgf 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.maxlgf", "%lf", 0.0, 0); // param named 'epc.maxlgf' in parameter file
+		default_object_list[i].epc.alloc_prop_day_growth = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_prop_day_growth", "%lf", 0.0, 0);
+		default_object_list[i].epc.daily_fire_turnover 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_fire_turnover", "%lf", 0.0, 0);
+		default_object_list[i].epc.height_to_stem_exp 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_exp", "%lf", 0.0, 0);
+		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 0.0, 0);
 		/*--------------------------------------------------------------*/
 		/*	optionally read in parameters on re-sprouting		*/
 		/* 	and other newly implemented vegetation routines		*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].epc.min_leaf_carbon = 0.0005;
-		default_object_list[i].epc.max_years_resprout = 100;
-		default_object_list[i].epc.resprout_leaf_carbon = 0.001;
-		default_object_list[i].epc.litter_gsurf_slope = 0.0;
-		default_object_list[i].epc.litter_gsurf_intercept = 100000000;
-		default_object_list[i].epc.coef_CO2 = 1.0;
-		default_object_list[i].epc.root_growth_direction = 0.8;
-		default_object_list[i].epc.root_distrib_parm = 8.0;
+		default_object_list[i].epc.min_leaf_carbon = getDoubleParam(&paramCnt, &paramPtr, "epc.min_leaf_carbon", "%lf", 0.0005, 1);
+		default_object_list[i].epc.max_years_resprout = getIntParam(&paramCnt, &paramPtr, "epc.max_years_resprout", "%d", 100, 1);
+		default_object_list[i].epc.resprout_leaf_carbon = getDoubleParam(&paramCnt, &paramPtr, "epc.resprout_leaf_carbon", "%lf", 0.001, 1);
+		default_object_list[i].epc.litter_gsurf_slope = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_gsurf_slope", "%lf", 0.0, 1);
+		default_object_list[i].epc.litter_gsurf_intercept = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_gsurf_intercept", "%lf", 100000000, 1);
+		default_object_list[i].epc.coef_CO2 = getDoubleParam(&paramCnt, &paramPtr, "epc.coef_CO2", "%lf", 1.0, 1);
+		default_object_list[i].epc.root_growth_direction = getDoubleParam(&paramCnt, &paramPtr, "epc.root_growth_direction", "%lf", 0.8, 1);
+		default_object_list[i].epc.root_distrib_parm = getDoubleParam(&paramCnt, &paramPtr, "epc.root_distrib_parm", "%lf", 8.0, 1);
 		/*--------------------------------------------------------------*/
 		/* default values for phenology (leaf onset/offset) model parameters */
-	    /* are set based on Jolly et al., 2005, Global Change Biology   */
+		/* are set based on Jolly et al., 2005, Global Change Biology   */
 		/* who defined a globally uniform parameter set					*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].epc.gs_tmin = -2.0;
-		default_object_list[i].epc.gs_tmax = 5.0;
-		default_object_list[i].epc.gs_vpd_min = 900;
-		default_object_list[i].epc.gs_vpd_max = 4100;
+		default_object_list[i].epc.gs_tmin = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_tmin", "%lf", -2.0, 1);
+		default_object_list[i].epc.gs_tmax = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_tmax", "%lf", 5.0, 1);
+		default_object_list[i].epc.gs_vpd_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_vpd_min", "%lf", 900, 1);
+		default_object_list[i].epc.gs_vpd_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_vpd_max", "%lf", 4100, 1);
 
-	        default_object_list[i].epc.gs_dayl_min = 36000;
-		default_object_list[i].epc.gs_dayl_max = 39600;
-		default_object_list[i].epc.max_storage_percent = 0.2;
-		default_object_list[i].epc.min_percent_leafg = default_object_list[i].epc.leaf_turnover; 
-		default_object_list[i].epc.dickenson_pa = 0.25;
-		default_object_list[i].epc.waring_pa = 0.8;
-		default_object_list[i].epc.waring_pb = 2.5;
-		default_object_list[i].epc.branch_turnover = 0.0;
-		default_object_list[i].epc.Tacclim = 0.0;
-		default_object_list[i].epc.Tacclim_days = 10.0;
-		default_object_list[i].epc.nfix = 0;
+	        default_object_list[i].epc.gs_dayl_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_dayl_min", "%lf", 36000, 1);
+		default_object_list[i].epc.gs_dayl_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_dayl_max", "%lf", 39600, 1);
+		default_object_list[i].epc.max_storage_percent = getDoubleParam(&paramCnt, &paramPtr, "epc.max_storage_percent", "%lf", 0.2, 1);
+		default_object_list[i].epc.min_percent_leafg = getDoubleParam(&paramCnt, &paramPtr, "epc.min_percent_leafg", "%lf", default_object_list[i].epc.leaf_turnover, 1);
+		default_object_list[i].epc.dickenson_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.dickenson_pa", "%lf", 0.25, 1);
+		default_object_list[i].epc.waring_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pa", "%lf", 0.8, 1);
+		default_object_list[i].epc.waring_pb = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pb", "%lf", 2.5, 1);
+		default_object_list[i].epc.branch_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.branch_turnover", "%lf", 0.0, 1) / 365.0;
+		default_object_list[i].epc.Tacclim = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim", "%lf", 0.0, 1);
+		default_object_list[i].epc.Tacclim_days = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim_days", "%lf", 10.0, 1);
 	/*--------------------------------------------------------------*/
 	/*	 litter is assumed to have a mositure capacity of 	*/
 	/*	given by litter_moist_coef default assumes			*/
@@ -401,148 +318,8 @@ struct stratum_default *construct_stratum_defaults(
 	/* 	similarly for litter depth but we assume an organic 	*/
 	/* 	matter density						*/
 	/*--------------------------------------------------------------*/
-		default_object_list[i].epc.litter_moist_coef = 2.0/1000.0;
-		default_object_list[i].epc.litter_density = 100.0/2.0;
-		while (!feof(default_file)) {
-			fscanf(default_file,"%lf", &(ftmp));
-			read_record(default_file, record);
-			// This strchr splitting method works since all tagged
-			// entries are labled epc.*.  This must change before
-			// we can make the whole file tagged
-			newrecord = strchr(record,'e'); 
-			if (newrecord != NULL) {
-			if (strncasecmp(newrecord,"epc.Tacclim_days", 15) == 0) {	
-				default_object_list[i].epc.Tacclim_days = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.Tacclim", 11) == 0) {	
-				default_object_list[i].epc.Tacclim = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.branch_turnover", 19) == 0) {	
-				default_object_list[i].epc.branch_turnover = ftmp/365.0;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.dickenson_pa", 16) == 0) {	
-				default_object_list[i].epc.dickenson_pa = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.waring_pb", 13) == 0) {	
-				default_object_list[i].epc.waring_pb = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.waring_pa", 13) == 0) {	
-				default_object_list[i].epc.waring_pa = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.min_percent_leafg", 21) == 0) {	
-				default_object_list[i].epc.min_percent_leafg = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.max_storage_percent", 23) == 0) {	
-				default_object_list[i].epc.max_storage_percent = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.min_leaf_carbon", 19) == 0) {	
-				default_object_list[i].epc.min_leaf_carbon = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.max_years_resprout", 22) == 0) {	
-			        default_object_list[i].epc.max_years_resprout = (int) ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-
-			if (strncasecmp(newrecord,"epc.resprout_leaf_carbon", 24) == 0) { 	
-				default_object_list[i].epc.resprout_leaf_carbon = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-
-			if (strncasecmp(newrecord,"epc.litter_gsurf_slope", 22) == 0) {	
-				default_object_list[i].epc.litter_gsurf_slope = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.coef_CO2", 12) == 0) { 
-				default_object_list[i].epc.coef_CO2 = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.litter_moist_coef", 21) == 0) { 
-				default_object_list[i].epc.litter_moist_coef = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strcasecmp(newrecord,"epc.litter_density") == 0) { 
-				default_object_list[i].epc.litter_density = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strcasecmp(newrecord,"epc.litter_gsurf_intercept") == 0) { 
-				default_object_list[i].epc.litter_gsurf_intercept = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.root_growth_direction", 25) == 0) { 
-				default_object_list[i].epc.root_growth_direction = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.root_distrib_parm", 21) == 0) { 
-				default_object_list[i].epc.root_distrib_parm = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.gs_tmin", 11) == 0) { 
-				default_object_list[i].epc.gs_tmin = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.gs_tmax", 11) == 0) { 
-				default_object_list[i].epc.gs_tmax = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-            		if (strncasecmp(newrecord,"epc.gs_vpd_min", 14) == 0) { 
-				default_object_list[i].epc.gs_vpd_min = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.gs_vpd_max", 14) == 0) { 
-				default_object_list[i].epc.gs_vpd_max = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.gs_dayl_min", 15) == 0) { 
-				default_object_list[i].epc.gs_dayl_min = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.nfix", 8) == 0) { 
-				default_object_list[i].epc.nfix = (int) ftmp;
-				printf("\n Using %d for %s for veg default ID %d",
-					default_object_list[i].epc.nfix, newrecord, default_object_list[i].ID);
-				}
-			if (strncasecmp(newrecord,"epc.gs_dayl_max", 15) == 0) { 
-				default_object_list[i].epc.gs_dayl_max = ftmp;
-				printf("\n Using %lf for %s for veg default ID %d",
-					ftmp, newrecord, default_object_list[i].ID);
-				}
-
-
-			}
-			}
-		
+		default_object_list[i].epc.litter_moist_coef = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_moist_coef", "%lf", 2.0/1000.0, 1);
+		default_object_list[i].epc.litter_density = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_density", "%lf", 100.0/2.0, 1);
 		default_object_list[i].epc.gs_dayl_range = default_object_list[i].epc.gs_dayl_max-default_object_list[i].epc.gs_dayl_min;
 		default_object_list[i].epc.gs_vpd_range = default_object_list[i].epc.gs_vpd_max-default_object_list[i].epc.gs_vpd_min;
 		default_object_list[i].epc.gs_trange = default_object_list[i].epc.gs_tmax-default_object_list[i].epc.gs_tmin;
@@ -559,7 +336,7 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		/* set sunlit sla multiplier	this should be an input		*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].epc.shade_sla_mult = 1;
+		default_object_list[i].epc.shade_sla_mult = 1.0;
 
 		/*--------------------------------------------------------------*/
 		/*	Apply sensitivity analysis if appropriate		*/
@@ -568,12 +345,57 @@ struct stratum_default *construct_stratum_defaults(
 		if (command_line[0].vgsen_flag == 1) {
 			default_object_list[i].epc.proj_sla *= command_line[0].veg_sen1;
 			default_object_list[i].epc.shade_sla_mult *= command_line[0].veg_sen2;
-			}
+		}
 
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
-		fclose(default_file);
-		} /*end for*/
-		return(default_object_list);
+
+            memset(strbuf, '\0', strbufLen);
+            strcpy(strbuf, default_files[i]);
+            char *s = strbuf;
+            char *y = NULL;
+            char *token = NULL;
+            char filename[256];
+
+            // Store filename portion of path in 't'
+            while ((token = strtok(s, "/")) != NULL) {
+                // Save the latest component of the filename
+                strcpy(filename, token);
+                s = NULL;
+            } 
+
+            // Remove the file extension, if one exists
+            memset(strbuf, '\0', strbufLen);
+            strcpy(strbuf, filename);
+            free(s);
+            s = strbuf;
+            token = strtok(s, ".");
+            if (token != NULL) {
+                strcpy(filename, token);
+            }
+
+            memset(outFilename, '\0', filenameLen);
+    
+            // Concatenate the output prefix with the filename of the input .def file
+            // and "_stratum.params"
+            if (command_line[0].output_prefix != NULL) {
+                strcat(outFilename, command_line[0].output_prefix);
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "_stratum.params");
+            } 
+            else {
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "stratum.params");
+            }
+    
+            printParams(paramCnt, paramPtr, outFilename);
+	} /*end for*/
+	return(default_object_list);
 } /*end construct_stratum_defaults*/

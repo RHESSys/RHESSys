@@ -3,11 +3,13 @@
 
 #include "blender.h"
 #include "util.h"
+#include "patch_hash_table.h"
 
 /// @brief function to account for roof contribution to impervious patches
 extern bool route_roofs_to_roads(
     struct flow_struct* _flow_table, // The flow table for updating the flowy bits
     int _num_patches,		     // The number of patches in the flow table
+    PatchTable_t *_patchTable, // Hash table to speed lookups of flow table indices
     const double* _roofs, // The array of the contribution of roof squares to the nearest impervous surface
     const int* _impervious, // The array of flags indicating whether a square is an impervious surface
     const int* _patch,	    // The map of pixels to patch ids

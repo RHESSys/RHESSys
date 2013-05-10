@@ -15,8 +15,8 @@ bool row_col_to_index(
     bool result = true;
     if(_rtn_index != 0) {
         if(_row < 0 || _row > _maxr || _col < 0 || _col > _maxc) {
-            fprintf(stderr, "ERROR: Row: %d and/or Column: %d out of range: %d,%d.\n",
-                    _row, _col, _maxr, _maxc);
+//            fprintf(stderr, "ERROR: Row: %d and/or Column: %d out of range: %d,%d.\n",
+//                    _row, _col, _maxr, _maxc);
             result = false;
         } else {
             *_rtn_index = _row * _maxc + _col;
@@ -39,7 +39,7 @@ bool index_to_row_col(
     bool result = true;
     if(_rtn_row != 0 && _rtn_col != 0) {
         if(_index < 0 || _index > _maxr * _maxc) {
-            fprintf(stderr, "ERROR: Index out of range.\n");
+//            fprintf(stderr, "ERROR: Index out of range.\n");
             result = false;
         } else {
             *_rtn_row = _index / _maxc;
