@@ -51,7 +51,7 @@ int	parse_veg_type( char *input_string)
 	else {
 		fprintf(stderr,"\n FATAL ERROR - parse_veg_type");
 		fprintf(stderr,"\n %s Unknown veg type in stratum default file", input_string);
-		fprintf(stderr,"\n must be either TREE or GRASS");
+		fprintf(stderr,"\n must be either TREE or GRASS\n");
 		exit(EXIT_FAILURE);
 	}
 	

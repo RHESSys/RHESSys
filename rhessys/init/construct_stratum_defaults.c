@@ -197,7 +197,7 @@ struct stratum_default *construct_stratum_defaults(
 
 		if ( (float)(epc->frootlitr_flab + epc->frootlitr_flig + fcel) != 1.0 ){
 			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
-			fprintf(stderr,"\n  froot litter proportions of labile, cell. and lignin must sum to 1.0");
+			fprintf(stderr,"\n  froot litter proportions of labile, cell. and lignin must sum to 1.0\n");
 			exit(EXIT_FAILURE);
 		}
 		lig_cel_ratio = epc->frootlitr_flig/fcel;
@@ -221,7 +221,7 @@ struct stratum_default *construct_stratum_defaults(
 		if (epc->veg_type == TREE) {
 			if ( (float)(epc->deadwood_flig + fcel) != 1.0 ){
 				fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
-				fprintf(stderr,"\n  dead wood proportions of labile, cell. and lignin must sum to 1.0");
+				fprintf(stderr,"\n  dead wood proportions of labile, cell. and lignin must sum to 1.0\n");
 				exit(EXIT_FAILURE);
 			}
 			lig_cel_ratio = epc->deadwood_flig/fcel;

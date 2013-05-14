@@ -142,7 +142,7 @@ struct tec_object	*construct_tec(
 		/*		Report a fatal error if line is incorrect.				*/
 		/*--------------------------------------------------------------*/
 		if ( !check ){
-			fprintf(stderr,"\nERROR:  the tec file is corrupted.");
+			fprintf(stderr,"\nERROR:  the tec file is corrupted.\n");
 			fclose(tecfile[0].tfile);
 			exit(EXIT_FAILURE);
 		} /*end if*/
@@ -152,8 +152,10 @@ struct tec_object	*construct_tec(
 		/*		date.													*/
 		/*--------------------------------------------------------------*/
 		if ( cal_date_lt(current_date,old_date)){
-			fprintf(stderr,"FATAL ERROR: in construct_tec ",
-				"dates not in sequence");
+			fprintf(stderr,
+					"FATAL ERROR: in construct_tec: dates not in sequence: %d/%d/%d %d; %d/%d/%d %d\n",
+					current_date.year, current_date.month, current_date.day, current_date.hour,
+					old_date.year, old_date.month, old_date.day, old_date.hour);
 			exit(EXIT_FAILURE);
 		} /*end if*/
 		/*--------------------------------------------------------------*/
