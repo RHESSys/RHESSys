@@ -1,7 +1,8 @@
 PGM  = rhessys5.15.r331
 VERSION = 5.15
 CC = gcc 
-CFLAGS = -O
+#CFLAGS = -O -std=c99
+CFLAGS = -g -std=c99
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 

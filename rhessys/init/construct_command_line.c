@@ -75,6 +75,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].prefix_flag = 0;
 	command_line[0].verbose_flag = 0;
 	command_line[0].routing_flag = 0;
+	command_line[0].surface_routing_flag = 0;
 	command_line[0].stream_routing_flag = 0;
 	command_line[0].reservoir_operation_flag = 0;
 	command_line[0].dclim_flag = 0;
@@ -603,8 +604,16 @@ struct	command_line_object	*construct_command_line(
 				/*			Read in the routing file name.						*/
 				/*--------------------------------------------------------------*/
 				command_line[0].routing_flag = 1;
-				strcpy(command_line[0].routing_filename,main_argv[i]);
+				strncpy(command_line[0].routing_filename, main_argv[i], FILEPATH_LEN);
 				i++;
+				/*--------------------------------------------------------------*/
+				/*	Attempt to read in surface routing file name.				*/
+				/*--------------------------------------------------------------*/
+				if ( (i < main_argc) && !valid_option(main_argv[i]) ) {
+					command_line[0].surface_routing_flag = 1;
+					strncpy(command_line[0].surface_routing_filename, main_argv[i], FILEPATH_LEN);
+					i++;
+				}
 			} /*end if*/
 
 

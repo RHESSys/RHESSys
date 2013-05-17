@@ -57,7 +57,7 @@ bool pervious_search_predicate(
 //	    fprintf(stderr, "ERROR: Failed to map the row: %d, and column: %d to an index.\n", _row, _col);
 	    result = false;
 	} else {
-	    if(context->impervious_[index] != 1 && !is_roof(context->roofs_[index])) {
+	    if(context->impervious_[index] == 0 && !is_roof(context->roofs_[index])) {
 		*_rtn_vote = 1;
 	    } else {
 		*_rtn_vote = 0;

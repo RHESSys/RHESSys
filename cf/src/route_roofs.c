@@ -16,8 +16,9 @@ bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 		const int* _patch, const int* _hill, const int* _zone, int _maxr,
 		int _maxc) {
 	bool result = true;
-	int num_squares = _maxr * _maxc;
-	bool roof_processed[num_squares];
+	int index;
+	int numCells = _maxr * _maxc;
+	bool roof_processed[numCells];
 
 	memset(roof_processed, 0, sizeof(roof_processed));
 
@@ -27,9 +28,9 @@ bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 		fprintf(stderr, "ERROR: could not open roof geometries debug file.\n");
 		result = false;
 	}
-	//
 
-	for (int index = 0; result && index < num_squares; ++index) {
+	for (int index = 0; result && index < numCells; ++index) {
+
 		if (is_roof(_roofs[index]) && roof_processed[index] != true) {
 
 			/* Construct a new roof geometry */
@@ -87,7 +88,6 @@ bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 	if (result) {
 		fclose(fid);
 	}
-	//
 
 	return result;
 }

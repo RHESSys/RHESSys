@@ -130,8 +130,8 @@
 /*	removed obsolete default variables 			*/
 /*--------------------------------------------------------------*/
 
-#ifndef RHESSYS_H
-#define RHESSYS_H
+#ifndef _RHESSYS_H_
+#define _RHESSYS_H_
 
 /*----------------------------------------------------------*/
 /*	Declare shared libraries.							 	*/				
@@ -144,6 +144,8 @@
 /*----------------------------------------------------------*/
 /*	Define macros.											*/
 /*----------------------------------------------------------*/
+#define FILEPATH_LEN 256
+#define TEC_CMD_LEN 256
 #define NULLVAL	-9999	
 #define TRUE	1
 #define FALSE	0
@@ -194,12 +196,19 @@
 
 
 /*----------------------------------------------------------*/
-/*      Define min and max functions                                                    */
+/*      Define min and max macros                           */
 /*----------------------------------------------------------*/
 #define max(a,b)    ((a) > (b) ? (a) : (b))
 #define min(a,b)    ((a) < (b) ? (a) : (b))
 
 int read_record( FILE *, char *);
+
+/*----------------------------------------------------------*/
+/*	Define types 											*/
+/*----------------------------------------------------------*/
+typedef short bool;
+static const short true = 1;
+static const short false = 0;
 
 /*----------------------------------------------------------*/
 /*	Define a calendar date object.							*/
@@ -466,7 +475,8 @@ struct basin_object
 	struct	hillslope_object	**hillslopes;
 	struct	patch_object 		*outside_region;
 	struct	stream_list_object	stream_list;
-	struct	routing_list_object	route_list;
+	struct	routing_list_object	*route_list;
+	struct	routing_list_object *surface_route_list;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
 	};
@@ -967,7 +977,7 @@ struct	soil_default
 /*----------------------------------------------------------*/
 /*	Define an innundation depth object.								*/
 /*----------------------------------------------------------*/
-struct	innundation_object
+struct	inundation_object
 	{
 	double  critical_depth;		/* m */
 	double	gamma;
@@ -1321,7 +1331,7 @@ struct patch_object
 	int		default_flag;
 	int		ID;	
 	int		num_base_stations;				
-	int		num_innundation_depths;
+	int		num_inundation_depths;
 	int		num_canopy_strata;
 	int		num_layers;
 	int		num_soil_intervals;				/* unitless */
@@ -1456,12 +1466,13 @@ struct patch_object
 	struct	canopy_strata_object	**canopy_strata;
 	struct	patch_hourly_object	*hourly;
 	struct	layer_object		*layers;
-	struct	innundation_object 	*innundation_list;
+	struct	inundation_object 	*inundation_list; // Used for subsurface routing, and surface routing when no surface table is provided
+	struct	inundation_object 	*surface_inundation_list; // Used for surface routing
 	struct	neighbour_object 	*neighbours;
 	struct	patch_object		*next_stream;
 	struct	surface_energy_object   *surface_energy_profile;
-        struct  accumulate_patch_object acc_month;
-        struct  accumulate_patch_object acc_year;
+	struct  accumulate_patch_object acc_month;
+	struct  accumulate_patch_object acc_year;
 	struct  rooting_zone_object	rootzone;
 	struct  zone_object		*zone; /* parent zone */
 
@@ -1692,6 +1703,7 @@ struct	command_line_object
 	int		gridded_netcdf_flag;
 	int		grow_flag;
 	int		routing_flag;
+	int		surface_routing_flag;
 	int		stream_routing_flag;
 	int     reservoir_operation_flag;
 	int		ddn_routing_flag;
@@ -1720,11 +1732,12 @@ struct	command_line_object
 	int		vmort_flag;
 	int		version_flag;
 	char	*output_prefix;
-	char	routing_filename[256];
-	char	stream_routing_filename[256];
-	char    reservoir_operation_filename[256];
-	char	world_filename[256];
-	char	tec_filename[256];
+	char	routing_filename[FILEPATH_LEN];
+	char	surface_routing_filename[FILEPATH_LEN];
+	char	stream_routing_filename[FILEPATH_LEN];
+	char    reservoir_operation_filename[FILEPATH_LEN];
+	char	world_filename[FILEPATH_LEN];
+	char	tec_filename[FILEPATH_LEN];
 	double  tmp_value;
 	double  cpool_mort_fract;
 	double	veg_sen1;
@@ -1769,7 +1782,7 @@ struct	tec_object
 struct tec_entry 
 	{
 	struct	date cal_date;
-	char	command[256];
+	char	command[TEC_CMD_LEN];
 	};
 
 
@@ -2434,9 +2447,6 @@ struct mortality_struct
 	double mort_frootc;
 };
 
-
-#endif
-
 /*----------------------------------------------------------*/
 /*	Define the fire structure.	*/
 /*----------------------------------------------------------*/
@@ -2496,3 +2506,4 @@ struct surface_energy_default {
 	};
 
 
+#endif

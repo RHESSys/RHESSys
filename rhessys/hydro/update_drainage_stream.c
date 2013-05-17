@@ -124,7 +124,7 @@ void  update_drainage_stream(
 	/*	streams because they do not route water to downslope	*/
 	/*	neighbours						*/
 	/*--------------------------------------------------------------*/
-	total_gamma =  patch[0].innundation_list[d].gamma;
+	total_gamma =  patch[0].inundation_list[d].gamma;
 
 
 

@@ -484,6 +484,7 @@ int main(int argc, char *argv[]) {
         
     // Added to support roof raster map - hcj
     if (roofs_flag) {
+    	int roofsRows, roofsCols;
     	struct Cell_head roofs_header;
     	roofs = (double*) raster2array(rnroofs, &roofs_header, NULL, NULL, DCELL_TYPE);
 

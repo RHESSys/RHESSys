@@ -1,4 +1,4 @@
-PGM = cf10.0b1
+PGM = cf10.0b2
 DOCDIR = docs
 RHESSYS_BIN = /usr/local/bin
 CC  = gcc

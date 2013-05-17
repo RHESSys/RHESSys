@@ -55,7 +55,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
 #include "rhessys.h"
+#include "functions.h"
 
 struct basin_object *construct_basin(
 									 struct	command_line_object	*command_line,
@@ -83,14 +85,14 @@ struct basin_object *construct_basin(
 	
 	void	sort_by_elevation( struct basin_object *);
 	
-	struct routing_list_object construct_ddn_routing_topology(
-		char *,
-		struct basin_object *);
+//	struct routing_list_object construct_ddn_routing_topology(
+//		char *,
+//		struct basin_object *);
 
-	struct routing_list_object construct_routing_topology(
-		char *,
-		struct basin_object *, 
-		struct	command_line_object *);
+//	struct routing_list_object construct_routing_topology(
+//		char *,
+//		struct basin_object *,
+//		struct	command_line_object *);
 	
 	struct stream_list_object construct_stream_routing_topology(
 		char *,
@@ -316,19 +318,38 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	/*	Read in flow routing topology for routing option	*/
 	/*--------------------------------------------------------------*/
-	if ( command_line[0].routing_flag == 1) {
+	if ( command_line[0].routing_flag == 1 ) {
 		basin[0].outside_region = (struct patch_object *) alloc (1 *
 			sizeof(struct patch_object) , "patch",
 			"construct_basin");
 		basin[0].outside_region[0].sat_deficit = 0.0;
 		basin[0].outside_region[0].ID = 0;
-		if (command_line[0].ddn_routing_flag == 1)
-			basin[0].route_list = construct_ddn_routing_topology( command_line[0].routing_filename, basin);
-		else
-			basin[0].route_list = construct_routing_topology( command_line[0].routing_filename, basin,
-						command_line);
+		if ( command_line[0].ddn_routing_flag == 1 ) {
+			basin->route_list = construct_ddn_routing_topology( command_line[0].routing_filename, basin);
+		} else {
+			basin->route_list = construct_routing_topology( command_line[0].routing_filename, basin,
+						command_line, false);
+			if ( command_line->surface_routing_flag ) {
+				printf("\tReading surface routing table\n");
+				basin->surface_route_list =
+						construct_routing_topology( command_line->surface_routing_filename, basin,
+								command_line, true);
+				if ( basin->surface_route_list->num_patches != basin->route_list->num_patches ) {
+					fprintf(stderr,
+							"\nFATAL ERROR: in construct_basin, surface routing table has %d patches, but subsurface routing table has %d patches. The number of patches must be identical.\n",
+							basin->surface_route_list->num_patches, basin->route_list->num_patches);
+					exit(EXIT_FAILURE);
+				}
+			} else {
+				// No surface routing table specified, use sub-surface for surface
+				basin->surface_route_list =
+						construct_routing_topology( command_line->routing_filename, basin,
+								command_line, true);
+			}
+		}
+	} else {
+		basin->route_list->num_patches = 0;
 	}
-		else basin[0].route_list.num_patches = 0;
 
 
 	/*--------------------------------------------------------------*/

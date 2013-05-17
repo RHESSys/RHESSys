@@ -1,3 +1,6 @@
+#ifndef _PARAMS_H_
+#define _PARAMS_H_
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,3 +21,5 @@ float  getFloatParam(int *paramCnt, param **paramPtr , char *paramName, char *re
 double getDoubleParam(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, double defaultVal, int useDefaultVal);
 void   printParams(int paramCnt, param *params, char *outFilename);
 int string_length(char *s);
+
+#endif

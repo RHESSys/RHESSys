@@ -1,3 +1,7 @@
+#ifndef _PHYS_CONSTANTS_H_
+#define _PHYS_CONSTANTS_H_
+
+
 /* holds physical constants */
 /* atmospheric constants */
 /* from the definition of the standard atmosphere, as established
@@ -44,5 +48,4 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 #define NONWOOD_GRPERC 1.2  /* (DIM) growth resp per unit of nonwood C grown */
 #define WOOD_GRPERC    2.0  /* (DIM) growth resp per unit of woody C grown */
 
-
-
+#endif

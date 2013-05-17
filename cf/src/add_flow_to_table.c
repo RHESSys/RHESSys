@@ -124,21 +124,25 @@ bool add_flow_to_table(
         // do the sciences
     	int contributor_patch = find_patch(_patchTable, _patch[contributor_index], _zone[contributor_index], _hill[contributor_index]);
     	assert( contributor_patch != PATCH_HASH_TABLE_EMPTY );
+
     	int receiver_patch = find_patch(_patchTable, _patch[receiver_index], _zone[receiver_index], _hill[receiver_index]);
-    	assert( receiver_patch != PATCH_HASH_TABLE_EMPTY );
 
-        // Create an adjacency for the receiver
-        struct adj_struct* adjacency = 0;
-        if(!create_flow_adjacency(_flow_table, receiver_patch, _proportion, &adjacency)) {
-            fprintf(stderr, "ERROR: Failed to create receiver adjacency.\n");
-            result = false;
-        }
+    	/* ignore areas outside the basin */
+    	if ( (_patch[receiver_index] > 0) && (_zone[receiver_index] > 0) && (_hill[receiver_index] > 0)) {
 
-        // Add the adjacency to the contributor
-        else if(!add_adjacency_to_contributor(_flow_table, contributor_patch, adjacency)) {
-            fprintf(stderr, "ERROR: Failed to add receiver adjacency to the contributor.\n");
-            result = false;
-        }
+			// Create an adjacency for the receiver
+			struct adj_struct* adjacency = 0;
+			if(!create_flow_adjacency(_flow_table, receiver_patch, _proportion, &adjacency)) {
+				fprintf(stderr, "ERROR: Failed to create receiver adjacency.\n");
+				result = false;
+			}
+
+			// Add the adjacency to the contributor
+			else if(!add_adjacency_to_contributor(_flow_table, contributor_patch, adjacency)) {
+				fprintf(stderr, "ERROR: Failed to add receiver adjacency to the contributor.\n");
+				result = false;
+			}
+    	}
     }
     return result;
 }

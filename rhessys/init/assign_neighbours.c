@@ -67,6 +67,9 @@ int assign_neighbours( struct neighbour_object *neighbours,
 		/* 	excepth in the case of a stream patch 				*/
 		/*	 - this however is not strictly enforced			*/
 		/*----------------------------------------------------------------------*/
+
+//		printf("\t\tassign_neigh(%d): patch: %d, zone: %d, hill: %d\n", i, patch_ID, zone_ID, hill_ID);
+
 		if (gamma > 0.0) {
 			if  ( (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) )
 				neigh = find_patch(patch_ID, zone_ID, hill_ID, basin);

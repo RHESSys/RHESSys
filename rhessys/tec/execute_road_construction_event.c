@@ -29,20 +29,22 @@
 /*--------------------------------------------------------------*/
 #include <string.h>
 #include <stdio.h>
+
 #include "rhessys.h"
+#include "functions.h"
 
 void execute_road_construction_event(
 									 struct	world_object *world,
 									 struct	command_line_object	*command_line,
 									 struct date	current_date)
 {
-	/*--------------------------------------------------------------*/
-	/*	Local function definition.									*/
-	/*--------------------------------------------------------------*/
-
-	struct routing_list_object construct_routing_topology(
-		char *,
-		struct basin_object *);
+//	/*--------------------------------------------------------------*/
+//	/*	Local function definition.									*/
+//	/*--------------------------------------------------------------*/
+//
+//	struct routing_list_object construct_routing_topology(
+//		char *,
+//		struct basin_object *);
 	
 
 	void *alloc(size_t, char *, char *);
@@ -57,7 +59,10 @@ void execute_road_construction_event(
 	
 	for (b=0; b< world[0].num_basin_files; b++) {
 		basin = world[0].basins[b];
-		free(basin[0].route_list.list);
+		free(basin->route_list->list);
+		free(basin->route_list);
+		free(basin->surface_route_list->list);
+		free(basin->surface_route_list);
 		/*--------------------------------------------------------------*/
 		/*  Read in a new routing topology file.                    */
 		/*--------------------------------------------------------------*/
@@ -65,11 +70,24 @@ void execute_road_construction_event(
 			current_date.month,
 			current_date.day,
 			current_date.hour);
-		strcpy(routing_filename, command_line[0].routing_filename);
-		strcat(routing_filename, ext);
-		printf("\nRedefining Flow Connectivity using %s\n",routing_filename);
+		strncpy(routing_filename, command_line[0].routing_filename, MAXSTR);
+		strncat(routing_filename, ext, MAXSTR);
+		printf("\nRedefining Flow Connectivity using %s\n", routing_filename);
+		basin->route_list = construct_routing_topology( routing_filename, basin, command_line, false );
 
-		basin[0].route_list = construct_routing_topology( routing_filename, basin);
+		if ( command_line->surface_routing_flag ) {
+			strncpy(routing_filename, command_line->surface_routing_filename, MAXSTR);
+			strncat(routing_filename, ext, MAXSTR);
+			printf("\nRedefining Surface Flow Connectivity using %s\n", routing_filename);
+		}
+		basin->surface_route_list = construct_routing_topology( routing_filename, basin, command_line, true );
+		if (basin->surface_route_list->num_patches != basin->route_list->num_patches) {
+			fprintf(stderr,
+					"\nFATAL ERROR: in execute_road_construction_event, surface routing table has %d patches, but subsurface routing table has %d patches. The number of patches must be identical.\n",
+					basin->surface_route_list->num_patches,
+					basin->route_list->num_patches);
+			exit(EXIT_FAILURE);
+		}
 
 	} /* end basins */
 	return;

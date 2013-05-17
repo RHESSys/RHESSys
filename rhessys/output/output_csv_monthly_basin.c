@@ -44,7 +44,7 @@ void	output_csv_monthly_basin(
 	int check;
 	if (basin[0].acc_month.length == 0) basin[0].acc_month.length = 1;
 
-	basin[0].acc_month.length /= basin[0].route_list.num_patches;
+	basin[0].acc_month.length /= basin->route_list->num_patches;
 
 	check = fprintf(outfile,
 		"%3d,%4d,%3d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",

@@ -44,8 +44,8 @@ void	output_monthly_basin(
 	int check;
 	if (basin[0].acc_month.length == 0) basin[0].acc_month.length = 1;
 	
-	if (basin[0].route_list.num_patches > 0)
-		basin[0].acc_month.length /= (basin[0].route_list.num_patches);
+	if (basin->route_list->num_patches > 0)
+		basin[0].acc_month.length /= (basin->route_list->num_patches);
 	check = fprintf(outfile,
 		"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.month,

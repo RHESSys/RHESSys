@@ -44,8 +44,8 @@ void	output_yearly_basin(
 	int check;
 
 
-	if (basin[0].route_list.num_patches > 0)	
-		basin[0].acc_year.length /= basin[0].route_list.num_patches;
+	if (basin->route_list->num_patches > 0)
+		basin[0].acc_year.length /= basin->route_list->num_patches;
 	if (basin[0].acc_year.length == 0) basin[0].acc_year.length = 1;
 
 

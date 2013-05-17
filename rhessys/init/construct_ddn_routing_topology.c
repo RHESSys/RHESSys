@@ -31,9 +31,8 @@
 #include <stdlib.h>
 #include "rhessys.h"
 
-struct routing_list_object construct_ddn_routing_topology(
-							  char	*routing_filename,
-							  struct basin_object *basin)
+struct routing_list_object *construct_ddn_routing_topology(char *routing_filename,
+		  struct basin_object *basin)
 													  
 {
 	/*--------------------------------------------------------------*/
@@ -57,10 +56,12 @@ struct routing_list_object construct_ddn_routing_topology(
 	int		drainage_type;
 	double	x,y,z, area, gamma, width, critical_depth;
 	FILE	*routing_file;
-	struct routing_list_object	rlist;
+	struct routing_list_object	*rlist;
 	struct	patch_object	*patch;
 	struct	patch_object	*stream;
 	
+	rlist = (struct routing_list_object	*)alloc( sizeof(struct routing_list_object), "rlist", "construct_routing_topology");
+
 	/*--------------------------------------------------------------*/
 	/*  Try to open the routing file in read mode.                    */
 	/*--------------------------------------------------------------*/
@@ -70,8 +71,8 @@ struct routing_list_object construct_ddn_routing_topology(
 		exit(EXIT_FAILURE);
 	} /*end if*/
 	fscanf(routing_file,"%d",&num_patches);
-	rlist.num_patches = num_patches;
-	rlist.list = (struct patch_object **)alloc(
+	rlist->num_patches = num_patches;
+	rlist->list = (struct patch_object **)alloc(
 		num_patches * sizeof(struct patch_object *), "patch list",
 		"construct_ddn_routing_topography");
 	/*--------------------------------------------------------------*/
@@ -95,33 +96,33 @@ struct routing_list_object construct_ddn_routing_topology(
 			patch = find_patch(patch_ID, zone_ID, hill_ID, basin);
 		else
 			patch = basin[0].outside_region;
-		rlist.list[i] = patch;
-		patch[0].num_innundation_depths = num_innundation_depths;
+		rlist->list[i] = patch;
+		patch[0].num_inundation_depths = num_innundation_depths;
 		patch[0].stream_gamma = 0.0;
 		patch[0].drainage_type = drainage_type;
 		/*--------------------------------------------------------------*/
 		/*  Allocate innundation depth array				*/
 		/*--------------------------------------------------------------*/
-		patch[0].innundation_list = (struct innundation_object *)alloc(num_innundation_depths *
-		sizeof(struct innundation_object), "innundation_list", "assign_neighbours");
+		patch[0].inundation_list = (struct inundation_object *)alloc(num_innundation_depths *
+		sizeof(struct inundation_object), "innundation_list", "assign_neighbours");
 
 		for (d=0; d<num_innundation_depths; d++) {
 			fscanf(routing_file,"%lf %lf %d", &critical_depth, &gamma, &num_neighbours);
 
 			if (num_innundation_depths > 1)
-				patch[0].innundation_list[d].critical_depth = critical_depth;
+				patch[0].inundation_list[d].critical_depth = critical_depth;
 			else
-				patch[0].innundation_list[d].critical_depth = NULLVAL;
+				patch[0].inundation_list[d].critical_depth = NULLVAL;
 
 			gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
 			
-			patch[0].innundation_list[d].gamma	 = gamma;
+			patch[0].inundation_list[d].gamma	 = gamma;
 			/*--------------------------------------------------------------*/
 			/*  Allocate neighbour array									*/
 			/*--------------------------------------------------------------*/
-			patch[0].innundation_list[d].neighbours = (struct neighbour_object *)alloc(num_neighbours *
+			patch[0].inundation_list[d].neighbours = (struct neighbour_object *)alloc(num_neighbours *
 			sizeof(struct neighbour_object), "neighbours", "assign_neighbours");
-			patch[0].innundation_list[d].num_neighbours = assign_neighbours(patch[0].innundation_list[d].neighbours, num_neighbours, basin, routing_file);
+			patch[0].inundation_list[d].num_neighbours = assign_neighbours(patch[0].inundation_list[d].neighbours, num_neighbours, basin, routing_file);
 		
 		}
 		if (drainage_type == 2) {
@@ -136,6 +137,9 @@ struct routing_list_object construct_ddn_routing_topology(
 			patch[0].next_stream = stream;
 		}
 	}
+
+	fclose(routing_file);
+
 	return(rlist);
 } /*end construct_ddn_routing_topology.c*/
 
