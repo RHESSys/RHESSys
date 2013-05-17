@@ -505,7 +505,7 @@ int main(int argc, char *argv[]) {
         flna = NULL;
 
     /* allocate patch tables */
-    // Use a relatively large tables, some users may need to make the table larger
+    // Use relatively large tables, some users may need to make the table larger
     // for very large numbers of patches (>100k) to improve performance (table size is currently static)
     if (!singleFlowtable_flag) {
     	surfacePatchTable = allocatePatchHashTable(PATCH_HASH_TABLE_DEFAULT_SIZE);

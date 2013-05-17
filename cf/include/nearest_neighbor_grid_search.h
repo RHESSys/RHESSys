@@ -3,6 +3,8 @@
 
 #include "util.h"
 
+#define NEAREST_NEIGHBOR_GRID_SEARCH_MAX_DIST 20
+
 /// @brief Interface for the search comparison callback function.
 typedef bool (*search_predicate_t)(
     int,			// The row
@@ -11,6 +13,7 @@ typedef bool (*search_predicate_t)(
     int*);			// Returned vote value
 
 /// @brief Do a nearest neighbor search over the grid squares using a callback to determine when a square is selected.
+/// @note Search is limited to cardinal directions
 bool grid_search(
     int _max_dist,		// The max distance out from which the search will look before giving up.
     int _start_row,		// The row of the starting square of the search

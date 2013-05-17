@@ -1,4 +1,4 @@
-PGM = cf10.0a1
+PGM = cf10.0b1
 DOCDIR = docs
 RHESSYS_BIN = /usr/local/bin
 CC  = gcc
@@ -53,7 +53,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $< 
 
 test: $(TESTS) 
-	# Run each test
+	# Run each unit test
 	$(patsubst %,%;,$(TESTS_TO_RUN))
 
 $(TESTS): $(OBJECTS) $(OBJECTS_TESTS) 
@@ -68,6 +68,10 @@ endif
 	
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
 	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $< 
+
+functest:
+	# Run Python-based functional testing
+	python -m unittest discover -s test
 
 doc:
 	doxygen
