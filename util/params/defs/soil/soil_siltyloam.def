@@ -1,5 +1,5 @@
-4.000000	   patch_default_ID
-1.000000	   theta_psi_curve
+8	   patch_default_ID
+1	   theta_psi_curve
 0.622000	   Ksat_0
 0.120000	   m
 0.485000	   porosity_0
@@ -22,6 +22,6 @@
 0.253000	   albedo
 1.000000	   mobile_N_proportion
 0.120000	   N_decay
-0.200000	   sand
-0.150000	   clay
-0.650000	   silt
+0.170000	   sand
+0.130000	   clay
+0.700000	   silt

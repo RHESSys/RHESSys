@@ -1,12 +1,12 @@
-2.000000	   patch_default_ID
-1.000000	   theta_psi_curve
+11	   patch_default_ID
+1	   theta_psi_curve
 13.500000	   Ksat_0
 0.120000	   m
 0.410000	   porosity_0
 4000.000000	   porosity_decay
 0.000000	   P3
 0.228000	   pore_size_index
-0.080000	   psi_air_entry
+0.090000	   psi_air_entry
 0.010000	   psi_max
 200.000000	   soil_depth
 0.400000	   m_z
