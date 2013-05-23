@@ -32,9 +32,10 @@ def usage():
     print '            - if "param" is specified, then name, value, comment fields are output with a format that is suitable for use as a RHESsys parameter file'
     print '      --genus=<genus name>: the name of a genus that will be used for searching'
     print '      --location=<location name>: the location to search for, e.g. "Orgeon"'
+    print '      --type=<class type>: one of: %s' % str(rpc.VALID_TYPES)
     print '      --reference=<reference string>: this can be any reference (citation) that will be used to search for matching records in the parameter database.'
     print '      --searchType=<hierarchical | constrained>: perform a hierarchical or constrained search'
-    print '      --species=<species name">: the name of a genuse that will be used for searching'
+    print '      --species=<species name">: the name of a genus that will be used for searching'
     print '      --startDatetime=<datetime>: select parameters that were inserted into the database after the specified datetime. Datetime can'
     print '        be specified in one of the formats: "YYYY-MM-DD", "YYYY-MM-DD HH:MM" or "YYYY-MM-DD HH:MM:SS", for example "2013-04-15 10:25:00"'
     print '      --user=<user name>: the name of the person that will be used for searching'

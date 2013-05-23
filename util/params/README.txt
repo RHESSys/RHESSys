@@ -9,13 +9,12 @@ add and delete parameters from the database. The following scripts are
 currently available: insertParams.py, searchParams.py,
 deleteParams.py. For convenience, the BASH scripts inserParams.sh,
 searchParams.sh and deleteParams.sh can be used to call the
-corresponsing Python script.
+corresponding Python script.
 
 Initial database creation and population
 ----------------------------------------
 In order to create the params.sqlite database for the first time, run
-the script createParamDB.sh, or simply copy the file
-empty-params.sqlite
+the script createParamDB.sh.
 
 The insertParams.py script is used to read parameters from a
 definition file (.def) and enter them into the database.
@@ -24,7 +23,7 @@ Class Hierarchy
 ---------------
 The parameter database is organized into parameter classes which
 corresponds to the groupings of parameters in .def files. Typical
-class names are "Deciduous", "Red Alder", "Sandy loam".
+class names are "Deciduous", "Red Alder", "sandy-loam".
 
 These classes are organized into a simple hierarchy, where each class
 may have one parent class. The class hierarchy is only two levels
@@ -39,18 +38,18 @@ specified and a separate set of parameter may exist for "Red Alder",
 Hierarchical Search
 -------------------
 This scheme of class hierarchy and location generic or location
-specific classes minimizes duplication of parameters for similiar
+specific classes minimizes duplication of parameters for similar
 classes.  For example, it is possible to enter a full set of
 parameters for class "Deciduous", and then only enter parameters that
 are unique to Red Alder in the class "Red Alder" (no location
-specified). Then for Red Alder occuring in Oregon, only unique
+specified). Then for Red Alder occurring in Oregon, only unique
 parameter for Orgeon are entered in the class "Red Alder", "Oregon".
 
 When parameters are retrieved using the "hierarchical" search method,
 more specified classes override the general, so when retrieving
-parameters for "Red Alder", "Orgeon", paraneter are retrieved for the
+parameters for "Red Alder", "Oregon", parameter are retrieved for the
 parent class "Deciduous", then the location generic class "Red Alder",
-then the location specific class "Red Alder", "Orgeon":
+then the location specific class "Red Alder", "Oregon":
 
     - "Red Alder", "Oregon" -> overrides duplicates of "Red Alder" ->
       overrides duplicates of "Decidous"
@@ -58,10 +57,10 @@ then the location specific class "Red Alder", "Orgeon":
 The parameter "stratum_default_ID" is handled specially by the
 database software. This parameter used to be contained in each .def
 file used by RHESsys, which requires that the value of this parameter
-is unique across all .def files that are used in a RHESsys modelling
+is unique across all .def files that are used in a RHESsys modeling
 run. With the use of the parameter database it is necessary for the
 database software to maintain a unique number for this parameter for
-each class in the database. The database software therefor determines
+each class in the database. The database software therefore determines
 the correct value for this parameter when the database is searched and
 a parameter file is written. The value used is the class_id value for
 the class that was requested during the search. For example, if we
@@ -70,7 +69,7 @@ performed the search:
     ./searchParams.py -v --searchType=hierarchical --class="Red Alder"
     --location="Oregon" --format=param
 
-the class_id for "Red Alder", "Orgeon" would be used (the requested
+the class_id for "Red Alder", "Oregon" would be used (the requested
 class), even though other classes have contributed parameters to the
 output, in this case, "Deciduous" and "Red Alder" (no location
 specified).
@@ -115,7 +114,7 @@ tar file
 
 Quickstart
 ----------
-1. Run createParamDB.sh or copy empty-params.sqlite to params.sqlite
+1. Run createParamDB.sh
 2. Edit insertParams.sh
 3. Run insertParams.sh
 4. Edit searchParams.sh

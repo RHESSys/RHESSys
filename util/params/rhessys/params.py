@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Author : Peter Slaughter
 Date   : Feb. 2013
@@ -248,8 +246,8 @@ def fetchParams(conn, className, classType, location, param, genus, species, sta
 
     c = conn.cursor()
     resultSet = None
-    selectClause = 'select %s from class c, param p' % rpc.PARAM_FIELD_NAMES_QUALIFIED
-    whereClause = ' where c.class_id=p.class_id '
+    selectClause = 'select %s from class c, param p, class_type t' % rpc.PARAM_FIELD_NAMES_QUALIFIED
+    whereClause = ' where c.class_id=p.class_id and c.type_id=t.type_id'
 
     if (className != None):
         whereClause += r" and c.name like '%" + "%s" % className+ r"%'"
@@ -258,6 +256,9 @@ def fetchParams(conn, className, classType, location, param, genus, species, sta
         whereClause += " and c.location = '%s'" % location
     #else:
     ##    whereClause += ' and c.location = ""'
+
+    if (classType != None):
+        whereClause += " and t.type_name = '%s'" % classType
 
     if (genus != None):
         whereClause += " and c.genus = '%s'" % genus
@@ -680,7 +681,6 @@ class paramDB:
             self.params = self.searchConstrained(classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference)
         else:
             msg = "Unknown search type %s" % searchType
-            usage()
             raise RuntimeError, msg
 
     def searchClass(self, classId, classType, className, location, genus, species):

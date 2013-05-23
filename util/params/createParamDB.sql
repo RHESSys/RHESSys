@@ -49,28 +49,6 @@ create table class(
     unique (type_id, default_id)
 );
 
--- Populate the class tqble with known base classes
--- Soil types
--- Note: using autoincrement to determine 'class_id'. The 'type_id' values are hard-coded from the class_type table initialization above.
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('clay',            '', 5, '', '', 1, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('silty-clay',      '', 5, '', '', 2, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('silty-clay-loam', '', 5, '', '', 3, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('sandy-clay',      '', 5, '', '', 4, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('sandy-clay-loam', '', 5, '', '', 5, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('clay-loam',       '', 5, '', '', 6, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('silt',            '', 5, '', '', 7, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('silt-loam',       '', 5, '', '', 8, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('loam',            '', 5, '', '', 9, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('sand',            '', 5, '', '', 10, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('loamy-sand',      '', 5, '', '', 11, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('sandy-loam',      '', 5, '', '', 12, 0);
--- Stratum types
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('deciduous', '', 8, '', '', 1, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('conifer',   '', 8, '', '', 2, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('grass',     '', 8, '', '', 3, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('nonveg',    '', 8, '', '', 4, 0);
-insert into class (name, location, type_id, genus, species, default_id, parent_id) values ('algae',     '', 8, '', '', 5, 0);
-
 -- Parameter table
 create table param(
     class_id integer not null,
