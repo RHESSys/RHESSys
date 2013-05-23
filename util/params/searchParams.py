@@ -28,10 +28,10 @@ def usage():
     print '      --endDatetime=<datetime>: select parameters that were inserted into the database before the specified datetime. Datetime can'
     print '        be specified in one of the formats: "YYYY-MM-DD", "YYYY-MM-DD HH:MM" or "YYYY-MM-DD HH:MM:SS", for example "2013-04-15 10:25:00"'
     print '      --format=<format type>: valid formats are "csv" and "param"'
-    print '            - if "csv" is specified, all fields from the database are written to the output file, separated by commans'
+    print '            - if "csv" is specified, all fields from the database are written to the output file, separated by commas'
     print '            - if "param" is specified, then name, value, comment fields are output with a format that is suitable for use as a RHESsys parameter file'
     print '      --genus=<genus name>: the name of a genus that will be used for searching'
-    print '      --location=<location name>: the location to search for, e.g. "Orgeon"'
+    print '      --location=<location name>: the location to search for, e.g. "Oregon"'
     print '      --type=<class type>: one of: %s' % str(rpc.VALID_TYPES)
     print '      --reference=<reference string>: this can be any reference (citation) that will be used to search for matching records in the parameter database.'
     print '      --searchType=<hierarchical | constrained>: perform a hierarchical or constrained search'
