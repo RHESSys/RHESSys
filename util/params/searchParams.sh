@@ -9,8 +9,9 @@
 #./searchParams.py -v --searchType=hierarchical --name="grass" --format=param --output=my-grass.def
 
 #./searchParams.py -v --searchType=hierarchical --name="Red Alder" --format=csv
+./searchParams.py -v --searchType=hierarchical --name="water" --format=csv
 #./searchParams.py -v --searchType=hierarchical --name="Red Alder" --format=param
-./searchParams.py -v --searchType=hierarchical --name="Red Alder" --location="Oregon" --format=csv
+#./searchParams.py -v --searchType=hierarchical --name="Red Alder" --location="Oregon" --format=csv
 #./searchParams.py -v --searchType=hierarchical --name="Red Alder" --location="Oregon" --format=param
 #./searchParams.py -v --searchType=hierarchical --name="Red Alder" --location="Oregon" --format=param --output=foo.def
 #./searchParams.py -v --searchType=hierarchical --name="Red Alder" --location="Oregon" --startDatetime="2013-04-15" --format=csv

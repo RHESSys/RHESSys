@@ -13,6 +13,7 @@ import time
 import tempfile
 import sqlite3
 import rhessys.constants as rpc
+from operator import itemgetter, attrgetter
 
 paramFileRegex = re.compile('^\s*([\w.-]+)\s*([\w.-]+)#*.*$')
 csvFileRegex = re.compile('^\s*(\w+)\s*,(\w+).*$')
@@ -405,12 +406,11 @@ def writeClass(conn, classes, outputPath):
     else:
         fdOut = sys.stdout
 
-    #fdOut.write(rpc.CLASS_FIELD_NAMES)
-    fdOut.write('class type,name,location,genus,species,default id,parent id\n')
+    fdOut.write('class name,name,location,genus,species,default id,parent id\n')
     paramsCSVwriter = csv.writer(fdOut, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    #print "classes: ", classes
-    for c in sorted(classes, key=lambda classes: classes[rpc.TYPE_JOIN_CLASS_IND['name']]):
+    #for c in sorted(sortedByType, key=lambda classes: sortedByType[rpc.TYPE_JOIN_CLASS_IND['name']]):
+    for c in sorted(classes, key=itemgetter(rpc.TYPE_JOIN_CLASS_IND['type_name'],rpc.TYPE_JOIN_CLASS_IND['name'])):
         (type_id,type_name,max_id,class_id,name,location,type_id,genus,species,default_id,parent_id ) = c
         outLine = (type_name,name,location,genus,species,default_id,parent_id)
 
@@ -589,7 +589,6 @@ class paramDB:
         # fetch parameters for base class if it exists
         baseClassParams = []
         baseClass = fetchBaseClass(self.conn, className, location)
-        print "base: ", baseClass
         # No base class exists for this class, but it still may have a location generic class
         if (baseClass != None):
             baseClassName = baseClass[rpc.TYPE_JOIN_CLASS_IND['name']]
@@ -653,8 +652,6 @@ class paramDB:
 
             self.requestedClassId = requestedClass[rpc.TYPE_JOIN_CLASS_IND['class_id']]
 
-        # fetch a resultset with the specified constraints
-        # return resultSet
         finalParams = []
         finalParams = fetchParams(self.conn, className, classType, location, param, genus, species, startDatetimeStr, endDatetimeStr, reference)
         if (className != None):
@@ -688,11 +685,22 @@ class paramDB:
         self.searchResultType = "class"
 
         if (classType != None):
-            if (not classType.lower() in rpc.VALID_TYPES):
-                msg = 'Invalid class type \"%s\".' % classType 
-                raise RuntimeError, msg
+            # The class type "all" is reserved to mean all class types
+            if (classType.lower() == "all"):
+                classType = ','.join(t for t in rpc.VALID_TYPES)
 
-        self.classes = fetchClass(self.conn, classId, classType, className, location, genus, species)
+            if (len(classType.split(',')) > 1):
+                self.classes = []
+                for ct in classType.split(','):
+                    if (classType != None):
+                        if (not ct.lower() in rpc.VALID_TYPES):
+                            msg = 'Invalid class type \"%s\".' % ct
+                            raise RuntimeError, msg
+                    self.classes.extend(fetchClass(self.conn, classId, ct, className, location, genus, species))
+            else:
+                self.classes = fetchClass(self.conn, classId, classType, className, location, genus, species)
+        else:
+            self.classes = fetchClass(self.conn, classId, classType, className, location, genus, species)
         
     def write(self, outputPath, outputFormat):
 
