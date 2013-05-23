@@ -52,7 +52,7 @@ parent class "Deciduous", then the location generic class "Red Alder",
 then the location specific class "Red Alder", "Oregon":
 
     - "Red Alder", "Oregon" -> overrides duplicates of "Red Alder" ->
-      overrides duplicates of "Decidous"
+      overrides duplicates of "Deciduous"
 
 The parameter "stratum_default_ID" is handled specially by the
 database software. This parameter used to be contained in each .def

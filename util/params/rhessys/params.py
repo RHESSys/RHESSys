@@ -5,7 +5,7 @@ Purpose: Maintain database of RHESSys runtime parameters
 """
 
 import ConfigParser
-import commands, csv, getopt, os, re, string, sys, time
+import commands, csv, getopt, os, re, string, sys, time, errno
 from datetime import datetime
 from datetime import date
 import logging
@@ -242,12 +242,14 @@ def fetchBaseClass(conn, className, location):
 
     return resultSet
 
-def fetchParams(conn, className, classType, location, param, genus, species, startDatetimeStr, endDatetimeStr, reference):
+def fetchParams(conn, className, classType, location, param, genus, species, startDatetimeStr, endDatetimeStr, reference, limitToBaseClasses=False):
 
     c = conn.cursor()
     resultSet = None
     selectClause = 'select %s from class c, param p, class_type t' % rpc.PARAM_FIELD_NAMES_QUALIFIED
     whereClause = ' where c.class_id=p.class_id and c.type_id=t.type_id'
+    if limitToBaseClasses:
+        whereClause += ' and c.parent_id = 0'
 
     if (className != None):
         whereClause += r" and c.name like '%" + "%s" % className+ r"%'"
@@ -425,7 +427,7 @@ def writeCSV(conn, params, classes, outputPath):
             fdOut = open(outputPath, 'w')
         except:
             msg = "Unable to open params output file %s" % outputPath
-            raise RuntimeError
+            raise RuntimeError(msg)
     else:
         fdOut = sys.stdout
 
@@ -468,6 +470,7 @@ def writeParams(conn, params, outputPath):
         fdOut.write("%s %s %s\n" % (value, name, comment))
 
     fdOut.close()
+
 
 def fetchClassType(conn, classTypeId, classTypeName):
     """ Fetch a classType entry from the 'class_type' table. """
@@ -574,7 +577,7 @@ class paramDB:
         self.requestedClassId = None
         self.searchResultType = None
         
-    def searchHierarchical(self, classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference):
+    def searchHierarchical(self, classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference, limitToBaseClasses=False):
 
         self.searchResultType = "param"
 
@@ -601,11 +604,11 @@ class paramDB:
 
             baseClassParams = []
             if (baseClassName != None):
-                baseClassParams = fetchParams(self.conn, baseClassName, None, None, None, None, None, startDatetimeStr, endDatetimeStr, None) 
+                baseClassParams = fetchParams(self.conn, baseClassName, None, None, None, None, None, startDatetimeStr, endDatetimeStr, None, limitToBaseClasses) 
                 #baseClassParams = filterDuplicates(baseClassParams, rpc.PARAM_IND['name'])
 
         # retrieve the "generic" version of the requested class
-        genericClassParams = fetchParams(self.conn, className, None, "", None, None, None, startDatetimeStr, endDatetimeStr, None) 
+        genericClassParams = fetchParams(self.conn, className, None, "", None, None, None, startDatetimeStr, endDatetimeStr, None, limitToBaseClasses) 
 
         # Sort and filter duplicates for the generic class parameters
         if (len(genericClassParams) > 0):
@@ -622,7 +625,7 @@ class paramDB:
 
         # Fetch parameters for the location specific class (if requested)
         if (location != None):
-            locationSpecificParams = fetchParams(self.conn, className, None, location, None, None, None, startDatetimeStr, endDatetimeStr, None) 
+            locationSpecificParams = fetchParams(self.conn, className, None, location, None, None, None, startDatetimeStr, endDatetimeStr, None, limitToBaseClasses) 
             locationSpecificClass = fetchClass(self.conn, None, None, className, location, None, None)[0]
             locationSpecificClassId = locationSpecificClass[rpc.TYPE_JOIN_CLASS_IND['class_id']]
 
@@ -639,7 +642,7 @@ class paramDB:
 
         return finalParams
 
-    def searchConstrained(self, classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference):
+    def searchConstrained(self, classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference, limitToBaseClasses=False):
 
         self.searchResultType = "param"
 
@@ -656,7 +659,7 @@ class paramDB:
         # fetch a resultset with the specified constraints
         # return resultSet
         finalParams = []
-        finalParams = fetchParams(self.conn, className, classType, location, param, genus, species, startDatetimeStr, endDatetimeStr, reference)
+        finalParams = fetchParams(self.conn, className, classType, location, param, genus, species, startDatetimeStr, endDatetimeStr, reference, limitToBaseClasses)
         if (className != None):
 
             finalClass = fetchClass(self.conn, None, None, className, location, None, None)[0]
@@ -671,14 +674,14 @@ class paramDB:
 
         return finalParams
 
-    def search(self, searchType, classType, className, location, param, genus, species, startDatetimeStr, endDatetimeStr, user, reference):
+    def search(self, searchType, classType, className, location, param, genus, species, startDatetimeStr, endDatetimeStr, user, reference, limitToBaseClasses=False):
 
         self.searchResultType = "param"
 
         if (searchType == rpc.SEARCH_TYPE_HIERARCHICAL):
-            self.params = self.searchHierarchical(classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference)
+            self.params = self.searchHierarchical(classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference, limitToBaseClasses)
         elif (searchType == rpc.SEARCH_TYPE_CONSTRAINED):
-            self.params = self.searchConstrained(classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference)
+            self.params = self.searchConstrained(classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference, limitToBaseClasses)
         else:
             msg = "Unknown search type %s" % searchType
             raise RuntimeError, msg
@@ -712,6 +715,42 @@ class paramDB:
                 writeCSV(self.conn, self.params, self.classes, outputPath)
             elif (outputFormat == rpc.OUTPUT_FORMAT_PARAM):
                 writeParams(self.conn, self.params, outputPath)
+
+    def writeParamFiles(self, outputPath):
+        """ @brief Write parameters for each class in previous search result to a separate .def file
+        
+            @param outputPath Directory where parameter files should be written 
+            
+            @raise IOError(errno.EACCESS) if outputPath is not a directory
+            @raise IOError(errno.ENOTDIR) if outputPath is not writable
+        """
+    
+        if not os.path.isdir(outputPath):
+            raise IOError(errno.ENOTDIR, "Output path %s is not a directory" % (outputPath,) )
+        if not os.access(outputPath, os.W_OK):
+            raise IOError(errno.ENOTDIR, "Output path %s is not writable" % (outputPath,) )
+    
+        fdOut = None
+        currClassId = None
+        cursor = self.conn.cursor()
+        for p in sorted(self.params, key=lambda param: param[rpc.PARAM_IND['class_id']]):
+            classId, name, value, dt, reference, comment, user = p
+            if classId != currClassId:
+                if fdOut: fdOut.close()
+                currClassId = classId
+                # Get class name and class type name for use in .def filename
+                cursor.execute("""select c.name, t.type_name from class as c, class_type as t where c.type_id=t.type_id and c.class_id=?""",
+                                  (classId,) )
+                result = cursor.fetchone()
+                assert(result)
+                className = result[0]
+                classType = result[1]
+                fileName = "%s_%s.def" % (classType, className)
+                filePath = os.path.join(outputPath, fileName)
+                fdOut = open(filePath, 'w')
+            fdOut.write( "%s %s %s %s%s" % (value, name, comment, reference, os.linesep) )
+    
+        if fdOut: fdOut.close()
 
     def insert(self, filename, location, classType, className, parentLocation, parentName, user, genus, species, comment, replace, verbose):
         """ Insert parameters into the parameter database.
