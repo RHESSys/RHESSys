@@ -529,13 +529,19 @@ def readCSVfile(filename):
 
 class paramDB:
 
-    def __init__(self):
+    def __init__(self, dbPath=None):
 
-        if (not os.path.exists(rpc.PARAM_DB_FILENAME)):
-            msg = "Parameter database %s not found" % rpc.PARAM_DB_FILENAME
-            raise RuntimeError, msg
+        if dbPath == None:
+            import rhessys.params
+            dbPathBase = os.path.split(rhessys.params.__file__)[0]
+            dbPathBase = os.path.split(dbPathBase)[0]
+            dbPath = os.path.join(dbPathBase, rpc.PARAM_DB_FILENAME)
+        
+        if not os.path.exists(dbPath):
+            msg = "Parameter database %s not found" % dbPath
+            raise IOError(errno.EEXIST, msg)
 
-        self.conn = sqlite3.connect(rpc.PARAM_DB_FILENAME)
+        self.conn = sqlite3.connect(dbPath)
         self.params = []
         self.classes = {}
         self.requestedClass = None
