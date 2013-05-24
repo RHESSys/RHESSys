@@ -5,4 +5,4 @@
 
 #insertParams.py -v --type="stratum" --name="Douglas Fir" --parentName="evergreen" --user="Peter Slaughter" example/veg_douglasfir.def 
 #insertParams.py -v --type="stratum" --name="Douglas Fir" --parentName="evergreen" --location="Oregon" --user="Peter Slaughter" example/veg_douglasfir_oregon.def 
-#insertParams.py -v --type="stratum" --name="Douglas Fir" --parentName="evergreen" --location="New Mexica" --user="Peter Slaughter" example/veg_douglasfir_newmexico.def     
+#insertParams.py -v --type="stratum" --name="Douglas Fir" --parentName="evergreen" --location="New Mexico" --user="Peter Slaughter" example/veg_douglasfir_newmexico.def     
