@@ -19,7 +19,7 @@ def usage():
     print 'Purpose: Search the RHESsys parameter database and output the results'
     print ''
     print 'Syntax:'
-    print '  %s --name=<class name> [--genus=<genus name>] --location=<location name> [--species=<species name>] [--type=<type name>] --verbose' % sys.argv[0]
+    print '  %s [--name=<class name>] [--genus=<genus name>] [--location=<location name>] [--species=<species name>] [--type=<class type name>] --verbose' % sys.argv[0]
     print ''
     print '    where:'
     print '      --name=<class name>: any name that can uniquely identify a set of parameters' 
@@ -27,10 +27,14 @@ def usage():
     print '      --genus=<genus name>: the name of a genus that will be used for searching'
     print '      --location=<location name>: the location to search for, e.g. "Orgeon"'
     print '      --species=<species name">: the name of a species that will be used for searching'
+    print '      --type=<class type name>: the name of a class type to search for. The type name can'
+    print '        be a single name, a comma separated list or the keyword "all"'
     print ''
     print '    for example:'
     print ''
     print '        %s --name="Red Alder" --location="Oregon"' % sys.argv[0]
+    print '        %s --type="all"' % sys.argv[0]
+    print '        %s --type="soil,stratum"' % sys.argv[0]
     print ''
     
 if __name__ == '__main__':

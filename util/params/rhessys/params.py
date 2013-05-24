@@ -13,6 +13,7 @@ import time
 import tempfile
 import sqlite3
 import rhessys.constants as rpc
+from operator import itemgetter, attrgetter
 
 paramFileRegex = re.compile('^\s*([\w.-]+)\s*([\w.-]+)#*.*$')
 csvFileRegex = re.compile('^\s*(\w+)\s*,(\w+).*$')
@@ -295,42 +296,6 @@ def fetchParams(conn, className, classType, location, param, genus, species, sta
 
     return resultSet
 
-def filterDuplicates(resultSet, paramInd):
-    # Sort the result set by paramInd (usually parameter name)
-    resultSet = sorted(resultSet, key=lambda param: param[paramInd]) 
-    outResultSet = []
-
-    # Now look for duplicates and use the best one, discarding other duplicates.
-    # Currently the only criteria to eliminate dups within a class are the last
-    # insertion date.
-    for resultInd in range(0, len(resultSet)):
-       if (resultInd == len(resultSet) - 1):
-           outResultSet.append(resultSet[resultInd])
-           continue
-
-       name1 = resultSet[resultInd][rpc.PARAM_IND['name']]
-       name2 = resultSet[resultInd+1][rpc.PARAM_IND['name']]
-
-       if (name1.lower() == name2.lower()):
-           val1 = resultSet[resultInd][rpc.PARAM_IND['value']]
-           val2 = resultSet[resultInd+1][rpc.PARAM_IND['value']]
-
-           dt1 = resultSet[resultInd][rpc.PARAM_IND['dt']]
-           dt2 = resultSet[resultInd+1][rpc.PARAM_IND['dt']]
-
-           # If the insertion dates are the same, use the last entry, otherwise
-           # use the last inserted value
-           if (dt1 == dt2):
-               result = resultSet[resultInd+1]
-           elif (dt1 > dt2):
-               result = resultSet[resultInd]
-       else:
-           result = resultSet[resultInd]
-
-       outResultSet.append(resultSet[resultInd])
-
-    return outResultSet
-
 def overlayResultSet(paramResult, overlayResult):
     """ Overlay the second resultSet on top of the first resultSet """
       
@@ -407,12 +372,11 @@ def writeClass(conn, classes, outputPath):
     else:
         fdOut = sys.stdout
 
-    #fdOut.write(rpc.CLASS_FIELD_NAMES)
-    fdOut.write('class type,name,location,genus,species,default id,parent id\n')
+    fdOut.write('class name,name,location,genus,species,default id,parent id\n')
     paramsCSVwriter = csv.writer(fdOut, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    #print "classes: ", classes
-    for c in sorted(classes, key=lambda classes: classes[rpc.TYPE_JOIN_CLASS_IND['name']]):
+    #for c in sorted(sortedByType, key=lambda classes: sortedByType[rpc.TYPE_JOIN_CLASS_IND['name']]):
+    for c in sorted(classes, key=itemgetter(rpc.TYPE_JOIN_CLASS_IND['type_name'],rpc.TYPE_JOIN_CLASS_IND['name'])):
         (type_id,type_name,max_id,class_id,name,location,type_id,genus,species,default_id,parent_id ) = c
         outLine = (type_name,name,location,genus,species,default_id,parent_id)
 
@@ -539,11 +503,12 @@ def readParamFile(filename):
         #print m.groups()
         paramVal = m.groups()[0].replace('\r', '')
         paramName = m.groups()[1].replace('\r', '')
-        # Filter out the parameter 'stratum_default_id' because
-        # this parameter value is now maintained by the Python parameter
-        # database software.
-        if (paramName.lower() == "stratum_default_id"):
-            continue
+        # Filter out the default_id parameters i.e. 'stratum_default_id',
+        # 'soil_default_id', etc. because these parameter value are now 
+        # maintained by the Python parameter database software.
+        for vt in rpc.VALID_TYPES:
+            if (paramName.lower() == "%s_default_id" % vt):
+               continue
 
         if (len(m.groups()) > 2):
            paramRef = m.groups()[2].lstrip().replace('\r', '')
@@ -575,6 +540,8 @@ class paramDB:
         self.classes = {}
         self.requestedClass = None
         self.requestedClassId = None
+        self.requestedClassType = None
+        self.requestedClassDefaultId = None
         self.searchResultType = None
         
     def searchHierarchical(self, classType, className, location, param, genus, species, user, startDatetimeStr, endDatetimeStr, reference, limitToBaseClasses=False):
@@ -588,11 +555,12 @@ class paramDB:
             raise RuntimeError, msg
 
         self.requestedClassId = requestedClass[0][rpc.TYPE_JOIN_CLASS_IND['class_id']]
+        self.requestedClassType = requestedClass[0][rpc.TYPE_JOIN_CLASS_IND['type_name']]
+        self.requestedClassDefaultId = requestedClass[0][rpc.TYPE_JOIN_CLASS_IND['default_id']]
 
         # fetch parameters for base class if it exists
         baseClassParams = []
         baseClass = fetchBaseClass(self.conn, className, location)
-        print "base: ", baseClass
         # No base class exists for this class, but it still may have a location generic class
         if (baseClass != None):
             baseClassName = baseClass[rpc.TYPE_JOIN_CLASS_IND['name']]
@@ -605,7 +573,6 @@ class paramDB:
             baseClassParams = []
             if (baseClassName != None):
                 baseClassParams = fetchParams(self.conn, baseClassName, None, None, None, None, None, startDatetimeStr, endDatetimeStr, None, limitToBaseClasses) 
-                #baseClassParams = filterDuplicates(baseClassParams, rpc.PARAM_IND['name'])
 
         # retrieve the "generic" version of the requested class
         genericClassParams = fetchParams(self.conn, className, None, "", None, None, None, startDatetimeStr, endDatetimeStr, None, limitToBaseClasses) 
@@ -618,7 +585,6 @@ class paramDB:
                 self.classes[genericClassId] = genericClass
             
             # Sort parameter resultSet by parameter name
-            #genericClassParams  = filterDuplicates(genericClassParams, rpc.PARAM_IND['name'])
          
         # Overlay generic parameters on base class parameters
         finalParams = overlayResultSet(baseClassParams, genericClassParams)
@@ -633,12 +599,13 @@ class paramDB:
                 self.classes[locationSpecificClassId] = locationSpecificClass
 
             # Resolve any duplicates 
-            #locationSpecificParams = filterDuplicates(locationSpecificParams, rpc.PARAM_IND['name'])
             finalParams = overlayResultSet(finalParams, locationSpecificParams)
 
+        # The 'default_ID' parameter value is calculated for each query, it is not stored in the database. The full name
+        # of this parameter is based on the parameter class type, i.e. 'stratum_default_ID', 'soil_default_ID', etc.
         if (self.requestedClassId != None):
             currentDatetimeStr = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            finalParams.append([self.requestedClassId, "stratum_default_ID", self.requestedClassId, currentDatetimeStr, "", "", ""])
+            finalParams.append([self.requestedClassId, "%s_default_ID" % self.requestedClassType.strip().lower(), self.requestedClassDefaultId, currentDatetimeStr, "", "", ""])
 
         return finalParams
 
@@ -655,9 +622,9 @@ class paramDB:
                 raise RuntimeError, msg
 
             self.requestedClassId = requestedClass[rpc.TYPE_JOIN_CLASS_IND['class_id']]
+            self.requestedClassType = requestedClass[rpc.TYPE_JOIN_CLASS_IND['type_name']]
+            self.requestedClassDefaultId = requestedClass[rpc.TYPE_JOIN_CLASS_IND['default_id']]
 
-        # fetch a resultset with the specified constraints
-        # return resultSet
         finalParams = []
         finalParams = fetchParams(self.conn, className, classType, location, param, genus, species, startDatetimeStr, endDatetimeStr, reference, limitToBaseClasses)
         if (className != None):
@@ -691,11 +658,22 @@ class paramDB:
         self.searchResultType = "class"
 
         if (classType != None):
-            if (not classType.lower() in rpc.VALID_TYPES):
-                msg = 'Invalid class type \"%s\".' % classType 
-                raise RuntimeError, msg
+            # The class type "all" is reserved to mean all class types
+            if (classType.lower() == "all"):
+                classType = ','.join(t for t in rpc.VALID_TYPES)
 
-        self.classes = fetchClass(self.conn, classId, classType, className, location, genus, species)
+            if (len(classType.split(',')) > 1):
+                self.classes = []
+                for ct in classType.split(','):
+                    if (classType != None):
+                        if (not ct.lower() in rpc.VALID_TYPES):
+                            msg = 'Invalid class type \"%s\".' % ct
+                            raise RuntimeError, msg
+                    self.classes.extend(fetchClass(self.conn, classId, ct, className, location, genus, species))
+            else:
+                self.classes = fetchClass(self.conn, classId, classType, className, location, genus, species)
+        else:
+            self.classes = fetchClass(self.conn, classId, classType, className, location, genus, species)
         
     def write(self, outputPath, outputFormat):
 

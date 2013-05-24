@@ -38,4 +38,3 @@ CLASS_TYPE_IND = {'type_id':0, 'type_name':1, 'max_id':2}
 TYPE_JOIN_CLASS_IND = {'type_id':0, 'type_name':1, 'max_id':2, 'class_id':3, 'name':4, 'location':5, 'type_id':6, 'genus':7, 'species':8, 'default_id':9, 'parent_id':10}
 CLASS_IND = {'class_id':0, 'name':1, 'location':2, 'type_id':3, 'genus':4, 'species':5, 'default_id':6, 'parent_id':7}
 PARAM_IND = {'class_id':0, 'name':1, 'value': 2, 'dt': 3, 'reference': 4, 'comment': 5, 'user': 6}
-
