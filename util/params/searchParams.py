@@ -118,6 +118,8 @@ if __name__ == '__main__':
         elif o in ("-v", "--verbose"):
             verbose = True
 
+        if searchType == None: searchType = rpc.SEARCH_TYPE_CONSTRAINED
+
     if (not outputFormat in rpc.VALID_FORMATS):
         msg = "Output format must be one of the following: ", rpc.VALID_FORMATS
         raise RuntimeError, msg
