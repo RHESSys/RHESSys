@@ -437,7 +437,6 @@ void  update_drainage_land(
 	if (patch[0].num_inundation_depths > 0) {
 		innundation_depth = patch[0].detention_store + route_to_surface/patch[0].area; 
 		d=0;
-		// TODO: Verify that d subscript on *_inundation_list is not wrong (it looks wrong because each patch has but on inundation list)
 		//while ((innundation_depth > patch[0].inundation_list[d].critical_depth)
 		while ((innundation_depth > patch->surface_inundation_list[d].critical_depth)
 			&& (d < patch[0].num_inundation_depths-1)) {
