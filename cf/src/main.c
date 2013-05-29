@@ -680,6 +680,9 @@ int main(int argc, char *argv[]) {
             printf("\n Unable to remove .gamma temp file");
         if (remove(pitfn) != 0)
             printf("\n Unable to remove .pit temp file");
+        if (remove("RoofGeometries.txt") != 0) {
+        	printf("\n Unable to remove RoofGeometry temp file");
+        }
     }
 
     if (!singleFlowtable_flag) {
