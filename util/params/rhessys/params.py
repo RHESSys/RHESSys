@@ -15,10 +15,8 @@ import sqlite3
 import rhessys.constants as rpc
 from operator import itemgetter, attrgetter
 
-paramFileRegex = re.compile('^\s*([\w.-]+)\s*([\w.-]+)#*.*$')
+paramFileRegex = re.compile('^\s*([\w.-]+)\s*([\w.-]+)\s*(#*.*)$')
 csvFileRegex = re.compile('^\s*(\w+)\s*,(\w+).*$')
-# Type of parameter: "basin", "landuse", "surface_energy", "fire", "soil", "zone", "hillslope", "stratum"
-classTypeList = ["basin", "landuse", "surface_energy", "fire", "soil", "zone", "hillslope", "stratum"]
 
 def readPropertiesFile(filename):
 
@@ -140,11 +138,11 @@ def putClass(conn, className, location, classTypeId, genus, species, defaultId, 
     # fields: 'class_id,name,location,type_id,genus,species,default_id,parent_id' 
     try:
         c.execute('insert into class values (?, ?, ?, ?, ?, ?, ?, ?)', classVals)
+        conn.commit()
     except sqlite3.IntegrityError:
         print 'exception type= %s, exception value= %s' % (sys.exc_info()[0] , sys.exc_info()[1])
-
-    conn.commit()
-    c.close()
+    finally:
+        c.close()
 
     return
 
@@ -219,10 +217,6 @@ def fetchBaseClass(conn, className, location):
     resultSet = None
     # Retrieve the current class
     currentClassResult = fetchClass(conn, None, None, className, location, None, None)[0]
-    #if (len(currentClassResult) > 1):
-    #    msg = "Duplicate base class for className: %s, location %s" % (className, location)
-    #    raise RuntimeError, msg
-
     parentId = currentClassResult[rpc.TYPE_JOIN_CLASS_IND['parent_id']]
     # A parentId of 0 indicates that this class has no parent, so
     # return an empty resultSet
@@ -253,7 +247,8 @@ def fetchParams(conn, className, classType, location, param, genus, species, sta
         whereClause += ' and c.parent_id = 0'
 
     if (className != None):
-        whereClause += r" and c.name like '%" + "%s" % className+ r"%'"
+        #whereClause += r" and c.name like '%" + "%s" % className + r"%'"
+        whereClause += r" and lower(c.name) = '%s'" % className.lower()
 
     if (location != None):
         whereClause += " and c.location = '%s'" % location
@@ -286,13 +281,14 @@ def fetchParams(conn, className, classType, location, param, genus, species, sta
     try:
         c.execute(queryStr)
         resultSet = c.fetchall()
-        c.close()
     except:
         print "Query statement: ", queryStr
         print 'exception type= ', sys.exc_type
         print 'exception value= ', sys.exc_value
         msg = "Error retrieving parameters from database."
         raise RuntimeError, msg
+    finally:
+        c.close()
 
     return resultSet
 
@@ -355,6 +351,68 @@ def overlayResultSet(paramResult, overlayResult):
             overlayInd += 1
         else:
             msg = "Internal Error"
+            raise RuntimeError, msg
+        
+    return finalResultSet
+
+def filterDuplicateParams(params, otherResult, className, otherClassName=None, otherLocation=None):
+    """ Overlay the second resultSet on top of the first resultSet """
+      
+    # Check if there are any duplicates
+    if (len(params) == 0):
+        return params 
+ 
+    # Index of the list element we are using for comparison
+    paramNameInd = rpc.PARAM_IND['name']
+    paramValueInd = rpc.PARAM_IND['value']
+
+    # 'params' are the value, name, reference values read from a parameter file
+    # 'otherResult' is a query resultSets obtained from the 'fetchParams' method.
+
+    # Sort the result sets by parameter name
+    params = sorted(params, key=lambda param: param[1]) 
+    otherResult = sorted(otherResult, key=lambda param: param[paramNameInd]) 
+
+    finalResultSet = []
+    paramInd = 0
+    otherResultInd = 0
+    paramLen = len(params)
+    otherResultLen = len(otherResult)
+  
+    while (paramInd < paramLen):
+
+        # Reached the end other result but not at end of params, so just
+        # output next param
+        if (otherResultInd == otherResultLen):
+            finalResultSet.append(params[paramInd])
+            paramInd += 1
+            continue
+ 
+        otherParamName = otherResult[otherResultInd][paramNameInd]
+        paramName = params[paramInd][paramNameInd]
+
+        # The param from the first list can either be equal to, less than or greater than
+        # the param in the other list. Find matching parameter names.
+        if (paramName == otherParamName):
+            otherValue = otherResult[otherResultInd][paramValueInd]
+            paramValue = params[paramInd][0]
+            #print "match paramName: %s paramVal: %s otherVal: %s" % (paramName, paramValue, otherValue)
+            if (paramValue.strip() == otherValue.strip()):
+                print "Will not override duplicate parameter from class \'%s\', location \'%s\': param = %s, value = %s, skipping insert for this parameter." % (otherClassName, otherLocation, paramName, otherValue)
+                paramInd += 1
+                otherResultInd += 1
+                continue
+
+            finalResultSet.append(params[paramInd])
+            paramInd += 1
+            otherResultInd += 1
+        elif (paramName < otherParamName):
+            finalResultSet.append(params[paramInd])
+            paramInd += 1
+        elif (paramName > otherParamName):
+            otherResultInd += 1
+        else:
+            msg = "Internal Error - invalid parameter. "
             raise RuntimeError, msg
         
     return finalResultSet
@@ -455,13 +513,15 @@ def fetchClassType(conn, classTypeId, classTypeName):
     try:
         c.execute(queryStr)
         result = c.fetchone()
-        c.close()
+        #c.close()
     except:
        print "Query statement: ", queryStr
        print 'exception type= ', sys.exc_type
        print 'exception value= ', sys.exc_value
        msg = "Error retrieving class type from database."
        raise RuntimeError, msg
+    finally:
+       c.close()
 
     return result
 
@@ -510,7 +570,7 @@ def readParamFile(filename):
             if (paramName.lower() == "%s_default_id" % vt):
                continue
 
-        if (len(m.groups()) > 2):
+        if (len(m.groups()) > 2 and m.groups()[2].strip() != ""):
            paramRef = m.groups()[2].lstrip().replace('\r', '')
         else:
            paramRef = ""
@@ -529,19 +589,23 @@ def readCSVfile(filename):
 
 class paramDB:
 
-    def __init__(self, dbPath=None):
+    def __init__(self, **kwargs):
 
-        if dbPath == None:
-            import rhessys.params
-            dbPathBase = os.path.split(rhessys.params.__file__)[0]
-            dbPathBase = os.path.split(dbPathBase)[0]
-            dbPath = os.path.join(dbPathBase, rpc.PARAM_DB_FILENAME)
-        
-        if not os.path.exists(dbPath):
-            msg = "Parameter database %s not found" % dbPath
-            raise IOError(errno.EEXIST, msg)
+        if kwargs.has_key('filename'):
+            dbFilename = kwargs['filename']
+            if (not os.path.exists(dbFilename)):
+                msg = "Parameter database %s not found" % dbFilename
+                raise RuntimeError, msg
 
-        self.conn = sqlite3.connect(dbPath)
+            self.conn = sqlite3.connect(dbFilename)
+        else:
+     
+            if (not os.path.exists(rpc.PARAM_DB_FILENAME)):
+                msg = "Parameter database %s not found" % rpc.PARAM_DB_FILENAME
+                raise RuntimeError, msg
+    
+            self.conn = sqlite3.connect(rpc.PARAM_DB_FILENAME)
+
         self.params = []
         self.classes = {}
         self.requestedClass = None
@@ -648,6 +712,25 @@ class paramDB:
         return finalParams
 
     def search(self, searchType, classType, className, location, param, genus, species, startDatetimeStr, endDatetimeStr, user, reference, limitToBaseClasses=False):
+        """ @brief Search the parameter database for entries that match the specified search criteria.
+        
+            @param outputPath Directory where parameter files should be written 
+            @param searchType perform either hierarchical or constrained search
+            @param classType class type to search for
+            @param className class name to search for
+            @param location location to search for
+            @param param parameter name to search or
+            @param genus class genus name to search for
+            @param species class species name to search for
+            @param startDatetimeStr select parameters after this date/time
+            @param endDatetimeStr select parameters before this date/time
+            @param user user name to search for
+            @param reference reference string to search for
+            @param limitToBaseClasses only select base classes
+
+            @raise RuntimeError if an invalid search type specified
+            
+        """
 
         self.searchResultType = "param"
 
@@ -660,6 +743,18 @@ class paramDB:
             raise RuntimeError, msg
 
     def searchClass(self, classId, classType, className, location, genus, species):
+        """ @brief Write parameters for each class in previous search result to a separate .def file
+        
+            @param classId class id to search for
+            @param classType class type to search for
+            @param className class name to search for
+            @param location location to search for
+            @param param parameter name to search or
+            @param genus class genus name to search for
+            
+            @raise IOError(errno.EACCESS) if outputPath is not a directory
+            @raise IOError(errno.ENOTDIR) if outputPath is not writable
+        """
 
         self.searchResultType = "class"
 
@@ -740,6 +835,9 @@ class paramDB:
         """ Insert parameters into the parameter database.
             If this class name and location is new, insert it into the 'class' table, then insert parameters into the 'param' table.
         """
+
+        if (verbose):
+            print "Inserting parameters for class %s, location: %s" % (className, location)
     
         logCommand(self.conn)
         if (classType != None):
@@ -824,6 +922,46 @@ class paramDB:
             parentId = classResult[0][rpc.TYPE_JOIN_CLASS_IND['parent_id']]
             classId = classResult[0][rpc.TYPE_JOIN_CLASS_IND['class_id']]
     
+        # The new class may not have duplicate (name, value) paramters with the base class or the
+        # genericClass (non location specific).
+        # If it's a base class we are inserting, then no filtering is required - it's at the top
+        # of the hierarchy.
+        if (parentId != 0):
+            # fetch parameters for base class if it exists
+            baseClassParams = []
+            baseClass = fetchBaseClass(self.conn, className, location)
+            # No base class exists for this class, but it still may have a location generic class
+            if (baseClass != None):
+                baseClassName = baseClass[rpc.TYPE_JOIN_CLASS_IND['name']]
+                baseClassId = baseClass[rpc.TYPE_JOIN_CLASS_IND['class_id']]
+    
+                # Capture the class_id for output later
+                if (baseClassId not in self.classes):
+                    self.classes[baseClassId] = baseClass
+    
+                baseClassParams = []
+                if (baseClassName != None):
+                   baseClassParams = fetchParams(self.conn, baseClassName, None, None, None, None, None, None, None, None, False) 
+
+            params = filterDuplicateParams(params, baseClassParams, className, otherClassName=baseClassName, otherLocation=None)
+
+            # If a location was specified for this class, then we have to filter duplicates between the location generic class and this class
+            if (location != None and location != ""):
+                # retrieve the "generic" version of the requested class
+                genericClassParams = fetchParams(self.conn, className, None, "", None, None, None, None, None, None, False) 
+    
+                # Sort and filter duplicates for the generic class parameters
+                if (len(genericClassParams) > 0):
+                    genericClass = fetchClass(self.conn, None, None, className, None, None, None)[0]
+                    genericClassId = genericClass[rpc.TYPE_JOIN_CLASS_IND['class_id']]
+                    if (genericClassId not in self.classes):
+                        self.classes[genericClassId] = genericClass
+            
+                params = filterDuplicateParams(params, genericClassParams, className, otherClassName=className, otherLocation=None)
+        #else:
+        #    if (verbose):
+        #        print "not checking for dups for class: %s" % className
+
         # Now insert the parameters for this class into the 'param' table
         for p in params:
             currentTimeStr = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())

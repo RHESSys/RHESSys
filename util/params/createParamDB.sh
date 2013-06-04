@@ -1,6 +1,11 @@
 #!/bin/bash
 
+# Create an empty database file
 sqlite3 params.sqlite < createParamDB.sql
+
+# Create an empty database file that may be used for testing or building a custom db, etc.
+sqlite3 empty_params.sqlite < createParamDB.sql
+sqlite3 unittests/empty_params.sqlite < createParamDB.sql
 
 # Insert params for the veg base classes
 ./insertParams.py -v --type="stratum" --name="evergreen" --parentName="None" --user="RHESSys" defs/stratum/veg_evergreen.def   
