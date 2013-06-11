@@ -128,6 +128,7 @@ void  update_drainage_land(
 	struct patch_object *neigh;
 	route_to_patch = 0.0;
 	route_to_surface = 0.0;
+	return_flow = 0.0;
 
 	DON_leached_to_patch = 0.0;
 	DON_leached_to_stream = 0.0;

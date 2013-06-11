@@ -123,6 +123,7 @@ void  update_drainage_road(
 	NO3_surface_leached_to_stream = 0.0;
 	route_to_stream = 0.0;
 	route_to_patch = 0.0;
+	return_flow = 0.0;
 
 
 	/*--------------------------------------------------------------*/
