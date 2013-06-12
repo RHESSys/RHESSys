@@ -655,10 +655,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/* allow infiltration of surface N				*/
 				/*--------------------------------------------------------------*/
 				if ((grow_flag > 0) && (infiltration > ZERO)) {
-					patch[0].surface_DOC -= ((infiltration
-							/ patch[0].detention_store) * patch[0].surface_DOC);
-					patch[0].surface_DON -= ((infiltration
-							/ patch[0].detention_store) * patch[0].surface_DON);
 					patch[0].soil_ns.DON += ((infiltration
 							/ patch[0].detention_store) * patch[0].surface_DON);
 					patch[0].soil_cs.DOC += ((infiltration
@@ -671,6 +667,10 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							/ patch[0].detention_store) * patch[0].surface_NH4);
 					patch[0].surface_NH4 -= ((infiltration
 							/ patch[0].detention_store) * patch[0].surface_NH4);
+					patch[0].surface_DOC -= ((infiltration
+							/ patch[0].detention_store) * patch[0].surface_DOC);
+					patch[0].surface_DON -= ((infiltration
+							/ patch[0].detention_store) * patch[0].surface_DON);
 				}
 
 				/*--------------------------------------------------------------*/
