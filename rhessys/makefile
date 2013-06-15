@@ -29,6 +29,7 @@ $(OBJ)/canopy_stratum_hourly.o \
 $(OBJ)/check_zero_stores.o \
 $(OBJ)/compute_Lstar.o \
 $(OBJ)/compute_N_leached.o \
+$(OBJ)/compute_N_absorbed.o \
 $(OBJ)/compute_annual_litfall.o \
 $(OBJ)/compute_annual_turnover.o \
 $(OBJ)/compute_atm_pres.o \
@@ -727,6 +728,8 @@ $(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_leaf_litfall.c -o $(OBJ)/compute_leaf_litfall.o
 $(OBJ)/compute_N_leached.o: cn/compute_N_leached.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_N_leached.c -o $(OBJ)/compute_N_leached.o
+$(OBJ)/compute_N_absorbed.o: cn/compute_N_absorbed.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_N_absorbed.c -o $(OBJ)/compute_N_absorbed.o
 $(OBJ)/compute_froot_litfall.o: cn/compute_froot_litfall.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_froot_litfall.c -o $(OBJ)/compute_froot_litfall.o
 $(OBJ)/compute_growth_resp.o: cn/compute_growth_resp.c 

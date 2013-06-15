@@ -109,7 +109,7 @@ void  update_drainage_stream(
 
 	d=0;
 	route_to_stream = 0.0;
-	return_flow = 0.0;
+	return_flow=0.0;
 	NO3_leached_to_stream = 0.0;
 	NH4_leached_to_stream = 0.0;
 	DON_leached_to_stream = 0.0;
@@ -125,7 +125,7 @@ void  update_drainage_stream(
 	/*	streams because they do not route water to downslope	*/
 	/*	neighbours						*/
 	/*--------------------------------------------------------------*/
-	total_gamma =  patch[0].inundation_list[d].gamma;
+	total_gamma =  patch[0].innundation_list[d].gamma;
 
 
 
@@ -148,7 +148,7 @@ void  update_drainage_stream(
 		gamma,
 		patch[0].soil_defaults[0][0].interval_size,
 		patch[0].transmissivity_profile);
-
+	
 	
 	if (route_to_stream < 0.0) route_to_stream = 0.0;
 
@@ -171,7 +171,7 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_NO3_proportion,
+			patch[0].soil_defaults[0][0].NO3_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].soil_ns.NO3_Qout += NO3_leached_to_stream;
 
@@ -189,10 +189,9 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_NH4_proportion,
+			patch[0].soil_defaults[0][0].NH4_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].soil_ns.NH4_Qout += NH4_leached_to_stream;
-
 
 		DON_leached_to_stream = compute_N_leached(
 			verbose_flag,
@@ -207,7 +206,7 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].DOM_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_DON_proportion,
+			patch[0].soil_defaults[0][0].DON_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].soil_ns.DON_Qout += DON_leached_to_stream;
 
@@ -224,11 +223,10 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].DOM_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_DOC_proportion,
+			patch[0].soil_defaults[0][0].DOC_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].soil_cs.DOC_Qout += DOC_leached_to_stream;
 	}
-
 
 	patch[0].Qout += (route_to_stream / patch[0].area);
 	patch[0].base_flow += (route_to_stream / patch[0].area);
@@ -271,7 +269,7 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_NO3_proportion,
+			patch[0].soil_defaults[0][0].NO3_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].surface_NO3 += Nout;
 		patch[0].soil_ns.NO3_Qout += Nout;
@@ -289,7 +287,7 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_NH4_proportion,
+			patch[0].soil_defaults[0][0].NH4_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].surface_NH4 += Nout;
 		patch[0].soil_ns.NH4_Qout += Nout;
@@ -307,7 +305,7 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].DOM_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_DON_proportion,
+			patch[0].soil_defaults[0][0].DON_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].surface_DON += Nout;
 		patch[0].soil_ns.DON_Qout += Nout;
@@ -325,7 +323,7 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].DOM_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].mobile_DOC_proportion,
+			patch[0].soil_defaults[0][0].DOC_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].surface_DOC += Nout;
 		patch[0].soil_cs.DOC_Qout += Nout;
