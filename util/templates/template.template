@@ -3,7 +3,7 @@
 $numBasinDefs
 $basinDefs
 $numHillslopDefs
-$basinDefs
+$hillslopeDefs
 $numZoneDefs
 $zoneDefs
 $numSoilDefs
