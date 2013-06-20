@@ -760,6 +760,7 @@ void		patch_daily_F(
 	patch[0].surface_NO3 += zone[0].ndep_NO3;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 
+
 	/*--------------------------------------------------------------*/
 	/*	a certain amount of surface_N is incorporated into the */
 	/*	soil each day - we used 66% based on fertilizer experiments 	*/
@@ -895,14 +896,14 @@ void		patch_daily_F(
 	/* allow infiltration of surface N				*/
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].grow_flag > 0 ) && (infiltration > ZERO)) {
-		patch[0].surface_DOC -= ((infiltration / patch[0].detention_store) * patch[0].surface_DOC);
-		patch[0].surface_DON -= ((infiltration / patch[0].detention_store) * patch[0].surface_DON);
 		patch[0].soil_ns.DON += ((infiltration / patch[0].detention_store) * patch[0].surface_DON);
 		patch[0].soil_cs.DOC += ((infiltration / patch[0].detention_store) * patch[0].surface_DOC);
 		patch[0].soil_ns.nitrate += ((infiltration / patch[0].detention_store) * patch[0].surface_NO3);
 		patch[0].surface_NO3 -= ((infiltration / patch[0].detention_store) * patch[0].surface_NO3);
 		patch[0].soil_ns.sminn += ((infiltration / patch[0].detention_store) * patch[0].surface_NH4);
 		patch[0].surface_NH4 -= ((infiltration / patch[0].detention_store) * patch[0].surface_NH4);
+		patch[0].surface_DOC -= ((infiltration / patch[0].detention_store) * patch[0].surface_DOC);
+		patch[0].surface_DON -= ((infiltration / patch[0].detention_store) * patch[0].surface_DON);
 	}
 	/*--------------------------------------------------------------*/
 	/* now take infiltration out of detention store 	*/

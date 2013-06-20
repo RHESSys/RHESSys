@@ -109,6 +109,7 @@ void  update_drainage_stream(
 
 	d=0;
 	route_to_stream = 0.0;
+	return_flow = 0.0;
 	NO3_leached_to_stream = 0.0;
 	NH4_leached_to_stream = 0.0;
 	DON_leached_to_stream = 0.0;
