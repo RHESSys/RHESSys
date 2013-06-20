@@ -52,6 +52,8 @@ endif
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $< 
 
+objects: $(OBJECTS)
+
 test: $(TESTS) 
 	# Run each unit test
 	$(patsubst %,%;,$(TESTS_TO_RUN))
