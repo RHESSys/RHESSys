@@ -47,8 +47,8 @@ _world $world_rast 1
 				x			value	0.0
 				y			value 0.0
 				z			aver $dem_rast
-				soil_default		dvalue $soils_rast 
-				landuse_default	dvalue $landuse_rast
+				soil_default		mode $soils_rast 
+				landuse_default	mode $landuse_rast
 				a_area		area	
 				slope	aver		$slope_rast
 				wetness_index	aver $wetness_index_rast 
