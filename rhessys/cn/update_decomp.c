@@ -336,7 +336,7 @@ int update_decomp(
 	remaining_uptake -= N_uptake;
 
 	/* remove from surface NH4 pool */
-	N_uptake = max((min(patch[0].surface_NO3, remaining_uptake)),0.0);
+	N_uptake = max((min(patch[0].surface_NH4, remaining_uptake)),0.0);
 	patch[0].surface_NH4 -=  N_uptake;
 	remaining_uptake -= N_uptake;
 
