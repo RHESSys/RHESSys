@@ -95,13 +95,13 @@
 
 			if (!strcmp(argv[i],"-t"))
 			{
-				strcpy(template_fname, argv[i+1]);
+				strncpy(template_fname, argv[i+1], MAXFILENAME);
 				template_flag = 1;
 			}
 
 			if (!strcmp(argv[i],"-w"))
 			{
-				strcpy(world_fname, argv[i+1]);
+				strncpy(world_fname, argv[i+1], MAXFILENAME);
 				world_flag = 1;
 			}
 		i++;
@@ -317,7 +317,6 @@
 	ch = getchar(); } */
 
 /* read in ouput from rat and store the table */
-	printf("\n tmpfile: %s", tmpfile);
     tmpfile = fopen(tmpname,"r");
 
 	if ( (tlevel[lev].table = (struct tableliststruct *)malloc(

@@ -15,7 +15,7 @@
 
 #define PROGNAME "Macaque V2.6"
 #define MSGINTRO "Macaque V2.6\n\nCopyright (C) by Fred Waston, September, 1996\n\n"
-#define MAXFILENAME 80
+#define MAXFILENAME 1024
 #define DOUBLEABS(a) ((a)>0?(a):-(a))
 #define SPLUSFIFOOUT "splusfifoout"
 #define SPLUSFIFOIN  "splusfifoin"
@@ -23,7 +23,7 @@
 #define RtoD 57.29577951 /* = 180/pi */
 #define FULL_DIAGNOSTIC writereportfulldiagnostic(master,in,nextin,loop,thevar)
 #define ZERO_PLUS_NUMERICAL_DRFIT 1E-10
-#define MAXCOMMAND 256 
+#define MAXCOMMAND ( (2 * MAXFILENAME) + 256 )
 
 #include "leveldef.h"
 #include "vardef.h"
