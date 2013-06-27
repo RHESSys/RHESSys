@@ -1,7 +1,7 @@
 PGM = lairead
 CC  = gcc 
- # For grassIO library, we need to know where createflowpaths lives
- # grassIO should be refactored into its own location in the source tree 
+# For grassIO library, we need to know where createflowpaths lives 
+# grassIO should be refactored into its own location in the source tree 
 CFPATH = ../../../cf
 CFLAGS = -O -I$(GISBASE)/include -I$(CFPATH)/include
 #CFLAGS = -g -I$(GISBASE)/include -I$(CFPATH)/include
