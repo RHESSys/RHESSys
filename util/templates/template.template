@@ -16,23 +16,23 @@ $num_climate_stations
 $climate_stations
 _world $world_rast 1
  _basin $basin_rast 1
-	x			mode $xmap_rast
-	y			mode $ymap_rast
+	x			aver $xmap_rast
+	y			aver $ymap_rast
 	z			aver $dem_rast
 	default_ID		dvalue 1
 	latitude		value $latitude_float
 	n_basestations 	dvalue 0	
   	_hillslope $hillslope_rast 1
-		x			mode $xmap_rast
-		y			mode $ymap_rast
+		x			aver $xmap_rast
+		y			aver $ymap_rast
 		z			aver $dem_rast
 		default_ID		dvalue 1
 		gw_storage		value 0.0
 		gw_NO3			value 0.0
 		n_basestations	dvalue 0 	
 		_zone $zone_rast 1 
-			x			mode $xmap_rast
-			y			mode $ymap_rast
+			x			aver $xmap_rast
+			y			aver $ymap_rast
 			z			aver $dem_rast
 			default_ID  	dvalue 1
 			a_area		area	
@@ -44,8 +44,8 @@ _world $world_rast 1
 			n_basestations	dvalue $zone_num_base_stations	
 			$zone_base_station_ids
 			 _patch $patch_rast 1
-				x			mode $xmap_rast
-				y			mode $ymap_rast
+				x			aver $xmap_rast
+				y			aver $ymap_rast
 				z			aver $dem_rast
 				soil_default		mode $soil_rast 
 				landuse_default	mode $landuse_rast
