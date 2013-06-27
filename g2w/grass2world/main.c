@@ -16,9 +16,7 @@
 
 
 
- main(argc,argv)
-	int argc;
-	char *argv[];
+ int main(int argc, char *argv[])
 /* Read a template file which guides us as to what data
    to export from GRASS. File is of the form:
 
@@ -122,7 +120,7 @@
 		printf("Couldn't find template file.\n");
 		ch=NULL;
 		ch=getchar();
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 
 
@@ -187,7 +185,7 @@
       if ( (thetvarlist = (struct tvarliststruct*)malloc(sizeof(struct tvarliststruct)) ) ==
 	  		NULL) {
 			fprintf(stderr,"ERROR: Could not allocate the varlist \n");
-			exit(1);
+			exit(EXIT_FAILURE);
 			}
       thetvarlist->next = NULL;
       thetvarlist->varnum = v;
@@ -297,7 +295,8 @@
     int ret = system(command);
 	if( ret != 0 )
 	{
-		return(1);
+		printf("\n Command %s failed", command);
+		return(ret);
 	}
 
 
@@ -322,7 +321,7 @@
 	if ( (tlevel[lev].table = (struct tableliststruct *)malloc(
 					sizeof(struct tableliststruct))) == NULL ) {
 			fprintf(stderr,"ERROR: Could not allocate tlevel.table \n");
-			exit(1);
+			exit(EXIT_FAILURE);
 			}
 
 	tlevel[lev].table_ptr = tlevel[lev].table;
@@ -332,7 +331,7 @@
 		if ( (tlevel[lev].table_ptr->next = (struct tableliststruct *)malloc(
 								sizeof(struct tableliststruct))) == NULL ) {
 			fprintf(stderr,"ERROR: Could not allocate tlevel.table \n");
-			exit(1);
+			exit(EXIT_FAILURE);
 			}
 
 		tlevel[lev].table_ptr = tlevel[lev].table_ptr->next;
@@ -350,7 +349,7 @@
 
   if ( (tunit = (struct tunitstruct*)malloc( sizeof(struct tunitstruct))) == NULL) { 
 			fprintf(stderr,"ERROR: Could not allocate tunitstruct \n");
-			exit(1);
+			exit(EXIT_FAILURE);
 			}
 
   tunit->lev = 0;          /* Real value  */
@@ -452,7 +451,7 @@
 		if ( (thetvarlist->table[ext] = (struct tableliststruct *)malloc(
 						sizeof(struct tableliststruct)) ) == NULL) {
 			fprintf(stderr,"ERROR: Could not allocate tableliststruct \n");
-			exit(1);
+			exit(EXIT_FAILURE);
 			}
 
 		thetvarlist->table_ptr[ext] = thetvarlist->table[ext];
@@ -466,7 +465,7 @@
 			if ( (thetvarlist->table_ptr[ext]->next = (struct tableliststruct *)malloc(
 								sizeof(struct tableliststruct)) ) == NULL) {
 				fprintf(stderr,"ERROR: Could not allocate tableliststruct \n");
-				exit(1);
+				exit(EXIT_FAILURE);
 				}
 			thetvarlist->table_ptr[ext] = thetvarlist->table_ptr[ext]->next;
 				thetvarlist->table_ptr[ext]->value = 2;
@@ -512,7 +511,7 @@
 		if ( (thetvarlist->table[ext] = (struct tableliststruct *)malloc(
 						sizeof(struct tableliststruct)) ) == NULL) {
 			fprintf(stderr,"ERROR: Could not allocate tableliststruct \n");
-			exit(1);
+			exit(EXIT_FAILURE);
 			}
 
 		thetvarlist->table_ptr[ext] = thetvarlist->table[ext];
@@ -523,7 +522,7 @@
 			fscanf(tmpfile2,"%d %f",&label_cos, &value_cos);	
 			if (label_cos != label_sin) {
 				fprintf(stderr,"ERROR: sin/cos file labels differ \n");
-				exit(1);
+				exit(EXIT_FAILURE);
 				}
 			thetvarlist->table_ptr[ext]->label = label_cos;
 			value = (float)atan(value_sin/value_cos) * RtoD;
@@ -549,7 +548,7 @@
 			if ( (thetvarlist->table_ptr[ext]->next = (struct tableliststruct *)malloc(
 								sizeof(struct tableliststruct)) ) == NULL) {
 				fprintf(stderr,"ERROR: Could not allocate tableliststruct \n");
-				exit(1);
+				exit(EXIT_FAILURE);
 				}
 			thetvarlist->table_ptr[ext] = thetvarlist->table_ptr[ext]->next;
 			}
@@ -578,7 +577,7 @@
 		printf("Opening output file %s", world_fname);
 		ch=NULL;
 		ch=getchar();
-		exit(1);
+		exit(EXIT_FAILURE);
   	}
 
 	/* output header information */
@@ -587,6 +586,8 @@
 
   exportunit(tunit,outfile,tlevel,VARNAME);
   fclose(outfile);
+
+  return(EXIT_SUCCESS);
 }
 
 void tallyunit(tunit, tlevel)
@@ -627,7 +628,7 @@ void tallyunit(tunit, tlevel)
     if (( tunit->subtunit = (struct tunitstruct*)malloc(
       		tunit->numsubtunits * sizeof(struct tunitstruct))) == NULL) {
 				fprintf(stderr,"ERROR: Could not allocate tunit->subunit \n");
-				exit(1);
+				exit(EXIT_FAILURE);
 				}
 
     /* ...and loop through them, telling them their level and recurring...
@@ -694,7 +695,7 @@ void exportunit(tunit, outfile, tlevel,VARNAME)
    if ((tunit->label * (ext+1)) == 0) {
 	printf("\n\n ERROR spatial unit ID within %s has a value of 0; this is should be fixed as it may invalidate worldfile results", 
 		LEVELNAME[tunit->lev]);
-		exit(0);
+		exit(EXIT_FAILURE);
 		}
 
 	

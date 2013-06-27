@@ -54,7 +54,7 @@ void error(msg)
 	char *msg;
 {
   fprintf(stderr,"error: %s\n",msg);
-  exit(1);
+  exit(EXIT_FAILURE);
 }
 
 void d(a)
@@ -69,6 +69,17 @@ int yes(answer)
   return((answer[0]=='y')||((answer[0]=='Y')||(answer[0]=='\0')));
 }
 
+/*
+ * TODO: Fix
+ * This function is wrong.  The correct algorithm is:
+ *
+ * function isLeapYear (year):
+ *   if ((year modulo 4 is 0) and (year modulo 100 is not 0))
+ *   or (year modulo 400 is 0)
+ *       then true
+ *   else false
+ *
+ */
 int leapyear(year)
 	int year;
 {

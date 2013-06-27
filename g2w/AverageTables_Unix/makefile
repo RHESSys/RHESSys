@@ -2,7 +2,7 @@ PGM = rat
 CC  = gcc 
 RHESSYS_BIN = /usr/local/bin
 GISLIB = -lgrass_gis
-CFLAGS = -O
+CFLAGS = -g
 OBJECTS = \
 main.o \
 log.o

@@ -182,7 +182,7 @@ char *argv[];
 	fflag->description = "format output in nice columns";
 
 	if (G_parser(argc,argv))
-		exit(1);  
+		exit(EXIT_FAILURE);
 
 	// open log
 	log_rat = 0;
@@ -215,7 +215,7 @@ char *argv[];
 				sprintf(temp_str1,"%s: Only works with up to %d columns\n", me, MAXCOLS);
 				log_output(logfile, temp_str1);
 			}
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		type[i] =* name;
 		table[i] = name + 1;
@@ -258,7 +258,7 @@ char *argv[];
 					log_output(logfile, temp_str1);
 				}
 				*/
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			else
 			{
@@ -289,7 +289,7 @@ char *argv[];
 						sprintf(temp_str1,"%s: Undefined column type: %c\n", me, type[i]);
 						log_output(logfile, temp_str1);
 					}
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 			}
 		}
@@ -302,7 +302,7 @@ char *argv[];
 			sprintf(temp_str1,"%s: Must have at least one basemap (type b or B)\n", me);
 			log_output(logfile, temp_str1);
 		}
-		exit(1);
+		exit(EXIT_FAILURE);
     }
 
 	/* Pretty sure we dont need this
@@ -388,7 +388,7 @@ char *argv[];
 			for(i = 0; i <= covermap; i++)
             if(iscovermap(i, type) == 1)        
                 unlink(tempfile2[i]);
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		else
 		{
@@ -610,7 +610,7 @@ char *argv[];
 			sprintf(temp_str1, "\n Cannot open output file %s", fileopt->answers[0]);
 			log_output(logfile, temp_str1);
 		}
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	else
 	{
@@ -642,7 +642,7 @@ char *argv[];
 				sprintf(temp_str1, "\n Cannot open input file %s", tempfile2[covermap]);
 				log_output(logfile, temp_str1);
 			}
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		else
 		{
@@ -813,7 +813,7 @@ char *argv[];
 	
 	/*  unlink(tempfile3); */
 
-	return(0);
+	return(EXIT_SUCCESS);
 }
 
 int iscovermap(map, type)
