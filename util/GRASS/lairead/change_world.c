@@ -103,7 +103,7 @@ change_world(oldworld, redefine, flow_table, num_patches)
 		ID[2] = flow_table[i].hillID;
 		ID[3] = flow_table[i].zoneID;
 		ID[4] = flow_table[i].patchID;
-		ID[5] = flow_table[i].patchID;
+		ID[5] = flow_table[i].vegid;
 
 		printf("\n processing patchID %d", flow_table[i].patchID);
 		flow_table[i].worldlink = find_tlevel(tlevel[0].children[0], ID, 1);
@@ -114,11 +114,9 @@ change_world(oldworld, redefine, flow_table, num_patches)
 
 			if (flow_table[i].lai < 1.0) {
 				flow_table[i].worldlink[0].valuelist[7] = 1.0/flow_table[i].veglink[0].sla;
-				}
-
-			else
+			} else {
 				flow_table[i].worldlink[0].valuelist[7] = flow_table[i].lai/flow_table[i].veglink[0].sla;
-					
+			}
 					
 			flow_table[i].worldlink[0].valuelist[4] = 0.0;
 			flow_table[i].worldlink[0].valuelist[5] = 0.0;

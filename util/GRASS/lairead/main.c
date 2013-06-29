@@ -50,7 +50,7 @@ main(int argc, char *argv[])
     char name[MAXS];
 
     /* Raster names */
-    char *rnLAI, *rnVegid, *rnPatch, *rnHill, *rnZone;
+    char *rnLAI, *rnVegid, *rnPatch, *rnHill, *rnZone, *rnMask;
 
     /* set pointers for images */
     int	     *vegid;
@@ -130,9 +130,15 @@ main(int argc, char *argv[])
     patch_raster_opt->required = NO;
     patch_raster_opt->description = "Patch raster map name";
 
+    struct Option* mask_raster_opt = G_define_option();
+    mask_raster_opt->key = "mask";
+    mask_raster_opt->type = TYPE_STRING;
+    mask_raster_opt->required = NO;
+    mask_raster_opt->description = "Mask raster map name. If none supplied 'mask' will be used.";
+
     // Parse GRASS arguments
     if (G_parser(argc, argv))
-        exit(1);
+        exit(EXIT_FAILURE);
 
     // Get values from GRASS arguments
     fnWorld    = worldfile_name_opt->answer;
@@ -143,24 +149,25 @@ main(int argc, char *argv[])
     rnZone        = zone_raster_opt->answer;
     rnHill        = hill_raster_opt->answer;
     rnPatch       = patch_raster_opt->answer;
+    rnMask		  = mask_raster_opt->answer;
 
     /* allometric file */
     if ( (fac = fopen(fnAllom, "r")) == NULL) {
         printf("cannot open allometric ratio file \'%s\'\n", fnAllom);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     if ( (fdWorld = fopen(fnWorld, "r")) == NULL) {
         printf("cannot open world file \'%s\' for reading.\n", fnWorld);
         usage();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     /* redefine world */
     if ( (fdRedefWorld = fopen(fnRedefWorld, "w")) == NULL) {
         printf("cannot open new world \'%s\' file for output.\n", fnRedefWorld);
         usage();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     /* open some diagnostic output files */
@@ -169,7 +176,7 @@ main(int argc, char *argv[])
     if ( (out1 = fopen(name, "w")) == NULL) {
         printf("cannot open diagnostic file %s for writing\n", name);
         usage();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     /* allocate and input map images */
@@ -180,7 +187,12 @@ main(int argc, char *argv[])
     }
 
     mask = (int *) calloc(maxr*maxc, sizeof(int));
-    mask = (int*)raster2array("mask", &patch_header, NULL, NULL, CELL_TYPE);
+
+    if (rnMask != NULL) {
+    	mask = (int*)raster2array(rnMask, &mask_header, NULL, NULL, CELL_TYPE);
+    } else {
+    	mask = (int*)raster2array("mask", &mask_header, NULL, NULL, CELL_TYPE);
+    }
 
     //printf("Reading %s raster map\n", rnPatch);
     patch = (int *) calloc(maxr*maxc, sizeof(int));
@@ -256,15 +268,12 @@ main(int argc, char *argv[])
     change_world(fdWorld, fdRedefWorld, flow_table, num_patches);
 
     printf("\n Finished LAIread \n\n");
-    exit(0);
+    exit(EXIT_SUCCESS);
 } /* end lairead.c */
 
 
 void usage(void) {
-    printf("\nOPTIONS\n\n");
-    printf("\t-allom\tname of allometric ratios file\n");
-    printf("\t-old\told worldfile name\n");
-    printf("\t-redef\tnew redefine worldfile name\n");
+	G_usage();
 
     return;
 }

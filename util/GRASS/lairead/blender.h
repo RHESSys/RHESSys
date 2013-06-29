@@ -9,7 +9,7 @@
 
 #define CELL   30		/* pixel dimensions in metres */
 
-#define MAXS   80		/* size of filename string    */
+#define MAXS   1024		/* size of filename string    */
 
 #define FPTR_SIZE 8		/* number of elements in each pixel
 				   for the fractional pointer	*/
