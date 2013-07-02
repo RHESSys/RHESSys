@@ -350,14 +350,14 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								compute_N_leached(verbose_flag,
 										patch[0].soil_cs.DOC, excess, 0.0, 0.0,
 										patch[0].m,
-										patch[0].inundation_list[d].gamma
+										patch[0].innundation_list[d].gamma
 												/ patch[0].area * time_int,
 										patch[0].soil_defaults[0][0].porosity_0,
 										patch[0].soil_defaults[0][0].porosity_decay,
 										patch[0].soil_defaults[0][0].DOM_decay_rate,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
-										patch[0].soil_defaults[0][0].mobile_DOC_proportion);
+										patch[0].soil_defaults[0][0].DOC_absorption_rate);
 						patch[0].surface_DOC += Nout;
 						patch[0].soil_cs.DOC -= Nout;
 					}
@@ -366,14 +366,14 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								compute_N_leached(verbose_flag,
 										patch[0].soil_ns.DON, excess, 0.0, 0.0,
 										patch[0].m,
-										patch[0].inundation_list[d].gamma
+										patch[0].innundation_list[d].gamma
 												/ patch[0].area * time_int,
 										patch[0].soil_defaults[0][0].porosity_0,
 										patch[0].soil_defaults[0][0].porosity_decay,
 										patch[0].soil_defaults[0][0].DOM_decay_rate,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
-										patch[0].soil_defaults[0][0].mobile_DON_proportion);
+										patch[0].soil_defaults[0][0].DON_absorption_rate);
 						patch[0].surface_DON += Nout;
 						patch[0].soil_ns.DON -= Nout;
 					}
@@ -382,14 +382,14 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								compute_N_leached(verbose_flag,
 										patch[0].soil_ns.nitrate, excess, 0.0,
 										0.0, patch[0].m,
-										patch[0].inundation_list[d].gamma
+										patch[0].innundation_list[d].gamma
 												/ patch[0].area * time_int,
 										patch[0].soil_defaults[0][0].porosity_0,
 										patch[0].soil_defaults[0][0].porosity_decay,
 										patch[0].soil_defaults[0][0].N_decay_rate,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
-										patch[0].soil_defaults[0][0].mobile_NO3_proportion);
+										patch[0].soil_defaults[0][0].NO3_absorption_rate);
 						patch[0].surface_NO3 += Nout;
 						patch[0].soil_ns.nitrate -= Nout;
 					}
@@ -399,14 +399,14 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								compute_N_leached(verbose_flag,
 										patch[0].soil_ns.sminn, excess, 0.0,
 										0.0, patch[0].m,
-										patch[0].inundation_list[d].gamma
+										patch[0].innundation_list[d].gamma
 												/ patch[0].area * time_int,
 										patch[0].soil_defaults[0][0].porosity_0,
 										patch[0].soil_defaults[0][0].porosity_decay,
 										patch[0].soil_defaults[0][0].N_decay_rate,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
-										patch[0].soil_defaults[0][0].mobile_NH4_proportion);
+										patch[0].soil_defaults[0][0].NH4_absorption_rate);
 						patch[0].surface_NH4 += Nout;
 						patch[0].soil_ns.sminn -= Nout;
 					}
@@ -453,24 +453,24 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						/*--------------------------------------------------------------*/
 						/* determine which innundation depth to consider		*/
 						/*--------------------------------------------------------------*/
-						if (patch[0].num_inundation_depths > 0) {
+						if (patch[0].num_innundation_depths > 0) {
 							innundation_depth = patch[0].detention_store;
 							d = 0;
 							while ((innundation_depth
-									> patch[0].inundation_list[d].critical_depth)
-									&& (d < patch[0].num_inundation_depths - 1)) {
+									> patch[0].innundation_list[d].critical_depth)
+									&& (d < patch[0].num_innundation_depths - 1)) {
 								d++;
 							}
 						} else {
 							d = 0;
 						}
 
-//						for (j = 0; j < patch[0].inundation_list[d].num_neighbours; j++) {
-						for (j = 0; j < patch->surface_inundation_list[d].num_neighbours; j++) {
-//							neigh = patch[0].inundation_list[d].neighbours[j].patch;
-							neigh = patch->surface_inundation_list[d].neighbours[j].patch;
-//							Qout = excess * patch[0].inundation_list[d].neighbours[j].gamma;
-							Qout = excess * patch->surface_inundation_list[d].neighbours[j].gamma;
+//						for (j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
+						for (j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
+//							neigh = patch[0].innundation_list[d].neighbours[j].patch;
+							neigh = patch->surface_innundation_list[d].neighbours[j].patch;
+//							Qout = excess * patch[0].innundation_list[d].neighbours[j].gamma;
+							Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
 							NO3_out = Qout / patch[0].detention_store
 									* patch[0].surface_NO3;
 							NH4_out = Qout / patch[0].detention_store

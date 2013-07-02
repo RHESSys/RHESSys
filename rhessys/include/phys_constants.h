@@ -48,4 +48,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 #define NONWOOD_GRPERC 1.2  /* (DIM) growth resp per unit of nonwood C grown */
 #define WOOD_GRPERC    2.0  /* (DIM) growth resp per unit of woody C grown */
 
+
+#define  PARTICLE_DENSITY	2.65	/* soil particle density g/cm3 (Dingman) */
+
 #endif

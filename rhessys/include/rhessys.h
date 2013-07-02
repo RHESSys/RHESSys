@@ -658,11 +658,11 @@ struct	aggdefs_object
 	double	soil_water_cap;					/* m */
 	double  active_zone_z;					/* m */
 	double  N_decay_rate;					/* kg N /m */
-	double  mobile_NO3_proportion;				/* (DIM) 0-1 */
-	double  mobile_NH4_proportion;				/* (DIM) 0-1 */
+	double  NO3_absorption_rate;				/* kg /kg soil */
+	double  NH4_absorption_rate;				/* kg /kg soil */
 	double  DOM_decay_rate;					/* kg N /m */
-	double  mobile_DON_proportion;				/* (DIM) 0-1 */
-	double  mobile_DOC_proportion;				/* (DIM) 0-1 */
+	double  DON_absorption_rate;				/* kg /kg soil */
+	double  DOC_absorption_rate;				/* kg /kg soil */
 	};
 /*----------------------------------------------------------*/
 /*	Define a deep groundwater object			*/
@@ -958,11 +958,11 @@ struct	soil_default
 	double  snow_melt_Tcoef;				/* unitless */
 	double  active_zone_z;					/* m */
 	double  DOM_decay_rate;					/* kg N /m */
-	double  mobile_DON_proportion;				/* (DIM) 0-1 */
-	double  mobile_DOC_proportion;				/* (DIM) 0-1 */
+	double  DON_absorption_rate;				/* kg /kg soil */
+	double  DOC_absorption_rate;				/* kg /kg soil */
 	double  N_decay_rate;					/* kg N /m */
-	double  mobile_NO3_proportion;				/* (DIM) 0-1 */
-	double  mobile_NH4_proportion;				/* (DIM) 0-1 */
+	double  NO3_absorption_rate;				/* kg /kg soil */
+	double  NH4_absorption_rate;				/* kg /kg soil */
 	double  denitrif_proportion;				/* (DIM) 0-1 */
 	double	DON_production_rate;					/* (DIM) 0-1 */
 	double	gl_c;						/* m/s */
@@ -977,7 +977,7 @@ struct	soil_default
 /*----------------------------------------------------------*/
 /*	Define an innundation depth object.								*/
 /*----------------------------------------------------------*/
-struct	inundation_object
+struct	innundation_object
 	{
 	double  critical_depth;		/* m */
 	double	gamma;
@@ -1331,7 +1331,7 @@ struct patch_object
 	int		default_flag;
 	int		ID;	
 	int		num_base_stations;				
-	int		num_inundation_depths;
+	int		num_innundation_depths;
 	int		num_canopy_strata;
 	int		num_layers;
 	int		num_soil_intervals;				/* unitless */
@@ -1466,8 +1466,8 @@ struct patch_object
 	struct	canopy_strata_object	**canopy_strata;
 	struct	patch_hourly_object	*hourly;
 	struct	layer_object		*layers;
-	struct	inundation_object 	*inundation_list; // Used for subsurface routing, and surface routing when no surface table is provided
-	struct	inundation_object 	*surface_inundation_list; // Used for surface routing
+	struct	innundation_object 	*innundation_list; // Used for subsurface routing, and surface routing when no surface table is provided
+	struct	innundation_object 	*surface_innundation_list; // Used for surface routing
 	struct	neighbour_object 	*neighbours;
 	struct	patch_object		*next_stream;
 	struct	surface_energy_object   *surface_energy_profile;
