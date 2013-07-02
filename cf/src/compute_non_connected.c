@@ -95,9 +95,17 @@ bool compute_roof_non_connected_routing(struct flow_struct* _flow_table,
 								result = false;
 							}
 						} else {
+							int index;
+							if (!row_col_to_index(row, col, _maxr, _maxc,
+									&index)) {
+								fprintf(stderr,
+										"ERROR: Failed to map row: %d, column: %d to an index.\n",
+										row, col);
+								result = false;
+							}
 							fprintf(stderr,
-									"WARNING: No pervious surface found for square row: %d, column %d.\n",
-									row, col);
+									"WARNING: No pervious surface found for patch: patchID: %d, hillID: %d, zoneID: %d\n",
+									_patch[index], _hill[index], _zone[index]);
 						}
 					}
 				}

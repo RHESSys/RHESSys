@@ -123,7 +123,11 @@ bool add_flow_to_table(
     else {
         // do the sciences
     	int contributor_patch = find_patch(_patchTable, _patch[contributor_index], _zone[contributor_index], _hill[contributor_index]);
-    	assert( contributor_patch != PATCH_HASH_TABLE_EMPTY );
+    	if ( contributor_patch == PATCH_HASH_TABLE_EMPTY ) {
+    		fprintf(stderr, "add_flow_to_table:125: Unable to find patch: patchID: %d, zoneID: %d, hillID: %d\n",
+    			_patch[contributor_index], _zone[contributor_index], _hill[contributor_index]);
+    		exit(EXIT_FAILURE);
+    	}
 
     	int receiver_patch = find_patch(_patchTable, _patch[receiver_index], _zone[receiver_index], _hill[receiver_index]);
 
