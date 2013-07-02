@@ -250,7 +250,7 @@ main(int argc, char *argv[])
     /* allocate flow table */
     flow_table = (struct flow_struct *)calloc((maxr*maxc),sizeof(struct flow_struct));
 
-    printf("Building flow table...\n");
+    printf("Building patch table...\n");
     /* build representation of patches */
     num_patches = build_flow_table(out1, flow_table, vegid, lai, hill, zone, patch, maxr, maxc);
 
