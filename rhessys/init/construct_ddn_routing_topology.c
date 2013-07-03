@@ -97,32 +97,32 @@ struct routing_list_object *construct_ddn_routing_topology(char *routing_filenam
 		else
 			patch = basin[0].outside_region;
 		rlist->list[i] = patch;
-		patch[0].num_inundation_depths = num_innundation_depths;
+		patch[0].num_innundation_depths = num_innundation_depths;
 		patch[0].stream_gamma = 0.0;
 		patch[0].drainage_type = drainage_type;
 		/*--------------------------------------------------------------*/
 		/*  Allocate innundation depth array				*/
 		/*--------------------------------------------------------------*/
-		patch[0].inundation_list = (struct inundation_object *)alloc(num_innundation_depths *
-		sizeof(struct inundation_object), "innundation_list", "assign_neighbours");
+		patch[0].innundation_list = (struct innundation_object *)alloc(num_innundation_depths *
+		sizeof(struct innundation_object), "innundation_list", "assign_neighbours");
 
 		for (d=0; d<num_innundation_depths; d++) {
 			fscanf(routing_file,"%lf %lf %d", &critical_depth, &gamma, &num_neighbours);
 
 			if (num_innundation_depths > 1)
-				patch[0].inundation_list[d].critical_depth = critical_depth;
+				patch[0].innundation_list[d].critical_depth = critical_depth;
 			else
-				patch[0].inundation_list[d].critical_depth = NULLVAL;
+				patch[0].innundation_list[d].critical_depth = NULLVAL;
 
 			gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
 			
-			patch[0].inundation_list[d].gamma	 = gamma;
+			patch[0].innundation_list[d].gamma	 = gamma;
 			/*--------------------------------------------------------------*/
 			/*  Allocate neighbour array									*/
 			/*--------------------------------------------------------------*/
-			patch[0].inundation_list[d].neighbours = (struct neighbour_object *)alloc(num_neighbours *
+			patch[0].innundation_list[d].neighbours = (struct neighbour_object *)alloc(num_neighbours *
 			sizeof(struct neighbour_object), "neighbours", "assign_neighbours");
-			patch[0].inundation_list[d].num_neighbours = assign_neighbours(patch[0].inundation_list[d].neighbours, num_neighbours, basin, routing_file);
+			patch[0].innundation_list[d].num_neighbours = assign_neighbours(patch[0].innundation_list[d].neighbours, num_neighbours, basin, routing_file);
 		
 		}
 		if (drainage_type == 2) {

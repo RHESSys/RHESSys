@@ -65,7 +65,7 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 	struct routing_list_object	*rlist;
 	struct	patch_object	*patch;
 	struct	patch_object	*stream;
-	struct	inundation_object *inundation_list;
+	struct	innundation_object *innundation_list;
 	
 	rlist = (struct routing_list_object	*)alloc( sizeof(struct routing_list_object), "rlist", "construct_routing_topology");
 
@@ -128,29 +128,29 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 		d=0;
 
 		if ( surface ) {
-			patch->surface_inundation_list = (struct inundation_object *)alloc( 1 *
-								sizeof(struct inundation_object), "surface_inundation_list", "construct_routing_topology");
-			inundation_list = patch->surface_inundation_list;
+			patch->surface_innundation_list = (struct innundation_object *)alloc( 1 *
+								sizeof(struct innundation_object), "surface_innundation_list", "construct_routing_topology");
+			innundation_list = patch->surface_innundation_list;
 		} else {
-			patch->inundation_list = (struct inundation_object *)alloc( 1 *
-					sizeof(struct inundation_object), "inundation_list", "construct_routing_topology");
-			inundation_list = patch->inundation_list;
+			patch->innundation_list = (struct innundation_object *)alloc( 1 *
+					sizeof(struct innundation_object), "innundation_list", "construct_routing_topology");
+			innundation_list = patch->innundation_list;
 		}
 
 		if ( surface ) {
-			patch[0].num_inundation_depths = 1;
+			patch[0].num_innundation_depths = 1;
 		}
 
-		inundation_list->num_neighbours = num_neighbours;
-		inundation_list->gamma = gamma;
+		innundation_list->num_neighbours = num_neighbours;
+		innundation_list->gamma = gamma;
 		// TODO: what should critical depth be for a surface flow table?
-		inundation_list->critical_depth = NULLVAL;
+		innundation_list->critical_depth = NULLVAL;
 
 		if ( !surface ) {
 			patch[0].stream_gamma = 0.0;
 			patch[0].drainage_type = drainage_type;
 			if ((patch[0].drainage_type != STREAM)
-					&& (patch[0].inundation_list[d].gamma < ZERO)) {
+					&& (patch[0].innundation_list[d].gamma < ZERO)) {
 				printf(
 						"\n non-stream patches with zero gamma %d switched to stream for now",
 						patch[0].ID);
@@ -161,13 +161,13 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 		/*--------------------------------------------------------------*/
 		/*  Allocate neighbour array									*/
 		/*--------------------------------------------------------------*/
-		inundation_list->neighbours = (struct neighbour_object *)alloc(num_neighbours *
+		innundation_list->neighbours = (struct neighbour_object *)alloc(num_neighbours *
 				sizeof(struct neighbour_object), "neighbours", "construct_routing_topology");
-		num_neighbours = assign_neighbours(inundation_list->neighbours, num_neighbours, basin, routing_file);
+		num_neighbours = assign_neighbours(innundation_list->neighbours, num_neighbours, basin, routing_file);
 		if ((num_neighbours == -9999) && (patch[0].drainage_type != STREAM)) {
 			printf("\n WARNING sum of patch %d neigh gamma is not equal to 1.0", patch[0].ID); 
 		} else {
-			inundation_list->num_neighbours = num_neighbours;
+			innundation_list->num_neighbours = num_neighbours;
 		}
 
 		if ( drainage_type == ROAD ) {

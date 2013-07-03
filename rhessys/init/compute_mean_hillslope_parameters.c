@@ -55,8 +55,8 @@ void compute_mean_hillslope_parameters( struct hillslope_object *hillslope)
 	hillslope[0].aggdefs.N_decay_rate = 0.0;
 	hillslope[0].aggdefs.active_zone_z = 0.0;
 	hillslope[0].aggdefs.soil_depth = 0.0;
-	hillslope[0].aggdefs.mobile_NH4_proportion = 0.0;
-	hillslope[0].aggdefs.mobile_NO3_proportion = 0.0;
+	hillslope[0].aggdefs.NH4_absorption_rate = 0.0;
+	hillslope[0].aggdefs.NO3_absorption_rate = 0.0;
 	
 	for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
 		for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
@@ -82,11 +82,11 @@ void compute_mean_hillslope_parameters( struct hillslope_object *hillslope)
 			hillslope[0].aggdefs.soil_depth +=
 				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].soil_depth *
 				hillslope[0].zones[i][0].patches[j][0].area;
-			hillslope[0].aggdefs.mobile_NH4_proportion +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_NH4_proportion *
+			hillslope[0].aggdefs.NH4_absorption_rate +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].NH4_absorption_rate *
 				hillslope[0].zones[i][0].patches[j][0].area;
-			hillslope[0].aggdefs.mobile_NO3_proportion +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].mobile_NO3_proportion *
+			hillslope[0].aggdefs.NO3_absorption_rate +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].NO3_absorption_rate *
 				hillslope[0].zones[i][0].patches[j][0].area;
 		}
 	}
@@ -97,8 +97,8 @@ void compute_mean_hillslope_parameters( struct hillslope_object *hillslope)
 	hillslope[0].aggdefs.N_decay_rate /= hillslope[0].area;
 	hillslope[0].aggdefs.active_zone_z /= hillslope[0].area;
 	hillslope[0].aggdefs.soil_depth /= hillslope[0].area;
-	hillslope[0].aggdefs.mobile_NO3_proportion /= hillslope[0].area;
-	hillslope[0].aggdefs.mobile_NH4_proportion /= hillslope[0].area;
+	hillslope[0].aggdefs.NO3_absorption_rate /= hillslope[0].area;
+	hillslope[0].aggdefs.NH4_absorption_rate /= hillslope[0].area;
 
 	return;
 

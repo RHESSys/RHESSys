@@ -760,7 +760,6 @@ void		patch_daily_F(
 	patch[0].surface_NO3 += zone[0].ndep_NO3;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 
-
 	/*--------------------------------------------------------------*/
 	/*	a certain amount of surface_N is incorporated into the */
 	/*	soil each day - we used 66% based on fertilizer experiments 	*/
@@ -904,7 +903,7 @@ void		patch_daily_F(
 		patch[0].surface_NH4 -= ((infiltration / patch[0].detention_store) * patch[0].surface_NH4);
 		patch[0].surface_DOC -= ((infiltration / patch[0].detention_store) * patch[0].surface_DOC);
 		patch[0].surface_DON -= ((infiltration / patch[0].detention_store) * patch[0].surface_DON);
-	}
+		}
 	/*--------------------------------------------------------------*/
 	/* now take infiltration out of detention store 	*/
 	/*--------------------------------------------------------------*/
@@ -995,7 +994,7 @@ void		patch_daily_F(
 			/*--------------------------------------------------------------*/
 		/* add canopy evaporation and snow sublimation to PET						*/
 			/*--------------------------------------------------------------*/
-		patch[0].PET = patch[0].evaporation;
+		patch[0].PET = patch[0].evaporation+patch[0].evaporation_surf;
 
 	if ( command_line[0].verbose_flag > 1 ) {
 		printf("\n%ld %ld %ld  -335.1 ",
@@ -1486,7 +1485,7 @@ void		patch_daily_F(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].porosity_0,
 			0.25,
-			patch[0].soil_defaults[0][0].mobile_NO3_proportion,patch[0].theta_std) != 0){
+			patch[0].soil_defaults[0][0].NO3_absorption_rate,patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}

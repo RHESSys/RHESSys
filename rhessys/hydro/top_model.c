@@ -374,7 +374,7 @@ double	top_model(
 					hillslope[0].aggdefs.N_decay_rate,
 					hillslope[0].aggdefs.active_zone_z,
 					hillslope[0].aggdefs.soil_depth,
-					hillslope[0].aggdefs.mobile_NO3_proportion,
+					hillslope[0].aggdefs.NO3_absorption_rate,
 					NULL);
 		hillslope[0].streamflow_NO3 += mean_N_leached;
 		mean_nitrate -= hillslope[0].streamflow_NO3;
