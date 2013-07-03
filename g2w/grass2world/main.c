@@ -117,9 +117,7 @@
 		strcpy(world_fname, OUTFILENAME);
 
 	if((templatefile=fopen(template_fname,"r"))==NULL) {
-		printf("Couldn't find template file.\n");
-		ch=NULL;
-		ch=getchar();
+		printf("Couldn't open template file.\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -312,8 +310,7 @@
 	/* debugging 
 	if (lev == NUMLEVELS-1) {
 	fprintf(stderr,"\n processing command %s",command);
-	ch = NULL;
-	ch = getchar(); } */
+    } */
 
 /* read in ouput from rat and store the table */
     tmpfile = fopen(tmpname,"r");
@@ -574,9 +571,7 @@
 
 	printf("\n Opening worldfile %s", world_fname);
  	 if (( outfile = fopen(world_fname,"w")) == NULL) {
-		printf("Opening output file %s", world_fname);
-		ch=NULL;
-		ch=getchar();
+		printf("Couldn't open output worldfile %s", world_fname);
 		exit(EXIT_FAILURE);
   	}
 
