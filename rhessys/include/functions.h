@@ -11,4 +11,10 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 		  struct command_line_object *command_line,
 		  bool surface);
 
+
+double compute_prop_alloc_daily(
+		double,
+		struct cstate_struct *,
+		struct epconst_struct);
+
 #endif

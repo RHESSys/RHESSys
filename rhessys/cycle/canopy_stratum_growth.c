@@ -82,20 +82,32 @@ void	canopy_stratum_growth(
 		struct	litter_n_object *,
 		struct	epconst_struct,
 		struct	command_line_object *);
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
+	double pnow;
 	/*--------------------------------------------------------------*/
 	/*	perform daily carbon and nitrogen allocations		*/
 	/*--------------------------------------------------------------*/
 
+	
 
 	if (command_line[0].grow_flag > 0) {
+
+		if (stratum[0].defaults[0][0].epc.dynamic_alloc_prop_day_growth == 1) 
+			pnow = compute_prop_alloc_daily(
+				stratum[0].phen.daily_allocation,
+				&(stratum[0].cs),
+				stratum[0].defaults[0][0].epc);
+		else
+			pnow = stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop;
+
 		if (allocate_daily_growth(
 			patch[0].soil_ns.nlimit,
-			stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop,
+			pnow,
 			patch[0].Tsoil,
 			patch[0].soil_cs.frootc,
 			stratum[0].cover_fraction,

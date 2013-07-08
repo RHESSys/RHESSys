@@ -434,6 +434,7 @@ void		patch_daily_F(
 	patch[0].acc_year.snowin += zone[0].snow;
 
 
+
 	/*--------------------------------------------------------------*/
 	/*	Compute the stability correction factor for aero cond	*/
 	/*--------------------------------------------------------------*/

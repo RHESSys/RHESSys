@@ -62,6 +62,7 @@ $(OBJ)/compute_potential_decomp.o \
 $(OBJ)/compute_potential_exfiltration.o \
 $(OBJ)/compute_potential_rain_interception.o \
 $(OBJ)/compute_potential_snow_interception.o \
+$(OBJ)/compute_prop_alloc_daily.o \
 $(OBJ)/compute_ra_overstory.o \
 $(OBJ)/compute_ra_surface.o \
 $(OBJ)/compute_ra_understory.o \
@@ -734,6 +735,8 @@ $(OBJ)/compute_froot_litfall.o: cn/compute_froot_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_froot_litfall.c -o $(OBJ)/compute_froot_litfall.o
 $(OBJ)/compute_growth_resp.o: cn/compute_growth_resp.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_growth_resp.c -o $(OBJ)/compute_growth_resp.o
+$(OBJ)/compute_prop_alloc_daily.o: cn/compute_prop_alloc_daily.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_prop_alloc_daily.c -o $(OBJ)/compute_prop_alloc_daily.o
 $(OBJ)/compute_potential_decomp.o: cn/compute_potential_decomp.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_decomp.c -o $(OBJ)/compute_potential_decomp.o
 $(OBJ)/compute_potential_N_uptake.o: cn/compute_potential_N_uptake.c 

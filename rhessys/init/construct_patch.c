@@ -300,6 +300,7 @@ struct patch_object *construct_patch(
 	patch[0].surface_DON = 0.0;
 	patch[0].fertilizer_NO3 = 0.0;
 	patch[0].fertilizer_NH4 = 0.0;
+	patch[0].grazing_Closs = 0.0;
 	
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this patch								*/

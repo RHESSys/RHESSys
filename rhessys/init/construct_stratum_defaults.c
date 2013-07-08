@@ -271,6 +271,7 @@ struct stratum_default *construct_stratum_defaults(
 		}
 		default_object_list[i].epc.alloc_maxlgf 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.maxlgf", "%lf", 0.0, 0); // param named 'epc.maxlgf' in parameter file
 		default_object_list[i].epc.alloc_prop_day_growth = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_prop_day_growth", "%lf", 0.0, 0);
+		default_object_list[i].epc.dynamic_alloc_prop_day_growth = getIntParam(&paramCnt, &paramPtr, "epc.dynamic_alloc_prop_day_growth", "%d", 0, 1);
 		default_object_list[i].epc.daily_fire_turnover 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_fire_turnover", "%lf", 0.0, 0);
 		default_object_list[i].epc.height_to_stem_exp 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_exp", "%lf", 0.0, 0);
 		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 0.0, 0);
@@ -324,15 +325,13 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_vpd_range = default_object_list[i].epc.gs_vpd_max-default_object_list[i].epc.gs_vpd_min;
 		default_object_list[i].epc.gs_trange = default_object_list[i].epc.gs_tmax-default_object_list[i].epc.gs_tmin;
 
+		/*--------------------------------------------------------------*/
+		/* plant type defaults - are you an nfixer - are you edible 	*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].epc.nfix = 	getIntParam(&paramCnt, &paramPtr, "epc.nfix", "%d", 0, 0);
+		default_object_list[i].epc.edible = 	getIntParam(&paramCnt, &paramPtr, "epc.edible", "%d", 0, 0);
 
-		/*
-		if (default_object_list[i].epc.min_percent_leafg > default_object_list[i].epc.leaf_turnover) {
-			printf("\n In veg default file %s", default_files[i]);
-			printf("\n min percent leafg is greater than leaf turnover you probably don't want that");
-			printf("\n Resetting min % gleaf to leaf turnover to avoid instability", default_object_list[i].epc.min_percent_leafg);
-			default_object_list[i].epc.min_percent_leafg = default_object_list[i].epc.leaf_turnover;
-			}
-		*/
+
 		/*--------------------------------------------------------------*/
 		/* set sunlit sla multiplier	this should be an input		*/
 		/*--------------------------------------------------------------*/

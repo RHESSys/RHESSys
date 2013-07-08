@@ -183,13 +183,17 @@ void		patch_daily_I(
 		struct  ndayflux_patch_struct *);
 	
 	
+	long julday( struct date);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int	layer;
+	int	layer, inx;
 	int	stratum;
-	double	count, theta;
+	double	cnt, count, theta;
+	
+	double  edible_leafc, grazing_mean_nc, grazing_Closs;
 	struct  canopy_strata_object *strata;
+	struct  dated_sequence	clim_event;
 
 	/*--------------------------------------------------------------*/
 	/*	zero out daily fluxes					*/
@@ -199,6 +203,7 @@ void		patch_daily_I(
 			"Error in zero_patch_daily_flux() from patch_daily_I.c... Exiting\n");
 		exit(EXIT_FAILURE);
 	}
+
 
 	
 	/*-----------------------------------------------------*/
@@ -351,10 +356,35 @@ void		patch_daily_I(
 	}
 
 
-	
+
+	/*-----------------------------------------------------*/
+	/* 	Check for any grazing activity from a land use default file			*/
+	/*-----------------------------------------------------*/
+	if (patch[0].base_stations != NULL) {
+		inx = patch[0].base_stations[0][0].dated_input[0].grazing_Closs.inx;
+		if (inx > -999) {
+			clim_event = patch[0].base_stations[0][0].dated_input[0].grazing_Closs.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].grazing_Closs.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].grazing_Closs.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].grazing_Closs.seq[inx];
+				}
+			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+				grazing_Closs = clim_event.value;
+				}
+			else grazing_Closs = 0.0;
+			} 
+		else grazing_Closs = patch[0].landuse_defaults[0][0].grazing_Closs;
+		}
+	else grazing_Closs = patch[0].landuse_defaults[0][0].grazing_Closs;
+	patch[0].grazing_Closs = grazing_Closs;
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy layers.			*/
 	/*--------------------------------------------------------------*/
+	edible_leafc = 0.0;
+	grazing_mean_nc = 0.0;
+	cnt = 0;
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		/*--------------------------------------------------------------*/
 		/*	Cycle through the canopy strata				*/
@@ -364,6 +394,11 @@ void		patch_daily_I(
 			strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
 			patch[0].preday_rain_stored += strata->cover_fraction * strata->rain_stored;
 			patch[0].preday_snow_stored += strata->cover_fraction * strata->snow_stored;
+			if ((strata[0].defaults[0][0].epc.edible == 1) && (strata[0].cs.leafc > ZERO)) {
+				edible_leafc += strata->cs.leafc * strata->cover_fraction;
+				cnt += 1;
+				grazing_mean_nc += strata->ns.leafn/strata->cs.leafc * strata->cover_fraction;
+				}
 			canopy_stratum_daily_I(
 				world,
 				basin,
@@ -376,6 +411,10 @@ void		patch_daily_I(
 				current_date );
 		}
 	}
+	patch[0].grazing_Closs = min(edible_leafc, patch[0].grazing_Closs);
+	if (cnt > 0)
+		patch[0].grazing_mean_nc = grazing_mean_nc / cnt;
+
 	/*--------------------------------------------------------------*/
 	/*	Calculate effective patch lai from stratum					*/
 	/*	- for later use by zone_daily_F								*/

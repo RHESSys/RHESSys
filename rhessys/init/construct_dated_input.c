@@ -83,6 +83,7 @@ struct	dated_input_object *construct_dated_input(
 	dated_input[0].fertilizer_NH4.inx = -999;
 	dated_input[0].irrigation.inx = -999;
 	dated_input[0].PH.inx = -999;
+	dated_input[0].grazing_Closs.inx = -999;
 	
 	/*--------------------------------------------------------------*/
 	/*	Read the still open base station file for the number of		*/
@@ -127,6 +128,12 @@ struct	dated_input_object *construct_dated_input(
 			strcpy(file_name, file_prefix);
 			dated_input[0].PH = construct_dated_clim_sequence(
 				(char *)strcat(file_name,".PH"),
+				start_date);
+		}
+		else if ( strcmp(sequence_name,"grazing_Closs" ) == 0) {
+			strcpy(file_name, file_prefix);
+			dated_input[0].grazing_Closs = construct_dated_clim_sequence(
+				(char *)strcat(file_name,".grazing_Closs"),
 				start_date);
 		}
 		else  fprintf(stderr,"WARNING-clim sequence %s not found.\n",

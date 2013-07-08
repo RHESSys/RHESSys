@@ -571,6 +571,7 @@ struct	dated_input_object
 	struct clim_event_sequence  fertilizer_NH4;					/* kg/m2/day	*/
 	struct clim_event_sequence  irrigation;					/* m/day	*/
 	struct clim_event_sequence  PH;					/* DIM	*/
+	struct clim_event_sequence  grazing_Closs;					/* kg/m2/day	*/
 	};
 
 /*----------------------------------------------------------*/
@@ -921,6 +922,7 @@ struct	landuse_default
 	double	detention_store_size;			/* m */
 	double	lai_cut;				/* m2/m2 */
 	double	percent_impervious;			/* 0-1 */
+	double	grazing_Closs;			/* kgC/m2/day */
 };
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/
@@ -1421,6 +1423,8 @@ struct patch_object
 	double	theta_std;			/* m water	*/
 	double  surface_NO3;		/* kg/m2	*/
 	double  surface_NH4;		/* kg/m2	*/
+	double  grazing_Closs;		/* kgC/m2	*/
+	double  grazing_mean_nc;	/* ratio N:Co	*/
 	double  fertilizer_NO3;		/* kg/m2	*/
 	double  fertilizer_NH4;		/* kg/m2	*/
 	double  surface_DOC_Qin_total;	/* kgC/m2 day	*/
@@ -2260,6 +2264,7 @@ struct epconst_struct
 	int veg_type;		/* (DIM) set as 1 for tree; 0 for grass	*/
 	int phenology_type;	/* (DIM) set as 1 for decid; 0 for evergreen	*/
 	int nfix;		/* (DIM) set a 1 for n-fixers; 0 for not nfixers */
+	int edible;		/* (DIM) set to 1 for edible plants */
     double gr_perc;	   /* (DIM 0-1) percent of growth allocated to respiration */
     double leaf_turnover;     /* (1/yr) annual leaf turnover fraction */
     double livewood_turnover; /* (1/yr) annual live wood turnover fraction */
@@ -2301,6 +2306,7 @@ struct epconst_struct
     double alloc_npool_fhold;  /* (DIM) fraction npool held for next year */
     double alloc_maxlgf;       /* (DIM) maximum leaf growth fraction */
     double alloc_prop_day_growth; /* (DIM) fraction of daily photosynthate used for daily growth */
+    int dynamic_alloc_prop_day_growth; /* (0-1) 1 proportional allocated daily can be dynamic 0 static */
     double  min_leaf_carbon; /* kgC minimum leaf carbon before death */
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */

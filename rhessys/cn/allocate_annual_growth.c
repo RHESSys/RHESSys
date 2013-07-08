@@ -351,7 +351,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	
 	if (total_above_biomass > ZERO)
-		 excess_carbon = (cdf->leafc_store_to_leafc_transfer+cs->leafc) - epc.min_percent_leafg*total_above_biomass;  
+		 excess_carbon = (cdf->leafc_store_to_leafc_transfer+cs->leafc) - epc.min_percent_leafg*total_biomass;  
 	else
 		excess_carbon = 0.0;
 

@@ -51,6 +51,7 @@ void	output_growth_basin(
 	double anpool;
 	double alitrc;
 	double asoilhr;
+	double acloss;
 	double asoilc, asminn, anitrate, asurfaceN;
 	double alitrn, asoiln, anfix, anuptake;
 	double aarea, hill_area, basin_area;
@@ -105,6 +106,7 @@ void	output_growth_basin(
 	aDOC = 0.0; aDON = 0.0;
 	arootdepth = 0.0;
 	basin_area = 0.0;
+	acloss = 0.0;
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
@@ -139,6 +141,7 @@ void	output_growth_basin(
 				aDON += (patch[0].soil_ns.DON) * patch[0].area;
 				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
 				anfix += (patch[0].ndf.nfix_to_sminn) * patch[0].area;
+				acloss += (patch[0].grazing_Closs) * patch[0].area;
 				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area,
 
 				asoilhr += (
@@ -261,6 +264,7 @@ void	output_growth_basin(
 	aDOC /= aarea;
 	arootdepth /= aarea;
 	anfix /= aarea;
+	acloss /= aarea;
 	anuptake /= aarea;
 
 	astreamflow_NH4 += (hstreamflow_NH4/ basin_area);
@@ -276,7 +280,7 @@ void	output_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -313,7 +317,8 @@ void	output_growth_basin(
 		aDON,
 		arootdepth*1000.0,
 		anfix * 1000.0,
-		anuptake * 1000.0
+		anuptake * 1000.0,
+		acloss * 1000.0
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 
