@@ -101,8 +101,6 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 			&gamma,
 			&num_neighbours);
 
-//		printf("Surface %d, Numpatches: %d, itr: %d, patch_ID: %d, zone_ID: %d, hill_ID: %d\n",
-//				surface, num_patches, i, patch_ID, zone_ID, hill_ID);
 
 		if  ( (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) )
 			patch = find_patch(patch_ID, zone_ID, hill_ID, basin);
@@ -110,7 +108,6 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 			patch = basin[0].outside_region;
 		rlist->list[i] = patch;
 
-//		printf("\tPatch: %d\n", patch->ID);
 
 		if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
 			printf("\n WARNING lateral Ksat (%lf) are close to zero for patch %d",

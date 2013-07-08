@@ -196,6 +196,19 @@ void	canopy_stratum_daily_F(
 		struct cstate_struct *cs,
 		struct nstate_struct *ns,
 		struct cdayflux_struct *);
+
+	void	update_mortality(
+		struct epconst_struct,
+		struct cstate_struct *,
+		struct cdayflux_struct *,
+		struct cdayflux_patch_struct *,
+		struct nstate_struct *,
+		struct ndayflux_struct *,
+		struct ndayflux_patch_struct *,
+		struct litter_c_object *,
+		struct litter_n_object *,
+		int,
+		struct mortality_struct);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -228,6 +241,7 @@ void	canopy_stratum_daily_F(
 	double	potential_transpiration_rate_sunlit;
 	double	potential_transpiration_rate_shade;
 	double  wind;
+	double leafcloss_perc;
 
 	double m_APAR_sunlit;
 	double m_tavg_sunlit;
@@ -245,6 +259,7 @@ void	canopy_stratum_daily_F(
 
 	struct	psnin_struct	psnin;
 	struct	psnout_struct	psnout;
+	struct mortality_struct mort;
 
 
 	if ( command_line[0].verbose_flag > 1 )
@@ -298,7 +313,39 @@ void	canopy_stratum_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	total_incoming_PAR = PAR_diffuse + PAR_direct;
+
+
 	
+	/*--------------------------------------------------------------*/
+	/*	perform plant grazing losses				*/
+	/*	(if grow flag is on)					*/
+	/*--------------------------------------------------------------*/
+	if ((stratum[0].cs.leafc > ZERO) && (patch[0].grazing_Closs > ZERO) && command_line[0].grow_flag == 1 ) {
+			leafcloss_perc  = patch[0].grazing_Closs * (stratum[0].ns.leafn/stratum[0].cs.leafc)
+						 / patch[0].grazing_mean_nc / stratum[0].cs.leafc;
+			mort.mort_leafc  = leafcloss_perc;
+			mort.mort_cpool = 0.0;
+			mort.mort_deadleafc = 0.0;
+			mort.mort_livestemc = 0.0;
+			mort.mort_deadstemc = 0.0;
+			mort.mort_livecrootc = 0.0;
+			mort.mort_deadcrootc = 0.0;
+			mort.mort_frootc = 0.0;
+			update_mortality(stratum[0].defaults[0][0].epc,
+				&(stratum[0].cs),
+				&(stratum[0].cdf),
+				&(patch[0].cdf),
+				&(stratum[0].ns),
+				&(stratum[0].ndf),
+				&(patch[0].ndf),
+				&(patch[0].litter_cs),
+				&(patch[0].litter_ns),
+				2,
+				mort);
+			printf("\n completed %lf from %lf", leafcloss_perc, stratum[0].cs.leafc);
+		
+	}
+
 	/*	NEW CHECK TO SEE IF STRATUM IS VEGETATED, OTHERWISE SKIP	*/
 	/*	TO END TO UPDATE RADIATION BY COVER FRACTION				*/
 	

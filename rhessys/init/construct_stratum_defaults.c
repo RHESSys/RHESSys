@@ -324,15 +324,13 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_vpd_range = default_object_list[i].epc.gs_vpd_max-default_object_list[i].epc.gs_vpd_min;
 		default_object_list[i].epc.gs_trange = default_object_list[i].epc.gs_tmax-default_object_list[i].epc.gs_tmin;
 
+		/*--------------------------------------------------------------*/
+		/* plant type defaults - are you an nfixer - are you edible 	*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].epc.nfix = 	getIntParam(&paramCnt, &paramPtr, "epc.nfix", "%d", 0, 1);
+		default_object_list[i].epc.edible = 	getIntParam(&paramCnt, &paramPtr, "epc.edible", "%d", 1, 1);
 
-		/*
-		if (default_object_list[i].epc.min_percent_leafg > default_object_list[i].epc.leaf_turnover) {
-			printf("\n In veg default file %s", default_files[i]);
-			printf("\n min percent leafg is greater than leaf turnover you probably don't want that");
-			printf("\n Resetting min % gleaf to leaf turnover to avoid instability", default_object_list[i].epc.min_percent_leafg);
-			default_object_list[i].epc.min_percent_leafg = default_object_list[i].epc.leaf_turnover;
-			}
-		*/
+
 		/*--------------------------------------------------------------*/
 		/* set sunlit sla multiplier	this should be an input		*/
 		/*--------------------------------------------------------------*/

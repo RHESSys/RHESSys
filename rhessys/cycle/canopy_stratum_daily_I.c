@@ -65,19 +65,6 @@ void	canopy_stratum_daily_I(
 		struct	rooting_zone_object	*,
 		struct command_line_object *);
 	
-	void	update_mortality(
-		struct epconst_struct,
-		struct cstate_struct *,
-		struct cdayflux_struct *,
-		struct cdayflux_patch_struct *,
-		struct nstate_struct *,
-		struct ndayflux_struct *,
-		struct ndayflux_patch_struct *,
-		struct litter_c_object *,
-		struct litter_n_object *,
-		int,
-		struct mortality_struct);
-	
 
 	void	update_branch_mortality(
 		struct epconst_struct,
@@ -115,6 +102,19 @@ void	canopy_stratum_daily_I(
 		double,
 		struct date,
 		int);
+
+	void	update_mortality(
+		struct epconst_struct,
+		struct cstate_struct *,
+		struct cdayflux_struct *,
+		struct cdayflux_patch_struct *,
+		struct nstate_struct *,
+		struct ndayflux_struct *,
+		struct ndayflux_patch_struct *,
+		struct litter_c_object *,
+		struct litter_n_object *,
+		int,
+		struct mortality_struct);
 	
 	int	zero_stratum_daily_flux(struct cdayflux_struct *,
 		struct ndayflux_struct *);
@@ -127,6 +127,7 @@ void	canopy_stratum_daily_I(
 	struct nstate_struct *ns;
 	double wilting_point;
 	struct mortality_struct mort;
+	double leafcloss_perc;
 
 	/*--------------------------------------------------------------*/
 	/* no processing at present for non-veg types			*/
@@ -199,13 +200,11 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
         stratum[0].cs.Tacc = stratum[0].cs.Tacc*(stratum[0].defaults[0][0].epc.Tacclim_days-1.0)/(stratum[0].defaults[0][0].epc.Tacclim_days) + 
                               zone[0].metv.tavg * 1.0/stratum[0].defaults[0][0].epc.Tacclim_days;
-	/*--------------------------------------------------------------*/
-	/*	perform plant mortality losses				*/
-	/*	(if grow flag is on)					*/
-	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0)  {
 		cs = &(stratum[0].cs);
 		ns = &(stratum[0].ns);
+	
+	 	
 		stratum[0].cs.preday_totalc = (cs->cpool + cs->cwdc
 			+ cs->leafc + cs->leafc_store + cs->leafc_transfer
 			+ cs->dead_leafc + cs->gresp_transfer + cs->gresp_store
@@ -214,16 +213,7 @@ void	canopy_stratum_daily_I(
 			+ cs->dead_stemc + cs->deadstemc_store + cs->deadstemc_transfer
 			+ cs->live_crootc + cs->livecrootc_store + cs->livecrootc_transfer
 			+ cs->dead_crootc + cs->deadcrootc_store + cs->deadcrootc_transfer);
-		/*
-		stratum[0].ns.preday_totaln = (ns->npool + ns->cwdn + ns->retransn
-			+ ns->dead_leafn + ns->leafn + ns->leafn_store
-			+ ns->leafn_transfer + ns->frootn + ns->frootn_store
-			+ ns->frootn_transfer +	ns->live_stemn + ns->livestemn_store
-			+ ns->livestemn_transfer + ns->dead_stemn + ns->deadstemn_store
-			+ ns->deadstemn_transfer + ns->live_crootn + ns->livecrootn_store
-			+ ns->livecrootn_transfer + ns->dead_crootn + ns->deadcrootn_store
-			+ ns->deadcrootn_transfer);
-		*/
+
 		
 		mort.mort_cpool = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
 		mort.mort_leafc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
@@ -233,7 +223,6 @@ void	canopy_stratum_daily_I(
 		mort.mort_livecrootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
 		mort.mort_deadcrootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
 		mort.mort_frootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		
 		update_mortality(stratum[0].defaults[0][0].epc,
 			&(stratum[0].cs),
 			&(stratum[0].cdf),
@@ -245,6 +234,7 @@ void	canopy_stratum_daily_I(
 			&(patch[0].litter_ns),
 			1,
 			mort);
+
 		if  ((stratum[0].defaults[0][0].epc.veg_type==TREE) && (stratum[0].defaults[0][0].epc.branch_turnover > ZERO)){
 		update_branch_mortality(stratum[0].defaults[0][0].epc,
 			&(stratum[0].cs),

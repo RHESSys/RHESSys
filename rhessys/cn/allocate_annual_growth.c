@@ -183,7 +183,7 @@ int allocate_annual_growth(				int id,
  		}
          }
 
-	total_store =  max(cs->cpool,0.0);
+	total_store =  cs->cpool;
 	total_biomass =  (cs->leafc+cs->frootc+cs->dead_stemc+cs->live_stemc+
 			cs->dead_crootc+cs->live_crootc);
 
@@ -372,6 +372,7 @@ int allocate_annual_growth(				int id,
 			froot = (1-fleaf);
 		}
 
+		fleaf = max(0.0, fleaf);
 		
 		if (epc.veg_type == TREE){
 		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
@@ -380,7 +381,6 @@ int allocate_annual_growth(				int id,
 	   	mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
 		}
 
-		fleaf = max(0.0, fleaf);
 		carbohydrate_transfer = carbohydrate_transfer/fleaf;
 
 		carbohydrate_transfer = min(cs->cpool, carbohydrate_transfer);		
@@ -400,14 +400,12 @@ int allocate_annual_growth(				int id,
 		ns->retransn = max(ns->retransn, 0.0);
 		if (unmetn > ns->retransn)   {
 			ndf->retransn_to_npool += ns->retransn;
-			carbohydrate_transfer = (ns->npool)*mean_cn;
+			carbohydrate_transfer = (ns->npool+ns->retransn)*mean_cn;
 			}
 			else {
 			ndf->retransn_to_npool += unmetn;
 			}	
 				
-
-		carbohydrate_transfer = max(carbohydrate_transfer, 0.0);		
 
 		cdf->leafc_store_to_leafc_transfer += carbohydrate_transfer * fleaf;
 		cdf->frootc_store_to_frootc_transfer += carbohydrate_transfer * froot;

@@ -465,11 +465,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							d = 0;
 						}
 
-//						for (j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
 						for (j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
-//							neigh = patch[0].innundation_list[d].neighbours[j].patch;
 							neigh = patch->surface_innundation_list[d].neighbours[j].patch;
-//							Qout = excess * patch[0].innundation_list[d].neighbours[j].gamma;
 							Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
 							NO3_out = Qout / patch[0].detention_store
 									* patch[0].surface_NO3;

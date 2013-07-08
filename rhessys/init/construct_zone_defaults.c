@@ -95,7 +95,7 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].wind =			getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 0.0, 0);
 		default_object_list[i].max_snow_temp =		getDoubleParam(&paramCnt, &paramPtr, "max_snow_temp", "%lf", 0.0, 0);
 		default_object_list[i].min_rain_temp =		getDoubleParam(&paramCnt, &paramPtr, "min_rain_temp", "%lf", 0.0, 0);
-		default_object_list[i].ndep_NO3 =		getDoubleParam(&paramCnt, &paramPtr, "n_deposition", "%lf", 0.0, 0) / 365.0; // variable name different than parameter name
+		default_object_list[i].ndep_NO3 =		getDoubleParam(&paramCnt, &paramPtr, "n_deposition", "%lf", 0.0, 1) / 365.0; // variable name different than parameter name
 		/*--------------------------------------------------------------*/
 		/*	convert from annual to daily				*/
 		/*	(old)							*/

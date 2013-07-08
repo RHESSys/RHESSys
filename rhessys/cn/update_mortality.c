@@ -157,10 +157,11 @@ void update_mortality(
 	/* daily nitrogen fluxes due to mortality */
 	/* mortality fluxes out of leaf and fine root pools */
 	if (epc.leaf_cn > ZERO) {
-		m_leafn_to_litr1n = m_leafc_to_litr1c / epc.leaf_cn;
 		m_leafn_to_litr2n = m_leafc_to_litr2c / CEL_CN;
 		m_leafn_to_litr3n = m_leafc_to_litr3c / CEL_CN;
 		m_leafn_to_litr4n = m_leafc_to_litr4c / LIG_CN;
+		m_leafn_to_litr1n = mort.mort_leafc*ns->leafn - (m_leafn_to_litr2n+m_leafn_to_litr3n+m_leafn_to_litr4n);
+		m_leafn_to_litr1n = max(m_leafn_to_litr1n, 0.0);
 		}
 	else {
 		m_leafn_to_litr1n = 0.0;
@@ -169,10 +170,11 @@ void update_mortality(
 		m_leafn_to_litr4n = 0.0;
 		}
 	if (epc.leaflitr_cn > ZERO) {
-		m_deadleafn_to_litr1n = m_deadleafc_to_litr1c / epc.leaflitr_cn;
 		m_deadleafn_to_litr2n = m_deadleafc_to_litr2c / CEL_CN;
 		m_deadleafn_to_litr3n = m_deadleafc_to_litr3c / CEL_CN;
 		m_deadleafn_to_litr4n = m_deadleafc_to_litr4c / LIG_CN;
+		m_deadleafn_to_litr1n = mort.mort_deadleafc*ns->dead_leafn - (m_deadleafn_to_litr2n+m_deadleafn_to_litr3n+m_deadleafn_to_litr4n);
+		m_deadleafn_to_litr1n = max(m_deadleafn_to_litr1n, 0.0);
 	}
 	else {
 		m_deadleafn_to_litr1n = 0.0;
@@ -181,10 +183,11 @@ void update_mortality(
 		m_deadleafn_to_litr4n = 0.0;
 	}	
 	if (epc.froot_cn > ZERO) {
-		m_frootn_to_litr1n = m_frootc_to_litr1c / epc.froot_cn;
 		m_frootn_to_litr2n = m_frootc_to_litr2c / CEL_CN;
 		m_frootn_to_litr3n = m_frootc_to_litr3c / CEL_CN;
 		m_frootn_to_litr4n = m_frootc_to_litr4c / LIG_CN;
+		m_frootn_to_litr1n = mort.mort_frootc*ns->frootn - (m_frootn_to_litr2n+m_frootn_to_litr3n+m_frootn_to_litr4n);
+		m_frootn_to_litr1n = max(m_frootn_to_litr1n, 0.0);
 		}
 	else {
 		m_frootn_to_litr1n = 0.0;
