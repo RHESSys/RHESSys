@@ -226,14 +226,15 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].DOC_absorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].soil_cs.DOC_Qout += DOC_leached_to_stream;
+		patch[0].streamflow_NO3 += NO3_leached_to_stream;
+		patch[0].streamflow_NH4 += NH4_leached_to_stream;
+		patch[0].streamflow_DON += DON_leached_to_stream;
+		patch[0].streamflow_DOC += DOC_leached_to_stream;
 	}
 
 	patch[0].Qout += (route_to_stream / patch[0].area);
 	patch[0].base_flow += (route_to_stream / patch[0].area);
-	patch[0].streamflow_NO3 += NO3_leached_to_stream;
-	patch[0].streamflow_NH4 += NH4_leached_to_stream;
-	patch[0].streamflow_DON += DON_leached_to_stream;
-	patch[0].streamflow_DOC += DOC_leached_to_stream;
+
 
 	/*--------------------------------------------------------------*/
 	/*	calculate any return flow to the stream in this patch   */

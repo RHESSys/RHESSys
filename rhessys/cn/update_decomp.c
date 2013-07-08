@@ -340,7 +340,7 @@ int update_decomp(
 	patch[0].surface_NH4 -=  N_uptake;
 	remaining_uptake -= N_uptake;
 
-	/* if (remaining_uptake > ZERO) printf("N balance issue \n"); */
+	if (remaining_uptake > ZERO) printf("N balance issue \n"); 
 	ndf->net_mineralized = daily_net_nmin;
 	total_N = ns_litr->litr1n + ns_litr->litr2n +  ns_litr->litr3n
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n

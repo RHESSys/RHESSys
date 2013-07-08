@@ -328,9 +328,8 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		/* plant type defaults - are you an nfixer - are you edible 	*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].epc.nfix = 	getIntParam(&paramCnt, &paramPtr, "epc.nfix", "%d", 0, 0);
-		default_object_list[i].epc.edible = 	getIntParam(&paramCnt, &paramPtr, "epc.edible", "%d", 0, 0);
-
+		default_object_list[i].epc.nfix = 	getIntParam(&paramCnt, &paramPtr, "epc.nfix", "%d", 0, 1);
+		default_object_list[i].epc.edible = 	getIntParam(&paramCnt, &paramPtr, "epc.edible", "%d", 1, 1);
 
 		/*--------------------------------------------------------------*/
 		/* set sunlit sla multiplier	this should be an input		*/

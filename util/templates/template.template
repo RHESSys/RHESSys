@@ -52,7 +52,7 @@ _world $world_rast 1
 				a_area		area	
 				slope	aver		$slope_rast
 				wetness_index	aver $wetness_index_rast 
-                Ksat_vertical     value 1.0
+				Ksat_vertical	eqn -1 1 $impervious_rast
 				m			value 0.12 
 				rz_storage	value 0.0
 				unsat_storage	value	0.0

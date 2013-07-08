@@ -149,6 +149,7 @@ double compute_potential_N_uptake_Dickenson(
 	cdf->fwood = fwood;	
 
 	/* add in nitrogen for plants and for nitrogen deficit in pool */
-	plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
+	plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn; 
+	
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake */
