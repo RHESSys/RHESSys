@@ -126,6 +126,7 @@ double	compute_N_leached(int verbose_flag,
 	/*------------------------------------------------------*/
 		if (nabsorbed > navail) {
 			navail=0;
+			nleached=0;
 			}
 		else 
 		  nleached = navail-nabsorbed;
@@ -189,6 +190,7 @@ double	compute_N_leached(int verbose_flag,
 
 	if (nabsorbed > navail) {
 			navail=0;
+			nleached=0;
 			}
 		else 
 		  navail = navail-nabsorbed;
