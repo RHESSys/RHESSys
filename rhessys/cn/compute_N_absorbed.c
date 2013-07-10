@@ -48,7 +48,7 @@ double	compute_N_absorbed(int verbose_flag,
 	double bulk_density;
 	
 	bulk_density = PARTICLE_DENSITY * (1.0 - n_0) * 1000;
-	nabsorbed=n_0*(z2-z1)*N_absorption_rate*bulk_density;
+	nabsorbed=(z2-z1)*N_absorption_rate*bulk_density;
 	
 	nabsorbed=max(nabsorbed, 0.0);
 	
