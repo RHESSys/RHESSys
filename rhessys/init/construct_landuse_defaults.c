@@ -133,15 +133,27 @@ struct landuse_default *construct_landuse_defaults(
         
                 memset(outFilename, '\0', filenameLen);
 
-                if (command_line[0].output_prefix != NULL) {
-                    outFilename[0] = '\0';
-                    strcat(outFilename, command_line[0].output_prefix);
-                    strcat(outFilename, "_landuse.params");
-                } 
-                else {
-                    strcat(outFilename, "landuse.params");
-                }
+
         
+    
+            // Concatenate the output prefix with the filename of the input .def file
+            // and "_landuse.params"
+            if (command_line[0].output_prefix != NULL) {
+                strcat(outFilename, command_line[0].output_prefix);
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "_landuse.params");
+            } 
+            else {
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "landuse.params");
+            }
+    
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 	return(default_object_list);

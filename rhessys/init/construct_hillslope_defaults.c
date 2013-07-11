@@ -122,15 +122,25 @@ struct hillslope_default *construct_hillslope_defaults(
         
                 memset(outFilename, '\0', filenameLen);
 
-                if (command_line[0].output_prefix != NULL) {
-                    outFilename[0] = '\0';
-                    strcat(outFilename, command_line[0].output_prefix);
-                    strcat(outFilename, "_hillslope.params");
-                } 
-                else {
-                    strcat(outFilename, "hillslope.params");
+    
+            // Concatenate the output prefix with the filename of the input .def file
+            // and "_hillslope.params"
+            if (command_line[0].output_prefix != NULL) {
+                strcat(outFilename, command_line[0].output_prefix);
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
                 }
-        
+                strcat(outFilename, "_hillslope.params");
+            } 
+            else {
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "hillslope.params");
+            }
+    
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 	return(default_object_list);

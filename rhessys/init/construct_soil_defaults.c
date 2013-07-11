@@ -262,19 +262,28 @@ struct soil_default *construct_soil_defaults(
         
                 memset(outFilename, '\0', filenameLen);
             
-                // Concatenate the output prefix with the filename of the input .def file
-                // and "_stratum.params"
-                if (command_line[0].output_prefix != NULL) {
-                    outFilename[0] = '\0';
-                    strcat(outFilename, command_line[0].output_prefix);
-                strcat(outFilename, "_soil.params");
-                } 
-                else {
-                    strcat(outFilename, "soil.params");
-                }
 
+    
+            // Concatenate the output prefix with the filename of the input .def file
+            // and "_soil.params"
+            if (command_line[0].output_prefix != NULL) {
+                strcat(outFilename, command_line[0].output_prefix);
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "_soil.params");
+            } 
+            else {
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "soil.params");
+            }
+    
+        printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 
-        printParams(paramCnt, paramPtr, outFilename);
 	return(default_object_list);
 } /*end construct_soil_defaults*/

@@ -159,17 +159,26 @@ struct zone_default *construct_zone_defaults(
                     strcpy(filename, token);
                 }
         
-                memset(outFilename, '\0', filenameLen);
-
-                if (command_line[0].output_prefix != NULL) {
-                    outFilename[0] = NULL;
-                    strcat(outFilename, command_line[0].output_prefix);
-                    strcat(outFilename, "_zone.params");
-                } 
-                else {
-                    strcat(outFilename, "zone.params");
-                }
         
+    
+            // Concatenate the output prefix with the filename of the input .def file
+            // and "_zone.params"
+            if (command_line[0].output_prefix != NULL) {
+                strcat(outFilename, command_line[0].output_prefix);
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "_zone.params");
+            } 
+            else {
+                if (filename != NULL) {
+                    strcat(outFilename, "_");
+                    strcat(outFilename, filename);
+                }
+                strcat(outFilename, "zone.params");
+            }
+    
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 
