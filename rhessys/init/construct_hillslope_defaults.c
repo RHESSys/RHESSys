@@ -81,7 +81,7 @@ struct hillslope_default *construct_hillslope_defaults(
 
                 paramPtr = readParamFile(&paramCnt, default_files[i]);
 
-		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "hillslope_default_ID", "%d", 0, 0);
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "hillslope_default_ID", "%d", 1, 1);
 
 		/*--------------------------------------------------------------*/
 		/* 	read in optional paramters				*/

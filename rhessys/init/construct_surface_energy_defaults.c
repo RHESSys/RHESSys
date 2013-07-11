@@ -79,7 +79,7 @@ struct surface_energy_default *construct_surface_energy_defaults(
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "surface_energy_ID", "%d", 0, 0);
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "surface_energy_ID", "%d", 1, 1);
 		/*--------------------------------------------------------------*/
 		/*		assign parameters in  default */
 		/*--------------------------------------------------------------*/

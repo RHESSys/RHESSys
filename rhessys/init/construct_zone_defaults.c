@@ -82,26 +82,26 @@ struct zone_default *construct_zone_defaults(
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.	*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "zone_default_ID", "%d", 0, 0);
-		default_object_list[i].atm_trans_lapse_rate =	getDoubleParam(&paramCnt, &paramPtr, "atm_trans_lapse_rate", "%lf", 0.0, 0);
-		default_object_list[i].dewpoint_lapse_rate =	getDoubleParam(&paramCnt, &paramPtr, "dewpoint_lapse_rate", "%lf", 0.0, 0);
-		default_object_list[i].max_effective_lai =	getDoubleParam(&paramCnt, &paramPtr, "max_effective_lai", "%lf", 0.0, 0);
-		default_object_list[i].lapse_rate =		getDoubleParam(&paramCnt, &paramPtr, "lapse_rate", "%lf", 0.0, 0);
-		default_object_list[i].pptmin =			getDoubleParam(&paramCnt, &paramPtr, "pptmin", "%lf", 0.0, 0);
-		default_object_list[i].sea_level_clear_sky_trans = getDoubleParam(&paramCnt, &paramPtr, "sea_level_clear_sky_trans", "%lf", 0.0, 0);
-		default_object_list[i].temcf = 			getDoubleParam(&paramCnt, &paramPtr, "temcf", "%lf", 0.0, 0);
-		default_object_list[i].trans_coeff1 = 		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff1", "%lf", 0.0, 0);
-		default_object_list[i].trans_coeff2 =		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff2", "%lf", 0.0, 0);
-		default_object_list[i].wind =			getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 0.0, 0);
-		default_object_list[i].max_snow_temp =		getDoubleParam(&paramCnt, &paramPtr, "max_snow_temp", "%lf", 0.0, 0);
-		default_object_list[i].min_rain_temp =		getDoubleParam(&paramCnt, &paramPtr, "min_rain_temp", "%lf", 0.0, 0);
-		default_object_list[i].ndep_NO3 =		getDoubleParam(&paramCnt, &paramPtr, "n_deposition", "%lf", 0.0, 1) / 365.0; // variable name different than parameter name
+		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "zone_default_ID", "%d", 1, 1);
+		default_object_list[i].atm_trans_lapse_rate =	getDoubleParam(&paramCnt, &paramPtr, "atm_trans_lapse_rate", "%lf", 0.000029, 1);
+		default_object_list[i].dewpoint_lapse_rate =	getDoubleParam(&paramCnt, &paramPtr, "dewpoint_lapse_rate", "%lf", 0.0015, 1);
+		default_object_list[i].max_effective_lai =	getDoubleParam(&paramCnt, &paramPtr, "max_effective_lai", "%lf", 10.0, 1);
+		default_object_list[i].lapse_rate =		getDoubleParam(&paramCnt, &paramPtr, "lapse_rate", "%lf", 0.0064, 1);
+		default_object_list[i].pptmin =			getDoubleParam(&paramCnt, &paramPtr, "pptmin", "%lf", 0.0254, 1);
+		default_object_list[i].sea_level_clear_sky_trans = getDoubleParam(&paramCnt, &paramPtr, "sea_level_clear_sky_trans", "%lf", 0.75, 1);
+		default_object_list[i].temcf = 			getDoubleParam(&paramCnt, &paramPtr, "temcf", "%lf", 0.4, 1);
+		default_object_list[i].trans_coeff1 = 		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff1", "%lf", 0.003, 1);
+		default_object_list[i].trans_coeff2 =		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff2", "%lf", 2.2, 1);
+		default_object_list[i].wind =			getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 1.0, 1);
+		default_object_list[i].max_snow_temp =		getDoubleParam(&paramCnt, &paramPtr, "max_snow_temp", "%lf", 1.0, 1);
+		default_object_list[i].min_rain_temp =		getDoubleParam(&paramCnt, &paramPtr, "min_rain_temp", "%lf", -1.0, 1);
+		default_object_list[i].ndep_NO3 =		getDoubleParam(&paramCnt, &paramPtr, "n_deposition", "%lf", 0.001, 1) / 365.0; // variable name different than parameter name
 		/*--------------------------------------------------------------*/
 		/*	convert from annual to daily				*/
 		/*	(old)							*/
 		/*	currently a concentration				*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].wind_direction = getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 180.0, 1); // parameter name is "wind" in param file
+		default_object_list[i].wind_direction = getDoubleParam(&paramCnt, &paramPtr, "wind_direction", "%lf", 180.0, 1); // parameter name is "wind" in param file
 		default_object_list[i].lapse_rate_tmin = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmax", "%lf", default_object_list[i].lapse_rate, 1);
 		default_object_list[i].lapse_rate_tmax = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmin", "%lf", default_object_list[i].lapse_rate, 1);
 		default_object_list[i].wet_lapse_rate = 	getDoubleParam(&paramCnt, &paramPtr, "wet_lapse_rate", "%lf", 0.0049, 1);

@@ -70,7 +70,7 @@ struct basin_default *construct_basin_defaults(
 
                 paramPtr = readParamFile(&paramCnt, default_files[i]);
 
-		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "basin_default_ID", "%d", 0, 0);
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "basin_default_ID", "%d", 1, 1);
 		/*--------------------------------------------------------------*/
 		/*	if grow flag allocate a grow default structure for the	*/
 		/*	ith object.						*/

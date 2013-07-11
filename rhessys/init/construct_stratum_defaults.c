@@ -92,47 +92,47 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "stratum_default_ID", "%d", 0, 0); // new param name
-		default_object_list[i].epc.veg_type = 		parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.veg.type", "%s", "", 0)); // param name is "epc.veg.type" in param file
-		default_object_list[i].K_absorptance = 		getDoubleParam(&paramCnt, &paramPtr, "K_absorptance", "%lf", 0.0, 0); // parameter misspelled in file as "K_apsorbtance"
-		default_object_list[i].K_reflectance = 		getDoubleParam(&paramCnt, &paramPtr, "K_reflectance", "%lf", 0.0, 0);
-		default_object_list[i].K_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "K_transmittance", "%lf", 0.0, 0); 
-		default_object_list[i].PAR_absorptance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_absorptance", "%lf", 0.0, 0); // param misspelled in file "PAR_absrptance" 
-		default_object_list[i].PAR_reflectance =  	getDoubleParam(&paramCnt, &paramPtr, "PAR_reflectance", "%lf", 0.0, 0);
-		default_object_list[i].PAR_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_transmittance", "%lf", 0.0, 0);
-		default_object_list[i].epc.ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ext_coef", "%lf", 0.0, 0);
-		default_object_list[i].specific_rain_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_rain_capacity", "%lf", 0.0, 0);
-		default_object_list[i].specific_snow_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_snow_capacity", "%lf", 0.0, 0);
-		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.0, 0); // param name is "wind_attenuation_coef" in param file
-		default_object_list[i].ustar_overu = 		getDoubleParam(&paramCnt, &paramPtr, "ustar_overu", "%lf", 0.0, 0);
-		default_object_list[i].mrc.q10 = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.q10", "%lf", 0.0, 0);
-		default_object_list[i].mrc.per_N = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.per_N", "%lf", 0.0, 0);
-		default_object_list[i].epc.gr_perc = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gr_perc", "%lf", 0.0, 0);
-		default_object_list[i].lai_stomatal_fraction = 	getDoubleParam(&paramCnt, &paramPtr, "lai_stomatal_fraction", "%lf", 0.0, 0);
-		default_object_list[i].epc.flnr = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr", "%lf", 0.0, 0);
-		default_object_list[i].epc.ppfd_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ppfd_coef", "%lf", 0.0, 0);
-		default_object_list[i].epc.topt = 		getDoubleParam(&paramCnt, &paramPtr, "epc.topt", "%lf", 0.0, 0);
-		default_object_list[i].epc.tmax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.tmax", "%lf", 0.0, 0);
-		default_object_list[i].epc.tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.tcoef", "%lf", 0.0, 0);
-		default_object_list[i].epc.psi_open = 		getDoubleParam(&paramCnt, &paramPtr, "epc.psi_open", "%lf", 0.0, 0);
-		default_object_list[i].epc.psi_close = 		getDoubleParam(&paramCnt, &paramPtr, "epc.psi_close", "%lf", 0.0, 0);
-		default_object_list[i].epc.vpd_open = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_open", "%lf", 0.0, 0);
-		default_object_list[i].epc.vpd_close = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_close", "%lf", 0.0, 0);
-		default_object_list[i].epc.gl_smax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax", "%lf", 0.0, 0);
-		default_object_list[i].epc.gl_c = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_c", "%lf", 0.0, 0);
-		default_object_list[i].gsurf_slope = 		getDoubleParam(&paramCnt, &paramPtr, "gsurf_slope", "%lf", 0.0, 0);
-		default_object_list[i].gsurf_intercept = 	getDoubleParam(&paramCnt, &paramPtr, "gsurf_intercept", "%lf", 0, 0);
-		default_object_list[i].epc.phenology_flag = 	parse_dyn_flag(getStrParam(&paramCnt, &paramPtr, "epc.phenology_flag", "%s", "", 0));
-		default_object_list[i].epc.phenology_type = 	parse_phenology_type(getStrParam(&paramCnt, &paramPtr, "epc.phenology.type", "%s", "", 0));
-		default_object_list[i].epc.max_lai = 		getDoubleParam(&paramCnt, &paramPtr, "epc.max_lai", "%lf", 0.0, 0);
-		default_object_list[i].epc.proj_sla = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_sla", "%lf", 0.0, 0);
-		default_object_list[i].epc.lai_ratio = 		getDoubleParam(&paramCnt, &paramPtr, "epc.lai_ratio", "%lf", 0.0, 0);
-		default_object_list[i].epc.proj_swa = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_swa", "%lf", 0.0, 0);
-		default_object_list[i].epc.leaf_turnover = 	getDoubleParam(&paramCnt, &paramPtr, "epc.leaf_turnover", "%lf", 0.0, 0);
-		default_object_list[i].epc.day_leafon = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafon", "%d", 0, 0);
-		default_object_list[i].epc.day_leafoff = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafoff", "%d", 0, 0);
-		default_object_list[i].epc.ndays_expand = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_expand", "%d", 0, 0);
-		default_object_list[i].epc.ndays_litfall = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_litfall", "%d", 0, 0);
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "stratum_default_ID", "%d", 7, 1); // new param name
+		default_object_list[i].epc.veg_type = 		parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.veg.type", "%s", "TREE", 1)); // param name is "epc.veg.type" in param file
+		default_object_list[i].K_absorptance = 		getDoubleParam(&paramCnt, &paramPtr, "K_absorptance", "%lf", 0.8, 1); // parameter misspelled in file as "K_apsorbtance"
+		default_object_list[i].K_reflectance = 		getDoubleParam(&paramCnt, &paramPtr, "K_reflectance", "%lf", 0.1, 1);
+		default_object_list[i].K_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "K_transmittance", "%lf", 0.1, 1); 
+		default_object_list[i].PAR_absorptance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_absorptance", "%lf", 1.0, 1); // param misspelled in file "PAR_absrptance" 
+		default_object_list[i].PAR_reflectance =  	getDoubleParam(&paramCnt, &paramPtr, "PAR_reflectance", "%lf", 0.0, 1);
+		default_object_list[i].PAR_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_transmittance", "%lf", 0.0, 1);
+		default_object_list[i].epc.ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ext_coef", "%lf", 0.5, 1);
+		default_object_list[i].specific_rain_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_rain_capacity", "%lf", 0.00024, 1);
+		default_object_list[i].specific_snow_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_snow_capacity", "%lf", 0.00024, 1);
+		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.002, 1); // param name is "wind_attenuation_coef" in param file
+		default_object_list[i].ustar_overu = 		getDoubleParam(&paramCnt, &paramPtr, "ustar_overu", "%lf", -999.9, 1);
+		default_object_list[i].mrc.q10 = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.q10", "%lf", 1.5, 1);
+		default_object_list[i].mrc.per_N = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.per_N", "%lf", 0.21, 1);
+		default_object_list[i].epc.gr_perc = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gr_perc", "%lf", 0.2, 1);
+		default_object_list[i].lai_stomatal_fraction = 	getDoubleParam(&paramCnt, &paramPtr, "lai_stomatal_fraction", "%lf", 1.0, 1);
+		default_object_list[i].epc.flnr = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr", "%lf", 0.1, 1);
+		default_object_list[i].epc.ppfd_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ppfd_coef", "%lf", 0.03, 1);
+		default_object_list[i].epc.topt = 		getDoubleParam(&paramCnt, &paramPtr, "epc.topt", "%lf", 15.0, 1);
+		default_object_list[i].epc.tmax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.tmax", "%lf", 40.0, 1);
+		default_object_list[i].epc.tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.tcoef", "%lf", 0.2, 1);
+		default_object_list[i].epc.psi_open = 		getDoubleParam(&paramCnt, &paramPtr, "epc.psi_open", "%lf", -0.65, 1);
+		default_object_list[i].epc.psi_close = 		getDoubleParam(&paramCnt, &paramPtr, "epc.psi_close", "%lf", -2.5, 1);
+		default_object_list[i].epc.vpd_open = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_open", "%lf", 0.0, 1);
+		default_object_list[i].epc.vpd_close = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_close", "%lf", 3500.0, 1);
+		default_object_list[i].epc.gl_smax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax", "%lf", 0.006, 1);
+		default_object_list[i].epc.gl_c = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_c", "%lf", 0.00006, 1);
+		default_object_list[i].gsurf_slope = 		getDoubleParam(&paramCnt, &paramPtr, "gsurf_slope", "%lf", 0.0, 1);
+		default_object_list[i].gsurf_intercept = 	getDoubleParam(&paramCnt, &paramPtr, "gsurf_intercept", "%lf", 1000000.0, 1);
+		default_object_list[i].epc.phenology_flag = 	parse_dyn_flag(getStrParam(&paramCnt, &paramPtr, "epc.phenology_flag", "%s", "static", 1));
+		default_object_list[i].epc.phenology_type = 	parse_phenology_type(getStrParam(&paramCnt, &paramPtr, "epc.phenology.type", "%s", "EVERGREEN", 1));
+		default_object_list[i].epc.max_lai = 		getDoubleParam(&paramCnt, &paramPtr, "epc.max_lai", "%lf", 12.0, 1);
+		default_object_list[i].epc.proj_sla = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_sla", "%lf", 9.0, 1);
+		default_object_list[i].epc.lai_ratio = 		getDoubleParam(&paramCnt, &paramPtr, "epc.lai_ratio", "%lf", 2.6, 1);
+		default_object_list[i].epc.proj_swa = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_swa", "%lf", 1.4, 1);
+		default_object_list[i].epc.leaf_turnover = 	getDoubleParam(&paramCnt, &paramPtr, "epc.leaf_turnover", "%lf", 0.27, 1);
+		default_object_list[i].epc.day_leafon = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafon", "%d", 91, 1);
+		default_object_list[i].epc.day_leafoff = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafoff", "%d", 260, 1);
+		default_object_list[i].epc.ndays_expand = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_expand", "%d", 30, 1);
+		default_object_list[i].epc.ndays_litfall = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_litfall", "%d", 30, 1);
 		default_object_list[i].epc.leaf_cn = 		getDoubleParam(&paramCnt, &paramPtr, "epc.leaf_cn", "%lf", 45.0, 1);
 		default_object_list[i].epc.leaflitr_cn = 	getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_cn", "%lf", 70.0, 1);
 		default_object_list[i].min_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "min_heat_capacity", "%lf", 0.0, 1);
@@ -146,26 +146,26 @@ struct stratum_default *construct_stratum_defaults(
 			fprintf(stderr, "\nWARNING construct_stratum_defaults");
 			fprintf(stderr, "\n  leaf litter C:N < leaf C:N");
 		}
-		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 0.0, 0);
-		default_object_list[i].epc.froot_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.froot_turnover", "%lf", 0.0, 0);
+		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 1.0, 1);
+		default_object_list[i].epc.froot_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.froot_turnover", "%lf", 0.27, 1);
 
 		if  ((default_object_list[i].epc.veg_type == GRASS) || (default_object_list[i].epc.veg_type == C4GRASS)) {
-			default_object_list[i].epc.deadleaf_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.deadleaf_turnover", "%lf", 0.0, 0);
+			default_object_list[i].epc.deadleaf_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.deadleaf_turnover", "%lf", 1.0, 1);
 		}
 		else {
-			default_object_list[i].epc.livewood_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_turnover", "%lf", 0.0, 0);
+			default_object_list[i].epc.livewood_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_turnover", "%lf", 0.7, 1);
 		}
 
-		default_object_list[i].epc.kfrag_base = 		getDoubleParam(&paramCnt, &paramPtr, "epc.kfrag_base", "%lf", 0.0, 0);
+		default_object_list[i].epc.kfrag_base = 		getDoubleParam(&paramCnt, &paramPtr, "epc.kfrag_base", "%lf", 0.01, 1);
 		default_object_list[i].epc.daily_mortality_turnover = 	getFloatParam(&paramCnt, &paramPtr, "epc.daily_mortality_turnover", "%f", 0.005, 1) / 365;
-		default_object_list[i].epc.froot_cn = 			getDoubleParam(&paramCnt, &paramPtr, "epc.froot_cn", "%lf", 0.0, 0);
-		default_object_list[i].epc.livewood_cn = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_cn", "%lf", 0.0, 0);
-		default_object_list[i].epc.leaflitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flab", "%lf", 0.0, 0);
+		default_object_list[i].epc.froot_cn = 			getDoubleParam(&paramCnt, &paramPtr, "epc.froot_cn", "%lf", 139.7, 1);
+		default_object_list[i].epc.livewood_cn = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_cn", "%lf", 200.0, 1);
+		default_object_list[i].epc.leaflitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flab", "%lf", 0.31, 1);
 
 		// Skipping epc.leaflitr_fcel (pcs 20130117 : comment or var name wrong in orig code: defs/veg_westhemlock.def has 'leaflitr_fcel')
-		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_fcel", "%lf", 0.0, 0); // param name in file is "leaflitr_fcel"
+		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_fcel", "%lf", 0.45, 1); // param name in file is "leaflitr_fcel"
 
-		default_object_list[i].epc.leaflitr_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flig", "%lf", 0.0, 0);
+		default_object_list[i].epc.leaflitr_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flig", "%lf", 0.24, 1);
 
 		if ( (float)(epc->leaflitr_flig + epc->leaflitr_flab + fcel) != 1.0 )	{
 			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
@@ -189,11 +189,11 @@ struct stratum_default *construct_stratum_defaults(
 				epc->leaflitr_fucel = 0.2*fcel;
 			}
 		}
-		default_object_list[i].epc.frootlitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_flab", "%lf", 0.0, 0);
+		default_object_list[i].epc.frootlitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_flab", "%lf", 0.23, 1);
 
 		// Skipping the mortality parameter
-		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_fcel", "%lf", 0.0, 0);
-		default_object_list[i].epc.frootlitr_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_flig", "%lf", 0.0, 0);
+		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_fcel", "%lf", 0.41, 1);
+		default_object_list[i].epc.frootlitr_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.frootlitr_flig", "%lf", 0.36, 1);
 
 		if ( (float)(epc->frootlitr_flab + epc->frootlitr_flig + fcel) != 1.0 ){
 			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
@@ -216,8 +216,8 @@ struct stratum_default *construct_stratum_defaults(
 				epc->frootlitr_fucel = 0.2*fcel;
 			}
 		}
-		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.deadwood_fcel", "%lf", 0.0, 0);
-		default_object_list[i].epc.deadwood_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.deadwood_flig", "%lf", 0.0, 0);
+		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.deadwood_fcel", "%lf", 0.52, 1);
+		default_object_list[i].epc.deadwood_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.deadwood_flig", "%lf", 0.48, 1);
 		if (epc->veg_type == TREE) {
 			if ( (float)(epc->deadwood_flig + fcel) != 1.0 ){
 				fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
@@ -261,20 +261,20 @@ struct stratum_default *construct_stratum_defaults(
 			epc->deadwood_fscel = 0.0;
 			epc->deadwood_cn = 0.0;
 		}
-		default_object_list[i].epc.alloc_frootc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_frootc_leafc", "%lf", 0.0, 0);
-		default_object_list[i].epc.alloc_crootc_stemc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_crootc_stemc", "%lf", 0.0, 0);
-		default_object_list[i].epc.alloc_stemc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_stemc_leafc", "%lf", 0.0, 0);
-		default_object_list[i].epc.alloc_livewoodc_woodc = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_livewoodc_woodc", "%lf", 0.0, 0);
+		default_object_list[i].epc.alloc_frootc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_frootc_leafc", "%lf", 1.325, 1);
+		default_object_list[i].epc.alloc_crootc_stemc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_crootc_stemc", "%lf", 0.3, 1);
+		default_object_list[i].epc.alloc_stemc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_stemc_leafc", "%lf", 1.62, 1);
+		default_object_list[i].epc.alloc_livewoodc_woodc = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_livewoodc_woodc", "%lf", 0.073, 1);
 		if (epc->veg_type != TREE){
 			epc->alloc_crootc_stemc = 0.0;
 			epc->phloemcsa_per_alllai = 0.0;
 		}
-		default_object_list[i].epc.alloc_maxlgf 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.maxlgf", "%lf", 0.0, 0); // param named 'epc.maxlgf' in parameter file
-		default_object_list[i].epc.alloc_prop_day_growth = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_prop_day_growth", "%lf", 0.0, 0);
+		default_object_list[i].epc.alloc_maxlgf 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.maxlgf", "%lf", 0.05, 1); // param named 'epc.maxlgf' in parameter file
+		default_object_list[i].epc.alloc_prop_day_growth = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_prop_day_growth", "%lf", 0.5, 1);
 		default_object_list[i].epc.dynamic_alloc_prop_day_growth = getIntParam(&paramCnt, &paramPtr, "epc.dynamic_alloc_prop_day_growth", "%d", 0, 1);
-		default_object_list[i].epc.daily_fire_turnover 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_fire_turnover", "%lf", 0.0, 0);
-		default_object_list[i].epc.height_to_stem_exp 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_exp", "%lf", 0.0, 0);
-		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 0.0, 0);
+		default_object_list[i].epc.daily_fire_turnover 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_fire_turnover", "%lf", 0.0, 1);
+		default_object_list[i].epc.height_to_stem_exp 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_exp", "%lf", 0.57, 1);
+		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 11.39, 1);
 		/*--------------------------------------------------------------*/
 		/*	optionally read in parameters on re-sprouting		*/
 		/* 	and other newly implemented vegetation routines		*/
