@@ -271,7 +271,7 @@ struct stratum_default *construct_stratum_defaults(
 		}
 		default_object_list[i].epc.alloc_maxlgf 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.maxlgf", "%lf", 0.05, 1); // param named 'epc.maxlgf' in parameter file
 		default_object_list[i].epc.alloc_prop_day_growth = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_prop_day_growth", "%lf", 0.5, 1);
-		default_object_list[i].epc.dynamic_alloc_prop_day_growth = getIntParam(&paramCnt, &paramPtr, "epc.dynamic_alloc_prop_day_growth", "%d", 0, 1);
+		default_object_list[i].epc.dynamic_alloc_prop_day_growth = getIntParam(&paramCnt, &paramPtr, "epc.dyn_alloc_prop_day_growth", "%d", 0, 1);
 		default_object_list[i].epc.daily_fire_turnover 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_fire_turnover", "%lf", 0.0, 1);
 		default_object_list[i].epc.height_to_stem_exp 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_exp", "%lf", 0.57, 1);
 		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 11.39, 1);
@@ -305,8 +305,10 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.waring_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pa", "%lf", 0.8, 1);
 		default_object_list[i].epc.waring_pb = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pb", "%lf", 2.5, 1);
 		default_object_list[i].epc.branch_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.branch_turnover", "%lf", 0.0, 1) / 365.0;
-		default_object_list[i].epc.Tacclim = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim", "%lf", 0.0, 1);
-		default_object_list[i].epc.Tacclim_days = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim_days", "%lf", 10.0, 1);
+		default_object_list[i].epc.Tacclim = getIntParam(&paramCnt, &paramPtr, "epc.Tacclim", "%d", 0, 1);
+		default_object_list[i].epc.Tacclim_intercpt = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim_intercpt", "%lf",3.22, 1);
+		default_object_list[i].epc.Tacclim_slp = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim_slp", "%lf",0.046, 1);
+		default_object_list[i].epc.Tacclim_days = getIntParam(&paramCnt, &paramPtr, "epc.Tacclim_days", "%d", 30, 1);
 	/*--------------------------------------------------------------*/
 	/*	 litter is assumed to have a mositure capacity of 	*/
 	/*	given by litter_moist_coef default assumes			*/

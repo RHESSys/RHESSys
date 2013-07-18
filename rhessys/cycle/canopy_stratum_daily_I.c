@@ -198,8 +198,14 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
         /*  compute temperature for acclimation - currently just a running mean of air temperature */
 	/*--------------------------------------------------------------*/
-        stratum[0].cs.Tacc = stratum[0].cs.Tacc*(stratum[0].defaults[0][0].epc.Tacclim_days-1.0)/(stratum[0].defaults[0][0].epc.Tacclim_days) + 
+	if (stratum[0].defaults[0][0].epc.Tacclim_days > 0)
+       	 stratum[0].cs.Tacc = stratum[0].cs.Tacc*(stratum[0].defaults[0][0].epc.Tacclim_days-1.0)/
+				(stratum[0].defaults[0][0].epc.Tacclim_days) + 
                               zone[0].metv.tavg * 1.0/stratum[0].defaults[0][0].epc.Tacclim_days;
+	else
+		stratum[0].cs.Tacc = zone[0].metv.tavg;
+
+
 	if (command_line[0].grow_flag > 0)  {
 		cs = &(stratum[0].cs);
 		ns = &(stratum[0].ns);

@@ -2265,6 +2265,7 @@ struct epconst_struct
 	int phenology_type;	/* (DIM) set as 1 for decid; 0 for evergreen	*/
 	int nfix;		/* (DIM) set a 1 for n-fixers; 0 for not nfixers */
 	int edible;		/* (DIM) set to 1 for edible plants */
+    	int  Tacclim;  		/* (DIM) set to 1  for temperature acclimation of respiration Q10  */
     double gr_perc;	   /* (DIM 0-1) percent of growth allocated to respiration */
     double leaf_turnover;     /* (1/yr) annual leaf turnover fraction */
     double livewood_turnover; /* (1/yr) annual live wood turnover fraction */
@@ -2315,8 +2316,9 @@ struct epconst_struct
     double waring_pa; /* parameter for Waring allometric equation */
     double waring_pb; /* parameter for Waring allometric equation */
     double dickenson_pa; /* parameter for Dickenson allometric equation */
-    double Tacclim;  /* parameter for temperature acclimation 0 gives no acclimation -0.0078 Aiken value */
     double Tacclim_days;  /* num days for temperature acclimation */
+    double Tacclim_slp;  /* slope for temperature acclimation adjutment to Q10 */
+    double Tacclim_intercpt;  /* intercept for temperature acclimation for temperature acclimation adjustment to Q10 */
 } ;
 
 

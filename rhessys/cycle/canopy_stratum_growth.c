@@ -99,7 +99,7 @@ void	canopy_stratum_growth(
 
 		if (stratum[0].defaults[0][0].epc.dynamic_alloc_prop_day_growth == 1) 
 			pnow = compute_prop_alloc_daily(
-				stratum[0].phen.daily_allocation,
+				stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop,
 				&(stratum[0].cs),
 				stratum[0].defaults[0][0].epc);
 		else
