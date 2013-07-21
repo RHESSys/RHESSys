@@ -1297,7 +1297,6 @@ void	canopy_stratum_daily_F(
 			stratum[0].cdf.psn_to_cpool = (assim_sunlit*stratum[0].epv.proj_lai_sunlit
 					+ assim_shade * stratum[0].epv.proj_lai_shade)	
 					*zone[0].metv.dayl*12.011e-9 + stratum[0].cdf.leaf_day_mr;
-
 			if ((assim_sunlit + assim_shade) > ZERO)
 				stratum[0].dC13 = (assim_sunlit * dC13_sunlit + assim_shade * dC13_shade)/(assim_sunlit+assim_shade);
 			else 
