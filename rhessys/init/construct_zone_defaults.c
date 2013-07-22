@@ -159,7 +159,7 @@ struct zone_default *construct_zone_defaults(
                     strcpy(filename, token);
                 }
         
-        
+                memset(outFilename, '\0', filenameLen);
     
             // Concatenate the output prefix with the filename of the input .def file
             // and "_zone.params"
