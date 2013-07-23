@@ -1,5 +1,5 @@
-PGM  = rhessys5.17
-VERSION = 5.17
+PGM  = rhessys5.18
+VERSION = 5.18
 CC = gcc 
 #CFLAGS = -O -std=c99
 CFLAGS = -g -std=c99
