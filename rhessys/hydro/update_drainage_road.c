@@ -203,7 +203,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NO3_absorption_rate,
+				patch[0].soil_defaults[0][0].NO3_adsorption_rate,
 				patch[0].transmissivity_profile);
 			NO3_leached_to_stream = compute_N_leached(
 				verbose_flag,
@@ -218,7 +218,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NO3_absorption_rate,
+				patch[0].soil_defaults[0][0].NO3_adsorption_rate,
 				patch[0].transmissivity_profile) -
 				NO3_leached_to_patch;
 			if (NO3_leached_to_stream < 0.0) NO3_leached_to_stream = 0.0;
@@ -237,7 +237,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NH4_absorption_rate,
+				patch[0].soil_defaults[0][0].NH4_adsorption_rate,
 				patch[0].transmissivity_profile);
 			NH4_leached_to_stream = compute_N_leached(
 				verbose_flag,
@@ -252,7 +252,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NH4_absorption_rate,
+				patch[0].soil_defaults[0][0].NH4_adsorption_rate,
 				patch[0].transmissivity_profile) -
 				NH4_leached_to_patch;
 			if (NH4_leached_to_stream < 0.0) NH4_leached_to_stream = 0.0;
@@ -272,7 +272,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].DOM_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DON_absorption_rate,
+				patch[0].soil_defaults[0][0].DON_adsorption_rate,
 				patch[0].transmissivity_profile);
 			DON_leached_to_stream = compute_N_leached(
 				verbose_flag,
@@ -287,7 +287,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].DOM_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DON_absorption_rate,
+				patch[0].soil_defaults[0][0].DON_adsorption_rate,
 				patch[0].transmissivity_profile) -
 				DON_leached_to_patch;
                      if (DON_leached_to_stream < 0.0) DON_leached_to_stream = 0.0;
@@ -308,7 +308,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].DOM_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DOC_absorption_rate,
+				patch[0].soil_defaults[0][0].DOC_adsorption_rate,
 				patch[0].transmissivity_profile);
 			DOC_leached_to_stream = compute_N_leached(
 				verbose_flag,
@@ -323,7 +323,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].DOM_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DOC_absorption_rate,
+				patch[0].soil_defaults[0][0].DOC_adsorption_rate,
 				patch[0].transmissivity_profile) -
 				DOC_leached_to_patch;
 
@@ -369,7 +369,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NO3_absorption_rate,
+				patch[0].soil_defaults[0][0].NO3_adsorption_rate,
 				patch[0].transmissivity_profile);
 			NO3_leached_to_stream = 0.0;
 			patch[0].soil_ns.NO3_Qout += (NO3_leached_to_patch + NO3_leached_to_stream);
@@ -388,7 +388,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].N_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NH4_absorption_rate,
+				patch[0].soil_defaults[0][0].NH4_adsorption_rate,
 				patch[0].transmissivity_profile);
 			NH4_leached_to_stream = 0.0;
 			patch[0].soil_ns.NH4_Qout += (NH4_leached_to_patch + NH4_leached_to_stream);
@@ -407,7 +407,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].DOM_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DON_absorption_rate,
+				patch[0].soil_defaults[0][0].DON_adsorption_rate,
 				patch[0].transmissivity_profile);
 			DON_leached_to_stream = 0.0;
 			patch[0].soil_ns.DON_Qout += (DON_leached_to_patch + DON_leached_to_stream);
@@ -426,7 +426,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].DOM_decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DOC_absorption_rate,
+				patch[0].soil_defaults[0][0].DOC_adsorption_rate,
 				patch[0].transmissivity_profile);
 			DOC_leached_to_stream = 0.0;
 			patch[0].soil_cs.DOC_Qout += (DOC_leached_to_patch + DOC_leached_to_stream);
@@ -477,7 +477,7 @@ void  update_drainage_road(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].NO3_absorption_rate,
+			patch[0].soil_defaults[0][0].NO3_adsorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].surface_NO3 += Nout;
 		patch[0].soil_ns.NO3_Qout += Nout;
@@ -496,7 +496,7 @@ void  update_drainage_road(
 			patch[0].soil_defaults[0][0].N_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].NH4_absorption_rate,
+			patch[0].soil_defaults[0][0].NH4_adsorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].surface_NH4 += Nout;
 		patch[0].soil_ns.NH4_Qout += Nout;
@@ -515,7 +515,7 @@ void  update_drainage_road(
 			patch[0].soil_defaults[0][0].DOM_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].DON_absorption_rate,
+			patch[0].soil_defaults[0][0].DON_adsorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].surface_DON += Nout;
 		patch[0].soil_ns.DON_Qout += Nout;
@@ -534,7 +534,7 @@ void  update_drainage_road(
 			patch[0].soil_defaults[0][0].DOM_decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].DOC_absorption_rate,
+			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
 			patch[0].transmissivity_profile);
 		patch[0].surface_DOC += Nout;
 		patch[0].soil_cs.DOC_Qout += Nout;

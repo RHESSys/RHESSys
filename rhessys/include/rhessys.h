@@ -659,11 +659,11 @@ struct	aggdefs_object
 	double	soil_water_cap;					/* m */
 	double  active_zone_z;					/* m */
 	double  N_decay_rate;					/* kg N /m */
-	double  NO3_absorption_rate;				/* kg /kg soil */
-	double  NH4_absorption_rate;				/* kg /kg soil */
+	double  NO3_adsorption_rate;				/* kg /kg soil */
+	double  NH4_adsorption_rate;				/* kg /kg soil */
 	double  DOM_decay_rate;					/* kg N /m */
-	double  DON_absorption_rate;				/* kg /kg soil */
-	double  DOC_absorption_rate;				/* kg /kg soil */
+	double  DON_adsorption_rate;				/* kg /kg soil */
+	double  DOC_adsorption_rate;				/* kg /kg soil */
 	};
 /*----------------------------------------------------------*/
 /*	Define a deep groundwater object			*/
@@ -960,11 +960,11 @@ struct	soil_default
 	double  snow_melt_Tcoef;				/* unitless */
 	double  active_zone_z;					/* m */
 	double  DOM_decay_rate;					/* kg N /m */
-	double  DON_absorption_rate;				/* kg /kg soil */
-	double  DOC_absorption_rate;				/* kg /kg soil */
+	double  DON_adsorption_rate;				/* kg /kg soil */
+	double  DOC_adsorption_rate;				/* kg /kg soil */
 	double  N_decay_rate;					/* kg N /m */
-	double  NO3_absorption_rate;				/* kg /kg soil */
-	double  NH4_absorption_rate;				/* kg /kg soil */
+	double  NO3_adsorption_rate;				/* kg /kg soil */
+	double  NH4_adsorption_rate;				/* kg /kg soil */
 	double  denitrif_proportion;				/* (DIM) 0-1 */
 	double	DON_production_rate;					/* (DIM) 0-1 */
 	double	gl_c;						/* m/s */

@@ -205,10 +205,10 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.active_zone_z = 0.0;
 	hillslope[0].aggdefs.Ksat_0 = 0.0;
 	hillslope[0].aggdefs.soil_depth = 0.0;
-	hillslope[0].aggdefs.NO3_absorption_rate = 0.0;
-	hillslope[0].aggdefs.NH4_absorption_rate = 0.0;
-	hillslope[0].aggdefs.DON_absorption_rate = 0.0;
-	hillslope[0].aggdefs.DOC_absorption_rate = 0.0;
+	hillslope[0].aggdefs.NO3_adsorption_rate = 0.0;
+	hillslope[0].aggdefs.NH4_adsorption_rate = 0.0;
+	hillslope[0].aggdefs.DON_adsorption_rate = 0.0;
+	hillslope[0].aggdefs.DOC_adsorption_rate = 0.0;
 	
 	for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
 		hillslope[0].zones[i] = construct_zone( command_line,
@@ -249,17 +249,17 @@ struct hillslope_object *construct_hillslope(
 			hillslope[0].aggdefs.soil_depth +=
 				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].soil_depth *
 				hillslope[0].zones[i][0].patches[j][0].area;
-			hillslope[0].aggdefs.NO3_absorption_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].NO3_absorption_rate *
+			hillslope[0].aggdefs.NO3_adsorption_rate +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].NO3_adsorption_rate *
 				hillslope[0].zones[i][0].patches[j][0].area;
-			hillslope[0].aggdefs.NH4_absorption_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].NH4_absorption_rate *
+			hillslope[0].aggdefs.NH4_adsorption_rate +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].NH4_adsorption_rate *
 				hillslope[0].zones[i][0].patches[j][0].area;
-			hillslope[0].aggdefs.DON_absorption_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].DON_absorption_rate *
+			hillslope[0].aggdefs.DON_adsorption_rate +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].DON_adsorption_rate *
 				hillslope[0].zones[i][0].patches[j][0].area;
-			hillslope[0].aggdefs.DOC_absorption_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].DOC_absorption_rate *
+			hillslope[0].aggdefs.DOC_adsorption_rate +=
+				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].DOC_adsorption_rate *
 				hillslope[0].zones[i][0].patches[j][0].area;
 
 		}
@@ -275,10 +275,10 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.active_zone_z /= hillslope[0].area;
 	hillslope[0].aggdefs.soil_depth /= hillslope[0].area;
 	hillslope[0].aggdefs.soil_water_cap /= hillslope[0].area;
-	hillslope[0].aggdefs.NO3_absorption_rate /= hillslope[0].area;
-	hillslope[0].aggdefs.NH4_absorption_rate /= hillslope[0].area;
-	hillslope[0].aggdefs.DON_absorption_rate /= hillslope[0].area;
-	hillslope[0].aggdefs.DOC_absorption_rate /= hillslope[0].area;
+	hillslope[0].aggdefs.NO3_adsorption_rate /= hillslope[0].area;
+	hillslope[0].aggdefs.NH4_adsorption_rate /= hillslope[0].area;
+	hillslope[0].aggdefs.DON_adsorption_rate /= hillslope[0].area;
+	hillslope[0].aggdefs.DOC_adsorption_rate /= hillslope[0].area;
 
 
 	/*--------------------------------------------------------------*/
