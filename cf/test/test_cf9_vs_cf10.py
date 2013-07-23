@@ -65,7 +65,7 @@ class TestCF9vCF10(TestCase):
         self.assertTrue(result)
         
         # Compare just-generated flow table with reference CF9.1 flowtable
-        referenceFlow = os.path.abspath( os.path.join('flow', 'DR5_5m_cf91.flow') )
+        referenceFlow = os.path.abspath( os.path.join('flow', 'CF91.flow') )
         newFlow = os.path.abspath( "%s.flow" % (newFlow,) )
         self.assertTrue( filecmp.cmp(referenceFlow, newFlow) )
         
