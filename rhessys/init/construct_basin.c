@@ -347,10 +347,7 @@ struct basin_object *construct_basin(
 								command_line, true);
 			}
 		}
-	} else {
-		basin->route_list->num_patches = 0;
 	}
-
 
 	/*--------------------------------------------------------------*/
 	/*	Read in stream routing topology if needed	*/

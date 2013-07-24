@@ -82,6 +82,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].ddn_routing_flag = 0;
 	command_line[0].tec_flag = 0;
 	command_line[0].world_flag = 0;
+	command_line[0].world_header_flag = 0;
 	command_line[0].start_flag = 0;
 	command_line[0].end_flag = 0;
 	command_line[0].sen_flag = 0;
@@ -697,6 +698,25 @@ struct	command_line_object	*construct_command_line(
 				/*--------------------------------------------------------------*/
 				command_line[0].world_flag = 1;
 				strcpy(command_line[0].world_filename,main_argv[i]);
+				i++;
+			} /*end if*/
+			/*--------------------------------------------------------------*/
+			/*		Check if the world header file is next.						*/
+			/*--------------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-whdr") == 0 ){
+				/*--------------------------------------------------------------*/
+				/*			Check that the next argument exists.				*/
+				/*--------------------------------------------------------------*/
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,"FATAL ERROR: World file header name not specified\n");
+					exit(EXIT_FAILURE);
+				} /*end if*/
+				/*--------------------------------------------------------------*/
+				/*			Read in the world file name.						*/
+				/*--------------------------------------------------------------*/
+				command_line[0].world_header_flag = 1;
+				strcpy(command_line->world_header_filename,main_argv[i]);
 				i++;
 			} /*end if*/
 			/*--------------------------------------------------------------*/

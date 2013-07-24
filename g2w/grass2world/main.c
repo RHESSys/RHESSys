@@ -61,13 +61,14 @@
   float	mult,add,value;
   float value_sin, value_cos;
   char line[MAXTEMPLATELINE];
-  FILE *templatefile, *outfile, *tmpfile, *tmpfile2;
+  FILE *templatefile, *outfile, *tmpfile, *tmpfile2, *hdr_outfile;
   char command[MAXCOMMAND], command2[MAXCOMMAND], filecommand[MAXCOMMAND];
   char command3[MAXCOMMAND];
   char tmpname[MAXFILENAME];
   char tmpname2[MAXFILENAME];
   char template_fname[MAXFILENAME];
   char world_fname[MAXFILENAME];
+  char header_fname[MAXFILENAME];
   char **VARNAME;
   char tmpstr[MAXFILENAME];
   char v;
@@ -576,8 +577,20 @@
   	}
 
 	/* output header information */
-	if (nh_flag == 0)
-		outputheader(outfile,header);
+	if ( nh_flag == 0 ) {
+		if ( snprintf(header_fname, MAXFILENAME, "%s.hdr", world_fname) >= MAXFILENAME ) {
+			fprintf(stderr,
+					"Couldn't write world file header as filename would have been longer than the limit of %d\n", MAXFILENAME);
+			exit(EXIT_FAILURE);
+		}
+		hdr_outfile = fopen(header_fname, "w");
+		if ( hdr_outfile == NULL ) {
+			fprintf(stderr,
+					"Error writing header file: %s", strerror(errno) );
+			exit(EXIT_FAILURE);
+		}
+		outputheader(hdr_outfile,header);
+	}
 
   exportunit(tunit,outfile,tlevel,VARNAME);
   fclose(outfile);

@@ -339,6 +339,9 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+
 #include "rhessys.h"
 
 
@@ -369,6 +372,9 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	FILE	*world_file;
+	FILE	*header_file;
+	int 	header_file_flag = 0;
+	int		legacy_worldfile = 0;
 	int	i;
 	char	record[MAXSTR];
 	struct world_object *world;
@@ -385,39 +391,85 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			command_line[0].world_filename);
 		exit(EXIT_FAILURE);
 	} /*end if*/
-	/*--------------------------------------------------------------*/
-	/*	Read in the start calendar date (year, month, day, hour )	*/
-	/*--------------------------------------------------------------*/
-	fscanf( world_file , "%ld", &world[0].start_date.year);
-	read_record(world_file, record);
-	fscanf( world_file , "%ld", &world[0].start_date.month);
-	read_record(world_file, record);
-	fscanf( world_file , "%ld", &world[0].start_date.day);
-	read_record(world_file, record);
-	fscanf( world_file , "%ld", &world[0].start_date.hour);
-	read_record(world_file, record);
-	/*--------------------------------------------------------------*/
-	/*	Read in the end calendar date (year, month, day, hour )	*/
-	/*--------------------------------------------------------------*/
-	fscanf( world_file , "%ld", &world[0].end_date.year);
-	read_record(world_file, record);
-	fscanf( world_file , "%ld", &world[0].end_date.month);
-	read_record(world_file, record);
-	fscanf( world_file , "%ld", &world[0].end_date.day);
-	read_record(world_file, record);
-	fscanf( world_file , "%ld", &world[0].end_date.hour);
-	read_record(world_file, record);
-	/*--------------------------------------------------------------*/
-	/* 	command line options can over-ride the worldfile start 	*/
-	/*	and/or end dates					*/
-	/*--------------------------------------------------------------*/
-	if (command_line[0].start_flag == 1) {
-		world[0].start_date = command_line[0].start_date;
+
+	/* Determine where to read worldfile header information from.
+	 * The three options, in order of precedence are:
+		1. -whdr command line option
+		2. ${WORLDFILE_NAME}.hdr
+		3. From legacy world file (deprecated)
+	 */
+	if ( command_line->world_header_flag ) {
+		// Option 1. -whdr command line option
+		header_file = fopen(command_line->world_header_filename, "r");
+		if ( header_file == NULL ) {
+			fprintf(stderr,"FATAL ERROR:  Cannot open world header file %s\n",
+					command_line->world_header_filename);
+			exit(EXIT_FAILURE);
+		}
+		header_file_flag = 1;
+		printf("Reading specified world file header %s\n", command_line->world_header_filename);
+	} else {
+		// Set up file name for Option 2. ${WORLDFILE_NAME}.hdr
+		if ( snprintf(command_line->world_header_filename, MAXSTR, "%s.hdr", command_line->world_filename) >= MAXSTR ) {
+			fprintf(stderr,
+					"Couldn't read world file header as filename would have been longer than the limit of %d\n", MAXSTR);
+			exit(EXIT_FAILURE);
+		}
+
+		if ( access(command_line->world_header_filename, R_OK) == 0 ) {
+			// Option 2. ${WORLDFILE_NAME}.hdr
+			header_file = fopen(command_line->world_header_filename, "r");
+			if ( header_file == NULL ) {
+				fprintf(stderr,"FATAL ERROR:  Cannot open world header file %s\n",
+						command_line->world_header_filename);
+				exit(EXIT_FAILURE);
+			}
+			header_file_flag = 1;
+			printf("Found world file header %s\n", command_line->world_header_filename);
+		} else {
+			// Option 3. From legacy world file (deprecated)
+			header_file = world_file;
+			legacy_worldfile = 1;
+			printf("\nWARNING\nReading world file header from legacy world file.\nThis feature will be removed from a future release.\nPlease re-run g2w to generate a separate world file header.\nWARNING\n\n");
+		}
 	}
-	if (command_line[0].end_flag == 1) {
-		world[0].end_date = command_line[0].end_date;
+
+	if ( legacy_worldfile ) {
+		/* For backward compatibility read date from worldfile if it is an old-style
+		 * worldfile with an in-line header.
+		 * NOTE: we are throwing these values away, letting the command line values
+		 * take precedence.
+		*/
+		/*--------------------------------------------------------------*/
+		/*	Read in the start calendar date (year, month, day, hour )	*/
+		/*--------------------------------------------------------------*/
+		fscanf( world_file , "%ld", &world[0].start_date.year);
+		read_record(world_file, record);
+		fscanf( world_file , "%ld", &world[0].start_date.month);
+		read_record(world_file, record);
+		fscanf( world_file , "%ld", &world[0].start_date.day);
+		read_record(world_file, record);
+		fscanf( world_file , "%ld", &world[0].start_date.hour);
+		read_record(world_file, record);
+		/*--------------------------------------------------------------*/
+		/*	Read in the end calendar date (year, month, day, hour )	*/
+		/*--------------------------------------------------------------*/
+		fscanf( world_file , "%ld", &world[0].end_date.year);
+		read_record(world_file, record);
+		fscanf( world_file , "%ld", &world[0].end_date.month);
+		read_record(world_file, record);
+		fscanf( world_file , "%ld", &world[0].end_date.day);
+		read_record(world_file, record);
+		fscanf( world_file , "%ld", &world[0].end_date.hour);
+		read_record(world_file, record);
 	}
 	
+	/*--------------------------------------------------------------
+	 * Always use command line start and end dates
+	 */
+	world[0].start_date = command_line[0].start_date;
+	world[0].end_date = command_line[0].end_date;
+
 	/*--------------------------------------------------------------*/
 	/*	Verify that the start hour was between 0 and 24.			*/
 	/*--------------------------------------------------------------*/
@@ -465,73 +517,73 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of basin default files.		*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(world[0].defaults[0].num_basin_default_files));
-	read_record(world_file, record);
+	fscanf(header_file,"%d",&(world[0].defaults[0].num_basin_default_files));
+	read_record(header_file, record);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the basin default files.			*/
 	/*--------------------------------------------------------------*/
-	world[0].basin_default_files = construct_filename_list( world_file,
+	world[0].basin_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_basin_default_files);
 	
 	/*-----------------------------------*/
 	/*	Read in the number of hillslope default files.		*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(world[0].defaults[0].num_hillslope_default_files));
-	read_record(world_file, record);
+	fscanf(header_file,"%d",&(world[0].defaults[0].num_hillslope_default_files));
+	read_record(header_file, record);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the hillslope default files.			*/
 	/*--------------------------------------------------------------*/
-	world[0].hillslope_default_files = construct_filename_list(	world_file,
+	world[0].hillslope_default_files = construct_filename_list(	header_file,
 		world[0].defaults[0].num_hillslope_default_files);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of zone default files.		*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(world[0].defaults[0].num_zone_default_files));
-	read_record(world_file, record);
+	fscanf(header_file,"%d",&(world[0].defaults[0].num_zone_default_files));
+	read_record(header_file, record);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the zone default files.				*/
 	/*--------------------------------------------------------------*/
-	world[0].zone_default_files = construct_filename_list( world_file,
+	world[0].zone_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_zone_default_files);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of soil default files.		*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(world[0].defaults[0].num_soil_default_files));
-	read_record(world_file, record);
+	fscanf(header_file,"%d",&(world[0].defaults[0].num_soil_default_files));
+	read_record(header_file, record);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the soil default files.				*/
 	/*--------------------------------------------------------------*/
-	world[0].soil_default_files = construct_filename_list( world_file,
+	world[0].soil_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_soil_default_files);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of land cover default files.		*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(world[0].defaults[0].num_landuse_default_files));
-	read_record(world_file, record);
+	fscanf(header_file,"%d",&(world[0].defaults[0].num_landuse_default_files));
+	read_record(header_file, record);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the land cover default files.			*/
 	/*--------------------------------------------------------------*/
-	world[0].landuse_default_files = construct_filename_list( world_file,
+	world[0].landuse_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_landuse_default_files);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of veg default files.		*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(world[0].defaults[0].num_stratum_default_files));
-	read_record(world_file, record);
+	fscanf(header_file,"%d",&(world[0].defaults[0].num_stratum_default_files));
+	read_record(header_file, record);
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the veg default files.			*/
 	/*--------------------------------------------------------------*/
-	world[0].stratum_default_files = construct_filename_list( world_file,
+	world[0].stratum_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_stratum_default_files);
 
 	
@@ -540,12 +592,12 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/* Read in the number of fire default files.		*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].firespread_flag == 1) {
-		fscanf(world_file,"%d",&(world[0].defaults[0].num_fire_default_files));
-		read_record(world_file, record);
+		fscanf(header_file,"%d",&(world[0].defaults[0].num_fire_default_files));
+		read_record(header_file, record);
 		/*--------------------------------------------------------------*/
 		/*	Read in the fire default files.			*/
 		/*--------------------------------------------------------------*/
-		world[0].fire_default_files= construct_filename_list( world_file,
+		world[0].fire_default_files= construct_filename_list( header_file,
 			world[0].defaults[0].num_fire_default_files);
 	}
 	
@@ -554,12 +606,12 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/* Read in the number of surface energy default files.		*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].surface_energy_flag == 1) {
-		fscanf(world_file,"%d",&(world[0].defaults[0].num_surface_energy_default_files));
-		read_record(world_file, record);
+		fscanf(header_file,"%d",&(world[0].defaults[0].num_surface_energy_default_files));
+		read_record(header_file, record);
 		/*--------------------------------------------------------------*/
 		/*	Read in the surface energy default files.			*/
 		/*--------------------------------------------------------------*/
-		world[0].surface_energy_default_files= construct_filename_list( world_file,
+		world[0].surface_energy_default_files= construct_filename_list( header_file,
 			world[0].defaults[0].num_fire_default_files);
 	}
 	
@@ -569,13 +621,13 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*  one entry in the world file, so we must get the number      */
 	/*  of stations from the climate file instead of the worldfile. */
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(world[0].num_base_stations));
-	read_record(world_file, record);
+	fscanf(header_file,"%d",&(world[0].num_base_stations));
+	read_record(header_file, record);
 	
 	/*--------------------------------------------------------------*/
 	/*	read in list of base_station files.			*/
 	/*--------------------------------------------------------------*/
-	world[0].base_station_files = construct_filename_list( world_file,
+	world[0].base_station_files = construct_filename_list( header_file,
 		world[0].num_base_stations);
 
 	// If the file is an ascii gridded climate file, then the number
@@ -739,10 +791,13 @@ struct world_object *construct_world(struct command_line_object *command_line){
 
 	}	
 	/*--------------------------------------------------------------*/
-	/*	Close the world_file.										*/
+	/*	Close the world_file and header (if necessary)	         	*/
 	/*--------------------------------------------------------------*/
-	if ( fclose(world_file) != 0 )
-		exit(EXIT_FAILURE);
+	if ( fclose(world_file) != 0 ) exit(EXIT_FAILURE);
+	if ( header_file_flag ) {
+		fclose(header_file);
+	}
+
 	
 	return(world);
 } /*end construct_world.c*/

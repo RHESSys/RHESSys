@@ -103,17 +103,6 @@ void 	readheader(templatefile, header)
 	int i,j;
 	char line[MAXTEMPLATELINE];
 
-
-	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-		error("Reading template file.");
-	sscanf(line,"%d %d %d %d",&tm.year,&tm.month,&tm.day,&tm.hour);
-	header->start_date = tm;
-
-	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-		error("Reading template file.");
-	sscanf(line,"%d %d %d %d",&tm.year,&tm.month,&tm.day,&tm.hour);
-	header->end_date = tm;
-
 	for (i=0; i<NUMLEVELS; ++i) {
 		fscanf(templatefile,"%d", &num_def);
 		header->defaults[i].num_defaults = num_def;
@@ -141,18 +130,6 @@ void 	outputheader(outfile, header)
 {
   	int i,j;
 
-	fprintf(outfile,"%-20d start_year\n%-20d month\n%-20d day \n%-20d hour",
-		header->start_date.year,
-		header->start_date.month,
-		header->start_date.day,
-		header->start_date.hour);
-
-	fprintf(outfile,"\n%-20d end_year\n%-20d month\n%-20d day \n%-20d hour",
-		header->end_date.year,
-		header->end_date.month,
-		header->end_date.day,
-		header->end_date.hour);
-
 	for (i=0; i<NUMLEVELS; ++i) {
 		
 		/*	Handle landuse. Somehow landuse got inserted into the template file
@@ -165,30 +142,28 @@ void 	outputheader(outfile, header)
 			stations
 		*/
 		if (i==4) { // landuse special case
-			fprintf(outfile, "\n%-20d num_landuse_files", header->defaults[i].num_defaults);
+			fprintf(outfile, "%-20d num_landuse_files\n", header->defaults[i].num_defaults);
 			for (j=0; j < header->defaults[i].num_defaults; ++j)
-				fprintf(outfile, "\n%-20s landuse_default_filename", header->defaults[i].filenames[j]);
+				fprintf(outfile, "%-20s landuse_default_filename\n", header->defaults[i].filenames[j]);
 		} else if (i==5) {
-			fprintf(outfile,"\n%-20d num_%s_files",	header->defaults[i].num_defaults,
+			fprintf(outfile,"%-20d num_%s_files\n",	header->defaults[i].num_defaults,
 							LEVELNAME[i]);
 			for (j=0; j< header->defaults[i].num_defaults; ++j)  
-				fprintf(outfile,"\n%-20s %s_default_filename", header->defaults[i].filenames[j],
+				fprintf(outfile,"%-20s %s_default_filename\n", header->defaults[i].filenames[j],
 						LEVELNAME[i]);
 		} else { // all others act like normal
-			fprintf(outfile,"\n%-20d num_%s_files",	header->defaults[i].num_defaults,
+			fprintf(outfile,"%-20d num_%s_files\n",	header->defaults[i].num_defaults,
 							LEVELNAME[i+1]);
 			for (j=0; j< header->defaults[i].num_defaults; ++j)  
-				fprintf(outfile,"\n%-20s %s_default_filename", header->defaults[i].filenames[j],
+				fprintf(outfile,"%-20s %s_default_filename\n", header->defaults[i].filenames[j],
 						LEVELNAME[i+1]);
 		}
 	}
 
 	// Landuse should be done here
-	fprintf(outfile,"\n%-20d num_base_stations",	header->num_base_stations);
+	fprintf(outfile,"%-20d num_base_stations\n",	header->num_base_stations);
 	for (j=0; j< header->num_base_stations; ++j)  
-		fprintf(outfile,"\n%-20s base_station_filename", header->base_station_filenames[j]);
-
-	fprintf(outfile,"\n");
+		fprintf(outfile,"%-20s base_station_filename\n", header->base_station_filenames[j]);
 }
 
 

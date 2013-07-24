@@ -1722,6 +1722,7 @@ struct	command_line_object
 	int		threshold_flag;
 	int		tec_flag;
 	int		world_flag;
+	int		world_header_flag;
 	int		start_flag;
 	int		end_flag;
 	int		firespread_flag;
@@ -1741,6 +1742,7 @@ struct	command_line_object
 	char	stream_routing_filename[FILEPATH_LEN];
 	char    reservoir_operation_filename[FILEPATH_LEN];
 	char	world_filename[FILEPATH_LEN];
+	char	world_header_filename[FILEPATH_LEN];
 	char	tec_filename[FILEPATH_LEN];
 	double  tmp_value;
 	double  cpool_mort_fract;
