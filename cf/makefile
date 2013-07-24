@@ -44,7 +44,7 @@ $(PGM): $(OBJECTS)
 ifeq ($(OS), Darwin)
 	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) $(LDLIBS) -o $(PGM)
 else ifeq ($(OS), Linux)
-	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) $(LDLIBS) -Wl,-rpath=$(GISBASE)/lib -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) $(LDLIBS) -lbsd -Wl,-rpath=$(GISBASE)/lib -o $(PGM)
 else
 	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) $(LDLIBS) -Wl,-rpath=$(GISBASE)/lib -o $(PGM)
 endif
@@ -62,18 +62,18 @@ $(TESTS): $(OBJECTS) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
 else ifeq ($(OS), Linux)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -Wl,-rpath=$(GISBASE)/lib -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -lbsd -Wl,-rpath=$(GISBASE)/lib -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -Wl,-rpath=$(GISBASE)/lib -o $@
 endif
 	cp $@ $(TESTS_ROOTDIR)
-	
+
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
 	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $< 
 
 functest:
 	# Run Python-based functional testing
-	python -m unittest discover -s test
+	LD_LIBRARY_PATH=$(GISBASE)/lib python -m unittest discover -s test
 
 doc:
 	doxygen
@@ -83,7 +83,7 @@ install: $(PGM)
 
 clean:
 	rm -f $(PGM) $(OBJECTS) $(TESTS) $(OBJECTS_TESTS) $(TESTS_TO_RUN) $(COVERAGE_FILES)
-	
+
 docclean:
 	rm -rf $(DOCDIR)/html
 

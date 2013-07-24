@@ -129,7 +129,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].max_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "max_heat_capacity", "%lf", 0.0, 1);
 		default_object_list[i].min_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "min_heat_capacity", "%lf", 0.0, 1);
 		default_object_list[i].albedo = 		getDoubleParam(&paramCnt, &paramPtr, "albedo", "%lf", 0.28, 1);
-		default_object_list[i].NO3_absorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_absorption_rate", "%lf", 0.0, 1); 
+		default_object_list[i].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1); 
 		default_object_list[i].N_decay_rate = 		getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1); 
 		/*
 		if (command_line[0].tmp_value > ZERO)
@@ -206,10 +206,10 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].gsurf_intercept = 	getDoubleParam(&paramCnt, &paramPtr, "gsurf_intercept", "%lf", 0.001, 1);
 		default_object_list[i].p4 = 			getDoubleParam(&paramCnt, &paramPtr, "p4", "%lf", -1.5, 1);
 		default_object_list[i].DOM_decay_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DOM_decay_rate", "%lf", 0.05, 1);
-		default_object_list[i].NH4_absorption_rate =    getDoubleParam(&paramCnt, &paramPtr, "NH4_absorption_rate", "%lf", 0.000005, 1);
+		default_object_list[i].NH4_adsorption_rate =    getDoubleParam(&paramCnt, &paramPtr, "NH4_adsorption_rate", "%lf", 0.000005, 1);
 		default_object_list[i].DON_production_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DON_production_rate", "%lf", 0.03, 1);
-		default_object_list[i].DOC_absorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DOC_absorption_rate", "%lf", 0.000023, 1);
-		default_object_list[i].DON_absorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DON_absorption_rate", "%lf", 0.000001, 1);
+		default_object_list[i].DOC_adsorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DOC_adsorption_rate", "%lf", 0.000023, 1);
+		default_object_list[i].DON_adsorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DON_adsorption_rate", "%lf", 0.000001, 1);
 		default_object_list[i].interval_size = 		getDoubleParam(&paramCnt, &paramPtr, "interval_size", "%lf", INTERVAL_SIZE, 1);
 
 		/*--------------------------------------------------------------*/
