@@ -160,6 +160,30 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Update the forcing functions based on the hourly computation*/
 	/*--------------------------------------------------------------*/
+	/* Set daily Kdowns to calculated if not given as inputs.		*/
+	/* Transmissivity & cloud fractions carry over from zone_daily_I.	*/
+	if ((zone[0].Kdown_direct_flag == 0) ||
+		(zone[0].Kdown_diffuse_flag == 0)) {
+			zone[0].Kdown_direct_flat = zone[0].Kdown_direct_flat_calc;
+			zone[0].Kdown_direct = zone[0].Kdown_direct_calc;
+			zone[0].Kdown_diffuse_flat = zone[0].Kdown_diffuse_flat_calc;
+			zone[0].Kdown_diffuse = zone[0].Kdown_diffuse_calc;
+		}
+	/* Otherwise use input Kdowns and calculate transmissivity as	*/
+	/* ratio between given and calculated, then generate cloud		*/
+	/* fraction estimates for longwave calculations. */ 
+	else {
+			zone[0].atm_trans = (zone[0].Kdown_direct+zone[0].Kdown_diffuse) 
+						/ (zone[0].Kdown_direct_calc + zone[0].Kdown_diffuse_calc);
+			zone[0].cloud_fraction = 1.0 - zone[0].atm_trans
+						/(zone[0].defaults[0][0].sea_level_clear_sky_trans
+						+ zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate);
+			zone[0].cloud_fraction = max(zone[0].cloud_fraction,0.0);
+			zone[0].cloud_fraction = min(zone[0].cloud_fraction,1.0);
+			zone[0].cloud = zone[0].cloud_opacity * zone[0].cloud_fraction * 12.0;
+		}
+	
+	
 	/*--------------------------------------------------------------*/
 	/*	Make use of more accurate basin daylength 		*/
 	/*	if it is not given and the zone horizons are 0		*/
@@ -187,6 +211,108 @@ void		zone_daily_F(
 		/*--------------------------------------------------------------*/
 		zone[0].metv.dayl = basin[0].daylength;
 	}
+	
+	/*--------------------------------------------------------------*/
+	/* MOVED TEMP AND PRECIP CALCS UP SO CAN BE USED FOR CLOUD FRAC */
+	
+	/*--------------------------------------------------------------*/
+	/*	.metv.tavg	(degrees C)									*/
+	/*--------------------------------------------------------------*/
+	if ( zone[0].metv.tavg == -999.0 ){
+		zone[0].metv.tavg = (zone[0].metv.tmax + zone[0].metv.tmin)/2.0;
+	}
+	
+	/*--------------------------------------------------------------*/
+	/*	metv.tday	(degrees C)									*/
+	/*																*/
+	/*	Eq 1. Page 4, "MTCLIM"										*/
+	/*--------------------------------------------------------------*/
+	if ( zone[0].metv.tday == -999.0 ){
+		zone[0].metv.tday = zone[0].defaults[0][0].temcf
+		* (zone[0].metv.tmax - zone[0].metv.tavg) + zone[0].metv.tavg;
+	}
+	/*--------------------------------------------------------------*/
+	/*	metv.tnight 	(degrees C)								*/
+	/*																*/
+	/*	zcomp.c C Rhessys code										*/
+	/*--------------------------------------------------------------*/
+	if ( zone[0].metv.tnight == -999.0 ){
+		zone[0].metv.tnight = (zone[0].metv.tday + zone[0].metv.tmin)/2.0;
+	}
+	/*--------------------------------------------------------------*/
+	/*	If we have no snow data determine if the rain should be snow*/
+	/*																*/
+	/*	Based on U.S Army Corps of ENgineers (1956) Snow Hydrology	*/
+	/*	use a min/max to get range in which there is a mix of snow/rain */
+	/*								*/
+	/*--------------------------------------------------------------*/
+	if (zone[0].snow == -999.0 ){
+		if (zone[0].metv.tavg < zone[0].defaults[0][0].max_snow_temp ){
+			if (zone[0].metv.tavg <= zone[0].defaults[0][0].min_rain_temp){
+				zone[0].snow = zone[0].rain;
+				zone[0].rain = 0.0;
+			}
+			else{
+				snow_rain_range = zone[0].defaults[0][0].max_snow_temp
+				- zone[0].defaults[0][0].min_rain_temp;
+				if ( snow_rain_range < 0.001){
+					zone[0].snow = zone[0].rain;
+					zone[0].rain = 0.0;
+				}
+				else{
+					zone[0].snow = min((zone[0].defaults[0][0].max_snow_temp
+										- zone[0].metv.tavg) * zone[0].rain / snow_rain_range, zone[0].rain);
+					zone[0].rain = zone[0].rain - zone[0].snow;
+				}
+			}
+		}
+		else{
+			zone[0].snow = 0.0;
+		}
+	}
+	/*--------------------------------------------------------------*/
+	/*	If we have no rain duration data set it as		*/
+	/*	daylength if rain 0 if not.					*/
+	/*--------------------------------------------------------------*/
+	if ( zone[0].daytime_rain_duration == -999.0 ){
+		if ( zone[0].rain == 0 || (zone[0].snow != 0 ) ){
+			zone[0].daytime_rain_duration = 0;
+		}
+		else{
+			zone[0].daytime_rain_duration = zone[0].metv.dayl;
+		}
+	}
+	else{
+		if ( zone[0].rain == 0 ){
+			zone[0].daytime_rain_duration = 0;
+		}
+		else{
+			zone[0].daytime_rain_duration =
+			min( zone[0].metv.dayl,zone[0].daytime_rain_duration);
+		}
+	}
+	
+	/*---------------------------------------------------------------*/
+	/* MOVED CLOUD FRACTION CALCS UP SO CAN BE USED FOR K ADJUSTMENTS*/
+	
+	/*if ( zone[0].cloud_fraction != -999.0  ){
+			zone[0].cloud = zone[0].cloud_opacity * zone[0].cloud_fraction * 12.0;
+	}
+	else if	((zone[0].snow + zone[0].rain) >= zone[0].defaults[0][0].pptmin ){
+		zone[0].cloud = 4.0;
+		zone[0].cloud_fraction = 1.0;
+	}
+	else {
+			zone[0].cloud = 0;
+			zone[0].cloud_fraction = 0.0;
+	}
+	
+	/*zone[0].Kdown_direct_adjustment = 1.0 - (zone[0].cloud_fraction * zone[0].cloud_opacity);
+	zone[0].Kdown_diffuse_adjustment = zone[0].Kdown_direct_adjustment;*/
+	
+	/*---------------------------------------------------------------*/
+	
+	
 	/*--------------------------------------------------------------*/
 	/*	Deretmine if we need to adjust Kdowns or metv.tmax.			*/
 	/*																*/
@@ -206,6 +332,10 @@ void		zone_daily_F(
 			* zone[0].Kdown_direct_adjustment;
 		zone[0].Kdown_diffuse = zone[0].Kdown_diffuse
 			* zone[0].Kdown_diffuse_adjustment;
+		if (command_line[0].verbose_flag == -5) {
+			printf("\nZONE DAILY F: Precip=%lf cloudfrac=%lf Kdir_adj=%lf Kdif_adj=%lf Tavg=%lf", 
+				   zone[0].snow + zone[0].rain, zone[0].cloud_fraction, zone[0].Kdown_direct_adjustment,zone[0].Kdown_diffuse_adjustment,zone[0].metv.tavg);
+		}
 		/*--------------------------------------------------------------*/
 		/*	radrat (unitless)											*/
 		/*																*/
@@ -273,115 +403,46 @@ void		zone_daily_F(
 		zone[0].PAR_diffuse = zone[0].PAR_direct * (zone[0].Kdown_diffuse
 			/ zone[0].Kdown_direct );
 	}
-	/*--------------------------------------------------------------*/
-	/*	.metv.tavg	(degrees C)									*/
-	/*--------------------------------------------------------------*/
-	if ( zone[0].metv.tavg == -999.0 ){
-		zone[0].metv.tavg = (zone[0].metv.tmax + zone[0].metv.tmin)/2.0;
-	}
 
-	/*--------------------------------------------------------------*/
-	/*	metv.tday	(degrees C)									*/
-	/*																*/
-	/*	Eq 1. Page 4, "MTCLIM"										*/
-	/*--------------------------------------------------------------*/
-	if ( zone[0].metv.tday == -999.0 ){
-		zone[0].metv.tday = zone[0].defaults[0][0].temcf
-			* (zone[0].metv.tmax - zone[0].metv.tavg) + zone[0].metv.tavg;
-	}
-	/*--------------------------------------------------------------*/
-	/*	metv.tnight 	(degrees C)								*/
-	/*																*/
-	/*	zcomp.c C Rhessys code										*/
-	/*--------------------------------------------------------------*/
-	if ( zone[0].metv.tnight == -999.0 ){
-		zone[0].metv.tnight = (zone[0].metv.tday + zone[0].metv.tmin)/2.0;
-	}
-	/*--------------------------------------------------------------*/
-	/*	If we have no snow data determine if the rain should be snow*/
-	/*																*/
-	/*	Based on U.S Army Corps of ENgineers (1956) Snow Hydrology	*/
-	/*	use a min/max to get range in which there is a mix of snow/rain */
-	/*								*/
-	/*--------------------------------------------------------------*/
-	if (zone[0].snow == -999.0 ){
-		if (zone[0].metv.tavg < zone[0].defaults[0][0].max_snow_temp ){
-			if (zone[0].metv.tavg <= zone[0].defaults[0][0].min_rain_temp){
-				zone[0].snow = zone[0].rain;
-				zone[0].rain = 0.0;
-			}
-			else{
-				snow_rain_range = zone[0].defaults[0][0].max_snow_temp
-					- zone[0].defaults[0][0].min_rain_temp;
-				if ( snow_rain_range < 0.001){
-					zone[0].snow = zone[0].rain;
-					zone[0].rain = 0.0;
+	
+	
+			/* THIS LDOWN MODEL REPLACED WITH NEW ONE CALCULATED AFTER VAPOR PRESSURE */
+			/*--------------------------------------------------------------*/
+			/*	Ldown														*/
+			/*--------------------------------------------------------------*/
+			/*if ( zone[0].Ldown == -999.0){
+				/*--------------------------------------------------------------*/
+				/*		compute the daily downwelling long wave based on 		*/
+				/*		.metv.tavg. 	(kJ/(m2*day))						*/
+				/*																*/
+				/*		Base on Linacre 1992 as found in C version of rhessys.	*/
+				/*																*/
+				/*		Also, Linacre's formula requires cloud fraction in   	*/
+				/*		oktas of cloud cover; where 1 okta = 1/8 th of sky	*/
+				/*		covered by clouds.					*/
+				/*																*/
+				/*		If we dont have cloud fraction data we assume 4.0oktas	*/
+				/*		of full cloudyness if it is a rainy day or a rain or 	*/
+				/*		snow day.												*/
+				/*--------------------------------------------------------------*/
+				/*if ( zone[0].cloud_fraction != -999.0 ){
+					zone[0].cloud = zone[0].cloud_opacity
+						* zone[0].cloud_fraction * 12.0;
+				}
+				else if	((zone[0].snow + zone[0].rain) > zone[0].defaults[0][0].pptmin ){
+					zone[0].cloud = 4.0;
+					zone[0].cloud_fraction = 1.0;
 				}
 				else{
-					zone[0].snow = min((zone[0].defaults[0][0].max_snow_temp
-						- zone[0].metv.tavg) * zone[0].rain / snow_rain_range, zone[0].rain);
-					zone[0].rain = zone[0].rain - zone[0].snow;
+					zone[0].cloud = 0;
+					zone[0].cloud_fraction = 0.0;
 				}
-			}
-		}
-		else{
-			zone[0].snow = 0.0;
-		}
-	}
-	/*--------------------------------------------------------------*/
-	/*	If we have no rain duration data set it as		*/
-	/*	daylength if rain 0 if not.					*/
-	/*--------------------------------------------------------------*/
-	if ( zone[0].daytime_rain_duration == -999.0 ){
-		if ( zone[0].rain == 0 || (zone[0].snow != 0 ) ){
-			zone[0].daytime_rain_duration = 0;
-		}
-		else{
-			zone[0].daytime_rain_duration = zone[0].metv.dayl;
-		}
-	}
-	else{
-		if ( zone[0].rain == 0 ){
-			zone[0].daytime_rain_duration = 0;
-		}
-		else{
-			zone[0].daytime_rain_duration =
-				min( zone[0].metv.dayl,zone[0].daytime_rain_duration);
-		}
-	}
-	/*--------------------------------------------------------------*/
-	/*	Ldown														*/
-	/*--------------------------------------------------------------*/
-	if ( zone[0].Ldown == -999.0){
-		/*--------------------------------------------------------------*/
-		/*		compute the daily downwelling long wave based on 		*/
-		/*		.metv.tavg. 	(kJ/(m2*day))						*/
-		/*																*/
-		/*		Base on Linacre 1992 as found in C version of rhessys.	*/
-		/*																*/
-		/*		Also, Linacre's formula requires cloud fraction in   	*/
-		/*		oktas of cloud cover; where 1 okta = 1/8 th of sky	*/
-		/*		covered by clouds.					*/
-		/*																*/
-		/*		If we dont have cloud fraction data we assume 4.0oktas	*/
-		/*		of full cloudyness if it is a rainy day or a rain or 	*/
-		/*		snow day.												*/
-		/*--------------------------------------------------------------*/
-		if ( zone[0].cloud_fraction != -999.0 ){
-			zone[0].cloud = zone[0].cloud_opacity
-				* zone[0].cloud_fraction * 12.0;
-		}
-		else if	((zone[0].snow + zone[0].rain) > zone[0].defaults[0][0].pptmin ){
-			zone[0].cloud = 4.0;
-			zone[0].cloud_fraction = 1.0;
-		}
-		else{
-			zone[0].cloud = 0;
-			zone[0].cloud_fraction = 0.0;
-		}
-		zone[0].Ldown = (208+6*zone[0].metv.tavg) * ( 1.0
-			+ 0.0034*pow(zone[0].cloud,2.0))* 86400.0 / 1000.0;
-	} /*end if*/
+				zone[0].Ldown = (208+6*zone[0].metv.tavg) * ( 1.0
+					+ 0.0034*pow(zone[0].cloud,2.0))* 86400.0 / 1000.0;
+			} /*end if*/
+			/*--------------------------------------------------------------*/
+	
+	
 	/*--------------------------------------------------------------*/
 	/*	Saturation Vapour Pressure	(Pa)							*/
 	/*																*/
@@ -453,6 +514,31 @@ void		zone_daily_F(
 				zone[0].relative_humidity = -999.0;
 			}
 	}
+	/* Case where vpd is given. Still need to calculate e_dewpoint for snowpack sublim and RH for output. */
+	else {
+		es = 613.75 * exp( (17.502 * zone[0].metv.tavg)
+						  / ( 240.97 + zone[0].metv.tavg) );
+		zone[0].e_dewpoint = es - zone[0].metv.vpd;
+		zone[0].relative_humidity = zone[0].e_dewpoint / es;
+	}
+	
+	/*--------------------------------------------------------------*/
+	/* NEW ATMOSPHERIC LONGWAVE MODEL								*/
+	/* Clear sky emissivity from Satterlund 1979 as applied in		*/
+	/* Mahat & Tarboten 2012 UEB with cloud fraction correction.	*/
+	
+	if ( zone[0].Ldown == -999.0){
+		/* Satterlund-Crawford */
+		/*zone[0].Ldown = (zone[0].cloud_fraction 
+			+ (1.0 - zone[0].cloud_fraction) * 1.08 * (1.0 - exp(-pow(zone[0].e_dewpoint/100,(zone[0].metv.tavg+273)/2016)))) 
+			* (SBC * 86400/1000) * pow(zone[0].metv.tavg+273,4);*/
+		/* Diley-Crawford */
+		zone[0].Ldown = zone[0].cloud_fraction * (SBC * 86400/1000) * pow(zone[0].metv.tavg+273,4)
+				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273)/273.16,6)
+				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273)/25,0.5)) * 86400/1000;
+	} /*end if*/
+	/*--------------------------------------------------------------*/
+	
 	/*--------------------------------------------------------------*/
 	/*	Nitrogen Deposition					*/
 	/*	- if not availabe use default value			*/
@@ -541,6 +627,14 @@ void		zone_daily_F(
 	zone[0].metv.tmin_ravg = 1.0/6.0*zone[0].metv.tmin + 5.0/6.0*zone[0].metv.tmin_ravg;
 	zone[0].metv.vpd_ravg = 1/6.0*zone[0].metv.vpd + 5.0/6.0*zone[0].metv.vpd_ravg;
 	zone[0].metv.dayl_ravg = 1/6.0*zone[0].metv.dayl + 5.0/6*zone[0].metv.dayl_ravg;
+	
+	if (command_line[0].verbose_flag == -5) {
+		printf(" Kdowndir=%lf Kdowndiff=%lf Ldown=%lf", 
+			   zone[0].Kdown_direct,
+			   zone[0].Kdown_diffuse,
+			   zone[0].Ldown);
+	}
+	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches for day end computations			*/
 	/*--------------------------------------------------------------*/

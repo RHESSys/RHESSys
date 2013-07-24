@@ -370,6 +370,8 @@ void  update_drainage_land(
 	if ( (patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) &&
 		(patch[0].detention_store > ZERO) ){
 
+		patch[0].overland_flow += patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size;
+		
 		Qout = (patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size);
 		if (command_line[0].grow_flag > 0) {
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;

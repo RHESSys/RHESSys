@@ -49,6 +49,10 @@ double	compute_litter_rain_stored(
 	double	throughfall;
 	struct	litter_object *litter;
 	
+	if (verbose_flag == -5) {
+		printf("\n     COMPUTE LITTER RAIN STORED: START evap_surf=%lf",patch[0].evaporation_surf);
+	}
+	
 	litter = &(patch[0].litter);
 	/*--------------------------------------------------------------*/
 	/*	Transfer potential evaporation to a working variable.	*/
@@ -137,6 +141,10 @@ double	compute_litter_rain_stored(
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);
 	patch[0].detention_store = throughfall;
+	
+	if (verbose_flag == -5) {
+		printf(" END evap_surf=%lf",patch[0].evaporation_surf);
+	}
 
 	return( rain_storage);
 } /*end compute_litter_rain_stored*/

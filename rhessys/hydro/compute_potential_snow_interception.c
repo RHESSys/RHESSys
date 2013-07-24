@@ -43,6 +43,7 @@
 double	compute_potential_snow_interception(
 											int	verbose_flag,
 											double	snow,
+											double Tair,
 											struct	canopy_strata_object	*stratum)
 {
 	/*------------------------------------------------------*/
@@ -54,6 +55,7 @@ double	compute_potential_snow_interception(
 	/*------------------------------------------------------*/
 	double	potential_interception;
 	double interception_coef;
+	double leaf_area_ratio;
 	/*--------------------------------------------------------------*/
 	/*	Compute amount potentially intercepted.			*/
 	/*								*/
@@ -67,10 +69,23 @@ double	compute_potential_snow_interception(
 	/*		* ( 1 m3 H20 / 1000 kg H20 )			*/
 	/*	limit rain interception by gap_fraction			*/
 	/*--------------------------------------------------------------*/
-	interception_coef = (1.0 - stratum[0].gap_fraction);
+	/* 60% interception efficiency for various conifers per Storck 2002 */
+	/* and as applied in Andreadis 2009 */
+	/*interception_coef = 0.6 * (1.0 - stratum[0].gap_fraction);*/
+	interception_coef = 1.0 - stratum[0].gap_fraction;
+	/*--------------------------------------------------------------*/
+	/* Leaf area ratio from Andreadis 2009 to account for reduction in */
+	/* holding capacity on narrow surfaces under cold temps */ 
+	/*if (Tair > -1.0) leaf_area_ratio = 4.0;
+	else {
+		if (Tair > -3.0) leaf_area_ratio = 1.5 * Tair + 5.5;
+		else leaf_area_ratio = 1.0;
+		}*/
+	leaf_area_ratio = 1.0;
+	/*--------------------------------------------------------------*/
 	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) 
 		potential_interception = min(interception_coef * snow,
-			stratum[0].epv.all_pai
+			leaf_area_ratio * stratum[0].epv.all_pai
 			* stratum[0].defaults[0][0].specific_snow_capacity
 			- stratum[0].snow_stored);
 	else

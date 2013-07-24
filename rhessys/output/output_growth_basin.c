@@ -62,7 +62,7 @@ void	output_growth_basin(
 	double hstreamflow_NO3, hstreamflow_NH4, hstreamflow_DON, hstreamflow_DOC;
 	double hgwNO3, hgwDON, hgwDOC, hgwNH4;
 	double hgwNO3out, hgwDONout, hgwDOCout, hgwNH4out;
-	
+
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -215,22 +215,22 @@ void	output_growth_basin(
 				aarea +=  patch[0].area;
 				hill_area += patch[0].area;
 			}
-
-		hgwNO3 += hillslope[0].gw.NO3 * hill_area;
-		hgwNH4 += hillslope[0].gw.NH4 * hill_area;
-		hgwDOC += hillslope[0].gw.DOC * hill_area;
-		hgwDON += hillslope[0].gw.DON * hill_area;
-		hgwDONout += hillslope[0].gw.DONout * hill_area;
-		hgwDOCout += hillslope[0].gw.DOCout * hill_area;
-		hgwNO3out += hillslope[0].gw.NO3out * hill_area;
-		hgwNH4out += hillslope[0].gw.NH4out * hill_area;
-		hstreamflow_NH4 += hillslope[0].streamflow_NH4 * hillslope[0].area;
-		hstreamflow_NO3 += hillslope[0].streamflow_NO3 * hillslope[0].area;
-		hstreamflow_DON += hillslope[0].streamflow_DON * hillslope[0].area;
-		hstreamflow_DOC += hillslope[0].streamflow_DOC * hillslope[0].area;
-		basin_area += hill_area;
+			
+			hgwNO3 += hillslope[0].gw.NO3 * hill_area;
+			hgwNH4 += hillslope[0].gw.NH4 * hill_area;
+			hgwDOC += hillslope[0].gw.DOC * hill_area;
+			hgwDON += hillslope[0].gw.DON * hill_area;
+			hgwDONout += hillslope[0].gw.DONout * hill_area;
+			hgwDOCout += hillslope[0].gw.DOCout * hill_area;
+			hgwNO3out += hillslope[0].gw.NO3out * hill_area;
+			hgwNH4out += hillslope[0].gw.NH4out * hill_area;
+			hstreamflow_NH4 += hillslope[0].streamflow_NH4 * hillslope[0].area;
+			hstreamflow_NO3 += hillslope[0].streamflow_NO3 * hillslope[0].area;
+			hstreamflow_DON += hillslope[0].streamflow_DON * hillslope[0].area;
+			hstreamflow_DOC += hillslope[0].streamflow_DOC * hillslope[0].area;
+			
+			basin_area += hill_area;
 		}
-		
 	}
 	agpsn /= aarea ;
 	aresp /= aarea ;
@@ -280,7 +280,7 @@ void	output_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -294,6 +294,7 @@ void	output_growth_basin(
 		asurfaceN * 1000,
 		(aleafc + awoodc + afrootc),
 		(aleafn + awoodn + afrootn),
+		acpool,
 		anpool,
 		alitrc,
 		alitrn,

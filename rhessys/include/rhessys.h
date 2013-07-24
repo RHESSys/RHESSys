@@ -158,6 +158,7 @@
 #define	ess_snow	0.97
 #define	ess_soil	0.95
 #define ess_veg   	0.96
+#define ess_water	0.97
 #define PRE	"result"
 #define state_output_filename	"world_state"
 #define	MAXNAME	60
@@ -369,7 +370,7 @@ struct accumulate_patch_object
    double recharge;
    double recharge_wyd;
    double snowin;
-   double Qin_total; 
+   double Qin_total;
    double Qout_total;
 };
 
@@ -781,7 +782,7 @@ struct	zone_default
 	double	wind;			/* m/s		*/
 	double	wind_direction;			/* degrees		*/
 	double  max_snow_temp;                                          /* degrees C */
-        double  min_rain_temp;                                          /* degrees C */
+	double  min_rain_temp;                                          /* degrees C */
 	double  ndep_NO3;		/* kgN/m2/day	*/
 	double  atm_CO2;		/* ppm */ 
 	double	psen[7];
@@ -834,11 +835,15 @@ struct zone_object
 	double	e_horizon; 	/* cos of angle to normal of flat  	*/
 	double	effective_lai;		/* area wt. average m^2/m^2	*/	
 	double	Kdown_diffuse;				/* Kj/(m^2*day)	*/
+	double	Kdown_diffuse_calc;				/* Kj/(m^2*day)	*/
 	double  Kdown_diffuse_adjustment;              	/*  0-1 */
 	double	Kdown_diffuse_flat;			/* Kj/(m^2*day)	*/
+	double	Kdown_diffuse_flat_calc;			/* Kj/(m^2*day)	*/
 	double	Kdown_direct;				/* Kj/(m^2*day)	*/
+	double	Kdown_direct_calc;				/* Kj/(m^2*day)	*/
 	double  Kdown_direct_adjustment;               	/*  0-1 */
 	double	Kdown_direct_flat;			/* Kj/(m^2*day)	*/
+	double	Kdown_direct_flat_calc;			/* Kj/(m^2*day)	*/
 	double	LAI_temp_adjustment;			/* 0 - 1	*/
 	double	LAI_scalar;				/* DIM		*/
 	double  Ldown;                              	/* W/m2 	*/
@@ -869,7 +874,7 @@ struct zone_object
 	struct	zone_default		**defaults;
 	struct	zone_hourly_object	*hourly;
 	struct  accumulate_zone_object  acc_month;
-        struct  accumulate_zone_object  acc_year;
+	struct  accumulate_zone_object  acc_year;
 
 	};
 
@@ -1321,6 +1326,11 @@ struct	snowpack_object
 	double  water_equivalent_depth;		/* m water   	*/
 	double	overstory_fraction;		/* percent	*/
 	double	overstory_height;		/* m		*/
+	double Rnet;	/* net SW + LW radiation in KJ/m2/d */
+	double Q_LE;     /* latent heat exchange with atmos in KJ/m2/d */
+	double Q_H;     /* sensible heat flux in KJ/m2/d */
+	double Q_rain;   /* rain advective heat flux in KJ/m2/d */
+	double Q_melt;  /* net input for melt in KJ/m2/d */
 	};
 
 
@@ -1353,21 +1363,44 @@ struct patch_object
 	double	evaporation;		/* m  water*/
 	double	evaporation_surf;	/* m  water*/
 	double  ga;			/* m/s */         
-	double  ga_final;		/* m/s */         
+	double  ga_final;		/* m/s */  
+	double  gasnow;			/* m/s */         
+	double  gasnow_final;		/* m/s */         
 	double  gw_drainage; 		/* m/day */
 	double  interim_sat;		/* m */
 	double  stream_gamma;		/* meters**2/day	*/
  	double	Kdown_direct;		/* Kj/(m^2*day)	*/
+	double	Kup_direct;		/* Kj/(m^2*day)	*/
 	double	Kdown_diffuse;		/* Kj/(m^2*day)	*/
+	double	Kup_diffuse;		/* Kj/(m^2*day)	*/
 	double	Kdown_direct_final;	/* Kj/(m^2*day)	*/
+	double	Kup_direct_final;	/* Kj/(m^2*day)	*/
 	double	Kdown_diffuse_final;	/* Kj/(m^2*day)	*/
-	double	Kup_direct;		/* Kj/(m^2*day) */
-	double	Kup_diffuse;		/* Kj/(m^2*day) */
+	double	Kup_diffuse_final;	/* Kj/(m^2*day)	*/
+	double Kdown_direct_ovund;
+	double Kup_direct_ovund;
+	double Kdown_diffuse_ovund;
+	double Kup_diffuse_ovund;
+	double Kdown_direct_und;
+	double Kup_direct_und;
+	double Kdown_diffuse_und;
+	double Kup_diffuse_und;		
+	double Kdown_direct_bare;
+	double Kup_direct_bare;
+	double Kdown_diffuse_bare;
+	double Kup_diffuse_bare;
+	double  Kstar_canopy;			/* Kj/(m^2*day)	*/
+	double  Kstar_canopy_final;	/* Kj/(m^2*day)	*/
+	double LE_canopy;  /* Kj/(m^2*day)	*/
+	double LE_canopy_final;  /* Kj/(m^2*day)	*/
+	double LE_soil;		/* Kj/(m^2*day)	*/
+	double  Kstar_soil;			/* Kj/(m^2*day)	*/
+	double	Kdown_direct_subcanopy;		/* Kj/(m^2*day)	*/
+	double	Kdown_diffuse_subcanopy;		/* Kj/(m^2*day)	*/
 	double	Ksat_0;			/* meteres/day  */
 	double  Ksat_vertical;		/* meters/day	*/
 	double	lna;			/* unitless	*/
 	double  lai;			/* unitless	*/
-	double  Lup_net;		/* Kj/(m^2*day) */
 	double	Lup_canopy;		/* Kj/(m^2*day)	*/
 	double	Lup_canopy_day;		/* Kj/(m^2*day)	*/
 	double	Lup_canopy_night;	/* Kj/(m^2*day)	*/
@@ -1376,16 +1409,18 @@ struct patch_object
 	double	Lup_surface_night;	/* Kj/(m^2*day)	*/
 	double	Lup_snow;		/* Kj/(m^2*day)	*/
 	double	Lup_soil;		/* Kj/(m^2*day)	*/
-	double	Lup_litter;		/* Kj/(m^2*day)	*/
+	double	Lup_pond;		/* Kj/(m^2*day)	*/
+	double	Lup;		/* Kj/(m^2*day)	*/
 	double	Lstar_canopy;		/* Kj/(m^2*day)	*/
 	double	Lstar_canopy_day;	/* Kj/(m^2*day)	*/
 	double	Lstar_canopy_night;	/* Kj/(m^2*day)	*/
 	double	Lstar_surface;		/* Kj/(m^2*day)	*/
 	double	Lstar_surface_day;	/* Kj/(m^2*day)	*/
 	double	Lstar_surface_night;	/* Kj/(m^2*day)	*/
-	double	Lstar_litter;		/* Kj/(m^2*day)	*/
 	double	Lstar_snow;		/* Kj/(m^2*day)	*/
 	double	Lstar_soil;		/* Kj/(m^2*day)	*/
+	double	Lstar_pond;		/* Kj/(m^2*day)	*/
+	double  Ldown_subcanopy;	/* Kj/(m^2*day)	*/
 	double  m;		/* m^-1 */
 	double  m_z;		/* m^-1 */
 	double  original_m;		/* m^-1 */
@@ -1460,7 +1495,14 @@ struct patch_object
 	double	rz_drainage;		/* m water by Taehee Hwang */
 	double  wind;			/* m/s		*/
 	double  wind_final;		/* m/s		*/
+	double  windsnow;			/* m/s		*/
+	double  windsnow_final;		/* m/s		*/
+	double  ustar;			/* m/s		*/
+	double  ustar_final;		/* m/s		*/
 	double  wilting_point;		/* mm */
+	double overstory_fraction; /* 0-1 */
+	double trans_reduc_perc; /*0-1*/
+	double overland_flow; /* m/s */
 	struct	base_station_object	**base_stations;
 	struct	soil_default		**soil_defaults;
 	struct	landuse_default		**landuse_defaults;
@@ -2289,7 +2331,7 @@ struct epconst_struct
     double litter_gsurf_intercept;  /* m/2 - intercept of conductance vs litter theta */
     double litter_gsurf_slope;  /* (DIM) - slope of conductance vs litter theta */
     double litter_moist_coef;  /* m/kg  water holding capacity of litter in m/kg/m2 */
-    double litter_density;  /* kg/m  density of litter in kg/m/m2 */
+	double litter_density;  /* kg/m  density of litter in kg/m/m2 */
     double frootlitr_flab;   /* (DIM) froot litter labile fraction */
     double frootlitr_fucel;  /* (DIM) froot litter unshielded cellulose fract */
     double frootlitr_fscel;  /* (DIM) froot litter shielded cellulose fract */
@@ -2314,6 +2356,7 @@ struct epconst_struct
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
+	double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
     int	    max_years_resprout; /* num years of resprouting before death */
     double waring_pa; /* parameter for Waring allometric equation */
     double waring_pb; /* parameter for Waring allometric equation */
@@ -2401,8 +2444,6 @@ struct	canopy_strata_object
 	double	gsurf;						/* m/s		*/
 	double	Kstar_direct;					/* Kj/(m2*day)	*/
 	double	Kstar_diffuse;					/* Kj/(m2*day)	*/
-	double	Kup_direct;					/* Kj/(m2*day)	*/
-	double	Kup_diffuse;					/* Kj/(m2*day)	*/
 	double	Lstar;						/* Kj/(m2*day)	*/	
 	double	PAR_after_reflection;				/* (umol photon/m2*day) */
 	double  ppfd_sunlit;			/*  (umol/m2/s) PAR photon flux density */
@@ -2515,5 +2556,5 @@ struct surface_energy_default {
 	double iteration_threshold; /* degrees C */
 	};
 
-
 #endif
+

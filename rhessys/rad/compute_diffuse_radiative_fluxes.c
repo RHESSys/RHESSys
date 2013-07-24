@@ -71,7 +71,8 @@
 #include "rhessys.h"
 
 double	compute_diffuse_radiative_fluxes(	int	verbose_flag,
-										 double	*flux_down_ptr,                     
+										 double	*flux_down_ptr, 
+										 double *flux_up_ptr,
 										 double	direct_flux,                     
 										 double	extinction_coef,
 										 double	gap_fraction,
@@ -95,7 +96,7 @@ double	compute_diffuse_radiative_fluxes(	int	verbose_flag,
 	/*	We assume that the reflectance_canopy is suitable for	*/
 	/*	diffuse irradiance of the canopy.			*/
 	/*--------------------------------------------------------------*/
-	flux_reflected = *flux_down_ptr * reflectance_canopy;
+	*flux_up_ptr = *flux_down_ptr * reflectance_canopy;
 	/*--------------------------------------------------------------*/
 	/*	Add additional direct flux scattered into the diffuse	*/
 	/*	stream.							*/
@@ -117,12 +118,17 @@ double	compute_diffuse_radiative_fluxes(	int	verbose_flag,
 	else{
 		S = 0;
 	}
-	flux_absorbed = ( *flux_down_ptr - flux_reflected)
+	flux_absorbed = ( *flux_down_ptr - *flux_up_ptr)
 		* ( 1 - exp(-1*pow(pai*(1-gap_fraction),0.7))+S);
-	flux_transmitted = *flux_down_ptr -  flux_reflected - flux_absorbed ;
+	flux_transmitted = *flux_down_ptr -  *flux_up_ptr - flux_absorbed ;
 	*flux_down_ptr = flux_transmitted;
 	if( verbose_flag > 2)
 		printf(" %8.1f %8.1f %8.1f %10.8f ",
-		flux_reflected,flux_absorbed,flux_transmitted, S);
+		*flux_up_ptr,flux_absorbed,flux_transmitted, S);
+	if ( verbose_flag == -5 ){
+		printf("\n          DIFRADFLUX: extcoef=%lf thetanoon=%lf S=%lf fluxrefl=%lf fluxabs=%lf fluxtrans=%lf", 
+			   extinction_coef, theta_noon, S, *flux_up_ptr, flux_absorbed, flux_transmitted);
+	}
+	
 	return( flux_absorbed );
 } /*end compute_radiative_fluxes*/
