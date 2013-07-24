@@ -49,6 +49,9 @@
 double	compute_snow_stored(
 							int	verbose_flag,
 							double	Tair_mean_day,
+							double  vp_air,
+							double  gasnow,
+							double  pa,
 							double	snow_density,
 							double	*snow,
 							double  *rain,
@@ -60,7 +63,18 @@ double	compute_snow_stored(
 	double	compute_potential_snow_interception(
 		int,
 		double,
+		double,
 		struct  canopy_strata_object    *);
+	double  compute_snow_sublimation(int, 
+									 double,
+									 double,
+									 double,
+									 double,
+									 double,
+									 double,
+									 double,
+									 double,
+									 double *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
@@ -77,6 +91,17 @@ double	compute_snow_stored(
 	double	Kstar_used;
 	double	APAR_used;
 	double	throughfall;
+	double unload;
+	double tmp, tmp2, tmp3, tmp4, tmp5;
+	double radsubl;
+	
+	tmp = 0.0;
+	tmp2 = 0.0;
+	tmp3 = 0.0;
+	tmp4 = 0.0;
+	tmp5 = 0.0;
+	unload = 0.0;
+	radsubl = 0.0;
 	
 	if( verbose_flag > 2)
 		printf("%8.6f %8.6f ",*snow,  stratum[0].snow_stored);
@@ -85,11 +110,20 @@ double	compute_snow_stored(
 	/*	based on the daytime average temperature.		*/
 	/*--------------------------------------------------------------*/
 	if ( Tair_mean_day > 0 ){
-		latent_heat = 335.0;
-	}
-	else{
-		latent_heat = 2845.0;
-	}
+		latent_heat = 334.0;
+		}
+	else {
+		/*latent_heat = 2845.0;*/
+		/* Eq. 3.19, Bras 1990 with conversion to KJ/kg */
+		latent_heat = (677.0 - 0.07*Tair_mean_day) * 4.1868;
+		}
+	
+	/* First, unload percent of stored snow in mass unloading */
+	/* Set to 0.1 per day per Mahat 2011 (UEBVeg) hourly unloading rate */
+	/* based on Hedstrom & Pomeroy 1998 obs. */
+	unload = 0.1 * stratum[0].snow_stored;
+	stratum[0].snow_stored -= unload;
+	
 	/*--------------------------------------------------------------*/
 	/*	Compute amount potentially intercepted.			*/
 	/*								*/
@@ -99,6 +133,7 @@ double	compute_snow_stored(
 	potential_interception = compute_potential_snow_interception(
 		verbose_flag,
 		*snow,
+		Tair_mean_day,
 		stratum);
 	/*--------------------------------------------------------------*/
 	/*	Sublimate the snow already stored and the potential intercep*/
@@ -111,12 +146,55 @@ double	compute_snow_stored(
 	/*								*/
 	/*	Note we assume 1 m3 snow = snow_density kg snow		*/
 	/*--------------------------------------------------------------*/
-	potential_sublimation = ((stratum[0].Kstar_direct + stratum[0].Kstar_diffuse)
-		/ latent_heat ) * (1/snow_density);
+	/*potential_sublimation = ((stratum[0].Kstar_direct + stratum[0].Kstar_diffuse)
+		/ latent_heat ) * (1/snow_density);*/
+	/*---------------------------------------------------------------*/
+	/* Now calculating sublimation using compute_sublimation routine */
+	/*---------------------------------------------------------------*/
+	
+if (Tair_mean_day > 0) {
+		/* this is really melt */
+		potential_sublimation = ((stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar)
+								 / latent_heat ) * (1/snow_density);
+		storage_sublimated = min(potential_sublimation,stratum[0].snow_stored);
+	}
+	else {
+		potential_sublimation = compute_snow_sublimation(
+			verbose_flag,
+			Tair_mean_day,
+			min(Tair_mean_day,0.0),
+			vp_air,
+			100000000.0, /* no capacity limit, restricting later */
+			gasnow,
+			stratum[0].epv.height,
+			stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar,
+			pa,
+			&(radsubl));
+		/* Per Lundberg 1994, evap rates reduced for unsaturated canopies, approximated by power function */
+		/*storage_sublimated = min(potential_sublimation * pow(stratum[0].snow_stored/(stratum[0].epv.all_pai * 
+									stratum[0].defaults[0][0].specific_snow_capacity),2), stratum[0].snow_stored);*/
+		storage_sublimated = min(potential_sublimation,stratum[0].snow_stored);
+	}
+	if (verbose_flag == -5) {
+		printf("\n          SNOW STORED:Tair=%lf vp=%lf snow=%lf stor=%lf maxstor=%lf potint=%lf gasnow=%lf\n               ht=%lf K=%lf L=%lf pa=%lf subl_pot=%lf",
+		   Tair_mean_day,
+		   vp_air,
+		   *snow,
+		   stratum[0].snow_stored,
+		   (stratum[0].epv.all_pai * stratum[0].defaults[0][0].specific_snow_capacity),
+		   potential_interception,
+		   gasnow,
+		   stratum[0].epv.height,
+		   stratum[0].Kstar_direct + stratum[0].Kstar_diffuse,
+		   stratum[0].Lstar,
+		   pa,
+		   potential_sublimation);
+	}
 	/*--------------------------------------------------------------*/
 	/*	Compute amount of storage sublimated.			*/
 	/*--------------------------------------------------------------*/
-	storage_sublimated = min(potential_sublimation,stratum[0].snow_stored);
+	/*storage_sublimated = min(potential_sublimation,stratum[0].snow_stored);*/
+
 	/*--------------------------------------------------------------*/
 	/*	Update amount of snow in storage after sublimation.	*/
 	/*--------------------------------------------------------------*/
@@ -128,6 +206,7 @@ double	compute_snow_stored(
 	/*--------------------------------------------------------------*/
 	/*	Update potentail sublimation.				*/
 	/*--------------------------------------------------------------*/
+	tmp5 = potential_sublimation;
 	potential_sublimation -= storage_sublimated;
 	/*--------------------------------------------------------------*/
 	/*	Remove snow potentially intercepted from throughfall.	*/
@@ -147,18 +226,6 @@ double	compute_snow_stored(
 	if( verbose_flag > 2)
 		printf("%8.6f %8.6f %8.6f", throughfall,potential_interception_sublimated,
 		potential_interception);
-	/*--------------------------------------------------------------*/
-	/*	Update snow storage					*/
-	/*--------------------------------------------------------------*/
-	snow_storage = min( stratum[0].snow_stored
-		+ potential_interception, stratum[0].epv.all_pai
-		* stratum[0].defaults[0][0].specific_snow_capacity );
-		
-	/*--------------------------------------------------------------*/
-	/*	Update snow throughfall.				*/
-	/*								*/
-	/*--------------------------------------------------------------*/
-		
 	
 	/*--------------------------------------------------------------*/
 	/*	Update snow throughfall.				*/
@@ -170,19 +237,23 @@ double	compute_snow_stored(
 			+ potential_interception, stratum[0].epv.all_pai
 			* stratum[0].defaults[0][0].specific_snow_capacity );
 		throughfall += max(potential_interception - (snow_storage - stratum[0].snow_stored),0.0);
-		*snow = throughfall;
+		*snow = throughfall + unload;
 		}
 	else {
 		snow_storage = min( stratum[0].snow_stored
 			+ potential_interception, stratum[0].defaults[0][0].specific_snow_capacity );
 		throughfall += max(potential_interception - (snow_storage - stratum[0].snow_stored),0.0);
-		*snow = throughfall;
+		*snow = throughfall + unload;
 		}
 	/*--------------------------------------------------------------*/
 	/*	Compute amount of sublimation that happened.		*/
 	/*--------------------------------------------------------------*/
 	stratum[0].sublimation =  storage_sublimated +
 		potential_interception_sublimated;
+	
+	if (verbose_flag == -5) {
+		printf("\n               subl_act=%lf",stratum[0].sublimation);
+	}
 	/*--------------------------------------------------------------*/
 	/*	If in fact the sublimation was melt add the amount	*/
 	/*	melted to the rain throughfall.				*/
@@ -195,7 +266,8 @@ double	compute_snow_stored(
 	/*	Update amount of energy available for this stratum.	*/
 	/*	We first get rid of longwave.				*/
 	/*--------------------------------------------------------------*/
-	Kstar_used =  stratum[0].sublimation * latent_heat * snow_density;
+	/* NEW ADJUSTMENT FOR SUBLIM DUE TO RADIATION */
+	Kstar_used =  stratum[0].sublimation * radsubl * latent_heat * snow_density;
 	if ( Kstar_used > 0 ){
 		APAR_used = (Kstar_used / ( stratum[0].Kstar_direct
 			+ stratum[0].Kstar_diffuse )) * (stratum[0].APAR_direct
@@ -233,6 +305,11 @@ double	compute_snow_stored(
 	else
 		fraction_diffuse_APAR_used = 0.0;
 	
+	tmp = stratum[0].APAR_direct;
+	tmp2 = stratum[0].APAR_direct + stratum[0].APAR_diffuse;
+	tmp3 = stratum[0].Kstar_direct;
+	tmp4 = stratum[0].Kstar_direct + stratum[0].Kstar_diffuse;
+	
 	stratum[0].Kstar_direct -= Kstar_used * fraction_direct_K_used;
 	stratum[0].Kstar_diffuse -= Kstar_used * fraction_diffuse_K_used;
 	stratum[0].APAR_direct -= APAR_used * fraction_direct_APAR_used;
@@ -240,5 +317,22 @@ double	compute_snow_stored(
 	if( verbose_flag > 2)
 		printf("%8.6f %8.6f %8.6f %8.6f ", *snow,  stratum[0].sublimation,
 		snow_storage, Kstar_used);
+	
+	if (verbose_flag == -5) {
+		printf("\n                         STOREND:snow=%lf rain=%lf stratstor=%lf storage=%lf potint=%lf stratsubl=%lf",
+		   *snow,
+		   *rain,
+		   stratum[0].snow_stored,
+		   snow_storage,
+		   potential_interception,
+		   stratum[0].sublimation);
+	}
+	
+	if ( stratum[0].APAR_direct < -1 ) {
+		printf("Tair=%lf pot_subl=%lf subl=%lf radsubl=%lf APARused=%lf APARdir=%lf APAR=%lf Kstar_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n", 
+			   Tair_mean_day, tmp5, stratum[0].sublimation, radsubl, APAR_used, tmp, tmp2, Kstar_used, tmp3, tmp4, stratum[0].Lstar);
+	}
+	
+	
 	return( snow_storage);
 } /*end compute_snow_stored*/

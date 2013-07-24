@@ -322,36 +322,66 @@ void		patch_daily_I(
 	if ( patch[0].sat_deficit_z <= patch[0].soil_defaults[0][0].psi_air_entry ){
 		patch[0].potential_exfiltration = patch[0].potential_cap_rise;
 	}
-	else{
+	else {
 		if ( patch[0].soil_defaults[0][0].active_zone_z < patch[0].sat_deficit_z ){
 			/*--------------------------------------------------------------*/
 			/*	Estimate potential exfiltration from active zone 	*/
 			/*--------------------------------------------------------------*/
+			/* Added new check to see if non-zero root depth... was unintentionally */
+			/* zeroing out potential exfil in non-vegetated cases.	-AD				*/
+			if (patch[0].rootzone.depth > ZERO)	{
+				patch[0].potential_exfiltration = compute_potential_exfiltration(
+					command_line[0].verbose_flag,
+					patch[0].rootzone.S,
+					patch[0].soil_defaults[0][0].active_zone_z,
+					patch[0].soil_defaults[0][0].Ksat_0_v,
+					patch[0].soil_defaults[0][0].mz_v,
+					patch[0].soil_defaults[0][0].psi_air_entry,
+					patch[0].soil_defaults[0][0].pore_size_index,
+					patch[0].soil_defaults[0][0].porosity_decay,
+					patch[0].soil_defaults[0][0].porosity_0);
+				}
+			else {
 			patch[0].potential_exfiltration = compute_potential_exfiltration(
-				command_line[0].verbose_flag,
-				patch[0].rootzone.S,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].Ksat_0_v,
-				patch[0].soil_defaults[0][0].mz_v,
-				patch[0].soil_defaults[0][0].psi_air_entry,
-				patch[0].soil_defaults[0][0].pore_size_index,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].porosity_0);
+					command_line[0].verbose_flag,
+					patch[0].S,
+					patch[0].soil_defaults[0][0].active_zone_z,
+					patch[0].soil_defaults[0][0].Ksat_0_v,
+					patch[0].soil_defaults[0][0].mz_v,
+					patch[0].soil_defaults[0][0].psi_air_entry,
+					patch[0].soil_defaults[0][0].pore_size_index,
+					patch[0].soil_defaults[0][0].porosity_decay,
+					patch[0].soil_defaults[0][0].porosity_0);
+				}
 		}
 		else {
 			/*--------------------------------------------------------------*/
 			/*	Estimate potential exfiltration from active zone 	*/
 			/*--------------------------------------------------------------*/
-			patch[0].potential_exfiltration = compute_potential_exfiltration(
-				command_line[0].verbose_flag,
-				patch[0].rootzone.S,
-				patch[0].sat_deficit_z,
-				patch[0].soil_defaults[0][0].Ksat_0_v,
-				patch[0].soil_defaults[0][0].mz_v,
-				patch[0].soil_defaults[0][0].psi_air_entry,
-				patch[0].soil_defaults[0][0].pore_size_index,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].porosity_0);
+			if (patch[0].rootzone.depth > ZERO)	{
+				patch[0].potential_exfiltration = compute_potential_exfiltration(
+					command_line[0].verbose_flag,
+					patch[0].rootzone.S,
+					patch[0].sat_deficit_z,
+					patch[0].soil_defaults[0][0].Ksat_0_v,
+					patch[0].soil_defaults[0][0].mz_v,
+					patch[0].soil_defaults[0][0].psi_air_entry,
+					patch[0].soil_defaults[0][0].pore_size_index,
+					patch[0].soil_defaults[0][0].porosity_decay,
+					patch[0].soil_defaults[0][0].porosity_0);
+				}
+			else {
+				patch[0].potential_exfiltration = compute_potential_exfiltration(
+					command_line[0].verbose_flag,
+					patch[0].S,
+					patch[0].sat_deficit_z,
+					patch[0].soil_defaults[0][0].Ksat_0_v,
+					patch[0].soil_defaults[0][0].mz_v,
+					patch[0].soil_defaults[0][0].psi_air_entry,
+					patch[0].soil_defaults[0][0].pore_size_index,
+					patch[0].soil_defaults[0][0].porosity_decay,
+					patch[0].soil_defaults[0][0].porosity_0);
+				}
 		}
 	}
 

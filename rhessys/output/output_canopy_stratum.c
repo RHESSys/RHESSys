@@ -43,7 +43,7 @@ void	output_canopy_stratum( int basinID, int hillID, int zoneID, int patchID,
 	/*------------------------------------------------------*/
 	
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -60,7 +60,7 @@ void	output_canopy_stratum( int basinID, int hillID, int zoneID, int patchID,
 		stratum[0].transpiration_unsat_zone *1000.0
 			+ stratum[0].transpiration_sat_zone *1000.0,
 		stratum[0].ga*1000.0,
-		stratum[0].gsurf,
+		stratum[0].gsurf*1000.0,
 		stratum[0].gs*1000.0,
 		stratum[0].epv.psi,
 		stratum[0].cdf.leaf_day_mr*1000.0,
@@ -74,6 +74,13 @@ void	output_canopy_stratum( int basinID, int hillID, int zoneID, int patchID,
 		stratum[0].mult_conductance.CO2,
 		stratum[0].mult_conductance.tmin,
 		stratum[0].mult_conductance.vpd,
-		stratum[0].dC13);
+		stratum[0].dC13,
+			stratum[0].Kstar_direct,
+			stratum[0].Kstar_diffuse,
+			stratum[0].Lstar,
+			stratum[0].surface_heat_flux,
+			stratum[0].epv.height,
+			stratum[0].cover_fraction,
+			stratum[0].defaults[0][0].ID);
 	return;
 } /*end output_canopy_stratum*/

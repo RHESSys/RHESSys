@@ -58,7 +58,8 @@
 #include "rhessys.h"
 
 double	compute_radiative_fluxes(int verbose_flag,
-								 double	*flux_down_ptr,                     
+								 double	*flux_down_ptr,  
+								 double *flux_up_ptr,
 								 double	total_extinction,
 								 double	reflectance,
 								 double	absorptance)
@@ -82,7 +83,7 @@ double	compute_radiative_fluxes(int verbose_flag,
 	/*	We assume that the stratum reflectance has already	*/
 	/*	been corrected for canopy pai and understory albedo	*/
 	/*--------------------------------------------------------------*/
-	flux_reflected = *flux_down_ptr * reflectance ;
+	*flux_up_ptr = *flux_down_ptr * reflectance ;
 	/*--------------------------------------------------------------*/
 	/*	Compute transmittance	using Beer's Law approx.	*/
 	/*	This stage assumes that the canopy elements are 	*/
@@ -90,10 +91,14 @@ double	compute_radiative_fluxes(int verbose_flag,
 	/*--------------------------------------------------------------*/
 	opaque_transmittance = exp(-1.0 * total_extinction);
 	flux_absorbed = *flux_down_ptr * absorptance * (1.0 - opaque_transmittance );
-	flux_transmitted = *flux_down_ptr -  flux_reflected - flux_absorbed ;
+	flux_transmitted = *flux_down_ptr -  *flux_up_ptr - flux_absorbed ;
 	*flux_down_ptr = flux_transmitted;
 	if( verbose_flag > 2)
-		printf("%8.1f %8.1f %8.1f %8.1f ", opaque_transmittance, flux_reflected,
+		printf("%8.1f %8.1f %8.1f %8.1f ", opaque_transmittance, *flux_up_ptr,
 		flux_absorbed,flux_transmitted);
+	if ( verbose_flag == -5 ){
+		printf("\nRADFLUX: trans=%lf fluxrefl=%1f fluxabs=%lf fluxtrans=%lf ", opaque_transmittance, *flux_up_ptr,
+		   flux_absorbed,flux_transmitted);
+	}
 	return( flux_absorbed );
 } /*end compute_radiative_fluxes*/

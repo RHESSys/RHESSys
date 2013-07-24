@@ -174,7 +174,7 @@ void zone_daily_I(
 	int 	patch;
 	double	temp, tmp;
 	double	Tlapse_adjustment;
-	double	trans_coeff1, z_delta;
+	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
 	
 	zone[0].rain_hourly_total = 0.0;
 	/*--------------------------------------------------------------*/
@@ -333,9 +333,13 @@ void zone_daily_I(
 	zone[0].cloud_opacity = -999.0;
 	zone[0].Delta_T = -999.0;
 	zone[0].Kdown_diffuse = -999.0;
+	zone[0].Kdown_diffuse_calc = 0.0;
+	zone[0].Kdown_diffuse_flat_calc = 0.0;
 	zone[0].Kdown_diffuse_adjustment = -999.0;
 	zone[0].Kdown_diffuse_flag = 0;
 	zone[0].Kdown_direct = -999.0;
+	zone[0].Kdown_direct_calc = 0.0;
+	zone[0].Kdown_direct_flat_calc = 0.0;
 	zone[0].Kdown_direct_adjustment = -999.0;
 	zone[0].Kdown_direct_flag = 0;
 	zone[0].Ldown = -999.0;
@@ -426,7 +430,7 @@ void zone_daily_I(
 	}
 	else{
 		zone[0].cloud_opacity = 0.8;
-	}
+	}	
 	/*--------------------------------------------------------------*/
 	/*	Delta_T														*/
 	/*																*/
@@ -633,7 +637,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].relative_humidity != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].relative_humidity[day];
-		if ( temp != -999.0 ) zone[0].relative_humidity= temp / 100.0;
+		if ( temp != -999.0 ) zone[0].relative_humidity= temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	Dewpoint temperature										*/
@@ -831,6 +835,7 @@ void zone_daily_I(
 			/*			it as a default variable for each zone.  We might be 	*/
 			/*			able to change the value by a tec event.  				*/
 			/*--------------------------------------------------------------*/
+						
 			if ( zone[0].cloud_fraction == -999.0 ){
 
 		/*--------------------------------------------------------------*/
@@ -838,12 +843,59 @@ void zone_daily_I(
 		/*	trans_coeff1 and make it a function of delta T		*/
 		/*--------------------------------------------------------------*/
 
-				trans_coeff1 = 0.036 * exp(-0.152 * zone[0].Delta_T);
+				/* original B&C fit */
+				trans_coeff1 = 0.036 * exp(-0.154 * zone[0].Delta_T);
+				trans_coeff2 = zone[0].defaults[0][0].trans_coeff2;
+				
+				/* Other Parameterizations */
+				/*trans_coeff1 = 2269.3 * exp(-1.54 * zone[0].Delta_T); /* parameterized for Niwot Ridge */
+				/*trans_coeff1 = 403.3 * exp(-1.33 * zone[0].Delta_T); /* parameterized for Niwot Ridge */
+				/*trans_coeff1 = zone[0].defaults[0][0].trans_coeff1; /* using def file param */
+				
+				/* Bristow & Campbell PARAMS NIW 8M */
+				/*if (current_date.month>=6 && current_date.month<=10) {
+					trans_coeff1 = 0.075;
+				    trans_coeff2 = 1.06;
+				}
+				else {
+					trans_coeff1 = 0.50;
+					trans_coeff2 = 0.49;
+				}
+				 
+				 /* Bristow & Campbell SEAS PARAMS NIW 21m w/ 1mm precip adjustment */
+				/*if (current_date.month>=6 && current_date.month<=10) {
+					trans_coeff1 = 0.152;
+					trans_coeff2 = 1.046;
+				 }
+				 else {
+					trans_coeff1 = 0.380;
+					trans_coeff2 = 0.685;
+				 }	*/	
+
+				/* Bristow & Campbell ANNUAL PARAMS NIW 21m w/ 1mm precip adjustment */
+				/*trans_coeff1 = 0.317;
+				trans_coeff2 = 0.731;*/
+				 
 				zone[0].atm_trans = zone[0].atm_trans
-					*( 1.0 - exp( -1 * trans_coeff1
-					*pow(zone[0].Delta_T,zone[0].defaults[0][0].trans_coeff2) ));
+					* ( 1.0 - exp( -1 * trans_coeff1
+					* pow(zone[0].Delta_T,trans_coeff2)));
+				
+				/* Donatelli & Campbell */
+				/*trans_coeff1 = 0.70;
+				trans_coeff2 = 50;
+				fn_tavg = 0.017 * exp(exp(-0.053*zone[0].metv.tavg));
+				zone[0].atm_trans = zone[0].atm_trans
+								* ( 1.0 - exp( -1 * trans_coeff1 * fn_tavg
+								* pow(zone[0].Delta_T,2) * exp(zone[0].metv.tmin/trans_coeff2)));*/
+				
 				zone[0].Kdown_direct_adjustment = 1.0;
 				zone[0].Kdown_diffuse_adjustment = 1.0;
+				zone[0].cloud_fraction = 1.0 - zone[0].atm_trans
+							/(zone[0].defaults[0][0].sea_level_clear_sky_trans
+							+ zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate);
+				zone[0].cloud_fraction = max(zone[0].cloud_fraction,0.0);
+				zone[0].cloud_fraction = min(zone[0].cloud_fraction,1.0);
+				zone[0].cloud = zone[0].cloud_opacity * zone[0].cloud_fraction * 12.0;
 			}
 			else{
 				/*--------------------------------------------------------------*/
@@ -856,17 +908,52 @@ void zone_daily_I(
 				/*			difference for low clouds in winter.					*/
 				/*																*/
 				/*-------------------------------------------------------------*/
-				zone[0].Kdown_direct_adjustment = (1.0 - zone[0].cloud_fraction *
-					(zone[0].cloud_opacity));
-				zone[0].Kdown_diffuse_adjustment = (1.0 - zone[0].cloud_fraction);
+				zone[0].Kdown_direct_adjustment = 1.0 - (zone[0].cloud_fraction * zone[0].cloud_opacity);
+				zone[0].Kdown_diffuse_adjustment = 1.0 - zone[0].cloud_fraction;
+				zone[0].cloud = zone[0].cloud_opacity * zone[0].cloud_fraction * 12.0;
 			} /*end if*/
 			/*--------------------------------------------------------------*/
 			/*			For now we replace estimated atm trans	*/
 			/*			by the clear sky since we dont believe	*/
 			/*			that the estimators are good.		*/
 			/*--------------------------------------------------------------*/
+			
 		} /*end if*/
+		else {
+			zone[0].Kdown_direct_adjustment = 1.0;
+			zone[0].Kdown_diffuse_adjustment = 1.0;
+			zone[0].cloud_fraction = 1.0 - zone[0].atm_trans
+			/(zone[0].defaults[0][0].sea_level_clear_sky_trans
+			  + zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate);
+			zone[0].cloud_fraction = max(zone[0].cloud_fraction,0.0);
+			zone[0].cloud_fraction = min(zone[0].cloud_fraction,1.0);
+			zone[0].cloud = zone[0].cloud_opacity * zone[0].cloud_fraction * 12.0;
+		}
+		
 	} /*end if*/
+	/* If Kdowns are given, set transmissivity to 1 to calculate "no atmosphere"	*/
+	/* Kdowns. Then use ratio between observed and "no atmosphere" to calculate		*/
+	/* actual transmissivity (and estimate cloud fraction) in zone_daily_F.			*/
+	else {
+		zone[0].Kdown_direct_adjustment = 1.0;
+		zone[0].Kdown_diffuse_adjustment = 1.0;
+		zone[0].atm_trans = 1.0;
+	}
+
+
+	
+	if (command_line[0].verbose_flag == -5) {
+		printf("\n%ld %ld %ld -335.1 ",
+			   current_date.year, current_date.month, current_date.day);
+		printf("\nZONE_I: precip=%lf cloudfrac=%lf Kdir_adj=%lf Kdif_adj=%lf trans=%lf tcoeff1=%lf tcoeff2=%lf", 
+			   zone[0].snow + zone[0].rain, 
+			   zone[0].cloud_fraction, 
+			   zone[0].Kdown_direct_adjustment,zone[0].Kdown_diffuse_adjustment, 
+			   zone[0].atm_trans,
+			   trans_coeff1,
+			   trans_coeff2);
+	}
+	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches 									*/
 	/*--------------------------------------------------------------*/
