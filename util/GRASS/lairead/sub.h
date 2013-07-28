@@ -6,7 +6,8 @@
 	void	input_ascii_float(float *, char *, int, int, int, float);
 	void	input_ascii_sint(short int *, char *, int, int, int);
 	void	link_patch_veg(struct flow_struct *, struct allom_struct *, int, int);
-	void	change_world(FILE *, FILE *, struct flow_struct *, int);
+	void	change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
+			struct	flow_struct *flow_table, int num_patches);
 	int	read_allom_table(FILE *, int, struct allom_struct *);
 	void	print_flow_table(int, struct flow_struct *, char *, char *);
 	int	build_flow_table(FILE *, struct flow_struct *, 

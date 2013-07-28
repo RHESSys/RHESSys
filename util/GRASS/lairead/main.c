@@ -265,7 +265,7 @@ main(int argc, char *argv[])
     link_patch_veg(flow_table, allometric_table, num_patches, nvegtype);
 
     /* now read in and change the worldfile */
-    change_world(fdWorld, fdRedefWorld, flow_table, num_patches);
+    change_world(fnWorld, fdWorld, fdRedefWorld, flow_table, num_patches);
 
     printf("\n Finished LAIread \n\n");
     exit(EXIT_SUCCESS);

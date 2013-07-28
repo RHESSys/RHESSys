@@ -29,6 +29,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <errno.h>
 
 #include "blender.h"
 
@@ -37,30 +39,62 @@
 	struct tlevelstruct *readnextlevel(int, FILE *);
 	void writenextlevel(struct tlevelstruct *, int, FILE *);
 
-change_world(oldworld, redefine, flow_table, num_patches) 
-
-	FILE *oldworld, *redefine;
-	struct	flow_struct *flow_table;
-	int 	num_patches;
-
-
+change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
+		struct	flow_struct *flow_table, int num_patches) {
 /* Read a initialworld file which guides us as to what data
    to export 
 */
-{
   struct tlevelstruct *tlevel;
- struct headerstruct *header;
+  struct headerstruct *header;
   int level, ID[5], i, j, n, itmp;
   char ch;
   char name[MAXNAME], line[MAXTEMPLATELINE];
+  char header_filename[MAXS];
+  FILE *header_file;
+  int legacy_worldfile = 0;
 
+  /* Determine where to read worldfile header information from.
+  	 * The two options, in order of precedence are:
+  		2. ${WORLDFILE_NAME}.hdr
+  		3. From legacy world file (deprecated)
+  	 */
+  // Set up file name for Option 2. ${WORLDFILE_NAME}.hdr
+  if ( snprintf(header_filename, MAXS, "%s.hdr", oldworld_name) >= MAXS ) {
+	fprintf(stderr,
+			"Couldn't read world file header as filename would have been longer than the limit of %d\n", MAXS);
+	exit(EXIT_FAILURE);
+  }
+
+  if ( access(header_filename, R_OK) == 0 ) {
+	// Option 2. ${WORLDFILE_NAME}.hdr
+	header_file = fopen(header_filename, "r");
+	if ( header_file == NULL ) {
+		fprintf(stderr,"FATAL ERROR:  Cannot open world header file %s\n",
+				header_filename);
+		exit(EXIT_FAILURE);
+	}
+	printf("Found world file header %s\n", header_filename);
+  } else {
+	// Option 3. From legacy world file (deprecated)
+	header_file = oldworld;
+	legacy_worldfile = 1;
+	printf("\nWARNING\nReading world file header from legacy world file.\nThis feature will be removed from a future release.\nPlease re-run g2w to generate a separate world file header.\nWARNING\n\n");
+  }
 
 	header = (struct headerstruct *)malloc(sizeof(struct headerstruct));
 
 	/* ******************************************************* */
 	/* read and write the header information */
 	/* ******************************************************* */
-    readheader( oldworld, header);
+    readheader( header_file, header);
+
+    if ( !legacy_worldfile ) {
+		// If we're dealing with a new-style worldfile
+		// (i.e. one with a separate header file) then
+		// we need to close the header file
+		fclose(header_file);
+	}
+
     /* outputheader(redefine, header); */
 	/* ******************************************************* */
 	/*  read in worldfile into data structure				  */
