@@ -95,6 +95,7 @@ double	snowpack_daily_F(
 	double ess_can, B, tau, Qext, KstarH, KstarH2, alb_can, Ldown, Tss, skyview, Lstar_snow_old, Lup_snow;
 	double radsubl;
 	double dum;
+	double start_age, b, fz, r1, r2, r3, fage, albvis, albir;
 	
 	/*--------------------------------------------------------------*/
 	/*  Fix heat capacity and density for air and water,ice for now */
@@ -160,7 +161,6 @@ double	snowpack_daily_F(
 		if ( (snowpack[0].energy_deficit < 0.0)){
 			snowpack[0].K_reflectance = 0.85
 				* pow(0.94,pow(1.0*snowpack[0].surface_age, 0.58));
-				/* temp change from 0.58 to 0.65 */
 		}
 		else{
 			snowpack[0].K_reflectance = 0.85
@@ -168,7 +168,26 @@ double	snowpack_daily_F(
 		}
 	}
 	
-	snowpack[0].K_reflectance = max(snowpack[0].K_reflectance,0.4);
+	/* BATS albedo scheme */
+	/*start_age = snowpack[0].surface_age;
+	b = 2;
+	fz = 1/b * ( (1+b) / (1 + 2 * b * cos(theta_noon)) - 1.0 );
+	if ( snow >= 0.01 ) {
+		snowpack[0].surface_age = 0.0;
+		fage = 0.0;
+		}
+	else {
+		r1 = exp(5000*(1/273.16 - 1/(Tss+KELVIN)));
+		r2 = max(pow(r1,10),1.0);
+		r3 = 0.3;
+		snowpack[0].surface_age = start_age + 0.0036 * (r1+r2+r3);
+		fage = snowpack[0].surface_age/(1+snowpack[0].surface_age);
+		}
+	albvis = 0.95 * (1-0.2*fage) + 0.4 * fz * (1-0.95*(1-0.2*fage));
+	albir = 0.65 * (1-0.5*fage) + 0.4 * fz * (1-0.65*(1-0.5*fage));
+	snowpack[0].K_reflectance = 0.5 * (albvis + albir);*/
+	/* end BATS albedo */
+	
 	
 	snowpack[0].PAR_reflectance = snowpack[0].K_reflectance;
 	snowpack[0].K_absorptance = 1.0 - snowpack[0].K_reflectance;
@@ -425,7 +444,7 @@ double	snowpack_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Age the surface of the snowpack								*/
 	/*--------------------------------------------------------------*/
-	snowpack[0].surface_age += 1;
+	/*snowpack[0].surface_age += 1;*/
 	/*--------------------------------------------------------------*/
 	/*	Remove melt from snowpack									*/
 	/*--------------------------------------------------------------*/

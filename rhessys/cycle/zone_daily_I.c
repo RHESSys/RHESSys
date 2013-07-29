@@ -844,7 +844,10 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 
 				/* original B&C fit */
-				trans_coeff1 = 0.036 * exp(-0.154 * zone[0].Delta_T);
+				if ( zone[0].defaults[0][0].trans_coeff1 == -999 )
+					trans_coeff1 = 0.036 * exp(-0.154 * zone[0].Delta_T);
+				else 
+					trans_coeff1 = zone[0].defaults[0][0].trans_coeff1;
 				trans_coeff2 = zone[0].defaults[0][0].trans_coeff2;
 				
 				/* Other Parameterizations */
