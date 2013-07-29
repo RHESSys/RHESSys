@@ -690,8 +690,8 @@ void		patch_daily_F(
 	patch[0].Kdown_direct_bare = patch[0].Kdown_direct;
 	patch[0].Kdown_diffuse_bare = patch[0].Kdown_diffuse;
 	
-	if (patch[0].snow_throughfall > 0.0 )
-		patch[0].snowpack.surface_age = 0.0;
+	/*if (patch[0].snow_throughfall > 0.0 )
+		patch[0].snowpack.surface_age = 0.0;*/
 	if ( patch[0].snowpack.water_equivalent_depth > ZERO ) {
 		
 		/*--------------------------------------------------------------*/

@@ -278,6 +278,7 @@ void	canopy_stratum_daily_F(
 	double K_reflectance, PAR_reflectance;
 	
 	double dum;
+	double wetfrac;
 	
 	struct	psnin_struct	psnin;
 	struct	psnout_struct	psnout;
@@ -319,6 +320,7 @@ void	canopy_stratum_daily_F(
 	stratum[0].mult_conductance.LWP = 0.0;
 	stratum[0].mult_conductance.APAR = 0.0;
 	dum = 0.0;
+	wetfrac = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize temporary variables for transmitted fluxes.	*/
@@ -383,9 +385,11 @@ void	canopy_stratum_daily_F(
 	if ((stratum[0].defaults[0][0].epc.veg_type != NON_VEG) && (stratum[0].epv.proj_lai > ZERO)) {
 		
 		if (stratum[0].snow_stored > ZERO) {
-			/* REFLECT TOO HIGH WITH SNOW IN CANOPY SO REDUCING BY 50% */
-			K_reflectance = patch[0].snowpack.K_reflectance * 0.5 + stratum[0].defaults[0][0].K_reflectance * 0.5;
-			PAR_reflectance = patch[0].snowpack.PAR_reflectance * 0.5 + stratum[0].defaults[0][0].PAR_reflectance * 0.5;
+			/* REFLECT TOO HIGH WITH SNOW IN CANOPY SO REDUCING BY WET FRACTION */
+			/* Wet fraction from Deardorff 1978) */
+			wetfrac = pow(stratum[0].snow_stored/stratum[0].defaults[0][0].specific_snow_capacity, 2/3);
+			K_reflectance = patch[0].snowpack.K_reflectance * wetfrac + stratum[0].defaults[0][0].K_reflectance * (1.0 - wetfrac);
+			PAR_reflectance = patch[0].snowpack.PAR_reflectance * wetfrac + stratum[0].defaults[0][0].PAR_reflectance * (1.0 - wetfrac);
 		}
 		else {
 			K_reflectance = stratum[0].defaults[0][0].K_reflectance;
