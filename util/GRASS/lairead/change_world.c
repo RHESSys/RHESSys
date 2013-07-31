@@ -86,7 +86,7 @@ change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
 	/* ******************************************************* */
 	/* read and write the header information */
 	/* ******************************************************* */
-    readheader( header_file, header);
+	readheader( header_file, header, legacy_worldfile);
 
     if ( !legacy_worldfile ) {
 		// If we're dealing with a new-style worldfile
