@@ -814,3 +814,7 @@ clean:
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)
+
+functest: $(PGM)
+	# Run Python-based functional testing
+	RHESSYS_BIN=$(PGM) python -m unittest discover -s test

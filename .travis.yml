@@ -6,3 +6,4 @@ env: GISBASE=/usr/lib/grass64
 
 script: "make; cd cf; make test"
 
+script: "cd rhessys; make functest"
