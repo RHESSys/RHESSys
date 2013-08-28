@@ -1,4 +1,4 @@
-PGM = cf10.0b2
+PGM = cf10.0b3
 DOCDIR = docs
 RHESSYS_BIN = /usr/local/bin
 CC  = gcc
@@ -71,9 +71,9 @@ endif
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
 	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $< 
 
-functest:
+functest: $(PGM)
 	# Run Python-based functional testing
-	LD_LIBRARY_PATH=$(GISBASE)/lib python -m unittest discover -s test
+	CF_BIN=$(PGM) LD_LIBRARY_PATH=$(GISBASE)/lib python -m unittest discover -s test
 
 doc:
 	doxygen

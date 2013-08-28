@@ -49,15 +49,11 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 			int max_col = _start_col + offset;
 			for (int col = min_col; result && col <= max_col; ++col) {
 				int vote = 0;
-				if (!_predicate(min_row, col, _context, &vote)) {
-//					fprintf(stderr,
-//							"ERROR: Predicate call failed for row: %d, column: %d.\n",
-//							min_row, col);
-//					result = false;
+				if (!_predicate(_start_row, _start_col, min_row, col, _context, &vote)) {
 					keepSearching = false;
 				} else {
 					if (vote) {
-						int dist = grid_dist(_start_row, min_row, _start_col,
+						int dist = vote * grid_dist(_start_row, min_row, _start_col,
 								col);
 						if (dist < min_dist) {
 							found_row = min_row;
@@ -67,15 +63,11 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 						}
 					}
 					vote = 0;
-					if (!_predicate(max_row, col, _context, &vote)) {
-//						fprintf(stderr,
-//								"ERROR: Predicate call failed for row: %d, column: %d.\n",
-//								max_row, col);
-//						result = false;
+					if (!_predicate(_start_row, _start_col, max_row, col, _context, &vote)) {
 						keepSearching = false;
 					} else {
 						if (vote) {
-							int dist = grid_dist(_start_row, max_row,
+							int dist = vote * grid_dist(_start_row, max_row,
 									_start_col, col);
 							if (dist < min_dist) {
 								found_row = max_row;
@@ -90,15 +82,11 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 			}
 			for (int row = min_row + 1; result && row <= max_row - 1; ++row) {
 				int vote = 0;
-				if (!_predicate(row, min_col, _context, &vote)) {
-//					fprintf(stderr,
-//							"ERROR: Predicate call failed for row: %d, column: %d.\n",
-//							row, min_col);
-//					result = false;
+				if (!_predicate(_start_row, _start_col, row, min_col, _context, &vote)) {
 					keepSearching = false;
 				} else {
 					if (vote) {
-						int dist = grid_dist(_start_row, row, _start_col,
+						int dist = vote * grid_dist(_start_row, row, _start_col,
 								min_col);
 						if (dist < min_dist) {
 							found_row = row;
@@ -108,15 +96,11 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 						}
 					}
 					vote = 0;
-					if (!_predicate(row, max_col, _context, &vote)) {
-//						fprintf(stderr,
-//								"ERROR: Predicate call failed for row: %d, column: %d.\n",
-//								row, max_col);
-//						result = false;
+					if (!_predicate(_start_row, _start_col, row, max_col, _context, &vote)) {
 						keepSearching = false;
 					} else {
 						if (vote) {
-							int dist = grid_dist(_start_row, row, _start_col,
+							int dist = vote * grid_dist(_start_row, row, _start_col,
 									max_col);
 							if (dist < min_dist) {
 								found_row = row;

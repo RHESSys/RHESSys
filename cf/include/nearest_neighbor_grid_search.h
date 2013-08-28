@@ -7,8 +7,10 @@
 
 /// @brief Interface for the search comparison callback function.
 typedef bool (*search_predicate_t)(
-    int,			// The row
-    int,			// The column
+	int,			// The row of the cell where the search begins
+	int, 			// The column of the cell where the search begins
+    int,			// The row of the cell being compared to the start cell
+    int,			// The column of the cell being compared to the start cell
     void*,			// Pointer to the predicate context
     int*);			// Returned vote value
 

@@ -40,6 +40,8 @@ bool impervious_make_context(
 }
 
 bool impervious_search_predicate(
+	int _subjectRow,
+	int _subjectCol,
     int _row,
     int _col,
     void* _context,

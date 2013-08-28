@@ -13,6 +13,8 @@ extern bool impervious_make_context(
 
 /// @brief Callback for determining if a grid square satisfies our search for an impervious surface
 bool impervious_search_predicate(
+	int _subjectRow,		// Row from which search begins
+	int _subjectCol, 	// Column from which search begins
     int _row,			// The squares row
     int _col,			// The squares column
     void* _context,		// The previously created impervious search context

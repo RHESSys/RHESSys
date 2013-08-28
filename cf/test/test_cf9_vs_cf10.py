@@ -12,7 +12,8 @@ class TestCF9vCF10(TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls.cfBinPath = os.path.abspath( os.path.join('.', 'cf10.0b2') )
+        cfBin = os.path.join( './', os.environ['CF_BIN'] )
+        cls.cfBinPath = os.path.abspath(cfBin)
         if not os.access(cls.cfBinPath, os.X_OK):
             raise IOError(errno.ENOEXEC, "Unable to execute CF binary %s" %
                           cls.cfBinPath)

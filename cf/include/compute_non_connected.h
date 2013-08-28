@@ -15,6 +15,9 @@ extern bool compute_roof_non_connected_routing(
     roof_geometry_t* _roof_geometry, // The geometry of the current roof
     const double* _roofs,            // The roof raster array
     const int* _impervious,          // The impervious surface raster array
+    const int* _priority,            // Priority flow receiver raster array
+    const double* _elevation,        // The digital elevation model (DEM) raster array
+    int priorityWeight,				 // Weight to give to priority flow receivers
     const int* _patch,               // The map of pixels to patch ids
     const int* _hill,                // The map of squares to hill ids
     const int* _zone,                // The map of squares to zone ids

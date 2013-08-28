@@ -9,6 +9,10 @@ typedef struct pervious_context_s {
     int maxc_;
     const double* roofs_;
     const int* impervious_;
+    const int* priorityCells_;
+    const double* elevation_;
+    const int* patch_;
+    int priorityWeight_;
 } pervious_context_t;
 
 bool pervious_make_context(
@@ -16,6 +20,10 @@ bool pervious_make_context(
     int _maxc,
     const double* _roofs,
     const int* _impervious,
+    const int* _priorityCells,
+    const double* _elevation,
+    const int* _patch,
+    int _priorityWeight,
     void** _rtn_ctx)
 {
     bool result = true;
@@ -32,6 +40,10 @@ bool pervious_make_context(
 	    context->maxc_ = _maxc;
 	    context->roofs_ = _roofs;
 	    context->impervious_ = _impervious;
+	    context->priorityCells_ = _priorityCells;
+	    context->elevation_ = _elevation;
+	    context->patch_ = _patch;
+	    context->priorityWeight_ = _priorityWeight;
 
 	    *_rtn_ctx = (void*)context;
 	}
@@ -40,29 +52,39 @@ bool pervious_make_context(
 }
 
 bool pervious_search_predicate(
+	int _subjectRow,
+	int _subjectCol,
     int _row,
     int _col,
     void* _context,
     int* _rtn_vote)
 {
     bool result = true;
-    if(_context == 0) {
-	fprintf(stderr, "ERROR: Search context pointer is NULL.\n");
-	result = false;
+    if (_context == 0) {
+    	fprintf(stderr, "ERROR: Search context pointer is NULL.\n");
+    	result = false;
     } else {
-	/* kinda ugly but it is C */
-	pervious_context_t* context = (pervious_context_t*)_context;
-	int index;
-	if(!row_col_to_index(_row, _col, context->maxr_, context->maxc_, &index)) {
-//	    fprintf(stderr, "ERROR: Failed to map the row: %d, and column: %d to an index.\n", _row, _col);
-	    result = false;
-	} else {
-	    if(context->impervious_[index] == 0 && !is_roof(context->roofs_[index])) {
-		*_rtn_vote = 1;
-	    } else {
-		*_rtn_vote = 0;
-	    }
-	}
+    	/* kinda ugly but it is C */
+    	pervious_context_t* context = (pervious_context_t*)_context;
+    	int subjectIndex;
+    	int index;
+    	if (!row_col_to_index(_subjectRow, _subjectCol, context->maxr_, context->maxc_, &subjectIndex) ||
+    			!row_col_to_index(_row, _col, context->maxr_, context->maxc_, &index)) {
+//	    	fprintf(stderr, "ERROR: Failed to map the row: %d, and column: %d to an index.\n", _row, _col);
+    		result = false;
+    	} else {
+    		if (context->impervious_[index] == 0 && !is_roof(context->roofs_[index])) {
+    			if (context->priorityCells_ != NULL &&
+    					context->priorityCells_[index] == 1 && context->elevation_[index] < context->elevation_[subjectIndex]) {
+    				// Priority cells that are lower in elevation than the subject cell get a higher vote
+    				*_rtn_vote = 1;
+    			} else {
+    				*_rtn_vote = context->priorityWeight_;
+    			}
+    		} else {
+    			*_rtn_vote = 0;
+    		}
+    	}
     }
     
     return result;

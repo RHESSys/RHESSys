@@ -70,6 +70,8 @@ int main(int argc, char *argv[]) {
     int singleFlowtable_flag; /**< boolean indicating if a single flow table is to produce or
     							   if separate surface and sub-surface tables are to be produced */
     int roofs_flag; /**< Roofs flag, was a roofs raster specified at the command line? */
+    int priority_flag; /**< Priority flag, was a priority flow receiver raster specified at the command line? */
+    int priority_weight = 3; /**< Weight to give priority flow receivers */
     int d_flag, dbg_flag;
     double scale_trans, scale_dem;
     char input_prefix[MAXS];
@@ -90,6 +92,7 @@ int main(int argc, char *argv[]) {
     char* rnstream;
     char* rnsewers;
     char* rnroofs;
+    char* rnpriority;
         
     /* set pointers for images */
     double *dem;
@@ -103,6 +106,7 @@ int main(int argc, char *argv[]) {
     int *sewers;
     double *flna;
     double* roofs;
+    int *priority = NULL;
 
     bool success = true;
     
@@ -125,6 +129,8 @@ int main(int argc, char *argv[]) {
     //st_flag  = 0;         /**< scaling stream side patches         */
     sewer_flag = FALSE; /**< route through a sewer network (NOT YET IMPLEMENTED) */
     roofs_flag = FALSE;
+    priority_flag = FALSE;
+
     singleFlowtable_flag = TRUE; /**< Generate a single combined surface and sub-surface
     								  flow table unless a surface feature dataset is provided
     								  e.g. roofs */
@@ -282,6 +288,18 @@ int main(int argc, char *argv[]) {
     roof_opt->required = NO;
     roof_opt->description = "Roof map";
         
+    struct Option* priority_opt = G_define_option();
+    priority_opt->key = "priority";
+    priority_opt->type = TYPE_STRING;
+    priority_opt->required = NO;
+    priority_opt->description = "Priority flow receivers map";
+
+    struct Option* weight_opt = G_define_option();
+    weight_opt->key = "weight";
+    weight_opt->type = TYPE_INTEGER;
+    weight_opt->required = NO;
+    weight_opt->description = "Weight to give priority flow receivers.  Defaults to 3";
+
     // Parse GRASS arguments
     if (G_parser(argc, argv)) exit(EXIT_FAILURE);
 
@@ -385,6 +403,21 @@ int main(int argc, char *argv[]) {
     	roofs_flag = TRUE;
     }
 
+    if (singleFlowtable_flag == FALSE) {
+
+    	// We're routing surface flows separately, check for a flow reciever priority map
+    	if ( priority_opt->answer != NULL ) {
+    		// Yes, there was a priority flow receivers map
+    		priority_flag = TRUE;
+
+    		// Check for weight
+    		if ( NULL != weight_opt->answer ) {
+    			priority_weight = atoi(weight_opt->answer);
+    		}
+    	}
+
+    }
+
     // Need to implement verbose
     rndem = dem_raster_opt->answer;
     fntemplate = template_opt->answer;
@@ -393,6 +426,7 @@ int main(int argc, char *argv[]) {
     rnstream = stream_raster_opt->answer;
     rnslope = slope_raster_opt->answer;
     rnroofs = roof_opt->answer;
+    rnpriority = priority_opt->answer;
         
     printf("Create_flowpaths.C\n\n");
 
@@ -492,6 +526,11 @@ int main(int argc, char *argv[]) {
     	impervious = (int*) raster2array(rnimpervious, &impervious_header, NULL, NULL, CELL_TYPE);
     }
 
+    if (priority_flag) {
+    	struct Cell_head priority_header;
+    	priority = (int*) raster2array(rnpriority, &priority_header, NULL, NULL, CELL_TYPE);
+    }
+
     if (sewer_flag) {
         struct Cell_head sewers_header;
         sewers = (int*) raster2array(rnsewers, &sewers_header, NULL, NULL,
@@ -544,7 +583,9 @@ int main(int argc, char *argv[]) {
     // Short circuit roof patches to the nearest road patches
     if (roofs_flag) {
     	printf("\n Route roofs to roads");
-    	success = route_roofs_to_roads(surface_flow_table, surface_num_patches, surfacePatchTable, roofs, impervious, patch, hill, zone, maxr, maxc);
+    	success = route_roofs_to_roads(surface_flow_table, surface_num_patches, surfacePatchTable,
+    			roofs, impervious, priority, dem, priority_weight,
+    			patch, hill, zone, maxr, maxc);
     }
 
     // Do some verification for debugging purposes
