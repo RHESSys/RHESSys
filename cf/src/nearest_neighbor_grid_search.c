@@ -13,7 +13,7 @@ static int grid_dist(int _row1, int _row2, int _col1, int _col2) {
 }
 
 bool grid_search(int _max_dist, int _start_row, int _start_col,
-		search_predicate_t _predicate, void* _context, int* _rtn_row,
+		search_predicate_t _predicate, search_predicate_tiebreaker_t _tiebreaker, void* _context, int* _rtn_row,
 		int* _rtn_col, bool* _rtn_found) {
 	bool keepSearching = true;
 	bool result = true;
@@ -53,13 +53,20 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 					keepSearching = false;
 				} else {
 					if (vote) {
-						int dist = vote * grid_dist(_start_row, min_row, _start_col,
-								col);
+						int dist = vote * grid_dist(_start_row, min_row, _start_col, col);
+
 						if (dist < min_dist) {
 							found_row = min_row;
 							found_col = col;
 							min_dist = dist;
 							found = true;
+						} else if (dist == min_dist && found) {
+							// Determine tiebreaker
+							if ( !_tiebreaker(found_row, found_col, min_row, col, _context, &found_row, &found_col) ) {
+								fprintf(stderr, "ERROR: Error determining tiebreaker.\n");
+								result = false;
+								keepSearching = false;
+							}
 						}
 					}
 					vote = 0;
@@ -74,6 +81,13 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 								found_col = col;
 								min_dist = dist;
 								found = true;
+							} else if (dist == min_dist && found) {
+								// Determine tiebreaker
+								if ( !_tiebreaker(found_row, found_col, max_row, col, _context, &found_row, &found_col) ) {
+									fprintf(stderr, "ERROR: Error determining tiebreaker.\n");
+									result = false;
+									keepSearching = false;
+								}
 							}
 						}
 					}
@@ -93,6 +107,13 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 							found_col = min_col;
 							min_dist = dist;
 							found = true;
+						} else if (dist == min_dist && found) {
+							// Determine tiebreaker
+							if ( !_tiebreaker(found_row, found_col, row, min_col, _context, &found_row, &found_col) ) {
+								fprintf(stderr, "ERROR: Error determining tiebreaker.\n");
+								result = false;
+								keepSearching = false;
+							}
 						}
 					}
 					vote = 0;
@@ -107,6 +128,13 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 								found_col = max_col;
 								min_dist = dist;
 								found = true;
+							} else if (dist == min_dist && found) {
+								// Determine tiebreaker
+								if ( !_tiebreaker(found_row, found_col, row, max_col, _context, &found_row, &found_col) ) {
+									fprintf(stderr, "ERROR: Error determining tiebreaker.\n");
+									result = false;
+									keepSearching = false;
+								}
 							}
 						}
 					}

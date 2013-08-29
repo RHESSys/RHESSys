@@ -20,4 +20,14 @@ bool impervious_search_predicate(
     void* _context,		// The previously created impervious search context
     int* _rtn_vote);		// The returned vote for this square. For this predicate it will be 0 or 1.
 
+/// @brief Callback for breaking ties when two grid squares equally satisfy our search for an impervious surface
+bool impervious_search_tiebreaker(
+	int _rowA,
+	int _colA,
+	int _rowB,
+	int _colB,
+	void* _context,
+	int* _winnerRow,
+	int* _winnerCol);
+
 #endif // _IMPERVIOS_SEARCH_PREDICATE_H_

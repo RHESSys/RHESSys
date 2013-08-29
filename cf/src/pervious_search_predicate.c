@@ -89,3 +89,44 @@ bool pervious_search_predicate(
     
     return result;
 }
+
+bool pervious_search_tiebreaker(
+	int _rowA,
+	int _colA,
+	int _rowB,
+	int _colB,
+	void* _context,
+	int* _winnerRow,
+	int* _winnerCol) {
+
+	bool result = true;
+	if (_context == 0) {
+		fprintf(stderr, "ERROR: Search context pointer is NULL.\n");
+		result = false;
+	} else {
+		pervious_context_t* context = (pervious_context_t*)_context;
+
+		int aIndex;
+		int bIndex;
+		if (!row_col_to_index(_rowA, _colA, context->maxr_, context->maxc_, &aIndex) ||
+				!row_col_to_index(_rowB, _colB, context->maxr_, context->maxc_, &bIndex)) {
+//	    	fprintf(stderr, "ERROR: Failed to map the row: %d, and column: %d to an index.\n", _row, _col);
+			result = false;
+		} else {
+			result = true;
+			// Default winner is the first (to allow nearer cells to win)
+			*_winnerRow = _rowA;
+			*_winnerCol = _colA;
+			if (context->priorityCells_ != NULL) {
+				if ( context->priorityCells_[aIndex] != 1 &&
+						context->priorityCells_[bIndex] == 1 ) {
+						*_winnerRow = _rowB;
+						*_winnerCol = _colB;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+

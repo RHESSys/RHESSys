@@ -69,3 +69,18 @@ bool impervious_search_predicate(
     
     return result;
 }
+
+bool impervious_search_tiebreaker(
+	int _rowA,
+	int _colA,
+	int _rowB,
+	int _colB,
+	void* _context,
+	int* _winnerRow,
+	int* _winnerCol) {
+	// Arbitrarily select first as the winner
+	*_winnerRow = _rowA;
+	*_winnerCol = _colA;
+	return true;
+}
+
