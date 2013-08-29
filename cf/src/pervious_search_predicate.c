@@ -73,6 +73,10 @@ bool pervious_search_predicate(
 //	    	fprintf(stderr, "ERROR: Failed to map the row: %d, and column: %d to an index.\n", _row, _col);
     		result = false;
     	} else {
+
+//    		printf("\nSubject patch: %d, target patch: %d",
+//    				context->patch_[subjectIndex], context->patch_[index]);
+
     		if (context->impervious_[index] == 0 && !is_roof(context->roofs_[index])) {
     			if (context->priorityCells_ != NULL &&
     					context->priorityCells_[index] == 1 && context->elevation_[index] < context->elevation_[subjectIndex]) {
@@ -87,6 +91,8 @@ bool pervious_search_predicate(
     	}
     }
     
+//    printf("\tVote: %d", *_rtn_vote);
+
     return result;
 }
 
@@ -113,6 +119,10 @@ bool pervious_search_tiebreaker(
 //	    	fprintf(stderr, "ERROR: Failed to map the row: %d, and column: %d to an index.\n", _row, _col);
 			result = false;
 		} else {
+
+//			printf("\nTie breaker patch A: %d, patch B: %d",
+//			    	context->patch_[aIndex], context->patch_[bIndex]);
+
 			result = true;
 			// Default winner is the first (to allow nearer cells to win)
 			*_winnerRow = _rowA;
@@ -122,6 +132,8 @@ bool pervious_search_tiebreaker(
 						context->priorityCells_[bIndex] == 1 ) {
 						*_winnerRow = _rowB;
 						*_winnerCol = _colB;
+
+//						printf("\tPatch B wins");
 				}
 			}
 		}

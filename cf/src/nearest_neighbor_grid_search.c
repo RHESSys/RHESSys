@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <limits.h>
+#include <math.h>
 
 #include "util.h"
 #include "nearest_neighbor_grid_search.h"
 
-static int grid_dist(int _row1, int _row2, int _col1, int _col2) {
-	int result = 0;
-	/* Use the sqr distance because we just need relative measure of distance */
-	result = (_row1 - _row2) * (_row1 - _row2)
+static double grid_dist(int _row1, int _row2, int _col1, int _col2) {
+	int squaredDist = 0;
+	/* We now need the actual distance because we are multiplying distances by weights */
+	squaredDist = (_row1 - _row2) * (_row1 - _row2)
 			+ (_col1 - _col2) * (_col1 - _col2);
-	return result;
+	return sqrt( (double)squaredDist );
 }
 
 bool grid_search(int _max_dist, int _start_row, int _start_col,
@@ -41,7 +42,7 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 		bool found = false;
 		int found_row = 0;
 		int found_col = 0;
-		int min_dist = INT_MAX;
+		double min_dist = (double)INT_MAX;
 		for (int offset = 1; keepSearching && offset < _max_dist; ++offset) {
 			int min_row = _start_row - offset;
 			int min_col = _start_col - offset;
@@ -53,7 +54,10 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 					keepSearching = false;
 				} else {
 					if (vote) {
-						int dist = vote * grid_dist(_start_row, min_row, _start_col, col);
+						double dist = vote * grid_dist(_start_row, min_row,
+								_start_col, col);
+
+//						printf("\n\tDistance: %f (min dist: %f)\n", dist, min_dist);
 
 						if (dist < min_dist) {
 							found_row = min_row;
@@ -74,8 +78,11 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 						keepSearching = false;
 					} else {
 						if (vote) {
-							int dist = vote * grid_dist(_start_row, max_row,
+							double dist = vote * grid_dist(_start_row, max_row,
 									_start_col, col);
+
+//							printf("\n\tDistance: %f (min dist: %f)\n", dist, min_dist);
+
 							if (dist < min_dist) {
 								found_row = max_row;
 								found_col = col;
@@ -100,8 +107,11 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 					keepSearching = false;
 				} else {
 					if (vote) {
-						int dist = vote * grid_dist(_start_row, row, _start_col,
+						double dist = vote * grid_dist(_start_row, row, _start_col,
 								min_col);
+
+//						printf("\n\tDistance: %f (min dist: %f)\n", dist, min_dist);
+
 						if (dist < min_dist) {
 							found_row = row;
 							found_col = min_col;
@@ -121,8 +131,11 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 						keepSearching = false;
 					} else {
 						if (vote) {
-							int dist = vote * grid_dist(_start_row, row, _start_col,
+							double dist = vote * grid_dist(_start_row, row, _start_col,
 									max_col);
+
+//							printf("\n\tDistance: %f (min dist: %f)\n", dist, min_dist);
+
 							if (dist < min_dist) {
 								found_row = row;
 								found_col = max_col;
