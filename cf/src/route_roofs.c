@@ -13,6 +13,7 @@
 
 bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 		PatchTable_t *_patchTable, const double* _roofs, const int* _impervious,
+		const int* _stream,
 		const int* _patch, const int* _hill, const int* _zone, int _maxr,
 		int _maxc) {
 	bool result = true;
@@ -68,8 +69,8 @@ bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 
 			// Compute routing for the connected (impervious) flow
 			else if (!compute_roof_connected_routing(_flow_table, _num_patches,
-					_patchTable, roof_geometry, _roofs, _impervious, _patch,
-					_hill, _zone, _maxr, _maxc)) {
+					_patchTable, roof_geometry, _roofs, _impervious, _stream,
+					_patch, _hill, _zone, _maxr, _maxc)) {
 				fprintf(stderr,
 						"ERROR: failed to perform the connected roof routing");
 				result = false;

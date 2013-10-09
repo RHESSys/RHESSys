@@ -544,7 +544,7 @@ int main(int argc, char *argv[]) {
     // Short circuit roof patches to the nearest road patches
     if (roofs_flag) {
     	printf("\n Route roofs to roads");
-    	success = route_roofs_to_roads(surface_flow_table, surface_num_patches, surfacePatchTable, roofs, impervious, patch, hill, zone, maxr, maxc);
+    	success = route_roofs_to_roads(surface_flow_table, surface_num_patches, surfacePatchTable, roofs, impervious, stream, patch, hill, zone, maxr, maxc);
     }
 
     // Do some verification for debugging purposes

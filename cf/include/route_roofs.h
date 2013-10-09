@@ -12,6 +12,7 @@ extern bool route_roofs_to_roads(
     PatchTable_t *_patchTable, // Hash table to speed lookups of flow table indices
     const double* _roofs, // The array of the contribution of roof squares to the nearest impervous surface
     const int* _impervious, // The array of flags indicating whether a square is an impervious surface
+    const int* _stream,     // The map of stream pixels
     const int* _patch,	    // The map of pixels to patch ids
     const int* _hill,	    // The map of squares to hill ids
     const int* _zone,	    // The map of squares to zone ids
