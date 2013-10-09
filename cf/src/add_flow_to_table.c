@@ -146,6 +146,8 @@ bool add_flow_to_table(
 				fprintf(stderr, "ERROR: Failed to add receiver adjacency to the contributor.\n");
 				result = false;
 			}
+    	} else {
+    		printf("Receiver patch %d is outside of basin\n", _patch[receiver_index]);
     	}
     }
     return result;

@@ -101,6 +101,9 @@ bool compute_roof_non_connected_routing(struct flow_struct* _flow_table,
 								result = false;
 							}
 						} else {
+							// Only display a warning that no pervious surfaces where found if
+							//   roof connectivity is less than 1.0, that is if some flow needed to go to
+							//   pervious, but could not due to lack of nearby pervious
 							int index;
 							if (!row_col_to_index(row, col, _maxr, _maxc,
 									&index)) {
@@ -109,9 +112,11 @@ bool compute_roof_non_connected_routing(struct flow_struct* _flow_table,
 										row, col);
 								result = false;
 							}
-							fprintf(stderr,
-									"WARNING: No pervious surface found for patch: patchID: %d, hillID: %d, zoneID: %d\n",
-									_patch[index], _hill[index], _zone[index]);
+							if ( _roofs[index] < 1.0 ) {
+								fprintf(stderr,
+										"WARNING: No pervious surface found for patch: patchID: %d, hillID: %d, zoneID: %d\n",
+										_patch[index], _hill[index], _zone[index]);
+							}
 						}
 					}
 				}

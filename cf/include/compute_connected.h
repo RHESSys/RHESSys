@@ -13,6 +13,7 @@ extern bool compute_roof_connected_routing(
     roof_geometry_t* _roof_geometry, // The geometry of the current roof
     const double* _roofs,            // The roof raster array
     const int* _impervious,          // The impervious surface raster array
+    const int* _stream,				 // The stream raster
     const int* _patch,               // The map of pixels to patch ids
     const int* _hill,                // The map of square to hill ids
     const int* _zone,                // The map of the square to zone ids

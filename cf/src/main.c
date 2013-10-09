@@ -584,7 +584,7 @@ int main(int argc, char *argv[]) {
     if (roofs_flag) {
     	printf("\n Route roofs to roads");
     	success = route_roofs_to_roads(surface_flow_table, surface_num_patches, surfacePatchTable,
-    			roofs, impervious, priority, dem, priority_weight,
+    			roofs, impervious, stream, priority, dem, priority_weight,
     			patch, hill, zone, maxr, maxc);
     }
 

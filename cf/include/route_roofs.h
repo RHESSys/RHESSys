@@ -12,6 +12,7 @@ extern bool route_roofs_to_roads(
     PatchTable_t *_patchTable, // Hash table to speed lookups of flow table indices
     const double* _roofs, // The array of the contribution of roof squares to the nearest impervous surface
     const int* _impervious, // The array of flags indicating whether a square is an impervious surface
+    const int* _stream,     // The map of stream pixels
     const int* _priority, // Priority flow receiver raster array
     const double* _elevation, // The digital elevation model (DEM) raster array
     int priorityWeight, // Weight to give priority flow receivers
