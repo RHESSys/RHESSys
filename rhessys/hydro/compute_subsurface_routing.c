@@ -468,15 +468,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						for (j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
 							neigh = patch->surface_innundation_list[d].neighbours[j].patch;
 							Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
-							NO3_out = Qout / patch[0].detention_store
-									* patch[0].surface_NO3;
-							NH4_out = Qout / patch[0].detention_store
-									* patch[0].surface_NH4;
-							DON_out = Qout / patch[0].detention_store
-									* patch[0].surface_DON;
-							DOC_out = Qout / patch[0].detention_store
-									* patch[0].surface_DOC;
-							Nout = NO3_out + NH4_out + DON_out;
+							if (grow_flag > 0) {
+								NO3_out = Qout / patch[0].detention_store
+										* patch[0].surface_NO3;
+								NH4_out = Qout / patch[0].detention_store
+										* patch[0].surface_NH4;
+								DON_out = Qout / patch[0].detention_store
+										* patch[0].surface_DON;
+								DOC_out = Qout / patch[0].detention_store
+										* patch[0].surface_DOC;
+								Nout = NO3_out + NH4_out + DON_out;
+							}
 							if (neigh[0].drainage_type == STREAM) {
 								neigh[0].Qin_total += Qout * patch[0].area
 										/ neigh[0].area;
