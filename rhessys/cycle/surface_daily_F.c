@@ -236,7 +236,9 @@ void		surface_daily_F(
 					* (zone[0].metv.dayl - zone[0].daytime_rain_duration )
 					+ detention_store_potential_rainy_evaporation_rate
 					* zone[0].daytime_rain_duration;
-								
+
+			// TODO: We are over-estimating ET from surfaces with no detention store size (e.g. impervious surface)
+			// Should be: min(detention_store_potential_evaporation, min(patch[0].detention_store, STORAGE_SIZE) );
 			detention_store_evaporation = min(detention_store_potential_evaporation, patch[0].detention_store);
 	
 	}
