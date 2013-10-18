@@ -137,7 +137,7 @@ change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
 		ID[2] = flow_table[i].hillID;
 		ID[3] = flow_table[i].zoneID;
 		ID[4] = flow_table[i].patchID;
-		ID[5] = flow_table[i].vegid;
+		ID[5] = flow_table[i].patchID;
 
 		printf("\n processing patchID %d", flow_table[i].patchID);
 		flow_table[i].worldlink = find_tlevel(tlevel[0].children[0], ID, 1);

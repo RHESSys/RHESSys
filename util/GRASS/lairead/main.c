@@ -127,7 +127,7 @@ main(int argc, char *argv[])
     struct Option* patch_raster_opt = G_define_option();
     patch_raster_opt->key = "patch";
     patch_raster_opt->type = TYPE_STRING;
-    patch_raster_opt->required = NO;
+    patch_raster_opt->required = YES;
     patch_raster_opt->description = "Patch raster map name";
 
     struct Option* mask_raster_opt = G_define_option();
