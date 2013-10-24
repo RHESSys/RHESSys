@@ -44,5 +44,5 @@ void compute_subsurface_temperature_profile(
 
 
 
-	return(0);
+	return;
 } /*end compute_subsurface_temperature_profile*/
