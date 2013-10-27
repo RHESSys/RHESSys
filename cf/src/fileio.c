@@ -381,7 +381,7 @@ void output_ascii_double(double *array, char *filename, int mc, int mr) {
 	return;
 }
 
-output_ascii_double_debug(double *array, char *filename, int mc, int mr) {
+void output_ascii_double_debug(double *array, char *filename, int mc, int mr) {
 	FILE *in1, *fopen();
 
 	int r;

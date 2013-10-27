@@ -29,7 +29,7 @@
 #include <math.h>
 #include "rhessys.h"
 
-struct basin_object *input_new_basin_mult(
+void input_new_basin_mult(
 									 struct	command_line_object	*command_line,
 									 FILE	*world_file,
 									 int		num_world_base_stations,
