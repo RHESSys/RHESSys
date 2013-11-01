@@ -1517,6 +1517,14 @@ void	canopy_stratum_daily_F(
 				&(stratum[0].ns),
 				&(stratum[0].cdf));
 			break;
+		case COMBINED:
+			stratum[0].ndf.potential_N_uptake =compute_potential_N_uptake_combined(
+				stratum[0].defaults[0][0].epc,
+				&(stratum[0].epv),
+				&(stratum[0].cs),
+				&(stratum[0].ns),
+				&(stratum[0].cdf));
+			break;
 		} /* end switch */
 	}
 	
