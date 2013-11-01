@@ -199,6 +199,13 @@ void	canopy_stratum_daily_F(
 		struct cstate_struct *cs,
 		struct nstate_struct *ns,
 		struct cdayflux_struct *);
+		
+	double	compute_potential_N_uptake_combined(
+		struct	epconst_struct,
+		struct	epvar_struct *,
+		struct cstate_struct *cs,
+		struct nstate_struct *ns,
+		struct cdayflux_struct *);
 
 	double	compute_potential_N_uptake(
 		struct	epconst_struct,
