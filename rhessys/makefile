@@ -58,6 +58,7 @@ $(OBJ)/compute_nonvascular_stratum_conductance.o \
 $(OBJ)/compute_potential_N_uptake.o \
 $(OBJ)/compute_potential_N_uptake_Dickenson.o \
 $(OBJ)/compute_potential_N_uptake_Waring.o \
+$(OBJ)/compute_potential_N_uptake_combined.o \
 $(OBJ)/compute_potential_decomp.o \
 $(OBJ)/compute_potential_exfiltration.o \
 $(OBJ)/compute_potential_rain_interception.o \
