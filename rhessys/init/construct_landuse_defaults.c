@@ -98,7 +98,7 @@ struct landuse_default *construct_landuse_defaults(
 		default_object_list[i].fertilizer_NH4 = 	getDoubleParam(&paramCnt, &paramPtr, "fertilizer_NH4", "%lf", 0.0, 1) / 365;
 		default_object_list[i].septic_NO3_load = 	getDoubleParam(&paramCnt, &paramPtr, "septic_NO3_load", "%lf", 0.0, 1) / 365;
 		default_object_list[i].septic_water_load = 	getDoubleParam(&paramCnt, &paramPtr, "septic_water_load", "%lf", 0.0, 1) / 365;
-		default_object_list[i].detention_store_size = 	getDoubleParam(&paramCnt, &paramPtr, "detention_store_size", "%lf", 0.0, 1) / 365;
+		default_object_list[i].detention_store_size = 	getDoubleParam(&paramCnt, &paramPtr, "detention_store_size", "%lf", 0.0, 1);
 		default_object_list[i].PH = 			getDoubleParam(&paramCnt, &paramPtr, "PH", "%lf", 7.0, 1);
 		default_object_list[i].percent_impervious = 	getDoubleParam(&paramCnt, &paramPtr, "landuse.percent_impervious", "%lf", 0.0, 1);
 		default_object_list[i].grazing_Closs = 	getDoubleParam(&paramCnt, &paramPtr, "grazing_Closs", "%lf", 0.0, 1) / 365;
