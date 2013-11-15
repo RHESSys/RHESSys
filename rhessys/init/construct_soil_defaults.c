@@ -153,7 +153,7 @@ struct soil_default *construct_soil_defaults(
 		} /*end if*/
 
 		if (command_line[0].gw_flag > 0) {
-			default_object_list[i].sat_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "sat_to_gw_coeff", "%lf", 0.0, 1);
+			default_object_list[i].sat_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "sat_to_gw_coeff", "%lf", 1.0, 1);
 			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
 			}
 
