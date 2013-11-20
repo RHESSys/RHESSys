@@ -65,7 +65,7 @@ param * readParamFile(int *paramCnt, char *filename)
             strcpy(paramPtr[paramInd].name, strbuf2);
             paramPtr[paramInd].accessed = 0;
             paramPtr[paramInd].defaultValUsed = 0;
-            //printf("param name: %s value %s\n", paramPtr[paramInd].name, paramPtr[paramInd].strVal);
+            //printf("\n%d param name: %s value %s", *paramCnt, paramPtr[paramInd].name, paramPtr[paramInd].strVal);
         }
 
         fclose ( file );
@@ -90,7 +90,7 @@ char * getStrParam(int *paramCnt, param **paramPtr, char *paramName, char *readF
     params = *paramPtr;
 
     /* Search for a parameter that matches the specified parameter name */
-    for (iParam = 0; iParam <= *paramCnt; iParam++) {
+    for (iParam = 0; iParam < *paramCnt; iParam++) {
         if (strcmp(params[iParam].name, paramName) == 0) {
             found = 1;
             // Allocate an output string buffer that is the same size as the parameter value string
@@ -144,7 +144,7 @@ int getIntParam(int *paramCnt, param **paramPtr , char *paramName, char *readFor
     param *params;
     params = *paramPtr;
 
-    for (iParam = 0; iParam <= *paramCnt; iParam++) {
+    for (iParam = 0; iParam < *paramCnt; iParam++) {
         if (strcmp(params[iParam].name, paramName) == 0) {
             found = 1;
             // Transform the string according to the specified format
@@ -194,7 +194,7 @@ float getFloatParam(int *paramCnt, param **paramPtr , char *paramName, char *rea
     param *params;
     params = *paramPtr;
 
-    for (iParam = 0; iParam <= *paramCnt; iParam++) {
+    for (iParam = 0; iParam < *paramCnt; iParam++) {
         if (strcmp(params[iParam].name, paramName) == 0) {
             found = 1;
             // Transform the string according to the specified format
@@ -244,7 +244,7 @@ double getDoubleParam(int *paramCnt, param **paramPtr, char *paramName, char *re
     param *params;
     params = *paramPtr;
 
-    for (iParam = 0; iParam <= *paramCnt; iParam++) {
+    for (iParam = 0; iParam < *paramCnt; iParam++) {
         if (strcmp(params[iParam].name, paramName) == 0) {
             found = 1;
             // Transform the string according to the specified format
@@ -304,7 +304,7 @@ void printParams(int paramCnt, param *params, char *outFilename) {
     	exit(EXIT_FAILURE);
     }
     
-    for (iParam = 0; iParam <= paramCnt; iParam++) {
+    for (iParam = 0; iParam < paramCnt; iParam++) {
         /* Print the parameter value with the format that was specified when the parameter was read, i.e. call to getIntParameter */
         if (params[iParam].accessed) {
             fprintf(outFile, "%s %s\n", params[iParam].strVal, params[iParam].name);
