@@ -75,7 +75,7 @@ double	leaf_conductance_LWP_curve(int curve,
 		}
 	else {
 		if (LWP_predawn < LWP_threshold)	{
-			estimate = slp*LWP_predawn+intercpt;
+			estimate = slp*(LWP_predawn-LWP_threshold)+intercpt;
 			m_LWP = pow(estimate,curve);
 			m_LWP = max(m_LWP,0);
 			m_LWP = min(m_LWP, 1);
