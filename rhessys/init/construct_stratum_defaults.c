@@ -332,7 +332,7 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].epc.nfix = 	getIntParam(&paramCnt, &paramPtr, "epc.nfix", "%d", 0, 1);
 		default_object_list[i].epc.edible = 	getIntParam(&paramCnt, &paramPtr, "epc.edible", "%d", 1, 1);
-		default_object_list[i].epc.psi_curve  = 	getIntParam(&paramCnt, &paramPtr, "epc.curve", "%d", 0, 1);
+		default_object_list[i].epc.psi_curve  = 	getIntParam(&paramCnt, &paramPtr, "epc.psi_curve", "%d", 0, 1);
 		default_object_list[i].epc.psi_threshold =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_threshold", "%lf", -1, 1);
 		default_object_list[i].epc.psi_slp =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_slp", "%lf", 0.2, 1);
 		default_object_list[i].epc.psi_intercpt =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_intercpt", "%lf", 1.0, 1);
