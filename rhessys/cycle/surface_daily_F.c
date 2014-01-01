@@ -178,6 +178,7 @@ void		surface_daily_F(
 	/*	Check to see if detention store is greater than current		*/
 	/*	litter holding capacity.  If so, run water surface evap		*/
 	/*	first.														*/
+	/* but only do this if there is actually a detention_store capacity to hold water */
 	/*--------------------------------------------------------------*/
 	
 	if ( command_line[0].verbose_flag == -5 ){
@@ -194,7 +195,8 @@ void		surface_daily_F(
 	}
 	
 	
-	if ( patch[0].detention_store > (litter[0].rain_capacity - litter[0].rain_stored) ) {
+    	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
+                                        & (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
 	
 			/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 			/*** reflected by water surface based on water albedo. ***/
