@@ -489,7 +489,7 @@ void  update_drainage_land(
 				neigh[0].soil_defaults[0][0].porosity_decay,
 				(neigh[0].detention_store),	
 				time_int,
-				neigh[0].soil_defaults[0][0].theta_psi_curve);
+				neigh[0].soil_defaults[0][0].psi_air_entry);
 			}
 			else {
 			infiltration = compute_infiltration(
@@ -503,7 +503,7 @@ void  update_drainage_land(
 				neigh[0].soil_defaults[0][0].porosity_decay,
 				(neigh[0].detention_store),	
 				time_int,
-				neigh[0].soil_defaults[0][0].theta_psi_curve);
+				neigh[0].soil_defaults[0][0].psi_air_entry);
 			}
 		}
 		else infiltration = 0.0;
