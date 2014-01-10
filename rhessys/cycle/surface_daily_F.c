@@ -166,7 +166,7 @@ void		surface_daily_F(
 	/*--------------------------------------------------------------*/
 	
     	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
-                                        & (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
+                                        && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
 	
 			/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 			/*** reflected by water surface based on water albedo. ***/
@@ -208,9 +208,11 @@ void		surface_daily_F(
 					+ detention_store_potential_rainy_evaporation_rate
 					* zone[0].daytime_rain_duration;
 
-			// TODO: We are over-estimating ET from surfaces with no detention store size (e.g. impervious surface)
-			// Should be: min(detention_store_potential_evaporation, min(patch[0].detention_store, STORAGE_SIZE) );
-			detention_store_evaporation = min(detention_store_potential_evaporation, patch[0].detention_store);
+			// Avoid over-estimating ET from surfaces with no detention store size 
+			//   (e.g. impervious surface) by gating ET by detention_store_size
+			detention_store_evaporation = min(detention_store_potential_evaporation,
+							  min(patch[0].detention_store, 
+							      patch[0].soil_defaults[0][0].detention_store_size) );
 	
 	}
 	
