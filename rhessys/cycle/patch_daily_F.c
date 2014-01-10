@@ -1088,7 +1088,7 @@ void		patch_daily_F(
 	        		patch[0].soil_defaults[0][0].porosity_decay,
 	        		net_inflow,
 	        		duration,
-	        		patch[0].soil_defaults[0][0].theta_psi_curve);
+	        		patch[0].soil_defaults[0][0].psi_air_entry);
 			}
 
 		else {
@@ -1103,7 +1103,7 @@ void		patch_daily_F(
 	        		patch[0].soil_defaults[0][0].porosity_decay,
 	        		net_inflow,
 	        		duration,
-	        		patch[0].soil_defaults[0][0].theta_psi_curve);
+	        		patch[0].soil_defaults[0][0].psi_air_entry);
 		}
 
 	}
