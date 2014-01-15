@@ -63,12 +63,14 @@ void	basin_daily_F(
 		struct	command_line_object *, 
 		struct	tec_entry *,
 		struct	date );
-
-	void	compute_subsurface_routing(
+	/*--------------------------------------------------------------*/
+	/* this part has been moved to basin_hourly			*/
+	/*--------------------------------------------------------------*/
+/*	void	compute_subsurface_routing(
 		struct command_line_object *,
 		struct basin_object *,
 		int, struct	date);
-	
+*/	
 	double	compute_stream_routing(
 		struct command_line_object *,
 		struct stream_network_object *,
@@ -96,15 +98,15 @@ void	basin_daily_F(
 
 	/*--------------------------------------------------------------*/
 	/*  For routing option - route water between patches within     */
-	/*      the basin                                               */
+	/*      the basin:  this part has been moved to basin_hourly    */
 	/*--------------------------------------------------------------*/
-   	 if ( command_line[0].routing_flag == 1) {
+/*   	 if ( command_line[0].routing_flag == 1) {
 		compute_subsurface_routing(command_line,
 			basin,
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
 	}
-
+*/
 	/*--------------------------------------------------------------*/
 	/*  For stream routing option - route water between patches within     */
 	/*      the basin                                               */
