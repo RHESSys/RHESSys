@@ -75,6 +75,15 @@ void	basin_daily_F(
 		struct command_line_object *,
 		struct stream_network_object *,
 		int, struct	date);
+
+	void	update_basin_patch_accumulator(
+		struct command_line_object *command_line,
+		struct basin_object *basin,
+		struct date current_date);
+
+	void	update_hillslope_accumulator(
+		struct command_line_object *command_line,
+		struct basin_object *basin);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
