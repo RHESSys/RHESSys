@@ -4,7 +4,7 @@
 /*											*/
 /*	NAME										*/
 /*	update_basin_patch_accumulator.c - update accumulator variables at the end of day	*/
-/*											*/
+/*					this process is taken from compute_subsurface_routing.c	*/
 /*	SYNOPSIS									*/
 /*	void update_basin_patch_accumulator( 						*/
 /*					struct command_line_object *command_line,	*/
