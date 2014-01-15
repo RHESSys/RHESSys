@@ -1,5 +1,5 @@
-PGM  = rhessys5.18.r2
-VERSION = 5.18.r2
+PGM  = rhessys5.18
+VERSION = 5.18
 CC = gcc 
 #CFLAGS = -O -std=c99
 CFLAGS = -g -std=c99
@@ -76,6 +76,7 @@ $(OBJ)/compute_snow_sublimation.o \
 $(OBJ)/compute_soil_water_potential.o \
 $(OBJ)/compute_stability_correction.o \
 $(OBJ)/compute_subsurface_routing.o \
+$(OBJ)/compute_subsurface_routing_hourly.o \
 $(OBJ)/compute_stream_routing.o \
 $(OBJ)/compute_surface_heat_flux.o \
 $(OBJ)/compute_subsurface_temperature_profile.o \
@@ -182,6 +183,7 @@ $(OBJ)/leaf_conductance_tavg_curve.o \
 $(OBJ)/leaf_conductance_tmin_curve.o \
 $(OBJ)/leaf_conductance_vpd_curve.o \
 $(OBJ)/main.o \
+$(OBJ)/output_24hours_basin.o \
 $(OBJ)/output_stream_routing.o \
 $(OBJ)/output_basin.o \
 $(OBJ)/output_basin_state.o \
@@ -233,6 +235,7 @@ $(OBJ)/surface_daily_F.o \
 $(OBJ)/top_model.o \
 $(OBJ)/update_C_stratum_daily.o \
 $(OBJ)/update_N_stratum_daily.o \
+$(OBJ)/update_basin_patch_accumulator.o \
 $(OBJ)/update_decomp.o \
 $(OBJ)/update_denitrif.o \
 $(OBJ)/update_dissolved_organic_losses.o \
@@ -240,6 +243,7 @@ $(OBJ)/update_drainage_land.o \
 $(OBJ)/update_drainage_road.o \
 $(OBJ)/update_drainage_stream.o \
 $(OBJ)/update_gw_drainage.o \
+$(OBJ)/update_hillslope_accumulator.o \
 $(OBJ)/update_litter_interception_capacity.o \
 $(OBJ)/update_mortality.o \
 $(OBJ)/update_branch_mortality.o \
@@ -266,8 +270,7 @@ $(OBJ)/skip_hillslope.o \
 $(OBJ)/skip_zone.o \
 $(OBJ)/skip_patch.o \
 $(OBJ)/skip_strata.o \
-$(OBJ)/params.o
-
+$(OBJ)/params.o	
 all:	dir rhessys
 
 dir:
@@ -358,6 +361,8 @@ $(OBJ)/construct_clim_sequence.o: init/construct_clim_sequence.c
 	$(CC) -c $(CFLAGS) -I include init/construct_clim_sequence.c -o $(OBJ)/construct_clim_sequence.o
 $(OBJ)/construct_dated_clim_sequence.o: init/construct_dated_clim_sequence.c
 	$(CC) -c $(CFLAGS) -I include init/construct_dated_clim_sequence.c -o $(OBJ)/construct_dated_clim_sequence.o
+$(OBJ)/output_24hours_basin.o: output/output_24hours_basin.c
+	$(CC) -c $(CFLAGS) -I include output/output_24hours_basin.c -o $(OBJ)/output_24hours_basin.o
 $(OBJ)/output_growth_patch.o: output/output_growth_patch.c
 	$(CC) -c $(CFLAGS) -I include output/output_growth_patch.c -o $(OBJ)/output_growth_patch.o
 $(OBJ)/output_growth_basin.o: output/output_growth_basin.c
@@ -604,6 +609,8 @@ $(OBJ)/compute_stream_routing.o: hydro/compute_stream_routing.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_stream_routing.c -o $(OBJ)/compute_stream_routing.o
 $(OBJ)/compute_subsurface_routing.o: hydro/compute_subsurface_routing.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_subsurface_routing.c -o $(OBJ)/compute_subsurface_routing.o
+$(OBJ)/compute_subsurface_routing_hourly.o: hydro/compute_subsurface_routing_hourly.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_subsurface_routing_hourly.c -o $(OBJ)/compute_subsurface_routing_hourly.o
 $(OBJ)/compute_potential_exfiltration.o: hydro/compute_potential_exfiltration.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_potential_exfiltration.c -o $(OBJ)/compute_potential_exfiltration.o
 $(OBJ)/Ksat_z_curve.o: cn/Ksat_z_curve.c
@@ -690,12 +697,16 @@ $(OBJ)/zone_hourly.o: cycle/zone_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/zone_hourly.c -o $(OBJ)/zone_hourly.o
 $(OBJ)/canopy_stratum_hourly.o: cycle/canopy_stratum_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_hourly.c -o $(OBJ)/canopy_stratum_hourly.o
+$(OBJ)/update_basin_patch_accumulator.o: hydro/update_basin_patch_accumulator.c
+	$(CC) -c $(CFLAGS) -I include hydro/update_basin_patch_accumulator.c -o $(OBJ)/update_basin_patch_accumulator.o
 $(OBJ)/update_drainage_stream.o: hydro/update_drainage_stream.c 
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_stream.c -o $(OBJ)/update_drainage_stream.o
 $(OBJ)/update_drainage_road.o: hydro/update_drainage_road.c 
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_road.c -o $(OBJ)/update_drainage_road.o
 $(OBJ)/update_drainage_land.o: hydro/update_drainage_land.c 
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_land.c -o $(OBJ)/update_drainage_land.o
+$(OBJ)/update_hillslope_accumulator.o: hydro/update_hillslope_accumulator.c
+	$(CC) -c $(CFLAGS) -I include hydro/update_hillslope_accumulator.c -o $(OBJ)/update_hillslope_accumulator.o
 $(OBJ)/update_soil_moisture.o: hydro/update_soil_moisture.c 
 	$(CC) -c $(CFLAGS) -I include hydro/update_soil_moisture.c -o $(OBJ)/update_soil_moisture.o
 $(OBJ)/skip_basin.o: tec/skip_basin.c
