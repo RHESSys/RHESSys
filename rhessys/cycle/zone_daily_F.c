@@ -341,7 +341,7 @@ void		zone_daily_F(
 		}
 	}
 	else{
-		if ( zone[0].rain == 0 ){
+		if ( zone[0].rain == 0 && zone[0].rain_hourly_total == 0){
 			zone[0].daytime_rain_duration = 0;
 		}
 		else{
@@ -371,7 +371,7 @@ void		zone_daily_F(
 			zone[0].cloud = zone[0].cloud_opacity
 				* zone[0].cloud_fraction * 12.0;
 		}
-		else if	((zone[0].snow + zone[0].rain) > zone[0].defaults[0][0].pptmin ){
+		else if	((zone[0].snow + zone[0].rain + zone[0].rain_hourly_total) > zone[0].defaults[0][0].pptmin ){
 			zone[0].cloud = 4.0;
 			zone[0].cloud_fraction = 1.0;
 		}

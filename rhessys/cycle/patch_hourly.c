@@ -117,8 +117,8 @@ void		patch_hourly(
 	/*	below the snowpack					*/
 	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-		patch[0].rain_throughfall_final = 0.0;
 		if ( (patch[0].layers[layer].height <= patch[0].snowpack.height) ){
+			patch[0].rain_throughfall_final = 0.0;
 			for ( stratum=0;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
@@ -169,7 +169,7 @@ void		patch_hourly(
 			duration,
 			patch[0].soil_defaults[0][0].psi_air_entry);
 			
-		printf("hourly patch called \n");
+		//printf("hourly patch called \n");
 	}
 	else infiltration = 0.0;
 
