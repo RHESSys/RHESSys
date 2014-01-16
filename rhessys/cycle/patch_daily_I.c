@@ -505,7 +505,7 @@ void		patch_daily_I(
 		/*--------------------------------------------------------------*/
 		/*	zeros the accumulative rain_throughfall for 24 hours	*/
 		/*--------------------------------------------------------------*/
-	patch[0].rain_throughfall_24hours=0.0; 
+	patch[0].rain_throughfall_24hours=0.0;
 
 	return;
 }/*end patch_daily_I.c*/
