@@ -115,6 +115,16 @@ void		zone_hourly(
 	}
 	zone[0].rain_hourly_total += zone[0].hourly[0].rain;
 	/*--------------------------------------------------------------*/
+	/*	count the daytime_rain_duration				*/
+	/*--------------------------------------------------------------*/
+	if (zone[0].hourly[0].rain>0){
+		if (zone[0].daytime_rain_duration==-999.0){	
+			zone[0].daytime_rain_duration=0;
+		} 
+		zone[0].daytime_rain_duration+=3600;
+	}
+
+	/*--------------------------------------------------------------*/
 	/*	Compute zone hourly radiation forcings.								*/
 	/*--------------------------------------------------------------*/
 	/*--------------------------------------------------------------*/
