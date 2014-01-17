@@ -806,7 +806,7 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/* if there is hourly rain input, don't run the daily infiltration	*/
 	/*--------------------------------------------------------------*/
-	if (patch[0].hourly_rain_flag!=1) {
+	if (zone[0].hourly_rain_flag!=1) {
 		
 		/* Calculate det store, litter, and bare soil evap first */
 		surface_daily_F(
