@@ -69,6 +69,20 @@ void		patch_hourly(
 		double,
 		double,
 		double);
+
+	void	update_soil_moisture(
+		int	verbose_flag,
+		double	infiltration,
+		double	net_inflow,
+		struct	patch_object	*patch,
+		struct 	command_line_object *command_line,
+		struct	date 			current_date);
+
+	int 	update_gw_drainage(
+			struct patch_object *,
+			struct hillslope_object *,
+			struct command_line_object *,
+			struct date); 
 	/*--------------------------------------------------------------*/
 	/*	Local Variable Declarations.								*/
 	/*--------------------------------------------------------------*/
@@ -147,6 +161,19 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 	net_inflow = patch[0].hourly[0].rain_throughfall;
 	if (net_inflow > 0.0) {
+		/*------------------------------------------------------------------------*/
+		/*	drainage to a deeper groundwater store				  */
+		/*	move both nitrogen and water				       	*/
+		/*------------------------------------------------------------------------*/
+		if (command_line[0].gw_flag > 0) {
+		if ( update_gw_drainage(patch,
+				hillslope,
+				command_line,
+				current_date) != 0) {
+				fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
+				exit(EXIT_FAILURE);
+			}
+		}		
 		/*--------------------------------------------------------------*/
 		/*      - if rain duration is zero, then input is from snow     */
 		/*      melt  assume full daytime duration                      */
@@ -181,54 +208,33 @@ void		patch_hourly(
 	/* determine fate of hold infiltration excess in detention store */
 	/* infiltration excess will removed during routing portion	*/
 	/*--------------------------------------------------------------*/
-	patch[0].detention_store = (net_inflow - infiltration);
+	infiltration=min(infiltration,net_inflow);
+	patch[0].detention_store += (net_inflow - infiltration);
 				
-	if ( infiltration > patch[0].sat_deficit - patch[0].unsat_storage - patch[0].rz_storage){
+	if (infiltration>ZERO) {
 		/*--------------------------------------------------------------*/
-		/*		Yes the unsat zone will be filled so we may	*/
-		/*		as well treat the unsat_storage and infiltration*/
-		/*		as water added to the water table.		*/
+		/*	Update patch level soil moisture with final infiltration.	*/
 		/*--------------------------------------------------------------*/
-		patch[0].sat_deficit -= (infiltration + patch[0].unsat_storage + patch[0].rz_storage);
-		/*--------------------------------------------------------------*/
-		/*		There is no unsat_storage left.			*/
-		/*--------------------------------------------------------------*/
-		patch[0].unsat_storage = 0;
-		patch[0].rz_storage = 0;
-		patch[0].field_capacity = 0;
-		patch[0].rootzone.field_capacity =0;
-		/*--------------------------------------------------------------*/
-		/*		Reverse the cap rise as it likely did not happen*/
-		/*--------------------------------------------------------------*/
-		patch[0].potential_cap_rise += patch[0].cap_rise;
-		patch[0].cap_rise = 0;
-	}
-	else if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) &&
-		(infiltration > patch[0].rootzone.potential_sat - patch[0].rz_storage)) {
-		/*----------------------------------------------------------------------*/
-		/*		Just add the infiltration remains to the unsat_storage	*/
-		/*----------------------------------------------------------------------*/
-		patch[0].unsat_storage += infiltration - (patch[0].rootzone.potential_sat - patch[0].rz_storage);
-		patch[0].rz_storage = patch[0].rootzone.potential_sat;
-	}
-	else if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) &&
-		(infiltration <= patch[0].rootzone.potential_sat - patch[0].rz_storage)) {
-		/*--------------------------------------------------------------*/
-		/*		Just add the infiltration to the rz_storage	*/
-		/*--------------------------------------------------------------*/
-		patch[0].rz_storage += infiltration;
-	}
-	else if ((patch[0].sat_deficit_z <= patch[0].rootzone.depth) &&
-		(infiltration <= patch[0].sat_deficit - patch[0].rz_storage)) {
-		patch[0].rz_storage += patch[0].unsat_storage;		/* transfer left water in unsat storage to rootzone layer */
-		patch[0].unsat_storage = 0;
-		patch[0].rz_storage += infiltration;
-		patch[0].field_capacity = 0;
-	}
-
+		update_soil_moisture(
+			command_line[0].verbose_flag,
+			infiltration,
+			net_inflow,
+			patch,
+			command_line,
+			current_date );
+	} /* end if infiltration > ZERO */
+	patch[0].recharge += infiltration;
+	
 	} /* end if rain throughfall */
 	/*--------------------------------------------------------------*/
 	/*	Destroy the patch hourly object.							*/
 	/*--------------------------------------------------------------*/
+
+	/*--------------------------------------------------------------*/
+	/*	use rain_throughfall_24hours to collect the accumulative rain_throughfall		*/
+	/*--------------------------------------------------------------*/
+
+	patch[0].rain_throughfall_24hours+=patch[0].hourly[0].rain_throughfall;
+
 	return;
 } /*end patch_hourly.c*/
