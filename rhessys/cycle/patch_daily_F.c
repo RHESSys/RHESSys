@@ -802,6 +802,10 @@ void		patch_daily_F(
 	/*	and evaporation routines.									*/
 	
 	patch[0].detention_store += patch[0].rain_throughfall;
+	/*--------------------------------------------------------------*/
+	/* if there is hourly rain input, don't run the daily infiltration	*/
+	/*--------------------------------------------------------------*/
+
 	
 	/* Calculate det store, litter, and bare soil evap first */
 	surface_daily_F(
