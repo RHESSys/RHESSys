@@ -223,6 +223,8 @@ void		patch_hourly(
 			command_line,
 			current_date );
 	} /* end if infiltration > ZERO */
+
+	/* aggregate the hourly recharge */ 
 	patch[0].recharge += infiltration;
 	
 	} /* end if rain throughfall */
