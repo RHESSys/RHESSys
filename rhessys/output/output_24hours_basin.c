@@ -302,6 +302,5 @@ void	output_24hours_basin(			int routing_flag,
 		asnow*1000.0 ,
 		basin[0].stream_list.streamflow *1000.0*24*3600/aarea
 		);
-
 	return;
 } /*end output_basin*/
