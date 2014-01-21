@@ -364,6 +364,7 @@ void		patch_daily_F(
 	double 	surfaceN_to_soil;
 	double	FERT_TO_SOIL;
 	double	pond_height;
+	double 	rz_drainage,unsat_drainage;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
@@ -1328,8 +1329,8 @@ void		patch_daily_F(
 	if (patch[0].sat_deficit < ZERO) {
 		patch[0].S = 1.0;
 		patch[0].rootzone.S = 1.0;
-		patch[0].rz_drainage = 0.0;
-		patch[0].unsat_drainage = 0.0;
+		rz_drainage = 0.0;
+		unsat_drainage = 0.0;
 	}
 	else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)  {		/* Constant vertical profile of soil porosity */
 		/*-------------------------------------------------------*/
@@ -1337,7 +1338,7 @@ void		patch_daily_F(
 		/*-------------------------------------------------------*/
 		
 		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
-		patch[0].rz_drainage = compute_unsat_zone_drainage(
+		rz_drainage = compute_unsat_zone_drainage(
 			command_line[0].verbose_flag,
 			patch[0].soil_defaults[0][0].theta_psi_curve,
 			patch[0].soil_defaults[0][0].pore_size_index,
@@ -1348,12 +1349,12 @@ void		patch_daily_F(
 			patch[0].rz_storage - patch[0].rootzone.field_capacity);
 
 
-		patch[0].rz_storage -=  patch[0].rz_drainage;
-		patch[0].unsat_storage +=  patch[0].rz_drainage;
+		patch[0].rz_storage -=  rz_drainage;
+		patch[0].unsat_storage +=  rz_drainage;
 		
 		patch[0].S = patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat);	
 		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
-		patch[0].unsat_drainage = compute_unsat_zone_drainage(
+		unsat_drainage = compute_unsat_zone_drainage(
 			command_line[0].verbose_flag,
 			patch[0].soil_defaults[0][0].theta_psi_curve,
 			patch[0].soil_defaults[0][0].pore_size_index,
@@ -1363,15 +1364,15 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].Ksat_0_v / 2,
 			patch[0].unsat_storage - patch[0].field_capacity);
 
-		patch[0].unsat_storage -=  patch[0].unsat_drainage;
-		patch[0].sat_deficit -=  patch[0].unsat_drainage;
+		patch[0].unsat_storage -=  unsat_drainage;
+		patch[0].sat_deficit -=  unsat_drainage;
 	}									
 	else  {
 		patch[0].rz_storage += patch[0].unsat_storage;	/* transfer left water in unsat storage to rootzone layer */
 		patch[0].unsat_storage = 0.0;   
 
 		patch[0].S = min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
-		patch[0].rz_drainage = compute_unsat_zone_drainage(
+		rz_drainage = compute_unsat_zone_drainage(
 			command_line[0].verbose_flag,
 			patch[0].soil_defaults[0][0].theta_psi_curve,
 			patch[0].soil_defaults[0][0].pore_size_index,
@@ -1381,13 +1382,14 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].Ksat_0 / 2,
 			patch[0].rz_storage - patch[0].rootzone.field_capacity);		
 
-		patch[0].unsat_drainage = 0.0;
+		unsat_drainage = 0.0;
 
-		patch[0].rz_storage -=  patch[0].rz_drainage;
-		patch[0].sat_deficit -=  patch[0].rz_drainage;
+		patch[0].rz_storage -=  rz_drainage;
+		patch[0].sat_deficit -=  rz_drainage;
 	}	
+	patch[0].unsat_drainage += unsat_drainage;
+	patch[0].rz_drainage += rz_drainage;
 	
-
 	/* ---------------------------------------------- */
 	/*     Final rootzone saturation calculation      */
 	/* ---------------------------------------------- */

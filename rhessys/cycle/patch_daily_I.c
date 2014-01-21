@@ -507,6 +507,8 @@ void		patch_daily_I(
 		/*--------------------------------------------------------------*/
 	patch[0].rain_throughfall_24hours=0.0;
 	patch[0].recharge=0;
+	patch[0].rz_drainage=0;
+	patch[0].unsat_drainage=0;
 
 	return;
 }/*end patch_daily_I.c*/
