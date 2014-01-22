@@ -121,6 +121,7 @@ void		patch_hourly(
 			patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
 		}
 	}
+	
 	if (patch[0].snowpack.water_equivalent_depth > 0.0) {
 		patch[0].snowpack.water_equivalent_depth
 			+= patch[0].hourly[0].rain_throughfall;
@@ -148,6 +149,7 @@ void		patch_hourly(
 		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	include any detention storage as throughfall		*/
 	/*--------------------------------------------------------------*/

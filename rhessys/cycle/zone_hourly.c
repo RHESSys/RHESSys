@@ -89,6 +89,7 @@ void		zone_hourly(
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 			clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
 			}
+		printf("edate.year=%d,rain=%f,currentmonth=%d,currentday=%d\n",clim_event.edate.year,clim_event.value,current_date.month,current_date.day);
 		if ( (clim_event.edate.year != 0) &&
 			(julday(clim_event.edate) == julday(current_date)) ) {
 			zone[0].hourly_rain_flag = 1;
@@ -114,6 +115,7 @@ void		zone_hourly(
 		}
 	}
 	zone[0].rain_hourly_total += zone[0].hourly[0].rain;
+	
 	/*--------------------------------------------------------------*/
 	/*	count the daytime_rain_duration				*/
 	/*--------------------------------------------------------------*/
