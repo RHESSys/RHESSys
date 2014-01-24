@@ -185,18 +185,37 @@ void		patch_hourly(
 		else
 			duration = zone[0].hourly[0].rain_duration/(86400);
 		
-		infiltration = compute_infiltration(
-			command_line[0].verbose_flag,
-			patch[0].sat_deficit_z,
-			patch[0].rootzone.S,
-			patch[0].Ksat_vertical,
-			patch[0].soil_defaults[0][0].Ksat_0_v,
-			patch[0].soil_defaults[0][0].mz_v,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-			net_inflow,
-			duration,
-			patch[0].soil_defaults[0][0].psi_air_entry);
+		if (patch[0].rootzone.depth > ZERO)	{
+				infiltration = compute_infiltration(
+					command_line[0].verbose_flag,
+					patch[0].sat_deficit_z,
+					patch[0].rootzone.S,
+					patch[0].Ksat_vertical,
+					patch[0].soil_defaults[0][0].Ksat_0_v,
+					patch[0].soil_defaults[0][0].mz_v,
+					patch[0].soil_defaults[0][0].porosity_0,
+					patch[0].soil_defaults[0][0].porosity_decay,
+					net_inflow,
+					duration,
+					patch[0].soil_defaults[0][0].psi_air_entry);
+				}
+
+		else {
+				infiltration = compute_infiltration(
+					command_line[0].verbose_flag,
+					patch[0].sat_deficit_z,
+					patch[0].S,
+					patch[0].Ksat_vertical,
+					patch[0].soil_defaults[0][0].Ksat_0_v,
+					patch[0].soil_defaults[0][0].mz_v,
+					patch[0].soil_defaults[0][0].porosity_0,
+					patch[0].soil_defaults[0][0].porosity_decay,
+					net_inflow,
+					duration,
+					patch[0].soil_defaults[0][0].psi_air_entry);
+		}
+
+
 			
 		//printf("hourly patch called \n");
 	}

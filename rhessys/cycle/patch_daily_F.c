@@ -804,22 +804,21 @@ void		patch_daily_F(
 	
 	patch[0].detention_store += patch[0].rain_throughfall;
 
+	/* Calculate det store, litter, and bare soil evap first */
+	surface_daily_F(
+					world,
+					basin,
+					hillslope,
+					zone,
+					patch,
+					command_line,
+					event,
+					current_date );	
+
 	/*--------------------------------------------------------------*/
 	/* if there is hourly rain input, don't run the daily infiltration	*/
 	/*--------------------------------------------------------------*/
-	if (zone[0].hourly_rain_flag!=1) {
-		
-		/* Calculate det store, litter, and bare soil evap first */
-		surface_daily_F(
-						world,
-						basin,
-						hillslope,
-						zone,
-						patch,
-						command_line,
-						event,
-						current_date );	
-		
+	if (zone[0].hourly_rain_flag!=1) {	
 		/*--------------------------------------------------------------*/
 		/* 	Above ground Hydrologic Processes			*/
 		/* 	compute infiltration into the soil			*/
