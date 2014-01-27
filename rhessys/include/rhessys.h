@@ -2242,6 +2242,9 @@ struct epconst_struct
 	double tcoef;          /* (NONE) coefficient for tempcurve function */
 	double psi_open;       /* (MPa) psi at start of conductance reduction */
 	double psi_close;      /* (MPa) psi at complete conductance reduction */
+	double psi_threshold;      /* (MPa) psi at complete conductance reduction begins */
+	double psi_slp;      /* (/MPa) slope of conductance reduction curve */
+	double psi_intercpt;      /* (0-1) intercept of conductance reduction curve */
 	double vpd_open;       /* (Pa) vpd at start of conductance reduction */
 	double vpd_close;      /* (Pa) vpd at complete conductance reduction */
 	double gl_smax;        /* (m/s) maximum leaf-scale stomatal conductance */
@@ -2266,6 +2269,7 @@ struct epconst_struct
 	int veg_type;		/* (DIM) set as 1 for tree; 0 for grass	*/
 	int phenology_type;	/* (DIM) set as 1 for decid; 0 for evergreen	*/
 	int nfix;		/* (DIM) set a 1 for n-fixers; 0 for not nfixers */
+	int psi_curve;		/* (DIM) set to 0 for biome-bgc psi-conductance curve, other values give type of model 1=linear, 2=squared etc */
 	int edible;		/* (DIM) set to 1 for edible plants */
     	int  Tacclim;  		/* (DIM) set to 1  for temperature acclimation of respiration Q10  */
     double gr_perc;	   /* (DIM 0-1) percent of growth allocated to respiration */

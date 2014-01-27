@@ -46,11 +46,15 @@
 
 double	compute_vascular_stratum_conductance(
 											 int	verbose_flag,
+											 int	LWP_curve,
 											 double	APAR_coef,
 											 double 	cuticular_cond,
 											 double	stomatal_fraction,
 											 double	LWP_min_spring,
 											 double	LWP_stom_closure,
+											 double	LWP_threshold,
+											 double	LWP_slp,
+											 double	LWP_intercpt,
 											 double	stomatal_conductance_max,
 											 double	topt,     
 											 double	tcoef,
@@ -78,7 +82,10 @@ double	compute_vascular_stratum_conductance(
 
 	double	leaf_conductance_CO2_curve(double, double);
 
-	double	leaf_conductance_LWP_curve(	double,
+	double	leaf_conductance_LWP_curve(int,	double,
+		double,
+		double,
+		double,
 		double,
 		double);
 	double	leaf_conductance_tavg_curve(	double,
@@ -114,8 +121,8 @@ double	compute_vascular_stratum_conductance(
 	/*--------------------------------------------------------------*/
 
 	if (LWP_predawn !=  9999.0) {
-		m_LWP = leaf_conductance_LWP_curve(LWP_predawn,
-			LWP_min_spring,LWP_stom_closure);
+		m_LWP = leaf_conductance_LWP_curve(LWP_curve, LWP_predawn,
+			LWP_min_spring,LWP_stom_closure,LWP_threshold, LWP_slp, LWP_intercpt );
 
 		if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > stratum[0].rootzone.potential_sat)) {
 			patch[0].wilting_point = exp(-100.0*log(-1.0*LWP_stom_closure/patch[0].soil_defaults[0][0].psi_air_entry) 

@@ -119,6 +119,10 @@ void	canopy_stratum_daily_F(
 	
 	double	compute_vascular_stratum_conductance(
 		int	,
+		int	,
+		double	,
+		double	,
+		double	,
 		double	,
 		double	,
 		double	,
@@ -651,11 +655,15 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].gs_sunlit = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
+		stratum[0].defaults[0][0].epc.psi_curve,
 		stratum[0].defaults[0][0].epc.ppfd_coef,
 		stratum[0].defaults[0][0].epc.gl_c,
 		stratum[0].defaults[0][0].lai_stomatal_fraction,
 		stratum[0].defaults[0][0].epc.psi_open,
 		stratum[0].defaults[0][0].epc.psi_close,
+		stratum[0].defaults[0][0].epc.psi_threshold,
+		stratum[0].defaults[0][0].epc.psi_slp,
+		stratum[0].defaults[0][0].epc.psi_intercpt,
 		stratum[0].defaults[0][0].epc.gl_smax,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
@@ -682,11 +690,15 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].potential_gs_sunlit = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
+		stratum[0].defaults[0][0].epc.psi_curve,
 		stratum[0].defaults[0][0].epc.ppfd_coef,
 		stratum[0].defaults[0][0].epc.gl_c,
 		stratum[0].defaults[0][0].lai_stomatal_fraction,
 		stratum[0].defaults[0][0].epc.psi_open,
 		stratum[0].defaults[0][0].epc.psi_close,
+		stratum[0].defaults[0][0].epc.psi_threshold,
+		stratum[0].defaults[0][0].epc.psi_slp,
+		stratum[0].defaults[0][0].epc.psi_intercpt,
 		stratum[0].defaults[0][0].epc.gl_smax,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
@@ -705,11 +717,15 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].gs_shade = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
+		stratum[0].defaults[0][0].epc.psi_curve,
 		stratum[0].defaults[0][0].epc.ppfd_coef,
 		stratum[0].defaults[0][0].epc.gl_c,
 		stratum[0].defaults[0][0].lai_stomatal_fraction,
 		stratum[0].defaults[0][0].epc.psi_open,
 		stratum[0].defaults[0][0].epc.psi_close,
+		stratum[0].defaults[0][0].epc.psi_threshold,
+		stratum[0].defaults[0][0].epc.psi_slp,
+		stratum[0].defaults[0][0].epc.psi_intercpt,
 		stratum[0].defaults[0][0].epc.gl_smax,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
@@ -738,11 +754,15 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].potential_gs_shade = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
+		stratum[0].defaults[0][0].epc.psi_curve,
 		stratum[0].defaults[0][0].epc.ppfd_coef,
 		stratum[0].defaults[0][0].epc.gl_c,
 		stratum[0].defaults[0][0].lai_stomatal_fraction,
 		stratum[0].defaults[0][0].epc.psi_open,
 		stratum[0].defaults[0][0].epc.psi_close,
+		stratum[0].defaults[0][0].epc.psi_threshold,
+		stratum[0].defaults[0][0].epc.psi_slp,
+		stratum[0].defaults[0][0].epc.psi_intercpt,
 		stratum[0].defaults[0][0].epc.gl_smax,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
