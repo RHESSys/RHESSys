@@ -48,6 +48,7 @@ $(OBJ)/compute_layer_field_capacity.o \
 $(OBJ)/compute_froot_litfall.o \
 $(OBJ)/compute_growth_resp.o \
 $(OBJ)/compute_hourly_rain_stored.o \
+$(OBJ)/compute_hourly_litter_rain_stored.o \
 $(OBJ)/compute_infiltration.o \
 $(OBJ)/compute_leaf_litfall.o \
 $(OBJ)/compute_litter_rain_stored.o \
@@ -232,6 +233,7 @@ $(OBJ)/snowpack_daily_F.o \
 $(OBJ)/sort_by_elevation.o \
 $(OBJ)/sort_patch_layers.o \
 $(OBJ)/surface_daily_F.o \
+$(OBJ)/surface_hourly.o \
 $(OBJ)/top_model.o \
 $(OBJ)/update_C_stratum_daily.o \
 $(OBJ)/update_N_stratum_daily.o \
@@ -758,8 +760,12 @@ $(OBJ)/compute_potential_N_uptake_Dickenson.o: cn/compute_potential_N_uptake_Dic
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake_Dickenson.c -o $(OBJ)/compute_potential_N_uptake_Dickenson.o
 $(OBJ)/compute_litter_rain_stored.o: hydro/compute_litter_rain_stored.c 
 	$(CC) -c $(CFLAGS) -I include hydro/compute_litter_rain_stored.c -o $(OBJ)/compute_litter_rain_stored.o
+$(OBJ)/compute_hourly_litter_rain_stored.o: hydro/compute_hourly_litter_rain_stored.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_hourly_litter_rain_stored.c -o $(OBJ)/compute_hourly_litter_rain_stored.o
 $(OBJ)/surface_daily_F.o: cycle/surface_daily_F.c 
 	$(CC) -c $(CFLAGS) -I include cycle/surface_daily_F.c -o $(OBJ)/surface_daily_F.o
+$(OBJ)/surface_hourly.o: cycle/surface_hourly.c
+	$(CC) -c $(CFLAGS) -I include cycle/surface_hourly.c -o $(OBJ)/surface_hourly.o
 $(OBJ)/parse_alloc_flag.o: init/parse_alloc_flag.c 
 	$(CC) -c $(CFLAGS) -I include init/parse_alloc_flag.c -o $(OBJ)/parse_alloc_flag.o
 $(OBJ)/parse_dyn_flag.o: init/parse_dyn_flag.c 

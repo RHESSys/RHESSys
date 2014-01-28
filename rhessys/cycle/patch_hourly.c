@@ -70,6 +70,16 @@ void		patch_hourly(
 		double,
 		double);
 
+	void 	surface_hourly(
+		struct world_object *,
+		struct basin_object *,
+		struct hillslope_object *,
+		struct zone_object *,
+		struct patch_object *,
+		struct command_line_object *,
+		struct tec_entry *,
+		struct date);
+
 	void	update_soil_moisture(
 		int	verbose_flag,
 		double	infiltration,
@@ -128,7 +138,7 @@ void		patch_hourly(
 		patch[0].hourly[0].rain_throughfall = 0.0;
 	}
 	/*--------------------------------------------------------------*/
-	/*	Cycle through the canopy strata								*/
+	/*	Cycle through the canopy strata				*/
 	/*	below the snowpack					*/
 	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
@@ -154,7 +164,18 @@ void		patch_hourly(
 	/*	include any detention storage as throughfall		*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].hourly_rain_flag == 1) {
-
+		/*--------------------------------------------------------------*/
+		/*	calculate the litter interception			*/
+		/*--------------------------------------------------------------*/
+		surface_hourly(
+					world,
+					basin,
+					hillslope,
+					zone,
+					patch,
+					command_line,
+					event,
+					current_date);
 	/*--------------------------------------------------------------*/
 	/* 	Above ground Hydrologic Processes			*/
 	/* 	compute infiltration into the soil			*/

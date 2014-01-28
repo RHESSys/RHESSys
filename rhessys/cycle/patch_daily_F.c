@@ -814,7 +814,6 @@ void		patch_daily_F(
 					command_line,
 					event,
 					current_date );	
-
 	/*--------------------------------------------------------------*/
 	/* if there is hourly rain input, don't run the daily infiltration	*/
 	/*--------------------------------------------------------------*/
