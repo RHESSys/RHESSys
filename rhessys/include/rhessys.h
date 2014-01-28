@@ -2259,6 +2259,9 @@ struct epconst_struct
 	double gs_dayl_min;	   /* (s) lower day length threshold for leaf onset */
 	double gs_dayl_max;	   /* (s) upper day length threshold for leaf onset */
 	double gs_dayl_range;	   /* (s)  day length range for leaf onset */
+	double gs_psi_min;	   /* (mPa) lower soil moisture psi threshold for leaf onset mPa */
+	double gs_psi_max;	   /* (mPa) upper soil moisture psi  threshold for leaf onset mPa */
+	double gs_psi_range;	   /* (mPa)  psi range for leaf onset */
 	double coef_CO2;	/* DIM 0-1  conductance sensitivity to CO2 */ 
 	int day_leafon;        /* (DIM) yearday leaves on */
 	int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */
