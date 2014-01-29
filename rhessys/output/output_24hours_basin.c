@@ -121,7 +121,7 @@ void	output_24hours_basin(			int routing_flag,
 		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
-			apcp += (zone[0].rain_hourly_total+zone[0].snow)*zone[0].area;
+			apcp += (zone[0].rain_hourly_total+zone[0].rain+zone[0].snow)*zone[0].area;
       atmin += zone[0].metv.tmin * zone[0].area;
       atmax += zone[0].metv.tmax * zone[0].area;
       asnow += zone[0].snow * zone[0].area;

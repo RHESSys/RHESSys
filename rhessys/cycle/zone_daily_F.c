@@ -568,6 +568,5 @@ void		zone_daily_F(
 		zone[0].acc_month.K_diffuse += zone[0].Kdown_diffuse;
 		zone[0].acc_month.length += 1;
 	}
-
 	return;
 } /*end zone_daily_F.c*/
