@@ -189,7 +189,7 @@ void		zone_daily_F(
 	}
 	/*--------------------------------------------------------------*/
 	/*	Deretmine if we need to adjust Kdowns or metv.tmax.			*/
-	/*																*/
+	/*								*/
 	/*	We assume that if either Kdown_diffuse or Kdown_direct		*/
 	/*	was not supplied then themetv.tmax needs adjustment.		*/
 	/*	This is because the adjustment should not be needed			*/

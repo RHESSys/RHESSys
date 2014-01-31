@@ -128,7 +128,7 @@ void	output_24hours_basin(			int routing_flag,
 			zone_area += zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
-				arain_throughfall += patch[0].rain_throughfall_24hours * patch[0].area;
+				arain_throughfall += (patch[0].rain_throughfall_24hours + patch[0].rain_throughfall) * patch[0].area;
 				asnow_throughfall += patch[0].snow_throughfall * patch[0].area;
 				asat_deficit_z += patch[0].sat_deficit_z * patch[0].area;
 				asat_deficit += patch[0].sat_deficit * patch[0].area;

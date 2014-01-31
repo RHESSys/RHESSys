@@ -105,7 +105,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	/*--------------------------------------------------------------*/
 	inx = 0;
 	for ( i=0 ; i<duration ; i++ ){
-		if(fscanf(sequence_file,"%d%d%d%d%lf",
+		if(fscanf(sequence_file,"%ld %ld %ld %ld %lf",
 			&cur_date.year,
 			&cur_date.month,
 			&cur_date.day,
@@ -126,5 +126,6 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		}
 	}
 	events.seq[inx].edate.year = 0;
+
 	return(events);
 } /*end construct_dated_clim_sequence*/

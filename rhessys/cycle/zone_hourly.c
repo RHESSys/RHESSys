@@ -89,7 +89,7 @@ void		zone_hourly(
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 			clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
 			}
-		
+
 		if ( (clim_event.edate.year != 0) &&
 			(julday(clim_event.edate) == julday(current_date)) ) {
 			zone[0].hourly_rain_flag = 1;
@@ -119,13 +119,14 @@ void		zone_hourly(
 	/*--------------------------------------------------------------*/
 	/*	count the daytime_rain_duration				*/
 	/*--------------------------------------------------------------*/
-	if (zone[0].hourly[0].rain>0){
-		if (zone[0].daytime_rain_duration==-999.0){	
-			zone[0].daytime_rain_duration=0;
-		} 
-		zone[0].daytime_rain_duration+=3600;
+	if (zone[0].hourly_rain_flag==1) {
+		if (current_date.hour==1) {
+			zone[0].daytime_rain_duration=0;}
+		
+		if (zone[0].hourly[0].rain>0) {
+			zone[0].daytime_rain_duration += 3600;}
 	}
-
+			
 	/*--------------------------------------------------------------*/
 	/*	Compute zone hourly radiation forcings.								*/
 	/*--------------------------------------------------------------*/
