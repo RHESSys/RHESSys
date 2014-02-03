@@ -1300,6 +1300,45 @@ struct	soil_n_object
     double nleached_snk;    /* (kgN/m2) SUM of N leached */
     double nvolatilized_snk; /* (kgN/m2) SUM of N lost to volatilization */
 	};
+
+
+/*----------------------------------------------------------*/
+/*	Define the fire structure.	*/
+/*----------------------------------------------------------*/
+
+struct fire_default {
+	int ID;
+	double veg_fuel_weighting ;	
+	double ndays_average;	/* days */
+	};
+
+struct fire_object 
+{
+	int num_patches;
+	int burn;			/* 0-1 */
+	struct patch_object **patches;
+	double *prop_patch_in_grid;
+	double *prop_grid_in_patch; 	/* 0-1 */
+	double fuel_veg;  		/* kgC/m2 */
+	double fuel_litter; 		/* kgC/m2 */
+	double fuel_moist; 		/* 0-1 */
+	double soil_moist; 		/* 0-1 */
+	double z; 			/* m */
+	double wind; 			/* m/s */
+	double wind_direction; 		/*degrees */
+	double relative_humidity;	/* 0-1 */
+	double pet;			/* mm */
+	double et;			/* mm */
+	struct fire_default_object *defaults;
+};	
+
+struct patch_fire_object
+{
+	double pet;			/* mm */
+	double et;			/* mm */
+
+};
+
 /*----------------------------------------------------------*/
 /*	Define a snowpack object.								*/
 /*----------------------------------------------------------*/
@@ -1517,6 +1556,7 @@ struct patch_object
 	struct	neighbour_object 	*neighbours;
 	struct	patch_object		*next_stream;
 	struct	surface_energy_object   *surface_energy_profile;
+	struct	patch_fire_object	fire;
 	struct  accumulate_patch_object acc_month;
 	struct  accumulate_patch_object acc_year;
 	struct  rooting_zone_object	rootzone;
@@ -2284,6 +2324,9 @@ struct epconst_struct
 	double tcoef;          /* (NONE) coefficient for tempcurve function */
 	double psi_open;       /* (MPa) psi at start of conductance reduction */
 	double psi_close;      /* (MPa) psi at complete conductance reduction */
+	double psi_threshold;      /* (MPa) psi at complete conductance reduction begins */
+	double psi_slp;      /* (/MPa) slope of conductance reduction curve */
+	double psi_intercpt;      /* (0-1) intercept of conductance reduction curve */
 	double vpd_open;       /* (Pa) vpd at start of conductance reduction */
 	double vpd_close;      /* (Pa) vpd at complete conductance reduction */
 	double gl_smax;        /* (m/s) maximum leaf-scale stomatal conductance */
@@ -2298,6 +2341,9 @@ struct epconst_struct
 	double gs_dayl_min;	   /* (s) lower day length threshold for leaf onset */
 	double gs_dayl_max;	   /* (s) upper day length threshold for leaf onset */
 	double gs_dayl_range;	   /* (s)  day length range for leaf onset */
+	double gs_psi_min;	   /* (mPa) lower soil moisture psi threshold for leaf onset mPa */
+	double gs_psi_max;	   /* (mPa) upper soil moisture psi  threshold for leaf onset mPa */
+	double gs_psi_range;	   /* (mPa)  psi range for leaf onset */
 	double coef_CO2;	/* DIM 0-1  conductance sensitivity to CO2 */ 
 	int day_leafon;        /* (DIM) yearday leaves on */
 	int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */
@@ -2308,6 +2354,7 @@ struct epconst_struct
 	int veg_type;		/* (DIM) set as 1 for tree; 0 for grass	*/
 	int phenology_type;	/* (DIM) set as 1 for decid; 0 for evergreen	*/
 	int nfix;		/* (DIM) set a 1 for n-fixers; 0 for not nfixers */
+	int psi_curve;		/* (DIM) set to 0 for biome-bgc psi-conductance curve, other values give type of model 1=linear, 2=squared etc */
 	int edible;		/* (DIM) set to 1 for edible plants */
     	int  Tacclim;  		/* (DIM) set to 1  for temperature acclimation of respiration Q10  */
     double gr_perc;	   /* (DIM 0-1) percent of growth allocated to respiration */
@@ -2497,33 +2544,6 @@ struct mortality_struct
 	double mort_deadcrootc;
 	double mort_frootc;
 };
-
-/*----------------------------------------------------------*/
-/*	Define the fire structure.	*/
-/*----------------------------------------------------------*/
-
-struct fire_default {
-	int ID;
-	double veg_fuel_weighting ;	
-	};
-
-struct fire_object 
-{
-	int num_patches;
-	int burn;			/* 0-1 */
-	struct patch_object **patches;
-	double *prop_patch_in_grid;
-	double *prop_grid_in_patch; 	/* 0-1 */
-	double fuel_veg;  		/* kgC/m2 */
-	double fuel_litter; 		/* kgC/m2 */
-	double fuel_moist; 		/* 0-1 */
-	double soil_moist; 		/* 0-1 */
-	double z; 			/* m */
-	double wind; 			/* m/s */
-	double wind_direction; 		/*degrees */
-	double relative_humidity;	/* 0-1 */
-	struct fire_default_object *defaults;
-};	
 
 
 /*----------------------------------------------------------*/

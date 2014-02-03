@@ -131,7 +131,6 @@ void	output_patch(
 					patch[0].snowpack.Q_melt/86.4,
 					patch[0].LE_canopy);
 	
-	
 
 	if (check <= 0) {
 		fprintf(stdout, "\nWARNING: output error has occured in output_patch");

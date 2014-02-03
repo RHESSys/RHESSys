@@ -705,6 +705,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].fire_default_files, command_line);
 	}
 
+	printf("\n Constructed fire defaults\n");
 	/*--------------------------------------------------------------*/
 	/* if surface_energy spread flag is set					*/
 	/*	Construct the fire default objects.			*/

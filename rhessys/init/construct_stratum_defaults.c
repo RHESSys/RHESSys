@@ -303,6 +303,8 @@ struct stratum_default *construct_stratum_defaults(
 
 	        default_object_list[i].epc.gs_dayl_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_dayl_min", "%lf", 36000, 1);
 		default_object_list[i].epc.gs_dayl_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_dayl_max", "%lf", 39600, 1);
+	        default_object_list[i].epc.gs_psi_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_psi_min", "%lf", -15.0, 1);
+		default_object_list[i].epc.gs_psi_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_psi_max", "%lf", -14.0, 1);
 		default_object_list[i].epc.max_storage_percent = getDoubleParam(&paramCnt, &paramPtr, "epc.max_storage_percent", "%lf", 0.2, 1);
 		default_object_list[i].epc.min_percent_leafg = getDoubleParam(&paramCnt, &paramPtr, "epc.min_percent_leafg", "%lf", default_object_list[i].epc.leaf_turnover, 1);
 		default_object_list[i].epc.dickenson_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.dickenson_pa", "%lf", 0.25, 1);
@@ -327,6 +329,7 @@ struct stratum_default *construct_stratum_defaults(
 	/*--------------------------------------------------------------*/
 		default_object_list[i].epc.litter_moist_coef = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_moist_coef", "%lf", 2.0/1000.0, 1);
 		default_object_list[i].epc.litter_density = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_density", "%lf", 100.0/2.0, 1);
+		default_object_list[i].epc.gs_psi_range = default_object_list[i].epc.gs_psi_max-default_object_list[i].epc.gs_psi_min;
 		default_object_list[i].epc.gs_dayl_range = default_object_list[i].epc.gs_dayl_max-default_object_list[i].epc.gs_dayl_min;
 		default_object_list[i].epc.gs_vpd_range = default_object_list[i].epc.gs_vpd_max-default_object_list[i].epc.gs_vpd_min;
 		default_object_list[i].epc.gs_trange = default_object_list[i].epc.gs_tmax-default_object_list[i].epc.gs_tmin;
@@ -336,6 +339,10 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].epc.nfix = 	getIntParam(&paramCnt, &paramPtr, "epc.nfix", "%d", 0, 1);
 		default_object_list[i].epc.edible = 	getIntParam(&paramCnt, &paramPtr, "epc.edible", "%d", 1, 1);
+		default_object_list[i].epc.psi_curve  = 	getIntParam(&paramCnt, &paramPtr, "epc.psi_curve", "%d", 0, 1);
+		default_object_list[i].epc.psi_threshold =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_threshold", "%lf", -1, 1);
+		default_object_list[i].epc.psi_slp =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_slp", "%lf", 0.2, 1);
+		default_object_list[i].epc.psi_intercpt =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_intercpt", "%lf", 1.0, 1);
 
 		/*--------------------------------------------------------------*/
 		/* set sunlit sla multiplier	this should be an input		*/
