@@ -147,7 +147,7 @@ void destroy_world(struct command_line_object *command_line,
 	free( world[0].basins );
 
 	if (command_line[0].firespread_flag == 1)
-		free(world[0].fire_grid);
+	/*	free(world[0].fire_grid);*/
 	/*--------------------------------------------------------------*/
 	/*	Destroy the world.											*/
 	/*--------------------------------------------------------------*/

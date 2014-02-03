@@ -98,6 +98,8 @@ void execute_firespread_event(
 			fire_grid[i][j].wind += patch[0].zone[0].wind * fire_grid[i][j].prop_patch_in_grid[p];
 			fire_grid[i][j].wind_direction += patch[0].zone[0].wind_direction * fire_grid[i][j].prop_patch_in_grid[p];
 			fire_grid[i][j].relative_humidity += patch[0].zone[0].relative_humidity * fire_grid[i][j].prop_patch_in_grid[p];
+			fire_grid[i][j].et += patch[0].fire.et * fire_grid[i][j].prop_patch_in_grid[p];
+			fire_grid[i][j].pet += patch[0].fire.pet * fire_grid[i][j].prop_patch_in_grid[p];
 		}
 			
 	}

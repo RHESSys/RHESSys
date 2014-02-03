@@ -70,7 +70,7 @@ void	output_patch(
 
 	
 	
-	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -106,7 +106,7 @@ void	output_patch(
 		litterS,
 		patch[0].area, (patch[0].PET)*1000.0, alai, 
 		patch[0].base_flow*1000.0, 
-		patch[0].streamflow*1000.0, 1000.0*(zone[0].rain+zone[0].snow), patch[0].recharge);
+		patch[0].streamflow*1000.0, 1000.0*(zone[0].rain+zone[0].snow), patch[0].recharge, patch[0].fire.et*1000.0, patch[0].fire.pet*1000.0);
 
 	if (check <= 0) {
 		fprintf(stdout, "\nWARNING: output error has occured in output_patch");

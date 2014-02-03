@@ -1503,6 +1503,22 @@ void		patch_daily_F(
 
 	}
 
+
+	/* track variables for fire spread */
+	if (command_line[0].firespread_flag == 1) {
+		patch[0].fire.et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.et  +  
+		(patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone
+		+ patch[0].evaporation + patch[0].evaporation_surf 
+		+ patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone))/
+		(patch[0].fire_defaults[0][0].ndays_average + 1);
+
+		patch[0].fire.pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.pet    
+				+ patch[0].PET) / 
+		(patch[0].fire_defaults[0][0].ndays_average + 1);
+		}
+	
+
+
 	patch[0].soil_cs.totalc = ((patch[0].soil_cs.soil1c)
 		+ (patch[0].soil_cs.soil2c) +	(patch[0].soil_cs.soil3c)
 		+ (patch[0].soil_cs.soil4c));

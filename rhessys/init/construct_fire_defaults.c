@@ -85,6 +85,7 @@ struct fire_default *construct_fire_defaults(
                 /*   optional parameter specification                           */
 		/*--------------------------------------------------------------*/
 		default_object_list[i].veg_fuel_weighting = getDoubleParam(&paramCnt, &paramPtr, "veg_fuel_weighting", "%lf", 0.2, 1);
+		default_object_list[i].ndays_average = getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 30, 1);
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/

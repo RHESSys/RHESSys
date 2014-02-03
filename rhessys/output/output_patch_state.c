@@ -63,6 +63,18 @@ void	output_patch_state(
 	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30ld %s",patch[0].landuse_defaults[0][0].ID, "landuse_default_ID");
 	fprintf(outfile,"\n          ");
+
+	if (command_line[0].firespread_flag == 1) {
+		fprintf(outfile,"%-30ld %s",patch[0].fire_defaults[0][0].ID, "fire_default_ID");
+		fprintf(outfile,"\n          ");
+	}
+
+	if (command_line[0].surface_energy_flag == 1) {
+		fprintf(outfile,"%-30ld %s",patch[0].surface_energy_defaults[0][0].ID, "surface_energy_default_ID");
+		fprintf(outfile,"\n          ");
+	}
+
+
 	fprintf(outfile,"%-30.8f %s",patch[0].area, "area");
 	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30.8f %s",patch[0].slope/DtoR, "slope");
