@@ -82,16 +82,22 @@ void		zone_hourly(
 	zone[0].hourly_rain_flag = 0;
 	zone[0].hourly[0].rain = 0.0;
 	inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
+
+/*	//test
+	if (current_date.hour==1 || current_date.hour==2){
+		printf("inx=%d\n",inx);
+	}
+*/
 	if (inx > -999)  {
 		clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
-		while (julday(clim_event.edate) < julday(current_date)) {
+		while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
 			zone[0].base_stations[0][0].hourly_clim[0].rain.inx += 1;
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 			clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
 			}
-
+		
 		if ( (clim_event.edate.year != 0) &&
-			(julday(clim_event.edate) == julday(current_date)) ) {
+			(julday(clim_event.edate) == julday(current_date)) && (clim_event.edate.hour == current_date.hour) ) {
 			zone[0].hourly_rain_flag = 1;
 			zone[0].hourly[0].rain = clim_event.value;
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.inx;
@@ -101,12 +107,12 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/
 			if (inx > -999) {
 				clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.seq[inx];
-				while (julday(clim_event.edate) < julday(current_date)) {
+				while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
 					zone[0].base_stations[0][0].hourly_clim[0].rain_duration.inx += 1;
 					inx = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.inx;
 					clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.seq[inx];
 					}
-				if (julday(clim_event.edate) == julday(current_date)) {
+				if ( (julday(clim_event.edate) == julday(current_date)) && (clim_event.edate.hour == current_date.hour) ) {
 					zone[0].hourly[0].rain_duration = clim_event.value;
 				}
 				else zone[0].hourly[0].rain_duration = 3600;

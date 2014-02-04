@@ -126,6 +126,9 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		}
 	}
 	events.seq[inx].edate.year = 0;
-
+	//test
+	for (i=0; i<inx; i++){
+		printf("%d %d %d %d %f\n",events.seq[i].edate.year,events.seq[i].edate.month,events.seq[i].edate.day,events.seq[i].edate.hour,events.seq[i].value);
+	}
 	return(events);
 } /*end construct_dated_clim_sequence*/

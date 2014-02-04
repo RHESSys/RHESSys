@@ -114,8 +114,6 @@ void	output_24hours_basin(			int routing_flag,
   atmax = 0.0;
   asnow = 0.0;
 
-
-
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
