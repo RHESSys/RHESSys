@@ -57,6 +57,14 @@ void		patch_hourly(
 		struct tec_entry *,
 		struct date);
 	
+	double	compute_delta_water(
+		int,
+		double,
+		double,
+		double,
+		double,
+		double);
+
 	double	compute_infiltration(
 		int,
 		double,
@@ -69,7 +77,17 @@ void		patch_hourly(
 		double,
 		double,
 		double);
-
+	
+	double  compute_unsat_zone_drainage(
+		int,
+		int,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double);
+ 
 	double  compute_z_final(
 		int,
 		double,
@@ -108,6 +126,7 @@ void		patch_hourly(
 	int	layer;
 	double  net_inflow, duration, infiltration;
 	double 	rz_drainage, unsat_drainage;
+	double  theta;
 	/*--------------------------------------------------------------*/
 	/*	process any hourly rainfall				*/
 	/*--------------------------------------------------------------*/
@@ -290,7 +309,6 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 
 	patch[0].rain_throughfall_24hours+=patch[0].hourly[0].rain_throughfall;
-
 
 	return;
 } /*end patch_hourly.c*/

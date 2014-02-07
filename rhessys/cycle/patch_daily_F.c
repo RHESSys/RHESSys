@@ -1310,7 +1310,6 @@ void		patch_daily_F(
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
 		}
 	}
-	//if (zone[0].hourly_rain_flag != 1){
 	/*-------------------------------------------------------------------------*/
 	/*	Compute current actual depth to water table				*/
 	/*------------------------------------------------------------------------*/
@@ -1428,7 +1427,6 @@ void		patch_daily_F(
 
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
-	//} //end if hourly rain flag
 	/*-------------------------------------------------------------------------*/
 	/*	finalized soil and litter decomposition					*/
 	/* 	and any septic losses							*/
