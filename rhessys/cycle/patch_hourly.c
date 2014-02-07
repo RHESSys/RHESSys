@@ -70,6 +70,14 @@ void		patch_hourly(
 		double,
 		double);
 
+	double  compute_z_final(
+		int,
+		double,
+		double,
+		double,
+		double,
+		double);
+
 	void 	surface_hourly(
 		struct world_object *,
 		struct basin_object *,
@@ -99,6 +107,7 @@ void		patch_hourly(
 	int	stratum;
 	int	layer;
 	double  net_inflow, duration, infiltration;
+	double 	rz_drainage, unsat_drainage;
 	/*--------------------------------------------------------------*/
 	/*	process any hourly rainfall				*/
 	/*--------------------------------------------------------------*/
@@ -159,6 +168,8 @@ void		patch_hourly(
 		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
 	}
+	
+	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
 
 	/*--------------------------------------------------------------*/
 	/*	include any detention storage as throughfall		*/
@@ -182,8 +193,7 @@ void		patch_hourly(
 	/*	from snowmelt or rain_throughfall			*/
 	/*	for now assume that all water infilatrates		*/
 	/*--------------------------------------------------------------*/
-	net_inflow = patch[0].hourly[0].rain_throughfall;
-	if (net_inflow > 0.0) {
+	if (patch[0].detention_store > 0.0) {
 		/*------------------------------------------------------------------------*/
 		/*	drainage to a deeper groundwater store				  */
 		/*	move both nitrogen and water				       	*/
@@ -197,6 +207,7 @@ void		patch_hourly(
 				exit(EXIT_FAILURE);
 			}
 		}		
+		net_inflow=patch[0].detention_store;
 		/*--------------------------------------------------------------*/
 		/*      - if rain duration is zero, then input is from snow     */
 		/*      melt  assume full daytime duration                      */
@@ -250,8 +261,8 @@ void		patch_hourly(
 	/* determine fate of hold infiltration excess in detention store */
 	/* infiltration excess will removed during routing portion	*/
 	/*--------------------------------------------------------------*/
-	infiltration=min(infiltration,net_inflow);
-	patch[0].detention_store += (net_inflow - infiltration);
+	infiltration=min(infiltration,patch[0].detention_store);
+	patch[0].detention_store -= infiltration;
 				
 	if (infiltration>ZERO) {
 		/*--------------------------------------------------------------*/
@@ -279,6 +290,7 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 
 	patch[0].rain_throughfall_24hours+=patch[0].hourly[0].rain_throughfall;
+
 
 	return;
 } /*end patch_hourly.c*/
