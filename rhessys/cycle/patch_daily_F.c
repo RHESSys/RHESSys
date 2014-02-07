@@ -1670,6 +1670,7 @@ void		patch_daily_F(
 		-1.0 * patch[0].sat_deficit);
 
 
+	theta = patch[0].rootzone.S;
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
 
