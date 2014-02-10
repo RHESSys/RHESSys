@@ -310,5 +310,65 @@ void		patch_hourly(
 
 	patch[0].rain_throughfall_24hours+=patch[0].hourly[0].rain_throughfall;
 
+
+	/*-------------------------------------------------------------------------*/
+	/*	Compute current actual depth to water table				*/
+	/*------------------------------------------------------------------------*/
+	patch[0].sat_deficit_z = compute_z_final(
+		command_line[0].verbose_flag,
+		patch[0].soil_defaults[0][0].porosity_0,
+		patch[0].soil_defaults[0][0].porosity_decay,
+		patch[0].soil_defaults[0][0].soil_depth,
+		0.0,
+		-1.0 * patch[0].sat_deficit);
+
+	/*--------------------------------------------------------------*/
+	/*      Recompute patch soil moisture storage                   */
+	/*--------------------------------------------------------------*/
+	if (patch[0].sat_deficit < ZERO) {
+		patch[0].S = 1.0;
+		patch[0].rootzone.S = 1.0;
+		rz_drainage = 0.0;
+		unsat_drainage = 0.0;
+	}
+	else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)  {		/* Constant vertical profile of soil porosity */
+		/*-------------------------------------------------------*/
+		/*	soil drainage and storage update	     	 */
+		/*-------------------------------------------------------*/
+		
+		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
+		rz_drainage = compute_unsat_zone_drainage(
+			command_line[0].verbose_flag,
+			patch[0].soil_defaults[0][0].theta_psi_curve,
+			patch[0].soil_defaults[0][0].pore_size_index,
+			patch[0].rootzone.S,
+			patch[0].soil_defaults[0][0].mz_v,
+			patch[0].rootzone.depth,
+			patch[0].soil_defaults[0][0].Ksat_0_v /  basin[0].defaults[0][0].n_routing_timesteps / 2,
+			patch[0].rz_storage - patch[0].rootzone.field_capacity);
+		//test
+		printf("patch.sat_deficit_z>rootzone.depth? %d ", patch[0].sat_deficit_z > patch[0].rootzone.depth);
+		printf("rz_drainage=%f",rz_drainage);
+		patch[0].rz_storage -=  rz_drainage;
+		patch[0].unsat_storage +=  rz_drainage;
+		
+		patch[0].S = min(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat),1.0);	
+		unsat_drainage = compute_unsat_zone_drainage(
+			command_line[0].verbose_flag,
+			patch[0].soil_defaults[0][0].theta_psi_curve,
+			patch[0].soil_defaults[0][0].pore_size_index,
+			patch[0].S,
+			patch[0].soil_defaults[0][0].mz_v,
+			patch[0].sat_deficit_z,
+			patch[0].soil_defaults[0][0].Ksat_0_v / basin[0].defaults[0][0].n_routing_timesteps / 2,
+			patch[0].unsat_storage - patch[0].field_capacity);
+
+	//	patch[0].unsat_storage -=  unsat_drainage;
+	//	patch[0].sat_deficit -=  unsat_drainage;
+		
+		printf("unsat_drainage=%f,sat_deficit=%f\n",unsat_drainage,patch[0].sat_deficit);
+	}	
+	//patch[0].unsat_drainage += unsat_drainage;
+	patch[0].rz_drainage += rz_drainage;
 	return;
 } /*end patch_hourly.c*/
