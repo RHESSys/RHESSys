@@ -20,9 +20,8 @@ bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 	bool result = true;
 	int index;
 	int numCells = _maxr * _maxc;
-	bool roof_processed[numCells];
 
-	memset(roof_processed, 0, sizeof(roof_processed));
+	bool *roof_processed = (bool *) calloc((_maxr * _maxc), sizeof(bool));
 
 	// For debugging
 	FILE* fid = fopen("RoofGeometries.txt", "w");
@@ -92,6 +91,8 @@ bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 	if (result) {
 		fclose(fid);
 	}
+
+	free(roof_processed);
 
 	return result;
 }
