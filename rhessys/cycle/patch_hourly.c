@@ -347,8 +347,8 @@ void		patch_hourly(
 			patch[0].soil_defaults[0][0].Ksat_0_v /  basin[0].defaults[0][0].n_routing_timesteps / 2,
 			patch[0].rz_storage - patch[0].rootzone.field_capacity);
 		//test
-		printf("patch.sat_deficit_z>rootzone.depth? %d ", patch[0].sat_deficit_z > patch[0].rootzone.depth);
-		printf("rz_drainage=%f",rz_drainage);
+		//printf("patch.sat_deficit_z>rootzone.depth? %d ", patch[0].sat_deficit_z > patch[0].rootzone.depth);
+		//printf("rz_drainage=%f",rz_drainage);
 		patch[0].rz_storage -=  rz_drainage;
 		patch[0].unsat_storage +=  rz_drainage;
 		
@@ -365,8 +365,8 @@ void		patch_hourly(
 
 	//	patch[0].unsat_storage -=  unsat_drainage;
 	//	patch[0].sat_deficit -=  unsat_drainage;
-		
-		printf("unsat_drainage=%f,sat_deficit=%f\n",unsat_drainage,patch[0].sat_deficit);
+		//test
+		//printf("unsat_drainage=%f,sat_deficit=%f\n",unsat_drainage,patch[0].sat_deficit);
 	}	
 	//patch[0].unsat_drainage += unsat_drainage;
 	patch[0].rz_drainage += rz_drainage;
