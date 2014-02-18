@@ -859,7 +859,7 @@ void		patch_daily_F(
 	        		patch[0].soil_defaults[0][0].porosity_decay,
 	        		net_inflow,
 	        		duration,
-	        		patch[0].soil_defaults[0][0].theta_psi_curve);
+	        		patch[0].soil_defaults[0][0].psi_air_entry);
 			}
 
 		else {
@@ -874,7 +874,7 @@ void		patch_daily_F(
 	        		patch[0].soil_defaults[0][0].porosity_decay,
 	        		net_inflow,
 	        		duration,
-	        		patch[0].soil_defaults[0][0].theta_psi_curve);
+	        		patch[0].soil_defaults[0][0].psi_air_entry);
 		}
 
 	}
@@ -1433,6 +1433,7 @@ void		patch_daily_F(
 		-1.0 * patch[0].sat_deficit);
 
 
+	theta = patch[0].rootzone.S;	
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
 
