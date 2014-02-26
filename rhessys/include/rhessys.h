@@ -178,6 +178,7 @@
 #define WARING 2
 #define CONSTANT 1
 #define DICKENSON 3
+#define COMBINED 4
 #define ZERO 0.000000001
 #define URBANID		100
 #define M 0

@@ -203,6 +203,13 @@ void	canopy_stratum_daily_F(
 		struct cstate_struct *cs,
 		struct nstate_struct *ns,
 		struct cdayflux_struct *);
+		
+	double	compute_potential_N_uptake_combined(
+		struct	epconst_struct,
+		struct	epvar_struct *,
+		struct cstate_struct *cs,
+		struct nstate_struct *ns,
+		struct cdayflux_struct *);
 
 	double	compute_potential_N_uptake(
 		struct	epconst_struct,
@@ -1524,6 +1531,14 @@ void	canopy_stratum_daily_F(
 			break;
 		case WARING:
 			stratum[0].ndf.potential_N_uptake =compute_potential_N_uptake_Waring(
+				stratum[0].defaults[0][0].epc,
+				&(stratum[0].epv),
+				&(stratum[0].cs),
+				&(stratum[0].ns),
+				&(stratum[0].cdf));
+			break;
+		case COMBINED:
+			stratum[0].ndf.potential_N_uptake =compute_potential_N_uptake_combined(
 				stratum[0].defaults[0][0].epc,
 				&(stratum[0].epv),
 				&(stratum[0].cs),
