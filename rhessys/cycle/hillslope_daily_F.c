@@ -85,7 +85,7 @@ void		hillslope_daily_F(
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
 	int	zone;
-	double scale;
+	double slow_store, fast_store,scale;
 	
 	
 	for ( zone=0 ; zone<hillslope[0].num_zones; zone++ ){
@@ -121,12 +121,24 @@ void		hillslope_daily_F(
 
 	/*----------------------------------------------------------------------*/
 	/*	compute groundwater losses					*/
+	/* 	updated to consider two possible deeper concept gw models	*/
+	/*  see review in Stoelzie e tal, 2014, Hydrological Processes		*/
 	/*----------------------------------------------------------------------*/
 	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO)) {
 	
-		
-		hillslope[0].gw.Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
+	
+		if (hillslope[0].defaults[0][0].gw_loss_fast_threshold < ZERO) {	
+			hillslope[0].gw.Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
 					hillslope[0].defaults[0][0].gw_loss_coeff;
+		}
+		else {
+			slow_store = min(hillslope[0].defaults[0][0].gw_loss_fast_threshold, hillslope[0].gw.storage);
+			hillslope[0].gw.Qout = slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_coeff; 
+			fast_store = max(0.0,hillslope[0].gw.storage - hillslope[0].defaults[0][0].gw_loss_fast_threshold);
+			hillslope[0].gw.Qout += slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff; 
+			}
+
+
 		hillslope[0].gw.NH4out = hillslope[0].gw.Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
 		hillslope[0].gw.NO3out = hillslope[0].gw.Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
 		hillslope[0].gw.DONout = hillslope[0].gw.Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;

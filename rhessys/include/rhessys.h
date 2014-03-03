@@ -642,6 +642,8 @@ struct hillslope_default
 	int			ID;
 	int	n_routing_timesteps; 		/*  number per day */
 	double	gw_loss_coeff;					/* percent/day */
+	double	gw_loss_fast_coeff;					/* percent/day */
+	double	gw_loss_fast_threshold;					/* m */
 	};
 
 /*----------------------------------------------------------*/
