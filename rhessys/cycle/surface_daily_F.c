@@ -85,7 +85,7 @@ void		surface_daily_F(
 		double	,
 		double	);
 
-	double	 compute_litter_rain_stored(
+	double	compute_litter_rain_stored(
 		int,
 		struct	patch_object *);
 	

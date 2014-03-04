@@ -61,7 +61,7 @@ struct	hourly_clim_object *construct_hourly_clim(
 	/*--------------------------------------------------------------*/
 	int	i;
 	int	num_non_critical_sequences;
-	char  record[MAXSTR];
+	char    record[MAXSTR];
 	char	sequence_name[256];
 	char	file_name[256];
 	struct hourly_clim_object	*hourly_clim;

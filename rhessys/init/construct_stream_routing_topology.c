@@ -97,8 +97,8 @@ struct stream_list_object construct_stream_routing_topology(
 	stream_list.num_reaches = num_reaches;
 	
 	/*--------------------------------------------------------------*/
-	/* allocate stream network
-	 /*--------------------------------------------------------------*/
+	/* allocate stream network					*/
+	/*--------------------------------------------------------------*/
 	
 	stream_network_ini = (struct stream_network_object *)alloc(
 															   num_reaches * sizeof(struct stream_network_object), " streamlist",
