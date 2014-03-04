@@ -395,10 +395,8 @@ void		patch_hourly(
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
-		-1.0 * patch[0].sat_deficit);
-	
-	//test
-	printf("sat_deficit_z=%f,field_capacity=%f,rootzone.depth=%f,rootzone.field_capacity=%f\n",patch[0].sat_deficit_z,patch[0].field_capacity,patch[0].rootzone.depth,patch[0].rootzone.field_capacity);
+		-1.0 * patch[0].sat_deficit);	
+
 
 	/*--------------------------------------------------------------*/
 	/*      Recompute patch soil moisture storage                   */
