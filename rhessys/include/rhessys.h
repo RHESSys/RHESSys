@@ -874,6 +874,7 @@ struct zone_object
 	double	sin_slope;				/*	DIM	*/
 	double	slope;					/* degrees 	*/
 	double	snow;				     	/* m water	*/
+	double	snow_hourly_total;
 	double	surface_Tday;				/*	deg C	*/
 	double	surface_Tnight;				/*	deg C	*/
 	double	tdewpoint;				/* degrees C	*/
@@ -909,6 +910,7 @@ struct	zone_hourly_object
 	double	Kdown_diffuse_flat;			/*	W/m^2	*/
 	double	sin_aspect;				/*	DIM	*/
 	double	sin_slope;				/*	DIM	*/
+	double	snow;					/*	m	*/
 	};
 
 

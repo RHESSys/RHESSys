@@ -328,6 +328,7 @@ void		zone_daily_F(
 			zone[0].snow = 0.0;
 		}
 	}
+	zone[0].snow += zone[0].snow_hourly_total;
 	/*--------------------------------------------------------------*/
 	/*	If we have no rain duration data set it as		*/
 	/*	daylength if rain 0 if not.					*/
