@@ -22,6 +22,7 @@ extern bool compute_roof_non_connected_routing(
     const int* _hill,                // The map of squares to hill ids
     const int* _zone,                // The map of squares to zone ids
     int _maxr,                       // The max rows
-    int _maxc);                      // The max columns
+    int _maxc,                       // The max columns
+    int* const _receiver_out); // Map of cells that actually received flow. Value of each cell represents number of contributor cells.
 
 #endif // _COMPUTE_NON_CONNECTED_H_

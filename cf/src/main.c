@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
     char* rnsewers;
     char* rnroofs;
     char* rnpriority;
+    char* rnperviousRcv = NULL;
         
     /* set pointers for images */
     double *dem;
@@ -107,6 +108,7 @@ int main(int argc, char *argv[]) {
     double *flna;
     double* roofs;
     int *priority = NULL;
+    int *pervious_recv_out_rast = NULL;
 
     bool success = true;
     
@@ -294,6 +296,12 @@ int main(int argc, char *argv[]) {
     priority_opt->required = NO;
     priority_opt->description = "Priority flow receivers map";
 
+    struct Option* pervious_recv_out_opt = G_define_option();
+	pervious_recv_out_opt->key = "perviousrecv";
+	pervious_recv_out_opt->type = TYPE_STRING;
+	pervious_recv_out_opt->required = NO;
+	pervious_recv_out_opt->description = "Map of pervious cells that actually received flow. Value of each cell represents number of contributor cells.";
+
     struct Option* weight_opt = G_define_option();
     weight_opt->key = "weight";
     weight_opt->type = TYPE_INTEGER;
@@ -406,7 +414,7 @@ int main(int argc, char *argv[]) {
     if (singleFlowtable_flag == FALSE) {
 
     	// We're routing surface flows separately, check for a flow reciever priority map
-    	if ( priority_opt->answer != NULL ) {
+    	if ( NULL != priority_opt->answer ) {
     		// Yes, there was a priority flow receivers map
     		priority_flag = TRUE;
 
@@ -416,6 +424,10 @@ int main(int argc, char *argv[]) {
     		}
     	}
 
+    	// Check for pervious receiver output
+		if ( NULL != pervious_recv_out_opt->answer ) {
+			rnperviousRcv = pervious_recv_out_opt->answer;
+		}
     }
 
     // Need to implement verbose
@@ -544,6 +556,11 @@ int main(int argc, char *argv[]) {
     } else
         flna = NULL;
 
+    /* allocate output map */
+    if ( NULL != rnperviousRcv ) {
+    	pervious_recv_out_rast = (int *) calloc( maxr * maxc, sizeof(int) );
+    }
+
     /* allocate patch tables */
     // Use relatively large tables, some users may need to make the table larger
     // for very large numbers of patches (>100k) to improve performance (table size is currently static)
@@ -585,7 +602,7 @@ int main(int argc, char *argv[]) {
     	printf("\n Route roofs to roads");
     	success = route_roofs_to_roads(surface_flow_table, surface_num_patches, surfacePatchTable,
     			roofs, impervious, stream, priority, dem, priority_weight,
-    			patch, hill, zone, maxr, maxc);
+    			patch, hill, zone, maxr, maxc, pervious_recv_out_rast);
     }
 
     // Do some verification for debugging purposes
@@ -724,6 +741,12 @@ int main(int argc, char *argv[]) {
         if (remove("RoofGeometries.txt") != 0) {
         	printf("\n Unable to remove RoofGeometry temp file");
         }
+    }
+
+    /* write output map */
+    if ( NULL != rnperviousRcv ) {
+    	array2raster(pervious_recv_out_rast, rnperviousRcv, CELL_TYPE,
+    			maxr, maxc);
     }
 
     if (!singleFlowtable_flag) {

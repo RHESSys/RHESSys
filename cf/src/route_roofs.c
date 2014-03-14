@@ -16,7 +16,8 @@ bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 		const int* _priority, const double* _elevation,
 		int priorityWeight,
 		const int* _patch, const int* _hill, const int* _zone, int _maxr,
-		int _maxc) {
+		int _maxc,
+		int* const _receiver_out) {
 	bool result = true;
 	int index;
 	int numCells = _maxr * _maxc;
@@ -63,7 +64,8 @@ bool route_roofs_to_roads(struct flow_struct* _flow_table, int _num_patches,
 					_num_patches, _patchTable, roof_geometry, _roofs,
 					_impervious, _priority, _elevation,
 					priorityWeight,
-					_patch, _hill, _zone, _maxr, _maxc)) {
+					_patch, _hill, _zone, _maxr, _maxc,
+					_receiver_out)) {
 				fprintf(stderr,
 						"ERROR: failed to perform non-connected roof routing");
 				result = false;

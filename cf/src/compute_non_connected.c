@@ -12,10 +12,12 @@
 bool compute_roof_non_connected_routing(struct flow_struct* _flow_table,
 		int _num_patches, PatchTable_t *_patchTable,
 		roof_geometry_t* _roof_geometry, const double* _roofs,
-		const int* _impervious, const int* _priority, const double* _elevation,
+		const int* _impervious, const int* _priority,
+		const double* _elevation,
 		int priorityWeight,
 		const int* _patch, const int* _hill,
-		const int* _zone, int _maxr, int _maxc) {
+		const int* _zone, int _maxr, int _maxc,
+		int* const _receiver_out) {
 	bool result = true;
 
 	// check input parameters
@@ -92,7 +94,7 @@ bool compute_roof_non_connected_routing(struct flow_struct* _flow_table,
 							else if (!add_flow_to_table(row, col, found_row,
 									found_col, _maxr, _maxc, _flow_table,
 									_num_patches, _patchTable, _patch, _hill,
-									_zone, 1.0 - _roofs[index])) {
+									_zone, 1.0 - _roofs[index], _receiver_out)) {
 								fprintf(stderr,
 										"ERROR: Failed to add the roof flow for patch %d, hill %d, zone %d to the flow table.\n",
 										_patch[index],

@@ -20,6 +20,7 @@ extern bool route_roofs_to_roads(
     const int* _hill,	    // The map of squares to hill ids
     const int* _zone,	    // The map of squares to zone ids
     int _maxr,		    // The maximum row
-    int _maxc);		    // The maximum column
+    int _maxc,		    // The maximum column
+    int* const _receiver_out); // Map of cells that actually received flow. Value of each cell represents number of contributor cells.
 
 #endif // _ROUTE_ROOFS_TO_ROADS_H_

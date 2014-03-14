@@ -100,7 +100,7 @@ bool compute_roof_connected_routing(struct flow_struct* _flow_table,
 								else if (!add_flow_to_table(row, col, found_row,
 										found_col, _maxr, _maxc, _flow_table,
 										_num_patches, _patchTable, _patch, _hill,
-										_zone, _roofs[index])) {
+										_zone, _roofs[index], NULL) ) {
 									fprintf(stderr,
 											"ERROR: Failed to add the roof flow to the flow table.\n");
 									result = false;
@@ -129,7 +129,7 @@ bool compute_roof_connected_routing(struct flow_struct* _flow_table,
 											if (!add_flow_to_table(row, col, str_row,
 													str_col, _maxr, _maxc, _flow_table,
 													_num_patches, _patchTable, _patch, _hill,
-													_zone, _roofs[index])) {
+													_zone, _roofs[index], NULL) ) {
 												fprintf(stderr,
 														"ERROR: Failed to add the roof flow to outlet.\n");
 												result = false;
