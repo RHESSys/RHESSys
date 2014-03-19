@@ -123,9 +123,9 @@ void execute_firespread_event(
 		}
 //	    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) {
-			patch = world[0].patch_ffire_grid[i][j].patches[p];
+			patch = world[0].patch_fire_grid[i][j].patches[p];
 			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	
-				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * fire_grid[i][j].prop_patch_in_grid[p];
+				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p];
 			if( patch[0].litter.rain_capacity!=0)	// then update the fuel moisture, otherwise don't change it
 			    world[0].fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
 							patch_fire_grid[i][j].prop_patch_in_grid[p];
@@ -136,11 +136,11 @@ void execute_firespread_event(
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 				world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 				* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc) *
-						fire_grid[i][j].prop_patch_in_grid[p] ;
+						patch_fire_grid[i][j].prop_patch_in_grid[p] ;
 				}
 			}
 
-			world[0]fire_grid[i][j].soil_moist += patch[0].rootzone.S * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];	
+			world[0].fire_grid[i][j].soil_moist += patch[0].rootzone.S * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];	
 
 			world[0].fire_grid[i][j].wind += patch[0].zone[0].wind * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			world[0].fire_grid[i][j].wind_direction += patch[0].zone[0].wind_direction * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
@@ -214,12 +214,12 @@ void execute_firespread_event(
 	thin_type =2;
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
-	    for (p=0; p < fire_grid[i][j].num_patches; ++p) {
-			patch = fire_grid[i][j].patches[p];
+	    for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
+			patch = patch_fire_grid[i][j].patches[p];
 
 			
-			patch[0].burn = fire_grid[i][j].burn * fire_grid[i][j].prop_grid_in_patch[p];
-			loss = fire_grid[i][j].burn * fire_grid[i][j].prop_grid_in_patch[p];
+			patch[0].burn = fire_grid[i][j].burn * patch_fire_grid[i][j].prop_grid_in_patch[p];
+			loss = fire_grid[i][j].burn * patch_fire_grid[i][j].prop_grid_in_patch[p];
 
 			mort.mort_cpool = loss;
 			mort.mort_leafc = loss;

@@ -1303,33 +1303,33 @@ struct	soil_n_object
 /*	Define the fire structure.	*/
 /*----------------------------------------------------------*/
 
-struct fire_default {
-	int ID;
-	double veg_fuel_weighting ;	
-	double ndays_average;	/* days */
-	};
+//struct fire_default {
+//	int ID;
+//	double veg_fuel_weighting ;	
+//	double ndays_average;	/* days */
+//	};
 
-struct fire_object 
-{
-	int num_patches;
-	int burn;			/* 0-1 */
-	struct patch_object **patches;
-	double *prop_patch_in_grid;
-	double *prop_grid_in_patch; 	/* 0-1 */
-	double fuel_veg;  		/* kgC/m2 */
-	double fuel_litter; 		/* kgC/m2 */
-	double fuel_moist; 		/* 0-1 */
-	double soil_moist; 		/* 0-1 */
-	double z; 			/* m */
-	double wind; 			/* m/s */
-	double wind_direction; 		/*degrees */
-	double relative_humidity;	/* 0-1 */
-	double pet;			/* mm */
-	double et;			/* mm */
-	struct fire_default_object *defaults;
-};	
+//struct fire_object 
+//{
+//	int num_patches;
+//	int burn;			/* 0-1 */
+//	struct patch_object **patches;
+//	double *prop_patch_in_grid;
+//	double *prop_grid_in_patch; 	/* 0-1 */
+//	double fuel_veg;  		/* kgC/m2 */
+//	double fuel_litter; 		/* kgC/m2 */
+//	double fuel_moist; 		/* 0-1 */
+//	double soil_moist; 		/* 0-1 */
+//	double z; 			/* m */
+//	double wind; 			/* m/s */
+//	double wind_direction; 		/*degrees */
+//	double relative_humidity;	/* 0-1 */
+//	double pet;			/* mm */
+//	double et;			/* mm */
+//	struct fire_default_object *defaults;
+//};	
 
-struct patch_fire_object
+struct patch_fire_water_object
 {
 	double pet;			/* mm */
 	double et;			/* mm */
@@ -1516,7 +1516,7 @@ struct patch_object
 	struct	neighbour_object 	*neighbours;
 	struct	patch_object		*next_stream;
 	struct	surface_energy_object   *surface_energy_profile;
-	struct	patch_fire_object	fire;
+	struct	patch_fire_water_object	fire;
 	struct  accumulate_patch_object acc_month;
 	struct  accumulate_patch_object acc_year;
 	struct  rooting_zone_object	rootzone;
