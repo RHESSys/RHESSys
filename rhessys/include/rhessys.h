@@ -141,6 +141,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../../util/WMFireInterface.h" /* required for fire spread*/
 /*----------------------------------------------------------*/
 /*	Define macros.											*/
 /*----------------------------------------------------------*/
@@ -286,6 +287,7 @@ struct world_object
 	struct	date			duration;				
 	struct	default_object		*defaults;
 	struct	world_hourly_object	*hourly;
+	struct patch_fire_object **patch_fire_grid;  //mk
 	struct  fire_object		**fire_grid;
 	};
 
@@ -2504,6 +2506,21 @@ struct mortality_struct
 	double mort_frootc;
 };
 
+
+/*******************************************/
+/* fire object specific to rhessys patch structure		*/
+/*******************************************/
+struct patch_fire_object 
+{
+	int num_patches;
+	int tmp_patch; // which patch among the num_patches are we on?
+	struct patch_object **patches;
+	double *prop_patch_in_grid; /* proportion of total cell area occupied by this patch, this array matches the patch pointer array, for updating cell fuel and moisture values*/
+	double *prop_grid_in_patch; 	/* 0-1, proportion of total patch area that overlaps with this cell, this array matches the patch pointer array, for updating patch mortality */
+	double occupied_area; /*gives the total patch area in the current grid	*/
+	struct fire_default_object *defaults;
+	double elev; // elevation if read in from grid
+};	
 
 /*----------------------------------------------------------*/
 /* Define Surface Temperature Object */

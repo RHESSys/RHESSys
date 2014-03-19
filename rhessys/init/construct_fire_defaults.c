@@ -86,7 +86,24 @@ struct fire_default *construct_fire_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].veg_fuel_weighting = getDoubleParam(&paramCnt, &paramPtr, "veg_fuel_weighting", "%lf", 0.2, 1);
 		default_object_list[i].ndays_average = getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 30, 1);
-		/*--------------------------------------------------------------*/
+		default_object_list[i].load_k1=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 0.8, 1);
+  		default_object_list[i].load_k2=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 10, 1);
+  		default_object_list[i].slope_k1=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 0.8, 1);
+		default_object_list[i].slope_k2=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 0.25, 1);
+		default_object_list[i].moisture_k1=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 0.8, 1);
+		default_object_list[i].moisture_k2=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 0.15, 1);
+		default_object_list[i].winddir_k2=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 0.15, 1);
+ 		default_object_list[i].winddir_k1=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 1, 1);
+		default_object_list[i].windmax=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 100, 1);
+		default_object_list[i].ignition_col=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", -1, 1);
+		default_object_list[i].ignition_row=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", -1, 1);
+		default_object_list[i].ignition_tmin=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 10, 1);
+		default_object_list[i].fire_write=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 0, 1);
+		default_object_list[i].fire_in_buffer=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 0, 1); 
+		default_object_list[i].n_rows=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", -1, 1);
+		default_object_list[i].n_cols=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", -1, 1);
+		default_object_list[i].spread_calc_type=getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 1, 1);
+/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
 
