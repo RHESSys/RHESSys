@@ -137,6 +137,6 @@ double	compute_litter_rain_stored(
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);
 	patch[0].detention_store = throughfall;
-
+	
 	return( rain_storage);
 } /*end compute_litter_rain_stored*/

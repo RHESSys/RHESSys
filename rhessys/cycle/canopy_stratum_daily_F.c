@@ -644,7 +644,7 @@ void	canopy_stratum_daily_F(
 	/*
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%f ",stratum[0].APAR_direct/zone[0].metv.dayl+
-		stratum[0].APAR_diffuse/zone[0].metv.dayl);
+		stratum[0].APAR_diffuse/zone[0].metv.dayl);		*/
 	/*--------------------------------------------------------------*/
 	/*								*/
 	/*	if there is still snow sitting on the canopy gs should be zero */

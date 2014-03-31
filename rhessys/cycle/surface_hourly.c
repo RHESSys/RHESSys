@@ -62,7 +62,7 @@ void		surface_hourly(
 	/*--------------------------------------------------------------*/
 	/*	LITTER STORE INTERCEPTION:				*/
 	/*--------------------------------------------------------------*/
-	
+
 	if ( patch[0].detention_store <= (litter[0].rain_capacity - litter[0].rain_stored) ) {
 		
 									
@@ -73,9 +73,12 @@ void		surface_hourly(
 		litter[0].rain_stored  = compute_hourly_litter_rain_stored(
 			command_line[0].verbose_flag,
 			patch);
-						
+/*	//test
+	if (current_date.hour < 5){
+		printf("rain_stored=%f\n",litter[0].rain_stored);
+		}							
+*/
 	}
-
-		
+	
 	return;
 }/*end surface_daily_F.c*/

@@ -82,6 +82,7 @@ void compute_subsurface_routing_hourly(
 	struct patch_object *patch;
 	struct hillslope_object *hillslope;
 	struct patch_object *neigh;
+	struct litter_object *litter;
 	/*--------------------------------------------------------------*/
 	/*	initializations						*/
 	/*--------------------------------------------------------------*/
@@ -186,6 +187,8 @@ void compute_subsurface_routing_hourly(
 	/*--------------------------------------------------------------*/
 		for (i = 0; i < basin->route_list->num_patches; i++) {
 			patch = basin->route_list->list[i];
+			litter=&(patch[0].litter);
+
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
 			/*	is routed to downslope patches; saturated throughflow	*/
@@ -206,6 +209,8 @@ void compute_subsurface_routing_hourly(
 				update_drainage_land(patch, command_line, time_int,
 						verbose_flag);
 			}
+
+
 
 		} /* end i */
 

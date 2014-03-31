@@ -140,6 +140,7 @@ void		patch_hourly(
 	double  net_inflow, duration, infiltration;
 	double 	rz_drainage, unsat_drainage;
 	double  theta;
+	struct 	litter_object *litter;
 	/*--------------------------------------------------------------*/
 	/*	process any hourly rainfall				*/
 	/*--------------------------------------------------------------*/
@@ -201,7 +202,7 @@ void		patch_hourly(
 		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
 	}
-	
+
 	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
 
 	/*--------------------------------------------------------------*/
@@ -220,6 +221,7 @@ void		patch_hourly(
 					command_line,
 					event,
 					current_date);
+
 	/*--------------------------------------------------------------*/
 	/* 	Above ground Hydrologic Processes			*/
 	/* 	compute infiltration into the soil			*/
@@ -295,8 +297,9 @@ void		patch_hourly(
 	/* infiltration excess will removed during routing portion	*/
 	/*--------------------------------------------------------------*/
 	infiltration=min(infiltration,patch[0].detention_store);
+
 	patch[0].detention_store -= infiltration;
-				
+			
 	if (infiltration>ZERO) {
 		/*--------------------------------------------------------------*/
 		/*	Update patch level soil moisture with final infiltration.	*/
@@ -339,8 +342,7 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 	/*	compute new field capacity				*/
 	/*--------------------------------------------------------------*/
-	//test
-//	printf("sat_deficit_z=%f,field_capacity=%f,rootzone.depth=%f,rootzone.field_capacity=%f\n",patch[0].sat_deficit_z,patch[0].field_capacity,patch[0].rootzone.depth,patch[0].rootzone.field_capacity);
+
 
 
 	if (patch[0].sat_deficit_z < patch[0].rootzone.depth)  {

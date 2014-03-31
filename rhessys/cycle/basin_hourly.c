@@ -153,6 +153,7 @@ void	basin_hourly(
 	/*	Note that solar geometry except for cos_sza may be garbage	*/
 	/*	if cos_sza < 0 (no daylight).								*/
 	/*--------------------------------------------------------------*/
+
 	for ( hillslope=0 ; hillslope < basin[0].num_hillslopes ;hillslope++ ){
 		hillslope_hourly(
 			world,

@@ -187,6 +187,7 @@ void		zone_daily_F(
 		/*--------------------------------------------------------------*/
 		zone[0].metv.dayl = basin[0].daylength;
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	Deretmine if we need to adjust Kdowns or metv.tmax.			*/
 	/*								*/
@@ -555,6 +556,7 @@ void		zone_daily_F(
 			command_line,
 			event,
 			current_date );
+
 	}
 
 	/*--------------------------------------------------------------*/

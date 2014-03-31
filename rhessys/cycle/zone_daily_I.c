@@ -819,6 +819,7 @@ void zone_daily_I(
 			zone[0].atm_trans =
 				zone[0].defaults[0][0].sea_level_clear_sky_trans
 				+ zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate;
+				
 			/*--------------------------------------------------------------*/
 			/*			convert clear sky transmissivity to bulk transmissivity	*/
 			/*																*/

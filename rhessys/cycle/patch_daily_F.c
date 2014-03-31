@@ -780,6 +780,7 @@ void		patch_daily_F(
 		patch[0].soil_ns.nitrate += surfaceN_to_soil;
 		}
 
+		
 	/*--------------------------------------------------------------*/
 	/* adjust PH using data patch level inputs			*/
 	/*--------------------------------------------------------------*/
@@ -800,8 +801,7 @@ void		patch_daily_F(
 
 
 	/*	Add rain throughfall to detention store for infiltration	*/
-	/*	and evaporation routines.									*/
-	
+	/*	and evaporation routines.					*/
 	patch[0].detention_store += patch[0].rain_throughfall;
 
 	/* Calculate det store, litter, and bare soil evap first */
@@ -814,6 +814,7 @@ void		patch_daily_F(
 					command_line,
 					event,
 					current_date );	
+
 	/*--------------------------------------------------------------*/
 	/* if there is hourly rain input, don't run the daily infiltration	*/
 	/*--------------------------------------------------------------*/
