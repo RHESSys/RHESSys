@@ -164,12 +164,14 @@ void		surface_daily_F(
 	/*	first.														*/
 	/* but only do this if there is actually a detention_store capacity to hold water */
 	/*--------------------------------------------------------------*/
-	//test
-	//printf("detention_store=%f, litter_capacity - litter.rain_stored=%f,detention_store_size=%f\n",
-	//	patch[0].detention_store,litter[0].rain_capacity-litter[0].rain_stored,patch[0].soil_defaults[0][0].detention_store_size);
+
 
     	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
                                         && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
+
+		/* assume if det store over litter then litter is saturated */
+		litter[0].rain_stored = litter[0].rain_capacity;
+		patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);	
 	
 			/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 			/*** reflected by water surface based on water albedo. ***/
@@ -263,13 +265,7 @@ void		surface_daily_F(
 	/*	remaining surface water can be held by the litter.			*/
 	/*--------------------------------------------------------------*/
 	
-/*	//test
-	printf("date=%ld, size=%f,detention_store=%f,store_evap=%f,litter_capacity=%f,litter_stored=%f\n",
-		current_date.day,
-		patch[0].soil_defaults[0][0].detention_store_size,patch[0].detention_store,detention_store_evaporation,
-		litter[0].rain_capacity,litter[0].rain_stored);
-*/
-	
+
 	if ( patch[0].detention_store <= (litter[0].rain_capacity - litter[0].rain_stored) ) {
 		
 		/*--------------------------------------------------------------*/

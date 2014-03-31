@@ -102,6 +102,10 @@ void		zone_hourly(
 			(julday(clim_event.edate) == julday(current_date)) && (clim_event.edate.hour == current_date.hour) ) {
 			zone[0].hourly_rain_flag = 1;
 			zone[0].hourly[0].rain = clim_event.value;
+
+			/*--------------------------------------------------------------*/
+			/*if there is hourly input, turn daily rain to 0 		*/
+			/*--------------------------------------------------------------*/
 			zone[0].rain = 0;
 
 

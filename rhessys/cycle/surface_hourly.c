@@ -62,6 +62,13 @@ void		surface_hourly(
 	/*--------------------------------------------------------------*/
 	/*	LITTER STORE INTERCEPTION:				*/
 	/*--------------------------------------------------------------*/
+    
+	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
+                                        && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
+	/* assume if det store over litter then litter is saturated */
+		litter[0].rain_stored = litter[0].rain_capacity;
+		patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);	
+	}
 
 	if ( patch[0].detention_store <= (litter[0].rain_capacity - litter[0].rain_stored) ) {
 		
@@ -73,11 +80,7 @@ void		surface_hourly(
 		litter[0].rain_stored  = compute_hourly_litter_rain_stored(
 			command_line[0].verbose_flag,
 			patch);
-/*	//test
-	if (current_date.hour < 5){
-		printf("rain_stored=%f\n",litter[0].rain_stored);
-		}							
-*/
+
 	}
 	
 	return;
