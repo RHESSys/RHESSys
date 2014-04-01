@@ -89,7 +89,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].et=0.0;
 				    world[0].fire_grid[i][j].pet=0.0;
 
-			//	  printf("No fire in buffer\n");
+				  printf("No fire in buffer\n");
 			  }
 			  else // if denom_for_mean==0, then this initializes the buffer, otherwise the mean is filled in below
 			  {
@@ -121,7 +121,7 @@ void execute_firespread_event(
 		    world[0].fire_grid[i][j].et=0.0;
 		    world[0].fire_grid[i][j].pet=0.0;
 		}
-//	    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
+	//    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) {
 			patch = world[0].patch_fire_grid[i][j].patches[p];
 			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	
@@ -129,9 +129,9 @@ void execute_firespread_event(
 			if( patch[0].litter.rain_capacity!=0)	// then update the fuel moisture, otherwise don't change it
 			    world[0].fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
 							patch_fire_grid[i][j].prop_patch_in_grid[p];
-			fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
+/*			fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
 						patch_fire_grid[i][j].prop_patch_in_grid[p];
-
+*/
 			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 				world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
@@ -206,8 +206,10 @@ void execute_firespread_event(
 	/*--------------------------------------------------------------*/
 	/* maureens stuff here 						*/
 	/*--------------------------------------------------------------*/
+	printf("calling WMFire\n");
 	world[0].fire_grid=WMFire(world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year);
- 	/*--------------------------------------------------------------*/
+ 	printf("Finished calling WMFire\n");
+	/*--------------------------------------------------------------*/
 	/* update biomass after fire					*/
 	/*--------------------------------------------------------------*/
 
@@ -215,11 +217,12 @@ void execute_firespread_event(
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 	    for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
-			patch = patch_fire_grid[i][j].patches[p];
+			patch = world[0].patch_fire_grid[i][j].patches[p];
 
-			
-			patch[0].burn = fire_grid[i][j].burn * patch_fire_grid[i][j].prop_grid_in_patch[p];
-			loss = fire_grid[i][j].burn * patch_fire_grid[i][j].prop_grid_in_patch[p];
+//			printf("in update mortality\n");
+			patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+			loss = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+//			printf("in update mortality2\n");
 
 			mort.mort_cpool = loss;
 			mort.mort_leafc = loss;
@@ -231,7 +234,7 @@ void execute_firespread_event(
 
 			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
-					canopy_strata = patch[0].layers[layer].strata[c];
+					canopy_strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 					update_mortality(canopy_strata[0].defaults[0][0].epc,
 						 &(canopy_strata[0].cs),
 						 &(canopy_strata[0].cdf),
@@ -245,12 +248,13 @@ void execute_firespread_event(
 						 mort);
 				}
 			}
+//			printf("in update mortality3\n");
 
 		}
 			
 	}
 	}
-
+printf("Finished updating mortality\n");
 
 		
 
