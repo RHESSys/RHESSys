@@ -274,7 +274,7 @@ dir:
 	mkdir -p $(OBJ)
 
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM) 
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
