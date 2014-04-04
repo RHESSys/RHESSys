@@ -70,8 +70,8 @@ double	compute_growingseason_index(struct zone_object *zone,
 	ipsi = max(ipsi, 0.0);
 	
 	gsi = idayl*itmin*ivpd*ipsi;
-	/* printf("\n tmin %lf %lf vpd %lf %lf dayl %lf %lf psi %lf %lf gsi %lf", itmin,
-	zone[0].metv.tmin_ravg, ivpd, zone[0].metv.vpd_ravg, idayl, zone[0].metv.dayl_ravg, ipsi, epv->psi,gsi);  */
+ /* printf("\n tmin %lf %lf vpd %lf %lf dayl %lf %lf psi %lf %lf gsi %lf", itmin,
+	zone[0].metv.tmin_ravg, ivpd, zone[0].metv.vpd_ravg, idayl, zone[0].metv.dayl_ravg, ipsi, epv->psi,gsi);     */
 	return(gsi);
 } /* end compute_growingseason_index */
 
