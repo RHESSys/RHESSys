@@ -18,6 +18,8 @@
 /*                      struct ndayflux_patch_struct *,		*/
 /*                      struct litter_c_object *,		*/
 /*                      struct litter_n_object *,		*/
+/*			int,					*/
+/*			int,					*/
 /*                      double);				*/
 /*								*/
 /*  OPTIONS                                                     */
@@ -49,6 +51,7 @@ void update_mortality(
 					  struct litter_c_object *cs_litr,
 					  struct litter_n_object *ns_litr,
 					  int thintyp,
+					  int reproduction_flag,
 					  struct mortality_struct mort)
 {
 	/*------------------------------------------------------*/
@@ -116,7 +119,7 @@ void update_mortality(
 	/* carbon depts in cpool have to die with the plant - could result in a carbon balance issue */
 	m_cpool = mort.mort_cpool * cs->cpool;
 	m_npool = mort.mort_cpool * ns->npool;
-	
+
 	m_leafc_to_litr1c = mort.mort_leafc * cs->leafc * epc.leaflitr_flab;
 	m_leafc_to_litr2c = mort.mort_leafc * cs->leafc * epc.leaflitr_fucel;
 	m_leafc_to_litr3c = mort.mort_leafc * cs->leafc * epc.leaflitr_fscel;
@@ -153,7 +156,10 @@ void update_mortality(
 		m_livecrootc_transfer_to_litr1c = mort.mort_cpool * cs->livecrootc_transfer;
 		m_deadcrootc_transfer_to_litr1c = mort.mort_cpool * cs->deadcrootc_transfer;		
 	}
-	
+
+	if (reproduction_flag==1) {
+		}		
+
 	/* daily nitrogen fluxes due to mortality */
 	/* mortality fluxes out of leaf and fine root pools */
 	if (epc.leaf_cn > ZERO) {
@@ -224,7 +230,10 @@ void update_mortality(
 		m_livecrootn_transfer_to_litr1n = mort.mort_cpool * ns->livecrootn_transfer;
 		m_deadcrootn_transfer_to_litr1n = mort.mort_cpool * ns->deadcrootn_transfer;		
 	}
-	
+
+	if (reproduction_flag==1) {
+	}	
+
 	/* update state variables */
 	
 	/* ---------------------------------------- */
@@ -260,6 +269,8 @@ void update_mortality(
 		/* gresp... group in with aboveground? */
 		cs_litr->litr1c         += m_gresp_store_to_litr1c;
 		cs_litr->litr1c         += m_gresp_transfer_to_litr1c;
+		if (reproduction_flag == 1) {
+			}
 		}
 	/* Remove aboveground dead c from carbon stores in all cases. */
 	cs->cpool -= m_cpool;
@@ -286,7 +297,9 @@ void update_mortality(
 	/* gresp... group in with aboveground? */
 	cs->gresp_store       -= m_gresp_store_to_litr1c;
 	cs->gresp_transfer      -= m_gresp_transfer_to_litr1c;
-	
+
+	if (reproduction_flag == 1) {
+		}	
 	/* BELOWGROUND C POOLS */
 	/* Belowground dead c goes to litter and cwd in all cases. */
 	/*   Fine root mortality */
@@ -317,6 +330,8 @@ void update_mortality(
 		cs_litr->litr1c         += m_deadcrootc_transfer_to_litr1c;
 		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
 		}
+	if (reproduction_flag == 1) {
+		}	
 	
 	/* ---------------------------------------- */
 	/* NITROGEN mortality state variable update */
@@ -375,6 +390,8 @@ void update_mortality(
 		ns->livestemn_transfer  -= m_livestemn_transfer_to_litr1n;
 		ns->deadstemn_transfer  -= m_deadstemn_transfer_to_litr1n;
 		}
+	if (reproduction_flag == 1) {
+		}	
 
 	/* BELOWGROUND N POOLS */
 	/* Belowground dead n goes to litter and cwd in all cases. */
@@ -408,6 +425,8 @@ void update_mortality(
 		ns_litr->litr1n         += m_deadcrootn_transfer_to_litr1n;
 		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;		
 	}
+	if (reproduction_flag == 1) {
+		}	
 	return;
 }/*end update_mortality*/
 

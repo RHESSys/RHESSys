@@ -31,10 +31,12 @@ $(OBJ)/compute_Lstar.o \
 $(OBJ)/compute_N_leached.o \
 $(OBJ)/compute_N_absorbed.o \
 $(OBJ)/compute_annual_litfall.o \
+$(OBJ)/compute_annual_seedfall.o \
 $(OBJ)/compute_annual_turnover.o \
 $(OBJ)/compute_atm_pres.o \
 $(OBJ)/compute_capillary_rise.o \
 $(OBJ)/compute_cwd_decay.o \
+$(OBJ)/compute_seed_decay.o \
 $(OBJ)/compute_deadleaf_turnover.o \
 $(OBJ)/compute_delta_water.o \
 $(OBJ)/compute_diffuse_radiative_PAR_fluxes.o \
@@ -50,11 +52,13 @@ $(OBJ)/compute_growth_resp.o \
 $(OBJ)/compute_hourly_rain_stored.o \
 $(OBJ)/compute_infiltration.o \
 $(OBJ)/compute_leaf_litfall.o \
+$(OBJ)/compute_reprod_seedfall.o \
 $(OBJ)/compute_litter_rain_stored.o \
 $(OBJ)/compute_lwp_predawn.o \
 $(OBJ)/compute_maint_resp.o \
 $(OBJ)/compute_mean_hillslope_parameters.o \
 $(OBJ)/compute_nonvascular_stratum_conductance.o \
+$(OBJ)/compute_N_demand.o \
 $(OBJ)/compute_potential_N_uptake.o \
 $(OBJ)/compute_potential_N_uptake_Dickenson.o \
 $(OBJ)/compute_potential_N_uptake_Waring.o \
@@ -245,6 +249,7 @@ $(OBJ)/update_mortality.o \
 $(OBJ)/update_branch_mortality.o \
 $(OBJ)/update_nitrif.o \
 $(OBJ)/update_phenology.o \
+$(OBJ)/update_reprod_phenology.o \
 $(OBJ)/update_rooting_depth.o \
 $(OBJ)/update_septic.o \
 $(OBJ)/update_soil_moisture.o \
@@ -721,10 +726,16 @@ $(OBJ)/compute_annual_turnover.o: cn/compute_annual_turnover.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_annual_turnover.c -o $(OBJ)/compute_annual_turnover.o
 $(OBJ)/compute_annual_litfall.o: cn/compute_annual_litfall.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_annual_litfall.c -o $(OBJ)/compute_annual_litfall.o
+$(OBJ)/compute_annual_seedfall.o: cn/compute_annual_seedfall.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_annual_seedfall.c -o $(OBJ)/compute_annual_seedfall.o
+$(OBJ)/compute_seed_decay.o: cn/compute_seed_decay.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_seed_decay.c -o $(OBJ)/compute_seed_decay.o
 $(OBJ)/compute_cwd_decay.o: cn/compute_cwd_decay.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_cwd_decay.c -o $(OBJ)/compute_cwd_decay.o
 $(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_deadleaf_turnover.c -o $(OBJ)/compute_deadleaf_turnover.o
+$(OBJ)/compute_reprod_seedfall.o: cn/compute_reprod_seedfall.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_reprod_seedfall.c -o $(OBJ)/compute_reprod_seedfall.o
 $(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_leaf_litfall.c -o $(OBJ)/compute_leaf_litfall.o
 $(OBJ)/compute_N_leached.o: cn/compute_N_leached.c 
@@ -739,6 +750,8 @@ $(OBJ)/compute_prop_alloc_daily.o: cn/compute_prop_alloc_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_prop_alloc_daily.c -o $(OBJ)/compute_prop_alloc_daily.o
 $(OBJ)/compute_potential_decomp.o: cn/compute_potential_decomp.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_decomp.c -o $(OBJ)/compute_potential_decomp.o
+$(OBJ)/compute_N_demand.o: cn/compute_N_demand.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_N_demand.c -o $(OBJ)/compute_N_demand.o
 $(OBJ)/compute_potential_N_uptake.o: cn/compute_potential_N_uptake.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake.c -o $(OBJ)/compute_potential_N_uptake.o
 $(OBJ)/compute_potential_N_uptake_Waring.o: cn/compute_potential_N_uptake_Waring.c 
@@ -787,6 +800,8 @@ $(OBJ)/update_rooting_depth.o: cn/update_rooting_depth.c
 	$(CC) -c $(CFLAGS) -I include cn/update_rooting_depth.c -o $(OBJ)/update_rooting_depth.o
 $(OBJ)/update_phenology.o: cn/update_phenology.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_phenology.c -o $(OBJ)/update_phenology.o
+$(OBJ)/update_reprod_phenology.o: cn/update_reprod_phenology.c 
+	$(CC) -c $(CFLAGS) -I include cn/update_reprod_phenology.c -o $(OBJ)/update_reprod_phenology.o
 $(OBJ)/output_template_structure.o: output/output_template_structure.c 
 	$(CC) -c $(CFLAGS) -I include output/output_template_structure.c -o $(OBJ)/output_template_structure.o
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c

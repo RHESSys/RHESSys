@@ -15,7 +15,8 @@
 /*			    struct epvar_struct *epv,		*/
 /*                          struct cstate_struct *,             */
 /*                          struct nstate_struct *,             */
-/*                          struct cdayflux_struct *)           */
+/*                          struct cdayflux_struct *,           */
+/*                          struct command_line_object command_line*)           */
 /*								*/
 /*								*/
 /*	returns int:						*/
@@ -42,12 +43,18 @@ double compute_potential_N_uptake_Waring(
 								  struct	epvar_struct *epv,
 								  struct cstate_struct *cs,
 								  struct nstate_struct *ns,
-								  struct cdayflux_struct *cdf)
+								  struct cdayflux_struct *cdf,
+								  struct command_line_object *command_line)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
 	
+        double compute_N_demand(
+		struct	epconst_struct,
+		struct cstate_struct *,
+		double,
+		struct	command_line_object *);
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -63,7 +70,7 @@ double compute_potential_N_uptake_Waring(
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
 	double cnmax;       /* RATIO   max of root and leaf C:N      */
-	double c_allometry, n_allometry, mean_cn, transfer;
+	double growth_cn,c_allometry, n_allometry, mean_cn, transfer;
 	double plant_calloc, plant_ndemand;
 	double k2, c; /* working variables */
 	/*---------------------------------------------------------------
@@ -139,7 +146,7 @@ double compute_potential_N_uptake_Waring(
 	else mean_cn = 1.0;
 
 	if (c_allometry > ZERO)
-		plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
+		plant_ndemand = compute_N_demand(epc, cs, mean_cn, command_line);
 	else
 		plant_ndemand = 0.0;
 

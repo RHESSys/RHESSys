@@ -156,6 +156,27 @@ struct canopy_strata_object *construct_canopy_strata(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].cs.cwdc));
 	read_record(world_file, record);
+
+	if (command_line[0].reproduction_flag == 1) {
+
+		printf("\n reading reproduction  C stores");
+		fscanf(world_file,"%lf",&(canopy_strata[0].cs.reprodc));
+				read_record(world_file, record);
+		fscanf(world_file,"%lf",&(canopy_strata[0].cs.reprodc_store));
+				read_record(world_file, record);
+		fscanf(world_file,"%lf",&(canopy_strata[0].cs.reprodc_transfer));
+				read_record(world_file, record);
+		fscanf(world_file,"%lf",&(canopy_strata[0].cs.seedc));
+				read_record(world_file, record);
+		}
+	else {
+		canopy_strata[0].cs.reprodc = 0.0;
+		canopy_strata[0].cs.reprodc_store = 0.0;
+		canopy_strata[0].cs.reprodc_transfer = 0.0;
+		canopy_strata[0].cs.seedc  = 0.0;
+		}
+
+
 	fscanf(world_file,"%lf",&(canopy_strata[0].epv.prev_leafcalloc));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].ns.npool));
@@ -202,7 +223,28 @@ struct canopy_strata_object *construct_canopy_strata(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].ns.retransn));
 	read_record(world_file, record);
+
 	
+	if (command_line[0].reproduction_flag == 1) {
+		printf("\n reading reproduction  N stores");
+		fscanf(world_file,"%lf",&(canopy_strata[0].ns.reprodn));
+				read_record(world_file, record);
+		fscanf(world_file,"%lf",&(canopy_strata[0].ns.reprodn_store));
+				read_record(world_file, record);
+		fscanf(world_file,"%lf",&(canopy_strata[0].ns.reprodn_transfer));
+				read_record(world_file, record);
+		fscanf(world_file,"%lf",&(canopy_strata[0].ns.seedn));
+				read_record(world_file, record);
+		}
+
+	
+	else {
+		canopy_strata[0].ns.reprodn = 0.0;
+		canopy_strata[0].ns.reprodn_store = 0.0;
+		canopy_strata[0].ns.reprodn_transfer = 0.0;
+		canopy_strata[0].ns.seedn  = 0.0;
+		}
+
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
 	/*--------------------------------------------------------------*/
@@ -431,7 +473,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*	set phenology timing if static allocation		*/
 	/*  and initialize for dynamic runs				*/
 	/*--------------------------------------------------------------*/
-			canopy_strata[0].phen.expand_startday =
+		canopy_strata[0].phen.expand_startday =
 			canopy_strata[0].defaults[0][0].epc.day_leafon;
 		canopy_strata[0].phen.expand_stopday =
 			canopy_strata[0].phen.expand_startday
@@ -452,7 +494,36 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].phen.nretdays = 365;
 		canopy_strata[0].phen.gwseasonday = -1;
 		canopy_strata[0].phen.lfseasonday = -1;
-		/*--------------------------------------------------------------*/
+
+
+	/*--------------------------------------------------------------*/
+	/*	set phenology timing for reproduction		*/
+	/*	if flag is set 						*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].reproduction_flag == 1) {
+		canopy_strata[0].reprod_phen.expand_startday =
+			canopy_strata[0].defaults[0][0].epc.day_reprod_on;
+		canopy_strata[0].reprod_phen.expand_stopday =
+			canopy_strata[0].reprod_phen.expand_startday
+			+ canopy_strata[0].defaults[0][0].epc.ndays_reprod_expand;
+		canopy_strata[0].reprod_phen.litfall_startday =
+			canopy_strata[0].defaults[0][0].epc.day_reprod_off;
+		canopy_strata[0].reprod_phen.litfall_stopday =
+			canopy_strata[0].reprod_phen.litfall_startday
+			+ canopy_strata[0].defaults[0][0].epc.ndays_seedfall;
+		if (canopy_strata[0].reprod_phen.expand_stopday > 365)
+			canopy_strata[0].reprod_phen.expand_stopday -= 365;
+		if (canopy_strata[0].reprod_phen.litfall_stopday > 365)
+			canopy_strata[0].reprod_phen.litfall_stopday -= 365;
+		/*---------------------------------------------------------------*/
+		/* assume this is 365 for now since we don't know when next      */
+		/* year's growing season will start                              */
+		/*---------------------------------------------------------------*/
+		canopy_strata[0].reprod_phen.nretdays = 365;
+		canopy_strata[0].reprod_phen.gwseasonday = -1;
+		canopy_strata[0].reprod_phen.lfseasonday = -1;
+	}
+	/*--------------------------------------------------------------*/
 	/*	set critical soil moisture (at stomatal closure)	*/
 	/*      psi_close is converted to m water tension from MPa using     */
 	/*      1m water tension = 10000 Pa                             */
@@ -477,6 +548,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(canopy_strata[0].num_base_stations));
 	read_record(world_file, record);
+
 	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this strata.			*/
 	/*--------------------------------------------------------------*/

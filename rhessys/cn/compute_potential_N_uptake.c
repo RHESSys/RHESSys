@@ -15,7 +15,8 @@
 /*			    struct epvar_struct *epv,		*/
 /*                          struct cstate_struct *,             */
 /*                          struct nstate_struct *,             */
-/*                          struct cdayflux_struct *)           */
+/*                          struct cdayflux_struct *,           */
+/*                          struct command_line_object *)           */
 /*								*/
 /*								*/
 /*	returns int:						*/
@@ -28,8 +29,6 @@
 /*	PROGRAMMER NOTES					*/
 /*								*/
 /*								*/
-/*              modified from Peter Thornton (1998)             */
-/*                      dynamic - 1d-bgc ver4.0                 */
 /*--------------------------------------------------------------*/
 
 #include <stdlib.h>
@@ -42,12 +41,20 @@ double compute_potential_N_uptake(
 								  struct	epvar_struct *epv,
 								  struct cstate_struct *cs,
 								  struct nstate_struct *ns,
-								  struct cdayflux_struct *cdf)
+								  struct cdayflux_struct *cdf,
+								  struct command_line_object *command_line)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
+        double compute_N_demand	(
+		struct	epconst_struct,
+		struct cstate_struct *,
+		double,
+		struct	command_line_object *);
+
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -64,7 +71,7 @@ double compute_potential_N_uptake(
 	double cndw;        /* RATIO   dead wood C:N */
 	double cnmax;       /* RATIO   max of root and leaf C:N      */
 	double c_allometry, n_allometry;
-	double plant_ndemand;
+	double growth_cn,plant_ndemand;
 	/*---------------------------------------------------------------
 	Assess the carbon availability on the basis of this day's
 	gross production and maintenance respiration costs
@@ -125,11 +132,13 @@ double compute_potential_N_uptake(
 		c_allometry = (1.0 + g1 + f1 + f1*g1);
 		n_allometry = (1.0/cnl + f1/cnfr);
 	}
-	plant_ndemand = cs->availc * (n_allometry / c_allometry);
 
 	cdf->fleaf =  1.0/(1.0+f1+f3+f2*f3);
         cdf->froot = cdf->fleaf*f1;
         cdf->fwood = cdf->fleaf*f3*(1.0+f2);
+	
+	growth_cn = c_allometry/n_allometry;	
+	plant_ndemand = compute_N_demand(epc, cs, growth_cn, command_line);
 
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake */

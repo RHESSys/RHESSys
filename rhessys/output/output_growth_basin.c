@@ -49,6 +49,7 @@ void	output_growth_basin(
 	double aleafn, afrootn, awoodn;
 	double acpool;
 	double anpool;
+	double agresp_store;
 	double alitrc;
 	double asoilhr;
 	double acloss;
@@ -75,6 +76,7 @@ void	output_growth_basin(
 	aleafc = 0.0; afrootc=0.0; awoodc=0.0;
 	aleafn = 0.0; afrootn=0.0; awoodn=0.0;
 	agpsn = 0.0; aresp=0.0; anfix=0.0; anuptake=0.0;
+	agresp_store = 0.0;
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
@@ -209,6 +211,7 @@ void	output_growth_basin(
 						alai += strata->cover_fraction * (strata->epv.proj_lai)
 							* patch[0].area;
 						acpool += strata->cover_fraction*strata->cs.cpool*patch[0].area;
+						agresp_store += strata->cover_fraction*strata->cs.gresp_store*patch[0].area;
 						anpool += strata->cover_fraction*strata->ns.npool*patch[0].area;
 					}
 				}
@@ -238,6 +241,7 @@ void	output_growth_basin(
 	anitrate /= aarea;
 	asurfaceN /= aarea;
 	acpool /= aarea ;
+	agresp_store /= aarea ;
 	anpool /= aarea ;
 	aleafc /= aarea ;
 	aleafn /= aarea ;
@@ -280,7 +284,7 @@ void	output_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -294,7 +298,9 @@ void	output_growth_basin(
 		asurfaceN * 1000,
 		(aleafc + awoodc + afrootc),
 		(aleafn + awoodn + afrootn),
+		acpool,
 		anpool,
+		agresp_store,
 		alitrc,
 		alitrn,
 		asoilc,

@@ -67,6 +67,7 @@ int allocate_annual_growth(				int id,
 		struct litter_c_object *,
 		struct litter_n_object *,
 		int,
+		int,
 		struct mortality_struct);
 
 	
@@ -87,7 +88,7 @@ int allocate_annual_growth(				int id,
 	double unmetn, carbohydrate_transfer_n;
 	double plantc, excess_lai, excess_leaf_carbon, stemc, leafc;
 	double delta_leaf, leaf_growth_deficit;
-	double total_store, ratio, total_above_biomass,total_biomass, carbohydrate_transfer;
+	double tmp, tmp2, total_store, ratio, total_above_biomass,total_biomass, carbohydrate_transfer;
 	struct mortality_struct mort;
 
 
@@ -224,65 +225,16 @@ int allocate_annual_growth(				int id,
 		mort.mort_livecrootc = excess_carbon;
 		mort.mort_deadcrootc = excess_carbon;
 		mort.mort_frootc = excess_carbon;					
+		mort.mort_reprodc = excess_carbon;					
 		update_mortality(epc,
 						 cs, cdf, cdf_patch,
 						 ns, ndf, ndf_patch, 
 						 cs_litr, ns_litr, 1,
+						 command_line[0].reproduction_flag,
 						 mort);	
 	}
 		
 	
-	/*--------------------------------------------------------------*/
-	/*	respiration thinning			*/
-	/*	now substituting carbon hydrat storage mortality 		*/
-	/*--------------------------------------------------------------*/
-/*
-	if ((vmort_flag == 1) && ((cs->leafc_store+cs->leafc) < epc.min_percent_leafg*epv->prev_leafcalloc) ) {
-
-		plantc =  (cs->live_crootc
-			+ cs->live_stemc + cs->dead_crootc
-			+ cs->dead_stemc + cs->livecrootc_store
-			+ cs->livestemc_store + cs->deadcrootc_store
-			+ cs->deadstemc_store
-			+ cs->livecrootc_transfer
-			+ cs->livestemc_transfer
-			+ cs->deadcrootc_transfer
-			+ cs->deadstemc_transfer
-			+ cs->leafc + cs->leafc_transfer + cs->leafc_store
-			+ cs->frootc + cs->frootc_transfer + cs->frootc_store);
-
-		leafc =	 cs->leafc;
-		stemc = 
-			 cs->live_stemc 
-			+ cs->dead_stemc ;
-		
-		if (leafc/stemc > 0.6)
-			excess_leaf_carbon = stemc*(leafc/stemc - 0.6); 
-		else
-			excess_leaf_carbon = 0.0;
-
-		excess_leaf_carbon = min(cs->leafc, excess_leaf_carbon);
-		excess_leaf_carbon = max(0.0, excess_leaf_carbon);
-		excess_leaf_carbon = min(-1.0*cs->cpool, excess_leaf_carbon);
-
-		excess_carbon = min(1.0, -1.0*cs->cpool/plantc - excess_leaf_carbon);
-
-		cs->leafc -= excess_leaf_carbon;
-		ns->leafn -= excess_leaf_carbon/epc.leaf_cn;
-
-		cs->cpool += excess_leaf_carbon;
-		ns->npool += excess_leaf_carbon/epc.leaf_cn;
-
-		update_mortality(epc,
-			cs, cdf, cdf_patch,
-			ns, ndf, ndf_patch, 
-			cs_litr, ns_litr, cover_fraction, excess_carbon);
-		}
-*/
-
-
-
-
 	/*--------------------------------------------------------------*
 	/*  we include a delay on storage output so that the
 		veg does not die in a bad year -esp. for Grasses	*/
@@ -315,6 +267,12 @@ int allocate_annual_growth(				int id,
 		cs->cpool += cs->deadcrootc_store * (1.0-storage_transfer_prop);
 		cs->deadcrootc_store = 0.0;
 	}
+	if (command_line[0].reproduction_flag == 1) {
+		/* for now we don't hold anything back from reproduction to cpool since we already checked that cpool was suffcient */
+		/* in other words reproduction is taken out after growth */
+		cdf->reprodc_store_to_reprodc_transfer = cs->reprodc_store * storage_transfer_prop;
+		cs->reprodc_store = 0.0;
+	}		
 
 	/* nitrogen transfers */
 	/* for grasses, we include a delay on storage output so that the
@@ -345,10 +303,17 @@ int allocate_annual_growth(				int id,
 		ns->deadcrootn_store = 0.0;
 	}
 	
+	if (command_line[0].reproduction_flag == 1) {
+		/* for now we don't hold anything back from reproduction to cpool since we already checked that cpool was suffcient */
+		/* in other words reproduction is taken out after growth */
+		ndf->reprodn_store_to_reprodn_transfer = ns->reprodn_store * storage_transfer_prop;
+		ns->reprodn_store = 0.0;
+	}		
 	
 	/*--------------------------------------------------------------*/
 	/* use carbohydrates if stressed				*/
 	/*--------------------------------------------------------------*/
+
 	
 	if (total_above_biomass > ZERO)
 		 excess_carbon = (cdf->leafc_store_to_leafc_transfer+cs->leafc) - epc.min_percent_leafg*total_biomass;  
@@ -432,7 +397,9 @@ int allocate_annual_growth(				int id,
 	/*	we allow only a certain amount of resprouting based on 	*/
 	/*	a stratum default file parameterization 		*/
 	/*--------------------------------------------------------------*/
-	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) {
+	if (((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) &&
+		(command_line[0].reproduction_flag == 0)) {
+
 		if (cs->num_resprout < epc.max_years_resprout) {
 
 		printf("\n Resprouting stratum %d", id);
@@ -454,6 +421,7 @@ int allocate_annual_growth(				int id,
 		ns->leafn_transfer = 0.0;
 		ns->frootn_transfer = 0.0;
 		ns->leafn = 0.0;
+		
 		cdf->gresp_store_to_gresp_transfer = 0.0;
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 
@@ -509,6 +477,10 @@ int allocate_annual_growth(				int id,
 		 cs->age += 1;
 		 }
 
+	if (command_line[0].reproduction_flag == 1) {
+	/* resprout code using seed */
+	}
+
 	/* update states variables */
 	cs->leafc_transfer    += cdf->leafc_store_to_leafc_transfer;
 	cs->frootc_transfer   += cdf->frootc_store_to_frootc_transfer;
@@ -522,8 +494,8 @@ int allocate_annual_growth(				int id,
 		cs->livecrootc_transfer += cdf->livecrootc_store_to_livecrootc_transfer;
 		cs->deadcrootc_transfer += cdf->deadcrootc_store_to_deadcrootc_transfer;
 	}
-	
-		
+
+
 	/* update states variables */
 	ns->leafn_transfer    += ndf->leafn_store_to_leafn_transfer;
 	ns->frootn_transfer   += ndf->frootn_store_to_frootn_transfer;
@@ -533,6 +505,12 @@ int allocate_annual_growth(				int id,
 		ns->livecrootn_transfer += ndf->livecrootn_store_to_livecrootn_transfer;
 		ns->deadcrootn_transfer += ndf->deadcrootn_store_to_deadcrootn_transfer;
 	}
+
+	if (command_line[0].reproduction_flag == 1) {
+		cs->reprodc_transfer += cdf->reprodc_store_to_reprodc_transfer; 
+		ns->reprodn_transfer += ndf->reprodn_store_to_reprodn_transfer; 
+	}
+
 	
 	/* for deciduous system, force leafc and frootc to exactly 0.0 on the
 	last day */
@@ -546,6 +524,7 @@ int allocate_annual_growth(				int id,
 			cs->frootc = 0.0;
 		}
 	}
+
 
 	return (!ok);
 } /* end allocate_annual_growth */

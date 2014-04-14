@@ -46,6 +46,7 @@ void execute_firespread_event(
 		struct litter_c_object *,
 		struct litter_n_object *,
 		int,
+		int,
 		struct mortality_struct);
 	void *alloc(size_t, char *, char *);
 
@@ -130,7 +131,7 @@ void execute_firespread_event(
 			mort.mort_livestemc = loss;
 			mort.mort_deadcrootc = loss;
 			mort.mort_livecrootc = loss;
-
+			mort.mort_reprodc = loss;
 			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 					canopy_strata = patch[0].layers[layer].strata[c];
@@ -144,6 +145,7 @@ void execute_firespread_event(
 						 &(patch[0].litter_cs),
 						 &(patch[0].litter_ns),
 						 thin_type,
+						 command_line[0].reproduction_flag,
 						 mort);
 				}
 			}

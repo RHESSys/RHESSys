@@ -171,6 +171,24 @@ void input_new_strata(
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cwdc = ltmp;
+
+
+
+		if (command_line[0].reproduction_flag == 1) {
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.reprodc = ltmp;
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.reprodc_store = ltmp;
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.reprodc_transfer = ltmp;
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.seedc = ltmp;
+		}
+
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.prev_leafcalloc = ltmp;
@@ -241,6 +259,20 @@ void input_new_strata(
 		read_record(world_file, record);
 		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp;
 		
+		if (command_line[0].reproduction_flag == 1) {
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.reprodn = ltmp;
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.reprodn_store = ltmp;
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.reprodn_transfer = ltmp;
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.seedn = ltmp;
+		}
 
 		/*--------------------------------------------------------------*/
 		/*	intialized annual flux variables			*/
@@ -413,6 +445,35 @@ void input_new_strata(
 		fprintf(stderr,"\n phenology flag must be set to 0 for STATIC");
 		fprintf(stderr,"\n since dynamic phenology timing not yet implemented");
 		exit(EXIT_FAILURE);
+	}
+
+
+	/*--------------------------------------------------------------*/
+	/*	set phenology timing for reproduction		*/
+	/*	if flag is set 						*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].reproduction_flag == 1) {
+		canopy_strata[0].reprod_phen.expand_startday =
+			canopy_strata[0].defaults[0][0].epc.day_reprod_on;
+		canopy_strata[0].reprod_phen.expand_stopday =
+			canopy_strata[0].reprod_phen.expand_startday
+			+ canopy_strata[0].defaults[0][0].epc.ndays_reprod_expand;
+		canopy_strata[0].reprod_phen.litfall_startday =
+			canopy_strata[0].defaults[0][0].epc.day_reprod_off;
+		canopy_strata[0].reprod_phen.litfall_stopday =
+			canopy_strata[0].reprod_phen.litfall_startday
+			+ canopy_strata[0].defaults[0][0].epc.ndays_seedfall;
+		if (canopy_strata[0].reprod_phen.expand_stopday > 365)
+			canopy_strata[0].reprod_phen.expand_stopday -= 365;
+		if (canopy_strata[0].reprod_phen.litfall_stopday > 365)
+			canopy_strata[0].reprod_phen.litfall_stopday -= 365;
+		/*---------------------------------------------------------------*/
+		/* assume this is 365 for now since we don't know when next      */
+		/* year's growing season will start                              */
+		/*---------------------------------------------------------------*/
+		canopy_strata[0].reprod_phen.nretdays = 365;
+		canopy_strata[0].reprod_phen.gwseasonday = -1;
+		canopy_strata[0].reprod_phen.lfseasonday = -1;
 	}
 		/*--------------------------------------------------------------*/
 		/*	for now initialize these accumuling variables		*/

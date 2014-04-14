@@ -148,6 +148,7 @@ struct stratum_default *construct_stratum_defaults(
 		}
 		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 1.0, 1);
 		default_object_list[i].epc.froot_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.froot_turnover", "%lf", 0.27, 1);
+		default_object_list[i].epc.reprod_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.reprod_turnover", "%lf", 1.0, 1);
 
 		if  ((default_object_list[i].epc.veg_type == GRASS) || (default_object_list[i].epc.veg_type == C4GRASS)) {
 			default_object_list[i].epc.deadleaf_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.deadleaf_turnover", "%lf", 1.0, 1);
@@ -157,12 +158,12 @@ struct stratum_default *construct_stratum_defaults(
 		}
 
 		default_object_list[i].epc.kfrag_base = 		getDoubleParam(&paramCnt, &paramPtr, "epc.kfrag_base", "%lf", 0.01, 1);
+		default_object_list[i].epc.kfrag_seed = 		getDoubleParam(&paramCnt, &paramPtr, "epc.kfrag_seed", "%lf", 0.01, 1);
 		default_object_list[i].epc.daily_mortality_turnover = 	getFloatParam(&paramCnt, &paramPtr, "epc.daily_mortality_turnover", "%f", 0.005, 1) / 365;
 		default_object_list[i].epc.froot_cn = 			getDoubleParam(&paramCnt, &paramPtr, "epc.froot_cn", "%lf", 139.7, 1);
 		default_object_list[i].epc.livewood_cn = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_cn", "%lf", 200.0, 1);
 		default_object_list[i].epc.leaflitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flab", "%lf", 0.31, 1);
 
-		// Skipping epc.leaflitr_fcel (pcs 20130117 : comment or var name wrong in orig code: defs/veg_westhemlock.def has 'leaflitr_fcel')
 		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_fcel", "%lf", 0.45, 1); // param name in file is "leaflitr_fcel"
 
 		default_object_list[i].epc.leaflitr_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flig", "%lf", 0.24, 1);
@@ -261,6 +262,41 @@ struct stratum_default *construct_stratum_defaults(
 			epc->deadwood_fscel = 0.0;
 			epc->deadwood_cn = 0.0;
 		}
+
+
+		default_object_list[i].epc.seed_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.seed_flab", "%lf", 0.31, 1);
+		fcel = getDoubleParam(&paramCnt, &paramPtr, "epc.seed_fcel", "%lf", 0.45, 1); // param name in file is "seed_fcel"
+		default_object_list[i].epc.seed_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.seed_flig", "%lf", 0.24, 1);
+
+		if ( (float)(epc->seed_flig + epc->seed_flab + fcel) != 1.0 )	{
+			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
+			fprintf(stderr,"\n  seed proportions of labile, cell. and lignin must sum to 1.0");
+			fprintf(stderr," \n for default ID %d \n", default_object_list[i].ID);
+			exit(EXIT_FAILURE);
+		}
+		lig_cel_ratio = epc->seed_flig/fcel;
+		/* calculate shielded and unshielded cellulose fraction */
+		if (lig_cel_ratio < 0.45){
+			epc->seed_fscel = 0.0;
+			epc->seed_fucel = fcel;
+		}
+		else{
+			if ((lig_cel_ratio > 0.45) && (lig_cel_ratio < 0.7)){
+				epc->seed_fscel= (lig_cel_ratio - 0.45)*3.2*fcel;
+				epc->seed_fucel = (1.0 - 3.2*(lig_cel_ratio - 0.45))*fcel;
+			}
+			else {
+				epc->seed_fscel = 0.8*fcel;
+				epc->seed_fucel = 0.2*fcel;
+			}
+		}
+
+		default_object_list[i].epc.day_reprod_on = 	getIntParam(&paramCnt, &paramPtr, "epc.day_reprod_on", "%d", 91, 1);
+		default_object_list[i].epc.day_reprod_off = 	getIntParam(&paramCnt, &paramPtr, "epc.day_reprod_off", "%d", 260, 1);
+		default_object_list[i].epc.ndays_reprod_expand = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_reprod_expand", "%d", 30, 1);
+		default_object_list[i].epc.ndays_seedfall = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_seedfall", "%d", 30, 1);
+		default_object_list[i].epc.seed_cn = 1.0/((fcel/CEL_CN +epc->seed_flig/LIG_CN + epc->seed_flab/LIVELAB_CN));
+
 		default_object_list[i].epc.alloc_frootc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_frootc_leafc", "%lf", 1.325, 1);
 		default_object_list[i].epc.alloc_crootc_stemc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_crootc_stemc", "%lf", 0.3, 1);
 		default_object_list[i].epc.alloc_stemc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_stemc_leafc", "%lf", 1.62, 1);
@@ -270,6 +306,8 @@ struct stratum_default *construct_stratum_defaults(
 			epc->phloemcsa_per_alllai = 0.0;
 		}
 		default_object_list[i].epc.alloc_maxlgf 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.maxlgf", "%lf", 0.05, 1); // param named 'epc.maxlgf' in parameter file
+		default_object_list[i].epc.alloc_cpool_reprodc = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_cpool_reprodc", "%lf", 0.0, 1);
+		default_object_list[i].epc.cpool_fract_reprod_thresh = getDoubleParam(&paramCnt, &paramPtr, "epc.cpool_fract_reprod_thresh", "%lf", 0.01, 1);
 		default_object_list[i].epc.alloc_prop_day_growth = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_prop_day_growth", "%lf", 0.5, 1);
 		default_object_list[i].epc.dynamic_alloc_prop_day_growth = getIntParam(&paramCnt, &paramPtr, "epc.dyn_alloc_prop_day_growth", "%d", 0, 1);
 		default_object_list[i].epc.daily_fire_turnover 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_fire_turnover", "%lf", 0.0, 1);

@@ -179,27 +179,31 @@ void	canopy_stratum_daily_F(
 		struct psnin_struct * ,
 		struct psnout_struct * ,
 		int);
+
 	
 	double	compute_potential_N_uptake_Dickenson(
 		struct	epconst_struct,
 		struct	epvar_struct *,
-		struct cstate_struct *cs,
-		struct nstate_struct *ns,
-		struct cdayflux_struct *);
+		struct cstate_struct *,
+		struct nstate_struct *,
+		struct cdayflux_struct *,
+		struct command_line_object *);
 
 	double	compute_potential_N_uptake_Waring(
 		struct	epconst_struct,
 		struct	epvar_struct *,
-		struct cstate_struct *cs,
-		struct nstate_struct *ns,
-		struct cdayflux_struct *);
+		struct cstate_struct *,
+		struct nstate_struct *,
+		struct cdayflux_struct *,
+		struct command_line_object *);
 
 	double	compute_potential_N_uptake(
 		struct	epconst_struct,
 		struct	epvar_struct *,
-		struct cstate_struct *cs,
-		struct nstate_struct *ns,
-		struct cdayflux_struct *);
+		struct cstate_struct *,
+		struct nstate_struct *,
+		struct cdayflux_struct *,
+		struct command_line_object *);
 
 	void	update_mortality(
 		struct epconst_struct,
@@ -211,6 +215,7 @@ void	canopy_stratum_daily_F(
 		struct ndayflux_patch_struct *,
 		struct litter_c_object *,
 		struct litter_n_object *,
+		int,
 		int,
 		struct mortality_struct);
 	/*--------------------------------------------------------------*/
@@ -265,6 +270,7 @@ void	canopy_stratum_daily_F(
 	struct	psnout_struct	psnout;
 	struct mortality_struct mort;
 
+	tmid = stratum[0].cs.frootc;
 
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.1 ",julday(current_date)-2449000);
@@ -335,6 +341,10 @@ void	canopy_stratum_daily_F(
 			mort.mort_livecrootc = 0.0;
 			mort.mort_deadcrootc = 0.0;
 			mort.mort_frootc = 0.0;
+			/* reproduction losses also occur during grazing */
+			if (command_line[0].reproduction_flag == 1) {
+				mort.mort_reprodc = leafcloss_perc;
+				}	
 			update_mortality(stratum[0].defaults[0][0].epc,
 				&(stratum[0].cs),
 				&(stratum[0].cdf),
@@ -345,6 +355,7 @@ void	canopy_stratum_daily_F(
 				&(patch[0].litter_cs),
 				&(patch[0].litter_ns),
 				2,
+				command_line[0].reproduction_flag,
 				mort);
 			printf("\n completed %lf from %lf", leafcloss_perc, stratum[0].cs.leafc);
 		
@@ -1346,7 +1357,8 @@ void	canopy_stratum_daily_F(
 				&(stratum[0].epv),
 				&(stratum[0].cs),
 				&(stratum[0].ns),
-				&(stratum[0].cdf));
+				&(stratum[0].cdf),
+				command_line);
 			break;
 		case DICKENSON:
 			stratum[0].ndf.potential_N_uptake =compute_potential_N_uptake_Dickenson(
@@ -1354,7 +1366,8 @@ void	canopy_stratum_daily_F(
 				&(stratum[0].epv),
 				&(stratum[0].cs),
 				&(stratum[0].ns),
-				&(stratum[0].cdf));
+				&(stratum[0].cdf),
+				command_line);
 			break;
 		case WARING:
 			stratum[0].ndf.potential_N_uptake =compute_potential_N_uptake_Waring(
@@ -1362,7 +1375,8 @@ void	canopy_stratum_daily_F(
 				&(stratum[0].epv),
 				&(stratum[0].cs),
 				&(stratum[0].ns),
-				&(stratum[0].cdf));
+				&(stratum[0].cdf),
+				command_line);
 			break;
 		} /* end switch */
 	}

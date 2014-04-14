@@ -1045,6 +1045,9 @@ struct	cdayflux_patch_struct
     double cwdc_to_litr2c;   /* (kgC/m2/d) CWD to unshielded cellulose litter */
     double cwdc_to_litr3c;   /* (kgC/m2/d) CWD to shielded cellulose litter */
     double cwdc_to_litr4c;   /* (kgC/m2/d) CWD to lignin litter */
+    double seedc_to_litr2c;   /* (kgC/m2/d) CWD to unshielded cellulose litter */
+    double seedc_to_litr3c;   /* (kgC/m2/d) CWD to shielded cellulose litter */
+    double seedc_to_litr4c;   /* (kgC/m2/d) CWD to lignin litter */
 
     /* daily heterotroph respiration fluxes */
     double litr1c_hr;         /* (kgC/m2/d) labile litter respiration */
@@ -1139,6 +1142,9 @@ struct	ndayflux_patch_struct
     double cwdn_to_litr2n;   /* (kgN/m2/d) CWD to unshielded cellulose N */
     double cwdn_to_litr3n;   /* (kgN/m2/d) CWD to shielded cellulose N */
     double cwdn_to_litr4n;   /* (kgN/m2/d) CWD to lignin N */
+    double seedn_to_litr2n;   /* (kgN/m2/d) seed to unshielded cellulose N */
+    double seedn_to_litr3n;   /* (kgN/m2/d) seed to shielded cellulose N */
+    double seedn_to_litr4n;   /* (kgN/m2/d) seed to lignin N */
 
     /* daily N immobilization & mineralization fluxes */
     double plant_potential_ndemand; /* (kgN/m2/d) potential N demand from plants	      */
@@ -1771,6 +1777,7 @@ struct	command_line_object
 	int		tchange_flag;
 	int		stdev_flag;
 	int		surface_energy_flag;
+	int		reproduction_flag;
 	int		precip_scale_flag;
 	int		snow_scale_flag;
 	int		noredist_flag;
@@ -1877,7 +1884,6 @@ struct tec_entry
 
 
 /* phenological control arrays */
-/* note this is modified from BIOME_bgc approach by Thornten (1998) */
 /* to allow for daily rather than annual control of phenology		*/
 
 struct phenology_struct
@@ -1890,17 +1896,35 @@ struct phenology_struct
         double frootlitfalln; /* (kgN/m2) current growth year leaflitter nitrogen */
         double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
         double gsi;		/* (0 to 1) growing season phenology index */
-		int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
+	int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
         int expand_startday;       /* (yday) yearday of first leaf growth */
-        int litfall_startday;       /* (yday) yearday of litterfall growth */
+        int litfall_startday;       /* (yday) yearday of litterfall */
         int expand_stopday;       /* (yday) yearday of last leaf growth */
-        int litfall_stopday;       /* (yday) yearday of last litterfall growth */
+        int litfall_stopday;       /* (yday) yearday of last litterfall  */
         int ngrowthdays; /* (days) days between onday and next offday */
         int nretdays;    /* (days) days between allocations */
-		int gwseasonday; /* (day) day within the growing season */
-		int lfseasonday; /* (day) day within litter fall period */
+	int gwseasonday; /* (day) day within the growing season */
+	int lfseasonday; /* (day) day within litter fall period */
 		
 		
+};
+
+
+struct reproduction_phenology_struct
+{
+        double reprodlitfallc; /* (kgC/m2) current growth year reproduction carbon */
+        double reprodlitfalln; /* (kgN/m2) current growth year reproduction nitrogen */
+        double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
+        double gsi;		/* (0 to 1) growing season phenology index */
+	int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
+        int expand_startday;       /* (yday) yearday of first leaf growth */
+        int litfall_startday;       /* (yday) yearday of litterfall */
+        int expand_stopday;       /* (yday) yearday of last leaf growth */
+        int litfall_stopday;       /* (yday) yearday of last litterfall  */
+        int ngrowthdays; /* (days) days between onday and next offday */
+        int nretdays;    /* (days) days between allocations */
+	int gwseasonday; /* (day) day within the growing season */
+	int lfseasonday; /* (day) day within litter fall period */
 };
 
 	
@@ -1924,6 +1948,7 @@ struct cstate_struct
     double live_crootc;     /* (kgC/m2) live coarse root C */
     double dead_crootc;     /* (kgC/m2) dead coarse root C */
     double frootc;          /* (kgC/m2) fine root C */ 
+    double reprodc;	    /* (kgC/m2) reproduction pool C */
 
     double leafc_transfer; 	/* (kgC/m2) leaf C to be allocated from last season */
     double livestemc_transfer; /* (kgC/m2) live stemwood C to be allocated from last season */
@@ -1931,6 +1956,7 @@ struct cstate_struct
     double livecrootc_transfer;/* (kgC/m2) live coarse root C to be allocated from last season */
     double deadcrootc_transfer;/* (kgC/m2) dead coarse root C to be allocated from last season */
     double frootc_transfer; 	/* (kgC/m2) leaf C to be allocated from last season */
+    double reprodc_transfer; 	/* (kgC/m2) reproduction  C to be allocated from last season */
     double gresp_transfer;    /* (kgC/m2) growth respiration C to be allocated from last season*/ 
 
     double leafc_store;     /* (kgC/m2) stored leaf C stored from year's growth */
@@ -1939,9 +1965,11 @@ struct cstate_struct
     double livecrootc_store;/* (kgC/m2) live coarse root C  stored from this years growth*/
     double deadcrootc_store;/* (kgC/m2) dead coarse root C  stored from this years growth*/
     double frootc_store;    /* (kgC/m2) fine root C  stored from this years growth */ 
+    double reprodc_store;    /* (kgC/m2) reproduction C  stored from this years growth */ 
 
     double gresp_store;    /* (kgC/m2) growth respiration C stored from this years growth */ 
     double cwdc;	   /* (kgC/m2) coarse woody debris C*/
+    double seedc;	    /* (kgC/m2) on ground seed pool C */
 
 /* sink for respiration and fire losses */
     double gpsn_src;       /* (kgC/m2) SUM of gross PSN carbon inputs */
@@ -2066,6 +2094,11 @@ struct epvar_struct
     double livecrootc_transfer_to_livecrootc;/* (kgC/m2/d) */
     double deadcrootc_transfer_to_deadcrootc;/* (kgC/m2/d) */
 
+
+    /* phenology/turnover fluxes from reproduction */
+    double reprodc_transfer_to_reprodc;/* (kgC/m2/d) */
+    double reprodc_to_seedc;/* (kgC/m2/d) */
+
     /* daily growth fluxes */
   	double cpool_to_leafc;               /* (kgC/m2/d) */
         double cpool_to_leafc_store;       /* (kgC/m2/d) */
@@ -2080,6 +2113,8 @@ struct epvar_struct
         double cpool_to_deadcrootc;          /* (kgC/m2/d) */
         double cpool_to_deadcrootc_store;  /* (kgC/m2/d) */
         double cpool_to_gresp_store;       /* (kgC/m2/d) */
+  	double cpool_to_reprodc;               /* (kgC/m2/d) */
+        double cpool_to_reprodc_store;       /* (kgC/m2/d) */
 
  	/* annual turnover of storage to transfer pools */
         double leafc_store_to_leafc_transfer;           /* (kgC/m2/d) */
@@ -2088,6 +2123,7 @@ struct epvar_struct
         double deadstemc_store_to_deadstemc_transfer;    /* (kgC/m2/d) */
         double livecrootc_store_to_livecrootc_transfer; /* (kgC/m2/d) */
         double deadcrootc_store_to_deadcrootc_transfer; /* (kgC/m2/d) */
+        double reprodc_store_to_reprodc_transfer; /* (kgC/m2/d) */
         double gresp_store_to_gresp_transfer;           /* (kgC/m2/d) */
 
         /* turnover of live wood to dead wood */
@@ -2117,6 +2153,8 @@ struct epvar_struct
         double transfer_livecroot_gr;        /* (kgC/m2/d) */
         double cpool_deadcroot_gr;           /* (kgC/m2/d) */
         double transfer_deadcroot_gr;        /* (kgC/m2/d) */
+        double cpool_reprod_gr;           /* (kgC/m2/d) */
+        double transfer_reprod_gr;        /* (kgC/m2/d) */
         double transfer_gr;        /* (kgC/m2/d) */
         double total_gr;        /* (kgC/m2/d) */
 };
@@ -2153,23 +2191,27 @@ struct epvar_struct
     double live_crootn;     /* (kgN/m2) live coarse root N */
     double dead_crootn;     /* (kgN/m2) dead coarse root N */
     double frootn;          /* (kgN/m2) fine root N */ 
+    double reprodn;          /* (kgN/m2) reproduction N */ 
     double retransn;	    /* (kgN/m2) retranslocated N */
 
-    double leafn_transfer; 	/* (kgN/m2) leaf C to be allocated from last season */
-    double livestemn_transfer; /* (kgN/m2) live stemwood C to be allocated from last season */
-    double deadstemn_transfer; /* (kgN/m2) dead stemwood C to be allocated from last season */
-    double livecrootn_transfer;/* (kgN/m2) live coarse root C to be allocated from last season */
-    double deadcrootn_transfer;/* (kgN/m2) dead coarse root C to be allocated from last season */
-    double frootn_transfer; 	/* (kgN/m2) leaf C to be allocated from last season */
+    double leafn_transfer; 	/* (kgN/m2) leaf N to be allocated from last season */
+    double livestemn_transfer; /* (kgN/m2) live stemwood N to be allocated from last season */
+    double deadstemn_transfer; /* (kgN/m2) dead stemwood N to be allocated from last season */
+    double livecrootn_transfer;/* (kgN/m2) live coarse root N to be allocated from last season */
+    double deadcrootn_transfer;/* (kgN/m2) dead coarse root N to be allocated from last season */
+    double frootn_transfer; 	/* (kgN/m2) leaf N to be allocated from last season */
+    double reprodn_transfer; 	/* (kgN/m2) reproduction N to be allocated from last season */
 
     double leafn_store;     /* (kgN/m2) stored leaf N stored from year's growth */
-    double livestemn_store; /* (kgN/m2) live stemwood C stored from this years growth */
-    double deadstemn_store; /* (kgN/m2) dead stemwood C  stored from this years growth*/
-    double livecrootn_store;/* (kgN/m2) live coarse root C  stored from this years growth*/
-    double deadcrootn_store;/* (kgN/m2) dead coarse root C  stored from this years growth*/
+    double livestemn_store; /* (kgN/m2) live stemwood N stored from this years growth */
+    double deadstemn_store; /* (kgN/m2) dead stemwood N  stored from this years growth*/
+    double livecrootn_store;/* (kgN/m2) live coarse root N  stored from this years growth*/
+    double deadcrootn_store;/* (kgN/m2) dead coarse root N  stored from this years growth*/
     double frootn_store;    /* (kgN/m2) fine root N  stored from this years growth */ 
+    double reprodn_store;    /* (kgN/m2) reproduction N  stored from this years growth */ 
 
     double cwdn;	   /* (kgN/m2) coarse woody debris N*/
+    double seedn;	   /* (kgN/m2) on the ground seed N*/
     double fire_snk;       /* (kgC/m2) SUM of nitrogen loss due to fire */
 };
 
@@ -2193,6 +2235,10 @@ struct epvar_struct
    double livecrootn_transfer_to_livecrootn; /* (kgN/m2/d) */
    double deadcrootn_transfer_to_deadcrootn; /* (kgN/m2/d) */
 
+    /* phenology/turnover fluxes from reproduction */
+    double reprodn_transfer_to_reprodn; /* (kgN/m2/d) */
+    double reprodn_to_seedn;/* (kgN/m2/d) */
+
 
     /* daily growth fluxes */
     	double potential_N_uptake; /* (kgN/m2) potential uptake from soil */
@@ -2210,6 +2256,8 @@ struct epvar_struct
         double npool_to_livecrootn_store;   /* (kgN/m2/d) */
         double npool_to_deadcrootn;           /* (kgN/m2/d) */
         double npool_to_deadcrootn_store;   /* (kgN/m2/d) */
+        double npool_to_reprodn;                /* (kgN/m2/d) */
+        double npool_to_reprodn_store;           /* (kgN/m2/d) */
 
      /* annual turnover of storage to transfer */
         double leafn_store_to_leafn_transfer;           /* (kgN/m2/d) */
@@ -2218,6 +2266,7 @@ struct epvar_struct
         double deadstemn_store_to_deadstemn_transfer;   /* (kgN/m2/d) */
         double livecrootn_store_to_livecrootn_transfer; /* (kgN/m2/d) */
         double deadcrootn_store_to_deadcrootn_transfer; /* (kgN/m2/d) */
+        double reprodn_store_to_reprodn_transfer; /* (kgN/m2/d) */
 
         /* turnover of live wood to dead wood, with retranslocation */
         double livestemn_to_deadstemn;        /* (kgN/m2/d) */
@@ -2307,6 +2356,10 @@ struct epconst_struct
 	int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */
 	int ndays_expand;      /* (DIM) number of transition days leaf on to/from off  */
 	int ndays_litfall;  /* (DIM) number of transition days for full leaf drop  */
+	int day_reprod_on;        /* (DIM) yearday reproduction expression on */
+	int day_reprod_off;       /* (DIM) yearday reproduction to seedfall - set to 0 for no seed drop cond.  */
+	int ndays_reprod_expand;      /* (DIM) number of transition days reproduction on   */
+	int ndays_seedfall;  /* (DIM) number of transition days for full seed drop  */
 	int phenology_flag;	/* (DIM) set as 1 for dynamic phenology	*/
 	int allocation_flag;	/* (DIM) set as 1 for dynamic allocation */
 	int veg_type;		/* (DIM) set as 1 for tree; 0 for grass	*/
@@ -2316,6 +2369,7 @@ struct epconst_struct
 	int edible;		/* (DIM) set to 1 for edible plants */
     	int  Tacclim;  		/* (DIM) set to 1  for temperature acclimation of respiration Q10  */
     double gr_perc;	   /* (DIM 0-1) percent of growth allocated to respiration */
+    double reprod_turnover;     /* (1/yr) annual reproduction tissue turnover  fraction */
     double leaf_turnover;     /* (1/yr) annual leaf turnover fraction */
     double livewood_turnover; /* (1/yr) annual live wood turnover fraction */
     double deadleaf_turnover; /* (1/yr) annual turnover of standing dead grass fraction */
@@ -2345,6 +2399,11 @@ struct epconst_struct
     double deadwood_fscel;   /* (DIM) dead wood shielded cellulose fraction */
     double deadwood_flig;    /* (DIM) dead wood lignin fraction */
     double deadwood_cn;      /* (kgC/kgN) dead wood C:N (calc. internally) */
+    double seed_flab;   /* (DIM) seed  litter labile fraction */
+    double seed_fucel;  /* (DIM) seed litter unshielded cellulose fract */
+    double seed_fscel;  /* (DIM) seed litter shielded cellulose fract */
+    double seed_flig;   /* (DIM) seed litter lignin fraction */
+    double seed_cn;   /* (DIM) seed cn ratio */
     double alloc_frootc_leafc; /* (ratio) new fine root C to new leaf C */
     double alloc_crootc_stemc; /* (ratio) new live croot C to new live stem C */
     double alloc_stemc_leafc; /* (ratio) new live stem C to new leaf C */
@@ -2368,6 +2427,11 @@ struct epconst_struct
     double Tacclim_days;  /* num days for temperature acclimation */
     double Tacclim_slp;  /* slope for temperature acclimation adjutment to Q10 */
     double Tacclim_intercpt;  /* intercept for temperature acclimation for temperature acclimation adjustment to Q10 */
+    double shell_seed_ratio; /* (ratio) ratio of seed shell C to total seed C */
+    double seed_success_prop; /* proportion of seed C (available for growth) that successfully germinates per year */
+    double alloc_cpool_reprodc; /* (ratio) new cpool allocated to reproduction pool */
+    double cpool_fract_reprod_thresh; /* cpool/total biomass fraction that must be exceeded before alloc to reproduction */ 
+    double kfrag_seed;	      /* (1/day) daily seed fragmentation rate */
 } ;
 
 
@@ -2471,6 +2535,7 @@ struct	canopy_strata_object
 	struct	nstate_struct	ns;
 	struct	ndayflux_struct ndf;				
 	struct	phenology_struct phen;
+	struct	reproduction_phenology_struct reprod_phen;
 	struct	base_station_object	**base_stations;
 	struct	stratum_default	**defaults;
 	struct	canopy_strata_hourly_object	*hourly;
@@ -2502,6 +2567,7 @@ struct mortality_struct
 	double mort_livecrootc;
 	double mort_deadcrootc;
 	double mort_frootc;
+	double mort_reprodc;
 };
 
 

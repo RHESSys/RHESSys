@@ -124,6 +124,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
+	command_line[0].reproduction_flag = 0;
 	
 	/*-------------------------------------------------*/
 	/*	Loop through each arguement in the command line.*/
@@ -418,6 +419,17 @@ struct	command_line_object	*construct_command_line(
 			else if ( strcmp(main_argv[i],"-precip") == 0 ){
 				printf("\n Running wiith stochastic precipitation scaling ");
 				command_line[0].precip_scale_flag = 1;
+				i++;
+
+			} /* end if */
+
+
+			/*-------------------------------------------------------*/
+			/*Check if the reproduction   flag is next.           */
+			/*-------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-reproduction") == 0 ){
+				printf("\n Running wiith reproduction turned on = worldfile must be adjusted\n");
+				command_line[0].reproduction_flag = 1;
 				i++;
 
 			} /* end if */

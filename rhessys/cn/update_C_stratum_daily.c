@@ -29,7 +29,8 @@
 #include "phys_constants.h"
 
 int update_C_stratum_daily(struct epconst_struct epc,
-						   struct cstate_struct *cs, struct cdayflux_struct *cdf)
+						   struct cstate_struct *cs, struct cdayflux_struct *cdf,
+				struct command_line_object *command_line)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -91,6 +92,14 @@ int update_C_stratum_daily(struct epconst_struct epc,
 		cs->deadcrootc_store += cdf->cpool_to_deadcrootc_store;
 		cs->cpool              -= cdf->cpool_to_deadcrootc_store;
 	}
+
+	if (command_line[0].reproduction_flag == 1) {
+		cs->reprodc += cdf->cpool_to_reprodc;
+		cs->cpool -= cdf->cpool_to_reprodc;
+		cs->reprodc_store += cdf->cpool_to_reprodc_store;
+		cs->cpool -= cdf->cpool_to_reprodc_store;
+		}
+
 	/* Daily allocation for transfer growth respiration */
 	cs->gresp_store  += cdf->cpool_to_gresp_store;
 	cs->cpool          -= cdf->cpool_to_gresp_store;

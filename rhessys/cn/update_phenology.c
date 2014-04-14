@@ -24,6 +24,7 @@
 /*                      struct soil_n_object *,                 */
 /*                      double,                                 */
 /*			struct date current_date,		*/
+/*			struct date command_line,		*/
 /*		 	int	grow_flag);			*/
 /*                                  				*/
 /*                                                              */
@@ -69,6 +70,7 @@ void update_phenology(struct zone_object  *zone,
 					  double	gap_fraction,
 					  double	theta_noon,
 					  struct date current_date,
+					  struct command_line_object *command_line,
 					  int	grow_flag)
 {
 	/*--------------------------------------------------------------*/
@@ -201,7 +203,7 @@ void update_phenology(struct zone_object  *zone,
               expand_flag=1;
           }   
       else if (phen->gsi > 0.5) {
-              phen->gwseasonday = 1;
+          phen->gwseasonday = 1;
           phen->lfseasonday = -1; 
           expand_flag=1;
           phen->expand_startday = day;
@@ -254,7 +256,7 @@ void update_phenology(struct zone_object  *zone,
           }   
 
 
-                if  (phen->lfseasonday < epc.ndays_litfall) {
+          if  (phen->lfseasonday < epc.ndays_litfall) {
                                        litfall_flag=1;
           phen->gwseasonday = -1; 
     }
@@ -270,8 +272,6 @@ void update_phenology(struct zone_object  *zone,
       phen->lfseasonday += 1;
 
   } /* end dynamic phenology set up */
-
-
 	
 	phen->daily_allocation = epc.alloc_prop_day_growth;
 	phen->annual_allocation = 0;
@@ -391,6 +391,7 @@ void update_phenology(struct zone_object  *zone,
 			ns->deadcrootn_transfer -= ndf->deadcrootn_transfer_to_deadcrootn;
 
 		}
+			
 	}	/* end of grow processing */
 	/*--------------------------------------------------------------*/
 	/* check for leaf and fine root litfall for this day */
@@ -514,6 +515,7 @@ void update_phenology(struct zone_object  *zone,
 		}
 
 	} /* end tree processing */
+
 	if (grow_flag == 0) { /* non-grow processing */
 		/*--------------------------------------------------------------*/
 		/* update state variables assumes no retranslocation */
@@ -647,7 +649,6 @@ void update_phenology(struct zone_object  *zone,
 		cs_litr,
 		litter);
 
-	
 
 	return;
 

@@ -87,6 +87,7 @@ void input_new_strata_thin(
 		struct litter_c_object *,
 		struct litter_n_object *,
 		int,
+		int,
 		struct mortality_struct);
 
 	void	*alloc(	size_t,
@@ -110,6 +111,7 @@ void input_new_strata_thin(
 	mort.mort_livecrootc = 0.0;
 	mort.mort_deadcrootc = 0.0;
 	mort.mort_frootc = 0.0;
+	mort.mort_reprodc = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.		*/
@@ -195,6 +197,23 @@ void input_new_strata_thin(
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		/*if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cwdc = ltmp * canopy_strata[0].cs.cwdc;*/
+
+
+		if (command_line[0].reproduction_flag == 1) {
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/* if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.reprodc = ltmp; */
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/* if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.reprodc_store = ltmp; */
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/* if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.reprodc_transfer = ltmp; */
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/* if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.seedc = ltmp; */
+		}
+
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		/*if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.prev_leafcalloc = ltmp * canopy_strata[0].epv.prev_leafcalloc;*/
@@ -264,7 +283,23 @@ void input_new_strata_thin(
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		/*if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp * canopy_strata[0].ns.retransn;*/
-		
+	
+	
+		if (command_line[0].reproduction_flag == 1) {
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/* if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.reprodn = ltmp; */
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/* if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.reprodn_store = ltmp; */
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/* if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.reprodn_transfer = ltmp; */
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/* if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.seedn = ltmp; */
+		}
+
 
 		/*--------------------------------------------------------------*/
 		/*	intialized annual flux variables			*/
@@ -313,6 +348,7 @@ void input_new_strata_thin(
 						 &(patch[0].litter_cs),
 						 &(patch[0].litter_ns),
 						 thintyp,
+						 command_line[0].reproduction_flag,
 						 mort);
 	
 	

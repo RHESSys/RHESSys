@@ -45,14 +45,17 @@ void	canopy_stratum_growth(
 	int 	update_C_stratum_daily(
 		struct epconst_struct,
 		struct cstate_struct *,
-		struct cdayflux_struct *);
+		struct cdayflux_struct *,
+		struct command_line_object *);
 	int 	update_N_stratum_daily(
 		struct epconst_struct,
 		struct nstate_struct *,
 		struct ndayflux_struct *,
-		struct soil_n_object *);
+		struct soil_n_object *,
+		struct command_line_object *);
 	int	allocate_daily_growth(
 		int,
+		double,
 		double,
 		double,
 		double,
@@ -64,7 +67,8 @@ void	canopy_stratum_growth(
 		struct ndayflux_patch_struct *,
 		struct	epvar_struct *,
 		struct	epconst_struct,
-		struct	date);
+		struct	date,
+		struct command_line_object *);
 	int	allocate_annual_growth(
 		int,
 		int,
@@ -88,12 +92,12 @@ void	canopy_stratum_growth(
 	/*--------------------------------------------------------------*/
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
-	double pnow;
+	double tmp, pnow;
 	/*--------------------------------------------------------------*/
 	/*	perform daily carbon and nitrogen allocations		*/
 	/*--------------------------------------------------------------*/
 
-	
+	tmp = stratum[0].cs.frootc;
 
 	if (command_line[0].grow_flag > 0) {
 
@@ -108,6 +112,7 @@ void	canopy_stratum_growth(
 		if (allocate_daily_growth(
 			patch[0].soil_ns.nlimit,
 			pnow,
+			stratum[0].phen.daily_allocation,
 			patch[0].Tsoil,
 			patch[0].soil_cs.frootc,
 			stratum[0].cover_fraction,
@@ -118,11 +123,12 @@ void	canopy_stratum_growth(
 			&(patch[0].ndf),
 			&(stratum[0].epv),
 			stratum[0].defaults[0][0].epc,
-			current_date) != 0){
+			current_date, command_line) != 0){
 			fprintf(stderr,"FATAL ERROR: in allocate_daily_growth");
 			exit(EXIT_FAILURE);
 			}
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	compute growth respiration (if grow option is on_)	*/
 	/*--------------------------------------------------------------*/
@@ -164,6 +170,7 @@ void	canopy_stratum_growth(
 	}
 
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	update carbon state variables 				*/
 	/*--------------------------------------------------------------*/
@@ -171,10 +178,12 @@ void	canopy_stratum_growth(
 	if (update_C_stratum_daily(
 		stratum[0].defaults[0][0].epc,
 		&(stratum[0].cs),
-		&(stratum[0].cdf))!= 0){
+		&(stratum[0].cdf),
+		command_line)!= 0){
 		fprintf(stderr,"FATAL ERROR: in update_C_stratum_daily");
 		exit(EXIT_FAILURE);
 	}
+
 
 	/*--------------------------------------------------------------*/
 	/*	update nitrogen state variables 				*/
@@ -183,7 +192,8 @@ void	canopy_stratum_growth(
 		stratum[0].defaults[0][0].epc,
 		&(stratum[0].ns),
 		&(stratum[0].ndf),
-		&(patch[0].soil_ns))!= 0){
+		&(patch[0].soil_ns),
+		command_line)!= 0){
 		fprintf(stderr,"FATAL ERROR: in update_N_stratum_daily");
 		exit(EXIT_FAILURE);
 	}
@@ -220,5 +230,6 @@ void	canopy_stratum_growth(
 		+ ns->live_crootn + ns->livecrootn_store +  ns->livecrootn_transfer
 		+ ns->dead_crootn + ns->deadcrootn_store +  ns->deadcrootn_transfer);
 	stratum[0].acc_month.lai += stratum[0].epv.proj_lai;
+
 	return;
 } /*end canopy_stratum_daily_growth.c*/

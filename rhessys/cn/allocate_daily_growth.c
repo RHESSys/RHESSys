@@ -37,6 +37,7 @@
 
 int allocate_daily_growth(int nlimit,
 						  double pnow,
+						  double daily_allocation,
 						  double Tsoil,
 						  double total_soil_frootc,
 						  double cover_fraction,
@@ -47,7 +48,8 @@ int allocate_daily_growth(int nlimit,
 						  struct ndayflux_patch_struct *ndf_patch,
 						  struct epvar_struct *epv,
 						  struct epconst_struct epc,
-						  struct date current_date)
+						  struct date current_date,
+						  struct command_line_object *command_line)
 {
 	/*------------------------------------------------------*/
 	/*	Local function declarations.						*/
@@ -80,6 +82,7 @@ int allocate_daily_growth(int nlimit,
 	double sminn_to_npool;
 	double B,C, totalc_used,total_used; /* working variables */
 	double preday_npool, preday_cpool;
+	double total_biomass, alloc_to_reprodc, c_remaining;
 
 	/* assign local values for the allocation control parameters */
 	B = epc.alloc_stemc_leafc;
@@ -252,6 +255,28 @@ int allocate_daily_growth(int nlimit,
 		cdf->cpool_to_deadcrootc_store = plant_calloc * fwood  * fcroot * fdead *  (1.0-pnow);
 	}
 
+
+	/* allocate to reproduction fluxes if flag is set and cpool is sufficient */
+	if (command_line[0].reproduction_flag==1) {
+		total_biomass = total_biomass =  (cs->leafc+cs->frootc+cs->dead_stemc+cs->live_stemc+
+                        cs->dead_crootc+cs->live_crootc);
+		if (total_biomass > ZERO) {
+		if (cs->cpool/total_biomass > epc.cpool_fract_reprod_thresh) {
+		  c_remaining = cdf->psn_to_cpool - cdf->cpool_to_leafc - cdf->cpool_to_frootc;
+		  if (epc.veg_type == TREE) {
+			c_remaining -= cdf->cpool_to_livestemc + cdf->cpool_to_deadstemc +
+					cdf->cpool_to_deadcrootc + cdf->cpool_to_deadcrootc_store;
+		  alloc_to_reprodc = plant_calloc * epc.alloc_cpool_reprodc* (1.0-epc.storage_transfer_prop);
+		  /* don't put more to reproduction that is available after growth expressed today */
+		  alloc_to_reprodc = min(alloc_to_reprodc,c_remaining);
+	          cdf->cpool_to_reprodc = alloc_to_reprodc * daily_allocation;
+		  cdf->cpool_to_reprodc_store = alloc_to_reprodc * (1.0-daily_allocation);
+	/*  printf("\n redprod %lf %lf nlc %lf c %lf", cdf->cpool_to_reprodc, cdf->cpool_to_reprodc_store, nlc, plant_calloc); */
+		}
+		}
+	}
+	}
+ 
 	/* daily N fluxes out of npool and into new growth or storage */
 	ndf->sminn_to_npool = sminn_to_npool;
 	ndf_patch->sminn_to_npool += sminn_to_npool * cover_fraction;
@@ -290,6 +315,15 @@ int allocate_daily_growth(int nlimit,
 		ndf->npool_to_deadcrootn         +
 		ndf->npool_to_deadcrootn_store;
 
+
+	/* allocate to reproduction fluxes if flag is set and cpool is sufficient */
+	if ((command_line[0].reproduction_flag==1) && (alloc_to_reprodc > ZERO)) {
+	          ndf->npool_to_reprodn = cdf->cpool_to_reprodc / epc.seed_cn;
+	          ndf->npool_to_reprodn_store = cdf->cpool_to_reprodc_store / epc.seed_cn;
+		}
+
+
+
 /*
 	printf("\nused %lf sminn_to_npool %lf npool %lf soil %lf ret %lf both %lf uptake %lf  limit %d", 
 			ndf->actual_N_uptake, sminn_to_npool, ns->npool, soil_nsupply, ns->retransn, ns->retransn+soil_nsupply, 
@@ -311,7 +345,6 @@ int allocate_daily_growth(int nlimit,
 		cdf->cpool_to_deadcrootc         +
 		cdf->cpool_to_deadcrootc_store;
 
-		 
 	/* calculate the amount of carbon that needs to go into growth
 	respiration storage to satisfy all of the storage growth demands */
 	if (epc.veg_type == TREE){

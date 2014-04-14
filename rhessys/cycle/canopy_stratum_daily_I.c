@@ -101,7 +101,26 @@ void	canopy_stratum_daily_I(
 		double,
 		double,
 		struct date,
+		struct command_line_object *,
 		int);
+
+
+	void	update_reprod_phenology(
+		struct epvar_struct *,
+		struct epconst_struct,
+		struct reproduction_phenology_struct *,
+		struct cstate_struct *,
+		struct cdayflux_struct *,
+		struct cdayflux_patch_struct *,
+		struct nstate_struct *,
+		struct ndayflux_struct *,
+		struct ndayflux_patch_struct *,
+		struct litter_c_object *,
+		struct litter_n_object *,
+		struct litter_object *,
+		double,
+		struct date,
+		struct command_line_object *);
 
 	void	update_mortality(
 		struct epconst_struct,
@@ -113,6 +132,7 @@ void	canopy_stratum_daily_I(
 		struct ndayflux_patch_struct *,
 		struct litter_c_object *,
 		struct litter_n_object *,
+		int,
 		int,
 		struct mortality_struct);
 	
@@ -127,8 +147,10 @@ void	canopy_stratum_daily_I(
 	struct nstate_struct *ns;
 	double wilting_point;
 	struct mortality_struct mort;
-	double leafcloss_perc;
+	double tmp,leafcloss_perc;
 
+	tmp = stratum[0].cs.frootc;
+	
 	/*--------------------------------------------------------------*/
 	/* no processing at present for non-veg types			*/
 	/*--------------------------------------------------------------*/
@@ -228,7 +250,7 @@ void	canopy_stratum_daily_I(
 		mort.mort_deadstemc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
 		mort.mort_livecrootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
 		mort.mort_deadcrootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		mort.mort_frootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		mort.mort_frootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover; 
 		update_mortality(stratum[0].defaults[0][0].epc,
 			&(stratum[0].cs),
 			&(stratum[0].cdf),
@@ -239,6 +261,7 @@ void	canopy_stratum_daily_I(
 			&(patch[0].litter_cs),
 			&(patch[0].litter_ns),
 			1,
+			command_line[0].reproduction_flag,
 			mort);
 
 		if  ((stratum[0].defaults[0][0].epc.veg_type==TREE) && (stratum[0].defaults[0][0].epc.branch_turnover > ZERO)){
@@ -278,7 +301,30 @@ void	canopy_stratum_daily_I(
 		stratum[0].gap_fraction,
 		basin[0].theta_noon,
 		current_date,
+		command_line,
 		command_line[0].grow_flag);
+
+	/*--------------------------------------------------------------*/
+	/*  perform seasonal leaf sens. and budding						*/
+	/*--------------------------------------------------------------*/
+	if ((command_line[0].reproduction_flag ==1) && (command_line[0].grow_flag == 1) ) {
+		update_reprod_phenology( &(stratum[0].epv),
+		stratum[0].defaults[0][0].epc,
+		&(stratum[0].phen),
+		&(stratum[0].cs),
+		&(stratum[0].cdf),
+		&(patch[0].cdf),
+		&(stratum[0].ns),
+		&(stratum[0].ndf),
+		&(patch[0].ndf),
+		&(patch[0].litter_cs),
+		&(patch[0].litter_ns),
+		&(patch[0].litter),
+		stratum[0].cover_fraction,
+		current_date,
+		command_line);
+	}
+
 
 	/*--------------------------------------------------------------*/
 	/* if it is the last day of litterfall, perform carbon/nitrogen */
@@ -308,6 +354,7 @@ void	canopy_stratum_daily_I(
 		} /* end litterfall end of season calculations */
 	} /* end grow flag */
 	}	/* end NON_VEG conditional */
+
 	return;
 } /*end canopy_stratum_I.c*/
 

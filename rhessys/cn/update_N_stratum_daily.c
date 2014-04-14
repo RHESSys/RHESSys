@@ -30,7 +30,8 @@
 
 int update_N_stratum_daily(			 struct epconst_struct epc,
 						   struct nstate_struct *ns, struct ndayflux_struct *ndf,
-						   struct soil_n_object *ns_soil)
+						   struct soil_n_object *ns_soil,
+						   struct command_line_object *command_line)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -93,6 +94,14 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 		ns->deadcrootn_store += ndf->npool_to_deadcrootn_store;
 		ns->npool              -= ndf->npool_to_deadcrootn_store;
 	}
+
+	if (command_line[0].reproduction_flag == 1) {
+		ns->reprodn += ndf->npool_to_reprodn;
+		ns->npool -= ndf->npool_to_reprodn;
+		ns->reprodn_store += ndf->npool_to_reprodn_store;
+		ns->npool -= ndf->npool_to_reprodn_store;
+		}
+
 	/*------------------------------------------------------*/
 	/*	return any excess nitrogen to the soil		*/
 	/*------------------------------------------------------*/

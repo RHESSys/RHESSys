@@ -53,6 +53,7 @@ int zero_stratum_daily_flux(
 	cdf->deadstemc_transfer_to_deadstemc = 0.0;
 	cdf->livecrootc_transfer_to_livecrootc = 0.0;
 	cdf->deadcrootc_transfer_to_deadcrootc = 0.0;
+	cdf->reprodc_transfer_to_reprodc = 0.0;
 	cdf->livestemc_to_deadstemc = 0.0;
 	cdf->livecrootc_to_deadcrootc = 0.0;
 	/* daily growth fluxes */
@@ -68,6 +69,8 @@ int zero_stratum_daily_flux(
 	cdf->cpool_to_livecrootc_store = 0.0;
 	cdf->cpool_to_deadcrootc = 0.0;
 	cdf->cpool_to_deadcrootc_store = 0.0;
+	cdf->cpool_to_reprodc = 0.0;
+	cdf->cpool_to_reprodc_store = 0.0;
 	cdf->cpool_to_gresp_store = 0.0;
 	/* annual growth fluxes */
 	cdf->leafc_store_to_leafc_transfer = 0.0;
@@ -76,6 +79,7 @@ int zero_stratum_daily_flux(
 	cdf->deadstemc_store_to_deadstemc_transfer = 0.0;
 	cdf->livecrootc_store_to_livecrootc_transfer = 0.0;
 	cdf->deadcrootc_store_to_deadcrootc_transfer = 0.0;
+	cdf->reprodc_store_to_reprodc_transfer = 0.0;
 	cdf->gresp_store_to_gresp_transfer = 0.0;
 
 	/* autotroph  maintenance respiration fluxes */
@@ -104,6 +108,7 @@ int zero_stratum_daily_flux(
 	ndf->deadstemn_transfer_to_deadstemn = 0.0;
 	ndf->livecrootn_transfer_to_livecrootn = 0.0;
 	ndf->deadcrootn_transfer_to_deadcrootn = 0.0;
+	ndf->reprodn_transfer_to_reprodn = 0.0;
 	ndf->livestemn_to_deadstemn = 0.0;
 	ndf->livestemn_to_retransn = 0.0;
 	ndf->livecrootn_to_deadcrootn = 0.0;
@@ -124,6 +129,8 @@ int zero_stratum_daily_flux(
 	ndf->npool_to_livecrootn_store = 0.0;
 	ndf->npool_to_deadcrootn = 0.0;
 	ndf->npool_to_deadcrootn_store = 0.0;
+	ndf->npool_to_reprodn = 0.0;
+	ndf->npool_to_reprodn_store = 0.0;
 	/* annual growth fluxes */
 	ndf->leafn_store_to_leafn_transfer = 0.0;
 	ndf->frootn_store_to_frootn_transfer = 0.0;
@@ -131,6 +138,7 @@ int zero_stratum_daily_flux(
 	ndf->deadstemn_store_to_deadstemn_transfer = 0.0;
 	ndf->livecrootn_store_to_livecrootn_transfer = 0.0;
 	ndf->deadcrootn_store_to_deadcrootn_transfer = 0.0;
+	ndf->reprodn_store_to_reprodn_transfer = 0.0;
 	return (!ok);
 } /* end zero_stratum_daily_flux */
 

@@ -18,8 +18,8 @@
 /*                          struct epv_var_struct *,              */
 /*                          struct cstate_struct *,             */
 /*                          struct nstate_struct *,             */
-/*                          struct cdayflux_struct *)           */
-/*								*/
+/*                          struct cdayflux_struct *,           */
+/*                          struct command_line_object command_line*)           */
 /*								*/
 /*	returns int:						*/
 /*								*/
@@ -43,12 +43,18 @@ double compute_potential_N_uptake_Dickenson(
 								  struct epvar_struct	*epv,
 								  struct cstate_struct *cs,
 								  struct nstate_struct *ns,
-								  struct cdayflux_struct *cdf)
+								  struct cdayflux_struct *cdf,
+								  struct command_line_object *command_line)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+        double compute_N_demand(
+		struct	epconst_struct,
+		struct cstate_struct *,
+		double,
+		struct	command_line_object *);
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -149,7 +155,7 @@ double compute_potential_N_uptake_Dickenson(
 	cdf->fwood = fwood;	
 
 	/* add in nitrogen for plants and for nitrogen deficit in pool */
-	plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn; 
+	plant_ndemand = compute_N_demand(epc, cs, mean_cn, command_line);
 	
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake */

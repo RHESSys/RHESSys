@@ -119,6 +119,17 @@ void	output_canopy_strata_state(
 	fprintf(outfile,"\n            ");
 	fprintf(outfile,"%-30.8f %s", (canopy_strata[0].cs.cwdc), "cs_cwdc");
 	fprintf(outfile,"\n            ");
+	if (command_line[0].reproduction_flag == 1) {
+		fprintf(outfile,"%-30.8f %s", (canopy_strata[0].cs.reprodc), "cs_reprodc");
+		fprintf(outfile,"\n            ");
+		fprintf(outfile,"%-30.8f %s", (canopy_strata[0].cs.reprodc_transfer), "cs_reprodc_transfer");
+		fprintf(outfile,"\n            ");
+		fprintf(outfile,"%-30.8f %s", (canopy_strata[0].cs.reprodc_store), "cs_reprodc_store");
+		fprintf(outfile,"\n            ");
+		fprintf(outfile,"%-30.8f %s", (canopy_strata[0].cs.seedc), "cs_seedc");
+		fprintf(outfile,"\n            ");
+		}
+
 	fprintf(outfile,"%-30.8f %s", (canopy_strata[0].epv.prev_leafcalloc),
 		"epv.prev_leafcalloc");
 	fprintf(outfile,"\n            ");
@@ -183,6 +194,18 @@ void	output_canopy_strata_state(
 	fprintf(outfile,"\n            ");
 	fprintf(outfile,"%-30.8f %s", (canopy_strata[0].ns.retransn), "ns_retransn");
 	fprintf(outfile,"\n            ");
+
+	if (command_line[0].reproduction_flag == 1) {
+		fprintf(outfile,"%-30.8f %s", (canopy_strata[0].ns.reprodn), "ns_reprodn");
+		fprintf(outfile,"\n            ");
+		fprintf(outfile,"%-30.8f %s", (canopy_strata[0].ns.reprodn_transfer), "ns_reprodn_transfer");
+		fprintf(outfile,"\n            ");
+		fprintf(outfile,"%-30.8f %s", (canopy_strata[0].ns.reprodn_store), "ns_reprodn_store");
+		fprintf(outfile,"\n            ");
+		fprintf(outfile,"%-30.8f %s", (canopy_strata[0].ns.seedn), "ns_seedn");
+		fprintf(outfile,"\n            ");
+		}
+
 	fprintf(outfile,"%-30ld %s", (canopy_strata[0].epv.wstress_days),
 		"epv_wstress_days");
 	fprintf(outfile,"\n            ");
