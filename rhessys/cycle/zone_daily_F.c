@@ -542,7 +542,7 @@ void		zone_daily_F(
 
 	zone[0].metv.tmin_ravg = 1.0/6.0*zone[0].metv.tmin + 5.0/6.0*zone[0].metv.tmin_ravg;
 	zone[0].metv.vpd_ravg = 1/6.0*zone[0].metv.vpd + 5.0/6.0*zone[0].metv.vpd_ravg;
-	zone[0].metv.dayl_ravg = 1/6.0*zone[0].metv.dayl + 5.0/6*zone[0].metv.dayl_ravg;
+	zone[0].metv.dayl_ravg = 1/6.0*basin[0].daylength + 5.0/6*zone[0].metv.dayl_ravg;
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches for day end computations			*/
 	/*--------------------------------------------------------------*/

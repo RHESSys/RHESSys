@@ -714,6 +714,7 @@ struct hillslope_object
 	double	y;			/*	meters	*/
 	double	z;			/* meters	*/
 	double	area;			/* sq meters */
+	double	riparian_area;		/* sq meters */
 	double	slope;			/* degrees */
 	double	base_flow;		/* meters		*/
 	double	streamflow_NO3;		/* kgN/m2/day		*/
@@ -1771,7 +1772,8 @@ struct	command_line_object
 	int		routing_flag;
 	int		surface_routing_flag;
 	int		stream_routing_flag;
-	int     reservoir_operation_flag;
+	int		gwtoriparian_flag;
+	int     	reservoir_operation_flag;
 	int		ddn_routing_flag;
 	int		dclim_flag;
 	int		road_flag;

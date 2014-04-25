@@ -431,7 +431,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*	set phenology timing if static allocation		*/
 	/*  and initialize for dynamic runs				*/
 	/*--------------------------------------------------------------*/
-			canopy_strata[0].phen.expand_startday =
+		canopy_strata[0].phen.expand_startday =
 			canopy_strata[0].defaults[0][0].epc.day_leafon;
 		canopy_strata[0].phen.expand_stopday =
 			canopy_strata[0].phen.expand_startday
