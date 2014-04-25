@@ -8,7 +8,10 @@
 /*	leaf_conductance_LWP_curve				*/
 /*								*/
 /*	SYNOPSIS						*/
-/*	double	leaf_conductance_LWP_curve(	double,		*/
+/*	double	leaf_conductance_LWP_curve( int	double,		*/
+/*						double,		*/
+/*						double,		*/
+/*						double,		*/
 /*						double,		*/
 /*						double);	*/
 /*								*/
@@ -35,9 +38,13 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-double	leaf_conductance_LWP_curve(	double	LWP_predawn,
-								   double	LWP_min_spring,
-								   double	LWP_stom_closure) 	
+double	leaf_conductance_LWP_curve(int curve,
+				double	LWP_predawn,
+			        double	LWP_min_spring,
+			        double	LWP_stom_closure,
+				double  LWP_threshold,
+				double  slp,
+				double  intercpt) 	
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
@@ -45,22 +52,36 @@ double	leaf_conductance_LWP_curve(	double	LWP_predawn,
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	double	m_LWP;
+	double	m_LWP, estimate;
 	/*--------------------------------------------------------------*/
 	/*	Specify curve						*/
 	/*--------------------------------------------------------------*/
+
 	if ( LWP_predawn > LWP_min_spring ){
 		m_LWP = 1.0;
 	}
 	else if ( LWP_predawn < LWP_stom_closure ){
 		m_LWP = 0.0;
 	}
+	
 	else{
+
+	 if (curve == 0) {  /* original Biome BGC approach */ 
 		if (LWP_min_spring == LWP_stom_closure)
 			m_LWP = 1.0;
 		else
 			m_LWP = (LWP_predawn - LWP_stom_closure)
 			/ (LWP_min_spring - LWP_stom_closure);
+		}
+	else {
+		if (LWP_predawn < LWP_threshold)	{
+			estimate = slp*(LWP_predawn-LWP_threshold)+intercpt;
+			m_LWP = pow(estimate,curve);
+			m_LWP = max(m_LWP,0);
+			m_LWP = min(m_LWP, 1);
+		}
+		else m_LWP = 1;
+	}
 	}
 
 	return(m_LWP);

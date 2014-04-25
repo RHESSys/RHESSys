@@ -131,7 +131,7 @@ change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
 	/* ******************************************************* */
 	/* ******************************************************* */
 
-	for (i=0; i<num_patches; i++) {
+	for (i=1; i <= num_patches; i++) {
 
 		ID[1] = 1;
 		ID[2] = flow_table[i].hillID;
