@@ -196,7 +196,6 @@ void update_phenology(struct zone_object  *zone,
 
 
   /* first are we before last possible date for leaf onset */
-  if (day < epc.day_leafon) {
     /* are we already in a leaf onset condition */
       if (phen->gwseasonday > -1 ) { 
           if  (phen->gwseasonday < epc.ndays_expand)
@@ -208,24 +207,9 @@ void update_phenology(struct zone_object  *zone,
           expand_flag=1;
           phen->expand_startday = day;
           phen->expand_stopday = day + epc.ndays_expand;
-          phen->litfall_startday = epc.day_leafoff;
-          phen->litfall_stopday = phen->litfall_startday + epc.ndays_litfall;
-
           }   
-      }   
-  else {    
-       /* if we are after the last possible date for leaf onset */
-    /* trigger leaf on if needed              */  
-    if ((phen->gwseasonday < 0) && (phen->lfseasonday < 0)&& (phen->gsi >0.5)) {
-                    phen->gwseasonday = 1;
-          expand_flag=1;
-          phen->expand_startday = day;
-          phen->expand_stopday = day + epc.ndays_expand;
-          }   
- }
 
 /* now determine if we are before the last possible date of leaf drop */
-  if (day < epc.day_leafoff) {
      
       /* are we already in a leaf offset */
       if (phen->lfseasonday > -1 ) { 
@@ -245,27 +229,7 @@ void update_phenology(struct zone_object  *zone,
           phen->litfall_stopday = day + epc.ndays_litfall;
 
           }   
-      }   
     
-  else {   
-    
-    if ((day == epc.day_leafoff) && (phen->lfseasonday < 0) ){
-        phen->lfseasonday = 0;
-          phen->litfall_startday = day;
-          phen->litfall_stopday = day + epc.ndays_litfall;
-          }   
-
-
-          if  (phen->lfseasonday < epc.ndays_litfall) {
-                                       litfall_flag=1;
-          phen->gwseasonday = -1; 
-    }
-    else {
-        phen->lfseasonday = -1;
-        phen->gwseasonday = -1;
-    }
-  }
- 
   if (phen->gwseasonday > 0)
       phen->gwseasonday += 1;
   if (phen->lfseasonday >=0)

@@ -88,12 +88,15 @@ struct hillslope_default *construct_hillslope_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].gw_loss_coeff = 		getDoubleParam(&paramCnt, &paramPtr, "gw_loss_coeff", "%lf", 1.0, 1);
 		default_object_list[i].n_routing_timesteps = 	getIntParam(&paramCnt, &paramPtr, "n_routing_timesteps", "%d", 24, 1);
+		default_object_list[i].gw_loss_fast_threshold = 	getDoubleParam(&paramCnt, &paramPtr, "gw_loss_fast_threshold", "%lf", -1.0, 1);
+		default_object_list[i].gw_loss_fast_coeff = 	getDoubleParam(&paramCnt, &paramPtr, "gw_loss_fast_coeff", "%lf", 3.0*default_object_list[i].gw_loss_coeff, 1);
 
 		if (default_object_list[i].n_routing_timesteps < 1)
 			default_object_list[i].n_routing_timesteps = 1;
 		
 		if (command_line[0].gw_flag > 0) {
 			default_object_list[i].gw_loss_coeff *= command_line[0].gw_loss_coeff_mult;
+			default_object_list[i].gw_loss_fast_coeff *= command_line[0].gw_loss_coeff_mult;
 			}
 
                 memset(strbuf, '\0', strbufLen);

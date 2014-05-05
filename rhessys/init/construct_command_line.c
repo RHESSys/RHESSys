@@ -106,6 +106,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].sen[SOIL_DEPTH] = 1.0;
 	command_line[0].prev_flag = 0;
 	command_line[0].gw_flag = 0;
+	command_line[0].gwtoriparian_flag = 0;
 	command_line[0].tchange_flag = 0;
 	command_line[0].tmax_add = 0.0;
 	command_line[0].tmin_add = 0.0;
@@ -274,6 +275,15 @@ struct	command_line_object	*construct_command_line(
 					fprintf(stderr,"FATAL ERROR: Values for fire grid parameters not specified\n");
 					exit(EXIT_FAILURE);
 				} /*end if*/
+			}/* end if */
+
+			/*-------------------------------------------------*/
+			/*	routing gw to riparian option */
+			/*-------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-gwtoriparian") == 0 ){
+				i++;
+				printf("\n Running with hillslope gw routed to riparian areas\n ");
+				command_line[0].gwtoriparian_flag = 1;
 			}/* end if */
 			/*-------------------------------------------------*/
 			/*	groundwater flag and coeffcients	  */
