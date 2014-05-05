@@ -158,6 +158,7 @@ void update_mortality(
 	}
 
 	if (reproduction_flag==1) {
+	/* transfers of mortality fluxes from reproduction go here */
 		}		
 
 	/* daily nitrogen fluxes due to mortality */
@@ -232,6 +233,7 @@ void update_mortality(
 	}
 
 	if (reproduction_flag==1) {
+	/* transfers from mortality fluxes go here */
 	}	
 
 	/* update state variables */
