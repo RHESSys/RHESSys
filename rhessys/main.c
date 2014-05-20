@@ -302,7 +302,7 @@ const char RHESSYS_VERSION[] = "5.14.3";
 int	main( int main_argc, char **main_argv)
 
 {
-	
+	clock_t startClock = clock();
 	/*--------------------------------------------------------------*/
 	/*	Non-function definitions. 									*/
 	/*--------------------------------------------------------------*/
@@ -473,6 +473,8 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	/*	The end.													*/
 	/*--------------------------------------------------------------*/
+	clock_t endClock =clock();
+	printf("%ld",(endClock - startClock)/CLOCKS_PER_SEC);
 	return(EXIT_SUCCESS);
 	
 } /*end main*/

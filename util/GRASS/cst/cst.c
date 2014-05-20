@@ -242,6 +242,8 @@ main(int argc, char *argv[])
     maxPasses = strtod(tmpStr, &endPtr);
     if (maxPasses == 0)
         maxPasses = 1;
+       printf("Max passes: %d\n", maxPasses);
+        printf("Max passes: %d\n", maxPasses);
 
     if (verbose)
         printf("Max passes: %d\n", maxPasses);

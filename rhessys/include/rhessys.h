@@ -468,6 +468,23 @@ struct basin_object
 	double	theta_noon;		/* 	rads	*/
 	double	sin_latitude;		/* 	DIM	*/
 	double	max_slope;		/* 	degrees	*/
+	
+	/*	used in subsurface computation		*/
+	double basin_outflow;
+	double basin_rz_storage;
+	double basin_unsat_storage;
+	double basin_sat_deficit;
+	double basin_return_flow;
+	double basin_detention_store;
+	double basin_area;
+	double preday_basin_unsat_storage;
+	double preday_basin_rz_storage;
+	double preday_basin_sat_deficit;
+	double preday_sat_deficit;
+	double preday_basin_return_flow;
+	double preday_basin_detention_store;
+	/*						*/
+	
 	struct	base_station_object	**base_stations;
 	struct	basin_default		**defaults;
 	struct	basin_hourly_object	*hourly;
@@ -858,6 +875,7 @@ struct zone_object
 	double	sin_slope;				/*	DIM	*/
 	double	slope;					/* degrees 	*/
 	double	snow;				     	/* m water	*/
+	double	snow_hourly_total;
 	double	surface_Tday;				/*	deg C	*/
 	double	surface_Tnight;				/*	deg C	*/
 	double	tdewpoint;				/* degrees C	*/
@@ -893,6 +911,7 @@ struct	zone_hourly_object
 	double	Kdown_diffuse_flat;			/*	W/m^2	*/
 	double	sin_aspect;				/*	DIM	*/
 	double	sin_slope;				/*	DIM	*/
+	double	snow;					/*	m	*/
 	};
 
 
@@ -1454,7 +1473,8 @@ struct patch_object
 	double	rain_throughfall;	/* m water	*/	
 	double	recharge;	/* m water	*/	
 	double	return_flow;		/* m water	*/
-	double	snow_throughfall;	/* m water	*/	
+	double	snow_throughfall;	/* m water	*/
+	double	rain_throughfall_24hours;	/* m water,used for 24 hours accumulated throughfall	*/	
 	double	rain_throughfall_final;	/* m water	*/	
 	double	rain_stored;		/* m water	*/
 	double	slope;			/* degrees		*/

@@ -177,6 +177,7 @@ void zone_daily_I(
 	double	trans_coeff1, z_delta;
 	
 	zone[0].rain_hourly_total = 0.0;
+	zone[0].snow_hourly_total = 0.0;
 	/*--------------------------------------------------------------*/
 	/*	Determine the critical daily forcing parameters. 			*/
 	/*																*/
@@ -217,7 +218,6 @@ void zone_daily_I(
 		/*		we do not adjust for slope, cloudyness or lai as yet	*/
 		/*--------------------------------------------------------------*/
 		temp = zone[0].base_stations[i][0].daily_clim[0].rain[day];
-
 		/*--------------------------------------------------------------*/
 		/* 	allow for stocastic noise in precip scaling 		*/
 		/*--------------------------------------------------------------*/
@@ -364,12 +364,16 @@ void zone_daily_I(
 	/*	If snow is not available we estimate it at the end of the 	*/
 	/*	day based on end of day temperatures						*/
 	/*--------------------------------------------------------------*/
+	
+	
 	if ( zone[0].base_stations[0][0].daily_clim[0].snow != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].snow[day];
 		if ( temp != -999.0 ){
 			zone[0].snow = temp * isohyet_adjustment;
 		}
+
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	daytime rain duration - (seconds)			*/
 	/*								*/
@@ -815,6 +819,7 @@ void zone_daily_I(
 			zone[0].atm_trans =
 				zone[0].defaults[0][0].sea_level_clear_sky_trans
 				+ zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate;
+				
 			/*--------------------------------------------------------------*/
 			/*			convert clear sky transmissivity to bulk transmissivity	*/
 			/*																*/
@@ -881,4 +886,5 @@ void zone_daily_I(
 			event,
 			current_date );
 	}
+
 } /*end zone_daily_I.c*/
