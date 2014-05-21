@@ -164,7 +164,7 @@ void zone_daily_I(
 
 	double unifdist(double, double);
 
-		
+	long  julday(struct date);	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -175,7 +175,9 @@ void zone_daily_I(
 	double	temp, tmp;
 	double	Tlapse_adjustment;
 	double	trans_coeff1, z_delta;
-	
+	int	inx;
+	struct	dated_sequence	clim_event;
+
 	zone[0].rain_hourly_total = 0.0;
 	zone[0].snow_hourly_total = 0.0;
 	/*--------------------------------------------------------------*/
@@ -388,6 +390,16 @@ void zone_daily_I(
 			zone[0].daytime_rain_duration = temp * 3600;
 		}
 	}
+	inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
+	if (inx==0){inx=-1;}
+	if(inx>-999){
+		clim_event=zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx+1];
+		if ((clim_event.edate.year!=0)&&(julday(clim_event.edate)==julday(current_date))){
+			zone[0].daytime_rain_duration = 0;
+		}
+	}
+
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the base station effective LAI for this date.		*/
 	/*	We need this since the LAI compensdation for temp assumes	*/

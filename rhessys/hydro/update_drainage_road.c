@@ -221,7 +221,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].NO3_adsorption_rate,
 				patch[0].transmissivity_profile) -
 				NO3_leached_to_patch;
-			if (NO3_leached_to_stream < 0.0) NO3_leached_to_stream = 0.0;
+			if (NO3_leached_to_stream < 0.0) NO3_leached_to_stream = 0.0;	
 			patch[0].soil_ns.NO3_Qout += (NO3_leached_to_patch + NO3_leached_to_stream);
 
 			NH4_leached_to_patch = compute_N_leached(
@@ -553,6 +553,9 @@ void  update_drainage_road(
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
 			patch[0].surface_NO3  -= Nout;
 			patch[0].next_stream[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
+			patch[0].streamNO3_from_surface += Nout;
+
+
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
 			patch[0].surface_NH4  -= Nout;
 			patch[0].next_stream[0].streamflow_NH4 += (Nout * patch[0].area / patch[0].next_stream[0].area);

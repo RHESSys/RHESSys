@@ -1484,6 +1484,7 @@ struct patch_object
 	double	std;			/* m water	*/
 	double	theta_std;			/* m water	*/
 	double  surface_NO3;		/* kg/m2	*/
+	double	streamNO3_from_surface;	/* kg/m2	*/
 	double  surface_NH4;		/* kg/m2	*/
 	double  grazing_Closs;		/* kgC/m2	*/
 	double  grazing_mean_nc;	/* ratio N:Co	*/

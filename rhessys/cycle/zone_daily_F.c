@@ -334,6 +334,7 @@ void		zone_daily_F(
 	/*	If we have no rain duration data set it as		*/
 	/*	daylength if rain 0 if not.					*/
 	/*--------------------------------------------------------------*/
+
 	if ( zone[0].daytime_rain_duration == -999.0 ){
 		if ( zone[0].rain == 0 || (zone[0].snow != 0 ) ){
 			zone[0].daytime_rain_duration = 0;

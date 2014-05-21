@@ -85,11 +85,6 @@ void		zone_hourly(
 	zone[0].hourly[0].snow = 0.0; 
 	inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 
-/*	//test
-	if (current_date.hour==1 || current_date.hour==2){
-		printf("inx=%d\n",inx);
-	}
-*/
 	if (inx > -999)  {
 		clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
 		while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
@@ -197,8 +192,8 @@ void		zone_hourly(
 	/*	count the daytime_rain_duration				*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].hourly_rain_flag==1) {
-		if (current_date.hour==1) {
-			zone[0].daytime_rain_duration=0;}
+		//if (current_date.hour==1) {
+		//	zone[0].daytime_rain_duration=0;}
 		
 		if (zone[0].hourly[0].rain+zone[0].hourly[0].snow > 0) {
 			zone[0].daytime_rain_duration += 3600;}
