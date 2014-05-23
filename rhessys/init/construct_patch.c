@@ -91,7 +91,6 @@ struct patch_object *construct_patch(
 	struct patch_object *patch;
 	double	mpar;
 	
-	printf("\nStarting construct patch");
 	/*--------------------------------------------------------------*/
 	/*  Allocate a patch object.                                */
 	/*--------------------------------------------------------------*/

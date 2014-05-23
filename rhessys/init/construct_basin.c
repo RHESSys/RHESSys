@@ -114,7 +114,6 @@ struct basin_object *construct_basin(
 	char		record[MAXSTR];
 	struct basin_object	*basin;
 	
-	printf("\nStarting construct basin");
 	/*--------------------------------------------------------------*/
 	/*	Allocate a basin object.								*/
 	/*--------------------------------------------------------------*/

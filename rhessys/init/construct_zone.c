@@ -114,7 +114,6 @@ struct zone_object *construct_zone(
 	j = 0;
 	k = 0;	
 	
-	printf("\nStarting construct zone");
 	/*--------------------------------------------------------------*/
 	/*	Allocate a zone object.								*/
 	/*--------------------------------------------------------------*/
@@ -204,21 +203,17 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of base stations for this zone.          */
 	/*--------------------------------------------------------------*/
-	printf("\nStarting construct zone2: %d",zone[0].num_base_stations);
 	zone[0].base_stations = (struct base_station_object **)
 		alloc(zone[0].num_base_stations *
 		sizeof(struct base_station_object *),
 		"base_stations","construct_zone" );
-	printf("\nStarting construct zone2.5: %d",command_line[0].gridded_netcdf_flag);
 	/*--------------------------------------------------------------*/
 	/* NON NETCDF BASE STATIONS */
 	/*--------------------------------------------------------------*/
 	/*	Read each base_station ID and then point to that base station */
 	/*--------------------------------------------------------------*/
 	if (command_line[0].gridded_netcdf_flag == 0){
-	printf("\nStarting construct zone3: %d",zone[0].num_base_stations);
 	for (i=0 ; i<zone[0].num_base_stations ; i++ ){
-		printf("\nStarting construct zone3.25: %d",*num_world_base_stations);
 		fscanf(world_file,"%d",&(base_stationID));
 		read_record(world_file, record);
 		/*--------------------------------------------------------------*/
@@ -226,7 +221,6 @@ struct zone_object *construct_zone(
 		/*              station list for this world.                    */
 		/*                                                              */
 		/*--------------------------------------------------------------*/
-		printf("\nStarting construct zone3.5: %d",*num_world_base_stations);
 		zone[0].base_stations[i] =	assign_base_station(
 			base_stationID,
 			*num_world_base_stations,
@@ -237,7 +231,6 @@ struct zone_object *construct_zone(
 		fscanf(world_file,"%d",&(dum));
 		read_record(world_file, record);
 	}
-	printf("\nStarting construct zone4: %d",command_line[0].gridded_netcdf_flag);
 	/*--------------------------------------------------------------*/
 	/* NETCDF BASE STATIONS */
 	/*--------------------------------------------------------------*/

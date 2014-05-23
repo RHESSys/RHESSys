@@ -85,8 +85,6 @@ struct hillslope_object *construct_hillslope(
 	char		record[MAXSTR];
 	struct	hillslope_object *hillslope;
 	
-	printf("\nStarting construct hillslope");
-	
 	/*--------------------------------------------------------------*/
 	/*	Allocate a hillslope object.								*/
 	/*--------------------------------------------------------------*/

@@ -798,7 +798,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		alloc(world[0].num_basin_files * sizeof(struct basin_object *),
 		"basins","construct_world");
 	
-	printf("\n Starting basin for loop: %d\n",world[0].num_base_stations);
 	/*--------------------------------------------------------------*/
 	/*	Construct the basins. 										*/
 	/*--------------------------------------------------------------*/
