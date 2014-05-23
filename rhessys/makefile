@@ -1,5 +1,5 @@
-PGM  = rhessys5.18
-VERSION = 5.18
+PGM  = rhessys5.19
+VERSION = 5.19
 CC = gcc 
 #CFLAGS = -O -std=c99
 CFLAGS = -g -std=c99
@@ -9,6 +9,7 @@ OBJ = objects
 OS := $(shell uname)
 
 OBJECTS = \
+$(OBJ)/read_netcdf.o \
 $(OBJ)/Ksat_z_curve.o \
 $(OBJ)/add_growth_headers.o \
 $(OBJ)/add_headers.o \
@@ -16,6 +17,7 @@ $(OBJ)/alloc.o \
 $(OBJ)/allocate_annual_growth.o \
 $(OBJ)/allocate_daily_growth.o \
 $(OBJ)/assign_base_station.o \
+$(OBJ)/assign_base_station_xy.o \
 $(OBJ)/assign_neighbours.o \
 $(OBJ)/basin_daily_F.o \
 $(OBJ)/basin_daily_I.o \
@@ -28,6 +30,7 @@ $(OBJ)/canopy_stratum_growth.o \
 $(OBJ)/canopy_stratum_hourly.o \
 $(OBJ)/check_zero_stores.o \
 $(OBJ)/compute_Lstar.o \
+$(OBJ)/compute_Lstar_canopy.o \
 $(OBJ)/compute_N_leached.o \
 $(OBJ)/compute_N_absorbed.o \
 $(OBJ)/compute_annual_litfall.o \
@@ -219,6 +222,7 @@ $(OBJ)/parse_alloc_flag.o \
 $(OBJ)/parse_dyn_flag.o \
 $(OBJ)/parse_phenology_type.o \
 $(OBJ)/parse_veg_type.o \
+$(OBJ)/parse_albedo_flag.o \
 $(OBJ)/patch_daily_F.o  \
 $(OBJ)/patch_daily_I.o  \
 $(OBJ)/patch_hourly.o \
@@ -260,6 +264,8 @@ $(OBJ)/zone_daily_F.o \
 $(OBJ)/zone_daily_I.o \
 $(OBJ)/zone_hourly.o \
 $(OBJ)/construct_ascii_grid.o \
+$(OBJ)/construct_netcdf_grid.o \
+$(OBJ)/construct_netcdf_header.o \
 $(OBJ)/create_random_distrb.o \
 $(OBJ)/skip_basin.o \
 $(OBJ)/skip_hillslope.o \
@@ -274,10 +280,12 @@ dir:
 	mkdir -p $(OBJ)
 
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
+$(OBJ)/read_netcdf.o: init/read_netcdf.c
+	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o $(OBJ)/read_netcdf.o
 $(OBJ)/add_headers.o: output/add_headers.c
 	$(CC) -c $(CFLAGS) -I include output/add_headers.c -o $(OBJ)/add_headers.o
 $(OBJ)/add_growth_headers.o: output/add_growth_headers.c
@@ -506,6 +514,8 @@ $(OBJ)/assign_neighbours.o: init/assign_neighbours.c
 	$(CC) -c $(CFLAGS) -I include init/assign_neighbours.c -o $(OBJ)/assign_neighbours.o
 $(OBJ)/assign_base_station.o: init/assign_base_station.c
 	$(CC) -c $(CFLAGS) -I include init/assign_base_station.c -o $(OBJ)/assign_base_station.o
+$(OBJ)/assign_base_station_xy.o: init/assign_base_station_xy.c
+	$(CC) -c $(CFLAGS) -I include init/assign_base_station_xy.c -o $(OBJ)/assign_base_station_xy.o
 $(OBJ)/construct_zone.o: init/construct_zone.c
 	$(CC) -c $(CFLAGS) -I include init/construct_zone.c -o $(OBJ)/construct_zone.o
 $(OBJ)/construct_patch.o: init/construct_patch.c
@@ -560,6 +570,8 @@ $(OBJ)/compute_snow_stored.o: hydro/compute_snow_stored.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_snow_stored.c -o $(OBJ)/compute_snow_stored.o
 $(OBJ)/compute_Lstar.o: rad/compute_Lstar.c
 	$(CC) -c $(CFLAGS) -I include rad/compute_Lstar.c -o $(OBJ)/compute_Lstar.o
+$(OBJ)/compute_Lstar_canopy.o: rad/compute_Lstar_canopy.c
+	$(CC) -c $(CFLAGS) -I include rad/compute_Lstar_canopy.c -o $(OBJ)/compute_Lstar_canopy.o
 $(OBJ)/compute_stability_correction.o: hydro/compute_stability_correction.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_stability_correction.c -o $(OBJ)/compute_stability_correction.o
 $(OBJ)/compute_atm_pres.o: clim/compute_atm_pres.c
@@ -757,6 +769,8 @@ $(OBJ)/parse_veg_type.o: init/parse_veg_type.c
 	$(CC) -c $(CFLAGS) -I include init/parse_veg_type.c -o $(OBJ)/parse_veg_type.o
 $(OBJ)/parse_phenology_type.o: init/parse_phenology_type.c 
 	$(CC) -c $(CFLAGS) -I include init/parse_phenology_type.c -o $(OBJ)/parse_phenology_type.o
+$(OBJ)/parse_albedo_flag.o: init/parse_albedo_flag.c 
+	$(CC) -c $(CFLAGS) -I include init/parse_albedo_flag.c -o $(OBJ)/parse_albedo_flag.o
 $(OBJ)/resolve_sminn_competition.o: cn/resolve_sminn_competition.c 
 	$(CC) -c $(CFLAGS) -I include cn/resolve_sminn_competition.c -o $(OBJ)/resolve_sminn_competition.o
 $(OBJ)/update_C_stratum_daily.o: cn/update_C_stratum_daily.c 
@@ -791,6 +805,10 @@ $(OBJ)/output_template_structure.o: output/output_template_structure.c
 	$(CC) -c $(CFLAGS) -I include output/output_template_structure.c -o $(OBJ)/output_template_structure.o
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
+$(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
+	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid.c -o $(OBJ)/construct_netcdf_grid.o
+$(OBJ)/construct_netcdf_header.o: init/construct_netcdf_header.c
+	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_header.c -o $(OBJ)/construct_netcdf_header.o
 $(OBJ)/params.o: util/params.c
 	$(CC) -c $(CFLAGS) -I include util/params.c -o $(OBJ)/params.o
 

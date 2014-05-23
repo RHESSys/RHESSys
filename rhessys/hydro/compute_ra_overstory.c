@@ -298,12 +298,11 @@ double compute_ra_overstory(
 	*U2mSnow = *U2mSnow * Uref;
 	
 	/* Boundary resistance for leaves */
-	Rb = 1/(0.01 * pow(Uref/0.001,0.5));
+	/*Rb = 1/(0.01 * pow(Uref/0.001,0.5));*/
+	Rb = 0.0;
 	
-	/* NOTE FACTOR OF 10 MULTIPLIER! */
-	/* Justified by negative feedback btw evap and vpd for water vapor fluxes...? */
-	*ga = 1/(Ra_un / Uref); /* / 10.0; */
-	*gasnow = 1/(RaSnow / Uref); /* / 10.0; /* NOTE FACTOR OF 10 MULTIPLIER! */
+	*ga = 1/(Ra_un / Uref);
+	*gasnow = 1/(RaSnow / Uref);
 	
 	/* NO DEPENDENCE IF WIND SPEED LESS THAN 2, OTHERWISE DEPENDENT ON WIND SPEED */
 	/* REMOVE??? */
@@ -311,7 +310,7 @@ double compute_ra_overstory(
 		*gasnow = 1/(RaSnow / Uref);
 	else
 		*gasnow = 1/RaSnow;*/
-	ra = (Ra_ov / Uref + Rb); /* * 10.0; /* NOTE FACTOR OF 10 MULTIPLIER! */
+	ra = (Ra_ov / Uref + Rb);
 	
 	if (verbose_flag == -5) {
 		printf("\n               RA OVERSTORY: Htov=%lf Zref=%lf Zw=%lf Zt=%lf Uref=%lf Ucan=%lf U_un=%lf Usnow=%lf Uw=%lf Uh=%lf Ut=%lf\n               ra_ov=%lf ra_un=%lf ra_snow=%lf", Height_ov, Zref, Zw, Zt, Uref, *Ucan, *U, *U2mSnow, Uw, Uh, Ut, ra, 1.0/(*ga), 1.0/(*gasnow));

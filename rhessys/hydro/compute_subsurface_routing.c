@@ -638,7 +638,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								patch[0].soil_defaults[0][0].porosity_0,
 								patch[0].soil_defaults[0][0].porosity_decay,
 								(patch[0].detention_store), time_int,
-								patch[0].soil_defaults[0][0].theta_psi_curve);
+								patch[0].soil_defaults[0][0].psi_air_entry);
 					} else {
 						infiltration = compute_infiltration(verbose_flag,
 								patch[0].sat_deficit_z, patch[0].S,
@@ -648,7 +648,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								patch[0].soil_defaults[0][0].porosity_0,
 								patch[0].soil_defaults[0][0].porosity_decay,
 								(patch[0].detention_store), time_int,
-								patch[0].soil_defaults[0][0].theta_psi_curve);
+								patch[0].soil_defaults[0][0].psi_air_entry);
 					}
 				else
 					infiltration = 0.0;

@@ -70,7 +70,7 @@ void	output_patch(
 		}
 	}
 
-	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 					current_date.day,
 					current_date.month,
 					current_date.year,
@@ -129,7 +129,9 @@ void	output_patch(
 					patch[0].snowpack.Q_H/86.4,
 					patch[0].snowpack.Q_rain/86.4,
 					patch[0].snowpack.Q_melt/86.4,
-					patch[0].LE_canopy);
+					patch[0].LE_canopy,
+					patch[0].snowpack.energy_deficit,
+					patch[0].snowpack.surface_age);
 	
 	
 

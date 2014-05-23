@@ -76,6 +76,9 @@ void	output_basin(			int routing_flag,
 	double aLstar_can, aLstar_soil, aLstar_snow;
 	double aKup, aLup;
 	double aLE_can, aLE_soil, aLE_snow;
+	double acLstar;
+	double acdrip;
+	double acga;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -154,8 +157,11 @@ void	output_basin(			int routing_flag,
 	aLE_can = 0.0;
 	aLE_soil = 0.0;
 	aLE_snow = 0.0;
+	acLstar = 0.0;
 	
 	alitrc = 0.0;
+	acdrip = 0.0;
+	acga = 0.0;
 
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
@@ -287,6 +293,14 @@ void	output_basin(			int routing_flag,
 						aheight += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction 
 							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height 
 							* patch[0].area;
+						acLstar += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].Lstar )
+							* patch[0].area;
+						acdrip += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].canopy_drip )
+							* patch[0].area;
+						acga += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].ga * patch[0].area;
 					}
 				}
 				aarea +=  patch[0].area;
@@ -306,6 +320,9 @@ void	output_basin(			int routing_flag,
 	atavg /= zone_area;
 	avpd /= zone_area;
     asnow /= zone_area;
+	aKdown /= zone_area;
+	aLdown /= zone_area;
+
 
 	aPET /=  aarea;
 	acrain /=  aarea;
@@ -352,8 +369,6 @@ void	output_basin(			int routing_flag,
 	
 	alitrc /= aarea;
 	
-	aKdown /= aarea;
-	aLdown /= aarea;
 	aKup /= aarea;
 	aLup /= aarea;
 	aKstar_can /= aarea;
@@ -365,6 +380,9 @@ void	output_basin(			int routing_flag,
 	aLE_can /= aarea;
 	aLE_soil /= aarea;
 	aLE_snow /= aarea;
+	acLstar /= aarea;
+	acdrip /= aarea;
+	acga /= aarea;
 
 	hgw = hgw / basin_area;
 	hgwQout = hgwQout / basin_area;
@@ -396,7 +414,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -446,7 +464,7 @@ void	output_basin(			int routing_flag,
 		aKdown, aLdown, aKup, aLup,
 		aKstar_can, aKstar_soil, aKstar_snow, 
 		aLstar_can, aLstar_soil, aLstar_snow,
-		aLE_can, aLE_soil, aLE_snow);
+		aLE_can, aLE_soil, aLE_snow, acLstar, acdrip*1000, acga*1000);
 
 	return;
 } /*end output_basin*/

@@ -103,7 +103,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ext_coef", "%lf", 0.5, 1);
 		default_object_list[i].specific_rain_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_rain_capacity", "%lf", 0.00024, 1);
 		default_object_list[i].specific_snow_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_snow_capacity", "%lf", 0.00024, 1);
-		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.002, 1); // param name is "wind_attenuation_coef" in param file
+		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.4, 1); // param name is "wind_attenuation_coef" in param file
 		default_object_list[i].ustar_overu = 		getDoubleParam(&paramCnt, &paramPtr, "ustar_overu", "%lf", -999.9, 1);
 		default_object_list[i].mrc.q10 = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.q10", "%lf", 1.5, 1);
 		default_object_list[i].mrc.per_N = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.per_N", "%lf", 0.21, 1);

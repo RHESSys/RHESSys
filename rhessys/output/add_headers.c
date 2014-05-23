@@ -48,7 +48,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -106,7 +106,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"Kdown","Ldown","Kup","Lup",
 		"Kstar_can","Kstar_soil","Kstar_snow",
 		"Lstar_can","Lstar_soil","Lstar_snow",
-		"LE_canopy","LE_soil","LE_snow");
+		"LE_canopy","LE_soil","LE_snow","Lstar_strat","canopydrip","ga");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
@@ -302,7 +302,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
 		check = fprintf(outfile,
-						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 						"day",
 						"month",
 						"year",
@@ -346,7 +346,8 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"overland_flow","height","ustar","snow_albedo",
 						"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
 						"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
-						"LEcanopy");
+						"LEcanopy",
+						"SED","snow_age");
 		
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/

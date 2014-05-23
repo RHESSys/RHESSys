@@ -107,7 +107,7 @@ double	penman_monteith(
 	/*--------------------------------------------------------------*/
 	/*	Latent heat of vapourization as a fn. of Tair.		*/
 	/*--------------------------------------------------------------*/
-	lhvap = 2.5023e6 - 2430.54 * Tair;
+	lhvap = 2.5023e6 - 2430.54 * Tair; /* J/kg H2O */
 	/*--------------------------------------------------------------*/
 	/*	Temperature offsets for slope estimates			*/
 	/*--------------------------------------------------------------*/
@@ -138,6 +138,18 @@ double	penman_monteith(
 		Rnet,gamma,vpd);
 	if ( verbose_flag > 2)
 		printf("%8.2f %8.4f ",Rnet, vpd);
+	
+	if ( verbose_flag == -5) {
+		printf("\n          PENMAN: s=%8.4f ra=%8.4f rs=%8.4f Rnet=%8.4f gamma=%8.4f vpd=%8.4f rho=%8.4f CP=%8.4f Tair=%lf Pair=%lf LE=%8.4f e=%8.4f",
+			   s , ra, rs,
+			   Rnet,gamma,vpd,
+			   rho,CP,
+			   Tair,Pair,
+			   e,
+			   e / ( lhvap * 1000 ) * 1000.0);
+	}
+	
+	
 	/*--------------------------------------------------------------*/
 	/*	Perform conversion if needed and return			*/
 	/*--------------------------------------------------------------*/

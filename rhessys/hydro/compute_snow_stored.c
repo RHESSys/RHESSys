@@ -82,13 +82,14 @@ double	compute_snow_stored(
 	double	fraction_diffuse_K_used;
 	double	fraction_direct_APAR_used;
 	double	fraction_diffuse_APAR_used;
+	double fraction_L_used;
 	double	latent_heat;
 	double	potential_interception;
 	double	potential_sublimation;
 	double	snow_storage;
 	double	storage_sublimated;
 	double	potential_interception_sublimated;
-	double	Kstar_used;
+	double	Rnet_used;
 	double	APAR_used;
 	double	throughfall;
 	double unload;
@@ -102,6 +103,15 @@ double	compute_snow_stored(
 	tmp5 = 0.0;
 	unload = 0.0;
 	radsubl = 0.0;
+	
+	fraction_L_used = 0.0;
+	fraction_direct_K_used = 0.0;
+	fraction_diffuse_K_used = 0.0;
+	fraction_direct_APAR_used = 0.0;
+	fraction_diffuse_APAR_used = 0.0;
+	
+	APAR_used = 0.0;
+	Rnet_used = 0.0;
 	
 	if( verbose_flag > 2)
 		printf("%8.6f %8.6f ",*snow,  stratum[0].snow_stored);
@@ -122,6 +132,7 @@ double	compute_snow_stored(
 	/* Set to 0.1 per day per Mahat 2011 (UEBVeg) hourly unloading rate */
 	/* based on Hedstrom & Pomeroy 1998 obs. */
 	unload = 0.1 * stratum[0].snow_stored;
+	unload = 0.0;
 	stratum[0].snow_stored -= unload;
 	
 	/*--------------------------------------------------------------*/
@@ -154,8 +165,8 @@ double	compute_snow_stored(
 	
 if (Tair_mean_day > 0) {
 		/* this is really melt */
-		potential_sublimation = ((stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar)
-								 / latent_heat ) * (1/snow_density);
+		potential_sublimation = ((stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar) / latent_heat ) * (1/snow_density);
+		potential_sublimation = max(potential_sublimation, 0.0);
 		storage_sublimated = min(potential_sublimation,stratum[0].snow_stored);
 	}
 	else {
@@ -170,13 +181,14 @@ if (Tair_mean_day > 0) {
 			stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar,
 			pa,
 			&(radsubl));
+		potential_sublimation = max(potential_sublimation, 0.0);
 		/* Per Lundberg 1994, evap rates reduced for unsaturated canopies, approximated by power function */
 		/*storage_sublimated = min(potential_sublimation * pow(stratum[0].snow_stored/(stratum[0].epv.all_pai * 
 									stratum[0].defaults[0][0].specific_snow_capacity),2), stratum[0].snow_stored);*/
-		storage_sublimated = min(potential_sublimation,stratum[0].snow_stored);
+		storage_sublimated = min(max(potential_sublimation,0.0),stratum[0].snow_stored);
 	}
 	if (verbose_flag == -5) {
-		printf("\n          SNOW STORED:Tair=%lf vp=%lf snow=%lf stor=%lf maxstor=%lf potint=%lf gasnow=%lf\n               ht=%lf K=%lf L=%lf pa=%lf subl_pot=%lf",
+		printf("\n          SNOW STORED:Tair=%lf vp=%lf snow=%lf stor=%lf maxstor=%lf potint=%lf gasnow=%lf\n               ht=%lf K=%lf L=%lf pa=%lf subl_pot=%lf pai=%lf snowcap=%lf",
 		   Tair_mean_day,
 		   vp_air,
 		   *snow,
@@ -185,10 +197,12 @@ if (Tair_mean_day > 0) {
 		   potential_interception,
 		   gasnow,
 		   stratum[0].epv.height,
-		   stratum[0].Kstar_direct + stratum[0].Kstar_diffuse,
-		   stratum[0].Lstar,
+		   (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse)/86.4,
+		   stratum[0].Lstar/86.4,
 		   pa,
-		   potential_sublimation);
+		   potential_sublimation,
+			   stratum[0].epv.all_pai,
+			   stratum[0].defaults[0][0].specific_snow_capacity);
 	}
 	/*--------------------------------------------------------------*/
 	/*	Compute amount of storage sublimated.			*/
@@ -245,6 +259,11 @@ if (Tair_mean_day > 0) {
 		throughfall += max(potential_interception - (snow_storage - stratum[0].snow_stored),0.0);
 		*snow = throughfall + unload;
 		}
+	/* Removing small stores so that canopy albedo is not affected */
+	if (snow_storage < 0.000001) {
+		*snow += snow_storage;
+		snow_storage = 0.0;
+	}
 	/*--------------------------------------------------------------*/
 	/*	Compute amount of sublimation that happened.		*/
 	/*--------------------------------------------------------------*/
@@ -252,7 +271,7 @@ if (Tair_mean_day > 0) {
 		potential_interception_sublimated;
 	
 	if (verbose_flag == -5) {
-		printf("\n               subl_act=%lf",stratum[0].sublimation);
+		printf("\n               subl_act=%lf radsubl=%lf",stratum[0].sublimation,radsubl);
 	}
 	/*--------------------------------------------------------------*/
 	/*	If in fact the sublimation was melt add the amount	*/
@@ -260,6 +279,7 @@ if (Tair_mean_day > 0) {
 	/*--------------------------------------------------------------*/
 	if ( Tair_mean_day > 0 ){
 		*rain += stratum[0].sublimation;
+		stratum[0].canopy_drip = stratum[0].sublimation;
 		stratum[0].sublimation = 0.0;
 	}
 	/*--------------------------------------------------------------*/
@@ -267,70 +287,95 @@ if (Tair_mean_day > 0) {
 	/*	We first get rid of longwave.				*/
 	/*--------------------------------------------------------------*/
 	/* NEW ADJUSTMENT FOR SUBLIM DUE TO RADIATION */
-	Kstar_used =  stratum[0].sublimation * radsubl * latent_heat * snow_density;
-	if ( Kstar_used > 0 ){
-		APAR_used = (Kstar_used / ( stratum[0].Kstar_direct
-			+ stratum[0].Kstar_diffuse )) * (stratum[0].APAR_direct
-			+ stratum[0].APAR_diffuse);
-	}
-	else{
-		APAR_used = 0;
-	}
+	/*Rnet_used =  stratum[0].sublimation * radsubl * latent_heat * snow_density;*/
+	Rnet_used =  stratum[0].sublimation * latent_heat * snow_density;
+		
+	if (Rnet_used > 0.0) {
+		if ( (stratum[0].Lstar > 0) && (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar > 0) ){
+			fraction_L_used = stratum[0].Lstar 
+							/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar);
+			fraction_direct_K_used = stratum[0].Kstar_direct 
+							/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar);
+			fraction_diffuse_K_used = stratum[0].Kstar_diffuse 
+							/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar);
+			}
+		else if ( stratum[0].Kstar_direct + stratum[0].Kstar_diffuse > 0.0 ) {
+			fraction_direct_K_used = stratum[0].Kstar_direct 
+							/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse);
+			fraction_diffuse_K_used = stratum[0].Kstar_diffuse 
+							/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse);
+		}
 	
-	if ( stratum[0].Kstar_direct > 0 ){
-		fraction_direct_K_used = 1.0
-			/ (1 + stratum[0].Kstar_diffuse/stratum[0].Kstar_direct);
-	}
-	else
-		fraction_direct_K_used = 0.0;
+		
+		if ( stratum[0].APAR_direct > 0 ){
+			fraction_direct_APAR_used = 1.0
+							/ ( 1 + stratum[0].APAR_diffuse/stratum[0].APAR_direct);
+			}
+		else
+			fraction_direct_APAR_used = 0.0;
 	
-	if ( stratum[0].Kstar_diffuse > 0 ){
-		fraction_diffuse_K_used = 1.0
-			/ ( 1 + stratum[0].Kstar_direct/stratum[0].Kstar_diffuse);
-	}
-	else
-		fraction_diffuse_K_used = 0.0;
+		if (stratum[0].APAR_diffuse > 0 ){
+			fraction_diffuse_APAR_used = 1.0
+							/ ( 1 + stratum[0].APAR_direct/stratum[0].APAR_diffuse);
+			}
+		else
+			fraction_diffuse_APAR_used = 0.0;
 	
-	if ( stratum[0].APAR_direct > 0 ){
-		fraction_direct_APAR_used = 1.0
-			/ ( 1 + stratum[0].APAR_diffuse/stratum[0].APAR_direct);
-	}
-	else
-		fraction_direct_APAR_used = 0.0;
+
+		APAR_used = ( ( (fraction_direct_K_used * Rnet_used) + (fraction_diffuse_K_used * Rnet_used) )
+						/ ( stratum[0].Kstar_direct + stratum[0].Kstar_diffuse ) )
+						* (stratum[0].APAR_direct + stratum[0].APAR_diffuse);
 	
-	if (stratum[0].APAR_diffuse > 0 ){
-		fraction_diffuse_APAR_used = 1.0
-			/ ( 1 + stratum[0].APAR_direct/stratum[0].APAR_diffuse);
-	}
-	else
-		fraction_diffuse_APAR_used = 0.0;
 	
-	tmp = stratum[0].APAR_direct;
-	tmp2 = stratum[0].APAR_direct + stratum[0].APAR_diffuse;
-	tmp3 = stratum[0].Kstar_direct;
-	tmp4 = stratum[0].Kstar_direct + stratum[0].Kstar_diffuse;
+		tmp = stratum[0].APAR_direct;
+		tmp2 = stratum[0].APAR_direct + stratum[0].APAR_diffuse;
+		tmp3 = stratum[0].Kstar_direct;
+		tmp4 = stratum[0].Kstar_direct + stratum[0].Kstar_diffuse;
 	
-	stratum[0].Kstar_direct -= Kstar_used * fraction_direct_K_used;
-	stratum[0].Kstar_diffuse -= Kstar_used * fraction_diffuse_K_used;
-	stratum[0].APAR_direct -= APAR_used * fraction_direct_APAR_used;
-	stratum[0].APAR_diffuse -= APAR_used * fraction_diffuse_APAR_used;
+		stratum[0].Lstar -= Rnet_used * fraction_L_used;
+		stratum[0].Kstar_direct -= Rnet_used * fraction_direct_K_used;
+		stratum[0].Kstar_diffuse -= Rnet_used * fraction_diffuse_K_used;
+		stratum[0].APAR_direct -= APAR_used * fraction_direct_APAR_used;
+		stratum[0].APAR_diffuse -= APAR_used * fraction_diffuse_APAR_used;
+		
+		/* Zero out negative APARs. K and Lstars ok since we are converting to temp change in canopy daily F */
+		stratum[0].APAR_direct = max(stratum[0].APAR_direct,0.0);
+		stratum[0].APAR_diffuse = max(stratum[0].APAR_diffuse,0.0);
+	
+		} /* end if rnet_used > 0 */
+	
+
+	
 	if( verbose_flag > 2)
 		printf("%8.6f %8.6f %8.6f %8.6f ", *snow,  stratum[0].sublimation,
-		snow_storage, Kstar_used);
+		snow_storage, Rnet_used);
 	
 	if (verbose_flag == -5) {
-		printf("\n                         STOREND:snow=%lf rain=%lf stratstor=%lf storage=%lf potint=%lf stratsubl=%lf",
+		printf("\n                         STOREND:snow=%lf rain=%lf stratstor1000=%lf storage1000=%lf potint1000=%lf stratsubl1000=%lf Kdirused=%lf Kdifused=%lf Lused=%lf",
 		   *snow,
 		   *rain,
-		   stratum[0].snow_stored,
-		   snow_storage,
-		   potential_interception,
-		   stratum[0].sublimation);
+		   stratum[0].snow_stored*1000,
+		   snow_storage*1000,
+		   potential_interception*1000,
+		   stratum[0].sublimation*1000,
+		   (Rnet_used * fraction_direct_K_used)/86.4,
+		   (Rnet_used * fraction_diffuse_K_used)/86.4,
+		   (Rnet_used * fraction_L_used)/86.4);
 	}
 	
 	if ( stratum[0].APAR_direct < -1 ) {
-		printf("Tair=%lf pot_subl=%lf subl=%lf radsubl=%lf APARused=%lf APARdir=%lf APAR=%lf Kstar_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n", 
-			   Tair_mean_day, tmp5, stratum[0].sublimation, radsubl, APAR_used, tmp, tmp2, Kstar_used, tmp3, tmp4, stratum[0].Lstar);
+		printf("Tair=%lf pot_subl=%lf subl=%lf radsubl=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n", 
+			   Tair_mean_day, 
+			   tmp5, 
+			   stratum[0].sublimation, 
+			   radsubl, 
+			   APAR_used, 
+			   stratum[0].APAR_direct,
+			   (stratum[0].APAR_direct+stratum[0].APAR_diffuse)/86.4,
+			   Rnet_used/86.4, 
+			   stratum[0].Kstar_direct/86.4,
+			   (stratum[0].Kstar_direct+stratum[0].Kstar_diffuse)/86.4,
+			   stratum[0].Lstar/86.4);
 	}
 	
 	

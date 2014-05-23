@@ -157,6 +157,7 @@ void		zone_daily_F(
 	int 	patch;
 	double snow_rain_range;
 	double	es;
+	double Tcloud, f8, e8z, tau8;
 	/*--------------------------------------------------------------*/
 	/*  Update the forcing functions based on the hourly computation*/
 	/*--------------------------------------------------------------*/
@@ -218,9 +219,9 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	.metv.tavg	(degrees C)									*/
 	/*--------------------------------------------------------------*/
-	if ( zone[0].metv.tavg == -999.0 ){
+	/*if ( zone[0].metv.tavg == -999.0 ){
 		zone[0].metv.tavg = (zone[0].metv.tmax + zone[0].metv.tmin)/2.0;
-	}
+	}*/
 	
 	/*--------------------------------------------------------------*/
 	/*	metv.tday	(degrees C)									*/
@@ -334,7 +335,11 @@ void		zone_daily_F(
 			* zone[0].Kdown_diffuse_adjustment;
 		if (command_line[0].verbose_flag == -5) {
 			printf("\nZONE DAILY F: Precip=%lf cloudfrac=%lf Kdir_adj=%lf Kdif_adj=%lf Tavg=%lf", 
-				   zone[0].snow + zone[0].rain, zone[0].cloud_fraction, zone[0].Kdown_direct_adjustment,zone[0].Kdown_diffuse_adjustment,zone[0].metv.tavg);
+				   zone[0].snow + zone[0].rain, 
+				   zone[0].cloud_fraction, 
+				   zone[0].Kdown_direct_adjustment/86.4,
+				   zone[0].Kdown_diffuse_adjustment/86.4,
+				   zone[0].metv.tavg);
 		}
 		/*--------------------------------------------------------------*/
 		/*	radrat (unitless)											*/
@@ -351,6 +356,10 @@ void		zone_daily_F(
 		if ( zone[0].radrat == 0.0) {
 			zone[0].radrat = 1.0;
 		}
+		
+		/* REMOVING TMAX CORRECTION SINCE EQUATION IS ALWAYS ADDING 1 DEG	*/
+		/* EVEN ON FLAT SURFACES WITH SAME LAI AS BASE. EQN NEEDS EDITS		*/
+		/* BEFORE RE-IMPLEMENTING.											*/
 		/*--------------------------------------------------------------*/
 		/*	LAI compensation (unitless)									*/
 		/*																*/
@@ -358,7 +367,7 @@ void		zone_daily_F(
 		/*	Modified so that the base station LAI is subtracted from the*/
 		/*		zone lai.												*/
 		/*--------------------------------------------------------------*/
-		zone[0].effective_lai = 0.0;
+		/*zone[0].effective_lai = 0.0;
 		for ( patch=0 ; patch<zone[0].num_patches ; patch++ ){
 			zone[0].effective_lai
 				+= zone[0].patches[patch][0].effective_lai
@@ -371,7 +380,7 @@ void		zone_daily_F(
 				- zone[0].base_station_effective_lai )
 				/ zone[0].defaults[0][0].max_effective_lai );
 		}
-		else{
+		else {
 			zone[0].LAI_temp_adjustment = ( zone[0].radrat )
 				* ( 1 - (zone[0].effective_lai
 				- zone[0].base_station_effective_lai )
@@ -380,8 +389,9 @@ void		zone_daily_F(
 		/*--------------------------------------------------------------*/
 		/*metv.tmax adjusted ( degrees C)								*/
 		/*--------------------------------------------------------------*/
-		zone[0].metv.tmax = zone[0].metv.tmax + zone[0].LAI_temp_adjustment;
+		/*zone[0].metv.tmax = zone[0].metv.tmax + zone[0].LAI_temp_adjustment;*/
 	} /*end if*/
+	
 	/* EG edit: LAI temp adjustment was pushing tmax below tmin*/
 	if (zone[0].metv.tmax < zone[0].metv.tmin) {
 		zone[0].metv.tmax = zone[0].metv.tmin + 1.0;
@@ -530,12 +540,33 @@ void		zone_daily_F(
 	if ( zone[0].Ldown == -999.0){
 		/* Satterlund-Crawford */
 		/*zone[0].Ldown = (zone[0].cloud_fraction 
-			+ (1.0 - zone[0].cloud_fraction) * 1.08 * (1.0 - exp(-pow(zone[0].e_dewpoint/100,(zone[0].metv.tavg+273)/2016)))) 
-			* (SBC * 86400/1000) * pow(zone[0].metv.tavg+273,4);*/
+			+ (1.0 - zone[0].cloud_fraction) * 1.08 * (1.0 - exp(-pow(zone[0].e_dewpoint/100,(zone[0].metv.tavg+273.16)/2016)))) 
+			* (SBC * 86400/1000) * pow(zone[0].metv.tavg+273.16,4);*/
+		
 		/* Diley-Crawford */
-		zone[0].Ldown = zone[0].cloud_fraction * (SBC * 86400/1000) * pow(zone[0].metv.tavg+273,4)
-				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273)/273.16,6)
-				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273)/25,0.5)) * 86400/1000;
+		zone[0].Ldown = zone[0].cloud_fraction * (SBC * 86400/1000) * pow(zone[0].metv.tavg+273.16,4)
+				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273.16)/273.16,6)
+				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273.16)/25,0.5)) * 86400/1000;
+		
+		/* split by day/night (not sensitive) */
+		/*zone[0].Ldown = ( zone[0].cloud_fraction * (SBC * (seconds_per_day-zone[0].metv.dayl)/1000) * pow(zone[0].metv.tnight+273,4)
+						    + (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tnight+273)/273.16,6)
+						    + 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tnight+273)/25,0.5)) * (seconds_per_day-zone[0].metv.dayl)/1000 )
+					+ ( zone[0].cloud_fraction * (SBC * zone[0].metv.dayl/1000) * pow(zone[0].metv.tday+273,4)
+					        + (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tday+273)/273.16,6)
+							+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tday+273)/25,0.5)) * zone[0].metv.dayl/1000 );*/
+		
+		/* Diley with Kimball cloud correction per Flerchinger 2009 */
+		/*if ( (current_date.month>=5) && (current_date.month<=10) )
+			Tcloud = (zone[0].metv.tavg+273.16) - 9; /* summer adjustment for cloud temp */
+		/*else 
+			Tcloud = (zone[0].metv.tavg+273.16) - 13; /* winter adjustment for cloud temp */
+		/*f8 = -0.6732 + (0.006240*Tcloud) - (0.9140*pow(10,-5)*pow(Tcloud,2));
+		e8z = 0.24 + (2.98*pow(10,-6) * pow(zone[0].e_dewpoint/1000,2) * exp(3000.0/(zone[0].metv.tavg+273.16)));
+		tau8 = 1.0 - e8z*(1.4-0.4*e8z);
+		zone[0].Ldown = zone[0].cloud_fraction * f8 * tau8 * (SBC * 86400/1000) * pow(Tcloud,4)
+				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273.16)/273.16,6)
+				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273.16)/25,0.5)) * 86400/1000;*/
 	} /*end if*/
 	/*--------------------------------------------------------------*/
 	
@@ -630,9 +661,9 @@ void		zone_daily_F(
 	
 	if (command_line[0].verbose_flag == -5) {
 		printf(" Kdowndir=%lf Kdowndiff=%lf Ldown=%lf", 
-			   zone[0].Kdown_direct,
-			   zone[0].Kdown_diffuse,
-			   zone[0].Ldown);
+			   zone[0].Kdown_direct/86.4,
+			   zone[0].Kdown_diffuse/86.4,
+			   zone[0].Ldown/86.4);
 	}
 	
 	/*--------------------------------------------------------------*/

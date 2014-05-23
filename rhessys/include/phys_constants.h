@@ -34,7 +34,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 #define	EPAR	4.55		/* (umol/J) PAR photon energy ratio		*/
 #define SECPERRAD 13750.9871            /* seconds per radian of hour angle */
 
-#define LITTER_ALBEDO 0.15 /* changed from 0.02 to 0.15 based on Oke 1987 */
+#define LITTER_ALBEDO 0.1 /* changed from 0.02 to 0.15 based on Oke 1987 */
 #define WATER_ALBEDO 0.05	/* average liquid water albedo for solar angle of 60 (Dingman) */
 
 #define LIVELAB_CN  50           /* C:N for labile fraction of live wood */

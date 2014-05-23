@@ -246,7 +246,7 @@ void		patch_daily_I(
 	/*	compute new field capacity				*/
 	/*--------------------------------------------------------------*/
 
-	if (patch[0].sat_deficit_z < patch[0].rootzone.depth)  {
+	if (patch[0].sat_deficit_z <= patch[0].rootzone.depth)  {
 		patch[0].rootzone.field_capacity = compute_layer_field_capacity(
 			command_line[0].verbose_flag,
 			patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -260,6 +260,14 @@ void		patch_daily_I(
 			patch[0].rootzone.depth, 0.0);				
 			
 		patch[0].field_capacity = 0.0;
+		if ( command_line[0].verbose_flag == -5 ){
+			printf("\n***PCHDAILYI CASE1: satdefz=%lf rzdepth=%lf rzFC=%lf FC=%lf",
+				   patch[0].sat_deficit_z,
+				   patch[0].rootzone.depth,
+				   patch[0].rootzone.field_capacity,
+				   patch[0].field_capacity);
+		}
+		
 	}
 	else  {
 		patch[0].rootzone.field_capacity = compute_layer_field_capacity(
@@ -285,6 +293,15 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit_z,
 			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.depth;
+		
+		if ( command_line[0].verbose_flag == -5 ){
+			printf("\n***PCHDAILYI CASE2: satdefz=%lf rzdepth=%lf rzFC=%lf FC=%lf",
+				   patch[0].sat_deficit_z,
+				   patch[0].rootzone.depth,
+				   patch[0].rootzone.field_capacity,
+				   patch[0].field_capacity);
+		}
+		
 	}
 
 

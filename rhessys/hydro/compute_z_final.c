@@ -237,5 +237,8 @@ double	compute_z_final(
 		}
 	}
 	
+	/* CAN GO SLIGHTLY BELOW SOIL DEPTH AND CAUSING INSTABILITY, SO CAPPING */
+	z_final = min(z_final,soil_depth);
+	
 	return(z_final);
 } /*compute_z_final*/

@@ -157,7 +157,7 @@
 #define seconds_per_day 86400
 #define	ess_snow	0.97
 #define	ess_soil	0.95
-#define ess_veg   	0.96
+#define ess_veg   	0.98
 #define ess_water	0.97
 #define PRE	"result"
 #define state_output_filename	"world_state"
@@ -280,7 +280,8 @@ struct world_object
 	double	cos_declin;		/*	DIM	*/
 	double	sin_declin;		/*	DIM	*/
 	double	Io;			/* Wm-2 	*/
-	struct	base_station_object	**base_stations;	
+	struct	base_station_object	**base_stations;
+	struct	base_station_ncheader_object	*base_station_ncheader;
 	struct	basin_object		**basins;
 	struct	date			start_date;				
 	struct	date			end_date;				
@@ -533,6 +534,32 @@ struct base_station_object
 	struct	dated_input_object	 *dated_input;
 	};
 /*----------------------------------------------------------*/
+/*	Define a netcdf base station header object.							*/
+/*----------------------------------------------------------*/
+struct base_station_ncheader_object
+{
+	int		lastID;
+	FILE	*base_station_file;
+	double	effective_lai;			/* m^2/m^2	*/
+	double	screen_height;			/* meters	*/
+	double  sdist;					/* search distance in native netcdf units */
+	int		year_start;				/* start year for netcdf time counter (NOT time series start date) */
+	int		day_offset;				/* day offset from January 1 for netcdf time counter */
+	int		leap_year;				/* 0 = no leap years, 1 = leap years in netcdf record */
+	double	precip_mult;			/* multiplier for precip if not in meters */
+	int		elevflag;				/* set based on whether elev filename is given */
+	char	netcdf_x_varname[MAXSTR];	/* variable name for x coordinate in nc file */
+	char	netcdf_y_varname[MAXSTR];	/* variable name for y coordinate in nc file */
+	char	netcdf_tmax_filename[MAXSTR];	/* filename for tmax nc file */
+	char	netcdf_tmin_filename[MAXSTR];	/* filename for tmin nc file */
+	char	netcdf_rain_filename[MAXSTR];	/* filename for rain nc file */
+	char	netcdf_elev_filename[MAXSTR];	/* filename for elev nc file */
+	char	netcdf_tmax_varname[MAXSTR];	/* variable name for tmax in nc file */
+	char	netcdf_tmin_varname[MAXSTR];	/* variable name for tmin in nc file */
+	char	netcdf_rain_varname[MAXSTR];	/* variable name for rain in nc file */
+	char	netcdf_elev_varname[MAXSTR];	/* variable name for elev in nc file */
+};
+/*----------------------------------------------------------*/
 /*	Define dated climate sequence	         	    */
 /*----------------------------------------------------------*/
 struct	dated_sequence
@@ -779,6 +806,12 @@ struct	zone_default
 	double	temcf;			/* 	DIM	*/
 	double	trans_coeff1;		/* 	DIM	*/
 	double	trans_coeff2;		/* 	DIM	*/
+	double	trans_coeff1_sum;		/* 	DIM	*/
+	double	trans_coeff2_sum;		/* 	DIM	*/
+	int		trans_startmonth_sum;		/* 	month 1-12	*/
+	double	trans_coeff1_win;		/* 	DIM	*/
+	double	trans_coeff2_win;		/* 	DIM	*/
+	int		trans_startmonth_win;		/* 	month 1-12	*/
 	double	wind;			/* m/s		*/
 	double	wind_direction;			/* degrees		*/
 	double  max_snow_temp;                                          /* degrees C */
@@ -963,6 +996,9 @@ struct	soil_default
 	double  snow_water_capacity;				/* m */
 	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
 	double  snow_melt_Tcoef;				/* unitless */
+	int snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
+	double  bats_b;				/* unitless */
+	double  bats_r3;				/* unitless */
 	double  active_zone_z;					/* m */
 	double  DOM_decay_rate;					/* kg N /m */
 	double  DON_adsorption_rate;				/* kg /kg soil */
@@ -1377,6 +1413,8 @@ struct patch_object
 	double	Kup_direct_final;	/* Kj/(m^2*day)	*/
 	double	Kdown_diffuse_final;	/* Kj/(m^2*day)	*/
 	double	Kup_diffuse_final;	/* Kj/(m^2*day)	*/
+	double  Ldown;	/* Kj/(m^2*day)	*/
+	double  Ldown_final;	/* Kj/(m^2*day)	*/
 	double Kdown_direct_ovund;
 	double Kup_direct_ovund;
 	double Kdown_diffuse_ovund;
@@ -1401,22 +1439,9 @@ struct patch_object
 	double  Ksat_vertical;		/* meters/day	*/
 	double	lna;			/* unitless	*/
 	double  lai;			/* unitless	*/
-	double	Lup_canopy;		/* Kj/(m^2*day)	*/
-	double	Lup_canopy_day;		/* Kj/(m^2*day)	*/
-	double	Lup_canopy_night;	/* Kj/(m^2*day)	*/
-	double	Lup_surface;		/* Kj/(m^2*day)	*/
-	double	Lup_surface_day;	/* Kj/(m^2*day)	*/
-	double	Lup_surface_night;	/* Kj/(m^2*day)	*/
-	double	Lup_snow;		/* Kj/(m^2*day)	*/
 	double	Lup_soil;		/* Kj/(m^2*day)	*/
-	double	Lup_pond;		/* Kj/(m^2*day)	*/
 	double	Lup;		/* Kj/(m^2*day)	*/
 	double	Lstar_canopy;		/* Kj/(m^2*day)	*/
-	double	Lstar_canopy_day;	/* Kj/(m^2*day)	*/
-	double	Lstar_canopy_night;	/* Kj/(m^2*day)	*/
-	double	Lstar_surface;		/* Kj/(m^2*day)	*/
-	double	Lstar_surface_day;	/* Kj/(m^2*day)	*/
-	double	Lstar_surface_night;	/* Kj/(m^2*day)	*/
 	double	Lstar_snow;		/* Kj/(m^2*day)	*/
 	double	Lstar_soil;		/* Kj/(m^2*day)	*/
 	double	Lstar_pond;		/* Kj/(m^2*day)	*/
@@ -1503,6 +1528,8 @@ struct patch_object
 	double overstory_fraction; /* 0-1 */
 	double trans_reduc_perc; /*0-1*/
 	double overland_flow; /* m/s */
+	double  T_canopy;  /* deg C */
+	double  T_canopy_final;  /* deg C */
 	struct	base_station_object	**base_stations;
 	struct	soil_default		**soil_defaults;
 	struct	landuse_default		**landuse_defaults;
@@ -2458,6 +2485,7 @@ struct	canopy_strata_object
 	double	transpiration_unsat_zone;	/* m water / day */
 	double	transpiration_sat_zone;		/* m water / day */
 	double  wind;						/* 1/meters	*/
+	double  canopy_drip;
 	struct  rooting_zone_object	rootzone;
 	struct	cdayflux_struct cdf;				
 	struct	cstate_struct	cs;

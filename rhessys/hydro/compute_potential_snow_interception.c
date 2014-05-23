@@ -55,7 +55,7 @@ double	compute_potential_snow_interception(
 	/*------------------------------------------------------*/
 	double	potential_interception;
 	double interception_coef;
-	double leaf_area_ratio;
+	double leaf_area_ratio, Imax;
 	/*--------------------------------------------------------------*/
 	/*	Compute amount potentially intercepted.			*/
 	/*								*/
@@ -92,6 +92,11 @@ double	compute_potential_snow_interception(
 		potential_interception = min (snow,
 			(stratum[0].defaults[0][0].specific_snow_capacity
 			- stratum[0].snow_stored));
+	
+	/* Liston & Elder */
+	/*Imax = 4.4 * stratum[0].epv.all_pai / 1000; /* converted from kg/m2 to m */
+	/*potential_interception = 0.7 * (Imax - stratum[0].snow_stored) * (1.0 - exp(-snow/Imax));*/
+	
 		
 	potential_interception = max(potential_interception, 0.0);
 	return( potential_interception );

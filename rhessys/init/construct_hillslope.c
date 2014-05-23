@@ -49,9 +49,11 @@
 struct hillslope_object *construct_hillslope(
 											 struct	command_line_object	*command_line,
 											 FILE	*world_file,
-											 int		num_world_base_stations,
+											 int	*num_world_base_stations,
 											 struct	base_station_object	**world_base_stations,
-											 struct	default_object	*defaults)
+											 struct	default_object	*defaults,
+											 struct base_station_ncheader_object *base_station_ncheader,
+											 struct world_object *world)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
@@ -64,9 +66,11 @@ struct hillslope_object *construct_hillslope(
 	struct zone_object *construct_zone(
 		struct command_line_object *,
 		FILE	*,
-		int		num_world_base_stations,
+		int		*num_world_base_stations,
 		struct	base_station_object	**world_base_stations,
-		struct	default_object *);
+		struct	default_object *,
+		struct base_station_ncheader_object *,
+	    struct world_object *);
 	
 	void	*alloc(	size_t,
 		char	*,
@@ -80,6 +84,8 @@ struct hillslope_object *construct_hillslope(
 	int		default_object_ID;
 	char		record[MAXSTR];
 	struct	hillslope_object *hillslope;
+	
+	printf("\nStarting construct hillslope");
 	
 	/*--------------------------------------------------------------*/
 	/*	Allocate a hillslope object.								*/
@@ -164,7 +170,7 @@ struct hillslope_object *construct_hillslope(
 		/*--------------------------------------------------------------*/
 		hillslope[0].base_stations[i] = assign_base_station(
 			base_stationID,
-			num_world_base_stations,
+			*num_world_base_stations,
 			world_base_stations);
 	} /*end for*/
 	
@@ -214,7 +220,8 @@ struct hillslope_object *construct_hillslope(
 		hillslope[0].zones[i] = construct_zone( command_line,
 			world_file,
 			num_world_base_stations,
-			world_base_stations, defaults);
+			world_base_stations, defaults,
+			base_station_ncheader, world);
 		for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
 			hillslope[0].area += hillslope[0].zones[i][0].patches[j][0].area;
 			hillslope[0].slope += hillslope[0].zones[i][0].patches[j][0].slope *
