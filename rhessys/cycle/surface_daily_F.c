@@ -135,7 +135,7 @@ void		surface_daily_F(
 	double	potential_evaporation_rate;
 	double	potential_rainy_evaporation_rate;
 	double	rainy_evaporation;
-	double	rnet_evap, rnet_evap_pond, rnet_evap_litter, rnet_evap_soil;
+	double	rnet_evap_pond, rnet_evap_litter, rnet_evap_soil;
 	double  rnet;
 	double	PE_rate, PE_rainy_rate;
 	double	soil_potential_evaporation;
@@ -148,7 +148,7 @@ void		surface_daily_F(
 	double	water_density;		/* density of water in kg/m^3 */
 	double 	fraction_direct_K;
 	double	fraction_diffuse_K;
-	double	fraction_Lstar_soil;
+	double	fraction_Lstar_pond;
 	double	fraction_surface_heat_flux;
 	double  Kdown_diffuse_in, PAR_diffuse_in, Kstar_diffuse_lit, APAR_diffuse_lit, Kstar_diffuse_soil, APAR_diffuse_soil;
 	double  Kdown_direct_in, PAR_direct_in, Kstar_direct_lit, APAR_direct_lit, Kstar_direct_soil, APAR_direct_soil;
@@ -168,6 +168,10 @@ void		surface_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	rnet = 0.0;
+	
+	rnet_evap_pond = 0.0;
+	rnet_evap_litter = 0.0;
+	rnet_evap_soil = 0.0;
 	
 	Kup_direct_soil = 0.0;
 	Kup_diffuse_soil = 0.0;
@@ -198,6 +202,7 @@ void		surface_daily_F(
 	/*	Check to see if detention store is greater than current		*/
 	/*	litter holding capacity.  If so, run water surface evap		*/
 	/*	first.														*/
+	/* but only do this if there is actually a detention_store capacity to hold water */
 	/*--------------------------------------------------------------*/
 	
 	if ( command_line[0].verbose_flag == -5 ){
@@ -214,21 +219,23 @@ void		surface_daily_F(
 			   patch[0].evaporation_surf);
 	}
 	
-	
 	/* Case where detention store sits on top of litter */
-	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))) & (patch[0].soil_defaults[0][0].detention_store_size > 0.0) ) {
+	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
+			&& (patch[0].soil_defaults[0][0].detention_store_size > 0.0) ) {
 		
 		/* assume if det store over litter then litter is saturated */
-		litter[0].rain_stored = litter[0].rain_capacity;
 		patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);
+		litter[0].rain_stored = litter[0].rain_capacity;
 	
-			/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
-			/*** reflected by water surface based on water albedo. ***/
+		/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
+		/*** reflected by water surface based on water albedo. ***/
 		
-			if (zone[0].metv.dayl > ZERO) {
+		if (zone[0].metv.dayl > ZERO) {
 				rnet_evap_pond = 1000 * ( (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse) 
-										 + ess_water * patch[0].Lstar_pond
-										 - patch[0].Lstar_soil + patch[0].surface_heat_flux) / zone[0].metv.dayl;
+										+ patch[0].Lstar_pond
+										/* - patch[0].Lstar_soil */ /* Lstar_soil is assumed 0 when ponded water */
+										+ patch[0].surface_heat_flux ) 
+										/ zone[0].metv.dayl;
 				if (rnet_evap_pond <= ZERO) {
 					rnet_evap_pond = 0.0;
 				}
@@ -257,24 +264,30 @@ void		surface_daily_F(
 				0.0,
 				1/(patch[0].ga),
 				2) ;
-	
+		
+			/* Added adjustment for rain duration. Assumes rain duration input	*/
+			/* is # of hours over 24-hr day and we divide into daylight vs.		*/
+			/* night rain hours following total daylight hour fraction.			*/ 
 			detention_store_potential_evaporation  = detention_store_potential_dry_evaporation_rate
 					* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
 					+ detention_store_potential_rainy_evaporation_rate
 					* (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
 								
+			// Avoid over-estimating ET from surfaces with no detention store size 
+			//   (e.g. impervious surface) by gating ET by detention_store_size
 			detention_store_evaporation = min(detention_store_potential_evaporation, 
-											  min(patch[0].detention_store,patch[0].soil_defaults[0][0].detention_store_size));
+						min(patch[0].detention_store,
+							patch[0].soil_defaults[0][0].detention_store_size));
 		
 		patch[0].detention_store -= detention_store_evaporation;
 		
-		patch[0].Kup_direct += (1 - patch[0].overstory_fraction) * WATER_ALBEDO * patch[0].Kdown_direct;
-		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction) * WATER_ALBEDO * patch[0].Kdown_diffuse;
-	
+		patch[0].Kup_direct += (1 - patch[0].overstory_fraction) 
+					* WATER_ALBEDO * patch[0].Kdown_direct;
+		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction)
+					* WATER_ALBEDO * patch[0].Kdown_diffuse;	
 	}
 	
 	else detention_store_evaporation = 0.0;
-	
 	
 	
 	/*** If snowpack is over detention store, then add evaporated water to snowpack. ***/
@@ -291,11 +304,10 @@ void		surface_daily_F(
 	/*** Assume same proportions as original 4 energy sources. ***/
 	
 	K_used =  detention_store_evaporation * hv * water_density;
-	/*K_initial = (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse)
-					+ patch[0].Lstar_soil + patch[0].surface_heat_flux;*/
 	K_initial = (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse) 
-					+ ess_water * patch[0].Lstar_pond
-					- patch[0].Lstar_soil + patch[0].surface_heat_flux;
+					+ patch[0].Lstar_pond
+					/* - patch[0].Lstar_soil */
+					+ patch[0].surface_heat_flux;
 
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n     SURFACE DAILY DET STORE: dayl=%lf raindur=%lf Kused=%lf Kini=%lf Kdowndir=%lf Kdowndif=%lf Lstarsoil=%lf surfheat=%lf evapsurf=%lf", 
@@ -314,18 +326,18 @@ void		surface_daily_F(
 		if ( K_initial > 0 ){
 			fraction_direct_K = (1-WATER_ALBEDO) * patch[0].Kdown_direct / K_initial;
 			fraction_diffuse_K = (1-WATER_ALBEDO) * patch[0].Kdown_diffuse / K_initial;
-			fraction_Lstar_soil = patch[0].Lstar_soil / K_initial;
+			fraction_Lstar_pond = patch[0].Lstar_soil / K_initial;
 			fraction_surface_heat_flux = patch[0].surface_heat_flux / K_initial;
 		}
 		else {
 			fraction_direct_K = 0.0;
 			fraction_diffuse_K = 0.0;
-			fraction_Lstar_soil = 0.0;
+			fraction_Lstar_pond = 0.0;
 			fraction_surface_heat_flux = 0.0;
 		}
 		patch[0].Kdown_direct = ((1-WATER_ALBEDO) * patch[0].Kdown_direct) - (fraction_direct_K * K_used);
 		patch[0].Kdown_diffuse = ((1-WATER_ALBEDO) * patch[0].Kdown_diffuse) - (fraction_diffuse_K * K_used);
-		patch[0].Lstar_soil = patch[0].Lstar_soil - (fraction_Lstar_soil * K_used);
+		patch[0].Lstar_pond = patch[0].Lstar_soil - (fraction_Lstar_pond * K_used);
 		patch[0].surface_heat_flux = patch[0].surface_heat_flux - (fraction_surface_heat_flux * K_used);
 	}
 	
@@ -335,7 +347,7 @@ void		surface_daily_F(
 		   patch[0].Kdown_diffuse/86.4,
 		   patch[0].Kup_direct/86.4,
 		   patch[0].Kup_diffuse/86.4,
-		   patch[0].Lstar_soil/86.4, 
+		   patch[0].Lstar_pond/86.4, 
 		   patch[0].surface_heat_flux, 
 		   patch[0].detention_store, 
 		   litter[0].rain_capacity, 
@@ -348,7 +360,8 @@ void		surface_daily_F(
 	/*	remaining surface water can be held by the litter.			*/
 	/*--------------------------------------------------------------*/
 	
-	if ( patch[0].detention_store <= (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)) | (patch[0].soil_defaults[0][0].detention_store_size == 0.0)) {
+	if ( patch[0].detention_store <= (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))
+			| (patch[0].soil_defaults[0][0].detention_store_size == 0.0)) {
 		
 		/*--------------------------------------------------------------*/
 		/*	calculate surface albedo as a function of amount of	*/
@@ -537,26 +550,37 @@ void		surface_daily_F(
 		
 		/* Set patch variable for tracking & output. */
 		/* Note that this is total surface Kstar not just soil Kstar. */
-		patch[0].Kstar_soil = (1 - litter[0].cover_fraction) * (Kstar_direct_soil + Kstar_diffuse_soil) 
-								+ litter[0].cover_fraction * (Kstar_direct_lit + Kstar_diffuse_lit);
+		patch[0].Kstar_soil = (1 - litter[0].cover_fraction) 
+									* (Kstar_direct_soil + Kstar_diffuse_soil) 
+								+ litter[0].cover_fraction
+									* (Kstar_direct_lit + Kstar_diffuse_lit);
 		/* Update patch Kup with reflected fluxes from surface. */
 		/* Assumes Kup from surface gets reabsorbed by canopy so only track open surfaces. */
-		patch[0].Kup_direct += (1 - patch[0].overstory_fraction) * ((1 - litter[0].cover_fraction) * Kup_direct_soil 
-								+ litter[0].cover_fraction * Kup_direct_lit);
-		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction) * ((1 - litter[0].cover_fraction) * Kup_diffuse_soil 
-								+ litter[0].cover_fraction * Kup_diffuse_lit);
+		patch[0].Kup_direct += (1 - patch[0].overstory_fraction)
+									* ((1 - litter[0].cover_fraction) * Kup_direct_soil 
+									+ litter[0].cover_fraction * Kup_direct_lit);
+		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction) 
+									* ((1 - litter[0].cover_fraction) * Kup_diffuse_soil 
+									+ litter[0].cover_fraction * Kup_diffuse_lit);
 		
 		if (zone[0].metv.dayl > ZERO) {
-			/* Assuming litter water receives emitted LW rad from soil and has a net LW of 0 */
-			/* between litter surface and atmosphere (assuming same temperature). */
-			rnet_evap_litter = litter[0].cover_fraction * 1000 * (Kstar_direct_lit + Kstar_diffuse_lit + patch[0].Lup_soil
-									   + patch[0].surface_heat_flux) / zone[0].metv.dayl;
+			/* Assuming net LW for litter is same as soil layer, which is	*/
+			/* a reasonable approximation if litter and soil are same 	*/
+			/* temperature and have same emissivity. */
+			rnet_evap_litter = litter[0].cover_fraction 
+									* 1000 * (Kstar_direct_lit + Kstar_diffuse_lit 
+											  + patch[0].Lstar_soil
+											  + patch[0].surface_heat_flux) 
+									/ zone[0].metv.dayl;
 				if (rnet_evap_litter <= ZERO) {
 					rnet_evap_litter = 0.0;
 				}	
-			/* Assuming soil water receives emitted LW rad from soil. */
-			rnet_evap_soil = (1 - litter[0].cover_fraction) * 1000 * (Kstar_direct_soil + Kstar_diffuse_soil + patch[0].Lup_soil
-									 + patch[0].surface_heat_flux) / zone[0].metv.dayl;
+			/* Assuming net LW for soil is available for soil water evap. */
+			rnet_evap_soil = (1 - litter[0].cover_fraction)
+									* 1000 * (Kstar_direct_soil + Kstar_diffuse_soil 
+											  + patch[0].Lstar_soil
+											  + patch[0].surface_heat_flux)
+									/ zone[0].metv.dayl;
 				if (rnet_evap_soil <= ZERO) {
 					rnet_evap_soil = 0.0;
 				}		
@@ -566,8 +590,6 @@ void		surface_daily_F(
 			rnet_evap_litter = 0.0;
 			rnet_evap_soil = 0.0;
 		}
-		
-		rnet_evap = 0.0; /* DROP VARIABLE? */
 		
 		
 		if ( command_line[0].verbose_flag == -5 ){
@@ -581,10 +603,6 @@ void		surface_daily_F(
 				   litter[0].gsurf_intercept);
 		}
 		
-
-		/*rnet_evap_litter = min(litter->proj_pai,1)*rnet_evap;
-		rnet_evap_soil = max(0.0, rnet_evap-rnet_evap_litter);
-		if (rnet_evap < 0.0) rnet_evap = 0.0;*/
 		
 		/*--------------------------------------------------------------*/
 		/*	Make sure ga and gsurf are non-zero.			*/

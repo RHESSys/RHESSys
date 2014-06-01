@@ -249,18 +249,17 @@ struct	command_line_object	*construct_command_line(
 			/*	fire spread option and coeffcients	  */
 			/*-------------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-firespread") == 0 ){
-				i++;
 				printf("\n Running with FIRE SPREAD turned on");
 				command_line[0].firespread_flag = 1;
-				if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
-					fprintf(stderr,"FATAL ERROR: Values for fire grid parameters not specified\n");
-					exit(EXIT_FAILURE);
-				} /*end if*/
+				i++;
+				command_line[0].fire_grid_res = 30;
 				/*-------------------------------*/
 				/*Read in the fire spread grid parameters		*/
 				/*-------------------------------*/
-				command_line[0].fire_grid_res = (double)atof(main_argv[i]);
-				i++;
+				if (  (i != main_argc) && (valid_option(main_argv[i])==0) ){
+					command_line[0].fire_grid_res = (double)atof(main_argv[i]);
+					i++;
+				}/*end if*/
 			}/* end if */
 
 			/*-------------------------------------------------*/

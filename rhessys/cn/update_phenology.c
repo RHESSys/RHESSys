@@ -136,6 +136,7 @@ void update_phenology(struct zone_object  *zone,
 	
 	double compute_growingseason_index(
 		struct zone_object *,
+	 	struct epvar_struct	*epv ,
 		struct epconst_struct
 		);
 		
@@ -188,7 +189,7 @@ void update_phenology(struct zone_object  *zone,
 
   else {
 
-  phen->gsi = compute_growingseason_index(zone, epc);
+  phen->gsi = compute_growingseason_index(zone, epv, epc);
   
 
 

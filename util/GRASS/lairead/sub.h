@@ -19,6 +19,6 @@ int funcnumber(char *funcname);
 void msgnoloop(char *msg);
 int varnumber( char *vname, char **VARNAME);
 void space_output(FILE *outfile, int lev);
-void readheader(FILE *templatefile , struct headerstruct  *header );
+void readheader(FILE *templatefile , struct headerstruct  *header, int legacy_world );
 void outputheader(FILE *templatefile, struct headerstruct *header);
 void error(char *msg);

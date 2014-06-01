@@ -86,7 +86,7 @@ change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
 	/* ******************************************************* */
 	/* read and write the header information */
 	/* ******************************************************* */
-    readheader( header_file, header);
+	readheader( header_file, header, legacy_worldfile);
 
     if ( !legacy_worldfile ) {
 		// If we're dealing with a new-style worldfile
@@ -131,13 +131,13 @@ change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
 	/* ******************************************************* */
 	/* ******************************************************* */
 
-	for (i=0; i<num_patches; i++) {
+	for (i=1; i<=num_patches; i++) {
 
 		ID[1] = 1;
 		ID[2] = flow_table[i].hillID;
 		ID[3] = flow_table[i].zoneID;
 		ID[4] = flow_table[i].patchID;
-		ID[5] = flow_table[i].vegid;
+		ID[5] = flow_table[i].patchID;
 
 		printf("\n processing patchID %d", flow_table[i].patchID);
 		flow_table[i].worldlink = find_tlevel(tlevel[0].children[0], ID, 1);
@@ -337,6 +337,7 @@ struct tlevelstruct  *readnextlevel(level, oldworld)
 
     		if(fgets(line,MAXTEMPLATELINE,oldworld)==NULL) error("Reading initialworld file.");
     		sscanf(line,"%d %s", &ID,name);
+		printf("\n Processing ID %d from %s", ID,name);
     
 		if ( (tlevel = (struct tlevelstruct*)malloc(sizeof(struct tlevelstruct)) ) == NULL) {
 			fprintf(stderr,"ERROR: Could not allocate level structure for level %d id %d \n",

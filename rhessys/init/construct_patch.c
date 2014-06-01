@@ -234,7 +234,11 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.potential_recharge_wyd = 0.0;
 	patch[0].acc_year.recharge = 0.0;
 	patch[0].acc_year.recharge_wyd = 0.0;
-	
+
+	if (command_line[0].firespread_flag == 1) {
+		patch[0].fire.et = 0.0;
+		patch[0].fire.pet = 0.0;
+		}	
 	/*--------------------------------------------------------------*/
 	/*	Variables for the dynamic version are included here     */
 	/*--------------------------------------------------------------*/

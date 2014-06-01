@@ -42,7 +42,8 @@ int leapyear(year)
 /* Header Routines */
 
 
-void 	readheader(templatefile, header)
+void 	readheader(templatefile, header, legacy_world)
+  int     legacy_world;
 	FILE	*templatefile;
 	struct 	headerstruct	*header;
 	
@@ -56,58 +57,62 @@ void 	readheader(templatefile, header)
 	char name[MAXTEMPLATELINE];
 
 
+	// If we're reading a legacy worldfile we need to read the date
+	if ( legacy_world ) {
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+	   error("Reading template file. 1");
 	sscanf(line,"%d %s",&tm.year,name);
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+	   error("Reading template file. 2");
 	sscanf(line,"%d %s",&tm.month,name);
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+	   error("Reading template file. 3");
 	sscanf(line,"%d %s",&tm.day,name);
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+	   error("Reading template file. 4");
 	sscanf(line,"%d %s",&tm.hour,name);
 	header->start_date = tm;
-
+	
 
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+	   error("Reading template file. 5");
 	sscanf(line,"%d %s",&tm.year,name);
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+	   error("Reading template file. 6");
 	sscanf(line,"%d %s",&tm.month,name);
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+	   error("Reading template file. 7");
 	sscanf(line,"%d %s",&tm.day,name);
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   error("Reading template file.");
+	   error("Reading template file. 8");
 	sscanf(line,"%d %s",&tm.hour,name);
 	header->end_date = tm;
 
+	}
+
 	for (i=0; i<NUMDEFLEVELS; ++i) {
 		if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   		error("Reading template file.");
+	   		error("Reading template file. 9");
 		sscanf(line,"%d %s", &num_def,name);
 		header->defaults[i].num_defaults = num_def;
 		header->defaults[i].filenames = (char **)calloc(num_def, sizeof(char *));
 		for (j=0; j<num_def; ++j)  {
 			header->defaults[i].filenames[j] = (char *)malloc(MAXFILENAME*sizeof(char));
 			if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   			error("Reading template file.");
+	   			error("Reading template file. 10");
 			sscanf(line,"%s %s",header->defaults[i].filenames[j],name);
 			}
 		}
 
 	if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-		error("Reading template file.");
+		error("Reading template file. 11");
 	sscanf(line,"%d %s", &num_def,name);
 	header->num_base_stations= num_def;
 	header->base_station_filenames = (char **)calloc(num_def, sizeof(char *));
 	for (j=0; j<num_def; ++j) {
 		header->base_station_filenames[j] = (char *)malloc(MAXFILENAME*sizeof(char));
 		if(fgets(line,MAXTEMPLATELINE,templatefile)==NULL)
-	   			error("Reading template file.");
+	   			error("Reading template file. 12");
 		sscanf(line,"%s %s",header->base_station_filenames[j],name);
 		}
 

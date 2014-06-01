@@ -130,6 +130,10 @@ void	canopy_stratum_daily_F(
 	
 	double	compute_vascular_stratum_conductance(
 		int	,
+		int	,
+		double	,
+		double	,
+		double	,
 		double	,
 		double	,
 		double	,
@@ -195,6 +199,13 @@ void	canopy_stratum_daily_F(
 		struct cdayflux_struct *);
 
 	double	compute_potential_N_uptake_Waring(
+		struct	epconst_struct,
+		struct	epvar_struct *,
+		struct cstate_struct *cs,
+		struct nstate_struct *ns,
+		struct cdayflux_struct *);
+		
+	double	compute_potential_N_uptake_combined(
 		struct	epconst_struct,
 		struct	epvar_struct *,
 		struct cstate_struct *cs,
@@ -869,11 +880,15 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].gs_sunlit = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
+		stratum[0].defaults[0][0].epc.psi_curve,
 		stratum[0].defaults[0][0].epc.ppfd_coef,
 		stratum[0].defaults[0][0].epc.gl_c,
 		stratum[0].defaults[0][0].lai_stomatal_fraction,
 		stratum[0].defaults[0][0].epc.psi_open,
 		stratum[0].defaults[0][0].epc.psi_close,
+		stratum[0].defaults[0][0].epc.psi_threshold,
+		stratum[0].defaults[0][0].epc.psi_slp,
+		stratum[0].defaults[0][0].epc.psi_intercpt,
 		stratum[0].defaults[0][0].epc.gl_smax,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
@@ -900,11 +915,15 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].potential_gs_sunlit = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
+		stratum[0].defaults[0][0].epc.psi_curve,
 		stratum[0].defaults[0][0].epc.ppfd_coef,
 		stratum[0].defaults[0][0].epc.gl_c,
 		stratum[0].defaults[0][0].lai_stomatal_fraction,
 		stratum[0].defaults[0][0].epc.psi_open,
 		stratum[0].defaults[0][0].epc.psi_close,
+		stratum[0].defaults[0][0].epc.psi_threshold,
+		stratum[0].defaults[0][0].epc.psi_slp,
+		stratum[0].defaults[0][0].epc.psi_intercpt,
 		stratum[0].defaults[0][0].epc.gl_smax,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
@@ -923,11 +942,15 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].gs_shade = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
+		stratum[0].defaults[0][0].epc.psi_curve,
 		stratum[0].defaults[0][0].epc.ppfd_coef,
 		stratum[0].defaults[0][0].epc.gl_c,
 		stratum[0].defaults[0][0].lai_stomatal_fraction,
 		stratum[0].defaults[0][0].epc.psi_open,
 		stratum[0].defaults[0][0].epc.psi_close,
+		stratum[0].defaults[0][0].epc.psi_threshold,
+		stratum[0].defaults[0][0].epc.psi_slp,
+		stratum[0].defaults[0][0].epc.psi_intercpt,
 		stratum[0].defaults[0][0].epc.gl_smax,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
@@ -956,11 +979,15 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].potential_gs_shade = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
+		stratum[0].defaults[0][0].epc.psi_curve,
 		stratum[0].defaults[0][0].epc.ppfd_coef,
 		stratum[0].defaults[0][0].epc.gl_c,
 		stratum[0].defaults[0][0].lai_stomatal_fraction,
 		stratum[0].defaults[0][0].epc.psi_open,
 		stratum[0].defaults[0][0].epc.psi_close,
+		stratum[0].defaults[0][0].epc.psi_threshold,
+		stratum[0].defaults[0][0].epc.psi_slp,
+		stratum[0].defaults[0][0].epc.psi_intercpt,
 		stratum[0].defaults[0][0].epc.gl_smax,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
@@ -1719,6 +1746,14 @@ void	canopy_stratum_daily_F(
 			break;
 		case WARING:
 			stratum[0].ndf.potential_N_uptake =compute_potential_N_uptake_Waring(
+				stratum[0].defaults[0][0].epc,
+				&(stratum[0].epv),
+				&(stratum[0].cs),
+				&(stratum[0].ns),
+				&(stratum[0].cdf));
+			break;
+		case COMBINED:
+			stratum[0].ndf.potential_N_uptake =compute_potential_N_uptake_combined(
 				stratum[0].defaults[0][0].epc,
 				&(stratum[0].epv),
 				&(stratum[0].cs),

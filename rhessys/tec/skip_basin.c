@@ -28,7 +28,7 @@
 #include <math.h>
 #include "rhessys.h"
 
-struct basin_object *skip_basin(
+void skip_basin(
 									 struct	command_line_object	*command_line,
 									 FILE	*world_file,
 									 int		num_world_base_stations,

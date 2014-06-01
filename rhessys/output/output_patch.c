@@ -133,7 +133,6 @@ void	output_patch(
 					patch[0].snowpack.energy_deficit,
 					patch[0].snowpack.surface_age);
 	
-	
 
 	if (check <= 0) {
 		fprintf(stdout, "\nWARNING: output error has occured in output_patch");
