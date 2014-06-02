@@ -227,11 +227,14 @@ void  update_drainage_stream(
 			patch[0].transmissivity_profile);
 		patch[0].soil_cs.DOC_Qout += DOC_leached_to_stream;
 		patch[0].streamflow_NO3 += NO3_leached_to_stream;
+		patch[0].streamNO3_from_sub += NO3_leached_to_stream;
+		
 		patch[0].streamflow_NH4 += NH4_leached_to_stream;
 		patch[0].streamflow_DON += DON_leached_to_stream;
 		patch[0].streamflow_DOC += DOC_leached_to_stream;
 
-		patch[0].streamNO3_from_surface += NO3_leached_to_stream;
+		//patch[0].streamNO3_from_surface += NO3_leached_to_stream;
+		//this is base flow, not surface flow
 	}
 
 	patch[0].Qout += (route_to_stream / patch[0].area);
@@ -345,6 +348,7 @@ void  update_drainage_stream(
 		patch[0].surface_NO3  -= Nout;
 		patch[0].streamflow_NO3 += Nout;
 		patch[0].streamNO3_from_surface+=Nout;
+
 		patch[0].surface_ns_leach += Nout;
 		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_DOC;
 		patch[0].surface_DOC  -= Nout;

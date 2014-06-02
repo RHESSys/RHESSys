@@ -466,7 +466,7 @@ void  update_drainage_road(
 	if (command_line[0].grow_flag > 0) {
 		Nout = compute_N_leached(
 			verbose_flag,
-			patch[0].soil_ns.nitrate - NO3_leached_to_patch,
+			patch[0].soil_ns.nitrate - NO3_leached_to_patch - NO3_leached_to_stream,
 			return_flow,
 			0.0,
 			0.0,
@@ -485,7 +485,7 @@ void  update_drainage_road(
 
 		Nout = compute_N_leached(
 			verbose_flag,
-			patch[0].soil_ns.sminn- NH4_leached_to_patch,
+			patch[0].soil_ns.sminn- NH4_leached_to_patch - NH4_leached_to_stream,
 			return_flow,
 			0.0,
 			0.0,
@@ -504,7 +504,7 @@ void  update_drainage_road(
 
 		Nout = compute_N_leached(
 			verbose_flag,
-			patch[0].soil_ns.DON - DON_leached_to_patch,
+			patch[0].soil_ns.DON - DON_leached_to_patch - DON_leached_to_stream,
 			return_flow,
 			0.0,
 			0.0,
@@ -523,7 +523,7 @@ void  update_drainage_road(
 
 		Nout = compute_N_leached(
 			verbose_flag,
-			patch[0].soil_cs.DOC - DOC_leached_to_patch,
+			patch[0].soil_cs.DOC - DOC_leached_to_patch - DOC_leached_to_stream,
 			return_flow,
 			0.0,
 			0.0,
@@ -553,7 +553,7 @@ void  update_drainage_road(
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
 			patch[0].surface_NO3  -= Nout;
 			patch[0].next_stream[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
-			patch[0].streamNO3_from_surface += Nout;
+			patch[0].next_stream[0].streamNO3_from_surface += (Nout * patch[0].area / patch[0].next_stream[0].area);
 
 
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
@@ -590,6 +590,8 @@ void  update_drainage_road(
 		patch[0].next_stream[0].streamflow_DOC += Nin;
 		Nin = (NO3_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NO3 += Nin;
+		patch[0].next_stream[0].streamNO3_from_sub += Nin;
+
 		Nin = (NH4_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NH4 += Nin;
 		}
