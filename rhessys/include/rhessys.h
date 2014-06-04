@@ -471,6 +471,23 @@ struct basin_object
 	double	theta_noon;		/* 	rads	*/
 	double	sin_latitude;		/* 	DIM	*/
 	double	max_slope;		/* 	degrees	*/
+	
+	/*	used in subsurface computation		*/
+	double basin_outflow;
+	double basin_rz_storage;
+	double basin_unsat_storage;
+	double basin_sat_deficit;
+	double basin_return_flow;
+	double basin_detention_store;
+	double basin_area;
+	double preday_basin_unsat_storage;
+	double preday_basin_rz_storage;
+	double preday_basin_sat_deficit;
+	double preday_sat_deficit;
+	double preday_basin_return_flow;
+	double preday_basin_detention_store;
+	/*						*/
+	
 	struct	base_station_object	**base_stations;
 	struct	basin_default		**defaults;
 	struct	basin_hourly_object	*hourly;
@@ -671,6 +688,8 @@ struct hillslope_default
 	int			ID;
 	int	n_routing_timesteps; 		/*  number per day */
 	double	gw_loss_coeff;					/* percent/day */
+	double	gw_loss_fast_coeff;					/* percent/day */
+	double	gw_loss_fast_threshold;					/* m */
 	};
 
 /*----------------------------------------------------------*/
@@ -724,6 +743,7 @@ struct hillslope_object
 	double	y;			/*	meters	*/
 	double	z;			/* meters	*/
 	double	area;			/* sq meters */
+	double	riparian_area;		/* sq meters */
 	double	slope;			/* degrees */
 	double	base_flow;		/* meters		*/
 	double	streamflow_NO3;		/* kgN/m2/day		*/
@@ -894,6 +914,7 @@ struct zone_object
 	double	sin_slope;				/*	DIM	*/
 	double	slope;					/* degrees 	*/
 	double	snow;				     	/* m water	*/
+	double	snow_hourly_total;
 	double	surface_Tday;				/*	deg C	*/
 	double	surface_Tnight;				/*	deg C	*/
 	double	tdewpoint;				/* degrees C	*/
@@ -929,6 +950,7 @@ struct	zone_hourly_object
 	double	Kdown_diffuse_flat;			/*	W/m^2	*/
 	double	sin_aspect;				/*	DIM	*/
 	double	sin_slope;				/*	DIM	*/
+	double	snow;					/*	m	*/
 	};
 
 
@@ -1512,7 +1534,8 @@ struct patch_object
 	double	rain_throughfall;	/* m water	*/	
 	double	recharge;	/* m water	*/	
 	double	return_flow;		/* m water	*/
-	double	snow_throughfall;	/* m water	*/	
+	double	snow_throughfall;	/* m water	*/
+	double	rain_throughfall_24hours;	/* m water,used for 24 hours accumulated throughfall	*/	
 	double	rain_throughfall_final;	/* m water	*/	
 	double	rain_stored;		/* m water	*/
 	double	slope;			/* degrees		*/
@@ -1819,7 +1842,8 @@ struct	command_line_object
 	int		routing_flag;
 	int		surface_routing_flag;
 	int		stream_routing_flag;
-	int     reservoir_operation_flag;
+	int		gwtoriparian_flag;
+	int     	reservoir_operation_flag;
 	int		ddn_routing_flag;
 	int		dclim_flag;
 	int		road_flag;

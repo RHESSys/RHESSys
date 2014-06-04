@@ -63,16 +63,27 @@ void	basin_daily_F(
 		struct	command_line_object *, 
 		struct	tec_entry *,
 		struct	date );
-
-	void	compute_subsurface_routing(
+	/*--------------------------------------------------------------*/
+	/* this part has been moved to basin_hourly			*/
+	/*--------------------------------------------------------------*/
+/*	void	compute_subsurface_routing(
 		struct command_line_object *,
 		struct basin_object *,
 		int, struct	date);
-	
+*/	
 	double	compute_stream_routing(
 		struct command_line_object *,
 		struct stream_network_object *,
 		int, struct	date);
+
+	void	update_basin_patch_accumulator(
+		struct command_line_object *command_line,
+		struct basin_object *basin,
+		struct date current_date);
+
+	void	update_hillslope_accumulator(
+		struct command_line_object *command_line,
+		struct basin_object *basin);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -96,15 +107,15 @@ void	basin_daily_F(
 
 	/*--------------------------------------------------------------*/
 	/*  For routing option - route water between patches within     */
-	/*      the basin                                               */
+	/*      the basin:  this part has been moved to basin_hourly    */
 	/*--------------------------------------------------------------*/
-    if ( command_line[0].routing_flag == 1) {
+/*   	 if ( command_line[0].routing_flag == 1) {
 		compute_subsurface_routing(command_line,
 			basin,
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
 	}
-
+*/
 	/*--------------------------------------------------------------*/
 	/*  For stream routing option - route water between patches within     */
 	/*      the basin                                               */
@@ -116,57 +127,18 @@ void	basin_daily_F(
                         current_date);
 	}
 
+	/*--------------------------------------------------------------*/
+	/* update basin patch accumulator				*/
+	/*--------------------------------------------------------------*/
+	update_basin_patch_accumulator(command_line,
+					basin,
+					current_date);
 
-	for ( h = 0 ; h < basin[0].num_hillslopes; h++ ){
-		hillslope = basin[0].hillslopes[h];
-		for (z = 0; z < hillslope[0].num_zones; z++) {
-			for (p=0; p < hillslope[0].zones[z][0].num_patches; p++) {
-				patch = hillslope[0].zones[z][0].patches[p];
-
-		scale = patch[0].area / hillslope[0].area;
-
-		if((command_line[0].output_flags.monthly == 1)&&(command_line[0].h != NULL)){
-			hillslope[0].acc_month.snowpack += (patch[0].snowpack.water_equivalent_depth) * scale;
-			hillslope[0].acc_month.streamflow += (patch[0].streamflow) * scale;
-			hillslope[0].acc_month.et += (patch[0].transpiration_unsat_zone
-				+ patch[0].evaporation_surf + 
-				patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone +
-				patch[0].transpiration_sat_zone + patch[0].evaporation)*scale;
-			hillslope[0].acc_month.denitrif += patch[0].ndf.denitrif*scale;
-			hillslope[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
-			hillslope[0].acc_month.mineralized += patch[0].ndf.net_mineralized*scale;
-			hillslope[0].acc_month.uptake += patch[0].ndf.sminn_to_npool*scale;
-			hillslope[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
-			hillslope[0].acc_month.DON_loss+= patch[0].ndf.total_DON_loss * scale;
-			hillslope[0].acc_month.length += 1;
-			hillslope[0].acc_month.stream_NO3 += patch[0].streamflow_NO3 * scale;
-			hillslope[0].acc_month.stream_NH4 += patch[0].streamflow_NH4 * scale;
-			hillslope[0].acc_month.psn += patch[0].net_plant_psn * scale;
-			hillslope[0].acc_month.lai += patch[0].lai * scale;
-		}
-		if((command_line[0].output_flags.yearly == 1)&&(command_line[0].h != NULL)){
-			hillslope[0].acc_year.length += 1;
-			hillslope[0].acc_year.stream_NO3 += patch[0].streamflow_NH4 * scale;
-			hillslope[0].acc_year.stream_NH4 += patch[0].streamflow_NO3 * scale;
-			hillslope[0].acc_year.denitrif += patch[0].ndf.denitrif * scale;
-			hillslope[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
-			hillslope[0].acc_year.mineralized += patch[0].ndf.net_mineralized*scale;
-			hillslope[0].acc_year.uptake += patch[0].ndf.sminn_to_npool*scale;
-			hillslope[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
-			hillslope[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss * scale;
-			hillslope[0].acc_year.psn += patch[0].net_plant_psn * scale;
-			hillslope[0].acc_year.et += (patch[0].evaporation 
-				+ patch[0].evaporation_surf + 
-				patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone +
-				patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone)
-						* scale;
-			hillslope[0].acc_year.streamflow += (patch[0].streamflow)*scale;
-			hillslope[0].acc_year.lai += patch[0].lai * scale;
-			}
-
-		} /* end patch */
-		} /* end zone */
-	} /* end hillslope */
+	/*--------------------------------------------------------------*/
+	/* update hillslope accumulator					*/
+	/*--------------------------------------------------------------*/
+	update_hillslope_accumulator(command_line,
+					basin);
 
 	return;
 } /*end basin_daily_F*/

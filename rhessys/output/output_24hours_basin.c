@@ -2,13 +2,13 @@
 /* 																*/
 /*					output_basin						*/
 /*																*/
-/*	output_basin - creates output files objects.		*/
+/*	output_hourly_basin - creates output files objects.		*/
 /*																*/
 /*	NAME														*/
-/*	output_basin - outputs current contents of a basin.			*/
+/*	output_hourly_basin - outputs current contents of a basin.			*/
 /*																*/
 /*	SYNOPSIS													*/
-/*	void	output_basin( int routing_flag,										*/	
+/*	void	output_hourly_basin( int routing_flag,										*/	
 /*					struct	basin_object	*basin,				*/
 /*					struct	date	date,  						*/
 /*					FILE 	*outfile)							*/
@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void	output_basin(			int routing_flag,
+void	output_24hours_basin(			int routing_flag,
 					 struct	basin_object	*basin,
 					 struct	date	date,
 					 FILE *outfile)
@@ -43,7 +43,6 @@ void	output_basin(			int routing_flag,
 	/*------------------------------------------------------*/
 	int h,z,p,c;
 	int var_flag, layer;
-	double astreamflow_N;
 	double arain_throughfall;
 	double asnow_throughfall;
 	double alitter_store;
@@ -78,7 +77,7 @@ void	output_basin(			int routing_flag,
 	double aLE_can, aLE_soil, aLE_snow;
 	double acLstar;
 	double acdrip;
-	double acga;
+	double acga;	
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -116,18 +115,18 @@ void	output_basin(			int routing_flag,
 	hgw = 0.0;
 	alai = 0.0;
 	adetention_store = 0.0;
-	astreamflow_N = 0.0;
 	aacctrans = 0.0; 
 	basin_area = 0.0;
 	zone_area = 0.0;
 	adC13 = 0.0;
 	amortality_fract = 0.0;
 	apcp = 0.0;
-	atmin = 0.0;
-	atmax = 0.0;
-	atavg = 0.0;
-	avpd = 0.0;
-	asnow = 0.0;
+    atmin = 0.0;
+    atmax = 0.0;
+    atavg = 0.0;
+    avpd = 0.0;
+    asnow = 0.0;
+	
 	agpsn=0.0;
 	aresp=0.0;
 	ags=0.0;
@@ -162,14 +161,14 @@ void	output_basin(			int routing_flag,
 	alitrc = 0.0;
 	acdrip = 0.0;
 	acga = 0.0;
-
+	
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
-			apcp += (zone[0].rain+zone[0].snow)*zone[0].area;
+			apcp += (zone[0].rain_hourly_total+zone[0].rain+zone[0].snow)*zone[0].area;
 			atmin += zone[0].metv.tmin * zone[0].area;
 			atmax += zone[0].metv.tmax * zone[0].area;
 			atavg += zone[0].metv.tavg * zone[0].area;
@@ -180,7 +179,7 @@ void	output_basin(			int routing_flag,
 			zone_area += zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
-				arain_throughfall += patch[0].rain_throughfall * patch[0].area;
+				arain_throughfall += (patch[0].rain_throughfall_24hours + patch[0].rain_throughfall) * patch[0].area;
 				asnow_throughfall += patch[0].snow_throughfall * patch[0].area;
 				asat_deficit_z += patch[0].sat_deficit_z * patch[0].area;
 				asat_deficit += patch[0].sat_deficit * patch[0].area;
@@ -196,7 +195,7 @@ void	output_basin(			int routing_flag,
 				aevap_can += (patch[0].evaporation) * patch[0].area;
 				aevap_lit += (patch[0].evaporation_surf) * patch[0].area;
 				aevap_soil += (patch[0].exfiltration_sat_zone
-								 + patch[0].exfiltration_unsat_zone) * patch[0].area;
+							   + patch[0].exfiltration_unsat_zone) * patch[0].area;
 				asublimation += patch[0].snowpack.sublimation * patch[0].area;
 				asnowpack += patch[0].snowpack.water_equivalent_depth*patch[0].area;
 				if (patch[0].snowpack.water_equivalent_depth > 0.001)
@@ -210,7 +209,7 @@ void	output_basin(			int routing_flag,
 					+ patch[0].transpiration_unsat_zone)  *  patch[0].area;
 				alitrc += (patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c
 						   + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c)
-							* patch[0].area;
+				* patch[0].area;
 				aKup += (patch[0].Kup_direct + patch[0].Kup_diffuse) * patch[0].area;
 				aLup += (patch[0].Lup) * patch[0].area;
 				aKstar_can += patch[0].Kstar_canopy * patch[0].area;
@@ -277,15 +276,15 @@ void	output_basin(			int routing_flag,
 							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.frootc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.frootc_transfer)
 							* patch[0].area;
 						awoodc += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction	* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_crootc
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_crootc
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_store
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_store
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_store
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_transfer
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_transfer
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_transfer
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_transfer
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cpool) 
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_crootc
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_store
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_store
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_store
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_transfer
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_transfer
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_transfer
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_transfer
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cpool) 
 							* patch[0].area;
 						acsnow += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].snow_stored )
@@ -315,18 +314,16 @@ void	output_basin(			int routing_flag,
 	adC13 /=  aarea;
 	amortality_fract /=  aarea;
 	apcp /= zone_area;
-    atmin /= zone_area;
-    atmax /= zone_area;
+	atmin /= zone_area;
+	atmax /= zone_area;
 	atavg /= zone_area;
 	avpd /= zone_area;
     asnow /= zone_area;
 	aKdown /= zone_area;
-	aLdown /= zone_area;
-
+	aLdown /= zone_area;	
 
 	aPET /=  aarea;
 	acrain /=  aarea;
-	acsnow /=  aarea;
 	arecharge /= aarea;
 	arain_throughfall /=  aarea;
 	adetention_store /= aarea;
@@ -349,9 +346,9 @@ void	output_basin(			int routing_flag,
 	apsn /= aarea ;
 	alai /= aarea;
 	abase_flow /= aarea;
-	astreamflow_N /= aarea;
 	asat_area /= aarea;
 	aacctrans /= aarea; 
+
 	agpsn /= aarea;
 	aresp /= aarea;
 	ags /= aarea;
@@ -383,12 +380,12 @@ void	output_basin(			int routing_flag,
 	acLstar /= aarea;
 	acdrip /= aarea;
 	acga /= aarea;
-
+	
 	hgw = hgw / basin_area;
 	hgwQout = hgwQout / basin_area;
 	abase_flow += (hbase_flow / basin_area);
 	astreamflow += (hbase_flow / basin_area);
-
+    
 	if (routing_flag == 0)
 		astreamflow += areturn_flow;
 
@@ -412,7 +409,7 @@ void	output_basin(			int routing_flag,
 
 	var_trans /= aarea;
 	var_acctrans /= aarea;
-	
+				
 
 	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
@@ -448,12 +445,15 @@ void	output_basin(			int routing_flag,
 		aacctrans*1000,
 		var_acctrans,
 		aPET*1000,
-		adC13,
-		apcp*1000.0,
+		adC13, 
+		apcp*1000.0, 
 		amortality_fract*100,
-	  	atmax,
-		atmin,
-		atavg, avpd, asnow*1000.0, arecharge*1000.0,
+	  	atmax, 
+		atmin, 
+		atavg,
+		avpd, 
+		asnow*1000.0,
+		arecharge*1000.0,
 		agpsn * 1000,
 		aresp * 1000,
 		ags * 1000,
@@ -464,12 +464,26 @@ void	output_basin(			int routing_flag,
 		basin[0].stream_list.streamflow *1000.0*24*3600/aarea,
 		acsnow * 1000.0, 
 		aheight,
-		aevap_can * 1000.0, aevap_lit * 1000.0, aevap_soil * 1000.0,
+		aevap_can * 1000.0,
+		aevap_lit * 1000.0,
+		aevap_soil * 1000.0,
 		alitrc, 
-		aKdown, aLdown, aKup, aLup,
-		aKstar_can, aKstar_soil, aKstar_snow, 
-		aLstar_can, aLstar_soil, aLstar_snow,
-		aLE_can, aLE_soil, aLE_snow, acLstar, acdrip*1000, acga*1000);
-
+		aKdown,
+		aLdown,
+		aKup,
+		aLup,
+		aKstar_can,
+		aKstar_soil,
+		aKstar_snow, 
+		aLstar_can,
+		aLstar_soil,
+		aLstar_snow,
+		aLE_can,
+		aLE_soil,
+		aLE_snow,
+		acLstar,
+		acdrip*1000,
+		acga*1000
+		);
 	return;
 } /*end output_basin*/

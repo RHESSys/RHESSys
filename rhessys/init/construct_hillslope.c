@@ -198,6 +198,7 @@ struct hillslope_object *construct_hillslope(
 	/*--------------------------------------------------------------*/
 
 	hillslope[0].area = 0.0;
+	hillslope[0].riparian_area = 0.0;
 	hillslope[0].slope = 0.0;
 	hillslope[0].aggdefs.soil_water_cap = 0.0;
 	hillslope[0].aggdefs.m = 0.0;
@@ -222,6 +223,8 @@ struct hillslope_object *construct_hillslope(
 			base_station_ncheader, world);
 		for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
 			hillslope[0].area += hillslope[0].zones[i][0].patches[j][0].area;
+			if (hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].ID == 42) 
+				hillslope[0].riparian_area += hillslope[0].zones[i][0].patches[j][0].area;
 			hillslope[0].slope += hillslope[0].zones[i][0].patches[j][0].slope *
 					hillslope[0].zones[i][0].patches[j][0].area;
 			hillslope[0].aggdefs.soil_water_cap +=

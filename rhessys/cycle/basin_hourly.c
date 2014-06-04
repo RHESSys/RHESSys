@@ -53,6 +53,12 @@ void	basin_hourly(
 		struct date);
 	
 	void	*alloc(	size_t, char *, char *);
+
+	void    compute_subsurface_routing_hourly(
+		struct command_line_object *command_line,
+                struct basin_object *basin,
+		int n_timesteps, 
+		struct date current_date);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -147,6 +153,7 @@ void	basin_hourly(
 	/*	Note that solar geometry except for cos_sza may be garbage	*/
 	/*	if cos_sza < 0 (no daylight).								*/
 	/*--------------------------------------------------------------*/
+
 	for ( hillslope=0 ; hillslope < basin[0].num_hillslopes ;hillslope++ ){
 		hillslope_hourly(
 			world,
@@ -160,5 +167,18 @@ void	basin_hourly(
 	/*	Destroy the basin hourly parameter arrayu.					*/
 	/*--------------------------------------------------------------*/
 	free( basin[0].hourly );
+
+	/*--------------------------------------------------------------*/
+	/*	do subsurface routing					*/
+	/*--------------------------------------------------------------*/
+	/* this part is nearly the same as in the basin_daily_F		*/
+
+	if ( command_line[0].routing_flag == 1) { 
+		compute_subsurface_routing_hourly(command_line,
+			basin,
+			basin[0].defaults[0][0].n_routing_timesteps,
+			current_date);
+	}
+
 	return;
 } /*end basin_hourly.c*/

@@ -87,7 +87,7 @@ void		surface_daily_F(
 		double	,
 		double	);
 
-	double	 compute_litter_rain_stored(
+	double	compute_litter_rain_stored(
 		int,
 		struct	patch_object *);
 	
@@ -156,7 +156,7 @@ void		surface_daily_F(
 	double  dum;
 	struct	litter_object	*litter;
 	
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Initialize litter variables.				*/
 	/*--------------------------------------------------------------*/
@@ -607,12 +607,10 @@ void		surface_daily_F(
 		/*--------------------------------------------------------------*/
 		/*	Make sure ga and gsurf are non-zero.			*/
 		/*--------------------------------------------------------------*/
-				
 		patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
 		/*--------------------------------------------------------------*/
 		/*	Estimate potential evap rates.				*/
 		/*--------------------------------------------------------------*/
-			
 		potential_evaporation_rate = penman_monteith(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
@@ -652,14 +650,13 @@ void		surface_daily_F(
 		
 		PE_rainy_rate = max(0, PE_rainy_rate);
 		PE_rate = max(0, PE_rate);
-
 		potential_evaporation_rate = max(0,potential_evaporation_rate);
 		potential_rainy_evaporation_rate = max(0,potential_rainy_evaporation_rate);
 		/*--------------------------------------------------------------*/
 		/*	Do not allow negative potential evap if it raining	*/
 		/*	since condensation/dew dep is the same as rain		*/
 		/*--------------------------------------------------------------*/
-		if ( zone[0].rain > 0 ){
+		if ( zone[0].rain + zone[0].rain_hourly_total > 0 ){
 			potential_evaporation_rate = max(0,potential_evaporation_rate);
 			potential_rainy_evaporation_rate =
 				max(0,potential_rainy_evaporation_rate);

@@ -131,7 +131,7 @@ change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
 	/* ******************************************************* */
 	/* ******************************************************* */
 
-	for (i=1; i<=num_patches; i++) {
+	for (i=1; i <= num_patches; i++) {
 
 		ID[1] = 1;
 		ID[2] = flow_table[i].hillID;
@@ -337,7 +337,6 @@ struct tlevelstruct  *readnextlevel(level, oldworld)
 
     		if(fgets(line,MAXTEMPLATELINE,oldworld)==NULL) error("Reading initialworld file.");
     		sscanf(line,"%d %s", &ID,name);
-		printf("\n Processing ID %d from %s", ID,name);
     
 		if ( (tlevel = (struct tlevelstruct*)malloc(sizeof(struct tlevelstruct)) ) == NULL) {
 			fprintf(stderr,"ERROR: Could not allocate level structure for level %d id %d \n",
