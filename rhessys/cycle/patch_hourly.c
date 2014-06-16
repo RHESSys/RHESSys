@@ -233,7 +233,7 @@ void		patch_hourly(
 		/*	drainage to a deeper groundwater store				  */
 		/*	move both nitrogen and water				       	*/
 		/*------------------------------------------------------------------------*/
-		if (command_line[0].gw_flag > 0) {
+		if (command_line[0].gw_flag > 0 )// && patch[0].detention_store > 0.008 ) {
 		if ( update_gw_drainage(patch,
 				hillslope,
 				command_line,
