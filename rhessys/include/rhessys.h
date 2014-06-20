@@ -303,7 +303,7 @@ struct	world_hourly_object
 /*----------------------------------------------------------*/
 struct	world_output_file_object
 	{
-	struct	output_files_object 	*basin;
+	struct	output_files_object		*basin;
 	struct	output_files_object		*hillslope;
 	struct	output_files_object		*zone;
 	struct	output_files_object		*patch;
@@ -1416,6 +1416,11 @@ struct patch_object
 	double  ga;			/* m/s */         
 	double  ga_final;		/* m/s */         
 	double  gw_drainage; 		/* m/day */
+	double	hourly_rz_drainage;	/* m water by Xiaoli */
+	double	hourly_unsat_drainage;	/* m water by Xiaoli */
+	double	hourly_subsur2stream_flow;	/* m water by Xiaoli */
+	double	hourly_sur2stream_flow;  /* m water by Xiaoli */
+	double	hourly_stream_flow;	/* m water by Xiaoli */
 	double  interim_sat;		/* m */
 	double  stream_gamma;		/* meters**2/day	*/
  	double	Kdown_direct;		/* Kj/(m^2*day)	*/
@@ -1761,6 +1766,7 @@ struct	output_flag
 	int		daily;
 	int		daily_growth;
 	int		hourly;
+	int		hourly_growth;
 	};
 
 /*----------------------------------------------------------*/

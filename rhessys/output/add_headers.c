@@ -3,10 +3,10 @@
 /*					add_headers					*/
 /*																*/
 /*	add_headers - 
-/*																*/
+															*/
 /*	NAME														*/
 /*	add_headers 
-/*																*/
+																*/
 /*	SYNOPSIS													*/
 /*	void add_headers(struct world output_file_object *,				*/
 /*			struct command_line_object *)					*/
@@ -44,6 +44,61 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].b != NULL) {
+	outfile = world_output_files[0].basin[0].hourly;
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n",
+	// the unit is based on mm and day
+		"hour",		
+		"day",
+		"month",
+		"year",
+		"basinID",
+		"pot_surface_infil",
+		//asnow_throughfall * 1000.0,
+		"sat_def_z",
+		"sat_def",
+		"rz_stor",
+		"unsat_stor",
+		"rz_drainage",
+		"unsat_drainage",
+		//acap_rise * 1000.0,
+		//aevaporation * 1000.0,
+		//asnowpack * 1000.0,
+		//atranspiration * 1000.0,
+		"subsur2stream_flow",
+		"sur2stream_flow",
+		"streamflow",
+		//apsn,
+		//alai,
+		"gw.Qout",
+		"gw.storage",
+		"detention_store",
+		"%sat_area",
+		"litter_store",
+		"canopy_store", 
+		//aperc_snow *100,
+		//asublimation * 1000.0,
+		//var_trans,
+		//aacctrans*1000,
+		//var_acctrans,
+		//aPET*1000,
+		//adC13, 
+		"precip", 
+		//amortality_fract*100,
+	  	//atmax, 
+		//atmin, 
+		//asnow*1000.0 ,
+		"routedstreamflow");
+		
+	
+
+
+
+
+
+
+
+
+
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/

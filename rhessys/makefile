@@ -217,6 +217,7 @@ $(OBJ)/output_yearly_patch.o \
 $(OBJ)/output_yearly_zone.o \
 $(OBJ)/output_zone.o \
 $(OBJ)/output_hourly_zone.o \
+$(OBJ)/output_hourly_basin.o \
 $(OBJ)/output_zone_state.o \
 $(OBJ)/parse_alloc_flag.o \
 $(OBJ)/parse_dyn_flag.o \
@@ -413,6 +414,8 @@ $(OBJ)/output_hillslope.o: output/output_hillslope.c
 	$(CC) -c $(CFLAGS) -I include output/output_hillslope.c -o $(OBJ)/output_hillslope.o
 $(OBJ)/output_hourly_zone.o: output/output_hourly_zone.c
 	$(CC) -c $(CFLAGS) -I include output/output_hourly_zone.c -o $(OBJ)/output_hourly_zone.o
+$(OBJ)/output_hourly_basin.o: output/output_hourly_basin.c
+	$(CC) -c $(CFLAGS) -I include output/output_hourly_basin.c -o $(OBJ)/output_hourly_basin.o
 $(OBJ)/output_zone.o: output/output_zone.c
 	$(CC) -c $(CFLAGS) -I include output/output_zone.c -o $(OBJ)/output_zone.o
 $(OBJ)/output_patch.o: output/output_patch.c

@@ -203,7 +203,7 @@ void		patch_hourly(
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
 	}
 
-	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
+	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here	
 
 	/*--------------------------------------------------------------*/
 	/*	include any detention storage as throughfall		*/
@@ -233,7 +233,7 @@ void		patch_hourly(
 		/*	drainage to a deeper groundwater store				  */
 		/*	move both nitrogen and water				       	*/
 		/*------------------------------------------------------------------------*/
-		if (command_line[0].gw_flag > 0 )// && patch[0].detention_store > 0.008 ) {
+		if (command_line[0].gw_flag > 0 ){// && patch[0].detention_store > 0.008 ) {
 		if ( update_gw_drainage(patch,
 				hillslope,
 				command_line,
@@ -465,6 +465,9 @@ void		patch_hourly(
 	
 	patch[0].unsat_drainage += unsat_drainage;
 	patch[0].rz_drainage += rz_drainage;
+	patch[0].hourly_unsat_drainage = unsat_drainage;
+	patch[0].hourly_rz_drainage = rz_drainage;
+	
 	/* ---------------------------------------------- */
 	/*     Final rootzone saturation calculation      */
 	/* ---------------------------------------------- */

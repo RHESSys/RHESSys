@@ -567,6 +567,7 @@ void  update_drainage_road(
 			patch[0].next_stream[0].streamflow_DOC += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			}
 		patch[0].next_stream[0].streamflow += (Qout * patch[0].area / patch[0].next_stream[0].area);
+		patch[0].next_stream[0].hourly_sur2stream_flow += Qout *  patch[0].area / patch[0].next_stream[0].area;
 		patch[0].detention_store -= Qout;
 		}
 		
@@ -582,6 +583,7 @@ void  update_drainage_road(
 	/*--------------------------------------------------------------*/
 	patch[0].next_stream[0].streamflow += (route_to_stream) / patch[0].next_stream[0].area;
 	patch[0].next_stream[0].surface_Qin  += (route_to_stream) / patch[0].next_stream[0].area;
+	patch[0].next_stream[0].hourly_sur2stream_flow += route_to_stream / patch[0].next_stream[0].area;
 
 	if (command_line[0].grow_flag > 0) {
 		Nin = (DON_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;

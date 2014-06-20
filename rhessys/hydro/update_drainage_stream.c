@@ -233,12 +233,13 @@ void  update_drainage_stream(
 		patch[0].streamflow_DON += DON_leached_to_stream;
 		patch[0].streamflow_DOC += DOC_leached_to_stream;
 
-		//patch[0].streamNO3_from_surface += NO3_leached_to_stream;
-		//this is base flow, not surface flow
+
 	}
 
 	patch[0].Qout += (route_to_stream / patch[0].area);
 	patch[0].base_flow += (route_to_stream / patch[0].area);
+	patch[0].hourly_subsur2stream_flow += route_to_stream / patch[0].area;
+
 
 
 	/*--------------------------------------------------------------*/
@@ -361,7 +362,9 @@ void  update_drainage_stream(
 		patch[0].streamflow_NH4 += Nout;
 		patch[0].detention_store -= Qout;
 		patch[0].return_flow += Qout; 
+		patch[0].hourly_sur2stream_flow += Qout;
 		}
+
 
 } /*end update_drainage_stream.c*/
 

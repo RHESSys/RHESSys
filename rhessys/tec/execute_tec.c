@@ -275,8 +275,18 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*			Perform any requested hourly output					*/
 			/*--------------------------------------------------------------*/
-			if (command_line[0].output_flags.hourly == 1)
-				execute_hourly_output_event(world,command_line,current_date,outfile);
+			if (command_line[0].output_flags.hourly == 1){
+				execute_hourly_output_event(
+							  world,
+							  command_line,
+							  current_date,
+							  outfile);
+			}
+
+			if(command_line[0].output_flags.hourly_growth ==1 &&
+					(command_line[0].grow_flag > 0) ){
+				  //execute_hourly_growth_output_event() need create this file
+				};
 			/*--------------------------------------------------------------*/
 			/*			Increment to the next hour.							*/
 			/*--------------------------------------------------------------*/

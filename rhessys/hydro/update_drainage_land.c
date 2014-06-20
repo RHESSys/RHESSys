@@ -469,7 +469,7 @@ void  update_drainage_land(
 		/*--------------------------------------------------------------*/
 
 		Qin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * route_to_surface) / neigh[0].area;
-		neigh[0].detention_store += Qin;
+		neigh[0].detention_store += Qin;// need fix this
 		neigh[0].surface_Qin += Qin;
 		
 		/*--------------------------------------------------------------*/

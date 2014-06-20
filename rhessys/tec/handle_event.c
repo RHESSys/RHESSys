@@ -155,6 +155,12 @@ void	handle_event(
 	else if ( !strcmp(event[0].command,"print_hourly_off") ){
 		command_line[0].output_flags.hourly= 0;
 	}
+	else if ( !strcmp(event[0].command,"print_hourly_growth_on")){
+		command_line[0].output_flags.hourly_growth = 1;
+	}
+	else if ( !strcmp(event[0].command,"print_hourly_growth_off")){
+		command_line[0].output_flags.hourly_growth = 0;
+	}
 	else if ( !strcmp(event[0].command,"output_current_state") ){
 		execute_state_output_event(world, current_date,
 			world[0].end_date,command_line);

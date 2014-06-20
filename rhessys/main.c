@@ -368,7 +368,8 @@ int	main( int main_argc, char **main_argv)
 	/*	Command line parsing.										*/
 	/*--------------------------------------------------------------*/
 	command_line = construct_command_line(main_argc, main_argv);
-      
+
+
 	/*--------------------------------------------------------------*/
 	/* Check if print version flag was set. If so, just print out   */
 	/* the version and return.                                      */
@@ -386,7 +387,6 @@ int	main( int main_argc, char **main_argv)
 	/*	Construct the world object.									*/
 	/*--------------------------------------------------------------*/
 	world = construct_world( command_line );
-	
 	if (command_line[0].verbose_flag > 0  )
 		fprintf(stderr,"FINISHED CON WORLD ***\n");
 	/*--------------------------------------------------------------*/
