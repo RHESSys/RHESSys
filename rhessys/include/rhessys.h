@@ -700,6 +700,12 @@ struct 	gw_object
 	double	NH4out;			/* kgN/m2/day	*/
 	double	DONout;			/* kgN/m2/day	*/
 	double	DOCout;			/* kgC/m2/day	*/
+	double	hourly_Qout;		/* m/m2/day	*/
+	double	hourly_NO3out;		/* kgN/m2/day	*/
+	double	hourly_NH4out;		/* kgN/m2/day	*/
+	double	hourly_DONout;		/* kgN/m2/day	*/
+	double	hourly_DOCout;		/* kgC/m2/day	*/
+
 	};
 /*----------------------------------------------------------*/
 /*	Define a hillslope object.								*/	
@@ -717,6 +723,7 @@ struct hillslope_object
 	double	riparian_area;		/* sq meters */
 	double	slope;			/* degrees */
 	double	base_flow;		/* meters		*/
+	double	hourly_base_flow;	/* meters   */
 	double	streamflow_NO3;		/* kgN/m2/day		*/
 	double	streamflow_NH4;		/* kgN/m2/day		*/
 	double	streamflow_DON;		/* kgN/m2/day		*/

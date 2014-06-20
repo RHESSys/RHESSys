@@ -203,9 +203,9 @@ void	output_hourly_basin(	int routing_flag,
 				hill_area += patch[0].area;
 			}
 		}
-		hbase_flow += hillslope[0].base_flow * hill_area;
+		hbase_flow += hillslope[0].hourly_base_flow * hill_area;
 		hgw += hillslope[0].gw.storage * hill_area;
-		hgwQout += hillslope[0].gw.Qout * hill_area;
+		hgwQout += hillslope[0].gw.hourly_Qout * hill_area;
 		basin_area += hill_area;
 	}
 	//adC13 /=  aarea;
@@ -244,8 +244,8 @@ void	output_hourly_basin(	int routing_flag,
 
 	hgw = hgw / basin_area;
 	hgwQout = hgwQout / basin_area;
-	abase_flow += (hbase_flow / basin_area);
-	//astreamflow += (hbase_flow / basin_area);
+      	abase_flow += (hbase_flow / basin_area);
+	astreamflow += hgwQout;//(hbase_flow / basin_area);
     
 	if (routing_flag == 0)
 		astreamflow += areturn_flow;
