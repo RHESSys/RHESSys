@@ -474,7 +474,7 @@ int	main( int main_argc, char **main_argv)
 	/*	The end.													*/
 	/*--------------------------------------------------------------*/
 	clock_t endClock =clock();
-	printf("%ld",(endClock - startClock)/CLOCKS_PER_SEC);
+	printf("\n%ld\n",(endClock - startClock)/CLOCKS_PER_SEC);
 	return(EXIT_SUCCESS);
 	
 } /*end main*/
