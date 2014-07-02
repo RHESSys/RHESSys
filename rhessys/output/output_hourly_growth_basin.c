@@ -164,7 +164,7 @@ void	output_hourly_growth_basin(
 				aarea +=  patch[0].area;
 				hill_area += patch[0].area;
 			}
-
+		}
 		hgwNO3 += hillslope[0].gw.NO3 * hill_area;
 		hgwNH4 += hillslope[0].gw.NH4 * hill_area;
 		hgwDOC += hillslope[0].gw.DOC * hill_area;
@@ -178,7 +178,7 @@ void	output_hourly_growth_basin(
 		hstreamflow_DON += hillslope[0].hourly_streamflow_DON * hillslope[0].area;
 		hstreamflow_DOC += hillslope[0].hourly_streamflow_DOC * hillslope[0].area;
 		basin_area += hill_area;
-		}
+
 		
 	}
 	//agpsn /= aarea ;
@@ -230,7 +230,7 @@ void	output_hourly_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 
-	fprintf(outfile,"%d %d %d %d %d %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %d %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf \n",
 		current_date.hour,
 		current_date.day,
 		current_date.month,

@@ -554,7 +554,8 @@ void  update_drainage_road(
 			patch[0].surface_NO3  -= Nout;
 			patch[0].next_stream[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			patch[0].next_stream[0].streamNO3_from_surface += (Nout * patch[0].area / patch[0].next_stream[0].area);
-
+			patch[0].next_stream[0].hourly[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
+			patch[0].next_stream[0].hourly[0].streamflow_NO3_from_surface =+ (Nout * patch[0].area / patch[0].next_stream[0].area);
 
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
 			patch[0].surface_NH4  -= Nout;
@@ -593,6 +594,8 @@ void  update_drainage_road(
 		Nin = (NO3_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NO3 += Nin;
 		patch[0].next_stream[0].streamNO3_from_sub += Nin;
+		patch[0].next_stream[0].hourly[0].streamflow_NO3 += Nin;
+		patch[0].next_stream[0].hourly[0].streamflow_NO3_from_sub += Nin;
 
 		Nin = (NH4_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NH4 += Nin;

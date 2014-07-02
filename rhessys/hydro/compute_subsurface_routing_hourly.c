@@ -192,12 +192,13 @@ void compute_subsurface_routing_hourly(
 		      	patch[0].hourly_subsur2stream_flow = 0;
 			patch[0].hourly_sur2stream_flow = 0;
 			patch[0].hourly_stream_flow = 0;
+			patch[0].hourly[0].streamflow_NO3 = 0;
+			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
+			patch[0].hourly[0].streamflow_NO3_from_surface = 0;
 		}
 
 		for (i = 0; i < basin->route_list->num_patches; i++) {
 			patch = basin->route_list->list[i];
-			//the following code is for test only
-			//if (patch[0].ID == 52982){printf("i= %d, in subsurface routing ID = %d\n",i, patch[0].ID);}
 			litter=&(patch[0].litter);
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
@@ -351,10 +352,11 @@ void compute_subsurface_routing_hourly(
 			/*--------------------------------------------------------------*/			
 			/* in the new version of rhessys, we delete the finalize streamflow and saturation deficits */
 			/* because it is already counted in the update_drainage and patch_hourly.c		    */
-			/* double counting should be deleted.							    */
-			/*--------------------------------------------------------------*/
+			/* double counting should be deleted.*/
 
-			/* ******************************** try separte the summation from final soil moisture calculation*/
+			/* ******************************** */
+			/* accumulate the daily returnflow and baseflow calculated from update_drainage*/
+			/* The N calculation has been completed in update_drainage_***.c routing*/
 			if (current_date.hour == n_timesteps){
 				    if (patch[0].drainage_type == STREAM) {
 					patch[0].streamflow += patch[0].return_flow
@@ -365,16 +367,8 @@ void compute_subsurface_routing_hourly(
 			patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 		      				+ patch[0].hourly_sur2stream_flow;
 
-			//the following code is for test only
-			/*if (current_date.day == 12 && patch[0].drainage_type == STREAM){
-			  printf("ID = %d, hour = %d, hourly_streamflow = %f, subsur2stream = %f, sur2stream = %f\n",patch[0].ID,
-													current_date.hour,
-													patch[0].hourly_stream_flow,
-													patch[0].hourly_subsur2stream_flow,
-													patch[0].hourly_sur2stream_flow);
-			}*/
 
-			basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area; // this one has serious problem
+			basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;
 			// it is not the sum of hourly return_flow, the patch[0].return_flow is already the sum of hourly return_flow from
 			// hour 0 to current_date.hour 
 	

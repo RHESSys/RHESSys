@@ -728,6 +728,10 @@ struct hillslope_object
 	double	streamflow_NH4;		/* kgN/m2/day		*/
 	double	streamflow_DON;		/* kgN/m2/day		*/
 	double	streamflow_DOC;		/* kgC/m2/day		*/
+	double  hourly_streamflow_NO3;	/* kgN/m2/day		*/
+	double	hourly_streamflow_NH4;	/* kgN/m2/day		*/
+	double	hourly_streamflow_DON;	/* kgN/m2/day		*/
+	double	hourly_streamflow_DOC;	/* kgN/m2/day		*/
 	struct	gw_object		gw;
 	struct	aggdefs_object		aggdefs;
 	struct	base_station_object	**base_stations;
@@ -1641,6 +1645,9 @@ struct	patch_hourly_object
 	int	i;
 	double	rain_throughfall;
 	double	infiltration;
+	double	streamflow_NO3_from_surface;
+	double	streamflow_NO3_from_sub;
+	double	streamflow_NO3;
 	};
 
 /*----------------------------------------------------------*/

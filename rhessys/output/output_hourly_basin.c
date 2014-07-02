@@ -245,7 +245,7 @@ void	output_hourly_basin(	int routing_flag,
 	hgw = hgw / basin_area;
 	hgwQout = hgwQout / basin_area;
       	abase_flow += (hbase_flow / basin_area);
-	astreamflow += hgwQout;//(hbase_flow / basin_area);
+	astreamflow += hgwQout;//==(hbase_flow / basin_area);
     
 	if (routing_flag == 0)
 		astreamflow += areturn_flow;

@@ -37,6 +37,8 @@
 /*	Sept, 98 - C.Tague	*/
 /*	added comma delimited output event */
 /*																*/
+/*	June, 2014 - X Chen	*/
+/*	added hourly growth output event*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>

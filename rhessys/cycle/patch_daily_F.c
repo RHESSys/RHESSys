@@ -1388,6 +1388,8 @@ void		patch_daily_F(
 	}	
 	patch[0].unsat_drainage += unsat_drainage;
 	patch[0].rz_drainage += rz_drainage;
+	patch[0].hourly_unsat_drainage += unsat_drainage;
+	patch[0].hourly_rz_drainage += rz_drainage;
 	/* ---------------------------------------------- */
 	/*     Final rootzone saturation calculation      */
 	/* ---------------------------------------------- */

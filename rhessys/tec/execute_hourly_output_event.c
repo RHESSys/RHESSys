@@ -90,7 +90,6 @@ void	execute_hourly_output_event(
 			if ( command_line[0].b != NULL ){
 				basinID = command_line[0].b->basinID;
 				if (( world[0].basins[b][0].ID == basinID) || (basinID == -999))
-				      //printf("print output file for basin ID = %d, in day %d and hour %d\n",basinID, date.day, date.hour);
 					output_hourly_basin(
 					command_line[0].routing_flag,
 					world[0].basins[b],

@@ -285,7 +285,12 @@ void	execute_tec(
 
 			if(command_line[0].output_flags.hourly_growth ==1 &&
 					(command_line[0].grow_flag > 0) ){
-				  //execute_hourly_growth_output_event() need create this file
+				  execute_hourly_growth_output_event(
+							      world, 
+							      command_line, 
+							      current_date, 
+							      growth_outfile);
+				  
 				};
 			/*--------------------------------------------------------------*/
 			/*			Increment to the next hour.							*/
@@ -304,7 +309,6 @@ void	execute_tec(
 					command_line,
 					event,
 					current_date);
-			        // printf("%s\n","finish_daily_simulation");	
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested daily output					*/
 				/*--------------------------------------------------------------*/
@@ -317,7 +321,6 @@ void	execute_tec(
 						growth_outfile);
 				}
 				if (command_line[0].output_flags.daily == 1) {
-                                                //printf("%s\n","before_daily_output");
 						execute_daily_output_event(
 						world,
 						command_line,
