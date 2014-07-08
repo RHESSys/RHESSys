@@ -351,7 +351,7 @@ void  update_drainage_stream(
 		patch[0].surface_NO3  -= Nout;
 		patch[0].streamflow_NO3 += Nout;
 		patch[0].hourly[0].streamflow_NO3 += Nout;
-		patch[0].streamNO3_from_surface+=Nout;
+		patch[0].streamNO3_from_surface +=Nout;
 		patch[0].hourly[0].streamflow_NO3_from_surface +=Nout;
 
 		patch[0].surface_ns_leach += Nout;

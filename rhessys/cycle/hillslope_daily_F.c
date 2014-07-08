@@ -162,9 +162,9 @@ void		hillslope_daily_F(
 	}
 	*/
 
-	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag == 1)) {
+	/*if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag == 1)) {
 
-	/*	hillslope[0].gw.Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
+		hillslope[0].gw.Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
 					hillslope[0].defaults[0][0].gw_loss_coeff;
 
 
@@ -178,7 +178,7 @@ void		hillslope_daily_F(
 			fast_store = max(0.0,hillslope[0].gw.storage - hillslope[0].defaults[0][0].gw_loss_fast_threshold);
 			hillslope[0].gw.Qout += slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff; 
 			}
-	*/
+	
 		hillslope[0].gw.NH4out = hillslope[0].gw.Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
 		hillslope[0].gw.NO3out = hillslope[0].gw.Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
 		hillslope[0].gw.DONout = hillslope[0].gw.Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;
@@ -220,6 +220,7 @@ void		hillslope_daily_F(
 
 
 		}
+	*/
 
 	/*----------------------------------------------------------------------*/
 	/*	accumulate monthly and yearly streamflow variables		*/
