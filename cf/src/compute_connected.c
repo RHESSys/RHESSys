@@ -135,8 +135,30 @@ bool compute_roof_connected_routing(struct flow_struct* _flow_table,
 												result = false;
 											}
 										} else {
-											printf("\tUnable to find stream. Verify flow table as some receivers may have invalid accumulated areas.");
-											result = false;
+											// Route to watershed outlet if we can't find a stream pixel nearby
+											printf("\tUnable to find stream. Routing to watershed outlet.\n");
+
+											// Watershed outlet is the last patch in the table
+											// Get row and column of watershed outlet
+											if(!index_to_row_col(_num_patches,
+													_maxr,
+													_maxc,
+													&str_row, &str_col)) {
+												fprintf(stderr,
+														"ERROR: Failed to map index: %d to a row and column.\n",
+														_num_patches);
+												result = false;
+											}
+
+											if (!add_flow_to_table(row, col, str_row,
+													str_col, _maxr, _maxc, _flow_table,
+													_num_patches, _patchTable, _patch, _hill,
+													_zone, _roofs[index], NULL) ) {
+												fprintf(stderr,
+														"ERROR: Failed to add the roof flow to outlet.\n");
+												result = false;
+											}
+
 										}
 									}
 								}
