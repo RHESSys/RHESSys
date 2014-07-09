@@ -146,7 +146,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}
 		world[0].num_fire_grid_row = grid_dimY;
 		world[0].num_fire_grid_col = grid_dimX;
-	//	printf("after initializing the values\n");
+		printf("after initializing the values: rows, columns: %d\t%d\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col = grid_dimX);
 	// now we have to tally the number of patches that overlap each grid cell for allocation
 	// of the patch and area arrays, then one more navigation to calculate the areas and
 	// assign the patches to each grid cell
@@ -225,12 +225,13 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					maxYpix=maxYpix+1;
 	//			printf("calculating overlap. minXpix %d minYpix %d maxXpix %d max Ypix %d\n",minXpix,minYpix,maxXpix,maxYpix);
 				if(minXpix<0||minYpix<0)
-					printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n",curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY);
+					printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n",
+																curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY);
 	   // so now we loop through each pixel pair starting with minX and minY, and ending with < maxX and maxY (In C)
 	    // in the case that the patch overlaps with >1 pixel in both directions
 				for(i =minXpix; i<maxXpix; i++) {
 					for(j =minYpix; j<maxYpix; j++){
-						fire_grid[j][i].patches[fire_grid[j][i].tmp_patch]=patch; 
+						fire_grid[j][i].patches[fire_grid[j][i].tmp_patch]=patch; // this is the current patch in the loop
 						cellMinX=i*cell_res+minx; 
 						cellMaxY=maxy-j*cell_res;
 						cellMaxX=(i+1)*cell_res+minx ;
@@ -241,7 +242,8 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 						fire_grid[j][i].occupied_area=fire_grid[j][i].occupied_area+areaPatchInGrid;
 		// calculate the total area of the current patch that overlaps with the current grid cell
 						fire_grid[j][i].prop_grid_in_patch[fire_grid[j][i].tmp_patch]=areaPatchInGrid/patch[0].area; // the proportion of patch area occupied by this grid					
-						fire_grid[j][i].prop_patch_in_grid[fire_grid[j][i].tmp_patch]=areaPatchInGrid; // the grid area occupied by this patch, to be calculated as a proportion once the total occupied area of the grid is found
+						fire_grid[j][i].prop_patch_in_grid[fire_grid[j][i].tmp_patch]=areaPatchInGrid; // the grid area occupied by this patch, to be calculated as a proportion once 
+																					//	the total occupied area of the grid is found
 						fire_grid[j][i].tmp_patch++;
 					}				
 				}	 
@@ -320,9 +322,9 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 										//printf("now filling in array--found a match!\n");
 										fire_grid[i][j].patches[0]=patch;
 										//printf("patch1\n");
-										fire_grid[i][j].occupied_area=cell_res;
+										fire_grid[i][j].occupied_area=cell_res*cell_res;
 										//printf("patch2: area, cell res %lf, %lf\n",patch[0].area,cell_res);
-										fire_grid[i][j].prop_grid_in_patch[0]=cell_res/patch[0].area; // the proportion of this patch in this cell
+										fire_grid[i][j].prop_grid_in_patch[0]=(cell_res*cell_res)/patch[0].area; // the proportion of this patch in this cell
 										//printf("patch3\n");
 										fire_grid[i][j].prop_patch_in_grid[0]=1;// the whole cell is occupied this patch
 										//printf("array filled\n");
@@ -476,6 +478,7 @@ double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,doub
 		else // the patch falls within the pixel border in both the x and the y-directions
 			areaPatchInGrid=(curMaxY-curMinY)*(curMaxX-curMinX);
 	}
+//	printf("Area patch in grid: %lf\t",areaPatchInGrid);
 	return areaPatchInGrid;
 }
 

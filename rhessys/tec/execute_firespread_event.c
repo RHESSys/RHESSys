@@ -98,7 +98,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].fuel_moist = 0;
 				    world[0].fire_grid[i][j].soil_moist = 0;
 				    world[0].fire_grid[i][j].relative_humidity = 0;
-				    world[0].fire_grid[i][j].wind_direction = world[0].basins[0][0].hillslopes[0][0].zones[0][0].wind_direction;//patches[0].zone[0].wind_direction;//pull the wind direction from the default wind
+				    world[0].fire_grid[i][j].wind_direction = world[0].basins[0][0].hillslopes[0][0].zones[0][0].wind_direction;//patches[0].zone[0].wind_direction;// or pull the wind direction from the default wind
 				    world[0].fire_grid[i][j].wind = 50.0;
 				    world[0].fire_grid[i][j].z=world[0].patch_fire_grid[i][j].elev; // mk: add so we can calculate the current elevation as the weighted mean elevation of the patches
 				    world[0].fire_grid[i][j].temp=0.0;
@@ -139,6 +139,8 @@ void execute_firespread_event(
 						patch_fire_grid[i][j].prop_patch_in_grid[p] ;
 				}
 			}
+		//	printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
+			
 
 			world[0].fire_grid[i][j].soil_moist += patch[0].rootzone.S * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];	
 
@@ -149,6 +151,8 @@ void execute_firespread_event(
 			world[0].fire_grid[i][j].temp += patch[0].zone[0].metv.tavg*patch_fire_grid[i][j].prop_patch_in_grid[p];// temperature? mk
 			world[0].fire_grid[i][j].et += patch[0].fire.et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			world[0].fire_grid[i][j].pet += patch[0].fire.pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+	//printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
+
 		}
 		if(world[0].patch_fire_grid[i][j].occupied_area>0&&world[0].defaults[0].fire[0].fire_in_buffer==1)
 		{
@@ -164,6 +168,9 @@ void execute_firespread_event(
 			mean_et+=world[0].fire_grid[i][j].et;
 			mean_pet+=world[0].fire_grid[i][j].pet;
 		}
+		
+		world[0].fire_grid[i][j].et=world[0].fire_grid[i][j].et*1000; // convert to mm
+		world[0].fire_grid[i][j].pet=world[0].fire_grid[i][j].pet*1000; // convert to mm
 
 			
 	}
@@ -181,6 +188,7 @@ void execute_firespread_event(
 		mean_temp=mean_temp/denom_for_mean;
 		mean_et=mean_et/denom_for_mean;
 		mean_pet=mean_pet/denom_for_mean;
+	//	printf("mean pet, mean et: %lf\t%lf\n",mean_pet,mean_et);
 	//	printf("mean wind: %lf, mean direction %lf \n",mean_wind,mean_wind_direction);
 		for  (i=0; i< world[0].num_fire_grid_row; i++) {
 		  for (j=0; j < world[0].num_fire_grid_col; j++) {
@@ -196,8 +204,8 @@ void execute_firespread_event(
 				world[0].fire_grid[i][j].wind = mean_wind;
 				world[0].fire_grid[i][j].temp=mean_temp;
 				world[0].fire_grid[i][j].z=world[0].patch_fire_grid[i][j].elev;
-				world[0].fire_grid[i][j].et=mean_et;
-				world[0].fire_grid[i][j].pet=mean_pet;
+				world[0].fire_grid[i][j].et=mean_et*1000; // convert to mm
+				world[0].fire_grid[i][j].pet=mean_pet*1000; // convert to mm
 			  }
 		     }
 		}
