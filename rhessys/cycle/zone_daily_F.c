@@ -187,9 +187,10 @@ void		zone_daily_F(
 		/*--------------------------------------------------------------*/
 		zone[0].metv.dayl = basin[0].daylength;
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	Deretmine if we need to adjust Kdowns or metv.tmax.			*/
-	/*																*/
+	/*								*/
 	/*	We assume that if either Kdown_diffuse or Kdown_direct		*/
 	/*	was not supplied then themetv.tmax needs adjustment.		*/
 	/*	This is because the adjustment should not be needed			*/
@@ -328,10 +329,12 @@ void		zone_daily_F(
 			zone[0].snow = 0.0;
 		}
 	}
+	zone[0].snow += zone[0].snow_hourly_total;
 	/*--------------------------------------------------------------*/
 	/*	If we have no rain duration data set it as		*/
 	/*	daylength if rain 0 if not.					*/
 	/*--------------------------------------------------------------*/
+
 	if ( zone[0].daytime_rain_duration == -999.0 ){
 		if ( zone[0].rain == 0 || (zone[0].snow != 0 ) ){
 			zone[0].daytime_rain_duration = 0;
@@ -341,7 +344,7 @@ void		zone_daily_F(
 		}
 	}
 	else{
-		if ( zone[0].rain == 0 ){
+		if ( zone[0].rain == 0 && zone[0].rain_hourly_total == 0){
 			zone[0].daytime_rain_duration = 0;
 		}
 		else{
@@ -371,7 +374,7 @@ void		zone_daily_F(
 			zone[0].cloud = zone[0].cloud_opacity
 				* zone[0].cloud_fraction * 12.0;
 		}
-		else if	((zone[0].snow + zone[0].rain) > zone[0].defaults[0][0].pptmin ){
+		else if	((zone[0].snow + zone[0].rain + zone[0].rain_hourly_total) > zone[0].defaults[0][0].pptmin ){
 			zone[0].cloud = 4.0;
 			zone[0].cloud_fraction = 1.0;
 		}
@@ -540,7 +543,7 @@ void		zone_daily_F(
 
 	zone[0].metv.tmin_ravg = 1.0/6.0*zone[0].metv.tmin + 5.0/6.0*zone[0].metv.tmin_ravg;
 	zone[0].metv.vpd_ravg = 1/6.0*zone[0].metv.vpd + 5.0/6.0*zone[0].metv.vpd_ravg;
-	zone[0].metv.dayl_ravg = 1/6.0*zone[0].metv.dayl + 5.0/6*zone[0].metv.dayl_ravg;
+	zone[0].metv.dayl_ravg = 1/6.0*basin[0].daylength + 5.0/6*zone[0].metv.dayl_ravg;
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches for day end computations			*/
 	/*--------------------------------------------------------------*/
@@ -554,6 +557,7 @@ void		zone_daily_F(
 			command_line,
 			event,
 			current_date );
+
 	}
 
 	/*--------------------------------------------------------------*/
@@ -568,6 +572,5 @@ void		zone_daily_F(
 		zone[0].acc_month.K_diffuse += zone[0].Kdown_diffuse;
 		zone[0].acc_month.length += 1;
 	}
-
 	return;
 } /*end zone_daily_F.c*/

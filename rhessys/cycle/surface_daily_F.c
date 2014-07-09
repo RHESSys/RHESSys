@@ -85,7 +85,7 @@ void		surface_daily_F(
 		double	,
 		double	);
 
-	double	 compute_litter_rain_stored(
+	double	compute_litter_rain_stored(
 		int,
 		struct	patch_object *);
 	
@@ -140,7 +140,7 @@ void		surface_daily_F(
 	double	fraction_surface_heat_flux;
 	struct	litter_object	*litter;
 	
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Initialize litter variables.				*/
 	/*--------------------------------------------------------------*/
@@ -164,13 +164,17 @@ void		surface_daily_F(
 	/*	first.														*/
 	/* but only do this if there is actually a detention_store capacity to hold water */
 	/*--------------------------------------------------------------*/
-	
+
+
     	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
                                         && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
+
+		/* assume if det store over litter then litter is saturated */
+		litter[0].rain_stored = litter[0].rain_capacity;
+		patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);	
 	
 			/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 			/*** reflected by water surface based on water albedo. ***/
-		
 			if (zone[0].metv.dayl > ZERO) {
 				rnet_evap_pond = 1000 * ( (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse) - 
 						patch[0].Lstar_soil + patch[0].surface_heat_flux) / zone[0].metv.dayl;
@@ -217,9 +221,8 @@ void		surface_daily_F(
 	}
 	
 	else detention_store_evaporation = 0.0;
-	
 	patch[0].detention_store -= detention_store_evaporation;
-	
+
 	/*** If snowpack is over detention store, then add evaporated water to snowpack. ***/
 	
 	if (patch[0].snowpack.water_equivalent_depth > ZERO) {
@@ -262,6 +265,7 @@ void		surface_daily_F(
 	/*	remaining surface water can be held by the litter.			*/
 	/*--------------------------------------------------------------*/
 	
+
 	if ( patch[0].detention_store <= (litter[0].rain_capacity - litter[0].rain_stored) ) {
 		
 		/*--------------------------------------------------------------*/
@@ -417,7 +421,6 @@ void		surface_daily_F(
 		/*--------------------------------------------------------------*/
 		/*	Estimate potential evap rates.				*/
 		/*--------------------------------------------------------------*/
-			
 		potential_evaporation_rate = penman_monteith(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
@@ -457,14 +460,13 @@ void		surface_daily_F(
 		
 		PE_rainy_rate = max(0, PE_rainy_rate);
 		PE_rate = max(0, PE_rate);
-
 		potential_evaporation_rate = max(0,potential_evaporation_rate);
 		potential_rainy_evaporation_rate = max(0,potential_rainy_evaporation_rate);
 		/*--------------------------------------------------------------*/
 		/*	Do not allow negative potential evap if it raining	*/
 		/*	since condensation/dew dep is the same as rain		*/
 		/*--------------------------------------------------------------*/
-		if ( zone[0].rain > 0 ){
+		if ( zone[0].rain + zone[0].rain_hourly_total > 0 ){
 			potential_evaporation_rate = max(0,potential_evaporation_rate);
 			potential_rainy_evaporation_rate =
 				max(0,potential_rainy_evaporation_rate);

@@ -133,5 +133,6 @@ double *construct_clim_sequence(char *file, struct date start_date,
 			*(sequence+i) = value;
 		}
 	}
+	fclose(sequence_file);
 	return(sequence);
 } /*end construct_clim_sequence*/

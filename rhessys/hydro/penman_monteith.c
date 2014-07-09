@@ -138,6 +138,7 @@ double	penman_monteith(
 		Rnet,gamma,vpd);
 	if ( verbose_flag > 2)
 		printf("%8.2f %8.4f ",Rnet, vpd);
+
 	/*--------------------------------------------------------------*/
 	/*	Perform conversion if needed and return			*/
 	/*--------------------------------------------------------------*/
