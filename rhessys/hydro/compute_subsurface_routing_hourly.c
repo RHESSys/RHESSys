@@ -114,6 +114,14 @@ void compute_subsurface_routing_hourly(
 		//       the set of patches in the subsurface flow table
 		for (i = 0; i < basin->route_list->num_patches; i++) {
 			patch = basin->route_list->list[i];
+			/*//the following code is for testing only
+			if (i==2000){
+			printf("sat_deficit = %f, soil_dep = %f, n_0 = %f, p = %f\n",
+				patch[0].sat_deficit,
+				patch[0].soil_defaults[0][0].soil_depth,
+				patch[0].soil_defaults[0][0].porosity_0,
+				patch[0].soil_defaults[0][0].porosity_decay);
+			}*/
 			patch[0].streamflow = 0.0;
 			patch[0].return_flow = 0.0;
 			patch[0].base_flow = 0.0;

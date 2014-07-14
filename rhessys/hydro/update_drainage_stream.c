@@ -84,7 +84,8 @@ void  update_drainage_stream(
 		double,
 		double,
 		double,
-		double *);
+		double *,
+		struct patch_object *patch);
 
 	double recompute_gamma(	
 		struct patch_object *,
@@ -147,7 +148,8 @@ void  update_drainage_stream(
 		patch[0].sat_deficit,
 		gamma,
 		patch[0].soil_defaults[0][0].interval_size,
-		patch[0].transmissivity_profile);
+		patch[0].transmissivity_profile,
+		patch);
 	
 	
 	if (route_to_stream < 0.0) route_to_stream = 0.0;

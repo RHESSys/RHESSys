@@ -64,7 +64,8 @@ void  update_drainage_land(
 		double,
 		double,
 		double,
-		double *);
+		double *,
+		struct patch_object *);
 
 
 	double compute_N_leached(int,
@@ -174,7 +175,8 @@ void  update_drainage_land(
 		patch[0].sat_deficit,
 		total_gamma, 
 		patch[0].soil_defaults[0][0].interval_size,
-		patch[0].transmissivity_profile);
+		patch[0].transmissivity_profile,
+		patch);
 
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 

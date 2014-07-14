@@ -73,7 +73,8 @@ void  update_drainage_road(
 		double,
 		double,
 		double,
-		double *);
+		double *,
+		struct patch_object *patch);
 
 	double recompute_gamma(	
 		struct patch_object *,
@@ -167,7 +168,8 @@ void  update_drainage_road(
 			road_int_depth,
 			total_gamma, 
 			patch[0].soil_defaults[0][0].interval_size,
-			patch[0].transmissivity_profile);
+			patch[0].transmissivity_profile,
+			patch);
 
 		/*-----------------------------------------------------------*/
 		/*	calculate amuount of water output to stream		*/
@@ -178,7 +180,8 @@ void  update_drainage_road(
 			patch[0].sat_deficit,
 			total_gamma, 
 			patch[0].soil_defaults[0][0].interval_size,
-			patch[0].transmissivity_profile) - route_to_patch;
+			patch[0].transmissivity_profile,
+			patch) - route_to_patch;
 
 		if (route_to_patch < 0.0) route_to_patch = 0.0;
 		if (route_to_stream < 0.0) route_to_stream = 0.0;
@@ -347,7 +350,8 @@ void  update_drainage_road(
 			patch[0].sat_deficit,
 			total_gamma, 
 			patch[0].soil_defaults[0][0].interval_size,
-			patch[0].transmissivity_profile);
+			patch[0].transmissivity_profile,
+			patch);
 
 		if (route_to_patch < 0.0) route_to_patch = 0.0;
 		if (route_to_patch > available_sat_water) 

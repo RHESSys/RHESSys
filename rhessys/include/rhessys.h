@@ -1005,6 +1005,7 @@ struct	soil_default
 	double  gsurf_intercept;				/* m/s */
 	double  theta_mean_std_p1;				/* DIM */
 	double  theta_mean_std_p2;				/* DIM */
+	double	sat_store;					/* m, for fill and spill  */
 	struct soil_class	soil_type;
 	};
 

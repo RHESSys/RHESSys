@@ -13,7 +13,8 @@
 /*				double	,			*/
 /*				double	,			*/
 /*				double	,			*/
-/*				double	)			*/
+/*				double	,			*/
+/*				struct patch_object *patch)	    	*/
 /*								*/
 /*	returns:						*/
 /*	estimate of subsurface flow from patch			*/
@@ -46,8 +47,8 @@ double	compute_varbased_flow(
 				double s1,
 				double gamma,	
 				double interval_size,
-				double *transmissivity
-					)
+				double *transmissivity,
+				struct patch_object *patch)
 {
 
 
@@ -94,6 +95,18 @@ double	compute_varbased_flow(
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
 		flow = transmissivity[didx];
 	}
-	flow = flow*gamma; 
-	return(flow);
+	flow = flow*gamma;
+
+	/* fill and spill */
+	/* spill when sat_deficit <= threshold
+	                            = max_sat_deficit - sat_store
+				    = soil_depth * porosity_0 * 0.95 - sat_store */
+	if (patch[0].sat_deficit <= (patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0) * 0.95 
+				      - patch[0].soil_defaults[0][0].sat_store){
+	  return(flow);
+	}
+	else
+	{
+	  return(0);
+	}
 } /*compute_varbased_flow*/
