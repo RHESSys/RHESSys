@@ -397,6 +397,7 @@ int allocate_annual_growth(				int id,
 	/*	we allow only a certain amount of resprouting based on 	*/
 	/*	a stratum default file parameterization 		*/
 	/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
 	if (((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) &&
 		(command_line[0].reproduction_flag == 0)) {
 
@@ -477,8 +478,11 @@ int allocate_annual_growth(				int id,
 		 cs->age += 1;
 		 }
 
+	/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
+	/* resprout code using seed goes here */
+	/*--------------------------------------------------------------*/
 	if (command_line[0].reproduction_flag == 1) {
-	/* resprout code using seed */
 	}
 
 	/* update states variables */
