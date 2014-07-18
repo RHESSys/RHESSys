@@ -281,10 +281,12 @@ void		patch_daily_F(
 		struct soil_class,
 		double,
 		double);
+
 	
 	int	resolve_sminn_competition(
 		struct  soil_n_object   *,
 		double, double,
+		double, double,double,
 		struct ndayflux_patch_struct *);
 	
 	void   canopy_stratum_growth(
@@ -1217,7 +1219,11 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0)  {
 		resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
-			patch[0].surface_NH4,&(patch[0].ndf));
+			patch[0].surface_NH4,
+			patch[0].rootzone.depth,
+			patch[0].soil_defaults[0][0].soil_depth,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+			&(patch[0].ndf));
 	}
 	/*--------------------------------------------------------------*/
 	/*	Reduce the stratum actual transpiration and compute 	*/
