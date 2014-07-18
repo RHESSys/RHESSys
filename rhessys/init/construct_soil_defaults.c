@@ -159,7 +159,7 @@ struct soil_default *construct_soil_defaults(
 
 		/* sat_store for fill and spill */	
 		default_object_list[i].sat_store = 	getDoubleParam(&paramCnt, &paramPtr, "sat_store", "%lf", 1.5, 1);
-		if (default_object_list[i].porosity_0 * default_object_list[i].soil_depth * 0.95 < default_object_list[i].sat_store){
+		if (default_object_list[i].porosity_0 * default_object_list[i].soil_depth * 0.999 < default_object_list[i].sat_store){
 		    printf("sat_store = %f, porosity_0 = %f, soil_depth = %f\n",default_object_list[i].sat_store,default_object_list[i].porosity_0,
 								default_object_list[i].soil_depth);
 	    	    fprintf(stderr,"FATAL ERROR: sat_store is more than max_soil_sat_deficit. Please choose a small sat_store in soil def file.");

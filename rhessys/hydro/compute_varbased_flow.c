@@ -101,7 +101,7 @@ double	compute_varbased_flow(
 	/* spill when sat_deficit <= threshold
 	                            = max_sat_deficit - sat_store
 				    = soil_depth * porosity_0 * 0.95 - sat_store */
-	if (patch[0].sat_deficit <= (patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0) * 0.95 
+	if (patch[0].sat_deficit <= (patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0) * 0.99 
 				      - patch[0].soil_defaults[0][0].sat_store){
 	  return(flow);
 	}
