@@ -75,24 +75,96 @@ void		zone_hourly(
 	double	Kdown_direct_flat_toa;
 	double	temp;
 	struct	dated_sequence	clim_event;
+	double 	snow_rain_range;
 	/*--------------------------------------------------------------*/
 	/* 	check for hourly precipitation data			*/
 	/* 	for now only assume one base station per zone		*/
 	/*--------------------------------------------------------------*/
 	zone[0].hourly_rain_flag = 0;
 	zone[0].hourly[0].rain = 0.0;
+	zone[0].hourly[0].snow = 0.0; 
 	inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
+
 	if (inx > -999)  {
 		clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
-		while (julday(clim_event.edate) < julday(current_date)) {
+		while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
 			zone[0].base_stations[0][0].hourly_clim[0].rain.inx += 1;
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 			clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
 			}
+		
 		if ( (clim_event.edate.year != 0) &&
-			(julday(clim_event.edate) == julday(current_date)) ) {
+			(julday(clim_event.edate) == julday(current_date)) && (clim_event.edate.hour == current_date.hour) ) {
 			zone[0].hourly_rain_flag = 1;
 			zone[0].hourly[0].rain = clim_event.value;
+
+			/*--------------------------------------------------------------*/
+			/*if there is hourly input, turn daily rain to 0 		*/
+			/*--------------------------------------------------------------*/
+			zone[0].rain = 0;
+
+
+			/*--------------------------------------------------------------*/
+			/*if temperture is low enough, some of rain will turn to snow	*/
+			/*--------------------------------------------------------------*/
+			
+			/*--------------------------------------------------------------*/
+			/*	.metv.tavg	(degrees C)				*/
+			/*--------------------------------------------------------------*/
+			if ( zone[0].metv.tavg == -999.0 ){
+				zone[0].metv.tavg = (zone[0].metv.tmax + zone[0].metv.tmin)/2.0;
+			}
+
+			/*--------------------------------------------------------------*/
+			/*	metv.tday	(degrees C)				*/
+			/*								*/
+			/*	Eq 1. Page 4, "MTCLIM"					*/
+			/*--------------------------------------------------------------*/
+			if ( zone[0].metv.tday == -999.0 ){
+				zone[0].metv.tday = zone[0].defaults[0][0].temcf
+					* (zone[0].metv.tmax - zone[0].metv.tavg) + zone[0].metv.tavg;
+			}
+			/*--------------------------------------------------------------*/
+			/*	metv.tnight 	(degrees C)				*/
+			/*								*/
+			/*	zcomp.c C Rhessys code					*/
+			/*--------------------------------------------------------------*/
+			if ( zone[0].metv.tnight == -999.0 ){
+				zone[0].metv.tnight = (zone[0].metv.tday + zone[0].metv.tmin)/2.0;
+			}
+			/*--------------------------------------------------------------*/
+			/*	If we have no snow data determine if the rain should be snow*/
+			/*								*/
+			/*	Based on U.S Army Corps of ENgineers (1956) Snow Hydrology	*/
+			/*	use a min/max to get range in which there is a mix of snow/rain */
+			/*								*/
+			/*--------------------------------------------------------------*/
+			if (zone[0].hourly[0].snow == 0 ){
+				if (zone[0].metv.tavg < zone[0].defaults[0][0].max_snow_temp ){
+					if (zone[0].metv.tavg <= zone[0].defaults[0][0].min_rain_temp){
+						zone[0].hourly[0].snow = zone[0].hourly[0].rain;
+						zone[0].hourly[0].rain = 0.0;
+					}
+					else{
+						snow_rain_range = zone[0].defaults[0][0].max_snow_temp
+							- zone[0].defaults[0][0].min_rain_temp;
+						if ( snow_rain_range < 0.001){
+							zone[0].hourly[0].snow = zone[0].hourly[0].rain;
+							zone[0].hourly[0].rain = 0.0;
+						}
+						else{
+							zone[0].hourly[0].snow = min((zone[0].defaults[0][0].max_snow_temp
+								- zone[0].metv.tavg) * zone[0].hourly[0].rain / snow_rain_range, zone[0].hourly[0].rain);
+							zone[0].hourly[0].rain = zone[0].hourly[0].rain - zone[0].hourly[0].snow;
+						}
+					}
+				}
+				else{
+					zone[0].hourly[0].snow = 0.0;
+				}
+			}
+			
+
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.inx;
 			/*--------------------------------------------------------------*/
 			/* 	check for corresponding duration data			*/
@@ -100,12 +172,12 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/
 			if (inx > -999) {
 				clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.seq[inx];
-				while (julday(clim_event.edate) < julday(current_date)) {
+				while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
 					zone[0].base_stations[0][0].hourly_clim[0].rain_duration.inx += 1;
 					inx = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.inx;
 					clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.seq[inx];
 					}
-				if (julday(clim_event.edate) == julday(current_date)) {
+				if ( (julday(clim_event.edate) == julday(current_date)) && (clim_event.edate.hour == current_date.hour) ) {
 					zone[0].hourly[0].rain_duration = clim_event.value;
 				}
 				else zone[0].hourly[0].rain_duration = 3600;
@@ -113,7 +185,20 @@ void		zone_hourly(
 			else zone[0].hourly[0].rain_duration = 3600;
 		}
 	}
+	zone[0].snow_hourly_total += zone[0].hourly[0].snow;
 	zone[0].rain_hourly_total += zone[0].hourly[0].rain;
+	
+	/*--------------------------------------------------------------*/
+	/*	count the daytime_rain_duration				*/
+	/*--------------------------------------------------------------*/
+	if (zone[0].hourly_rain_flag==1) {
+		//if (current_date.hour==1) {
+		//	zone[0].daytime_rain_duration=0;}
+		
+		if (zone[0].hourly[0].rain+zone[0].hourly[0].snow > 0) {
+			zone[0].daytime_rain_duration += 3600;}
+	}
+			
 	/*--------------------------------------------------------------*/
 	/*	Compute zone hourly radiation forcings.								*/
 	/*--------------------------------------------------------------*/
