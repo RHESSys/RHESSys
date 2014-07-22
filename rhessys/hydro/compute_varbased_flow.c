@@ -63,7 +63,9 @@ double	compute_varbased_flow(
 	double	normal[9], perc[9];
 	int i;
 	int didx;
-
+	double threshold;
+	threshold = patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0 * 0.99 
+		    - patch[0].soil_defaults[0][0].sat_store;
 	normal[0] = 0;
 	normal[1] = 0.253;
 	normal[2] = 0.524;
@@ -86,27 +88,28 @@ double	compute_varbased_flow(
 	for (i=0; i <9; i++) {
 		didx = (int) lround((s1 + normal[i]*std)/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
-		accum = transmissivity[didx];
+		/* lateral flow below the threshold is 1/5 of the original value, the multiplier is arbitary */
+		accum = transmissivity[didx] * 0;
+		/* fill and spill */
+		if (patch[0].sat_deficit <= threshold && (s1 + normal[i]*std) <= threshold){
+		    accum=transmissivity[didx] * 3;
+		}
+
 		flow += accum * perc[i];
 	}
 	}
 	else  {
 		didx = (int) lround(s1/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
-		flow = transmissivity[didx];
+		/* lateral flow below the threshold is 1/5 of the original value, the multiplier is arbitary */
+		accum = transmissivity[didx] * 0;
+		if (patch[0].sat_deficit <= threshold && (s1 + normal[i]*std) <= threshold){
+	
+		    flow = transmissivity[didx]*3;
+		}
 	}
+
 	flow = flow*gamma;
 
-	/* fill and spill */
-	/* spill when sat_deficit <= threshold
-	                            = max_sat_deficit - sat_store
-				    = soil_depth * porosity_0 * 0.95 - sat_store */
-	if (patch[0].sat_deficit <= (patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0) * 0.99 
-				      - patch[0].soil_defaults[0][0].sat_store){
 	  return(flow);
-	}
-	else
-	{
-	  return(0);
-	}
 } /*compute_varbased_flow*/

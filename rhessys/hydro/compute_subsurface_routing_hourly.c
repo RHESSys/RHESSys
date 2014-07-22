@@ -83,6 +83,8 @@ void compute_subsurface_routing_hourly(
 	struct hillslope_object *hillslope;
 	struct patch_object *neigh;
 	struct litter_object *litter;
+	
+	double threshold; 
 	/*--------------------------------------------------------------*/
 	/*	initializations						*/
 	/*--------------------------------------------------------------*/
@@ -362,6 +364,26 @@ void compute_subsurface_routing_hourly(
 			/* because it is already counted in the update_drainage and patch_hourly.c		    */
 			/* double counting should be deleted.*/
 
+			/* ******************************** this is done by each hourly*/
+			patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
+		      				+ patch[0].hourly_sur2stream_flow;
+			threshold = patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0 * 0.99 
+		    - patch[0].soil_defaults[0][0].sat_store;
+	/*	//the following code is for testing only
+		if (i == 6539 && current_date.month == 12 && current_date.day>15){
+		    printf("ID= %d, baseflow*1000 = %.9f, sat_deficit=%f, threshold = %f,hourly_subsur=%f\n",
+				      patch[0].ID, patch[0].base_flow*1000,
+				      patch[0].sat_deficit, 
+				      threshold,
+				      patch[0].hourly_subsur2stream_flow);
+		}
+	*/
+
+			basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;
+			// it is not the sum of hourly return_flow, the patch[0].return_flow is already the sum of hourly return_flow from
+			// hour 0 to current_date.hour 
+
+
 			/* ******************************** */
 			/* accumulate the daily returnflow and baseflow calculated from update_drainage*/
 			/* The N calculation has been completed in update_drainage_***.c routing*/
@@ -369,16 +391,20 @@ void compute_subsurface_routing_hourly(
 				    if (patch[0].drainage_type == STREAM) {
 					patch[0].streamflow += patch[0].return_flow
 							+ patch[0].base_flow;
+				    
+			/*		    if (i==6539 && current_date.month == 12 && current_date.day>15){
+						  printf("**********the end of day = %d; ID= %d, i = %d, baseflow*1000 = %.9f, hourly_subsur2stream=%f,std=%f\n",
+						  current_date.day,
+						  patch[0].ID, 
+						  i, 
+						  patch[0].base_flow*1000, 
+						  patch[0].hourly_subsur2stream_flow,
+						  patch[0].std * command_line[0].std_scale);
+					    }
+			*/		    
 				    }
+
 			}
-			/* ******************************** this is done by each hourly*/
-			patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
-		      				+ patch[0].hourly_sur2stream_flow;
-
-
-			basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;
-			// it is not the sum of hourly return_flow, the patch[0].return_flow is already the sum of hourly return_flow from
-			// hour 0 to current_date.hour 
 	
 
 		} /* end i */
