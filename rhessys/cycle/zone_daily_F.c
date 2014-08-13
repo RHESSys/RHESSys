@@ -276,7 +276,13 @@ void		zone_daily_F(
 			zone[0].daytime_rain_duration = 0;
 		}
 		else{
-			zone[0].daytime_rain_duration = zone[0].metv.dayl;
+			/* Old code */
+			/* zone[0].daytime_rain_duration = zone[0].metv.dayl;*/
+			/* Since this value is used for both infiltration (intensity) and 
+			 radiation, we are now defining it as # of seconds of rain over
+			 ENTIRE 24-hr period. If no value is given, we assume it rains
+			 over the full day. */
+			zone[0].daytime_rain_duration = 86400;
 		}
 	}
 	else{
@@ -284,8 +290,14 @@ void		zone_daily_F(
 			zone[0].daytime_rain_duration = 0;
 		}
 		else{
+			/* Old code */
+			/*zone[0].daytime_rain_duration =
+				min( zone[0].metv.dayl,zone[0].daytime_rain_duration);*/
+			/* We adjust this value in the radiation routines to split
+			 into daylight vs. nighttime rain hours, so here we leave
+			 it as-is and just bound to 0:86400 sec. */
 			zone[0].daytime_rain_duration =
-				min( zone[0].metv.dayl,zone[0].daytime_rain_duration);
+				min( 86400, max(zone[0].daytime_rain_duration,0));
 		}
 	}
 	
