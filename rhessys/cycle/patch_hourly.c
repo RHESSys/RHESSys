@@ -149,6 +149,8 @@ void		patch_hourly(
 		patch[0].hourly[0].rain_throughfall = zone[0].hourly[0].rain;
 	else
 		patch[0].hourly[0].rain_throughfall = 0.0;
+
+	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
@@ -156,6 +158,7 @@ void		patch_hourly(
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
+			patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
 			for (stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
@@ -172,9 +175,11 @@ void		patch_hourly(
 			/*	process any hourly throughfallthat falls on a snowpack */
 			/*--------------------------------------------------------------*/
 			patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
+			patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
+
 		}
 	}
-	
+      	
 	if (patch[0].snowpack.water_equivalent_depth > 0.0) {
 		patch[0].snowpack.water_equivalent_depth
 			+= patch[0].hourly[0].rain_throughfall;
@@ -187,6 +192,8 @@ void		patch_hourly(
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		if ( (patch[0].layers[layer].height <= patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
+			patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
+
 			for ( stratum=0;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
@@ -201,7 +208,11 @@ void		patch_hourly(
 			}
 		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
+		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
 	}
+
+
+	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 
 	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here	
 

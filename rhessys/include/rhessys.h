@@ -1493,6 +1493,8 @@ struct patch_object
 	double	snow_throughfall;	/* m water	*/
 	double	rain_throughfall_24hours;	/* m water,used for 24 hours accumulated throughfall	*/	
 	double	rain_throughfall_final;	/* m water	*/	
+	double	NO3_throughfall;	/* kg/m2 day  */
+	double	NO3_throughfall_final;	/* kg/m2 day */
 	double	rain_stored;		/* m water	*/
 	double	slope;			/* degrees		*/
 	double	S;			/* m/m		*/
@@ -1645,6 +1647,8 @@ struct	patch_hourly_object
 	{
 	int	i;
 	double	rain_throughfall;
+	double	NO3_throughfall;
+	double	NO3_throughfall_final;
 	double	infiltration;
 	double	streamflow_NO3_from_surface;
 	double	streamflow_NO3_from_sub;
@@ -2498,6 +2502,7 @@ struct	canopy_strata_object
 	double	Kup_direct;					/* Kj/(m2*day)	*/
 	double	Kup_diffuse;					/* Kj/(m2*day)	*/
 	double	Lstar;						/* Kj/(m2*day)	*/	
+	double	NO3_stored;					/* kg/m2	*/
 	double	PAR_after_reflection;				/* (umol photon/m2*day) */
 	double  ppfd_sunlit;			/*  (umol/m2/s) PAR photon flux density */
 	double  ppfd_shade;			/*  (umol/m2/s) PAR photon flux density */
