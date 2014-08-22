@@ -42,7 +42,7 @@ struct base_station_object
 	i = 0;
 	if (num_base_stations < 1) {
 		*notfound = 1;
-		return;
+		return 0;
 	}
 	else {
 		//printf("\n      Assign: Starting while loop: %lf %lf",(*(base_stations[i])).x,(*(base_stations[i])).y);
@@ -55,7 +55,7 @@ struct base_station_object
 			if ( i >= num_base_stations ){
 				//fprintf(stderr,"\n      Assign: NOT FOUND. Adding new base station for %lf %lf",x,y);
 				*notfound = 1;
-				return;
+				return 0;
 			}
 		}  /* end-while */
 	base_station = base_stations[i];
