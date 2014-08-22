@@ -60,6 +60,8 @@ void	output_growth_basin(
 	double astreamflow_NO3, astreamflow_NH4, astreamflow_DON, astreamflow_DOC;
 	double anitrif, aDOC, aDON, arootdepth;
 	double hstreamflow_NO3, hstreamflow_NH4, hstreamflow_DON, hstreamflow_DOC;
+	double streamNO3_from_surface;
+	double streamNO3_from_sub;
 	double hgwNO3, hgwDON, hgwDOC, hgwNH4;
 	double hgwNO3out, hgwDONout, hgwDOCout, hgwNH4out;
 
@@ -107,6 +109,8 @@ void	output_growth_basin(
 	arootdepth = 0.0;
 	basin_area = 0.0;
 	acloss = 0.0;
+	streamNO3_from_surface = 0.0;
+	streamNO3_from_sub = 0.0;
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
@@ -134,6 +138,8 @@ void	output_growth_basin(
 				astreamflow_NO3 += patch[0].streamflow_NO3 * patch[0].area;
 				astreamflow_DON += patch[0].streamflow_DON * patch[0].area;
 				astreamflow_DOC += patch[0].streamflow_DOC * patch[0].area;
+				streamNO3_from_surface += patch[0].streamNO3_from_surface * patch[0].area;
+				streamNO3_from_sub += patch[0].streamNO3_from_sub * patch[0].area;
 				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
 				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
@@ -258,6 +264,8 @@ void	output_growth_basin(
 	astreamflow_NO3 /= aarea;
 	astreamflow_DON /= aarea;
 	astreamflow_DOC /= aarea;
+	streamNO3_from_surface /=aarea;
+	streamNO3_from_sub /=aarea;
 	adenitrif /= aarea;
 	anitrif /= aarea;
 	aDON /= aarea;
@@ -280,7 +288,8 @@ void	output_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -319,7 +328,9 @@ void	output_growth_basin(
 		arootdepth*1000.0,
 		anfix * 1000.0,
 		anuptake * 1000.0,
-		acloss * 1000.0
+		acloss * 1000.0,
+		streamNO3_from_surface * 1000.0,
+		streamNO3_from_sub * 1000.0
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 

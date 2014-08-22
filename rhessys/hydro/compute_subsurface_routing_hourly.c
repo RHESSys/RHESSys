@@ -177,7 +177,9 @@ void compute_subsurface_routing_hourly(
 				patch[0].surface_DON_Qin = 0.0;
 				patch[0].surface_DOC_Qout = 0.0;
 				patch[0].surface_DOC_Qin = 0.0;
-
+			
+				patch[0].streamNO3_from_surface	= 0.0;
+				patch[0].streamNO3_from_sub = 0.0;
 			}
 		}
 	}
@@ -439,6 +441,11 @@ void compute_subsurface_routing_hourly(
 							patch[0].surface_NH4 -= (excess
 									/ patch[0].detention_store)
 									* patch[0].surface_NH4;
+
+							patch[0].streamNO3_from_surface += (excess
+									/ patch[0].detention_store)
+									* patch[0].surface_NO3;
+
 						}
 						patch[0].return_flow += excess;
 						patch[0].detention_store -= excess;
@@ -489,6 +496,9 @@ void compute_subsurface_routing_hourly(
 											* patch[0].area / neigh[0].area);
 									neigh[0].surface_ns_leach += (Nout
 											* patch[0].area / neigh[0].area);
+
+									neigh[0].streamNO3_from_surface +=(NO3_out
+											* patch[0].area / neigh[0].area);
 								}
 							} else {
 								neigh[0].Qin_total += Qout * patch[0].area
@@ -502,6 +512,7 @@ void compute_subsurface_routing_hourly(
 											* patch[0].area / neigh[0].area);
 									neigh[0].surface_NO3 += (NO3_out
 											* patch[0].area / neigh[0].area);
+
 									neigh[0].surface_ns_leach -= (Nout
 											* patch[0].area / neigh[0].area);
 									neigh[0].surface_NH4 += (NH4_out

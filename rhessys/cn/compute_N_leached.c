@@ -67,7 +67,7 @@ double	compute_N_leached(int verbose_flag,
 		double,
 		double,
 		double);
-	double compute_N_absorbed(
+	double  compute_N_absorbed(
 		int,
 		double,
 		double,
