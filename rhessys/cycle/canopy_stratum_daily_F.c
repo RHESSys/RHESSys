@@ -263,6 +263,8 @@ void	canopy_stratum_daily_F(
 	double	potential_rainy_evaporation_rate;
 	double	rainy_evaporation;
 	double	rain_throughfall;
+	double	NO3_throughfall;
+	double	NO3_stored;
 	double	rnet_evap;
 	double	rnet_trans, rnet_trans_sunlit, rnet_trans_shade;
 	double	snow_throughfall;
@@ -289,7 +291,7 @@ void	canopy_stratum_daily_F(
 	double m_CO2_shade;
 	double m_tmin_shade;
 	double m_vpd_shade;
-	
+
 	double	fraction_direct_K_used;
 	double	fraction_diffuse_K_used;
 	double	fraction_direct_APAR_used;
@@ -304,7 +306,7 @@ void	canopy_stratum_daily_F(
 	double dum;
 	double max_snow_albedo_increase, wetfrac;
 	double deltaT;
-	
+
 	struct	psnin_struct	psnin;
 	struct	psnout_struct	psnout;
 	struct mortality_struct mort;
@@ -1290,6 +1292,31 @@ void	canopy_stratum_daily_F(
 		command_line[0].verbose_flag,
 		&(rain_throughfall),
 		stratum);
+	if (stratum[0].rain_stored > 0){
+	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
+	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
+	    NO3_throughfall = (rain_throughfall + snow_throughfall)
+		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
+	}
+	else{
+	    if (rain_throughfall > 0){
+		NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
+	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
+
+		NO3_throughfall =  (rain_throughfall + snow_throughfall)
+		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		* (stratum[0].NO3_stored + patch[0].NO3_throughfall); 
+	    }
+	    else{
+                NO3_stored += patch[0].NO3_throughfall;
+		NO3_throughfall = 0;
+	    }
+	}
+
+	
 
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.15 ",julday(current_date)-2449000);
@@ -1784,6 +1811,9 @@ void	canopy_stratum_daily_F(
 		* stratum[0].cover_fraction;
 	patch[0].snow_throughfall_final += snow_throughfall
 		* stratum[0].cover_fraction;
+	patch[0].NO3_throughfall_final += NO3_throughfall 
+		* stratum[0].cover_fraction;
+	stratum[0].NO3_stored = NO3_stored;
 	patch[0].ga_final += ga * stratum[0].cover_fraction;
 	patch[0].gasnow_final += gasnow * stratum[0].cover_fraction;
 	patch[0].wind_final += wind * stratum[0].cover_fraction;

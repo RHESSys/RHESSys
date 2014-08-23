@@ -306,7 +306,7 @@ struct	world_hourly_object
 /*----------------------------------------------------------*/
 struct	world_output_file_object
 	{
-	struct	output_files_object 	*basin;
+	struct	output_files_object		*basin;
 	struct	output_files_object		*hillslope;
 	struct	output_files_object		*zone;
 	struct	output_files_object		*patch;
@@ -729,6 +729,12 @@ struct 	gw_object
 	double	NH4out;			/* kgN/m2/day	*/
 	double	DONout;			/* kgN/m2/day	*/
 	double	DOCout;			/* kgC/m2/day	*/
+	double	hourly_Qout;		/* m/m2/day	*/
+	double	hourly_NO3out;		/* kgN/m2/day	*/
+	double	hourly_NH4out;		/* kgN/m2/day	*/
+	double	hourly_DONout;		/* kgN/m2/day	*/
+	double	hourly_DOCout;		/* kgC/m2/day	*/
+
 	};
 /*----------------------------------------------------------*/
 /*	Define a hillslope object.								*/	
@@ -746,10 +752,15 @@ struct hillslope_object
 	double	riparian_area;		/* sq meters */
 	double	slope;			/* degrees */
 	double	base_flow;		/* meters		*/
+	double	hourly_base_flow;	/* meters   */
 	double	streamflow_NO3;		/* kgN/m2/day		*/
 	double	streamflow_NH4;		/* kgN/m2/day		*/
 	double	streamflow_DON;		/* kgN/m2/day		*/
 	double	streamflow_DOC;		/* kgC/m2/day		*/
+	double  hourly_streamflow_NO3;	/* kgN/m2/day		*/
+	double	hourly_streamflow_NH4;	/* kgN/m2/day		*/
+	double	hourly_streamflow_DON;	/* kgN/m2/day		*/
+	double	hourly_streamflow_DOC;	/* kgN/m2/day		*/
 	struct	gw_object		gw;
 	struct	aggdefs_object		aggdefs;
 	struct	base_station_object	**base_stations;
@@ -1036,6 +1047,7 @@ struct	soil_default
 	double  gsurf_intercept;				/* m/s */
 	double  theta_mean_std_p1;				/* DIM */
 	double  theta_mean_std_p2;				/* DIM */
+	double	sat_store;					/* percent of max sat_deficit, for fill and spill  */
 	struct soil_class	soil_type;
 	};
 
@@ -1465,6 +1477,11 @@ struct patch_object
 	double  gasnow;			/* m/s */         
 	double  gasnow_final;		/* m/s */         
 	double  gw_drainage; 		/* m/day */
+	double	hourly_rz_drainage;	/* m water by Xiaoli */
+	double	hourly_unsat_drainage;	/* m water by Xiaoli */
+	double	hourly_subsur2stream_flow;	/* m water by Xiaoli */
+	double	hourly_sur2stream_flow;  /* m water by Xiaoli */
+	double	hourly_stream_flow;	/* m water by Xiaoli */
 	double  interim_sat;		/* m */
 	double  stream_gamma;		/* meters**2/day	*/
  	double	Kdown_direct;		/* Kj/(m^2*day)	*/
@@ -1537,6 +1554,8 @@ struct patch_object
 	double	snow_throughfall;	/* m water	*/
 	double	rain_throughfall_24hours;	/* m water,used for 24 hours accumulated throughfall	*/	
 	double	rain_throughfall_final;	/* m water	*/	
+	double	NO3_throughfall;	/* kg/m2 day  */
+	double	NO3_throughfall_final;	/* kg/m2 day */
 	double	rain_stored;		/* m water	*/
 	double	slope;			/* degrees		*/
 	double	S;			/* m/m		*/
@@ -1698,7 +1717,12 @@ struct	patch_hourly_object
 	{
 	int	i;
 	double	rain_throughfall;
+	double	NO3_throughfall;
+	double	NO3_throughfall_final;
 	double	infiltration;
+	double	streamflow_NO3_from_surface;
+	double	streamflow_NO3_from_sub;
+	double	streamflow_NO3;
 	};
 
 /*----------------------------------------------------------*/
@@ -1831,6 +1855,7 @@ struct	output_flag
 	int		daily;
 	int		daily_growth;
 	int		hourly;
+	int		hourly_growth;
 	};
 
 /*----------------------------------------------------------*/
@@ -2546,6 +2571,7 @@ struct	canopy_strata_object
 	double	Kstar_direct;					/* Kj/(m2*day)	*/
 	double	Kstar_diffuse;					/* Kj/(m2*day)	*/
 	double	Lstar;						/* Kj/(m2*day)	*/	
+	double	NO3_stored;					/* kg/m2	*/
 	double	PAR_after_reflection;				/* (umol photon/m2*day) */
 	double  ppfd_sunlit;			/*  (umol/m2/s) PAR photon flux density */
 	double  ppfd_shade;			/*  (umol/m2/s) PAR photon flux density */

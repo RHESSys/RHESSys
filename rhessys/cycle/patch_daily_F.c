@@ -294,7 +294,7 @@ void		patch_daily_F(
 	int	resolve_sminn_competition(
 		struct  soil_n_object   *,
 		double, double,
-		double, double,double,
+		double, double, double,
 		struct ndayflux_patch_struct *);
 	
 	void   canopy_stratum_growth(
@@ -531,6 +531,9 @@ void		patch_daily_F(
 	else irrigation = patch[0].landuse_defaults[0][0].irrigation;
 
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
+	/* the N_depo is add in patch_hourly.c in hourly */
+	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
+	patch[0].NO3_throughfall = 0;
 
 
 	if (command_line[0].snow_scale_flag == 1) {
@@ -637,6 +640,7 @@ void		patch_daily_F(
 			patch[0].LE_canopy_final = patch[0].LE_canopy;
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
+			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			if (dum == 0) {
 				patch[0].ga_final = patch[0].layers[layer].null_cover * tmpga;
@@ -658,6 +662,7 @@ void		patch_daily_F(
 					printf("\n     ***NOT TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
 				}
 			}
+
 			/*--------------------------------------------------------------*/
 			/*		Cycle through the canopy strata in this layer	*/
 			/*--------------------------------------------------------------*/
@@ -686,6 +691,7 @@ void		patch_daily_F(
 			patch[0].LE_canopy = patch[0].LE_canopy_final;
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;
 			patch[0].snow_throughfall = patch[0].snow_throughfall_final;
+			patch[0].NO3_throughfall = patch[0].NO3_throughfall_final;
 			patch[0].ga = patch[0].ga_final;
 			patch[0].gasnow = patch[0].gasnow_final;
 			patch[0].wind = patch[0].wind_final;
@@ -977,6 +983,7 @@ void		patch_daily_F(
 			patch[0].PAR_diffuse_final = patch[0].layers[layer].null_cover * patch[0].PAR_diffuse;
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
+			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
@@ -999,6 +1006,7 @@ void		patch_daily_F(
 			patch[0].PAR_diffuse = patch[0].PAR_diffuse_final;
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;
 			patch[0].snow_throughfall = patch[0].snow_throughfall_final;
+			patch[0].NO3_throughfall = patch[0].NO3_throughfall_final;
 			patch[0].Tday_surface_offset = patch[0].Tday_surface_offset_final;
 			patch[0].ga = patch[0].ga_final;
 			patch[0].wind = patch[0].wind_final;
@@ -1022,6 +1030,7 @@ void		patch_daily_F(
 			patch[0].PAR_diffuse_final = patch[0].layers[layer].null_cover * patch[0].PAR_diffuse;
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
+			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
@@ -1044,6 +1053,7 @@ void		patch_daily_F(
 			patch[0].PAR_diffuse = patch[0].PAR_diffuse_final;
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;
 			patch[0].snow_throughfall = patch[0].snow_throughfall_final;
+			patch[0].NO3_throughfall = patch[0].NO3_throughfall_final;
 			patch[0].Tday_surface_offset = patch[0].Tday_surface_offset_final;
 			patch[0].ga = patch[0].ga_final;
 			patch[0].wind = patch[0].wind_final;
@@ -1129,7 +1139,8 @@ void		patch_daily_F(
 
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
-	patch[0].surface_NO3 += zone[0].ndep_NO3;
+	//patch[0].surface_NO3 += zone[0].ndep_NO3;
+	patch[0].surface_NO3 += patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 
 	/*--------------------------------------------------------------*/
@@ -1637,12 +1648,12 @@ void		patch_daily_F(
 	/* 	Resolve plant uptake and soil microbial N demands	*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0)  {
-		resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
-			patch[0].surface_NH4,
-			patch[0].rootzone.depth,
-			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].N_decay_rate,
-			&(patch[0].ndf));
+                resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
+                        patch[0].surface_NH4,
+                        patch[0].rootzone.depth,
+                        patch[0].soil_defaults[0][0].soil_depth,
+                        patch[0].soil_defaults[0][0].N_decay_rate,
+                        &(patch[0].ndf));
 	}
 	/*--------------------------------------------------------------*/
 	/*	Reduce the stratum actual transpiration and compute 	*/
@@ -1843,6 +1854,8 @@ void		patch_daily_F(
 	}	
 	patch[0].unsat_drainage += unsat_drainage;
 	patch[0].rz_drainage += rz_drainage;
+	patch[0].hourly_unsat_drainage += unsat_drainage;
+	patch[0].hourly_rz_drainage += rz_drainage;
 	/* ---------------------------------------------- */
 	/*     Final rootzone saturation calculation      */
 	/* ---------------------------------------------- */

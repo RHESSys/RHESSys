@@ -64,7 +64,8 @@ void  update_drainage_land(
 		double,
 		double,
 		double,
-		double *);
+		double *,
+		struct patch_object *);
 
 
 	double compute_N_leached(int,
@@ -174,8 +175,16 @@ void  update_drainage_land(
 		patch[0].sat_deficit,
 		total_gamma, 
 		patch[0].soil_defaults[0][0].interval_size,
-		patch[0].transmissivity_profile);
-
+		patch[0].transmissivity_profile,
+		patch);
+	//the following code is for testing only
+	/*if (patch[0].ID ==30645){
+	  printf("ID = %d, sat_deficit = %f, thresh = %f, sat_store = %f, route_to_patch = %f\n",patch[0].ID, patch[0].sat_deficit,
+		  (patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0) * 0.99 
+				      - patch[0].soil_defaults[0][0].sat_store,
+				      patch[0].soil_defaults[0][0].sat_store,
+				      route_to_patch);
+	}*/
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 
 		route_to_patch *= (available_sat_water)/(route_to_patch);
@@ -471,7 +480,7 @@ void  update_drainage_land(
 		/*--------------------------------------------------------------*/
 
 		Qin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * route_to_surface) / neigh[0].area;
-		neigh[0].detention_store += Qin;
+		neigh[0].detention_store += Qin;// need fix this
 		neigh[0].surface_Qin += Qin;
 		
 		/*--------------------------------------------------------------*/
