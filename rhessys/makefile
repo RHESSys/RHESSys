@@ -826,8 +826,15 @@ $(OBJ)/output_template_structure.o: output/output_template_structure.c
 	$(CC) -c $(CFLAGS) -I include output/output_template_structure.c -o $(OBJ)/output_template_structure.o
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
+
+ifdef netcdf
 $(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid.c -o $(OBJ)/construct_netcdf_grid.o
+else
+$(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid_dummy.c
+	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid_dummy.c -o $(OBJ)/construct_netcdf_grid.o
+endif
+
 $(OBJ)/construct_netcdf_header.o: init/construct_netcdf_header.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_header.c -o $(OBJ)/construct_netcdf_header.o
 $(OBJ)/params.o: util/params.c

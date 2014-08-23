@@ -176,7 +176,6 @@ void zone_daily_I(
 	double	Tlapse_adjustment;
 	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
 	int		season;
-	
 	season = 0;
 	
 	int	inx;
@@ -921,9 +920,9 @@ void zone_daily_I(
 								
 				/*----------------------------------------------------------------------*/
 				/* Other Parameterizations for Bristow & Campbell */
-				/*trans_coeff1 = 2269.3 * exp(-1.54 * zone[0].Delta_T); /* parameterized for Niwot Ridge */
-				/*trans_coeff1 = 403.3 * exp(-1.33 * zone[0].Delta_T); /* parameterized for Niwot Ridge */
-				/*trans_coeff1 = zone[0].defaults[0][0].trans_coeff1; /* using def file param */
+				/*trans_coeff1 = 2269.3 * exp(-1.54 * zone[0].Delta_T);  parameterized for Niwot Ridge */
+				/*trans_coeff1 = 403.3 * exp(-1.33 * zone[0].Delta_T);  parameterized for Niwot Ridge */
+				/*trans_coeff1 = zone[0].defaults[0][0].trans_coeff1;  using def file param */
 				
 				/* Bristow & Campbell PARAMS NIW 8M */
 				/*if (current_date.month>=6 && current_date.month<=10) {
@@ -935,7 +934,7 @@ void zone_daily_I(
 					trans_coeff2 = 0.49;
 					}
 				 
-				 /* Bristow & Campbell SEAS PARAMS NIW 21m w/ 1mm precip adjustment */
+				  Bristow & Campbell SEAS PARAMS NIW 21m w/ 1mm precip adjustment */
 				/*if (current_date.month>=6 && current_date.month<=10) {
 					trans_coeff1 = 0.152;
 					trans_coeff2 = 1.046;
