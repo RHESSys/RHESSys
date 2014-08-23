@@ -88,11 +88,11 @@ double	compute_varbased_flow(
 	for (i=0; i <9; i++) {
 		didx = (int) lround((s1 + normal[i]*std)/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
-		/* lateral flow below the threshold is 1/5 of the original value, the multiplier is arbitary */
-		accum = transmissivity[didx] * 1/5;
+		/* lateral flow below the threshold is 1 of the original value, the multiplier is arbitary. Xiaoli */
+		accum = transmissivity[didx] * 1;
 		/* fill and spill */
 		if ((patch[0].sat_deficit <= threshold) && ((s1 + normal[i]*std) <= threshold)){
-		    accum=transmissivity[didx] * 3;
+		    accum=transmissivity[didx] * 1;
 		}
 
 		flow += accum * perc[i];
@@ -101,12 +101,12 @@ double	compute_varbased_flow(
 	else  {
 		didx = (int) lround(s1/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
-		/* lateral flow below the threshold is 1/5 of the original value, the multiplier is arbitary */
-		    flow = transmissivity[didx] * 1/5;
+		/* lateral flow below the threshold is 1 of the original value, the multiplier is arbitary. Xiaoli */
+		    flow = transmissivity[didx] * 1;
 
 		if (patch[0].sat_deficit <= threshold){
 	
-		    flow = transmissivity[didx] * 3;
+		    flow = transmissivity[didx] * 1;
 		}
 	}
 
