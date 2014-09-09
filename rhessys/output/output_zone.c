@@ -42,7 +42,7 @@ void	output_zone(	int basinID, int hillID,
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	fprintf(outfile,
-		"%4d %4d %4d %3d %3d %3d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n ",
+		"%4d %4d %4d %3d %3d %3d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n ",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -58,11 +58,20 @@ void	output_zone(	int basinID, int hillID,
 		zone[0].Kdown_diffuse,
 		zone[0].PAR_direct,
 		zone[0].PAR_diffuse,
+		zone[0].Ldown,
 		zone[0].relative_humidity,
 		zone[0].aspect,
 		zone[0].z,
 		zone[0].slope,
 		zone[0].e_horizon,
-		zone[0].w_horizon);
+		zone[0].w_horizon,
+			zone[0].tdewpoint,
+			zone[0].e_dewpoint,
+			zone[0].atm_trans,
+			zone[0].wind,
+			zone[0].Delta_T,
+			zone[0].defaults[0][0].sea_level_clear_sky_trans + zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate,
+			0.036 * exp(-0.154 * zone[0].Delta_T),
+			zone[0].cloud_fraction);
 	return;
 } /*end output_zone*/

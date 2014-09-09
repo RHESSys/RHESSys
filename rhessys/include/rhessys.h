@@ -157,7 +157,8 @@
 #define seconds_per_day 86400
 #define	ess_snow	0.97
 #define	ess_soil	0.95
-#define ess_veg   	0.96
+#define ess_veg   	0.98
+#define ess_water	0.97
 #define PRE	"result"
 #define state_output_filename	"world_state"
 #define	MAXNAME	60
@@ -177,6 +178,7 @@
 #define WARING 2
 #define CONSTANT 1
 #define DICKENSON 3
+#define COMBINED 4
 #define ZERO 0.000000001
 #define URBANID		100
 #define M 0
@@ -279,7 +281,8 @@ struct world_object
 	double	cos_declin;		/*	DIM	*/
 	double	sin_declin;		/*	DIM	*/
 	double	Io;			/* Wm-2 	*/
-	struct	base_station_object	**base_stations;	
+	struct	base_station_object	**base_stations;
+	struct	base_station_ncheader_object	*base_station_ncheader;
 	struct	basin_object		**basins;
 	struct	date			start_date;				
 	struct	date			end_date;				
@@ -303,7 +306,7 @@ struct	world_hourly_object
 /*----------------------------------------------------------*/
 struct	world_output_file_object
 	{
-	struct	output_files_object 	*basin;
+	struct	output_files_object		*basin;
 	struct	output_files_object		*hillslope;
 	struct	output_files_object		*zone;
 	struct	output_files_object		*patch;
@@ -369,7 +372,7 @@ struct accumulate_patch_object
    double recharge;
    double recharge_wyd;
    double snowin;
-   double Qin_total; 
+   double Qin_total;
    double Qout_total;
 };
 
@@ -549,6 +552,32 @@ struct base_station_object
 	struct	dated_input_object	 *dated_input;
 	};
 /*----------------------------------------------------------*/
+/*	Define a netcdf base station header object.							*/
+/*----------------------------------------------------------*/
+struct base_station_ncheader_object
+{
+	int		lastID;
+	FILE	*base_station_file;
+	double	effective_lai;			/* m^2/m^2	*/
+	double	screen_height;			/* meters	*/
+	double  sdist;					/* search distance in native netcdf units */
+	int		year_start;				/* start year for netcdf time counter (NOT time series start date) */
+	int		day_offset;				/* day offset from January 1 for netcdf time counter */
+	int		leap_year;				/* 0 = no leap years, 1 = leap years in netcdf record */
+	double	precip_mult;			/* multiplier for precip if not in meters */
+	int		elevflag;				/* set based on whether elev filename is given */
+	char	netcdf_x_varname[MAXSTR];	/* variable name for x coordinate in nc file */
+	char	netcdf_y_varname[MAXSTR];	/* variable name for y coordinate in nc file */
+	char	netcdf_tmax_filename[MAXSTR];	/* filename for tmax nc file */
+	char	netcdf_tmin_filename[MAXSTR];	/* filename for tmin nc file */
+	char	netcdf_rain_filename[MAXSTR];	/* filename for rain nc file */
+	char	netcdf_elev_filename[MAXSTR];	/* filename for elev nc file */
+	char	netcdf_tmax_varname[MAXSTR];	/* variable name for tmax in nc file */
+	char	netcdf_tmin_varname[MAXSTR];	/* variable name for tmin in nc file */
+	char	netcdf_rain_varname[MAXSTR];	/* variable name for rain in nc file */
+	char	netcdf_elev_varname[MAXSTR];	/* variable name for elev in nc file */
+};
+/*----------------------------------------------------------*/
 /*	Define dated climate sequence	         	    */
 /*----------------------------------------------------------*/
 struct	dated_sequence
@@ -700,6 +729,12 @@ struct 	gw_object
 	double	NH4out;			/* kgN/m2/day	*/
 	double	DONout;			/* kgN/m2/day	*/
 	double	DOCout;			/* kgC/m2/day	*/
+	double	hourly_Qout;		/* m/m2/day	*/
+	double	hourly_NO3out;		/* kgN/m2/day	*/
+	double	hourly_NH4out;		/* kgN/m2/day	*/
+	double	hourly_DONout;		/* kgN/m2/day	*/
+	double	hourly_DOCout;		/* kgC/m2/day	*/
+
 	};
 /*----------------------------------------------------------*/
 /*	Define a hillslope object.								*/	
@@ -717,10 +752,15 @@ struct hillslope_object
 	double	riparian_area;		/* sq meters */
 	double	slope;			/* degrees */
 	double	base_flow;		/* meters		*/
+	double	hourly_base_flow;	/* meters   */
 	double	streamflow_NO3;		/* kgN/m2/day		*/
 	double	streamflow_NH4;		/* kgN/m2/day		*/
 	double	streamflow_DON;		/* kgN/m2/day		*/
 	double	streamflow_DOC;		/* kgC/m2/day		*/
+	double  hourly_streamflow_NO3;	/* kgN/m2/day		*/
+	double	hourly_streamflow_NH4;	/* kgN/m2/day		*/
+	double	hourly_streamflow_DON;	/* kgN/m2/day		*/
+	double	hourly_streamflow_DOC;	/* kgN/m2/day		*/
 	struct	gw_object		gw;
 	struct	aggdefs_object		aggdefs;
 	struct	base_station_object	**base_stations;
@@ -798,10 +838,16 @@ struct	zone_default
 	double	temcf;			/* 	DIM	*/
 	double	trans_coeff1;		/* 	DIM	*/
 	double	trans_coeff2;		/* 	DIM	*/
+	double	trans_coeff1_sum;		/* 	DIM	*/
+	double	trans_coeff2_sum;		/* 	DIM	*/
+	int		trans_startmonth_sum;		/* 	month 1-12	*/
+	double	trans_coeff1_win;		/* 	DIM	*/
+	double	trans_coeff2_win;		/* 	DIM	*/
+	int		trans_startmonth_win;		/* 	month 1-12	*/
 	double	wind;			/* m/s		*/
 	double	wind_direction;			/* degrees		*/
 	double  max_snow_temp;                                          /* degrees C */
-        double  min_rain_temp;                                          /* degrees C */
+	double  min_rain_temp;                                          /* degrees C */
 	double  ndep_NO3;		/* kgN/m2/day	*/
 	double  atm_CO2;		/* ppm */ 
 	double	psen[7];
@@ -854,11 +900,15 @@ struct zone_object
 	double	e_horizon; 	/* cos of angle to normal of flat  	*/
 	double	effective_lai;		/* area wt. average m^2/m^2	*/	
 	double	Kdown_diffuse;				/* Kj/(m^2*day)	*/
+	double	Kdown_diffuse_calc;				/* Kj/(m^2*day)	*/
 	double  Kdown_diffuse_adjustment;              	/*  0-1 */
 	double	Kdown_diffuse_flat;			/* Kj/(m^2*day)	*/
+	double	Kdown_diffuse_flat_calc;			/* Kj/(m^2*day)	*/
 	double	Kdown_direct;				/* Kj/(m^2*day)	*/
+	double	Kdown_direct_calc;				/* Kj/(m^2*day)	*/
 	double  Kdown_direct_adjustment;               	/*  0-1 */
 	double	Kdown_direct_flat;			/* Kj/(m^2*day)	*/
+	double	Kdown_direct_flat_calc;			/* Kj/(m^2*day)	*/
 	double	LAI_temp_adjustment;			/* 0 - 1	*/
 	double	LAI_scalar;				/* DIM		*/
 	double  Ldown;                              	/* W/m2 	*/
@@ -890,7 +940,7 @@ struct zone_object
 	struct	zone_default		**defaults;
 	struct	zone_hourly_object	*hourly;
 	struct  accumulate_zone_object  acc_month;
-        struct  accumulate_zone_object  acc_year;
+	struct  accumulate_zone_object  acc_year;
 
 	};
 
@@ -980,6 +1030,9 @@ struct	soil_default
 	double  snow_water_capacity;				/* m */
 	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
 	double  snow_melt_Tcoef;				/* unitless */
+	int snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
+	double  bats_b;				/* unitless */
+	double  bats_r3;				/* unitless */
 	double  active_zone_z;					/* m */
 	double  DOM_decay_rate;					/* kg N /m */
 	double  DON_adsorption_rate;				/* kg /kg soil */
@@ -994,6 +1047,7 @@ struct	soil_default
 	double  gsurf_intercept;				/* m/s */
 	double  theta_mean_std_p1;				/* DIM */
 	double  theta_mean_std_p2;				/* DIM */
+	double	sat_store;					/* percent of max sat_deficit, for fill and spill  */
 	struct soil_class	soil_type;
 	};
 
@@ -1382,6 +1436,11 @@ struct	snowpack_object
 	double  water_equivalent_depth;		/* m water   	*/
 	double	overstory_fraction;		/* percent	*/
 	double	overstory_height;		/* m		*/
+	double Rnet;	/* net SW + LW radiation in KJ/m2/d */
+	double Q_LE;     /* latent heat exchange with atmos in KJ/m2/d */
+	double Q_H;     /* sensible heat flux in KJ/m2/d */
+	double Q_rain;   /* rain advective heat flux in KJ/m2/d */
+	double Q_melt;  /* net input for melt in KJ/m2/d */
 	};
 
 
@@ -1414,39 +1473,58 @@ struct patch_object
 	double	evaporation;		/* m  water*/
 	double	evaporation_surf;	/* m  water*/
 	double  ga;			/* m/s */         
-	double  ga_final;		/* m/s */         
+	double  ga_final;		/* m/s */  
+	double  gasnow;			/* m/s */         
+	double  gasnow_final;		/* m/s */         
 	double  gw_drainage; 		/* m/day */
+	double	hourly_rz_drainage;	/* m water by Xiaoli */
+	double	hourly_unsat_drainage;	/* m water by Xiaoli */
+	double	hourly_subsur2stream_flow;	/* m water by Xiaoli */
+	double	hourly_sur2stream_flow;  /* m water by Xiaoli */
+	double	hourly_stream_flow;	/* m water by Xiaoli */
 	double  interim_sat;		/* m */
 	double  stream_gamma;		/* meters**2/day	*/
  	double	Kdown_direct;		/* Kj/(m^2*day)	*/
+	double	Kup_direct;		/* Kj/(m^2*day)	*/
 	double	Kdown_diffuse;		/* Kj/(m^2*day)	*/
+	double	Kup_diffuse;		/* Kj/(m^2*day)	*/
 	double	Kdown_direct_final;	/* Kj/(m^2*day)	*/
+	double	Kup_direct_final;	/* Kj/(m^2*day)	*/
 	double	Kdown_diffuse_final;	/* Kj/(m^2*day)	*/
-	double	Kup_direct;		/* Kj/(m^2*day) */
-	double	Kup_diffuse;		/* Kj/(m^2*day) */
+	double	Kup_diffuse_final;	/* Kj/(m^2*day)	*/
+	double  Ldown;	/* Kj/(m^2*day)	*/
+	double  Ldown_final;	/* Kj/(m^2*day)	*/
+	double Kdown_direct_ovund;
+	double Kup_direct_ovund;
+	double Kdown_diffuse_ovund;
+	double Kup_diffuse_ovund;
+	double Kdown_direct_und;
+	double Kup_direct_und;
+	double Kdown_diffuse_und;
+	double Kup_diffuse_und;		
+	double Kdown_direct_bare;
+	double Kup_direct_bare;
+	double Kdown_diffuse_bare;
+	double Kup_diffuse_bare;
+	double  Kstar_canopy;			/* Kj/(m^2*day)	*/
+	double  Kstar_canopy_final;	/* Kj/(m^2*day)	*/
+	double LE_canopy;  /* Kj/(m^2*day)	*/
+	double LE_canopy_final;  /* Kj/(m^2*day)	*/
+	double LE_soil;		/* Kj/(m^2*day)	*/
+	double  Kstar_soil;			/* Kj/(m^2*day)	*/
+	double	Kdown_direct_subcanopy;		/* Kj/(m^2*day)	*/
+	double	Kdown_diffuse_subcanopy;		/* Kj/(m^2*day)	*/
 	double	Ksat_0;			/* meteres/day  */
 	double  Ksat_vertical;		/* meters/day	*/
 	double	lna;			/* unitless	*/
 	double  lai;			/* unitless	*/
-	double  Lup_net;		/* Kj/(m^2*day) */
-	double	Lup_canopy;		/* Kj/(m^2*day)	*/
-	double	Lup_canopy_day;		/* Kj/(m^2*day)	*/
-	double	Lup_canopy_night;	/* Kj/(m^2*day)	*/
-	double	Lup_surface;		/* Kj/(m^2*day)	*/
-	double	Lup_surface_day;	/* Kj/(m^2*day)	*/
-	double	Lup_surface_night;	/* Kj/(m^2*day)	*/
-	double	Lup_snow;		/* Kj/(m^2*day)	*/
 	double	Lup_soil;		/* Kj/(m^2*day)	*/
-	double	Lup_litter;		/* Kj/(m^2*day)	*/
+	double	Lup;		/* Kj/(m^2*day)	*/
 	double	Lstar_canopy;		/* Kj/(m^2*day)	*/
-	double	Lstar_canopy_day;	/* Kj/(m^2*day)	*/
-	double	Lstar_canopy_night;	/* Kj/(m^2*day)	*/
-	double	Lstar_surface;		/* Kj/(m^2*day)	*/
-	double	Lstar_surface_day;	/* Kj/(m^2*day)	*/
-	double	Lstar_surface_night;	/* Kj/(m^2*day)	*/
-	double	Lstar_litter;		/* Kj/(m^2*day)	*/
 	double	Lstar_snow;		/* Kj/(m^2*day)	*/
 	double	Lstar_soil;		/* Kj/(m^2*day)	*/
+	double	Lstar_pond;		/* Kj/(m^2*day)	*/
+	double  Ldown_subcanopy;	/* Kj/(m^2*day)	*/
 	double  m;		/* m^-1 */
 	double  m_z;		/* m^-1 */
 	double  original_m;		/* m^-1 */
@@ -1476,6 +1554,8 @@ struct patch_object
 	double	snow_throughfall;	/* m water	*/
 	double	rain_throughfall_24hours;	/* m water,used for 24 hours accumulated throughfall	*/	
 	double	rain_throughfall_final;	/* m water	*/	
+	double	NO3_throughfall;	/* kg/m2 day  */
+	double	NO3_throughfall_final;	/* kg/m2 day */
 	double	rain_stored;		/* m water	*/
 	double	slope;			/* degrees		*/
 	double	S;			/* m/m		*/
@@ -1524,7 +1604,16 @@ struct patch_object
 	double	rz_drainage;		/* m water by Taehee Hwang */
 	double  wind;			/* m/s		*/
 	double  wind_final;		/* m/s		*/
+	double  windsnow;			/* m/s		*/
+	double  windsnow_final;		/* m/s		*/
+	double  ustar;			/* m/s		*/
+	double  ustar_final;		/* m/s		*/
 	double  wilting_point;		/* mm */
+	double overstory_fraction; /* 0-1 */
+	double trans_reduc_perc; /*0-1*/
+	double overland_flow; /* m/s */
+	double  T_canopy;  /* deg C */
+	double  T_canopy_final;  /* deg C */
 	struct	base_station_object	**base_stations;
 	struct	soil_default		**soil_defaults;
 	struct	landuse_default		**landuse_defaults;
@@ -1628,7 +1717,12 @@ struct	patch_hourly_object
 	{
 	int	i;
 	double	rain_throughfall;
+	double	NO3_throughfall;
+	double	NO3_throughfall_final;
 	double	infiltration;
+	double	streamflow_NO3_from_surface;
+	double	streamflow_NO3_from_sub;
+	double	streamflow_NO3;
 	};
 
 /*----------------------------------------------------------*/
@@ -1761,6 +1855,7 @@ struct	output_flag
 	int		daily;
 	int		daily_growth;
 	int		hourly;
+	int		hourly_growth;
 	};
 
 /*----------------------------------------------------------*/
@@ -2362,7 +2457,7 @@ struct epconst_struct
     double litter_gsurf_intercept;  /* m/2 - intercept of conductance vs litter theta */
     double litter_gsurf_slope;  /* (DIM) - slope of conductance vs litter theta */
     double litter_moist_coef;  /* m/kg  water holding capacity of litter in m/kg/m2 */
-    double litter_density;  /* kg/m  density of litter in kg/m/m2 */
+	double litter_density;  /* kg/m  density of litter in kg/m/m2 */
     double frootlitr_flab;   /* (DIM) froot litter labile fraction */
     double frootlitr_fucel;  /* (DIM) froot litter unshielded cellulose fract */
     double frootlitr_fscel;  /* (DIM) froot litter shielded cellulose fract */
@@ -2387,6 +2482,7 @@ struct epconst_struct
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
+	double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
     int	    max_years_resprout; /* num years of resprouting before death */
     double waring_pa; /* parameter for Waring allometric equation */
     double waring_pb; /* parameter for Waring allometric equation */
@@ -2474,9 +2570,8 @@ struct	canopy_strata_object
 	double	gsurf;						/* m/s		*/
 	double	Kstar_direct;					/* Kj/(m2*day)	*/
 	double	Kstar_diffuse;					/* Kj/(m2*day)	*/
-	double	Kup_direct;					/* Kj/(m2*day)	*/
-	double	Kup_diffuse;					/* Kj/(m2*day)	*/
 	double	Lstar;						/* Kj/(m2*day)	*/	
+	double	NO3_stored;					/* kg/m2	*/
 	double	PAR_after_reflection;				/* (umol photon/m2*day) */
 	double  ppfd_sunlit;			/*  (umol/m2/s) PAR photon flux density */
 	double  ppfd_shade;			/*  (umol/m2/s) PAR photon flux density */
@@ -2490,6 +2585,7 @@ struct	canopy_strata_object
 	double	transpiration_unsat_zone;	/* m water / day */
 	double	transpiration_sat_zone;		/* m water / day */
 	double  wind;						/* 1/meters	*/
+	double  canopy_drip;
 	struct  rooting_zone_object	rootzone;
 	struct	cdayflux_struct cdf;				
 	struct	cstate_struct	cs;
@@ -2561,5 +2657,5 @@ struct surface_energy_default {
 	double iteration_threshold; /* degrees C */
 	};
 
-
 #endif
+

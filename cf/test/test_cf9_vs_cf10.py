@@ -12,7 +12,8 @@ class TestCF9vCF10(TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls.cfBinPath = os.path.abspath( os.path.join('.', 'cf10.0b2') )
+        cfBin = os.path.join( './', os.environ['CF_BIN'] )
+        cls.cfBinPath = os.path.abspath(cfBin)
         if not os.access(cls.cfBinPath, os.X_OK):
             raise IOError(errno.ENOEXEC, "Unable to execute CF binary %s" %
                           cls.cfBinPath)
@@ -65,7 +66,7 @@ class TestCF9vCF10(TestCase):
         self.assertTrue(result)
         
         # Compare just-generated flow table with reference CF9.1 flowtable
-        referenceFlow = os.path.abspath( os.path.join('flow', 'CF91.flow') )
+        referenceFlow = os.path.abspath( os.path.join('flow', 'DR5_5m_cf91.flow') )
         newFlow = os.path.abspath( "%s.flow" % (newFlow,) )
         self.assertTrue( filecmp.cmp(referenceFlow, newFlow) )
         

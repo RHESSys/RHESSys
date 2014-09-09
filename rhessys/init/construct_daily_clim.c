@@ -307,6 +307,22 @@ struct	daily_clim_object *construct_daily_clim(
 				start_date,
 				duration);
 		}
+		else if ( strcmp(sequence_name,"tdewpoint") == 0 ){
+			strcpy(file_name, file_prefix);
+			daily_clim[0].tdewpoint = construct_clim_sequence(
+				(char *)strcat(file_name,".tdewpoint"),
+				start_date,
+				duration);
+		}
+		else if ( strcmp(sequence_name,"atm_trans") == 0 ){
+			strcpy(file_name, file_prefix);
+			daily_clim[0].atm_trans = construct_clim_sequence(
+				(char *)strcat(file_name,".atm_trans"),
+				start_date,
+				duration);
+		}
+		
+		
 		else  fprintf(stderr,
 			"WARNING -  clim sequence %s not found.\n",sequence_name);
 	} /*end for*/

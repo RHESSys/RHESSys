@@ -137,6 +137,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].Qout = 0.0;
 		patch[0].surface_Qin = 0.0;
 		patch[0].surface_Qout = 0.0;
+		
+		patch[0].overland_flow = 0.0;
 
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
 
@@ -415,6 +417,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/*--------------------------------------------------------------*/
 				/*	final overland flow routing				*/
 				/*--------------------------------------------------------------*/
+				patch[0].overland_flow += patch[0].detention_store 
+									- patch[0].soil_defaults[0][0].detention_store_size;
+				
 				if (((excess = patch[0].detention_store
 						- patch[0].soil_defaults[0][0].detention_store_size)
 						> ZERO) && (patch[0].detention_store > ZERO)) {

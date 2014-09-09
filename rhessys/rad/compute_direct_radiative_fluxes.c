@@ -53,7 +53,8 @@
 #include "rhessys.h"
 
 double	compute_direct_radiative_fluxes(	int	verbose_flag,
-										double	*flux_down_ptr,                     
+										double	*flux_down_ptr,
+										double  *flux_up_ptr,
 										double	extinction_coef,
 										double	gap_fraction,
 										double	proj_pai,
@@ -83,10 +84,12 @@ double	compute_direct_radiative_fluxes(	int	verbose_flag,
 	/*      for solar zenith angle as 10% of the transmission at    */
 	/*      solar noon.                                             */
 	/*--------------------------------------------------------------*/
-	flux_reflected = *flux_down_ptr * reflectance_canopy;
+	*flux_up_ptr = *flux_down_ptr * reflectance_canopy;
 	unreflected_fraction = ( 1- reflectance_canopy);
-	noon_extinction = extinction_coef*(1-gap_fraction)
-		* proj_pai/cos(theta_noon);
+	noon_extinction = extinction_coef*(1-gap_fraction) * proj_pai/cos(theta_noon);
+	if ( verbose_flag == -5 ){
+		printf("\n          DIRRADFLUX: noonext=%lf extcoef=%lf thetanoon=%lf",noon_extinction, extinction_coef, theta_noon);
+	}
 	if ( noon_extinction < -0.3  ){
 		noon_transmission = exp(noon_extinction);
 		day_correction  =  -1 * (( 1 - reflectance_bkgd )
@@ -116,10 +119,14 @@ double	compute_direct_radiative_fluxes(	int	verbose_flag,
 		day_absorption = unreflected_fraction * ( 1.0 - exp(noon_extinction) );
 	}
 	flux_absorbed = *flux_down_ptr * day_absorption;
-	flux_transmitted = *flux_down_ptr * (1 - reflectance_canopy-day_absorption );
+	flux_transmitted = *flux_down_ptr * (1 - reflectance_canopy - day_absorption );
 	*flux_down_ptr = flux_transmitted;
 	if( verbose_flag > 2)
-		printf("%8.1f %8.1f %8.1f ", flux_reflected,flux_absorbed,
+		printf("%8.1f %8.1f %8.1f ", *flux_up_ptr,flux_absorbed,
 		flux_transmitted);
+	if ( verbose_flag == -5 ){
+		printf("\n               fluxrefl=%lf fluxabs=%lf fluxtrans=%lf dayabs=%lf canrefl=%lf", *flux_up_ptr,flux_absorbed,
+		   flux_transmitted, day_absorption, reflectance_canopy);
+	}
 	return( flux_absorbed );
 } /*end compute_radiative_fluxes*/
