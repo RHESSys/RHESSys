@@ -93,6 +93,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].noredist_flag = 0;
 	command_line[0].surface_energy_flag = 0;
 	command_line[0].firespread_flag = 0;
+     command_line[0].scm_flag = 0;
 	command_line[0].vgsen_flag = 0;
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
@@ -275,6 +276,15 @@ struct	command_line_object	*construct_command_line(
 					exit(EXIT_FAILURE);
 				} /*end if*/
 			}/* end if */
+               
+			/*-------------------------------------------------*/
+			/*	SCM  option and coeffcients	  */
+			/*-------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-scm") == 0 ){
+				printf("\n Running with SCM option turned on\n");
+				command_line[0].scm_flag = 1;
+				i++;
+      		}/* end if */
 
 			/*-------------------------------------------------*/
 			/*	routing gw to riparian option */

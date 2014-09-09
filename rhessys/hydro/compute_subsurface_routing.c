@@ -45,6 +45,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	void update_drainage_road(struct patch_object *,
 			struct command_line_object *, double, int);
 
+	void update_drainage_scm(struct zone_object *, struct patch_object *,
+			struct command_line_object *, double, int, double *);
+
 	void update_drainage_land(struct patch_object *,
 			struct command_line_object *, double, int);
 
@@ -90,10 +93,11 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	double preday_basin_detention_store;
 	double add_field_capacity, rz_drainage, unsat_drainage;
 	double streamflow, Qout, Qin_total, Qstr_total;
+     struct zone_object *zone;
 	struct patch_object *patch;
 	struct hillslope_object *hillslope;
 	struct patch_object *neigh;
-	/*--------------------------------------------------------------*/
+     /*--------------------------------------------------------------*/
 	/*	initializations						*/
 	/*--------------------------------------------------------------*/
 	grow_flag = command_line[0].grow_flag;
@@ -137,8 +141,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].Qout = 0.0;
 		patch[0].surface_Qin = 0.0;
 		patch[0].surface_Qout = 0.0;
-		
-		patch[0].overland_flow = 0.0;
 
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
 
@@ -212,6 +214,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			} else if (patch[0].drainage_type == STREAM) {
 				update_drainage_stream(patch, command_line, time_int,
 						verbose_flag);
+               } else if (patch[0].drainage_type == SCM) {
+                    update_drainage_scm(zone, patch, command_line, time_int,
+               verbose_flag, patch[0].scm_stage_storage);
 			} else {
 				update_drainage_land(patch, command_line, time_int,
 						verbose_flag);
@@ -283,6 +288,12 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					+ (patch[0].surface_DON_Qout - patch[0].surface_DON_Qin));
 			patch[0].Qin_total += patch[0].Qin + patch[0].surface_Qin;
 			patch[0].Qout_total += patch[0].Qout + patch[0].surface_Qout;
+               
+               if(patch[0].drainage_type == SCM){
+                //    patch[0].preday_scm_inflow = patch[0].Qin_total;
+                    patch[0].preday_detention_store = patch[0].detention_store;
+               }
+     
 
 			patch[0].surface_Qin = 0.0;
 			patch[0].surface_Qout = 0.0;
@@ -417,9 +428,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/*--------------------------------------------------------------*/
 				/*	final overland flow routing				*/
 				/*--------------------------------------------------------------*/
-				patch[0].overland_flow += patch[0].detention_store 
-									- patch[0].soil_defaults[0][0].detention_store_size;
-				
 				if (((excess = patch[0].detention_store
 						- patch[0].soil_defaults[0][0].detention_store_size)
 						> ZERO) && (patch[0].detention_store > ZERO)) {
@@ -1182,6 +1190,11 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		if (basin_outflow <= command_line[0].thresholds[STREAMFLOW])
 			basin[0].acc_year.num_threshold += 1;
 	}
+
+     /*--------------------------------------------------------------*/
+	/*  set preday scm variables before zeroing out                 */
+	/*--------------------------------------------------------------*/
+
 
 	return;
 

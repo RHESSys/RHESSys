@@ -2,14 +2,15 @@
 /* 											*/
 /*					update_drainage_land			*/
 /*											*/
-/*	update_drainage_land.c - creates a patch object				*/
+/*	update_drainage_scm.c - creates a patch object				*/
 /*											*/
 /*	NAME										*/
-/*	update_drainage_land.c - creates a patch object				*/
+/*	update_drainage_scm.c - creates a patch object				*/
 /*											*/
 /*	SYNOPSIS									*/
-/*	void update_drainage_land( 							*/
-/*					struct patch_object *patch			*/
+/*	void update_drainage_scm( 							*/
+/*				  struct zone_object *zone,
+ /*                   struct patch_object *patch,			*/
 /*				 			double,			 	*/
 /*				 			double,			 	*/
 /*				 			double,			 	*/
@@ -34,11 +35,13 @@
 #include "rhessys.h"
 
 
-void  update_drainage_land(
-					struct patch_object *patch,
-					 struct command_line_object *command_line,
-					 double time_int,
-					 int verbose_flag)
+void  update_drainage_scm(
+					struct zone_object *zone,
+                         struct patch_object *patch,
+                         struct command_line_object *command_line,
+					double time_int,
+					int verbose_flag,
+                         struct date current_date)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
@@ -98,12 +101,12 @@ void  update_drainage_land(
 		double,
 		double,
 		double);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	int j, d, idx;
-	double tmp;
+	int k, j, d, idx, avek, mins, intused;
+	double step; /* minutes */
 	double m, Ksat, std_scale;
 	double NH4_leached_to_patch, NH4_leached_to_stream;
 	double NO3_leached_to_patch, NO3_leached_to_stream;
@@ -124,6 +127,12 @@ void  update_drainage_land(
 	double total_gamma;
 	double Nin, Nout; /* kg/m2 */ 
 	double t1,t2,t3;
+     double scm_ave_height; /* m */
+     double scm_max_H; /* m */
+     double scm_max_area, scm_max_volume; /* m^2 | m^3 */
+     double out_hi, out_low, h_hi, h_low, vol_hi, vol_low, LHS, LHS_delta; /* m | m | m/time int | m/time int | m/minute | m/minute */
+     double preday_scm_volume, preday_scm_inflow, preday_scm_outflow;
+     double scm_H, scm_outflow, scm_outflow_tmp, scm_volume; /* m | m^3/s | m */
 
 	struct patch_object *neigh;
 	route_to_patch = 0.0;
@@ -142,7 +151,14 @@ void  update_drainage_land(
 	NH4_leached_to_surface = 0.0;
 	DOC_leached_to_surface = 0.0;
 	DON_leached_to_surface = 0.0;
-
+     
+     // Patch SCM varibles
+     scm_max_area       = patch[0].area;
+     scm_max_volume     = patch[0].scm_stage_storage[1000][1];
+     scm_max_H          = patch[0].scm_stage_storage[1000][0];
+     
+     // Write over soil default detention storage
+     patch[0].soil_defaults[0][0].detention_store_size = patch[0].scm_stage_storage[1000][6];
 	/*--------------------------------------------------------------*/
 	/*	m and K are multiplied by sensitivity analysis variables */
 	/*--------------------------------------------------------------*/
@@ -364,36 +380,138 @@ void  update_drainage_land(
 			patch[0].soil_cs.DOC_Qout += Nout;
 		}
 	
+     
+
 	/*--------------------------------------------------------------*/
-	/*	route water and nitrogen lossed due to infiltration excess */
+	/*	route water and nitrogen lossed due to surface routing    */
 	/*--------------------------------------------------------------*/
-	if ( (patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) &&
-		(patch[0].detention_store > ZERO) ){
+	
+     /*-----------------------------------------------------------*/
+     /* Need to compute total outflow at a sub-houlry time step   */
+     /* Use one minute                                            */
+     /* Assume inflow in linearaly distributed across the time    */
+     /*-----------------------------------------------------------*/
+     preday_scm_volume  = patch[0].preday_detention_store;
+     preday_scm_inflow  = patch[0].preday_scm_inflow;
+     preday_scm_outflow = patch[0].preday_scm_outflow;
 
-		Qout = (patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size);
-		if (command_line[0].grow_flag > 0) {
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
-			DOC_leached_to_surface = Nout * patch[0].area;
-			patch[0].surface_DOC -= Nout;
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
-			DON_leached_to_surface = Nout * patch[0].area;
-			patch[0].surface_DON -= Nout;
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
-			NO3_leached_to_surface = Nout * patch[0].area;
-			patch[0].surface_NO3 -= Nout;
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
-			NH4_leached_to_surface = Nout * patch[0].area;
-			patch[0].surface_NH4 -= Nout;
-			}
-		route_to_surface = (Qout *  patch[0].area);
-		patch[0].detention_store -= Qout;
-		patch[0].surface_Qout += Qout;
+ 
+     /*-----------------------------------------------------------*/
+     /* A) IF HOURLY                                              */
+     /*-----------------------------------------------------------*/
+     
+     if (zone[0].hourly_rain_flag!=1) {
+          intused = 4;
+          step = 60;
+     } else {
+          intused = 5;
+          step = 60*24;
+     }
 
-		}
-			
+     /*-----------------------------------------------------------*/
+     /* SUB-HOURLY FOR LOOP */
+     /*-----------------------------------------------------------*/
+     scm_outflow = 0;
 
-	if (NO3_leached_to_surface < 0.0)
+     for (mins=0; mins<step; mins++){
+          
+         scm_outflow_tmp = 0;
+         
+         // Calculate LHS in m/minute
+         // LHS = Ii + Ij + (2*Si/t) - Oi        [t=1 minute]
+         LHS = preday_scm_inflow/step + patch[0].Qin_total/step + (2*preday_scm_volume)/1 - preday_scm_outflow/step;
+         /*-----------------------------------------------------------*/
+         /* calculate amuount of water output to stream (SCM routing) */
+         /*-----------------------------------------------------------*/
+
+         /* for loop to lookup scm depth and outflow based on LHS */
+         for (k=0; k<1001; k++) {
+               // Check to see if LHS is above max
+               if (LHS >= patch[0].scm_stage_storage[1000][9]) {
+                    scm_outflow_tmp  = (scm_volume - patch[0].scm_stage_storage[1000][6])/patch[0].area; // immediately route excess volume to stream
+                    scm_outflow_tmp += (patch[0].scm_stage_storage[1000][intused]/step) + patch[0].Qin_total/step ;  // set outflow rate to that of the maximum depth water and short-circuit extra water out
+                    scm_H = scm_max_H;             // set water level to maximum
+                    avek = 1000;
+                    break;
+               } else if (LHS >= patch[0].scm_stage_storage[k][9] && LHS < patch[0].scm_stage_storage[k+1][9]) {
+                    h_low = patch[0].scm_stage_storage[k][0];
+                    h_hi  = patch[0].scm_stage_storage[k+1][0];
+                    out_low = patch[0].scm_stage_storage[k][intused]/step;
+                    out_hi  = patch[0].scm_stage_storage[k+1][intused]/step;
+                    vol_low = patch[0].scm_stage_storage[k][6];
+                    vol_hi  = patch[0].scm_stage_storage[k+1][6];
+                    
+                    LHS_delta = (LHS - patch[0].scm_stage_storage[k][9])/(patch[0].scm_stage_storage[k+1][9]-patch[0].scm_stage_storage[k][9]);
+                    scm_H = h_low + (h_hi-h_low)*LHS_delta;
+                    scm_outflow_tmp = out_low + (out_hi-out_low)*LHS_delta;
+                    //scm_volume = vol_low + (vol_hi-vol_low)*LHS_delta;
+                    avek = k;
+                    break;
+               } else {
+                    
+               }
+             
+         }
+         
+         scm_outflow_tmp    = max(scm_outflow_tmp,0);
+         scm_volume         = preday_scm_volume - scm_outflow_tmp + patch[0].Qin_total/step;
+         
+         if(patch[0].ID == 1){
+               fprintf(stderr, "\npre-I: %f | pre-volume: %f | volume: %f | pre-height: %f | O: %f  | LHS %f | avek: %d", preday_scm_inflow/step, preday_scm_volume, scm_volume, scm_H, scm_outflow_tmp, LHS, avek);
+         }
+          
+         preday_scm_volume  = scm_volume;
+         preday_scm_outflow = scm_outflow_tmp;
+         preday_scm_inflow  = patch[0].Qin_total; // after the first step, preday inflow is just the inflow
+         scm_outflow       += scm_outflow_tmp;
+ 
+     }
+
+     Qout = scm_outflow;
+     patch[0].scm_H = scm_H;
+
+    
+     if (command_line[0].grow_flag > 0) {
+          Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
+          DOC_leached_to_surface = Nout * patch[0].area;
+          patch[0].surface_DOC -= Nout;
+          Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
+          DON_leached_to_surface = Nout * patch[0].area;
+          patch[0].surface_DON -= Nout;
+          Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
+          NO3_leached_to_surface = Nout * patch[0].area;
+          patch[0].surface_NO3 -= Nout;
+          Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
+          NH4_leached_to_surface = Nout * patch[0].area;
+          patch[0].surface_NH4 -= Nout;
+     }
+
+     //patch[0].detention_store -= Qout;  // IS THIS DONE SOMEWHERE ELSE AT THE END OF THE HOUR?
+     patch[0].detention_store = preday_scm_volume;
+     patch[0].surface_Qout = Qout;
+     route_to_surface = Qout * patch[0].area;
+     /*if(patch[0].ID == 1){
+     fprintf(stderr, "\nTEST: LHS: %f | k: %d | hr: %d", LHS, avek, current_date.hour);
+     }*/
+     
+     if(patch[0].ID ==1){
+          fprintf(stderr, "\nS0: %f | S1: %f | I0: %f | I1: %f | Surf. O: %f  |  SubSurf O: %f  |  Qout T: %f | hour: %d | ET: %f", patch[0].preday_detention_store, patch[0].detention_store, patch[0].preday_scm_inflow, patch[0].Qin_total, Qout, patch[0].Qout, (patch[0].Qout_total), current_date.hour, (patch[0].evaporation + patch[0].evaporation_surf  + patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone));
+     }
+     
+     if(avek > 0){
+     patch[0].scm_ave_height = (patch[0].detention_store*patch[0].area)/((patch[0].scm_stage_storage[0][3]+patch[0].scm_stage_storage[avek][3])/2);
+     } else {
+     patch[0].scm_ave_height = 0;
+     }
+
+
+     patch[0].preday_scm_inflow  = patch[0].Qin_total;
+     patch[0].preday_scm_volume  = preday_scm_volume;
+     patch[0].preday_scm_outflow = preday_scm_outflow;
+
+  	if (NO3_leached_to_surface < 0.0)
 		printf("WARNING %d %lf",patch[0].ID, NO3_leached_to_surface);
+
 
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/
@@ -559,8 +677,16 @@ void  update_drainage_land(
 
 	}
 
-	} /* end if redistribution flag */
+	}
+     
 
+     /* end if redistribution flag */
+
+
+     /*if(patch[0].ID == 1){
+          fprintf(stderr, "\nP no:  %d  |  \Qout: %f  |  Depth:  %f", patch[0].ID, Qout, scm_H);
+     }*/
+     
 	return;
 
 } /*end update_drainage_land.c*/

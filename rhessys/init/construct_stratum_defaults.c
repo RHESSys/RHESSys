@@ -92,6 +92,7 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/
 		/*--------------------------------------------------------------*/
+          
 		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "stratum_default_ID", "%d", 7, 1); // new param name
 		default_object_list[i].epc.veg_type = 		parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.veg.type", "%s", "TREE", 1)); // param name is "epc.veg.type" in param file
 		default_object_list[i].K_absorptance = 		getDoubleParam(&paramCnt, &paramPtr, "K_absorptance", "%lf", 0.8, 1); // parameter misspelled in file as "K_apsorbtance"
@@ -103,7 +104,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ext_coef", "%lf", 0.5, 1);
 		default_object_list[i].specific_rain_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_rain_capacity", "%lf", 0.00024, 1);
 		default_object_list[i].specific_snow_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_snow_capacity", "%lf", 0.00024, 1);
-		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.4, 1); // param name is "wind_attenuation_coef" in param file
+		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.002, 1); // param name is "wind_attenuation_coef" in param file
 		default_object_list[i].ustar_overu = 		getDoubleParam(&paramCnt, &paramPtr, "ustar_overu", "%lf", -999.9, 1);
 		default_object_list[i].mrc.q10 = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.q10", "%lf", 1.5, 1);
 		default_object_list[i].mrc.per_N = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.per_N", "%lf", 0.21, 1);
@@ -287,10 +288,6 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.coef_CO2 = getDoubleParam(&paramCnt, &paramPtr, "epc.coef_CO2", "%lf", 1.0, 1);
 		default_object_list[i].epc.root_growth_direction = getDoubleParam(&paramCnt, &paramPtr, "epc.root_growth_direction", "%lf", 0.8, 1);
 		default_object_list[i].epc.root_distrib_parm = getDoubleParam(&paramCnt, &paramPtr, "epc.root_distrib_parm", "%lf", 8.0, 1);
-		default_object_list[i].epc.crown_ratio = getDoubleParam(&paramCnt, &paramPtr, "epc.crown_ratio", "%lf", 0.6, 1);
-		if (epc->veg_type != TREE)
-			default_object_list[i].epc.crown_ratio = 1.0;
-		
 		/*--------------------------------------------------------------*/
 		/* default values for phenology (leaf onset/offset) model parameters */
 		/* are set based on Jolly et al., 2005, Global Change Biology   */
@@ -357,6 +354,32 @@ struct stratum_default *construct_stratum_defaults(
 			default_object_list[i].epc.proj_sla *= command_line[0].veg_sen1;
 			default_object_list[i].epc.shade_sla_mult *= command_line[0].veg_sen2;
 		}
+          
+          
+                  
+          /*--------------------------------------------------------------*/
+		/* optionally read in ALGAE parameters                          */
+		/*--------------------------------------------------------------*/
+        
+          if (default_object_list[i].epc.veg_type == ALGAE) {
+               default_object_list[i].algae.growth_rate      = getDoubleParam(&paramCnt, &paramPtr, "algae.growth_rate", "%lf", 0.2, 1);
+               default_object_list[i].algae.growth_temptheta = getDoubleParam(&paramCnt, &paramPtr, "algae.growth_temptheta", "%lf", 1.066, 1);
+               default_object_list[i].algae.light_extinct    = getDoubleParam(&paramCnt, &paramPtr, "algae.light_extinct", "%lf", 0.2, 1);
+               default_object_list[i].algae.light_optimum    = getDoubleParam(&paramCnt, &paramPtr, "algae.light_optimum", "%lf", 10460.0, 1);
+               default_object_list[i].algae.nitro_halfsat    = getDoubleParam(&paramCnt, &paramPtr, "algae.nitro_halfsat", "%lf", 0.0002, 1);
+               default_object_list[i].algae.phos_halfsat     = getDoubleParam(&paramCnt, &paramPtr, "algae.phos_halfsat", "%lf", 0.00004, 1);
+               default_object_list[i].algae.phos_conc        = getDoubleParam(&paramCnt, &paramPtr, "algae.phos_conc", "%lf", 0.00005, 1);
+               default_object_list[i].algae.death_rate       = getDoubleParam(&paramCnt, &paramPtr, "algae.death_rate", "%lf", 0.15, 1);
+               default_object_list[i].algae.death_temptheta  = getDoubleParam(&paramCnt, &paramPtr, "algae.death_temptheta", "%lf", 1.08, 1);
+               default_object_list[i].algae.scm_photo_depth  = getDoubleParam(&paramCnt, &paramPtr, "algae.scm_photo_depth", "%lf", 1.5, 1);
+               default_object_list[i].algae.npref_coeff      = getDoubleParam(&paramCnt, &paramPtr, "algae.npref_coef", "%lf", 0.00005, 1);
+               default_object_list[i].algae.chla_to_C        = getDoubleParam(&paramCnt, &paramPtr, "algae.chla_to_C", "%lf", 0.025, 1);
+               default_object_list[i].algae.chla_to_N        = getDoubleParam(&paramCnt, &paramPtr, "algae.chla_to_N", "%lf", 0.14, 1);
+               default_object_list[i].algae.K_reflectance    = getDoubleParam(&paramCnt, &paramPtr, "K_reflectance", "%lf", 0.03, 1);
+          }
+        
+          
+          
 
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/

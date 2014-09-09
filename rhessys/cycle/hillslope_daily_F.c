@@ -81,6 +81,7 @@ void		hillslope_daily_F(
 		struct hillslope_object *,
 		struct  zone_object ** ,
 		struct	date );
+     
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -104,7 +105,7 @@ void		hillslope_daily_F(
 	/*  baseflow calculations                                               */
 	/*----------------------------------------------------------------------*/
 	if (command_line[0].routing_flag == 0) {
-		hillslope[0].base_flow += top_model(
+		hillslope[0].base_flow = top_model(
 			command_line[0].verbose_flag,
 			command_line[0].grow_flag,
 			hillslope[0].defaults[0][0].n_routing_timesteps,
@@ -118,7 +119,7 @@ void		hillslope_daily_F(
 			current_date);
 	}
 	else{
-		hillslope[0].base_flow += 0.0;
+		hillslope[0].base_flow = 0.0;
 	}
 
 	/*----------------------------------------------------------------------*/
@@ -126,11 +127,9 @@ void		hillslope_daily_F(
 	/* 	updated to consider two possible deeper concept gw models	*/
 	/*  see review in Stoelzie e tal, 2014, Hydrological Processes		*/
 	/*----------------------------------------------------------------------*/
-	
-	/* this part has been moved to hillslope hourly 
 	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag==0)) {
 	
-      
+	
 		if (hillslope[0].defaults[0][0].gw_loss_fast_threshold < ZERO) {	
 			hillslope[0].gw.Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
 					hillslope[0].defaults[0][0].gw_loss_coeff;
@@ -142,7 +141,7 @@ void		hillslope_daily_F(
 			hillslope[0].gw.Qout += slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff; 
 			}
 
-	
+
 		hillslope[0].gw.NH4out = hillslope[0].gw.Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
 		hillslope[0].gw.NO3out = hillslope[0].gw.Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
 		hillslope[0].gw.DONout = hillslope[0].gw.Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;
@@ -153,16 +152,15 @@ void		hillslope_daily_F(
 		hillslope[0].streamflow_DON += hillslope[0].gw.DONout;
 		hillslope[0].streamflow_DOC += hillslope[0].gw.DOCout;
 		hillslope[0].base_flow += hillslope[0].gw.Qout;
-		//hillslope[0].gw.storage -= hillslope[0].gw.Qout; the storage has been updated in hillslop hourly already
+		hillslope[0].gw.storage -= hillslope[0].gw.Qout;
 		hillslope[0].gw.NH4 -= hillslope[0].gw.NH4out;
 		hillslope[0].gw.NO3 -= hillslope[0].gw.NO3out;
 		hillslope[0].gw.DON -= hillslope[0].gw.DONout;
 		hillslope[0].gw.DOC -= hillslope[0].gw.DOCout;
-		
-	}
-	*/
+		}
 
-	/*if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag == 1)) {
+
+	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag == 1)) {
 
 		hillslope[0].gw.Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
 					hillslope[0].defaults[0][0].gw_loss_coeff;
@@ -178,7 +176,7 @@ void		hillslope_daily_F(
 			fast_store = max(0.0,hillslope[0].gw.storage - hillslope[0].defaults[0][0].gw_loss_fast_threshold);
 			hillslope[0].gw.Qout += slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff; 
 			}
-	
+
 		hillslope[0].gw.NH4out = hillslope[0].gw.Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
 		hillslope[0].gw.NO3out = hillslope[0].gw.Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
 		hillslope[0].gw.DONout = hillslope[0].gw.Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;
@@ -196,7 +194,7 @@ void		hillslope_daily_F(
 			hillslope[0].streamflow_DOC += hillslope[0].gw.DOCout;
 			hillslope[0].base_flow += hillslope[0].gw.Qout;
 			gw_Qout = 0.0;
-		}
+			}
 
 		for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
 			for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
@@ -212,7 +210,7 @@ void		hillslope_daily_F(
 		}
 
 
-		//hillslope[0].gw.storage -= hillslope[0].gw.Qout;
+		hillslope[0].gw.storage -= hillslope[0].gw.Qout;
 		hillslope[0].gw.NH4 -= hillslope[0].gw.NH4out;
 		hillslope[0].gw.NO3 -= hillslope[0].gw.NO3out;
 		hillslope[0].gw.DON -= hillslope[0].gw.DONout;
@@ -220,7 +218,6 @@ void		hillslope_daily_F(
 
 
 		}
-	*/
 
 	/*----------------------------------------------------------------------*/
 	/*	accumulate monthly and yearly streamflow variables		*/

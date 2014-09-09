@@ -48,10 +48,13 @@ int	parse_veg_type( char *input_string)
 	else if ((strncmp(input_string,"NON_VEG",5) == 0) ||
 		(strncmp(input_string, "non_veg",5) == 0) )
 		veg_type = NON_VEG;
+    else if ((strncmp(input_string,"ALGAE",5) == 0) ||
+             (strncmp(input_string, "algae",5) == 0) )
+		veg_type = ALGAE;
 	else {
 		fprintf(stderr,"\n FATAL ERROR - parse_veg_type");
 		fprintf(stderr,"\n %s Unknown veg type in stratum default file", input_string);
-		fprintf(stderr,"\n must be either TREE or GRASS\n");
+		fprintf(stderr,"\n must be either TREE or GRASS or ALGAE\n");
 		exit(EXIT_FAILURE);
 	}
 	

@@ -29,7 +29,7 @@ void	canopy_stratum_daily_F(
 							   struct	hillslope_object	*hillslope, 
 							   struct	zone_object		*zone,
 							   struct	patch_object		*patch,
-							   struct   layer_object		*layer,
+							   struct  layer_object		*layer,
 							   struct 	canopy_strata_object 	*stratum,
 							   struct 	command_line_object	*command_line,
 							   struct	tec_entry		*event,
@@ -39,18 +39,6 @@ void	canopy_stratum_daily_F(
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
 	long	julday(struct date calendar_date);
-    
-    void algae_stratum_daily_F(
-        struct world_object *,
-        struct basin_object *,
-        struct hillslope_object *,
-        struct zone_object *,
-        struct patch_object *,
-        struct layer_object *,
-        struct canopy_strata_object *,
-        struct command_line_object *,
-        struct tec_entry *,
-        struct date);
 	
 	double	compute_diffuse_radiative_fluxes(
 		int,
@@ -277,6 +265,7 @@ void	canopy_stratum_daily_F(
 	struct	psnout_struct	psnout;
 	struct mortality_struct mort;
 
+
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.1 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
@@ -364,7 +353,7 @@ void	canopy_stratum_daily_F(
 	/*	NEW CHECK TO SEE IF STRATUM IS VEGETATED, OTHERWISE SKIP	*/
 	/*	TO END TO UPDATE RADIATION BY COVER FRACTION				*/
 	
-    if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG && stratum[0].defaults[0][0].epc.veg_type != ALGAE) {
+	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) {
 	
 	/*--------------------------------------------------------------*/
 	/*  Intercept diffuse radiation.                                */
@@ -655,7 +644,7 @@ void	canopy_stratum_daily_F(
 	/*
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%f ",stratum[0].APAR_direct/zone[0].metv.dayl+
-		stratum[0].APAR_diffuse/zone[0].metv.dayl);		*/
+		stratum[0].APAR_diffuse/zone[0].metv.dayl);
 	/*--------------------------------------------------------------*/
 	/*								*/
 	/*	if there is still snow sitting on the canopy gs should be zero */
@@ -1379,21 +1368,7 @@ void	canopy_stratum_daily_F(
 	}
 	
 	}
-    
-    if (stratum[0].defaults[0][0].epc.veg_type == ALGAE){
-        algae_stratum_daily_F(
-                              world,
-                              basin,
-                              hillslope,
-                              zone,
-                              patch,
-                              layer,
-                              stratum,
-                              command_line,
-                              event,
-                              current_date);
-        
-    }
+	
 	/*--------------------------------------------------------------*/
 	/*	Increment the transmitted fluxes from this patch layer	*/
 	/*	by weighting the fluxes in this stratum by its cover	*/
@@ -1421,7 +1396,7 @@ void	canopy_stratum_daily_F(
 	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL)){
 		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
-		if (stratum[0].acc_year.minNSC == -999)
+		if (stratum[0].acc_year.minNSC = -999)
 			stratum[0].acc_year.minNSC = stratum[0].cs.cpool;
 		else
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);

@@ -132,7 +132,7 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	/* no processing at present for non-veg types			*/
 	/*--------------------------------------------------------------*/
-	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) {
+	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG && stratum[0].defaults[0][0].epc.veg_type != ALGAE) {
 		
 	/*--------------------------------------------------------------*/
 	/*  zero all of the carbon daily flux variables.		*/
@@ -143,8 +143,8 @@ void	canopy_stratum_daily_I(
 	}
 
 
-/*	stratum[0].Kup_direct = 0.0;
-	stratum[0].Kup_diffuse = 0.0;*/
+	stratum[0].Kup_direct = 0.0;
+	stratum[0].Kup_diffuse = 0.0;
 
 	if (patch[0].sat_deficit < ZERO)
 		stratum[0].rootzone.S = 1.0;
@@ -173,6 +173,11 @@ void	canopy_stratum_daily_I(
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		stratum[0].rootzone.S);
+
+	wilting_point = exp(-1.0*log(-1.0*stratum[0].defaults[0][0].epc.psi_close/patch[0].soil_defaults[0][0].psi_air_entry) 
+			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
+
+	if (stratum[0].rootzone.S < wilting_point) stratum[0].epv.psi = stratum[0].defaults[0][0].epc.psi_close;
 
 	if ( command_line[0].verbose_flag > 1 )
 		printf(" %8f", stratum[0].epv.psi);
@@ -302,7 +307,7 @@ void	canopy_stratum_daily_I(
 			stratum[0].epv.min_vwc = 1.0;
 		} /* end litterfall end of season calculations */
 	} /* end grow flag */
-	}	/* end NON_VEG conditional */
+	}	/* end NOT NON_VEG/ NOT ALGAE conditional */
 	return;
 } /*end canopy_stratum_I.c*/
 

@@ -47,7 +47,6 @@ double	compute_toc_wind(
 						 int	verbose_flag,
 						 double	u_h,
 						 double	h,
-						 double canht,
 						 double	z)
 {
 	/*--------------------------------------------------------------*/
@@ -62,14 +61,8 @@ double	compute_toc_wind(
 	/*--------------------------------------------------------------*/
 	/*	compute winds.						*/
 	/*--------------------------------------------------------------*/
-	if (canht > 0.0) {
-		d_o = 0.63 * canht;
-		z_o = 0.1 * canht;
-	}
-	else {
-		d_o = 0.0;
-		z_o = 0.01;
-	}
+	d_o = 0.63 * z;
+	z_o = 0.1 * z;
 	/*--------------------------------------------------------------*/
 	/*	make sure the screen is higher than the estimated 	*/
 	/*	zero plane displacement.				*/

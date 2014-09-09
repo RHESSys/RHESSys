@@ -43,7 +43,6 @@ void	output_basin(			int routing_flag,
 	/*------------------------------------------------------*/
 	int h,z,p,c;
 	int var_flag, layer;
-	double astreamflow_N;
 	double arain_throughfall;
 	double asnow_throughfall;
 	double alitter_store;
@@ -55,30 +54,19 @@ void	output_basin(			int routing_flag,
 	double arecharge;
 	double areturn_flow;
 	double aevaporation;
-	double asnowpack, aperc_snow, asnowmelt;
+	double asnowpack, aperc_snow;
 	double atranspiration;
 	double astreamflow;
-	double asublimation, acanopysubl;
+	double asublimation;
 	double asat_area, adetention_store;
-	double apsn, alai, acrain, acsnow;
+	double apsn, alai, acrain;
 	double abase_flow, hbase_flow,  hstreamflow_NO3, hstreamflow_NH4;
 	double	aacctrans, var_acctrans, var_trans;
 	double aPET, adC13, amortality_fract, apcp;
 	double	hgw;
-	double atmin, atmax, atavg, avpd, asnow;
-	double	hgwQout;
+	double atmin, atmax, asnow;
+	double	hgwQout, hgwNout;
 	double aarea, hill_area, zone_area, basin_area;
-	double agpsn, aresp, ags, arootdepth, aleafc, afrootc, awoodc;
-	double aheight;
-	double aevap_can, aevap_lit, aevap_soil, alitrc;
-	double aKdown, aLdown;
-	double aKstar_can, aKstar_soil, aKstar_snow;
-	double aLstar_can, aLstar_soil, aLstar_snow;
-	double aKup, aLup;
-	double aLE_can, aLE_soil, aLE_snow;
-	double acLstar;
-	double acdrip;
-	double acga;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -116,52 +104,16 @@ void	output_basin(			int routing_flag,
 	hgw = 0.0;
 	alai = 0.0;
 	adetention_store = 0.0;
-	astreamflow_N = 0.0;
 	aacctrans = 0.0; 
 	basin_area = 0.0;
 	zone_area = 0.0;
 	adC13 = 0.0;
 	amortality_fract = 0.0;
 	apcp = 0.0;
-	atmin = 0.0;
-	atmax = 0.0;
-	atavg = 0.0;
-	avpd = 0.0;
-	asnow = 0.0;
-	agpsn=0.0;
-	aresp=0.0;
-	ags=0.0;
-	arootdepth = 0.0;
-	aleafc = 0.0;
-	afrootc = 0.0;
-	awoodc = 0.0;
-	asnowmelt = 0.0;
-	acanopysubl = 0.0;
-	acsnow = 0.0;
-	aheight = 0.0;
-	
-	aevap_can = 0.0;
-	aevap_lit = 0.0;
-	aevap_soil = 0.0;
-	
-	aKdown = 0.0;
-	aLdown = 0.0;
-	aKup = 0.0;
-	aLup = 0.0;
-	aKstar_can = 0.0;
-	aKstar_soil = 0.0;
-	aKstar_snow = 0.0;
-	aLstar_can = 0.0;
-	aLstar_soil = 0.0;
-	aLstar_snow = 0.0;
-	aLE_can = 0.0;
-	aLE_soil = 0.0;
-	aLE_snow = 0.0;
-	acLstar = 0.0;
-	
-	alitrc = 0.0;
-	acdrip = 0.0;
-	acga = 0.0;
+  atmin = 0.0;
+  atmax = 0.0;
+  asnow = 0.0;
+
 
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
@@ -170,13 +122,9 @@ void	output_basin(			int routing_flag,
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			apcp += (zone[0].rain+zone[0].snow)*zone[0].area;
-			atmin += zone[0].metv.tmin * zone[0].area;
-			atmax += zone[0].metv.tmax * zone[0].area;
-			atavg += zone[0].metv.tavg * zone[0].area;
-			avpd += zone[0].metv.vpd * zone[0].area;
-			aKdown += (zone[0].Kdown_diffuse + zone[0].Kdown_direct) * zone[0].area;
-			aLdown += zone[0].Ldown * zone[0].area;
-			asnow += zone[0].snow * zone[0].area;
+      atmin += zone[0].metv.tmin * zone[0].area;
+      atmax += zone[0].metv.tmax * zone[0].area;
+      asnow += zone[0].snow * zone[0].area;
 			zone_area += zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
@@ -193,35 +141,17 @@ void	output_basin(			int routing_flag,
 				aevaporation += (patch[0].evaporation + patch[0].evaporation_surf
 					+ patch[0].exfiltration_sat_zone
 					+ patch[0].exfiltration_unsat_zone) * patch[0].area;
-				aevap_can += (patch[0].evaporation) * patch[0].area;
-				aevap_lit += (patch[0].evaporation_surf) * patch[0].area;
-				aevap_soil += (patch[0].exfiltration_sat_zone
-								 + patch[0].exfiltration_unsat_zone) * patch[0].area;
 				asublimation += patch[0].snowpack.sublimation * patch[0].area;
 				asnowpack += patch[0].snowpack.water_equivalent_depth*patch[0].area;
 				if (patch[0].snowpack.water_equivalent_depth > 0.001)
 					aperc_snow += patch[0].area;
-				asnowmelt += patch[0].snow_melt*patch[0].area;
+
 				aPET += (patch[0].PET) * patch[0].area;
 				alitter_store += patch[0].litter.rain_stored * patch[0].area;
 				adetention_store += patch[0].detention_store*patch[0].area;
 				aacctrans += patch[0].acc_year_trans * patch[0].area; 
 				atranspiration += (patch[0].transpiration_sat_zone
 					+ patch[0].transpiration_unsat_zone)  *  patch[0].area;
-				alitrc += (patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c
-						   + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c)
-							* patch[0].area;
-				aKup += (patch[0].Kup_direct + patch[0].Kup_diffuse) * patch[0].area;
-				aLup += (patch[0].Lup) * patch[0].area;
-				aKstar_can += patch[0].Kstar_canopy * patch[0].area;
-				aKstar_soil += patch[0].Kstar_soil * patch[0].area;
-				aKstar_snow += (patch[0].snowpack.Kstar_direct + patch[0].snowpack.Kstar_diffuse) * patch[0].area;
-				aLstar_can += patch[0].Lstar_canopy * patch[0].area;
-				aLstar_soil += patch[0].Lstar_soil * patch[0].area;
-				aLstar_snow += patch[0].Lstar_snow * patch[0].area;
-				aLE_can += patch[0].LE_canopy * patch[0].area;
-				aLE_soil += patch[0].LE_soil * patch[0].area;
-				aLE_snow += (-1 * patch[0].snowpack.Q_LE + patch[0].snowpack.Q_melt) * patch[0].area;
 				if (patch[0].sat_deficit <= ZERO)
 					asat_area += patch[0].area;
 				if (routing_flag == 1) {
@@ -246,7 +176,7 @@ void	output_basin(			int routing_flag,
 						alai += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai
 							* patch[0].area;
-						acanopysubl += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+						asublimation += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].sublimation
 							* patch[0].area;
 						adC13 += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
@@ -255,52 +185,6 @@ void	output_basin(			int routing_flag,
 						amortality_fract += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.mortality_fract
 							* patch[0].area;
-						agpsn += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.psn_to_cpool
-							* patch[0].area;
-						aresp += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.leaf_day_mr + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_leaf_gr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.leaf_night_mr +	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.livestem_mr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_livestem_gr + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.livecroot_mr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_livecroot_gr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_deadcroot_gr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.froot_mr + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_froot_gr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_to_gresp_store)	* patch[0].area;
-						ags += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction 
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].gs * patch[0].area;
-						arootdepth += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction 
-							* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].rootzone.depth)
-							* patch[0].area;
-						aleafc += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction	* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc_transfer ) 
-							* patch[0].area;
-						afrootc += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction * (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.frootc
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.frootc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.frootc_transfer)
-							* patch[0].area;
-						awoodc += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction	* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_crootc
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_crootc
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_store
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_store
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_store
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_transfer
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_transfer
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_transfer
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_transfer
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cpool) 
-							* patch[0].area;
-						acsnow += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].snow_stored )
-							* patch[0].area;
-						aheight += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction 
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height 
-							* patch[0].area;
-						acLstar += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].Lstar )
-							* patch[0].area;
-						acdrip += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].canopy_drip )
-							* patch[0].area;
-						acga += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].ga * patch[0].area;
 					}
 				}
 				aarea +=  patch[0].area;
@@ -315,18 +199,12 @@ void	output_basin(			int routing_flag,
 	adC13 /=  aarea;
 	amortality_fract /=  aarea;
 	apcp /= zone_area;
-    atmin /= zone_area;
-    atmax /= zone_area;
-	atavg /= zone_area;
-	avpd /= zone_area;
-    asnow /= zone_area;
-	aKdown /= zone_area;
-	aLdown /= zone_area;
-
+  atmin /= zone_area;
+  atmax /= zone_area;
+  asnow /= zone_area;
 
 	aPET /=  aarea;
 	acrain /=  aarea;
-	acsnow /=  aarea;
 	arecharge /= aarea;
 	arain_throughfall /=  aarea;
 	adetention_store /= aarea;
@@ -349,46 +227,14 @@ void	output_basin(			int routing_flag,
 	apsn /= aarea ;
 	alai /= aarea;
 	abase_flow /= aarea;
-	astreamflow_N /= aarea;
 	asat_area /= aarea;
 	aacctrans /= aarea; 
-	agpsn /= aarea;
-	aresp /= aarea;
-	ags /= aarea;
-	arootdepth /= aarea;
-	aleafc /= aarea;
-	afrootc /= aarea;
-	awoodc /= aarea;
-	asnowmelt /= aarea;
-	acanopysubl /= aarea;
-	aheight /= aarea;
-	
-	aevap_can /= aarea ;
-	aevap_lit /= aarea ;
-	aevap_soil /= aarea ;
-	
-	alitrc /= aarea;
-	
-	aKup /= aarea;
-	aLup /= aarea;
-	aKstar_can /= aarea;
-	aKstar_soil /= aarea;
-	aKstar_snow /= aarea;
-	aLstar_can /= aarea;
-	aLstar_soil /= aarea;
-	aLstar_snow /= aarea;
-	aLE_can /= aarea;
-	aLE_soil /= aarea;
-	aLE_snow /= aarea;
-	acLstar /= aarea;
-	acdrip /= aarea;
-	acga /= aarea;
 
 	hgw = hgw / basin_area;
 	hgwQout = hgwQout / basin_area;
 	abase_flow += (hbase_flow / basin_area);
 	astreamflow += (hbase_flow / basin_area);
-
+    
 	if (routing_flag == 0)
 		astreamflow += areturn_flow;
 
@@ -412,9 +258,9 @@ void	output_basin(			int routing_flag,
 
 	var_trans /= aarea;
 	var_acctrans /= aarea;
-	
+				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -448,28 +294,14 @@ void	output_basin(			int routing_flag,
 		aacctrans*1000,
 		var_acctrans,
 		aPET*1000,
-		adC13,
-		apcp*1000.0,
+		adC13, 
+		apcp*1000.0, 
 		amortality_fract*100,
-	  	atmax,
-		atmin,
-		atavg, avpd, asnow*1000.0, arecharge*1000.0,
-		agpsn * 1000,
-		aresp * 1000,
-		ags * 1000,
-		arootdepth*1000.0,
-		(aleafc + awoodc + afrootc),
-		asnowmelt * 1000.0,
-		acanopysubl * 1000.0, 
-		basin[0].stream_list.streamflow *1000.0*24*3600/aarea,
-		acsnow * 1000.0, 
-		aheight,
-		aevap_can * 1000.0, aevap_lit * 1000.0, aevap_soil * 1000.0,
-		alitrc, 
-		aKdown, aLdown, aKup, aLup,
-		aKstar_can, aKstar_soil, aKstar_snow, 
-		aLstar_can, aLstar_soil, aLstar_snow,
-		aLE_can, aLE_soil, aLE_snow, acLstar, acdrip*1000, acga*1000);
+	  	atmax, 
+		atmin, 
+		asnow*1000.0 ,
+		basin[0].stream_list.streamflow *1000.0*24*3600/aarea
+		);
 
 	return;
 } /*end output_basin*/

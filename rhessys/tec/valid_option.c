@@ -73,6 +73,7 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-precip") == 0) ||
 		(strcmp(command_line,"-surfaceenergy") == 0) ||
 		(strcmp(command_line,"-firespread") == 0) ||
+		(strcmp(command_line,"-scm") == 0) ||
 		(strcmp(command_line,"-snowdistb") == 0) ||
 		(strcmp(command_line,"-whdr") == 0) ||
 		(strcmp(command_line,"-template") == 0))

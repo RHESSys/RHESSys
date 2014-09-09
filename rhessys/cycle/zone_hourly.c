@@ -208,8 +208,8 @@ void		zone_hourly(
 	/*  Add to top of zone daily values for these terms if not		*/
 	/*	provided.  													*/
 	/*--------------------------------------------------------------*/
-	if (/*(zone[0].Kdown_direct_flag == 0) ||
-		(zone[0].Kdown_diffuse_flag == 0) ||*/
+	if ((zone[0].Kdown_direct_flag == 0) ||
+		(zone[0].Kdown_diffuse_flag == 0) ||
 		(zone[0].daylength_flag == 0 )){
 		/*--------------------------------------------------------------*/
 		/*  Accumulate incoming Kdown if the sun is up.                 */
@@ -273,8 +273,8 @@ void		zone_hourly(
 				/*--------------------------------------------------------------*/
 				/*	Only do the following if we dont have direct radiation		*/
 				/*--------------------------------------------------------------*/
-				/*if ((zone[0].Kdown_direct_flag == 0) ||
-					(zone[0].Kdown_diffuse_flag == 0)){*/
+				if ((zone[0].Kdown_direct_flag == 0) ||
+					(zone[0].Kdown_diffuse_flag == 0)){
 					/*------------------------------------------------------------*/
 					/*     Kdown_direct_flat   (W/(m2))                            */
 					/*                                                             */
@@ -347,24 +347,26 @@ void		zone_hourly(
 					/*------------------------------------------------------------*/
 					/*		Convert calculation fro W/m^2 to Kj/(m^2*hr)	*/
 					/*-----------------------------------------------------------*/
-					zone[0].Kdown_direct_flat_calc
+					zone[0].Kdown_direct_flat
 						+= zone[0].hourly[0].Kdown_direct_flat * 3600 / 1000;
-					zone[0].Kdown_direct_calc
+					zone[0].Kdown_direct
 						+= zone[0].hourly[0].Kdown_direct * 3600 / 1000;
 
-					zone[0].Kdown_diffuse_flat_calc
+					zone[0].Kdown_diffuse_flat
 						+= zone[0].hourly[0].Kdown_diffuse_flat * 3600 / 1000;
-					zone[0].Kdown_diffuse_calc
+					zone[0].Kdown_diffuse
 						+= zone[0].hourly[0].Kdown_diffuse * 3600 / 1000;
-				/*} /*end if */
+				} /*end if */
 			} /*end if*/
 			} /*end if*/
 		} /*end if*/
 		/*--------------------------------------------------------------*/
 		/*	Cycle through the patches 									*/
 		/*--------------------------------------------------------------*/
-		for ( patch=0 ; patch<zone[0].num_patches; patch++ ){
-			patch_hourly(
+
+     
+          for ( patch=0 ; patch<zone[0].num_patches; patch++ ){
+          	patch_hourly(
 				world,
 				basin,
 				hillslope,
@@ -373,6 +375,10 @@ void		zone_hourly(
 				command_line,
 				event,
 				current_date );
-		}
+               //fprintf(stderr, "\nPatch hourly at patch no: %d |  hour no: %d", zone[0].patches[patch], current_date.hour);
+		
+          }
+     
+     //fprintf(stderr,"\nZone hourly at hour %d | patch no: %d", current_date.hour, zone[0].ID);
 		return;
 } /*end zone_hourly.c*/

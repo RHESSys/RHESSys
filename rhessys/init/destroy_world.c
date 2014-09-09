@@ -68,6 +68,10 @@ void destroy_world(struct command_line_object *command_line,
 		int,
 		int,
 		struct fire_default * );
+	void	destroy_scm_defaults(
+		int,
+		int,
+		struct scm_default * );
 	void	destroy_stratum_defaults(
 		int,
 		int,
@@ -121,6 +125,11 @@ void destroy_world(struct command_line_object *command_line,
 		world[0].defaults[0].num_fire_default_files,
 		command_line[0].grow_flag,
 		world[0].defaults[0].fire);
+     if (command_line[0].scm_flag == 1)
+		destroy_scm_defaults(
+		world[0].defaults[0].num_scm_default_files,
+		command_line[0].grow_flag,
+		world[0].defaults[0].scm);
 	/*--------------------------------------------------------------*/
 	/*	Destroy the stratum_defaults objects.					*/
 	/*--------------------------------------------------------------*/

@@ -78,8 +78,11 @@ $(OBJ)/compute_snow_sublimation.o \
 $(OBJ)/compute_soil_water_potential.o \
 $(OBJ)/compute_stability_correction.o \
 $(OBJ)/compute_subsurface_routing.o \
+<<<<<<< HEAD
 $(OBJ)/compute_stage_storage.o \
+=======
 $(OBJ)/compute_subsurface_routing_hourly.o \
+>>>>>>> 4811c6c2e8d5af62014e77a4dc1013ab53c4b715
 $(OBJ)/compute_stream_routing.o \
 $(OBJ)/compute_surface_heat_flux.o \
 $(OBJ)/compute_subsurface_temperature_profile.o \
@@ -248,7 +251,6 @@ $(OBJ)/update_dissolved_organic_losses.o \
 $(OBJ)/update_drainage_land.o \
 $(OBJ)/update_drainage_road.o \
 $(OBJ)/update_drainage_stream.o \
-$(OBJ)/update_drainage_scm.o \
 $(OBJ)/update_gw_drainage.o \
 $(OBJ)/update_hillslope_accumulator.o \
 $(OBJ)/update_litter_interception_capacity.o \
@@ -720,8 +722,6 @@ $(OBJ)/update_drainage_road.o: hydro/update_drainage_road.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_road.c -o $(OBJ)/update_drainage_road.o
 $(OBJ)/update_drainage_land.o: hydro/update_drainage_land.c 
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_land.c -o $(OBJ)/update_drainage_land.o
-$(OBJ)/update_drainage_scm.o: hydro/update_drainage_scm.c 
-	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_scm.c -o $(OBJ)/update_drainage_scm.o
 $(OBJ)/update_hillslope_accumulator.o: hydro/update_hillslope_accumulator.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_hillslope_accumulator.c -o $(OBJ)/update_hillslope_accumulator.o
 $(OBJ)/update_soil_moisture.o: hydro/update_soil_moisture.c 

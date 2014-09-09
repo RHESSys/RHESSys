@@ -90,22 +90,8 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].pptmin =			getDoubleParam(&paramCnt, &paramPtr, "pptmin", "%lf", 0.0254, 1);
 		default_object_list[i].sea_level_clear_sky_trans = getDoubleParam(&paramCnt, &paramPtr, "sea_level_clear_sky_trans", "%lf", 0.75, 1);
 		default_object_list[i].temcf = 			getDoubleParam(&paramCnt, &paramPtr, "temcf", "%lf", 0.4, 1);
-		default_object_list[i].trans_coeff1 = 		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff1", "%lf", -999.0, 1);
+		default_object_list[i].trans_coeff1 = 		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff1", "%lf", 0.003, 1);
 		default_object_list[i].trans_coeff2 =		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff2", "%lf", 2.2, 1);
-		default_object_list[i].trans_coeff1_sum = 		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff1_sum", "%lf", -999.0, 1);
-		default_object_list[i].trans_coeff2_sum =		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff2_sum", "%lf", -999.0, 1);
-		default_object_list[i].trans_startmonth_sum =		getDoubleParam(&paramCnt, &paramPtr, "trans_startmonth_sum", "%lf", 5, 1);
-			if ((default_object_list[i].trans_startmonth_sum < 1) || (default_object_list[i].trans_startmonth_sum > 12)) {
-				fprintf(stderr,"\nSummer start month for zone atmospheric transmissivity is not valid (1-12). Defaulting to 5 (May).");
-				default_object_list[i].trans_startmonth_sum = 5;
-			}
-		default_object_list[i].trans_coeff1_win = 		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff1_win", "%lf", -999.0, 1);
-		default_object_list[i].trans_coeff2_win =		getDoubleParam(&paramCnt, &paramPtr, "trans_coeff2_win", "%lf", -999.0, 1);
-		default_object_list[i].trans_startmonth_win =		getDoubleParam(&paramCnt, &paramPtr, "trans_startmonth_win", "%lf", 11, 1);
-			if ((default_object_list[i].trans_startmonth_win < 1) || (default_object_list[i].trans_startmonth_win > 12)) {
-				fprintf(stderr,"\nWinter start month for zone atmospheric transmissivity is not valid (1-12). Defaulting to 11 (November).");
-				default_object_list[i].trans_startmonth_win = 11;
-			}
 		default_object_list[i].wind =			getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 1.0, 1);
 		default_object_list[i].max_snow_temp =		getDoubleParam(&paramCnt, &paramPtr, "max_snow_temp", "%lf", 1.0, 1);
 		default_object_list[i].min_rain_temp =		getDoubleParam(&paramCnt, &paramPtr, "min_rain_temp", "%lf", -1.0, 1);

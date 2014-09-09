@@ -48,9 +48,6 @@ int	parse_alloc_flag( char *input_string)
 	else if ((strncmp(input_string,"DICKENSON",9) == 0) ||
 		(strncmp(input_string, "dickenson",9) == 0) )
 		alloc_flag = DICKENSON;
-	else if ((strncmp(input_string,"COMBINED",8) == 0) ||
-		(strncmp(input_string, "combined",8) == 0) )
-		alloc_flag = COMBINED;
 	else {
 		fprintf(stderr,"\n FATAL ERROR - parse_alloc_flag");
 		fprintf(stderr,"\n Flag must be static or dynamic and is %s" , input_string);

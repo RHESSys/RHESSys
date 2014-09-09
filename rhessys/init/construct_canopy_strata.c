@@ -101,7 +101,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	read_record(world_file, record);
 	fscanf(world_file,"%d",&(default_object_ID));
 	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cover_fraction));
+     	fscanf(world_file,"%lf",&(canopy_strata[0].cover_fraction));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].gap_fraction));
 	read_record(world_file, record);
@@ -221,7 +221,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		"construct_canopy_strata" );
 	i = 0;
 	while (defaults[0].stratum[i].ID != default_object_ID) {
-		i++;
+          i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
 		/*  the default to point to this canopy_strata.						    */
@@ -304,7 +304,6 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.deadcroot_gr_snk = 0.0;
 	canopy_strata[0].cs.froot_mr_snk = 0.0;
 	canopy_strata[0].cs.froot_gr_snk = 0.0;
-	canopy_strata[0].NO3_stored = 0.0; // this is for the NO3 deposition on leaves
 	
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables                        */

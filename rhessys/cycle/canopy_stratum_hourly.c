@@ -1,3 +1,4 @@
+
 /*--------------------------------------------------------------*/
 /* 																*/
 /*						canopy_stratum_hourly					*/
@@ -57,8 +58,6 @@ void	canopy_stratum_hourly(
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
 	double rain_throughfall;
-	double NO3_throughfall;
-	double NO3_stored;
 	/*--------------------------------------------------------------*/
 	/*	Create canopy stratum hourly object.						*/
 	/*--------------------------------------------------------------*/
@@ -73,42 +72,6 @@ void	canopy_stratum_hourly(
 			stratum);
 		patch[0].rain_throughfall_final += rain_throughfall * stratum[0].cover_fraction;
 	}
-	/*--------------------------------------------------------------*/
-	/* update the NO3 stored in canopy and NO3 throughfall		*/
-	/*--------------------------------------------------------------*/
-	double tmp1;
-	double tmp2;
-	NO3_stored = 0;
-	if (stratum[0].rain_stored > 0){
-	    NO3_stored = (stratum[0].rain_stored) / (stratum[0].rain_stored + rain_throughfall) 
-		* (stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall);
-	    NO3_throughfall = (rain_throughfall) / (stratum[0].rain_stored + rain_throughfall) 
-		* (stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall);
-	    tmp1 = (stratum[0].rain_stored) / (stratum[0].rain_stored + rain_throughfall) ;
-	    tmp2 = (rain_throughfall) / (stratum[0].rain_stored + rain_throughfall) ;
-
-		
-	}
-	else{//stratum[0].rain_stored == 0 
-	    if (rain_throughfall > 0){
-		NO3_stored = (stratum[0].rain_stored) 
-	      	/ (stratum[0].rain_stored + rain_throughfall) 
-		* (stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall);
-
-		NO3_throughfall =  (rain_throughfall)
-		/ (stratum[0].rain_stored + rain_throughfall) 
-		* (stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall); 
-	    }
-	    else{// rain_throughfall == 0 
-                NO3_stored = stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall;
-		NO3_throughfall = 0;
-	    }
-	}
-
-
-	patch[0].hourly[0].NO3_throughfall_final += NO3_throughfall 
-		* stratum[0].cover_fraction;
-	stratum[0].NO3_stored = NO3_stored;
 	/*--------------------------------------------------------------*/
 	/*	Destroy the canopy stratum hourly object.					*/
 	/*--------------------------------------------------------------*/
