@@ -73,6 +73,7 @@ int locate(float *data, int n, float x, float md){
 	corl = fabs(data[jl]-x);
 	coru = fabs(data[ju]-x);
 	cormin = (corl<=coru?corl:coru);
+
 	if(cormin<=md){
 		if(corl <= coru) return jl;
 		else return ju;
@@ -353,6 +354,7 @@ int get_netcdf_xy(char *netcdf_filename, char *nlat_name, char *nlon_name,
 		free(lont);	
 		ERR(retval);
 	}
+
 	/*locate the record */
 	idlat = locate(lat,nlat,rlat,sd);
 	idlont = locate(lont,nlont,rlon,sd);

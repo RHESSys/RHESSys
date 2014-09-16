@@ -113,7 +113,8 @@ struct zone_object *construct_zone(
 	base_y = 0.0;
 	j = 0;
 	k = 0;	
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate a zone object.								*/
 	/*--------------------------------------------------------------*/
@@ -236,6 +237,8 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Construct the list of base stations.			*/
 	/*--------------------------------------------------------------*/
+
+
 	if (command_line[0].dclim_flag == 0) {
 		if(command_line[0].gridded_netcdf_flag == 1){
 			/*--------------------------------------------------------------*/
@@ -252,7 +255,7 @@ struct zone_object *construct_zone(
 					   base_x);
 				printf("\n   STARTING CLOSEST CELL: y=%lf x=%lf",base_y,base_x);
 			}
-			
+
 			/* Identify centerpoint coords for closest netcdf cell to zone x, y */
 			k = get_netcdf_xy(base_station_ncheader[0].netcdf_tmax_filename, 
 							  base_station_ncheader[0].netcdf_y_varname,
@@ -360,5 +363,7 @@ struct zone_object *construct_zone(
 			defaults);
 		zone[0].patches[i][0].zone = zone;
 	} /*end for*/
+
+	
 	return(zone);
 } /*end construct_zone.c*/

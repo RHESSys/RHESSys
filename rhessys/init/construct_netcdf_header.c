@@ -40,7 +40,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	
 	char	first[MAXSTR];		//I use first & second for the while loop that reads the first base station file
 	char	second[MAXSTR];	
-	char	buffer[MAXSTR*100];
+	char	buffer[MAXSTR*1000];
 	
 	FILE*	base_station_file;
 	
@@ -79,11 +79,11 @@ struct base_station_ncheader_object *construct_netcdf_header (
 			} else if(strcmp(second,"location_searching_distance") == 0){
 				base_station_ncheader[0].sdist = atof(first);
 			} else if (strcmp(second, "year_start_index") == 0){
-				base_station_ncheader[0].year_start = atof(first);
+				base_station_ncheader[0].year_start = atoi(first);
 			} else if (strcmp(second, "day_offset") == 0){
-				base_station_ncheader[0].day_offset = atof(first);
+				base_station_ncheader[0].day_offset = atoi(first);
 			} else if (strcmp(second, "leap_year_include") == 0){
-				base_station_ncheader[0].leap_year = atof(first);
+				base_station_ncheader[0].leap_year = atoi(first);
 			} else if (strcmp(second, "precip_multiplier") == 0){
 				base_station_ncheader[0].precip_mult = atof(first);
 			} else if(strcmp(second,"netcdf_var_x") == 0){

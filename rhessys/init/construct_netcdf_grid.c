@@ -319,6 +319,6 @@ struct base_station_object *construct_netcdf_grid (
 	
 	*num_world_base_stations +=1;
 	base_station_ncheader[0].lastID +=1;
-	
+
 	return(base_station);
 }
