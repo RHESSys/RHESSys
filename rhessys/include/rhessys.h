@@ -144,7 +144,7 @@
 /*----------------------------------------------------------*/
 /*	Define macros.											*/
 /*----------------------------------------------------------*/
-#define FILEPATH_LEN 256
+#define FILEPATH_LEN 1024
 #define TEC_CMD_LEN 256
 #define NULLVAL	-9999	
 #define TRUE	1
