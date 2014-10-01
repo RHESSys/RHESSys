@@ -289,13 +289,16 @@ all:	dir rhessys
 dir:
 	mkdir -p $(OBJ)
 
+ifdef netcdf
 rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
+else
+rhessys: $(OBJECTS)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -v -o $(PGM) 
+endif
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
-$(OBJ)/read_netcdf.o: init/read_netcdf.c
-	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o $(OBJ)/read_netcdf.o
 $(OBJ)/add_headers.o: output/add_headers.c
 	$(CC) -c $(CFLAGS) -I include output/add_headers.c -o $(OBJ)/add_headers.o
 $(OBJ)/add_growth_headers.o: output/add_growth_headers.c
@@ -839,9 +842,13 @@ $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 ifdef netcdf
 $(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid.c -o $(OBJ)/construct_netcdf_grid.o
+$(OBJ)/read_netcdf.o: init/read_netcdf.c
+	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o $(OBJ)/read_netcdf.o
 else
 $(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid_dummy.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid_dummy.c -o $(OBJ)/construct_netcdf_grid.o
+$(OBJ)/read_netcdf.o: init/read_netcdf_dummy.c
+	$(CC) -c $(CFLAGS) -I include init/read_netcdf_dummy.c -o $(OBJ)/read_netcdf.o
 endif
 
 $(OBJ)/construct_netcdf_header.o: init/construct_netcdf_header.c
