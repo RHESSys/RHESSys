@@ -414,9 +414,9 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		printf("Reading specified world file header %s\n", command_line->world_header_filename);
 	} else {
 		// Set up file name for Option 2. ${WORLDFILE_NAME}.hdr
-		if ( snprintf(command_line->world_header_filename, MAXSTR, "%s.hdr", command_line->world_filename) >= MAXSTR ) {
+		if ( snprintf(command_line->world_header_filename, FILEPATH_LEN, "%s.hdr", command_line->world_filename) >= FILEPATH_LEN ) {
 			fprintf(stderr,
-					"Couldn't read world file header as filename would have been longer than the limit of %d\n", MAXSTR);
+					"Couldn't read world file header as filename would have been longer than the limit of %d\n", FILEPATH_LEN);
 			exit(EXIT_FAILURE);
 		}
 
