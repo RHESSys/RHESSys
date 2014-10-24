@@ -851,6 +851,7 @@ struct	zone_default
 	double  ndep_NO3;		/* kgN/m2/day	*/
 	double  atm_CO2;		/* ppm */ 
 	double	psen[7];
+	double	ravg_days; /* (days) number of days for running average */
 	struct	zone_grow_default	*grow_defaults;
 	};
 
@@ -2148,6 +2149,7 @@ struct epvar_struct
     double prev_leafcalloc; /* (kgC/m2/y) last year's leaf C allocation */
     double canopy_w;       /* (kgH2O/m2) water store on canopy */
     double psi;            /* (MPa) water potential of soil and leaves */
+    double psi_ravg;            /* (MPa) water potential of soil and leaves */
     int	  wstress_days;	   /* # of days in which water stress occurs */
     double crit_vwc;	   /* (m/m) water content at stomatal closure */
     double  min_vwc;	   /* (m/m) this growing season minimum water content */
@@ -2423,6 +2425,7 @@ struct epconst_struct
 	double gs_psi_min;	   /* (mPa) lower soil moisture psi threshold for leaf onset mPa */
 	double gs_psi_max;	   /* (mPa) upper soil moisture psi  threshold for leaf onset mPa */
 	double gs_psi_range;	   /* (mPa)  psi range for leaf onset */
+	double gs_ravg_days;	   /* (days)  length of averaging window for gs controls  */
 	double coef_CO2;	/* DIM 0-1  conductance sensitivity to CO2 */ 
 	int day_leafon;        /* (DIM) yearday leaves on */
 	int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */

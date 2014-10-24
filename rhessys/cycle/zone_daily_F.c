@@ -621,9 +621,13 @@ void		zone_daily_F(
 	/*      update met running averages variables                            */
 	/*--------------------------------------------------------------*/
 
-	zone[0].metv.tmin_ravg = 1.0/6.0*zone[0].metv.tmin + 5.0/6.0*zone[0].metv.tmin_ravg;
-	zone[0].metv.vpd_ravg = 1/6.0*zone[0].metv.vpd + 5.0/6.0*zone[0].metv.vpd_ravg;
-	zone[0].metv.dayl_ravg = 1/6.0*zone[0].metv.dayl + 5.0/6*zone[0].metv.dayl_ravg;
+	zone[0].metv.tmin_ravg = 1.0/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.tmin 
+			+ (zone[0].defaults[0][0].ravg_days-1.0)/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.tmin_ravg;
+	zone[0].metv.vpd_ravg = 1.0/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.vpd 
+			+ (zone[0].defaults[0][0].ravg_days-1.0)/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.vpd_ravg;
+	zone[0].metv.dayl_ravg = 1.0/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.dayl 
+			+ (zone[0].defaults[0][0].ravg_days-1.0)/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.dayl_ravg;
+
 	
 	if (command_line[0].verbose_flag == -5) {
 		printf(" Kdowndir=%lf Kdowndiff=%lf Ldown=%lf", 

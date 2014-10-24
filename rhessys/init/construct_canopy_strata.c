@@ -453,7 +453,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].phen.nretdays = 365;
 		canopy_strata[0].phen.gwseasonday = -1;
 		canopy_strata[0].phen.lfseasonday = -1;
-		/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
 	/*	set critical soil moisture (at stomatal closure)	*/
 	/*      psi_close is converted to m water tension from MPa using     */
 	/*      1m water tension = 10000 Pa                             */
@@ -463,6 +463,14 @@ struct canopy_strata_object *construct_canopy_strata(
 		((-1.0 * 100.0 * canopy_strata[0].defaults[0][0].epc.psi_close)
 		/ patch[0].soil_defaults[0][0].psi_air_entry),
 		patch[0].soil_defaults[0][0].pore_size_index );
+
+	
+	/*--------------------------------------------------------------*/
+	/* initialize runnning average of psi **** should actually  calc */
+	/* current day psi						*/
+	/*--------------------------------------------------------------*/
+	canopy_strata[0].epv.psi_ravg = canopy_strata[0].defaults[0][0].epc.psi_open;
+
 	/*--------------------------------------------------------------*/
 	/*	for now initialize these accumuling variables		*/
 	/*	note that age really should be a state variable 	*/

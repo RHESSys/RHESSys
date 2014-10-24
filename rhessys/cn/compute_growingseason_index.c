@@ -56,9 +56,8 @@ double	compute_growingseason_index(struct zone_object *zone,
 		idayl = 1.0;
 	else
 		idayl = (zone[0].metv.dayl_ravg - epc.gs_dayl_min)/(epc.gs_dayl_range);
-
 	ipsi = 1.0;
-	if (epv->psi  >= epc.gs_psi_max)
+	if (epv->psi_ravg  >= epc.gs_psi_max)
 		ipsi = 1.0;
 	else
 		ipsi = (epv->psi - epc.gs_psi_min)/(epc.gs_psi_range);
