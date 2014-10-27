@@ -60,7 +60,7 @@ double	compute_growingseason_index(struct zone_object *zone,
 	if (epv->psi_ravg  >= epc.gs_psi_max)
 		ipsi = 1.0;
 	else
-		ipsi = (epv->psi - epc.gs_psi_min)/(epc.gs_psi_range);
+		ipsi = (epv->psi_ravg - epc.gs_psi_min)/(epc.gs_psi_range);
 
 	
 	itmin = max(itmin, 0.0);
