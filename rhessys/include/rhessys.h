@@ -1274,10 +1274,11 @@ struct	soil_c_object
 
     double frootc;	   /* (kgC/m2) total soil fine root C   	*/
     double DOC;		   /* (kgC/m2) DOC */
-    double DOC_Qin;	/* (kgC/m2/day) DON */
-    double DOC_Qout;	/* (kgC/m2/day) DON */
-    double DOC_Qin_total;	/* (kgC/m2/day) DON */
-    double DOC_Qout_total;	/* (kgC/m2/day) DON */
+    double DOC_Qin;	/* (kgC/m2/day) DOC */
+    double DOC_Qout;	/* (kgC/m2/day) DOC */
+    double DOC_Qin_total;	/* (kgC/m2/day) DOC */
+    double DOC_Qout_total;	/* (kgC/m2/day) DOC */
+    double DOC_settled;     /* kgC/m2/day DOC */
     double totalc;	   /* (kgC/m2) total soil  C   	*/
     double soil_cpool;	   /* (kgC/m2) temporary soil carbon pool	*/
     double soil1c;         /* (kgC/m2) microbial recycling pool C (fast) */
@@ -1302,6 +1303,7 @@ struct	soil_n_object
     double DON_Qout;	/* (kgN/m2/day) DON */
     double DON_Qin_total;	/* (kgN/m2/day) DON */
     double DON_Qout_total;	/* (kgN/m2/day) DON */
+    double DON_settled;     /* kgN/m2/day DON */
     double soil1n;          /* (kgN/m2) microbial recycling pool N (fast) */
     double soil2n;          /* (kgN/m2) microbial recycling pool N (medium) */
     double soil3n;          /* (kgN/m2) microbial recycling pool N (slow) */
@@ -1312,10 +1314,12 @@ struct	soil_n_object
     double NO3_Qout_total;            /* (kgN/m2/day) soil mineral N input */
     double NO3_Qin;             /* (kgN/m2/day) soil mineral N output */
     double NO3_Qout;            /* (kgN/m2/day) soil mineral N input */
+    double NO3_settled;     /* kgN/m2/day soil mineral N input */
     double NH4_Qin;             /* (kgN/m2/day) soil mineral N output */
     double NH4_Qout;            /* (kgN/m2/day) soil mineral N input */
     double NH4_Qin_total;             /* (kgN/m2/day) soil mineral N output */
     double NH4_Qout_total;            /* (kgN/m2/day) soil mineral N input */
+    double NH4_settled;     /* kgN/m2/day soil mineral N input */
     double leach;            /* (kgN/m2) soil mineral N input */
     double nfix_src;        /* (kgN/m2) SUM of biological N fixation */
     double ndep_src;        /* (kgN/m2) SUM of N deposition inputs */
@@ -1395,29 +1399,24 @@ struct	snowpack_object
 struct        scm_default
 {
     int               ID;
+    int               num_discrete; /* number of depth discretizations of the pond */
     double            maxH;      /* m */
     double            LtoW; /* m/m */
     double            SS;    /* m/m */
-    double            riser_L;   /* m */
-    double            riser_coef;       /* unitless */
+    double            infil_rate; /* m/d */
+    double            riser_L;   /* m - total perimeter of orifice (for square it should be length*4, for circle should be circumfrence) */
+    double            riser_weir_coef;       /* unitless */
+    double            riser_ori_coef;       /* unitless */
     double            riser_H;       /* m */
     double            spillway_L;     /* m */
     double            spillway_coef;   /* unitless */
     double            spillway_H;       /* m */
     int               orifice_n; /* integer - mudt be <= 4 */
-    double            orifice_D;    /* m */
-    double            orifice_coef;    /* unitless  */
-    double            orifice_H;     /* m */
-    // Now  the optional orifice parameters - up to 4
-    double            orifice_D_2;    /* m */
-    double            orifice_coef_2;    /* unitless   */
-    double            orifice_H_2;     /* m */
-    double            orifice_D_3;    /* m */
-    double            orifice_coef_3;    /* unitless  */
-    double            orifice_H_3;     /* m  */
-    double            orifice_D_4;    /* m  */
-    double            orifice_coef_4;    /* unitless   */
-    double            orifice_H_4;     /* m */
+    double            *orifice_D;    /* array in m */
+    double            *orifice_coef;    /* array in unitless  */
+    double            *orifice_H;     /* array in m */
+    double            DON_settling_rate; /* m/d */
+    double            DOC_settling_rate; /* m/d */
 };
 
 
@@ -1533,12 +1532,16 @@ struct patch_object
 	double  surface_DON_Qout_total;	/* kgN/m2 day	*/
 	double  surface_DOC_Qin;	/* kgC/m2 day	*/
 	double  surface_DOC_Qout;	/* kgC/m2 day	*/
+     double  surface_DOC_settled;	/* kgC/m2 day	*/
 	double  surface_DON_Qin;	/* kgN/m2 day	*/
 	double  surface_DON_Qout;	/* kgN/m2 day	*/
+     double  surface_DON_settled;	/* kgN/m2 day	*/
 	double  surface_NH4_Qin;		/* kg/m2 day	*/
 	double  surface_NH4_Qout;	/* kg/m2 day	*/
+     double  surface_NH4_settled;	/* kg/m2 day	*/
 	double  surface_NO3_Qin;		/* kg/m2 day	*/
 	double  surface_NO3_Qout;	/* kg/m2 day	*/
+     double  surface_NO3_settled;	/* kg/m2 day	*/
 	double  surface_ns_leach;	/* kg/m2 day	*/
 	double  surface_Qin;		/* m day	*/
 	double  surface_Qout;		/* m day	*/
@@ -1652,7 +1655,7 @@ struct patch_object
         double  preday_scm_volume;   /* m water */
         double  preday_scm_inflow; /* m */
         double  preday_scm_outflow; /* m */
-        double  **scm_stage_storage;   /* array, 1001x9. columns are depth | volume [m3] | outflow [m3/s] | surface area [m2] | O [m/hr] | O [m/day] | 2S/T + O [m/hr] | 2S/T + O [m/day] */
+        double  **scm_stage_storage;   /* array, num_discretex6. columns are (0) stage [m] (1) surface area [m2],  (2) volume [m], (3) outflow [m/time int in hours], (4) outflow [m/time int in days], (5) 2*S/T + O [m/min] */
         double  scm_temp;            /* deg C*/
 	};
 
@@ -2453,20 +2456,31 @@ struct epconst_struct
 /*----------------------------------------------------------*/
 struct        algae_struct
 {
-    double growth_rate;      /* d^-1 */
-    double growth_temptheta; /* unitless */
-    double light_extinct;    /* kJ / (m^2 * day) */
-    double light_optimum;    /* kJ / (m^2 * day) */
-    double nitro_halfsat;    /* kg/m^3 */
-    double phos_halfsat;     /* kg/m^3 */
-    double phos_conc;       /* kg/m^3 -- Ambient P conc in scm - static Conc, brought in algae def file */
-    double death_rate;       /* d^-1 */
-    double death_temptheta;  /* unitless */
-    double scm_photo_depth;  /* m */
-    double npref_coeff;      /* kg/m^3 */
-    double chla_to_C;        /* kg/m^2 Chla : kg/m^2 C */
-    double chla_to_N;        /* kg/m^2 Chla : kg/m^2 N */
-    double K_reflectance;    /* unitless, zero to 1 - used for PAR and radiation, both diffuse and direct*/
+    double growth_rate;        /* d^-1 */
+    double growth_temp_theta;  /* unitless */
+    double growth_temp_baseT; /* degC */
+    double temp_coef_A;        /* intercept of line - degC SCM */
+    double temp_coef_B;        /* slope of line - degC SCM / degC Air */
+    double light_extinct;      /* kJ / (m^2 * day) */
+    double light_coef_A;       /* intercept of line - degC SCM */
+    double light_coef_B;       /* slope of line - degC SCM / degC Air */
+    double light_optimum;      /* kJ / (m^2 * day) */
+    double nitro_halfsat;      /* kg/m^3 */
+    double phos_halfsat;       /* kg/m^3 */
+    double phos_conc;          /* kg/m^3 -- Ambient P conc in scm - static Conc, brought in algae def file */
+    double death_rate;         /* d^-1 */
+    double death_temp_theta;   /* unitless */
+    double death_temp_baseT;   /* degC */
+    double respire_rate;       /* d^-1 */
+    double respire_temp_theta; /* unitless */
+    double respire_temp_baseT; /* degC */
+    double chla_settling_rate; /* m/d */
+    double scm_photo_depth;    /* m */
+    double npref_coeff;        /* kg/m^3 */
+    double chla_resprout_conc; /* kg/m^3 */
+    double chla_to_C;          /* kg/m^2 Chla : kg/m^2 C */
+    double chla_to_N;          /* kg/m^2 Chla : kg/m^2 N */
+    double K_reflectance;      /* unitless, zero to 1 - used for PAR and radiation, both diffuse and direct*/
 };
 
 
@@ -2531,11 +2545,22 @@ struct	stratum_default
 struct        algae_strata_object
 {
     double chla;
-    double Nuptake;
-    double Nrelease;
-    double Cfixed;
+    double chla_settle_cum;
+    double chla_settle;
     double totalN;
+    double Nuptake_cum;
+    double Nuptake;
+    double Nrelease_cum;
+    double Nrelease;
+    double Nrespire_cum;
+    double Nrespire;
     double totalC;
+    double Cfix;
+    double Cfix_cum;
+    double Crelease_cum;
+    double Crelease;
+    double Crespire_cum;
+    double Crespire;
 };
 
 

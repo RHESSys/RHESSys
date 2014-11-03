@@ -31,6 +31,7 @@ $(OBJ)/check_zero_stores.o \
 $(OBJ)/compute_Lstar.o \
 $(OBJ)/compute_N_leached.o \
 $(OBJ)/compute_N_absorbed.o \
+$(OBJ)/compute_N_settled.o \
 $(OBJ)/compute_annual_litfall.o \
 $(OBJ)/compute_annual_turnover.o \
 $(OBJ)/compute_atm_pres.o \
@@ -51,6 +52,7 @@ $(OBJ)/compute_growth_resp.o \
 $(OBJ)/compute_hourly_rain_stored.o \
 $(OBJ)/compute_hourly_litter_rain_stored.o \
 $(OBJ)/compute_infiltration.o \
+$(OBJ)/compute_infiltration_scm.o \
 $(OBJ)/compute_leaf_litfall.o \
 $(OBJ)/compute_litter_rain_stored.o \
 $(OBJ)/compute_lwp_predawn.o \
@@ -644,6 +646,8 @@ $(OBJ)/compute_transmissivity_curve.o: hydro/compute_transmissivity_curve.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_transmissivity_curve.c -o $(OBJ)/compute_transmissivity_curve.o
 $(OBJ)/compute_infiltration.o: hydro/compute_infiltration.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_infiltration.c -o $(OBJ)/compute_infiltration.o
+$(OBJ)/compute_infiltration_scm.o: hydro/compute_infiltration_scm.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_infiltration_scm.c -o $(OBJ)/compute_infiltration_scm.o
 $(OBJ)/compute_varbased_returnflow.o: hydro/compute_varbased_returnflow.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_varbased_returnflow.c -o $(OBJ)/compute_varbased_returnflow.o
 $(OBJ)/compute_varbased_flow.o: hydro/compute_varbased_flow.c
@@ -759,6 +763,8 @@ $(OBJ)/compute_N_leached.o: cn/compute_N_leached.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_N_leached.c -o $(OBJ)/compute_N_leached.o
 $(OBJ)/compute_N_absorbed.o: cn/compute_N_absorbed.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_N_absorbed.c -o $(OBJ)/compute_N_absorbed.o
+$(OBJ)/compute_N_settled.o: cn/compute_N_settled.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_N_settled.c -o $(OBJ)/compute_N_settled.o
 $(OBJ)/compute_froot_litfall.o: cn/compute_froot_litfall.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_froot_litfall.c -o $(OBJ)/compute_froot_litfall.o
 $(OBJ)/compute_growth_resp.o: cn/compute_growth_resp.c 

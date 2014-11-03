@@ -1,0 +1,8 @@
+COMMAND: v.edit map="vmask" layer=1 type="point,line,boundary,centroid" tool="create" thresh=-1,0,0 snap="no"
+GISDBASE: /Users/miles/Dropbox/RHESSys/eclipse/rhessys-git/cf/test/data/GRASSData
+LOCATION: synthetic_5m MAPSET: PERMANENT USER: miles DATE: Wed May  8 15:29:41 2013
+---------------------------------------------------------------------------------
+COMMAND: v.db.connect map="vmask" driver="dbf" database="$GISDBASE/$LOCATION_NAME/$MAPSET/dbf/" table="vmask" key="cat" layer=1 fs=" "
+GISDBASE: /Users/miles/Dropbox/RHESSys/eclipse/rhessys-git/cf/test/data/GRASSData
+LOCATION: synthetic_5m MAPSET: PERMANENT USER: miles DATE: Wed May  8 15:29:41 2013
+---------------------------------------------------------------------------------

@@ -77,31 +77,7 @@ struct patch_object *construct_patch(
 	
 	void	sort_patch_layers(struct patch_object *);
 	void	*alloc(	size_t, char *, char *);
-     double **compute_stage_storage(
-          int,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double,
-          double);
+    double **compute_stage_storage(struct patch_object *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
@@ -693,47 +669,23 @@ struct patch_object *construct_patch(
 	/*	Initialize SCM patch variables                              */
 	/*--------------------------------------------------------------*/
 
-     if (scm_default_object_ID > 0) {
-     // NEED TO MAKE A NOTE IN DOCUMENTATION ABOUT HOW NON-SCM SHOULD HAD A DEFAULT ID OF 0 AND THERE HSOULD BE A "NON POND" SCM FILE
-     // not sure of another way around this cuz the "drainage type" patch parameter has not been established at this point...
      
-          patch[0].scm_H =0;
-          patch[0].preday_scm_volume = 0;
-          patch[0].scm_temp = 25; //default
+     if (command_line[0].scm_flag == 1) {
           
-          // Only call the compute_stage_storage if SCM flag is called, otherwise it may produce errors
-        	if (command_line[0].scm_flag == 1) {
-               patch[0].scm_stage_storage = compute_stage_storage(
-                    patch[0].scm_defaults[0][0].ID,
-                    patch[0].area,
-                    patch[0].scm_defaults[0][0].maxH,
-                    patch[0].scm_defaults[0][0].LtoW,
-                    patch[0].scm_defaults[0][0].SS,
-                    patch[0].scm_defaults[0][0].orifice_n,
-                    patch[0].scm_defaults[0][0].orifice_coef,
-                    patch[0].scm_defaults[0][0].orifice_D,
-                    patch[0].scm_defaults[0][0].orifice_H,
-                    patch[0].scm_defaults[0][0].riser_L,
-                    patch[0].scm_defaults[0][0].riser_coef,
-                    patch[0].scm_defaults[0][0].riser_H,
-                    patch[0].scm_defaults[0][0].spillway_L,
-                    patch[0].scm_defaults[0][0].spillway_coef,
-                    patch[0].scm_defaults[0][0].spillway_H,
-                    patch[0].scm_defaults[0][0].orifice_D_2,
-                    patch[0].scm_defaults[0][0].orifice_coef_2,
-                    patch[0].scm_defaults[0][0].orifice_H_2,
-                    patch[0].scm_defaults[0][0].orifice_D_3,
-                    patch[0].scm_defaults[0][0].orifice_coef_3,
-                    patch[0].scm_defaults[0][0].orifice_H_3,
-                    patch[0].scm_defaults[0][0].orifice_D_4,
-                    patch[0].scm_defaults[0][0].orifice_coef_4,
-                    patch[0].scm_defaults[0][0].orifice_H_4);
+          if (scm_default_object_ID > 0) {
+          // NEED TO MAKE A NOTE IN DOCUMENTATION ABOUT HOW NON-SCM SHOULD HAD A DEFAULT ID OF 0 AND THERE HSOULD BE A "NON POND" SCM FILE
+          
+               patch[0].scm_H =0;
+               patch[0].preday_scm_volume = 0;
+               patch[0].scm_temp = 20; //default
+               
+              patch[0].scm_stage_storage = compute_stage_storage(patch);
+ 
+              // Write over soil default detention storage and ksat vertical (using infiltrate)
+              patch[0].soil_defaults[0][0].detention_store_size = patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][2];
+          	  patch[0].soil_defaults[0][0].Ksat_0 = patch[0].scm_defaults[0][0].infil_rate;
+          	
           }
-          /* THIS IS NOT A 2x POINTER SO PROBABLY WONT WORK... MAYBE ILL JUST LEAVE IT UNDEFINED
-          else {
-               patch[0].scm_stage_storage = 0;
-          }*/
-     
      }
 
 	return(patch);

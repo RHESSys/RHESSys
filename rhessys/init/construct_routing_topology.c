@@ -101,7 +101,6 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 			&gamma,
 			&num_neighbours);
 
-
 		if  ( (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) )
 			patch = find_patch(patch_ID, zone_ID, hill_ID, basin);
 		else

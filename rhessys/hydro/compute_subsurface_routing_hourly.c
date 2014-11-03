@@ -47,15 +47,19 @@ void compute_subsurface_routing_hourly(
 
 	void update_drainage_road(struct patch_object *,
 			struct command_line_object *, double, int);
-     
-	void update_drainage_scm(struct zone_object *, struct patch_object *,
-			struct command_line_object *, double, int, double *, struct date);
 
 	void update_drainage_land(struct patch_object *,
 			struct command_line_object *, double, int);
 
+     
+	void update_drainage_scm(struct zone_object *, struct patch_object *,
+			struct command_line_object *, double, int, double *, struct date);
+
+
 	double compute_infiltration(int, double, double, double, double, double,
 			double, double, double, double, double);
+
+	double compute_infiltration_scm(double, double, double);
 
 	double compute_z_final(int, double, double, double, double, double);
 
@@ -289,11 +293,6 @@ void compute_subsurface_routing_hourly(
 					+ (patch[0].surface_NH4_Qout - patch[0].surface_NH4_Qin)
 					+ (patch[0].surface_DON_Qout - patch[0].surface_DON_Qin));
 			patch[0].Qin_total += patch[0].Qin + patch[0].surface_Qin;
-
-               if(patch[0].drainage_type == SCM){
-                    //patch[0].preday_scm_inflow = patch[0].Qin_total;
-                    patch[0].preday_detention_store = patch[0].detention_store;
-               }
 
 			patch[0].Qout_total += patch[0].Qout + patch[0].surface_Qout;
 
@@ -658,30 +657,81 @@ void compute_subsurface_routing_hourly(
 				/* use time_int as duration */
 				/*--------------------------------------------------------------*/
 
-				if (patch[0].detention_store > ZERO)
-					if (patch[0].rootzone.depth > ZERO) {
-						infiltration = compute_infiltration(verbose_flag,
-								patch[0].sat_deficit_z, patch[0].rootzone.S,
-								patch[0].Ksat_vertical,
-								patch[0].soil_defaults[0][0].Ksat_0_v,
-								patch[0].soil_defaults[0][0].mz_v,
-								patch[0].soil_defaults[0][0].porosity_0,
-								patch[0].soil_defaults[0][0].porosity_decay,
-								(patch[0].detention_store), time_int,
-								patch[0].soil_defaults[0][0].theta_psi_curve);
+				/*--------------------------------------------------------------*/
+				/* If SCM Flag is on - call different logic for infiltration	*/
+				/*   a bit repetitive, but there may not be an "scm_defaults.ID"*/
+				/*    without flag												*/
+				/*--------------------------------------------------------------*/					
+				if(command_line[0].scm_flag == 1){
+			
+					// IF PATCH IS NOT AN SCM (default ID = 0)- follow regular routing
+					if(patch[0].scm_defaults[0][0].ID == 0) {
+						if (patch[0].detention_store > ZERO)
+							if (patch[0].rootzone.depth > ZERO) {
+								infiltration = compute_infiltration(verbose_flag,
+										patch[0].sat_deficit_z, patch[0].rootzone.S,
+										patch[0].Ksat_vertical,
+										patch[0].soil_defaults[0][0].Ksat_0_v,
+										patch[0].soil_defaults[0][0].mz_v,
+										patch[0].soil_defaults[0][0].porosity_0,
+										patch[0].soil_defaults[0][0].porosity_decay,
+										(patch[0].detention_store), time_int,
+										patch[0].soil_defaults[0][0].theta_psi_curve);
+							} else {
+								infiltration = compute_infiltration(verbose_flag,
+										patch[0].sat_deficit_z, patch[0].S,
+										patch[0].Ksat_vertical,
+										patch[0].soil_defaults[0][0].Ksat_0_v,
+										patch[0].soil_defaults[0][0].mz_v,
+										patch[0].soil_defaults[0][0].porosity_0,
+										patch[0].soil_defaults[0][0].porosity_decay,
+										(patch[0].detention_store), time_int,
+										patch[0].soil_defaults[0][0].theta_psi_curve);
+							}
+						else
+							infiltration = 0.0;
+					
+					// IF PATCH IS AN SCM - INFILTRATE WATER BASED ON PARAMETERIZED RATE					
 					} else {
-						infiltration = compute_infiltration(verbose_flag,
-								patch[0].sat_deficit_z, patch[0].S,
-								patch[0].Ksat_vertical,
-								patch[0].soil_defaults[0][0].Ksat_0_v,
-								patch[0].soil_defaults[0][0].mz_v,
-								patch[0].soil_defaults[0][0].porosity_0,
-								patch[0].soil_defaults[0][0].porosity_decay,
-								(patch[0].detention_store), time_int,
-								patch[0].soil_defaults[0][0].theta_psi_curve);
+						if (patch[0].detention_store > ZERO) {
+							infiltration = compute_infiltration_scm(
+								time_int,
+								patch[0].scm_defaults[0][0].infil_rate,
+								patch[0].detention_store);
+						} 
+						else infiltration = 0.0;
 					}
-				else
-					infiltration = 0.0;
+				
+				/*--------------------------------------------------------------*/
+				/* If SCM Flag is OFF - regular logic							*/
+				/*--------------------------------------------------------------*/		
+				} else {
+					if (patch[0].detention_store > ZERO)
+						if (patch[0].rootzone.depth > ZERO) {
+							infiltration = compute_infiltration(verbose_flag,
+									patch[0].sat_deficit_z, patch[0].rootzone.S,
+									patch[0].Ksat_vertical,
+									patch[0].soil_defaults[0][0].Ksat_0_v,
+									patch[0].soil_defaults[0][0].mz_v,
+									patch[0].soil_defaults[0][0].porosity_0,
+									patch[0].soil_defaults[0][0].porosity_decay,
+									(patch[0].detention_store), time_int,
+									patch[0].soil_defaults[0][0].theta_psi_curve);
+						} else {
+							infiltration = compute_infiltration(verbose_flag,
+									patch[0].sat_deficit_z, patch[0].S,
+									patch[0].Ksat_vertical,
+									patch[0].soil_defaults[0][0].Ksat_0_v,
+									patch[0].soil_defaults[0][0].mz_v,
+									patch[0].soil_defaults[0][0].porosity_0,
+									patch[0].soil_defaults[0][0].porosity_decay,
+									(patch[0].detention_store), time_int,
+									patch[0].soil_defaults[0][0].theta_psi_curve);
+						}
+					else
+						infiltration = 0.0;
+				}	
+					
 				/*--------------------------------------------------------------*/
 				/* added an surface N flux to surface N pool	and		*/
 				/* allow infiltration of surface N				*/

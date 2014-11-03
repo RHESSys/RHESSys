@@ -1,0 +1,4 @@
+1.000000	   hillslope_default_ID
+1.000000	  sat_to_gw_coeff
+1.000000	  gw_loss_coeff
+24.000000	  n_routing_timesteps

@@ -78,6 +78,11 @@ void		patch_hourly(
 		double,
 		double);
 
+	double compute_infiltration_scm(
+		double,
+		double,
+		double);
+
 	double compute_layer_field_capacity(
 		int,
 		int,
@@ -257,7 +262,61 @@ void		patch_hourly(
 		else
 			duration = zone[0].hourly[0].rain_duration/(86400);
 		
-		if (patch[0].rootzone.depth > ZERO)	{
+		
+		/*--------------------------------------------------------------*/
+		/* If SCM Flag is on - call different logic for infiltration	*/
+		/*   a bit repetitive, but there may not be an "scm_defaults.ID"*/
+		/*    without flag												*/
+		/*--------------------------------------------------------------*/	
+		if(command_line[0].scm_flag == 1){
+			// IF PATCH IS NOT AN SCM (default ID = 0)- follow regular routing
+			if(patch[0].scm_defaults[0][0].ID == 0) {
+		
+				if (patch[0].rootzone.depth > ZERO)	{
+						infiltration = compute_infiltration(
+							command_line[0].verbose_flag,
+							patch[0].sat_deficit_z,
+							patch[0].rootzone.S,
+							patch[0].Ksat_vertical,
+							patch[0].soil_defaults[0][0].Ksat_0_v,
+							patch[0].soil_defaults[0][0].mz_v,
+							patch[0].soil_defaults[0][0].porosity_0,
+							patch[0].soil_defaults[0][0].porosity_decay,
+							net_inflow,
+							duration,
+							patch[0].soil_defaults[0][0].psi_air_entry);
+						}
+
+				else {
+						infiltration = compute_infiltration(
+							command_line[0].verbose_flag,
+							patch[0].sat_deficit_z,
+							patch[0].S,
+							patch[0].Ksat_vertical,
+							patch[0].soil_defaults[0][0].Ksat_0_v,
+							patch[0].soil_defaults[0][0].mz_v,
+							patch[0].soil_defaults[0][0].porosity_0,
+							patch[0].soil_defaults[0][0].porosity_decay,
+							net_inflow,
+							duration,
+							patch[0].soil_defaults[0][0].psi_air_entry);
+				}
+				//printf("hourly patch called \n");
+			
+			// IF PATCH IS AN SCM - INFILTRATE WATER BASED ON PARAMETERIZED RATE					
+			} else {
+				infiltration = compute_infiltration_scm(
+					duration,
+					patch[0].scm_defaults[0][0].infil_rate,
+					patch[0].detention_store);
+			}
+				
+		/*--------------------------------------------------------------*/
+		/* If SCM Flag is OFF - regular logic							*/
+		/*--------------------------------------------------------------*/		
+		} else {
+		
+			 if (patch[0].rootzone.depth > ZERO)	{
 				infiltration = compute_infiltration(
 					command_line[0].verbose_flag,
 					patch[0].sat_deficit_z,
@@ -270,9 +329,9 @@ void		patch_hourly(
 					net_inflow,
 					duration,
 					patch[0].soil_defaults[0][0].psi_air_entry);
-				}
+			}
 
-		else {
+			else {
 				infiltration = compute_infiltration(
 					command_line[0].verbose_flag,
 					patch[0].sat_deficit_z,
@@ -285,14 +344,15 @@ void		patch_hourly(
 					net_inflow,
 					duration,
 					patch[0].soil_defaults[0][0].psi_air_entry);
+			}
+		
 		}
-
-
-			
-		//printf("hourly patch called \n");
+		
 	}
+	// If no detention store...
 	else infiltration = 0.0;
-
+		
+		
 	if (infiltration < 0.0)
 		printf("\nInfiltration %lf < 0 for %d on %d",
 			infiltration,
@@ -304,7 +364,7 @@ void		patch_hourly(
 	infiltration=min(infiltration,patch[0].detention_store);
 
 	patch[0].detention_store -= infiltration;
-			
+				
 	if (infiltration>ZERO) {
 		/*--------------------------------------------------------------*/
 		/*	Update patch level soil moisture with final infiltration.	*/
@@ -320,8 +380,8 @@ void		patch_hourly(
 
 	/* aggregate the hourly recharge */ 
 	patch[0].recharge += infiltration;
-	
-	} /* end if rain throughfall */
+
+	}/* end if rain throughfall */
  
 
 	/*--------------------------------------------------------------*/
@@ -510,7 +570,6 @@ void		patch_hourly(
 	theta = patch[0].rootzone.S;
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
-     
 
 
 } /*end patch_hourly.c*/

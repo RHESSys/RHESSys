@@ -620,7 +620,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*	If SCM option has been set                                 */
 	/* Read in the number of SCM default files.	                   */
 	/*--------------------------------------------------------------*/
-	     printf("scm flag %d", command_line[0].scm_flag);
      if (command_line[0].scm_flag == 1) {
   		fscanf(header_file,"%d",&(world[0].defaults[0].num_scm_default_files));
           //fprintf("num scm def files: %d", world[0].defaults[0].num_scm_default_files);

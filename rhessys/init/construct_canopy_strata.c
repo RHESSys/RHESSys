@@ -202,6 +202,15 @@ struct canopy_strata_object *construct_canopy_strata(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].ns.retransn));
 	read_record(world_file, record);
+     
+     if (command_line[0].scm_flag == 1) {
+          fscanf(world_file,"%lf",&(canopy_strata[0].algae.chla));
+          read_record(world_file, record);
+          fscanf(world_file,"%lf",&(canopy_strata[0].algae.totalC));
+          read_record(world_file, record);
+          fscanf(world_file,"%lf",&(canopy_strata[0].algae.totalN));
+          read_record(world_file, record);
+	}
 	
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/

@@ -1,0 +1,20 @@
+1		scm_default_ID
+1000		num_discrete
+2.0		maxH			/* m */
+1.5		LtoW			/* m/m */
+1.0		SS			/* m/m */
+0.006096		infil_rate		/* m/d */
+0.8		riser_L			/* m */
+3.33		riser_weir_coef		/* unitless */
+0.6		riser_ori_coef		/* unitless */
+1.75		riser_H			/* m/m */
+2.0		spillway_L		/* m */
+3.0		spillway_coef		/* unitless */
+1.95		spillway_H		/* m */
+2.0		orifice_n		/* orifices */
+0.025		orifice_D_1		/* m */
+0.6		orifice_coef_1		/* unitless */
+1.5		orifice_H_1		/* m */
+0.00125		orifice_D_2		/* m */
+0.6		orifice_coef_2		/* m */
+0.25		orifice_H_2		/* m */

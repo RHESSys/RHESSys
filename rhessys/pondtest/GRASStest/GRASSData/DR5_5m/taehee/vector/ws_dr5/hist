@@ -1,0 +1,5 @@
+COMMAND: v.in.ogr -o dsn="DR5_CUERE_201211_UTM.shp" output="ws_dr5" min_area=0.0001 snap=-1
+GISDBASE: /Users/t7666/GRASSdata
+LOCATION: DR5_5m MAPSET: taehee USER: t7666 DATE: Mon May  6 14:40:30 2013
+---------------------------------------------------------------------------------
+1 input polygonsTotal area: 1.633789e+06 (2 areas)Overlapping area: 0.000000e+00 (0 areas)Area without category: 2.499513e+01 (1 areas)

@@ -1,0 +1,16 @@
+104			base_station_id
+100.0			x_coordinate
+100.0			y_coordinate
+640.0			z_coordinate
+3.5			effective_lai
+10.0			screen_height
+gb_prime_annual	annual_climate_prefix
+0			number_non_critical_annual_sequences
+gb_prime_monthly 	monthly_climate_prefix
+0			number_non_critical_monthly_sequences
+../clim/mission_irr_double		daily_climate_prefix
+1
+daytime_rain_duration	number_non_critical_daily_sequences
+../clim/mission_dated_hourly 	hourly_climate_prefix
+1
+rain	number_non_critical_hourly_sequences

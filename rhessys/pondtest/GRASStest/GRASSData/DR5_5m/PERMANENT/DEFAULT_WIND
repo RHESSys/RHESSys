@@ -1,0 +1,18 @@
+proj:       1
+zone:       18
+north:      4352172
+south:      4348622
+east:       351742
+west:       347512
+cols:       846
+rows:       710
+e-w resol:  5
+n-s resol:  5
+top:        1
+bottom:     0
+cols3:      1
+rows3:      1
+depths:     1
+e-w resol3: 1
+n-s resol3: 1
+t-b resol:  1

@@ -1,0 +1,7 @@
+name: Universal Transverse Mercator
+proj: utm
+datum: nad83
+ellps: grs80
+zone: 18
+towgs84: 0,0,0,0,0,0,0
+no_defs: defined

@@ -1,0 +1,16 @@
+Hi Colin,
+       There are three files we need to change in order to use the hourly version.
+
+      1. the clim base file. In my case, it is mission_base_hourly. Compared with the daily one (mission_base), there are some difference from line 14 to line 16, which describe the name of the hourly rain input file.
+
+      2. create the dated hourly rain input file. In my case, it is mission_date_hourly.rain. The format of this file is as following:
+         The first line says how many dated records do we have in this whole file. Then the rest of the files are filled with record: year, month, day, hour, and rain (in meters)
+
+      3. the daytime_rain_duration.
+        I may change this part in summer to make it more intelligent. Right now rhessys will still read the daytime_rain_duration from the daily input file. It will also calculate the raining hours from dated hourly rain input files. But there are some conflicts when the daily daytime_rain_duration has none zero value. The easiest way to solve the conflicts are zeroing out all the value in daytime_rain_duration input file. I have saved two daytime_rain_duration file, one with none-zero value (use it for daily rhessys), the other is all zeros (use it for hourly rhessys). Sorry it is obviously inconvenient to switch back and forth.
+
+        I will rewrite the related part within this month and by then, you won't need to keep the all zeros daytime_rain_duration file.
+
+Please feel free to email me anything about the hourly rhessys if you are confused.
+
+Best,

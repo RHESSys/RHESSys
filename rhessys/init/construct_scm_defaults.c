@@ -49,7 +49,7 @@ struct scm_default *construct_scm_defaults(
 	/*--------------------------------------------------------------*/
         int strbufLen = 256;
         int filenameLen = 1024;
-	int	i;
+	int	i, k;
 	double 	ftmp,scm;
 	FILE	*default_file;
         char	strbuf[strbufLen];
@@ -60,8 +60,13 @@ struct scm_default *construct_scm_defaults(
 	void	*alloc(	size_t, char *, char *);
         param *paramPtr = NULL;
         int paramCnt = 0;
+    double *orifice_D_local;
+    double *orifice_coef_local;
+    double *orifice_H_local;
+    char D_name[18];
+    char coef_name[18];
+    char H_name[18];
     
-
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.			*/
 	/*--------------------------------------------------------------*/
@@ -85,6 +90,7 @@ struct scm_default *construct_scm_defaults(
 		//} /*end if*/
 
 		printf("Reading %s\n", default_files[i]);
+
                 paramCnt = 0;
                 if (paramPtr != NULL)
                     free(paramPtr);
@@ -94,35 +100,55 @@ struct scm_default *construct_scm_defaults(
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.	*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].ID = 		   getIntParam(&paramCnt, &paramPtr, "scm_default_ID", "%d", 1, 1);
-		default_object_list[i].maxH = 	       getDoubleParam(&paramCnt, &paramPtr, "maxH", "%lf", 2.0, 1); //default is 2.0m
-		default_object_list[i].LtoW = 		   getDoubleParam(&paramCnt, &paramPtr, "LtoW", "%lf", 3.0, 1); //default is 3:1 L:W
-		default_object_list[i].SS = 		   getDoubleParam(&paramCnt, &paramPtr, "SS", "%lf", 5.0, 1);  //Default is 5:1 side slopes
-		default_object_list[i].riser_L = 	   getDoubleParam(&paramCnt, &paramPtr, "riser_L", "%lf", 0.75, 1); //default length of riser is 0.75m
-		default_object_list[i].riser_coef =    getDoubleParam(&paramCnt, &paramPtr, "riser_coef", "%lf", 0.057, 1); //default riser discharge C is 0.057
-		default_object_list[i].riser_H =       getDoubleParam(&paramCnt, &paramPtr, "riser_H", "%lf", 1.4, 1); //default riser height is 1.4 m
-		default_object_list[i].spillway_L =   getDoubleParam(&paramCnt, &paramPtr, "spillway_L", "%lf", 2.0, 1); //default spillway width is 2.0m
-		default_object_list[i].spillway_coef = getDoubleParam(&paramCnt, &paramPtr, "spillway_coef", "%lf", 0.38, 1); //default spillway Cd is 0.38
-		default_object_list[i].spillway_H =    getDoubleParam(&paramCnt, &paramPtr, "spillway_H", "%lf", 1.75, 1); //default spillway height is 1.75m
-		default_object_list[i].orifice_n = 	   getIntParam(&paramCnt, &paramPtr, "orifice_n", "%d", 1, 1); // Default is one orifice
-          default_object_list[i].orifice_D = 	   getDoubleParam(&paramCnt, &paramPtr, "orifice_D", "%lf", 0.20, 1); //Deafult is 20cm diameter (about 8")
-		default_object_list[i].orifice_coef =  getDoubleParam(&paramCnt, &paramPtr, "orifice_coef", "%lf", 0.6, 1); //Default is 0.6
-		default_object_list[i].orifice_H = 	   getDoubleParam(&paramCnt, &paramPtr, "orifice_H", "%lf", 1.0, 1); //default height of orifice is 1.0m
-        
+		default_object_list[i].ID  		    =  getIntParam(&paramCnt, &paramPtr, "scm_default_ID", "%d", 1, 1);
+        default_object_list[i].num_discrete    =  getIntParam(&paramCnt, &paramPtr, "num_discrete", "%d", 1000, 1);
+		default_object_list[i].maxH  	         =  getDoubleParam(&paramCnt, &paramPtr, "maxH", "%lf", 2.0, 1); //default is 2.0m
+		default_object_list[i].LtoW  	         =  getDoubleParam(&paramCnt, &paramPtr, "LtoW", "%lf", 3.0, 1); //default is 3:1 L:W
+		default_object_list[i].SS  		    =  getDoubleParam(&paramCnt, &paramPtr, "SS", "%lf", 5.0, 1);  //Default is 5:1 side slopes
+        default_object_list[i].infil_rate   =  getDoubleParam(&paramCnt, &paramPtr, "infil_rate", "%lf", 0.006096, 1);  //Default is 0.006096 m/d (0.01 in/hr)
+		default_object_list[i].riser_L  	    =  getDoubleParam(&paramCnt, &paramPtr, "riser_L", "%lf", 1.0, 1); //default length/perimeter of riser is 1.0m
+		default_object_list[i].riser_weir_coef =  getDoubleParam(&paramCnt, &paramPtr, "riser_weir_coef", "%lf", 3.0, 1); //default riser discharge C as a weir is 3.0
+        default_object_list[i].riser_ori_coef  =  getDoubleParam(&paramCnt, &paramPtr, "riser_ori_coef", "%lf", 0.6, 1); //default riser discharge C as an orifice 0.6
+		default_object_list[i].riser_H         = getDoubleParam(&paramCnt, &paramPtr, "riser_H", "%lf", 1.4, 1); //default riser height is 1.4 m
+		default_object_list[i].spillway_L      = getDoubleParam(&paramCnt, &paramPtr, "spillway_L", "%lf", 2.0, 1); //default spillway width is 2.0m
+		default_object_list[i].spillway_coef   = getDoubleParam(&paramCnt, &paramPtr, "spillway_coef", "%lf", 3.33, 1); //default spillway Cd is 3.33
+		default_object_list[i].spillway_H      = getDoubleParam(&paramCnt, &paramPtr, "spillway_H", "%lf", 1.75, 1); //default spillway height is 1.75m
+		default_object_list[i].orifice_n       = getIntParam(&paramCnt, &paramPtr, "orifice_n", "%d", 1, 1); // Default is one orifice
+
+          if((default_object_list[i].orifice_n+2) >= default_object_list[i].num_discrete/2){
+               fprintf(stderr,
+			"FATAL ERROR: In construct_scm_defaults - scm default ID %d - the number of SCM discretizations must be > than 2 * number of (orifices + spillway + riser )\n",
+			default_object_list[i].ID);
+		exit(EXIT_FAILURE);
+          }
+
         /*--------------------------------------------------------------*/
-		/* initialization of optional default file params	        	*/
+		/*	Read in params orifice_n orifices, all named orifice_PARAMNUM where number varies from 1 to orifice_n	*/
 		/*--------------------------------------------------------------*/
-        default_object_list[i].orifice_D_2 = 	getDoubleParam(&paramCnt, &paramPtr, "orifice_D_2", "%lf", 0.20, 1); //Deafult is 20cm diameter (about 8")
-		default_object_list[i].orifice_coef_2 = getDoubleParam(&paramCnt, &paramPtr, "orifice_coef_2", "%lf", 0.6, 1); //Default is 0.6
-        default_object_list[i].orifice_H_2 = 	getDoubleParam(&paramCnt, &paramPtr, "orifice_H_2", "%lf", 1.1, 1); //default height of orifice is 1.1m
-        default_object_list[i].orifice_D_3 = 	getDoubleParam(&paramCnt, &paramPtr, "orifice_D_3", "%lf", 0.20, 1); //Deafult is 20cm diameter (about 8")
-		default_object_list[i].orifice_coef_3 = getDoubleParam(&paramCnt, &paramPtr, "orifice_coef_3", "%lf", 0.6, 1); //Default is 0.6
-		default_object_list[i].orifice_H_3 = 	getDoubleParam(&paramCnt, &paramPtr, "orifice_H_3", "%lf", 1.2, 1); //default height of orifice is 1.2m
-        default_object_list[i].orifice_D_4 = 	getDoubleParam(&paramCnt, &paramPtr, "orifice_D_4", "%lf", 0.20, 1); //Deafult is 20cm diameter (about 8")
-		default_object_list[i].orifice_coef_4 = getDoubleParam(&paramCnt, &paramPtr, "orifice_coef_4", "%lf", 0.6, 1); //Default is 0.6
-		default_object_list[i].orifice_H_4 = 	getDoubleParam(&paramCnt, &paramPtr, "orifice_H_4", "%lf", 1.3, 1); //default height of orifice is 1.2m
+         
+        // Initialize pointers locally
+        orifice_D_local = (double *) alloc((default_object_list[i].orifice_n ) * sizeof(double),"orifice_D","construct_scm_defaults");
+        orifice_coef_local = (double *) alloc((default_object_list[i].orifice_n ) * sizeof(double),"orifice_coef","construct_scm_defaults");
+        orifice_H_local = (double *) alloc((default_object_list[i].orifice_n ) * sizeof(double),"orifice_H","construct_scm_defaults");
+
+        //  Loop thorugh file and read in parameters to local array/pointers
+        for(k=0; k<(default_object_list[i].orifice_n); k++){
+              snprintf(D_name, sizeof D_name, "%s%d","orifice_D_", (k+1));
+              snprintf(coef_name, sizeof coef_name, "%s%d","orifice_coef_", (k+1));
+              snprintf(H_name, sizeof H_name, "%s%d","orifice_H_", (k+1));
+              orifice_D_local[k]    = getDoubleParam(&paramCnt, &paramPtr, D_name, "%lf", 0.20, 1); // Deafult is 20cm diameter (about 8")0           
+              orifice_coef_local[k] = getDoubleParam(&paramCnt, &paramPtr, coef_name, "%lf", 0.6, 1); // Default is 0.6
+              orifice_H_local[k]    = getDoubleParam(&paramCnt, &paramPtr, H_name, "%lf", 0.5*(k+1), 1); //default height is one every 0.5m
+        }      
+
+        // Assign local pointers to scm_defaults object
+		default_object_list[i].orifice_D = orifice_D_local;
+        default_object_list[i].orifice_coef = orifice_coef_local;
+        default_object_list[i].orifice_H = orifice_H_local;
+        		
+		default_object_list[i].DON_settling_rate = getDoubleParam(&paramCnt, &paramPtr, "DON_settling_rate", "%lf", 0.15, 1); //default settling is 0.15 m/d
+		default_object_list[i].DOC_settling_rate = getDoubleParam(&paramCnt, &paramPtr, "DOC_settling_rate", "%lf", 0.2, 1); //default settling is 0.2 m/d
         
-        //printf("\n default object list ID %d", default_object_list[i].ID);
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/

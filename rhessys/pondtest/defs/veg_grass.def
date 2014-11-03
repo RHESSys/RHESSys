@@ -1,0 +1,76 @@
+1.000000	   stratum_default_ID
+GRASS	   epc.veg.type
+0.650000	   K_absorptance
+0.250000	   K_reflectance
+0.100000	   K_transmittance
+0.400000	   PAR_absorptance
+0.000000	   PAR_reflectance
+0.600000	   PAR_transmittance
+0.500000	   epc.ext_coef
+0.001000	  specific_rain_capacity
+0.002500	  specific_snow_capacity
+0.002000	  wind_attenuation_coef
+-999.900000	  ustar_overu
+1.500000	  mrc.q10
+0.200000	  mrc.per_N
+0.200000	  epc.gr_perc
+1.000000	  lai_stomatal_fraction
+0.100000	  epc.flnr
+0.030000	  epc.ppfd_coef
+17.500000	  epc.topt
+35.000000	  epc.tmax
+0.200000	  epc.tcoef
+-0.500000	  epc.psi_open
+-2.300000	  epc.psi_close
+0.000000	  epc.vpd_open
+3000.000000	  epc.vpd_close
+0.083000	  epc.gl_smax
+0.083000	  epc.gl_c
+0.000000	  gsurf_slope
+1000000.000000	  gsurf_intercept
+STATIC	  epc.phenology_flag
+EVERGREEN	  epc.phenology.type
+2.000000	  epc.max_lai
+17.000000	  epc.proj_sla
+2.000000	  epc.lai_ratio
+0.000000	  epc.proj_swa
+0.000000	  epc.leaf_turnover
+90.000000	  epc.day_leafon
+245.000000	  epc.day_leafoff
+30.000000	  epc.ndays_expand
+30.000000	  epc.ndays_litfall
+27.700000	  epc.leaf_cn
+50.000000	  epc.leaflitr_cn
+0.000000	  min_heat_capacity
+0.000000	  max_heat_capacity
+dynamic	  epc.allocation_flag
+0.900000	  epc.storage_transfer_prop
+0.400000	  epc.froot_turnover
+0.200000	  epc.livewood_turnover
+0.010000	  epc.kfrag_base
+0.000000	  epc.daily_mortality_turnover
+47.800000	  epc.froot_cn
+250.000000	  epc.livewood_cn
+0.230000	  epc.leaflitr_flab
+0.470000	  epc.leaflitr_fcel
+0.300000	  epc.leaflitr_flig
+0.080000	  epc.frootlitr_flab
+0.410000	  epc.frootlitr_fcel
+0.510000	  epc.frootlitr_flig
+0.500000	  epc.deadwood_fcel
+0.500000	  epc.deadwood_flig
+5.000000	  epc.alloc_frootc_leafc
+0.000000	  epc.alloc_crootc_stemc
+0.000000	  epc.alloc_stemc_leafc
+0.600000	  epc.alloc_livewoodc_woodc
+0.050000	  epc.maxlgf
+0.000000	  epc.alloc_prop_day_growth
+0.000000	  epc.daily_fire_turnover
+0.570000	  epc.height_to_stem_exp
+11.390000	  epc.height_to_stem_coef
+0.000000	  
+0.000000	  
+0.000000	  
+0.000000	  
+0.000000	  
+0.000000	  

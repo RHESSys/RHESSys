@@ -99,6 +99,10 @@ void  update_drainage_land(
 		double,
 		double);
 	
+	double compute_infiltration_scm(double,
+		double,
+		double);
+	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
@@ -146,7 +150,6 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	/*	m and K are multiplied by sensitivity analysis variables */
 	/*--------------------------------------------------------------*/
-
 	m = patch[0].m ;
 	Ksat = patch[0].soil_defaults[0][0].Ksat_0 ;
 	d=0;
@@ -470,43 +473,104 @@ void  update_drainage_land(
 
 		Qin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * route_to_surface) / neigh[0].area;
 		neigh[0].detention_store += Qin;
-		neigh[0].surface_Qin += Qin;
 		
 		/*--------------------------------------------------------------*/
 		/* try to infiltrate this water					*/ 
 		/* use time_int as duration */
 		/*--------------------------------------------------------------*/
-		if (neigh[0].detention_store > ZERO) {
-			if (neigh[0].rootzone.depth > ZERO) {
-			infiltration = compute_infiltration(
-				verbose_flag,
-				neigh[0].sat_deficit_z,
-				neigh[0].rootzone.S,
-				neigh[0].Ksat_vertical,
-				neigh[0].soil_defaults[0][0].Ksat_0_v,
-				neigh[0].soil_defaults[0][0].mz_v,
-				neigh[0].soil_defaults[0][0].porosity_0,
-				neigh[0].soil_defaults[0][0].porosity_decay,
-				(neigh[0].detention_store),	
-				time_int,
-				neigh[0].soil_defaults[0][0].psi_air_entry);
+		
+		/*--------------------------------------------------------------*/
+		/* If SCM Flag is on - call different logic for infiltration	*/
+		/*   a bit repetitive, but there may not be an "scm.default.ID" */
+		/*    without flag												*/
+		/*--------------------------------------------------------------*/	
+		if(command_line[0].scm_flag == 1){
+			
+			// IF NOT AN SCM NEIGHBOR  (default ID = 0)- follow regular routing
+			if(neigh[0].scm_defaults[0][0].ID == 0) {
+			
+				if (neigh[0].detention_store > ZERO) {
+					if (neigh[0].rootzone.depth > ZERO) {
+					infiltration = compute_infiltration(
+						verbose_flag,
+						neigh[0].sat_deficit_z,
+						neigh[0].rootzone.S,
+						neigh[0].Ksat_vertical,
+						neigh[0].soil_defaults[0][0].Ksat_0_v,
+						neigh[0].soil_defaults[0][0].mz_v,
+						neigh[0].soil_defaults[0][0].porosity_0,
+						neigh[0].soil_defaults[0][0].porosity_decay,
+						(neigh[0].detention_store),	
+						time_int,
+						neigh[0].soil_defaults[0][0].psi_air_entry);
+					}
+					else {
+					infiltration = compute_infiltration(
+						verbose_flag,
+						neigh[0].sat_deficit_z,
+						neigh[0].S,
+						neigh[0].Ksat_vertical,
+						neigh[0].soil_defaults[0][0].Ksat_0_v,
+						neigh[0].soil_defaults[0][0].mz_v,
+						neigh[0].soil_defaults[0][0].porosity_0,
+						neigh[0].soil_defaults[0][0].porosity_decay,
+						(neigh[0].detention_store),	
+						time_int,
+						neigh[0].soil_defaults[0][0].psi_air_entry);
+					}
+				} else {
+					infiltration = 0.0;	
+				}
+			// IF NEIGHBOR IS AN SCM - INFILTRATE WATER BASED ON PARAMETERIZED RATE
+			} else {
+				if (neigh[0].detention_store > ZERO) {
+						infiltration = compute_infiltration_scm(
+							time_int,
+							neigh[0].scm_defaults[0][0].infil_rate,
+							neigh[0].detention_store);
+				} else {
+					infiltration = 0.0;
+				}
 			}
-			else {
-			infiltration = compute_infiltration(
-				verbose_flag,
-				neigh[0].sat_deficit_z,
-				neigh[0].S,
-				neigh[0].Ksat_vertical,
-				neigh[0].soil_defaults[0][0].Ksat_0_v,
-				neigh[0].soil_defaults[0][0].mz_v,
-				neigh[0].soil_defaults[0][0].porosity_0,
-				neigh[0].soil_defaults[0][0].porosity_decay,
-				(neigh[0].detention_store),	
-				time_int,
-				neigh[0].soil_defaults[0][0].psi_air_entry);
-			}
+		
+		/*--------------------------------------------------------------*/
+		/* if no scm flag, follow regular infiltration logic			*/
+		/*--------------------------------------------------------------*/	
+		} else {
+			if (neigh[0].detention_store > ZERO) {
+					if (neigh[0].rootzone.depth > ZERO) {
+					infiltration = compute_infiltration(
+						verbose_flag,
+						neigh[0].sat_deficit_z,
+						neigh[0].rootzone.S,
+						neigh[0].Ksat_vertical,
+						neigh[0].soil_defaults[0][0].Ksat_0_v,
+						neigh[0].soil_defaults[0][0].mz_v,
+						neigh[0].soil_defaults[0][0].porosity_0,
+						neigh[0].soil_defaults[0][0].porosity_decay,
+						(neigh[0].detention_store),	
+						time_int,
+						neigh[0].soil_defaults[0][0].psi_air_entry);
+					}
+					else {
+					infiltration = compute_infiltration(
+						verbose_flag,
+						neigh[0].sat_deficit_z,
+						neigh[0].S,
+						neigh[0].Ksat_vertical,
+						neigh[0].soil_defaults[0][0].Ksat_0_v,
+						neigh[0].soil_defaults[0][0].mz_v,
+						neigh[0].soil_defaults[0][0].porosity_0,
+						neigh[0].soil_defaults[0][0].porosity_decay,
+						(neigh[0].detention_store),	
+						time_int,
+						neigh[0].soil_defaults[0][0].psi_air_entry);
+					}
+				} else
+				infiltration = 0.0;	
+			 		
 		}
-		else infiltration = 0.0;
+	
 		/*--------------------------------------------------------------*/
 		/* added an surface N flux to surface N pool	and		*/
 		/* allow infiltration of surface N				*/
@@ -556,7 +620,6 @@ void  update_drainage_land(
 		}
 
 		neigh[0].detention_store -= infiltration;
-
 	}
 
 	} /* end if redistribution flag */

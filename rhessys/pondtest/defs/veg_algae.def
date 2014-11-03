@@ -1,0 +1,30 @@
+2.000000	stratum_default_ID
+ALGAE		epc.veg.type
+0.03		K_reflectance		  /* unitless */
+0.2		algae.growth_rate	  /* /d */
+1.066		algae.growth_temp_theta   /* unitless */
+20		algae.growth_temp_baseT   /* deg C */
+5.08		algae.temp_coef_A         /* water temp - deg C */
+0.752		algae.temp_coef_B         /* air degC/water tempd egC */
+0.2		algae.light_extinct       /* /m */
+0.0088		algae.light_coef_A        /* m^-1 / (mg chlA / m^3) */
+0.054		algae.light_coef_B        /* m^-1 / (mg chlA / m^3)^(2/3) */
+10460.0		algae.light_optimum	  /* kJ / (m^2 * day) */
+0.0002		algae.nitro_halfsat	  /* kg N/m^3 */
+0.00004		algae.phos_halfsat	  /* kg P/m^3 */	
+0.00005		algae.phos_conc		  /* kg P/m^3 */
+0.015		algae.death_rate	  /* /d */
+1.08		algae.death_temp_theta    /* unitless */
+20		algae.death_temp_baseT    /* deg C */
+0.015		algae.respire_rate	  /* /d */
+1.08		algae.respire_temp_theta  /* unitless */
+20		algae.respire_temp_baseT  /* deg C */
+1.5		algae.scm_photo_depth	  /* m */
+0.00005		algae.npref_coef          /* kg/m^3 */
+0.000001	algae.chla_resprout_conc  /* kg/m^3 */
+0.025		algae.chla_to_C           /* kg/m^2 Chla : kg/m^2 C */
+0.200		algae.chla_to_N           /* kg/m^2 Chla : kg/m^2 N C)*/
+8.000000	epc.leaflitr_cn           /* SHOULD BE EQUAL TO chla_to_N / chl_a_to_C (above) */
+0.750000	epc.leaflitr_flab         /* 1 - (20-30%) from Mihranyan 2010 - see text by Lewin */
+0.250000	epc.leaflitr_fcel         /* 20-30% from Mihranyan 2010 - see text by Lewin */
+0.000000	epc.leaflitr_flig         /* No lignin in algae */
