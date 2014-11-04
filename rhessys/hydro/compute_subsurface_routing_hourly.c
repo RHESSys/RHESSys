@@ -332,7 +332,7 @@ void compute_subsurface_routing_hourly(
 				patch[0].surface_DOC_Qin = 0.0;
 
 			}
-               
+ 
 			/*--------------------------------------------------------------*/
 			/*	finalize streamflow and saturation deficits		*/
 			/*								*/
@@ -347,21 +347,21 @@ void compute_subsurface_routing_hourly(
 			/*	that it accumulates flux in from patches		*/
 			/*	(roads) that direct water to the stream			*/
 			/*--------------------------------------------------------------*/
-			  //  fprintf(stderr,"gamma = %f ",patch[0].innundation_list[d].gamma);
                if (current_date.hour == n_timesteps ) {
-
-				if ((patch[0].sat_deficit- (patch[0].unsat_storage + patch[0].rz_storage))< -1.0 * ZERO) {
+				// added by Colin - seems to be important:
+				// Missing a piece of code like "determine which inundation depths to consider" i.e. determining what "d" to use.
+				d=0;	
+				if ((patch[0].sat_deficit - (patch[0].unsat_storage + patch[0].rz_storage))< -1.0 * ZERO) {
 					excess = -1.0 * (patch[0].sat_deficit - patch[0].unsat_storage
 									- patch[0].rz_storage);
 					patch[0].detention_store += excess;
 					patch[0].sat_deficit = 0.0;
 					patch[0].unsat_storage = 0.0;
 					patch[0].rz_storage = 0.0;
-    
-                         if (grow_flag > 0) {
+ 	
 
-    //fprintf(stderr,"gamma = %f ",patch[0].innundation_list[d].gamma);//,patch[0].soil_defaults[0][0].porosity_0,patch[0].soil_defaults[0][0].porosity_decay,patch[0].soil_defaults[0][0].DOM_decay_rate,patch[0].soil_defaults[0][0].active_zone_z,patch[0].soil_defaults[0][0].soil_depth,patch[0].soil_defaults[0][0].DOC_adsorption_rate);
-                              Nout =
+                if (grow_flag > 0) {	 
+							Nout =
 								compute_N_leached(verbose_flag,
 										patch[0].soil_cs.DOC, excess, 0.0, 0.0,
 										patch[0].m,
@@ -373,16 +373,13 @@ void compute_subsurface_routing_hourly(
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
 										patch[0].soil_defaults[0][0].DOC_adsorption_rate);
-                              //fprintf(stderr,"\nhour: %d | patch: %d | area: %f", current_date.hour, patch[0].ID, patch[0].area);
 						patch[0].surface_DOC += Nout;
 						patch[0].soil_cs.DOC -= Nout;
                          
+			
 
-
-					}
-                         
-
-					
+					}	  
+				
                          if (grow_flag > 0) {
 						Nout =
 								compute_N_leached(verbose_flag,
@@ -434,7 +431,6 @@ void compute_subsurface_routing_hourly(
 						patch[0].soil_ns.sminn -= Nout;
 					}
 				}
-
 				/*--------------------------------------------------------------*/
 				/*	final overland flow routing				*/
 				/*--------------------------------------------------------------*/

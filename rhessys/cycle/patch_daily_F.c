@@ -375,6 +375,8 @@ void		patch_daily_F(
 	/*	alos for the Kdowns and PAR (for now Ldown can be kept )	*/
 	/*--------------------------------------------------------------*/
 
+	fprintf(stderr, "\nP no: %d | Date: %f", patch[0].ID, julday(current_date));
+
 	if (command_line[0].surface_energy_flag == 0) 
 		patch[0].Tsoil = zone[0].metv.tsoil;
 
