@@ -59,10 +59,10 @@ double	compute_varbased_flow(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	double	flow, accum;
+	double	flow, accum,thre_flow;
 	double	normal[9], perc[9];
 	int i;
-	int didx;
+	int didx,didthr;
 
 	// soil deficit threshold, not the soil moisture threshold, sat_store is the soil moiture threshold as
 	// percentage of the max soil moisture holding capacity
@@ -92,10 +92,10 @@ double	compute_varbased_flow(
 		didx = (int) lround((s1 + normal[i]*std)/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
 		/* lateral flow below the threshold is 1/3 of the original value, the multiplier is arbitary. Xiaoli */
-		accum = transmissivity[didx] * 1/3;
+		accum = transmissivity[didx] * 1;
 		/* fill and spill */
 		if ((patch[0].sat_deficit <= threshold) && ((s1 + normal[i]*std) <= threshold)){
-		    accum=transmissivity[didx] * 3;
+		    accum=transmissivity[didx] * 1;
 		}
 
 		flow += accum * perc[i];
@@ -103,14 +103,17 @@ double	compute_varbased_flow(
 	}
 	else  {
 		didx = (int) lround(s1/interval_size);
+		didthr = (int) lround(threshold/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
 
 		/* default lateral flow (seepage) below the threshold is 1/3 of the original value, the multiplier is arbitary. Xiaoli */
-		flow = transmissivity[didx] * 1/3; // 
+		flow = transmissivity[didx] * 1; // 
 
 		// if water level exceed moisture threshold (or sat_deficit <= soil deficit threshold)
 		if (patch[0].sat_deficit <= threshold){
-		    flow = transmissivity[didx] * 3; 
+		    thre_flow=transmissivity[didthr];
+		    flow = (transmissivity[didx]-thre_flow) * 1; 
+      		    flow = flow + thre_flow * 1;
 		}
 	}
 
