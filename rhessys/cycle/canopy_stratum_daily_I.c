@@ -174,6 +174,9 @@ void	canopy_stratum_daily_I(
 		patch[0].soil_defaults[0][0].porosity_decay,
 		stratum[0].rootzone.S);
 
+	stratum[0].epv.psi_ravg = (stratum[0].defaults[0][0].epc.gs_ravg_days-1)/(stratum[0].defaults[0][0].epc.gs_ravg_days)* stratum[0].epv.psi_ravg + 
+	 			1.0/(stratum[0].defaults[0][0].epc.gs_ravg_days) * stratum[0].epv.psi;
+
 	if ( command_line[0].verbose_flag > 1 )
 		printf(" %8f", stratum[0].epv.psi);
 
