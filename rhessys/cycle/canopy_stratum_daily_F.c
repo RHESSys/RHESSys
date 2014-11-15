@@ -320,6 +320,8 @@ void	canopy_stratum_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	total_incoming_PAR = PAR_diffuse + PAR_direct;
+	NO3_stored=0;
+	NO3_throughfall=0
 
 
 	
@@ -1031,6 +1033,8 @@ void	canopy_stratum_daily_F(
 		command_line[0].verbose_flag,
 		&(rain_throughfall),
 		stratum);
+
+
 	if (stratum[0].rain_stored > 0){
 	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
 	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
@@ -1050,7 +1054,7 @@ void	canopy_stratum_daily_F(
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall); 
 	    }
 	    else{
-                NO3_stored += patch[0].NO3_throughfall;
+                NO3_stored = stratum[0].NO3_stored + patch[0].NO3_throughfall;
 		NO3_throughfall = 0;
 	    }
 	}
@@ -1433,5 +1437,6 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
 		stratum[0].acc_year.length += 1;
 	}
+
 	return;
 } /*end canopy_stratum_daily_F.c*/
