@@ -180,11 +180,11 @@ void update_phenology(struct zone_object  *zone,
 		phen->gwseasonday = -1;
 	}
 
-	else if (phen->gwseasonday > -1 && phen->gwseasonday <=  epc.ndays_expand){ 
+	else if (phen->gwseasonday > -1 && phen->gwseasonday <= epc.ndays_expand){ 
 		expand_flag = 1;
 	}
 
-	else if (phen->lfseasonday > -1 && phen->lfseasonday <=  epc.ndays_litfall){ 
+	else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){ 
 		litfall_flag = 1;
 	}
 
@@ -235,11 +235,6 @@ void update_phenology(struct zone_object  *zone,
 
   } /* end dynamic phenology set up */
     
- 
-  if (phen->gwseasonday > 0)
-      phen->gwseasonday += 1;
-  if (phen->lfseasonday >=0)
-      phen->lfseasonday += 1;
 
 	
 	phen->daily_allocation = epc.alloc_prop_day_growth;
@@ -307,7 +302,7 @@ void update_phenology(struct zone_object  *zone,
 	/*	this is also considered to be the end of the growing season */
 	/*	so do annual allcation					*/
 	/*--------------------------------------------------------------*/
-	if (phen->lfseasonday == (epc.ndays_litfall)){
+	if (phen->lfseasonday == epc.ndays_litfall){
 		if (epc.phenology_type == DECID) {
 			leaflitfallc = cs->leafc;
 			phen->daily_allocation = 0;
@@ -615,6 +610,13 @@ void update_phenology(struct zone_object  *zone,
 		cs_litr,
 		litter);
 
+
+
+	/* Advances seasonday variables */
+	  if (phen->gwseasonday > 0)
+	      phen->gwseasonday += 1;
+	  if (phen->lfseasonday > 0)
+	      phen->lfseasonday += 1;
 	
 
 	return;
