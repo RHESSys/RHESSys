@@ -465,7 +465,7 @@ void		patch_daily_I(
 	/*--------------------------------------------------------------*/
 	/*	Calculate effective patch lai from stratum					*/
 	/*	- for later use by zone_daily_F								*/
-	/*      Accumulate root biomass for patch soil -
+	/*      Accumulate root biomass for patch soil -		*/
 	/*      required for N updake from soil                         */
 	/*	also determine total plant carbon			*/
 	/*	- if grow option is specified				*/

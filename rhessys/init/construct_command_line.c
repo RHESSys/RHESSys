@@ -94,6 +94,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].surface_energy_flag = 0;
 	command_line[0].firespread_flag = 0;
 	command_line[0].vgsen_flag = 0;
+	command_line[0].FillSpill_flag=0;	
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
@@ -303,6 +304,25 @@ struct	command_line_object	*construct_command_line(
 				i++;
 			}/* end if */
 
+			/*-------------------------------------------------*/
+			/*	Fill and Spill flag and coeffcients	  */
+			/*-------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-fs") == 0 ){
+				i++;
+				command_line[0].FillSpill_flag = 1;
+				if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
+					fprintf(stderr,"FATAL ERROR: Values for gw coefficients not specified\n");
+					exit(EXIT_FAILURE);
+				} /*end if*/
+				/*-------------------------------*/
+				/*Read in the loss to gw rate multiplier values		*/
+				/*-------------------------------*/
+				command_line[0].fs_spill = (double)atof(main_argv[i]);
+				i++;
+				command_line[0].fs_percolation = (double)atof(main_argv[i]);
+				i++;
+
+			}/* end if */
 
 			/*-------------------------------------------------*/
 			/* simple addition of temperature increases 		*/

@@ -304,7 +304,8 @@ struct patch_object *construct_patch(
 	patch[0].fertilizer_NO3 = 0.0;
 	patch[0].fertilizer_NH4 = 0.0;
 	patch[0].grazing_Closs = 0.0;
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this patch								*/
 	/*--------------------------------------------------------------*/
@@ -350,7 +351,7 @@ struct patch_object *construct_patch(
 
 	
 	/*--------------------------------------------------------------*/
-	/* if fire spread module is called assign fire defaults
+	/* if fire spread module is called assign fire defaults		*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].firespread_flag == 1) {
 	patch[0].fire_defaults = (struct fire_default **)
@@ -376,7 +377,7 @@ struct patch_object *construct_patch(
 
 
 	/*--------------------------------------------------------------*/
-	/* if surface energy module is called assign fire defaults
+	/* if surface energy module is called assign fire defaults	*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].surface_energy_flag == 1) {
 
@@ -629,6 +630,20 @@ struct patch_object *construct_patch(
 		-1*patch[0].sat_deficit);
 	patch[0].preday_sat_deficit_z = patch[0].sat_deficit_z;
 	
+	/*--------------------------------------------------------------*/
+	/*	Assign	default value for Fill Spill mode		*/
+	/*--------------------------------------------------------------*/
+	patch[0].soil_defaults[0][0].fs_spill=1;
+	patch[0].soil_defaults[0][0].fs_percolation=1;
+
+	/*--------------------------------------------------------------*/
+	/*	if Fill and Spill mode is on			*/
+	/*--------------------------------------------------------------*/
+	if(command_line[0].FillSpill_flag==1){
+	  patch[0].soil_defaults[0][0].fs_spill=command_line[0].fs_spill;
+	  patch[0].soil_defaults[0][0].fs_percolation=command_line[0].fs_percolation;
+	}
+
 	return(patch);
 } /*end construct_patch.c*/
 

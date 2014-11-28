@@ -1031,7 +1031,9 @@ struct	soil_default
 	double  snow_water_capacity;				/* m */
 	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
 	double  snow_melt_Tcoef;				/* unitless */
-	int snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
+	double	fs_spill;					/* multiplier*/
+	double	fs_percolation;					/* multiplier */
+	int	snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
 	double  bats_b;				/* unitless */
 	double  bats_r3;				/* unitless */
 	double  active_zone_z;					/* m */
@@ -1898,6 +1900,7 @@ struct	command_line_object
 	int		noredist_flag;
 	int		vmort_flag;
 	int		version_flag;
+	int		FillSpill_flag;
 	char	*output_prefix;
 	char	routing_filename[FILEPATH_LEN];
 	char	surface_routing_filename[FILEPATH_LEN];
@@ -1922,6 +1925,8 @@ struct	command_line_object
 	double	vsen_alt[2];
 	double	std_scale;
 	double	thresholds[2];
+	double	fs_spill;
+	double	fs_percolation;
 	struct	output_flag	output_flags;
 	struct	b_option	*b;
 	struct	h_option	*h;
