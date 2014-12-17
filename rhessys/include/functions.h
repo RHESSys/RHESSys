@@ -17,4 +17,8 @@ double compute_prop_alloc_daily(
 		struct cstate_struct *,
 		struct epconst_struct);
 
+void *alloc(size_t size, char *array_name, char *calling_function);
+
+struct routing_list_object *construct_topmodel_patchlist(struct basin_object * const basin);
+
 #endif
