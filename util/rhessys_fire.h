@@ -9,6 +9,7 @@ extern "C" {
 struct fire_default {
 	int ID;
 	double veg_fuel_weighting ;	
+	double ndays_average;
 	double load_k1; // k1 for the fuel load sigmoid function
 	double moisture_k1; //k1 for the fuel moisture sigmoid function
 	double load_k2; // k2 for the fuel load sigmoid function
@@ -26,7 +27,13 @@ struct fire_default {
 	int n_cols;
 	int fire_in_buffer;
 	int spread_calc_type;
-	double ndays_average;
+	double mean_log_wind;
+	double sd_log_wind;
+	double mean1_rvm;
+	double mean2_rvm;
+	double kappa1_rvm;
+	double kappa2_rvm;
+	double p_rvm;
 //	char **patch_file_name;
 };
 

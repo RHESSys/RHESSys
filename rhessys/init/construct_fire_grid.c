@@ -111,7 +111,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}
 		}
 	//	fclose(patchout);
-	//	printf("exited first navigation of patch structure in construct_fire_grid: maxX %lf  maxY %lf  minX %lf  minY %lf cell_res %lf\n",maxx,maxy,minx,miny,command_line[0].fire_grid_res);
+		printf("exited first navigation of patch structure in construct_fire_grid: maxX %lf  maxY %lf  minX %lf  minY %lf cell_res %lf\n",maxx,maxy,minx,miny,command_line[0].fire_grid_res);
 		int minXpix,maxXpix,minYpix,maxYpix;
 		double cellMinX, cellMaxX,cellMinY,cellMaxY,areaPatchInGrid;
 		/*now we calculate the grid dimensions and allocate memory for the grid*/
@@ -125,7 +125,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		
 		grid_dimX=ceil((maxx-minx)/cell_res);
 		grid_dimY=ceil((maxy-miny)/cell_res);
-	//	printf("grid dimensions: x %d  y %d minX %lf minY %lf maxX %lf maxY %lf\n",grid_dimX,grid_dimY,minx,miny,maxx,maxy);
+		printf("grid dimensions: x %d  y %d minX %lf minY %lf maxX %lf maxY %lf\n",grid_dimX,grid_dimY,minx,miny,maxx,maxy);
 	  // now we have to reorient the max and min X and Y for the new grid.  If we assume the orientation of the grid
 	  // st the lower left is as minX and minY, then we just need to add to maxX and maxY
 		maxx=minx+grid_dimX*cell_res;
@@ -146,7 +146,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}
 		world[0].num_fire_grid_row = grid_dimY;
 		world[0].num_fire_grid_col = grid_dimX;
-		printf("after initializing the values: rows, columns: %d\t%d\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col = grid_dimX);
+		printf("after initializing the values: rows, columns: %d\t%d\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col);
 	// now we have to tally the number of patches that overlap each grid cell for allocation
 	// of the patch and area arrays, then one more navigation to calculate the areas and
 	// assign the patches to each grid cell
@@ -342,7 +342,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		printf("assigning dem\n");
 		FILE *demIn;
 		demIn=fopen("../auxdata/DemGrid.txt","r");
-		// for now do away with the header
+		// for now do away with the header, so this file has no header
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){				
 				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
