@@ -295,8 +295,12 @@ rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
+<<<<<<< HEAD
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -v -o $(PGM) 
 endif
+=======
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM) 
+>>>>>>> WMFire
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
