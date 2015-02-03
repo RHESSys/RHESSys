@@ -68,7 +68,7 @@ struct	command_line_object	*construct_command_line(
 	/*--------------------------------------------------------------*/
 	command_line[0].gridded_ascii_flag = 0;
 	command_line[0].gridded_netcdf_flag = 0;
-	command_line[0].grow_flag = 0;
+	command_line[0].grow_flag = 0;	
 	command_line[0].std_scale = 0;
 	command_line[0].stdev_flag = 0;
 	command_line[0].road_flag = 1;
@@ -93,6 +93,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].noredist_flag = 0;
 	command_line[0].surface_energy_flag = 0;
 	command_line[0].firespread_flag = 0;
+	command_line[0].vegspinup_flag = 0;		
 	command_line[0].vgsen_flag = 0;
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
@@ -127,7 +128,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].snow_scale_tol = 999999999;
 	
 	/*-------------------------------------------------*/
-	/*	Loop through each arguement in the command line.*/
+	/* Loop through each arguement in the command line.*/
 	/*-------------------------------------------------*/
 	i = 1;
 	while  ( i < main_argc){
@@ -139,7 +140,7 @@ struct	command_line_object	*construct_command_line(
 			++i;
 		}
 		/*------------------------------------------*/
-		/*		Check if the verbose flag is next.    */
+		/*	Check if the verbose flag is next.  */
 		/*------------------------------------------*/
 		if ( i< main_argc ){
 			if ( strcmp(main_argv[i],"-v") == 0 ){
@@ -276,6 +277,14 @@ struct	command_line_object	*construct_command_line(
 				} /*end if*/
 			}/* end if */
 
+			/*------------------------------------------*/
+			/*Check if spinup flag next.                */
+			/*------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-vegspinup") == 0 ){
+				printf("\n Running with SPINUP turned on \n");
+				command_line[0].vegspinup_flag = 1;
+				i++;
+			}
 			/*-------------------------------------------------*/
 			/*	routing gw to riparian option */
 			/*-------------------------------------------------*/

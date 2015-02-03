@@ -96,6 +96,7 @@ $(OBJ)/construct_base_station.o \
 $(OBJ)/construct_basin.o \
 $(OBJ)/construct_basin_defaults.o \
 $(OBJ)/construct_canopy_strata.o \
+$(OBJ)/construct_empty_shadow_strata.o \
 $(OBJ)/construct_clim_sequence.o \
 $(OBJ)/construct_command_line.o \
 $(OBJ)/construct_daily_clim.o \
@@ -118,6 +119,7 @@ $(OBJ)/construct_surface_energy_defaults.o \
 $(OBJ)/construct_fire_defaults.o \
 $(OBJ)/construct_soil_defaults.o \
 $(OBJ)/construct_stratum_defaults.o \
+$(OBJ)/construct_spinup_defaults.o \
 $(OBJ)/construct_tec.o \
 $(OBJ)/construct_tec_entry.o \
 $(OBJ)/construct_world.o \
@@ -360,6 +362,8 @@ $(OBJ)/construct_surface_energy_defaults.o: init/construct_surface_energy_defaul
 	$(CC) -c $(CFLAGS) -I include init/construct_surface_energy_defaults.c -o $(OBJ)/construct_surface_energy_defaults.o
 $(OBJ)/construct_fire_defaults.o: init/construct_fire_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_defaults.c -o $(OBJ)/construct_fire_defaults.o
+$(OBJ)/construct_spinup_defaults.o: init/construct_spinup_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/construct_spinup_defaults.c -o $(OBJ)/construct_spinup_defaults.o
 $(OBJ)/construct_soil_defaults.o: init/construct_soil_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_soil_defaults.c -o $(OBJ)/construct_soil_defaults.o
 $(OBJ)/construct_landuse_defaults.o: init/construct_landuse_defaults.c
@@ -550,6 +554,8 @@ $(OBJ)/key_compare.o: util/key_compare.c
 	$(CC) -c $(CFLAGS) -I include util/key_compare.c -o $(OBJ)/key_compare.o
 $(OBJ)/construct_canopy_strata.o: init/construct_canopy_strata.c
 	$(CC) -c $(CFLAGS) -I include init/construct_canopy_strata.c -o $(OBJ)/construct_canopy_strata.o
+$(OBJ)/construct_empty_shadow_strata.o: init/construct_empty_shadow_strata.c
+	$(CC) -c $(CFLAGS) -I include init/construct_empty_shadow_strata.c -o $(OBJ)/construct_empty_shadow_strata.o
 $(OBJ)/destroy_world.o: init/destroy_world.c
 	$(CC) -c $(CFLAGS) -I include init/destroy_world.c -o $(OBJ)/destroy_world.o
 $(OBJ)/destroy_basin_defaults.o: init/destroy_basin_defaults.c

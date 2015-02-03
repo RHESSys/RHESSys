@@ -83,7 +83,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	int	base_stationID;
 	int	i;
 	double	sai, rootc;
-	int	default_object_ID;
+	int	default_object_ID; 
+	int     spinup_default_object_ID; 
 	char	record[MAXSTR];
 	struct	canopy_strata_object	*canopy_strata;
 	
@@ -95,13 +96,17 @@ struct canopy_strata_object *construct_canopy_strata(
 		"construct_canopy_strata" );
 	
 	/*--------------------------------------------------------------*/
-	/*	Read in the next canopy strata record for this patch.		*/
+	/*	Read in the next canopy strata record for this patch.	*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(canopy_strata[0].ID));
 	read_record(world_file, record);
 	fscanf(world_file,"%d",&(default_object_ID));
 	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cover_fraction));
+	if (command_line[0].vegspinup_flag > 0){
+	    fscanf(world_file,"%d",&(spinup_default_object_ID));
+	    read_record(world_file, record);
+        }
+        fscanf(world_file,"%lf",&(canopy_strata[0].cover_fraction));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].gap_fraction));
 	read_record(world_file, record);
@@ -234,6 +239,31 @@ struct canopy_strata_object *construct_canopy_strata(
 		}
 	} /* end-while */
 	canopy_strata[0].defaults[0] = &defaults[0].stratum[i];
+
+	/*--------------------------------------------------------------*/
+	/* if spinup module is called assign spinup defaults            */
+	/*--------------------------------------------------------------*/
+	if (command_line[0].vegspinup_flag > 0) {
+	canopy_strata[0].spinup_defaults = (struct spinup_default **)
+		alloc( sizeof(struct spinup_default *),"defaults",
+		"construct_stratum" );
+	i = 0;
+	while (defaults[0].spinup[i].ID != spinup_default_object_ID) {
+		i++;
+		/*--------------------------------------------------------------*/
+		/*  Report an error if no match was found.  Otherwise assign    */
+		/*  the default to point to this patch.						    */
+		/*--------------------------------------------------------------*/
+		if ( i>= defaults[0].num_spinup_default_files ){
+			fprintf(stderr,
+				"\nFATAL ERROR: in construct_stratum, spinup default ID %d not found for patch %d\n" ,
+				spinup_default_object_ID, patch[0].ID);
+			exit(EXIT_FAILURE);
+		}
+	} /* end-while */
+	canopy_strata[0].spinup_defaults[0] = &defaults[0].spinup[i];
+	}
+
 	/*--------------------------------------------------------------*/
 	/* zero all non tree stem and wood variables			*/
 	/*--------------------------------------------------------------*/
@@ -361,6 +391,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+
 	/*--------------------------------------------------------------*/
 	/*	calculate all sided  and project pai from max projected lai	*/
 	/*--------------------------------------------------------------*/
@@ -391,7 +422,6 @@ struct canopy_strata_object *construct_canopy_strata(
 		fprintf(stderr,"FATAL ERROR: in compute_annual_litfall() ... Exiting\n");
 		exit(EXIT_FAILURE);
 	}
-
 
 	/*--------------------------------------------------------------*/
 	/*	compute new rooting depth based on current root carbon  */
@@ -494,7 +524,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		sizeof(struct base_station_object *),"base_stations",
 		"construct_canopy_strata");
 	/*--------------------------------------------------------------*/
-	/*      Read each base_station ID and then point to that base_statio*/
+	/* Read each base_station ID and then point to that base_station*/
 	/*--------------------------------------------------------------*/
 	for (i=0 ; i<canopy_strata[0].num_base_stations; i++){
 		fscanf(world_file,"%d",&(base_stationID));
@@ -502,7 +532,6 @@ struct canopy_strata_object *construct_canopy_strata(
 		/*--------------------------------------------------------------*/
 		/*	Point to the appropriate base station in the base       	*/
 		/*              station list for this world.					*/
-		/*																*/
 		/*--------------------------------------------------------------*/
 		canopy_strata[0].base_stations[i] = assign_base_station(
 			base_stationID,
