@@ -161,9 +161,6 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
 			}
 
-		/* sat_store for fill and spill */	
-		default_object_list[i].sat_store = 	getDoubleParam(&paramCnt, &paramPtr, "sat_store", "%lf", 0.1, 1);
-
 	/*	if (default_object_list[i].porosity_0 * default_object_list[i].soil_depth * command_line[0].sen[SOIL_DEPTH]* 0.999
 											    < default_object_list[i].sat_store){
 		    printf("sat_store = %f, porosity_0 = %f, soil_depth = %f\n",default_object_list[i].sat_store,default_object_list[i].porosity_0,

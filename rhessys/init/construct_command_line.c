@@ -310,17 +310,32 @@ struct	command_line_object	*construct_command_line(
 			else if ( strcmp(main_argv[i],"-fs") == 0 ){
 				i++;
 				command_line[0].FillSpill_flag = 1;
-				if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
-					fprintf(stderr,"FATAL ERROR: Values for gw coefficients not specified\n");
+				if ((i == main_argc-2) || (valid_option(main_argv[i])==1)){
+					fprintf(stderr,"FATAL ERROR: Values for Spillover Multiplier not specified\n");
 					exit(EXIT_FAILURE);
 				} /*end if*/
 				/*-------------------------------*/
-				/*Read in the loss to gw rate multiplier values		*/
+				/*Read in the Spillover multiplier values		*/
 				/*-------------------------------*/
 				command_line[0].fs_spill = (double)atof(main_argv[i]);
 				i++;
+				if (( i == main_argc-1) || (valid_option(main_argv[i]) ==1)){
+					fprintf(stderr,"FATAL ERROR: Values for Percolation Multiplier not specified\n");
+					exit(EXIT_FAILURE);
+				} 
+				/*-------------------------------*/
+				/*Read in the Percolation multiplier values		*/
+				/*-------------------------------*/				
 				command_line[0].fs_percolation = (double)atof(main_argv[i]);
 				i++;
+
+				/*-------------------------------*/
+				/*Read in the Threshold values		*/
+				/*-------------------------------*/	
+			    	if (( i != main_argc) && (valid_option(main_argv[i]) == 0)){
+					command_line[0].fs_threshold = (double)atof(main_argv[i]);
+					i++;
+				}
 
 			}/* end if */
 

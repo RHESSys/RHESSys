@@ -1033,6 +1033,7 @@ struct	soil_default
 	double  snow_melt_Tcoef;				/* unitless */
 	double	fs_spill;					/* multiplier*/
 	double	fs_percolation;					/* multiplier */
+	double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */	
 	int	snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
 	double  bats_b;				/* unitless */
 	double  bats_r3;				/* unitless */
@@ -1050,7 +1051,6 @@ struct	soil_default
 	double  gsurf_intercept;				/* m/s */
 	double  theta_mean_std_p1;				/* DIM */
 	double  theta_mean_std_p2;				/* DIM */
-	double	sat_store;					/* percent of max sat_deficit, for fill and spill  */
 	struct soil_class	soil_type;
 	};
 
@@ -1927,6 +1927,7 @@ struct	command_line_object
 	double	thresholds[2];
 	double	fs_spill;
 	double	fs_percolation;
+	double	fs_threshold;
 	struct	output_flag	output_flags;
 	struct	b_option	*b;
 	struct	h_option	*h;

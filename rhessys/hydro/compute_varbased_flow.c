@@ -71,7 +71,7 @@ double	compute_varbased_flow(
 	double p;
 	double n_0;
 	double soil_depth;
-	double fs_spill
+	double fs_spill;
 	double fs_percolation;
 
 
@@ -81,7 +81,7 @@ double	compute_varbased_flow(
 	p = patch[0].soil_defaults[0][0].porosity_decay;
 	n_0 = patch[0].soil_defaults[0][0].porosity_0;
 	soil_depth = patch[0].soil_defaults[0][0].soil_depth;
-	threshold = n_0 * p * (1 - exp(-soil_depth/p))*(1 - patch[0].soil_defaults[0][0].sat_store);
+	threshold = n_0 * p * (1 - exp(-soil_depth/p))*(1 - patch[0].soil_defaults[0][0].fs_threshold);
 	fs_spill = patch[0].soil_defaults[0][0].fs_spill;
 	fs_percolation = patch[0].soil_defaults[0][0].fs_percolation;
 
@@ -117,7 +117,6 @@ double	compute_varbased_flow(
 	for (i=0; i <9; i++) {
 		didx = (int) lround((s1 + normal[i]*std)/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
-		/* lateral flow below the threshold is 1/3 of the original value, the multiplier is arbitary. Xiaoli */
 		accum = transmissivity[didx] * 1;
 		/* fill and spill */
 		if ((patch[0].sat_deficit <= threshold) && ((s1 + normal[i]*std) <= threshold)){
@@ -155,20 +154,23 @@ double	compute_varbased_flow(
 	}
 
 	flow = flow*gamma;
-	// the following code is for testing only
-/*	if(patch[0].ID==33575){
-	  printf("Soil_depth=%f, Threshold=%f, intervalsize=%f\n",
-	      patch[0].soil_defaults[0][0].soil_depth,
-	      threshold, 
-	      interval_size);
-	  printf("sat_store=%f, sat_deficit=%f, flow=%f, didx=%d, didthr=%d\n",
+/*	//the following code is for testing only
+	if(patch[0].ID==33575){
+	 printf("fs_spillover=%f, fs_percolation=%f, fs_threshold=%f\n",
+	      patch[0].soil_defaults[0][0].fs_spill,
+	      patch[0].soil_defaults[0][0].fs_percolation, 
+	      patch[0].soil_defaults[0][0].fs_threshold);
+	 
+	  
+	  printf("sat_store=%f, sat_deficit=%f, flow=%f, didx=%d, didthr=%d,maxtransimisivity=%f\n",
 	      patch[0].soil_defaults[0][0].sat_store, 
 	      patch[0].sat_deficit,
 	      flow,
 	      didx, 
-	      didthr);
+	      didthr,
+	      transmissivity[0]);
 	}
-*/
 
+*/
 	  return(flow);
 } /*compute_varbased_flow*/

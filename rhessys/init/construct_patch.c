@@ -633,15 +633,17 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	/*	Assign	default value for Fill Spill mode		*/
 	/*--------------------------------------------------------------*/
-	patch[0].soil_defaults[0][0].fs_spill=1;
-	patch[0].soil_defaults[0][0].fs_percolation=1;
+	patch[0].soil_defaults[0][0].fs_spill = 1;
+	patch[0].soil_defaults[0][0].fs_percolation = 1;
+	patch[0].soil_defaults[0][0].fs_threshold = 0.2;
 
 	/*--------------------------------------------------------------*/
 	/*	if Fill and Spill mode is on			*/
 	/*--------------------------------------------------------------*/
 	if(command_line[0].FillSpill_flag==1){
-	  patch[0].soil_defaults[0][0].fs_spill=command_line[0].fs_spill;
-	  patch[0].soil_defaults[0][0].fs_percolation=command_line[0].fs_percolation;
+	  patch[0].soil_defaults[0][0].fs_spill = command_line[0].fs_spill;
+	  patch[0].soil_defaults[0][0].fs_percolation = command_line[0].fs_percolation;
+	  patch[0].soil_defaults[0][0].fs_threshold = command_line[0].fs_threshold;
 	}
 
 	return(patch);

@@ -107,9 +107,6 @@ void  update_drainage_stream(
 	double gamma, total_gamma, percent_tobe_routed;
 	double Nin, Nout;  /* kg/m2 */
 	double t1,t2,t3;
-	double threshold;
-	threshold = patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0 * 0.99 *
-		   (1 - patch[0].soil_defaults[0][0].sat_store);
 	
 	d=0;
 	route_to_stream = 0.0;
