@@ -349,6 +349,10 @@ struct basin_object *construct_basin(
 								command_line, true);
 			}
 		}
+	} else { // command_line[0].routing_flag != 1
+		// For TOPMODEL mode, make a dummy route list consisting of all patches
+		// in the basin, in no particular order.
+		basin->route_list = construct_topmodel_patchlist(basin);
 	}
 	
 	/*--------------------------------------------------------------*/

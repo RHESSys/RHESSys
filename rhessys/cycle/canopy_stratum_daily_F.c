@@ -310,8 +310,6 @@ void	canopy_stratum_daily_F(
 	struct	psnin_struct	psnin;
 	struct	psnout_struct	psnout;
 	struct mortality_struct mort;
-
-
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.1 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
@@ -369,7 +367,8 @@ void	canopy_stratum_daily_F(
 	stratum[0].evaporation = 0.0;
 	
 	deltaT = 0.0;
-
+	NO3_stored=0;
+	NO3_throughfall=0;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize temporary variables for transmitted fluxes.	*/
@@ -710,7 +709,7 @@ void	canopy_stratum_daily_F(
 					&(ga));
 				windsnow = wind;
 				gasnow = ga;
-			}
+			}*/
 			/*--------------------------------------------------------------*/
 			/*		Layer is <0.1highest ht. in height.		*/
 			/*--------------------------------------------------------------*/
@@ -729,7 +728,7 @@ void	canopy_stratum_daily_F(
 					&(ga));
 				windsnow = wind;
 				gasnow = ga;
-			}
+			}*/
 			/*----------------------- END OLD CODE ----------------------------------------*/
 		}
 		else{
@@ -1225,7 +1224,6 @@ void	canopy_stratum_daily_F(
 	transpiration_rate = transpiration_rate_sunlit +  transpiration_rate_shade;
 	potential_transpiration_rate = potential_transpiration_rate_sunlit +  potential_transpiration_rate_shade;
 		
-	/*printf("\nrnet_sunlit=%lf rnet_shade=%lf rnet_all=%lf",rnet_trans_sunlit,rnet_trans_shade,rnet_trans_sunlit+rnet_trans_shade);*/
 
 	/*--------------------------------------------------------------*/
 	/*	Compute potential evaporation of stratum. 		*/
@@ -1299,6 +1297,7 @@ void	canopy_stratum_daily_F(
 	    NO3_throughfall = (rain_throughfall + snow_throughfall)
 		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
+	   
 	}
 	else{
 	    if (rain_throughfall > 0){
@@ -1309,14 +1308,16 @@ void	canopy_stratum_daily_F(
 		NO3_throughfall =  (rain_throughfall + snow_throughfall)
 		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall); 
+		
 	    }
 	    else{
-                NO3_stored += patch[0].NO3_throughfall;
+                NO3_stored = stratum[0].NO3_stored + patch[0].NO3_throughfall;
 		NO3_throughfall = 0;
+
+
 	    }
 	}
 
-	
 
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.15 ",julday(current_date)-2449000);
@@ -1532,6 +1533,7 @@ void	canopy_stratum_daily_F(
 		}
 
 		
+
 		
 		/*--------------------------------------------------------------*/
 
@@ -1791,7 +1793,6 @@ void	canopy_stratum_daily_F(
 	}
 	
 	}
-	
 	/*--------------------------------------------------------------*/
 	/*	Increment the transmitted fluxes from this patch layer	*/
 	/*	by weighting the fluxes in this stratum by its cover	*/
@@ -1814,6 +1815,10 @@ void	canopy_stratum_daily_F(
 	patch[0].NO3_throughfall_final += NO3_throughfall 
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
+
+
+
+	
 	patch[0].ga_final += ga * stratum[0].cover_fraction;
 	patch[0].gasnow_final += gasnow * stratum[0].cover_fraction;
 	patch[0].wind_final += wind * stratum[0].cover_fraction;
@@ -1858,5 +1863,6 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
 		stratum[0].acc_year.length += 1;
 	}
+
 	return;
 } /*end canopy_stratum_daily_F.c*/

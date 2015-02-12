@@ -59,6 +59,12 @@ void	canopy_stratum_hourly(
 	double rain_throughfall;
 	double NO3_throughfall;
 	double NO3_stored;
+	double tmp1;
+	double tmp2;
+	rain_throughfall = 0;
+	NO3_stored = 0;
+	NO3_throughfall=0;
+
 	/*--------------------------------------------------------------*/
 	/*	Create canopy stratum hourly object.						*/
 	/*--------------------------------------------------------------*/
@@ -76,9 +82,6 @@ void	canopy_stratum_hourly(
 	/*--------------------------------------------------------------*/
 	/* update the NO3 stored in canopy and NO3 throughfall		*/
 	/*--------------------------------------------------------------*/
-	double tmp1;
-	double tmp2;
-	NO3_stored = 0;
 	if (stratum[0].rain_stored > 0){
 	    NO3_stored = (stratum[0].rain_stored) / (stratum[0].rain_stored + rain_throughfall) 
 		* (stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall);
@@ -86,7 +89,6 @@ void	canopy_stratum_hourly(
 		* (stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall);
 	    tmp1 = (stratum[0].rain_stored) / (stratum[0].rain_stored + rain_throughfall) ;
 	    tmp2 = (rain_throughfall) / (stratum[0].rain_stored + rain_throughfall) ;
-
 		
 	}
 	else{//stratum[0].rain_stored == 0 
@@ -106,9 +108,11 @@ void	canopy_stratum_hourly(
 	}
 
 
+
 	patch[0].hourly[0].NO3_throughfall_final += NO3_throughfall 
 		* stratum[0].cover_fraction;
-	stratum[0].NO3_stored = NO3_stored;
+	stratum[0].NO3_stored = NO3_stored; 
+
 	/*--------------------------------------------------------------*/
 	/*	Destroy the canopy stratum hourly object.					*/
 	/*--------------------------------------------------------------*/
