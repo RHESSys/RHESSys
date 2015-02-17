@@ -483,6 +483,7 @@ int allocate_annual_growth(				int id,
 	/* resprout code using seed goes here */
 	/*--------------------------------------------------------------*/
 	if (command_line[0].reproduction_flag == 1) {
+		compute_resprout_from_seed();		
 	}
 
 	/* update states variables */

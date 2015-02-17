@@ -73,6 +73,7 @@ $(OBJ)/compute_ra_understory.o \
 $(OBJ)/compute_radiative_fluxes.o \
 $(OBJ)/compute_rain_stored.o \
 $(OBJ)/compute_return_flow.o \
+$(OBJ)/compute_resprout_from_seed.o \
 $(OBJ)/compute_varbased_returnflow.o \
 $(OBJ)/compute_varbased_flow.o \
 $(OBJ)/compute_snow_stored.o \
@@ -633,6 +634,8 @@ $(OBJ)/compute_varbased_returnflow.o: hydro/compute_varbased_returnflow.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_varbased_returnflow.c -o $(OBJ)/compute_varbased_returnflow.o
 $(OBJ)/compute_varbased_flow.o: hydro/compute_varbased_flow.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_varbased_flow.c -o $(OBJ)/compute_varbased_flow.o
+$(OBJ)/compute_resprout_from_seed.o: cn/compute_resprout_from_seed.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_resprout_from_seed.c -o $(OBJ)/compute_resprout_from_seed.o
 $(OBJ)/compute_return_flow.o: hydro/compute_return_flow.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_return_flow.c -o $(OBJ)/compute_return_flow.o
 $(OBJ)/compute_snow_sublimation.o: hydro/compute_snow_sublimation.c

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------*/
-/*                                                              */ 
+/*                                                              */
 /*		update_mortality									*/
 /*                                                              */
 /*  NAME                                                        */
@@ -7,7 +7,7 @@
 /*                                                              */
 /*                                                              */
 /*  SYNOPSIS                                                    */
-/* 	void update_mortality( 
+/* 	void update_mortality(
 /*                      struct epconst_struct,			*/
 /*                      struct phenology_struct *,		*/
 /*                      struct cstate_struct *,			*/
@@ -57,7 +57,7 @@ void update_mortality(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -110,7 +110,26 @@ void update_mortality(
 	double m_deadstemn_to_cwdn;
 	double m_livecrootn_to_cwdn;
 	double m_deadcrootn_to_cwdn;
+	/* reproduction fluxes */
+	double m_reprodc_to_litr1c, m_reprodc_to_litr2c;
+	double m_reprodc_to_litr3c, m_reprodc_to_litr4c;
+	double m_reprodc_store_to_litr1c, m_reprodc_store_to_litr2c;
+	double m_reprodc_store_to_litr3c, m_reprodc_store_to_litr4c;
+	double m_reprodc_transfer_to_litr1c, m_reprodc_transfer_to_litr2c;
+	double m_reprodc_transfer_to_litr3c, m_reprodc_transfer_to_litr4c;
+	double m_seedc_to_litr1c, m_seedc_to_litr2c;
+	double m_seedc_to_litr3c, m_seedc_to_litr4c;
 	
+	double m_reprodn_to_litr1n, m_reprodn_to_litr2n;
+	double m_reprodn_to_litr3n, m_reprodn_to_litr4n;
+	double m_reprodn_store_to_litr1n, m_reprodn_store_to_litr2n;
+	double m_reprodn_store_to_litr3n, m_reprodn_store_to_litr4n;
+	double m_reprodn_transfer_to_litr1n, m_reprodn_transfer_to_litr2n;
+	double m_reprodn_transfer_to_litr3n, m_reprodn_transfer_to_litr4n;
+	double m_seedn_to_litr1n, m_seedn_to_litr2n;
+	double m_seedn_to_litr3n, m_seedn_to_litr4n;
+
+
 	/******************************************************************/
 	/* Non-fire mortality: these fluxes all enter litter or CWD pools */
 	/******************************************************************/
@@ -127,7 +146,7 @@ void update_mortality(
 	m_deadleafc_to_litr1c = mort.mort_deadleafc * cs->dead_leafc * epc.leaflitr_flab;
 	m_deadleafc_to_litr2c = mort.mort_deadleafc * cs->dead_leafc * epc.leaflitr_fucel;
 	m_deadleafc_to_litr3c = mort.mort_deadleafc * cs->dead_leafc * epc.leaflitr_fscel;
-	m_deadleafc_to_litr4c = mort.mort_deadleafc * cs->dead_leafc * epc.leaflitr_flig;	
+	m_deadleafc_to_litr4c = mort.mort_deadleafc * cs->dead_leafc * epc.leaflitr_flig;
 	m_frootc_to_litr1c = mort.mort_frootc * cs->frootc * epc.frootlitr_flab;
 	m_frootc_to_litr2c = mort.mort_frootc * cs->frootc * epc.frootlitr_fucel;
 	m_frootc_to_litr3c = mort.mort_frootc * cs->frootc * epc.frootlitr_fscel;
@@ -154,12 +173,27 @@ void update_mortality(
 		m_livestemc_transfer_to_litr1c = mort.mort_cpool * cs->livestemc_transfer;
 		m_deadstemc_transfer_to_litr1c = mort.mort_cpool * cs->deadstemc_transfer;
 		m_livecrootc_transfer_to_litr1c = mort.mort_cpool * cs->livecrootc_transfer;
-		m_deadcrootc_transfer_to_litr1c = mort.mort_cpool * cs->deadcrootc_transfer;		
+		m_deadcrootc_transfer_to_litr1c = mort.mort_cpool * cs->deadcrootc_transfer;
 	}
 
 	if (reproduction_flag==1) {
 	/* transfers of mortality fluxes from reproduction go here */
-		}		
+	/* new reproduction pools: reprodc, reprodc_store, reprodc_transfer, seedc */
+		m_reprodc_to_litr1c = mort.mort_reprodc * cs->reprodc * epc.seed_flab;
+		m_reprodc_to_litr2c = mort.mort_reprodc * cs->reprodc * epc.seed_fucel;
+		m_reprodc_to_litr3c = mort.mort_reprodc * cs->reprodc * epc.seed_fscel;
+		m_reprodc_to_litr4c = mort.mort_reprodc * cs->reprodc * epc.seed_flig;
+
+		m_reprodc_store_to_litr1c = mort.mort_reprodc * cs->reprodc_store * epc.seed_flab;
+		m_reprodc_store_to_litr2c = mort.mort_reprodc * cs->reprodc_store * epc.seed_fucel;
+		m_reprodc_store_to_litr3c = mort.mort_reprodc * cs->reprodc_store * epc.seed_fscel;
+		m_reprodc_store_to_litr4c = mort.mort_reprodc * cs->reprodc_store * epc.seed_flig;
+
+		m_reprodc_transfer_to_litr1c = mort.mort_reprodc * cs->reprodc_transfer * epc.seed_flab;
+		m_reprodc_transfer_to_litr2c = mort.mort_reprodc * cs->reprodc_transfer * epc.seed_fucel;
+		m_reprodc_transfer_to_litr3c = mort.mort_reprodc * cs->reprodc_transfer * epc.seed_fscel;
+		m_reprodc_transfer_to_litr4c = mort.mort_reprodc * cs->reprodc_transfer * epc.seed_flig;
+		}
 
 	/* daily nitrogen fluxes due to mortality */
 	/* mortality fluxes out of leaf and fine root pools */
@@ -188,7 +222,7 @@ void update_mortality(
 		m_deadleafn_to_litr2n = 0.0;
 		m_deadleafn_to_litr3n = 0.0;
 		m_deadleafn_to_litr4n = 0.0;
-	}	
+	}
 	if (epc.froot_cn > ZERO) {
 		m_frootn_to_litr2n = m_frootc_to_litr2c / CEL_CN;
 		m_frootn_to_litr3n = m_frootc_to_litr3c / CEL_CN;
@@ -200,7 +234,7 @@ void update_mortality(
 		m_frootn_to_litr1n = 0.0;
 		m_frootn_to_litr2n = 0.0;
 		m_frootn_to_litr3n = 0.0;
-		m_frootn_to_litr4n = 0.0;		
+		m_frootn_to_litr4n = 0.0;
 		}
 
 	/* mortality fluxes out of storage and transfer pools */
@@ -229,21 +263,39 @@ void update_mortality(
 		m_livestemn_transfer_to_litr1n = mort.mort_cpool * ns->livestemn_transfer;
 		m_deadstemn_transfer_to_litr1n = mort.mort_cpool * ns->deadstemn_transfer;
 		m_livecrootn_transfer_to_litr1n = mort.mort_cpool * ns->livecrootn_transfer;
-		m_deadcrootn_transfer_to_litr1n = mort.mort_cpool * ns->deadcrootn_transfer;		
+		m_deadcrootn_transfer_to_litr1n = mort.mort_cpool * ns->deadcrootn_transfer;
 	}
 
 	if (reproduction_flag==1) {
-	/* transfers from mortality fluxes go here */
-	}	
+	/* transfers from mortality fluxes go here : NITROGEN */
+		m_reprodn_to_litr2n = m_reprodc_to_litr2c / CEL_CN;
+		m_reprodn_to_litr3n = m_reprodc_to_litr3c / CEL_CN;
+		m_reprodn_to_litr4n = m_reprodc_to_litr4c / LIG_CN;
+        	m_reprodn_to_litr1n = mort.mort_reprodc * ns->reprodn - (m_reprodn_to_litr2n + m_reprodn_to_litr3n + m_reprodn_to_litr4n);
+		m_reprodn_to_litr1n = max(m_reprodn_to_litr1n, 0.0);
+
+		m_reprodn_store_to_litr2n = m_reprodc_store_to_litr2c / CEL_CN;
+		m_reprodn_store_to_litr3n = m_reprodc_store_to_litr3c / CEL_CN;
+		m_reprodn_store_to_litr4n = m_reprodc_store_to_litr4c / LIG_CN;
+        	m_reprodn_store_to_litr1n = mort.mort_reprodc * ns->reprodn_store - (m_reprodn_store_to_litr2n + m_reprodn_store_to_litr3n + m_reprodn_store_to_litr4n);
+		m_reprodn_store_to_litr1n = max(m_reprodn_store_to_litr1n, 0.0);
+
+		m_reprodn_transfer_to_litr2n = m_reprodc_transfer_to_litr2c / CEL_CN;
+		m_reprodn_transfer_to_litr3n = m_reprodc_transfer_to_litr3c / CEL_CN;
+		m_reprodn_transfer_to_litr4n = m_reprodc_transfer_to_litr4c / LIG_CN;
+        	m_reprodn_transfer_to_litr1n = mort.mort_reprodc * ns->reprodn_transfer - (m_reprodn_transfer_to_litr2n + m_reprodn_transfer_to_litr3n + m_reprodn_transfer_to_litr4n);
+		m_reprodn_transfer_to_litr1n = max(m_reprodn_transfer_to_litr1n, 0.0);
+
+	}
 
 	/* update state variables */
-	
+
 	/* ---------------------------------------- */
 	/* CARBON mortality state variable update   */
 	/* ---------------------------------------- */
-	
+
 	/* ABOVEGROUND C POOLS */
-	
+
 	/* Only add dead leaf and stem c to litter and cwd pools if thintyp   */
 	/* is not 2 (harvest case). If thintyp is 2, harvest aboveground c.   */
 	if (thintyp != 2) {
@@ -256,7 +308,7 @@ void update_mortality(
 		cs_litr->litr1c    += m_deadleafc_to_litr1c;
 		cs_litr->litr2c    += m_deadleafc_to_litr2c;
 		cs_litr->litr3c    += m_deadleafc_to_litr3c;
-		cs_litr->litr4c    += m_deadleafc_to_litr4c;		
+		cs_litr->litr4c    += m_deadleafc_to_litr4c;
 		cs_litr->litr1c    += m_leafc_store_to_litr1c;
 		cs_litr->litr1c    += m_leafc_transfer_to_litr1c;
 		if (epc.veg_type == TREE) {
@@ -266,12 +318,25 @@ void update_mortality(
 			cs_litr->litr1c    += m_livestemc_store_to_litr1c;
 			cs_litr->litr1c    += m_deadstemc_store_to_litr1c;
 			cs_litr->litr1c    += m_livestemc_transfer_to_litr1c;
-			cs_litr->litr1c    += m_deadstemc_transfer_to_litr1c;			
+			cs_litr->litr1c    += m_deadstemc_transfer_to_litr1c;
 			}
 		/* gresp... group in with aboveground? */
 		cs_litr->litr1c         += m_gresp_store_to_litr1c;
 		cs_litr->litr1c         += m_gresp_transfer_to_litr1c;
 		if (reproduction_flag == 1) {
+            cs_litr->litr1c    += m_reprodc_to_litr1c;
+            cs_litr->litr2c    += m_reprodc_to_litr2c;
+            cs_litr->litr3c    += m_reprodc_to_litr3c;
+            cs_litr->litr4c    += m_reprodc_to_litr4c;
+            cs_litr->litr1c    += m_reprodc_store_to_litr1c;
+            cs_litr->litr2c    += m_reprodc_store_to_litr2c;
+            cs_litr->litr3c    += m_reprodc_store_to_litr3c;
+            cs_litr->litr4c    += m_reprodc_store_to_litr4c;
+            cs_litr->litr1c    += m_reprodc_transfer_to_litr1c;
+            cs_litr->litr2c    += m_reprodc_transfer_to_litr2c;
+            cs_litr->litr3c    += m_reprodc_transfer_to_litr3c;
+            cs_litr->litr4c    += m_reprodc_transfer_to_litr4c;
+
 			}
 		}
 	/* Remove aboveground dead c from carbon stores in all cases. */
@@ -284,7 +349,7 @@ void update_mortality(
 	cs->dead_leafc          -= m_deadleafc_to_litr1c;
 	cs->dead_leafc          -= m_deadleafc_to_litr2c;
 	cs->dead_leafc          -= m_deadleafc_to_litr3c;
-	cs->dead_leafc          -= m_deadleafc_to_litr4c;	
+	cs->dead_leafc          -= m_deadleafc_to_litr4c;
 	cs->leafc_store       -= m_leafc_store_to_litr1c;
 	cs->leafc_transfer      -= m_leafc_transfer_to_litr1c;
 	if (epc.veg_type == TREE){
@@ -294,14 +359,29 @@ void update_mortality(
 		cs->livestemc_store   -= m_livestemc_store_to_litr1c;
 		cs->deadstemc_store   -= m_deadstemc_store_to_litr1c;
 		cs->livestemc_transfer  -= m_livestemc_transfer_to_litr1c;
-		cs->deadstemc_transfer  -= m_deadstemc_transfer_to_litr1c;		
+		cs->deadstemc_transfer  -= m_deadstemc_transfer_to_litr1c;
 		}
 	/* gresp... group in with aboveground? */
 	cs->gresp_store       -= m_gresp_store_to_litr1c;
 	cs->gresp_transfer      -= m_gresp_transfer_to_litr1c;
 
 	if (reproduction_flag == 1) {
-		}	
+		cs->reprodc          -= m_reprodc_to_litr1c;
+		cs->reprodc          -= m_reprodc_to_litr2c;
+		cs->reprodc          -= m_reprodc_to_litr3c;
+		cs->reprodc          -= m_reprodc_to_litr4c;
+		
+		cs->reprodc_store          -= m_reprodc_store_to_litr1c;
+		cs->reprodc_store          -= m_reprodc_store_to_litr2c;
+		cs->reprodc_store          -= m_reprodc_store_to_litr3c;
+		cs->reprodc_store          -= m_reprodc_store_to_litr4c;
+		
+		cs->reprodc_transfer          -= m_reprodc_transfer_to_litr1c;
+		cs->reprodc_transfer          -= m_reprodc_transfer_to_litr2c;
+		cs->reprodc_transfer          -= m_reprodc_transfer_to_litr3c;
+		cs->reprodc_transfer          -= m_reprodc_transfer_to_litr4c;
+		
+		}
 	/* BELOWGROUND C POOLS */
 	/* Belowground dead c goes to litter and cwd in all cases. */
 	/*   Fine root mortality */
@@ -322,7 +402,7 @@ void update_mortality(
 		cs->cwdc       += m_livecrootc_to_cwdc;
 		cs->live_crootc -= m_livecrootc_to_cwdc;
 		cs->cwdc       += m_deadcrootc_to_cwdc;
-		cs->dead_crootc -= m_deadcrootc_to_cwdc;		
+		cs->dead_crootc -= m_deadcrootc_to_cwdc;
 		cs_litr->litr1c       += m_livecrootc_store_to_litr1c;
 		cs->livecrootc_store  -= m_livecrootc_store_to_litr1c;
 		cs_litr->litr1c       += m_deadcrootc_store_to_litr1c;
@@ -332,20 +412,18 @@ void update_mortality(
 		cs_litr->litr1c         += m_deadcrootc_transfer_to_litr1c;
 		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
 		}
-	if (reproduction_flag == 1) {
-		}	
-	
+
 	/* ---------------------------------------- */
 	/* NITROGEN mortality state variable update */
 	/* ---------------------------------------- */
-	
+
 	/* ABOVEGROUND N POOLS */
-	
+
 	/* Only add dead leaf and stem n to litter and cwd pools if thintyp   */
 	/* is not 2 (harvest case). If thintyp is 2, harvest aboveground n.   */
 	if (thintyp != 2) {
 		ns_litr->litr1n         += m_npool;
-		/*    Leaf mortality */		
+		/*    Leaf mortality */
 		ns_litr->litr1n    += m_leafn_to_litr1n;
 		ns_litr->litr2n    += m_leafn_to_litr2n;
 		ns_litr->litr3n    += m_leafn_to_litr3n;
@@ -353,7 +431,7 @@ void update_mortality(
 		ns_litr->litr1n    += m_deadleafn_to_litr1n;
 		ns_litr->litr2n    += m_deadleafn_to_litr2n;
 		ns_litr->litr3n    += m_deadleafn_to_litr3n;
-		ns_litr->litr4n    += m_deadleafn_to_litr4n;		
+		ns_litr->litr4n    += m_deadleafn_to_litr4n;
 		ns_litr->litr1n    += m_leafn_store_to_litr1n;
 		ns_litr->litr1n    += m_leafn_transfer_to_litr1n;
 		ns_litr->litr1n    += m_retransn_to_litr1n;
@@ -367,6 +445,20 @@ void update_mortality(
 			ns_litr->litr1n    += m_livestemn_transfer_to_litr1n;
 			ns_litr->litr1n    += m_deadstemn_transfer_to_litr1n;
 			}
+		if (reproduction_flag == 1) {
+            ns_litr->litr1n    += m_reprodn_to_litr1n;
+            ns_litr->litr2n    += m_reprodn_to_litr2n;
+            ns_litr->litr3n    += m_reprodn_to_litr3n;
+            ns_litr->litr4n    += m_reprodn_to_litr4n;
+            ns_litr->litr1n    += m_reprodn_store_to_litr1n;
+            ns_litr->litr2n    += m_reprodn_store_to_litr2n;
+            ns_litr->litr3n    += m_reprodn_store_to_litr3n;
+            ns_litr->litr4n    += m_reprodn_store_to_litr4n;
+            ns_litr->litr1n    += m_reprodn_transfer_to_litr1n;
+            ns_litr->litr2n    += m_reprodn_transfer_to_litr2n;
+            ns_litr->litr3n    += m_reprodn_transfer_to_litr3n;
+            ns_litr->litr4n    += m_reprodn_transfer_to_litr4n;
+			}
 		}
 	/* Remove aboveground dead n from n stores in all cases. */
 	ns->npool -= m_npool;
@@ -378,7 +470,7 @@ void update_mortality(
 	ns->dead_leafn          -= m_deadleafn_to_litr1n;
 	ns->dead_leafn          -= m_deadleafn_to_litr2n;
 	ns->dead_leafn          -= m_deadleafn_to_litr3n;
-	ns->dead_leafn          -= m_deadleafn_to_litr4n;	
+	ns->dead_leafn          -= m_deadleafn_to_litr4n;
 	ns->leafn_store       -= m_leafn_store_to_litr1n;
 	ns->leafn_transfer      -= m_leafn_transfer_to_litr1n;
 	ns->retransn            -= m_retransn_to_litr1n;
@@ -393,7 +485,22 @@ void update_mortality(
 		ns->deadstemn_transfer  -= m_deadstemn_transfer_to_litr1n;
 		}
 	if (reproduction_flag == 1) {
-		}	
+		ns->reprodn          -= m_reprodn_to_litr1n;
+		ns->reprodn          -= m_reprodn_to_litr2n;
+		ns->reprodn          -= m_reprodn_to_litr3n;
+		ns->reprodn          -= m_reprodn_to_litr4n;
+		
+		ns->reprodn_store          -= m_reprodn_store_to_litr1n;
+		ns->reprodn_store          -= m_reprodn_store_to_litr2n;
+		ns->reprodn_store          -= m_reprodn_store_to_litr3n;
+		ns->reprodn_store          -= m_reprodn_store_to_litr4n;
+		
+		ns->reprodn_transfer          -= m_reprodn_transfer_to_litr1n;
+		ns->reprodn_transfer          -= m_reprodn_transfer_to_litr2n;
+		ns->reprodn_transfer          -= m_reprodn_transfer_to_litr3n;
+		ns->reprodn_transfer          -= m_reprodn_transfer_to_litr4n;
+
+		}
 
 	/* BELOWGROUND N POOLS */
 	/* Belowground dead n goes to litter and cwd in all cases. */
@@ -425,10 +532,7 @@ void update_mortality(
 		ns_litr->litr1n         += m_livecrootn_transfer_to_litr1n;
 		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
 		ns_litr->litr1n         += m_deadcrootn_transfer_to_litr1n;
-		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;		
+		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;
 	}
-	if (reproduction_flag == 1) {
-		}	
 	return;
 }/*end update_mortality*/
-

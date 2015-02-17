@@ -258,14 +258,18 @@ int allocate_daily_growth(int nlimit,
 
 	/* allocate to reproduction fluxes if flag is set and cpool is sufficient */
 	if (command_line[0].reproduction_flag==1) {
-		total_biomass = total_biomass =  (cs->leafc+cs->frootc+cs->dead_stemc+cs->live_stemc+
+		total_biomass =  cs->leafc+cs->frootc;
+		 if (epc.veg_type == TREE) {
+			total_biomass =  total_biomass+ (cs->dead_stemc+cs->live_stemc+
                         cs->dead_crootc+cs->live_crootc);
+			}
 		if (total_biomass > ZERO) {
 		if (cs->cpool/total_biomass > epc.cpool_fract_reprod_thresh) {
 		  c_remaining = cdf->psn_to_cpool - cdf->cpool_to_leafc - cdf->cpool_to_frootc;
 		  if (epc.veg_type == TREE) {
 			c_remaining -= cdf->cpool_to_livestemc + cdf->cpool_to_deadstemc +
 					cdf->cpool_to_deadcrootc + cdf->cpool_to_deadcrootc_store;
+			}
 		  alloc_to_reprodc = plant_calloc * epc.alloc_cpool_reprodc* (1.0-epc.storage_transfer_prop);
 		  /* don't put more to reproduction that is available after growth expressed today */
 		  alloc_to_reprodc = min(alloc_to_reprodc,c_remaining);
@@ -273,8 +277,8 @@ int allocate_daily_growth(int nlimit,
 		  cdf->cpool_to_reprodc_store = alloc_to_reprodc * (1.0-daily_allocation);
 	/*  printf("\n redprod %lf %lf nlc %lf c %lf", cdf->cpool_to_reprodc, cdf->cpool_to_reprodc_store, nlc, plant_calloc); */
 		}
+		
 		}
-	}
 	}
  
 	/* daily N fluxes out of npool and into new growth or storage */
@@ -300,6 +304,12 @@ int allocate_daily_growth(int nlimit,
 	}
 
 
+	/* allocate to reproduction fluxes if flag is set and cpool is sufficient */
+	if ((command_line[0].reproduction_flag==1) && (alloc_to_reprodc > ZERO)) {
+	          ndf->npool_to_reprodn = cdf->cpool_to_reprodc / epc.seed_cn;
+	          ndf->npool_to_reprodn_store = cdf->cpool_to_reprodc_store / epc.seed_cn;
+		}
+
 
 	ndf->actual_N_uptake  = 
 		ndf->npool_to_leafn +
@@ -313,14 +323,10 @@ int allocate_daily_growth(int nlimit,
 		ndf->npool_to_livecrootn         +
 		ndf->npool_to_livecrootn_store +
 		ndf->npool_to_deadcrootn         +
-		ndf->npool_to_deadcrootn_store;
+		ndf->npool_to_deadcrootn_store  +
+		ndf->npool_to_reprodn +
+		ndf->npool_to_reprodn_store;
 
-
-	/* allocate to reproduction fluxes if flag is set and cpool is sufficient */
-	if ((command_line[0].reproduction_flag==1) && (alloc_to_reprodc > ZERO)) {
-	          ndf->npool_to_reprodn = cdf->cpool_to_reprodc / epc.seed_cn;
-	          ndf->npool_to_reprodn_store = cdf->cpool_to_reprodc_store / epc.seed_cn;
-		}
 
 
 

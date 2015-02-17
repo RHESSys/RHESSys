@@ -210,19 +210,11 @@ void update_reprod_phenology(
 		/*	compute reprod litter fall				*/
 		/*--------------------------------------------------------------*/
 		if (ok && compute_reprod_seedfall(epc,
-			reprodlitfallc,cover_fraction,
-			cs,ns, cdf,ndf)){
-			fprintf(stderr,
-				"FATAL ERROR: in seed_litfall() from update_reprod_phenology()\n");
-			exit(EXIT_FAILURE);
-		}
-		phen->reprodlitfallc -= reprodlitfallc;
-		if (phen->reprodlitfallc < 0)
-			phen->reprodlitfallc = 0;
-	}
+			reprodlitfallc,cover_fraction, cs,ns, cdf,ndf)){ fprintf(stderr, "FATAL ERROR: in seed_litfall() from update_reprod_phenology()\n"); exit(EXIT_FAILURE);
+		} 
+		phen->reprodlitfallc -= reprodlitfallc; if (phen->reprodlitfallc < 0) phen->reprodlitfallc = 0; } 
 
-
-		/*--------------------------------------------------------------*/
+		/*--------------------------------------------------------------*/ 
 		/*	compute seed debris fragmentation		*/
 		/*--------------------------------------------------------------*/
 		if ((cs->seedc > ZERO) && (cover_fraction > ZERO)) {

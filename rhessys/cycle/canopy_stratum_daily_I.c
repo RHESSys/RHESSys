@@ -308,6 +308,7 @@ void	canopy_stratum_daily_I(
 	/*  perform seasonal leaf sens. and budding						*/
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].reproduction_flag ==1) && (command_line[0].grow_flag == 1) ) {
+
 		update_reprod_phenology( &(stratum[0].epv),
 		stratum[0].defaults[0][0].epc,
 		&(stratum[0].phen),
