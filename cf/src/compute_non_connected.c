@@ -72,7 +72,7 @@ bool compute_roof_non_connected_routing(struct flow_struct* _flow_table,
 						result = false;
 					}
 					// search for the nearest pervious surface to the roof square
-					else if (!grid_search(NEAREST_NEIGHBOR_GRID_SEARCH_MAX_DIST, row, col,
+					else if (!grid_search(NEAREST_NEIGHBOR_GRID_SEARCH_MAX_DIST, row, col, _maxr, _maxc,
 							pervious_search_predicate, pervious_search_tiebreaker, pervious_search_context,
 							&found_row, &found_col, &found)) {
 						fprintf(stderr,
