@@ -302,7 +302,7 @@ const char RHESSYS_VERSION[] = "5.14.3";
 int	main( int main_argc, char **main_argv)
 
 {
-	
+	clock_t startClock = clock();
 	/*--------------------------------------------------------------*/
 	/*	Non-function definitions. 									*/
 	/*--------------------------------------------------------------*/
@@ -368,7 +368,8 @@ int	main( int main_argc, char **main_argv)
 	/*	Command line parsing.										*/
 	/*--------------------------------------------------------------*/
 	command_line = construct_command_line(main_argc, main_argv);
-      
+
+
 	/*--------------------------------------------------------------*/
 	/* Check if print version flag was set. If so, just print out   */
 	/* the version and return.                                      */
@@ -386,7 +387,6 @@ int	main( int main_argc, char **main_argv)
 	/*	Construct the world object.									*/
 	/*--------------------------------------------------------------*/
 	world = construct_world( command_line );
-	
 	if (command_line[0].verbose_flag > 0  )
 		fprintf(stderr,"FINISHED CON WORLD ***\n");
 	/*--------------------------------------------------------------*/
@@ -473,6 +473,10 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	/*	The end.													*/
 	/*--------------------------------------------------------------*/
+	clock_t endClock =clock();
+	
+	printf("time cost = %ld seconds\n",(endClock - startClock)/CLOCKS_PER_SEC);
+
 	return(EXIT_SUCCESS);
 	
 } /*end main*/

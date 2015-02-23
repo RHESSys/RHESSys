@@ -165,8 +165,8 @@ void	canopy_stratum_daily_I(
 	}
 
 
-	stratum[0].Kup_direct = 0.0;
-	stratum[0].Kup_diffuse = 0.0;
+/*	stratum[0].Kup_direct = 0.0;
+	stratum[0].Kup_diffuse = 0.0;*/
 
 	if (patch[0].sat_deficit < ZERO)
 		stratum[0].rootzone.S = 1.0;
@@ -196,10 +196,8 @@ void	canopy_stratum_daily_I(
 		patch[0].soil_defaults[0][0].porosity_decay,
 		stratum[0].rootzone.S);
 
-	wilting_point = exp(-1.0*log(-1.0*stratum[0].defaults[0][0].epc.psi_close/patch[0].soil_defaults[0][0].psi_air_entry) 
-			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
-
-	if (stratum[0].rootzone.S < wilting_point) stratum[0].epv.psi = stratum[0].defaults[0][0].epc.psi_close;
+	stratum[0].epv.psi_ravg = (stratum[0].defaults[0][0].epc.gs_ravg_days-1)/(stratum[0].defaults[0][0].epc.gs_ravg_days)* stratum[0].epv.psi_ravg + 
+	 			1.0/(stratum[0].defaults[0][0].epc.gs_ravg_days) * stratum[0].epv.psi;
 
 	if ( command_line[0].verbose_flag > 1 )
 		printf(" %8f", stratum[0].epv.psi);

@@ -157,9 +157,34 @@ void		zone_daily_F(
 	int 	patch;
 	double snow_rain_range;
 	double	es;
+	double Tcloud, f8, e8z, tau8;
 	/*--------------------------------------------------------------*/
 	/*  Update the forcing functions based on the hourly computation*/
 	/*--------------------------------------------------------------*/
+	/* Set daily Kdowns to calculated if not given as inputs.		*/
+	/* Transmissivity & cloud fractions carry over from zone_daily_I.	*/
+	if ((zone[0].Kdown_direct_flag == 0) ||
+		(zone[0].Kdown_diffuse_flag == 0)) {
+			zone[0].Kdown_direct_flat = zone[0].Kdown_direct_flat_calc;
+			zone[0].Kdown_direct = zone[0].Kdown_direct_calc;
+			zone[0].Kdown_diffuse_flat = zone[0].Kdown_diffuse_flat_calc;
+			zone[0].Kdown_diffuse = zone[0].Kdown_diffuse_calc;
+		}
+	/* Otherwise use input Kdowns and calculate transmissivity as	*/
+	/* ratio between given and calculated, then generate cloud		*/
+	/* fraction estimates for longwave calculations. */ 
+	else {
+			zone[0].atm_trans = (zone[0].Kdown_direct+zone[0].Kdown_diffuse) 
+						/ (zone[0].Kdown_direct_calc + zone[0].Kdown_diffuse_calc);
+			zone[0].cloud_fraction = 1.0 - zone[0].atm_trans
+						/(zone[0].defaults[0][0].sea_level_clear_sky_trans
+						+ zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate);
+			zone[0].cloud_fraction = max(zone[0].cloud_fraction,0.0);
+			zone[0].cloud_fraction = min(zone[0].cloud_fraction,1.0);
+			zone[0].cloud = zone[0].cloud_opacity * zone[0].cloud_fraction * 12.0;
+		}
+	
+	
 	/*--------------------------------------------------------------*/
 	/*	Make use of more accurate basin daylength 		*/
 	/*	if it is not given and the zone horizons are 0		*/
@@ -187,107 +212,19 @@ void		zone_daily_F(
 		/*--------------------------------------------------------------*/
 		zone[0].metv.dayl = basin[0].daylength;
 	}
-	/*--------------------------------------------------------------*/
-	/*	Deretmine if we need to adjust Kdowns or metv.tmax.			*/
-	/*																*/
-	/*	We assume that if either Kdown_diffuse or Kdown_direct		*/
-	/*	was not supplied then themetv.tmax needs adjustment.		*/
-	/*	This is because the adjustment should not be needed			*/
-	/*		if we had good enough data to get Kdowns.				*/
-	/*--------------------------------------------------------------*/
-	if ( (zone[0].Kdown_direct_flag == 0) ||
-		(zone[0].Kdown_diffuse_flag == 0) ){
-		/*--------------------------------------------------------------*/
-		/*	Adjust the computed Kdown's for cloud fraction if they		*/
-		/*	were not read in directly.									*/
-		/*	See simuilate_zone_daily_1 for the adjustment computation	*/
-		/*--------------------------------------------------------------*/
-		zone[0].Kdown_direct = zone[0].Kdown_direct
-			* zone[0].Kdown_direct_adjustment;
-		zone[0].Kdown_diffuse = zone[0].Kdown_diffuse
-			* zone[0].Kdown_diffuse_adjustment;
-		/*--------------------------------------------------------------*/
-		/*	radrat (unitless)											*/
-		/*																*/
-		/*	Equation 2a & 2b , Page 5, "MTCLIM" 						*/
-		/*--------------------------------------------------------------*/
-		if ( (zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat) != 0.0 ) {
-			zone[0].radrat = (zone[0].Kdown_direct + zone[0].Kdown_diffuse) /
-			(zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat);   
-		}
-		else zone[0].radrat = 1.0;
-		/*zone[0].radrat = 1.0;*/
-		/* EG edit: when radrat equals zero, tmax= -Inf and PSN=Nan */
-		if ( zone[0].radrat == 0.0) {
-			zone[0].radrat = 1.0;
-		}
-		/*--------------------------------------------------------------*/
-		/*	LAI compensation (unitless)									*/
-		/*																*/
-		/*	Equation 2a & 2b , Page 5, "MTCLIM" 						*/
-		/*	Modified so that the base station LAI is subtracted from the*/
-		/*		zone lai.												*/
-		/*--------------------------------------------------------------*/
-		zone[0].effective_lai = 0.0;
-		for ( patch=0 ; patch<zone[0].num_patches ; patch++ ){
-			zone[0].effective_lai
-				+= zone[0].patches[patch][0].effective_lai
-				* zone[0].patches[patch][0].area;
-		}
-		zone[0].effective_lai = zone[0].effective_lai / zone[0].area;
-		if ( zone[0].radrat <  1.0 ){
-			zone[0].LAI_temp_adjustment
-				=-1 * ( 1/zone[0].radrat ) * ( 1 + (zone[0].effective_lai
-				- zone[0].base_station_effective_lai )
-				/ zone[0].defaults[0][0].max_effective_lai );
-		}
-		else{
-			zone[0].LAI_temp_adjustment = ( zone[0].radrat )
-				* ( 1 - (zone[0].effective_lai
-				- zone[0].base_station_effective_lai )
-				/ zone[0].defaults[0][0].max_effective_lai );
-		}  /*end if-else*/
-		/*--------------------------------------------------------------*/
-		/*metv.tmax adjusted ( degrees C)								*/
-		/*--------------------------------------------------------------*/
-		zone[0].metv.tmax = zone[0].metv.tmax + zone[0].LAI_temp_adjustment;
-	} /*end if*/
-	/* EG edit: LAI temp adjustment was pushing tmax below tmin*/
-	if (zone[0].metv.tmax < zone[0].metv.tmin) {
-		zone[0].metv.tmax = zone[0].metv.tmin + 1.0;
-	}
-	/*--------------------------------------------------------------*/
-	/*	If no PAR or only diffuse PAR is given get the other PAR's	*/
-	/*	We assume the ratio of diffuse to direct PAR is a closed 	*/
-	/*		form equation of the ratio of diffuse to direct Kdown.	*/
-	/*--------------------------------------------------------------*/
-	if ( (zone[0].PAR_direct == -999.0 ) && ( zone[0].PAR_diffuse == -999.0) ){
-		zone[0].PAR_direct = 1000.0 * zone[0].Kdown_direct * RAD2PAR * EPAR;
-		zone[0].PAR_diffuse = 1000.0 *  zone[0].Kdown_diffuse * RAD2PAR * EPAR;
-	}
-	else if ( zone[0].PAR_direct == -999.0 ){
-		zone[0].PAR_direct = zone[0].PAR_diffuse * (zone[0].Kdown_direct
-			/ zone[0].Kdown_diffuse );
-	}
-	else if ( zone[0].PAR_diffuse == -999.0 ){
-		zone[0].PAR_diffuse = zone[0].PAR_direct * (zone[0].Kdown_diffuse
-			/ zone[0].Kdown_direct );
-	}
-	/*--------------------------------------------------------------*/
-	/*	.metv.tavg	(degrees C)									*/
-	/*--------------------------------------------------------------*/
-	if ( zone[0].metv.tavg == -999.0 ){
-		zone[0].metv.tavg = (zone[0].metv.tmax + zone[0].metv.tmin)/2.0;
-	}
 
 	/*--------------------------------------------------------------*/
-	/*	metv.tday	(degrees C)									*/
+	/* MOVED TEMP AND PRECIP CALCS UP SO CAN BE USED FOR CLOUD FRAC */
+	/*--------------------------------------------------------------*/
+	/*  metv.tavg calc in zone_daily_I								*/
+	/*--------------------------------------------------------------*/
+	/*	metv.tday	(degrees C)										*/
 	/*																*/
 	/*	Eq 1. Page 4, "MTCLIM"										*/
 	/*--------------------------------------------------------------*/
 	if ( zone[0].metv.tday == -999.0 ){
 		zone[0].metv.tday = zone[0].defaults[0][0].temcf
-			* (zone[0].metv.tmax - zone[0].metv.tavg) + zone[0].metv.tavg;
+		* (zone[0].metv.tmax - zone[0].metv.tavg) + zone[0].metv.tavg;
 	}
 	/*--------------------------------------------------------------*/
 	/*	metv.tnight 	(degrees C)								*/
@@ -312,14 +249,15 @@ void		zone_daily_F(
 			}
 			else{
 				snow_rain_range = zone[0].defaults[0][0].max_snow_temp
-					- zone[0].defaults[0][0].min_rain_temp;
+				- zone[0].defaults[0][0].min_rain_temp;
 				if ( snow_rain_range < 0.001){
 					zone[0].snow = zone[0].rain;
 					zone[0].rain = 0.0;
 				}
 				else{
 					zone[0].snow = min((zone[0].defaults[0][0].max_snow_temp
-						- zone[0].metv.tavg) * zone[0].rain / snow_rain_range, zone[0].rain);
+										- zone[0].metv.tavg) * zone[0].rain 
+									    / snow_rain_range, zone[0].rain);
 					zone[0].rain = zone[0].rain - zone[0].snow;
 				}
 			}
@@ -328,60 +266,155 @@ void		zone_daily_F(
 			zone[0].snow = 0.0;
 		}
 	}
+	zone[0].snow += zone[0].snow_hourly_total;
 	/*--------------------------------------------------------------*/
 	/*	If we have no rain duration data set it as		*/
 	/*	daylength if rain 0 if not.					*/
 	/*--------------------------------------------------------------*/
+
 	if ( zone[0].daytime_rain_duration == -999.0 ){
 		if ( zone[0].rain == 0 || (zone[0].snow != 0 ) ){
 			zone[0].daytime_rain_duration = 0;
 		}
 		else{
-			zone[0].daytime_rain_duration = zone[0].metv.dayl;
+			/* Old code */
+			/* zone[0].daytime_rain_duration = zone[0].metv.dayl;*/
+			/* Since this value is used for both infiltration (intensity) and 
+			 radiation, we are now defining it as # of seconds of rain over
+			 ENTIRE 24-hr period. If no value is given, we assume it rains
+			 over the full day. */
+			zone[0].daytime_rain_duration = 86400;
 		}
 	}
 	else{
-		if ( zone[0].rain == 0 ){
+		if ( zone[0].rain == 0 && zone[0].rain_hourly_total == 0){
 			zone[0].daytime_rain_duration = 0;
 		}
 		else{
+			/* Old code */
+			/*zone[0].daytime_rain_duration =
+				min( zone[0].metv.dayl,zone[0].daytime_rain_duration);*/
+			/* We adjust this value in the radiation routines to split
+			 into daylight vs. nighttime rain hours, so here we leave
+			 it as-is and just bound to 0:86400 sec. */
 			zone[0].daytime_rain_duration =
-				min( zone[0].metv.dayl,zone[0].daytime_rain_duration);
+				min( 86400, max(zone[0].daytime_rain_duration,0));
 		}
 	}
+	
+	/*---------------------------------------------------------------*/
+	/* MOVED CLOUD FRACTION CALCS INTO ZONE DAILY I AND EARLIER IN	 */
+	/* THIS ROUTINE SO CAN BE USED FOR K ADJUSTMENTS				 */
+	/*---------------------------------------------------------------*/
+	
 	/*--------------------------------------------------------------*/
-	/*	Ldown														*/
+	/*	Deretmine if we need to adjust Kdowns or metv.tmax.			*/
+	/*																*/
+	/*	We assume that if either Kdown_diffuse or Kdown_direct		*/
+	/*	was not supplied then themetv.tmax needs adjustment.		*/
+	/*	This is because the adjustment should not be needed			*/
+	/*		if we had good enough data to get Kdowns.				*/
 	/*--------------------------------------------------------------*/
-	if ( zone[0].Ldown == -999.0){
+	if ( (zone[0].Kdown_direct_flag == 0) ||
+		(zone[0].Kdown_diffuse_flag == 0) ){
 		/*--------------------------------------------------------------*/
-		/*		compute the daily downwelling long wave based on 		*/
-		/*		.metv.tavg. 	(kJ/(m2*day))						*/
-		/*																*/
-		/*		Base on Linacre 1992 as found in C version of rhessys.	*/
-		/*																*/
-		/*		Also, Linacre's formula requires cloud fraction in   	*/
-		/*		oktas of cloud cover; where 1 okta = 1/8 th of sky	*/
-		/*		covered by clouds.					*/
-		/*																*/
-		/*		If we dont have cloud fraction data we assume 4.0oktas	*/
-		/*		of full cloudyness if it is a rainy day or a rain or 	*/
-		/*		snow day.												*/
+		/*	Adjust the computed Kdown's for cloud fraction if they		*/
+		/*	were not read in directly.									*/
+		/*	See simuilate_zone_daily_1 for the adjustment computation	*/
 		/*--------------------------------------------------------------*/
-		if ( zone[0].cloud_fraction != -999.0 ){
-			zone[0].cloud = zone[0].cloud_opacity
-				* zone[0].cloud_fraction * 12.0;
+		zone[0].Kdown_direct = zone[0].Kdown_direct
+			* zone[0].Kdown_direct_adjustment;
+		zone[0].Kdown_diffuse = zone[0].Kdown_diffuse
+			* zone[0].Kdown_diffuse_adjustment;
+		if (command_line[0].verbose_flag == -5) {
+			printf("\nZONE DAILY F: Precip=%lf cloudfrac=%lf Kdir_adj=%lf Kdif_adj=%lf Tavg=%lf", 
+				   zone[0].snow + zone[0].rain, 
+				   zone[0].cloud_fraction, 
+				   zone[0].Kdown_direct_adjustment/86.4,
+				   zone[0].Kdown_diffuse_adjustment/86.4,
+				   zone[0].metv.tavg);
 		}
-		else if	((zone[0].snow + zone[0].rain) > zone[0].defaults[0][0].pptmin ){
-			zone[0].cloud = 4.0;
-			zone[0].cloud_fraction = 1.0;
+		/*--------------------------------------------------------------*/
+		/*	radrat (unitless)											*/
+		/*																*/
+		/*	Equation 2a & 2b , Page 5, "MTCLIM" 						*/
+		/*--------------------------------------------------------------*/
+		if ( (zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat) != 0.0 ) {
+			zone[0].radrat = (zone[0].Kdown_direct + zone[0].Kdown_diffuse) /
+			(zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat);   
 		}
-		else{
-			zone[0].cloud = 0;
-			zone[0].cloud_fraction = 0.0;
+		else zone[0].radrat = 1.0;
+		/*zone[0].radrat = 1.0;*/
+		/* EG edit: when radrat equals zero, tmax= -Inf and PSN=Nan */
+		if ( zone[0].radrat == 0.0) {
+			zone[0].radrat = 1.0;
 		}
-		zone[0].Ldown = (208+6*zone[0].metv.tavg) * ( 1.0
-			+ 0.0034*pow(zone[0].cloud,2.0))* 86400.0 / 1000.0;
+		
+		/*------------------------------------------------------------------*/
+		/* REMOVING TMAX CORRECTION SINCE EQUATION IS ALWAYS ADDING 1 DEG	*/
+		/* EVEN ON FLAT SURFACES WITH SAME LAI AS BASE. EQN NEEDS EDITS		*/
+		/* BEFORE RE-IMPLEMENTING.											*/
+		/*--------------------------------------------------------------*/
+		/*	LAI compensation (unitless)									*/
+		/*																*/
+		/*	Equation 2a & 2b , Page 5, "MTCLIM" 						*/
+		/*	Modified so that the base station LAI is subtracted from the*/
+		/*		zone lai.												*/
+		/*--------------------------------------------------------------*/
+		//zone[0].effective_lai = 0.0;
+		//for ( patch=0 ; patch<zone[0].num_patches ; patch++ ){
+		//	zone[0].effective_lai
+		//		+= zone[0].patches[patch][0].effective_lai
+		//		* zone[0].patches[patch][0].area;
+		//}
+		//zone[0].effective_lai = zone[0].effective_lai / zone[0].area;
+		//if ( zone[0].radrat <  1.0 ){
+		//	zone[0].LAI_temp_adjustment
+		//		=-1 * ( 1/zone[0].radrat ) * ( 1 + (zone[0].effective_lai
+		//		- zone[0].base_station_effective_lai )
+		//		/ zone[0].defaults[0][0].max_effective_lai );
+		//}
+		//else {
+		//	zone[0].LAI_temp_adjustment = ( zone[0].radrat )
+		//		* ( 1 - (zone[0].effective_lai
+		//		- zone[0].base_station_effective_lai )
+		//		/ zone[0].defaults[0][0].max_effective_lai );
+		//}  /*end if-else*/
+		/*--------------------------------------------------------------*/
+		/*metv.tmax adjusted ( degrees C)								*/
+		/*--------------------------------------------------------------*/
+		//zone[0].metv.tmax = zone[0].metv.tmax + zone[0].LAI_temp_adjustment;
+		/*-----------------------------------------------------------------*/
+		
 	} /*end if*/
+	
+	/* EG edit: LAI temp adjustment was pushing tmax below tmin*/
+	if (zone[0].metv.tmax < zone[0].metv.tmin) {
+		zone[0].metv.tmax = zone[0].metv.tmin + 1.0;
+	}
+	/*--------------------------------------------------------------*/
+	/*	If no PAR or only diffuse PAR is given get the other PAR's	*/
+	/*	We assume the ratio of diffuse to direct PAR is a closed 	*/
+	/*		form equation of the ratio of diffuse to direct Kdown.	*/
+	/*--------------------------------------------------------------*/
+	if ( (zone[0].PAR_direct == -999.0 ) && ( zone[0].PAR_diffuse == -999.0) ){
+		zone[0].PAR_direct = 1000.0 * zone[0].Kdown_direct * RAD2PAR * EPAR;
+		zone[0].PAR_diffuse = 1000.0 *  zone[0].Kdown_diffuse * RAD2PAR * EPAR;
+	}
+	else if ( zone[0].PAR_direct == -999.0 ){
+		zone[0].PAR_direct = zone[0].PAR_diffuse * (zone[0].Kdown_direct
+			/ zone[0].Kdown_diffuse );
+	}
+	else if ( zone[0].PAR_diffuse == -999.0 ){
+		zone[0].PAR_diffuse = zone[0].PAR_direct * (zone[0].Kdown_diffuse
+			/ zone[0].Kdown_direct );
+	}
+
+	
+	/*-------------------------------------------------------------------*/
+	/* LDOWN MODEL REPLACED WITH NEW ONE CALCULATED AFTER VAPOR PRESSURE */
+	/*-------------------------------------------------------------------*/
+	
 	/*--------------------------------------------------------------*/
 	/*	Saturation Vapour Pressure	(Pa)							*/
 	/*																*/
@@ -453,6 +486,56 @@ void		zone_daily_F(
 				zone[0].relative_humidity = -999.0;
 			}
 	}
+	/* Case where vpd is given. Still need to calculate e_dewpoint	*/
+	/* for snowpack sublim and RH for output.						*/
+	else {
+		es = 613.75 * exp( (17.502 * zone[0].metv.tavg)
+						  / ( 240.97 + zone[0].metv.tavg) );
+		zone[0].e_dewpoint = es - zone[0].metv.vpd;
+		zone[0].relative_humidity = zone[0].e_dewpoint / es;
+	}
+	
+	/*--------------------------------------------------------------*/
+	/* NEW ATMOSPHERIC LONGWAVE MODEL								*/
+	/* Clear sky emissivity from Satterlund 1979 as applied in		*/
+	/* Mahat & Tarboten 2012 UEB with cloud fraction correction.	*/
+	/* After testing, best results from Diley-Crawford model but	*/
+	/* leaving others in as comments in case someone else wants		*/
+	/* to experiment.												*/
+	/*--------------------------------------------------------------*/
+	if ( zone[0].Ldown == -999.0){
+		/* Satterlund-Crawford */
+		/*zone[0].Ldown = (zone[0].cloud_fraction 
+			+ (1.0 - zone[0].cloud_fraction) * 1.08 * (1.0 - exp(-pow(zone[0].e_dewpoint/100,(zone[0].metv.tavg+273.16)/2016)))) 
+			* (SBC * 86400/1000) * pow(zone[0].metv.tavg+273.16,4);*/
+		
+		/* Diley-Crawford */
+		zone[0].Ldown = zone[0].cloud_fraction * (SBC * 86400/1000) * pow(zone[0].metv.tavg+273.16,4)
+				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273.16)/273.16,6)
+				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273.16)/25,0.5)) * 86400/1000;
+		
+		/* split by day/night (not sensitive) */
+		/*zone[0].Ldown = ( zone[0].cloud_fraction * (SBC * (seconds_per_day-zone[0].metv.dayl)/1000) * pow(zone[0].metv.tnight+273,4)
+						    + (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tnight+273)/273.16,6)
+						    + 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tnight+273)/25,0.5)) * (seconds_per_day-zone[0].metv.dayl)/1000 )
+					+ ( zone[0].cloud_fraction * (SBC * zone[0].metv.dayl/1000) * pow(zone[0].metv.tday+273,4)
+					        + (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tday+273)/273.16,6)
+							+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tday+273)/25,0.5)) * zone[0].metv.dayl/1000 );*/
+		
+		/* Diley with Kimball cloud correction per Flerchinger 2009 */
+		/*if ( (current_date.month>=5) && (current_date.month<=10) )
+			Tcloud = (zone[0].metv.tavg+273.16) - 9; /* summer adjustment for cloud temp */
+		/*else 
+			Tcloud = (zone[0].metv.tavg+273.16) - 13; /* winter adjustment for cloud temp */
+		/*f8 = -0.6732 + (0.006240*Tcloud) - (0.9140*pow(10,-5)*pow(Tcloud,2));
+		e8z = 0.24 + (2.98*pow(10,-6) * pow(zone[0].e_dewpoint/1000,2) * exp(3000.0/(zone[0].metv.tavg+273.16)));
+		tau8 = 1.0 - e8z*(1.4-0.4*e8z);
+		zone[0].Ldown = zone[0].cloud_fraction * f8 * tau8 * (SBC * 86400/1000) * pow(Tcloud,4)
+				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273.16)/273.16,6)
+				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273.16)/25,0.5)) * 86400/1000;*/
+	} /*end if*/
+	/*--------------------------------------------------------------*/
+	
 	/*--------------------------------------------------------------*/
 	/*	Nitrogen Deposition					*/
 	/*	- if not availabe use default value			*/
@@ -538,9 +621,21 @@ void		zone_daily_F(
 	/*      update met running averages variables                            */
 	/*--------------------------------------------------------------*/
 
-	zone[0].metv.tmin_ravg = 1.0/6.0*zone[0].metv.tmin + 5.0/6.0*zone[0].metv.tmin_ravg;
-	zone[0].metv.vpd_ravg = 1/6.0*zone[0].metv.vpd + 5.0/6.0*zone[0].metv.vpd_ravg;
-	zone[0].metv.dayl_ravg = 1/6.0*basin[0].daylength + 5.0/6*zone[0].metv.dayl_ravg;
+	zone[0].metv.tmin_ravg = 1.0/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.tmin 
+			+ (zone[0].defaults[0][0].ravg_days-1.0)/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.tmin_ravg;
+	zone[0].metv.vpd_ravg = 1.0/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.vpd 
+			+ (zone[0].defaults[0][0].ravg_days-1.0)/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.vpd_ravg;
+	zone[0].metv.dayl_ravg = 1.0/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.dayl 
+			+ (zone[0].defaults[0][0].ravg_days-1.0)/(zone[0].defaults[0][0].ravg_days)*zone[0].metv.dayl_ravg;
+
+	
+	if (command_line[0].verbose_flag == -5) {
+		printf(" Kdowndir=%lf Kdowndiff=%lf Ldown=%lf", 
+			   zone[0].Kdown_direct/86.4,
+			   zone[0].Kdown_diffuse/86.4,
+			   zone[0].Ldown/86.4);
+	}
+	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches for day end computations			*/
 	/*--------------------------------------------------------------*/

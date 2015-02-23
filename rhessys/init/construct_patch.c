@@ -103,7 +103,6 @@ struct patch_object *construct_patch(
 	fscanf(world_file,"%d",&(patch[0].ID));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(patch[0].x));
-
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(patch[0].y));
 	read_record(world_file, record);
@@ -629,7 +628,7 @@ struct patch_object *construct_patch(
 		0,
 		-1*patch[0].sat_deficit);
 	patch[0].preday_sat_deficit_z = patch[0].sat_deficit_z;
-
+	
 	return(patch);
 } /*end construct_patch.c*/
 

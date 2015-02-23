@@ -151,6 +151,7 @@ double	compute_soil_water_potential(
 		case 1: 
 			LWP_predawn = min(-1.0 * 0.01 * ( psi_air_entry
 				* pow ( S , -1/pore_size_index) ), LWP_min_spring);
+				/*printf("\n%lf %lf %lf %lf %lf",psi_air_entry,S,pore_size_index,LWP_min_spring,LWP_predawn);*/
 			break;
 		case 2:
 			if (S > ZERO) 
@@ -176,5 +177,6 @@ double	compute_soil_water_potential(
 	/*	Limit the lowest LWP to that of stomatal closure	*/
 	/*--------------------------------------------------------------*/
 	LWP_predawn = max(LWP_predawn, LWP_stom_closure);
+	/*printf(" %lf %lf",Tsoil,LWP_predawn);*/
 	return(LWP_predawn);
 } /*end compute_soil_water_potential)*/

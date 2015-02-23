@@ -67,8 +67,9 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 	struct	patch_object	*stream;
 	struct	innundation_object *innundation_list;
 	
+	
 	rlist = (struct routing_list_object	*)alloc( sizeof(struct routing_list_object), "rlist", "construct_routing_topology");
-
+	
 	/*--------------------------------------------------------------*/
 	/*  Try to open the routing file in read mode.                    */
 	/*--------------------------------------------------------------*/
@@ -82,8 +83,7 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 	rlist->list = (struct patch_object **)alloc(
 		num_patches * sizeof(struct patch_object *), "patch list",
 		"construct_routing_topography");
-
-
+	
 	/*--------------------------------------------------------------*/
 	/*	Read in  each patch record and find it		.				*/
 	/*	if it is a stream add it to the basin level routing list	*/
@@ -101,13 +101,11 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 			&gamma,
 			&num_neighbours);
 
-
 		if  ( (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) )
 			patch = find_patch(patch_ID, zone_ID, hill_ID, basin);
 		else
 			patch = basin[0].outside_region;
 		rlist->list[i] = patch;
-
 
 		if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
 			printf("\n WARNING lateral Ksat (%lf) are close to zero for patch %d",
@@ -117,6 +115,7 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 		 	gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0;
 		else	
 		 	gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
+
 		/*--------------------------------------------------------------*/
 		/*  Allocate innundation list array				*/
 		/*	note for this routing there is only one innundation depth 	*/
@@ -191,9 +190,8 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 				patch[0].num_soil_intervals = MAX_NUM_INTERVAL;
 				patch[0].soil_defaults[0][0].interval_size = patch[0].soil_defaults[0][0].soil_water_cap / MAX_NUM_INTERVAL;
 				}
-
 			patch[0].transmissivity_profile = compute_transmissivity_curve(gamma, patch, command_line);
-		}
+			}
 
 
 	}

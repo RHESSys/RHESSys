@@ -102,7 +102,7 @@ double *construct_clim_sequence(char *file, struct date start_date,
 	/*	Compute offset to reach start date.							*/
 	/*--------------------------------------------------------------*/
 	offset = (start_date_julian - first_date_julian);
-	
+
 	/*--------------------------------------------------------------*/
 	/* 	If the start date is before the first date error.			*/
 	/*--------------------------------------------------------------*/
@@ -133,5 +133,6 @@ double *construct_clim_sequence(char *file, struct date start_date,
 			*(sequence+i) = value;
 		}
 	}
+	fclose(sequence_file);
 	return(sequence);
 } /*end construct_clim_sequence*/

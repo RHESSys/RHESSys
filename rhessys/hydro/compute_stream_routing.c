@@ -11,7 +11,7 @@
 /*	struct routing_list_object compute_stream_routing( 				*/
 /*							struct command_line_object command */
 /*							struct stream_network_object *network)	*/
-/*							int num_reaches,
+/*							int num_reaches,		*/	
 /*							struct date *current_date)	*/
 /*											*/
 /* 											*/

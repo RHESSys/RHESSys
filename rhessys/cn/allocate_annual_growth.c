@@ -185,10 +185,15 @@ int allocate_annual_growth(				int id,
          }
 
 	total_store =  cs->cpool;
-	total_biomass =  (cs->leafc+cs->frootc+cs->dead_stemc+cs->live_stemc+
-			cs->dead_crootc+cs->live_crootc);
+	
+	/* Changed to just be live C */
+	/*total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->dead_stemc +
+			cs->live_crootc + cs->dead_crootc);*/
+	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc);
 
-	total_above_biomass =  cs->leafc+cs->dead_stemc+cs->live_stemc;
+	/* Changed to just be live C */
+	/*total_above_biomass =  cs->leafc+cs->dead_stemc+cs->live_stemc;*/
+	total_above_biomass =  cs->leafc+cs->live_stemc;
 	
 	if (total_biomass > ZERO)
 		ratio = (total_store/total_biomass);

@@ -74,7 +74,7 @@ double	compute_hourly_rain_stored(
 	if( verbose_flag > 2)
 		printf("%8.6f ",rain_storage);
 	/*--------------------------------------------------------------*/
-	/*	Update rain throughfall.									*/
+	/*	Update rain throughfallu				*/
 	/*	m += m							*/
 	/*--------------------------------------------------------------*/
 	throughfall += max(potential_interception
