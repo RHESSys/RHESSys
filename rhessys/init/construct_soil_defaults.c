@@ -49,6 +49,7 @@ struct soil_default *construct_soil_defaults(
 		char	*);
 	
 	double compute_delta_water(int, double, double,	double, double, double);
+	int	parse_albedo_flag( char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
@@ -123,6 +124,9 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].snow_water_capacity = 		getDoubleParam(&paramCnt, &paramPtr, "snow_water_capacity", "%lf", 0.0, 1);
 		default_object_list[i].snow_light_ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_light_ext_coef", "%lf", 10000.0, 1);
 		default_object_list[i].snow_melt_Tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_melt_Tcoef", "%lf", 0.05, 1);
+		default_object_list[i].snow_albedo_flag = 	parse_albedo_flag(getStrParam(&paramCnt, &paramPtr, "snow_albedo_flag", "%s", "age", 1));
+		default_object_list[i].bats_b = 		getDoubleParam(&paramCnt, &paramPtr, "bats_b", "%lf", 2.0, 1);
+		default_object_list[i].bats_r3 = 		getDoubleParam(&paramCnt, &paramPtr, "bats_r3", "%lf", 0.3, 1);
 /*
 			 default_object_list[i].snow_melt_Tcoef *= command_line[0].tmp_value; 
 */
@@ -157,18 +161,7 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
 			}
 
-		/* sat_store for fill and spill */	
-		default_object_list[i].sat_store = 	getDoubleParam(&paramCnt, &paramPtr, "sat_store", "%lf", 0.1, 1);
 
-	/*	if (default_object_list[i].porosity_0 * default_object_list[i].soil_depth * command_line[0].sen[SOIL_DEPTH]* 0.999
-											    < default_object_list[i].sat_store){
-		    printf("sat_store = %f, porosity_0 = %f, soil_depth = %f\n",default_object_list[i].sat_store,default_object_list[i].porosity_0,
-								default_object_list[i].soil_depth * command_line[0].sen[SOIL_DEPTH]);
-	    	    fprintf(stderr,"FATAL ERROR: sat_store is more than max_soil_sat_deficit. Please choose a small sat_store in soil def file.");
-
-		exit(0);
-		} 
-       */
 		
 
 		/*--------------------------------------------------------------*/
@@ -298,6 +291,6 @@ struct soil_default *construct_soil_defaults(
     
         printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
-
-	return(default_object_list);
+	
+		return(default_object_list);
 } /*end construct_soil_defaults*/

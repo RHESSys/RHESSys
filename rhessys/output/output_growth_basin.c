@@ -64,7 +64,7 @@ void	output_growth_basin(
 	double streamNO3_from_sub;
 	double hgwNO3, hgwDON, hgwDOC, hgwNH4;
 	double hgwNO3out, hgwDONout, hgwDOCout, hgwNH4out;
-	
+
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -221,6 +221,7 @@ void	output_growth_basin(
 				aarea +=  patch[0].area;
 				hill_area += patch[0].area;
 			}
+
 		}
 		hgwNO3 += hillslope[0].gw.NO3 * hill_area;
 		hgwNH4 += hillslope[0].gw.NH4 * hill_area;
@@ -287,7 +288,8 @@ void	output_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -301,6 +303,7 @@ void	output_growth_basin(
 		asurfaceN * 1000,
 		(aleafc + awoodc + afrootc),
 		(aleafn + awoodn + afrootn),
+		acpool,
 		anpool,
 		alitrc,
 		alitrn,

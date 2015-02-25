@@ -1,3 +1,4 @@
+
 /*--------------------------------------------------------------*/
 /*                                                              */ 
 /*		update_mortality									*/
@@ -151,7 +152,7 @@ void update_mortality(
 		m_livestemc_transfer_to_litr1c = mort.mort_cpool * cs->livestemc_transfer;
 		m_deadstemc_transfer_to_litr1c = mort.mort_cpool * cs->deadstemc_transfer;
 		m_livecrootc_transfer_to_litr1c = mort.mort_cpool * cs->livecrootc_transfer;
-		m_deadcrootc_transfer_to_litr1c = mort.mort_cpool * cs->deadcrootc_transfer;		
+		m_deadcrootc_transfer_to_litr1c = mort.mort_cpool * cs->deadcrootc_transfer;
 	}
 	
 	/* daily nitrogen fluxes due to mortality */
@@ -250,8 +251,16 @@ void update_mortality(
 		cs_litr->litr1c    += m_leafc_transfer_to_litr1c;
 		if (epc.veg_type == TREE) {
 			/*    Stem wood mortality */
-			cs->cwdc       += m_livestemc_to_cwdc;
-			cs->cwdc       += m_deadstemc_to_cwdc;
+			/*	  Transfer to DEADWOOD if standing dead */
+			if (thintyp == 3) {
+				cs->dead_stemc       += m_livestemc_to_cwdc;
+				cs->dead_stemc       += m_deadstemc_to_cwdc;
+				}
+			/*	  Transfer to CWD otherwise */
+			else {
+				cs->cwdc       += m_livestemc_to_cwdc;
+				cs->cwdc       += m_deadstemc_to_cwdc;
+				}
 			cs_litr->litr1c    += m_livestemc_store_to_litr1c;
 			cs_litr->litr1c    += m_deadstemc_store_to_litr1c;
 			cs_litr->litr1c    += m_livestemc_transfer_to_litr1c;
@@ -281,7 +290,7 @@ void update_mortality(
 		cs->livestemc_store   -= m_livestemc_store_to_litr1c;
 		cs->deadstemc_store   -= m_deadstemc_store_to_litr1c;
 		cs->livestemc_transfer  -= m_livestemc_transfer_to_litr1c;
-		cs->deadstemc_transfer  -= m_deadstemc_transfer_to_litr1c;		
+		cs->deadstemc_transfer  -= m_deadstemc_transfer_to_litr1c;	
 		}
 	/* gresp... group in with aboveground? */
 	cs->gresp_store       -= m_gresp_store_to_litr1c;
@@ -343,8 +352,16 @@ void update_mortality(
 		if (epc.veg_type == TREE){
 		/*    Stem wood mortality */
 			ns_litr->litr1n     += m_livestemn_to_litr1n;
-			ns->cwdn       += m_livestemn_to_cwdn;
-			ns->cwdn       += m_deadstemn_to_cwdn;
+			/*	  Transfer to CWD if normal thinning */
+			if (thintyp != 3) {
+				ns->cwdn       += m_livestemn_to_cwdn;
+				ns->cwdn       += m_deadstemn_to_cwdn;
+				}
+			/*	  Transfer to DEADWOOD if standing dead */
+			else {
+				ns->dead_stemn       += m_livestemn_to_cwdn;
+				ns->dead_stemn       += m_deadstemn_to_cwdn;
+				}
 			ns_litr->litr1n    += m_livestemn_store_to_litr1n;
 			ns_litr->litr1n    += m_deadstemn_store_to_litr1n;
 			ns_litr->litr1n    += m_livestemn_transfer_to_litr1n;

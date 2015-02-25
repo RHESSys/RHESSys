@@ -37,6 +37,8 @@ bool stream_make_context(
 }
 
 bool stream_search_predicate(
+		int _subjectRow,
+		int _subjectCol,
 		int _row,
 		int _col,
 		void* _context,
@@ -64,3 +66,18 @@ bool stream_search_predicate(
 
 	return result;
 }
+
+bool stream_search_tiebreaker(
+	int _rowA,
+	int _colA,
+	int _rowB,
+	int _colB,
+	void* _context,
+	int* _winnerRow,
+	int* _winnerCol) {
+	// Default winner is the first
+	*_winnerRow = _rowA;
+	*_winnerCol = _colA;
+	return true;
+}
+

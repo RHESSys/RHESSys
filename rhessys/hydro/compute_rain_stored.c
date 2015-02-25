@@ -76,6 +76,14 @@ double	compute_rain_stored(
 		printf("%8.6f %8.6f ",*rain, stratum[0].rain_stored);
 	if( verbose_flag >2)
 		printf("%8.6f ",potential_interception);
+	if (verbose_flag == -5) {
+		printf("\n          RAIN STORED:rain=%lf rainstor=%lf potint=%lf potevap=%lf",
+			   *rain,
+			   stratum[0].rain_stored,
+			   potential_interception,
+			   potential_evaporation);
+	}
+	
 	/*--------------------------------------------------------------*/
 	/*	Add amount not potentially intercepted to throughfall.	*/
 	/*	m = m - m 						*/
@@ -140,6 +148,19 @@ double	compute_rain_stored(
 		- (rain_storage - stratum[0].rain_stored),0);
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);
+	
+	if (verbose_flag == -5) {
+		printf("                    RAIN STORED END:rainstor=%lf throughfall=%lf oldrainstor=%lf evap=%lf potevap=%lf",
+			   rain_storage,
+			   throughfall,
+			   stratum[0].rain_stored,
+			   stratum[0].evaporation,
+			   stratum[0].potential_evaporation);
+	}
+	
+	
 	*rain = throughfall;
+	
+	
 	return( rain_storage);
 } /*end compute_rain_stored*/

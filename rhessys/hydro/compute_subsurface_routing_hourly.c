@@ -84,7 +84,6 @@ void compute_subsurface_routing_hourly(
 	struct patch_object *neigh;
 	struct litter_object *litter;
 	
-	double threshold; 
 	/*--------------------------------------------------------------*/
 	/*	initializations						*/
 	/*--------------------------------------------------------------*/
@@ -233,7 +232,11 @@ void compute_subsurface_routing_hourly(
 						verbose_flag);
 			}
 
-			
+		/*	//the following code is for testing only
+			if (patch[0].ID==59812){ //56681
+			    printf("ID = %d, patch[0].Qout*10^6 = %f\n",patch[0].ID, patch[0].Qout * 1000000);
+			}
+		*/	
 
 		} /* end i */
 
@@ -367,17 +370,6 @@ void compute_subsurface_routing_hourly(
 			/* ******************************** this is done by each hourly*/
 			patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 		      				+ patch[0].hourly_sur2stream_flow;
-			threshold = patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0 * 0.99 *
-		    (1 - patch[0].soil_defaults[0][0].sat_store);
-		//the following code is for testing only
-/*		if (i == 6539 && current_date.month == 12 && current_date.day>15){
-		    printf("ID= %d, baseflow*1000 = %.9f, sat_deficit=%f, threshold = %f,hourly_subsur=%.9f\n",
-				      patch[0].ID, patch[0].base_flow*1000,
-				      patch[0].sat_deficit, 
-				      threshold,
-				      patch[0].hourly_subsur2stream_flow * 1000);
-		}
-*/	
 
 			basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;
 			// it is not the sum of hourly return_flow, the patch[0].return_flow is already the sum of hourly return_flow from

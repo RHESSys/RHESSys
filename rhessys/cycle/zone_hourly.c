@@ -208,8 +208,8 @@ void		zone_hourly(
 	/*  Add to top of zone daily values for these terms if not		*/
 	/*	provided.  													*/
 	/*--------------------------------------------------------------*/
-	if ((zone[0].Kdown_direct_flag == 0) ||
-		(zone[0].Kdown_diffuse_flag == 0) ||
+	if (/*(zone[0].Kdown_direct_flag == 0) ||
+		(zone[0].Kdown_diffuse_flag == 0) ||*/
 		(zone[0].daylength_flag == 0 )){
 		/*--------------------------------------------------------------*/
 		/*  Accumulate incoming Kdown if the sun is up.                 */
@@ -273,8 +273,8 @@ void		zone_hourly(
 				/*--------------------------------------------------------------*/
 				/*	Only do the following if we dont have direct radiation		*/
 				/*--------------------------------------------------------------*/
-				if ((zone[0].Kdown_direct_flag == 0) ||
-					(zone[0].Kdown_diffuse_flag == 0)){
+				/*if ((zone[0].Kdown_direct_flag == 0) ||
+					(zone[0].Kdown_diffuse_flag == 0)){*/
 					/*------------------------------------------------------------*/
 					/*     Kdown_direct_flat   (W/(m2))                            */
 					/*                                                             */
@@ -347,16 +347,16 @@ void		zone_hourly(
 					/*------------------------------------------------------------*/
 					/*		Convert calculation fro W/m^2 to Kj/(m^2*hr)	*/
 					/*-----------------------------------------------------------*/
-					zone[0].Kdown_direct_flat
+					zone[0].Kdown_direct_flat_calc
 						+= zone[0].hourly[0].Kdown_direct_flat * 3600 / 1000;
-					zone[0].Kdown_direct
+					zone[0].Kdown_direct_calc
 						+= zone[0].hourly[0].Kdown_direct * 3600 / 1000;
 
-					zone[0].Kdown_diffuse_flat
+					zone[0].Kdown_diffuse_flat_calc
 						+= zone[0].hourly[0].Kdown_diffuse_flat * 3600 / 1000;
-					zone[0].Kdown_diffuse
+					zone[0].Kdown_diffuse_calc
 						+= zone[0].hourly[0].Kdown_diffuse * 3600 / 1000;
-				} /*end if */
+				/*} end if */ 
 			} /*end if*/
 			} /*end if*/
 		} /*end if*/

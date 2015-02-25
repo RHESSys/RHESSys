@@ -18,8 +18,7 @@ extern bool add_flow_to_table(
     const int* _patch,		     // The map of squares to patch ids
     const int* _hill,		     // The map of square to hill ids
     const int* _zone,		     // The map of square to zone ids
-    double _proportion);	     // The proportion of the
-				     // contributors gamma to assign
-				     // to the receiver
+    double _proportion,			 // The proportion of the contributors gamma to assign to the receiver
+    int* const _receiver_out);	 // Map of cells that actually received flow. Value of each cell represents number of contributor cells.
 
 #endif // _ADD_FLOW_TO_TABLE_H_

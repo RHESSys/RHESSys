@@ -181,7 +181,10 @@ void	handle_event(
 	}		
 	else if ( !strcmp(event[0].command,"redefine_world_thin_harvest") ){
 		execute_redefine_world_thin_event(world, command_line, current_date, 2);
-	}		
+	}
+	else if ( !strcmp(event[0].command,"redefine_world_thin_snags") ){
+		execute_redefine_world_thin_event(world, command_line, current_date, 3);
+	}			
 	else if ( !strcmp(event[0].command,"roads_on") ){
 		command_line[0].road_flag = 1;
 		execute_road_construction_event(world, command_line, current_date);

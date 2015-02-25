@@ -103,7 +103,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ext_coef", "%lf", 0.5, 1);
 		default_object_list[i].specific_rain_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_rain_capacity", "%lf", 0.00024, 1);
 		default_object_list[i].specific_snow_capacity = getDoubleParam(&paramCnt, &paramPtr, "specific_snow_capacity", "%lf", 0.00024, 1);
-		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.002, 1); // param name is "wind_attenuation_coef" in param file
+		default_object_list[i].wind_attenuation_coeff = getDoubleParam(&paramCnt, &paramPtr, "wind_attenuation_coef", "%lf", 0.4, 1); // param name is "wind_attenuation_coef" in param file
 		default_object_list[i].ustar_overu = 		getDoubleParam(&paramCnt, &paramPtr, "ustar_overu", "%lf", -999.9, 1);
 		default_object_list[i].mrc.q10 = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.q10", "%lf", 1.5, 1);
 		default_object_list[i].mrc.per_N = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.per_N", "%lf", 0.21, 1);
@@ -287,6 +287,10 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.coef_CO2 = getDoubleParam(&paramCnt, &paramPtr, "epc.coef_CO2", "%lf", 1.0, 1);
 		default_object_list[i].epc.root_growth_direction = getDoubleParam(&paramCnt, &paramPtr, "epc.root_growth_direction", "%lf", 0.8, 1);
 		default_object_list[i].epc.root_distrib_parm = getDoubleParam(&paramCnt, &paramPtr, "epc.root_distrib_parm", "%lf", 8.0, 1);
+		default_object_list[i].epc.crown_ratio = getDoubleParam(&paramCnt, &paramPtr, "epc.crown_ratio", "%lf", 0.6, 1);
+		if (epc->veg_type != TREE)
+			default_object_list[i].epc.crown_ratio = 1.0;
+		
 		/*--------------------------------------------------------------*/
 		/* default values for phenology (leaf onset/offset) model parameters */
 		/* are set based on Jolly et al., 2005, Global Change Biology   */
@@ -301,6 +305,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_dayl_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_dayl_max", "%lf", 39600, 1);
 	        default_object_list[i].epc.gs_psi_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_psi_min", "%lf", -15.0, 1);
 		default_object_list[i].epc.gs_psi_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_psi_max", "%lf", -14.0, 1);
+		default_object_list[i].epc.gs_ravg_days = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_ravg_days", "%lf", 6, 1);
 		default_object_list[i].epc.max_storage_percent = getDoubleParam(&paramCnt, &paramPtr, "epc.max_storage_percent", "%lf", 0.2, 1);
 		default_object_list[i].epc.min_percent_leafg = getDoubleParam(&paramCnt, &paramPtr, "epc.min_percent_leafg", "%lf", default_object_list[i].epc.leaf_turnover, 1);
 		default_object_list[i].epc.dickenson_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.dickenson_pa", "%lf", 0.25, 1);

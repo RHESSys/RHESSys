@@ -99,6 +99,9 @@ double	compute_ra_understory(
 	/*--------------------------------------------------------------*/
 	zo_o = pow(10.0, (0.997 * log10(h_o+0.001) - 0.883));
 	zo_u = max(0.01*h_o, pow(10.0, (0.997 * log10(h_u+0.001) - 0.883)));
+	
+	printf("\nUNDER:cn=%lf u_toc=%lf h_o=%lf h_u=%lf ga_toc=%lf ra_toc=%lf",cn,*u,h_o,h_u,*ga,ra);
+	
 	if ( h_o < d_o ){
 		fprintf(stderr,
 			"FATAL ERROR: screen height < zero plane stratum\n");
@@ -115,7 +118,8 @@ double	compute_ra_understory(
 	/*--------------------------------------------------------------*/
 	/*	compute exponential decay of wind throught the canopy  */
 	/*--------------------------------------------------------------*/
-	*u = max((*u * exp(cn*max(h_u, 0.1*h_o)/h_o - 1)), 0.0);
+	*u = max((*u * exp(cn*(max(h_u, 0.1*h_o)/h_o - 1))), 0.0); /* FIXED MISSING PARENTHESES */
+	printf(" u_bot=%lf ra_bot1=%lf",*u,ra_u);
 	/*--------------------------------------------------------------*/
 	/*	if, this canopy below extends to 0.1*ho of the surface	*/
 	/* 	include a logarithmic profile componenet of the near	*/
@@ -127,5 +131,6 @@ double	compute_ra_understory(
 	/*	update conductance below this patch			*/
 	/*--------------------------------------------------------------*/
 	*ga = 1/ra_u;
+	printf(" ra_bot2=%lf ga_bot=%lf",ra_u,*ga);
 	return(ra);
 } /*compute_ra_understory*/

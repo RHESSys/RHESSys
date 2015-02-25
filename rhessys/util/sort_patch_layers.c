@@ -141,10 +141,10 @@ void sort_patch_layers( struct patch_object *patch)
 		/*		this layer does not add to 1.0			*/
 		/*--------------------------------------------------------------*/
 		if ( cover_fraction > 1.0 ){
-			printf( "\nFATAL ERROR: in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
+			/*printf( "\nFATAL ERROR: in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
 				patch[0].layers[i].height);
 			printf("\n for patch %d, cover fraction %lf\n", patch[0].ID, cover_fraction);
-			patch[0].layers[i].null_cover = 0.0;
+			patch[0].layers[i].null_cover = 0.0;*/
 		}
 		else {
 			patch[0].layers[i].null_cover = 1.0 - cover_fraction;

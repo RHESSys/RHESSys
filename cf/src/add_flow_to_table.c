@@ -98,7 +98,8 @@ bool add_flow_to_table(
     const int* _patch,
     const int* _hill,
     const int* _zone,
-    double _proportion)
+    double _proportion,
+    int* const _receiver_out)
 {
     bool result = true;
     int contributor_index = 0;
@@ -146,6 +147,12 @@ bool add_flow_to_table(
 				fprintf(stderr, "ERROR: Failed to add receiver adjacency to the contributor.\n");
 				result = false;
 			}
+
+			// Update receiver output map
+			if ( _receiver_out && _proportion > 0 ) {
+				_receiver_out[receiver_index] += 1;
+			}
+
     	} else {
     		printf("Receiver patch %d is outside of basin\n", _patch[receiver_index]);
     	}
