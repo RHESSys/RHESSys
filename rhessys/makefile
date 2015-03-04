@@ -157,6 +157,7 @@ $(OBJ)/execute_road_construction_event.o \
 $(OBJ)/execute_firespread_event.o \
 $(OBJ)/execute_state_output_event.o \
 $(OBJ)/execute_tec.o \
+$(OBJ)/execute_tec_dynrouting.o \
 $(OBJ)/execute_yearly_growth_output_event.o \
 $(OBJ)/execute_yearly_output_event.o \
 $(OBJ)/find_basin.o \
@@ -341,6 +342,8 @@ $(OBJ)/execute_firespread_event.o: tec/execute_firespread_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event.c -o $(OBJ)/execute_firespread_event.o
 $(OBJ)/execute_tec.o: tec/execute_tec.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_tec.c -o $(OBJ)/execute_tec.o
+$(OBJ)/execute_tec_dynrouting.o: tec/execute_tec_dynrouting.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_tec_dynrouting.c -o $(OBJ)/execute_tec_dynrouting.o	
 $(OBJ)/construct_command_line.o: init/construct_command_line.c
 	$(CC) -c $(CFLAGS) -I include init/construct_command_line.c -o $(OBJ)/construct_command_line.o
 $(OBJ)/valid_option.o: tec/valid_option.c
