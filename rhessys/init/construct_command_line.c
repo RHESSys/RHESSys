@@ -632,7 +632,6 @@ struct	command_line_object	*construct_command_line(
 			/*--------------------------------------------------------------*/
 			else if ( strcmp(main_argv[i], "-dynrouting") == 0 ) {
 				command_line[0].dyn_routing_flag = 1;
-				printf("Dynamic routing enabled\n");
 				i++;
 			} /*end if*/
 
