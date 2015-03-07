@@ -196,6 +196,12 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	for (k = 0; k < n_timesteps; k++) {
 		for (i = 0; i < basin->route_list->num_patches; i++) {
 			patch = basin->route_list->list[i];
+		      	patch[0].hourly_subsur2stream_flow = 0;
+			patch[0].hourly_sur2stream_flow = 0;
+			patch[0].hourly_stream_flow = 0;
+			patch[0].hourly[0].streamflow_NO3 = 0;
+			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
+			patch[0].hourly[0].streamflow_NO3_from_surface = 0;			
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
 			/*	is routed to downslope patches; saturated throughflow	*/

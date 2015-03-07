@@ -1480,6 +1480,7 @@ struct patch_object
 	double  gasnow;			/* m/s */         
 	double  gasnow_final;		/* m/s */         
 	double  gw_drainage; 		/* m/day */
+	double	gw_drainage_hourly;     /* m/day by Xiaoli */
 	double	hourly_rz_drainage;	/* m water by Xiaoli */
 	double	hourly_unsat_drainage;	/* m water by Xiaoli */
 	double	hourly_subsur2stream_flow;	/* m water by Xiaoli */

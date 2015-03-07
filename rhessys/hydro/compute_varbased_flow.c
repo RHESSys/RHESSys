@@ -64,7 +64,9 @@ double	compute_varbased_flow(
 	double	normal[9], perc[9];
 	int i;
 	int didx,didthr;
-	// soil deficit threshold, not the soil moisture threshold, sat_store is the soil moiture threshold as
+	
+
+	// soil deficit threshold, not the soil moisture threshold, fs_threshold is defined as the soil moiture threshold as
 	// percentage of the max soil moisture holding capacity
 	double threshold;
 	double p;
@@ -145,15 +147,17 @@ double	compute_varbased_flow(
 		    abovthre_flow = (transmissivity[didx]-thre_flow) * fs_spill; // fs_spill default value is 1 
       		    flow = abovthre_flow + thre_flow * fs_percolation;  // fs_percolation defaults = 1
 		}
-	/*	if (patch[0].ID==33575){
-		  printf("sat_deficit=%f, threshold=%f,thre_flow=%f,abovethre_flow=%f,flow=%f\n",
+		/*if (patch[0].ID==33575){
+		  printf("sat_deficit=%f, threshold=%f,thre_flow=%f,abovethre_flow=%f,flow=%f,trasn=%f,fs_spill=%f\n",
 			patch[0].sat_deficit,
 			threshold,
 			thre_flow,
 			abovthre_flow,
-			flow);
-		}
-	*/
+			flow,
+			transmissivity[didx],
+			fs_spill);
+		}*/
+	
 	}
 
 	flow = flow*gamma;

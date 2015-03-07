@@ -168,6 +168,7 @@ struct patch_object *construct_patch(
 	patch[0].streamflow = 0.0;
 	patch[0].return_flow = 0.0;
 	patch[0].gw_drainage = 0.0;
+	patch[0].gw_drainage_hourly = 0.0;
 	patch[0].infiltration_excess = 0.0;
 	patch[0].streamflow_NH4 = 0.0;
 	patch[0].streamflow_NO3 = 0.0;

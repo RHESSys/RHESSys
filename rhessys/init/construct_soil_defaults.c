@@ -155,7 +155,6 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].soil_type.silt,
 				default_object_list[i].soil_type.clay);
 		} /*end if*/
-
 		if (command_line[0].gw_flag > 0) {
 			default_object_list[i].sat_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "sat_to_gw_coeff", "%lf", 1.0, 1);
 			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
@@ -291,6 +290,6 @@ struct soil_default *construct_soil_defaults(
     
         printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
-	
-		return(default_object_list);
+
+  return(default_object_list);
 } /*end construct_soil_defaults*/
