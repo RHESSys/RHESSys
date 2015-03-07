@@ -32,6 +32,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void	basin_hourly(
@@ -64,12 +65,19 @@ void	basin_hourly(
 	/*--------------------------------------------------------------*/
 	int	hillslope;
 	int	ML;
+	int	inx;
 	double	air_mass_array[22]  =
 	{0.0, 2.90,3.05,3.21,3.39, 3.69, 3.82, 4.07, 4.37, 4.72, 5.12,
 	5.60,6.18,6.88,7.77,8.90,10.39,12.44,15.36,19.79,26.96,30.00};
+	struct	hillslope_object *hillslope_p;
+	struct	zone_object *zone_p;
+
 	/*--------------------------------------------------------------*/
-	/*	Allocate memory for the basin hourly forcings.				*/
+	/*	Initialize the hillslope and zone object.			*/
 	/*--------------------------------------------------------------*/
+	hillslope_p = basin[0].hillslopes[0];
+	zone_p = hillslope_p[0].zones[0];
+	
 	basin[0].hourly = (struct basin_hourly_object * ) alloc(
 		sizeof( struct basin_hourly_object),"hourly","basin_hourly");
 	/*--------------------------------------------------------------*/
@@ -153,7 +161,6 @@ void	basin_hourly(
 	/*	Note that solar geometry except for cos_sza may be garbage	*/
 	/*	if cos_sza < 0 (no daylight).								*/
 	/*--------------------------------------------------------------*/
-
 	for ( hillslope=0 ; hillslope < basin[0].num_hillslopes ;hillslope++ ){
 		hillslope_hourly(
 			world,
@@ -163,6 +170,10 @@ void	basin_hourly(
 			event,
 			current_date);
 	}
+
+
+
+	
 	/*--------------------------------------------------------------*/
 	/*	Destroy the basin hourly parameter arrayu.					*/
 	/*--------------------------------------------------------------*/
@@ -173,12 +184,18 @@ void	basin_hourly(
 	/*--------------------------------------------------------------*/
 	/* this part is nearly the same as in the basin_daily_F		*/
 
-	if ( command_line[0].routing_flag == 1) { 
+	if ( command_line[0].routing_flag == 1 && zone_p[0].hourly_rain_flag==1) { 
 		compute_subsurface_routing_hourly(command_line,
 			basin,
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
 	}
 
+	// the following code is for testing only
+	/*if (zone_p[0].hourly_rain_flag ==1){
+	printf("it is hourly, hour = %d, day = %d \n",current_date.hour,current_date.day);
+	}
+	else{printf("There is no hourly input,hour = %d, day = %d\n",current_date.hour, current_date.day);}
+	*/
 	return;
 } /*end basin_hourly.c*/

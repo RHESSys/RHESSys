@@ -311,6 +311,7 @@ void		patch_daily_F(
 	int update_gw_drainage(
 			struct patch_object *,
 			struct hillslope_object *,
+			struct zone_object *,
 			struct command_line_object *,
 			struct date);
 			
@@ -1228,6 +1229,7 @@ void		patch_daily_F(
 			if (command_line[0].gw_flag > 0) {
 			if ( update_gw_drainage(patch,
 					hillslope,
+					zone,
 					command_line,
 					current_date) != 0) {
 					fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");

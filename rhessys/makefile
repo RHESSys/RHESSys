@@ -1,4 +1,4 @@
-PGM  = rhessys5.19
+PGM  = rhessys5.19.infil
 VERSION = 5.19
 CC = gcc 
 #CFLAGS = -O -std=c99
