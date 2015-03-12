@@ -393,7 +393,7 @@ void	canopy_stratum_daily_F(
 	dry_evaporation = 0;
 	total_incoming_PAR = PAR_diffuse + PAR_direct;
 	NO3_stored=0;
-	NO3_throughfall=0
+	NO3_throughfall=0;
 
 	ustar = patch[0].ustar;
 	
