@@ -83,8 +83,7 @@ void	canopy_stratum_hourly(
 	/* update the NO3 stored in canopy and NO3 throughfall		*/
 	/*--------------------------------------------------------------*/
 
-	double tmp1;
-	double tmp2;
+
 	NO3_stored = 0;
         NO3_throughfall = 0;
 
@@ -120,9 +119,6 @@ void	canopy_stratum_hourly(
 	stratum[0].NO3_stored = NO3_stored;
 
 	
-
-	stratum[0].NO3_stored = NO3_stored; 
-
 	/*--------------------------------------------------------------*/
 	/*	Destroy the canopy stratum hourly object.					*/
 	/*--------------------------------------------------------------*/
