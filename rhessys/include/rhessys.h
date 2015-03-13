@@ -453,6 +453,41 @@ struct stream_list_object
 	};
 
 
+
+/*----------------------------------------------------------*/
+/*	Define a snowpack object.								*/
+/*----------------------------------------------------------*/
+
+struct	snowpack_object
+	{
+	double  APAR_direct;                   	/* umol/(m2*day)*/
+	double  APAR_diffuse;                   /* umol(m2*day) */
+	double	energy_deficit;			/* degree days	*/
+	double  evaporation;		        /* m water	*/
+	double	ga;				/* m/s          */
+	double	gap_fraction;			/* unitless 	*/
+	double	height;				/* meters   	*/
+	double  Kstar_direct;                   /* Kj/(m2*day)  */
+	double  Kstar_diffuse;                  /* Kj/(m2*day)  */
+	double	K_reflectance;			/* unitless 0-1	*/
+	double	K_absorptance;			/* unitless 0-1 */
+	double	PAR_reflectance;		/* unitless 0-1	*/
+	double	PAR_absorptance;		/* unitless 0-1 */
+	double	surface_age;			/* days		*/
+	double	sublimation;			/* m water	*/
+	double  T; 		                /*  degrees C  	*/
+	double	water_depth;			/* m water	*/
+	double  water_equivalent_depth;		/* m water   	*/
+	double	overstory_fraction;		/* percent	*/
+	double	overstory_height;		/* m		*/
+	double Rnet;	/* net SW + LW radiation in KJ/m2/d */
+	double Q_LE;     /* latent heat exchange with atmos in KJ/m2/d */
+	double Q_H;     /* sensible heat flux in KJ/m2/d */
+	double Q_rain;   /* rain advective heat flux in KJ/m2/d */
+	double Q_melt;  /* net input for melt in KJ/m2/d */
+	};
+
+
 /*----------------------------------------------------------*/
 /*	Define basin object.									*/
 /*----------------------------------------------------------*/
@@ -462,6 +497,7 @@ struct basin_object
 	int		num_base_stations;
 	int		num_hillslopes;
 	double  area;			/*  m2 		*/
+	double  area_withsnow;			/*  m2 		*/
 	double	x;			/*  meters 	*/	
 	double	y;			/*  meters	*/
 	double	z;			/*  meters	*/
@@ -499,6 +535,7 @@ struct basin_object
 	struct	routing_list_object *surface_route_list;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
+        struct  snowpack_object snowpack;
 	};
 
 /*----------------------------------------------------------*/
@@ -1410,40 +1447,6 @@ struct patch_fire_object
 	double et;			/* mm */
 
 };
-
-/*----------------------------------------------------------*/
-/*	Define a snowpack object.								*/
-/*----------------------------------------------------------*/
-
-struct	snowpack_object
-	{
-	double  APAR_direct;                   	/* umol/(m2*day)*/
-	double  APAR_diffuse;                   /* umol(m2*day) */
-	double	energy_deficit;			/* degree days	*/
-	double  evaporation;		        /* m water	*/
-	double	ga;				/* m/s          */
-	double	gap_fraction;			/* unitless 	*/
-	double	height;				/* meters   	*/
-	double  Kstar_direct;                   /* Kj/(m2*day)  */
-	double  Kstar_diffuse;                  /* Kj/(m2*day)  */
-	double	K_reflectance;			/* unitless 0-1	*/
-	double	K_absorptance;			/* unitless 0-1 */
-	double	PAR_reflectance;		/* unitless 0-1	*/
-	double	PAR_absorptance;		/* unitless 0-1 */
-	double	surface_age;			/* days		*/
-	double	sublimation;			/* m water	*/
-	double  T; 		                /*  degrees C  	*/
-	double	water_depth;			/* m water	*/
-	double  water_equivalent_depth;		/* m water   	*/
-	double	overstory_fraction;		/* percent	*/
-	double	overstory_height;		/* m		*/
-	double Rnet;	/* net SW + LW radiation in KJ/m2/d */
-	double Q_LE;     /* latent heat exchange with atmos in KJ/m2/d */
-	double Q_H;     /* sensible heat flux in KJ/m2/d */
-	double Q_rain;   /* rain advective heat flux in KJ/m2/d */
-	double Q_melt;  /* net input for melt in KJ/m2/d */
-	};
-
 
 /*----------------------------------------------------------*/
 /*	Define an patch object	 								*/	

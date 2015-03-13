@@ -50,6 +50,7 @@
 									 int     num_world_base_stations,
 									 struct  base_station_object **world_base_stations,
 									 struct	default_object	*defaults,
+									 struct  basin_object *basin,
 									 struct	 patch_object *patch)
 {
 	/*--------------------------------------------------------------*/
@@ -132,7 +133,14 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].sat_deficit = ltmp;
  	fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);
-	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.water_equivalent_depth = ltmp;
+	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		 if ((patch[0].snowpack.water_equivalent_depth < ZERO) && (ltmp > ZERO)) {
+			patch[0].snowpack.energy_deficit = basin[0].snowpack.energy_deficit;
+			patch[0].snowpack.T = basin[0].snowpack.T;
+			patch[0].snowpack.surface_age = basin[0].snowpack.surface_age;
+			}
+		patch[0].snowpack.water_equivalent_depth = ltmp;
+	}
  	fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.water_depth = ltmp;
@@ -146,11 +154,13 @@
 	read_record(world_file, record);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.energy_deficit = ltmp;
 
+
 	if (command_line[0].snow_scale_flag == 1) {
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snow_redist_scale = ltmp;
 		}
+
 
 
  	fscanf(world_file,"%lf",&(ltmp));
