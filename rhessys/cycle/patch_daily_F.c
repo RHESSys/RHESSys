@@ -1965,6 +1965,14 @@ void		patch_daily_F(
 	}
 
 
+	/* track variables for snow assimilation  */
+	if (patch[0].snowpack.water_equivalent_depth > ZERO) {
+		basin[0].snowpack.energy_deficit += patch[0].snowpack.energy_deficit * patch[0].area;
+		basin[0].snowpack.surface_age += patch[0].snowpack.surface_age * patch[0].area;
+		basin[0].snowpack.T += patch[0].snowpack.T * patch[0].area;
+		basin[0].area_withsnow += patch[0].area;
+		}
+
 	/* track variables for fire spread */
 	if (command_line[0].firespread_flag == 1) {
 		patch[0].fire.et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.et  +  

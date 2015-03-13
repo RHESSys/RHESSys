@@ -92,6 +92,13 @@ void	basin_daily_F(
 	struct	hillslope_object *hillslope;
 	struct	patch_object *patch; 
 	/*--------------------------------------------------------------*/
+	/* 	track basin scale snow for snow assimilation 			*/
+	/*--------------------------------------------------------------*/
+	basin[0].area_withsnow=0;
+	basin[0].snowpack.surface_age = 0.0;
+	basin[0].snowpack.energy_deficit = 0.0;
+	basin[0].snowpack.T = 0.0;
+	/*--------------------------------------------------------------*/
 	/*	Simulate the hillslopes in this basin for the whole day		*/
 	/*--------------------------------------------------------------*/
 	for ( h = 0 ; h < basin[0].num_hillslopes; h ++ ){
@@ -104,6 +111,9 @@ void	basin_daily_F(
 			current_date );
 	}
 
+	basin[0].snowpack.surface_age /=  basin[0].area_withsnow;
+	basin[0].snowpack.T /=  basin[0].area_withsnow;
+	basin[0].snowpack.energy_deficit /=  basin[0].area_withsnow;
 
 	/*--------------------------------------------------------------*/
 	/*  For routing option - route water between patches within     */
