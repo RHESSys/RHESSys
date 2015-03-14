@@ -281,6 +281,7 @@ struct world_object
         char    **fire_default_files;
         char    **surface_energy_default_files;
         char    **spinup_default_files;
+        char    **spinup_thresholds_files;  // EJH ????????????????????????????????????
         double  declin;                 /*      rads    */
         double  cos_declin;             /*      DIM     */
         double  sin_declin;             /*      DIM     */
@@ -294,6 +295,7 @@ struct world_object
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;
+        struct  spinup_thresholds_list_object  *spinup_thresholds ;  // EJH - do I * or **
         };
 
 
@@ -404,6 +406,14 @@ struct routing_list_object
         {
         int num_patches;
         struct patch_object **list;
+        };
+/*----------------------------------------------------------*/
+/*      Define spinup threshold list object.                */
+/*----------------------------------------------------------*/
+struct spinup_thresholds_list_object 
+        {
+        int num_stratum;
+        struct stratum_object **list;
         };
 /*----------------------------------------------------------*/
 /*      Define reservoir object.                            */
@@ -1437,6 +1447,8 @@ struct stratum_spinup_object
 
 };
 
+// EJH Do I need to add anything for the spinup thresholds?
+
 /*----------------------------------------------------------*/
 /*      Define a snowpack object.                                                               */
 /*----------------------------------------------------------*/
@@ -1935,6 +1947,7 @@ struct  command_line_object
         char    world_filename[FILEPATH_LEN];
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
+        char    vegspinup_filename[FILEPATH_LEN];
         double  tmp_value;
         double  cpool_mort_fract;
         double  veg_sen1;
@@ -2566,6 +2579,14 @@ struct  stratum_default
         };
 
 /*----------------------------------------------------------*/
+/*      Define target object                                */
+/*----------------------------------------------------------*/
+       struct target_object { 
+              double lai;
+              double total_stemc;
+              int    met;
+       };
+/*----------------------------------------------------------*/
 /*      Define accumulator object                           */
 /*----------------------------------------------------------*/
 
@@ -2607,20 +2628,21 @@ struct  canopy_strata_object
         double  PAR_after_reflection;                           /* (umol photon/m2*day) */
         double  ppfd_sunlit;                    /*  (umol/m2/s) PAR photon flux density */
         double  ppfd_shade;                     /*  (umol/m2/s) PAR photon flux density */
-        double  potential_evaporation;                          /* meters/day   */
-        double  rain_stored;                                    /* meters       */
-        double  snow_stored;                                    /* meters       */
-        double  sublimation;                                    /*      meters  */ 
-        double  surface_heat_flux;                              /* kJ/day               */
-        double  PET;            /* m water /day */
-        double  PE;             /* m water /day */
-        double  transpiration_unsat_zone;       /* m water / day */
-        double  transpiration_sat_zone;         /* m water / day */
+        double  potential_evaporation;                          /*  meters/day  */
+        double  rain_stored;                                    /*  meters      */
+        double  snow_stored;                                    /*  meters      */
+        double  sublimation;                                    /*  meters      */
+        double  surface_heat_flux;                              /*  kJ/day      */
+        double  PET;                                            /*  m water/day */
+        double  PE;                                             /*  m water/day */
+        double  transpiration_unsat_zone;                       /*  m water/day */
+        double  transpiration_sat_zone;                         /* m water /day */
         double  wind;                                           /* 1/meters     */
         double  canopy_drip;
         struct  rooting_zone_object     rootzone;
         struct  cdayflux_struct cdf;                            
         struct  cstate_struct   cs;
+        struct  target_object   target;
         struct  epvar_struct epv;                               
         struct  nstate_struct   ns;
         struct  ndayflux_struct ndf;                            
@@ -2636,7 +2658,7 @@ struct  canopy_strata_object
 
 
 /*----------------------------------------------------------*/
-/*      Define the canopy_strata hourly parameter structure.    */
+/*      Define the canopy_strata hourly parameter structure */
 /*----------------------------------------------------------*/
 struct  canopy_strata_hourly_object
         {

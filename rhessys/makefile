@@ -120,6 +120,7 @@ $(OBJ)/construct_fire_defaults.o \
 $(OBJ)/construct_soil_defaults.o \
 $(OBJ)/construct_stratum_defaults.o \
 $(OBJ)/construct_spinup_defaults.o \
+$(OBJ)/construct_spinup_thresholds.o \
 $(OBJ)/construct_tec.o \
 $(OBJ)/construct_tec_entry.o \
 $(OBJ)/construct_world.o \
@@ -364,6 +365,8 @@ $(OBJ)/construct_fire_defaults.o: init/construct_fire_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_defaults.c -o $(OBJ)/construct_fire_defaults.o
 $(OBJ)/construct_spinup_defaults.o: init/construct_spinup_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_spinup_defaults.c -o $(OBJ)/construct_spinup_defaults.o
+$(OBJ)/construct_spinup_thresholds.o: init/construct_spinup_thresholds.c
+	$(CC) -c $(CFLAGS) -I include init/construct_spinup_thresholds.c -o $(OBJ)/construct_spinup_thresholds.o
 $(OBJ)/construct_soil_defaults.o: init/construct_soil_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_soil_defaults.c -o $(OBJ)/construct_soil_defaults.o
 $(OBJ)/construct_landuse_defaults.o: init/construct_landuse_defaults.c

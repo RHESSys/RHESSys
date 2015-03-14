@@ -360,6 +360,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
 	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
 	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *); 
+	// struct spinup_thresholds *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);  // EJH is this correct????? 
 	struct base_station_object *construct_base_station(char *,
 		struct date, struct date);
 	struct basin_object *construct_basin(struct command_line_object *, FILE *, int *, 
@@ -368,7 +369,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct fire_struct **construct_fire_grid(struct world_object *, struct command_line_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
-	
+  void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
 /*
 	void  construct_dclim(struct world_object *);
@@ -833,6 +834,15 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].base_stations,	world[0].defaults, 
 			world[0].base_station_ncheader, world);
 	} /*end for*/
+
+	/*--------------------------------------------------------------*/
+	/*	If spinup flag is set construct the spinup thresholds object*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].vegspinup_flag > 0) {
+		world[0].spinup_thresholds = construct_spinup_thresholds(command_line[0].vegspinup_filename, &world[0], command_line);
+  }
+// call spinup thresholds here EJH  - is this right? 
+
 	/*--------------------------------------------------------------*/
 	/* if fire spread flag is set					*/
 	/*	Construct the fire grid object.				*/
