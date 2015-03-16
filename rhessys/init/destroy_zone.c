@@ -54,11 +54,9 @@ void destroy_zone(
 	/*	destroy the list of pointers to the base stations 			*/
 	/*--------------------------------------------------------------*/
 	if ( zone[0].num_base_stations > 0 ){
-	    for( i = 0;i<zone[0].num_base_stations;i++){
-		free(zone[0].base_stations[i]);
-	    }
-	    free(zone[0].base_stations);
+	       free(zone[0].base_stations);
 	}
+      
 	/*--------------------------------------------------------------*/
 	/*	destroy the hourly zone			*/
 	/*--------------------------------------------------------------*/
