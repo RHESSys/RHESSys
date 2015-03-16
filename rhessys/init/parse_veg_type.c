@@ -54,6 +54,6 @@ int	parse_veg_type( char *input_string)
 		fprintf(stderr,"\n must be either TREE or GRASS\n");
 		exit(EXIT_FAILURE);
 	}
-	
+	free(input_string);
 	return(veg_type);
 }/*end parse_veg_type.c*/
