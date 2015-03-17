@@ -1464,6 +1464,8 @@ struct patch_object
 	double	x;									/* meters	*/
 	double	y;									/* meters	*/
 	double	z;									/* meters	*/
+	double	dx;								/* meters */
+	double	dy;								/* meters */
 	double	area;			/* sq meters	*/
 	double  acc_year_trans;		/* m water	*/
 	double  base_flow;		/* m water */

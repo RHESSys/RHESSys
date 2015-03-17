@@ -39,6 +39,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "rhessys.h"
 #include "phys_constants.h"
 
@@ -160,6 +161,12 @@ struct patch_object *construct_patch(
 		read_record(world_file, record);
 		}
 
+	/* When setting dx and dy assume square patches for now
+	 * TODO: Update grass2world to calculate dx and dy and include
+	 * in worldfiles, in which case we would read them from
+	 * the worldfile instead of calculating as here.
+	 */
+	patch[0].dx = patch[0].dy = sqrt(patch[0].area);
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;
 	patch[0].surface_Tnight = -999.9;
