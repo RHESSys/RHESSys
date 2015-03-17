@@ -25,16 +25,19 @@
 #include "rhessys.h"
 
 void	canopy_stratum_daily_F(
-							   struct	world_object		*world,
-							   struct	basin_object		*basin,
-							   struct	hillslope_object	*hillslope, 
-							   struct	zone_object		*zone,
-							   struct	patch_object		*patch,
-							   struct  layer_object		*layer,
-							   struct 	canopy_strata_object 	*stratum,
-							   struct 	command_line_object	*command_line,
-							   struct	tec_entry		*event,
-							   struct 	date 			current_date)
+							   struct	world_object		      *world,
+							   struct	basin_object		      *basin,
+							   struct	hillslope_object	    *hillslope, 
+							   struct	zone_object		        *zone,
+							   struct	patch_object		      *patch,
+							   struct layer_object		      *layer,
+							   struct canopy_strata_object 	*stratum,
+                 struct canopy_strata_object  *empty_shadow_strata,
+							   struct command_line_object	  *command_line,
+                 struct default_object        *defaults, 
+                 struct target_object         *target,
+							   struct	tec_entry		          *event,
+							   struct date 			            current_date)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
@@ -240,7 +243,14 @@ void	canopy_stratum_daily_F(
 								 struct	zone_object *,
 								 struct	patch_object *);
 	
-	
+	struct 	canopy_strata_object *construct_empty_shadow_strata( 
+		struct command_line_object *,
+		FILE	*,
+		struct	patch_object *,
+		int     num_world_base_stations,
+		struct  base_station_object **world_base_stations,
+		struct	default_object	*defaults);
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -1844,8 +1854,16 @@ void	canopy_stratum_daily_F(
 		   stratum[0].defaults[0][0].epc.tcoef,
 		   stratum[0].defaults[0][0].epc.tmax);
 	}
+  
+	/*------------------------------------------------------------------------*/
+	/*	If spinup option is set, update the shadow stratum until the targets  */
+	/*	have been met                                                       	*/
+	/*------------------------------------------------------------------------*/
 
-	
+	if(command_line[0].vegspinup_flag > 0){
+    update_shadow_strata(target, empty_shadow_strata, stratum);
+  }
+  
 	/*--------------------------------------------------------------*/
 	/*      update accumlator variables                             */
 	/*--------------------------------------------------------------*/

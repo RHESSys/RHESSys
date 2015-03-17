@@ -266,6 +266,7 @@ $(OBJ)/update_phenology.o \
 $(OBJ)/update_rooting_depth.o \
 $(OBJ)/update_septic.o \
 $(OBJ)/update_soil_moisture.o \
+$(OBJ)/update_shadow_strata.o \
 $(OBJ)/valid_option.o \
 $(OBJ)/world_daily_F.o \
 $(OBJ)/world_daily_I.o \
@@ -749,6 +750,8 @@ $(OBJ)/update_hillslope_accumulator.o: hydro/update_hillslope_accumulator.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_hillslope_accumulator.c -o $(OBJ)/update_hillslope_accumulator.o
 $(OBJ)/update_soil_moisture.o: hydro/update_soil_moisture.c 
 	$(CC) -c $(CFLAGS) -I include hydro/update_soil_moisture.c -o $(OBJ)/update_soil_moisture.o
+$(OBJ)/update_shadow_strata.o: cn/update_shadow_strata.c 
+	$(CC) -c $(CFLAGS) -I include cn/update_shadow_strata.c -o $(OBJ)/update_shadow_strata.o
 $(OBJ)/skip_basin.o: tec/skip_basin.c
 	$(CC) -c $(CFLAGS) -I include tec/skip_basin.c -o $(OBJ)/skip_basin.o
 $(OBJ)/skip_hillslope.o: tec/skip_hillslope.c

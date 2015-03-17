@@ -267,6 +267,7 @@ struct world_object
         int             ID;    
         int             num_fire_grid_row;
         int             num_fire_grid_col;
+        int             target_status;
         long    num_years;
         long    num_days;
         long    num_hours;
@@ -281,7 +282,7 @@ struct world_object
         char    **fire_default_files;
         char    **surface_energy_default_files;
         char    **spinup_default_files;
-        char    **spinup_thresholds_files;  // EJH ????????????????????????????????????
+        char    **spinup_thresholds_files;  
         double  declin;                 /*      rads    */
         double  cos_declin;             /*      DIM     */
         double  sin_declin;             /*      DIM     */
@@ -295,7 +296,7 @@ struct world_object
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;
-        struct  spinup_thresholds_list_object  *spinup_thresholds ;  // EJH - do I * or **
+        struct  spinup_thresholds_list_object  *spinup_thresholds ;   
         };
 
 
@@ -1447,8 +1448,6 @@ struct stratum_spinup_object
 
 };
 
-// EJH Do I need to add anything for the spinup thresholds?
-
 /*----------------------------------------------------------*/
 /*      Define a snowpack object.                                                               */
 /*----------------------------------------------------------*/
@@ -1497,6 +1496,7 @@ struct patch_object
         int             num_shadow_strata; 
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
+        int             target_status;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */
@@ -1662,6 +1662,7 @@ struct patch_object
         struct  grow_patch_object       *grow;
         struct  canopy_strata_object    **canopy_strata;
         struct  canopy_strata_object    **shadow_strata;
+        struct  patch_object            *shadow_litter;
         struct  patch_hourly_object     *hourly;
         struct  layer_object            *layers;
         struct  innundation_object      *innundation_list; // Used for subsurface routing, and surface routing when no surface table is provided
@@ -1734,6 +1735,10 @@ struct patch_object
         struct  litter_object   litter;
         struct  litter_c_object litter_cs;
         struct  litter_n_object litter_ns;
+        struct  soil_c_object   *shadow_soil_cs;
+        struct  soil_n_object   *shadow_soil_ns;
+        struct  litter_c_object *shadow_litter_cs;
+        struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
         };

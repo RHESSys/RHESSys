@@ -103,6 +103,23 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	patch = (struct patch_object *) alloc( 1 *
 		sizeof( struct patch_object ),"patch","construct_patch");
+
+  /*---------------------------------------------------------------------------------*/
+  /*  Allocate a shadow_litter object, and shadow_soil object if spinup flag is set  */
+  /*---------------------------------------------------------------------------------*/
+ 	if ( (command_line[0].vegspinup_flag > 0) ) {
+   patch[0].shadow_litter_cs = (struct litter_c_object *) alloc( 1 *
+      sizeof( struct litter_c_object ),"shadow_litter_cs", "construct_patch" );
+        
+   patch[0].shadow_litter_ns = (struct litter_n_object *) alloc( 1 *
+      sizeof( struct litter_n_object ),"shadow_litter_ns", "construct_patch" );
+    
+   patch[0].shadow_soil_cs = (struct soil_c_object *) alloc( 1 *
+      sizeof( struct soil_c_object ),"shadow_soil_cs", "construct_patch" );
+        
+   patch[0].shadow_soil_ns = (struct soil_n_object *) alloc( 1 *
+      sizeof( struct soil_n_object ),"shadow_soil_ns", "construct_patch" );
+  }
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the next patch record for this hillslope.			*/
@@ -288,7 +305,7 @@ struct patch_object *construct_patch(
 	patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
 	
 	/*--------------------------------------------------------------*/
-	/*	initialize sinks					*/
+	/*	initialize sinks				                                   	*/
 	/*--------------------------------------------------------------*/
 	
 	patch[0].litter_cs.litr1c_hr_snk = 0.0;
@@ -312,6 +329,31 @@ struct patch_object *construct_patch(
 	patch[0].fertilizer_NH4 = 0.0;
 	patch[0].grazing_Closs = 0.0;
 	
+  /*--------------------------------------------------------------*/
+  /*   Initialize shadow litter and soil objects for this  patch. */
+  /*--------------------------------------------------------------*/
+ 	if( (command_line[0].vegspinup_flag > 0) ) {
+    patch[0].shadow_litter_cs[0].litr1c = patch[0].litter_cs.litr1c;    
+    patch[0].shadow_litter_cs[0].litr2c = patch[0].litter_cs.litr2c;    
+    patch[0].shadow_litter_cs[0].litr3c = patch[0].litter_cs.litr3c;    
+    patch[0].shadow_litter_cs[0].litr4c = patch[0].litter_cs.litr4c;    
+    
+    patch[0].shadow_litter_ns[0].litr1n = patch[0].litter_ns.litr1n; 
+    patch[0].shadow_litter_ns[0].litr2n = patch[0].litter_ns.litr2n; 
+    patch[0].shadow_litter_ns[0].litr3n = patch[0].litter_ns.litr3n; 
+    patch[0].shadow_litter_ns[0].litr4n = patch[0].litter_ns.litr4n; 
+
+    patch[0].shadow_soil_cs[0].soil1c = patch[0].soil_cs.soil1c;    
+    patch[0].shadow_soil_cs[0].soil2c = patch[0].soil_cs.soil2c;    
+    patch[0].shadow_soil_cs[0].soil3c = patch[0].soil_cs.soil3c;    
+    patch[0].shadow_soil_cs[0].soil4c = patch[0].soil_cs.soil4c;    
+    
+    patch[0].shadow_soil_ns[0].soil1n = patch[0].soil_ns.soil1n; 
+    patch[0].shadow_soil_ns[0].soil2n = patch[0].soil_ns.soil2n; 
+    patch[0].shadow_soil_ns[0].soil3n = patch[0].soil_ns.soil3n; 
+    patch[0].shadow_soil_ns[0].soil4n = patch[0].soil_ns.soil4n; 
+  }
+
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this patch								*/
 	/*--------------------------------------------------------------*/
@@ -380,8 +422,6 @@ struct patch_object *construct_patch(
 	} /* end-while */
 	patch[0].fire_defaults[0] = &defaults[0].fire[i];
 	}
-
-
 
 	/*--------------------------------------------------------------*/
 	/* if surface energy module is called assign fire defaults      */
@@ -625,7 +665,6 @@ struct patch_object *construct_patch(
         } /*end for*/
 	} /*end shadow stratum if statement*/
 
-	
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
 	/* 	set litter temperature to -999 to trigger update	*/

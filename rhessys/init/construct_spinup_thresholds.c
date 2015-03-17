@@ -75,7 +75,7 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 
 //create target array, times number of targets (readin first)
   fscanf(spinup_thresholds_file,"%d",&num_stratum);
-  read_record(spinup_thresholds_file, record); // EJH need to create data structure for 
+  read_record(spinup_thresholds_file, record); // TODO: need to create data structure for 
   fscanf(spinup_thresholds_file,"%d",&num_targets);
   read_record(spinup_thresholds_file, record);
 	
@@ -99,6 +99,12 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 			&stratum_ID);
 
     strata = find_stratum(stratum_ID, patch_ID, zone_ID, hill_ID, basin_ID, world);
+
+	  if (strata == NULL) {
+		  fprintf(stderr,	"FATAL ERROR: Could not find strata %d \n", stratum_ID);
+			exit(EXIT_FAILURE);
+    }
+
     strata->target.met = 0;
      
       for (j=0; j< num_targets; ++j) {

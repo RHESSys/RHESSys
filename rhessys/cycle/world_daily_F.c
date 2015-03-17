@@ -59,6 +59,7 @@ void world_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Simulate over all of the basins.							*/
 	/*--------------------------------------------------------------*/
+  world[0].target_status = 1;
 	for ( basin = 0; basin < world[0].num_basin_files; basin++ ){
 		basin_daily_F(	day,
 			world,

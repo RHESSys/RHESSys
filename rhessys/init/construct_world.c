@@ -360,7 +360,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
 	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
 	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *); 
-	// struct spinup_thresholds *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);  // EJH is this correct????? 
 	struct base_station_object *construct_base_station(char *,
 		struct date, struct date);
 	struct basin_object *construct_basin(struct command_line_object *, FILE *, int *, 
@@ -738,8 +737,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	}
 
 	/*--------------------------------------------------------------*/
-	/* if spinup flag is set					*/
-	/*	Construct the spinup default objects.	         	*/
+	/* if spinup flag is set				                              	*/
+	/*	Construct the spinup default objects.	                    	*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].vegspinup_flag > 0) {
 		world[0].defaults[0].spinup = construct_spinup_defaults(
@@ -841,7 +840,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	if (command_line[0].vegspinup_flag > 0) {
 		world[0].spinup_thresholds = construct_spinup_thresholds(command_line[0].vegspinup_filename, &world[0], command_line);
   }
-// call spinup thresholds here EJH  - is this right? 
 
 	/*--------------------------------------------------------------*/
 	/* if fire spread flag is set					*/
