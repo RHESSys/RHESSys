@@ -1564,7 +1564,8 @@ struct patch_object
 	double	NO3_throughfall;	/* kg/m2 day  */
 	double	NO3_throughfall_final;	/* kg/m2 day */
 	double	rain_stored;		/* m water	*/
-	double	slope;			/* degrees		*/
+	double	slope;			/* radians		*/
+	double  slope_max;		/* Slope of maximum descent to neighbors; radians */
 	double	S;			/* m/m		*/
 	double	sat_zone_storage;	/* m water 	*/
 	double	snow_redist_scale;	/* multiplier	*/ 
