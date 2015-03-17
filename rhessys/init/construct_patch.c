@@ -174,6 +174,7 @@ struct patch_object *construct_patch(
 	patch[0].snowpack.height = patch[0].snowpack.water_equivalent_depth *10.0;
 	patch[0].tmp = 0.0;
 	patch[0].detention_store = 0.0;	
+	patch[0].mannN = 0.0;
 	patch[0].soil_ns.DON = 0.0;
 	patch[0].soil_cs.DOC = 0.0;
 
@@ -584,6 +585,10 @@ struct patch_object *construct_patch(
 			* patch[0].canopy_strata[i][0].cover_fraction;
 		patch[0].rootzone.depth = max(patch[0].rootzone.depth, 
 			 patch[0].canopy_strata[i][0].rootzone.depth);
+
+		/* Manning's n */
+		patch->mannN += patch->canopy_strata[i]->cover_fraction * patch->canopy_strata[i]->mannN;
+
 	} /*end for*/
 
 

@@ -234,6 +234,10 @@ struct canopy_strata_object *construct_canopy_strata(
 		}
 	} /* end-while */
 	canopy_strata[0].defaults[0] = &defaults[0].stratum[i];
+
+	/* Manning's n */
+	canopy_strata->mannN = canopy_strata->defaults[0]->mannN;
+
 	/*--------------------------------------------------------------*/
 	/* zero all non tree stem and wood variables			*/
 	/*--------------------------------------------------------------*/
