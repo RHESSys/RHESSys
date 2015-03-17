@@ -1643,6 +1643,7 @@ struct patch_object
 /*	Surface Hydrology  stuff			*/
 /*----------------------------------------------------------*/
 	int   	drainage_type;				/* unitless 1 stream, 0 land, 2, road */	
+	double	mannN;						/* Manning's n; s/[m1/3] */
 	double	water_balance;				/* meters water		*/
 	double	delta_snowpack;				/* meters		*/
 	double	delta_canopy_storage;			/* meters water		*/
@@ -2536,6 +2537,7 @@ struct	stratum_default
 	double	specific_snow_capacity;			/* m /  LAI	*/
 	double  wind_attenuation_coeff;	    	/* 1/meters     */
 	double	ustar_overu;			/* DIM	*/
+	double	mannN;					/* Manning's n; s/[m1/3] */
 	struct	epconst_struct	epc;
 	struct	mrconst_struct	mrc;
 	};
@@ -2593,6 +2595,7 @@ struct	canopy_strata_object
 	double	transpiration_sat_zone;		/* m water / day */
 	double  wind;						/* 1/meters	*/
 	double  canopy_drip;
+	double	mannN;						/* Manning's n; s/[m1/3] */
 	struct  rooting_zone_object	rootzone;
 	struct	cdayflux_struct cdf;				
 	struct	cstate_struct	cs;
