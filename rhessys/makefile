@@ -192,7 +192,6 @@ $(OBJ)/leaf_conductance_vpd_curve.o \
 $(OBJ)/main.o \
 $(OBJ)/output_24hours_basin.o \
 $(OBJ)/output_stream_routing.o \
-$(OBJ)/output_basin.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
 $(OBJ)/output_canopy_stratum.o \
@@ -426,8 +425,6 @@ $(OBJ)/output_yearly_canopy_stratum.o: output/output_yearly_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_yearly_canopy_stratum.c -o $(OBJ)/output_yearly_canopy_stratum.o
 $(OBJ)/output_stream_routing.o: output/output_stream_routing.c
 	$(CC) -c $(CFLAGS) -I include output/output_stream_routing.c -o $(OBJ)/output_stream_routing.o
-$(OBJ)/output_basin.o: output/output_basin.c
-	$(CC) -c $(CFLAGS) -I include output/output_basin.c -o $(OBJ)/output_basin.o
 $(OBJ)/output_hillslope.o: output/output_hillslope.c
 	$(CC) -c $(CFLAGS) -I include output/output_hillslope.c -o $(OBJ)/output_hillslope.o
 $(OBJ)/output_hourly_zone.o: output/output_hourly_zone.c

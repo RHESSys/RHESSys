@@ -531,6 +531,7 @@ void		patch_daily_F(
 	else irrigation = patch[0].landuse_defaults[0][0].irrigation;
 
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
+
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
 	patch[0].NO3_throughfall = 0;
@@ -544,6 +545,7 @@ void		patch_daily_F(
 	patch[0].wind = zone[0].wind;
 	patch[0].windsnow = zone[0].wind;
 
+	patch[0].precip_with_assim += patch[0].rain_throughfall + patch[0].snow_throughfall;
 
 	if ((patch[0].landuse_defaults[0][0].septic_water_load > ZERO) 
 		|| (patch[0].landuse_defaults[0][0].septic_NO3_load > ZERO)) {

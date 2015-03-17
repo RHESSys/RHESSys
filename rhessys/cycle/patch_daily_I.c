@@ -205,6 +205,8 @@ void		patch_daily_I(
 	}
 
 
+	patch[0].precip_with_assim = 0.0;
+
 	
 	/*-----------------------------------------------------*/
 	/*  Compute potential saturation for rootzone layer   */

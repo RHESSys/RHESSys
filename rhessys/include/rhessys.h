@@ -1605,7 +1605,8 @@ struct patch_object
 	double	unsat_drainage;		/* m water	*/
 	double	PET;		/* m water	*/
 	double	PE;		/* m water	*/
-	double	rz_drainage;		/* m water by Taehee Hwang */
+	double  precip_with_assim;    /* m water */
+	double	rz_drainage;		/* m water */
 	double  wind;			/* m/s		*/
 	double  wind_final;		/* m/s		*/
 	double  windsnow;			/* m/s		*/
