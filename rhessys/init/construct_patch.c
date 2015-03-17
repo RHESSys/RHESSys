@@ -161,6 +161,11 @@ struct patch_object *construct_patch(
 		read_record(world_file, record);
 		}
 
+	/* Provide inverse of area to allow division by area
+	 * to be converted into less-expensive multiplication.
+	 */
+	patch[0].area_inv = 1.0 / patch[0].area;
+
 	/* When setting dx and dy assume square patches for now
 	 * TODO: Update grass2world to calculate dx and dy and include
 	 * in worldfiles, in which case we would read them from
