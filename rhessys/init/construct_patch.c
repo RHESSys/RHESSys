@@ -173,6 +173,11 @@ struct patch_object *construct_patch(
 	 */
 	patch[0].dx = patch[0].dy = sqrt(patch[0].area);
 	patch[0].slope = patch[0].slope * DtoR;
+	/* max slope = slope by default; will be updated
+	 * when the routing topology is created, if we are
+	 * not using TOPMODEL mode
+	 */
+	patch[0].slope_max = patch[0].slope;
 	patch[0].surface_Tday = -999.9;
 	patch[0].surface_Tnight = -999.9;
 	patch[0].preday_sat_deficit  = patch[0].sat_deficit;
