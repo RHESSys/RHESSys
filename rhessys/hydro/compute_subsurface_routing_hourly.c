@@ -141,14 +141,7 @@ void compute_subsurface_routing_hourly(
 		//       the set of patches in the subsurface flow table
 		for (i = 0; i < basin->route_list->num_patches; i++) {
 			patch = basin->route_list->list[i];
-			/*//the following code is for testing only
-			if (i==2000){
-			printf("sat_deficit = %f, soil_dep = %f, n_0 = %f, p = %f\n",
-				patch[0].sat_deficit,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay);
-			}*/
+
 			patch[0].streamflow = 0.0;
 			patch[0].return_flow = 0.0;
 			patch[0].base_flow = 0.0;
@@ -474,9 +467,20 @@ void compute_subsurface_routing_hourly(
 							patch[0].streamflow_DOC += (excess
 									/ patch[0].detention_store)
 									* patch[0].surface_DOC;
+
 							patch[0].streamflow_NO3 += (excess
 									/ patch[0].detention_store)
 									* patch[0].surface_NO3;
+							patch[0].streamNO3_from_surface +=(excess
+									/ patch[0].detention_store)
+									* patch[0].surface_NO3;
+							patch[0].hourly[0].streamflow_NO3 += (excess
+									/ patch[0].detention_store)
+									* patch[0].surface_NO3;
+							patch[0].hourly[0].streamflow_NO3_from_surface +=(excess
+									/ patch[0].detention_store)
+									* patch[0].surface_NO3;
+
 							patch[0].streamflow_NH4 += (excess
 									/ patch[0].detention_store)
 									* patch[0].surface_NH4;
@@ -537,8 +541,17 @@ void compute_subsurface_routing_hourly(
 											* patch[0].area / neigh[0].area);
 									neigh[0].streamflow_DON += (DON_out
 											* patch[0].area / neigh[0].area);
+
 									neigh[0].streamflow_NO3 += (NO3_out
 											* patch[0].area / neigh[0].area);
+									neigh[0].streamNO3_from_surface +=(NO3_out
+											* patch[0].area / neigh[0].area);
+									neigh[0].hourly[0].streamflow_NO3 += (NO3_out
+											* patch[0].area / neigh[0].area);
+									neigh[0].hourly[0].streamflow_NO3_from_sub +=(NO3_out
+											* patch[0].area / neigh[0].area);
+
+
 									neigh[0].streamflow_NH4 += (NH4_out
 											* patch[0].area / neigh[0].area);
 									neigh[0].surface_ns_leach += (Nout
@@ -955,7 +968,8 @@ void compute_subsurface_routing_hourly(
 				    if (patch[0].drainage_type == STREAM) {
 					patch[0].streamflow += patch[0].return_flow
 							+ patch[0].base_flow;
-				    
+				    }
+			}
 	/*				    if (i==6539 && current_date.month == 12 && current_date.day>15){
 						  printf("**********the end of day = %d; ID= %d, i = %d, baseflow*1000 = %.9f, hourly_subsur2stream=%.9f,std=%f\n",
 						  current_date.day,
@@ -966,9 +980,9 @@ void compute_subsurface_routing_hourly(
 						  patch[0].std * command_line[0].std_scale);
 					    }
 	*/  
-				    }
+				    
 
-			}
+			
 	
 
 		} /* end i */
