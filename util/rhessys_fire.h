@@ -23,6 +23,7 @@ struct fire_default {
 	double ignition_col; // allow for ignition x and y coordinates, but not yet implemented. default to -1
 	double ignition_row;
 	int fire_write; // should the fire results be written to a file?
+	int fire_verbose;
 	int n_rows;
 	int n_cols;
 	int fire_in_buffer;
@@ -52,6 +53,7 @@ struct fire_object
 	double temp; /* temperature of the cell */
 	double et;
 	double pet;
+	int ign_available; /* 1 if available for ignition, 0 otherwise*/
 };	
 
 #ifdef __cplusplus

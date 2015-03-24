@@ -88,6 +88,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].temp=0.0;
 				    world[0].fire_grid[i][j].et=0.0;
 				    world[0].fire_grid[i][j].pet=0.0;
+				    world[0].fire_grid[i][j].ign_available=0;
 
 				  printf("No fire in buffer\n");
 			  }
@@ -104,7 +105,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].temp=0.0;
 		  		    world[0].fire_grid[i][j].et=0.0;
 				    world[0].fire_grid[i][j].pet=0.0;
-
+				    world[0].fire_grid[i][j].ign_available=0;
 			  }
 		}
 		else
@@ -120,6 +121,7 @@ void execute_firespread_event(
 		    world[0].fire_grid[i][j].temp=0.0;
 		    world[0].fire_grid[i][j].et=0.0;
 		    world[0].fire_grid[i][j].pet=0.0;
+		    world[0].fire_grid[i][j].ign_available=1;	/* then make this available for ignition */
 		}
 	//    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) {
@@ -166,7 +168,8 @@ void execute_firespread_event(
 			mean_wind+=world[0].fire_grid[i][j].wind;
 			mean_temp+=world[0].fire_grid[i][j].temp;	
 			mean_et+=world[0].fire_grid[i][j].et;
-			mean_pet+=world[0].fire_grid[i][j].pet;
+			mean_pet+=world[0].fire_grid[i][j].pet;		
+		//	printf("et: %f  pet: %f  ",world[0].fire_grid[i][j].et,world[0].fire_grid[i][j].pet);
 		}
 		
 		world[0].fire_grid[i][j].et=world[0].fire_grid[i][j].et*1000; // convert to mm
@@ -175,9 +178,10 @@ void execute_firespread_event(
 			
 	}
 	}
-	
+//	printf("denom: %lf\t",denom_for_mean);
 	if(denom_for_mean>0&&world[0].defaults[0].fire[0].fire_in_buffer==1)
 	{
+//		printf("in denom if\n");
 		mean_fuel_veg=mean_fuel_veg/denom_for_mean;
 		mean_fuel_litter=mean_fuel_litter/denom_for_mean;  
 		mean_fuel_moist=mean_fuel_moist/denom_for_mean;
@@ -188,6 +192,8 @@ void execute_firespread_event(
 		mean_temp=mean_temp/denom_for_mean;
 		mean_et=mean_et/denom_for_mean;
 		mean_pet=mean_pet/denom_for_mean;
+	//	printf("mean et: %f  mean pet: %f  ",mean_et,mean_pet);
+
 	//	printf("mean pet, mean et: %lf\t%lf\n",mean_pet,mean_et);
 	//	printf("mean wind: %lf, mean direction %lf \n",mean_wind,mean_wind_direction);
 		for  (i=0; i< world[0].num_fire_grid_row; i++) {
@@ -206,6 +212,7 @@ void execute_firespread_event(
 				world[0].fire_grid[i][j].z=world[0].patch_fire_grid[i][j].elev;
 				world[0].fire_grid[i][j].et=mean_et*1000; // convert to mm
 				world[0].fire_grid[i][j].pet=mean_pet*1000; // convert to mm
+	//	printf("in denom if take 2 update values\n");
 			  }
 		     }
 		}
@@ -214,8 +221,8 @@ void execute_firespread_event(
 	/*--------------------------------------------------------------*/
 	/* maureens stuff here 						*/
 	/*--------------------------------------------------------------*/
-	printf("calling WMFire\n");
-	world[0].fire_grid=WMFire(world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year);
+	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);
+	world[0].fire_grid=WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
  	printf("Finished calling WMFire\n");
 	/*--------------------------------------------------------------*/
 	/* update biomass after fire					*/
@@ -260,7 +267,7 @@ void execute_firespread_event(
 
 		}
 			
-	}
+		}
 	}
 printf("Finished updating mortality\n");
 
