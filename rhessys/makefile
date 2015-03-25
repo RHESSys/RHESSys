@@ -1,12 +1,35 @@
-PGM  = rhessys5.19
-VERSION = 5.19
-CC = gcc 
-#CFLAGS = -O -std=c99
-CFLAGS = -g -std=c99
-RHESSYS_BIN = /usr/local/bin
-OBJ = objects
+
+BLD_ROOT    := ${HOME}/models/RHESSys/Linux2_x86_64
+RHESSYS_BIN := ${BLD_ROOT}/bin
+OBJ         := ${BLD_ROOT}/obj
+LIB         := ${BLD_ROOT}/lib
+
+ifndef VERSION
+    VERSION := 5.19
+endif
+
+PGM := ${RHESSYS_BIN}/rhessys${VERSION}
+
+ CC     := gcc 
+ CFLAGS := -O3 -std=c99 -m64 -march=native -mtune=native -fopenmp -ffast-math -funroll-loops
+#CFLAGS := -Og -std=c99 -m64
+
+#CC     := icc 
+#CFLAGS := -O3  -traceback -xHost -openmp
+
+#CC     := pgcc 
+#CFLAGS := -O3  -fast -mp
+
+#CC     := suncc 
+#CFLAGS := -O3    -xarch=avx -xtarget=sandybridge -m64 -xdebugformat=dwarf -openmp
 
 OS := $(shell uname)
+
+ifdef netcdf
+    LIBS := -L${LIB} -lnetcdf -lm
+else
+    LIBS := -lm
+endif
 
 OBJECTS = \
 $(OBJ)/read_netcdf.o \
@@ -289,15 +312,10 @@ $(OBJ)/params.o
 all:	dir rhessys
 
 dir:
-	mkdir -p $(OBJ)
+	mkdir -p $(OBJ) $(RHESSYS_BIN)
 
-ifdef netcdf
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
-else
-rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -v -o $(PGM) 
-endif
+	$(CC) $(OBJECTS) $(CFLAGS) -I include ${LIBS} -v -o $(PGM) 
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
@@ -875,10 +893,13 @@ else
 endif
 
 install:
-	cp $(PGM) $(RHESSYS_BIN)
+	mkdir -p $(RHESSYS_BIN); cp $(PGM) $(RHESSYS_BIN)
+
+neat:
+	rm -f $(OBJECTS)
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f $(OBJECTS) $(PGM)
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)
