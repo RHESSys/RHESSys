@@ -86,6 +86,9 @@
 /*	Local function definitions.				*/
 
 extern void  * alloc( size_t, char *, char *);
+
+extern double recompute_gamma( struct patch_object *, double);
+
 extern double  compute_N_leached( int,
 		                          double,
 		                          double,
@@ -114,6 +117,9 @@ extern double  compute_N_leached( int,
 static int      verbose ;
 
 static unsigned num_patches = -9999 ;
+
+static double   basin_area ;
+static double   std_scale  ;
 
 struct patch_object * * plist ;     /*  array of pointers plist[num_patches] to the patches     */
 
@@ -148,8 +154,15 @@ static unsigned * sfccnt ;      /*   used as sfccnt[num_patches]                
 static unsigned * sfcndx ;      /*   used as sfcndx[num_patches][MAXNEIGHBOR]   */
 static double   * sfcgam ;      /*   used as sfcgam[num_patches][MAXNEIGHBOR]   */
 
+/*  Sub-Surface-routing Drainage Matrix  */
+
+static unsigned * subcnt ;      /*   used as sfccnt[num_patches]                */
+static unsigned * subndx ;      /*   used as sfcndx[num_patches][MAXNEIGHBOR]   */
+static double   * subgam ;      /*   used as sfcgam[num_patches][MAXNEIGHBOR]   */
+
 static double   normal[9] = { 0.0, 0.253, 0.524, 0.842, 1.283, -0.253, -0.524, -0.842, -1.283 };
-static double     perc[9] = { 0,2, 0.1,   0.1,   0.1,   0.1,    0.1,    0.1,    0.1,    0.1   };   
+static double     perc[9] = { 0.2, 0.1,   0.1,   0.1,   0.1,    0.1,    0.1,    0.1,    0.1   };   
+
 
 /*--------------------------------------------------------------------------*/
 
@@ -159,13 +172,15 @@ static void init_hydro_routing( struct command_line_object * command_line,
     unsigned                i, j, k, m, n ;
     unsigned                num_matrix, num_neigh ;
     double                  gfac ;
-    unsigned                dcount[basin->route_list->num_patches] ;    /*  array of downhill-neighbor counts  */
+    unsigned                dcount[basin->route_list->num_patches] ;    /*  array of surface-downhill-neighbor counts  */
+    unsigned                gcount[basin->route_list->num_patches] ;    /*  array of subsurface-neighbor counts  */
     double                  dfrac [basin->route_list->num_patches][MAXNEIGHBOR] ;
     size_t                  psize ;
 	struct patch_object *   patch ;
 	struct patch_object *   neigh ;
     
-    verbose = command_line->verbose_flag ;
+    verbose   = command_line->verbose_flag ;
+    std_scale = command_line->std_scale ;
 
     num_patches = basin->route_list->num_patches ;
     num_matrix  = MAXNEIGHBOR * num_patches ;
@@ -196,20 +211,30 @@ static void init_hydro_routing( struct command_line_object * command_line,
     sfcDOC = (double   *) alloc( num_patches * sizeof(   double ), "sfcDOC", "hydro_routing/init_hydro_routing()" ) ;
     sfcDON = (double   *) alloc( num_patches * sizeof(   double ), "sfcDON", "hydro_routing/init_hydro_routing()" ) ;
     sfcknl = (double   *) alloc( num_patches * sizeof(   double ), "sfcknl", "hydro_routing/init_hydro_routing()" ) ;
+
     sfccnt = (unsigned *) alloc( num_patches * sizeof( unsigned ), "sfccnt", "hydro_routing/init_hydro_routing()" ) ;
     sfcndx = (unsigned *) alloc( num_matrix  * sizeof( unsigned ), "sfcndx", "hydro_routing/init_hydro_routing()" ) ;
     sfcgam = (double   *) alloc( num_matrix  * sizeof(   double ), "sfcgam", "hydro_routing/init_hydro_routing()" ) ;
 
+    subcnt = (unsigned *) alloc( num_patches * sizeof( unsigned ), "subcnt", "hydro_routing/init_hydro_routing()" ) ;
+    subndx = (unsigned *) alloc( num_matrix  * sizeof( unsigned ), "subndx", "hydro_routing/init_hydro_routing()" ) ;
+    subgam = (double   *) alloc( num_matrix  * sizeof(   double ), "subgam", "hydro_routing/init_hydro_routing()" ) ;
+
+    basin_area = 0.0 ;
+    
 #pragma omp parallel for    \
         private( i, j, patch, neigh, gfac ) \
-        shared( num_patches, basin, plist, sfccnt, retdep, rootzs,  \
+        shared( num_patches, basin, plist, sfccnt, subcnt, retdep, rootzs,  \
                 ksatv, ksat_0, mz_v, psiair, zsoil, Ndecay, Ddecay, \
-                sfcknl, dcount, dfrac )
+                sfcknl, dcount, dfrac, gcount ) \
+        reduction( +:  basin_area )
+
     for ( i = 0; i < num_patches; i++ )
         {
         patch     = basin->route_list->list[i] ;
         plist[i]  = patch ;
         sfccnt[i] = 0 ;
+        subcnt[i] = 0 ;
         retdep[i] = patch->soil_defaults[0][0].detention_store_size ;
         rootzs[i] = ( patch->rootzone.depth > ZERO ? patch->rootzone.S : patch->S ) ;
         ksatv [i] = patch->Ksat_vertical ;
@@ -223,23 +248,26 @@ static void init_hydro_routing( struct command_line_object * command_line,
         Ddecay[i] = patch->soil_defaults[0][0].DOM_decay_rate ;
         sfcknl[i] = sqrt( tan( patch->slope_max ) ) / ( patch->mannN * sqrt(patch->area ) ) ;
         dcount[i] = plist[i]->surface_innundation_list->num_neighbours ;
+        gcount[i] = plist[i]->innundation_list->num_neighbours ;
 
         gfac = 0.0 ;
         for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions  */
             {
-            neigh = plist[i]->surface_innundation_list->neighbours[j].patch;
-            gfac += plist[k]->innundation_list[j].gamma ;
+            gfac += plist[k]->surface_innundation_list->neighbours[j].gamma ;
             }
         gfac = 1.0 / gfac ;
         for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions from         */
             {                                   /*  flow-rates gamma and uphill/downhill area ratios  */
             neigh = plist[i]->surface_innundation_list->neighbours[j].patch;
-            dfrac[i][j] = gfac * plist[i]->innundation_list[j].gamma  * plist[i]->area / neigh->area ;
+            dfrac[i][j] = gfac * plist[k]->surface_innundation_list->neighbours[j].gamma  * plist[i]->area / neigh->area ;
             }
         }
 
     for ( i = 0; i < num_patches; i++ )                     /*  !! Serial loop !!  */
         {
+        
+        /*  invert the surface-routing table  */
+        
         for ( j = 0; j < dcount[i]; j++ )
             {
             neigh = plist[i]->surface_innundation_list->neighbours[j].patch;
@@ -262,9 +290,35 @@ static void init_hydro_routing( struct command_line_object * command_line,
                     }
                 }
             }
-        }       /*  end loop constructing drainage matrix  */
+        
+        /*  invert the subsurface-routing table  */
+        
+        for ( j = 0; j < gcount[i]; j++ )
+            {
+            neigh = plist[i]->innundation_list->neighbours[j].patch;
+            for ( k = 0, m = -1 ; k < num_patches; k++ )
+                {
+                if ( neigh == plist[k] )
+                    {
+                    if ( subcnt[k] < MAXNEIGHBOR-1 )
+                        {
+                        m = MAXNEIGHBOR * k + subcnt[k] ;
+                        subcnt[k]++ ;
+                        subndx[m] = k ;
+                        break ;
+                        }
+                    else{
+                        fprintf( stderr, "ERROR:  matrix-overflow in hydro_routing.c:  increase MAXNEIGHBOR and re-=compile" );
+                        exit(EXIT_FAILURE);
+                        }
+                    }
+                }
+            }
+
+        }       /*  end serial loop constructing drainage matrices  */
 
     return ;
+
     }           /*  end init_hydro_routing()  */
 
 
@@ -272,6 +326,10 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
 static void sub_routing( double   tstep,        /*  external time step          */
                          double * substep )     /*  hydro-coupling time step (set in sub_routing()  */
+    {
+
+    return ;
+
     }           /*  end sub_routing()  */
 
 
@@ -279,7 +337,7 @@ static void sub_routing( double   tstep,        /*  external time step          
 
 static void sub_vertical( double  tstep )        /*  process time-step  */
     {
-    unsigned                i ;
+    unsigned                i, j ;
     double                  gammadtda, darea, Vout ;
     double                  std, sd, sd1, return_flow ;
 	struct patch_object *   patch ;
@@ -299,15 +357,15 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                 return_flow = 0.0 ;
                 for ( j=0 ; j < 9 ; j++ )
                     {
-                    sd  = plist[i]->sat_deficit - plist[i]->unsat_storage + std*normal[j]
+                    sd  = plist[i]->sat_deficit - plist[i]->unsat_storage + std*normal[j] ;
                     if ( sd < 0.0 )
                         {
-                        return_flow += sd*perc[j]
+                        return_flow += sd*perc[j] ;
                         }
                     }
                 }
             else{
-                return_flow = max( 0.0, plist[i]->unsat_storage - plist[i]->sat_deficit ;
+                return_flow = max( 0.0, plist[i]->unsat_storage - plist[i]->sat_deficit ) ;
                 }
 
             sfcH2O[i]              +=   return_flow ;
@@ -326,13 +384,13 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                       return_flow, 0.0, 0.0, 
                                       plist[i]->m, 
                                       gammadtda,
-                                      por_0 [i]
-                                      por_d [i]
+                                      por_0 [i],
+                                      por_d [i],
                                       Ndecay[i],
                                       plist[i]->soil_defaults[0][0].active_zone_z,
                                       zsoil [i],
                                       plist[i]->soil_defaults[0][0].NO3_adsorption_rate,
-                                      plist[i]->transmissivity_profile )
+                                      plist[i]->transmissivity_profile ) ;
             sfcNO3[i] += Vout ;
             plist[i]->soil_ns.NO3_Qout += Vout;
 
@@ -341,13 +399,13 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                       return_flow, 0.0, 0.0, 
                                       plist[i]->m, 
                                       gammadtda,
-                                      por_0 [i]
-                                      por_d [i]
+                                      por_0 [i],
+                                      por_d [i],
                                       Ndecay[i],
                                       plist[i]->soil_defaults[0][0].active_zone_z,
                                       zsoil [i],
                                       plist[i]->soil_defaults[0][0].NH4_adsorption_rate,
-                                      plist[i]->transmissivity_profile )
+                                      plist[i]->transmissivity_profile ) ;
             sfcNH4[i] += Vout ;
             plist[i]->soil_ns.NH4_Qout += Vout;
 
@@ -356,30 +414,30 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                       return_flow, 0.0, 0.0, 
                                       plist[i]->m, 
                                       gammadtda,
-                                      por_0 [i]
-                                      por_d [i]
+                                      por_0 [i],
+                                      por_d [i],
                                       Ddecay[i],
                                       plist[i]->soil_defaults[0][0].active_zone_z,
                                       zsoil [i],
                                       plist[i]->soil_defaults[0][0].DON_adsorption_rate,
-                                      plist[i]->transmissivity_profile )
+                                      plist[i]->transmissivity_profile ) ;
             sfcDON[i] += Vout ;
             plist[i]->soil_ns.DON_Qout += Vout;
 
             Vout = compute_N_leached( verbose, 
-                                      plist[i]->soil_ns.DOC,
+                                      plist[i]->soil_cs.DOC,
                                       return_flow, 0.0, 0.0, 
                                       plist[i]->m, 
                                       gammadtda,
-                                      por_0 [i]
-                                      por_d [i]
+                                      por_0 [i],
+                                      por_d [i],
                                       Ddecay[i],
                                       plist[i]->soil_defaults[0][0].active_zone_z,
                                       zsoil [i],
                                       plist[i]->soil_defaults[0][0].DOC_adsorption_rate,
-                                      plist[i]->transmissivity_profile )
+                                      plist[i]->transmissivity_profile ) ;
             sfcDOC[i] += Vout ;
-            plist[i]->soil_ns.DOC_Qout += Vout;
+            plist[i]->soil_cs.DOC_Qout += Vout;
 
             }
         }
@@ -581,6 +639,8 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 
     /*  copy overflow to surface  */
 
+    return ;
+
     }           /*  end stream_routing()  */
 
 
@@ -651,4 +711,5 @@ void hydro_routing( struct command_line_object * command_line,
         patch->surface_DOC     = sfcDOC[i] ;
         patch->surface_DON     = sfcDON[i] ;
         }
+
     }           /*  end hydro_routing()  */
