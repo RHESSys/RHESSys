@@ -37,7 +37,7 @@
 streamEntry* findHighestStream(streamEntry **streamEntryPtr, int *streamCnt);
 streamEntry* findStreamEntry(int, streamEntry**, int*);
 int  checkStreamIntxns(streamEntry*, int, int, int, int, streamEntry*, int, int*, bool);
-int  addStreamIntxn(streamEntry*, streamEntry*, int, int, int);
+void  addStreamIntxn(streamEntry*, streamEntry*, int, int, int);
 void addBasinDivision(streamEntry*, int, int*, int*, int*);
 basinDivision* findBasinDivision(streamEntry*, int, int*, int*, int*);
 void addUpstreamIntxn(streamEntry*, streamEntry*, int, int);
@@ -48,7 +48,7 @@ int    debug;
 int    verbose;
 float cellResolution;
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 
     /* Constants.
@@ -200,7 +200,7 @@ main(int argc, char *argv[])
     /* Max passes to make through the list of streams in order to determine downstream reaches. */
     struct Option* maxPasses_opt = G_define_option();
     maxPasses_opt->key = "maxPasses";
-    maxPasses_opt->type = TYPE_STRING;
+    maxPasses_opt->type = TYPE_INTEGER;
     maxPasses_opt->required = NO;
     maxPasses_opt->description = "maxPasses";
 
@@ -239,7 +239,11 @@ main(int argc, char *argv[])
     debug = debug_flag->answer;
     verbose = verbose_flag->answer;
 
-    maxPasses = strtod(tmpStr, &endPtr);
+    if (tmpStr == NULL) {
+    	maxPasses = 1;
+    } else {
+    	maxPasses = atoi(tmpStr);
+    }
     if (maxPasses == 0)
         maxPasses = 1;
        printf("Max passes: %d\n", maxPasses);
@@ -640,7 +644,7 @@ main(int argc, char *argv[])
     if (verbose)
         printf("Program %s Done\n", argv[0]);
 
-    exit(0);
+    return EXIT_SUCCESS;
 
     /* end cst.c */
 }
@@ -858,7 +862,7 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
 
 }
 
-int addStreamIntxn(streamEntry *currentStreamPtr, streamEntry *adjacentStreamPtr, int nRow, int nCol, int index) {
+void addStreamIntxn(streamEntry *currentStreamPtr, streamEntry *adjacentStreamPtr, int nRow, int nCol, int index) {
 
     if (debug)
         printf("Stream %d: adding intxn to stream %d, row: %d, col: %d\n", currentStreamPtr->streamId, adjacentStreamPtr->streamId, nRow, nCol);
