@@ -741,12 +741,12 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*	Construct the spinup default objects.	                    	*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].vegspinup_flag > 0) {
+	  printf("\nConstructed spinup defaults \n");
 		world[0].defaults[0].spinup = construct_spinup_defaults(
 			world[0].defaults[0].num_spinup_default_files,
 			world[0].spinup_default_files, command_line);
 	}
 
-	printf("\nConstructed spinup defaults \n");
 
 	/*--------------------------------------------------------------*/
 	/*	Construct the list of base stations.			*/
@@ -838,6 +838,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*	If spinup flag is set construct the spinup thresholds object*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].vegspinup_flag > 0) {
+    printf("\n Reading spinup threshold file %s", command_line[0].vegspinup_filename);
 		world[0].spinup_thresholds = construct_spinup_thresholds(command_line[0].vegspinup_filename, &world[0], command_line);
   }
 

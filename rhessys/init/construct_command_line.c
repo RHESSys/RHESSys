@@ -288,7 +288,6 @@ struct	command_line_object	*construct_command_line(
       	/*--------------------------------------------------------------*/
 				/*			Read in the vegspinup file name.						          	*/
 				/*--------------------------------------------------------------*/
-				command_line[0].vegspinup_flag = 1;
 				strncpy(command_line[0].vegspinup_filename, main_argv[i], FILEPATH_LEN);
 				i++;
       }

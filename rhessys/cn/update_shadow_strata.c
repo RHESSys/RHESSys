@@ -42,6 +42,8 @@ void	update_shadow_strata(
 	/*	if it is do nothing, if not copy strata values to shadow              */
 	/*	then check if targets have been met. If so, set target.met flag to 1 	*/
 	/*------------------------------------------------------------------------*/
+  
+ //  printf("target met: %d", target->met);
 
   if(target->met == 0){
     empty_shadow_strata[0].ID = stratum[0].ID;

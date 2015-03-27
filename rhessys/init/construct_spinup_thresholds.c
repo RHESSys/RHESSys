@@ -34,8 +34,7 @@
 #include "rhessys.h"
 
 void *construct_spinup_thresholds(char *spinup_thresholds_filename,
-		  struct world_object *world,
-		  struct command_line_object *command_line)
+		  struct world_object *world)
 													  
 {
 	/*--------------------------------------------------------------*/
@@ -78,18 +77,20 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
   read_record(spinup_thresholds_file, record); // TODO: need to create data structure for 
   fscanf(spinup_thresholds_file,"%d",&num_targets);
   read_record(spinup_thresholds_file, record);
-	
+
   target_array = (struct target_read *)alloc( sizeof(struct target_read)*num_targets, "target_array", "construct_spinup_thresholds");
   
   for (j=0; j< num_targets; j++){
     fscanf(spinup_thresholds_file, "%s", target_array[j].name 	);
+    read_record(spinup_thresholds_file, record);
   }
 	/*--------------------------------------------------------------*/
 	/*	Read in  each stratum record and find it			          		*/
 	/*	add it to the world level spinup_thresholds list	          */
 	/*--------------------------------------------------------------*/
   read_record(spinup_thresholds_file, record);
-	
+  read_record(spinup_thresholds_file, record);
+
   for (i=0; i< num_stratum; ++i) {  
 		fscanf(spinup_thresholds_file,"%d %d %d %d %d",
 			&basin_ID,

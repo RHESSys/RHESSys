@@ -122,6 +122,7 @@ void		patch_daily_F(
 		struct patch_object *,
 		struct layer_object *,
 		struct canopy_strata_object *,
+		struct canopy_strata_object *,
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
@@ -666,6 +667,7 @@ void		patch_daily_F(
 			/*--------------------------------------------------------------*/
 			/*		Cycle through the canopy strata in this layer	*/
 			/*--------------------------------------------------------------*/
+      printf("\n which strata %d",  (patch[0].layers[layer].strata[stratum]));
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
 					canopy_stratum_daily_F(
 						world,
@@ -675,6 +677,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -996,6 +999,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -1043,6 +1047,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );

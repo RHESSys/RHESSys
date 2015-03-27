@@ -337,6 +337,7 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
         /*  Output world state in spinup mode if targets met            */
 				/*--------------------------------------------------------------*/
+
 				if((command_line[0].vegspinup_flag > 0) && (world[0].target_status > 0)) {
 		      execute_state_output_event(world, current_date, world[0].end_date,command_line);
           printf("\nSpinup is complete.");

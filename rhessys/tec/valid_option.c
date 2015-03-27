@@ -75,7 +75,7 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-firespread") == 0) ||
 		(strcmp(command_line,"-snowdistb") == 0) ||
 		(strcmp(command_line,"-whdr") == 0) ||
-		(strcmp(command_line,"-lai_su") == 0) ||
+		(strcmp(command_line,"-vegspinup") == 0) ||
 		(strcmp(command_line,"-template") == 0))
 		i = 0;
 	if ( i == 0 ){

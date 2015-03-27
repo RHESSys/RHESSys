@@ -8,9 +8,6 @@
 /*      construct_empty_shadow_strata.c - creates a empty_shadow_strata object                                                  */
 /*                                                                                                                              */
 /*      SYNOPSIS                                                                                                                */
-/*      struct empty_shadow_strata_object  construct_empty_shadow_strata(                                                       */
-/*                              struct  command_line_object     *command_line,                                                  */
-/*                              FILE    *world_file)                                                                            */
 /*                                                                                                                              */
 /*                                                                                                                              */
 /*      OPTIONS                                                                                                                 */
@@ -33,7 +30,7 @@
 #include "rhessys.h"
 
 struct canopy_strata_object *construct_empty_shadow_strata(
-                                                                                                         struct command_line_object     *command_line,
+                                                                                                         struct command_line_object * command_line, 
                                                                                                          struct patch_object    *patch,
                                                                                                          struct canopy_strata_object *stratum,
                                                                                                          struct default_object  *defaults)

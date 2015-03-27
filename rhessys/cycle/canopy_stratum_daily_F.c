@@ -251,6 +251,16 @@ void	canopy_stratum_daily_F(
 		struct  base_station_object **world_base_stations,
 		struct	default_object	*defaults);
 
+
+  void	update_shadow_strata(  
+	  struct	world_object		      *world,
+	  struct canopy_strata_object 	*stratum,
+    struct canopy_strata_object   *empty_shadow_strata,
+	  struct command_line_object	  *command_line,
+    struct default_object         *defaults, 
+    struct target_object          *target,
+	  struct date 			            current_date); 
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -328,7 +338,11 @@ void	canopy_stratum_daily_F(
 		patch[0].Kdown_diffuse,
 		patch[0].PAR_direct/1000,
 		patch[0].PAR_diffuse/1000);
-	/*--------------------------------------------------------------*/
+
+  printf(" ID empty %d\n", empty_shadow_strata[0].ID);
+printf("\nspinup flag %d \n", command_line[0].vegspinup_flag);
+	
+  /*--------------------------------------------------------------*/
 	/*	Initialize stratum variables.				*/
 	/*--------------------------------------------------------------*/
 	stratum[0].Kstar_diffuse = 0.0;
@@ -1859,9 +1873,8 @@ void	canopy_stratum_daily_F(
 	/*	If spinup option is set, update the shadow stratum until the targets  */
 	/*	have been met                                                       	*/
 	/*------------------------------------------------------------------------*/
-
 	if(command_line[0].vegspinup_flag > 0){
-    update_shadow_strata(target, empty_shadow_strata, stratum);
+    update_shadow_strata(world, stratum, empty_shadow_strata, command_line, defaults, target, current_date);
   }
   
 	/*--------------------------------------------------------------*/
