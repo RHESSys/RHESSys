@@ -25,9 +25,10 @@ void	update_shadow_strata(
 							   struct canopy_strata_object 	*stratum,
                  struct canopy_strata_object  *empty_shadow_strata,
 							   struct command_line_object	  *command_line,
-                 struct default_object        *defaults, 
+							   struct date 			            current_date,
                  struct target_object         *target,
-							   struct date 			            current_date)
+                 struct default_object        *defaults,
+                 struct spinup_object         *spinup) 
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration		                          		*/
@@ -47,7 +48,7 @@ void	update_shadow_strata(
 
   if(target->met == 0){
     empty_shadow_strata[0].ID = stratum[0].ID;
-   //  default_object_ID = stratum[0].default_object_ID; // Do I need this line? It's a NULLVAL in construct_empty - EJH
+    // default_object_ID = stratum[0].default_object_ID; // Do I need this line? It's a NULLVAL in construct_empty - EJH
     empty_shadow_strata[0].cover_fraction = stratum[0].cover_fraction;
     empty_shadow_strata[0].gap_fraction = stratum[0].gap_fraction;
     empty_shadow_strata[0].rootzone.depth = stratum[0].rootzone.depth;

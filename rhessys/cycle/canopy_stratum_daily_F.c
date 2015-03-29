@@ -34,10 +34,11 @@ void	canopy_stratum_daily_F(
 							   struct canopy_strata_object 	*stratum,
                  struct canopy_strata_object  *empty_shadow_strata,
 							   struct command_line_object	  *command_line,
-                 struct default_object        *defaults, 
-                 struct target_object         *target,
 							   struct	tec_entry		          *event,
-							   struct date 			            current_date)
+							   struct date 			            current_date,
+                 struct target_object         *target,
+                 struct default_object        *defaults,
+                 struct spinup_object         *spinup)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
@@ -257,9 +258,10 @@ void	canopy_stratum_daily_F(
 	  struct canopy_strata_object 	*stratum,
     struct canopy_strata_object   *empty_shadow_strata,
 	  struct command_line_object	  *command_line,
-    struct default_object         *defaults, 
+	  struct date 			            current_date, 
     struct target_object          *target,
-	  struct date 			            current_date); 
+    struct default_object         *defaults,
+    struct spinup_object          *spinup); 
 
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -1874,7 +1876,7 @@ printf("\nspinup flag %d \n", command_line[0].vegspinup_flag);
 	/*	have been met                                                       	*/
 	/*------------------------------------------------------------------------*/
 	if(command_line[0].vegspinup_flag > 0){
-    update_shadow_strata(world, stratum, empty_shadow_strata, command_line, defaults, target, current_date);
+    update_shadow_strata(world, stratum, empty_shadow_strata, command_line, current_date, target, defaults, spinup);
   }
   
 	/*--------------------------------------------------------------*/
