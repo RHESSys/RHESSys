@@ -667,7 +667,7 @@ void		patch_daily_F(
 			/*--------------------------------------------------------------*/
 			/*		Cycle through the canopy strata in this layer	*/
 			/*--------------------------------------------------------------*/
-      printf("\n which strata %d",  (patch[0].layers[layer].strata[stratum]));
+      printf("\nwhich strata %d", (patch[0].layers[layer].strata[stratum]));
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
 					canopy_stratum_daily_F(
 						world,

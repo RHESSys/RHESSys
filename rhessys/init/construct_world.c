@@ -838,7 +838,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*	If spinup flag is set construct the spinup thresholds object*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].vegspinup_flag > 0) {
-    printf("\n Reading spinup threshold file %s", command_line[0].vegspinup_filename);
+    printf("\nReading spinup threshold file %s", command_line[0].vegspinup_filename);
 		world[0].spinup_thresholds = construct_spinup_thresholds(command_line[0].vegspinup_filename, &world[0], command_line);
   }
 

@@ -32,13 +32,10 @@ void	canopy_stratum_daily_F(
 							   struct	patch_object		      *patch,
 							   struct layer_object		      *layer,
 							   struct canopy_strata_object 	*stratum,
-                 struct canopy_strata_object  *empty_shadow_strata,
+                 struct canopy_strata_object  *shadow_strata,
 							   struct command_line_object	  *command_line,
 							   struct	tec_entry		          *event,
-							   struct date 			            current_date,
-                 struct target_object         *target,
-                 struct default_object        *defaults,
-                 struct spinup_object         *spinup)
+							   struct date 			            current_date)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
@@ -256,12 +253,9 @@ void	canopy_stratum_daily_F(
   void	update_shadow_strata(  
 	  struct	world_object		      *world,
 	  struct canopy_strata_object 	*stratum,
-    struct canopy_strata_object   *empty_shadow_strata,
+    struct canopy_strata_object   *shadow_strata,
 	  struct command_line_object	  *command_line,
-	  struct date 			            current_date, 
-    struct target_object          *target,
-    struct default_object         *defaults,
-    struct spinup_object          *spinup); 
+	  struct date 			            current_date); 
 
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -341,8 +335,8 @@ void	canopy_stratum_daily_F(
 		patch[0].PAR_direct/1000,
 		patch[0].PAR_diffuse/1000);
 
-  printf(" ID empty %d\n", empty_shadow_strata[0].ID);
-printf("\nspinup flag %d \n", command_line[0].vegspinup_flag);
+  printf("\nID shadow %d\n", shadow_strata[0].ID);
+  printf("\nspinup flag %d \n", command_line[0].vegspinup_flag);
 	
   /*--------------------------------------------------------------*/
 	/*	Initialize stratum variables.				*/
@@ -1876,7 +1870,7 @@ printf("\nspinup flag %d \n", command_line[0].vegspinup_flag);
 	/*	have been met                                                       	*/
 	/*------------------------------------------------------------------------*/
 	if(command_line[0].vegspinup_flag > 0){
-    update_shadow_strata(world, stratum, empty_shadow_strata, command_line, current_date, target, defaults, spinup);
+    update_shadow_strata(world, stratum, shadow_strata, command_line, current_date);
   }
   
 	/*--------------------------------------------------------------*/
