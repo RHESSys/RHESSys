@@ -530,7 +530,9 @@ void		patch_daily_F(
 		else irrigation = patch[0].landuse_defaults[0][0].irrigation;
 		}
 	else irrigation = patch[0].landuse_defaults[0][0].irrigation;
-
+	/*--------------------------------------------------------------*/
+	/*	process any daily rainfall				*/
+	/*--------------------------------------------------------------*/
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
@@ -642,6 +644,8 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
+			/* the following code is for testing only*/
+			//printf("Test null_cover = %f\n",patch[0].layers[layer].null_cover);
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			if (dum == 0) {
 				patch[0].ga_final = patch[0].layers[layer].null_cover * tmpga;
@@ -1141,6 +1145,7 @@ void		patch_daily_F(
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
 	//patch[0].surface_NO3 += zone[0].ndep_NO3;
+	/* NO3 ndep fall's on canopy, not directly to ground, NH4 could use the same way */
 	patch[0].surface_NO3 += patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 

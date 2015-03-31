@@ -282,7 +282,13 @@ $(OBJ)/skip_hillslope.o \
 $(OBJ)/skip_zone.o \
 $(OBJ)/skip_patch.o \
 $(OBJ)/skip_strata.o \
-$(OBJ)/params.o
+$(OBJ)/params.o \
+$(OBJ)/resemble_hourly_date.o \
+$(OBJ)/union_date_init.o \
+$(OBJ)/union_date_combine.o \
+$(OBJ)/get_num_daywhourly.o \
+$(OBJ)/date_oper_union.o \
+$(OBJ)/reconstruct_hourly_clim.o \
 
 all:	dir rhessys
 
@@ -855,7 +861,18 @@ $(OBJ)/construct_netcdf_header.o: init/construct_netcdf_header.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_header.c -o $(OBJ)/construct_netcdf_header.o
 $(OBJ)/params.o: util/params.c
 	$(CC) -c $(CFLAGS) -I include util/params.c -o $(OBJ)/params.o
-
+$(OBJ)/resemble_hourly_date.o: util/resemble_hourly_date.c
+	$(CC) -c $(CFLAGS) -I include util/resemble_hourly_date.c -o $(OBJ)/resemble_hourly_date.o
+$(OBJ)/union_date_init.o: util/union_date_init.c
+	$(CC) -c $(CFLAGS) -I include util/union_date_init.c -o $(OBJ)/union_date_init.o
+$(OBJ)/union_date_combine.o: util/union_date_combine.c
+	$(CC) -c $(CFLAGS) -I include util/union_date_combine.c -o $(OBJ)/union_date_combine.o
+$(OBJ)/get_num_daywhourly.o: util/get_num_daywhourly.c
+	$(CC) -c $(CFLAGS) -I include util/get_num_daywhourly.c -o $(OBJ)/get_num_daywhourly.o
+$(OBJ)/date_oper_union.o: util/date_oper_union.c
+	$(CC) -c $(CFLAGS) -I include util/date_oper_union.c -o $(OBJ)/date_oper_union.o
+$(OBJ)/reconstruct_hourly_clim.o: init/reconstruct_hourly_clim.c
+	$(CC) -c $(CFLAGS) -I include init/reconstruct_hourly_clim.c -o $(OBJ)/reconstruct_hourly_clim.o
 $(OBJ)/main.o: main.c setversion
 	$(CC) -c $(CFLAGS) -I include main.c -o $(OBJ)/main.o
 

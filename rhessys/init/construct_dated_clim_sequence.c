@@ -67,6 +67,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	long	i;
 	int	j;
 	int	inx;
+	int	start_flag;
 	long	start_date_julian;
 	double	value;
 	int	num_records;
@@ -81,7 +82,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	/*	Initialize							*/
 	/*--------------------------------------------------------------*/
         num_days = 0;
-
+	start_flag = 0;
 
 	/*--------------------------------------------------------------*/
 	/*      Compute julian date of start 				  */
@@ -151,7 +152,8 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		sizeof(struct dated_sequence),
 		"sequence","construct_dated_clim_sequence");
 	events.inx = 0;
-	
+	events.seq[0].edate.year = 1999;
+	//printf("TEST_year = %d\n",events.seq[0].edate.year);
 	/*--------------------------------------------------------------*/
 	/*	Read in the climate sequence data.							*/
 	/*--------------------------------------------------------------*/
@@ -178,7 +180,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 			  if(julday(cur_date)>julday(tmp_date)){ 
 			    /* start a new day */
 			    /* make the value of the rest hours in the previous day to 0 */
-			    if (tmp_date.hour<24 && julday(tmp_date)!=start_date_julian){
+			    if (tmp_date.hour<=24 && start_flag != 0){ // not the first day after start_date
 				for(j=tmp_date.hour+1;j<=24;j++){
 				  events.seq[inx].edate.year = tmp_date.year;
 				  events.seq[inx].edate.month = tmp_date.month;
@@ -190,7 +192,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				
 			    }
 			    /* make the value of the hours earlier than cur day to 0 */
-			    if (cur_date.hour>1){
+			    if (cur_date.hour>=1){
 				for(j=1;j<cur_date.hour;j++){
 				  events.seq[inx].edate.year = cur_date.year;
 				  events.seq[inx].edate.month = cur_date.month;
@@ -199,6 +201,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				  events.seq[inx].value = 0.0;
 				  inx += 1;
 				}
+				start_flag=1;
 			    }
 				
 				events.seq[inx].edate.year = cur_date.year;
@@ -209,8 +212,26 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				inx += 1;
 			    }
 			
-			else{ /* if there are multiple records within one day*/
-			    for(j=tmp_date.hour+1;j<cur_date.hour;j++){
+			else{/* if there are multiple records within one day*/
+			    if(start_flag==0){ //if it is the first record after start_date
+			      	for(j=1;j<cur_date.hour;j++){
+				  events.seq[inx].edate.year = cur_date.year;
+				  events.seq[inx].edate.month = cur_date.month;
+				  events.seq[inx].edate.day = cur_date.day;
+				  events.seq[inx].edate.hour = j;
+				  events.seq[inx].value = 0.0;
+				  inx += 1;
+				}
+				events.seq[inx].edate.year = cur_date.year;
+				events.seq[inx].edate.month = cur_date.month;
+				events.seq[inx].edate.day = cur_date.day;
+				events.seq[inx].edate.hour = cur_date.hour;
+				events.seq[inx].value = value;
+				inx += 1;
+				start_flag = 1;
+
+			    }
+			   else{ for(j=tmp_date.hour+1;j<cur_date.hour;j++){
 				events.seq[inx].edate.year = tmp_date.year;
 				events.seq[inx].edate.month = tmp_date.month;
 				events.seq[inx].edate.day = tmp_date.day;
@@ -224,6 +245,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				events.seq[inx].edate.hour = cur_date.hour;
 				events.seq[inx].value = value;
 				inx += 1;
+			   }
 
 
 			}
@@ -252,7 +274,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 
 	printf("number_day with hourly precipitation in the input file= %d\nnumber_hour = number_day * 24 = %d\ninx=%d\nnum_records=%d\n",num_days,num_hours,inx,num_records);
 	//test
-	/*for (i=0; i<inx; i++){
+	/*     for (i=0; i<inx; i++){
 		printf("%d %d %d %d %f\n",events.seq[i].edate.year,events.seq[i].edate.month,events.seq[i].edate.day,events.seq[i].edate.hour,events.seq[i].value);
 	}*/
 	return(events);

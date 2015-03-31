@@ -290,6 +290,7 @@ struct world_object
 	struct	default_object		*defaults;
 	struct	world_hourly_object	*hourly;
 	struct  fire_object		**fire_grid;
+	struct  date			**master_hourly_date;
 	};
 
 
