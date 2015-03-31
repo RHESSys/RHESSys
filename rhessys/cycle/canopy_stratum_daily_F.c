@@ -335,9 +335,6 @@ void	canopy_stratum_daily_F(
 		patch[0].PAR_direct/1000,
 		patch[0].PAR_diffuse/1000);
 
-  printf("\nID shadow %d\n", shadow_strata[0].ID);
-  printf("\nspinup flag %d \n", command_line[0].vegspinup_flag);
-	
   /*--------------------------------------------------------------*/
 	/*	Initialize stratum variables.				*/
 	/*--------------------------------------------------------------*/

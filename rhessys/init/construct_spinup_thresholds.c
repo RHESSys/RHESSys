@@ -74,7 +74,7 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 
 //create target array, times number of targets (readin first)
   fscanf(spinup_thresholds_file,"%d",&num_stratum);
-  read_record(spinup_thresholds_file, record); // TODO: need to create data structure for 
+  read_record(spinup_thresholds_file, record);  
   fscanf(spinup_thresholds_file,"%d",&num_targets);
   read_record(spinup_thresholds_file, record);
 

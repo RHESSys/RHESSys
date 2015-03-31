@@ -256,15 +256,6 @@ void	execute_daily_output_event(
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date, outfile->canopy_stratum->daily);
-																if (command_line[0].vegspinup_flag > ZERO)  {
-																output_canopy_stratum(
-																world[0].basins[b][0].ID,
-																world[0].basins[b][0].hillslopes[h][0].ID,
-																world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
-																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
-																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->shadow_strata[c],
-																date, outfile->shadow_strata->daily);
-																}
 															}
 										} /* end stratum (c) for loop */
 									} /* end if options */

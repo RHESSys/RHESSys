@@ -72,7 +72,7 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         struct  canopy_strata_object      *shadow_strata;
         
         /*--------------------------------------------------------------*/
-        /*  Allocate an shadow_strata object.                     */
+        /*  Allocate a shadow_strata object.                            */
         /*--------------------------------------------------------------*/
         shadow_strata = (struct canopy_strata_object *) alloc( 1 *
                 sizeof( struct canopy_strata_object ),"shadow_strata",
@@ -81,8 +81,6 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         /*--------------------------------------------------------------*/
         /*   Initialize the next canopy strata record for this patch.   */
         /*--------------------------------------------------------------*/
-        shadow_strata[0].ID = NULLVAL;
-        default_object_ID = NULLVAL;
         shadow_strata[0].cover_fraction = NULLVAL;
         shadow_strata[0].gap_fraction = NULLVAL;
         shadow_strata[0].rootzone.depth = NULLVAL;
@@ -145,7 +143,7 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         /*--------------------------------------------------------------*/
         shadow_strata[0].defaults = (struct stratum_default **)  
                 alloc( sizeof(struct stratum_default *),"defaults",
-                "construct_shadow_strata" );
+                "construct_empty_shadow_strata" );
                 
         /*--------------------------------------------------------------*/
         /*      assign number of  strata base stations                  */
@@ -157,7 +155,7 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         shadow_strata[0].base_stations = (struct base_station_object **)
                 alloc(shadow_strata[0].num_base_stations *
                 sizeof(struct base_station_object *),"base_stations",
-                "construct_shadow_strata");
+                "construct_empty_shadow_strata");
         /*--------------------------------------------------------------*/
         /* Read each base_station ID and then point to that base_station*/
         /*--------------------------------------------------------------*/

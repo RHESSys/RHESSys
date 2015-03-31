@@ -41,19 +41,15 @@ void	update_shadow_strata(
 	/*	then check if targets have been met. If so, set target.met flag to 1 	*/
 	/*------------------------------------------------------------------------*/
   
- printf("\ntarget met: %d", stratum[0].target.met);
+ // printf("\ntarget met: %d", stratum[0].target.met);
 
   if(stratum[0].target.met == 0){
-    shadow_strata[0].ID = stratum[0].ID;
-    printf("\nstrata ID: %d shadow strata ID: %d", stratum[0].ID, shadow_strata[0].ID);
-    // default_object_ID = world[0].default_object_ID; // Do I need this line? It's a NULLVAL in construct_empty - EJH
     shadow_strata[0].cover_fraction = stratum[0].cover_fraction;
     shadow_strata[0].gap_fraction = stratum[0].gap_fraction;
     shadow_strata[0].rootzone.depth = stratum[0].rootzone.depth;
     shadow_strata[0].snow_stored = stratum[0].snow_stored;
     shadow_strata[0].rain_stored = stratum[0].rain_stored;
     shadow_strata[0].cs.cpool = stratum[0].cs.cpool;
-    printf("\nstrata c pool: %d shadow strata c pool: %d", stratum[0].cs.cpool, shadow_strata[0].cs.cpool);
     shadow_strata[0].cs.leafc = stratum[0].cs.leafc;
     shadow_strata[0].cs.dead_leafc = stratum[0].cs.dead_leafc;
     shadow_strata[0].cs.leafc_store = stratum[0].cs.leafc_store;
@@ -76,7 +72,6 @@ void	update_shadow_strata(
     shadow_strata[0].cs.cwdc = stratum[0].cs.cwdc;
     shadow_strata[0].epv.prev_leafcalloc = stratum[0].epv.prev_leafcalloc;
     shadow_strata[0].ns.npool = stratum[0].ns.npool;
-    printf("\nstrata n pool: %d shadow strata n pool: %d", stratum[0].ns.npool, shadow_strata[0].ns.npool);
     shadow_strata[0].ns.leafn = stratum[0].ns.leafn;
     shadow_strata[0].ns.dead_leafn = stratum[0].ns.dead_leafn;
     shadow_strata[0].ns.leafn_store = stratum[0].ns.leafn_store;
@@ -98,10 +93,13 @@ void	update_shadow_strata(
     shadow_strata[0].ns.frootn_transfer = stratum[0].ns.frootn_transfer;
     shadow_strata[0].ns.cwdn = stratum[0].ns.cwdn;
     shadow_strata[0].ns.retransn = stratum[0].ns.retransn;
+    shadow_strata[0].epv.wstress_days = stratum[0].epv.wstress_days;
+    shadow_strata[0].epv.max_fparabs = stratum[0].epv.max_fparabs;
+    shadow_strata[0].epv.min_vwc = stratum[0].epv.min_vwc;
   }
   
-  if((abs(stratum[0].epv.proj_lai - stratum[0].target.lai) <	world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai)
-    && (abs(stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc - stratum[0].target.total_stemc) < world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc)) {
+ if((stratum[0].epv.proj_lai >= (stratum[0].target.lai -	world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai))
+    && ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc))) {
     // TODO: add && for all the possible targets
     stratum[0].target.met = 1;
   }
