@@ -569,12 +569,10 @@ struct patch_object *construct_patch(
 		sizeof( struct canopy_strata_object *),
 		"canopy_strata","construct_patch");
  	
-        if( command_line[0].vegspinup_flag > 0 ) {
 		patch[0].shadow_strata = ( struct canopy_strata_object ** )
 			alloc( patch[0].num_canopy_strata * 
 			sizeof( struct canopy_strata_object *),
 			"shadow_strata","construct_patch");
- 	}
 
 	/*--------------------------------------------------------------*/
 	/*      Allocate the patch hourly object.	  */
