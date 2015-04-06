@@ -1653,7 +1653,7 @@ void		patch_daily_F(
                 resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
                         patch[0].surface_NH4,
                         patch[0].rootzone.depth,
-                        patch[0].soil_defaults[0][0].soil_depth,
+                        patch[0].soil_defaults[0][0].active_zone_z,
                         patch[0].soil_defaults[0][0].N_decay_rate,
                         &(patch[0].ndf));
 	}

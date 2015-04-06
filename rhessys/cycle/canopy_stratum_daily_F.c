@@ -1043,7 +1043,6 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].gs = stratum[0].gs_sunlit + stratum[0].gs_shade;
 
-
 	/*--------------------------------------------------------------*/
 	/*	Determine heat flux between stratum and surface.			*/
 	/*	representative of the surface temperature.  Obviously   */

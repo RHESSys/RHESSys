@@ -127,64 +127,19 @@ double	compute_vascular_stratum_conductance(
 	/*--------------------------------------------------------------*/
 	/*	soil-LWP multiplier					*/
 	/*--------------------------------------------------------------*/
-
-	if ( verbose_flag == -5 ){
-		printf("\nVAS STRAT CONDUCT START: LWP=%lf open=%lf close=%lf RZstor=%lf satdef=%lf satdefz=%lf pch_potsat=%lf strat_potsat=%lf pchWP=%lf stratWP=%lf LWPclos=%lf \n                         psiae=%lf b=%lf por=%lf pchRZD=%lf stratRZD=%lf m_LWP=%lf ",
-			   LWP_predawn,
-			   LWP_min_spring, 
-			   LWP_stom_closure, 
-			   patch[0].rz_storage,
-			   patch[0].sat_deficit,
-			   patch[0].sat_deficit_z,
-			   patch[0].rootzone.potential_sat,
-			   stratum[0].rootzone.potential_sat,
-			   patch[0].wilting_point,
-			   wilting_point,
-			   LWP_stom_closure,
-			   patch[0].soil_defaults[0][0].psi_air_entry,
-			   patch[0].soil_defaults[0][0].pore_size_index,
-			   patch[0].soil_defaults[0][0].porosity_0,
-			   patch[0].rootzone.depth,
-			   stratum[0].rootzone.depth,
-			   m_LWP);
-	}
-	
-	
 	if (LWP_predawn !=  9999.0) {
 		m_LWP = leaf_conductance_LWP_curve(LWP_curve, LWP_predawn,
 			LWP_min_spring,LWP_stom_closure,LWP_threshold, LWP_slp, LWP_intercpt );
 
-		/* CHANGED FROM stratum[0].rootzone.potential_sat to patch[0].rootzone.potential_sat... NEED TO CHECK */
 		if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > patch[0].rootzone.potential_sat)) {
-			/*patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*LWP_stom_closure/patch[0].soil_defaults[0][0].psi_air_entry) 
-										 * patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
-			patch[0].wilting_point = patch[0].wilting_point * (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat)) ;*/
 
-			if ( verbose_flag == -5 ){
-				printf("\n                   CVSC_CASE1: RZstor=%lf satdef=%lf strat_potsat=%lf pch_potsat=%lf LWPclos=%lf psiae=%lf b=%lf por=%lf stratWP=%lf m_LWP=%lf",
-					   patch[0].rz_storage,
-					   patch[0].sat_deficit, 
-					   stratum[0].rootzone.potential_sat, 
-					   patch[0].rootzone.potential_sat,
-					   LWP_stom_closure,
-					   patch[0].soil_defaults[0][0].psi_air_entry,
-					   patch[0].soil_defaults[0][0].pore_size_index,
-					   patch[0].soil_defaults[0][0].porosity_0,
-					   wilting_point,
-					   m_LWP);
-			}
-			/* NEW: Adjust check to make proportional to stratum-specific rooting depth */
-			/*if ( patch[0].rz_storage < patch[0].wilting_point) {*/
+			/* Adjust check to make proportional to stratum-specific rooting depth */
 			if ( (patch[0].rz_storage * stratum[0].rootzone.depth / patch[0].rootzone.depth ) < wilting_point) {
 				m_LWP = 0.0;
-				if ( verbose_flag == -5 ){
-					printf("         CVSC_CASE1A: m_LWP=%lf ",m_LWP);
 					}
 				}
 
 			}
-
-		}
 	else m_LWP=1.0;
 
 
