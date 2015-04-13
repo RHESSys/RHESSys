@@ -665,8 +665,9 @@ bool printStream(streamEntry *currentStreamPtr, FILE *streamOutFile, streamEntry
     if (debug)
         printf("Printing stream %d\n", currentStreamPtr->streamId);
 
-    fprintf(streamOutFile, "\n%d %7.2f %7.2f %7.2f %7.4f %7.4f %7.2f\n", currentStreamPtr->streamId, currentStreamPtr->streamBottomWidth,
-            currentStreamPtr->streamTopWidth, currentStreamPtr->streamDepth, currentStreamPtr->slope, currentStreamPtr->ManningsN, currentStreamPtr->pixelCount*cellResolution);
+	fprintf(streamOutFile, "\n%d %7.2f %7.2f %7.2f %7.4f %7.4f %7.2f\n", currentStreamPtr->streamId, currentStreamPtr->streamTopWidth, 
+	currentStreamPtr->streamBottomWidth, currentStreamPtr->streamDepth, currentStreamPtr->slope, currentStreamPtr->ManningsN, 
+	currentStreamPtr->pixelCount*cellResolution);
     fprintf(streamOutFile, "%d\n", currentStreamPtr->basinDivisionCnt);
 
     int j;
