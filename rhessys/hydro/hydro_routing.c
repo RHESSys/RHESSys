@@ -32,7 +32,9 @@
 /*          loop on adaptive internal time steps                            */
 /*              parallel loop computing the  d(head)/dt and d(chem)/dt      */
 /*              compute Courant-stable time step dt                         */
-/*              parallel loop updating the head and chem for time dt        */
+/*              parallel loop updating the usrface head and chem for        */
+/*              in terms of flow, precip+canopy input rates, and            */
+/*              infiltration for time-step dt                               */
 /*          update state-data from working vectors                          */
 /*                                                                          */
 /*      static void stream_routing()                                        */
@@ -40,8 +42,12 @@
 /*          baseflow                                                        */
 /*          stream-network routing                                          */
 /*                                                                          */
+/*  DESCRIPTION:  sub_routing()                                             */
+/*                                                                          */
+/*  DESCRIPTION:  can_routing()                                             */
+/*                                                                          */
 /*  DESCRIPTION:  sfc_routing()                                             */
-/*      Uses an implementation based on "inflow matrices" and an            */
+/*      Uses a parallel implementation based on "inflow matrices" and an    */
 /*      adaptive time step.  For each cell and for surface-head and for     */
 /*      each species chem in {H)3, NH4, DOC, DON}:                          */
 /*                                                                          */
@@ -66,7 +72,7 @@
 /*                                                                          */
 /*      Again, note the time independent indexing arrays and factors        */
 /*      sfccnti(R)   = number     of sources that flow into cell R          */
-/*      sfcndxi(R,S) = subscripts of sources that flow into cell R           */
+/*      sfcndxi(R,S) = subscripts of sources that flow into cell R          */
 /*      sfcgam(R,S)  = gamma(S,R) * area(S) } / area(R)                      */
 /*                                                                          */
 /*      The "inflow matrices" approach is necessary for a parallel          */
@@ -75,6 +81,8 @@
 /*      the state of its downhill neighbors:  more than one patch might     */
 /*      be updating any one of these neighbors simultaneously, leading      */
 /*      to race conditions and incorrect results.                           */
+/*                                                                          */
+/*  DESCRIPTION:  stream_routing()                                          */
 /*                                                                          */
 /*  PROGRAMMER NOTES                                                        */
 /*      Initial version 3/12/2015 by Carlie J. Coats, Jr., UNC IE           */
@@ -102,22 +110,27 @@ double	compute_z_final( int	verbose_flag,
 #define     DEG2RAD         (M_PI/180.0)
 #define     EPSILON         (1.0e-5)
 
-typedef     double    BDYdble[ MAXNEIGHBOR ] ;
-typedef     unsigned  BDYuint[ MAXNEIGHBOR ] ;
+/*  "array-of-neighbors"  types:  */
+
+typedef     double    NBRdble[ MAXNEIGHBOR ] ;
+typedef     unsigned  NBRuint[ MAXNEIGHBOR ] ;
 
 static double   CPLMAX ;        /*  Courant-stability threshold                                 */
 static double   COUMAX ;        /*  Max coupling timestep (sec; returned by sub_routing() )     */
 
 static int      verbose ;
 
-static unsigned num_patches = -9999 ;
+static unsigned num_patches  = -9999 ;      /* Number of patches, set in init_hydro_routing()  */
+static unsigned num_strm     = -9999 ;      /* Number of streams, set in init_hydro_routing()  */
+static unsigned strm_patch   = -9999 ;      /* Number of patches draining into streams, set in init_hydro_routing()  */
 
 static double   basin_area ;
 static double   std_scale  ;
 
 struct patch_object * * plist ; /*  array of pointers plist[num_patches] to the patches     */
 
-static double * psize ;         /*  cell-size:  sqrt( patch->area )                         */
+static double * parea ;         /*  patch->area (M^2)                                       */
+static double * psize ;         /*  cell-size:  sqrt( patch->area ) (M)                     */
 static double * pscale;         /*  patch->std  * std_scale                                 */
 static double * perim ;         /*  patch->perimeter                                        */
 
@@ -173,23 +186,52 @@ static double * canDON ;        /*  DON from can_route() to surface             
 /*  Surface-routing Drainage Matrix  */
 
 static unsigned * sfccnti ;     /*   used as sfccnti[num_patches]                */
-static BDYuint  * sfcndxi ;     /*   used as sfcndxi[num_patches][MAXNEIGHBOR]:  outflow-subscripts   */
-static BDYdble  * sfcgam ;      /*   used as  sfcgam[num_patches][MAXNEIGHBOR]   */
+static NBRuint  * sfcndxi ;     /*   used as sfcndxi[num_patches][MAXNEIGHBOR]:  outflow-subscripts   */
+static NBRdble  * sfcgam ;      /*   used as  sfcgam[num_patches][MAXNEIGHBOR]   */
 
 /*  Sub-Surface-routing Drainage Matrix  */
 
 static unsigned * subcnto ;     /*   used as  subcnto[num_patches]:                outflow count        */
 static unsigned * subcnti ;     /*   used as  subcnti[num_patches]:                 inflow count        */
-static BDYuint  * subndxo ;     /*   used as  subndxo[num_patches][MAXNEIGHBOR]:   outflow subscripts   */
-static BDYuint  * subndxi ;     /*   used as  subndxi[num_patches][MAXNEIGHBOR]:    inflow subscripts   */
-static BDYdble  * perimf  ;     /*   used as   perimf[num_patches][MAXNEIGHBOR]   */
-static BDYdble  * subdist ;     /*   used as  subdist[num_patches][MAXNEIGHBOR]   */
+static NBRuint  * subndxo ;     /*   used as  subndxo[num_patches][MAXNEIGHBOR]:   outflow subscripts   */
+static NBRuint  * subndxi ;     /*   used as  subndxi[num_patches][MAXNEIGHBOR]:    inflow subscripts   */
+static NBRdble  * perimf  ;     /*   used as   perimf[num_patches][MAXNEIGHBOR]   */
+static NBRdble  * subdist ;     /*   used as  subdist[num_patches][MAXNEIGHBOR]   */
+
+/*  Stream-routing Lateral-flow drainage matrix; stream properties; tributary incidence-matrix; stream state  */
+
+static unsigned * strmlo  ;     /*  [num_strm]    */
+static unsigned * strmhi  ;     /*  [num_strm]    */
+static unsigned * strmdex ;     /*  [strm_patch]  */
+static double   * strmfac ;     /*  [strm_patch]  */
+
+static unsigned * strmID   ;    /*  [num_strm]    */
+static double   * strmlen  ;    /*  [num_strm]   */
+static double   * manning  ;    /*  [num_strm]   */
+static double   * botwdth  ;     /*  [num_strm]   */
+static double   * bfwidth  ;    /*  [num_strm]   */
+static double   * bfhght   ;    /*  [num_strm]   */
+static double   * sideslp  ;    /*  [num_strm]   */
+static double   * sqrtslp  ;    /*  [num_strm]   */
+
+static unsigned * triblo   ;     /*  [num_strm]  #( tributary-list ) for incidence matrix */
+static unsigned * tribhi   ;     /*  [num_strm]  #( tributary-list ) for incidence matrix */
+static unsigned * tribdex  ;     /*  [num_strm]  tributary-list      for incidence matrix */
+
+static double   * strmH2O  ;    /*  [num_strm] stream water volume (M^3)  */
+static double   * strmNO3  ;    /*  [num_strm]   */
+static double   * strmNH4  ;    /*  [num_strm]   */
+static double   * strmDON  ;    /*  [num_strm]   */
+static double   * strmDOC  ;    /*  [num_strm]   */
+static double   * strmflo  ;    /*  [num_strm] stream water outflow rate (M^3/S)  */
+
+/*  Coefficients for computing distribution of transmissivity  */
 
 static double   normal[9] = { 0.0, 0.253, 0.524, 0.842, 1.283, -0.253, -0.524, -0.842, -1.283 };
-static double     perc[9] = { 0.2, 0.1,   0.1,   0.1,   0.1,    0.1,    0.1,    0.1,    0.1   };   
+static double     perc[9] = { 0.2, 0.1,   0.1,   0.1,   0.1,    0.1,    0.1,    0.1,    0.1   };
 
 
-/*--------------------------------------------------------------------------*/ 
+/*--------------------------------------------------------------------------*/
 
 
 static unsigned patchdex( struct patch_object * patch )   /*  patch-subscript in plist[]  */
@@ -205,16 +247,30 @@ static unsigned patchdex( struct patch_object * patch )   /*  patch-subscript in
 
 /*--------------------------------------------------------------------------*/
 
+
+static unsigned  streamdex( unsigned ID )   /*  stream-subscript in strmID[]  */
+    {
+    unsigned    i ;
+    for ( i = 0 ; i < num_strm; i++ )
+        {
+        if ( ID == strmID[i] )  return( i ) ;
+        }
+    return( num_strm+1 ) ;
+    }
+
+
+/*--------------------------------------------------------------------------*/
+
 static void init_hydro_routing( struct command_line_object * command_line,
                                 struct basin_object        * basin )
     {
     unsigned                i, j, k, m, n ;
-    double                  gfac, dx, dy, diagf ;
+    double                  gfac, dx, dy, diagf, rat, head, area ;
     unsigned                dcount[basin->route_list->num_patches] ;    /*  array of surface-downhill-neighbor counts  */
     double                  dfrac [basin->route_list->num_patches][MAXNEIGHBOR] ;
 	struct patch_object *   patch ;
 	struct patch_object *   neigh ;
-    
+
     verbose   = command_line->verbose_flag ;
     std_scale = command_line->std_scale ;
 
@@ -222,10 +278,17 @@ static void init_hydro_routing( struct command_line_object * command_line,
     COUMAX    =    0.2 ;                    /*  max Courant condition (number)      */
 
     num_patches = basin->route_list->num_patches ;
+    num_strm    = basin->stream_list.num_reaches ;
+    strm_patch  = 0 ;
+    for ( i = 0 ; i < num_strm ; i++ )
+        {
+        strm_patch += basin->stream_list.stream_network[i].num_lateral_inputs ;
+        }
 
     plist   = (struct patch_object * *) alloc( num_patches * sizeof(struct patch_object *), "plist", "hydro_routing/init_hydro_routing()" ) ;
 
     psize   = (double   *) alloc( num_patches * sizeof(   double ), "psize",  "hydro_routing/init_hydro_routing()" ) ;
+    parea   = (double   *) alloc( num_patches * sizeof(   double ), "parea",  "hydro_routing/init_hydro_routing()" ) ;
     nsoil   = (unsigned *) alloc( num_patches * sizeof(   double ), "nsoil",  "hydro_routing/init_hydro_routing()" ) ;
     dzsoil  = (double   *) alloc( num_patches * sizeof(   double ), "dzsoil", "hydro_routing/init_hydro_routing()" ) ;
     pscale  = (double   *) alloc( num_patches * sizeof(   double ), "pscale", "hydro_routing/init_hydro_routing()" ) ;
@@ -279,27 +342,51 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     sfcknl  = (double   *) alloc( num_patches * sizeof(   double ), "sfcknl", "hydro_routing/init_hydro_routing()" ) ;
     sfccnti = (unsigned *) alloc( num_patches * sizeof( unsigned ), "sfccnti", "hydro_routing/init_hydro_routing()" ) ;
-    sfcndxi = (BDYuint  *) alloc( num_patches * sizeof(  BDYuint ), "sfcndxi", "hydro_routing/init_hydro_routing()" ) ;
-    sfcgam  = (BDYdble  *) alloc( num_patches * sizeof(  BDYdble ), "sfcgam",  "hydro_routing/init_hydro_routing()" ) ;
+    sfcndxi = (NBRuint  *) alloc( num_patches * sizeof(  NBRuint ), "sfcndxi", "hydro_routing/init_hydro_routing()" ) ;
+    sfcgam  = (NBRdble  *) alloc( num_patches * sizeof(  NBRdble ), "sfcgam",  "hydro_routing/init_hydro_routing()" ) ;
 
     subcnto = (unsigned *) alloc( num_patches * sizeof( unsigned ), "subcnto", "hydro_routing/init_hydro_routing()" ) ;
     subcnti = (unsigned *) alloc( num_patches * sizeof( unsigned ), "subcnti", "hydro_routing/init_hydro_routing()" ) ;
-    subndxo = (BDYuint  *) alloc( num_patches * sizeof(  BDYuint ), "subndxo", "hydro_routing/init_hydro_routing()" ) ;
-    subndxi = (BDYuint  *) alloc( num_patches * sizeof(  BDYuint ), "subndxi", "hydro_routing/init_hydro_routing()" ) ;
-    perimf  = (BDYdble  *) alloc( num_patches * sizeof(  BDYdble ), "perimf",  "hydro_routing/init_hydro_routing()" ) ;
-    subdist = (BDYdble  *) alloc( num_patches * sizeof(  BDYdble ), "subdist", "hydro_routing/init_hydro_routing()" ) ;
+    subndxo = (NBRuint  *) alloc( num_patches * sizeof(  NBRuint ), "subndxo", "hydro_routing/init_hydro_routing()" ) ;
+    subndxi = (NBRuint  *) alloc( num_patches * sizeof(  NBRuint ), "subndxi", "hydro_routing/init_hydro_routing()" ) ;
+    perimf  = (NBRdble  *) alloc( num_patches * sizeof(  NBRdble ), "perimf",  "hydro_routing/init_hydro_routing()" ) ;
+    subdist = (NBRdble  *) alloc( num_patches * sizeof(  NBRdble ), "subdist", "hydro_routing/init_hydro_routing()" ) ;
+
+    strmlo  = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "strmlo",  "hydro_routing/init_hydro_routing()" ) ;
+    strmhi  = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "strmhi",  "hydro_routing/init_hydro_routing()" ) ;
+    strmdex = (unsigned *) alloc(  strm_patch * sizeof( unsigned ), "strmdex", "hydro_routing/init_hydro_routing()" ) ;
+    strmfac = (double   *) alloc(  strm_patch * sizeof(   double ), "strmfac", "hydro_routing/init_hydro_routing()" ) ;
+
+    strmID  = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "strmID",  "hydro_routing/init_hydro_routing()" ) ;
+    triblo  = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "triblo",  "hydro_routing/init_hydro_routing()" ) ;
+    tribhi  = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "tribhi",  "hydro_routing/init_hydro_routing()" ) ;
+    tribdex = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "tribdex", "hydro_routing/init_hydro_routing()" ) ;
+    strmlen = (double   *) alloc(    num_strm * sizeof(   double ), "strmlen", "hydro_routing/init_hydro_routing()" ) ;
+    manning = (double   *) alloc(    num_strm * sizeof(   double ), "manning", "hydro_routing/init_hydro_routing()" ) ;
+    botwdth = (double   *) alloc(    num_strm * sizeof(   double ), "botwdth", "hydro_routing/init_hydro_routing()" ) ;
+    bfwidth = (double   *) alloc(    num_strm * sizeof(   double ), "bfwidth", "hydro_routing/init_hydro_routing()" ) ;
+    bfhght  = (double   *) alloc(    num_strm * sizeof(   double ), "bfhght",  "hydro_routing/init_hydro_routing()" ) ;
+    sideslp = (double   *) alloc(    num_strm * sizeof(   double ), "sideslp", "hydro_routing/init_hydro_routing()" ) ;
+    sqrtslp = (double   *) alloc(    num_strm * sizeof(   double ), "sqrtslp", "hydro_routing/init_hydro_routing()" ) ;
+
+    strmH2O = (double   *) alloc(    num_strm * sizeof(   double ), "strmH2O", "hydro_routing/init_hydro_routing()" ) ;
+    strmNO3 = (double   *) alloc(    num_strm * sizeof(   double ), "strmNO3", "hydro_routing/init_hydro_routing()" ) ;
+    strmNH4 = (double   *) alloc(    num_strm * sizeof(   double ), "strmNH4", "hydro_routing/init_hydro_routing()" ) ;
+    strmDON = (double   *) alloc(    num_strm * sizeof(   double ), "strmDON", "hydro_routing/init_hydro_routing()" ) ;
+    strmDOC = (double   *) alloc(    num_strm * sizeof(   double ), "strmDOC", "hydro_routing/init_hydro_routing()" ) ;
+    strmflo = (double   *) alloc(    num_strm * sizeof(   double ), "strmflo", "hydro_routing/init_hydro_routing()" ) ;
 
     diagf = 0.5 * sqrt( 0.5 ) ;     /*  "perimeter" factor for diagonals */
     basin_area = 0.0 ;
-    
+
 #pragma omp parallel for                                                \
         default( none )                                                 \
         private( i, j, k, patch, neigh, gfac, dx, dy )                  \
-         shared( num_patches, basin, plist, psize, sfccnti, subcnto,    \
+         shared( num_patches, basin, plist, parea, psize, sfccnti,      \
                  retdep, rootzs, ksatv, ksat_0, mz_v, psiair, zsoil,    \
                  nsoil, dzsoil, std_scale, pscale, Ndecay, Ddecay,      \
                  sfcknl, dcount, dfrac, capH2O, por_0, por_d,           \
-                 subdist, subndxo, perimf, diagf, subcnti )             \
+                 subdist, subndxo, perimf, diagf, subcnti, subcnto )    \
       reduction( +:  basin_area )
 
     for ( i = 0; i < num_patches; i++ )
@@ -307,6 +394,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
         patch     = basin->route_list->list[i] ;
         plist [i] = patch ;
         capH2O[i] = patch->field_capacity ;
+        parea [i] = patch->area ;
         psize [i] = sqrt( patch->area ) ;
         nsoil [i] = patch->num_soil_intervals ;
         dzsoil[i] = patch->soil_defaults[0][0].interval_size ;
@@ -340,7 +428,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
             neigh = plist[i]->surface_innundation_list->neighbours[j].patch;
             dfrac[i][j] = gfac * plist[k]->surface_innundation_list->neighbours[j].gamma  * plist[i]->area / neigh->area ;
             }
-        
+
         for ( j = 0; j < subcnto[i]; j++ )
             {
             neigh = plist[i]->innundation_list->neighbours[j].patch;
@@ -362,9 +450,9 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     for ( i = 0; i < num_patches; i++ )
         {
-        
+
         /*  invert the surface-routing table  */
-        
+
         for ( j = 0; j < dcount[i]; j++ )
             {
             neigh = plist[i]->surface_innundation_list->neighbours[j].patch ;
@@ -382,9 +470,9 @@ static void init_hydro_routing( struct command_line_object * command_line,
                 exit(EXIT_FAILURE);
                 }
             }
-        
+
         /*  use existing subsurface-routing table:  need distances, area-ratios for neighbors  */
-        
+
         for ( j = 0; j < subcnto[i]; j++ )
             {
             neigh = plist[ subndxo[i][j] ] ;
@@ -395,6 +483,68 @@ static void init_hydro_routing( struct command_line_object * command_line,
             }
 
         }       /*  end serial loop constructing drainage matrices  */
+
+        /*  Initialize data structures for streams  */
+        /*  NOTE:  NO3, NH4, DON, DOC initializes to zero, for now...  */
+
+#pragma omp parallel for                                                \
+        default( none )                                                 \
+        private( i, head, area )                                        \
+         shared( num_strm, basin, strmID, strmlen, manning, strmflo,    \
+                 botwdth, bfwidth, bfhght, sideslp, sqrtslp,            \
+                 strmH2O, strmNO3, strmNH4, strmDOC, strmDON )
+
+    for ( i = 0 ; i < num_strm ; i++ )
+        {
+        strmID [i] = basin->stream_list.stream_network[i].reach_ID ;
+        strmlen[i] = basin->stream_list.stream_network[i].length ;
+        manning[i] = basin->stream_list.stream_network[i].manning ;
+        botwdth[i] = basin->stream_list.stream_network[i].bottom_width ;
+        bfwidth[i] = basin->stream_list.stream_network[i].top_width ;
+        bfhght [i] = basin->stream_list.stream_network[i].max_height ;
+        sqrtslp[i] = sqrt( basin->stream_list.stream_network[i].stream_slope ) ;
+        sideslp[i] = 0.5 * ( bfwidth[i] - botwdth[i] ) / bfhght [i] ;
+        strmflo[i] = basin->stream_list.stream_network[i].initial_flow ;
+
+        head = basin->stream_list.stream_network[i].water_depth ;
+        area = head * ( botwdth[i] + head / sideslp[i] ) ;
+        strmH2O[i] = area * strmlen[i] ;
+        strmNO3[i] = 0.0 ;
+        strmNH4[i] = 0.0 ;
+        strmDON[i] = 0.0 ;
+        strmDOC[i] = 0.0 ;
+        }
+
+    /*  !! Serial loop !!  -- computing surface-to-stream lateral-inflow matrix  */
+
+    k = 0 ;
+    for ( i = 0 ; i < num_strm ; i++ )
+        {
+        n         = basin->stream_list.stream_network[i].num_lateral_inputs ;
+        strmlo[i] = k ;
+        strmhi[i] = k + n - 1 ;
+        for ( j = 0 ; j < n ; j++, k++ )
+            {
+            strmdex[k] = patchdex( basin->stream_list.stream_network[i].lateral_inputs[j] ) ;
+            rat = bfwidth[i] / psize[ strmdex[k] ] ;
+            strmfac[k] = ( rat > 1.0 ? 1.0 : rat ) ;
+            }
+        }
+
+    /*  !! Serial loop !!  -- computing incidence matrix for tributary-relation  */
+    /*  NOTE:  #{ tribs } <= #{ streams }   */
+
+    k = 0 ;
+    for ( i = 0 ; i < num_strm ; i++ )
+        {
+        n         = basin->stream_list.stream_network[i].num_upstream_neighbours ;
+        triblo[i] = k ;
+        tribhi[i] = k + n - 1 ;
+        for ( j = 0 ; j < n ; j++, k++ )
+            {
+            tribdex[k] = streamdex( basin->stream_list.stream_network[i].upstream_neighbours[j] ) ;
+            }
+        }
 
     return ;
 
@@ -427,7 +577,7 @@ static void sub_routing( double   tstep,        /*  external time step      */
 
     for ( i = 0; i < num_patches; i++ )     /*  calculate  water-table Z, transmissivity  */
         {
-        patch = plist[i] ;        
+        patch = plist[i] ;
         if ( pscale[i] > 0 )
             {
             tsum = 0.0 ;
@@ -519,13 +669,13 @@ static void sub_routing( double   tstep,        /*  external time step      */
         private( i, j, k, dH2O, dNO3, dNH4, dDOC, dDON )            \
          shared( num_patches, plist, subcnti, subndxi,              \
                  dt, outfac, dH2Odt, rtefac,                        \
-                 outH2O, totNO3, totNH4, totDON, totDOC,            \
+                 totH2O, totNO3, totNH4, totDON, totDOC,            \
                  latH2O, latNO3, latNH4, latDON, latDOC )           \
        schedule( guided )
 
     for ( i = 0; i < num_patches; i++ )     /*  update H2O, NO3, NH4, DON, DOC  */
         {
-        dH2O = -outH2O[i] * dt ;
+        dH2O = -outfac[i] * totH2O[i] ;
         dNO3 = -outfac[i] * totNO3[i] ;
         dNH4 = -outfac[i] * totNH4[i] ;
         dDON = -outfac[i] * totDON[i] ;
@@ -533,7 +683,7 @@ static void sub_routing( double   tstep,        /*  external time step      */
         for ( j = 0; j < subcnti[i]; j++ )
             {
             k     = subndxi[i][j] ;
-            dH2O += dH2Odt[k][j] * dt ;
+            dH2O += rtefac[k][j] * totH2O[i] ;
             dNO3 += rtefac[k][j] * totNO3[i] ;
             dNH4 += rtefac[k][j] * totNH4[i] ;
             dDON += rtefac[k][j] * totDON[i] ;
@@ -545,7 +695,7 @@ static void sub_routing( double   tstep,        /*  external time step      */
         latDON[i] = dDON ;
         latDOC[i] = dDOC ;
         }       /*  end loop updating state-variables  */
-    
+
     return ;
 
     }           /*  end sub_routing()  */
@@ -564,6 +714,7 @@ static void can_routing( double  tstep )        /*  process time-step  */
         default( none )     \
         private( i )        \
          shared( num_patches, canH2O, canNO3, canNH4, canDOC, canDON )
+
     for ( i = 0; i < num_patches; i++ )
         {
         canH2O[i] = 0.0 ;
@@ -628,7 +779,7 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
         schedule( guided )
 
         for ( i = 0; i < num_patches; i++ ) /*  compute drainage rates  */
-            {           
+            {
 
             /*  Transport  */
 
@@ -670,7 +821,7 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
 
         for ( i = 0; i < num_patches; i++ )     /*  update&infiltration loop  */
             {
-            
+
             /*  accumulate and apply net in-flows  */
 
             sumH2O = -outH2O[i] ;   /*  start with outflow rate  */
@@ -680,7 +831,7 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
             sumDON = -outDON[i] ;
             for ( j = 0 ; j < sfccnti[i] ; j++ )     /*  add the inflow rates  */
                 {
-                k = sfcndxi[i][j] ;                
+                k = sfcndxi[i][j] ;
                 sumH2O += sfcgam[i][j] * outH2O[k] ;
                 sumNO3 += sfcgam[i][j] * outNO3[k] ;
                 sumNH4 += sfcgam[i][j] * outNH4[k] ;
@@ -699,22 +850,22 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
             sfcDON[i] += sumDON *dt ;
 
             /*  Calculate Infiltration  */
-            
+
             if ( ( rootzs[i] < 1.0 ) && ( ksat_0[i] > ZERO ) )
                 {
                 z     = plist[i]->sat_deficit_z ;
 
 	            /*	use mean K and p (porosity) given current saturation depth   */
-                
+
                 ksat  = ( mz_v[i] > ZERO   ? mz_v[i]*ksat_0[i]*(1.0 - exp(-z/mz_v[i]) )/z : ksat_0[i] ) ;
                 poro  = ( por_d[i] < 999.9 ? por_d[i]*por_0[i]*(1.0 - exp(-z/por_d[i]))/z : por_0[i]  ) ;
 
                 /*	soil moisture deficit - S must be converted to theta	*/
-                
+
                 theta = rootzs[i] * poro ;
 
                 /*	estimate sorptivity					*/
-                
+
                 psi_f = 0.76 * psiair[i] ;
                 Sp    = sqrt( 2.0 * ksat * psi_f ) ;
                 intensity = sfcH2O[i] / dt ;
@@ -725,9 +876,9 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
                 else{
                     tp = dt ;
                     }
-                    
+
 	            /* use Ksat_vertical to limit infiltration only to pervious area */
-                
+
                 if ( dt <= tp )
                     {
                     delta = ksatv[i]*sfcH2O[i] ;
@@ -738,9 +889,9 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
                     delta = Sp * sqrt( dt - tp ) + afac + tp * sfcH2O[i] ;
                     delta = ksatv[i]*( delta < sfcH2O[i] ? delta :  sfcH2O[i] ) ;
                     }
-                    
+
 	            /* Update surface and infiltration variables: */
-                
+
                 afac = delta / sfcH2O[i] ;      /*  new-infiltration fraction  */
                 infH2O[i] += delta ;
                 sfcH2O[i] -= delta ;
@@ -755,8 +906,8 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
 
                 }           /*  Calculate Infiltration : if ( rootzs[i] < 1.0 ) && ( ksat_0[i] > ZERO )  */
 
-            }               /*  end &infiltration loop  */
-            
+            }               /*  end update&infiltration loop  */
+
         }                   /*  end internal timestep loop  */
 
     return ;
@@ -766,14 +917,182 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
 
 /*--------------------------------------------------------------------------*/
 
+static double headfn( double area,      /*  returns head for a specified water-area and stream geometry  */
+                      double botw,
+                      double sslp )
+    {
+    double hh ;
+    hh = sqrt( botw*sslp + 4.0*area*sslp ) - botw*sslp ;
+    return( hh > ZERO ? 0.5*hh : ZERO ) ;
+    }
+
+
+static double kinvel( double area,      /*  returns velocity for kinematic flow     */
+                      double head,      /*  water depth (M)                         */
+                      double botw,      /*  bottom width (M)                        */
+                      double dmann,     /*  reciprocal of Mannings coefficient      */
+                      double dside,     /*  reciprocal of side-slope                */
+                      double rtslp )    /*  square root of stream-bed slope         */
+    {
+    double  rhyd ;
+    if ( head < EPSILON )
+        {
+        return( 0.0 ) ;
+        }
+    else{
+        rhyd = area / ( botw + 2.0*head*sqrt( 1.0 + dside*dside ) ) ;
+        return( dmann * rtslp * pow( rhyd, TWOTHD ) ) ;
+        }
+    }
+
+
 static void stream_routing( double  tstep )        /*  process time-step  */
     {
+    unsigned    i, j, k ;
+    double      t , dt, ddt, area, head, vel, flow;
+    double      cmax, cscr, dmann, dside, p, q, frac ;
+    double      dH2O, dNO3, dNH4, dDOC, dDON ;
+    double      latsH2O[num_strm] ;     /*  lateral inflow from surface (M^3/S)  */
+    double      latsNO3[num_strm] ;     /*  lateral inflow from surface (?^3/S)  */
+    double      latsNH4[num_strm] ;     /*  lateral inflow from surface (?^3/S)  */
+    double      latsDOC[num_strm] ;     /*  lateral inflow from surface (?^3/S)  */
+    double      latsDON[num_strm] ;     /*  lateral inflow from surface (?^3/S)  */
+    double      tribH2O[num_strm] ;     /*  triberal inflow (M^3/S)  */
+    double      tribNO3[num_strm] ;     /*  triberal inflow (?^3/S)  */
+    double      tribNH4[num_strm] ;     /*  triberal inflow (?^3/S)  */
+    double      tribDOC[num_strm] ;     /*  triberal inflow (?^3/S)  */
+    double      tribDON[num_strm] ;     /*  triberal inflow (?^3/S)  */
 
     /*  scavenge lateral inflow  */
 
+    ddt = 1.0 / tstep ;
+
+#pragma omp parallel for    \
+        default( none )     \
+        private( i, j, k, dH2O, dNO3, dNH4, dDOC, dDON, p, q )  \
+         shared( num_strm, strmlo, strmhi, strmdex, strmfac,    \
+                 latsH2O, latsNO3, latsNH4, latsDOC, latsDON,   \
+                 sfcH2O,  sfcNO3,  sfcNH4,  sfcDOC,  sfcDON,    \
+                 parea, tstep, ddt ) \
+       schedule( guided )
+
+    for ( i = 0 ; i < num_strm ; i++ )
+        {
+        dH2O = 0.0 ;
+        dNO3 = 0.0 ;
+        dNH4 = 0.0 ;
+        dDON = 0.0 ;
+        dDOC = 0.0 ;
+        for ( j = strmlo[i]; j < strmhi[i] ; j++ )
+            {
+            k = strmdex[j] ;
+            q = 1.0 - strmfac[j] ;      /*  remaining fraction after lateral-flow scavenging  */
+            p = strmfac[j] * parea[k] ; /*  fraction of head scavenged from patch * area of patch  */
+            dH2O      = p * sfcH2O[i] ;
+            sfcH2O[i] = q * sfcH2O[i] ;
+            dNO3      = p * sfcNO3[i] ;
+            sfcNO3[i] = q * sfcNO3[i] ;
+            dNH4      = p * sfcNH4[i] ;
+            sfcNH4[i] = q * sfcNH4[i] ;
+            dDON      = p * sfcDON[i] ;
+            sfcDON[i] = q * sfcDON[i] ;
+            dDOC      = p * sfcDOC[i] ;
+            sfcDOC[i] = q * sfcDOC[i] ;
+            }
+        latsH2O[i] = ddt * dH2O ;
+        latsNO3[i] = ddt * dNO3 ;
+        latsNH4[i] = ddt * dNH4 ;
+        latsDON[i] = ddt * dDON ;
+        latsDOC[i] = ddt * dDOC ;
+        }
+
     /*  Main processing loop  */
 
-    /*  copy overflow to surface  */
+    for ( t = tstep ; t > EPSILON ; t-=dt )
+        {
+
+        /*  Compute tributary inflow  */
+
+#pragma omp parallel for                                        \
+        default( none )                                         \
+        private( i, j, k, frac, dH2O, dNO3, dNH4, dDOC, dDON )  \
+         shared( num_strm, triblo, tribhi, tribdex, strmflo,    \
+                 strmH2O, strmNO3, strmNH4, strmDOC, strmDON,   \
+                 tribH2O, tribNO3, tribNH4, tribDOC, tribDON )  \
+       schedule( guided )
+
+        for ( i = 0 ; i < num_strm ; i++ )
+        {
+        dH2O = 0.0 ;
+        dNO3 = 0.0 ;
+        dNH4 = 0.0 ;
+        dDON = 0.0 ;
+        dDOC = 0.0 ;
+        for ( j = triblo[i]; j < tribhi[i] ; j++ )
+            {
+            k     = tribdex[j] ;
+            frac  = strmflo[k] / strmH2O[k] ;
+            dH2O += frac * strmH2O[k] ;     /* = strmflo[k]  */
+            dNO3 += frac * strmNO3[k] ;
+            dNH4 += frac * strmNH4[k] ;
+            dDON += frac * strmDON[k] ;
+            dDOC += frac * strmDOC[k] ;
+            }
+        tribH2O[i] = dH2O ;
+        tribNO3[i] = dNO3 ;
+        tribNH4[i] = dNH4 ;
+        tribDON[i] = dDON ;
+        tribDOC[i] = dDOC ;
+        }
+
+        cmax = 0.0 ;
+
+#pragma omp parallel for                                    \
+        default( none )                                     \
+        private( i, area, head, vel, dmann, dside, cscr )   \
+         shared( num_strm, strmH2O, strmlen, botwdth,       \
+                 manning, sideslp, sqrtslp, strmflo )       \
+      reduction( max: cmax )                                \
+       schedule( guided )
+
+        for ( i = 0 ; i < num_strm ; i++ )
+            {
+            area  = strmH2O[i] / strmlen[i] ;
+            head  = headfn( area, botwdth[i], sideslp[i] );
+            dmann = 1.0 / manning[i] ;
+            dside = 1.0 / sideslp[i] ;
+            vel   = kinvel( area, head, botwdth[i], dmann, dside, sqrtslp[i] ) ;
+            cscr  = vel / strmlen[i] ;
+            if ( cscr > cmax )
+                {
+                cmax = cscr ;
+                }
+            strmflo[i] = area * vel ;
+            }
+
+        dt = min( COUMAX / cmax , t ) ;     /*  Courant-stable internal time step  */
+
+#pragma omp parallel for                                        \
+        default( none )                                         \
+        private( i, frac )                                      \
+         shared( num_strm, strmflo, dt,                         \
+                 strmH2O, strmNO3, strmNH4, strmDOC, strmDON,   \
+                 tribH2O, tribNO3, tribNH4, tribDOC, tribDON,   \
+                 latsH2O, latsNO3, latsNH4, latsDOC, latsDON )
+
+        for ( i = 0 ; i < num_strm ; i++ )
+            {
+            frac = 1.0 - dt * strmflo[i] / strmH2O[i] ;             /* 1 - outflow-fraction  */
+            strmH2O[i] = frac * strmH2O[i] + dt * ( tribH2O[i] + latsH2O[i] ) ;
+            strmNO3[i] = frac * strmNO3[i] + dt * ( tribNO3[i] + latsNO3[i] ) ;
+            strmNH4[i] = frac * strmNH4[i] + dt * ( tribNH4[i] + latsNH4[i] ) ;
+            strmDON[i] = frac * strmDON[i] + dt * ( tribDON[i] + latsDON[i] ) ;
+            strmDOC[i] = frac * strmDOC[i] + dt * ( tribDOC[i] + latsDOC[i] ) ;
+            }
+
+        }       /*  end internal time-step loop  */
+
+    /*  (?) copy stream-overflow to surface  */
 
     return ;
 
@@ -801,17 +1120,17 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
 
     for ( i = 0; i < num_patches; i++ )     /*  loop on patches  */
         {
-        
+
         /*  Add infiltration, lateral inflow  */
-             
+
         totH2O[i] = totH2O[i] + infH2O[i] + latH2O[i] ;
         totNO3[i] = totNO3[i] + infNO3[i] + latNO3[i] ;
         totNH4[i] = totNH4[i] + infNH4[i] + latNH4[i] ;
         totDON[i] = totDON[i] + infDON[i] + latDON[i] ;
         totDOC[i] = totDOC[i] + infDOC[i] + latDOC[i] ;
-        
+
         /*  re-compute surface water  */
-        
+
         if ( totH2O[i] > capH2O[i] )
             {
             fac = ( totH2O[i] - capH2O[i] ) / totH2O[i] ;       /*  excess-water fraction  */
@@ -847,9 +1166,10 @@ void hydro_routing( struct command_line_object * command_line,
     {
     double      substep ;       /*  subsurface (process-coupling) time step     */
     double      t ;             /*  time-variables (sec) [counts down to 0]     */
+    double      head, area ;
     unsigned    i ;
 	struct patch_object *   patch ;
-    
+
     if ( num_patches == -9999 )
         {
         init_hydro_routing( command_line, basin ) ;
@@ -872,14 +1192,25 @@ void hydro_routing( struct command_line_object * command_line,
         sfcDOC[i] = patch->surface_DOC ;
         sfcDON[i] = patch->surface_DON ;
 
-        waterz[i] = patch->z - ( patch->sat_deficit_z > ZERO ? patch->sat_deficit_z : ZERO ) ;
-
-        totH2O[i] = patch->field_capacity - patch->sat_deficit  ;
+        totH2O[i] = patch->field_capacity - patch->sat_deficit  ;    /*  to working vbles for subsfc routing  */
         totNO3[i] = patch->soil_ns.nitrate ;
         totNH4[i] = patch->soil_ns.sminn ;
         totDON[i] = patch->soil_ns.DON ;
         totDOC[i] = patch->soil_cs.DOC ;
+        waterz[i] = patch->z - ( patch->sat_deficit_z > ZERO ? patch->sat_deficit_z : ZERO ) ;
+        }
 
+#pragma omp parallel for                                                \
+        default( none )                                                 \
+        private( i, head, area )                                        \
+         shared( num_strm, basin, botwdth, sideslp, strmlen, strmH2O, strmflo )
+
+    for ( i = 0 ; i < num_strm ; i++ )
+        {
+        head = basin->stream_list.stream_network[i].water_depth ;
+        area = head * ( botwdth[i] + head / sideslp[i] ) ;
+        strmH2O[i] = area * strmlen[i] ;
+        strmflo[i] = basin->stream_list.stream_network[i].Qout ;
         }
 
 
@@ -915,13 +1246,25 @@ void hydro_routing( struct command_line_object * command_line,
         patch->surface_NH4     = sfcNH4[i] ;
         patch->surface_DOC     = sfcDOC[i] ;
         patch->surface_DON     = sfcDON[i] ;
-        
+
         patch->sat_deficit_z   = patch->z - waterz[i]  ;
         patch->sat_deficit     = patch->field_capacity - totH2O[i] ;
         patch->soil_ns.nitrate = totNO3[i] ;
         patch->soil_ns.sminn   = totNH4[i] ;
         patch->soil_ns.DON     = totDON[i] ;
         patch->soil_cs.DOC     = totDOC[i] ;
+        }
+
+#pragma omp parallel for                                                \
+        default( none )                                                 \
+        private( i, head, area )                                        \
+         shared( num_strm, basin, botwdth, sideslp, strmlen, strmH2O, strmflo )
+
+    for ( i = 0 ; i < num_strm ; i++ )
+        {
+        area = strmH2O[i] / strmlen[i] ;
+        basin->stream_list.stream_network[i].water_depth = headfn( area, botwdth[i], sideslp[i] );
+        basin->stream_list.stream_network[i].Qout = strmflo[i] ;
         }
 
     return ;
