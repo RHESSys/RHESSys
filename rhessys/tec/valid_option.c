@@ -71,6 +71,7 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-vmort") == 0) ||
 		(strcmp(command_line,"-svalt") == 0) ||
 		(strcmp(command_line,"-precip") == 0) ||
+		(strcmp(command_line,"-gwtoriparian") == 0) ||
 		(strcmp(command_line,"-surfaceenergy") == 0) ||
 		(strcmp(command_line,"-firespread") == 0) ||
 		(strcmp(command_line,"-snowdistb") == 0) ||

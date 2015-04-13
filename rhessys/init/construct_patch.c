@@ -642,7 +642,9 @@ struct patch_object *construct_patch(
 						patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
 
-	/*--------------------------------------------------------------*/
+	patch[0].precip_with_assim = 0.0;
+	
+  /*--------------------------------------------------------------*/
 	/*	Construct the shadow strata in this patch.		*/
 	/*--------------------------------------------------------------*/
 	if ( (command_line[0].vegspinup_flag > 0) ) {
