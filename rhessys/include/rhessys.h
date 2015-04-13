@@ -468,8 +468,6 @@ struct stream_list_object
         struct stream_network_object *stream_network;
         };
 
-
-
 /*----------------------------------------------------------*/
 /*	Define a snowpack object.								*/
 /*----------------------------------------------------------*/
@@ -1464,7 +1462,6 @@ struct patch_fire_object
 };
 
 /*----------------------------------------------------------*/
-<<<<<<< HEAD
 /*      Define the spinup structure.                        */
 /*----------------------------------------------------------*/
 
@@ -1487,41 +1484,7 @@ struct stratum_spinup_object
 };
 
 /*----------------------------------------------------------*/
-/*      Define a snowpack object.                                                               */
-/*----------------------------------------------------------*/
-
-struct  snowpack_object
-        {
-        double  APAR_direct;                    /* umol/(m2*day)*/
-        double  APAR_diffuse;                   /* umol(m2*day) */
-        double  energy_deficit;                 /* degree days  */
-        double  evaporation;                    /* m water      */
-        double  ga;                             /* m/s          */
-        double  gap_fraction;                   /* unitless     */
-        double  height;                         /* meters       */
-        double  Kstar_direct;                   /* Kj/(m2*day)  */
-        double  Kstar_diffuse;                  /* Kj/(m2*day)  */
-        double  K_reflectance;                  /* unitless 0-1 */
-        double  K_absorptance;                  /* unitless 0-1 */
-        double  PAR_reflectance;                /* unitless 0-1 */
-        double  PAR_absorptance;                /* unitless 0-1 */
-        double  surface_age;                    /* days         */
-        double  sublimation;                    /* m water      */
-        double  T;                              /*  degrees C   */
-        double  water_depth;                    /* m water      */
-        double  water_equivalent_depth;         /* m water      */
-        double  overstory_fraction;             /* percent      */
-        double  overstory_height;               /* m            */
-        double Rnet;    /* net SW + LW radiation in KJ/m2/d */
-        double Q_LE;     /* latent heat exchange with atmos in KJ/m2/d */
-        double Q_H;     /* sensible heat flux in KJ/m2/d */
-        double Q_rain;   /* rain advective heat flux in KJ/m2/d */
-        double Q_melt;  /* net input for melt in KJ/m2/d */
-        };
-
-
-/*----------------------------------------------------------*/
-/*      Define an patch object                                                                  */      
+/*      Define an patch object                              */      
 /*----------------------------------------------------------*/
 struct patch_object
         {
@@ -1679,7 +1642,8 @@ struct patch_object
         double  unsat_drainage;         /* m water      */
         double  PET;            /* m water      */
         double  PE;             /* m water      */
-        double  rz_drainage;            /* m water by Taehee Hwang */
+	      double  precip_with_assim;    /* m water */
+        double  rz_drainage;            /* m water      */
         double  wind;                   /* m/s          */
         double  wind_final;             /* m/s          */
         double  windsnow;                       /* m/s          */
@@ -1780,260 +1744,6 @@ struct patch_object
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
         };
-=======
-/*	Define an patch object	 								*/	
-/*----------------------------------------------------------*/
-struct patch_object
-	{
-	int		zone_ID;
-	int		default_flag;
-	int		ID;	
-	int		num_base_stations;				
-	int		num_innundation_depths;
-	int		num_canopy_strata;
-	int		num_layers;
-	int		num_soil_intervals;				/* unitless */
-	double	x;									/* meters	*/
-	double	y;									/* meters	*/
-	double	z;									/* meters	*/
-	double	area;			/* sq meters	*/
-	double  acc_year_trans;		/* m water	*/
-	double  base_flow;		/* m water */
-	double	cap_rise;		/* m water / day */
-	double	tmp; 			/* diagnostic variable - open units */
-	double  daily_fire_litter_turnover;			/* (DIM) 0-1 */
-	double	delta_rain_stored;	/* m water	*/
-	double	delta_snow_stored;	/* m water	*/
-	double  detention_store;	/* m water	*/
-	double 	effective_lai;		/* avg of strata m^2/m^2	*/
-	double	evaporation;		/* m  water*/
-	double	evaporation_surf;	/* m  water*/
-	double  ga;			/* m/s */         
-	double  ga_final;		/* m/s */  
-	double  gasnow;			/* m/s */         
-	double  gasnow_final;		/* m/s */         
-	double  gw_drainage; 		/* m/day */
-	double	hourly_rz_drainage;	/* m water by Xiaoli */
-	double	hourly_unsat_drainage;	/* m water by Xiaoli */
-	double	hourly_subsur2stream_flow;	/* m water by Xiaoli */
-	double	hourly_sur2stream_flow;  /* m water by Xiaoli */
-	double	hourly_stream_flow;	/* m water by Xiaoli */
-	double  interim_sat;		/* m */
-	double  stream_gamma;		/* meters**2/day	*/
- 	double	Kdown_direct;		/* Kj/(m^2*day)	*/
-	double	Kup_direct;		/* Kj/(m^2*day)	*/
-	double	Kdown_diffuse;		/* Kj/(m^2*day)	*/
-	double	Kup_diffuse;		/* Kj/(m^2*day)	*/
-	double	Kdown_direct_final;	/* Kj/(m^2*day)	*/
-	double	Kup_direct_final;	/* Kj/(m^2*day)	*/
-	double	Kdown_diffuse_final;	/* Kj/(m^2*day)	*/
-	double	Kup_diffuse_final;	/* Kj/(m^2*day)	*/
-	double  Ldown;	/* Kj/(m^2*day)	*/
-	double  Ldown_final;	/* Kj/(m^2*day)	*/
-	double Kdown_direct_ovund;
-	double Kup_direct_ovund;
-	double Kdown_diffuse_ovund;
-	double Kup_diffuse_ovund;
-	double Kdown_direct_und;
-	double Kup_direct_und;
-	double Kdown_diffuse_und;
-	double Kup_diffuse_und;		
-	double Kdown_direct_bare;
-	double Kup_direct_bare;
-	double Kdown_diffuse_bare;
-	double Kup_diffuse_bare;
-	double  Kstar_canopy;			/* Kj/(m^2*day)	*/
-	double  Kstar_canopy_final;	/* Kj/(m^2*day)	*/
-	double LE_canopy;  /* Kj/(m^2*day)	*/
-	double LE_canopy_final;  /* Kj/(m^2*day)	*/
-	double LE_soil;		/* Kj/(m^2*day)	*/
-	double  Kstar_soil;			/* Kj/(m^2*day)	*/
-	double	Kdown_direct_subcanopy;		/* Kj/(m^2*day)	*/
-	double	Kdown_diffuse_subcanopy;		/* Kj/(m^2*day)	*/
-	double	Ksat_0;			/* meteres/day  */
-	double  Ksat_vertical;		/* meters/day	*/
-	double	lna;			/* unitless	*/
-	double  lai;			/* unitless	*/
-	double	Lup_soil;		/* Kj/(m^2*day)	*/
-	double	Lup;		/* Kj/(m^2*day)	*/
-	double	Lstar_canopy;		/* Kj/(m^2*day)	*/
-	double	Lstar_snow;		/* Kj/(m^2*day)	*/
-	double	Lstar_soil;		/* Kj/(m^2*day)	*/
-	double	Lstar_pond;		/* Kj/(m^2*day)	*/
-	double  Ldown_subcanopy;	/* Kj/(m^2*day)	*/
-	double  m;		/* m^-1 */
-	double  m_z;		/* m^-1 */
-	double  original_m;		/* m^-1 */
-	double	PAR_direct;		/* umol/(m^2*day)	*/
-	double	PAR_diffuse;		/* umol/(m^2*day)	*/
-	double	PAR_direct_final;	/* umol/(m^2*day)	*/
-	double	PAR_diffuse_final;	/* umol(m^2*day)	*/
-	double  PH;			/* DIM */
-	double	potential_cap_rise;	/* m water/ day */
-	double	potential_exfiltration;	/* m water/ day */
-	double	potential_evaporation;	/* m water/ day */
-	double	psi;			/* MPa		*/
-	double  psi_max_veg; /* MPa */
-	double  Qin_total;			/* m /day 	*/
-	double  Qout_total;			/* m /day 	*/
-	double  Qin;			/* m /day 	*/
-	double  Qout;			/* m /day 	*/
-	double  streamflow;		/* m /day 	*/
-	double  streamflow_DOC;		/* kgC/m2/day 	*/
-	double  streamflow_DON;		/* kgN/m2/day 	*/
-	double  streamflow_NO3;		/* kg/m2/day 	*/
-	double  streamflow_NH4;		/* kg/m2/day 	*/
-	double	road_cut_depth;		/* m */
-	double	rain_throughfall;	/* m water	*/	
-	double	recharge;	/* m water	*/	
-	double	return_flow;		/* m water	*/
-	double	snow_throughfall;	/* m water	*/
-	double	rain_throughfall_24hours;	/* m water,used for 24 hours accumulated throughfall	*/	
-	double	rain_throughfall_final;	/* m water	*/	
-	double	NO3_throughfall;	/* kg/m2 day  */
-	double	NO3_throughfall_final;	/* kg/m2 day */
-	double	rain_stored;		/* m water	*/
-	double	slope;			/* degrees		*/
-	double	S;			/* m/m		*/
-	double	sat_zone_storage;	/* m water 	*/
-	double	snow_redist_scale;	/* multiplier	*/ 
-	double	std;			/* m water	*/
-	double	theta_std;			/* m water	*/
-	double  surface_NO3;		/* kg/m2	*/
-	double	streamNO3_from_surface;	/* kg/m2	*/
-	double	streamNO3_from_sub;	/* kg/m2	*/
-	double  surface_NH4;		/* kg/m2	*/
-	double  grazing_Closs;		/* kgC/m2	*/
-	double  grazing_mean_nc;	/* ratio N:Co	*/
-	double  fertilizer_NO3;		/* kg/m2	*/
-	double  fertilizer_NH4;		/* kg/m2	*/
-	double  surface_DOC_Qin_total;	/* kgC/m2 day	*/
-	double  surface_DOC_Qout_total;	/* kgC/m2 day	*/
-	double  surface_DON_Qin_total;	/* kgN/m2 day	*/
-	double  surface_DON_Qout_total;	/* kgN/m2 day	*/
-	double  surface_DOC_Qin;	/* kgC/m2 day	*/
-	double  surface_DOC_Qout;	/* kgC/m2 day	*/
-	double  surface_DON_Qin;	/* kgN/m2 day	*/
-	double  surface_DON_Qout;	/* kgN/m2 day	*/
-	double  surface_NH4_Qin;		/* kg/m2 day	*/
-	double  surface_NH4_Qout;	/* kg/m2 day	*/
-	double  surface_NO3_Qin;		/* kg/m2 day	*/
-	double  surface_NO3_Qout;	/* kg/m2 day	*/
-	double  surface_ns_leach;	/* kg/m2 day	*/
-	double  surface_Qin;		/* m day	*/
-	double  surface_Qout;		/* m day	*/
-	double  surface_DON;		/* kgN/m2	*/
-	double  surface_DOC;		/* kgC/m2	*/
-	double  infiltration_excess;    /* m water      */
-	double	snow_throughfall_final;	/* m water	*/	
-	double	snow_melt;		/* m water	*/
-	double	snow_stored;		/* m water	*/
-	double	surface_flow;		/* m water	*/
-	double	surface_heat_flux;	/* kJ		*/
-	double	transpiration_sat_zone;	/* m water	*/
-	double	transpiration_unsat_zone;	/* m water	*/
-	double	exfiltration_sat_zone;	/* m water	*/
-	double	exfiltration_unsat_zone;/* m water	*/
-	double	unsat_drainage;		/* m water	*/
-	double	PET;		/* m water	*/
-	double	PE;		/* m water	*/
-	double  precip_with_assim;    /* m water */
-	double	rz_drainage;		/* m water */
-	double  wind;			/* m/s		*/
-	double  wind_final;		/* m/s		*/
-	double  windsnow;			/* m/s		*/
-	double  windsnow_final;		/* m/s		*/
-	double  ustar;			/* m/s		*/
-	double  ustar_final;		/* m/s		*/
-	double  wilting_point;		/* mm */
-	double overstory_fraction; /* 0-1 */
-	double trans_reduc_perc; /*0-1*/
-	double overland_flow; /* m/s */
-	double  T_canopy;  /* deg C */
-	double  T_canopy_final;  /* deg C */
-	struct	base_station_object	**base_stations;
-	struct	soil_default		**soil_defaults;
-	struct	landuse_default		**landuse_defaults;
-	struct	fire_default		**fire_defaults;
-	struct	surface_energy_default	**surface_energy_defaults;
-	struct	grow_patch_object	*grow;
-	struct	canopy_strata_object	**canopy_strata;
-	struct	patch_hourly_object	*hourly;
-	struct	layer_object		*layers;
-	struct	innundation_object 	*innundation_list; // Used for subsurface routing, and surface routing when no surface table is provided
-	struct	innundation_object 	*surface_innundation_list; // Used for surface routing
-	struct	neighbour_object 	*neighbours;
-	struct	patch_object		*next_stream;
-	struct	surface_energy_object   *surface_energy_profile;
-	struct	patch_fire_object	fire;
-	struct  accumulate_patch_object acc_month;
-	struct  accumulate_patch_object acc_year;
-	struct  rooting_zone_object	rootzone;
-	struct  zone_object		*zone; /* parent zone */
-
-
-/*----------------------------------------------------------*/
-/*	Surface Hydrology  stuff			*/
-/*----------------------------------------------------------*/
-	int   	drainage_type;				/* unitless 1 stream, 0 land, 2, road */	
-	double	water_balance;				/* meters water		*/
-	double	delta_snowpack;				/* meters		*/
-	double	delta_canopy_storage;			/* meters water		*/
-	double	deltaS;					/* meters water		*/
-	double	evap_potential;				/* Joules		*/
-	double	field_capacity;				/* meters water 	*/
-	double  percent_soil_water_unfrozen;		/* 0-1		*/
-	double	preday_snow_stored;			/* meters water		*/
-	double  preday_detention_store;			/* meters water		*/
-	double	preday_rain_stored;			/* meters water		*/
-	double	preday_snowpack;			/* meters water		*/
-	double	preday_sat_deficit;			/* meters water		*/
-	double	preday_sat_deficit_z;			/* meters		*/
-	double	sat_deficit;				/* meters water		*/
-	double	sat_deficit_z;				/* meters		*/
-	double	*transmissivity_profile;		/* array (m/day) */
-	struct	snowpack_object	snowpack;		/* meters		*/
-	double	preday_unsat_storage;			/* meters water		*/
-	double  preday_rz_storage;			/* meters water by Taehee Hwang */
-	double	unsat_storage;				/* meters water		*/
-	double  rz_storage;				/* meters water by Taehee Hwang */
-	double	unsat_zone_volume;			/* meters water		*/
-
-/*----------------------------------------------------------*/
-/*	Forest floor stuff				    */
-/*----------------------------------------------------------*/
-	double  surface_Tday;			/* deg C		*/
-	double  surface_Tnight;			/* deg C		*/
-	double	soil_height;			/* m relative to surface */
-	double	gsurf;				/* m/s		*/
-	double	stability_correction; 		/* DIM */
-	double	Tday_surface_offset;		/* deg C	*/
-	double	Tday_surface_offset_final;	/* deg C	*/
-	double	Tsoil;				/* degrees C	*/
-/*----------------------------------------------------------*/
-/*	carbon and nitrogen objects for patch soil and litter */
-/*----------------------------------------------------------*/
-
-	double  burn;				/* 0-1 % burned */
-	double  net_plant_psn;			/* kgC/m2 net carbon flux into patch */
-	double  preday_totalc;			/* kgC/m2 total carbon */
-	double  totalc;				/* kgC/m2 total carbon */
-	double  carbon_balance;			/* kgC/m2 */
-
-	double  preday_totaln;			/* kgC/m2 total nitrogen */
-	double  totaln;				/* kgC/m2 total nitrogen */
-	double  nitrogen_balance;		/* kgC/m2 */
-	double	satzone_nitrate;		/* kgN/m2 saturated zone */
-
-	struct	soil_c_object	soil_cs;
-	struct	soil_n_object	soil_ns;
-	struct	litter_object	litter;
-	struct  litter_c_object	litter_cs;
-	struct  litter_n_object	litter_ns;
-    	struct cdayflux_patch_struct	cdf;
-    	struct ndayflux_patch_struct	ndf;
-	};
->>>>>>> 26ca14eaa0773a051d32d72a2181ada3b5aff2be
 
 /*----------------------------------------------------------*/
 /*      Define the l;ayer object structure.                     */
