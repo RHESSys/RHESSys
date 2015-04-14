@@ -12,7 +12,7 @@ static int grid_dist(int _row1, int _row2, int _col1, int _col2) {
 	return result;
 }
 
-bool grid_search(int _max_dist, int _start_row, int _start_col,
+bool grid_search(int _max_dist, int _start_row, int _start_col, int _max_row, int _max_col,
 		search_predicate_t _predicate, void* _context, int* _rtn_row,
 		int* _rtn_col, bool* _rtn_found) {
 	bool keepSearching = true;
@@ -44,9 +44,14 @@ bool grid_search(int _max_dist, int _start_row, int _start_col,
 		int min_dist = INT_MAX;
 		for (int offset = 1; keepSearching && offset < _max_dist; ++offset) {
 			int min_row = _start_row - offset;
+			if (min_row < 0) min_row = 0;
 			int min_col = _start_col - offset;
+			if (min_col < 0) min_col = 0;
 			int max_row = _start_row + offset;
+			if (max_row > _max_row) max_row = _max_row;
 			int max_col = _start_col + offset;
+			if (max_col > _max_col) max_col = _max_col;
+
 			for (int col = min_col; result && col <= max_col; ++col) {
 				int vote = 0;
 				if (!_predicate(min_row, col, _context, &vote)) {
