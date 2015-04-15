@@ -110,7 +110,12 @@ struct	world_output_file_object *construct_output_files(
 		strcpy(root, prefix);
 		strcat(root, "_stratum");
 		world_output_file[0].canopy_stratum = construct_output_fileset(root);
-	}
+  }
+ if (command_line[0].vegspinup_flag > ZERO)  {
+	  strcpy(root, prefix);
+		strcat(root, "_shadow_stratum");
+		world_output_file[0].shadow_strata = construct_output_fileset(root);
+  }
 	fprintf(stderr,"FINISHED CONSTRUCT OUTPUT FILES\n");
 	return(world_output_file);
 } /*end construct_output_files*/

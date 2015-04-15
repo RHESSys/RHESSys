@@ -637,7 +637,7 @@ void		zone_daily_F(
 	}
 	
 	/*--------------------------------------------------------------*/
-	/*	Cycle through the patches for day end computations			*/
+	/*	Cycle through the patches for day end computations		    	*/
 	/*--------------------------------------------------------------*/
 	for ( patch=0 ; patch<zone[0].num_patches; patch++ ){
 		patch_daily_F(
@@ -649,6 +649,11 @@ void		zone_daily_F(
 			command_line,
 			event,
 			current_date );
+
+	  if(command_line[0].vegspinup_flag > 0){
+      if (zone[0].patches[patch]->target_status == 0)
+        world[0].target_status = 0;
+    }
 	}
 
 	/*--------------------------------------------------------------*/
