@@ -205,6 +205,14 @@ double	snowpack_daily_F(
 	/*	I have no idea about what the optical depth should be here	*/
 	/*--------------------------------------------------------------*/
 	optical_depth =  1.0;
+
+	/*--------------------------------------------------------------*/
+	/* since we are not currently modeling snowpack[0].water_depth */
+	/* which is liquid water in the snowpack, this is set to zero */
+	/* we leave this as placeholder for future development 		*/
+	/*--------------------------------------------------------------*/
+	snowpack[0].water_depth = 0.0;
+
 	snowpack_total_water_depth = snowpack[0].water_depth
 		+ water_equivalent_depth;
 	/*--------------------------------------------------------------*/

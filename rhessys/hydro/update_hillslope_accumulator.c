@@ -41,6 +41,7 @@ void update_hillslope_accumulator(
 
 	for ( h = 0 ; h < basin[0].num_hillslopes; h++ ){
 		hillslope = basin[0].hillslopes[h];
+		hillslope[0].acc_month.length += 1;
 		for (z = 0; z < hillslope[0].num_zones; z++) {
 			for (p=0; p < hillslope[0].zones[z][0].num_patches; p++) {
 				patch = hillslope[0].zones[z][0].patches[p];
@@ -60,7 +61,6 @@ void update_hillslope_accumulator(
 					hillslope[0].acc_month.uptake += patch[0].ndf.sminn_to_npool * scale;
 					hillslope[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
 					hillslope[0].acc_month.DON_loss+= patch[0].ndf.total_DON_loss * scale;
-					hillslope[0].acc_month.length += 1;
 					hillslope[0].acc_month.stream_NO3 += patch[0].streamflow_NO3 * scale;
 					hillslope[0].acc_month.stream_NH4 += patch[0].streamflow_NH4 * scale;
 					hillslope[0].acc_month.psn += patch[0].net_plant_psn * scale;

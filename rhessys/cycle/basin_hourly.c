@@ -173,6 +173,7 @@ void	basin_hourly(
 	/*--------------------------------------------------------------*/
 	/* this part is nearly the same as in the basin_daily_F		*/
 
+	// TODO: Add branch for dynamic routing alternative
 	if ( command_line[0].routing_flag == 1) { 
 		compute_subsurface_routing_hourly(command_line,
 			basin,

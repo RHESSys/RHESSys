@@ -159,11 +159,12 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].hillslope[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
-		"hillID",
+		"basinID",
 		"lai",
 		"gpsn",
 		"plant_resp",
@@ -173,6 +174,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"surfaceN",
 		"plantc",
 		"plantn",
+		"cpool",
 		"npool",
 		"litrc",
 		"litrn",
@@ -193,7 +195,13 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"denitrif",
 		"nitrif",
 		"DOC",
-		"DON","root_depth");
+		"DON",
+		"root_depth",
+		"nfix",
+		"nuptake",
+		"grazingC",
+		"StreamNO3_from_surface",
+		"StreamNO3_from_sub");
 	}
 
 	/*--------------------------------------------------------------*/

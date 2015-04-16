@@ -139,6 +139,8 @@
 			patch[0].snowpack.T = basin[0].snowpack.T;
 			patch[0].snowpack.surface_age = basin[0].snowpack.surface_age;
 			}
+
+		patch[0].precip_with_assim += (ltmp - patch[0].snowpack.water_equivalent_depth);
 		patch[0].snowpack.water_equivalent_depth = ltmp;
 	}
  	fscanf(world_file,"%lf",&(ltmp));
