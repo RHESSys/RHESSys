@@ -1104,9 +1104,8 @@ static void stream_routing( double  tstep )        /*  process time-step  */
     double      tribNH4[num_strm] ;     /*  tributary inflow (?^3/S)  */
     double      tribDOC[num_strm] ;     /*  tributary inflow (?^3/S)  */
     double      tribDON[num_strm] ;     /*  tributary inflow (?^3/S)  */
-    double      downfac[num_strm] ;     /*  strmflo[i] / (strmH2O[i] + sum_downstream{ strmH2O[j] }  */
 
-    /*  scavenge lateral inflow  */
+    /*  SCAVENGE LATERAL INFLOW  */
 
     ddt = 1.0 / tstep ;
 
@@ -1149,12 +1148,12 @@ static void stream_routing( double  tstep )        /*  process time-step  */
         latsDOC[i] = ddt * dDOC ;
         }
 
-    /*  Main processing loop  */
+    /*  MAIN PROCESSING LOOP  */
 
     for ( t = tstep ; t > EPSILON ; t-=dt )
         {
 
-        /*  Compute tributary inflow rate (M^3/sec, Kg/Sec)  */
+        /*  COMPUTE TRIBUTARY INFLOW RATE (M^3/SEC, KG/SEC)  */
         /*  Interpolate concentrations to the unpstream confluence  */
         /*  Use distfac[] for distributary-confluences  */
 
@@ -1167,39 +1166,39 @@ static void stream_routing( double  tstep )        /*  process time-step  */
        schedule( guided )
 
         for ( i = 0 ; i < num_strm ; i++ )
-        {
-        dH2O = 0.0 ;
-        dNO3 = 0.0 ;
-        dNH4 = 0.0 ;
-        dDON = 0.0 ;
-        dDOC = 0.0 ;
-        for ( j = triblo[i]; j < tribhi[i] ; j++ )
             {
-            k     = tribdex[j] ;
-            frac  = distfac[i] * strmflo[k] / ( strmH2O[i] + strmH2O[k] ) ;
-            dH2O += frac * ( strmH2O[i] + strmH2O[k] ) ;             /* == strmflo[k]  */
-            dNO3 += frac * ( strmNO3[i] + strmNO3[k] ) ;
-            dNH4 += frac * ( strmNH4[i] + strmNH4[k] ) ;
-            dDON += frac * ( strmDON[i] + strmDON[k] ) ;
-            dDOC += frac * ( strmDOC[i] + strmDOC[k] ) ;
-            }
-        tribH2O[i] = dH2O ;
-        tribNO3[i] = dNO3 ;
-        tribNH4[i] = dNH4 ;
-        tribDON[i] = dDON ;
-        tribDOC[i] = dDOC ;
-        }
+            dH2O = 0.0 ;
+            dNO3 = 0.0 ;
+            dNH4 = 0.0 ;
+            dDON = 0.0 ;
+            dDOC = 0.0 ;
+            for ( j = triblo[i]; j < tribhi[i] ; j++ )
+                {
+                k     = tribdex[j] ;
+                frac  = distfac[i] * strmflo[k] / ( strmH2O[i] + strmH2O[k] ) ;
+                dH2O += frac * ( strmH2O[i] + strmH2O[k] ) ;             /* == strmflo[k]  */
+                dNO3 += frac * ( strmNO3[i] + strmNO3[k] ) ;
+                dNH4 += frac * ( strmNH4[i] + strmNH4[k] ) ;
+                dDON += frac * ( strmDON[i] + strmDON[k] ) ;
+                dDOC += frac * ( strmDOC[i] + strmDOC[k] ) ;
+                }
+            tribH2O[i] = dH2O ;
+            tribNO3[i] = dNO3 ;
+            tribNH4[i] = dNH4 ;
+            tribDON[i] = dDON ;
+            tribDOC[i] = dDOC ;
+            }       /*  end tributary-loop  */
 
         cmax = 0.0 ;
 
-        /*  Compute velocities, water outflow rate (M^3/sec)  */
+        /*  COMPUTE VELOCITIES, WATER OUTFLOW RATE (M^3/SEC)  */
 
 #pragma omp parallel for                                                \
         default( none )                                                 \
         private( i, j, area, head, vel, dmann, dside, cscr, dH2O )      \
          shared( num_strm, resv_ID, strmH2O, strmlen, botwdth,          \
                  manning, sideslp, sqrtslp, strmflo, tribH2O, dt,       \
-                 reslist, strmfac )                                     \
+                 reslist )                                              \
       reduction( max: cmax )                                            \
        schedule( guided )
 
@@ -1222,40 +1221,64 @@ static void stream_routing( double  tstep )        /*  process time-step  */
             else{
                 strmflo[i] = resflow( reslist[i], tribH2O[i], dt ) ;
                 }
-            if ( strmH2O[i] > EPSILON )
-                {
-                strmfac[i] = strmflo[i] / strmH2O[i] ;
-                }
-            else{
-                strmfac[i] = 0.0 ;
-                }
-            }
+            }           /*  end velocity-loop  */
 
         dt = min( COUMAX / cmax , t ) ;     /*  Courant-stable internal time step  */
 
-        /*  Update stream-state (M^3, Kg)  */
+        /*  UPDATE STREAM-STATE (M^3, KG)  */
 
 #pragma omp parallel for                                        \
         default( none )                                         \
-        private( i, frac )                                      \
+        private( i, j, k, frac, dH2O, dNO3, dNH4, dDOC, dDON )  \
          shared( num_strm, strmfac, strmflo, baseflo, dt,       \
+                 downslo, downshi, downsdex, distfac,           \
                  strmH2O, strmNO3, strmNH4, strmDOC, strmDON,   \
                  tribH2O, tribNO3, tribNH4, tribDOC, tribDON,   \
-                 latsH2O, latsNO3, latsNH4, latsDOC, latsDON )
+                 latsH2O, latsNO3, latsNH4, latsDOC, latsDON )  \
+       schedule( guided )
 
         for ( i = 0 ; i < num_strm ; i++ )
             {
-            frac       = 1.0 - dt * strmfac[i] ;    /* residual-fraction == 1 - outflow-fraction  */
-            strmH2O[i] = frac * strmH2O[i] + dt * ( tribH2O[i] + latsH2O[i] + baseflo[i] ) ;
-            strmNO3[i] = frac * strmNO3[i] + dt * ( tribNO3[i] + latsNO3[i] ) ;
-            strmNH4[i] = frac * strmNH4[i] + dt * ( tribNH4[i] + latsNH4[i] ) ;
-            strmDON[i] = frac * strmDON[i] + dt * ( tribDON[i] + latsDON[i] ) ;
-            strmDOC[i] = frac * strmDOC[i] + dt * ( tribDOC[i] + latsDOC[i] ) ;
-            }
+            if (strmH2O[i] <= EPSILON )
+                {
+                continue ;
+                }
+            else if ( downslo[i] > downshi[i] )  /*  no outlet:  stream exits basin  */
+                {
+                frac       = 1.0 - dt * strmflo[i] / strmH2O[i];    /* residual-fraction == 1 - outflow-fraction  */
+                strmH2O[i] = frac * strmH2O[i] + dt * ( tribH2O[i] + latsH2O[i] + baseflo[i] ) ;
+                strmNO3[i] = frac * strmNO3[i] + dt * ( tribNO3[i] + latsNO3[i] ) ;
+                strmNH4[i] = frac * strmNH4[i] + dt * ( tribNH4[i] + latsNH4[i] ) ;
+                strmDON[i] = frac * strmDON[i] + dt * ( tribDON[i] + latsDON[i] ) ;
+                strmDOC[i] = frac * strmDOC[i] + dt * ( tribDOC[i] + latsDOC[i] ) ;
+                }
+            else{           /*  multiple possible outlets  */
+                dH2O = 0.0 ;
+                dNO3 = 0.0 ;
+                dNH4 = 0.0 ;
+                dDON = 0.0 ;
+                dDOC = 0.0 ;
+                for ( j = downslo[i] ; j < downshi[i] ; j++ )
+                    {
+                    k     = downsdex[j] ;
+                    frac  = dt * distfac[k] * strmflo[i] / ( strmH2O[i] + strmH2O[k] ) ;
+                    dH2O += frac * ( strmH2O[i] + strmH2O[k] ) ;
+                    dNO3 += frac * ( strmNO3[i] + strmNO3[k] ) ;
+                    dNH4 += frac * ( strmNH4[i] + strmNH4[k] ) ;
+                    dDON += frac * ( strmDON[i] + strmDON[k] ) ;
+                    dDOC += frac * ( strmDOC[i] + strmDOC[k] ) ;
+                    }
+                strmH2O[i] = strmH2O[i] - dH2O + dt * ( tribH2O[i] + latsH2O[i] + baseflo[i] ) ;
+                strmNO3[i] = strmNO3[i] - dNO3 + dt * ( tribNO3[i] + latsNO3[i] ) ;
+                strmNH4[i] = strmNH4[i] - dNH4 + dt * ( tribNH4[i] + latsNH4[i] ) ;
+                strmDON[i] = strmDON[i] - dDON + dt * ( tribDON[i] + latsDON[i] ) ;
+                strmDOC[i] = strmDOC[i] - dDOC + dt * ( tribDOC[i] + latsDOC[i] ) ;
+                }
+            }       /*  end update-loop  */
 
-        }       /*  end internal time-step loop  */
+        }           /*  end internal time-step loop  */
 
-    /*  (?) copy stream-overflow to surface  */
+    /*  (?) COPY STREAM-OVERFLOW TO SURFACE  */
 
     return ;
 
