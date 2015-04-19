@@ -192,7 +192,11 @@ double	compute_z_final(
 				}
 			}
 			else
-				z_final =  (z_initial - delta_water/p_0);
+				{if (z_final>soil_depth)
+					z_final=soil_depth;
+				else
+					z_final =  (0 - delta_water/p_0); // should be 0 because start from surface, z=0
+				} 
 		}
 	}
 	/*--------------------------------------------------------------*/
@@ -242,3 +246,64 @@ double	compute_z_final(
 	
 	return(z_final);
 } /*compute_z_final*/
+
+/*The comment above is not consistent with the code, the code meaning should be like below:
+z1=-p*ln[exp(-z0/p)+delta_water/p/n0],   equation (1) refer to above
+
+case I:
+z0<=0 && delta_water>=0,   z1=z0-delta_water.          
+
+
+
+----z1
+
+----z0
+----------------  ground surface
+
+
+Case II: 
+
+                      {   z1<=0, z1=z0-delta_water.   Like case I, but z1 is below z0. 
+                      {                      ----z0
+                      {
+                      {                      ----z1
+                      {                      ----------------  ground surface
+                      {                                                                        ----z0
+                      {                                                                        ----------------  ground surface
+                      {                                                                        
+                      {                                                                        ----- z1 
+                      {                             {           {   z1<max water, equation (1) ---- max depth 
+                      {                             {           {
+                      {                             {           {
+                      {                             {   p<999   {                                       ----z0
+                      {	                            {           {	z1>max water, z1=soil depth	----------------  ground surface		  
+z0<=0 && delta_water<0{  z1>0,                      {           {					---- max depth
+                      {delta_water = -1 * z_final   {				                        ----- z1
+		      {(from surface z=0)           {
+                      {                             {
+                      {                             {			{ z1< max water depth, 0-delta_water/n0  (bug in original code, z_initial should be 0)
+                      {                             {                   {
+		      {                             {  p>=1000          {
+                      {                             {			{
+                      {                             {			{ z1> max water depth, z1=soil depth  ( not included in code, should be added)
+
+
+
+
+
+                      {          {        z1 equation (1)          ----------------  ground surface  
+                      {          {						∧
+           case I     {   z1 >0  {						|   ----- z0
+		      {		 {		  soil depth			| z1
+                      {		 {						|
+                      {								∨
+z0>0				  {
+                      {                             
+                      {                            
+                      {								  -----z1
+		case IV  	  {  z1<0 z1=delta_surf-delta    ----------------  ground surface 
+                      {								  ----- z0
+                      {
+
+added by Linyuan					  
+					  */
