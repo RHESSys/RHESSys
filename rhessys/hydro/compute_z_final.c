@@ -192,7 +192,7 @@ double	compute_z_final(
 				}
 			}
 			else
-				{if (z_final>soil_depth)
+				{if ((-delta_water/p_0)>soil_depth) // should compare with soil_depth here
 					z_final=soil_depth;
 				else
 					z_final =  (0 - delta_water/p_0); // should be 0 because start from surface, z=0
