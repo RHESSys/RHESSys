@@ -100,7 +100,7 @@ void	update_shadow_strata(
   
  if((stratum[0].epv.proj_lai >= (stratum[0].target.lai -	world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai))
     && ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc))) {
-    // TODO: add && for all the possible targets
+    // TODO: add && for all the possible targets, add age
     stratum[0].target.met = 1;
   }
 
