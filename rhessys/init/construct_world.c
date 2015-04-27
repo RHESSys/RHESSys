@@ -352,13 +352,14 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	char	**construct_filename_list( FILE *, int);
 	long	julday( struct date );
 	struct basin_default *construct_basin_defaults(int, char **, struct command_line_object *);
-	struct zone_default *construct_zone_defaults(int, char **, struct command_line_object *);
 	struct hillslope_default *construct_hillslope_defaults(int, char **, struct command_line_object *);
+	struct zone_default *construct_zone_defaults(int, char **, struct command_line_object *);
 	struct soil_default *construct_soil_defaults(int, char **, struct command_line_object *);
-	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
-	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
 	struct landuse_default *construct_landuse_defaults(int, char **, struct command_line_object *);
 	struct stratum_default *construct_stratum_defaults(int, char **, struct command_line_object *);
+	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
+	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
+	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *); 
 	struct base_station_object *construct_base_station(char *,
 		struct date, struct date);
 	struct basin_object *construct_basin(struct command_line_object *, FILE *, int *, 
@@ -367,7 +368,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct fire_struct **construct_fire_grid(struct world_object *, struct command_line_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
-	
+  void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
 
 	void resemble(struct world_object *);
@@ -431,7 +432,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 				exit(EXIT_FAILURE);
 			}
 			header_file_flag = 1;
-			printf("Found world file header %s\n", command_line->world_header_filename);
+			printf("\nFound world file header %s\n", command_line->world_header_filename);
 		} else {
 			// Option 3. From legacy world file (deprecated)
 			header_file = world_file;
@@ -573,7 +574,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	fscanf(header_file,"%d",&(world[0].defaults[0].num_landuse_default_files));
 	read_record(header_file, record);
-	
+        	
 	/*--------------------------------------------------------------*/
 	/*	Read in the land cover default files.			*/
 	/*--------------------------------------------------------------*/
@@ -585,7 +586,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	fscanf(header_file,"%d",&(world[0].defaults[0].num_stratum_default_files));
 	read_record(header_file, record);
-	
 	/*--------------------------------------------------------------*/
 	/*	Read in the veg default files.			*/
 	/*--------------------------------------------------------------*/
@@ -621,6 +621,20 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].defaults[0].num_fire_default_files);
 	}
 	
+	/*--------------------------------------------------------------*/
+	/*	If spinup flag has been set                             */
+	/*      Read in the number of spinup default files              */
+	/*--------------------------------------------------------------*/
+	if (command_line[0].vegspinup_flag > 0) {
+		fscanf(header_file,"%d",&(world[0].defaults[0].num_spinup_default_files));
+		read_record(header_file, record);
+		/*--------------------------------------------------------------*/
+		/*	Read in the spinup default files.			*/
+		/*--------------------------------------------------------------*/
+	        world[0].spinup_default_files = construct_filename_list( header_file,
+		        world[0].defaults[0].num_spinup_default_files);
+	}
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of base_station files.		*/
 	/*  In the case of gridded climate input, there will only be    */
@@ -713,7 +727,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].fire_default_files, command_line);
 	}
 
-	printf("\n Constructed fire defaults\n");
+	printf("\nConstructed fire defaults\n");
 	/*--------------------------------------------------------------*/
 	/* if surface_energy spread flag is set					*/
 	/*	Construct the fire default objects.			*/
@@ -722,6 +736,17 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].defaults[0].surface_energy = construct_surface_energy_defaults(
 			world[0].defaults[0].num_surface_energy_default_files,
 			world[0].surface_energy_default_files, command_line);
+	}
+
+	/*--------------------------------------------------------------*/
+	/* if spinup flag is set				                              	*/
+	/*	Construct the spinup default objects.	                    	*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].vegspinup_flag > 0) {
+	  printf("\nConstructed spinup defaults \n");
+		world[0].defaults[0].spinup = construct_spinup_defaults(
+			world[0].defaults[0].num_spinup_default_files,
+			world[0].spinup_default_files, command_line);
 	}
 
 
@@ -820,6 +845,15 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].base_stations,	world[0].defaults, 
 			world[0].base_station_ncheader, world);
 	} /*end for*/
+
+	/*--------------------------------------------------------------*/
+	/*	If spinup flag is set construct the spinup thresholds object*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].vegspinup_flag > 0) {
+    printf("\nReading spinup threshold file %s", command_line[0].vegspinup_filename);
+		world[0].spinup_thresholds = construct_spinup_thresholds(command_line[0].vegspinup_filename, &world[0], command_line);
+  }
+
 	/*--------------------------------------------------------------*/
 	/* if fire spread flag is set					*/
 	/*	Construct the fire grid object.				*/

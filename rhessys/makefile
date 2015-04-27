@@ -96,6 +96,7 @@ $(OBJ)/construct_base_station.o \
 $(OBJ)/construct_basin.o \
 $(OBJ)/construct_basin_defaults.o \
 $(OBJ)/construct_canopy_strata.o \
+$(OBJ)/construct_empty_shadow_strata.o \
 $(OBJ)/construct_clim_sequence.o \
 $(OBJ)/construct_command_line.o \
 $(OBJ)/construct_daily_clim.o \
@@ -118,12 +119,15 @@ $(OBJ)/construct_surface_energy_defaults.o \
 $(OBJ)/construct_fire_defaults.o \
 $(OBJ)/construct_soil_defaults.o \
 $(OBJ)/construct_stratum_defaults.o \
+$(OBJ)/construct_spinup_defaults.o \
+$(OBJ)/construct_spinup_thresholds.o \
 $(OBJ)/construct_tec.o \
 $(OBJ)/construct_tec_entry.o \
 $(OBJ)/construct_world.o \
 $(OBJ)/construct_yearly_clim.o \
 $(OBJ)/construct_zone.o \
 $(OBJ)/construct_zone_defaults.o \
+$(OBJ)/construct_topmodel_patchlist.o \
 $(OBJ)/destroy_base_station.o \
 $(OBJ)/destroy_basin.o \
 $(OBJ)/destroy_basin_defaults.o \
@@ -191,7 +195,6 @@ $(OBJ)/leaf_conductance_vpd_curve.o \
 $(OBJ)/main.o \
 $(OBJ)/output_24hours_basin.o \
 $(OBJ)/output_stream_routing.o \
-$(OBJ)/output_basin.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
 $(OBJ)/output_canopy_stratum.o \
@@ -262,6 +265,7 @@ $(OBJ)/update_phenology.o \
 $(OBJ)/update_rooting_depth.o \
 $(OBJ)/update_septic.o \
 $(OBJ)/update_soil_moisture.o \
+$(OBJ)/update_shadow_strata.o \
 $(OBJ)/valid_option.o \
 $(OBJ)/world_daily_F.o \
 $(OBJ)/world_daily_I.o \
@@ -365,6 +369,10 @@ $(OBJ)/construct_surface_energy_defaults.o: init/construct_surface_energy_defaul
 	$(CC) -c $(CFLAGS) -I include init/construct_surface_energy_defaults.c -o $(OBJ)/construct_surface_energy_defaults.o
 $(OBJ)/construct_fire_defaults.o: init/construct_fire_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_defaults.c -o $(OBJ)/construct_fire_defaults.o
+$(OBJ)/construct_spinup_defaults.o: init/construct_spinup_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/construct_spinup_defaults.c -o $(OBJ)/construct_spinup_defaults.o
+$(OBJ)/construct_spinup_thresholds.o: init/construct_spinup_thresholds.c
+	$(CC) -c $(CFLAGS) -I include init/construct_spinup_thresholds.c -o $(OBJ)/construct_spinup_thresholds.o
 $(OBJ)/construct_soil_defaults.o: init/construct_soil_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_soil_defaults.c -o $(OBJ)/construct_soil_defaults.o
 $(OBJ)/construct_landuse_defaults.o: init/construct_landuse_defaults.c
@@ -431,8 +439,6 @@ $(OBJ)/output_yearly_canopy_stratum.o: output/output_yearly_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_yearly_canopy_stratum.c -o $(OBJ)/output_yearly_canopy_stratum.o
 $(OBJ)/output_stream_routing.o: output/output_stream_routing.c
 	$(CC) -c $(CFLAGS) -I include output/output_stream_routing.c -o $(OBJ)/output_stream_routing.o
-$(OBJ)/output_basin.o: output/output_basin.c
-	$(CC) -c $(CFLAGS) -I include output/output_basin.c -o $(OBJ)/output_basin.o
 $(OBJ)/output_hillslope.o: output/output_hillslope.c
 	$(CC) -c $(CFLAGS) -I include output/output_hillslope.c -o $(OBJ)/output_hillslope.o
 $(OBJ)/output_hourly_zone.o: output/output_hourly_zone.c
@@ -533,6 +539,8 @@ $(OBJ)/construct_stream_routing_topology.o: init/construct_stream_routing_topolo
 	$(CC) -c $(CFLAGS) -I include init/construct_stream_routing_topology.c -o $(OBJ)/construct_stream_routing_topology.o
 $(OBJ)/construct_routing_topology.o: init/construct_routing_topology.c
 	$(CC) -c $(CFLAGS) -I include init/construct_routing_topology.c -o $(OBJ)/construct_routing_topology.o
+$(OBJ)/construct_topmodel_patchlist.o: init/construct_topmodel_patchlist.c
+	$(CC) -c $(CFLAGS) -I include init/construct_topmodel_patchlist.c -o $(OBJ)/construct_topmodel_patchlist.o
 $(OBJ)/construct_fire_grid.o: init/construct_fire_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_grid.c -o $(OBJ)/construct_fire_grid.o
 $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
@@ -553,6 +561,8 @@ $(OBJ)/key_compare.o: util/key_compare.c
 	$(CC) -c $(CFLAGS) -I include util/key_compare.c -o $(OBJ)/key_compare.o
 $(OBJ)/construct_canopy_strata.o: init/construct_canopy_strata.c
 	$(CC) -c $(CFLAGS) -I include init/construct_canopy_strata.c -o $(OBJ)/construct_canopy_strata.o
+$(OBJ)/construct_empty_shadow_strata.o: init/construct_empty_shadow_strata.c
+	$(CC) -c $(CFLAGS) -I include init/construct_empty_shadow_strata.c -o $(OBJ)/construct_empty_shadow_strata.o
 $(OBJ)/destroy_world.o: init/destroy_world.c
 	$(CC) -c $(CFLAGS) -I include init/destroy_world.c -o $(OBJ)/destroy_world.o
 $(OBJ)/destroy_basin_defaults.o: init/destroy_basin_defaults.c
@@ -743,6 +753,8 @@ $(OBJ)/update_hillslope_accumulator.o: hydro/update_hillslope_accumulator.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_hillslope_accumulator.c -o $(OBJ)/update_hillslope_accumulator.o
 $(OBJ)/update_soil_moisture.o: hydro/update_soil_moisture.c 
 	$(CC) -c $(CFLAGS) -I include hydro/update_soil_moisture.c -o $(OBJ)/update_soil_moisture.o
+$(OBJ)/update_shadow_strata.o: cn/update_shadow_strata.c 
+	$(CC) -c $(CFLAGS) -I include cn/update_shadow_strata.c -o $(OBJ)/update_shadow_strata.o
 $(OBJ)/skip_basin.o: tec/skip_basin.c
 	$(CC) -c $(CFLAGS) -I include tec/skip_basin.c -o $(OBJ)/skip_basin.o
 $(OBJ)/skip_hillslope.o: tec/skip_hillslope.c

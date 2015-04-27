@@ -112,7 +112,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].m_z = 			getDoubleParam(&paramCnt, &paramPtr, "m_z", "%lf", 0.4, 1);
 		default_object_list[i].detention_store_size = 	getDoubleParam(&paramCnt, &paramPtr, "detention_store_size", "%lf", 0.0, 1);
 		default_object_list[i].deltaz = 		getDoubleParam(&paramCnt, &paramPtr, "deltaZ", "%lf", 1.0, 1); // param name contains uppercase "Z" in param file
-		default_object_list[i].active_zone_z = 		getDoubleParam(&paramCnt, &paramPtr, "active_zone_z", "%lf", 10.0, 1);
+		default_object_list[i].active_zone_z = 		getDoubleParam(&paramCnt, &paramPtr, "active_zone_z", "%lf", 5.0, 1);
 
 		if (abs(default_object_list[i].active_zone_z - default_object_list[i].soil_depth) > 0.5) {
 			printf("\nNote that soil depth used for biogeochem cycling (active zone z)");

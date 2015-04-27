@@ -74,6 +74,11 @@ void	execute_daily_output_event(
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
+	void output_shadow_strata(
+		int, int, int, int,
+		struct	canopy_strata_object *,
+		struct	date,
+		FILE	*);
         void output_stream_routing(
 		struct	stream_network_object *,
 		struct	date,
@@ -243,7 +248,7 @@ void	execute_daily_output_event(
 														if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID == patchID)
 															||	(patchID == -999))
 															if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].canopy_strata[c][0].ID == stratumID)
-																|| (stratumID == -999))
+																|| (stratumID == -999)) {
 																output_canopy_stratum(
 																world[0].basins[b][0].ID,
 																world[0].basins[b][0].hillslopes[h][0].ID,
@@ -251,6 +256,7 @@ void	execute_daily_output_event(
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date, outfile->canopy_stratum->daily);
+															}
 										} /* end stratum (c) for loop */
 									} /* end if options */
 								} /* end patch (p) for loop */

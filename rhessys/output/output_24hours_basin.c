@@ -62,7 +62,7 @@ void	output_24hours_basin(			int routing_flag,
 	double apsn, alai, acrain, acsnow;
 	double abase_flow, hbase_flow,  hstreamflow_NO3, hstreamflow_NH4;
 	double	aacctrans, var_acctrans, var_trans;
-	double aPET, adC13, amortality_fract, apcp;
+	double aPET, adC13, amortality_fract, apcp, apcpassim;
 	double	hgw;
 	double atmin, atmax, atavg, avpd, asnow;
 	double	hgwQout;
@@ -121,6 +121,7 @@ void	output_24hours_basin(			int routing_flag,
 	adC13 = 0.0;
 	amortality_fract = 0.0;
 	apcp = 0.0;
+	apcpassim = 0.0;
     atmin = 0.0;
     atmax = 0.0;
     atavg = 0.0;
@@ -181,6 +182,7 @@ void	output_24hours_basin(			int routing_flag,
 				patch = zone[0].patches[p];
 				arain_throughfall += (patch[0].rain_throughfall_24hours + patch[0].rain_throughfall) * patch[0].area;
 				asnow_throughfall += patch[0].snow_throughfall * patch[0].area;
+				apcpassim += patch[0].precip_with_assim * patch[0].area;
 				asat_deficit_z += patch[0].sat_deficit_z * patch[0].area;
 				asat_deficit += patch[0].sat_deficit * patch[0].area;
 				arecharge += patch[0].recharge * patch[0].area;
@@ -322,6 +324,7 @@ void	output_24hours_basin(			int routing_flag,
 	aKdown /= zone_area;
 	aLdown /= zone_area;	
 
+	apcpassim /=  aarea;
 	aPET /=  aarea;
 	acrain /=  aarea;
 	arecharge /= aarea;
@@ -411,7 +414,7 @@ void	output_24hours_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -446,7 +449,8 @@ void	output_24hours_basin(			int routing_flag,
 		var_acctrans,
 		aPET*1000,
 		adC13, 
-		apcp*1000.0, 
+		apcp*1000.0,
+		apcpassim*1000.0, 
 		amortality_fract*100,
 	  	atmax, 
 		atmin, 

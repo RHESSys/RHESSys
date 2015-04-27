@@ -37,7 +37,7 @@ int resolve_sminn_competition(
 							  double surface_NO3,
 							  double surface_NH4,
 							  double rooting_depth,
-							  double soil_depth,
+							  double active_zone_z,
 							  double N_decay_rate,
 							  struct ndayflux_patch_struct *ndf)
 {
@@ -58,10 +58,15 @@ int resolve_sminn_competition(
 	sum_avail = max(ns_soil->sminn + ns_soil->nitrate + ndf->mineralized, 0.0);
 	/*--------------------------------------------------------------*/
 	/* limit available N for plants by rooting depth		*/
+	/* for really small rooting depths this can be problematic	*/
+	/* for now provide a minimum access				*/
 	/*--------------------------------------------------------------*/
 	perc_inroot = (1.0-exp(-N_decay_rate * rooting_depth)) /
-			(1.0 - exp(-N_decay_rate * soil_depth));
+			(1.0 - exp(-N_decay_rate * active_zone_z));
 	perc_inroot = min(perc_inroot,1.0);
+	if (rooting_depth > ZERO)
+		perc_inroot = max(0.1, perc_inroot);
+
 	sum_avail = perc_inroot * sum_avail;
 
 	if (sum_ndemand <= sum_avail){

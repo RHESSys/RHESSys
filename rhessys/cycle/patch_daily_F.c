@@ -122,6 +122,7 @@ void		patch_daily_F(
 		struct patch_object *,
 		struct layer_object *,
 		struct canopy_strata_object *,
+		struct canopy_strata_object *,
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
@@ -534,6 +535,7 @@ void		patch_daily_F(
 	/*	process any daily rainfall				*/
 	/*--------------------------------------------------------------*/
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
+
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
 	patch[0].NO3_throughfall = 0;
@@ -547,6 +549,7 @@ void		patch_daily_F(
 	patch[0].wind = zone[0].wind;
 	patch[0].windsnow = zone[0].wind;
 
+	patch[0].precip_with_assim += patch[0].rain_throughfall + patch[0].snow_throughfall;
 
 	if ((patch[0].landuse_defaults[0][0].septic_water_load > ZERO) 
 		|| (patch[0].landuse_defaults[0][0].septic_NO3_load > ZERO)) {
@@ -680,6 +683,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+            patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -1001,6 +1005,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -1048,6 +1053,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -1658,7 +1664,7 @@ void		patch_daily_F(
                 resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
                         patch[0].surface_NH4,
                         patch[0].rootzone.depth,
-                        patch[0].soil_defaults[0][0].soil_depth,
+                        patch[0].soil_defaults[0][0].active_zone_z,
                         patch[0].soil_defaults[0][0].N_decay_rate,
                         &(patch[0].ndf));
 	}
@@ -1722,20 +1728,26 @@ void		patch_daily_F(
 	/* 	tag vegtype							*/	
 	/*--------------------------------------------------------------*/
 	vegtype = 0;
+  patch[0].target_status = 1;
+
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		for ( stratum=0 ; stratum < patch[0].layers[layer].count; stratum++ ){
 			strata =
 				patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
-			if ( (strata[0].defaults[0][0].epc.veg_type != NON_VEG) )
-			 {
+   
+	    if(command_line[0].vegspinup_flag > 0){
+        if (strata->target.met == 0)
+          patch[0].target_status = 0;
+        }
+			  if ( (strata[0].defaults[0][0].epc.veg_type != NON_VEG) ){
 
-				if (transpiration_reduction_percent < 1.0) {
-				strata->cdf.psn_to_cpool = strata->cdf.psn_to_cpool  * transpiration_reduction_percent;
-				strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
-				strata->gs_sunlit *= transpiration_reduction_percent;		
-				strata->gs_shade *= transpiration_reduction_percent;		
-				strata->mult_conductance.LWP *= transpiration_reduction_percent;
-				strata->ndf.potential_N_uptake *= transpiration_reduction_percent;
+			   	if (transpiration_reduction_percent < 1.0) {
+				  strata->cdf.psn_to_cpool = strata->cdf.psn_to_cpool  * transpiration_reduction_percent;
+				  strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
+				  strata->gs_sunlit *= transpiration_reduction_percent;		
+				  strata->gs_shade *= transpiration_reduction_percent;		
+				  strata->mult_conductance.LWP *= transpiration_reduction_percent;
+				  strata->ndf.potential_N_uptake *= transpiration_reduction_percent;
 				}
 
 				vegtype=1;
@@ -1971,6 +1983,14 @@ void		patch_daily_F(
 
 	}
 
+
+	/* track variables for snow assimilation  */
+	if (patch[0].snowpack.water_equivalent_depth > ZERO) {
+		basin[0].snowpack.energy_deficit += patch[0].snowpack.energy_deficit * patch[0].area;
+		basin[0].snowpack.surface_age += patch[0].snowpack.surface_age * patch[0].area;
+		basin[0].snowpack.T += patch[0].snowpack.T * patch[0].area;
+		basin[0].area_withsnow += patch[0].area;
+		}
 
 	/* track variables for fire spread */
 	if (command_line[0].firespread_flag == 1) {

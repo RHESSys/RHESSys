@@ -49,6 +49,7 @@ void	execute_redefine_world_event(struct world_object *world,
 		int,
 		struct base_station_object **,
 		struct default_object *,
+		struct basin_object *,
 		struct patch_object *);
 	void input_new_zone( struct command_line_object *,
 		FILE *,
@@ -205,6 +206,7 @@ void	execute_redefine_world_event(struct world_object *world,
 										world[0].num_base_stations,
 										world[0].base_stations,
 										world[0].defaults,
+										basin,
 										patch);
 								fscanf(world_input_file, "%d",&num_stratum);
 								read_record(world_input_file, record);

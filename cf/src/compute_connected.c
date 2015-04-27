@@ -78,7 +78,7 @@ bool compute_roof_connected_routing(struct flow_struct* _flow_table,
 						}
 						// search for the nearest impervious surface to the roof square
 						else if (!grid_search(NEAREST_NEIGHBOR_GRID_SEARCH_MAX_DIST,
-								row, col, impervious_search_predicate, impervious_search_tiebreaker,
+								row, col, _maxr, _maxc, impervious_search_predicate, impervious_search_tiebreaker,
 								impervious_search_context, &found_row, &found_col,
 								&found)) {
 							fprintf(stderr,
@@ -118,7 +118,7 @@ bool compute_roof_connected_routing(struct flow_struct* _flow_table,
 									// Route directly to stream
 									int str_row, str_col;
 									if (!grid_search(2* NEAREST_NEIGHBOR_GRID_SEARCH_MAX_DIST,
-											row, col, stream_search_predicate, stream_search_tiebreaker,
+											row, col, _maxr, _maxc, stream_search_predicate, stream_search_tiebreaker,
 											stream_search_context, &str_row, &str_col,
 											&found)) {
 										fprintf(stderr,
