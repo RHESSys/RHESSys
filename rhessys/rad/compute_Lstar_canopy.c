@@ -39,15 +39,13 @@ double	compute_Lstar_canopy(
 	/*------------------------------------------------------*/
 	double	daylength;
 	double	nightlength;
-	double Lup_canopy_day, Lup_canopy_night, Lup_canopy, Ldown_canopy;
+	double Lup_canopy, Ldown_canopy;
 	double Lup_snow, Lup_soil, Lup_pond;
 	double Tss, Tpond, Tcan, Tsoil, ess_can, B, skyview;
 	double Lstar, Ldownini;
 	
 	
 	/* Zero out fluxes */
-	Lup_canopy_day = 0.0;
-	Lup_canopy_night = 0.0;
 	Lup_canopy = 0.0;
 	Ldown_canopy = 0.0;
 	Lup_snow = 0.0;
@@ -78,11 +76,6 @@ double	compute_Lstar_canopy(
 	
 	Ldownini= *Ldown;
 	
-	/*Lup_canopy_night = ess_veg * SBC * pow( zone[0].metv.tnight + 273.0, 4.0 ) * nightlength / 1000.0;
-	Lup_canopy_day = ess_veg * SBC * pow( zone[0].metv.tday +	273.0, 4.0 ) * daylength / 1000.0;
-	/* added canopy reflected Ldown from atmosphere */
-	/*Lup_canopy =   Lup_canopy_day  + Lup_canopy_night + (B * KstarH) + (1 - ess_veg) * *Ldown;
-	Ldown_canopy = Lup_canopy_day  + Lup_canopy_night + (B * KstarH);*/
 	
 	Lup_canopy = ess_veg * SBC * pow( Tcan + 273.0, 4.0 ) * 86400 / 1000.0
 					+ (1 - ess_veg) * *Ldown; /* added canopy reflected Ldown from atmosphere */
@@ -171,6 +164,10 @@ double	compute_Lstar_canopy(
 			   (ess_veg * (SBC*86400/1000) * pow((zone[0].metv.tavg+273), 4.0))/86.4,
 			   Ldown_canopy/86.4);
 	}
+
+	/* Longwave from the canopy is unstable - due to poor estimation of cnaopy temperature - we prevent large longwave losses (that lead to  */
+	/* underestimation of the canopy net radiation (and transpiration), by not letting Lstar_canopy be strongly negative during growing season */
+   if (Tcan > 0 && Lstar < 0) Lstar=0.0;
 	
     return( Lstar );	
 	

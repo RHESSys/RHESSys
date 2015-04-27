@@ -29,6 +29,8 @@ bool grid_search(
     int _max_dist,		// The max distance out from which the search will look before giving up.
     int _start_row,		// The row of the starting square of the search
     int _start_col,		// The column of the starting square of the search
+	int _max_row,		// Maximum row
+	int _max_col,		// Maximum column
     search_predicate_t _predicate, // The callback which determines if a specified square is selected
     search_predicate_tiebreaker_t _tiebreaker,
     void* _context,		    // The context within which to do the comparison

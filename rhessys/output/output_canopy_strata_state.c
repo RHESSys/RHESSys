@@ -48,7 +48,7 @@ void	output_canopy_strata_state(
 	fprintf(outfile,"\n            ");
 	fprintf(outfile,"%-30ld %s",canopy_strata[0].ID, "canopy_strata_ID");
 	fprintf(outfile,"\n            ");
-	fprintf(outfile,"%-30ld %s",canopy_strata[0].defaults[0][0].ID, "default_ID");
+	fprintf(outfile,"%-30ld %s",canopy_strata[0].defaults[0][0].ID, "stratum_default_ID");
 	fprintf(outfile,"\n            ");
 	fprintf(outfile,"%-30.8f %s", (canopy_strata[0].cover_fraction),
 		"cover_fraction");

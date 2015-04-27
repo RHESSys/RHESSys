@@ -57,7 +57,7 @@ void compute_subsurface_routing_hourly(
 	double compute_z_final(int, double, double, double, double, double);
 
 	double compute_N_leached(int, double, double, double, double, double,
-			double, double, double, double, double, double, double);
+			double, double, double, double, double, double, double,double *);
 
 	double compute_layer_field_capacity(int, int, double, double, double,
 			double, double, double, double, double, double);
@@ -405,7 +405,8 @@ void compute_subsurface_routing_hourly(
 										patch[0].soil_defaults[0][0].DOM_decay_rate,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
-										patch[0].soil_defaults[0][0].DOC_adsorption_rate);
+										patch[0].soil_defaults[0][0].DOC_adsorption_rate,
+										patch[0].transmissivity_profile);
 						patch[0].surface_DOC += Nout;
 						patch[0].soil_cs.DOC -= Nout;
 					}
@@ -421,7 +422,8 @@ void compute_subsurface_routing_hourly(
 										patch[0].soil_defaults[0][0].DOM_decay_rate,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
-										patch[0].soil_defaults[0][0].DON_adsorption_rate);
+										patch[0].soil_defaults[0][0].DON_adsorption_rate,
+										patch[0].transmissivity_profile);
 						patch[0].surface_DON += Nout;
 						patch[0].soil_ns.DON -= Nout;
 					}
@@ -437,7 +439,8 @@ void compute_subsurface_routing_hourly(
 										patch[0].soil_defaults[0][0].N_decay_rate,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
-										patch[0].soil_defaults[0][0].NO3_adsorption_rate);
+										patch[0].soil_defaults[0][0].NO3_adsorption_rate,
+										patch[0].transmissivity_profile);
 						patch[0].surface_NO3 += Nout;
 						patch[0].soil_ns.nitrate -= Nout;
 					}
@@ -454,7 +457,8 @@ void compute_subsurface_routing_hourly(
 										patch[0].soil_defaults[0][0].N_decay_rate,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
-										patch[0].soil_defaults[0][0].NH4_adsorption_rate);
+										patch[0].soil_defaults[0][0].NH4_adsorption_rate,
+										patch[0].transmissivity_profile);
 						patch[0].surface_NH4 += Nout;
 						patch[0].soil_ns.sminn -= Nout;
 					}

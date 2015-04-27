@@ -58,20 +58,6 @@ int update_gw_drainage(
 		double);
 
 
-	double compute_N_leached(int,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double);
-
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 			*/
 	/*------------------------------------------------------*/

@@ -177,6 +177,12 @@ void	execute_tec(
 		struct	command_line_object	*,
 		struct	date);
 	
+	void	execute_state_output_event(
+		struct world_object *,
+		struct date,
+		struct date,
+		struct command_line_object *);
+
 	/*--------------------------------------------------------------*/
 	/*	Local Variable Definition. 									*/
 	/*--------------------------------------------------------------*/
@@ -328,6 +334,16 @@ void	execute_tec(
 						current_date,
 						outfile);
                                }
+				/*--------------------------------------------------------------*/
+        /*  Output world state in spinup mode if targets met            */
+				/*--------------------------------------------------------------*/
+
+				if((command_line[0].vegspinup_flag > 0) && (world[0].target_status > 0)) {
+		      execute_state_output_event(world, current_date, world[0].end_date,command_line);
+          printf("\nSpinup completed YEAR %d MONTH %d DAY %d \n", current_date.year,current_date.month,current_date.day);
+          exit(0);
+        } 
+
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested yearly output					*/
 				/*--------------------------------------------------------------*/
