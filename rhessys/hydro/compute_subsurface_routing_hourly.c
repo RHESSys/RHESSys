@@ -386,6 +386,8 @@ void compute_subsurface_routing_hourly(
 					patch[0].unsat_storage = 0.0;
 					patch[0].rz_storage = 0.0;
 			
+				//printf("before patchID=%d,hour=%d,excess=%f\n",patch[0].ID,current_date.hour,excess);
+				
 					if (grow_flag > 0) {
 						Nout =
 								compute_N_leached(verbose_flag,
@@ -403,6 +405,10 @@ void compute_subsurface_routing_hourly(
 						patch[0].surface_DOC += Nout;
 						patch[0].soil_cs.DOC -= Nout;
 					}
+		    		/*printf("after patchID=%d,hour=%d,Nout=%f,N_decay_rate=%f\n",
+				      patch[0].ID,current_date.hour,Nout,
+				      patch[0].soil_defaults[0][0].DOM_decay_rate);*/
+	
 					if (grow_flag > 0) {
 						Nout =
 								compute_N_leached(verbose_flag,
