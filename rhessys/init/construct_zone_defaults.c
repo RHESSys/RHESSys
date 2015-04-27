@@ -197,5 +197,8 @@ struct zone_default *construct_zone_defaults(
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 
+                if (paramPtr != NULL)
+                    free(paramPtr);
+		    
 	return(default_object_list);
 } /*end construct_zone_defaults*/

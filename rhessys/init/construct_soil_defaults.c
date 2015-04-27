@@ -290,6 +290,7 @@ struct soil_default *construct_soil_defaults(
     
         printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
-
+	if (paramPtr != NULL)
+            free(paramPtr);
   return(default_object_list);
 } /*end construct_soil_defaults*/

@@ -358,7 +358,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*--------------------------------------------------------------*/
 			if (k >=0){// (n_timesteps - 1)){
 				      
-				      	if ((patch[0].sat_deficit
+			      if ((patch[0].sat_deficit
 						- (patch[0].unsat_storage + patch[0].rz_storage))
 						< -1.0 * ZERO) {
 					excess = -1.0
@@ -368,7 +368,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					patch[0].sat_deficit = 0.0;
 					patch[0].unsat_storage = 0.0;
 					patch[0].rz_storage = 0.0;
-
+					
 					if (grow_flag > 0) {
 						Nout =
 								compute_N_leached(verbose_flag,
