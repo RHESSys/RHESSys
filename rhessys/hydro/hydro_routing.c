@@ -204,11 +204,11 @@ static double * infNH4 ;        /*  NH4 infiltration                            
 static double * infDOC ;        /*  DOC infiltration                                        */
 static double * infDON ;        /*  DON infiltration                                        */
 
-static double * canH2O ;        /*  H2O canopy/litter storage                               */
-static double * canNO3 ;        /*  NO3 "                                                   */
-static double * canNH4 ;        /*  NH4 "                                                   */
-static double * canDON ;        /*  DON "                                                   */
-static double * canDOC ;        /*  DOC "                                                   */
+static double * litH2O ;        /*  H2O canopy/litter storage                               */
+static double * litNO3 ;        /*  NO3 "                                                   */
+static double * litNH4 ;        /*  NH4 "                                                   */
+static double * litDON ;        /*  DON "                                                   */
+static double * litDOC ;        /*  DOC "                                                   */
 
 static double * gndH2O ;        /*  H2O to groundwater from surface                         */
 static double * gndNO3 ;        /*  NO3 to groundwater from surface                         */
@@ -222,7 +222,8 @@ static double * latNH4 ;        /*  NH4 lateral flow                            
 static double * latDOC ;        /*  DOC lateral flow                                        */
 static double * latDON ;        /*  DON lateral flow                                        */
 
-static double * precip ;        /*  H2O from rain/canopy to surface (m/s)                   */
+static double * thruH2O;        /*  H2O from rain/canopy to surface (m/s)                   */
+static double * thruNO3;        /*  NO3 from rain/canopy to surface (m/s)                   */
 
 static double * gwcoef ;        /*  patch[0].soil_defaults[0][0].sat_to_gw_coeff/3600.0     */
 
@@ -391,11 +392,11 @@ static void init_hydro_routing( struct command_line_object * command_line,
     infDOC  = (double   *) alloc( num_patches * sizeof(   double ), "infDOC", "hydro_routing/init_hydro_routing()" ) ;
     infDON  = (double   *) alloc( num_patches * sizeof(   double ), "infDON", "hydro_routing/init_hydro_routing()" ) ;
 
-    canH2O  = (double   *) alloc( num_patches * sizeof(   double ), "canH2O", "hydro_routing/init_hydro_routing()" ) ;
-    canNO3  = (double   *) alloc( num_patches * sizeof(   double ), "canNO3", "hydro_routing/init_hydro_routing()" ) ;
-    canNH4  = (double   *) alloc( num_patches * sizeof(   double ), "canNH4", "hydro_routing/init_hydro_routing()" ) ;
-    canDOC  = (double   *) alloc( num_patches * sizeof(   double ), "canDOC", "hydro_routing/init_hydro_routing()" ) ;
-    canDON  = (double   *) alloc( num_patches * sizeof(   double ), "canDON", "hydro_routing/init_hydro_routing()" ) ;
+    litH2O  = (double   *) alloc( num_patches * sizeof(   double ), "litH2O", "hydro_routing/init_hydro_routing()" ) ;
+    litNO3  = (double   *) alloc( num_patches * sizeof(   double ), "litNO3", "hydro_routing/init_hydro_routing()" ) ;
+    litNH4  = (double   *) alloc( num_patches * sizeof(   double ), "litNH4", "hydro_routing/init_hydro_routing()" ) ;
+    litDOC  = (double   *) alloc( num_patches * sizeof(   double ), "litDOC", "hydro_routing/init_hydro_routing()" ) ;
+    litDON  = (double   *) alloc( num_patches * sizeof(   double ), "litDON", "hydro_routing/init_hydro_routing()" ) ;
 
     latH2O  = (double   *) alloc( num_patches * sizeof(   double ), "latH2O", "hydro_routing/init_hydro_routing()" ) ;
     latNO3  = (double   *) alloc( num_patches * sizeof(   double ), "latNO3", "hydro_routing/init_hydro_routing()" ) ;
@@ -409,7 +410,8 @@ static void init_hydro_routing( struct command_line_object * command_line,
     sfcDOC  = (double   *) alloc( num_patches * sizeof(   double ), "sfcDOC", "hydro_routing/init_hydro_routing()" ) ;
     sfcDON  = (double   *) alloc( num_patches * sizeof(   double ), "sfcDON", "hydro_routing/init_hydro_routing()" ) ;
 
-    precip  = (double   *) alloc( num_patches * sizeof(   double ), "precip", "hydro_routing/init_hydro_routing()" ) ;
+    thruH2O = (double   *) alloc( num_patches * sizeof(   double ), "thruH2O","hydro_routing/init_hydro_routing()" ) ;
+    thruNO3 = (double   *) alloc( num_patches * sizeof(   double ), "thruNO3","hydro_routing/init_hydro_routing()" ) ;
 
     gndH2O  = (double   *) alloc( num_patches * sizeof(   double ), "gndH2O", "hydro_routing/init_hydro_routing()" ) ;
     gndNO3  = (double   *) alloc( num_patches * sizeof(   double ), "gndNO3", "hydro_routing/init_hydro_routing()" ) ;
@@ -481,7 +483,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
                  nsoil, dzsoil, std_scale, pscale, Ndecay, Ddecay,      \
                  sfcknl, dcount, dfrac, capH2O, por_0, por_d, gwcoef,   \
                  subdist, subdexo, perimf, diagf, subcnti, subcnto,     \
-                 canH2O, canNO3, canNH4, canDOC, canDON, cancap )       \
+                 litH2O, litNO3, litNH4, litDOC, litDON, cancap )       \
       reduction( +:  basin_area )                                       \
        schedule( guided )
 
@@ -515,11 +517,11 @@ static void init_hydro_routing( struct command_line_object * command_line,
         subcnto[i] = patch->innundation_list->num_neighbours ;
         subcnti[i] = 0 ;
         
-        canH2O[i] = patch->litter.rain_stored ;
-        canNO3[i] = 0.0 ;
-        canNH4[i] = 0.0 ;
-        canDON[i] = 0.0 ;
-        canDOC[i] = 0.0 ;
+        litH2O[i] = patch->litter.rain_stored ;
+        litNO3[i] = 0.0 ;
+        litNH4[i] = 0.0 ;
+        litDON[i] = 0.0 ;
+        litDOC[i] = 0.0 ;
 
         gfac = 0.0 ;
         for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions  */
@@ -919,8 +921,9 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
                  water )                                                \
          shared( num_patches, plist, mz_v, ksat_0, ksatv, por_d, por_0, \
                  dt, sfccnti, sfcndxi, sfcgam, rootzs, psiair,          \
-                 sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON, precip,        \
-                 canH2O, canNO3, canNH4, canDON, canDOC, cancap,        \
+                 sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON,                \
+                 thruH2O,thruNO3,                                       \
+                 litH2O, litNO3, litNH4, litDON, litDOC, cancap,        \
                  gndH2O, gndNO3, gndNH4, gndDOC, gndDON, gwcoef,        \
                  infH2O, infNO3, infNH4, infDOC, infDON,                \
                  outH2O, outNO3, outNH4, outDOC, outDON )               \
@@ -951,33 +954,34 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
             sfcDOC[i] += sumDOC *dt ;
             sfcDON[i] += sumDON *dt ;
             
-            if ( cancap[i] > EPSILON )          /*  Calculate rain + canopy/litter effects  */
+            if ( cancap[i] > EPSILON )              /*  Calculate rain + canopy/litter effects  */
                 {
-                canH2O[i] = canH2O[i] + precip[i] * dt ;    /*  rain falls preferentially on canopy   */
-                capacity  = cancap[i] - canH2O[i] ;         /*  available canopy/litter storage       */
-                water     = canH2O[i] + sfcH2O[i] ;         /*  available total surface+canopy water  */
+                litH2O[i] = litH2O[i] + thruH2O[i] * dt ;   /*  rain falls preferentially on canopy   */
+                litNO3[i] = litNO3[i] + thruNO3[i] * dt ;   /*  rain falls preferentially on canopy   */
+                capacity  = cancap[i] - litH2O[i] ;         /*  available canopy/litter storage       */
+                water     = litH2O[i] + sfcH2O[i] ;         /*  available total surface+canopy water  */
 
-                if ( canH2O[i] > cancap[i] )     /*  excess canopy water, etc., to surface  */
+                if ( capacity < 0.0 )        /*  excess canopy water, etc., to surface  */
                     {
-                    afac = ( canH2O[i] - cancap[i] ) / cancap[i] ;
-                    dH2O = afac * canH2O[i] ;
-                    dNO3 = afac * canNO3[i] ;
-                    dNH4 = afac * canNH4[i] ;
-                    dDON = afac * canDON[i] ;
-                    dDOC = afac * canDOC[i] ;
+                    afac = ( litH2O[i] - cancap[i] ) / cancap[i] ;
+                    dH2O = afac * litH2O[i] ;
+                    dNO3 = afac * litNO3[i] ;
+                    dNH4 = afac * litNH4[i] ;
+                    dDON = afac * litDON[i] ;
+                    dDOC = afac * litDOC[i] ;
                     sfcH2O[i] += dH2O ;
                     sfcNO3[i] += dNO3 ;
                     sfcNH4[i] += dNH4 ;
                     sfcDON[i] += dDON ;
                     sfcDOC[i] += dDOC ;
-                    canH2O[i] -= dH2O ;
-                    canNO3[i] -= dNO3 ;
-                    canNH4[i] -= dNH4 ;
-                    canDON[i] -= dDON ;
-                    canDOC[i] -= dDOC ;
+                    litH2O[i] -= dH2O ;
+                    litNO3[i] -= dNO3 ;
+                    litNH4[i] -= dNH4 ;
+                    litDON[i] -= dDON ;
+                    litDOC[i] -= dDOC ;
                     }                     
-                else if ( capacity > EPSILON ) 
-                    {                           /*  canopy scavenges surface water, etc.  */
+                else if ( sfcH2O[i] > EPSILON )      /*  canopy scavenges surface water, etc.  */
+                    {                  
                     afac = min( capacity / sfcH2O[i] , 1.0 ) ;
                     dH2O = afac * sfcH2O[i] ;
                     dNO3 = afac * sfcNO3[i] ;
@@ -989,15 +993,16 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
                     sfcNH4[i] -= dNH4 ;
                     sfcDON[i] -= dDON ;
                     sfcDOC[i] -= dDOC ;
-                    canH2O[i] += dH2O ;
-                    canNO3[i] += dNO3 ;
-                    canNH4[i] += dNH4 ;
-                    canDON[i] += dDON ;
-                    canDOC[i] += dDOC ;
+                    litH2O[i] += dH2O ;
+                    litNO3[i] += dNO3 ;
+                    litNH4[i] += dNH4 ;
+                    litDON[i] += dDON ;
+                    litDOC[i] += dDOC ;
                     }
                 }                       /*  end calculating canopy/litter effects  */
             else{
-                sfcH2O[i] = sfcH2O[i] + precip[i] * dt ;    /*  no litter:  rain falls on surface  */
+                sfcH2O[i] = sfcH2O[i] + thruH2O[i] * dt ;    /*  no litter:  rain falls on surface  */
+                sfcNO3[i] = sfcNO3[i] + thruNO3[i] * dt ;    /*  no litter:  rain falls on surface  */
                 }
 
             if ( sfcH2O[i] < EPSILON )  continue ;
@@ -1423,13 +1428,13 @@ void hydro_routing( struct command_line_object * command_line,
 
     now_date = current_date ;
 
-#pragma omp parallel for  default( none )                   \
-        private( i, patch )                                 \
-         shared( num_patches, plist, waterz, precip,        \
-                 sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON,    \
-                 gndH2O, gndNO3, gndNH4, gndDOC, gndDON,    \
-                 totH2O, totNO3, totNH4, totDOC, totDON,    \
-                 canH2O )
+#pragma omp parallel for  default( none )                       \
+        private( i, patch )                                     \
+         shared( num_patches, plist, waterz, thruH2O, thruNO3,  \
+                 sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON,        \
+                 gndH2O, gndNO3, gndNH4, gndDOC, gndDON,        \
+                 totH2O, totNO3, totNH4, totDOC, totDON,        \
+                 litH2O )
 
     for ( i = 0; i < num_patches; i++ )
         {
@@ -1452,10 +1457,12 @@ void hydro_routing( struct command_line_object * command_line,
         gndDOC[i] = 0.0 ;
         gndDON[i] = 0.0 ;
 
-        canH2O[i] = patch->litter.rain_stored ;
+        litH2O[i] = patch->litter.rain_stored ;
         
-        waterz[i] = patch->z - ( patch->sat_deficit_z > ZERO ? patch->sat_deficit_z : ZERO ) ;
-        precip[i] = D3600 * patch->hourly->rain_throughfall ;
+        waterz[i]  = patch->z - ( patch->sat_deficit_z > ZERO ? patch->sat_deficit_z : ZERO ) ;
+
+        thruH2O[i] = D3600 * patch->hourly->rain_throughfall ;  /* convert to M/S  */
+        thruNO3[i] = D3600 * patch->hourly->NO3_throughfall ;
         }
 
 #pragma omp parallel for                                                \
@@ -1503,7 +1510,7 @@ void hydro_routing( struct command_line_object * command_line,
          shared( num_patches, plist, waterz,                \
                  sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON,    \
                  totH2O, totNO3, totNH4, totDOC, totDON,    \
-                 canH2O )
+                 litH2O )
 
     for ( i = 0; i < num_patches; i++ )
         {
@@ -1521,7 +1528,7 @@ void hydro_routing( struct command_line_object * command_line,
         patch->soil_ns.DON     = totDON[i] ;
         patch->soil_cs.DOC     = totDOC[i] ;
 
-        patch->litter.rain_stored = canH2O[i] ;
+        patch->litter.rain_stored = litH2O[i] ;
         }
 
 #pragma omp parallel for                                                \
