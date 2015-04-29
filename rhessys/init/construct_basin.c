@@ -71,7 +71,7 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	param *read_basin(int *, FILE *);
+	param *readtag_worldfile(int *, FILE *,char *);
 	struct base_station_object *assign_base_station(
 								int,
 								int,
@@ -132,21 +132,18 @@ struct basin_object *construct_basin(
 	fscanf(world_file,"%d",&(basin[0].num_base_stations));
 	read_record(world_file, record);*/
 
-	paramPtr=read_basin(&paramCnt,world_file);
-	for (i=0;i<paramCnt;i++){
+	paramPtr=readtag_worldfile(&paramCnt,world_file,"hillslope_ID");
+	/*for (i=0;i<paramCnt;i++){
 	  printf("value=%s,name =%s\n",paramPtr[i].strVal,paramPtr[i].name);
-	}
-	basin[0].ID = getIntParam(&paramCnt,&paramPtr,"basin_ID","%d",1,1);
-	basin[0].x = getDoubleParam(&paramCnt,&paramPtr,"x","%lf",0,1);
-	basin[0].y = getDoubleParam(&paramCnt,&paramPtr,"y","%lf",0,1);
-	basin[0].z = getDoubleParam(&paramCnt,&paramPtr,"z","%lf",0,1);
-	default_object_ID = getIntParam(&paramCnt,&paramPtr,"default_ID","%d",1,1);	
-	basin[0].latitude = getIntParam(&paramCnt,&paramPtr,"latitude","%lf",0,1);
-	basin[0].num_base_stations = getIntParam(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
-	basin[0].num_hillslopes	= getIntParam(&paramCnt,&paramPtr,"num_hillslopes","%d",1,1);
+	}*/
+	basin[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_ID","%d",1,1);//must
+	basin[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0,1);
+	basin[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0,1);
+	basin[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0,1);
+	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"default_ID","%d",1,1);//must	
+	basin[0].latitude = getIntWorldfile(&paramCnt,&paramPtr,"latitude","%lf",0,1);
+	basin[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);//must
 	
-	printf("num_hillslopes=%d\n",basin[0].num_hillslopes);
-	exit(0);
 	/*--------------------------------------------------------------*/
 	/*	Create cosine of latitude to save future computations.		*/
 	/*--------------------------------------------------------------*/
@@ -251,7 +248,7 @@ struct basin_object *construct_basin(
 		}
 	};
 	
-	printf("numof zone=%d\n",basin[0].hillslopes[0][0].num_zones);
+	//printf("numof zone=%d\n",basin[0].hillslopes[0][0].num_zones);
 	
 	//exit(0);
 	
@@ -375,6 +372,9 @@ struct basin_object *construct_basin(
 			basin[0].stream_list.stream_network = NULL;
 			basin[0].stream_list.streamflow = 0.0;
 		}
+
+	if(paramPtr!=NULL)
+	    free(paramPtr);
 
 	return(basin);
 } /*end construct_basin.c*/

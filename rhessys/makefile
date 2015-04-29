@@ -117,6 +117,9 @@ $(OBJ)/construct_ddn_routing_topology.o \
 $(OBJ)/construct_surface_energy_defaults.o \
 $(OBJ)/construct_fire_defaults.o \
 $(OBJ)/construct_soil_defaults.o \
+$(OBJ)/construct_spinup_thresholds.o \
+$(OBJ)/construct_spinup_defaults.o \
+$(OBJ)/construct_empty_shadow_strata.o \
 $(OBJ)/construct_stratum_defaults.o \
 $(OBJ)/construct_tec.o \
 $(OBJ)/construct_tec_entry.o \
@@ -234,7 +237,7 @@ $(OBJ)/patch_daily_I.o  \
 $(OBJ)/patch_hourly.o \
 $(OBJ)/penman_monteith.o \
 $(OBJ)/read_record.o \
-$(OBJ)/read_basin.o \
+$(OBJ)/readtag_worldfile.o \
 $(OBJ)/recompute_gamma.o \
 $(OBJ)/resolve_sminn_competition.o \
 $(OBJ)/snowpack_daily_F.o \
@@ -261,6 +264,7 @@ $(OBJ)/update_nitrif.o \
 $(OBJ)/update_phenology.o \
 $(OBJ)/update_rooting_depth.o \
 $(OBJ)/update_septic.o \
+$(OBJ)/update_shadow_strata.o \
 $(OBJ)/update_soil_moisture.o \
 $(OBJ)/valid_option.o \
 $(OBJ)/world_daily_F.o \
@@ -311,8 +315,8 @@ $(OBJ)/add_growth_headers.o: output/add_growth_headers.c
 	$(CC) -c $(CFLAGS) -I include output/add_growth_headers.c -o $(OBJ)/add_growth_headers.o
 $(OBJ)/read_record.o: util/read_record.c
 	$(CC) -c $(CFLAGS) -I include util/read_record.c -o $(OBJ)/read_record.o
-$(OBJ)/read_basin.o: util/read_basin.c
-	$(CC) -c $(CFLAGS) -I include util/read_basin.c -o $(OBJ)/read_basin.o
+$(OBJ)/readtag_worldfile.o: util/readtag_worldfile.c
+	$(CC) -c $(CFLAGS) -I include util/readtag_worldfile.c -o $(OBJ)/readtag_worldfile.o
 $(OBJ)/construct_tec.o: init/construct_tec.c
 	$(CC) -c $(CFLAGS) -I include init/construct_tec.c -o $(OBJ)/construct_tec.o
 $(OBJ)/handle_event.o: tec/handle_event.c
@@ -369,6 +373,12 @@ $(OBJ)/construct_fire_defaults.o: init/construct_fire_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_defaults.c -o $(OBJ)/construct_fire_defaults.o
 $(OBJ)/construct_soil_defaults.o: init/construct_soil_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_soil_defaults.c -o $(OBJ)/construct_soil_defaults.o
+$(OBJ)/construct_spinup_thresholds.o: init/construct_spinup_thresholds.c
+	$(CC) -c $(CFLAGS) -I include init/construct_spinup_thresholds.c -o $(OBJ)/construct_spinup_thresholds.o
+$(OBJ)/construct_spinup_defaults.o: init/construct_spinup_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/construct_spinup_defaults.c -o $(OBJ)/construct_spinup_defaults.o
+$(OBJ)/construct_empty_shadow_strata.o: init/construct_empty_shadow_strata.c
+	$(CC) -c $(CFLAGS) -I include init/construct_empty_shadow_strata.c -o $(OBJ)/construct_empty_shadow_strata.o
 $(OBJ)/construct_landuse_defaults.o: init/construct_landuse_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_landuse_defaults.c -o $(OBJ)/construct_landuse_defaults.o
 $(OBJ)/construct_stratum_defaults.o: init/construct_stratum_defaults.c
@@ -818,6 +828,8 @@ $(OBJ)/update_N_stratum_daily.o: cn/update_N_stratum_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/update_N_stratum_daily.c -o $(OBJ)/update_N_stratum_daily.o
 $(OBJ)/update_decomp.o: cn/update_decomp.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_decomp.c -o $(OBJ)/update_decomp.o
+$(OBJ)/update_shadow_strata.o: cn/update_shadow_strata.c
+	$(CC) -c $(CFLAGS) -I include cn/update_shadow_strata.c -o $(OBJ)/update_shadow_strata.o
 $(OBJ)/update_septic.o: cn/update_septic.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_septic.c -o $(OBJ)/update_septic.o
 $(OBJ)/update_gw_drainage.o: hydro/update_gw_drainage.c 

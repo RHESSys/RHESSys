@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include "params.h"
 
-param *read_basin(int *paramCnt, FILE *file){
+param *readtag_worldfile(int *paramCnt, FILE *file,char *next_key){
     int paramInd = -1;
     int iParam;
 
@@ -31,14 +31,38 @@ param *read_basin(int *paramCnt, FILE *file){
     char strbuf3 [128];
     int argCnt;
     param *paramPtr = NULL;
+    int num_variables=0;
+
+
+    if (strcmp(next_key,"hillslope_ID")==0){
+      //it is reading the 7 state variables for basin, 
+      num_variables = 7;
+    }
+    else if (strcmp(next_key,"zone")==0){
+      //in this case, it is reading the 8 state variables for hillslope
+      num_variables = 8;
+    }
+    else if(strcmp(next_key,"patch_ID")==0){
+      //it is reading the 12 state variables for zones
+      num_variables = 12;
+    }
+    else if(strcmp(next_key,"canopy_strata_ID")==0){
+      //it is reading the 37 state variables for patch
+      num_variables = 37;
+    }
+    else{
+      // reading the 56 state variables for strata
+      num_variables = 56;
+    }
+    
+    
+    
+    paramPtr = (param *)malloc(sizeof(param) * (num_variables + 1));
+
+    // Char array that will hold parameter names and values (as strings)
     //FILE *file;
         while ( fgets ( line, sizeof line, file ) != NULL ) /* read a line */ {
             // Char array that will hold parameter names and values (as strings)
-            if (*paramCnt == 0) {
-                paramPtr = (param *) malloc(sizeof(param));
-            } else {
-                paramPtr = (param *) realloc(paramPtr, (sizeof(param) * (*paramCnt + 1)));
-            }
             (*paramCnt)++;
             paramInd++;
 
@@ -61,8 +85,12 @@ param *read_basin(int *paramCnt, FILE *file){
 	    if(strcmp(strbuf2,"n_basestations")==0){
 	      break;
 	    }
-	    if(strcmp(strbuf2,"hillslope_ID")==0){
+	    if(strcmp(strbuf2,next_key)==0){
 	      fprintf(stderr,"Num of hillslopes need to be specified in worldfile!\n");
+	    }
+	    if(num_variables < *paramCnt){
+	      printf("num_variables=%d,paramCnt=%d\n",num_variables,*paramCnt);
+	      fprintf(stderr,"added new parameter, adjust the num_variables in readtag_worldfile.c\n");
 	    }
 
             //printf("\n%d param name: %s value %s", *paramCnt, paramPtr[paramInd].name, paramPtr[paramInd].strVal);

@@ -50,6 +50,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
+#include "params.h"
 
 struct zone_object *construct_zone(
 								   struct	command_line_object	*command_line,
@@ -95,6 +96,8 @@ struct zone_object *construct_zone(
 	
 	void	*alloc(size_t, char *, char *);
 	double	atm_pres( double );
+	param * readtag_worldfile(int *, FILE *, char*);
+
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
@@ -107,6 +110,8 @@ struct zone_object *construct_zone(
 	float   base_x, base_y;	
 	char	record[MAXSTR];
 	struct	zone_object *zone;
+	int paramCnt=0;
+	param *paramPtr=NULL;
 	
 	notfound = 0;
 	base_x = 0.0;
@@ -123,7 +128,7 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Read in the next zone record for this hillslope.			*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(zone[0].ID));
+	/*  fscanf(world_file,"%d",&(zone[0].ID));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(zone[0].x));
 	read_record(world_file, record);
@@ -146,8 +151,23 @@ struct zone_object *construct_zone(
 	fscanf(world_file,"%lf",&(zone[0].w_horizon));
 	read_record(world_file, record);
 	fscanf(world_file,"%d",&(zone[0].num_base_stations));
-	read_record(world_file, record);
+	read_record(world_file, record);*/
 
+	paramPtr=readtag_worldfile(&paramCnt,world_file,"patch_ID");
+
+	zone[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"zone","%d",1,1);
+	zone[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0,1);
+	zone[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0,1);
+	zone[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0,1);
+	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"default_ID","%d",1,1);
+	zone[0].area = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",0.0,1);
+	zone[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",0.0,1);
+	zone[0].aspect = getDoubleWorldfile(&paramCnt,&paramPtr,"aspect","%lf",0.0,1);
+	zone[0].precip_lapse_rate = getDoubleWorldfile(&paramCnt,&paramPtr,"isohyet","%lf",1.0,1);
+	zone[0].e_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",0.0,1);
+	zone[0].w_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",0.0,1);
+	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	
 	/*--------------------------------------------------------------*/
 	/*	convert from degrees to radians for slope and aspects 	*/
 	/*--------------------------------------------------------------*/
@@ -365,5 +385,9 @@ struct zone_object *construct_zone(
 	} /*end for*/
 
 	
+
+	if(paramPtr!=NULL)
+	  free(paramPtr);
+
 	return(zone);
 } /*end construct_zone.c*/
