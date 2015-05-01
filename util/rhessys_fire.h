@@ -34,7 +34,9 @@ struct fire_default {
 	double mean2_rvm;
 	double kappa1_rvm;
 	double kappa2_rvm;
-	double p_rvm;
+	double p_rvm;	
+	double ign_def_mod;
+
 //	char **patch_file_name;
 };
 

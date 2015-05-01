@@ -87,7 +87,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].z=0.0; // mk: add so we can calculate the current elevation as the weighted mean elevation of the patches
 				    world[0].fire_grid[i][j].temp=0.0;
 				    world[0].fire_grid[i][j].et=0.0;
-				    world[0].fire_grid[i][j].pet=0.0;
+				    world[0].fire_grid[i][j].pet=1.0;
 				    world[0].fire_grid[i][j].ign_available=0;
 
 				  printf("No fire in buffer\n");

@@ -139,6 +139,8 @@ struct fire_default *construct_fire_defaults(
 		printf("kappa2_rvm: %lf\n",default_object_list[i].kappa2_rvm);
 		default_object_list[i].p_rvm=getDoubleParam(&paramCnt, &paramPtr, "p_rvm", "%lf", 1 , 1);
 		printf("p_rvm: %lf\n",default_object_list[i].p_rvm);
+		default_object_list[i].ign_def_mod=getDoubleParam(&paramCnt, &paramPtr, "ign_def_mod", "%lf", 1 , 1);
+		printf("ign_def_mod: %lf\n",default_object_list[i].ign_def_mod);
 
 /*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
