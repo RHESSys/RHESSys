@@ -51,4 +51,170 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 
 #define  PARTICLE_DENSITY	2.65	/* soil particle density g/cm3 (Dingman) */
 
+
+#define NUM_VAR_BASIN 7
+#define NUM_VAR_HILLSLOPE 8
+#define NUM_VAR_ZONE 12
+#define NUM_VAR_PATCH 37
+#define NUM_VAR_STRATA 56
+
+
+
 #endif
+
+
+
+/*-----------------------------------------------------------------------------
+ *  Num of Variables (read by tag) in basin = 7
+ *-----------------------------------------------------------------------------*/
+/*
+    basin_ID
+    x
+    y
+    z
+    default_ID
+    latitude
+    n_basestations //this one is fixed to be the indicator for end of the reading process
+*/
+
+/*-----------------------------------------------------------------------------
+ *  Num of Variables (read by tag) in hillslope = 8
+ *-----------------------------------------------------------------------------*/
+/*
+    hillslope_ID
+    x
+    y
+    z
+    default_ID
+    gw_storage
+    gw_NO3
+    n_basestations
+*/
+ /*-----------------------------------------------------------------------------
+  *  Num of variables (read by tag) in zone = 12
+  *-----------------------------------------------------------------------------*/
+/*
+    zone ID // there is white space between, 'zone' and 'ID', need to fix to 'zone_ID'
+    x
+    y
+    z
+    default_ID
+    area
+    slope
+    aspect
+    isohyet
+    e_horizon
+    w_horizon
+    n_basestations
+*/
+
+/*-----------------------------------------------------------------------------
+ *  Num of variables (read by tag) in patch = 37 
+ *-----------------------------------------------------------------------------*/
+/*
+    patch_ID
+    x
+    y
+    z
+    soil_default_ID
+    landuse_default_ID
+    fire_default_ID
+    surface_energy_default_ID
+    area
+    slope
+    lna
+    Ksat_vertical
+    m_par
+    std
+    rz_storag
+    unsat_storage
+    sat_deficit
+    snowpack.water_equivalent_depth
+    snowpack_water_depth
+    snowpack_T
+    snowpack_surface_age
+    snowpack_energy_deficit
+    snow_redist_scale
+    litter.cover_fraction
+    litter.rain_stored
+    litter_cs.litr1c
+    litter_ns.litr1n
+    litter_cs.litr2c
+    litter_cs.litr3c
+    litter_cs.litr4c
+    soil_cs.soil1c
+    soil_ns.sminn
+    soil_ns.nitrate
+    soil_cs.soil2c
+    soil_cs.soil3c
+    soil_cs.soil4c
+    n_basestations
+*/
+
+ /*-----------------------------------------------------------------------------
+  * Num of variables (read by tag) in canopy strata = 56  
+  *-----------------------------------------------------------------------------*/
+/*
+    canopy_strata_ID
+    default_ID
+    spinup_object_ID
+    cover_fraction
+    gap_fraction
+    root_depth
+    snow_stored
+    rain_stored
+    cs_cpool
+    cs_leafc
+    cs_dead_leafc
+    cs_leafc_store
+    cs_leafc_transfer
+    cs_live_stemc
+    cs_livestemc_store
+    cs_livestemc_transfer
+    cs_dead_stemc
+    cs_deadstemc_store
+    cs_deadstemc_transfer
+    cs_live_crootc
+    cs_livecrootc_store
+    cs_livecrootc_transfer
+    cs_dead_crootc
+    cs_deadcrootc_store
+    cs_deadcrootc_transfer
+    cs_frootc
+    cs_frootc_store
+    cs_frootc_transfer
+    cs_cwdc
+    epv.prev_leafcalloc
+    ns_npool
+    ns_leafn
+    ns_dead_leafn
+    ns_leafn_store
+    ns_leafn_transfer
+    ns_live_stemn
+    ns_livestemn_store
+    ns_livestemn_transfer
+    ns_dead_stemn
+    ns_deadstemn_store
+    ns_deadstemn_transfer
+    ns_live_crootn
+    ns_livecrootn_store
+    ns_livecrootn_transfer
+    ns_dead_crootn
+    ns_deadcrootn_store
+    ns_deadcrootn_transfer
+    ns_frootn
+    ns_frootn_store
+    ns_frootn_transfer
+    ns_cwdn
+    ns_retransn
+    epv_wstress_days
+    epv_max_fparabs
+    epv_min_vwc
+    n_basestations
+
+*/
+
+
+
+
+

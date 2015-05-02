@@ -91,7 +91,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	char	record[MAXSTR];
 	struct	canopy_strata_object	*canopy_strata;
 	int	paramCnt=0;
-	param	*paramPtr;
+	param	*paramPtr=NULL;
 	/*--------------------------------------------------------------*/
 	/*  Allocate a canopy_strata object.                                */
 	/*--------------------------------------------------------------*/
@@ -102,7 +102,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.	*/
 	/*--------------------------------------------------------------*/
-	paramPtr = readtag_worldfile(&paramCnt,world_file,"n_basestations");
+	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 
 	/*fscanf(world_file,"%d",&(canopy_strata[0].ID));
 	read_record(world_file, record);
@@ -265,7 +265,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	
 	canopy_strata[0].cs.dead_crootc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs_dead_crootc","%lf",0.0,1);
 	
-	canopy_strata[0].cs.deadcrootc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs_deadfrootc_store","%lf",0.0,1);
+	canopy_strata[0].cs.deadcrootc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs_deadcrootc_store","%lf",0.0,1);
 	
 	canopy_strata[0].cs.deadcrootc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs_deadcrootc_transfer","%lf",0.0,1);
 	
@@ -326,11 +326,11 @@ struct canopy_strata_object *construct_canopy_strata(
 
 
 	if (command_line[0].vegspinup_flag > 0){
-     canopy_strata[0].target.lai = NULLVAL;
-     canopy_strata[0].target.total_stemc = NULLVAL;
-     canopy_strata[0].target.met = 2;
-     
-   }
+	     canopy_strata[0].target.lai = NULLVAL;
+	     canopy_strata[0].target.total_stemc = NULLVAL;
+	     canopy_strata[0].target.met = 2;
+	     
+	   }
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
 	/*--------------------------------------------------------------*/

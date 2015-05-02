@@ -101,7 +101,7 @@ struct patch_object *construct_patch(
 	struct patch_object *patch;
 	double	mpar;
 	int paramCnt=0;
-	param * paramPtr;
+	param * paramPtr=NULL;
 	/*--------------------------------------------------------------*/
 	/*  Allocate a patch object.                                */
 	/*--------------------------------------------------------------*/
@@ -141,7 +141,8 @@ struct patch_object *construct_patch(
 	fscanf(world_file,"%d",&(landuse_default_object_ID));
 	read_record(world_file, record);*/
 
-	paramPtr = readtag_worldfile(&paramCnt,world_file,"canopy_strata_ID");
+	paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
+	
 	patch[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"patch_ID","%d",1,1);
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
@@ -226,6 +227,36 @@ struct patch_object *construct_patch(
 		patch[0].snow_redist_scale=
 			      getDoubleWorldfile(&paramCnt,&paramPtr,"snow_redist_scale","%lf",0.0,1);
 		}
+
+	patch[0].litter.cover_fraction = 
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.cover_fraction","%lf",1.0,1);
+	patch[0].litter.rain_stored =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",0.0,1);
+	patch[0].litter_cs.litr1c =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.0,1);
+	patch[0].litter_ns.litr1n =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",0.0,1);
+	patch[0].litter_cs.litr2c =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",0.0,1);
+	patch[0].litter_cs.litr3c =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr3c","%lf",0.0,1);	
+	patch[0].litter_cs.litr4c =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c","%lf",0.0,1);
+	
+	patch[0].soil_cs.soil1c =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil1c","%lf",0.0,1);
+	patch[0].soil_ns.sminn =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.sminn","%lf",0.0,1);
+	patch[0].soil_ns.nitrate =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.nitrate","%lf",0.0,1);
+	patch[0].soil_cs.soil2c =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil2c","%lf",0.0,1);
+	patch[0].soil_cs.soil3c =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil3c","%lf",0.0,1);
+	patch[0].soil_cs.soil4c =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",0.0,1);
+	patch[0].num_base_stations = 
+		      getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
 
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;
@@ -324,21 +355,6 @@ struct patch_object *construct_patch(
 	read_record(world_file, record); 
 	fscanf(world_file,"%lf",&(patch[0].litter_cs.litr4c));
 	read_record(world_file, record);*/
-
-	patch[0].litter.cover_fraction = 
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.cover_fraction","%lf",1.0,1);
-	patch[0].litter.rain_stored =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",0.0,1);
-	patch[0].litter_cs.litr1c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.0,1);
-	patch[0].litter_ns.litr1n =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",0.0,1);
-	patch[0].litter_cs.litr2c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",0.0,1);
-	patch[0].litter_cs.litr3c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr3c","%lf",0.0,1);	
-	patch[0].litter_cs.litr4c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c","%lf",0.0,1);
 	
 	patch[0].litter_ns.litr2n = patch[0].litter_cs.litr2c / CEL_CN;
 	patch[0].litter_ns.litr3n = patch[0].litter_cs.litr3c / CEL_CN;
@@ -356,18 +372,7 @@ struct patch_object *construct_patch(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(patch[0].soil_cs.soil4c));
 	read_record(world_file, record);*/
-	patch[0].soil_cs.soil1c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil1c","%lf",0.0,1);
-	patch[0].soil_ns.sminn =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.sminn","%lf",0.0,1);
-	patch[0].soil_ns.nitrate =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.nitrate","%lf",0.0,1);
-	patch[0].soil_cs.soil2c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil2c","%lf",0.0,1);
-	patch[0].soil_cs.soil3c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil3c","%lf",0.0,1);
-	patch[0].soil_cs.soil4c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",0.0,1);
+		      
 
 	patch[0].soil_ns.soil1n = patch[0].soil_cs.soil1c / SOIL1_CN;
 	patch[0].soil_ns.soil2n = patch[0].soil_cs.soil2c / SOIL2_CN;
@@ -606,7 +611,6 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	/*fscanf(world_file,"%d",&(patch[0].num_base_stations));
 	read_record(world_file, record);*/
-	patch[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
 	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this patch.			*/
 	/*--------------------------------------------------------------*/

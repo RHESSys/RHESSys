@@ -153,7 +153,7 @@ struct zone_object *construct_zone(
 	fscanf(world_file,"%d",&(zone[0].num_base_stations));
 	read_record(world_file, record);*/
 
-	paramPtr=readtag_worldfile(&paramCnt,world_file,"patch_ID");
+	paramPtr=readtag_worldfile(&paramCnt,world_file,"Zone");
 
 	zone[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"zone","%d",1,1);
 	zone[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0,1);

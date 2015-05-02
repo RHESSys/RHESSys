@@ -85,8 +85,8 @@ struct hillslope_object *construct_hillslope(
 	int		default_object_ID;
 	char		record[MAXSTR];
 	struct	hillslope_object *hillslope;
-	param *paramPtr=NULL;
-	int paramCnt=0;
+	param		*paramPtr=NULL;
+	int		paramCnt=0;
 	/*--------------------------------------------------------------*/
 	/*	Allocate a hillslope object.								*/
 	/*--------------------------------------------------------------*/
@@ -127,7 +127,7 @@ struct hillslope_object *construct_hillslope(
 	read_record(world_file, record);*/
 
 
-	paramPtr=readtag_worldfile(&paramCnt,world_file,"zone");
+	paramPtr=readtag_worldfile(&paramCnt,world_file,"Hillslope");
 
 	hillslope[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"hillslope_ID","%d",1,1);
 	hillslope[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0,1);

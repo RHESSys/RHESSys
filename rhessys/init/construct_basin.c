@@ -132,16 +132,16 @@ struct basin_object *construct_basin(
 	fscanf(world_file,"%d",&(basin[0].num_base_stations));
 	read_record(world_file, record);*/
 
-	paramPtr=readtag_worldfile(&paramCnt,world_file,"hillslope_ID");
+	paramPtr=readtag_worldfile(&paramCnt,world_file,"Basin");
 	/*for (i=0;i<paramCnt;i++){
 	  printf("value=%s,name =%s\n",paramPtr[i].strVal,paramPtr[i].name);
 	}*/
 	basin[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_ID","%d",1,1);//must
-	basin[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0,1);
-	basin[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0,1);
-	basin[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0,1);
+	basin[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
+	basin[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
+	basin[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
 	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"default_ID","%d",1,1);//must	
-	basin[0].latitude = getIntWorldfile(&paramCnt,&paramPtr,"latitude","%lf",0,1);
+	basin[0].latitude = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",0.0,1);
 	basin[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);//must
 	
 	/*--------------------------------------------------------------*/
