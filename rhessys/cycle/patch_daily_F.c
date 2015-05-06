@@ -1185,7 +1185,7 @@ void		patch_daily_F(
 	
 	/*	Add rain throughfall to detention store for infiltration	*/
 	/*	and evaporation routines.									*/
-	
+	// TODO: Do not execute this transfer if in dynamic routing mode
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
 	
 
@@ -1206,7 +1206,7 @@ void		patch_daily_F(
 			   patch[0].Kup_direct/86.4, 
 			   patch[0].Kup_diffuse/86.4);
 	}
-	
+	// TODO: Do not execute this transfer if in dynamic routing mode
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
 	
 	/*--------------------------------------------------------------*/
