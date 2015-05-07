@@ -207,7 +207,7 @@ struct patch_object *construct_patch(
 	fscanf(world_file,"%lf",&(patch[0].snowpack.energy_deficit));
 	read_record(world_file, record);*/
 
-	patch[0].rz_storage = getDoubleWorldfile(&paramCnt,&paramPtr,"rz_storag","%lf",1.0,1);
+	patch[0].rz_storage = getDoubleWorldfile(&paramCnt,&paramPtr,"rz_storage","%lf",1.0,1);
 	patch[0].unsat_storage = getDoubleWorldfile(&paramCnt,&paramPtr,"unsat_storage","%lf",0.1,1);
 	patch[0].sat_deficit = getDoubleWorldfile(&paramCnt,&paramPtr,"sat_deficit","%lf",0.1,1);
 	patch[0].snowpack.water_equivalent_depth = 
