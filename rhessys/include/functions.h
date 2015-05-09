@@ -1,6 +1,8 @@
 #ifndef _FUNCTIONS_H_
 #define _FUNCTIONS_H_
 
+#include <cassandra.h>
+
 #include "rhessys.h"
 
 struct routing_list_object *construct_ddn_routing_topology(char *routing_filename,

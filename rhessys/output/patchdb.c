@@ -4,11 +4,16 @@
 
 #include <cassandra.h>
 
-void patchdb_print_error(CassFuture* future) {
+#include "rhessys.h"
+
+void patchdb_print_error(CassFuture* future, char* query) {
 	const char* message;
 	size_t message_length;
 	cass_future_error_message(future, &message, &message_length);
-	fprintf(stderr, "Error: %.*s\n", (int)message_length, message);
+	fprintf(stderr, "\n\nError: %s\n\n", message);
+	if (query != NULL) {
+		fprintf(stderr, "Query was: %s", query);
+	}
 }
 
 CassError patchdb_execute_query(CassSession* session, const char* query) {
@@ -21,7 +26,7 @@ CassError patchdb_execute_query(CassSession* session, const char* query) {
 
 	rc = cass_future_error_code(future);
 	if (rc != CASS_OK) {
-		patchdb_print_error(future);
+		patchdb_print_error(future, query);
 		exit(EXIT_FAILURE);
 	}
 
@@ -33,26 +38,30 @@ CassError patchdb_execute_query(CassSession* session, const char* query) {
 
 void init_patchdb(char* hostname,
 				  char* keyspace_name,
-				  CassCluster* cluster,
-				  CassSession* session) {
+				  CassCluster** cluster,
+				  CassSession** session) {
 
-	printf("Connecting to Cassandra cluster at %s ...\n", hostname);
+	printf("patchdb: Connecting to Cassandra cluster at %s ...\n", hostname);
 
-	cluster = cass_cluster_new();
-	session = cass_session_new();
-	cass_cluster_set_contact_points(cluster, hostname);
-	CassFuture* connect_future = cass_session_connect(session, cluster);
+	*cluster = cass_cluster_new();
+	*session = cass_session_new();
+	cass_cluster_set_contact_points(*cluster, hostname);
+	CassFuture* connect_future = cass_session_connect(*session, *cluster);
 
 	if (cass_future_error_code(connect_future) != CASS_OK) {
-		patchdb_print_error(connect_future);
+		patchdb_print_error(connect_future, NULL);
 		exit(EXIT_FAILURE);
 	}
 
-	printf("Creating keyspace %s ...", keyspace_name);
+	printf("patchdb: Creating keyspace %s ... ", keyspace_name);
 
-	patchdb_execute_query(session,
-	              	  	  sprintf("CREATE KEYSPACE %s WITH replication = { \
-	               'class': 'SimpleStrategy', 'replication_factor': '1' };", keyspace_name));
+	char query[MAXSTR];
+	snprintf(query, MAXSTR, "CREATE KEYSPACE IF NOT EXISTS %s WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' };", keyspace_name);
+	patchdb_execute_query(*session, query);
+
+	// Use the newly created keyspace
+	snprintf(query, MAXSTR, "USE %s;", keyspace_name);
+	patchdb_execute_query(*session, query);
 
 	printf("done\n");
 
@@ -63,9 +72,14 @@ void init_patchdb(char* hostname,
 void destroy_patchdb(CassCluster* cluster,
 					 CassSession* session) {
 	CassFuture* close_future = cass_session_close(session);
+
+	printf("patchdb: Disconnecting from cluster ... ");
+
 	cass_future_wait(close_future);
 	cass_future_free(close_future);
 
 	cass_cluster_free(cluster);
 	cass_session_free(session);
+
+	printf("done\n");
 }

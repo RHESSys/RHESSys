@@ -320,8 +320,8 @@ void add_headers(struct world_output_file_object *world_output_files,
 		// Initialize patchdb
 		init_patchdb(command_line[0].patchdb_hostname,
 					 command_line[0].patchdb_keyspace,
-					 world_output_files->patchdb_cluster,
-					 world_output_files->patchdb_session);
+					 &(world_output_files->patchdb_cluster),
+					 &(world_output_files->patchdb_session));
 	}
 
 	/*--------------------------------------------------------------*/

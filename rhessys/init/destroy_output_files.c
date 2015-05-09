@@ -22,7 +22,9 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+
 #include "rhessys.h"
+#include "functions.h"
 
 
 void	destroy_output_files(
@@ -59,6 +61,11 @@ void	destroy_output_files(
 	/*--------------------------------------------------------------*/
 	if ( command_line[0].p != NULL ){
 		destroy_output_fileset( output[0].patch);
+
+		if (command_line[0].patchdb_flag) {
+			destroy_patchdb(output->patchdb_cluster,
+					 	 	output->patchdb_session);
+		}
 	}
 	/*--------------------------------------------------------------*/
 	/*	Destroy the canopy_stratum output files.		*/
