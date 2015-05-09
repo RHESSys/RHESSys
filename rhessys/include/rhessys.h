@@ -141,6 +141,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <cassandra.h>
+
 /*----------------------------------------------------------*/
 /*	Define macros.											*/
 /*----------------------------------------------------------*/
@@ -308,7 +310,9 @@ struct	world_output_file_object
 	struct	output_files_object		*zone;
 	struct	output_files_object		*patch;
 	struct	output_files_object		*canopy_stratum;
-        struct	output_files_object		*stream_routing;
+    struct	output_files_object		*stream_routing;
+    CassCluster* patchdb_cluster;
+    CassSession* patchdb_session;
 	};
 
 /*----------------------------------------------------------*/
@@ -1736,6 +1740,7 @@ struct	command_line_object
 	int		noredist_flag;
 	int		vmort_flag;
 	int		version_flag;
+	int		patchdb_flag;
 	char	*output_prefix;
 	char	routing_filename[FILEPATH_LEN];
 	char	surface_routing_filename[FILEPATH_LEN];
@@ -1744,6 +1749,8 @@ struct	command_line_object
 	char	world_filename[FILEPATH_LEN];
 	char	world_header_filename[FILEPATH_LEN];
 	char	tec_filename[FILEPATH_LEN];
+	char	patchdb_hostname[FILEPATH_LEN];
+	char	patchdb_keyspace[FILEPATH_LEN];
 	double  tmp_value;
 	double  cpool_mort_fract;
 	double	veg_sen1;

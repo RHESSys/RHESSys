@@ -99,6 +99,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].veg_sen3 = 1.0;
 	command_line[0].vmort_flag = 0;
 	command_line[0].version_flag = 0;
+	command_line[0].patchdb_flag = 0;
 	command_line[0].vsen[M] = 1.0;
 	command_line[0].vsen[K] = 1.0;
 	command_line[0].sen[M] = 1.0;
@@ -1056,6 +1057,25 @@ struct	command_line_object	*construct_command_line(
 			/*--------------------------------------------------------------*/
 			/*	NOTE:  ADD MORE OPTION PARSING HERE.						*/
 			/*--------------------------------------------------------------*/
+			else if (strcmp(main_argv[i], "-patchdb") == 0) {
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,"FATAL ERROR: patchdb not specified\n");
+					exit(EXIT_FAILURE);
+				}
+				/*--------------------------------------------------------------*/
+				/*			Read in the routing file name.						*/
+				/*--------------------------------------------------------------*/
+				command_line[0].patchdb_flag= 1;
+				strcpy(command_line[0].patchdb_hostname, main_argv[i]);
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,"FATAL ERROR: patchdb keyspace not specified\n");
+					exit(EXIT_FAILURE);
+				}
+				strcpy(command_line[0].patchdb_keyspace, main_argv[i]);
+				i++;
+			}
 			/*--------------------------------------------------------------*/
 			/*		the option must be invalid.								*/
 			/*--------------------------------------------------------------*/

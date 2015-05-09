@@ -25,8 +25,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "rhessys.h"
 
+#include "rhessys.h"
+#include "functions.h"
 
 void add_headers(struct world_output_file_object *world_output_files, 
 			struct command_line_object *command_line)
@@ -314,6 +315,15 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"root.depth",
 		"litter.rain_stor",
 		"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge");
+
+	if (command_line[0].patchdb_flag) {
+		// Initialize patchdb
+		init_patchdb(command_line[0].patchdb_hostname,
+					 command_line[0].patchdb_keyspace,
+					 world_output_files->patchdb_cluster,
+					 world_output_files->patchdb_session);
+	}
+
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/

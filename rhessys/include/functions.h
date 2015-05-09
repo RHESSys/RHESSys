@@ -11,10 +11,21 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 		  struct command_line_object *command_line,
 		  bool surface);
 
-
 double compute_prop_alloc_daily(
 		double,
 		struct cstate_struct *,
 		struct epconst_struct);
+
+
+void patchdb_print_error(CassFuture* future);
+CassError patchdb_execute_query(CassSession* session, const char* query);
+
+void init_patchdb(char* hostname,
+		 	 	  char* keyspace_name,
+				  CassCluster* cluster,
+				  CassSession* session);
+
+void destroy_patchdb(CassCluster* cluster,
+					 CassSession* session);
 
 #endif
