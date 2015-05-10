@@ -27,9 +27,12 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
-#include "rhessys.h"
 
-void	output_patch(
+#include "rhessys.h"
+#include "functions.h"
+
+void	output_patch(struct  command_line_object * command_line,
+					 struct world_output_file_object *world_output_files,
 					 int basinID, int hillID, int zoneID,
 					 struct	patch_object	*patch,
 					 struct	zone_object	*zone,
@@ -68,48 +71,92 @@ void	output_patch(
 		}
 	}
 
-	
-	
-	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
-		current_date.day,
-		current_date.month,
-		current_date.year,
-		basinID,
-		hillID,
-		zoneID,
-		patch[0].ID,
-		patch[0].rain_throughfall*1000.0,
-		patch[0].detention_store*1000.0,
-		patch[0].sat_deficit_z*1000,
-		patch[0].sat_deficit*1000,
-		patch[0].rz_storage*1000,
-		patch[0].rootzone.potential_sat*1000,
-		patch[0].rootzone.field_capacity*1000,
-		patch[0].wilting_point*1000,
-		patch[0].unsat_storage*1000,
-		patch[0].rz_drainage*1000,
-		patch[0].unsat_drainage*1000,
-		(patch[0].snowpack.sublimation + asub)*1000,
-		patch[0].return_flow*1000.0,
-		patch[0].evaporation*1000.0,
-		patch[0].evaporation_surf*1000.0,
-		patch[0].exfiltration_sat_zone*1000.0 + patch[0].exfiltration_unsat_zone * 1000.0, 
-		patch[0].snowpack.water_equivalent_depth*1000.0,
-		patch[0].snow_melt*1000.0,
-		(patch[0].transpiration_sat_zone*1000.0), (patch[0].transpiration_unsat_zone)*1000.0,
-		patch[0].Qin_total * 1000.0,
-		patch[0].Qout_total * 1000.0,
-		apsn * 1000.0,
-		patch[0].rootzone.S,
-		patch[0].rootzone.depth*1000.0,
-		patch[0].litter.rain_stored*1000.0,
-		litterS,
-		patch[0].area, (patch[0].PET)*1000.0, alai, 
-		patch[0].base_flow*1000.0, 
-		patch[0].streamflow*1000.0, 1000.0*(zone[0].rain+zone[0].snow), patch[0].recharge);
+	if (command_line[0].patchdb_flag) {
+		char query[MAXSTR];
+		char datestr[16];
+		snprintf(datestr, 16, "%ld-%02ld-%02ld", current_date.year,
+				 current_date.month, current_date.day);
+		char patchid[64];
+		snprintf(patchid, 64, "%d:%d:%d:%d", basinID, hillID,
+				 zoneID, patch->ID);
 
-	if (check <= 0) {
-		fprintf(stdout, "\nWARNING: output error has occured in output_patch");
+		snprintf(query, MAXSTR, "INSERT INTO variables_by_date_patch "
+								"(variable,date,patchid,value) "
+								"VALUES ('%s','%s','%s', %f);",
+								"rain_thr", datestr, patchid, patch[0].rain_throughfall*1000.0);
+		patchdb_execute_query(world_output_files->patchdb_session, query);
+		//printf("\n");
+		//printf(query);
+		//printf("\n");
+		/*		"detention_store",
+				"sat_def_z",
+				"sat_def",
+				"rz_storage",
+				"potential_rz_store",
+				"rz_field_capacity",
+				"rz_wilting_point",
+				"unsat_stor",
+				"rz_drainage",
+				"unsat_drain",
+				"sublimation",
+				"return",
+				"evap",
+				"evap_surface",
+				"soil_evap",
+				"snow",
+				"snow_melt",
+				"trans_sat",
+				"trans_unsat",
+				"Qin",
+				"Qout",
+				"psn",
+				"root_zone.S",
+				"root.depth",
+				"litter.rain_stor",
+				"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge"*/
+	} else {
+		// Output to file
+		check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+			current_date.day,
+			current_date.month,
+			current_date.year,
+			basinID,
+			hillID,
+			zoneID,
+			patch[0].ID,
+			patch[0].rain_throughfall*1000.0,
+			patch[0].detention_store*1000.0,
+			patch[0].sat_deficit_z*1000,
+			patch[0].sat_deficit*1000,
+			patch[0].rz_storage*1000,
+			patch[0].rootzone.potential_sat*1000,
+			patch[0].rootzone.field_capacity*1000,
+			patch[0].wilting_point*1000,
+			patch[0].unsat_storage*1000,
+			patch[0].rz_drainage*1000,
+			patch[0].unsat_drainage*1000,
+			(patch[0].snowpack.sublimation + asub)*1000,
+			patch[0].return_flow*1000.0,
+			patch[0].evaporation*1000.0,
+			patch[0].evaporation_surf*1000.0,
+			patch[0].exfiltration_sat_zone*1000.0 + patch[0].exfiltration_unsat_zone * 1000.0,
+			patch[0].snowpack.water_equivalent_depth*1000.0,
+			patch[0].snow_melt*1000.0,
+			(patch[0].transpiration_sat_zone*1000.0), (patch[0].transpiration_unsat_zone)*1000.0,
+			patch[0].Qin_total * 1000.0,
+			patch[0].Qout_total * 1000.0,
+			apsn * 1000.0,
+			patch[0].rootzone.S,
+			patch[0].rootzone.depth*1000.0,
+			patch[0].litter.rain_stored*1000.0,
+			litterS,
+			patch[0].area, (patch[0].PET)*1000.0, alai,
+			patch[0].base_flow*1000.0,
+			patch[0].streamflow*1000.0, 1000.0*(zone[0].rain+zone[0].snow), patch[0].recharge);
+	
+		if (check <= 0) {
+			fprintf(stdout, "\nWARNING: output error has occured in output_patch");
+		}
 	}
 	return;
 } /*end output_patch*/

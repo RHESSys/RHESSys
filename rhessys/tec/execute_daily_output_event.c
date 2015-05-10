@@ -62,7 +62,8 @@ void	execute_daily_output_event(
 		struct	date,
 		FILE	*);
 	
-	void output_patch(
+	void output_patch(struct  command_line_object *,
+		struct world_output_file_object *,
 		int, int, int,
 		struct	patch_object *,
 		struct	zone_object *,
@@ -210,6 +211,8 @@ void	execute_daily_output_event(
 													if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID == patchID)
 														|| (patchID == -999)){
 														output_patch(
+															command_line,
+															outfile,
 															world[0].basins[b]->ID,
 															world[0].basins[b]->hillslopes[h]->ID,
 															world[0].basins[b]->hillslopes[h]->zones[z]->ID,
