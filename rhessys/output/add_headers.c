@@ -322,6 +322,28 @@ void add_headers(struct world_output_file_object *world_output_files,
 					 command_line[0].patchdb_keyspace,
 					 &(world_output_files->patchdb_cluster),
 					 &(world_output_files->patchdb_session));
+		// Make tables
+		char query[MAXSTR];
+		printf("patchdb: Creating tables ... ");
+		// Table partitioned by variable and clustered by date then patch ID
+		snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS variables_by_date_patch ("
+								"variable text,"
+								"date timestamp,"
+								"patchid text,"
+								"value double,"
+								"PRIMARY KEY (variable, date, patchid));");
+		patchdb_execute_query(world_output_files->patchdb_session, query);
+
+		// Table partitioned by patch ID and clustered by variable then date
+		snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS patches_by_variable_date ("
+								"patchid text,"
+								"variable text,"
+								"date timestamp,"
+								"value double,"
+								"PRIMARY KEY (patchid, variable, date));");
+		patchdb_execute_query(world_output_files->patchdb_session, query);
+
+		printf("done\n");
 	}
 
 	/*--------------------------------------------------------------*/
