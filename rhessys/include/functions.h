@@ -19,13 +19,13 @@ double compute_prop_alloc_daily(
 		struct epconst_struct);
 
 
-void patchdb_print_error(CassFuture* future);
+void patchdb_print_error(CassFuture* future, const char* query);
 CassError patchdb_execute_query(CassSession* session, const char* query);
 
 void init_patchdb(char* hostname,
 		 	 	  char* keyspace_name,
-				  CassCluster* cluster,
-				  CassSession* session);
+				  CassCluster** cluster,
+				  CassSession** session);
 
 void destroy_patchdb(CassCluster* cluster,
 					 CassSession* session);

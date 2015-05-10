@@ -6,7 +6,7 @@
 
 #include "rhessys.h"
 
-void patchdb_print_error(CassFuture* future, char* query) {
+void patchdb_print_error(CassFuture* future, const char* query) {
 	const char* message;
 	size_t message_length;
 	cass_future_error_message(future, &message, &message_length);
@@ -56,6 +56,7 @@ void init_patchdb(char* hostname,
 	printf("patchdb: Creating keyspace %s ... ", keyspace_name);
 
 	char query[MAXSTR];
+	// TODO: remove "IF NOT EXISTS" for production use
 	snprintf(query, MAXSTR, "CREATE KEYSPACE IF NOT EXISTS %s WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' };", keyspace_name);
 	patchdb_execute_query(*session, query);
 
