@@ -35,7 +35,11 @@
 /*		moss is present.				*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+
+#include <cassandra.h>
+
 #include "rhessys.h"
+#include "functions.h"
 
 void	execute_daily_output_event(
 								   struct	world_object	*world,
@@ -191,6 +195,36 @@ void	execute_daily_output_event(
 								/*----------------------------------------------------*/
 								/*	output patches 												*/
 								/*---------------------------------------------------*/
+
+								if (command_line[0].patchdb_flag) {
+									char datestr[16];
+									snprintf(datestr, 16, "%ld-%02ld-%02ld",
+											date.year, date.month, date.day);
+									// Make prepared statements for this day
+									CassError rc = CASS_OK;
+									char query[128];
+									snprintf(query, 128, "INSERT INTO variables_by_date_patch "
+											"(variable,date,patchid,value) "
+											"VALUES (?,'%s',?,?);", datestr);
+									rc = patchdb_prepare_statement(outfile->patchdb_session,
+											(const char*)&query, &(outfile->var_by_date_patch_stmt));
+									if (rc != CASS_OK) {
+										exit(EXIT_FAILURE);
+									}
+
+									snprintf(query, 128, "INSERT INTO patches_by_variable_date "
+											"(patchid,variable,date,value) "
+											"VALUES (?,'%s',?,?);", datestr);
+									rc = patchdb_prepare_statement(outfile->patchdb_session,
+											(const char*)&query, &(outfile->patch_by_var_date_stmt));
+									if (rc != CASS_OK) {
+										exit(EXIT_FAILURE);
+									}
+
+									// Make batch for batch execution
+									outfile->patchdb_batch = cass_batch_new(CASS_BATCH_TYPE_UNLOGGED);
+								}
+
 								for(p=0;
 								p < world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches;
 								++p){
@@ -210,6 +244,7 @@ void	execute_daily_output_event(
 													|| (zoneID == -999))
 													if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID == patchID)
 														|| (patchID == -999)){
+
 														output_patch(
 															command_line,
 															outfile,
@@ -257,6 +292,30 @@ void	execute_daily_output_event(
 										} /* end stratum (c) for loop */
 									} /* end if options */
 								} /* end patch (p) for loop */
+
+								if (command_line[0].patchdb_flag) {
+									// Perform batch insert
+									CassError rc = CASS_OK;
+									CassFuture* future = NULL;
+									future = cass_session_execute_batch(outfile->patchdb_session,
+											outfile->patchdb_batch);
+									cass_future_wait(future);
+
+									rc = cass_future_error_code(future);
+									if (rc != CASS_OK) {
+										patchdb_print_error(future, "Batch execution of output_patch");
+										exit(EXIT_FAILURE);
+									}
+
+									cass_future_free(future);
+									// Free batch
+									cass_batch_free(outfile->patchdb_batch);
+
+									// Free prepared statements
+									cass_prepared_free(outfile->var_by_date_patch_stmt);
+									cass_prepared_free(outfile->patch_by_var_date_stmt);
+								}
+
 							} /* end if options */
 						} /* end zone (z) for  loop*/
 					} /* end if options */

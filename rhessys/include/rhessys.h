@@ -315,6 +315,7 @@ struct	world_output_file_object
     CassSession* patchdb_session;
     const CassPrepared *var_by_date_patch_stmt;
     const CassPrepared *patch_by_var_date_stmt;
+    CassBatch* patchdb_batch;
 	};
 
 /*----------------------------------------------------------*/

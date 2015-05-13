@@ -20,6 +20,8 @@ double compute_prop_alloc_daily(
 
 
 void patchdb_print_error(CassFuture* future, const char* query);
+CassError patchdb_prepare_statement(CassSession* session, const char* query,
+		const CassPrepared **stmt);
 CassError patchdb_execute_query(CassSession* session, const char* query);
 
 void init_patchdb(char* hostname,

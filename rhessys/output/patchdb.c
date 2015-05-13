@@ -16,6 +16,23 @@ void patchdb_print_error(CassFuture* future, const char* query) {
 	}
 }
 
+CassError patchdb_prepare_statement(CassSession* session, const char* query,
+		const CassPrepared **stmt) {
+	CassFuture* future = NULL;
+	CassError rc = CASS_OK;
+
+	future = cass_session_prepare(session, query);
+	cass_future_wait(future);
+	rc = cass_future_error_code(future);
+	if (rc != CASS_OK) {
+		patchdb_print_error(future, query);
+	} else {
+		*stmt = cass_future_get_prepared(future);
+	}
+	cass_future_free(future);
+	return rc;
+}
+
 CassError patchdb_execute_query(CassSession* session, const char* query) {
 	CassError rc = CASS_OK;
 	CassFuture* future = NULL;
@@ -68,7 +85,6 @@ void init_patchdb(char* hostname,
 
 	cass_future_free(connect_future);
 }
-
 
 void destroy_patchdb(CassCluster* cluster,
 					 CassSession* session) {

@@ -338,7 +338,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS patches_by_variable_date ("
 								"patchid text,"
 								"variable text,"
-								"date timeuuid,"
+								"date timestamp,"
 								"value double,"
 								"PRIMARY KEY (patchid, variable, date));");
 		patchdb_execute_query(world_output_files->patchdb_session, query);

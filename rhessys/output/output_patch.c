@@ -34,6 +34,27 @@
 #include "rhessys.h"
 #include "functions.h"
 
+
+void _write_to_patchdb(struct world_output_file_object *world_output_files,
+		char* patchid, char* var, cass_double_t value) {
+	CassError rc = CASS_OK;
+	CassStatement* statement = NULL;
+
+	statement = cass_prepared_bind(world_output_files->var_by_date_patch_stmt);
+	cass_statement_bind_string(statement, 0, var);
+	cass_statement_bind_string(statement, 1, patchid);
+	cass_statement_bind_double(statement, 2, value);
+	cass_batch_add_statement(world_output_files->patchdb_batch, statement);
+	cass_statement_free(statement);
+
+	statement = cass_prepared_bind(world_output_files->patch_by_var_date_stmt);
+	cass_statement_bind_string(statement, 0, patchid);
+	cass_statement_bind_string(statement, 1, var);
+	cass_statement_bind_double(statement, 2, value);
+	cass_batch_add_statement(world_output_files->patchdb_batch, statement);
+	cass_statement_free(statement);
+}
+
 void	output_patch(struct  command_line_object * command_line,
 					 struct world_output_file_object *world_output_files,
 					 int basinID, int hillID, int zoneID,
@@ -75,54 +96,13 @@ void	output_patch(struct  command_line_object * command_line,
 	}
 
 	if (command_line[0].patchdb_flag) {
-		char query[MAXSTR];
-		char datestr[16];
-		snprintf(datestr, 16, "%ld-%02ld-%02ld", current_date.year,
-				 current_date.month, current_date.day);
-//		struct tm date = { .tm_year = current_date.year-1900,
-//				.tm_mon = current_date.month-1,
-//				.tm_mday = current_date.day
-//		};
-//		CassUuidGen* uuid_gen = cass_uuid_gen_new();
-//		time_t timestamp = mktime(&date);
-//		cass_int64_t cass_timestamp = (cass_int64_t)timestamp;
-//		CassUuid uuid;
-//		cass_uuid_gen_from_time(uuid_gen, cass_timestamp, &uuid);
 		char patchid[64];
 		snprintf(patchid, 64, "%d:%d:%d:%d", basinID, hillID,
 				 zoneID, patch->ID);
-//		cass_uuid_gen_free(uuid_gen);
-		snprintf(query, MAXSTR, "INSERT INTO variables_by_date_patch "
-								"(variable,date,patchid,value) "
-								"VALUES ('%s','%s','%s',%f);",
-								"rain_thr", datestr, patchid, patch[0].rain_throughfall*1000.0);
 
-//		CassError rc = CASS_OK;
-//		CassStatement* statement = NULL;
-//		CassFuture* future = NULL;
-//
-//		statement = cass_prepared_bind(world_output_files->var_by_date_patch_stmt);
-//		cass_statement_bind_string(statement, 0, "rain_thr");
-//		cass_statement_bind_uuid(statement, 1, uuid);
-//		cass_statement_bind_string(statement, 2, patchid);
-//		cass_statement_bind_double(statement, 3, (cass_double_t)patch[0].rain_throughfall*1000.0);
-//		future = cass_session_execute(world_output_files->patchdb_session, statement);
-//		cass_future_wait(future);
-//
-//		rc = cass_future_error_code(future);
-//		if (rc != CASS_OK) {
-//			patchdb_print_error(future, NULL);
-//		}
+		_write_to_patchdb(world_output_files, patchid,
+				"rain_thr", (cass_double_t)patch[0].rain_throughfall*1000.0);
 
-		patchdb_execute_query(world_output_files->patchdb_session, query);
-//		snprintf(query, MAXSTR, "INSERT INTO patches_by_variable_date "
-//								"(patchid,variable,date,value) "
-//								"VALUES ('%s','%s','%s',%f);",
-//								patchid, "rain_thr", datestr, patch[0].rain_throughfall*1000.0);
-//		patchdb_execute_query(world_output_files->patchdb_session, query);
-		//printf("\n");
-		//printf(query);
-		//printf("\n");
 		/*		"detention_store",
 				"sat_def_z",
 				"sat_def",

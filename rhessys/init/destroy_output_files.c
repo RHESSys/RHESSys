@@ -67,8 +67,6 @@ void	destroy_output_files(
 		if (command_line[0].patchdb_flag) {
 			destroy_patchdb(output->patchdb_cluster,
 					 	 	output->patchdb_session);
-			cass_prepared_free(output->var_by_date_patch_stmt);
-			cass_prepared_free(output->patch_by_var_date_stmt);
 		}
 	}
 	/*--------------------------------------------------------------*/
