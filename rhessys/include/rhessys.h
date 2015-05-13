@@ -313,6 +313,8 @@ struct	world_output_file_object
     struct	output_files_object		*stream_routing;
     CassCluster* patchdb_cluster;
     CassSession* patchdb_session;
+    const CassPrepared *var_by_date_patch_stmt;
+    const CassPrepared *patch_by_var_date_stmt;
 	};
 
 /*----------------------------------------------------------*/
