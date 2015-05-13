@@ -206,6 +206,7 @@ void	execute_daily_output_event(
 									snprintf(query, 128, "INSERT INTO variables_by_date_patch "
 											"(variable,date,patchid,value) "
 											"VALUES (?,'%s',?,?);", datestr);
+									//printf(query);
 									rc = patchdb_prepare_statement(outfile->patchdb_session,
 											(const char*)&query, &(outfile->var_by_date_patch_stmt));
 									if (rc != CASS_OK) {
@@ -214,7 +215,8 @@ void	execute_daily_output_event(
 
 									snprintf(query, 128, "INSERT INTO patches_by_variable_date "
 											"(patchid,variable,date,value) "
-											"VALUES (?,'%s',?,?);", datestr);
+											"VALUES (?,?,'%s',?);", datestr);
+									//printf(query);
 									rc = patchdb_prepare_statement(outfile->patchdb_session,
 											(const char*)&query, &(outfile->patch_by_var_date_stmt));
 									if (rc != CASS_OK) {
