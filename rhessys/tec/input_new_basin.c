@@ -90,6 +90,7 @@ void input_new_basin(
          /*fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",basin[0].latitude,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",basin[0].num_base_stations,1);	
 	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  {
 		basin[0].latitude = ltmp;
@@ -103,7 +104,7 @@ void input_new_basin(
 	/*--------------------------------------------------------------*/
          /*fscanf(world_file,"%d",&(dtmp));
 	read_record(world_file, record);*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",basin[0].num_base_stations,1);
+
 	
 	if (dtmp > 0) {
 		basin[0].num_base_stations = dtmp;

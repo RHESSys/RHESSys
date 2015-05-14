@@ -107,10 +107,10 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp;
 	/*fscanf(world_file,"%d",&(soil_default_object_ID));*/
 	/*read_record(world_file, record);*/
-	soil_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",1,1);
+	soil_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",0,1);
 	/*fscanf(world_file,"%d",&(landuse_default_object_ID));*/
 	/*read_record(world_file, record);*/
-	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",1,1);
+	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",0,1);
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",patch[0].area,1);	
@@ -263,7 +263,7 @@
 		patch[0].soil_cs.soil4c = ltmp;
 		patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
 		}
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,0);	
 	//printf("\nnum_base_stations=%d\n",dtmp);
 	//exit(0);
 	//

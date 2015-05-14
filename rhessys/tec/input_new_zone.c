@@ -105,7 +105,7 @@
 		}
          /*fscanf(world_file,"%d",&(default_object_ID));*/
 	/*read_record(world_file, record);*/
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",1,1); 	
+	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",0,1); 	
 	/*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",zone[0].area,1);

@@ -317,7 +317,7 @@ void input_new_strata(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.min_vwc = ltmp;
 
 	  
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",canopy_strata[0].num_base_stations,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",canopy_strata[0].num_base_stations,0);	
 
 		/*--------------------------------------------------------------*/
 		/*	Assign	defaults for this canopy_strata								*/

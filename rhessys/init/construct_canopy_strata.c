@@ -214,18 +214,18 @@ struct canopy_strata_object *construct_canopy_strata(
 	fscanf(world_file,"%lf",&(canopy_strata[0].ns.retransn));
 	read_record(world_file, record);*/
 
-	canopy_strata[0].ID = getIntWorldfile(&paramCnt, &paramPtr, "canopy_strata_ID","%d",1,1);
+	canopy_strata[0].ID = getIntWorldfile(&paramCnt, &paramPtr, "canopy_strata_ID","%d",-9999,0);
 
-	default_object_ID = getIntWorldfile(&paramCnt, &paramPtr, "veg_parm_ID","%d",1,1);
+	default_object_ID = getIntWorldfile(&paramCnt, &paramPtr, "veg_parm_ID","%d",-9999,0);
 
 	if (command_line[0].vegspinup_flag > 0){
-	    spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",1,1);
+	    spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,0);
         }
 	canopy_strata[0].cover_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1.0,1);
 	
 	canopy_strata[0].gap_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",0.0,1);
 	
-	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",0.1,1);
+	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",-9999,0);
 
 	if (command_line[0].tmp_value > ZERO){
 		canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
@@ -347,7 +347,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	
 	canopy_strata[0].epv.min_vwc = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",0.0,1);
 
-	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this canopy_strata								*/
 	/*--------------------------------------------------------------*/

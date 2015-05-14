@@ -63,154 +63,160 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 #endif
 
 
+/*-----------------------------------------------------------------------------
+ *  notes for value of variables:
+ *  u: calculated from g2w or from user's reference value
+ *  d: use default value
+ *-----------------------------------------------------------------------------*/
+
 
 /*-----------------------------------------------------------------------------
  *  Num of Variables (read by tag) in basin = 7, make it 17 
  *-----------------------------------------------------------------------------*/
 /*
-    basin_ID
-    x
-    y
-    z
-    basin_parm_ID
-    latitude
-    n_basestations //this one is fixed to be the indicator for end of the reading process
+    basin_ID  //u
+    x	      //d 0
+    y	      //d 0
+    z	      //u 
+    basin_parm_ID //u
+    latitude	  //u
+    n_basestations //u this one is the indicator for end of the reading process
 */
 
 /*-----------------------------------------------------------------------------
  *  Num of Variables (read by tag) in hillslope = 8, make it 18
  *-----------------------------------------------------------------------------*/
 /*
-    hillslope_ID
-    x
-    y
-    z
-    hill_parm_ID
-    gw.storage
-    gw.NO3
-    n_basestations
+    hillslope_ID // u
+    x		  // d 0 
+    y		  // d 0
+    z		  // u
+    hill_parm_ID  // u
+    gw.storage	  // d 0
+    gw.NO3	  // d 0
+    n_basestations// u 
 */
  /*-----------------------------------------------------------------------------
   *  Num of variables (read by tag) in zone = 12, make it 22
   *-----------------------------------------------------------------------------*/
 /*
-    zone_ID
-    x
-    y
-    z
-    zone_parm_ID
-    area
-    slope
-    aspect
-    precip_lapse_rate
-    e_horizon
-    w_horizon
-    n_basestations
+    zone_ID	  //u
+    x		  // d 0
+    y		  // d 0
+    z		  // u 
+    zone_parm_ID  // u
+    area	  // u 
+    slope	  // u 
+    aspect	  // u 
+    precip_lapse_rate //d 1
+    e_horizon	  // u
+    w_horizon	  // u
+    n_basestations // u 
 */
 
 /*-----------------------------------------------------------------------------
  *  Num of variables (read by tag) in patch = 37, make it 47
  *-----------------------------------------------------------------------------*/
 /*
-    patch_ID
-    x
-    y
-    z
-    soil_parm_ID
-    landuse_parm_ID
-    fire_parm_ID
-    surface_energy_parm_ID
-    area
-    slope
-    lna
-    Ksat_vertical
-    mpar
-    std
-    rz_storage
-    unsat_storage
-    sat_deficit
-    snowpack.water_equivalent_depth
-    snowpack.water_depth
-    snowpack.T
-    snowpack.surface_age
-    snowpack.energy_deficit
-    snow_redist_scale
-    litter.cover_fraction
-    litter.rain_stored
-    litter_cs.litr1c
-    litter_ns.litr1n
-    litter_cs.litr2c
-    litter_cs.litr3c
-    litter_cs.litr4c
-    soil_cs.soil1c
-    soil_ns.sminn
-    soil_ns.nitrate
-    soil_cs.soil2c
-    soil_cs.soil3c
-    soil_cs.soil4c
-    n_basestations
+    patch_ID           // u 
+    x		      // d 0 
+    y		      // d 0 
+    z		      // u 
+    soil_parm_ID      // u 
+    landuse_parm_ID   // u 
+    fire_parm_ID      // u 
+    surface_energy_parm_ID  // u
+    area	      // u
+    slope	      // u 
+    lna		      // d 7
+    Ksat_vertical     // d 1
+    mpar	      // d 0
+    std		      // d 0
+    rz_storage	      // d 0
+    unsat_storage     // d 0
+    sat_deficit	      // d 1
+    snowpack.water_equivalent_depth  // d 0
+    snowpack.water_depth	    // d 0
+    snowpack.T			    // d 0
+    snowpack.surface_age	    // d 0
+    snowpack.energy_deficit	    // d 0
+    snow_redist_scale		    // d ????
+    litter.cover_fraction	    // d 1
+    litter.rain_stored		    // d 0
+    litter_cs.litr1c		    // d janet
+    litter_ns.litr1n		    // d janet
+    litter_cs.litr2c		    // d 0
+    litter_cs.litr3c		    // d 0
+    litter_cs.litr4c		    // d 0
+    soil_cs.soil1c		    // d 0
+    soil_ns.sminn		    // d 0
+    soil_ns.nitrate		    // d 0
+    soil_cs.soil2c		    // d 0
+    soil_cs.soil3c		    // d 0
+    soil_cs.soil4c		    // d 0
+    n_basestations		    // u
 */
 
  /*-----------------------------------------------------------------------------
   * Num of variables (read by tag) in canopy strata = 56, make it 66 
   *-----------------------------------------------------------------------------*/
 /*
-    canopy_strata_ID
-    veg_parm_ID
-    spinup_object_ID
-    cover_fraction
-    gap_fraction
-    rootzone.depth
-    snow_stored
-    rain_stored
-    cs.cpool
-    cs.leafc
-    cs.dead_leafc
-    cs.leafc_store
-    cs.leafc_transfer
-    cs.live_stemc
-    cs.livestemc_store
-    cs.livestemc_transfer
-    cs.dead_stemc
-    cs.deadstemc_store
-    cs.deadstemc_transfer
-    cs.live_crootc
-    cs.livecrootc_store
-    cs.livecrootc_transfer
-    cs.dead_crootc
-    cs.deadcrootc_store
-    cs.deadcrootc_transfer
-    cs.frootc
-    cs.frootc_store
-    cs.frootc_transfer
-    cs.cwdc
-    epv.prev_leafcalloc
-    ns.npool
-    ns.leafn
-    ns.dead_leafn
-    ns.leafn_store
-    ns.leafn_transfer
-    ns.live_stemn
-    ns.livestemn_store
-    ns.livestemn_transfer
-    ns.dead_stemn
-    ns.deadstemn_store
-    ns.deadstemn_transfer
-    ns.live_crootn
-    ns.livecrootn_store
-    ns.livecrootn_transfer
-    ns.dead_crootn
-    ns.deadcrootn_store
-    ns.deadcrootn_transfer
-    ns.frootn
-    ns.frootn_store
-    ns.frootn_transfer
-    ns.cwdn
-    ns.retransn
-    epv.wstress_days
-    epv.max_fparabs
-    epv.min_vwc
-    n_basestations
+    canopy_strata_ID	      // u 
+    veg_parm_ID		      // u 
+    spinup_object_ID	      // u 
+    cover_fraction	      // d 1
+    gap_fraction	      // d 0
+    rootzone.depth	      // u
+    snow_stored		      // d 0
+    rain_stored                     // d 0
+    cs.cpool                        // d 0
+    cs.leafc                        // d 0
+    cs.dead_leafc                   // d 0
+    cs.leafc_store                  // d 0
+    cs.leafc_transfer               // d 0
+    cs.live_stemc                   // d 0
+    cs.livestemc_store     // d 0
+    cs.livestemc_transfer  // d 0
+    cs.dead_stemc          // d 0
+    cs.deadstemc_store     // d 0
+    cs.deadstemc_transfer  // d 0
+    cs.live_crootc         // d 0
+    cs.livecrootc_store    // d 0
+    cs.livecrootc_transfer // d 0
+    cs.dead_crootc         // d 0
+    cs.deadcrootc_store    // d 0
+    cs.deadcrootc_transfer // d 0
+    cs.frootc              // d 0
+    cs.frootc_store        // d 0
+    cs.frootc_transfer     // d 0
+    cs.cwdc                // d 0
+    epv.prev_leafcalloc    // d 0
+    ns.npool               // d 0
+    ns.leafn               // d 0
+    ns.dead_leafn          // d 0
+    ns.leafn_store         // d 0
+    ns.leafn_transfer      // d 0
+    ns.live_stemn          // d 0
+    ns.livestemn_store     // d 0
+    ns.livestemn_transfer  // d 0
+    ns.dead_stemn          // d 0
+    ns.deadstemn_store     // d 0
+    ns.deadstemn_transfer  // d 0
+    ns.live_crootn         // d 0
+    ns.livecrootn_store    // d 0
+    ns.livecrootn_transfer // d 0
+    ns.dead_crootn         // d 0
+    ns.deadcrootn_store    // d 0
+    ns.deadcrootn_transfer // d 0
+    ns.frootn              // d 0
+    ns.frootn_store        // d 0
+    ns.frootn_transfer     // d 0
+    ns.cwdn                // d 0
+    ns.retransn            // d 0
+    epv.wstress_days       // d 0
+    epv.max_fparabs        // d 0
+    epv.min_vwc            // d 0
+    n_basestations         // u
 
 */
 

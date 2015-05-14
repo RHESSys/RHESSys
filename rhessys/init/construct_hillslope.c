@@ -129,14 +129,14 @@ struct hillslope_object *construct_hillslope(
 
 	paramPtr=readtag_worldfile(&paramCnt,world_file,"Hillslope");
 
-	hillslope[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"hillslope_ID","%d",1,1);
+	hillslope[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"hillslope_ID","%d",-9999,0);
 	hillslope[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	hillslope[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
-	hillslope[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",1,1);
+	hillslope[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,0);
+	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",-9999,0);
 	hillslope[0].gw.storage = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",0.0,1);
 	hillslope[0].gw.NO3 = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",0.0,1);
-	hillslope[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	hillslope[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 	
         /*for (i=0;i<paramCnt;i++){
 	  printf("value=%s,name =%s\n",paramPtr[i].strVal,paramPtr[i].name);

@@ -155,18 +155,18 @@ struct zone_object *construct_zone(
 
 	paramPtr=readtag_worldfile(&paramCnt,world_file,"Zone");
 
-	zone[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_ID","%d",1,1);
+	zone[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_ID","%d",-9999,0);
 	zone[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0,1);
 	zone[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0,1);
-	zone[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0,1);
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",1,1);
-	zone[0].area = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",0.0,1);
-	zone[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",0.0,1);
-	zone[0].aspect = getDoubleWorldfile(&paramCnt,&paramPtr,"aspect","%lf",0.0,1);
+	zone[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,0);
+	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",-9999,0);
+	zone[0].area = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",-9999,0);
+	zone[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,0);
+	zone[0].aspect = getDoubleWorldfile(&paramCnt,&paramPtr,"aspect","%lf",-9999,0);
 	zone[0].precip_lapse_rate = getDoubleWorldfile(&paramCnt,&paramPtr,"precip_lapse_rate","%lf",1.0,1);
-	zone[0].e_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",0.0,1);
-	zone[0].w_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",0.0,1);
-	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	zone[0].e_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",-9999,0);
+	zone[0].w_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",-9999,0);
+	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 	
 	/*--------------------------------------------------------------*/
 	/*	convert from degrees to radians for slope and aspects 	*/
