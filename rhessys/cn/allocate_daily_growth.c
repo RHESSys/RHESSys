@@ -74,7 +74,8 @@ int allocate_daily_growth(int nlimit,
 	double gresp_store, total_wood;
 	double plant_ndemand, mean_cn;
 	double sum_plant_nsupply, soil_nsupply;
-	double plant_nalloc, plant_calloc;
+	double plant_nalloc=0.0;
+	double plant_calloc;
 	double plant_remaining_ndemand;
 	double excess_allocation_to_leaf, excess_c, excess_lai;
 	double sminn_to_npool;

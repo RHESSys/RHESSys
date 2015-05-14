@@ -109,6 +109,6 @@ int update_gw_drainage(
 		patch[0].ndf.N_to_gw += N_loss;
 		patch[0].surface_NO3 -= N_loss;
 		}
-	
+
 	return (!ok);
 } /* end update_gw_drainage.c */

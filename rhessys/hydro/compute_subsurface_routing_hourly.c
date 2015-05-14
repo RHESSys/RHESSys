@@ -239,11 +239,9 @@ void compute_subsurface_routing_hourly(
 			/*--------------------------------------------------------------*/
 			if ((patch[0].drainage_type == ROAD)
 					&& (command_line[0].road_flag == 1)) {
-			  // in this part, the patch[0].hourly_sur2stream_flow will be updated
 				update_drainage_road(patch, command_line, time_int,
 						verbose_flag);
 			} else if (patch[0].drainage_type == STREAM) {
-			  // in this part, the patch[0].hourly_subsur2stream_flow and hourly_sur2stream_flow will be updated
 				update_drainage_stream(patch, command_line, time_int,
 						verbose_flag);
 			} else {
@@ -251,11 +249,7 @@ void compute_subsurface_routing_hourly(
 						verbose_flag);
 			}
 
-		/*	//the following code is for testing only
-			if (patch[0].ID==59812){ //56681
-			    printf("ID = %d, patch[0].Qout*10^6 = %f\n",patch[0].ID, patch[0].Qout * 1000000);
-			}
-		*/	
+
 
 		} /* end i */
 
@@ -386,7 +380,6 @@ void compute_subsurface_routing_hourly(
 					patch[0].unsat_storage = 0.0;
 					patch[0].rz_storage = 0.0;
 
-				//printf("before patchID=%d,hour=%d,excess=%f\n",patch[0].ID,current_date.hour,excess);
 				
 					if (grow_flag > 0) {
 						Nout =
@@ -958,14 +951,11 @@ void compute_subsurface_routing_hourly(
 			/*--------------------------------------------------------------*/
 			/*--------------------------------------------------------------*/
 			/*--------------------------------------------------------------*/			
-			/* ******************************** this is done by each hourly*/
 			patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 		      				+ patch[0].hourly_sur2stream_flow;
 
 			basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;
-			// it is not the sum of hourly return_flow, the patch[0].return_flow is already the sum of hourly return_flow from
-			// hour 0 to current_date.hour . I don't know what's the use of the basin[0].basin_return_flow.
-			// It
+
 
 
 			/* ******************************** */
@@ -977,17 +967,7 @@ void compute_subsurface_routing_hourly(
 							+ patch[0].base_flow;
 				    }
 			}
-	/*				    if (i==6539 && current_date.month == 12 && current_date.day>15){
-						  printf("**********the end of day = %d; ID= %d, i = %d, baseflow*1000 = %.9f, hourly_subsur2stream=%.9f,std=%f\n",
-						  current_date.day,
-						  patch[0].ID, 
-						  i, 
-						  patch[0].base_flow*1000, 
-						  patch[0].hourly_subsur2stream_flow * 1000,
-						  patch[0].std * command_line[0].std_scale);
-					    }
-	*/  
-				    
+		    
 
 			
 	
@@ -1008,10 +988,7 @@ void compute_subsurface_routing_hourly(
 			+ basin[0].preday_basin_detention_store - basin[0].preday_basin_sat_deficit
 			- (basin[0].basin_rz_storage + basin[0].basin_unsat_storage + basin[0].basin_detention_store
 					- basin[0].basin_sat_deficit) - basin[0].basin_outflow;
-/*
-	if (abs(water_balance) > ZERO)
-		printf("\n Water Balance is %lf for %ld %ld %ld", water_balance, current_date.day, current_date.month, current_date.year);
-*/	
+
 	if ((command_line[0].output_flags.yearly == 1)
 			&& (command_line[0].b != NULL )) {
 		if (basin[0].basin_outflow <= command_line[0].thresholds[STREAMFLOW])

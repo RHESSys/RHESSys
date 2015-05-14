@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  read_basin.c
+ *       Filename:  readtag_worldfile.c
  *
  *    Description:  Read the state variables for basins in the worldfile, return the 
  *		    parameter pointer which stores these state value and names, it will
@@ -98,6 +98,7 @@ param *readtag_worldfile(int *paramCnt, FILE *file,char *key){
         }
 
         //fclose ( file );
+    
     return paramPtr; 
 }
 

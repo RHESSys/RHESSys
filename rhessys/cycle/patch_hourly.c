@@ -154,6 +154,7 @@ void		patch_hourly(
 		patch[0].hourly[0].rain_throughfall = 0.0;
 
 	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;// in stdzone file, the n_deposition is in kg/m2/yr
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
@@ -251,6 +252,7 @@ void		patch_hourly(
 		/*------------------------------------------------------------------------*/
 		if (command_line[0].gw_flag > 0 ){
 
+
 		if ( update_gw_drainage(patch,
 				hillslope,
 				zone,
@@ -259,7 +261,9 @@ void		patch_hourly(
 				fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
 				exit(EXIT_FAILURE);
 			}
-		}		
+		}
+	  
+	
 		net_inflow=patch[0].detention_store;
 		/*--------------------------------------------------------------*/
 		/*      - if rain duration is zero, then input is from snow     */
@@ -522,5 +526,6 @@ void		patch_hourly(
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
 	
+
 
 } /*end patch_hourly.c*/

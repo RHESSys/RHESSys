@@ -160,7 +160,7 @@ void		hillslope_hourly(
 		hillslope[0].streamflow_DOC +=hillslope[0].hourly_streamflow_DOC;
 		hillslope[0].streamflow_DON +=hillslope[0].hourly_streamflow_DON;
 	}
-	/* for the gwtoriparian scenario, I haven't tested it yet - Xiaoli*/
+	/* for the gwtoriparian scenario, haven't test yet*/
 	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag == 1)) {
 		hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
 					hillslope[0].defaults[0][0].gw_loss_coeff / 24;
@@ -227,8 +227,6 @@ void		hillslope_hourly(
 		hillslope[0].streamflow_DON +=hillslope[0].hourly_streamflow_DON;
 
 	}
-
-
 	hillslope[0].gw.Qout += hillslope[0].gw.hourly_Qout; // this is the daily gw.Qout, used in hillslop_daily_F
 	hillslope[0].base_flow += hillslope[0].hourly_base_flow; // daily base_flow
  

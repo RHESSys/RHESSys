@@ -179,13 +179,7 @@ void  update_drainage_land(
 		patch);
 
 
-	  /*if (patch[0].ID ==30645){
-	  printf("ID = %d, sat_deficit = %f, thresh = %f, sat_store = %f, route_to_patch = %f\n",patch[0].ID, patch[0].sat_deficit,
-		  (patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0) * 0.99 
-				      - patch[0].soil_defaults[0][0].sat_store,
-				      patch[0].soil_defaults[0][0].sat_store,
-				      route_to_patch);
-	}*/
+
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 
 		route_to_patch *= (available_sat_water)/(route_to_patch);

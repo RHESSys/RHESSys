@@ -993,10 +993,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			- (basin[0].basin_rz_storage + basin[0].basin_unsat_storage + basin[0].basin_detention_store
 					- basin[0].basin_sat_deficit) - basin[0].basin_outflow;
 
-	/*if (abs(water_balance) > ZERO)
-		printf("\n Water Balance is %lf for %ld %ld %ld", water_balance,
-				current_date.day, current_date.month, current_date.year);
-	*/
+
 	if((command_line[0].output_flags.yearly == 1)
 			&& (command_line[0].b != NULL )) {
 		if (basin_outflow <= command_line[0].thresholds[STREAMFLOW])

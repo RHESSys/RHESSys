@@ -66,7 +66,12 @@ void input_new_basin(
 	/*	Read in the basinID.									*/
 	/*--------------------------------------------------------------*/
 	paramPtr=readtag_worldfile(&paramCnt,world_file,"Basin");
-	
+
+        /*//the following code is for testing only
+	for(i=0;i<paramCnt;i++){
+	      printf("name=%s,val=%s\n",paramPtr[i].strVal,paramPtr[i].name);
+	}
+	exit(0);*/
          /*fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",basin[0].x,1);
@@ -99,7 +104,7 @@ void input_new_basin(
          /*fscanf(world_file,"%d",&(dtmp));
 	read_record(world_file, record);*/
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",basin[0].num_base_stations,1);
-
+	
 	if (dtmp > 0) {
 		basin[0].num_base_stations = dtmp;
 		basin[0].base_stations = (struct base_station_object **)

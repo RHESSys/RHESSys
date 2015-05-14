@@ -65,13 +65,13 @@ void	basin_hourly(
 	/*--------------------------------------------------------------*/
 	int	hillslope;
 	int	ML;
-	int	inx;
+	int	inx,i;
 	double	air_mass_array[22]  =
 	{0.0, 2.90,3.05,3.21,3.39, 3.69, 3.82, 4.07, 4.37, 4.72, 5.12,
 	5.60,6.18,6.88,7.77,8.90,10.39,12.44,15.36,19.79,26.96,30.00};
 	struct	hillslope_object *hillslope_p;
 	struct	zone_object *zone_p;
-
+	struct	patch_object *patch;
 	/*--------------------------------------------------------------*/
 	/*	Initialize the hillslope and zone object.			*/
 	/*--------------------------------------------------------------*/
@@ -170,7 +170,7 @@ void	basin_hourly(
 			event,
 			current_date);
 	}
-
+	
 
 
 	
@@ -191,11 +191,6 @@ void	basin_hourly(
 			current_date);
 	}
 
-	// the following code is for testing only
-	/*if (zone_p[0].hourly_rain_flag ==1){
-	printf("it is hourly, hour = %d, day = %d \n",current_date.hour,current_date.day);
-	}
-	else{printf("There is no hourly input,hour = %d, day = %d\n",current_date.hour, current_date.day);}
-	*/
+	
 	return;
 } /*end basin_hourly.c*/
