@@ -52,11 +52,11 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 #define  PARTICLE_DENSITY	2.65	/* soil particle density g/cm3 (Dingman) */
 
 
-#define NUM_VAR_BASIN 7
-#define NUM_VAR_HILLSLOPE 8
-#define NUM_VAR_ZONE 12
-#define NUM_VAR_PATCH 37
-#define NUM_VAR_STRATA 56
+#define NUM_VAR_BASIN 17
+#define NUM_VAR_HILLSLOPE 18
+#define NUM_VAR_ZONE 22
+#define NUM_VAR_PATCH 47
+#define NUM_VAR_STRATA 66
 
 
 
@@ -65,75 +65,75 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 
 
 /*-----------------------------------------------------------------------------
- *  Num of Variables (read by tag) in basin = 7
+ *  Num of Variables (read by tag) in basin = 7, make it 17 
  *-----------------------------------------------------------------------------*/
 /*
     basin_ID
     x
     y
     z
-    default_ID
+    basin_parm_ID
     latitude
     n_basestations //this one is fixed to be the indicator for end of the reading process
 */
 
 /*-----------------------------------------------------------------------------
- *  Num of Variables (read by tag) in hillslope = 8
+ *  Num of Variables (read by tag) in hillslope = 8, make it 18
  *-----------------------------------------------------------------------------*/
 /*
     hillslope_ID
     x
     y
     z
-    default_ID
-    gw_storage
-    gw_NO3
+    hill_parm_ID
+    gw.storage
+    gw.NO3
     n_basestations
 */
  /*-----------------------------------------------------------------------------
-  *  Num of variables (read by tag) in zone = 12
+  *  Num of variables (read by tag) in zone = 12, make it 22
   *-----------------------------------------------------------------------------*/
 /*
-    zone ID // there is white space between, 'zone' and 'ID', need to fix to 'zone_ID'
+    zone_ID
     x
     y
     z
-    default_ID
+    zone_parm_ID
     area
     slope
     aspect
-    isohyet
+    precip_lapse_rate
     e_horizon
     w_horizon
     n_basestations
 */
 
 /*-----------------------------------------------------------------------------
- *  Num of variables (read by tag) in patch = 37 
+ *  Num of variables (read by tag) in patch = 37, make it 47
  *-----------------------------------------------------------------------------*/
 /*
     patch_ID
     x
     y
     z
-    soil_default_ID
-    landuse_default_ID
-    fire_default_ID
-    surface_energy_default_ID
+    soil_parm_ID
+    landuse_parm_ID
+    fire_parm_ID
+    surface_energy_parm_ID
     area
     slope
     lna
     Ksat_vertical
-    m_par
+    mpar
     std
-    rz_storag
+    rz_storage
     unsat_storage
     sat_deficit
     snowpack.water_equivalent_depth
-    snowpack_water_depth
-    snowpack_T
-    snowpack_surface_age
-    snowpack_energy_deficit
+    snowpack.water_depth
+    snowpack.T
+    snowpack.surface_age
+    snowpack.energy_deficit
     snow_redist_scale
     litter.cover_fraction
     litter.rain_stored
@@ -152,64 +152,64 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 */
 
  /*-----------------------------------------------------------------------------
-  * Num of variables (read by tag) in canopy strata = 56  
+  * Num of variables (read by tag) in canopy strata = 56, make it 66 
   *-----------------------------------------------------------------------------*/
 /*
     canopy_strata_ID
-    default_ID
+    veg_parm_ID
     spinup_object_ID
     cover_fraction
     gap_fraction
-    root_depth
+    rootzone.depth
     snow_stored
     rain_stored
-    cs_cpool
-    cs_leafc
-    cs_dead_leafc
-    cs_leafc_store
-    cs_leafc_transfer
-    cs_live_stemc
-    cs_livestemc_store
-    cs_livestemc_transfer
-    cs_dead_stemc
-    cs_deadstemc_store
-    cs_deadstemc_transfer
-    cs_live_crootc
-    cs_livecrootc_store
-    cs_livecrootc_transfer
-    cs_dead_crootc
-    cs_deadcrootc_store
-    cs_deadcrootc_transfer
-    cs_frootc
-    cs_frootc_store
-    cs_frootc_transfer
-    cs_cwdc
+    cs.cpool
+    cs.leafc
+    cs.dead_leafc
+    cs.leafc_store
+    cs.leafc_transfer
+    cs.live_stemc
+    cs.livestemc_store
+    cs.livestemc_transfer
+    cs.dead_stemc
+    cs.deadstemc_store
+    cs.deadstemc_transfer
+    cs.live_crootc
+    cs.livecrootc_store
+    cs.livecrootc_transfer
+    cs.dead_crootc
+    cs.deadcrootc_store
+    cs.deadcrootc_transfer
+    cs.frootc
+    cs.frootc_store
+    cs.frootc_transfer
+    cs.cwdc
     epv.prev_leafcalloc
-    ns_npool
-    ns_leafn
-    ns_dead_leafn
-    ns_leafn_store
-    ns_leafn_transfer
-    ns_live_stemn
-    ns_livestemn_store
-    ns_livestemn_transfer
-    ns_dead_stemn
-    ns_deadstemn_store
-    ns_deadstemn_transfer
-    ns_live_crootn
-    ns_livecrootn_store
-    ns_livecrootn_transfer
-    ns_dead_crootn
-    ns_deadcrootn_store
-    ns_deadcrootn_transfer
-    ns_frootn
-    ns_frootn_store
-    ns_frootn_transfer
-    ns_cwdn
-    ns_retransn
-    epv_wstress_days
-    epv_max_fparabs
-    epv_min_vwc
+    ns.npool
+    ns.leafn
+    ns.dead_leafn
+    ns.leafn_store
+    ns.leafn_transfer
+    ns.live_stemn
+    ns.livestemn_store
+    ns.livestemn_transfer
+    ns.dead_stemn
+    ns.deadstemn_store
+    ns.deadstemn_transfer
+    ns.live_crootn
+    ns.livecrootn_store
+    ns.livecrootn_transfer
+    ns.dead_crootn
+    ns.deadcrootn_store
+    ns.deadcrootn_transfer
+    ns.frootn
+    ns.frootn_store
+    ns.frootn_transfer
+    ns.cwdn
+    ns.retransn
+    epv.wstress_days
+    epv.max_fparabs
+    epv.min_vwc
     n_basestations
 
 */

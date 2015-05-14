@@ -147,21 +147,21 @@ struct patch_object *construct_patch(
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
 	patch[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
-	soil_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_default_ID","%d",1,1);
-	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_default_ID","%d",1,1);
+	soil_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",1,1);
+	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",1,1);
 
 
 	if (command_line[0].firespread_flag == 1) {
 		/*fscanf(world_file,"%d",&(fire_default_object_ID));
 		read_record(world_file, record);*/
-		fire_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_default_ID","%d",1,1);
+		fire_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",1,1);
 		}
 
 	if (command_line[0].surface_energy_flag == 1) {
 		/*fscanf(world_file,"%d",&(surface_energy_default_object_ID));
 		read_record(world_file, record);*/
 		surface_energy_default_object_ID = 
-				getIntWorldfile(&paramCnt,&paramPtr,"surface_energy_default_ID","%d",1,1);
+				getIntWorldfile(&paramCnt,&paramPtr,"surface_energy_parm_ID","%d",1,1);
 		}
 /*
 	fscanf(world_file,"%lf",&(patch[0].area));
@@ -179,7 +179,7 @@ struct patch_object *construct_patch(
 	patch[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",1.0,1);
 	patch[0].lna  = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",1.0,1);
 	patch[0].Ksat_vertical = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",1.0,1);
-	mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"m_par","%lf",1.0,1);
+	mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",1.0,1);
 
 	if (command_line[0].stdev_flag == 1) {
 		/*fscanf(world_file,"%lf",&(patch[0].std));
@@ -212,12 +212,12 @@ struct patch_object *construct_patch(
 	patch[0].sat_deficit = getDoubleWorldfile(&paramCnt,&paramPtr,"sat_deficit","%lf",0.1,1);
 	patch[0].snowpack.water_equivalent_depth = 
 			      getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_equivalent_depth","%lf",0.0,1);
-	patch[0].snowpack.water_depth = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack_water_depth","%lf",0.0,1);
-	patch[0].snowpack.T = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack_T","%lf",0.0,1);
+	patch[0].snowpack.water_depth = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_depth","%lf",0.0,1);
+	patch[0].snowpack.T = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.T","%lf",0.0,1);
 	patch[0].snowpack.surface_age = 
-			      getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack_surface_age","%lf",0.0,1);
+			      getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.surface_age","%lf",0.0,1);
 	patch[0].snowpack.energy_deficit =
-			      getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack_energy_deficit","%lf",0.001,1);
+			      getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.energy_deficit","%lf",0.001,1);
 	
 
 	if (command_line[0].snow_scale_flag == 1) {
@@ -232,6 +232,7 @@ struct patch_object *construct_patch(
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.cover_fraction","%lf",1.0,1);
 	patch[0].litter.rain_stored =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",0.0,1);
+	
 	patch[0].litter_cs.litr1c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.0,1);
 	patch[0].litter_ns.litr1n =

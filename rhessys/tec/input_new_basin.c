@@ -86,7 +86,7 @@ void input_new_basin(
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].z = ltmp;
          /*fscanf(world_file,"%d",&(default_object_ID));
 	read_record(world_file, record);*/
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"default_ID","%d",0,1);		
+	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",0,1);		
          /*fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",basin[0].latitude,1);	

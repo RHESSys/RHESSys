@@ -62,7 +62,7 @@ void	output_basin_state(
 	fprintf(outfile,"\n   ");
 	fprintf(outfile,"%-30.8f %s",basin[0].z, "z");
 	fprintf(outfile,"\n   ");
-	fprintf(outfile,"%-30ld %s",basin[0].defaults[0][0].ID, "default_ID");
+	fprintf(outfile,"%-30ld %s",basin[0].defaults[0][0].ID, "basin_parm_ID");
 	fprintf(outfile,"\n   ");
 	fprintf(outfile,"%-30.8f %s",basin[0].latitude, "latitude");
 	fprintf(outfile,"\n   ");

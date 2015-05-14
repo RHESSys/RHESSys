@@ -107,17 +107,17 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp;
 	/*fscanf(world_file,"%d",&(soil_default_object_ID));*/
 	/*read_record(world_file, record);*/
-	soil_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_default_ID","%d",1,1);
+	soil_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",1,1);
 	/*fscanf(world_file,"%d",&(landuse_default_object_ID));*/
 	/*read_record(world_file, record);*/
-	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_default_ID","%d",1,1);
+	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",1,1);
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",patch[0].area,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slpe","%lf",patch[0].slope,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",patch[0].slope,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].slope = ltmp * DtoR;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
@@ -129,7 +129,7 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].Ksat_vertical = ltmp;
          /*fscanf(world_file,"%lf",&(mpar));*/
 	/*read_record(world_file, record);*/
-	mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"m_par","%lf",0,1);
+	mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",0,1);
 	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"std","%lf",patch[0].std,1);
 	if (command_line[0].stdev_flag == 1) {
@@ -165,19 +165,19 @@
 	}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack_water_depth","%lf",patch[0].snowpack.water_depth,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_depth","%lf",patch[0].snowpack.water_depth,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.water_depth = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack_T","%lf",patch[0].snowpack.T,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.T","%lf",patch[0].snowpack.T,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.T = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack_surface_age","%lf",patch[0].snowpack.surface_age,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.surface_age","%lf",patch[0].snowpack.surface_age,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.surface_age = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack_energy_deficit","%lf",patch[0].snowpack.energy_deficit,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.energy_deficit","%lf",patch[0].snowpack.energy_deficit,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.energy_deficit = ltmp;
 
 	if (command_line[0].snow_scale_flag == 1) {

@@ -105,7 +105,7 @@
 		}
          /*fscanf(world_file,"%d",&(default_object_ID));*/
 	/*read_record(world_file, record);*/
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"default_ID","%d",1,1); 	
+	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",1,1); 	
 	/*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",zone[0].area,1);
@@ -128,7 +128,7 @@
 		}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"isohyet","%lf",zone[0].precip_lapse_rate,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"precip_lapse_rate","%lf",zone[0].precip_lapse_rate,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].precip_lapse_rate = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
