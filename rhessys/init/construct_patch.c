@@ -225,7 +225,7 @@ struct patch_object *construct_patch(
 		/*fscanf(world_file,"%lf",&(patch[0].snow_redist_scale));
 		read_record(world_file, record);*/
 		patch[0].snow_redist_scale=
-			      getDoubleWorldfile(&paramCnt,&paramPtr,"snow_redist_scale","%lf",0.0,1);
+			      getDoubleWorldfile(&paramCnt,&paramPtr,"snow_redist_scale","%lf",1.0,1);
 	}
 
 	patch[0].litter.cover_fraction = 
