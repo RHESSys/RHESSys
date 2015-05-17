@@ -259,6 +259,7 @@ struct patch_object *construct_patch(
 	patch[0].num_base_stations = 
 		      getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 
+
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;
 	patch[0].surface_Tnight = -999.9;

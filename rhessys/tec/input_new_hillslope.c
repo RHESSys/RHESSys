@@ -108,7 +108,7 @@ void input_new_hillslope(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",hillslope[0].gw.NO3,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.NO3 = ltmp;
 
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",hillslope[0].num_base_stations,1);	
 
 	//printf("\nID = %d, gw_NO3 = %f, z = %f\n",hillslope[0].ID, hillslope[0].gw.NO3,hillslope[0].z);
 
