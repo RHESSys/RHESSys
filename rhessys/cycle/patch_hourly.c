@@ -145,8 +145,10 @@ void		patch_hourly(
 	/*	process any hourly rainfall				*/
 	/*--------------------------------------------------------------*/
 
-	if ( zone[0].hourly_rain_flag == 1)
+	if ( zone[0].hourly_rain_flag == 1) {
 		patch[0].hourly[0].rain_throughfall = zone[0].hourly[0].rain;
+		patch[0].precip_with_assim += zone[0].hourly[0].rain;
+		}
 	else
 		patch[0].hourly[0].rain_throughfall = 0.0;
 

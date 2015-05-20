@@ -56,7 +56,14 @@ struct patch_object *construct_patch(
 		int ,
 		int ,
 		struct base_station_object **);
-	struct 	canopy_strata_object *construct_canopy_strata(
+	struct 	canopy_strata_object *construct_canopy_strata( 
+		struct command_line_object *,
+		FILE	*,
+		struct	patch_object *,
+		int     num_world_base_stations,
+		struct  base_station_object **world_base_stations,
+		struct	default_object	*defaults);
+	struct 	canopy_strata_object *construct_empty_shadow_strata( 
 		struct command_line_object *,
 		FILE	*,
 		struct	patch_object *,
@@ -79,7 +86,7 @@ struct patch_object *construct_patch(
 	void	*alloc(	size_t, char *, char *);
 	
 	/*--------------------------------------------------------------*/
-	/*	Local variable definition.									*/
+	/*	Local variable definitions				*/
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
 	int		i;
@@ -96,6 +103,23 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	patch = (struct patch_object *) alloc( 1 *
 		sizeof( struct patch_object ),"patch","construct_patch");
+
+  /*---------------------------------------------------------------------------------*/
+  /*  Allocate a shadow_litter object, and shadow_soil object if spinup flag is set  */
+  /*---------------------------------------------------------------------------------*/
+ 	if ( (command_line[0].vegspinup_flag > 0) ) {
+   patch[0].shadow_litter_cs = (struct litter_c_object *) alloc( 1 *
+      sizeof( struct litter_c_object ),"shadow_litter_cs", "construct_patch" );
+        
+   patch[0].shadow_litter_ns = (struct litter_n_object *) alloc( 1 *
+      sizeof( struct litter_n_object ),"shadow_litter_ns", "construct_patch" );
+    
+   patch[0].shadow_soil_cs = (struct soil_c_object *) alloc( 1 *
+      sizeof( struct soil_c_object ),"shadow_soil_cs", "construct_patch" );
+        
+   patch[0].shadow_soil_ns = (struct soil_n_object *) alloc( 1 *
+      sizeof( struct soil_n_object ),"shadow_soil_ns", "construct_patch" );
+  }
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the next patch record for this hillslope.			*/
@@ -281,7 +305,7 @@ struct patch_object *construct_patch(
 	patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
 	
 	/*--------------------------------------------------------------*/
-	/*	initialize sinks					*/
+	/*	initialize sinks				                                   	*/
 	/*--------------------------------------------------------------*/
 	
 	patch[0].litter_cs.litr1c_hr_snk = 0.0;
@@ -305,6 +329,31 @@ struct patch_object *construct_patch(
 	patch[0].fertilizer_NH4 = 0.0;
 	patch[0].grazing_Closs = 0.0;
 	
+  /*--------------------------------------------------------------*/
+  /*   Initialize shadow litter and soil objects for this  patch. */
+  /*--------------------------------------------------------------*/
+ 	if( (command_line[0].vegspinup_flag > 0) ) {
+    patch[0].shadow_litter_cs[0].litr1c = patch[0].litter_cs.litr1c;    
+    patch[0].shadow_litter_cs[0].litr2c = patch[0].litter_cs.litr2c;    
+    patch[0].shadow_litter_cs[0].litr3c = patch[0].litter_cs.litr3c;    
+    patch[0].shadow_litter_cs[0].litr4c = patch[0].litter_cs.litr4c;    
+    
+    patch[0].shadow_litter_ns[0].litr1n = patch[0].litter_ns.litr1n; 
+    patch[0].shadow_litter_ns[0].litr2n = patch[0].litter_ns.litr2n; 
+    patch[0].shadow_litter_ns[0].litr3n = patch[0].litter_ns.litr3n; 
+    patch[0].shadow_litter_ns[0].litr4n = patch[0].litter_ns.litr4n; 
+
+    patch[0].shadow_soil_cs[0].soil1c = patch[0].soil_cs.soil1c;    
+    patch[0].shadow_soil_cs[0].soil2c = patch[0].soil_cs.soil2c;    
+    patch[0].shadow_soil_cs[0].soil3c = patch[0].soil_cs.soil3c;    
+    patch[0].shadow_soil_cs[0].soil4c = patch[0].soil_cs.soil4c;    
+    
+    patch[0].shadow_soil_ns[0].soil1n = patch[0].soil_ns.soil1n; 
+    patch[0].shadow_soil_ns[0].soil2n = patch[0].soil_ns.soil2n; 
+    patch[0].shadow_soil_ns[0].soil3n = patch[0].soil_ns.soil3n; 
+    patch[0].shadow_soil_ns[0].soil4n = patch[0].soil_ns.soil4n; 
+  }
+
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this patch								*/
 	/*--------------------------------------------------------------*/
@@ -342,6 +391,7 @@ struct patch_object *construct_patch(
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_patch, landuse default ID %d not found for patch %d\n" ,
 				landuse_default_object_ID, patch[0].ID);
+                        // fprintf(stderr, "\n %d ", defaults[0].landuse[i-1].ID);
 			exit(EXIT_FAILURE);
 		}
 	} /* end-while */
@@ -350,7 +400,7 @@ struct patch_object *construct_patch(
 
 	
 	/*--------------------------------------------------------------*/
-	/* if fire spread module is called assign fire defaults
+	/* if fire spread module is called assign fire defaults         */
 	/*--------------------------------------------------------------*/
 	if (command_line[0].firespread_flag == 1) {
 	patch[0].fire_defaults = (struct fire_default **)
@@ -373,10 +423,8 @@ struct patch_object *construct_patch(
 	patch[0].fire_defaults[0] = &defaults[0].fire[i];
 	}
 
-
-
 	/*--------------------------------------------------------------*/
-	/* if surface energy module is called assign fire defaults
+	/* if surface energy module is called assign fire defaults      */
 	/*--------------------------------------------------------------*/
 	if (command_line[0].surface_energy_flag == 1) {
 
@@ -501,7 +549,6 @@ struct patch_object *construct_patch(
 		/*--------------------------------------------------------------*/
 		/*	Point to the appropriate base station in the base       	*/
 		/*              station list for this world.					*/
-		/*																*/
 		/*--------------------------------------------------------------*/
 		patch[0].base_stations[i] = assign_base_station(
 			base_stationID,
@@ -521,7 +568,12 @@ struct patch_object *construct_patch(
 		alloc( patch[0].num_canopy_strata *
 		sizeof( struct canopy_strata_object *),
 		"canopy_strata","construct_patch");
-	
+ 	
+		patch[0].shadow_strata = ( struct canopy_strata_object ** )
+			alloc( patch[0].num_canopy_strata * 
+			sizeof( struct canopy_strata_object *),
+			"shadow_strata","construct_patch");
+
 	/*--------------------------------------------------------------*/
 	/*      Allocate the patch hourly object.	  */
 	/*--------------------------------------------------------------*/
@@ -548,7 +600,7 @@ struct patch_object *construct_patch(
 	/*	Construct the strata in this patch.						*/
 	/*--------------------------------------------------------------*/
 	for ( i=0 ; i<patch[0].num_canopy_strata ; i++ ){
-		patch[0].canopy_strata[i] = construct_canopy_strata(
+		patch[0].canopy_strata[i] = construct_canopy_strata(  
 			command_line,
 			world_file,
 			patch,
@@ -586,14 +638,32 @@ struct patch_object *construct_patch(
 			 patch[0].canopy_strata[i][0].rootzone.depth);
 	} /*end for*/
 
-
-	
 	patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/
 						patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
 
-
-
+	patch[0].precip_with_assim = 0.0;
+	
+  /*--------------------------------------------------------------*/
+	/*	Construct the shadow strata in this patch.		*/
+	/*--------------------------------------------------------------*/
+	if ( (command_line[0].vegspinup_flag > 0) ) {
+	
+	for ( i=0 ; i<patch[0].num_canopy_strata ; i++ ){
+		patch[0].shadow_strata[i] = construct_empty_shadow_strata(
+			command_line,
+			world_file,
+			patch,
+			num_world_base_stations,
+			world_base_stations,defaults);
+       
+		patch[0].shadow_strata[i][0].ID = patch[0].canopy_strata[i][0].ID;
+		patch[0].shadow_strata[i][0].defaults = patch[0].canopy_strata[i][0].defaults;
+		patch[0].shadow_strata[i][0].base_stations = patch[0].canopy_strata[i][0].base_stations;
+		patch[0].shadow_strata[i][0].num_base_stations = patch[0].canopy_strata[i][0].num_base_stations;
+	
+        } /*end for*/
+	} /*end shadow stratum if statement*/
 
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
