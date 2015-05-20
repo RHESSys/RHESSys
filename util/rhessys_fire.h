@@ -36,6 +36,8 @@ struct fire_default {
 	double kappa2_rvm;
 	double p_rvm;	
 	double ign_def_mod;
+	double veg_k1; // for ignition use veg fuel
+	double veg_k2; // for ignition use veg fuel
 
 //	char **patch_file_name;
 };
