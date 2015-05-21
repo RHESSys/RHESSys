@@ -232,7 +232,6 @@ struct patch_object *construct_patch(
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.cover_fraction","%lf",1.0,1);
 	patch[0].litter.rain_stored =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",0.0,1);
-	
 	patch[0].litter_cs.litr1c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.0,1);
 	patch[0].litter_ns.litr1n =
@@ -398,6 +397,7 @@ struct patch_object *construct_patch(
 	patch[0].soil_ns.nleached_snk = 0.0;
 	patch[0].soil_ns.nvolatilized_snk = 0.0;
 
+	patch[0].litter.NO3_stored = 0.0;
 	patch[0].surface_NO3 = 0.0;
 	patch[0].surface_NH4 = 0.0;
 	patch[0].surface_DOC = 0.0;

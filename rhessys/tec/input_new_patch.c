@@ -197,6 +197,7 @@
 	/*read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",patch[0].litter.rain_stored,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.rain_stored = ltmp;
+
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",patch[0].litter_cs.litr1c,1);

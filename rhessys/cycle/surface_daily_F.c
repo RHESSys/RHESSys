@@ -183,7 +183,7 @@ void		surface_daily_F(
 	dum = 0.0;
 	
 	litter = &(patch[0].litter);
-	/* hv = 2.495 * 1e3;	/* latent heat of vaporization for water (KJ/kg) */
+	/* hv = 2.495 * 1e3;	// latent heat of vaporization for water (KJ/kg) */
 	hv = (2.5023e6 - 2430.54 * zone[0].metv.tday) / 1000; /* changed to match hv used in penman monteith */
 	water_density = 1000;	/* density of water in kg/m^3 */
 	
@@ -226,7 +226,12 @@ void		surface_daily_F(
 		/* assume if det store over litter then litter is saturated */
 		patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);
 		litter[0].rain_stored = litter[0].rain_capacity;
-	
+		
+		litter[0].NO3_stored = litter[0].rain_stored / (patch[0].detention_store + litter[0].rain_stored) * 
+					( patch[0].surface_NO3 + litter[0].NO3_stored);
+		patch[0].surface_NO3 = patch[0].detention_store / (patch[0].detention_store + litter[0].rain_stored) * 
+					( patch[0].surface_NO3 + litter[0].NO3_stored);
+
 		/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 		/*** reflected by water surface based on water albedo. ***/
 		
@@ -362,6 +367,9 @@ void		surface_daily_F(
 	
 	if ( patch[0].detention_store <= (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))
 			| (patch[0].soil_defaults[0][0].detention_store_size == 0.0)) {
+		
+		litter[0].NO3_stored = patch[0].surface_NO3;
+		patch[0].surface_NO3 = 0;
 		
 		/*--------------------------------------------------------------*/
 		/*	calculate surface albedo as a function of amount of	*/

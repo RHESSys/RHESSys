@@ -124,6 +124,7 @@ void	output_patch_state(
 		"litter.rain_stored");
 	fprintf(outfile,"\n          ");
 
+
   if (command_line[0].vegspinup_flag > 0){
 	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_cs->litr1c, "litter_cs.litr1c");
 	  fprintf(outfile,"\n          ");
