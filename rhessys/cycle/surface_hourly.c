@@ -1,7 +1,7 @@
 
 /*--------------------------------------------------------------*/
 /* 								*/
-/*			surface_hourly_F			*/
+/*			surface_hourly			*/
 /*								*/
 /*	NAME							*/
 /*	surface_hourly 					*/
@@ -19,7 +19,7 @@
 /*	PROGRAMMER NOTES					*/
 /*								*/
 /*								*/
-/*	Jan 2014 Xiaoli						*/
+/*								*/
 /*	calculate the interception only, leave all evaporation in surface_daily_F.c	*/
 /*								*/
 /*--------------------------------------------------------------*/
@@ -52,26 +52,32 @@ void		surface_hourly(
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
 	struct	litter_object	*litter;
+	double  surface_NO3;
+	double	litter_NO3;
 	
 	/*--------------------------------------------------------------*/
 	/*	Initialize litter variables.				*/
 	/*--------------------------------------------------------------*/
 	
 	litter = &(patch[0].litter);
-	
+	surface_NO3 = 0;
+	litter_NO3 = 0;
 	/*--------------------------------------------------------------*/
 	/*	LITTER STORE INTERCEPTION:				*/
 	/*--------------------------------------------------------------*/
-    
+	
+	
 	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
-                                        && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
+                                        && (patch[0].soil_defaults[0][0].detention_store_size >= 0.0)) {
 	/* assume if det store over litter then litter is saturated */
 	     	patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);	
 		litter[0].rain_stored = litter[0].rain_capacity;
+		surface_NO3 = patch[0].surface_NO3;
+		litter_NO3 = litter[0].NO3_stored;
 		litter[0].NO3_stored = litter[0].rain_stored / (litter[0].rain_stored + patch[0].detention_store) *
-					(litter[0].NO3_stored + patch[0].surface_NO3);
+					(litter_NO3 + surface_NO3);
 		patch[0].surface_NO3 = patch[0].detention_store / (litter[0].rain_stored + patch[0].detention_store) *
-					(litter[0].NO3_stored + patch[0].surface_NO3);
+					(litter_NO3 + surface_NO3);
 
 		}
 
@@ -91,4 +97,4 @@ void		surface_hourly(
 
 	
 	return;
-}/*end surface_daily_F.c*/
+}/*end surface_hourly.c*/
