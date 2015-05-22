@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
+// test comment
 void execute_firespread_event(
 									 struct	world_object *world,
 									 struct	command_line_object	*command_line,
