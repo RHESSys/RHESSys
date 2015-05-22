@@ -295,10 +295,10 @@ dir:
 
 ifdef netcdf
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -L./lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM) 
 endif
 
 $(OBJ)/alloc.o: util/alloc.c

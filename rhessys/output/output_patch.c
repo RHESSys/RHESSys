@@ -135,7 +135,7 @@ void	output_patch(
 	
 
 	if (check <= 0) {
-		fprintf(stdout, "\nWARNING: output error has occured in output_patch");
+		fprintf(stdout, "\nWARNING: output error has occured in output_patch, file");
 	}
 	return;
 } /*end output_patch*/
