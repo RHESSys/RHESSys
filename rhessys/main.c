@@ -285,7 +285,7 @@
 /*--------------------------------------------------------------*/
 /*	Define header files and libraries with global scope.		*/
 /*--------------------------------------------------------------*/
-
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -378,6 +378,41 @@ int	main( int main_argc, char **main_argv)
 		return(EXIT_SUCCESS);
 	}
 
+	int patchdb_pid = -1;
+	if (command_line[0].patchdb_flag) {
+		// Start patchdbmq server
+		printf("Starting patchdb message queue server %s... ",
+			command_line[0].patchdb_server);
+		patchdb_pid = fork();
+		if (patchdb_pid < 0) {
+				printf("\nUnable to start patchdb message queue server %s\n",
+						command_line[0].patchdb_server);
+		} else if (patchdb_pid == 0) {
+			size_t cmd_len = 2*MAXSTR;
+			char cmd[cmd_len];
+			snprintf(cmd, cmd_len, "%s %s %s",
+					command_line->patchdb_server,
+					command_line->patchdb_hostname,
+					command_line->patchdb_keyspace);
+			int ret = system(cmd);
+
+			return(ret);
+		} else {
+			printf("done.\n");
+		}
+	}
+
+	sleep(10);
+
+	// Kill patchdb message queue server
+	// Note: only do this here for testing.  Normally, we would do this
+	// before returning from main, or before exit is called
+	if (patchdb_pid > 0) {
+		printf("Stopping patchdb message queue server %s... ",
+				command_line[0].patchdb_server);
+		kill(patchdb_pid, SIGKILL);
+		printf("done.\n");
+	}
 
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED CON COMMAND LINE ***\n");

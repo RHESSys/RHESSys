@@ -343,36 +343,6 @@ void add_headers(struct world_output_file_object *world_output_files,
 								"PRIMARY KEY (patchid, variable, date));");
 		patchdb_execute_query(world_output_files->patchdb_session, query);
 
-		// Make prepared statements
-//		CassFuture* future = NULL;
-//		CassError rc = CASS_OK;
-//		const char* var_by_date_patch_query = "INSERT INTO variables_by_date_patch "
-//											  "(variable,date,patchid,value) "
-//											  "VALUES (?,?,?,?);";
-//		future = cass_session_prepare(world_output_files->patchdb_session,
-//				var_by_date_patch_query);
-//		cass_future_wait(future);
-//		rc = cass_future_error_code(future);
-//		if (rc != CASS_OK) {
-//			patchdb_print_error(future, var_by_date_patch_query);
-//		} else {
-//			world_output_files->var_by_date_patch_stmt = cass_future_get_prepared(future);
-//		}
-//		cass_future_free(future);
-//		const char* patch_by_var_date_query = "INSERT INTO patches_by_variable_date "
-//											  "(patchid,variable,date,value) "
-//											  "VALUES (?,?,?,?);";
-//		future = cass_session_prepare(world_output_files->patchdb_session,
-//				patch_by_var_date_query);
-//		cass_future_wait(future);
-//		rc = cass_future_error_code(future);
-//		if (rc != CASS_OK) {
-//			patchdb_print_error(future, var_by_date_patch_query);
-//		} else {
-//			world_output_files->patch_by_var_date_stmt = cass_future_get_prepared(future);
-//		}
-//		cass_future_free(future);
-
 		printf("done\n");
 	}
 

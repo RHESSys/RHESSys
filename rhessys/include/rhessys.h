@@ -1754,6 +1754,7 @@ struct	command_line_object
 	char	tec_filename[FILEPATH_LEN];
 	char	patchdb_hostname[FILEPATH_LEN];
 	char	patchdb_keyspace[FILEPATH_LEN];
+	char	patchdb_server[MAXSTR];
 	double  tmp_value;
 	double  cpool_mort_fract;
 	double	veg_sen1;

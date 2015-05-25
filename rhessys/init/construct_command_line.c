@@ -1060,13 +1060,13 @@ struct	command_line_object	*construct_command_line(
 			else if (strcmp(main_argv[i], "-patchdb") == 0) {
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,"FATAL ERROR: patchdb not specified\n");
+					fprintf(stderr,"FATAL ERROR: patchdb parameters not specified\n");
 					exit(EXIT_FAILURE);
 				}
 				/*--------------------------------------------------------------*/
-				/*			Read in the routing file name.						*/
+				/*			Read in patchdb parameters   						*/
 				/*--------------------------------------------------------------*/
-				command_line[0].patchdb_flag= 1;
+				command_line[0].patchdb_flag = 1;
 				strcpy(command_line[0].patchdb_hostname, main_argv[i]);
 				i++;
 				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
@@ -1074,6 +1074,12 @@ struct	command_line_object	*construct_command_line(
 					exit(EXIT_FAILURE);
 				}
 				strcpy(command_line[0].patchdb_keyspace, main_argv[i]);
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+					fprintf(stderr,"FATAL ERROR: patchdb message queue server file path not specified\n");
+					exit(EXIT_FAILURE);
+				}
+				strcpy(command_line[0].patchdb_server, main_argv[i]);
 				i++;
 			}
 			/*--------------------------------------------------------------*/
