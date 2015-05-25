@@ -223,7 +223,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	//			printf("calculating overlap. minXpix %d minYpix %d maxXpix %d max Ypix %d\n",minXpix,minYpix,maxXpix,maxYpix);
 				if(minXpix<0||minYpix<0)
 	//				printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n",
-																curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY);
+																//curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY);
 	   // so now we loop through each pixel pair starting with minX and minY, and ending with < maxX and maxY (In C)
 	    // in the case that the patch overlaps with >1 pixel in both directions
 				for(i =minXpix; i<maxXpix; i++) {
