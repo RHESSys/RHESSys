@@ -86,26 +86,26 @@ void input_new_hillslope(
 
         /*fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",hillslope[0].x,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].x = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",hillslope[0].y,1);		
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",-9999,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].y = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",hillslope[0].z,1);		
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].z = ltmp;
          /*fscanf(world_file,"%d",&(default_object_ID));*/
 	/*read_record(world_file, record);*/
 	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",0,1);	 	
 	/*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",hillslope[0].gw.storage,1);		
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",-9999,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.storage = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",hillslope[0].gw.NO3,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.NO3 = ltmp;
 
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",hillslope[0].num_base_stations,1);	

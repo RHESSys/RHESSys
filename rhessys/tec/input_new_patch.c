@@ -95,15 +95,15 @@
 
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",patch[0].x,1);		
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",-9999,1);		
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].x = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",patch[0].y,1);		
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",-9999,1);		
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].y = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",patch[0].z,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp;
 	/*fscanf(world_file,"%d",&(soil_default_object_ID));*/
 	/*read_record(world_file, record);*/
@@ -113,46 +113,46 @@
 	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",0,1);
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",patch[0].area,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",patch[0].slope,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].slope = ltmp * DtoR;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",patch[0].lna,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].lna = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",patch[0].Ksat_vertical,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].Ksat_vertical = ltmp;
          /*fscanf(world_file,"%lf",&(mpar));*/
 	/*read_record(world_file, record);*/
 	mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",0,1);
 	
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"std","%lf",patch[0].std,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"std","%lf",-9999,1);
 	if (command_line[0].stdev_flag == 1) {
 		if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].std = ltmp;
 	}
 		
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"rz_storage","%lf",patch[0].rz_storage,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"rz_storage","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].rz_storage = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"unsat_storage","%lf",patch[0].unsat_storage,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"unsat_storage","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].unsat_storage = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"sat_deficit","%lf",patch[0].sat_deficit,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"sat_deficit","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].sat_deficit = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
 
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_equivalent_depth","%lf",
-						    patch[0].snowpack.water_equivalent_depth,1);
+						    -9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		 if ((patch[0].snowpack.water_equivalent_depth < ZERO) && (ltmp > ZERO)) {
 			patch[0].snowpack.energy_deficit = basin[0].snowpack.energy_deficit;
@@ -165,25 +165,25 @@
 	}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_depth","%lf",patch[0].snowpack.water_depth,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_depth","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.water_depth = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.T","%lf",patch[0].snowpack.T,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.T","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.T = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.surface_age","%lf",patch[0].snowpack.surface_age,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.surface_age","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.surface_age = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.energy_deficit","%lf",patch[0].snowpack.energy_deficit,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.energy_deficit","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.energy_deficit = ltmp;
 
 	if (command_line[0].snow_scale_flag == 1) {
                  /*fscanf(world_file,"%lf",&(ltmp));*/
 		/*read_record(world_file, record);*/
-		ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_redist_scale","%lf",patch[0].snow_redist_scale,1);
+		ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_redist_scale","%lf",-9999,1);
 		if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snow_redist_scale = ltmp;
 		}
 
@@ -191,38 +191,38 @@
 
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter.cover_fraction","%lf",patch[0].litter.cover_fraction,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter.cover_fraction","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.cover_fraction = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",patch[0].litter.rain_stored,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.rain_stored = ltmp;
 
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",patch[0].litter_cs.litr1c,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_cs.litr1c = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",patch[0].litter_ns.litr1n,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_ns.litr1n = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",patch[0].litter_cs.litr2c,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].litter_cs.litr2c = ltmp;
 		patch[0].litter_ns.litr2n = patch[0].litter_cs.litr2c / CEL_CN;
 		}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr3c","%lf",patch[0].litter_cs.litr3c,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr3c","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].litter_cs.litr3c = ltmp;
 		patch[0].litter_ns.litr3n = patch[0].litter_cs.litr3c / CEL_CN;
 		}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c","%lf",patch[0].litter_cs.litr4c,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c","%lf",-9999,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].litter_cs.litr4c = ltmp;
 		patch[0].litter_ns.litr4n = patch[0].litter_cs.litr4c / LIG_CN;
@@ -230,36 +230,36 @@
 
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil1c","%lf",patch[0].soil_cs.soil1c,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil1c","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil1c = ltmp;
 		patch[0].soil_ns.soil1n = patch[0].soil_cs.soil1c / SOIL1_CN;
 		}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.sminn","%lf",patch[0].soil_ns.sminn,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.sminn","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].soil_ns.sminn = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.nitrate","%lf",patch[0].soil_ns.nitrate,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.nitrate","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].soil_ns.nitrate = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil2c","%lf",patch[0].soil_cs.soil2c,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil2c","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil2c = ltmp;
 		patch[0].soil_ns.soil2n = patch[0].soil_cs.soil2c / SOIL2_CN;
 		}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil3c","%lf",patch[0].soil_cs.soil3c,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil3c","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil3c = ltmp;
 		patch[0].soil_ns.soil3n = patch[0].soil_cs.soil3c / SOIL3_CN;
 		}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",patch[0].soil_cs.soil4c,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil4c = ltmp;
 		patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;

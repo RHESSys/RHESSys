@@ -90,15 +90,15 @@
 
          /*fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",zone[0].x,1);		
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",-9999,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].x = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",zone[0].y,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].y = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",zone[0].z,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  {
 		zone[0].z = ltmp;
 		zone[0].metv.pa	= atm_pres( zone[0].z );
@@ -108,11 +108,11 @@
 	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",0,1); 	
 	/*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",zone[0].area,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].area = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",zone[0].slope,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO) {
 		zone[0].slope = ltmp * DtoR;
 		zone[0].cos_slope = cos(zone[0].slope);
@@ -120,7 +120,7 @@
 		}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"aspect","%lf",zone[0].aspect,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"aspect","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO) {
 		zone[0].aspect = ltmp * DtoR;
 		zone[0].cos_aspect = cos(zone[0].aspect);
@@ -128,15 +128,15 @@
 		}
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"precip_lapse_rate","%lf",zone[0].precip_lapse_rate,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"precip_lapse_rate","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].precip_lapse_rate = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",zone[0].e_horizon,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].e_horizon = ltmp;
          /*fscanf(world_file,"%lf",&(ltmp));*/
 	/*read_record(world_file, record);*/
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",zone[0].w_horizon,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",-9999,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].w_horizon = ltmp;
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",zone[0].num_base_stations,1);
 
