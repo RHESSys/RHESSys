@@ -10,9 +10,9 @@ endif
 
 PGM := ${RHESSYS_BIN}/rhessys${VERSION}
 
- CC     := gcc 
- CFLAGS := -O3 -std=c99 -m64 -march=native -mtune=native -fopenmp -ffast-math -funroll-loops
-#CFLAGS := -Og -std=c99 -m64
+CC     := gcc 
+# CFLAGS := -O3 -std=c99 -m64 -march=native -mtune=native -fopenmp -ffast-math -funroll-loops
+CFLAGS := -g -std=c99 -m64
 
 #CC     := icc 
 #CFLAGS := -O3  -traceback -xHost -openmp
@@ -32,6 +32,7 @@ else
 endif
 
 OBJECTS = \
+$(OBJ)/hydro_routing.o \
 $(OBJ)/read_netcdf.o \
 $(OBJ)/Ksat_z_curve.o \
 $(OBJ)/add_growth_headers.o \
@@ -320,6 +321,8 @@ dir:
 rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include ${LIBS} -v -o $(PGM) 
 
+$(OBJ)/hydro_routing.o: hydro/hydro_routing.c
+	$(CC) -c $(CFLAGS) -I include hydro/hydro_routing.c -o $(OBJ)/hydro_routing.o
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
 $(OBJ)/add_headers.o: output/add_headers.c

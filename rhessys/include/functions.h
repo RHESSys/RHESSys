@@ -27,4 +27,9 @@ void execute_tec_dynrouting(struct	tec_object *tecfile ,
 							struct	world_output_file_object *growth_outfile,
 							struct world_object *world);
 
+void hydro_routing( struct command_line_object * command_line,
+                    double                       extstep,   /*  external time step  */
+                    struct	date	             current_date,
+                    struct basin_object        * basin );
+
 #endif

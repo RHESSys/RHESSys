@@ -32,7 +32,9 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+
 #include "rhessys.h"
+#include "functions.h"
 
 void	basin_hourly(
 					 struct	world_object	*world,
@@ -173,12 +175,21 @@ void	basin_hourly(
 	/*--------------------------------------------------------------*/
 	/* this part is nearly the same as in the basin_daily_F		*/
 
-	// TODO: Add branch for dynamic routing alternative
 	if ( command_line[0].routing_flag == 1) { 
-		compute_subsurface_routing_hourly(command_line,
-			basin,
-			basin[0].defaults[0][0].n_routing_timesteps,
-			current_date);
+
+		if (command_line->dyn_routing_flag == 1) {
+
+			// TODO: Verify unit of extstep, for now assume hours (probably not correct)
+			hydro_routing(command_line, 24, current_date, basin);
+
+		} else {
+
+			compute_subsurface_routing_hourly(command_line,
+				basin,
+				basin[0].defaults[0][0].n_routing_timesteps,
+				current_date);
+		}
+
 	}
 
 	return;

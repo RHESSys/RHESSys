@@ -214,10 +214,12 @@ void		patch_hourly(
 	}
 
 
-	// TODO: Do not add these fluxes to state variables for dynamic routing
-	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
+	// Do not add these fluxes to state variables for dynamic routing
+	if (command_line->dyn_routing_flag != 1) {
+		patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 
-	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here	
+		patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here
+	}
 
 	/*--------------------------------------------------------------*/
 	/*	include any detention storage as throughfall		*/
@@ -241,14 +243,14 @@ void		patch_hourly(
 	/* 	compute infiltration into the soil			*/
 	/*	from snowmelt or rain_throughfall			*/
 	/*	for now assume that all water infilatrates		*/
+	/*  DO NOT DO THIS PROCESSING FOR DYNAMIC ROUTING MODE */
 	/*--------------------------------------------------------------*/
-	if (patch[0].detention_store > 0.0) {
+	if (patch[0].detention_store > 0.0 && command_line->dyn_routing_flag != 1) {
 		/*------------------------------------------------------------------------*/
 		/*	drainage to a deeper groundwater store				  */
 		/*	move both nitrogen and water				       	*/
 		/*------------------------------------------------------------------------*/
 		if (command_line[0].gw_flag > 0 ){
-			// TODO: do not update GW drainage for dynamic routing
 		if ( update_gw_drainage(patch,
 				hillslope,
 				command_line,
@@ -267,7 +269,6 @@ void		patch_hourly(
 		else
 			duration = zone[0].hourly[0].rain_duration/(86400);
 		
-		// TODO: do not compute infiltration for dynamic routing
 		if (patch[0].rootzone.depth > ZERO)	{
 				infiltration = compute_infiltration(
 					command_line[0].verbose_flag,
@@ -299,12 +300,11 @@ void		patch_hourly(
 		}
 
 
-			
+
 		//printf("hourly patch called \n");
 	}
 	else infiltration = 0.0;
 
-	// TODO: do not compute infiltration for dynamic routing
 	if (infiltration < 0.0)
 		printf("\nInfiltration %lf < 0 for %d on %d",
 			infiltration,
@@ -315,9 +315,10 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 	infiltration=min(infiltration,patch[0].detention_store);
 
-	// TODO: Do not do bookkeeping here for dynamic routing (i.e. from here to the end of
-	//       the current function).
-	patch[0].detention_store -= infiltration;
+	// Do not alter this state variable for dynamic routing
+	if (command_line->dyn_routing_flag != 1) {
+		patch[0].detention_store -= infiltration;
+	}
 
 	if (infiltration>ZERO) {
 		/*--------------------------------------------------------------*/
@@ -332,8 +333,11 @@ void		patch_hourly(
 			current_date );
 	} /* end if infiltration > ZERO */
 
-	/* aggregate the hourly recharge */ 
-	patch[0].recharge += infiltration;
+	// Do not alter this state variable for dynamic routing
+	if (command_line->dyn_routing_flag != 1) {
+		/* aggregate the hourly recharge */
+		patch[0].recharge += infiltration;
+	}
 	
 	} /* end if rain throughfall */
 	/*--------------------------------------------------------------*/
