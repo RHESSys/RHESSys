@@ -179,8 +179,7 @@ void	basin_hourly(
 
 		if (command_line->dyn_routing_flag == 1) {
 
-			// TODO: Verify unit of extstep, for now assume hours (probably not correct)
-			hydro_routing(command_line, 24, current_date, basin);
+			hydro_routing(command_line, SECONDS_PER_HOUR, current_date, basin);
 
 		} else {
 
