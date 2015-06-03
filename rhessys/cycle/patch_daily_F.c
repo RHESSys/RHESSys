@@ -122,6 +122,7 @@ void		patch_daily_F(
 		struct patch_object *,
 		struct layer_object *,
 		struct canopy_strata_object *,
+		struct canopy_strata_object *,
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
@@ -677,6 +678,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+            patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -998,6 +1000,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -1045,6 +1048,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+						patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -1717,20 +1721,26 @@ void		patch_daily_F(
 	/* 	tag vegtype							*/	
 	/*--------------------------------------------------------------*/
 	vegtype = 0;
+  patch[0].target_status = 1;
+
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		for ( stratum=0 ; stratum < patch[0].layers[layer].count; stratum++ ){
 			strata =
 				patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
-			if ( (strata[0].defaults[0][0].epc.veg_type != NON_VEG) )
-			 {
+   
+	    if(command_line[0].vegspinup_flag > 0){
+        if (strata->target.met == 0)
+          patch[0].target_status = 0;
+        }
+			  if ( (strata[0].defaults[0][0].epc.veg_type != NON_VEG) ){
 
-				if (transpiration_reduction_percent < 1.0) {
-				strata->cdf.psn_to_cpool = strata->cdf.psn_to_cpool  * transpiration_reduction_percent;
-				strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
-				strata->gs_sunlit *= transpiration_reduction_percent;		
-				strata->gs_shade *= transpiration_reduction_percent;		
-				strata->mult_conductance.LWP *= transpiration_reduction_percent;
-				strata->ndf.potential_N_uptake *= transpiration_reduction_percent;
+			   	if (transpiration_reduction_percent < 1.0) {
+				  strata->cdf.psn_to_cpool = strata->cdf.psn_to_cpool  * transpiration_reduction_percent;
+				  strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
+				  strata->gs_sunlit *= transpiration_reduction_percent;		
+				  strata->gs_shade *= transpiration_reduction_percent;		
+				  strata->mult_conductance.LWP *= transpiration_reduction_percent;
+				  strata->ndf.potential_N_uptake *= transpiration_reduction_percent;
 				}
 
 				vegtype=1;
