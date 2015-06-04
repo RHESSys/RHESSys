@@ -1,10 +1,14 @@
-PGM  = rhessys5.19
-VERSION = 5.19
-CC = gcc 
-#CFLAGS = -O -std=c99
-CFLAGS = -g -std=c99
-RHESSYS_BIN = /usr/local/bin
-OBJ = objects
+
+BLD_ROOT    := ${HOME}/models/RHESSys/Linux2_x86_64
+RHESSYS_BIN := ${BLD_ROOT}/bin
+OBJ         := ${BLD_ROOT}/obj
+LIB         := ${BLD_ROOT}/lib
+
+ifndef VERSION
+    VERSION := 5.19
+endif
+
+PGM := ${RHESSYS_BIN}/rhessys${VERSION}
 
 CC     := gcc 
 # CFLAGS := -O3 -std=c99 -m64 -march=native -mtune=native -fopenmp -ffast-math -funroll-loops
@@ -22,7 +26,7 @@ CFLAGS := -g -std=c99 -m64
 OS := $(shell uname)
 
 ifdef netcdf
-    LIBS := -lnetcdf -lm
+    LIBS := -L${LIB} -lnetcdf -lm
 else
     LIBS := -lm
 endif
