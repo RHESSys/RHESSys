@@ -197,34 +197,34 @@ void	execute_daily_output_event(
 								/*---------------------------------------------------*/
 
 								if (command_line[0].patchdb_flag) {
-									char datestr[16];
-									snprintf(datestr, 16, "%ld-%02ld-%02ld",
-											date.year, date.month, date.day);
-									// Make prepared statements for this day
-									CassError rc = CASS_OK;
-									char query[128];
-									snprintf(query, 128, "INSERT INTO variables_by_date_patch "
-											"(variable,date,patchid,value) "
-											"VALUES (?,'%s',?,?);", datestr);
-									//printf(query);
-									rc = patchdb_prepare_statement(outfile->patchdb_session,
-											(const char*)&query, &(outfile->var_by_date_patch_stmt));
-									if (rc != CASS_OK) {
-										exit(EXIT_FAILURE);
-									}
-
-									snprintf(query, 128, "INSERT INTO patches_by_variable_date "
-											"(patchid,variable,date,value) "
-											"VALUES (?,?,'%s',?);", datestr);
-									//printf(query);
-									rc = patchdb_prepare_statement(outfile->patchdb_session,
-											(const char*)&query, &(outfile->patch_by_var_date_stmt));
-									if (rc != CASS_OK) {
-										exit(EXIT_FAILURE);
-									}
-
-									// Make batch for batch execution
-									outfile->patchdb_batch = cass_batch_new(CASS_BATCH_TYPE_UNLOGGED);
+//									char datestr[16];
+//									snprintf(datestr, 16, "%ld-%02ld-%02ld",
+//											date.year, date.month, date.day);
+//									// Make prepared statements for this day
+//									CassError rc = CASS_OK;
+//									char query[128];
+//									snprintf(query, 128, "INSERT INTO variables_by_date_patch "
+//											"(variable,date,patchid,value) "
+//											"VALUES (?,'%s',?,?);", datestr);
+//									//printf(query);
+//									rc = patchdb_prepare_statement(outfile->patchdb_session,
+//											(const char*)&query, &(outfile->var_by_date_patch_stmt));
+//									if (rc != CASS_OK) {
+//										exit(EXIT_FAILURE);
+//									}
+//
+//									snprintf(query, 128, "INSERT INTO patches_by_variable_date "
+//											"(patchid,variable,date,value) "
+//											"VALUES (?,?,'%s',?);", datestr);
+//									//printf(query);
+//									rc = patchdb_prepare_statement(outfile->patchdb_session,
+//											(const char*)&query, &(outfile->patch_by_var_date_stmt));
+//									if (rc != CASS_OK) {
+//										exit(EXIT_FAILURE);
+//									}
+//
+//									// Make batch for batch execution
+//									outfile->patchdb_batch = cass_batch_new(CASS_BATCH_TYPE_UNLOGGED);
 								}
 
 								for(p=0;
@@ -296,26 +296,26 @@ void	execute_daily_output_event(
 								} /* end patch (p) for loop */
 
 								if (command_line[0].patchdb_flag) {
-									// Perform batch insert
-									CassError rc = CASS_OK;
-									CassFuture* future = NULL;
-									future = cass_session_execute_batch(outfile->patchdb_session,
-											outfile->patchdb_batch);
-									cass_future_wait(future);
-
-									rc = cass_future_error_code(future);
-									if (rc != CASS_OK) {
-										patchdb_print_error(future, "Batch execution of output_patch");
-										exit(EXIT_FAILURE);
-									}
-
-									cass_future_free(future);
-									// Free batch
-									cass_batch_free(outfile->patchdb_batch);
-
-									// Free prepared statements
-									cass_prepared_free(outfile->var_by_date_patch_stmt);
-									cass_prepared_free(outfile->patch_by_var_date_stmt);
+//									// Perform batch insert
+//									CassError rc = CASS_OK;
+//									CassFuture* future = NULL;
+//									future = cass_session_execute_batch(outfile->patchdb_session,
+//											outfile->patchdb_batch);
+//									cass_future_wait(future);
+//
+//									rc = cass_future_error_code(future);
+//									if (rc != CASS_OK) {
+//										patchdb_print_error(future, "Batch execution of output_patch");
+//										exit(EXIT_FAILURE);
+//									}
+//
+//									cass_future_free(future);
+//									// Free batch
+//									cass_batch_free(outfile->patchdb_batch);
+//
+//									// Free prepared statements
+//									cass_prepared_free(outfile->var_by_date_patch_stmt);
+//									cass_prepared_free(outfile->patch_by_var_date_stmt);
 								}
 
 							} /* end if options */

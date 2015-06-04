@@ -196,6 +196,7 @@
 #define P1HIGH 5
 #define P2HIGH 6
 
+#define PATCHDB_SOCKET_PATH "ipc:///tmp/patchdbmq"
 
 /*----------------------------------------------------------*/
 /*      Define min and max macros                           */
@@ -311,11 +312,13 @@ struct	world_output_file_object
 	struct	output_files_object		*patch;
 	struct	output_files_object		*canopy_stratum;
     struct	output_files_object		*stream_routing;
-    CassCluster* patchdb_cluster;
-    CassSession* patchdb_session;
-    const CassPrepared *var_by_date_patch_stmt;
-    const CassPrepared *patch_by_var_date_stmt;
-    CassBatch* patchdb_batch;
+//    CassCluster* patchdb_cluster;
+//    CassSession* patchdb_session;
+//    const CassPrepared *var_by_date_patch_stmt;
+//    const CassPrepared *patch_by_var_date_stmt;
+//    CassBatch* patchdb_batch;
+    void *patchdbmq_context;
+    void *patchdbmq_requester;
 	};
 
 /*----------------------------------------------------------*/

@@ -276,7 +276,7 @@ dir:
 	mkdir -p $(OBJ)
 
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) -lm -L/usr/local/lib -lcassandra -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) -lm -L/usr/local/lib -lcassandra -lzmq -v -o $(PGM) 
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) util/alloc.c -o $(OBJ)/alloc.o

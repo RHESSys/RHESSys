@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <zmq.h>
+
 #include "rhessys.h"
 #include "functions.h"
 
@@ -317,33 +319,38 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge");
 
 	if (command_line[0].patchdb_flag) {
-		// Initialize patchdb
-		init_patchdb(command_line[0].patchdb_hostname,
-					 command_line[0].patchdb_keyspace,
-					 &(world_output_files->patchdb_cluster),
-					 &(world_output_files->patchdb_session));
-		// Make tables
-		char query[MAXSTR];
-		printf("patchdb: Creating tables ... ");
-		// Table partitioned by variable and clustered by date then patch ID
-		snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS variables_by_date_patch ("
-								"variable text,"
-								"date timestamp,"
-								"patchid text,"
-								"value double,"
-								"PRIMARY KEY (variable, date, patchid));");
-		patchdb_execute_query(world_output_files->patchdb_session, query);
+//		// Initialize patchdb
+//		init_patchdb(command_line[0].patchdb_hostname,
+//					 command_line[0].patchdb_keyspace,
+//					 &(world_output_files->patchdb_cluster),
+//					 &(world_output_files->patchdb_session));
+//		// Make tables
+//		char query[MAXSTR];
+//		printf("patchdb: Creating tables ... ");
+//		// Table partitioned by variable and clustered by date then patch ID
+//		snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS variables_by_date_patch ("
+//								"variable text,"
+//								"date timestamp,"
+//								"patchid text,"
+//								"value double,"
+//								"PRIMARY KEY (variable, date, patchid));");
+//		patchdb_execute_query(world_output_files->patchdb_session, query);
+//
+//		// Table partitioned by patch ID and clustered by variable then date
+//		snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS patches_by_variable_date ("
+//								"patchid text,"
+//								"variable text,"
+//								"date timestamp,"
+//								"value double,"
+//								"PRIMARY KEY (patchid, variable, date));");
+//		patchdb_execute_query(world_output_files->patchdb_session, query);
+//
+//		printf("done\n");
 
-		// Table partitioned by patch ID and clustered by variable then date
-		snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS patches_by_variable_date ("
-								"patchid text,"
-								"variable text,"
-								"date timestamp,"
-								"value double,"
-								"PRIMARY KEY (patchid, variable, date));");
-		patchdb_execute_query(world_output_files->patchdb_session, query);
-
-		printf("done\n");
+		// Connect to patchdbmq server
+		world_output_files->patchdbmq_context = zmq_ctx_new();
+		world_output_files->patchdbmq_requester = zmq_socket(world_output_files->patchdbmq_context, ZMQ_REQ);
+		zmq_connect(world_output_files->patchdbmq_requester, PATCHDB_SOCKET_PATH);
 	}
 
 	/*--------------------------------------------------------------*/

@@ -28,32 +28,34 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <time.h>
+#include <errno.h>
 
-#include <cassandra.h>
+//#include <cassandra.h>
+#include <zmq.h>
 
 #include "rhessys.h"
 #include "functions.h"
 
 
-void _write_to_patchdb(struct world_output_file_object *world_output_files,
-		char* patchid, char* var, cass_double_t value) {
-	CassError rc = CASS_OK;
-	CassStatement* statement = NULL;
-
-	statement = cass_prepared_bind(world_output_files->var_by_date_patch_stmt);
-	cass_statement_bind_string(statement, 0, var);
-	cass_statement_bind_string(statement, 1, patchid);
-	cass_statement_bind_double(statement, 2, value);
-	cass_batch_add_statement(world_output_files->patchdb_batch, statement);
-	cass_statement_free(statement);
-
-	statement = cass_prepared_bind(world_output_files->patch_by_var_date_stmt);
-	cass_statement_bind_string(statement, 0, patchid);
-	cass_statement_bind_string(statement, 1, var);
-	cass_statement_bind_double(statement, 2, value);
-	cass_batch_add_statement(world_output_files->patchdb_batch, statement);
-	cass_statement_free(statement);
-}
+//void _write_to_patchdb(struct world_output_file_object *world_output_files,
+//		char* patchid, char* var, cass_double_t value) {
+//	CassError rc = CASS_OK;
+//	CassStatement* statement = NULL;
+//
+//	statement = cass_prepared_bind(world_output_files->var_by_date_patch_stmt);
+//	cass_statement_bind_string(statement, 0, var);
+//	cass_statement_bind_string(statement, 1, patchid);
+//	cass_statement_bind_double(statement, 2, value);
+//	cass_batch_add_statement(world_output_files->patchdb_batch, statement);
+//	cass_statement_free(statement);
+//
+//	statement = cass_prepared_bind(world_output_files->patch_by_var_date_stmt);
+//	cass_statement_bind_string(statement, 0, patchid);
+//	cass_statement_bind_string(statement, 1, var);
+//	cass_statement_bind_double(statement, 2, value);
+//	cass_batch_add_statement(world_output_files->patchdb_batch, statement);
+//	cass_statement_free(statement);
+//}
 
 void	output_patch(struct  command_line_object * command_line,
 					 struct world_output_file_object *world_output_files,
@@ -99,75 +101,102 @@ void	output_patch(struct  command_line_object * command_line,
 		char patchid[64];
 		snprintf(patchid, 64, "%d:%d:%d:%d", basinID, hillID,
 				 zoneID, patch->ID);
+		int rc = zmq_send(world_output_files->patchdbmq_requester, patchid, 64, 0);
+		if (rc == -1) {
+			if (errno == EFSM) {
+				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
+			} else {
+				printf("output_patch: zeromq returned: %d, exiting...\n", errno);
+			}
+			exit(EXIT_FAILURE);
+		}
+		char response[2];
+		rc = zmq_recv(world_output_files->patchdbmq_requester, response, 1, 0);
+		if (rc == -1) {
+			if (errno == EFSM) {
+				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
+			} else {
+				printf("output_patch: zeromq returned: %d, exiting...\n", errno);
+			}
+			exit(EXIT_FAILURE);
+		}
+		//response[1] = 0;
+		if (response[0] != 'A') {
+			printf("output_patch: expected patchdbmq server to return %s, but received: %s, exiting...\n",
+					"A", response);
+			exit(EXIT_FAILURE);
+		}
 
-		_write_to_patchdb(world_output_files, patchid,
-				"rain_thr", (cass_double_t)patch[0].rain_throughfall*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"detention_store", (cass_double_t)patch[0].detention_store*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"sat_def_z", (cass_double_t)patch[0].sat_deficit_z*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"sat_def", (cass_double_t)patch[0].sat_deficit*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"rz_storage", (cass_double_t)patch[0].rz_storage*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"potential_rz_store", (cass_double_t)patch[0].rootzone.potential_sat*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"rz_field_capacity", (cass_double_t)patch[0].rootzone.field_capacity*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"rz_wilting_point", (cass_double_t)patch[0].wilting_point*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"unsat_stor", (cass_double_t)patch[0].unsat_storage*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"rz_drainage", (cass_double_t)patch[0].rz_drainage*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"unsat_drain", (cass_double_t)patch[0].unsat_drainage*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"sublimation", (cass_double_t)(patch[0].snowpack.sublimation + asub)*1000);
-		_write_to_patchdb(world_output_files, patchid,
-				"return", (cass_double_t)patch[0].return_flow*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"evap", (cass_double_t)patch[0].evaporation*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"evap_surface", (cass_double_t)patch[0].evaporation_surf*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"soil_evap", (cass_double_t)patch[0].exfiltration_sat_zone*1000.0 + patch[0].exfiltration_unsat_zone * 1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"snow", (cass_double_t)patch[0].snowpack.water_equivalent_depth*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"snow_melt", (cass_double_t)patch[0].snow_melt*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"trans_sat", (cass_double_t)patch[0].transpiration_sat_zone*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"trans_unsat", (cass_double_t)patch[0].transpiration_unsat_zone*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"Qin", (cass_double_t)patch[0].Qin_total * 1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"Qout", (cass_double_t)patch[0].Qout_total * 1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"psn", (cass_double_t)apsn * 1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"root_zone.S", (cass_double_t)patch[0].rootzone.S);
-		_write_to_patchdb(world_output_files, patchid,
-				"root.depth", (cass_double_t)patch[0].rootzone.depth*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"litter.rain_stor", (cass_double_t)patch[0].litter.rain_stored*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"litter.S", (cass_double_t)litterS);
-		_write_to_patchdb(world_output_files, patchid,
-				"area", (cass_double_t)patch[0].area);
-		_write_to_patchdb(world_output_files, patchid,
-				"pet", (cass_double_t)patch[0].PET*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"lai", (cass_double_t)alai);
-		_write_to_patchdb(world_output_files, patchid,
-				"baseflow", (cass_double_t)patch[0].base_flow*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"streamflow", (cass_double_t)patch[0].streamflow*1000.0);
-		_write_to_patchdb(world_output_files, patchid,
-				"pcp", (cass_double_t)1000.0*(zone[0].rain+zone[0].snow));
-		_write_to_patchdb(world_output_files, patchid,
-				"recharge", (cass_double_t)patch[0].recharge);
+//
+//
+//		_write_to_patchdb(world_output_files, patchid,
+//				"rain_thr", (cass_double_t)patch[0].rain_throughfall*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"detention_store", (cass_double_t)patch[0].detention_store*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"sat_def_z", (cass_double_t)patch[0].sat_deficit_z*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"sat_def", (cass_double_t)patch[0].sat_deficit*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"rz_storage", (cass_double_t)patch[0].rz_storage*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"potential_rz_store", (cass_double_t)patch[0].rootzone.potential_sat*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"rz_field_capacity", (cass_double_t)patch[0].rootzone.field_capacity*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"rz_wilting_point", (cass_double_t)patch[0].wilting_point*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"unsat_stor", (cass_double_t)patch[0].unsat_storage*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"rz_drainage", (cass_double_t)patch[0].rz_drainage*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"unsat_drain", (cass_double_t)patch[0].unsat_drainage*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"sublimation", (cass_double_t)(patch[0].snowpack.sublimation + asub)*1000);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"return", (cass_double_t)patch[0].return_flow*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"evap", (cass_double_t)patch[0].evaporation*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"evap_surface", (cass_double_t)patch[0].evaporation_surf*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"soil_evap", (cass_double_t)patch[0].exfiltration_sat_zone*1000.0 + patch[0].exfiltration_unsat_zone * 1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"snow", (cass_double_t)patch[0].snowpack.water_equivalent_depth*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"snow_melt", (cass_double_t)patch[0].snow_melt*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"trans_sat", (cass_double_t)patch[0].transpiration_sat_zone*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"trans_unsat", (cass_double_t)patch[0].transpiration_unsat_zone*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"Qin", (cass_double_t)patch[0].Qin_total * 1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"Qout", (cass_double_t)patch[0].Qout_total * 1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"psn", (cass_double_t)apsn * 1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"root_zone.S", (cass_double_t)patch[0].rootzone.S);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"root.depth", (cass_double_t)patch[0].rootzone.depth*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"litter.rain_stor", (cass_double_t)patch[0].litter.rain_stored*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"litter.S", (cass_double_t)litterS);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"area", (cass_double_t)patch[0].area);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"pet", (cass_double_t)patch[0].PET*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"lai", (cass_double_t)alai);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"baseflow", (cass_double_t)patch[0].base_flow*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"streamflow", (cass_double_t)patch[0].streamflow*1000.0);
+//		_write_to_patchdb(world_output_files, patchid,
+//				"pcp", (cass_double_t)1000.0*(zone[0].rain+zone[0].snow));
+//		_write_to_patchdb(world_output_files, patchid,
+//				"recharge", (cass_double_t)patch[0].recharge);
 	} else {
 		// Output to file
 		check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
