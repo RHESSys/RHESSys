@@ -178,11 +178,11 @@ void	basin_hourly(
 	if ( command_line[0].routing_flag == 1) { 
 
 		if (command_line->dyn_routing_flag == 1) {
-
+			printf("Calling hydro_routing...\n");
 			hydro_routing(command_line, SECONDS_PER_HOUR, current_date, basin);
 
 		} else {
-
+			printf("Calling compute_subsurface_routing_hourly...\n");
 			compute_subsurface_routing_hourly(command_line,
 				basin,
 				basin[0].defaults[0][0].n_routing_timesteps,

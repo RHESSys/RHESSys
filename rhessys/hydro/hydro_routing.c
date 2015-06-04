@@ -475,6 +475,19 @@ static void init_hydro_routing( struct command_line_object * command_line,
     diagf = 0.5 * sqrt( 0.5 ) ;     /*  "perimeter" factor for diagonals */
     basin_area = 0.0 ;
 
+    // Initialize plist so that we can invert the flow tables (which needs
+    // to refer to patches in an arbitrary order compared to that of the
+    // route list.
+#pragma omp parallel for                                                \
+        default( none )                                                 \
+        private( i )												    \
+		shared( plist )													\
+		schedule( guided )
+    for ( i = 0; i < num_patches; i++ )
+    	{
+    		plist [i] = basin->route_list->list[i] ;
+    	}
+
 #pragma omp parallel for                                                \
         default( none )                                                 \
         private( i, j, k, patch, neigh, gfac, dx, dy )                  \
@@ -526,13 +539,13 @@ static void init_hydro_routing( struct command_line_object * command_line,
         gfac = 0.0 ;
         for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions  */
             {
-            gfac += plist[k]->surface_innundation_list->neighbours[j].gamma ;
+            gfac += plist[i]->surface_innundation_list->neighbours[j].gamma ;
             }
         gfac = 1.0 / gfac ;
         for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions from         */
             {                                   /*  flow-rates gamma and uphill/downhill area ratios  */
             neigh = plist[i]->surface_innundation_list->neighbours[j].patch;
-            dfrac[i][j] = gfac * plist[k]->surface_innundation_list->neighbours[j].gamma  * plist[i]->area / neigh->area ;
+            dfrac[i][j] = gfac * plist[i]->surface_innundation_list->neighbours[j].gamma  * plist[i]->area / neigh->area ;
             }
 
         for ( j = 0; j < subcnto[i]; j++ )
@@ -1420,6 +1433,7 @@ void hydro_routing( struct command_line_object * command_line,
 
     if ( num_patches == -9999 )
         {
+    	printf("Calling init_hydro_routing...\n");
         init_hydro_routing( command_line, basin ) ;
         }
 
