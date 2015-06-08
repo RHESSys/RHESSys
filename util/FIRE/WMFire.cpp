@@ -567,11 +567,17 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 			cout<<"in test ignition p_moisture: "<<p_moisture<<"moisture: "<<cur_moist<<"\n\n";
 		cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_veg;
 		p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
-		p_veg=1-1/(1+exp(-(def_.veg_k1*(fireGrid_[cur_row][cur_col].fuel_veg-def_.veg_k2))));
 		if(def_.fire_verbose==1)
 			cout<<"in test ignition p_load "<<p_load<<"load: "<<cur_load<<"\n\n";
+		if(def_.veg_ign==1)
+		{
+			p_veg=1-1/(1+exp(-(def_.veg_k1*(fireGrid_[cur_row][cur_col].fuel_veg-def_.veg_k2))));
+			pIgn=p_moisture*p_load*p_veg;
+		}
+		else
+			pIgn=p_moisture*p_load;
 
-		pIgn=p_moisture*p_load*p_veg;
+
 		double test=rng();
 		if(test<=pIgn)
 		{
