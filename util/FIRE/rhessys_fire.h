@@ -8,8 +8,7 @@ extern "C" {
 /**********************************************************/
 struct fire_default {
 	int ID;
-	double veg_fuel_weighting;	
-
+	double veg_fuel_weighting ;	
 	double ndays_average;
 	double load_k1; // k1 for the fuel load sigmoid function
 	double moisture_k1; //k1 for the fuel moisture sigmoid function
@@ -24,7 +23,7 @@ struct fire_default {
 	double ignition_col; // allow for ignition x and y coordinates, but not yet implemented. default to -1
 	double ignition_row;
 	int fire_write; // should the fire results be written to a file?
-	int fire_verbose;
+	int fire_verbose; // should the fire runs be verbose?
 	int n_rows;
 	int n_cols;
 	int fire_in_buffer;
@@ -35,9 +34,8 @@ struct fire_default {
 	double mean2_rvm;
 	double kappa1_rvm;
 	double kappa2_rvm;
-	double p_rvm;	
-	double ign_def_mod; // modifier for ignition moisture_k2, multiply the threshold deficit by this value
-	int veg_ign; // use vegetation for ignition? If so, use the parameters below
+	double p_rvm;
+	double ign_def_mod;
 	double veg_k1; // for ignition use veg fuel
 	double veg_k2; // for ignition use veg fuel
 
@@ -60,6 +58,7 @@ struct fire_object
 	double et;
 	double pet;
 	int ign_available; /* 1 if available for ignition, 0 otherwise*/
+
 };	
 
 #ifdef __cplusplus
