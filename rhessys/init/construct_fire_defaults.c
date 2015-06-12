@@ -147,6 +147,7 @@ struct fire_default *construct_fire_defaults(
 		printf("veg_k2: %lf\n",default_object_list[i].veg_k2);
  		default_object_list[i].veg_ign=getDoubleParam(&paramCnt, &paramPtr, "veg_ign", "%d", 10, 1);
 		printf("veg_ign: %d\n",default_object_list[i].veg_ign);
+
  
 /*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/

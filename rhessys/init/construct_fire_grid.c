@@ -225,6 +225,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	//				printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n",
 																//curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY);
 
+
 	   // so now we loop through each pixel pair starting with minX and minY, and ending with < maxX and maxY (In C)
 	    // in the case that the patch overlaps with >1 pixel in both directions
 				for(i =minXpix; i<maxXpix; i++) {
@@ -350,6 +351,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	}
 	// for debugging, write out the fire grid and patches
 /*	FILE *gridout;
+
 	gridout=fopen("FireGridPatchCheckOccupiedArea.txt","w");
 	for(i=0;i<grid_dimY;i++){
 		for(j=0;j<grid_dimX;j++){
@@ -400,6 +402,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		fprintf(gridout,"\n");
 	}
 	fclose(gridout);*/
+
 	/* done allocating fire grid, return to RHESSys*/
 	return(fire_grid);	
 }
