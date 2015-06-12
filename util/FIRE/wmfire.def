@@ -1,0 +1,4 @@
+LIBRARY   WMFIRE
+EXPORTS
+   WMFire=WMFire
+

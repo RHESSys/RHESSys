@@ -1,4 +1,4 @@
-PGM  = rhessys5.19
+PGM  = rhessys5.19.fire	
 VERSION = 5.19
 CC = gcc 
 #CFLAGS = -O -std=c99
@@ -294,11 +294,21 @@ dir:
 	mkdir -p $(OBJ)
 
 ifdef netcdf
+ifdef wmfire
 rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -L./lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
+endif
+else
+ifdef wmfire
+rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM) 
+else
+rhessys: $(OBJECTS)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM) 
+endif
 endif
 
 $(OBJ)/alloc.o: util/alloc.c
@@ -341,8 +351,13 @@ $(OBJ)/execute_hourly_growth_output_event.o: tec/execute_hourly_growth_output_ev
 	$(CC) -c $(CFLAGS) -I include tec/execute_hourly_growth_output_event.c -o $(OBJ)/execute_hourly_growth_output_event.o
 $(OBJ)/execute_state_output_event.o: tec/execute_state_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_state_output_event.c -o $(OBJ)/execute_state_output_event.o
+ifdef wmfire
 $(OBJ)/execute_firespread_event.o: tec/execute_firespread_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event.c -o $(OBJ)/execute_firespread_event.o
+else
+$(OBJ)/execute_firespread_event.o: tec/execute_firespread_event_dummy.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event_dummy.c -o $(OBJ)/execute_firespread_event.o
+endif
 $(OBJ)/execute_tec.o: tec/execute_tec.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_tec.c -o $(OBJ)/execute_tec.o
 $(OBJ)/construct_command_line.o: init/construct_command_line.c
