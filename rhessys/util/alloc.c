@@ -30,7 +30,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void	*alloc(size_t size, char *array_name, char *calling_function)
+void	*alloc(size_t size, const char *array_name, const char *calling_function)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/

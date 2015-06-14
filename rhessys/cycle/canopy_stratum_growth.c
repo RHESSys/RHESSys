@@ -82,6 +82,10 @@ void	canopy_stratum_growth(
 		struct	litter_n_object *,
 		struct	epconst_struct,
 		struct	command_line_object *);
+	double 		compute_prop_alloc_daily(
+			double curr_daily_alloc,
+			struct cstate_struct *cs,
+			struct epconst_struct epc);
 
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */

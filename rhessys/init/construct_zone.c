@@ -73,7 +73,7 @@ struct zone_object *construct_zone(
 		struct base_station_object **world_base_stations,
 		struct	default_object	*defaults);
 	
-	void	*alloc(size_t, char *, char *);
+	void	*alloc(size_t, const char *, const char *);
 	double	atm_pres( double );
 	
 	/*--------------------------------------------------------------*/

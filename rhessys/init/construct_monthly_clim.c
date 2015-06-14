@@ -58,8 +58,8 @@ struct	monthly_clim_object *construct_monthly_clim(
 		long);
 	
 	void	*alloc(	size_t,
-		char	*,
-		char	*);
+			const char	*,
+			const char	*);
 	
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/

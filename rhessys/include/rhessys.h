@@ -209,9 +209,9 @@ int read_record( FILE *, char *);
 /*----------------------------------------------------------*/
 /*	Define types 											*/
 /*----------------------------------------------------------*/
-typedef short bool;
-static const short true = 1;
-static const short false = 0;
+//typedef short bool;
+//static const short true = 1;
+//static const short false = 0;
 
 /*----------------------------------------------------------*/
 /*	Define a calendar date object.							*/

@@ -36,7 +36,7 @@ struct fire_default *construct_fire_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	void	*alloc( size_t, char *, char *);
+	void	*alloc( size_t, const char *, const char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

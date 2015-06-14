@@ -69,8 +69,8 @@ struct hillslope_object *construct_hillslope(
 		struct	default_object *);
 	
 	void	*alloc(	size_t,
-		char	*,
-		char	*);
+		const char	*,
+		const char	*);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

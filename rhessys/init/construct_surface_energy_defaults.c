@@ -36,7 +36,7 @@ struct surface_energy_default *construct_surface_energy_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	void	*alloc( size_t, char *, char *);
+	void	*alloc( size_t, const char *, const char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

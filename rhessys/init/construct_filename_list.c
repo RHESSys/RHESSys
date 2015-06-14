@@ -25,7 +25,7 @@ char	**construct_filename_list( FILE *file, int num_filenames){
 	/*--------------------------------------------------------------*/
 	/*	Local Function Declaration				*/
 	/*--------------------------------------------------------------*/
-	void	*alloc(size_t, char *, char *);
+	void	*alloc(size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

@@ -49,7 +49,7 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 		struct basin_object *,
 		FILE *);
 	
-	void *alloc(size_t, char *, char *);
+	void *alloc(size_t, const char *, const char *);
 
 	double * compute_transmissivity_curve( double, struct patch_object *, struct command_line_object *);
 	

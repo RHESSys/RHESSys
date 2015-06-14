@@ -70,7 +70,7 @@
 		struct litter_c_object *,
 		struct litter_object *);
 	
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

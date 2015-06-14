@@ -51,10 +51,10 @@ void	execute_daily_growth_output_event(
 		struct	date,
 		FILE	*);
 	
-	void output_growth_hillslope(	int,
-		struct	hillslope_object *,
-		struct	date,
-		FILE	*);
+	void	output_growth_hillslope(
+								struct	hillslope_object	*hillslope,
+								struct	date	current_date,
+								FILE *outfile);
 	
 	void output_growth_zone(	int, int,
 		struct	zone_object *,
@@ -118,7 +118,6 @@ void	execute_daily_growth_output_event(
 							if (( world[0].basins[b][0].hillslopes[h][0].ID == hillID)
 								|| (hillID == -999))
 								output_growth_hillslope(
-								world[0].basins[b][0].ID,
 								world[0].basins[b]->hillslopes[h],
 								date,
 								outfile->hillslope->daily);

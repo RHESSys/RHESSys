@@ -52,7 +52,7 @@ void	basin_hourly(
 		struct tec_entry *,
 		struct date);
 	
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/

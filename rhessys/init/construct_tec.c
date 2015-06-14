@@ -99,7 +99,7 @@ struct tec_object	*construct_tec(
 	/*	Local Function Definition									*/
 	/*--------------------------------------------------------------*/
 	int cal_date_lt(struct date, struct date);
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*	Local Variable Definition. 									*/
 	/*--------------------------------------------------------------*/

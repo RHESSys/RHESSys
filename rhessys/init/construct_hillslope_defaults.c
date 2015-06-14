@@ -42,7 +42,7 @@ struct hillslope_default *construct_hillslope_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/

@@ -1,8 +1,10 @@
 PGM  = rhessys5.18.r2
 VERSION = 5.18.r2
-CC = gcc 
+#CC = gcc
+CC = g++ 
 #CFLAGS = -O -std=c99
-CFLAGS = -g -std=c99
+#CFLAGS = -g -std=c99
+CFLAGS = -g 
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 INCLUDES = -I/usr/local/include -Iinclude

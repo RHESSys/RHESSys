@@ -59,7 +59,7 @@ double *construct_clim_sequence(char *file, struct date start_date,
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/
-	void	*alloc(size_t, char *, char *);
+	void	*alloc(size_t, const char *, const char *);
 	long	julday(struct date);
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/

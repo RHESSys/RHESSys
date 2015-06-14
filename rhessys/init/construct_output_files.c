@@ -40,7 +40,7 @@ struct	world_output_file_object *construct_output_files(
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
 	struct	output_files_object	*construct_output_fileset(char *);
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

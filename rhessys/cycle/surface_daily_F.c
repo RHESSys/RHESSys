@@ -100,12 +100,12 @@ void		surface_daily_F(
 		int);
 
 
-	double  compute_subsurface_temperature_profile(
-		struct	surface_energy_object *,
-		struct surface_energy_default *,
-		double,
-		double,
-		double *);
+	void compute_subsurface_temperature_profile(
+						  struct surface_energy_object	*se_profile,
+						  struct surface_energy_default	*sedef,
+						  double tsurface,
+						  double rnet,
+						  double *percent_soil_water_unfrozen);
 	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */

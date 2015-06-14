@@ -23,6 +23,7 @@
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhessys.h"
 
 void sort_patch_layers( struct patch_object *patch)
@@ -31,7 +32,7 @@ void sort_patch_layers( struct patch_object *patch)
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/
 	int key_compare(void *,  void *);
-	void	*alloc( 	size_t, char *, char *);
+	void	*alloc( 	size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -86,11 +87,11 @@ void sort_patch_layers( struct patch_object *patch)
 	/*--------------------------------------------------------------*/
 	/*	Now sort the layer list into descending order.		*/
 	/*--------------------------------------------------------------*/
-	qsort(
-		(void *) patch[0].layers,
-		(size_t) patch[0].num_layers,
-		sizeof(struct layer_object),
-		key_compare);
+//	qsort(
+//		(void *) patch[0].layers,
+//		(size_t) patch[0].num_layers,
+//		sizeof(struct layer_object),
+//		key_compare);
 	/*--------------------------------------------------------------*/
 	/*	Now construct a list of pointers to strata at each	*/
 	/*	height layer						*/

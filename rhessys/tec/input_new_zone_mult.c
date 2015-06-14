@@ -68,7 +68,7 @@
 		struct base_station_object **);
 	
 	
-	void	*alloc(size_t, char *, char *);
+	void	*alloc(size_t, const char *, const char *);
 	double	atm_pres( double );
 	
 	/*--------------------------------------------------------------*/

@@ -46,8 +46,8 @@ struct landuse_default *construct_landuse_defaults(
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t,
-		char	*,
-		char	*);
+			const char	*,
+			const char	*);
 	
 	
 	/*--------------------------------------------------------------*/

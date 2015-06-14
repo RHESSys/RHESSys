@@ -47,7 +47,7 @@ void	canopy_stratum_hourly(
 	/*--------------------------------------------------------------*/
 	/*	Local Function Declaration				*/
 	/*--------------------------------------------------------------*/
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 
 	double compute_hourly_rain_stored(
 		int,

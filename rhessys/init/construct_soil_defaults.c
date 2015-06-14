@@ -45,8 +45,8 @@ struct soil_default *construct_soil_defaults(
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t,
-		char	*,
-		char	*);
+			const char	*,
+			const char	*);
 	
 	double compute_delta_water(int, double, double,	double, double, double);
 	
@@ -63,7 +63,7 @@ struct soil_default *construct_soil_defaults(
 	char	*newrecord;
 	char	record[MAXSTR];
 	struct 	soil_default *default_object_list;
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
         param *paramPtr = NULL;
         int paramCnt = 0;
 

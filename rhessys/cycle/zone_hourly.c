@@ -65,7 +65,7 @@ void		zone_hourly(
 		struct tec_entry *,
 		struct date);
 	
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	long  julday( struct date );
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */

@@ -48,7 +48,7 @@ struct stream_list_object construct_stream_routing_topology(
 		struct basin_object *,
 		FILE *);
 	
-	void *alloc(size_t, char *, char *);
+	void *alloc(size_t, const char *, const char *);
 
 	
 	/*--------------------------------------------------------------*/
@@ -61,7 +61,7 @@ struct stream_list_object construct_stream_routing_topology(
 						   struct basin_object *,
 						   FILE *);
 	
-	void *alloc(size_t, char *, char *);
+	void *alloc(size_t, const char *, const char *);
 	
 	
 	/*--------------------------------------------------------------*/

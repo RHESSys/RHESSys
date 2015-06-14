@@ -55,8 +55,8 @@ void	execute_redefine_strata_event(struct world_object *world,
 		struct patch_object *,
 		struct canopy_strata_object *);
 	struct patch_object	*find_patch( int,
-		int, int, int,
-		struct world_object *);
+		int, int,
+		struct basin_object *);
 	struct canopy_strata_object	*find_stratum( int, int,
 		int, int, int,
 		struct world_object *);
@@ -128,8 +128,7 @@ void	execute_redefine_strata_event(struct world_object *world,
 						patch = find_patch(patch_ID,
 							zone_ID,
 							hill_ID,
-							basin_ID,
-							world);
+							world->basins[b]);
 						stratum = find_stratum_in_patch(stratum_ID, patch);
 						input_new_strata(command_line, stratum_file,
 							world[0].num_base_stations,

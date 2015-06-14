@@ -75,7 +75,7 @@ struct patch_object *construct_patch(
 		struct litter_object *);
 	
 	void	sort_patch_layers(struct patch_object *);
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

@@ -54,7 +54,7 @@ struct	daily_clim_object *construct_daily_clim(
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/
 	double	*construct_clim_sequence( char *, struct date, long);
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/
 	/*--------------------------------------------------------------*/

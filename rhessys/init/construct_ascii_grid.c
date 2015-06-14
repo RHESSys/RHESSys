@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
 #include "rhessys.h"
 
 struct base_station_object **construct_ascii_grid (
@@ -72,7 +73,7 @@ struct base_station_object **construct_ascii_grid (
 		int lapse_rate_tmin;
 	};
 	
-	void	*alloc( 	size_t, char *, char *);
+	void	*alloc( 	size_t, const char *, const char *);
 	
 	struct	base_station_object** base_stations;
 	
@@ -84,7 +85,7 @@ struct base_station_object **construct_ascii_grid (
 	int		j;
 		int tmp;
 
-	long	julday();
+	long	julday(struct date calendar_date);
 	long	first_date_julian;
 	long	start_date_julian;
 	long	offset;	

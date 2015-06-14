@@ -356,15 +356,19 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct hillslope_default *construct_hillslope_defaults(int, char **, struct command_line_object *);
 	struct soil_default *construct_soil_defaults(int, char **, struct command_line_object *);
 	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
-	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
+	struct surface_energy_default *construct_surface_energy_defaults(
+	    int	num_default_files,
+	    char	**default_files,
+	    int grow_flag,
+	    struct command_line_object *command_line);
 	struct landuse_default *construct_landuse_defaults(int, char **, struct command_line_object *);
 	struct stratum_default *construct_stratum_defaults(int, char **, struct command_line_object *);
 	struct base_station_object *construct_base_station(char *,
 		struct date, struct date);
 	struct basin_object *construct_basin(struct command_line_object *, FILE *, int, struct base_station_object **, struct default_object *);
-	struct fire_struct **construct_fire_grid(struct world_object *, struct command_line_object *);
+	struct fire_object **construct_fire_grid(struct world_object *, struct command_line_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
-	void *alloc(size_t, char *, char *);
+	void *alloc(size_t, const char *, const char *);
 /*
 	void  construct_dclim(struct world_object *);
 */
@@ -712,7 +716,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	if (command_line[0].surface_energy_flag == 1) {
 		world[0].defaults[0].surface_energy = construct_surface_energy_defaults(
 			world[0].defaults[0].num_surface_energy_default_files,
-			world[0].surface_energy_default_files, command_line);
+			world[0].surface_energy_default_files, command_line->grow_flag, command_line);
 	}
 
 

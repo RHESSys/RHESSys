@@ -183,7 +183,7 @@ struct	base_station_object *construct_base_station(
 		char	*,
 		struct date);
 
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/
 	/*--------------------------------------------------------------*/

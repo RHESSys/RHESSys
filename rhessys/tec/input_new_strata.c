@@ -76,8 +76,8 @@ void input_new_strata(
 		double);
 
 	void	*alloc(	size_t,
-		char	*,
-		char	*);
+			const char	*,
+			const char	*);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

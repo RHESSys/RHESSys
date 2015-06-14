@@ -53,7 +53,7 @@ struct	dated_input_object *construct_dated_input(
 /*	double	*construct_clim_sequence( char *, struct date, long);*/
 	struct clim_event_sequence construct_dated_clim_sequence(char *,
 		struct date);
-	void	*alloc(size_t, char *, char *);
+	void	*alloc(size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/
 	/*--------------------------------------------------------------*/

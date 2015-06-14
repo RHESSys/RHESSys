@@ -95,7 +95,7 @@ char * getStrParam(int *paramCnt, param **paramPtr, char *paramName, char *readF
             found = 1;
             // Allocate an output string buffer that is the same size as the parameter value string
             sLen = string_length(params[iParam].strVal);
-            outStr = malloc(sizeof(char) * sLen);
+            outStr = (char *)malloc(sizeof(char) * sLen);
             // Transform the string according to the specified format
             sscanf(params[iParam].strVal, readFormat, outStr);
             params[iParam].accessed = 1;

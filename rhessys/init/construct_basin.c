@@ -81,7 +81,7 @@ struct basin_object *construct_basin(
 		struct base_station_object **,
 		struct	default_object *);
 	
-	void	*alloc( 	size_t, char *, char *);
+	void	*alloc( 	size_t, const char *, const char *);
 	
 	void	sort_by_elevation( struct basin_object *);
 	

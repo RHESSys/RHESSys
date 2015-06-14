@@ -62,8 +62,8 @@ void skip_hillslope(
 		struct base_station_object **);
 	
 	void	*alloc(	size_t,
-		char	*,
-		char	*);
+			const char	*,
+			const char	*);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

@@ -76,7 +76,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		double,
 		double);
 
-	void	*alloc(size_t, char *, char *);
+	void	*alloc(size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

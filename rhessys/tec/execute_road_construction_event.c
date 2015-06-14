@@ -47,7 +47,7 @@ void execute_road_construction_event(
 //		struct basin_object *);
 	
 
-	void *alloc(size_t, char *, char *);
+	void *alloc(size_t, const char *, const char *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

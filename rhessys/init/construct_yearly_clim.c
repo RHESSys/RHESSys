@@ -48,7 +48,7 @@ struct	yearly_clim_object *construct_yearly_clim(
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/
 	double	*construct_clim_sequence( char *, struct date, long);
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/

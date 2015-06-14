@@ -43,7 +43,7 @@ struct stratum_default *construct_stratum_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	int	parse_veg_type( char *);
 	int	parse_phenology_type( char *);
 	int	parse_dyn_flag( char *);

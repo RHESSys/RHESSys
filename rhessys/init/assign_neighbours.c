@@ -34,7 +34,7 @@ int assign_neighbours( struct neighbour_object *neighbours,
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/
-	void *alloc (size_t, char *, char *);
+	void *alloc (size_t, const char *, const char *);
 	struct patch_object *find_patch( int, int, int,
 		struct basin_object *);
 	

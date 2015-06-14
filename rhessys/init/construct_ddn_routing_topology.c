@@ -45,7 +45,7 @@ struct routing_list_object *construct_ddn_routing_topology(char *routing_filenam
 		struct basin_object *,
 		FILE *);
 	
-	void *alloc(size_t, char *, char *);
+	void *alloc(size_t, const char *, const char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

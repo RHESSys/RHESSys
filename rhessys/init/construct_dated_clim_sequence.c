@@ -59,7 +59,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/
-	void	*alloc(	size_t, char *, char *);
+	void	*alloc(	size_t, const char *, const char *);
 	long julday(struct date );
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/

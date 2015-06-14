@@ -47,7 +47,7 @@ void execute_firespread_event(
 		struct litter_n_object *,
 		int,
 		struct mortality_struct);
-	void *alloc(size_t, char *, char *);
+	void *alloc(size_t, const char *, const char *);
 
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
@@ -131,18 +131,20 @@ void execute_firespread_event(
 
 			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
-					canopy_strata = patch[0].layers[layer].strata[c];
-					update_mortality(canopy_strata[0].defaults[0][0].epc,
-						 &(canopy_strata[0].cs),
-						 &(canopy_strata[0].cdf),
-						 &(patch[0].cdf),
-						 &(canopy_strata[0].ns),
-						 &(canopy_strata[0].ndf),
-						 &(patch[0].ndf),
-						 &(patch[0].litter_cs),
-						 &(patch[0].litter_ns),
-						 thin_type,
-						 mort);
+						// This code is broken: patch[0].layers[layer].strata[c] is of
+						// type long, but canopy_strata is canopy_strata_object *
+//					canopy_strata = patch[0].layers[layer].strata[c];
+//					update_mortality(canopy_strata[0].defaults[0][0].epc,
+//						 &(canopy_strata[0].cs),
+//						 &(canopy_strata[0].cdf),
+//						 &(patch[0].cdf),
+//						 &(canopy_strata[0].ns),
+//						 &(canopy_strata[0].ndf),
+//						 &(patch[0].ndf),
+//						 &(patch[0].litter_cs),
+//						 &(patch[0].litter_ns),
+//						 thin_type,
+//						 mort);
 				}
 			}
 
