@@ -145,10 +145,10 @@ static double   COUMAX ;        /*  Courant-stability threshold                 
 
 static int      verbose ;
 
-static unsigned num_patches  = -9999 ;      /* Number of patches, set in init_hydro_routing()  */
-static unsigned num_strm     = -9999 ;      /* Number of streams, set in init_hydro_routing()  */
-static unsigned num_hills    = -9999 ;      /* Number of streams, set in init_hydro_routing()  */
-static unsigned strm_patch   = -9999 ;      /* Number of patches draining into streams, set in init_hydro_routing()  */
+static int      num_patches  = -9999 ;      /* Number of patches, set in init_hydro_routing()  */
+static int      num_strm     = -9999 ;      /* Number of streams, set in init_hydro_routing()  */
+static int      num_hills    = -9999 ;      /* Number of streams, set in init_hydro_routing()  */
+static int      strm_patch   = -9999 ;      /* Number of patches draining into streams, set in init_hydro_routing()  */
 
 static double   basin_area ;
 static double   std_scale  ;
@@ -296,9 +296,9 @@ static double     perc[9] = { 0.2, 0.1,   0.1,   0.1,   0.1,    0.1,    0.1,    
 /*--------------------------------------------------------------------------*/
 
 
-static unsigned patchdex( struct patch_object * patch )   /*  patch-subscript in plist[]  */
+static int patchdex( struct patch_object * patch )   /*  patch-subscript in plist[]  */
     {
-    unsigned    i ;
+    int    i ;
     for ( i = 0 ; i < num_patches; i++ )
         {
         if ( patch == plist[i] )  return( i ) ;
@@ -311,9 +311,9 @@ static unsigned patchdex( struct patch_object * patch )   /*  patch-subscript in
 /*--------------------------------------------------------------------------*/
 
 
-static unsigned  streamdex( unsigned ID )   /*  stream-subscript in strm_ID[]  */
+static int  streamdex( int ID )   /*  stream-subscript in strm_ID[]  */
     {
-    unsigned    i ;
+    int    i ;
     for ( i = 0 ; i < num_strm; i++ )
         {
         if ( ID == strm_ID[i] )  return( i ) ;
@@ -337,9 +337,20 @@ static void init_hydro_routing( struct command_line_object * command_line,
 	struct patch_object          * neigh ;
     struct stream_network_object * stream;
     struct hillslope_object      * hillslope;
+    
+    if ( num_patches > 0 )
+        {
+        printf( "Redundant call to init_hydro_routing(); returning.\n" ) ;
+        return ;
+        }
 
     verbose   = command_line->verbose_flag ;
     std_scale = command_line->std_scale ;
+    
+    if ( verbose )
+        {
+        printf( "Entering init_hydro_routing().\n" ) ;
+        }
 
     CPLMAX    = 1800.0 ;                    /*  max hydro coupling time step (sec)  */
     COUMAX    =    0.2 ;                    /*  max Courant condition (number)      */
@@ -347,6 +358,12 @@ static void init_hydro_routing( struct command_line_object * command_line,
     num_patches = basin->route_list->num_patches ;
     num_strm    = basin->stream_list.num_reaches ;
     num_hills   = basin->num_hillslopes ;
+
+
+    printf( "Entering init_hydro_routing():\n    num_patches=%d \n    num_strm=%d \n    num_hills=%d.", 
+            num_patches, num_strm, num_hills ) ;
+    exit(0) ;
+
     strm_patch  = 0 ;
     for ( i = 0 ; i < num_strm ; i++ )
         {
@@ -419,11 +436,6 @@ static void init_hydro_routing( struct command_line_object * command_line,
     gndDOC  = (double   *) alloc( num_patches * sizeof(   double ), "gndDOC", "hydro_routing/init_hydro_routing()" ) ;
     gndDON  = (double   *) alloc( num_patches * sizeof(   double ), "gndDON", "hydro_routing/init_hydro_routing()" ) ;
 
-    hillslo = (unsigned *) alloc(   num_hills * sizeof( unsigned ), "hillslo", "hydro_routing/init_hydro_routing()" ) ;
-    hillshi = (unsigned *) alloc(   num_hills * sizeof( unsigned ), "hillshi", "hydro_routing/init_hydro_routing()" ) ;
-    hillsdx = (unsigned *) alloc( num_patches * sizeof( unsigned ), "hillsdx", "hydro_routing/init_hydro_routing()" ) ;
-    invhill = (double   *) alloc( num_patches * sizeof(   double ), "invhill", "hydro_routing/init_hydro_routing()" ) ;
-
     sfcknl  = (double   *) alloc( num_patches * sizeof(   double ), "sfcknl", "hydro_routing/init_hydro_routing()" ) ;
     sfccnti = (unsigned *) alloc( num_patches * sizeof( unsigned ), "sfccnti", "hydro_routing/init_hydro_routing()" ) ;
     sfcndxi = (NBRuint  *) alloc( num_patches * sizeof(  NBRuint ), "sfcndxi", "hydro_routing/init_hydro_routing()" ) ;
@@ -441,6 +453,11 @@ static void init_hydro_routing( struct command_line_object * command_line,
     strmhi  = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "strmhi",  "hydro_routing/init_hydro_routing()" ) ;
     strmdex = (unsigned *) alloc(  strm_patch * sizeof( unsigned ), "strmdex", "hydro_routing/init_hydro_routing()" ) ;
     strmfac = (double   *) alloc(  strm_patch * sizeof(   double ), "strmfac", "hydro_routing/init_hydro_routing()" ) ;
+
+    hillslo = (unsigned *) alloc(   num_hills * sizeof( unsigned ), "hillslo", "hydro_routing/init_hydro_routing()" ) ;
+    hillshi = (unsigned *) alloc(   num_hills * sizeof( unsigned ), "hillshi", "hydro_routing/init_hydro_routing()" ) ;
+    hillsdx = (unsigned *) alloc(   num_hills * sizeof( unsigned ), "hillsdx", "hydro_routing/init_hydro_routing()" ) ;
+    invhill = (double   *) alloc(   num_hills * sizeof(   double ), "invhill", "hydro_routing/init_hydro_routing()" ) ;
 
     strm_ID = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "strm_ID", "hydro_routing/init_hydro_routing()" ) ;
     resv_ID = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "resv_ID", "hydro_routing/init_hydro_routing()" ) ;
@@ -468,25 +485,22 @@ static void init_hydro_routing( struct command_line_object * command_line,
     strmDOC = (double   *) alloc(    num_strm * sizeof(   double ), "strmDOC", "hydro_routing/init_hydro_routing()" ) ;
     strmflo = (double   *) alloc(    num_strm * sizeof(   double ), "strmflo", "hydro_routing/init_hydro_routing()" ) ;
 
-    reslist = (struct reservoir_object * *) alloc(num_strm * sizeof(struct reservoir_object *), "reslist", "hydro_routing/init_hydro_routing()" ) ;
+    reslist = (struct reservoir_object * *) alloc( num_strm  * sizeof(struct reservoir_object *), "reslist", "hydro_routing/init_hydro_routing()" ) ;
 
-    hillist = (struct hillslope_object * *) alloc(num_strm * sizeof(struct hillslope_object *), "hillist", "hydro_routing/init_hydro_routing()" ) ;
+    hillist = (struct hillslope_object * *) alloc( num_hills * sizeof(struct hillslope_object *), "hillist", "hydro_routing/init_hydro_routing()" ) ;
 
     diagf = 0.5 * sqrt( 0.5 ) ;     /*  "perimeter" factor for diagonals */
     basin_area = 0.0 ;
 
-    // Initialize plist so that we can invert the flow tables (which needs
-    // to refer to patches in an arbitrary order compared to that of the
-    // route list.
-#pragma omp parallel for                                                \
-        default( none )                                                 \
-        private( i )												    \
-		shared( plist )													\
-		schedule( guided )
+#pragma omp parallel for                        \
+        default( none )                         \
+        private( i )                            \
+         shared( num_patches, basin, plist )
+
     for ( i = 0; i < num_patches; i++ )
-    	{
-    		plist [i] = basin->route_list->list[i] ;
-    	}
+        {
+        plist [i] = basin->route_list->list[i] ;
+        }
 
 #pragma omp parallel for                                                \
         default( none )                                                 \
@@ -502,8 +516,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     for ( i = 0; i < num_patches; i++ )
         {
-        patch     = basin->route_list->list[i] ;
-        plist [i] = patch ;
+        patch     = plist[i] ;
         capH2O[i] = patch->field_capacity ;
         parea [i] = patch->area ;
         psize [i] = sqrt( patch->area ) ;
@@ -539,28 +552,28 @@ static void init_hydro_routing( struct command_line_object * command_line,
         gfac = 0.0 ;
         for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions  */
             {
-            gfac += plist[i]->surface_innundation_list->neighbours[j].gamma ;
+            gfac += patch->surface_innundation_list->neighbours[j].gamma ;
             }
         gfac = 1.0 / gfac ;
         for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions from         */
             {                                   /*  flow-rates gamma and uphill/downhill area ratios  */
-            neigh = plist[i]->surface_innundation_list->neighbours[j].patch;
-            dfrac[i][j] = gfac * plist[i]->surface_innundation_list->neighbours[j].gamma  * plist[i]->area / neigh->area ;
+            neigh = patch->surface_innundation_list->neighbours[j].patch;
+            dfrac[i][j] = gfac * patch->surface_innundation_list->neighbours[j].gamma  * patch->area / neigh->area ;
             }
 
         for ( j = 0; j < subcnto[i]; j++ )
             {
-            neigh = plist[i]->innundation_list->neighbours[j].patch;
-            dx    = neigh->x - plist[j]->x ;
-            dy    = neigh->y - plist[j]->y ;
+            neigh = patch->innundation_list->neighbours[j].patch;
+            dx    = neigh->x - patch->x ;
+            dy    = neigh->y - patch->y ;
             subdist[i][j] = sqrt( dx*dx + dy*dy )  ;
             subdexo[i][j] = patchdex( neigh ) ;
             if ( dx+dy < 1.1*subdist[i][j] )
                 {
-                perimf[i][j] = diagf * plist[i]->area / neigh->area ;    /* diagonal-direction factor */
+                perimf[i][j] = diagf * patch->area / neigh->area ;    /* diagonal-direction factor */
                 }
             else{
-                perimf[i][j] = 0.5 * plist[i]->area / neigh->area ;     /* along-axis factor  */
+                perimf[i][j] = 0.5 * patch->area / neigh->area ;     /* along-axis factor  */
                 }
             }
         }                   /*  end first (parallel) initialization loop  */
@@ -705,8 +718,9 @@ static void init_hydro_routing( struct command_line_object * command_line,
     k = 0 ;
     for ( h = 0 ; i < num_hills ; h++ )
         {
+        hillslope  = basin->hillslopes[h] ;
+        hillist[h] = hillslope ;
         hillslo[h] = k ;
-        hillslope = basin->hillslopes[h] ;
         for ( i = 0 ; i < hillslope->num_zones ; i++ )
             {
             for ( j = 0 ; j < hillslope->zones[i]->num_patches ; j++ )
@@ -734,14 +748,13 @@ static void sub_routing( double   tstep,        /*  external time step      */
     double      ss, std, ssum, tsum, wsum, fac ;
     double      trans, dH2Odt ;
     double      dH2O, dNO3, dNH4, dDOC, dDON ;
-    unsigned    i, j, k, kk, m, mm ;
-    int         n ;
+    int         i, j, k, kk, m, mm, n ;
     double      outH2O[num_patches] ;
     double      gammaf[num_patches][MAXNEIGHBOR] ;
 	struct patch_object *   patch ;
 	struct patch_object *   neigh ;
 
-        cmax = COUMAX / min( tstep, CPLMAX ) ;             /*  "Courant-stable for one time-step"  */
+    cmax = COUMAX / min( tstep, CPLMAX ) ;             /*  "Courant-stable for one time-step"  */
 
 #pragma omp parallel for                                            \
         default( none )                                             \
@@ -852,7 +865,7 @@ static void sub_routing( double   tstep,        /*  external time step      */
 
 static void sfc_routing( double  tstep )        /*  process time-step  */
     {
-    unsigned                i, j, k, m ;
+    int                     i, j, k, m ;
     double                  z, poro, ksat, Sp, psi_f, theta, intensity, tp, delta ;
     double                  t, tfinal, dt1, dt2, dt ;
     double                  hh, vel, div, cmax ;
@@ -1178,7 +1191,7 @@ static double resflow( struct reservoir_object * reservoir,
 
 static void stream_routing( double  tstep )        /*  process time-step  */
     {
-    unsigned    i, j, k ;
+    int         i, j, k ;
     double      t , dt, ddt, area, head, vel, flow;
     double      cmax, cscr, dmann, dside, p, q, frac ;
     double      dH2O, dNO3, dNH4, dDOC, dDON ;
@@ -1355,7 +1368,7 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 
 static void sub_vertical( double  tstep )        /*  process time-step  */
     {
-    unsigned                i, j ;
+    int                     i, j ;
     double                  fac, dH2O, dNO3, dNH4, dDOC, dDON ;
 	struct patch_object *   patch ;
 
@@ -1427,16 +1440,18 @@ void hydro_routing( struct command_line_object * command_line,
     double      t ;             /*  time-variables (sec) [counts down to 0]     */
     double      head, area, bsum ;
     double      dH2O, dNO3, dNH4, dDOC, dDON ;
-    unsigned    i, j, k ;
+    int         i, j, k ;
 	struct patch_object     * patch ;
     struct hillslope_object * hillslope;
 
-    if ( num_patches == -9999 )
+    if ( num_patches < 0 )
         {
     	printf("Calling init_hydro_routing...\n");
         init_hydro_routing( command_line, basin ) ;
         }
-
+    
+    printf( "Entering hydro_routing() for %d-%d-%d:%d.\n",  
+            current_date.year, current_date.month, current_date.day, current_date.hour ) ;
 
     /*  COPY INTO WORKING VARIABLES  */
 
