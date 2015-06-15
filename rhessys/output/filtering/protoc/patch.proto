@@ -1,0 +1,45 @@
+package rhessys;
+
+message OutputPatch {
+	required int64 day = 1;
+	required int64 month = 2;
+	required int64 year = 3;
+	required int32 basin_id = 4;
+	required int32 hill_id = 5;
+	required int32 zone_id = 6;
+	required int32 patch_id = 7;
+	required double rain_throughfall = 8;
+	required double detention_store = 9;
+	required double sat_deficit_z = 10;
+	required double sat_deficit = 11;
+	required double rz_storage = 12;
+	required double potential_sat = 13;
+	required double field_capacity = 14;
+	required double wilting_point = 15;
+	required double unsat_storage = 16;
+	required double rz_drainage = 17;
+	required double unsat_drainage = 18;
+	required double sublimation = 19;
+	required double return_flow = 20;
+	required double evaporation = 21;
+	required double evaporation_surf = 22;
+	required double soil_evap = 23;
+	required double snow = 24;
+	required double snow_melt = 25;
+	required double trans_sat = 26;
+	required double trans_unsat = 27;
+	required double q_in = 28;
+	required double q_out = 29;
+	required double psn = 30;
+	required double rootzone_s = 31;
+	required double rootzone_depth = 32;
+	required double litter_rain_stored = 33;
+	required double litter_s = 34;
+	required double area = 35;
+	required double pet = 36;
+	required double lai = 37;
+	required double baseflow = 38;
+	required double streamflow = 39;
+	required double precip = 40;
+	required double recharge = 41;
+}

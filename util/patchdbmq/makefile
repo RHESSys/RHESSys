@@ -1,11 +1,11 @@
 PGM = patchdbmq
 DOCDIR = docs
 RHESSYS_BIN = /usr/local/bin
-CC  = gcc
-INCLUDES = -Iinclude -I/usr/local/include
-CFLAGS = -g -Wall -std=c99
+CC  = g++
+INCLUDES = -Iinclude -I/usr/local/include -I../../rhessys/output/filtering
+CFLAGS = -g -Wall
 #CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
-LDLIBS = -L/usr/local/lib -lzmq -lcassandra
+LDLIBS = -L/usr/local/lib -lzmq -lcassandra `pkg-config --cflags --libs protobuf`
 
 #if pkg-config libzmq --exists; then
 #  LDLIBS=$(pkg-config --libs --cflags libczmq libzmq)
@@ -22,9 +22,10 @@ LDLIBS = -L/usr/local/lib -lzmq -lcassandra
 #COVERAGE_FILES = *.gcov
 
 SRCDIR = src
-SRCS := $(shell find $(SRCDIR) -name '*.c')
+SRCS := $(shell find $(SRCDIR) -name '*.cc')
 OBJDIR = objects
-OBJECTS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
+OBJECTS := $(patsubst $(SRCDIR)/%.cc,$(OBJDIR)/%.o,$(SRCS))
+OBJECTS := $(OBJECTS) ../../rhessys/objects/patch.pb.o
 
 #TESTS_ROOTDIR = test
 #SRCDIR_TESTS = $(TESTS_ROOTDIR)/src
@@ -54,7 +55,7 @@ else
 	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) $(LDLIBS) -o $(PGM)
 endif
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
+$(OBJDIR)/%.o: $(SRCDIR)/%.cc
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $< 
 
 objects: $(OBJECTS)

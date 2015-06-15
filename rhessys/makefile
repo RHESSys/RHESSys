@@ -7,7 +7,10 @@ CC = g++
 CFLAGS = -g 
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
-INCLUDES = -I/usr/local/include -Iinclude
+INCLUDES = -I/usr/local/include -Iinclude -Ioutput/filtering
+
+PROTOC_SRC = output/filtering/protoc
+PROTOC_DEST = output/filtering
 
 OS := $(shell uname)
 
@@ -270,7 +273,8 @@ $(OBJ)/skip_zone.o \
 $(OBJ)/skip_patch.o \
 $(OBJ)/skip_strata.o \
 $(OBJ)/params.o \
-$(OBJ)/patchdb.o
+$(OBJ)/patchdb.o \
+$(OBJ)/patch.pb.o
 
 all:	dir rhessys
 
@@ -278,7 +282,13 @@ dir:
 	mkdir -p $(OBJ)
 
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) -lm -L/usr/local/lib -lcassandra -lzmq -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) $(INCLUDES) -lm -L/usr/local/lib -lcassandra -lzmq `pkg-config --cflags --libs protobuf` -v -o $(PGM) 
+
+protoc:
+	protoc -I=$(PROTOC_SRC) --cpp_out=$(PROTOC_DEST) $(PROTOC_SRC)/patch.proto
+
+$(OBJ)/patch.pb.o: output/filtering/patch.pb.cc
+	$(CC) -c $(CLFAGS) $(INCLUDES) output/filtering/patch.pb.cc -o $(OBJ)/patch.pb.o
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) util/alloc.c -o $(OBJ)/alloc.o
@@ -412,8 +422,8 @@ $(OBJ)/output_hourly_zone.o: output/output_hourly_zone.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) output/output_hourly_zone.c -o $(OBJ)/output_hourly_zone.o
 $(OBJ)/output_zone.o: output/output_zone.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) output/output_zone.c -o $(OBJ)/output_zone.o
-$(OBJ)/output_patch.o: output/output_patch.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) output/output_patch.c -o $(OBJ)/output_patch.o
+$(OBJ)/output_patch.o: output/output_patch.cc
+	$(CC) -c $(CFLAGS) $(INCLUDES) output/output_patch.cc -o $(OBJ)/output_patch.o
 $(OBJ)/output_canopy_stratum.o: output/output_canopy_stratum.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) output/output_canopy_stratum.c -o $(OBJ)/output_canopy_stratum.o
 $(OBJ)/output_basin_state.o: output/output_basin_state.c
