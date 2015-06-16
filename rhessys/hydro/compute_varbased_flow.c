@@ -86,16 +86,6 @@ double	compute_varbased_flow(
 	fs_spill = patch[0].soil_defaults[0][0].fs_spill;
 	fs_percolation = patch[0].soil_defaults[0][0].fs_percolation;
 
-	//patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0 * 0.99 *
-	//	   (1 - patch[0].soil_defaults[0][0].sat_store);
-	/*if(patch[0].ID==33575){
-	    printf("threshold = %f,sat_store = %f, sat_deficit_capacity=%f\n",
-	    threshold,
-	    patch[0].soil_defaults[0][0].sat_store,
-	    n_0 * p * (1 - exp(-soil_depth/p))
-	    );
-	}
-	*/
 	normal[0] = 0;
 	normal[1] = 0.253;
 	normal[2] = 0.524;
