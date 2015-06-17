@@ -84,15 +84,7 @@ void resemble_hourly_date(struct world_object *world){
   union_date=union_date_combine(world,
 				world[0].master_hourly_date);	
     i=0;
-  /*while(union_date[i].year!=0){
-      printf("record i=%d, year = %d, month = %d, day = %d\n",
-						i,
-						union_date[i].year,
-						union_date[i].month,
-						union_date[i].day);
-      i++;
-  }*/
-  
+
   /*-----------------------------------------------------------------------------
    *  2. reconstruct hourly precipitation data for each base station for union_date
    *  for each day in the union_date:
@@ -106,7 +98,7 @@ void resemble_hourly_date(struct world_object *world){
 			  world[0].duration.day);
   
   inx=0;
-  hourly_clim=world[0].base_stations[1][0].hourly_clim;
+  /*hourly_clim=world[0].base_stations[1][0].hourly_clim;
   while(hourly_clim[0].rain.seq[inx].edate.year!=0){
     printf("year = %d, month=%d, day=%d,hour=%d,value=%f\n",
 	    hourly_clim[0].rain.seq[inx].edate.year,
@@ -115,7 +107,7 @@ void resemble_hourly_date(struct world_object *world){
 	    hourly_clim[0].rain.seq[inx].edate.hour,
 	    hourly_clim[0].rain.seq[inx].value);
     inx++;
-  }
+  }*/
   
 }
 
