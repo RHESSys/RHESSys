@@ -276,6 +276,7 @@ struct	base_station_object *construct_base_station(
 	/*	read in the name of the hourly clim object prefix.			*/
 	/*--------------------------------------------------------------*/
 	fscanf(base_station[0].base_station_file, "%s",clim_object_file_prefix);
+	printf("\n Reading from %d %s   ", base_station[0].ID, clim_object_file_prefix);
 	read_record(base_station[0].base_station_file, record);
 	/*--------------------------------------------------------------*/
 	/*	create the hourly climate object for this base station		*/
@@ -289,6 +290,7 @@ struct	base_station_object *construct_base_station(
 	/*	now check to see if there are additional sequences to be read */
 	/*--------------------------------------------------------------*/
 	if (fscanf(base_station[0].base_station_file, "%s",clim_object_file_prefix) != EOF) {
+		printf("\n Now from %d %s   ", base_station[0].ID, clim_object_file_prefix);
 		read_record(base_station[0].base_station_file, record);
 		base_station[0].dated_input = construct_dated_input(
 			base_station[0].base_station_file,

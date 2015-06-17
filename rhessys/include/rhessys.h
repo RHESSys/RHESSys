@@ -668,6 +668,7 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NO3;                                     /* kg/m2/day    */
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
+        struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
         struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
         };

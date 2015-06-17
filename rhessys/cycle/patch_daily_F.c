@@ -396,6 +396,7 @@ void		patch_daily_F(
 	double	water_above_field_cap;
 	double	water_below_field_cap;
 	double 	duration, irrigation;
+	double	snow_melt_input;
 	double  fertilizer_NO3, fertilizer_NH4;
 	double	resp, transpiration_reduction_percent;
 	double 	surfaceN_to_soil;
@@ -562,6 +563,27 @@ void		patch_daily_F(
 
 	patch[0].acc_year.pcp += zone[0].rain + zone[0].snow + irrigation;
 	patch[0].acc_year.snowin += zone[0].snow;
+	/*--------------------------------------------------------------*/
+	/* if snowmelt is from another model (and input rather than computed */
+	/* get that value and set it up to substitute for rhessys internal snowmelt */
+	/*--------------------------------------------------------------*/
+	snow_melt_input=-999.0;
+	if (patch[0].base_stations != NULL) {
+		inx = patch[0].base_stations[0][0].dated_input[0].snow_melt_input.inx;
+		if (inx > -999) {
+			clim_event = patch[0].base_stations[0][0].dated_input[0].snow_melt_input.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].snow_melt_input.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].snow_melt_input.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].snow_melt_input.seq[inx];
+				}
+			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+				snow_melt_input = clim_event.value;
+				}
+			else snow_melt_input = 0.0;
+			} 
+		else snow_melt_input=-999.0;
+	}
 
 
 
@@ -907,7 +929,13 @@ void		patch_daily_F(
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snow_melt;
 			patch[0].snowpack.sublimation = min(patch[0].snowpack.sublimation, patch[0].snowpack.water_equivalent_depth);
 			patch[0].snowpack.height = patch[0].snowpack.water_equivalent_depth / 0.1; /* snow density ~ 0.1 */
-			patch[0].rain_throughfall += patch[0].snow_melt;
+
+			if (snow_melt_input == -999.0) 
+				patch[0].rain_throughfall += patch[0].snow_melt;
+			else {
+				patch[0].rain_throughfall += snow_melt_input;
+				patch[0].snow_melt = snow_melt_input;
+			}
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;
 			/* Force turbulent fluxes to 0 under snowpack */
