@@ -78,8 +78,6 @@ void reconstruct_hourly_clim(struct world_object * world,
     daily_clim = (*base_stations[i]).daily_clim;
     
     num_di = get_num_daywhourly(base_stations[i]);
-    // the following code is for testing only
-    //printf("num_d=%d,num_di=%d\n",num_d,num_di);
     if(num_di == num_d && num_di>=2){
       /*  it has the hourly record for union_date already */
 
@@ -119,12 +117,7 @@ void reconstruct_hourly_clim(struct world_object * world,
 	      for(tmp=0;tmp<24;tmp++){
 		seq[24*d+tmp].edate = hourly_clim[0].rain.seq[dh+tmp].edate;
 		seq[24*d+tmp].value = hourly_clim[0].rain.seq[dh+tmp].value;
-		/*printf("Hour year = %d, month = %d, day =%d, hourly=%d,value = %f\n",
-		      seq[24*d+tmp].edate.year,
-		      seq[24*d+tmp].edate.month,
-		      seq[24*d+tmp].edate.day,
-		      seq[24*d+tmp].edate.hour,
-		      seq[24*d+tmp].value);*/
+
 	      
 
 	      }
@@ -154,14 +147,7 @@ void reconstruct_hourly_clim(struct world_object * world,
 		  seq[24*d+tmp].edate.day  = union_date[d].day;
 		  seq[24*d+tmp].edate.hour = tmp+1;
 		  seq[24*d+tmp].value = daily_clim[0].rain[dd]/24;
-		  /*printf("Day year = %d,month=%d,day=%d,hour =%d,value = %f\n",
-			    union_date[d].year,
-			    union_date[d].month,
-			    union_date[d].day,
-			    tmp+1,
-			    daily_clim[0].rain[dd]/24);*/
-		  
-		  
+
 		}
 		continue;
 	      }
@@ -180,24 +166,11 @@ void reconstruct_hourly_clim(struct world_object * world,
 		  seq[24*d+tmp].value = 0;
 		}
 	  }
-	  /*printf("year = %d, month = %d, day =%d, value = %f\n",
-		      seq[24*d].edate.year,
-		      seq[24*d].edate.month,
-		      seq[24*d].edate.day,
-		      seq[24*d].value);*/
+
 
       }
       seq[24*num_d+1].edate.year=0;
-      /*j=0;
-      while(seq[j].edate.year!=0){
-	printf("date %d %d %d %d value %f\n",
-		  seq[j].edate.year,
-		  seq[j].edate.month,
-		  seq[j].edate.day,
-		  seq[j].edate.hour,
-		  seq[j].value);
-		  j++;
-      }*/
+
       /*-----------------------------------------------------------------------------
        * Replace the old seq with this new seq, free the memory 
        *-----------------------------------------------------------------------------*/

@@ -251,11 +251,7 @@ void compute_subsurface_routing_hourly(
 						verbose_flag);
 			}
 
-		/*	//the following code is for testing only
-			if (patch[0].ID==59812){ //56681
-			    printf("ID = %d, patch[0].Qout*10^6 = %f\n",patch[0].ID, patch[0].Qout * 1000000);
-			}
-		*/	
+
 
 		} /* end i */
 

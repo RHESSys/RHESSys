@@ -167,7 +167,6 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].fs_percolation =	getDoubleParam(&paramCnt, &paramPtr, "fs_percolation", "%lf", 1, 1);
 		default_object_list[i].fs_threshold = 	getDoubleParam(&paramCnt, &paramPtr, "fs_threshold", "%lf", 0.2, 1);
 		
-
 		/*--------------------------------------------------------------*/
 		/*	vertical soil m and K are initized using soil default	*/
 		/*	but sensitivity analysis -s is not applied to them	*/
