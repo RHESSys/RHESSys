@@ -24,8 +24,8 @@ LDLIBS = -L/usr/local/lib -lzmq -lcassandra `pkg-config --cflags --libs protobuf
 SRCDIR = src
 SRCS := $(shell find $(SRCDIR) -name '*.cc')
 OBJDIR = objects
-OBJECTS := $(patsubst $(SRCDIR)/%.cc,$(OBJDIR)/%.o,$(SRCS))
-OBJECTS := $(OBJECTS) ../../rhessys/objects/patch.pb.o
+OBJECTS_LOCAL := $(patsubst $(SRCDIR)/%.cc,$(OBJDIR)/%.o,$(SRCS))
+OBJECTS := $(OBJECTS_LOCAL) ../../rhessys/objects/patch.pb.o
 
 #TESTS_ROOTDIR = test
 #SRCDIR_TESTS = $(TESTS_ROOTDIR)/src
@@ -88,7 +88,7 @@ install: $(PGM)
 	cp $(PGM) $(RHESSYS_BIN)
 
 clean:
-	rm -f $(PGM) $(OBJECTS) $(TESTS) $(OBJECTS_TESTS) $(TESTS_TO_RUN) $(COVERAGE_FILES)
+	rm -f $(PGM) $(OBJECTS_LOCAL) $(TESTS) $(OBJECTS_TESTS) $(TESTS_TO_RUN) $(COVERAGE_FILES)
 
 docclean:
 	rm -rf $(DOCDIR)/html

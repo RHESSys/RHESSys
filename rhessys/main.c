@@ -500,6 +500,8 @@ int	main( int main_argc, char **main_argv)
 
 	// Kill patchdb message queue server
 	if (patchdb_pid > 0) {
+		// TODO: Tell patchdb that we are done ...
+
 		printf("Stopping patchdb (%d) message queue server %s... ",
 				patchdb_pid,
 				command_line[0].patchdb_server);
