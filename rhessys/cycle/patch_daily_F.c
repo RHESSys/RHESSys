@@ -669,8 +669,6 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
-			/* the following code is for testing only*/
-			//printf("Test null_cover = %f\n",patch[0].layers[layer].null_cover);
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			if (dum == 0) {
 				patch[0].ga_final = patch[0].layers[layer].null_cover * tmpga;
@@ -2163,22 +2161,6 @@ void		patch_daily_F(
 if ( command_line[0].verbose_flag == -5 ){
 	printf("\n***END PATCH DAILY: exfil_unsat=%lf",patch[0].exfiltration_unsat_zone);
 }
-
-/*	//the following code is for testing only
-	if(patch[0].ID==33575){
-	  printf("transmissivity[0]=%f\n transimissivity[10]=%f\n transmissivity[100]=%f\n transmissivity[1000]=%f\n",
-		patch[0].transmissivity_profile[0],
-		patch[0].transmissivity_profile[10],
-		patch[0].transmissivity_profile[100],
-		patch[0].transmissivity_profile[1000]);
-	  printf("n_0=%f, porosity_decay=%f, soil_depth=%f\n",patch[0].soil_defaults[0][0].porosity_0,
-		patch[0].soil_defaults[0][0].porosity_decay,
-		patch[0].soil_defaults[0][0].soil_depth);
-	  printf("num_soil_intervals=%d\n,interval_size=%f\n",
-		patch[0].num_soil_intervals,
-		patch[0].soil_defaults[0][0].interval_size);
-	}
-*/
 
 	return;
 } /*end patch_daily_F.c*/

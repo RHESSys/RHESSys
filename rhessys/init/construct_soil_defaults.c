@@ -160,9 +160,13 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
 			}
 
-
+		/*-----------------------------------------------------------------------------
+		 *  Fill and Spill parameters
+		 *-----------------------------------------------------------------------------*/
+		default_object_list[i].fs_spill =	getDoubleParam(&paramCnt, &paramPtr, "fs_spill", "%lf", 1, 1);
+		default_object_list[i].fs_percolation =	getDoubleParam(&paramCnt, &paramPtr, "fs_percolation", "%lf", 1, 1);
+		default_object_list[i].fs_threshold = 	getDoubleParam(&paramCnt, &paramPtr, "fs_threshold", "%lf", 0.2, 1);
 		
-
 		/*--------------------------------------------------------------*/
 		/*	vertical soil m and K are initized using soil default	*/
 		/*	but sensitivity analysis -s is not applied to them	*/

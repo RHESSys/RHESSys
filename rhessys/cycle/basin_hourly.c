@@ -191,11 +191,6 @@ void	basin_hourly(
 			current_date);
 	}
 
-	// the following code is for testing only
-	/*if (zone_p[0].hourly_rain_flag ==1){
-	printf("it is hourly, hour = %d, day = %d \n",current_date.hour,current_date.day);
-	}
-	else{printf("There is no hourly input,hour = %d, day = %d\n",current_date.hour, current_date.day);}
-	*/
+
 	return;
 } /*end basin_hourly.c*/

@@ -117,9 +117,6 @@ void	basin_daily_F(
 
         hillslope = basin[0].hillslopes[0];
 	zone = hillslope[0].zones[0];
-	// the following code is for testing only
-	//printf("zone[0].hourly_rain_flag=%d\n",zone[0].hourly_rain_flag);
-
 	basin[0].snowpack.surface_age /=  basin[0].area_withsnow;
 	basin[0].snowpack.T /=  basin[0].area_withsnow;
 	basin[0].snowpack.energy_deficit /=  basin[0].area_withsnow;
