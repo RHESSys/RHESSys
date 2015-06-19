@@ -158,6 +158,9 @@ int main (int argc, char **argv) {
     	/* Block until a message is available to be received from socket */
     	rc = zmq_recvmsg(responder, &msg, 0);
     	assert(rc != -1);
+    	// TODO: Recv as multipart message with control information preceding
+    	// data.
+    	// See: http://zguide.zeromq.org/page:all#Multipart-Messages
 
     	// De-serialize message Protocol Buffers message
     	rhessys::OutputPatch p;

@@ -172,6 +172,9 @@ void	output_patch(struct  command_line_object * command_line,
 			printf("Unable to create zeromq message");
 			exit(EXIT_FAILURE);
 		}
+		// TODO: send as multipart mesg to we can send control
+		// information.
+		// See: http://zguide.zeromq.org/page:all#Multipart-Messages
 		rc = zmq_sendmsg(world_output_files->patchdbmq_requester,
 				&msg, 0);
 
