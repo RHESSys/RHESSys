@@ -2134,6 +2134,5 @@ if ( command_line[0].verbose_flag == -5 ){
 }
 
 
-
 	return;
 } /*end patch_daily_F.c*/

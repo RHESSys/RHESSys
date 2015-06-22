@@ -191,6 +191,6 @@ void	basin_hourly(
 			current_date);
 	}
 
-	
+
 	return;
 } /*end basin_hourly.c*/
