@@ -456,7 +456,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     hillslo = (unsigned *) alloc(   num_hills * sizeof( unsigned ), "hillslo", "hydro_routing/init_hydro_routing()" ) ;
     hillshi = (unsigned *) alloc(   num_hills * sizeof( unsigned ), "hillshi", "hydro_routing/init_hydro_routing()" ) ;
-    hillsdx = (unsigned *) alloc(   num_hills * sizeof( unsigned ), "hillsdx", "hydro_routing/init_hydro_routing()" ) ;
+    hillsdx = (unsigned *) alloc( num_patches * sizeof( unsigned ), "hillsdx", "hydro_routing/init_hydro_routing()" ) ;
     invhill = (double   *) alloc(   num_hills * sizeof(   double ), "invhill", "hydro_routing/init_hydro_routing()" ) ;
 
     strm_ID = (unsigned *) alloc(    num_strm * sizeof( unsigned ), "strm_ID", "hydro_routing/init_hydro_routing()" ) ;
