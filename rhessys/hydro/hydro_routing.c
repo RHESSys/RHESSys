@@ -1578,6 +1578,11 @@ void hydro_routing( struct command_line_object * command_line,
         basin->stream_list.stream_network[i].water_depth = headfn( area, botwdth[i], sideslp[i] );
         basin->stream_list.stream_network[i].Qout = strmflo[i] ;
         }
+        
+        /* Loop through patches k=hillsdx[j] for this hillslope i: */
+        /* accumulating the per-patch ground-seepage terms         */
+        /* hillsdx[ hillslo[i] : hillshi[i] ]  are the             */
+        /* patch-subscripts for the hill subscripted "i"           */
 
 #pragma omp parallel for                                                    \
         default( none )                                                     \
@@ -1592,7 +1597,8 @@ void hydro_routing( struct command_line_object * command_line,
         dNO3 = 0.0 ;
         dNH4 = 0.0 ;
         dDON = 0.0 ;
-        dDOC = 0.0 ;   
+        dDOC = 0.0 ;
+
         for ( j = hillslo[i] ; j < hillshi[i] ; j++ )
             {
             k = hillsdx[j] ;
