@@ -113,6 +113,7 @@
 /*--------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+#include <limits.h>
 #include "rhessys.h"
 
 /*	Local function definitions.				*/
@@ -362,7 +363,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     printf( "Entering init_hydro_routing():\n    num_patches=%d \n    num_strm=%d \n    num_hills=%d.", 
             num_patches, num_strm, num_hills ) ;
-    exit(0) ;
+    //exit(0) ;
 
     strm_patch  = 0 ;
     for ( i = 0 ; i < num_strm ; i++ )
@@ -716,7 +717,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
     /*  NOTE that we don't need per-zone decomposition on the hillslopes  */
 
     k = 0 ;
-    for ( h = 0 ; i < num_hills ; h++ )
+    for ( h = 0 ; h < num_hills ; h++ )
         {
         hillslope  = basin->hillslopes[h] ;
         hillist[h] = hillslope ;
@@ -775,13 +776,19 @@ static void sub_routing( double   tstep,        /*  external time step      */
             tsum = 0.0 ;
             for ( m = 0 ; m < 9 ; m++ )
                 {
-                n = min( (int)nsoil[i], (int) lround( patch->sat_deficit + normal[m]*pscale[i])/dzsoil[i] ) ;
+                n = min( (int)nsoil[i], (int)lround( patch->sat_deficit + normal[m]*pscale[i])/dzsoil[i] ) ;
                 tsum += patch->transmissivity_profile[n] * perc[m] ;
                 }
             trans = tsum / psize [i] ;
             }
         else{
-            n     = min( (int)nsoil[i], (int)lround( patch->sat_deficit/dzsoil[i] ) ) ;
+        	long interval = lround( patch->sat_deficit/dzsoil[i] );
+        	if (interval > nsoil[i]) {
+        		n = (int)nsoil[i];
+        	} else {
+        		n = (int)min(interval, INT_MAX);
+        	}
+            //n     = min( (int)nsoil[i], (int)lround( patch->sat_deficit/dzsoil[i] ) ) ;
             trans = patch->transmissivity_profile[n] / psize [i] ;
             }
 
@@ -1586,7 +1593,7 @@ void hydro_routing( struct command_line_object * command_line,
         dNH4 = 0.0 ;
         dDON = 0.0 ;
         dDOC = 0.0 ;   
-        for ( j = hillslo[i] ; k < hillshi[i] ; j++ )
+        for ( j = hillslo[i] ; j < hillshi[i] ; j++ )
             {
             k = hillsdx[j] ;
             dH2O += parea[k] * gndH2O[k] ;
