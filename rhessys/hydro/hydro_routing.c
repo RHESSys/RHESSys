@@ -135,6 +135,7 @@ double	compute_z_final( int	verbose_flag,
 #define     DEG2RAD         (M_PI/180.0)
 #define     EPSILON         (1.0e-5)
 #define     D3600           (1.0/3600.0)
+#define     SEC2DAY         (1.0/3600.0*24.0)
 
 /*  "array-of-neighbors"  types:  */
 
@@ -779,17 +780,12 @@ static void sub_routing( double   tstep,        /*  external time step      */
                 n = min( (int)nsoil[i], (int)lround( patch->sat_deficit + normal[m]*pscale[i])/dzsoil[i] ) ;
                 tsum += patch->transmissivity_profile[n] * perc[m] ;
                 }
-            trans = tsum / psize [i] ;
+            trans = SEC2DAY * tsum / psize [i] ;
             }
         else{
-        	long interval = lround( patch->sat_deficit/dzsoil[i] );
-        	if (interval > nsoil[i]) {
-        		n = (int)nsoil[i];
-        	} else {
-        		n = (int)min(interval, INT_MAX);
-        	}
-            //n     = min( (int)nsoil[i], (int)lround( patch->sat_deficit/dzsoil[i] ) ) ;
-            trans = patch->transmissivity_profile[n] / psize [i] ;
+            if ( isnan( patch->sat_deficit ) ) patch->sat_deficit = 0.0 ;
+            n     = max( 0, min( nsoil[i], round( patch->sat_deficit/dzsoil[i] ) ) ) ;
+            trans = SEC2DAY * patch->transmissivity_profile[n] / psize [i] ;
             }
 
         z1    = waterz[i]  ;
@@ -1579,10 +1575,11 @@ void hydro_routing( struct command_line_object * command_line,
         basin->stream_list.stream_network[i].Qout = strmflo[i] ;
         }
         
-        /* Loop through patches k=hillsdx[j] for this hillslope i: */
-        /* accumulating the per-patch ground-seepage terms         */
-        /* hillsdx[ hillslo[i] : hillshi[i] ]  are the             */
-        /* patch-subscripts for the hill subscripted "i"           */
+        /* Loop through patches k=hillsdx[j] for this hillslope i:  */
+        /* accumulating the per-patch ground-seepage terms          */
+        /* hillsdx[ hillslo[i] : hillshi[i] ]  are the              */
+        /* patch-subscripts for the hill subscripted "i"            */
+        /* Normalize by patch-areas and hillslope-areas to get mean */
 
 #pragma omp parallel for                                                    \
         default( none )                                                     \
