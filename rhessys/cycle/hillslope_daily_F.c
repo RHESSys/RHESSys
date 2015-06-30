@@ -89,7 +89,7 @@ void		hillslope_daily_F(
 	double gw_Qout,gw_Qout_ratio;
 	struct patch_object *patch;
 	
-	
+	#pragma omp parallel for
 	for ( zone=0 ; zone<hillslope[0].num_zones; zone++ ){
 		zone_daily_F(	day,
 			world,
