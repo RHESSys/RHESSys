@@ -1,8 +1,8 @@
-PGM  = rhessys5.19
-VERSION = 5.19
+PGM  = rhessys5.19omp
+VERSION = 5.19omp
 CC = gcc 
 #CFLAGS = -O -std=c99
-CFLAGS = -g -std=c99
+CFLAGS = -g -std=c99 -openmp
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
