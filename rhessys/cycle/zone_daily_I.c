@@ -207,10 +207,17 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 		/*		compute isohyet difference adjustment					*/
 		/*--------------------------------------------------------------*/
+		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_precip == NULL) {
 		if (zone[0].defaults[0][0].lapse_rate_precip_default != -999.0)
 			isohyet_adjustment = zone[0].defaults[0][0].lapse_rate_precip_default*z_delta+1.0;
 		else
 			isohyet_adjustment = zone[0].precip_lapse_rate;
+
+		}
+		else {
+			isohyet_adjustment = 
+			zone[0].base_stations[i][0].daily_clim[0].lapse_rate_precip[day]*z_delta + 1.0;
+			}
 
 		isohyet_adjustment = max(0.0, isohyet_adjustment);
 		/*--------------------------------------------------------------*/

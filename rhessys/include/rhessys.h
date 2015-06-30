@@ -708,6 +708,7 @@ struct  daily_clim_object
         double  *dayl;                  /* seconds / day */
         double  *daytime_rain_duration;         /* hours/day    */
         double  *Delta_T;               /*      degrees C / day         */
+        double  *lapse_rate_precip;               /*      m / m           */
         double  *lapse_rate_tmin;               /*      degrees C / m           */
         double  *lapse_rate_tmax;               /*      degrees C / m           */
         double  *dewpoint;                      /*      degrees C       */
