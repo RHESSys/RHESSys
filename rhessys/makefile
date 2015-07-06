@@ -274,7 +274,8 @@ $(OBJ)/skip_patch.o \
 $(OBJ)/skip_strata.o \
 $(OBJ)/params.o \
 $(OBJ)/patchdb.o \
-$(OBJ)/patch.pb.o
+$(OBJ)/patch.pb.o \
+$(OBJ)/zmqutil.o
 
 all:	dir rhessys
 
@@ -290,6 +291,8 @@ protoc:
 $(OBJ)/patch.pb.o: output/filtering/patch.pb.cc
 	$(CC) -c $(CLFAGS) $(INCLUDES) output/filtering/patch.pb.cc -o $(OBJ)/patch.pb.o
 
+$(OBJ)/zmqutil.o: util/zmqutil.cc
+	$(CC) -c $(CLFAGS) $(INCLUDES) util/zmqutil.cc -o $(OBJ)/zmqutil.o
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) util/alloc.c -o $(OBJ)/alloc.o
 $(OBJ)/add_headers.o: output/add_headers.c
@@ -810,16 +813,16 @@ $(OBJ)/params.o: util/params.c
 $(OBJ)/patchdb.o: output/patchdb.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) output/patchdb.c -o $(OBJ)/patchdb.o
 
-$(OBJ)/main.o: main.c setversion
-	$(CC) -c $(CFLAGS) $(INCLUDES) main.c -o $(OBJ)/main.o
+$(OBJ)/main.o: main.cc setversion
+	$(CC) -c $(CFLAGS) $(INCLUDES) main.cc -o $(OBJ)/main.o
 
 setversion:
 ifeq ($(OS), Darwin)
-	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' -i '' ./main.c	
+	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' -i '' ./main.cc	
 else ifeq ($(OS), Linux)
-	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
+	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.cc
 else
-	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
+	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.cc
 endif
 
 install:

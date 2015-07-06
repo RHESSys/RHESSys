@@ -23,6 +23,7 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
+#include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
@@ -34,7 +35,30 @@ void protobuf_AssignDesc_patch_2eproto();
 void protobuf_ShutdownFile_patch_2eproto();
 
 class OutputPatch;
+class BeginSim;
+class EndSim;
+class PatchDBMesg;
 
+enum PatchDBMesg_Type {
+  PatchDBMesg_Type_BEGIN_SIM = 1,
+  PatchDBMesg_Type_END_SIM = 2,
+  PatchDBMesg_Type_OUTPUT_PATCH = 3
+};
+bool PatchDBMesg_Type_IsValid(int value);
+const PatchDBMesg_Type PatchDBMesg_Type_Type_MIN = PatchDBMesg_Type_BEGIN_SIM;
+const PatchDBMesg_Type PatchDBMesg_Type_Type_MAX = PatchDBMesg_Type_OUTPUT_PATCH;
+const int PatchDBMesg_Type_Type_ARRAYSIZE = PatchDBMesg_Type_Type_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* PatchDBMesg_Type_descriptor();
+inline const ::std::string& PatchDBMesg_Type_Name(PatchDBMesg_Type value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    PatchDBMesg_Type_descriptor(), value);
+}
+inline bool PatchDBMesg_Type_Parse(
+    const ::std::string& name, PatchDBMesg_Type* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<PatchDBMesg_Type>(
+    PatchDBMesg_Type_descriptor(), name, value);
+}
 // ===================================================================
 
 class OutputPatch : public ::google::protobuf::Message {
@@ -513,6 +537,314 @@ class OutputPatch : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static OutputPatch* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class BeginSim : public ::google::protobuf::Message {
+ public:
+  BeginSim();
+  virtual ~BeginSim();
+
+  BeginSim(const BeginSim& from);
+
+  inline BeginSim& operator=(const BeginSim& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BeginSim& default_instance();
+
+  void Swap(BeginSim* other);
+
+  // implements Message ----------------------------------------------
+
+  BeginSim* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BeginSim& from);
+  void MergeFrom(const BeginSim& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string mesg = 1;
+  inline bool has_mesg() const;
+  inline void clear_mesg();
+  static const int kMesgFieldNumber = 1;
+  inline const ::std::string& mesg() const;
+  inline void set_mesg(const ::std::string& value);
+  inline void set_mesg(const char* value);
+  inline void set_mesg(const char* value, size_t size);
+  inline ::std::string* mutable_mesg();
+  inline ::std::string* release_mesg();
+  inline void set_allocated_mesg(::std::string* mesg);
+
+  // @@protoc_insertion_point(class_scope:rhessys.BeginSim)
+ private:
+  inline void set_has_mesg();
+  inline void clear_has_mesg();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* mesg_;
+  friend void  protobuf_AddDesc_patch_2eproto();
+  friend void protobuf_AssignDesc_patch_2eproto();
+  friend void protobuf_ShutdownFile_patch_2eproto();
+
+  void InitAsDefaultInstance();
+  static BeginSim* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class EndSim : public ::google::protobuf::Message {
+ public:
+  EndSim();
+  virtual ~EndSim();
+
+  EndSim(const EndSim& from);
+
+  inline EndSim& operator=(const EndSim& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const EndSim& default_instance();
+
+  void Swap(EndSim* other);
+
+  // implements Message ----------------------------------------------
+
+  EndSim* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const EndSim& from);
+  void MergeFrom(const EndSim& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string mesg = 1;
+  inline bool has_mesg() const;
+  inline void clear_mesg();
+  static const int kMesgFieldNumber = 1;
+  inline const ::std::string& mesg() const;
+  inline void set_mesg(const ::std::string& value);
+  inline void set_mesg(const char* value);
+  inline void set_mesg(const char* value, size_t size);
+  inline ::std::string* mutable_mesg();
+  inline ::std::string* release_mesg();
+  inline void set_allocated_mesg(::std::string* mesg);
+
+  // @@protoc_insertion_point(class_scope:rhessys.EndSim)
+ private:
+  inline void set_has_mesg();
+  inline void clear_has_mesg();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* mesg_;
+  friend void  protobuf_AddDesc_patch_2eproto();
+  friend void protobuf_AssignDesc_patch_2eproto();
+  friend void protobuf_ShutdownFile_patch_2eproto();
+
+  void InitAsDefaultInstance();
+  static EndSim* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class PatchDBMesg : public ::google::protobuf::Message {
+ public:
+  PatchDBMesg();
+  virtual ~PatchDBMesg();
+
+  PatchDBMesg(const PatchDBMesg& from);
+
+  inline PatchDBMesg& operator=(const PatchDBMesg& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PatchDBMesg& default_instance();
+
+  void Swap(PatchDBMesg* other);
+
+  // implements Message ----------------------------------------------
+
+  PatchDBMesg* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PatchDBMesg& from);
+  void MergeFrom(const PatchDBMesg& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef PatchDBMesg_Type Type;
+  static const Type BEGIN_SIM = PatchDBMesg_Type_BEGIN_SIM;
+  static const Type END_SIM = PatchDBMesg_Type_END_SIM;
+  static const Type OUTPUT_PATCH = PatchDBMesg_Type_OUTPUT_PATCH;
+  static inline bool Type_IsValid(int value) {
+    return PatchDBMesg_Type_IsValid(value);
+  }
+  static const Type Type_MIN =
+    PatchDBMesg_Type_Type_MIN;
+  static const Type Type_MAX =
+    PatchDBMesg_Type_Type_MAX;
+  static const int Type_ARRAYSIZE =
+    PatchDBMesg_Type_Type_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  Type_descriptor() {
+    return PatchDBMesg_Type_descriptor();
+  }
+  static inline const ::std::string& Type_Name(Type value) {
+    return PatchDBMesg_Type_Name(value);
+  }
+  static inline bool Type_Parse(const ::std::string& name,
+      Type* value) {
+    return PatchDBMesg_Type_Parse(name, value);
+  }
+
+  // accessors -------------------------------------------------------
+
+  // required .rhessys.PatchDBMesg.Type type = 1;
+  inline bool has_type() const;
+  inline void clear_type();
+  static const int kTypeFieldNumber = 1;
+  inline ::rhessys::PatchDBMesg_Type type() const;
+  inline void set_type(::rhessys::PatchDBMesg_Type value);
+
+  // optional .rhessys.BeginSim beginSim = 2;
+  inline bool has_beginsim() const;
+  inline void clear_beginsim();
+  static const int kBeginSimFieldNumber = 2;
+  inline const ::rhessys::BeginSim& beginsim() const;
+  inline ::rhessys::BeginSim* mutable_beginsim();
+  inline ::rhessys::BeginSim* release_beginsim();
+  inline void set_allocated_beginsim(::rhessys::BeginSim* beginsim);
+
+  // optional .rhessys.EndSim endSim = 3;
+  inline bool has_endsim() const;
+  inline void clear_endsim();
+  static const int kEndSimFieldNumber = 3;
+  inline const ::rhessys::EndSim& endsim() const;
+  inline ::rhessys::EndSim* mutable_endsim();
+  inline ::rhessys::EndSim* release_endsim();
+  inline void set_allocated_endsim(::rhessys::EndSim* endsim);
+
+  // optional .rhessys.OutputPatch outputPatch = 4;
+  inline bool has_outputpatch() const;
+  inline void clear_outputpatch();
+  static const int kOutputPatchFieldNumber = 4;
+  inline const ::rhessys::OutputPatch& outputpatch() const;
+  inline ::rhessys::OutputPatch* mutable_outputpatch();
+  inline ::rhessys::OutputPatch* release_outputpatch();
+  inline void set_allocated_outputpatch(::rhessys::OutputPatch* outputpatch);
+
+  // @@protoc_insertion_point(class_scope:rhessys.PatchDBMesg)
+ private:
+  inline void set_has_type();
+  inline void clear_has_type();
+  inline void set_has_beginsim();
+  inline void clear_has_beginsim();
+  inline void set_has_endsim();
+  inline void clear_has_endsim();
+  inline void set_has_outputpatch();
+  inline void clear_has_outputpatch();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::rhessys::BeginSim* beginsim_;
+  ::rhessys::EndSim* endsim_;
+  ::rhessys::OutputPatch* outputpatch_;
+  int type_;
+  friend void  protobuf_AddDesc_patch_2eproto();
+  friend void protobuf_AssignDesc_patch_2eproto();
+  friend void protobuf_ShutdownFile_patch_2eproto();
+
+  void InitAsDefaultInstance();
+  static PatchDBMesg* default_instance_;
 };
 // ===================================================================
 
@@ -1505,6 +1837,318 @@ inline void OutputPatch::set_recharge(double value) {
   // @@protoc_insertion_point(field_set:rhessys.OutputPatch.recharge)
 }
 
+// -------------------------------------------------------------------
+
+// BeginSim
+
+// required string mesg = 1;
+inline bool BeginSim::has_mesg() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void BeginSim::set_has_mesg() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void BeginSim::clear_has_mesg() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void BeginSim::clear_mesg() {
+  if (mesg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_->clear();
+  }
+  clear_has_mesg();
+}
+inline const ::std::string& BeginSim::mesg() const {
+  // @@protoc_insertion_point(field_get:rhessys.BeginSim.mesg)
+  return *mesg_;
+}
+inline void BeginSim::set_mesg(const ::std::string& value) {
+  set_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_ = new ::std::string;
+  }
+  mesg_->assign(value);
+  // @@protoc_insertion_point(field_set:rhessys.BeginSim.mesg)
+}
+inline void BeginSim::set_mesg(const char* value) {
+  set_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_ = new ::std::string;
+  }
+  mesg_->assign(value);
+  // @@protoc_insertion_point(field_set_char:rhessys.BeginSim.mesg)
+}
+inline void BeginSim::set_mesg(const char* value, size_t size) {
+  set_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_ = new ::std::string;
+  }
+  mesg_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:rhessys.BeginSim.mesg)
+}
+inline ::std::string* BeginSim::mutable_mesg() {
+  set_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:rhessys.BeginSim.mesg)
+  return mesg_;
+}
+inline ::std::string* BeginSim::release_mesg() {
+  clear_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = mesg_;
+    mesg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void BeginSim::set_allocated_mesg(::std::string* mesg) {
+  if (mesg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete mesg_;
+  }
+  if (mesg) {
+    set_has_mesg();
+    mesg_ = mesg;
+  } else {
+    clear_has_mesg();
+    mesg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:rhessys.BeginSim.mesg)
+}
+
+// -------------------------------------------------------------------
+
+// EndSim
+
+// required string mesg = 1;
+inline bool EndSim::has_mesg() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void EndSim::set_has_mesg() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void EndSim::clear_has_mesg() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void EndSim::clear_mesg() {
+  if (mesg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_->clear();
+  }
+  clear_has_mesg();
+}
+inline const ::std::string& EndSim::mesg() const {
+  // @@protoc_insertion_point(field_get:rhessys.EndSim.mesg)
+  return *mesg_;
+}
+inline void EndSim::set_mesg(const ::std::string& value) {
+  set_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_ = new ::std::string;
+  }
+  mesg_->assign(value);
+  // @@protoc_insertion_point(field_set:rhessys.EndSim.mesg)
+}
+inline void EndSim::set_mesg(const char* value) {
+  set_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_ = new ::std::string;
+  }
+  mesg_->assign(value);
+  // @@protoc_insertion_point(field_set_char:rhessys.EndSim.mesg)
+}
+inline void EndSim::set_mesg(const char* value, size_t size) {
+  set_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_ = new ::std::string;
+  }
+  mesg_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:rhessys.EndSim.mesg)
+}
+inline ::std::string* EndSim::mutable_mesg() {
+  set_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    mesg_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:rhessys.EndSim.mesg)
+  return mesg_;
+}
+inline ::std::string* EndSim::release_mesg() {
+  clear_has_mesg();
+  if (mesg_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = mesg_;
+    mesg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void EndSim::set_allocated_mesg(::std::string* mesg) {
+  if (mesg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete mesg_;
+  }
+  if (mesg) {
+    set_has_mesg();
+    mesg_ = mesg;
+  } else {
+    clear_has_mesg();
+    mesg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:rhessys.EndSim.mesg)
+}
+
+// -------------------------------------------------------------------
+
+// PatchDBMesg
+
+// required .rhessys.PatchDBMesg.Type type = 1;
+inline bool PatchDBMesg::has_type() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void PatchDBMesg::set_has_type() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void PatchDBMesg::clear_has_type() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void PatchDBMesg::clear_type() {
+  type_ = 1;
+  clear_has_type();
+}
+inline ::rhessys::PatchDBMesg_Type PatchDBMesg::type() const {
+  // @@protoc_insertion_point(field_get:rhessys.PatchDBMesg.type)
+  return static_cast< ::rhessys::PatchDBMesg_Type >(type_);
+}
+inline void PatchDBMesg::set_type(::rhessys::PatchDBMesg_Type value) {
+  assert(::rhessys::PatchDBMesg_Type_IsValid(value));
+  set_has_type();
+  type_ = value;
+  // @@protoc_insertion_point(field_set:rhessys.PatchDBMesg.type)
+}
+
+// optional .rhessys.BeginSim beginSim = 2;
+inline bool PatchDBMesg::has_beginsim() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void PatchDBMesg::set_has_beginsim() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void PatchDBMesg::clear_has_beginsim() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void PatchDBMesg::clear_beginsim() {
+  if (beginsim_ != NULL) beginsim_->::rhessys::BeginSim::Clear();
+  clear_has_beginsim();
+}
+inline const ::rhessys::BeginSim& PatchDBMesg::beginsim() const {
+  // @@protoc_insertion_point(field_get:rhessys.PatchDBMesg.beginSim)
+  return beginsim_ != NULL ? *beginsim_ : *default_instance_->beginsim_;
+}
+inline ::rhessys::BeginSim* PatchDBMesg::mutable_beginsim() {
+  set_has_beginsim();
+  if (beginsim_ == NULL) beginsim_ = new ::rhessys::BeginSim;
+  // @@protoc_insertion_point(field_mutable:rhessys.PatchDBMesg.beginSim)
+  return beginsim_;
+}
+inline ::rhessys::BeginSim* PatchDBMesg::release_beginsim() {
+  clear_has_beginsim();
+  ::rhessys::BeginSim* temp = beginsim_;
+  beginsim_ = NULL;
+  return temp;
+}
+inline void PatchDBMesg::set_allocated_beginsim(::rhessys::BeginSim* beginsim) {
+  delete beginsim_;
+  beginsim_ = beginsim;
+  if (beginsim) {
+    set_has_beginsim();
+  } else {
+    clear_has_beginsim();
+  }
+  // @@protoc_insertion_point(field_set_allocated:rhessys.PatchDBMesg.beginSim)
+}
+
+// optional .rhessys.EndSim endSim = 3;
+inline bool PatchDBMesg::has_endsim() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void PatchDBMesg::set_has_endsim() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void PatchDBMesg::clear_has_endsim() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void PatchDBMesg::clear_endsim() {
+  if (endsim_ != NULL) endsim_->::rhessys::EndSim::Clear();
+  clear_has_endsim();
+}
+inline const ::rhessys::EndSim& PatchDBMesg::endsim() const {
+  // @@protoc_insertion_point(field_get:rhessys.PatchDBMesg.endSim)
+  return endsim_ != NULL ? *endsim_ : *default_instance_->endsim_;
+}
+inline ::rhessys::EndSim* PatchDBMesg::mutable_endsim() {
+  set_has_endsim();
+  if (endsim_ == NULL) endsim_ = new ::rhessys::EndSim;
+  // @@protoc_insertion_point(field_mutable:rhessys.PatchDBMesg.endSim)
+  return endsim_;
+}
+inline ::rhessys::EndSim* PatchDBMesg::release_endsim() {
+  clear_has_endsim();
+  ::rhessys::EndSim* temp = endsim_;
+  endsim_ = NULL;
+  return temp;
+}
+inline void PatchDBMesg::set_allocated_endsim(::rhessys::EndSim* endsim) {
+  delete endsim_;
+  endsim_ = endsim;
+  if (endsim) {
+    set_has_endsim();
+  } else {
+    clear_has_endsim();
+  }
+  // @@protoc_insertion_point(field_set_allocated:rhessys.PatchDBMesg.endSim)
+}
+
+// optional .rhessys.OutputPatch outputPatch = 4;
+inline bool PatchDBMesg::has_outputpatch() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void PatchDBMesg::set_has_outputpatch() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void PatchDBMesg::clear_has_outputpatch() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void PatchDBMesg::clear_outputpatch() {
+  if (outputpatch_ != NULL) outputpatch_->::rhessys::OutputPatch::Clear();
+  clear_has_outputpatch();
+}
+inline const ::rhessys::OutputPatch& PatchDBMesg::outputpatch() const {
+  // @@protoc_insertion_point(field_get:rhessys.PatchDBMesg.outputPatch)
+  return outputpatch_ != NULL ? *outputpatch_ : *default_instance_->outputpatch_;
+}
+inline ::rhessys::OutputPatch* PatchDBMesg::mutable_outputpatch() {
+  set_has_outputpatch();
+  if (outputpatch_ == NULL) outputpatch_ = new ::rhessys::OutputPatch;
+  // @@protoc_insertion_point(field_mutable:rhessys.PatchDBMesg.outputPatch)
+  return outputpatch_;
+}
+inline ::rhessys::OutputPatch* PatchDBMesg::release_outputpatch() {
+  clear_has_outputpatch();
+  ::rhessys::OutputPatch* temp = outputpatch_;
+  outputpatch_ = NULL;
+  return temp;
+}
+inline void PatchDBMesg::set_allocated_outputpatch(::rhessys::OutputPatch* outputpatch) {
+  delete outputpatch_;
+  outputpatch_ = outputpatch;
+  if (outputpatch) {
+    set_has_outputpatch();
+  } else {
+    clear_has_outputpatch();
+  }
+  // @@protoc_insertion_point(field_set_allocated:rhessys.PatchDBMesg.outputPatch)
+}
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -1514,6 +2158,11 @@ inline void OutputPatch::set_recharge(double value) {
 namespace google {
 namespace protobuf {
 
+template <> struct is_proto_enum< ::rhessys::PatchDBMesg_Type> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::rhessys::PatchDBMesg_Type>() {
+  return ::rhessys::PatchDBMesg_Type_descriptor();
+}
 
 }  // namespace google
 }  // namespace protobuf

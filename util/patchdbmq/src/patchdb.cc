@@ -20,6 +20,7 @@ CassError patchdb_prepare_statement(CassSession* session, const char* query,
 	CassFuture* future = NULL;
 	CassError rc = CASS_OK;
 
+	//printf("patchdb_prepare_statement...");
 	future = cass_session_prepare(session, query);
 	cass_future_wait(future);
 	rc = cass_future_error_code(future);
@@ -29,6 +30,8 @@ CassError patchdb_prepare_statement(CassSession* session, const char* query,
 		*stmt = cass_future_get_prepared(future);
 	}
 	cass_future_free(future);
+	//printf("done\n");
+
 	return rc;
 }
 
@@ -62,6 +65,7 @@ void init_patchdb(char* hostname,
 	*cluster = cass_cluster_new();
 	*session = cass_session_new();
 	cass_cluster_set_contact_points(*cluster, hostname);
+	cass_cluster_set_write_bytes_high_water_mark(*cluster, 64 * 1024 * 1024);
 	CassFuture* connect_future = cass_session_connect(*session, *cluster);
 
 	if (cass_future_error_code(connect_future) != CASS_OK) {

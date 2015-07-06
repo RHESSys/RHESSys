@@ -64,13 +64,6 @@ void	destroy_output_files(
 	/*--------------------------------------------------------------*/
 	if ( command_line[0].p != NULL ){
 		destroy_output_fileset( output[0].patch);
-
-		if (command_line[0].patchdb_flag) {
-//			destroy_patchdb(output->patchdb_cluster,
-//					 	 	output->patchdb_session);
-			zmq_close(output->patchdbmq_requester);
-			zmq_ctx_destroy(output->patchdbmq_context);
-		}
 	}
 	/*--------------------------------------------------------------*/
 	/*	Destroy the canopy_stratum output files.		*/

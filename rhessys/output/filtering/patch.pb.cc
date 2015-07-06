@@ -23,6 +23,16 @@ namespace {
 const ::google::protobuf::Descriptor* OutputPatch_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   OutputPatch_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BeginSim_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BeginSim_reflection_ = NULL;
+const ::google::protobuf::Descriptor* EndSim_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  EndSim_reflection_ = NULL;
+const ::google::protobuf::Descriptor* PatchDBMesg_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  PatchDBMesg_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* PatchDBMesg_Type_descriptor_ = NULL;
 
 }  // namespace
 
@@ -88,6 +98,55 @@ void protobuf_AssignDesc_patch_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(OutputPatch));
+  BeginSim_descriptor_ = file->message_type(1);
+  static const int BeginSim_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BeginSim, mesg_),
+  };
+  BeginSim_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BeginSim_descriptor_,
+      BeginSim::default_instance_,
+      BeginSim_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BeginSim, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BeginSim, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BeginSim));
+  EndSim_descriptor_ = file->message_type(2);
+  static const int EndSim_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EndSim, mesg_),
+  };
+  EndSim_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      EndSim_descriptor_,
+      EndSim::default_instance_,
+      EndSim_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EndSim, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EndSim, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(EndSim));
+  PatchDBMesg_descriptor_ = file->message_type(3);
+  static const int PatchDBMesg_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PatchDBMesg, type_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PatchDBMesg, beginsim_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PatchDBMesg, endsim_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PatchDBMesg, outputpatch_),
+  };
+  PatchDBMesg_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      PatchDBMesg_descriptor_,
+      PatchDBMesg::default_instance_,
+      PatchDBMesg_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PatchDBMesg, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PatchDBMesg, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(PatchDBMesg));
+  PatchDBMesg_Type_descriptor_ = PatchDBMesg_descriptor_->enum_type(0);
 }
 
 namespace {
@@ -102,6 +161,12 @@ void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     OutputPatch_descriptor_, &OutputPatch::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BeginSim_descriptor_, &BeginSim::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    EndSim_descriptor_, &EndSim::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    PatchDBMesg_descriptor_, &PatchDBMesg::default_instance());
 }
 
 }  // namespace
@@ -109,6 +174,12 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void protobuf_ShutdownFile_patch_2eproto() {
   delete OutputPatch::default_instance_;
   delete OutputPatch_reflection_;
+  delete BeginSim::default_instance_;
+  delete BeginSim_reflection_;
+  delete EndSim::default_instance_;
+  delete EndSim_reflection_;
+  delete PatchDBMesg::default_instance_;
+  delete PatchDBMesg_reflection_;
 }
 
 void protobuf_AddDesc_patch_2eproto() {
@@ -138,11 +209,24 @@ void protobuf_AddDesc_patch_2eproto() {
     "_rain_stored\030! \002(\001\022\020\n\010litter_s\030\" \002(\001\022\014\n\004"
     "area\030# \002(\001\022\013\n\003pet\030$ \002(\001\022\013\n\003lai\030% \002(\001\022\020\n\010"
     "baseflow\030& \002(\001\022\022\n\nstreamflow\030\' \002(\001\022\016\n\006pr"
-    "ecip\030( \002(\001\022\020\n\010recharge\030) \002(\001", 828);
+    "ecip\030( \002(\001\022\020\n\010recharge\030) \002(\001\"\030\n\010BeginSim"
+    "\022\014\n\004mesg\030\001 \002(\t\"\026\n\006EndSim\022\014\n\004mesg\030\001 \002(\t\"\335"
+    "\001\n\013PatchDBMesg\022\'\n\004type\030\001 \002(\0162\031.rhessys.P"
+    "atchDBMesg.Type\022#\n\010beginSim\030\002 \001(\0132\021.rhes"
+    "sys.BeginSim\022\037\n\006endSim\030\003 \001(\0132\017.rhessys.E"
+    "ndSim\022)\n\013outputPatch\030\004 \001(\0132\024.rhessys.Out"
+    "putPatch\"4\n\004Type\022\r\n\tBEGIN_SIM\020\001\022\013\n\007END_S"
+    "IM\020\002\022\020\n\014OUTPUT_PATCH\020\003", 1102);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "patch.proto", &protobuf_RegisterTypes);
   OutputPatch::default_instance_ = new OutputPatch();
+  BeginSim::default_instance_ = new BeginSim();
+  EndSim::default_instance_ = new EndSim();
+  PatchDBMesg::default_instance_ = new PatchDBMesg();
   OutputPatch::default_instance_->InitAsDefaultInstance();
+  BeginSim::default_instance_->InitAsDefaultInstance();
+  EndSim::default_instance_->InitAsDefaultInstance();
+  PatchDBMesg::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_patch_2eproto);
 }
 
@@ -1875,6 +1959,889 @@ void OutputPatch::Swap(OutputPatch* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = OutputPatch_descriptor_;
   metadata.reflection = OutputPatch_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int BeginSim::kMesgFieldNumber;
+#endif  // !_MSC_VER
+
+BeginSim::BeginSim()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:rhessys.BeginSim)
+}
+
+void BeginSim::InitAsDefaultInstance() {
+}
+
+BeginSim::BeginSim(const BeginSim& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:rhessys.BeginSim)
+}
+
+void BeginSim::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  mesg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BeginSim::~BeginSim() {
+  // @@protoc_insertion_point(destructor:rhessys.BeginSim)
+  SharedDtor();
+}
+
+void BeginSim::SharedDtor() {
+  if (mesg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete mesg_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void BeginSim::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BeginSim::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BeginSim_descriptor_;
+}
+
+const BeginSim& BeginSim::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_patch_2eproto();
+  return *default_instance_;
+}
+
+BeginSim* BeginSim::default_instance_ = NULL;
+
+BeginSim* BeginSim::New() const {
+  return new BeginSim;
+}
+
+void BeginSim::Clear() {
+  if (has_mesg()) {
+    if (mesg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+      mesg_->clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BeginSim::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:rhessys.BeginSim)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string mesg = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_mesg()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->mesg().data(), this->mesg().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "mesg");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:rhessys.BeginSim)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:rhessys.BeginSim)
+  return false;
+#undef DO_
+}
+
+void BeginSim::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:rhessys.BeginSim)
+  // required string mesg = 1;
+  if (has_mesg()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->mesg().data(), this->mesg().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "mesg");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->mesg(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:rhessys.BeginSim)
+}
+
+::google::protobuf::uint8* BeginSim::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:rhessys.BeginSim)
+  // required string mesg = 1;
+  if (has_mesg()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->mesg().data(), this->mesg().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "mesg");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->mesg(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:rhessys.BeginSim)
+  return target;
+}
+
+int BeginSim::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string mesg = 1;
+    if (has_mesg()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->mesg());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BeginSim::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BeginSim* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BeginSim*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BeginSim::MergeFrom(const BeginSim& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_mesg()) {
+      set_mesg(from.mesg());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BeginSim::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BeginSim::CopyFrom(const BeginSim& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BeginSim::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void BeginSim::Swap(BeginSim* other) {
+  if (other != this) {
+    std::swap(mesg_, other->mesg_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BeginSim::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BeginSim_descriptor_;
+  metadata.reflection = BeginSim_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int EndSim::kMesgFieldNumber;
+#endif  // !_MSC_VER
+
+EndSim::EndSim()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:rhessys.EndSim)
+}
+
+void EndSim::InitAsDefaultInstance() {
+}
+
+EndSim::EndSim(const EndSim& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:rhessys.EndSim)
+}
+
+void EndSim::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  mesg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+EndSim::~EndSim() {
+  // @@protoc_insertion_point(destructor:rhessys.EndSim)
+  SharedDtor();
+}
+
+void EndSim::SharedDtor() {
+  if (mesg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete mesg_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void EndSim::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* EndSim::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return EndSim_descriptor_;
+}
+
+const EndSim& EndSim::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_patch_2eproto();
+  return *default_instance_;
+}
+
+EndSim* EndSim::default_instance_ = NULL;
+
+EndSim* EndSim::New() const {
+  return new EndSim;
+}
+
+void EndSim::Clear() {
+  if (has_mesg()) {
+    if (mesg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+      mesg_->clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool EndSim::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:rhessys.EndSim)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string mesg = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_mesg()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->mesg().data(), this->mesg().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "mesg");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:rhessys.EndSim)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:rhessys.EndSim)
+  return false;
+#undef DO_
+}
+
+void EndSim::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:rhessys.EndSim)
+  // required string mesg = 1;
+  if (has_mesg()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->mesg().data(), this->mesg().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "mesg");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->mesg(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:rhessys.EndSim)
+}
+
+::google::protobuf::uint8* EndSim::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:rhessys.EndSim)
+  // required string mesg = 1;
+  if (has_mesg()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->mesg().data(), this->mesg().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "mesg");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->mesg(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:rhessys.EndSim)
+  return target;
+}
+
+int EndSim::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string mesg = 1;
+    if (has_mesg()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->mesg());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void EndSim::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const EndSim* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const EndSim*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void EndSim::MergeFrom(const EndSim& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_mesg()) {
+      set_mesg(from.mesg());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void EndSim::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void EndSim::CopyFrom(const EndSim& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool EndSim::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void EndSim::Swap(EndSim* other) {
+  if (other != this) {
+    std::swap(mesg_, other->mesg_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata EndSim::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = EndSim_descriptor_;
+  metadata.reflection = EndSim_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+const ::google::protobuf::EnumDescriptor* PatchDBMesg_Type_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return PatchDBMesg_Type_descriptor_;
+}
+bool PatchDBMesg_Type_IsValid(int value) {
+  switch(value) {
+    case 1:
+    case 2:
+    case 3:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#ifndef _MSC_VER
+const PatchDBMesg_Type PatchDBMesg::BEGIN_SIM;
+const PatchDBMesg_Type PatchDBMesg::END_SIM;
+const PatchDBMesg_Type PatchDBMesg::OUTPUT_PATCH;
+const PatchDBMesg_Type PatchDBMesg::Type_MIN;
+const PatchDBMesg_Type PatchDBMesg::Type_MAX;
+const int PatchDBMesg::Type_ARRAYSIZE;
+#endif  // _MSC_VER
+#ifndef _MSC_VER
+const int PatchDBMesg::kTypeFieldNumber;
+const int PatchDBMesg::kBeginSimFieldNumber;
+const int PatchDBMesg::kEndSimFieldNumber;
+const int PatchDBMesg::kOutputPatchFieldNumber;
+#endif  // !_MSC_VER
+
+PatchDBMesg::PatchDBMesg()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:rhessys.PatchDBMesg)
+}
+
+void PatchDBMesg::InitAsDefaultInstance() {
+  beginsim_ = const_cast< ::rhessys::BeginSim*>(&::rhessys::BeginSim::default_instance());
+  endsim_ = const_cast< ::rhessys::EndSim*>(&::rhessys::EndSim::default_instance());
+  outputpatch_ = const_cast< ::rhessys::OutputPatch*>(&::rhessys::OutputPatch::default_instance());
+}
+
+PatchDBMesg::PatchDBMesg(const PatchDBMesg& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:rhessys.PatchDBMesg)
+}
+
+void PatchDBMesg::SharedCtor() {
+  _cached_size_ = 0;
+  type_ = 1;
+  beginsim_ = NULL;
+  endsim_ = NULL;
+  outputpatch_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+PatchDBMesg::~PatchDBMesg() {
+  // @@protoc_insertion_point(destructor:rhessys.PatchDBMesg)
+  SharedDtor();
+}
+
+void PatchDBMesg::SharedDtor() {
+  if (this != default_instance_) {
+    delete beginsim_;
+    delete endsim_;
+    delete outputpatch_;
+  }
+}
+
+void PatchDBMesg::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* PatchDBMesg::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return PatchDBMesg_descriptor_;
+}
+
+const PatchDBMesg& PatchDBMesg::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_patch_2eproto();
+  return *default_instance_;
+}
+
+PatchDBMesg* PatchDBMesg::default_instance_ = NULL;
+
+PatchDBMesg* PatchDBMesg::New() const {
+  return new PatchDBMesg;
+}
+
+void PatchDBMesg::Clear() {
+  if (_has_bits_[0 / 32] & 15) {
+    type_ = 1;
+    if (has_beginsim()) {
+      if (beginsim_ != NULL) beginsim_->::rhessys::BeginSim::Clear();
+    }
+    if (has_endsim()) {
+      if (endsim_ != NULL) endsim_->::rhessys::EndSim::Clear();
+    }
+    if (has_outputpatch()) {
+      if (outputpatch_ != NULL) outputpatch_->::rhessys::OutputPatch::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool PatchDBMesg::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:rhessys.PatchDBMesg)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .rhessys.PatchDBMesg.Type type = 1;
+      case 1: {
+        if (tag == 8) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::rhessys::PatchDBMesg_Type_IsValid(value)) {
+            set_type(static_cast< ::rhessys::PatchDBMesg_Type >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(1, value);
+          }
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_beginSim;
+        break;
+      }
+
+      // optional .rhessys.BeginSim beginSim = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_beginSim:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_beginsim()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_endSim;
+        break;
+      }
+
+      // optional .rhessys.EndSim endSim = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_endSim:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_endsim()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_outputPatch;
+        break;
+      }
+
+      // optional .rhessys.OutputPatch outputPatch = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_outputPatch:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_outputpatch()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:rhessys.PatchDBMesg)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:rhessys.PatchDBMesg)
+  return false;
+#undef DO_
+}
+
+void PatchDBMesg::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:rhessys.PatchDBMesg)
+  // required .rhessys.PatchDBMesg.Type type = 1;
+  if (has_type()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      1, this->type(), output);
+  }
+
+  // optional .rhessys.BeginSim beginSim = 2;
+  if (has_beginsim()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->beginsim(), output);
+  }
+
+  // optional .rhessys.EndSim endSim = 3;
+  if (has_endsim()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->endsim(), output);
+  }
+
+  // optional .rhessys.OutputPatch outputPatch = 4;
+  if (has_outputpatch()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, this->outputpatch(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:rhessys.PatchDBMesg)
+}
+
+::google::protobuf::uint8* PatchDBMesg::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:rhessys.PatchDBMesg)
+  // required .rhessys.PatchDBMesg.Type type = 1;
+  if (has_type()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->type(), target);
+  }
+
+  // optional .rhessys.BeginSim beginSim = 2;
+  if (has_beginsim()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->beginsim(), target);
+  }
+
+  // optional .rhessys.EndSim endSim = 3;
+  if (has_endsim()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->endsim(), target);
+  }
+
+  // optional .rhessys.OutputPatch outputPatch = 4;
+  if (has_outputpatch()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        4, this->outputpatch(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:rhessys.PatchDBMesg)
+  return target;
+}
+
+int PatchDBMesg::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .rhessys.PatchDBMesg.Type type = 1;
+    if (has_type()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
+    }
+
+    // optional .rhessys.BeginSim beginSim = 2;
+    if (has_beginsim()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->beginsim());
+    }
+
+    // optional .rhessys.EndSim endSim = 3;
+    if (has_endsim()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->endsim());
+    }
+
+    // optional .rhessys.OutputPatch outputPatch = 4;
+    if (has_outputpatch()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->outputpatch());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void PatchDBMesg::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const PatchDBMesg* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const PatchDBMesg*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void PatchDBMesg::MergeFrom(const PatchDBMesg& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_type()) {
+      set_type(from.type());
+    }
+    if (from.has_beginsim()) {
+      mutable_beginsim()->::rhessys::BeginSim::MergeFrom(from.beginsim());
+    }
+    if (from.has_endsim()) {
+      mutable_endsim()->::rhessys::EndSim::MergeFrom(from.endsim());
+    }
+    if (from.has_outputpatch()) {
+      mutable_outputpatch()->::rhessys::OutputPatch::MergeFrom(from.outputpatch());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void PatchDBMesg::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void PatchDBMesg::CopyFrom(const PatchDBMesg& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool PatchDBMesg::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  if (has_beginsim()) {
+    if (!this->beginsim().IsInitialized()) return false;
+  }
+  if (has_endsim()) {
+    if (!this->endsim().IsInitialized()) return false;
+  }
+  if (has_outputpatch()) {
+    if (!this->outputpatch().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void PatchDBMesg::Swap(PatchDBMesg* other) {
+  if (other != this) {
+    std::swap(type_, other->type_);
+    std::swap(beginsim_, other->beginsim_);
+    std::swap(endsim_, other->endsim_);
+    std::swap(outputpatch_, other->outputpatch_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata PatchDBMesg::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = PatchDBMesg_descriptor_;
+  metadata.reflection = PatchDBMesg_reflection_;
   return metadata;
 }
 

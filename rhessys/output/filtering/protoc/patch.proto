@@ -43,3 +43,25 @@ message OutputPatch {
 	required double precip = 40;
 	required double recharge = 41;
 }
+
+message BeginSim {
+	required string mesg = 1;
+}
+
+message EndSim {
+	required string mesg = 1;
+}
+
+message PatchDBMesg {
+	enum Type { BEGIN_SIM = 1; 
+				END_SIM = 2; 
+				OUTPUT_PATCH = 3;
+			  }
+	
+	required Type type = 1;
+	
+	optional BeginSim beginSim = 2;
+	optional EndSim endSim = 3;
+	optional OutputPatch outputPatch = 4; 
+}
+

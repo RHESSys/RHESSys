@@ -35,26 +35,11 @@
 #include <zmq.h>
 
 #include "rhessys.h"
-#include "functions.h"
+#include "zmqutil.h"
 
 #include "patch.pb.h"
 
 using namespace std;
-
-int _PbToZmq(::google::protobuf::Message *src, zmq_msg_t *dest) {
-	// Adapted from: http://stackoverflow.com/questions/16732774/whats-elegant-way-to-send-binary-data-serizlized-with-googles-protocol-buffers
-    int size = src->ByteSize();
-    int rc = zmq_msg_init_size(dest, size);
-    if (rc==0) {
-        try {
-            rc = src->SerializeToArray(zmq_msg_data(dest), size)?0:-1;
-        }
-        catch (google::protobuf::FatalException fe) {
-            std::cout << "PbToZmq " << fe.message() << std::endl;
-        }
-    }
-    return rc;
-}
 
 //void _write_to_patchdb(struct world_output_file_object *world_output_files,
 //		char* patchid, char* var, cass_double_t value) {
@@ -122,52 +107,55 @@ void	output_patch(struct  command_line_object * command_line,
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 		// Serialize patch data to Protocol Buffers message
-		rhessys::OutputPatch p;
+		// Wrap in PatchDB mesg
+		rhessys::PatchDBMesg m;
+		m.set_type(m.OUTPUT_PATCH);
 
-		p.set_day(current_date.day);
-		p.set_month(current_date.month);
-		p.set_year(current_date.year);
-		p.set_basin_id(basinID);
-		p.set_hill_id(hillID);
-		p.set_zone_id(zoneID);
-		p.set_patch_id(patch[0].ID);
-		p.set_rain_throughfall(patch[0].rain_throughfall*1000.0);
-		p.set_detention_store(patch[0].detention_store*1000.0);
-		p.set_sat_deficit_z(patch[0].sat_deficit_z*1000);
-		p.set_sat_deficit(patch[0].sat_deficit*1000);
-		p.set_rz_storage(patch[0].rz_storage*1000);
-		p.set_potential_sat(patch[0].rootzone.potential_sat*1000);
-		p.set_field_capacity(patch[0].rootzone.field_capacity*1000);
-		p.set_wilting_point(patch[0].wilting_point*1000);
-		p.set_unsat_storage(patch[0].unsat_storage*1000);
-		p.set_rz_drainage(patch[0].rz_drainage*1000);
-		p.set_unsat_drainage(patch[0].unsat_drainage*1000);
-		p.set_sublimation((patch[0].snowpack.sublimation + asub)*1000);
-		p.set_return_flow(patch[0].return_flow*1000.0);
-		p.set_evaporation(patch[0].evaporation*1000.0);
-		p.set_evaporation_surf(patch[0].evaporation_surf*1000.0);
-		p.set_soil_evap(patch[0].exfiltration_sat_zone*1000.0 + patch[0].exfiltration_unsat_zone * 1000.0);
-		p.set_snow(patch[0].snowpack.water_equivalent_depth*1000.0);
-		p.set_snow_melt(patch[0].snow_melt*1000.0);
-		p.set_trans_sat(patch[0].transpiration_sat_zone*1000.0);
-		p.set_trans_unsat(patch[0].transpiration_unsat_zone*1000.0);
-		p.set_q_in(patch[0].Qin_total * 1000.0);
-		p.set_q_out(patch[0].Qout_total * 1000.0);
-		p.set_psn(apsn * 1000.0);
-		p.set_rootzone_s(patch[0].rootzone.S);
-		p.set_rootzone_depth(patch[0].rootzone.depth*1000.0);
-		p.set_litter_rain_stored(patch[0].litter.rain_stored*1000.0);
-		p.set_litter_s(litterS);
-		p.set_area(patch[0].area);
-		p.set_pet(patch[0].PET*1000.0);
-		p.set_lai(alai);
-		p.set_baseflow(patch[0].base_flow*1000.0);
-		p.set_streamflow(patch[0].streamflow*1000.0);
-		p.set_precip(1000.0*(zone[0].rain+zone[0].snow));
-		p.set_recharge(patch[0].recharge);
+		rhessys::OutputPatch *p = m.mutable_outputpatch();
+		p->set_day(current_date.day);
+		p->set_month(current_date.month);
+		p->set_year(current_date.year);
+		p->set_basin_id(basinID);
+		p->set_hill_id(hillID);
+		p->set_zone_id(zoneID);
+		p->set_patch_id(patch[0].ID);
+		p->set_rain_throughfall(patch[0].rain_throughfall*1000.0);
+		p->set_detention_store(patch[0].detention_store*1000.0);
+		p->set_sat_deficit_z(patch[0].sat_deficit_z*1000);
+		p->set_sat_deficit(patch[0].sat_deficit*1000);
+		p->set_rz_storage(patch[0].rz_storage*1000);
+		p->set_potential_sat(patch[0].rootzone.potential_sat*1000);
+		p->set_field_capacity(patch[0].rootzone.field_capacity*1000);
+		p->set_wilting_point(patch[0].wilting_point*1000);
+		p->set_unsat_storage(patch[0].unsat_storage*1000);
+		p->set_rz_drainage(patch[0].rz_drainage*1000);
+		p->set_unsat_drainage(patch[0].unsat_drainage*1000);
+		p->set_sublimation((patch[0].snowpack.sublimation + asub)*1000);
+		p->set_return_flow(patch[0].return_flow*1000.0);
+		p->set_evaporation(patch[0].evaporation*1000.0);
+		p->set_evaporation_surf(patch[0].evaporation_surf*1000.0);
+		p->set_soil_evap(patch[0].exfiltration_sat_zone*1000.0 + patch[0].exfiltration_unsat_zone * 1000.0);
+		p->set_snow(patch[0].snowpack.water_equivalent_depth*1000.0);
+		p->set_snow_melt(patch[0].snow_melt*1000.0);
+		p->set_trans_sat(patch[0].transpiration_sat_zone*1000.0);
+		p->set_trans_unsat(patch[0].transpiration_unsat_zone*1000.0);
+		p->set_q_in(patch[0].Qin_total * 1000.0);
+		p->set_q_out(patch[0].Qout_total * 1000.0);
+		p->set_psn(apsn * 1000.0);
+		p->set_rootzone_s(patch[0].rootzone.S);
+		p->set_rootzone_depth(patch[0].rootzone.depth*1000.0);
+		p->set_litter_rain_stored(patch[0].litter.rain_stored*1000.0);
+		p->set_litter_s(litterS);
+		p->set_area(patch[0].area);
+		p->set_pet(patch[0].PET*1000.0);
+		p->set_lai(alai);
+		p->set_baseflow(patch[0].base_flow*1000.0);
+		p->set_streamflow(patch[0].streamflow*1000.0);
+		p->set_precip(1000.0*(zone[0].rain+zone[0].snow));
+		p->set_recharge(patch[0].recharge);
 
 		zmq_msg_t msg;
-		int rc = _PbToZmq(&p, &msg);
+		int rc = PbToZmq(&m, &msg);
 		if (rc == -1) {
 			printf("Unable to create zeromq message");
 			exit(EXIT_FAILURE);
@@ -182,20 +170,24 @@ void	output_patch(struct  command_line_object * command_line,
 			if (errno == EFSM) {
 				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
 			} else {
-				printf("output_patch: zeromq returned: %d, exiting...\n", errno);
+				printf("output_patch: zeromq returned, output_patch:173: %d, exiting...\n", errno);
 			}
 			exit(EXIT_FAILURE);
 		}
+
+		//printf("RHESSys.output_patch(): get response...");
 		char response[2];
 		rc = zmq_recv(world_output_files->patchdbmq_requester, response, 1, 0);
 		if (rc == -1) {
 			if (errno == EFSM) {
 				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
 			} else {
-				printf("output_patch: zeromq returned: %d, exiting...\n", errno);
+				printf("output_patch: zeromq returned, output_patch:185: %d, exiting...\n", errno);
 			}
 			exit(EXIT_FAILURE);
 		}
+		//printf("done\n");
+
 		//response[1] = 0;
 		if (response[0] != 'A') {
 			printf("output_patch: expected patchdbmq server to return %s, but received: %s, exiting...\n",
