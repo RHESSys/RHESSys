@@ -135,7 +135,7 @@ double	compute_z_final( int	verbose_flag,
 #define     DEG2RAD         (M_PI/180.0)
 #define     EPSILON         (1.0e-5)
 #define     D3600           (1.0/3600.0)
-#define     SEC2DAY         (1.0/3600.0*24.0)
+#define     SEC2DAY         (1.0/(3600.0*24.0))
 
 /*  "array-of-neighbors"  types:  */
 
@@ -1453,7 +1453,7 @@ void hydro_routing( struct command_line_object * command_line,
         init_hydro_routing( command_line, basin ) ;
         }
     
-    printf( "Entering hydro_routing() for %d-%d-%d:%d.\n",  
+    printf( "Entering hydro_routing() for %d-%d-%d:%d.\n",
             current_date.year, current_date.month, current_date.day, current_date.hour ) ;
 
     /*  COPY INTO WORKING VARIABLES  */
