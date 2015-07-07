@@ -90,7 +90,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].pet=1.0;
 				    world[0].fire_grid[i][j].ign_available=0;
 
-				  printf("No fire in buffer\n");
+			//	  printf("No fire in buffer\n");
 			  }
 			  else // if denom_for_mean==0, then this initializes the buffer, otherwise the mean is filled in below
 			  {
