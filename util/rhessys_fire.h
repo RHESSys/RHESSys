@@ -9,6 +9,7 @@ extern "C" {
 struct fire_default {
 	int ID;
 	double veg_fuel_weighting;	
+
 	double ndays_average;
 	double load_k1; // k1 for the fuel load sigmoid function
 	double moisture_k1; //k1 for the fuel moisture sigmoid function
