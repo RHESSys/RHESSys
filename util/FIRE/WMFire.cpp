@@ -409,7 +409,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	double cur_load,cur_moist;
 	slope=(fireGrid_[new_row][new_col].z-fireGrid_[cur_row][cur_col].z)/cell_res_; // for now, just the orthogonal
 								//neighbors, so the slope is just the difference in elevation divided by the distance 
-	//	cout<<"winddir: "<<winddir<<"\t";
+	if(def_.fire_verbose==1)
+		cout<<"new elevation, old elevation, slope, p_slope: "<<fireGrid_[new_row][new_col].z<<"   "<<fireGrid_[cur_row][cur_col].z<<"   "<<slope<<"    "<<p_slope<<"\n";
 	if(slope<=0)
 		ind=-1;
 	p_slope=def_.slope_k1*exp(ind*def_.slope_k2*pow(slope,2)); // pSpread due to the slope
@@ -435,7 +436,6 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		else
 			windspeed=1;
 	}
-//	cout<<"Windspeed and winddirection: "<<windspeed<<"   "<<winddir<<"\t";
 	k1wind=def_.winddir_k1*windspeed;
 //	p_winddir=def_.winddir_k2+def_.winddir_k1*(1+cos(fire_dir-winddir)); // pSpread due to the orientation of the cells relative to the wind direction
 	p_winddir=def_.winddir_k2+k1wind *(1+cos(fire_dir-winddir)); // pSpread due to the orientation of the cells relative to the wind direction
@@ -444,6 +444,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		p_winddir=1;
 	if(p_winddir<0)
 		p_winddir=0;
+	if(def_.fire_verbose==1)
+		cout<<"Windspeed and winddirection, pwind: "<<windspeed<<"   "<<winddir<<"   "<<p_winddir<<"\t";
 	if(def_.spread_calc_type<4)
 		p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[new_row][new_col].fuel_moist-def_.moisture_k2))));
 	else // use deficit
@@ -521,7 +523,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	}		
 	
 	// Here we would put other pSpread calculations, depending on the parent node and the node being tested for spread
-//	cout<<"burn test, slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
+	if(def_.fire_verbose==1)
+		cout<<"burn test, slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
 	return temp_pBurn;
 }
 
@@ -808,7 +811,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	{
 		ofstream sizeOut;
 		sizeOut.open("FireSizes.txt", ofstream::app);
-		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\n";
+		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\n";
 		sizeOut.close();
 	}	
 	
