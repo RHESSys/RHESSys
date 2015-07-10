@@ -576,6 +576,10 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		{
 			p_veg=1-1/(1+exp(-(def_.veg_k1*(fireGrid_[cur_row][cur_col].fuel_veg-def_.veg_k2))));
 			pIgn=p_moisture*p_load*p_veg;
+			if(def_.fire_verbose==1)
+			{
+				cout<<"In test ignition, downgrading ignition prob by p_veg: "<<p_veg<<"\n";
+			}
 		}
 		else
 			pIgn=p_moisture*p_load;
