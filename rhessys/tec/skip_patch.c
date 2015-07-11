@@ -41,7 +41,7 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 #define ONE 1.0
-#include "params.h"
+
 
  void  skip_patch(
 									 struct	command_line_object	*command_line,
@@ -67,9 +67,6 @@
 	
 	void	*alloc(	size_t, char *, char *);
 	
-	param	*readtag_worldfile(int *,
-				  FILE *,
-				  char *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -78,21 +75,147 @@
 	int		soil_default_object_ID;
 	int		landuse_default_object_ID;
 	char		record[MAXSTR];
-	double		mpar, ltmp;
-	int		paramCnt=0;
-	param		*paramPtr=NULL;
+	double	mpar, ltmp;
+
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the next patch record for this hillslope.			*/
 	/*--------------------------------------------------------------*/
-	paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].x = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].y = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp;*/
 
- 	
+	fscanf(world_file,"%d",&(ltmp));
+	read_record(world_file, record);
+	fscanf(world_file,"%d",&(ltmp));
+	read_record(world_file, record);
+
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].slope = ltmp * DtoR;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].lna = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].Ksat_vertical = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	if (command_line[0].stdev_flag == 1) {
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+		/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].std = ltmp;*/
+		}
+		
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].rz_storage = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].unsat_storage = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].sat_deficit = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.water_equivalent_depth = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.water_depth = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.T = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.surface_age = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.energy_deficit = ltmp;*/
+
+	if (command_line[0].snow_scale_flag == 1) {
+ 		fscanf(world_file,"%lf",&(ltmp));
+		read_record(world_file, record);
+	/*	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snow_redist_scale = ltmp;*/
+		}
+
+
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.cover_fraction = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.rain_stored = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_cs.litr1c = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_ns.litr1n = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].litter_cs.litr2c = ltmp;
+		patch[0].litter_ns.litr2n = patch[0].litter_cs.litr2c / CEL_CN;
+		}*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].litter_cs.litr3c = ltmp;
+		patch[0].litter_ns.litr3n = patch[0].litter_cs.litr3c / CEL_CN;
+		}*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].litter_cs.litr4c = ltmp;
+		patch[0].litter_ns.litr4n = patch[0].litter_cs.litr4c / LIG_CN;
+		}*/
+
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].soil_cs.soil1c = ltmp;
+		patch[0].soil_ns.soil1n = patch[0].soil_cs.soil1c / SOIL1_CN;
+		}*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].soil_ns.sminn = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].soil_ns.nitrate = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].soil_cs.soil2c = ltmp;
+		patch[0].soil_ns.soil2n = patch[0].soil_cs.soil2c / SOIL2_CN;
+		}*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].soil_cs.soil3c = ltmp;
+		patch[0].soil_ns.soil3n = patch[0].soil_cs.soil3c / SOIL3_CN;
+		}*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].soil_cs.soil4c = ltmp;
+		patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
+		}*/
+	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  patch base stations 					*/
 	/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
-	
+ 	fscanf(world_file,"%d",&(dtmp));
+	read_record(world_file, record);
 	if (dtmp > 0)  {
 		/*patch[0].num_base_stations = dtmp;*/
 		/*--------------------------------------------------------------*/
@@ -119,9 +242,7 @@
 				world_base_stations);*/
 		} /*end for*/
 	}
-	if(paramPtr!=NULL){
-	  free(paramPtr);
-	}
+	
 	return;
 } /*end input_new_patch.c*/
 

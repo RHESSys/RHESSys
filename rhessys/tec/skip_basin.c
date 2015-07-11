@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rhessys.h"
-#include "params.h"
+
 void skip_basin(
 									 struct	command_line_object	*command_line,
 									 FILE	*world_file,
@@ -47,9 +47,7 @@ void skip_basin(
 	
 	void	*alloc( 	size_t, char *, char *);
 	
-	param	*readtag_worldfile(int *,
-				  FILE *,
-				  char *);
+	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -58,21 +56,35 @@ void skip_basin(
 	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
-	int	paramCnt=0;
-	param	*paramPtr=NULL;
-	/*--------------------------------------------------------------*/
-	/*	Read in the hillslope record from the world file.			*/
-	/*--------------------------------------------------------------*/
-
 	
-	paramPtr = readtag_worldfile(&paramCnt,world_file,"Basin");
 	
-
+	/*--------------------------------------------------------------*/
+	/*	Read in the basinID.									*/
+	/*--------------------------------------------------------------*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].x = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].y = ltmp;*/
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].z = ltmp;*/
+ 	fscanf(world_file,"%d",&(ltmp));
+	read_record(world_file, record);
+ 	fscanf(world_file,"%lf",&(ltmp));
+	read_record(world_file, record);
+	/*if (fabs(ltmp - NULLVAL) >= ZERO)  {
+		basin[0].latitude = ltmp;
+		basin[0].cos_latitude = cos(basin[0].latitude*DtoR);
+		basin[0].sin_latitude = sin(basin[0].latitude*DtoR);
+		}*/
+	
 	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this basin.			*/
 	/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
-	
+ 	fscanf(world_file,"%d",&(dtmp));
+	read_record(world_file, record);
 	if (dtmp > 0) {
 		/*basin[0].num_base_stations = dtmp;*/
 		/*basin[0].base_stations = (struct base_station_object **)
@@ -97,9 +109,7 @@ void skip_basin(
 		} /*end for*/
 	}	
 	
-	if(paramPtr!=NULL){
-	  free(paramPtr);
-	}
+	
 
 	return;
 } /*end input_new_basin.c*/
