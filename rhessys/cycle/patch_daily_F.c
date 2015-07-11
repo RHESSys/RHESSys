@@ -2160,9 +2160,5 @@ if ( command_line[0].verbose_flag == -5 ){
 	printf("\n***END PATCH DAILY: exfil_unsat=%lf",patch[0].exfiltration_unsat_zone);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> Test519
 	return;
 } /*end patch_daily_F.c*/
