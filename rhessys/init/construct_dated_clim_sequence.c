@@ -144,7 +144,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	
 	fscanf(sequence_file,"%d",&num_records);
 	
-	printf("\nRead hourly precipitation data %s\n", file);	
+	printf("\nRead dated climate input file  %s\n", file);	
 	/*--------------------------------------------------------------*/
 	/*	Allocate the clim sequence.									*/
 	/*--------------------------------------------------------------*/
@@ -153,7 +153,6 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		"sequence","construct_dated_clim_sequence");
 	events.inx = 0;
 	events.seq[0].edate.year = 1999;
-	//printf("TEST_year = %d\n",events.seq[0].edate.year);
 	/*--------------------------------------------------------------*/
 	/*	Read in the climate sequence data.							*/
 	/*--------------------------------------------------------------*/

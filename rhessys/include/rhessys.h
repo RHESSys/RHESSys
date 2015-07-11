@@ -670,6 +670,7 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NO3;                                     /* kg/m2/day    */
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
+        struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
         struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
         };
@@ -707,6 +708,7 @@ struct  daily_clim_object
         double  *dayl;                  /* seconds / day */
         double  *daytime_rain_duration;         /* hours/day    */
         double  *Delta_T;               /*      degrees C / day         */
+        double  *lapse_rate_precip;               /*      m / m           */
         double  *lapse_rate_tmin;               /*      degrees C / m           */
         double  *lapse_rate_tmax;               /*      degrees C / m           */
         double  *dewpoint;                      /*      degrees C       */
