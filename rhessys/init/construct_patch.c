@@ -184,6 +184,8 @@ struct patch_object *construct_patch(
 		read_record(world_file, record);
 		}
 
+
+
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;
 	patch[0].surface_Tnight = -999.9;
@@ -322,6 +324,7 @@ struct patch_object *construct_patch(
 	patch[0].soil_ns.nleached_snk = 0.0;
 	patch[0].soil_ns.nvolatilized_snk = 0.0;
 
+	patch[0].litter.NO3_stored = 0.0;
 	patch[0].surface_NO3 = 0.0;
 	patch[0].surface_NH4 = 0.0;
 	patch[0].surface_DOC = 0.0;

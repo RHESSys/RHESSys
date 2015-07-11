@@ -97,6 +97,7 @@ void input_new_hillslope(
 	read_record(world_file, record);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.NO3 = ltmp;
 
+
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this hillslope                             */
 	/*--------------------------------------------------------------*/

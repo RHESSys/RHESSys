@@ -1340,6 +1340,7 @@ struct  litter_object
         double depth;                   /* m */
         double density;                 /* m/kgC */
         double rain_stored;             /* m */
+	double NO3_stored;		/* kg/m2 */
         double gsurf;
         double proj_pai;
         double rain_capacity;
