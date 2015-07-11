@@ -142,11 +142,11 @@ struct fire_default *construct_fire_defaults(
 		default_object_list[i].ign_def_mod=getDoubleParam(&paramCnt, &paramPtr, "ign_def_mod", "%lf", 1 , 1);
 		printf("ign_def_mod: %lf\n",default_object_list[i].ign_def_mod);
 		default_object_list[i].veg_k1=getDoubleParam(&paramCnt, &paramPtr, "veg_k1", "%lf", 0.8, 1);
+ 		default_object_list[i].veg_ign=getIntParam(&paramCnt, &paramPtr, "veg_ign", "%d", 0, 1);
+		printf("veg_ign: %d\n",default_object_list[i].veg_ign);
   		printf("veg_k1: %lf\n",default_object_list[i].veg_k1);
 		default_object_list[i].veg_k2=getDoubleParam(&paramCnt, &paramPtr, "veg_k2", "%lf", 10, 1);
 		printf("veg_k2: %lf\n",default_object_list[i].veg_k2);
- 		default_object_list[i].veg_ign=getIntParam(&paramCnt, &paramPtr, "veg_ign", "%d", 0, 1);
-		printf("veg_ign: %d\n",default_object_list[i].veg_ign);
 
  
 /*--------------------------------------------------------------*/
