@@ -127,6 +127,7 @@ $(OBJ)/construct_world.o \
 $(OBJ)/construct_yearly_clim.o \
 $(OBJ)/construct_zone.o \
 $(OBJ)/construct_zone_defaults.o \
+$(OBJ)/construct_topmodel_patchlist.o \
 $(OBJ)/destroy_base_station.o \
 $(OBJ)/destroy_basin.o \
 $(OBJ)/destroy_basin_defaults.o \
@@ -558,6 +559,8 @@ $(OBJ)/construct_stream_routing_topology.o: init/construct_stream_routing_topolo
 	$(CC) -c $(CFLAGS) -I include init/construct_stream_routing_topology.c -o $(OBJ)/construct_stream_routing_topology.o
 $(OBJ)/construct_routing_topology.o: init/construct_routing_topology.c
 	$(CC) -c $(CFLAGS) -I include init/construct_routing_topology.c -o $(OBJ)/construct_routing_topology.o
+$(OBJ)/construct_topmodel_patchlist.o: init/construct_topmodel_patchlist.c
+	$(CC) -c $(CFLAGS) -I include init/construct_topmodel_patchlist.c -o $(OBJ)/construct_topmodel_patchlist.o
 $(OBJ)/construct_fire_grid.o: init/construct_fire_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_grid.c -o $(OBJ)/construct_fire_grid.o
 $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
