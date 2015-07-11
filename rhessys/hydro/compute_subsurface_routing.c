@@ -356,7 +356,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*	that it accumulates flux in from patches		*/
 			/*	(roads) that direct water to the stream			*/
 			/*--------------------------------------------------------------*/
-			if (k == n_timesteps-1){// (n_timesteps - 1)){
+			if (k >=0){// (n_timesteps - 1)){
 				      
 			      if ((patch[0].sat_deficit
 						- (patch[0].unsat_storage + patch[0].rz_storage))
