@@ -162,6 +162,5 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         for (i=0 ; i<shadow_strata[0].num_base_stations; i++){
                 shadow_strata[0].base_stations[i] = stratum[0].base_stations[i];
         } /*end for*/
-	        printf("\nConstructed empty canopy strata \n ");
         return(shadow_strata);
 } /*end construct_empty_shadow_strata.c*/
