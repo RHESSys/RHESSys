@@ -942,7 +942,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 
 
-				/* ******************************** this is done by each hourly*/
+				/* ******************************** this is done by each hour*/
 				patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 							  + patch[0].hourly_sur2stream_flow;
 			
