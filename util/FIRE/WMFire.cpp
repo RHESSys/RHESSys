@@ -52,8 +52,9 @@ using boost::shared_ptr;
 //					world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year
 struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, long month, struct fire_object** fire_grid,struct fire_default def)
 {
-	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: "<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
-	cout<<"Defaults: moisture k1 and k2, load k1"<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"\n";
+	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: \n"<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
+	if(def.fire_verbose==1)
+		cout<<"Defaults: moisture k1 and k2, load k1"<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"\n";
 	timeval t1;
 	#if defined(_WIN32) || defined(__WIN32__)
 		long seed=1; 
@@ -409,8 +410,6 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	double cur_load,cur_moist;
 	slope=(fireGrid_[new_row][new_col].z-fireGrid_[cur_row][cur_col].z)/cell_res_; // for now, just the orthogonal
 								//neighbors, so the slope is just the difference in elevation divided by the distance 
-	if(def_.fire_verbose==1)
-		cout<<"new elevation, old elevation, slope, p_slope: "<<fireGrid_[new_row][new_col].z<<"   "<<fireGrid_[cur_row][cur_col].z<<"   "<<slope<<"    "<<p_slope<<"\n";
 	if(slope<=0)
 		ind=-1;
 	p_slope=def_.slope_k1*exp(ind*def_.slope_k2*pow(slope,2)); // pSpread due to the slope
@@ -418,6 +417,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		p_slope=1;
 	if(p_slope<0)
 		p_slope=0;
+//	if(def_.fire_verbose==1)
+//		cout<<"new elevation, old elevation, slope, p_slope: "<<fireGrid_[new_row][new_col].z<<"   "<<fireGrid_[cur_row][cur_col].z<<"   "<<slope<<"    "<<p_slope<<"\n";
 	
 	if(cur_fire_.winddir>=0)
 	{
@@ -444,8 +445,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		p_winddir=1;
 	if(p_winddir<0)
 		p_winddir=0;
-	if(def_.fire_verbose==1)
-		cout<<"Windspeed and winddirection, pwind: "<<windspeed<<"   "<<winddir<<"   "<<p_winddir<<"\t";
+//	if(def_.fire_verbose==1)
+//		cout<<"Windspeed and winddirection, pwind: "<<windspeed<<"   "<<winddir<<"   "<<p_winddir<<"\t";
 	if(def_.spread_calc_type<4)
 		p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[new_row][new_col].fuel_moist-def_.moisture_k2))));
 	else // use deficit
@@ -523,8 +524,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	}		
 	
 	// Here we would put other pSpread calculations, depending on the parent node and the node being tested for spread
-	if(def_.fire_verbose==1)
-		cout<<"burn test, slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
+//	if(def_.fire_verbose==1)
+//		cout<<"burn test, slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
 	return temp_pBurn;
 }
 
@@ -567,22 +568,22 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		}	
 
 		if(def_.fire_verbose==1)
-			cout<<"in test ignition p_moisture: "<<p_moisture<<"moisture: "<<cur_moist<<"\n\n";
+			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<"\n\n";
 		cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_veg;
 		p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 		if(def_.fire_verbose==1)
-			cout<<"in test ignition p_load "<<p_load<<"load: "<<cur_load<<"\n\n";
+			cout<<"in test ignition p_load "<<p_load<<" load: "<<cur_load<<"SpreadType: "<<def_.spread_calc_type<<"\n\n";
+		pIgn=p_moisture*p_load;		
 		if(def_.veg_ign==1)
 		{
 			p_veg=1-1/(1+exp(-(def_.veg_k1*(fireGrid_[cur_row][cur_col].fuel_veg-def_.veg_k2))));
-			pIgn=p_moisture*p_load*p_veg;
+			pIgn=pIgn*p_veg;
 			if(def_.fire_verbose==1)
 			{
 				cout<<"In test ignition, downgrading ignition prob by p_veg: "<<p_veg<<"\n";
 			}
 		}
-		else
-			pIgn=p_moisture*p_load;
+			
 
 
 		double test=rng();
