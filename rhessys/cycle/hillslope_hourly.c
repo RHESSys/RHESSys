@@ -129,7 +129,7 @@ void		hillslope_hourly(
 		slow_store = min(hillslope[0].defaults[0][0].gw_loss_fast_threshold, hillslope[0].gw.storage);
 	      	hillslope[0].gw.hourly_Qout = slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_coeff/24; 
 		fast_store = max(0.0,hillslope[0].gw.storage - hillslope[0].defaults[0][0].gw_loss_fast_threshold);
-		hillslope[0].gw.hourly_Qout += slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24; 
+		hillslope[0].gw.hourly_Qout += fast_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24; 
 	    }
 
 		hillslope[0].hourly_base_flow += hillslope[0].gw.hourly_Qout;

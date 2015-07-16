@@ -231,7 +231,7 @@ struct soil_default *construct_soil_defaults(
 			if (default_object_list[i].theta_psi_curve != 3)  {
 				default_object_list[i].psi_air_entry *= command_line[0].vsen_alt[PA];
 				default_object_list[i].pore_size_index *= command_line[0].vsen_alt[PO];
-				if (default_object_list[0].pore_size_index >= 1.0) {
+				if (default_object_list[i].pore_size_index >= 1.0) {
 					printf("\n Sensitivity analysis giving Pore Size Index > 1.0, not allowed, setting to 1.0\n");
 					default_object_list[i].pore_size_index = 0.999;
 					}
