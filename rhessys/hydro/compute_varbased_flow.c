@@ -137,16 +137,7 @@ double	compute_varbased_flow(
 		    abovthre_flow = (transmissivity[didx]-thre_flow) * fs_spill; // fs_spill default value is 1 
       		    flow = abovthre_flow + thre_flow * fs_percolation;  // fs_percolation defaults = 1
 		}
-		/*if (patch[0].ID==33575){
-		  printf("sat_deficit=%f, threshold=%f,thre_flow=%f,abovethre_flow=%f,flow=%f,trasn=%f,fs_spill=%f\n",
-			patch[0].sat_deficit,
-			threshold,
-			thre_flow,
-			abovthre_flow,
-			flow,
-			transmissivity[didx],
-			fs_spill);
-		}*/
+
 	
 	}
 

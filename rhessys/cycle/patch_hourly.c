@@ -495,10 +495,10 @@ void		patch_hourly(
 	/* ---------------------------------------------- */
 	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
 		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
-	else 
+	else {
 		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 			/ patch[0].rootzone.potential_sat, 1.0);	
-	return;
+	return;}
 
 	/*-----------------------------------------------------*/
 	/*  re-Compute potential saturation for rootzone layer   */
