@@ -975,7 +975,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 			}
 				/*---------------------------------------------------------------------*/
-				/*update daily output*/
+				/*update daily output: the patch[0].base_flow and patch[0].return_flow
+				 * is the summation of 24 hours return_flow and base_flow from previous 
+				 * calculation*/
 				/*-----------------------------------------------------------------------*/
 				if(k==n_timesteps-1){
 				    if (patch[0].drainage_type == STREAM) {
