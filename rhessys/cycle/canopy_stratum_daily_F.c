@@ -1562,7 +1562,7 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Do respiration and photosynthesis only for plants	*/
 	/*--------------------------------------------------------------*/
-	if (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO) {
+	if (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO ) {
 		/*--------------------------------------------------------------*/
 		/*	perform maintenance respiration				*/
 		/*	only fluxes are computed here; stores are updated later	*/
@@ -1888,6 +1888,5 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
 		stratum[0].acc_year.length += 1;
 	}
-
 	return;
 } /*end canopy_stratum_daily_F.c*/
