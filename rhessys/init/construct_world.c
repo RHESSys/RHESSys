@@ -371,6 +371,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
   void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
+
+	void resemble(struct world_object *);
 /*
 	void  construct_dclim(struct world_object *);
 */
@@ -796,12 +798,22 @@ struct world_object *construct_world(struct command_line_object *command_line){
 													world[0].base_station_files[i],
 													world[0].start_date, world[0].duration);
 			} /*end for*/
+
+			/*--------------------------------------------------------------*/
+			/* List the hourly record for all base station, resemble the hourly records*/
+			/*--------------------------------------------------------------*/
+			if(world[0].num_base_stations > 1){
+			    resemble_hourly_date(world);
+			}
+
 		}
 	} /*end if dclim_flag*/
 	/*
 	 construct_dclim(world);
 	 */
 	
+        
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the world ID.							*/
 	/*--------------------------------------------------------------*/

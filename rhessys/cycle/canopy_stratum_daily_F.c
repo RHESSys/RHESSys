@@ -409,9 +409,13 @@ void	canopy_stratum_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	total_incoming_PAR = PAR_diffuse + PAR_direct;
+	NO3_stored=0;
+	NO3_throughfall=0;
+
 	ustar = patch[0].ustar;
 	
 	lhvap = (2.5023e6 - 2430.54 * zone[0].metv.tday)/1000.0; /* KJ/kg H2O */	
+
 
 	/* Lstar calcs are done in patch daily F AFTER this routine, so using yesterday's	*/
 	/* patch total canopy Lstar and scaling back to this stratum by cover fraction.		*/
@@ -1308,6 +1312,8 @@ void	canopy_stratum_daily_F(
 		command_line[0].verbose_flag,
 		&(rain_throughfall),
 		stratum);
+
+
 	if (stratum[0].rain_stored > 0){
 	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
 	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
@@ -1562,7 +1568,7 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Do respiration and photosynthesis only for plants	*/
 	/*--------------------------------------------------------------*/
-	if (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO) {
+	if (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO ) {
 		/*--------------------------------------------------------------*/
 		/*	perform maintenance respiration				*/
 		/*	only fluxes are computed here; stores are updated later	*/
@@ -1888,6 +1894,5 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
 		stratum[0].acc_year.length += 1;
 	}
-
 	return;
 } /*end canopy_stratum_daily_F.c*/

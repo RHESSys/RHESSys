@@ -87,7 +87,7 @@ void		zone_hourly(
 
 	if (inx > -999)  {
 		clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
-		while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
+		while (clim_event.edate.year!=0 && (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0)) {
 			zone[0].base_stations[0][0].hourly_clim[0].rain.inx += 1;
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 			clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
@@ -356,7 +356,7 @@ void		zone_hourly(
 						+= zone[0].hourly[0].Kdown_diffuse_flat * 3600 / 1000;
 					zone[0].Kdown_diffuse_calc
 						+= zone[0].hourly[0].Kdown_diffuse * 3600 / 1000;
-				/*} /*end if */
+				/*} end if */ 
 			} /*end if*/
 			} /*end if*/
 		} /*end if*/
@@ -374,5 +374,7 @@ void		zone_hourly(
 				event,
 				current_date );
 		}
+
+
 		return;
 } /*end zone_hourly.c*/

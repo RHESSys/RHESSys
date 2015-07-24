@@ -95,6 +95,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].firespread_flag = 0;
 	command_line[0].vegspinup_flag = 0;		
 	command_line[0].vgsen_flag = 0;
+	command_line[0].FillSpill_flag=0;	
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;

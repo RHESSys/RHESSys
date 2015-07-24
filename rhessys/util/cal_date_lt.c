@@ -40,6 +40,8 @@ int	 cal_date_lt( struct date date1,
 	/*--------------------------------------------------------------*/
 	/*	Check if the julian days are different.						*/
 	/*--------------------------------------------------------------*/
+	julday1 = 0.0;
+	julday2 = 0.0;
 	julday1 = julday(date1);
 	julday2 = julday(date2);
 	if ( julday1 == julday2 ){

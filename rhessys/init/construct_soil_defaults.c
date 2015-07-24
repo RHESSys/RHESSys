@@ -155,26 +155,18 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].soil_type.silt,
 				default_object_list[i].soil_type.clay);
 		} /*end if*/
-
 		if (command_line[0].gw_flag > 0) {
 			default_object_list[i].sat_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "sat_to_gw_coeff", "%lf", 1.0, 1);
 			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
 			}
 
-		/* sat_store for fill and spill */	
-		default_object_list[i].sat_store = 	getDoubleParam(&paramCnt, &paramPtr, "sat_store", "%lf", 0.1, 1);
-
-	/*	if (default_object_list[i].porosity_0 * default_object_list[i].soil_depth * command_line[0].sen[SOIL_DEPTH]* 0.999
-											    < default_object_list[i].sat_store){
-		    printf("sat_store = %f, porosity_0 = %f, soil_depth = %f\n",default_object_list[i].sat_store,default_object_list[i].porosity_0,
-								default_object_list[i].soil_depth * command_line[0].sen[SOIL_DEPTH]);
-	    	    fprintf(stderr,"FATAL ERROR: sat_store is more than max_soil_sat_deficit. Please choose a small sat_store in soil def file.");
-
-		exit(0);
-		} 
-       */
+		/*-----------------------------------------------------------------------------
+		 *  Fill and Spill parameters
+		 *-----------------------------------------------------------------------------*/
+		default_object_list[i].fs_spill =	getDoubleParam(&paramCnt, &paramPtr, "fs_spill", "%lf", 1, 1);
+		default_object_list[i].fs_percolation =	getDoubleParam(&paramCnt, &paramPtr, "fs_percolation", "%lf", 1, 1);
+		default_object_list[i].fs_threshold = 	getDoubleParam(&paramCnt, &paramPtr, "fs_threshold", "%lf", 0.2, 1);
 		
-
 		/*--------------------------------------------------------------*/
 		/*	vertical soil m and K are initized using soil default	*/
 		/*	but sensitivity analysis -s is not applied to them	*/
@@ -239,7 +231,7 @@ struct soil_default *construct_soil_defaults(
 			if (default_object_list[i].theta_psi_curve != 3)  {
 				default_object_list[i].psi_air_entry *= command_line[0].vsen_alt[PA];
 				default_object_list[i].pore_size_index *= command_line[0].vsen_alt[PO];
-				if (default_object_list[0].pore_size_index >= 1.0) {
+				if (default_object_list[i].pore_size_index >= 1.0) {
 					printf("\n Sensitivity analysis giving Pore Size Index > 1.0, not allowed, setting to 1.0\n");
 					default_object_list[i].pore_size_index = 0.999;
 					}
@@ -302,6 +294,7 @@ struct soil_default *construct_soil_defaults(
     
         printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
-	
-		return(default_object_list);
+	if (paramPtr != NULL)
+            free(paramPtr);
+  return(default_object_list);
 } /*end construct_soil_defaults*/

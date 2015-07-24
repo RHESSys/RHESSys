@@ -197,7 +197,7 @@ void	execute_daily_output_event(
 								/*---------------------------------------------------*/
 								for(p=0;
 								p < world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches;
-								++p){
+								++p){									
 									/*-------------------------------------------------*/
 									/*	Construct the patch output files.					*/
 									/*-------------------------------------------------*/

@@ -409,5 +409,9 @@ struct stratum_default *construct_stratum_defaults(
     
             printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
+
+                if (paramPtr != NULL)
+                    free(paramPtr);
+		    
 	return(default_object_list);
 } /*end construct_stratum_defaults*/

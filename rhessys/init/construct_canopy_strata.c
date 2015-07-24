@@ -224,6 +224,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	fscanf(world_file,"%lf",&(canopy_strata[0].epv.min_vwc));
 	read_record(world_file, record);
 	
+
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this canopy_strata								*/
 	/*--------------------------------------------------------------*/

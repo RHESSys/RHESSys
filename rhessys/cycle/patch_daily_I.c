@@ -294,7 +294,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit_z,
-			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.depth;
+			patch[0].sat_deficit_z, 0.0) - patch[0].field_capacity;
 		
 		if ( command_line[0].verbose_flag == -5 ){
 			printf("\n***PCHDAILYI CASE2: satdefz=%lf rzdepth=%lf rzFC=%lf FC=%lf",
@@ -467,7 +467,7 @@ void		patch_daily_I(
 	/*--------------------------------------------------------------*/
 	/*	Calculate effective patch lai from stratum					*/
 	/*	- for later use by zone_daily_F								*/
-	/*      Accumulate root biomass for patch soil -
+	/*      Accumulate root biomass for patch soil -		*/
 	/*      required for N updake from soil                         */
 	/*	also determine total plant carbon			*/
 	/*	- if grow option is specified				*/

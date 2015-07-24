@@ -323,3 +323,134 @@ int string_length(char *s)
  
    return c;
 }
+
+
+/*-----------------------------------------------------------------------------
+ *  function used to read variables in worldfile
+ *-----------------------------------------------------------------------------*/
+
+char * getStrWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *readFormat, char *defaultVal, int useDefaultVal) {
+
+    int iParam;
+    int sLen;
+    char *outStr;
+    int found = 0;
+    int paramInd;
+
+    param *params;
+    params = *paramPtr;
+
+    /* Search for a parameter that matches the specified parameter name */
+    for (iParam = 0; iParam < *paramCnt; iParam++) {
+        if (strcmp(params[iParam].name, paramName) == 0) {
+            found = 1;
+            // Allocate an output string buffer that is the same size as the parameter value string
+            sLen = string_length(params[iParam].strVal);
+            outStr = malloc(sizeof(char) * sLen);
+            // Transform the string according to the specified format
+            sscanf(params[iParam].strVal, readFormat, outStr);
+            params[iParam].accessed = 1;
+            strcpy(params[iParam].format, readFormat);
+            break;
+        }
+    }
+
+    /* Return the requested parameter if found in the parameter list, otherwise return the default value. */
+    if (found) {
+        return outStr;
+    } else if (useDefaultVal) {
+        return defaultVal;
+    } else {
+        printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+    }
+}
+
+int getIntWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, int defaultVal, int useDefaultVal) {
+
+    int iParam;
+    int paramInd;
+    int sLen;
+    int intVal;
+    int found = 0;
+    param *params;
+    params = *paramPtr;
+
+    for (iParam = 0; iParam < *paramCnt; iParam++) {
+        if (strcmp(params[iParam].name, paramName) == 0) {
+            found = 1;
+            // Transform the string according to the specified format
+            sscanf(params[iParam].strVal, readFormat, &intVal);
+            params[iParam].accessed = 1;
+            strcpy(params[iParam].format, readFormat);
+            break;
+        }
+    }
+
+    if (found) {
+        return intVal;
+    } else if (useDefaultVal) {
+        return defaultVal;
+    } else {
+        printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+    }
+}
+
+float getFloatWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, float defaultVal, int useDefaultVal) {
+
+    int iParam;
+    int paramInd;
+    int sLen;
+    float floatVal;
+    int found = 0;
+    param *params;
+    params = *paramPtr;
+
+    for (iParam = 0; iParam < *paramCnt; iParam++) {
+        if (strcmp(params[iParam].name, paramName) == 0) {
+            found = 1;
+            // Transform the string according to the specified format
+            sscanf(params[iParam].strVal, readFormat, &floatVal);
+            params[iParam].accessed = 1;
+            strcpy(params[iParam].format, readFormat);
+            break;
+        }
+    }
+
+    if (found) {
+        return floatVal;
+    } else if (useDefaultVal) {
+        return defaultVal;
+    } else {
+        printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+    }
+}
+
+double getDoubleWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *readFormat, double defaultVal, int useDefaultVal) {
+
+    int iParam;
+    int paramInd;
+    int sLen;
+    double doubleVal;
+    int found = 0;
+    param *params;
+    params = *paramPtr;
+
+    for (iParam = 0; iParam < *paramCnt; iParam++) {
+        if (strcmp(params[iParam].name, paramName) == 0) {
+            found = 1;
+            // Transform the string according to the specified format
+            sscanf(params[iParam].strVal, readFormat, &doubleVal);
+            params[iParam].accessed = 1;
+            strcpy(params[iParam].format, readFormat);
+            break;
+        }
+    }
+
+    if (found) {
+        return doubleVal;
+    } else if (useDefaultVal) {
+        return defaultVal;
+    } else {
+        printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+    }
+}

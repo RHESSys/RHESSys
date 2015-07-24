@@ -651,8 +651,9 @@ void		zone_daily_F(
 			current_date );
 
 	  if(command_line[0].vegspinup_flag > 0){
-      if (zone[0].patches[patch]->target_status == 0)
+      if (zone[0].patches[patch]->target_status == 0){
         world[0].target_status = 0;
+      }
     }
 	}
 
