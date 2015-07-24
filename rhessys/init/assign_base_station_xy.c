@@ -46,7 +46,7 @@ struct base_station_object
 	}
 	else {
 		//printf("\n      Assign: Starting while loop: %lf %lf",(*(base_stations[i])).x,(*(base_stations[i])).y);
-		while ( (x != (*(base_stations[i])).x) && (y != (*(base_stations[i])).y) ) {
+		while ( (x != (*(base_stations[i])).x) || (y != (*(base_stations[i])).y) ) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*	Report an error if no match was found.  Otherwise assign	*/
