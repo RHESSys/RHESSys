@@ -142,15 +142,15 @@ double	compute_N_leached(int verbose_flag,
 			n_0,
 			p,
 			z2_water,		
-			s2,
-			0.0);
+			0.0,
+			-s2);
 	z1 = compute_z_final(
 			verbose_flag,
 			n_0,
 			p,
 			z2_water,		
-			s1,
-			0.0);
+			0.0,
+			-s1);
 	if (N_decay_rate > 0.0) {	
 		navail = total_nitrate
 			/ (1.0 - exp(-1.0 * N_decay_rate * z2_N) )
