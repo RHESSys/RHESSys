@@ -1,4 +1,4 @@
-PGM  = rhessys5.19omp
+PGM  = rhessys5.19jul26
 VERSION = 5.19omp
 CC = gcc 
 #CFLAGS = -O -std=c99
