@@ -645,8 +645,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  strata base stations 					*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(canopy_strata[0].num_base_stations));
-	read_record(world_file, record);
+	/*  fscanf(world_file,"%d",&(canopy_strata[0].num_base_stations));
+	read_record(world_file, record);*/
 	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this strata.			*/
 	/*--------------------------------------------------------------*/
