@@ -14,8 +14,8 @@
 /*			int		num_world_base_stations,					*/
 /*			struct base_station_object	**world_base_stations,	*/
 /*			struct basin_object	**basin_list,					*/
-/*			struct default_object *defaults,
-/* 																*/
+/*			struct default_object *defaults,   */
+/* 														      */
 /*																*/
 /*	OPTIONS														*/
 /*																*/

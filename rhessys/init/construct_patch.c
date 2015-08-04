@@ -644,7 +644,7 @@ struct patch_object *construct_patch(
 
 	patch[0].precip_with_assim = 0.0;
 	
-  /*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
 	/*	Construct the shadow strata in this patch.		*/
 	/*--------------------------------------------------------------*/
 	if ( (command_line[0].vegspinup_flag > 0) ) {

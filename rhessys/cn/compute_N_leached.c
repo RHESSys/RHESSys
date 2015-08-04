@@ -131,7 +131,6 @@ double	compute_N_leached(int verbose_flag,
 		  nleached = navail-nabsorbed;
 		if (nleached > navail) nleached=navail;	
 	}
-	
 	else {
 	/*------------------------------------------------------*/
 	/*	now for regular subsurface flow			*/
@@ -158,7 +157,6 @@ double	compute_N_leached(int verbose_flag,
 			- exp(-1.0 * N_decay_rate * (z2)));
 
 		}
-
 	else {
 			septic_depth = -1.0*N_decay_rate;
 			if (z1 > septic_depth)
@@ -189,8 +187,8 @@ double	compute_N_leached(int verbose_flag,
 
 	if (nabsorbed > navail) {
 			navail=0;
-			}
-		else 
+	}
+	else 
 		  navail = navail-nabsorbed;
 	if (available_water > ZERO) {
 			nleached = navail * Qout/available_water;
