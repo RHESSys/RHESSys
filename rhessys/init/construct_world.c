@@ -372,7 +372,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
   void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
 
-	void resemble(struct world_object *);
+	void resemble_hourly_date(struct world_object *);
 /*
 	void  construct_dclim(struct world_object *);
 */

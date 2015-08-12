@@ -142,15 +142,15 @@ double	compute_N_leached(int verbose_flag,
 			n_0,
 			p,
 			z2_water,		
-			s2,
-			0.0);
+			0.0,
+			-s2);
 	z1 = compute_z_final(
 			verbose_flag,
 			n_0,
 			p,
 			z2_water,		
-			s1,
-			0.0);
+			0.0,
+			-s1);
 	if (N_decay_rate > 0.0) {	
 		navail = total_nitrate
 			/ (1.0 - exp(-1.0 * N_decay_rate * z2_N) )
@@ -179,7 +179,7 @@ double	compute_N_leached(int verbose_flag,
 		z2,
 		z1);
 
-	}
+	
 	nabsorbed=compute_N_absorbed(verbose_flag,
 		z1,
 		z2,
@@ -197,9 +197,9 @@ double	compute_N_leached(int verbose_flag,
 
 						}
 		else nleached = 0.0;
-	}
-
 	if (nleached > navail) nleached=navail;
+	}
+	}
 
 	/*------------------------------------------------------*/
 	/* there may be enough flow to leach out more than 	*/

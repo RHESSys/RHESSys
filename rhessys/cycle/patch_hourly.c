@@ -212,9 +212,10 @@ void		patch_hourly(
 					event,
 					current_date );
 			}
-		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
-		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
+		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;	
+		}
+
 	}
 
 
@@ -498,7 +499,7 @@ void		patch_hourly(
 	else {
 		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 			/ patch[0].rootzone.potential_sat, 1.0);	
-	return;}
+	}
 
 	/*-----------------------------------------------------*/
 	/*  re-Compute potential saturation for rootzone layer   */
