@@ -197,6 +197,7 @@ double	compute_N_leached(int verbose_flag,
 
 						}
 		else nleached = 0.0;
+		
 	if (nleached > navail) nleached=navail;
 	}
 	}
