@@ -95,7 +95,7 @@ char * getStrParam(int *paramCnt, param **paramPtr, char *paramName, char *readF
             found = 1;
             // Allocate an output string buffer that is the same size as the parameter value string
             sLen = string_length(params[iParam].strVal);
-            outStr = malloc(sizeof(char) * sLen);
+            outStr = (char *)malloc(sizeof(char) * sLen);
             // Transform the string according to the specified format
             sscanf(params[iParam].strVal, readFormat, outStr);
             params[iParam].accessed = 1;
@@ -128,7 +128,12 @@ char * getStrParam(int *paramCnt, param **paramPtr, char *paramName, char *readF
         params[paramInd].accessed = 1;
         params[paramInd].defaultValUsed = 1;
         strcpy(params[paramInd].format, readFormat);
-        return defaultVal;
+        // Allocate an output string buffer that is the same size as the parameter value string
+        sLen = string_length(defaultVal);
+        outStr = (char *)malloc(sizeof(char) * sLen);
+	sscanf(defaultVal,readFormat,outStr);
+        
+	return outStr;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
     }
@@ -346,7 +351,7 @@ char * getStrWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *r
             found = 1;
             // Allocate an output string buffer that is the same size as the parameter value string
             sLen = string_length(params[iParam].strVal);
-            outStr = malloc(sizeof(char) * sLen);
+            outStr = (char *)malloc(sizeof(char) * sLen);
             // Transform the string according to the specified format
             sscanf(params[iParam].strVal, readFormat, outStr);
             params[iParam].accessed = 1;
