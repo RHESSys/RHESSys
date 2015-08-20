@@ -422,41 +422,6 @@ void		patch_hourly(
 		0.0,
 		-1.0 * patch[0].sat_deficit);	
 
-		/*--------------------------------------------------------------*/
-		/* 	leave behind field capacity			*/
-		/*	if sat deficit has been lowered			*/
-		/*	this should be an interactive process, we will use 	*/
-		/*	0th order approximation					*/
-		/* 	we do not do this once sat def is below 0.9 soil depth	*/
-		/*     we use 0.9 to prevent numerical instability		*/
-		/*--------------------------------------------------------------*/
-		if (available_sat_water > ZERO) {
-	       		add_field_capacity = compute_layer_field_capacity(
-				command_line[0].verbose_flag,
-				patch[0].soil_defaults[0][0].theta_psi_curve,
-				patch[0].soil_defaults[0][0].psi_air_entry,
-				patch[0].soil_defaults[0][0].pore_size_index,
-				patch[0].soil_defaults[0][0].p3,
-				patch[0].soil_defaults[0][0].p4,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].sat_deficit_z,
-				patch[0].sat_deficit_z,
-				temp);
-			add_field_capacity = max(add_field_capacity, 0.0);
-			patch[0].sat_deficit += add_field_capacity;
-			if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) && (patch[0].preday_sat_deficit_z > patch[0].rootzone.depth))				
-				patch[0].unsat_storage += add_field_capacity;
-			
-			else if ((patch[0].sat_deficit_z <= patch[0].rootzone.depth) && (patch[0].preday_sat_deficit_z <= patch[0].rootzone.depth))
-				patch[0].rz_storage += add_field_capacity;
-			else  {
-				patch[0].rz_storage += add_field_capacity * (patch[0].rootzone.depth -patch[0].preday_sat_deficit_z) 
-					/ (patch[0].sat_deficit_z -patch[0].preday_sat_deficit_z);
-				patch[0].unsat_storage += add_field_capacity * (patch[0].sat_deficit_z - patch[0].rootzone.depth) 
-					/ (patch[0].sat_deficit_z -patch[0].preday_sat_deficit_z);					
-			}
-		}
 
 	/*--------------------------------------------------------------*/
 	/*      Recompute patch soil moisture storage                   */
