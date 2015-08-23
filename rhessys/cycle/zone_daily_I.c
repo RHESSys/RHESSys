@@ -169,17 +169,22 @@ void zone_daily_I(
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
 	int		flag;
-	int		i;
+	int		i,p;
 	double	isohyet_adjustment;
-	int 	patch;
 	double	temp, tmp;
 	double	Tlapse_adjustment;
 	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
+	double 	added_sat_water, added_water, excess_sat_water; 
+	double  excess_root_water, area_receiving, area_giving;
+
+	
+
 	int		season;
 	season = 0;
 	
 	int	inx;
 	struct	dated_sequence	clim_event;
+	struct  patch_object	*patch;
 
 	zone[0].rain_hourly_total = 0.0;
 	zone[0].snow_hourly_total = 0.0;
@@ -515,7 +520,7 @@ void zone_daily_I(
 	/* but warn user of problem with their climate inputs		*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].Delta_T < -ZERO) {
-		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d", 
+		printf("\n WARNING: Maximum temperature is less than minimum temperature on %ld %ld %ld", 
 			current_date.day, current_date.month, current_date.year); 
 		zone[0].Delta_T = zone[0].Delta_T * -1.0;
 	}
@@ -1033,20 +1038,93 @@ void zone_daily_I(
 			   trans_coeff1,
 			   trans_coeff2);
 	}
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches 									*/
 	/*--------------------------------------------------------------*/
-	for ( patch=0 ; patch<zone[0].num_patches; patch++ ){
+	zone[0].max_rootdepth = 0.0;
+	for ( p=0 ; p<zone[0].num_patches; p++ ){
+		patch= zone[0].patches[p];
 		patch_daily_I(
 			world,
 			basin,
 			hillslope,
 			zone,
-			zone[0].patches[patch],
+			patch,
 			command_line,
 			event,
 			current_date );
+		zone[0].max_rootdepth = max(patch[0].rootzone.depth, zone[0].max_rootdepth);
+	}	
+	if (command_line[0].ptransfer_flag==1) {
+	excess_root_water = 0.0;
+	area_giving = 0.0;
+	area_receiving = 0.0;
+	for ( p=0 ; p<zone[0].num_patches; p++ ){
+		patch= zone[0].patches[p];
+		patch[0].water_transfer=0.0;
+		if (patch[0].rootzone.depth < zone[0].max_rootdepth) {
+			if (patch[0].sat_deficit_z > patch[0].rootzone.depth) {
+				excess_root_water += patch[0].unsat_storage  *
+						(zone[0].max_rootdepth - patch[0].rootzone.depth) /
+						(patch[0].sat_deficit_z - patch[0].rootzone.depth);
+				excess_root_water = min(patch[0].unsat_storage, excess_root_water);
+				excess_root_water = max(0.0, excess_root_water);
+			patch[0].water_transfer = -excess_root_water;
+			patch[0].unsat_storage -= excess_root_water;
+			area_giving += patch[0].area;
+			}
+			excess_sat_water = max(0,max(0,(zone[0].max_rootdepth - patch[0].sat_deficit_z)) -
+						max(0,	(patch[0].rootzone.depth - patch[0].sat_deficit_z))
+						* patch[0].soil_defaults[0][0].porosity_0);
+			patch[0].water_transfer -= excess_sat_water;
+			patch[0].sat_deficit += excess_sat_water;
+		
+		}
+		else {
+			area_receiving += patch[0].area;
+		}
 	}
+	if (excess_root_water > ZERO) {
+	excess_root_water = excess_root_water * area_giving;
+	excess_sat_water = excess_sat_water * area_giving;
+	added_water=0.0;
+	added_sat_water=0.0;
+	for ( p=0 ; p<zone[0].num_patches; p++ ){
+		patch= zone[0].patches[p];
+		if (patch[0].rootzone.depth >= zone[0].max_rootdepth)	{
+			added_water += max(0.0, min(area_receiving*(patch[0].rootzone.field_capacity-patch[0].rz_storage),
+					excess_root_water))/area_receiving;
+			patch[0].rz_storage += added_water;
+			patch[0].water_transfer = added_water;
+			added_sat_water += max(0.0, min(area_receiving*(patch[0].rootzone.field_capacity-patch[0].rz_storage),
+					excess_sat_water))/area_receiving;
+			patch[0].rz_storage += added_sat_water;
+			patch[0].water_transfer = added_sat_water;
+		}
+	}
+	if (added_water*area_receiving < excess_root_water) {
+		for ( p=0 ; p<zone[0].num_patches; p++ ){
+			patch= zone[0].patches[p];
+			if (patch[0].rootzone.depth < zone[0].max_rootdepth) {
+				patch[0].unsat_storage += (excess_root_water- added_water*area_receiving)/area_giving;
+				patch[0].water_transfer += (excess_root_water- added_water*area_receiving)/area_giving;
+			}
+		}
+		}
+
+	if (added_sat_water*area_receiving < excess_sat_water) {
+		for ( p=0 ; p<zone[0].num_patches; p++ ){
+			patch= zone[0].patches[p];
+			if (patch[0].rootzone.depth < zone[0].max_rootdepth) {
+				patch[0].sat_deficit -= (excess_sat_water- added_sat_water*area_receiving)/area_giving;
+				patch[0].water_transfer += (excess_sat_water- added_sat_water*area_receiving)/area_giving;
+			}
+		}
+		}
+	}
+	}
+	
 
 } /*end zone_daily_I.c*/
