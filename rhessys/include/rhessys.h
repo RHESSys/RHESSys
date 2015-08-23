@@ -969,6 +969,7 @@ struct zone_object
         double  LAI_temp_adjustment;                    /* 0 - 1        */
         double  LAI_scalar;                             /* DIM          */
         double  Ldown;                                  /* W/m2         */
+	double	max_rootdepth;				/* m		*/
         double  ndep_NO3;                               /* kg/m2/day    */
         double  ndep_NH4;                               /* kg/m2/day    */
         double  PAR_direct;                             /* umol(m^2*day)        */
@@ -1629,6 +1630,7 @@ struct patch_object
         double  PE;             /* m water      */
         double  precip_with_assim;    /* m water */
         double  rz_drainage;            /* m water      */
+        double  water_transfer;         /* m water         */
         double  wind;                   /* m/s          */
         double  wind_final;             /* m/s          */
         double  windsnow;                       /* m/s          */
@@ -1932,6 +1934,7 @@ struct  command_line_object
         int             vmort_flag;
         int             version_flag;
 	int		FillSpill_flag;	
+	int		ptransfer_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];

@@ -117,6 +117,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].output_flags.monthly = 0;
 	command_line[0].output_flags.daily = 0;
 	command_line[0].output_flags.hourly = 0;
+	command_line[0].ptransfer_flag = 0;
 	command_line[0].stro = NULL;
 	command_line[0].b = NULL;
 	command_line[0].h = NULL;
@@ -248,6 +249,16 @@ struct	command_line_object	*construct_command_line(
 					i++;
 				}/*end if*/
 			}/* end if */
+
+
+			/*-------------------------------------------------------*/
+			/*Check if the inter-patch transfer of water flag is next.           */
+			/*-------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-ptransfer") == 0 ){
+				printf("\n Running with transfers between patches\n");
+				command_line[0].ptransfer_flag = 1;
+				i++;
+			}
 			/*-------------------------------------------------*/
 			/*	fire spread option and coeffcients	  */
 			/*-------------------------------------------------*/
