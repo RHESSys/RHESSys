@@ -701,7 +701,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		fireOut.close();
 
-	curFile.assign("SoilMoistGridYear");
+		curFile.assign("SoilMoistGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -809,6 +809,80 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 			fireOut<<"\n";
 		}
 		fireOut.close();	
+		if(def_.fire_write>3)
+		{
+			curFile.assign("PSlopeGridYear");
+			curFile.append(curYear);
+			curFile.append("Month");
+			curFile.append(curMonth);
+			curFile.append(".txt");
+
+		//	ofstream fireOut;
+			fireOut.open(curFile.c_str());
+			for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+			{
+				for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+				{
+					fireOut<<localFireGrid_[i][j].pSlope<<"\t";
+					}
+				fireOut<<"\n";
+			}
+			fireOut.close();	
+
+			curFile.assign("PDefGridYear");
+			curFile.append(curYear);
+			curFile.append("Month");
+			curFile.append(curMonth);
+			curFile.append(".txt");
+
+		//	ofstream fireOut;
+			fireOut.open(curFile.c_str());
+			for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+			{
+				for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+				{
+					fireOut<<localFireGrid_[i][j].pDef<<"\t";
+					}
+				fireOut<<"\n";
+			}
+			fireOut.close();	
+			
+			curFile.assign("PLoadGridYear");
+			curFile.append(curYear);
+			curFile.append("Month");
+			curFile.append(curMonth);
+			curFile.append(".txt");
+
+		//	ofstream fireOut;
+			fireOut.open(curFile.c_str());
+			for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+			{
+				for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+				{
+					fireOut<<localFireGrid_[i][j].pLoad<<"\t";
+					}
+				fireOut<<"\n";
+			}
+			fireOut.close();	
+			
+			curFile.assign("PWindGridYear");
+			curFile.append(curYear);
+			curFile.append("Month");
+			curFile.append(curMonth);
+			curFile.append(".txt");
+
+		//	ofstream fireOut;
+			fireOut.open(curFile.c_str());
+			for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+			{
+				for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+				{
+					fireOut<<localFireGrid_[i][j].pWind<<"\t";
+					}
+				fireOut<<"\n";
+			}
+			fireOut.close();	
+		}
 	}
 
 /*	ofstream demOut;
