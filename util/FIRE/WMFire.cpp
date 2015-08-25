@@ -131,6 +131,7 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 		{
 			fireGrid_[i][j].burn=0;		// 0 indicates that the pixel has not been burned
 			localFireGrid_[i][j].iter=-1;
+			localFireGrid_[i][j].failedIter=-1;
 			localFireGrid_[i][j].pSlope=-1;
 			localFireGrid_[i][j].pDef=-1;
 			localFireGrid_[i][j].pLoad=-1;
@@ -302,6 +303,9 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 					BurnedCells bc = {new_row, new_col};
 					burnedThisTime.push_back(bc);
 				}
+				else
+					localFireGrid_[new_row][new_col].failedIter=iter; // record pixels that failed to spread, and which iteration
+
 			}
 	
 		}
@@ -630,6 +634,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 //	char const* outFile;
 	std::string curFile;
 	std::string curPropFile;
+	std::string curFailedIterFile;
 	
 	std::string curMonth;
 	std::stringstream out;
@@ -647,6 +652,13 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	curFile.append(curMonth);
 	curFile.append(".txt");
 
+	curFailedIterFile.assign("FireFailedIterGridYear");
+	curFailedIterFile.append(curYear);
+	curFailedIterFile.append("Month");
+	curFailedIterFile.append(curMonth);
+	curFailedIterFile.append(".txt");
+
+
 	curPropFile.assign("FireSpreadPropGridYear");
 	curPropFile.append(curYear);
 	curPropFile.append("Month");
@@ -657,6 +669,9 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	{
 		ofstream fireOut;
 		fireOut.open(curFile.c_str());
+		ofstream fireFailedIterOut;
+		fireFailedIterOut.open(curFailedIterFile.c_str());
+
 		
 		ofstream firePropOut;
 		firePropOut.open(curPropFile.c_str());
@@ -667,13 +682,16 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 			for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
 			{
 				fireOut<<localFireGrid_[i][j].iter<<"\t";
+				fireFailedIterOut<<localFireGrid_[i][j].failedIter<<"\t";
 				firePropOut<<fireGrid_[i][j].burn<<"\t";
 			}
 			fireOut<<"\n";
 			firePropOut<<"\n";
+			fireFailedIterOut<<"\n";
 		}
 		fireOut.close();
 		firePropOut.close();
+		fireFailedIterOut.close();
 	}
 
 	cout<<"Year: "<<year<<" Month: "<<month<<"\n\n";

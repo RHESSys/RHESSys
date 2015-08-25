@@ -31,6 +31,7 @@ struct IgnitionCells // attributes of cells available for ignition, will draw ra
 struct LocalFireNodes
 {
 	int iter;
+	int failedIter;
 	double pSlope;
 	double pLoad;
 	double pDef;
