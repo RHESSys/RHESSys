@@ -173,35 +173,32 @@ double	compute_N_leached(int verbose_flag,
 	/* i.e n_avail / theta * outflow			*/
 	/*------------------------------------------------------*/
 
-	available_water = compute_delta_water(
-		verbose_flag,
-		n_0,p,z2_water,
-		z2,
-		z1);
+		available_water = compute_delta_water(
+			verbose_flag,
+			n_0,p,z2_water,
+			z2,
+			z1);
 
-	
-	nabsorbed=compute_N_absorbed(verbose_flag,
-		z1,
-		z2,
-		N_absorption_rate,
-		p,
-		n_0); 
-
-	if (nabsorbed > navail) {
-			navail=0;
-			}
-		else 
-		  navail = navail-nabsorbed;
-	if (available_water > ZERO) {
-			nleached = navail * Qout/available_water;
-
-						}
-		else nleached = 0.0;
 		
-	if (nleached > navail) nleached=navail;
-	}
-	}
+		nabsorbed=compute_N_absorbed(verbose_flag,
+			z1,
+			z2,
+			N_absorption_rate,
+			p,
+			n_0); 
 
+		if (nabsorbed > navail) {
+				navail=0;
+		}
+		else navail = navail-nabsorbed;
+		
+		if (available_water > ZERO) {
+			nleached = navail * Qout/available_water;
+		}
+		else nleached = 0.0;
+	    }
+	}
+	if (nleached > navail) nleached=navail;
 	/*------------------------------------------------------*/
 	/* there may be enough flow to leach out more than 	*/
 	/*	availabe nitrate, so limit export by available	*/
