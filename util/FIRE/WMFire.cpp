@@ -131,6 +131,11 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 		{
 			fireGrid_[i][j].burn=0;		// 0 indicates that the pixel has not been burned
 			localFireGrid_[i][j].iter=-1;
+			localFireGrid_[i][j].pSlope=-1;
+			localFireGrid_[i][j].pDef=-1;
+			localFireGrid_[i][j].pLoad=-1;
+			localFireGrid_[i][j].pWind=-1;
+			
 //			cout<<fireGrid_[i][j].burn<<"\t";
 			fireGrid_[i][j].wind_direction=fireGrid_[i][j].wind_direction*3.141593/180; // transform wind direction to radians, for RHESSys
 			// for debugging:
@@ -523,6 +528,11 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		temp_pBurn=p_slope*p_winddir*p_moisture*p_load; // if including wind direction, the overall pSpread is the product of the individual pSpreads.
 	}		
 	
+	localFireGrid_[new_row][new_col].pSlope=p_slope;
+	localFireGrid_[new_row][new_col].pDef=p_moisture;
+	localFireGrid_[new_row][new_col].pWind=p_winddir;
+	localFireGrid_[new_row][new_col].pLoad=p_load;
+
 	// Here we would put other pSpread calculations, depending on the parent node and the node being tested for spread
 //	if(def_.fire_verbose==1)
 //		cout<<"burn test, slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
@@ -801,7 +811,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		fireOut.close();	
 	}
 
-	ofstream demOut;
+/*	ofstream demOut;
 	demOut.open("RhessysDemInWMFire.txt");
 	for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
 	{
@@ -811,7 +821,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		demOut<<"\n";
 	}
-	demOut.close();
+	demOut.close();*/
 	if(def_.fire_write>0)
 	{
 		ofstream sizeOut;
