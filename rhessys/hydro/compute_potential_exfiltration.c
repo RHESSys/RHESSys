@@ -91,7 +91,7 @@ double	compute_potential_exfiltration(
 	/*--------------------------------------------------------------*/
 	/*	Estimate mean porosity.					*/
 	/*--------------------------------------------------------------*/
-	porosity_average = p * p_0 * (1-exp(-1*sat_deficit_z/p_0)) / sat_deficit_z;
+	porosity_average = p * p_0 * (1-exp(-1*sat_deficit_z/p)) / sat_deficit_z;
 	
 	/*--------------------------------------------------------------*/
 	/*	Estimate mean saturated conductivity.			*/
