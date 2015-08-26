@@ -396,6 +396,7 @@ void		patch_daily_F(
 	double	water_above_field_cap;
 	double	water_below_field_cap;
 	double 	duration, irrigation;
+	double	snow_melt_input;
 	double  fertilizer_NO3, fertilizer_NH4;
 	double	resp, transpiration_reduction_percent;
 	double 	surfaceN_to_soil;
@@ -562,6 +563,27 @@ void		patch_daily_F(
 
 	patch[0].acc_year.pcp += zone[0].rain + zone[0].snow + irrigation;
 	patch[0].acc_year.snowin += zone[0].snow;
+	/*--------------------------------------------------------------*/
+	/* if snowmelt is from another model (and input rather than computed */
+	/* get that value and set it up to substitute for rhessys internal snowmelt */
+	/*--------------------------------------------------------------*/
+	snow_melt_input=-999.0;
+	if (patch[0].base_stations != NULL) {
+		inx = patch[0].base_stations[0][0].dated_input[0].snow_melt_input.inx;
+		if (inx > -999) {
+			clim_event = patch[0].base_stations[0][0].dated_input[0].snow_melt_input.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].snow_melt_input.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].snow_melt_input.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].snow_melt_input.seq[inx];
+				}
+			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+				snow_melt_input = clim_event.value;
+				}
+			else snow_melt_input = 0.0;
+			} 
+		else snow_melt_input=-999.0;
+	}
 
 
 
@@ -647,7 +669,6 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
-
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			if (dum == 0) {
 				patch[0].ga_final = patch[0].layers[layer].null_cover * tmpga;
@@ -904,7 +925,13 @@ void		patch_daily_F(
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snow_melt;
 			patch[0].snowpack.sublimation = min(patch[0].snowpack.sublimation, patch[0].snowpack.water_equivalent_depth);
 			patch[0].snowpack.height = patch[0].snowpack.water_equivalent_depth / 0.1; /* snow density ~ 0.1 */
-			patch[0].rain_throughfall += patch[0].snow_melt;
+
+			if (snow_melt_input == -999.0) 
+				patch[0].rain_throughfall += patch[0].snow_melt;
+			else {
+				patch[0].rain_throughfall += snow_melt_input;
+				patch[0].snow_melt = snow_melt_input;
+			}
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;
 			/* Force turbulent fluxes to 0 under snowpack */
@@ -1148,8 +1175,7 @@ void		patch_daily_F(
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
 	//patch[0].surface_NO3 += zone[0].ndep_NO3;
-	/* NO3 ndep fall's on canopy, not directly to ground, NH4 could use the same way */
-	patch[0].surface_NO3 += patch[0].NO3_throughfall;
+	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 
 	/*--------------------------------------------------------------*/
@@ -1194,7 +1220,8 @@ void		patch_daily_F(
 	/*	and evaporation routines.									*/
 	
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
-	
+	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
+
 
 	/* Calculate det store, litter, and bare soil evap first */
 	
@@ -2132,8 +2159,6 @@ void		patch_daily_F(
 if ( command_line[0].verbose_flag == -5 ){
 	printf("\n***END PATCH DAILY: exfil_unsat=%lf",patch[0].exfiltration_unsat_zone);
 }
-
-
 
 	return;
 } /*end patch_daily_F.c*/
