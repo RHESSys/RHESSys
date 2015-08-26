@@ -210,6 +210,15 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	/*	proportion of subsurface outflow to each neighbour	*/
 	/*--------------------------------------------------------------*/
 	for (k = 0; k < n_timesteps; k++) {
+
+		patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
+				patch[0].soil_defaults[0][0].porosity_0,
+				patch[0].soil_defaults[0][0].porosity_decay,
+				patch[0].soil_defaults[0][0].soil_depth, 0.0,
+				-1.0 * patch[0].sat_deficit);
+		patch[0].preday_sat_deficit = patch[0].sat_deficit;
+
+
 		for (i = 0; i < basin->route_list->num_patches; i++) {
 			patch = basin->route_list->list[i];
 		      	patch[0].hourly_subsur2stream_flow = 0;
@@ -356,7 +365,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*	that it accumulates flux in from patches		*/
 			/*	(roads) that direct water to the stream			*/
 			/*--------------------------------------------------------------*/
-			if (k >=0){// (n_timesteps - 1)){
+			if (k >=0){// (n_timesteps - 1))
 				      
 			      if ((patch[0].sat_deficit
 						- (patch[0].unsat_storage + patch[0].rz_storage))
@@ -942,7 +951,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 
 
-				/* ******************************** this is done by each hourly*/
+				/* ******************************** this is done by each hour*/
 				patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 							  + patch[0].hourly_sur2stream_flow;
 			
@@ -957,7 +966,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				basin[0].basin_rz_storage += patch[0].rz_storage * patch[0].area;
 				basin[0].basin_detention_store += patch[0].detention_store
 						* patch[0].area;
-
+				
 				/*---------------------------------------------------------------------*/
 				/*update accumulator variables                                            */
 				/*-----------------------------------------------------------------------*/
@@ -966,7 +975,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 			}
 				/*---------------------------------------------------------------------*/
-				/*update daily output*/
+				/*update daily output: the patch[0].base_flow and patch[0].return_flow
+				 * is the summation of 24 hours return_flow and base_flow from previous 
+				 * calculation*/
 				/*-----------------------------------------------------------------------*/
 				if(k==n_timesteps-1){
 				    if (patch[0].drainage_type == STREAM) {
