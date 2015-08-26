@@ -376,10 +376,5 @@ void		zone_hourly(
 		}
 
 
-		//the following code is for testing only
-		/*printf("month = %d, day = %d, hour = %d, flag = %d, prec = %f\n", 
-		      current_date.month,current_date.day,current_date.hour,
-		      zone[0].hourly_rain_flag,zone[0].hourly[0].rain);
-		*/
 		return;
 } /*end zone_hourly.c*/
