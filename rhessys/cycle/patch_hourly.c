@@ -212,15 +212,16 @@ void		patch_hourly(
 					event,
 					current_date );
 			}
-		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
-		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
+		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;	
+		}
+
 	}
 
 
 	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 
-	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here	
+	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
 
 	/*--------------------------------------------------------------*/
 	/*	include any detention storage as throughfall		*/
@@ -495,10 +496,10 @@ void		patch_hourly(
 	/* ---------------------------------------------- */
 	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
 		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
-	else 
+	else {
 		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 			/ patch[0].rootzone.potential_sat, 1.0);	
-	return;
+	}
 
 	/*-----------------------------------------------------*/
 	/*  re-Compute potential saturation for rootzone layer   */
