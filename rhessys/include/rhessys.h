@@ -142,6 +142,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../../util/WMFireInterface.h" /* required for fire spread*/
 /*----------------------------------------------------------*/
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
@@ -296,6 +297,7 @@ struct world_object
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;
+	struct patch_fire_object **patch_fire_grid;  //mk
         struct  spinup_thresholds_list_object  *spinup_thresholds ;   
 	struct  date			**master_hourly_date;	
         };
@@ -668,6 +670,7 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NO3;                                     /* kg/m2/day    */
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
+        struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
         struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
         };
@@ -705,6 +708,7 @@ struct  daily_clim_object
         double  *dayl;                  /* seconds / day */
         double  *daytime_rain_duration;         /* hours/day    */
         double  *Delta_T;               /*      degrees C / day         */
+        double  *lapse_rate_precip;               /*      m / m           */
         double  *lapse_rate_tmin;               /*      degrees C / m           */
         double  *lapse_rate_tmax;               /*      degrees C / m           */
         double  *dewpoint;                      /*      degrees C       */
@@ -1336,6 +1340,7 @@ struct  litter_object
         double depth;                   /* m */
         double density;                 /* m/kgC */
         double rain_stored;             /* m */
+	double NO3_stored;		/* kg/m2 */
         double gsurf;
         double proj_pai;
         double rain_capacity;
@@ -1431,33 +1436,8 @@ struct  soil_n_object
 /*      Define the fire structure.      */
 /*----------------------------------------------------------*/
 
-struct fire_default {
-        int ID;
-        double veg_fuel_weighting ;     
-        double ndays_average;   /* days */
-        };
 
-struct fire_object 
-{
-        int num_patches;
-        int burn;                       /* 0-1 */
-        struct patch_object **patches;
-        double *prop_patch_in_grid;
-        double *prop_grid_in_patch;     /* 0-1 */
-        double fuel_veg;                /* kgC/m2 */
-        double fuel_litter;             /* kgC/m2 */
-        double fuel_moist;              /* 0-1 */
-        double soil_moist;              /* 0-1 */
-        double z;                       /* m */
-        double wind;                    /* m/s */
-        double wind_direction;          /*degrees */
-        double relative_humidity;       /* 0-1 */
-        double pet;                     /* mm */
-        double et;                      /* mm */
-        struct fire_default_object *defaults;
-};      
-
-struct patch_fire_object
+struct patch_fire_water_object
 {
         double pet;                     /* mm */
         double et;                      /* mm */
@@ -1677,7 +1657,7 @@ struct patch_object
         struct  neighbour_object        *neighbours;
         struct  patch_object            *next_stream;
         struct  surface_energy_object   *surface_energy_profile;
-        struct  patch_fire_object       fire;
+        struct  patch_fire_water_object       fire;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  rooting_zone_object     rootzone;
@@ -2698,6 +2678,21 @@ struct mortality_struct
         double mort_frootc;
 };
 
+
+/*******************************************/
+/* fire object specific to rhessys patch structure		*/
+/*******************************************/
+struct patch_fire_object 
+{
+	int num_patches;
+	int tmp_patch; // which patch among the num_patches are we on?
+	struct patch_object **patches;
+	double *prop_patch_in_grid; /* proportion of total cell area occupied by this patch, this array matches the patch pointer array, for updating cell fuel and moisture values*/
+	double *prop_grid_in_patch; 	/* 0-1, proportion of total patch area that overlaps with this cell, this array matches the patch pointer array, for updating patch mortality */
+	double occupied_area; /*gives the total patch area in the current grid	*/
+	struct fire_default_object *defaults;
+	double elev; // elevation if read in from grid
+};	
 
 /*----------------------------------------------------------*/
 /* Define Surface Temperature Object */
