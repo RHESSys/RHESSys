@@ -45,7 +45,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
-#include "params.h"
 
 struct hillslope_object *construct_hillslope(
 											 struct	command_line_object	*command_line,
@@ -76,7 +75,7 @@ struct hillslope_object *construct_hillslope(
 	void	*alloc(	size_t,
 		char	*,
 		char	*);
-	param * readtag_worldfile(int *, FILE *,char*);
+	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -85,8 +84,7 @@ struct hillslope_object *construct_hillslope(
 	int		default_object_ID;
 	char		record[MAXSTR];
 	struct	hillslope_object *hillslope;
-	param		*paramPtr=NULL;
-	int		paramCnt=0;
+	
 	/*--------------------------------------------------------------*/
 	/*	Allocate a hillslope object.								*/
 	/*--------------------------------------------------------------*/
@@ -109,7 +107,7 @@ struct hillslope_object *construct_hillslope(
 	/*--------------------------------------------------------------*/
 	/*	Read in the hillslope record from the world file.			*/
 	/*--------------------------------------------------------------*/
-	/*  fscanf(world_file,"%d",&(hillslope[0].ID));
+	fscanf(world_file,"%d",&(hillslope[0].ID));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(hillslope[0].x));
 	read_record(world_file, record);
@@ -124,25 +122,7 @@ struct hillslope_object *construct_hillslope(
 	fscanf(world_file,"%lf",&(hillslope[0].gw.NO3));
 	read_record(world_file, record);
 	fscanf(world_file,"%d",&(hillslope[0].num_base_stations));
-	read_record(world_file, record);*/
-
-
-	paramPtr=readtag_worldfile(&paramCnt,world_file,"Hillslope");
-
-	hillslope[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"hillslope_ID","%d",-9999,0);
-	hillslope[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
-	hillslope[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
-	hillslope[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,0);
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",-9999,0);
-	hillslope[0].gw.storage = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",0.0,1);
-	hillslope[0].gw.NO3 = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",0.0,1);
-	hillslope[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
-	
-        /*for (i=0;i<paramCnt;i++){
-	  printf("value=%s,name =%s\n",paramPtr[i].strVal,paramPtr[i].name);
-	}*/
-
-
+	read_record(world_file, record);
 
 	hillslope[0].streamflow_NO3 = 0.0;	
 	hillslope[0].streamflow_NH4 = 0.0;	
@@ -333,10 +313,6 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].acc_year.stream_NO3 = 0.0;
 	hillslope[0].acc_year.stream_NH4 = 0.0;
 	hillslope[0].acc_year.psn = 0.0;
-
-
-	if(paramPtr!=NULL)
-	  free(paramPtr);
 
 	return(hillslope);
 } /*end construct_hillslope.c*/
