@@ -198,6 +198,7 @@ void update_phenology(struct zone_object  *zone,
 
   phen->gsi = compute_growingseason_index(zone, epv, epc);
   
+  
 
 
   /* first are we before last possible date for leaf onset */
@@ -233,12 +234,17 @@ void update_phenology(struct zone_object  *zone,
           phen->litfall_stopday = day + epc.ndays_litfall;
 	  }   
 
+
+
   } /* end dynamic phenology set up */
     
 
 	
 	phen->daily_allocation = epc.alloc_prop_day_growth;
 	phen->annual_allocation = 0;
+	if (((cs->frootc + cs->frootc_transfer + cs->frootc_store) < ZERO) && (epc.phenology_flag != STATIC)) {
+		printf("\n calling annual allocation because fine roots are zero %lf %lf %lf", cs->frootc, cs->frootc_transfer, cs->frootc_store);
+		phen->annual_allocation=1;} 
 	/*--------------------------------------------------------------*/
 	/*	Leaf expansion - spring leaf out			*/
 	/*--------------------------------------------------------------*/
