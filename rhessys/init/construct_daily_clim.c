@@ -126,6 +126,7 @@ struct	daily_clim_object *construct_daily_clim(
 	daily_clim[0].ndep_NH4 = NULL;
 	daily_clim[0].lapse_rate_tmax = NULL;
 	daily_clim[0].lapse_rate_tmin = NULL;
+	daily_clim[0].lapse_rate_precip = NULL;
 	
 	/*--------------------------------------------------------------*/
 	/*	Read the still open base station file for the number of		*/
@@ -304,6 +305,13 @@ struct	daily_clim_object *construct_daily_clim(
 			strcpy(file_name, file_prefix);
 			daily_clim[0].lapse_rate_tmin = construct_clim_sequence(
 				(char *)strcat(file_name,".lapse_rate_tmin"),
+				start_date,
+				duration);
+		}
+		else if ( strcmp(sequence_name,"lapse_rate_precip") == 0 ){
+			strcpy(file_name, file_prefix);
+			daily_clim[0].lapse_rate_precip = construct_clim_sequence(
+				(char *)strcat(file_name,".lapse_rate_precip"),
 				start_date,
 				duration);
 		}
