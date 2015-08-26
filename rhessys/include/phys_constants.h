@@ -140,7 +140,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     snowpack.T			    // d 0
     snowpack.surface_age	    // d 0
     snowpack.energy_deficit	    // d 0
-    snow_redist_scale		    // d ????
+    snow_redist_scale		    // d 1
     litter.cover_fraction	    // d 1
     litter.rain_stored		    // d 0
     litter_cs.litr1c		    // d janet
