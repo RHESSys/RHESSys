@@ -113,6 +113,9 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].detention_store_size = 	getDoubleParam(&paramCnt, &paramPtr, "detention_store_size", "%lf", 0.0, 1);
 		default_object_list[i].deltaz = 		getDoubleParam(&paramCnt, &paramPtr, "deltaZ", "%lf", 1.0, 1); // param name contains uppercase "Z" in param file
 		default_object_list[i].active_zone_z = 		getDoubleParam(&paramCnt, &paramPtr, "active_zone_z", "%lf", 5.0, 1);
+		if(default_object_list[i].active_zone_z > default_object_list[i].soil_depth){
+		    default_object_list[i].active_zone_z = default_object_list[i].soil_depth;
+		}
 
 		if (abs(default_object_list[i].active_zone_z - default_object_list[i].soil_depth) > 0.5) {
 			printf("\nNote that soil depth used for biogeochem cycling (active zone z)");
@@ -160,9 +163,13 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
 			}
 
-
+		/*-----------------------------------------------------------------------------
+		 *  Fill and Spill parameters
+		 *-----------------------------------------------------------------------------*/
+		default_object_list[i].fs_spill =	getDoubleParam(&paramCnt, &paramPtr, "fs_spill", "%lf", 1, 1);
+		default_object_list[i].fs_percolation =	getDoubleParam(&paramCnt, &paramPtr, "fs_percolation", "%lf", 1, 1);
+		default_object_list[i].fs_threshold = 	getDoubleParam(&paramCnt, &paramPtr, "fs_threshold", "%lf", 0.2, 1);
 		
-
 		/*--------------------------------------------------------------*/
 		/*	vertical soil m and K are initized using soil default	*/
 		/*	but sensitivity analysis -s is not applied to them	*/
@@ -227,7 +234,7 @@ struct soil_default *construct_soil_defaults(
 			if (default_object_list[i].theta_psi_curve != 3)  {
 				default_object_list[i].psi_air_entry *= command_line[0].vsen_alt[PA];
 				default_object_list[i].pore_size_index *= command_line[0].vsen_alt[PO];
-				if (default_object_list[0].pore_size_index >= 1.0) {
+				if (default_object_list[i].pore_size_index >= 1.0) {
 					printf("\n Sensitivity analysis giving Pore Size Index > 1.0, not allowed, setting to 1.0\n");
 					default_object_list[i].pore_size_index = 0.999;
 					}
@@ -290,6 +297,8 @@ struct soil_default *construct_soil_defaults(
     
         printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
+
+
 	if (paramPtr != NULL)
             free(paramPtr);
   return(default_object_list);
