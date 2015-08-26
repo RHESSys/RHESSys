@@ -89,7 +89,6 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 	/*	add it to the world level spinup_thresholds list	          */
 	/*--------------------------------------------------------------*/
   read_record(spinup_thresholds_file, record);
-  read_record(spinup_thresholds_file, record);
 
   for (i=0; i< num_stratum; ++i) {  
 		fscanf(spinup_thresholds_file,"%d %d %d %d %d",
