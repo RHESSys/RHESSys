@@ -1,0 +1,37 @@
+project WMFire
+  : requirements
+    <threading>multi
+    <link>shared
+    <warnings>on
+    <warnings-as-errors>off
+  : default-build debug
+  : build-dir build
+;
+
+lib wmfire
+	: [ glob *.cpp ] 
+	: <conditional>@wmfire_build_config
+    :  <def-file>wmfire.def
+; 
+    
+rule wmfire_build_config ( properties * )
+{
+    local result ;
+    if <toolset>gcc in $(properties)
+    {
+        ### - do nothing
+    }
+    if <toolset>msvc in $(properties)
+    {
+        result += <define>_CRT_SECURE_NO_WARNINGS ;
+        if <variant>release in $(properties)
+        {
+        }
+        if <variant>debug in $(properties)
+        {
+        }
+    }
+    return $(result) ;
+}
+    
+#build-project ../wrapper ;
