@@ -91,7 +91,7 @@ void		surface_hourly(
 		litter[0].rain_stored  = compute_hourly_litter_rain_stored(
 			command_line[0].verbose_flag,
 			patch);
-		litter[0].NO3_stored = patch[0].surface_NO3;
+		litter[0].NO3_stored += patch[0].surface_NO3;
 		patch[0].surface_NO3 = 0;
 	}
 
