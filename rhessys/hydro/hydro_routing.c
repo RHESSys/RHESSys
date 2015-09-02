@@ -730,19 +730,11 @@ static void sub_routing2( double   tstep,        /*  external time step      */
     for ( i = 0; i < num_patches; i++ )     /*  update H2O, NO3, NH4, DON, DOC  */
         {
         transp = plist[i]->transmissivity_profile ;
-<<<<<<< HEAD
         dH2O = -outH2O[i] ;
         dNO3 = -compute_N_leached( verbose, totNO3[i], outH2O[i], satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NO3ads[i], transp ) ;
         dNH4 = -compute_N_leached( verbose, totNH4[i], outH2O[i], satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NH4ads[i], transp ) ;
         dDON = -compute_N_leached( verbose, totDON[i], outH2O[i], satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DONads[i], transp ) ;
         dDOC = -compute_N_leached( verbose, totDOC[i], outH2O[i], satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DOCads[i], transp ) ;
-=======
-        dH2O = -outH2O[i] ;   /* function compute_N_leached require positive dH2O */
-        dNO3 = -compute_N_leached( verbose, totNO3[i], dH2O, satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NO3ads[i], transp ) ;
-        dNH4 = -compute_N_leached( verbose, totNH4[i], dH2O, satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NH4ads[i], transp ) ;
-        dDON = -compute_N_leached( verbose, totDON[i], dH2O, satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DONads[i], transp ) ;
-        dDOC = -compute_N_leached( verbose, totDOC[i], dH2O, satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DOCads[i], transp ) ;
->>>>>>> d12677b62cfc254035083ecf16bb5d662a51881b
         for ( j = 0; j < subcnti[i]; j++ )
             {
             k     = subdexi[i][j] ;
