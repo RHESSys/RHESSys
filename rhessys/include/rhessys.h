@@ -157,6 +157,7 @@
 #define DtoR      0.01745329    
 #define PI      3.14159265359
 #define seconds_per_day 86400
+#define SECONDS_PER_HOUR 3600
 #define ess_snow        0.97
 #define ess_soil        0.95
 #define ess_veg         0.98
@@ -1470,7 +1471,6 @@ struct stratum_spinup_object
 /*      Define an patch object                              */      
 /*----------------------------------------------------------*/
 struct patch_object
-
         {
         int             zone_ID;
         int             default_flag;
@@ -1485,7 +1485,10 @@ struct patch_object
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */
+        double	dx;								/* meters */
+        double	dy;								/* meters */
         double  area;                   /* sq meters    */
+        double	area_inv;				/* inverse area; 1/sq. meters */
         double  acc_year_trans;         /* m water      */
         double  base_flow;              /* m water */
         double  cap_rise;               /* m water / day */
@@ -1584,6 +1587,7 @@ struct patch_object
         double  NO3_throughfall_final;  /* kg/m2 day */
         double  rain_stored;            /* m water      */
         double  slope;                  /* degrees              */
+        double  slope_max;		/* Slope of maximum descent to neighbors; radians */
         double  S;                      /* m/m          */
         double  sat_zone_storage;       /* m water      */
         double  snow_redist_scale;      /* multiplier   */ 
@@ -1667,7 +1671,8 @@ struct patch_object
 /*----------------------------------------------------------*/
 /*      Surface Hydrology  stuff                        */
 /*----------------------------------------------------------*/
-        int     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */        
+        int     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */
+        double	mannN;						/* Manning's n; s/[m1/3] */
         double  water_balance;                          /* meters water         */
         double  delta_snowpack;                         /* meters               */
         double  delta_canopy_storage;                   /* meters water         */
@@ -1892,7 +1897,7 @@ struct  output_flag
         };
 
 /*----------------------------------------------------------*/
-/*      Define a command_line_object object.                */
+/* 	Define a command_line_object object.					*/
 /*----------------------------------------------------------*/
 struct  command_line_object
         {
@@ -1903,6 +1908,7 @@ struct  command_line_object
         int             routing_flag;
         int             surface_routing_flag;
         int             stream_routing_flag;
+        int				dyn_routing_flag;
         int             gwtoriparian_flag;
         int             reservoir_operation_flag;
         int             ddn_routing_flag;
@@ -1971,7 +1977,6 @@ struct  command_line_object
         struct  date            start_date;
         struct  date            end_date;
         };
-
 
 
 /*----------------------------------------------------------*/
@@ -2548,32 +2553,34 @@ struct epconst_struct
 /*----------------------------------------------------------*/
 /*      Define a stratum default object.                                                */
 /*----------------------------------------------------------*/
-struct  stratum_default
-        {
-        int             ID;
-        int     lai_end_day;                                            /*      days    */
-        int     lai_start_day;                                          /*      days    */
-        int     lai_seasonal_flag;                                      /* boolean      */
-        double  albedo;                         /* unitless     */                      
-        double  APAR_coef;                      /*  (m/s*LAI) ( s /m2 / umol photon )   */
-        double  gsurf_slope;                    /* DIM */
-        double  gsurf_intercept;                        /* DIM */
-        double  K_absorptance;                  /* DIM */
-        double  K_reflectance;                  /* DIM */
-        double  K_transmittance;                /* DIM */
-        double  lai_stomatal_fraction;          /* DIM  */
-        double  min_heat_capacity;      /* J/m3/K */
-        double  max_heat_capacity;      /* J/m3/K */
-        double  PAR_absorptance;                /* DIM */ 
-        double  PAR_reflectance;                /* DIM */
-        double  PAR_transmittance;              /* DIM */
-        double  specific_rain_capacity;                 /* m / LAI      */
-        double  specific_snow_capacity;                 /* m /  LAI     */
-        double  wind_attenuation_coeff;         /* 1/meters     */
-        double  ustar_overu;                    /* DIM  */
-        struct  epconst_struct  epc;
-        struct  mrconst_struct  mrc;
-        };
+struct	stratum_default
+	{
+	int		ID;
+	int  	lai_end_day;						/*	days	*/
+	int  	lai_start_day;						/* 	days	*/
+	int  	lai_seasonal_flag;					/* boolean	*/
+	double 	albedo;				/* unitless	*/			
+	double	APAR_coef;			/*  (m/s*LAI) ( s /m2 / umol photon )	*/
+	double	gsurf_slope;			/* DIM */
+	double	gsurf_intercept;			/* DIM */
+	double	K_absorptance;			/* DIM */
+	double	K_reflectance; 			/* DIM */
+	double	K_transmittance; 		/* DIM */
+	double	lai_stomatal_fraction;		/* DIM	*/
+	double	min_heat_capacity;	/* J/m3/K */
+	double	max_heat_capacity;	/* J/m3/K */
+	double	PAR_absorptance;		/* DIM */ 
+	double	PAR_reflectance;		/* DIM */
+	double	PAR_transmittance; 		/* DIM */
+	double	specific_rain_capacity;			/* m / LAI	*/
+	double	specific_snow_capacity;			/* m /  LAI	*/
+	double  wind_attenuation_coeff;	    	/* 1/meters     */
+	double	ustar_overu;			/* DIM	*/
+	double	mannN;					/* Manning's n; s/[m1/3] */
+	struct	epconst_struct	epc;
+	struct	mrconst_struct	mrc;
+	};
+
 
 /*----------------------------------------------------------*/
 /*      Define target object                                */
@@ -2598,60 +2605,61 @@ struct  stratum_default
 
 
 /*----------------------------------------------------------*/
-/*      Define a canopy strata object.                      */
+/*	Define a canopy strata object.							*/
 /*----------------------------------------------------------*/
-struct  canopy_strata_object
-        {
-        int             patch_ID;
-        int             ID;
-        int             num_base_stations;                              
-        double  APAR_direct;                                    /* (umol photon/m2*day) */
-        double  APAR_diffuse;                                   /* */
-        double  cover_fraction;
-        double  dC13;           /* % discrimination of C13 */
-        double  evaporation;                                    /* meters/day   */
-        double  ga;                                             /* m/s          */
-        double  gap_fraction;                                   /* unitless     */
-        double  gs;                                             /* m/s          */
-        double  potential_gs_sunlit;                                    /* m/s          */
-        double  potential_gs_shade;                                     /* m/s          */
-        double  gs_sunlit;                                      /* m/s          */
-        double  gs_shade;                                       /* m/s          */
-        double  gsurf;                                          /* m/s          */
-        double  Kstar_direct;                                   /* Kj/(m2*day)  */
-        double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
-        double  Lstar;                                          /* Kj/(m2*day)  */      
-        double  NO3_stored;                                     /* kg/m2        */
-        double  PAR_after_reflection;                           /* (umol photon/m2*day) */
-        double  ppfd_sunlit;                    /*  (umol/m2/s) PAR photon flux density */
-        double  ppfd_shade;                     /*  (umol/m2/s) PAR photon flux density */
-        double  potential_evaporation;                          /*  meters/day  */
-        double  rain_stored;                                    /*  meters      */
-        double  snow_stored;                                    /*  meters      */
-        double  sublimation;                                    /*  meters      */
-        double  surface_heat_flux;                              /*  kJ/day      */
-        double  PET;                                            /*  m water/day */
-        double  PE;                                             /*  m water/day */
-        double  transpiration_unsat_zone;                       /*  m water/day */
-        double  transpiration_sat_zone;                         /* m water /day */
-        double  wind;                                           /* 1/meters     */
-        double  canopy_drip;
-        struct  rooting_zone_object     rootzone;
-        struct  cdayflux_struct cdf;                            
-        struct  cstate_struct   cs;
-        struct  target_object   target;
-        struct  epvar_struct epv;                               
-        struct  nstate_struct   ns;
-        struct  ndayflux_struct ndf;                            
-        struct  phenology_struct phen;
-        struct  base_station_object     **base_stations;
-        struct  stratum_default **defaults;
-        struct  spinup_default  **spinup_defaults;  
-        struct  canopy_strata_hourly_object     *hourly;
-        struct  accumulate_strata_object        acc_month;
-        struct  accumulate_strata_object        acc_year;
-        struct  mult_conduct_struct     mult_conductance;
-        };
+struct	canopy_strata_object
+	{
+	int		patch_ID;
+	int		ID;
+	int		num_base_stations;				
+	double	APAR_direct;					/* (umol photon/m2*day) */
+	double	APAR_diffuse;					/* */
+	double	cover_fraction;
+	double  dC13;		/* % discrimination of C13 */
+	double	evaporation;					/* meters/day	*/
+	double	ga;						/* m/s		*/
+	double	gap_fraction;					/* unitless 	*/
+	double	gs;						/* m/s		*/
+	double	potential_gs_sunlit;					/* m/s		*/
+	double	potential_gs_shade;					/* m/s		*/
+	double	gs_sunlit;					/* m/s		*/
+	double	gs_shade;					/* m/s		*/
+	double	gsurf;						/* m/s		*/
+	double	Kstar_direct;					/* Kj/(m2*day)	*/
+	double	Kstar_diffuse;					/* Kj/(m2*day)	*/
+	double	Lstar;						/* Kj/(m2*day)	*/	
+	double	NO3_stored;					/* kg/m2	*/
+	double	PAR_after_reflection;				/* (umol photon/m2*day) */
+	double  ppfd_sunlit;			/*  (umol/m2/s) PAR photon flux density */
+	double  ppfd_shade;			/*  (umol/m2/s) PAR photon flux density */
+	double	potential_evaporation;				/* meters/day	*/
+	double	rain_stored;					/* meters	*/
+	double	snow_stored;					/* meters	*/
+	double	sublimation;					/*	meters	*/ 
+	double	surface_heat_flux;				/* kJ/day		*/
+	double  PET;		/* m water /day */
+	double  PE;		/* m water /day */
+	double	transpiration_unsat_zone;	/* m water / day */
+	double	transpiration_sat_zone;		/* m water / day */
+	double  wind;						/* 1/meters	*/
+	double  canopy_drip;
+	double	mannN;						/* Manning's n; s/[m1/3] */
+	struct  rooting_zone_object	rootzone;
+	struct	cdayflux_struct cdf;				
+	struct	cstate_struct	cs;
+	struct  target_object   target;
+	struct	epvar_struct epv;				
+	struct	nstate_struct	ns;
+	struct	ndayflux_struct ndf;				
+	struct	phenology_struct phen;
+	struct	base_station_object	**base_stations;
+	struct	stratum_default	**defaults;
+	struct  spinup_default  **spinup_defaults;
+	struct	canopy_strata_hourly_object	*hourly;
+ 	struct  accumulate_strata_object        acc_month;
+    struct  accumulate_strata_object        acc_year;
+    struct  mult_conduct_struct     mult_conductance;
+    };
 
 
 /*----------------------------------------------------------*/

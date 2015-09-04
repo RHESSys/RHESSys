@@ -76,6 +76,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
+
 #include "rhessys.h"
 
 void		patch_daily_F(
@@ -1218,10 +1220,13 @@ void		patch_daily_F(
 	
 	/*	Add rain throughfall to detention store for infiltration	*/
 	/*	and evaporation routines.									*/
-	
-	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
-	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
 
+	// Do not execute this transfer if in dynamic routing mode
+	if (command_line->dyn_routing_flag != 1) {
+		patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
+		patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
+	}
+	
 
 	/* Calculate det store, litter, and bare soil evap first */
 	
@@ -1241,12 +1246,16 @@ void		patch_daily_F(
 			   patch[0].Kup_diffuse/86.4);
 	}
 	
-	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
-	
+	// Do not execute this transfer if in dynamic routing mode
+	if (command_line->dyn_routing_flag != 1) {
+		patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
+	}
+
 	/*--------------------------------------------------------------*/
 	/* if there is hourly rain input, don't run the daily infiltration	*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].hourly_rain_flag!=1) {	
+		assert(command_line->dyn_routing_flag != 1);
 		/*--------------------------------------------------------------*/
 		/* 	Above ground Hydrologic Processes			*/
 		/* 	compute infiltration into the soil			*/

@@ -289,8 +289,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rhessys.h"
 #include <time.h>
+
+#include "rhessys.h"
+#include "functions.h"
 
 // The $$RHESSYS_VERSION$$ string will be replaced by the make
 // script to reflect the current RHESSys version.
@@ -431,7 +433,13 @@ int	main( int main_argc, char **main_argv)
 	/*	AN EVENT LOOP WOULD GO HERE.								*/
 	/*--------------------------------------------------------------*/
 	fprintf(stderr,"Beginning Simulation\n");
-	execute_tec( tec, command_line, output, growth_output, world );
+	if (command_line[0].dyn_routing_flag) {
+		// Use dynamic routing time step
+		execute_tec_dynrouting(tec, command_line, output, growth_output, world);
+	} else {
+		// Use fixed routing time step
+		execute_tec( tec, command_line, output, growth_output, world );
+	}
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED EXE TEC\n");
 	

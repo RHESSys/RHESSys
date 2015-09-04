@@ -219,9 +219,12 @@ void		patch_hourly(
 	}
 
 
-	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
+	// Do not add these fluxes to state variables for dynamic routing
+	if (command_line->dyn_routing_flag != 1) {
+		patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 
-	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
+		patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here
+	}
 
 	/*--------------------------------------------------------------*/
 	/*	include any detention storage as throughfall		*/
@@ -245,8 +248,9 @@ void		patch_hourly(
 	/* 	compute infiltration into the soil			*/
 	/*	from snowmelt or rain_throughfall			*/
 	/*	for now assume that all water infilatrates		*/
+	/*  DO NOT DO THIS PROCESSING FOR DYNAMIC ROUTING MODE */
 	/*--------------------------------------------------------------*/
-	if (patch[0].detention_store > 0.0) {
+	if (patch[0].detention_store > 0.0 && command_line->dyn_routing_flag != 1) {
 		/*------------------------------------------------------------------------*/
 		/*	drainage to a deeper groundwater store				  */
 		/*	move both nitrogen and water				       	*/
@@ -306,7 +310,7 @@ void		patch_hourly(
 		}
 
 
-			
+
 		//printf("hourly patch called \n");
 	}
 	else infiltration = 0.0;
@@ -321,8 +325,11 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 	infiltration=min(infiltration,patch[0].detention_store);
 
-	patch[0].detention_store -= infiltration;
-			
+	// Do not alter this state variable for dynamic routing
+	if (command_line->dyn_routing_flag != 1) {
+		patch[0].detention_store -= infiltration;
+	}
+
 	if (infiltration>ZERO) {
 		/*--------------------------------------------------------------*/
 		/*	Update patch level soil moisture with final infiltration.	*/
@@ -336,8 +343,11 @@ void		patch_hourly(
 			current_date );
 	} /* end if infiltration > ZERO */
 
-	/* aggregate the hourly recharge */ 
-	patch[0].recharge += infiltration;
+	// Do not alter this state variable for dynamic routing
+	if (command_line->dyn_routing_flag != 1) {
+		/* aggregate the hourly recharge */
+		patch[0].recharge += infiltration;
+	}
 	
 	} /* end if rain throughfall */
 	/*--------------------------------------------------------------*/
