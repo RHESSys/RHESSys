@@ -269,7 +269,7 @@ static double * latDON ;        /*  [num_patches]: DON lateral flow             
 static double * thruH2O;        /*  [num_patches]: H2O from rain/canopy to surface (m/s)                   */
 static double * thruNO3;        /*  [num_patches]: NO3 from rain/canopy to surface (m/s)                   */
 
-static double * gwcoef ;        /*  [num_patches]: patch[0].soil_defaults[0][0].sat_to_gw_coeff/3600.0     */
+static double * gwcoef ;        /*  [num_patches]: patch[0].soil_defaults[0][0].sat_to_gw_coeff/3600.0*24.0*/
 
 /*  Surface-routing Drainage Matrix  */
 
@@ -1562,7 +1562,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
         NH4ads[i] = patch->soil_defaults[0][0].NH4_adsorption_rate ;
         DONads[i] = patch->soil_defaults[0][0].DON_adsorption_rate ;
         DOCads[i] = patch->soil_defaults[0][0].DOC_adsorption_rate ;
-        gwcoef[i] = patch->soil_defaults[0][0].sat_to_gw_coeff ;        /*  per sec, instead of per hour  */
+        gwcoef[i] = patch->soil_defaults[0][0].sat_to_gw_coeff / ( 24.0*3600.0*100.0 ) ;  /*  1/Sec, instead of %/Day  */
         sfcknl[i] = sqrt( tan( patch->slope_max ) ) / ( patch->mannN * psize[i] ) ;
         dcount[i] = patch->surface_innundation_list->num_neighbours ;
         cancap[i] = patch->litter.rain_capacity ;
