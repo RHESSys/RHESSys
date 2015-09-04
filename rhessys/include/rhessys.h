@@ -1908,7 +1908,7 @@ struct  command_line_object
         int             routing_flag;
         int             surface_routing_flag;
         int             stream_routing_flag;
-        int				dyn_routing_flag;
+        int				var_timestep_routing_flag;
         int             gwtoriparian_flag;
         int             reservoir_operation_flag;
         int             ddn_routing_flag;

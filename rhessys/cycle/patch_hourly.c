@@ -220,7 +220,7 @@ void		patch_hourly(
 
 
 	// Do not add these fluxes to state variables for dynamic routing
-	if (command_line->dyn_routing_flag != 1) {
+	if (command_line->var_timestep_routing_flag != 1) {
 		patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 
 		patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here
@@ -250,7 +250,7 @@ void		patch_hourly(
 	/*	for now assume that all water infilatrates		*/
 	/*  DO NOT DO THIS PROCESSING FOR DYNAMIC ROUTING MODE */
 	/*--------------------------------------------------------------*/
-	if (patch[0].detention_store > 0.0 && command_line->dyn_routing_flag != 1) {
+	if (patch[0].detention_store > 0.0 && command_line->var_timestep_routing_flag != 1) {
 		/*------------------------------------------------------------------------*/
 		/*	drainage to a deeper groundwater store				  */
 		/*	move both nitrogen and water				       	*/
@@ -326,7 +326,7 @@ void		patch_hourly(
 	infiltration=min(infiltration,patch[0].detention_store);
 
 	// Do not alter this state variable for dynamic routing
-	if (command_line->dyn_routing_flag != 1) {
+	if (command_line->var_timestep_routing_flag != 1) {
 		patch[0].detention_store -= infiltration;
 	}
 
@@ -344,7 +344,7 @@ void		patch_hourly(
 	} /* end if infiltration > ZERO */
 
 	// Do not alter this state variable for dynamic routing
-	if (command_line->dyn_routing_flag != 1) {
+	if (command_line->var_timestep_routing_flag != 1) {
 		/* aggregate the hourly recharge */
 		patch[0].recharge += infiltration;
 	}

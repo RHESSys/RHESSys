@@ -1222,7 +1222,7 @@ void		patch_daily_F(
 	/*	and evaporation routines.									*/
 
 	// Do not execute this transfer if in dynamic routing mode
-	if (command_line->dyn_routing_flag != 1) {
+	if (command_line->var_timestep_routing_flag != 1) {
 		patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
 		patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
 	}
@@ -1247,7 +1247,7 @@ void		patch_daily_F(
 	}
 	
 	// Do not execute this transfer if in dynamic routing mode
-	if (command_line->dyn_routing_flag != 1) {
+	if (command_line->var_timestep_routing_flag != 1) {
 		patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
 	}
 
@@ -1255,7 +1255,7 @@ void		patch_daily_F(
 	/* if there is hourly rain input, don't run the daily infiltration	*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].hourly_rain_flag!=1) {	
-		assert(command_line->dyn_routing_flag != 1);
+		assert(command_line->var_timestep_routing_flag != 1);
 		/*--------------------------------------------------------------*/
 		/* 	Above ground Hydrologic Processes			*/
 		/* 	compute infiltration into the soil			*/

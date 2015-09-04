@@ -188,7 +188,7 @@ void	basin_hourly(
 
 	if ( command_line[0].routing_flag == 1 && zone_p[0].hourly_rain_flag==1) { 
 
-		if (command_line->dyn_routing_flag == 1) {
+		if (command_line->var_timestep_routing_flag == 1) {
 			printf("Calling hydro_routing...\n");
 			hydro_routing(command_line, SECONDS_PER_HOUR, current_date, basin);
 

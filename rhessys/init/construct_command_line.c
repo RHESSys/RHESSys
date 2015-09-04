@@ -75,7 +75,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].prefix_flag = 0;
 	command_line[0].verbose_flag = 0;
 	command_line[0].routing_flag = 0;
-	command_line[0].dyn_routing_flag = 0;
+	command_line[0].var_timestep_routing_flag = 0;
 	command_line[0].surface_routing_flag = 0;
 	command_line[0].stream_routing_flag = 0;
 	command_line[0].reservoir_operation_flag = 0;
@@ -648,7 +648,7 @@ struct	command_line_object	*construct_command_line(
 			/*		Check if the dynamic timestep routing option file is next.	*/
 			/*--------------------------------------------------------------*/
 			else if ( strcmp(main_argv[i], "-dynrouting") == 0 ) {
-				command_line[0].dyn_routing_flag = 1;
+				command_line[0].var_timestep_routing_flag = 1;
 				i++;
 			} /*end if*/
 
@@ -1103,7 +1103,7 @@ struct	command_line_object	*construct_command_line(
 	} /*end while*/
 
 	/* Validate dependencies */
-	if (command_line[0].dyn_routing_flag && (!command_line[0].routing_flag)) {
+	if (command_line[0].var_timestep_routing_flag && (!command_line[0].routing_flag)) {
 		fprintf(stderr,
 				"Dyanmic routing was specified, but routing flag and flowtable(s) were not\nspecified.\n");
 		exit(EXIT_FAILURE);
