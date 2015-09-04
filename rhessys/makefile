@@ -321,7 +321,6 @@ all:	dir rhessys
 dir:
 	mkdir -p $(OBJ) $(RHESSYS_BIN)
 
-<<<<<<< HEAD
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
@@ -339,10 +338,6 @@ rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM) 
 endif
 endif
-=======
-rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include ${LIBS} -v -o $(PGM) 
->>>>>>> carlie_branch
 
 $(OBJ)/hydro_routing.o: hydro/hydro_routing.c
 	$(CC) -c $(CFLAGS) -I include hydro/hydro_routing.c -o $(OBJ)/hydro_routing.o
