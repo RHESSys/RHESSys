@@ -433,13 +433,8 @@ int	main( int main_argc, char **main_argv)
 	/*	AN EVENT LOOP WOULD GO HERE.								*/
 	/*--------------------------------------------------------------*/
 	fprintf(stderr,"Beginning Simulation\n");
-	if (command_line[0].var_timestep_routing_flag) {
-		// Use dynamic routing time step
-		execute_tec_dynrouting(tec, command_line, output, growth_output, world);
-	} else {
-		// Use fixed routing time step
-		execute_tec( tec, command_line, output, growth_output, world );
-	}
+	execute_tec( tec, command_line, output, growth_output, world );
+
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED EXE TEC\n");
 	
