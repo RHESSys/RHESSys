@@ -201,7 +201,7 @@ void	execute_tec_dynrouting(
 	/*	Initialize the tec event									*/
 	/*--------------------------------------------------------------*/
 	
-	printf("Dynamic routing time step enabled\n");
+	printf("Variable routing time step enabled\n");
 
 	event =  construct_tec_entry(world[0].end_date,"none");
 	
