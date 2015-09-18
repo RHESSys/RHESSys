@@ -650,6 +650,22 @@ struct	command_line_object	*construct_command_line(
 			else if ( strcmp(main_argv[i], "-varrouting") == 0 ) {
 				command_line[0].var_timestep_routing_flag = 1;
 				i++;
+
+				if (i < main_argc && !valid_option(main_argv[i]) == 1) {
+					if (strcmp(main_argv[i], VAR_ROUTING_MODE_CHEM_WELL_MIXED_STR) == 0) {
+						command_line[0].var_timestep_mode = VAR_ROUTING_MODE_CHEM_WELL_MIXED;
+					} else if (strcmp(main_argv[i], VAR_ROUTING_MODE_CHEM_EXPONENTIAL_STR) == 0) {
+						command_line[0].var_timestep_mode = VAR_ROUTING_MODE_CHEM_EXPONENTIAL;
+					} else if (strcmp(main_argv[i], VAR_ROUTING_MODE_NO_MOUNDING_STR) == 0) {
+						command_line[0].var_timestep_mode = VAR_ROUTING_MODE_NO_MOUNDING;
+					} else {
+						fprintf(stderr,"FATAL ERROR: Unknown option for -varrouting: %s\n", main_argv[i]);
+						exit(EXIT_FAILURE);
+					}
+				} else {
+					command_line[0].var_timestep_mode = VAR_ROUTING_MODE_CHEM_EXPONENTIAL;
+				}
+				i++;
 			} /*end if*/
 
 			/*--------------------------------------------------------------*/

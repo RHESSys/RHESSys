@@ -198,7 +198,19 @@
 #define PTYPEHIGH 4
 #define P1HIGH 5
 #define P2HIGH 6
-
+// well-mixed pollutants and flow governed by water-table elevation
+// slopes (i.e., without compute_N_leached, with support for back-flows
+// and "mounding")
+#define VAR_ROUTING_MODE_CHEM_WELL_MIXED_STR "chemmixed"
+#define VAR_ROUTING_MODE_CHEM_WELL_MIXED 0
+// compute_N_leached() pollutant transport, and flow governed by
+// water-table elevation slopes (i.e., with support for back-flows
+// and "mounding")
+#define VAR_ROUTING_MODE_CHEM_EXPONENTIAL_STR "chemexp"
+#define VAR_ROUTING_MODE_CHEM_EXPONENTIAL 1
+// re-computed gamma[]'s and compute_N_leached():  no back-flows nor "mounding")
+#define VAR_ROUTING_MODE_NO_MOUNDING_STR "nomounding"
+#define VAR_ROUTING_MODE_NO_MOUNDING 2
 
 /*----------------------------------------------------------*/
 /*      Define min and max macros                           */
@@ -1947,6 +1959,7 @@ struct  command_line_object
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
+        int		var_timestep_mode;
         double  tmp_value;
         double  cpool_mort_fract;
         double  veg_sen1;
