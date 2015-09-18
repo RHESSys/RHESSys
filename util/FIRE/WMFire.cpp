@@ -79,6 +79,7 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 	if(def.fire_verbose==1)
 		cout<<"\nafter landscape reset\n\n";
 	landscape.drawNumIgn(def.mean_ign,randomNG);
+
 	landscape.initializeCurrentFire(randomNG);// reset the information for the current fire, if successful this will be added to the analysis
 	if(def.fire_verbose==1)
 		cout<<"\nafter landscape initialize current fire\n\n";
@@ -191,7 +192,8 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 			fireGrid_[i][j].burn=0;
 	}
 	if(def_.fire_verbose==1)
-		cout<<"in burn after setting burn=0--here\n\n";
+		cout<<"in burn after setting burn=0--here\n\nHow many ignitions this month?  "<<n_cur_ign_<<"\n\n";
+
 	// hold all of the information for the burning fire in the cur_fire_ object, and retain it only if the fire reaches the appropriate size
 	if(n_cur_ign_>0)
 	{
@@ -396,10 +398,10 @@ void LandScape::initializeCurrentFire(GenerateRandom& rng)
 	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
 	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
 	}
-*/	
+	
 	if(def_.fire_verbose==1)
 		cout<<"ignition row and column: "<<fire.ignRow<<"\t"<<fire.ignCol<<"\n";
-//	cur_fire_.year=0;	//which year is this
+*///	cur_fire_.year=0;	//which year is this
 	fire.update_size=0;	// what is the size of the fire that is being burned, to be updated each iteration and be tested against size
 	fire.stop=0; // record the stopping rule for this fire
 	
@@ -445,6 +447,10 @@ void LandScape::chooseIgnPix(GenerateRandom& rng)
 	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
 	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
 	}
+	
+	if(def_.fire_verbose==1)
+		cout<<"ignition row and column: "<<cur_fire_.ignRow<<"\t"<<cur_fire_.ignCol<<"\n";
+
 	return ;	
 }
 
@@ -963,7 +969,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	{
 		ofstream sizeOut;
 		sizeOut.open("FireSizes.txt", ofstream::app);
-		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\n";
+		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\t"<<n_cur_ign_<<"\n";
 		sizeOut.close();
 	}	
 	
