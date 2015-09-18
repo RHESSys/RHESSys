@@ -78,6 +78,7 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 	landscape.Reset(); 
 	if(def.fire_verbose==1)
 		cout<<"\nafter landscape reset\n\n";
+	landscape.drawNumIgn(def.mean_ign,randomNG);
 	landscape.initializeCurrentFire(randomNG);// reset the information for the current fire, if successful this will be added to the analysis
 	if(def.fire_verbose==1)
 		cout<<"\nafter landscape initialize current fire\n\n";
@@ -100,6 +101,7 @@ LandScape::LandScape(double cell_res,struct fire_object **fire_grid,struct fire_
 	cols_=ncol;
 	buffer_=0;
 	n_ign_=0;
+	n_cur_ign_=0;
 	localFireGrid_.resize(boost::extents[rows_][cols_]); // local fire information
 	ignCells_.clear();
 	for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
@@ -146,6 +148,16 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 	return ;
 }
 
+/***********************drawRanIgn*********************************************/
+/* draw a random number of pixels that will be tested for successful ignition	*/
+/********************************************************************************/
+void LandScape::drawNumIgn(double lambda,GenerateRandom& rng)	// to be called in main, to replace RandomScar mk: ? RandomScar?
+{
+	double tmpN;
+	tmpN=poisdev(lambda,rng);
+	n_cur_ign_=round(tmpN);
+	return ;
+}
 
 
 
@@ -181,44 +193,53 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 	if(def_.fire_verbose==1)
 		cout<<"in burn after setting burn=0--here\n\n";
 	// hold all of the information for the burning fire in the cur_fire_ object, and retain it only if the fire reaches the appropriate size
-	int cur_row = int (cur_fire_.ignRow);		
-	int cur_col = int (cur_fire_.ignCol);
-
-	if(def_.fire_verbose==1)
-		cout<<"in burn before testIgnition: \n\n";
-	int ign;
-	ign=testIgnition(cur_row,cur_col,rng); // test whether the fire successfully ignites based on the fuel moisture and fuel load
-	if(def_.fire_verbose==1)
-		cout<<"in burn after testIgnition: "<<ign<<"\n\n";
-	int stop = 0;
-	int iter = 0;	
-	if(ign==1)
+	if(n_cur_ign_>0)
 	{
-//		fireGrid_[cur_row][cur_col].burn=1; // 1 indicates that this cell has been burned.
-//		calc_FireEffects(cur_row, cur_col,iter);
-		firstBurned_.clear(); // reset the firstBurned_ vector
-		for(int i = 0; i < 4; ++i)
-			borders_[i] = 0;
-
-		BurnedCells bc = {cur_row, cur_col};
-		firstBurned_.push_back(bc);
-		// continue to propagate the fire until one of the stopping conditions is met.
-		//  where an iteration is a set of burned cells, beginning with one burned cell
-		//  and its neighbors.  the next iteration will be the set of new burned cells and
-		//  these are tested.  the next iteration will be the set of cells burned from the previous iteration
-
-		while(stop==0)	 
+		for(int k=0;k<n_cur_ign_;k++)
 		{
-			iter++;
-			stop = BurnCells(iter, rng);	// this function will navigate the vector of burned cells and test spread for each, as well as update the area burned for the current year. it will also test for stopping
+			chooseIgnPix(rng); // draw a random pixel for each test for successful ignition
+
+			
+			int cur_row = int (cur_fire_.ignRow);		
+			int cur_col = int (cur_fire_.ignCol);
+
+			if(def_.fire_verbose==1)
+				cout<<"in burn before testIgnition: \n\n";
+			int ign;
+			ign=testIgnition(cur_row,cur_col,rng); // test whether the fire successfully ignites based on the fuel moisture and fuel load
+			if(def_.fire_verbose==1)
+				cout<<"in burn after testIgnition: "<<ign<<"\n\n";
+			int stop = 0;
+			int iter = 0;	
+			if(ign==1)
+			{
+		//		fireGrid_[cur_row][cur_col].burn=1; // 1 indicates that this cell has been burned.
+		//		calc_FireEffects(cur_row, cur_col,iter);
+				firstBurned_.clear(); // reset the firstBurned_ vector
+				for(int i = 0; i < 4; ++i)
+					borders_[i] = 0;
+
+				BurnedCells bc = {cur_row, cur_col};
+				firstBurned_.push_back(bc);
+				// continue to propagate the fire until one of the stopping conditions is met.
+				//  where an iteration is a set of burned cells, beginning with one burned cell
+				//  and its neighbors.  the next iteration will be the set of new burned cells and
+				//  these are tested.  the next iteration will be the set of cells burned from the previous iteration
+
+				while(stop==0)	 
+				{
+					iter++;
+					stop = BurnCells(iter, rng);	// this function will navigate the vector of burned cells and test spread for each, as well as update the area burned for the current year. it will also test for stopping
+				}
+		/*		int temp_borders=0;
+				for(int i=0; i<4; i++)
+					temp_borders = temp_borders + borders_[i];
+				if(temp_borders==4)
+					stop=5;
+		allow fire to continue burning even if all borders are reached, so the only way to stop is to have no successful tests of spread*/ 	
+				cur_fire_.stop=stop;
+			}
 		}
-/*		int temp_borders=0;
-		for(int i=0; i<4; i++)
-			temp_borders = temp_borders + borders_[i];
-		if(temp_borders==4)
-			stop=5;
-allow fire to continue burning even if all borders are reached, so the only way to stop is to have no successful tests of spread*/ 	
-		cur_fire_.stop=stop;
 	}
 	return ;
 }
@@ -358,8 +379,10 @@ int LandScape::TestFireStop(int numBurnedThisIter,int test_once,int borders[4])
 void LandScape::initializeCurrentFire(GenerateRandom& rng)
 {
 	fire_years fire;
+	fire.ignRow=-1;
+	fire.ignCol=-1;
 // allow for expanding the code to allow for set ignitions, but requires modifying the default file.
-	if(def_.ignition_col>=0&&def_.ignition_col<cols_&&def_.ignition_row>=0&&def_.ignition_row<rows_)
+/*	if(def_.ignition_col>=0&&def_.ignition_col<cols_&&def_.ignition_row>=0&&def_.ignition_row<rows_)
 	{
 		fire.ignRow=def_.ignition_row;
 		fire.ignCol=def_.ignition_col;
@@ -373,7 +396,7 @@ void LandScape::initializeCurrentFire(GenerateRandom& rng)
 	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
 	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
 	}
-	
+*/	
 	if(def_.fire_verbose==1)
 		cout<<"ignition row and column: "<<fire.ignRow<<"\t"<<fire.ignCol<<"\n";
 //	cur_fire_.year=0;	//which year is this
@@ -403,6 +426,28 @@ void LandScape::initializeCurrentFire(GenerateRandom& rng)
 	return ;
 }
  
+/***********************chooseIgnPix*********************************/
+/* finds random pixels to be tested for each ignition			*/
+/**********************************************************************/
+void LandScape::chooseIgnPix(GenerateRandom& rng)
+{
+	if(def_.ignition_col>=0&&def_.ignition_col<cols_&&def_.ignition_row>=0&&def_.ignition_row<rows_)
+	{
+		cur_fire_.ignRow=def_.ignition_row;
+		cur_fire_.ignCol=def_.ignition_col;
+	}
+	else
+	{
+		int vecID=0;
+		vecID=int(floor(rng()*(n_ign_+1)));
+		cur_fire_.ignRow=ignCells_[vecID].rowId;
+		cur_fire_.ignCol=ignCells_[vecID].colId;
+	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
+	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
+	}
+	return ;	
+}
+
 /**************************calc_pSpreadTest*******************************/
 /* implements the fire spread strategy by updating pSpread each year,	*/
 /* depending on spread strategy indicated in the configuration file		*/
