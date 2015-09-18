@@ -40,6 +40,7 @@ struct fire_default {
 	int veg_ign; // use vegetation for ignition? If so, use the parameters below
 	double veg_k1; // for ignition use veg fuel
 	double veg_k2; // for ignition use veg fuel
+	double mean_ign; // mean number of ignitions per month, for a monthly poisson draw
 
 //	char **patch_file_name;
 };
