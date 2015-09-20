@@ -78,7 +78,7 @@
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
-	int		i,dtmp;
+	int		i,j,dtmp;
 	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
@@ -119,7 +119,7 @@
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].e_horizon = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",zone[0].w_horizon,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].w_horizon = ltmp;
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",zone[0].num_base_stations,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",zone[0].num_base_stations,0);
 
 
 
@@ -173,6 +173,13 @@
 				num_world_base_stations,
 				world_base_stations);
 		} /*end for*/
+	}
+	else{
+	  dtmp = zone[0].num_base_stations;
+	  for(j=0;j<dtmp;j++){
+	     	fscanf(world_file,"%d",&(dtmp));
+		read_record(world_file, record);
+	  }
 	}
 	/*  else {
  	fscanf(world_file,"%d",&(dtmp));

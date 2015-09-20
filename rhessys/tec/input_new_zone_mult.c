@@ -78,7 +78,7 @@
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
-	int		i,dtmp;
+	int		i,j,dtmp;
 	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
@@ -150,7 +150,7 @@
  	/*  fscanf(world_file,"%d",&(dtmp));
 	read_record(world_file, record);*/
 	if (dtmp > 0) {
-		zone[0].num_base_stations = dtmp * zone[0].num_base_stations;
+		zone[0].num_base_stations = dtmp ;
 		zone[0].base_stations = (struct base_station_object **)
 			alloc(zone[0].num_base_stations *
 			sizeof(struct base_station_object *),
@@ -172,6 +172,14 @@
 				world_base_stations);
 		} /*end for*/
 	}
+    	else{
+	  dtmp = zone[0].num_base_stations;
+	  for(j=0;j<dtmp;j++){
+	     	fscanf(world_file,"%d",&(dtmp));
+		read_record(world_file, record);
+	  }
+	}
+
 	/*  else {
  	fscanf(world_file,"%d",&(dtmp));
 	read_record(world_file, record);

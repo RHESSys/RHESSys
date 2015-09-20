@@ -89,8 +89,9 @@ param *readtag_worldfile(int *paramCnt, FILE *file,char *key){
 	    if(strcmp(strbuf2,"n_basestations")==0){
 	      break;
 	    }
+	    
 	    if(num_variables < *paramCnt){
-	      printf("num_variables=%d,paramCnt=%d\n",num_variables,*paramCnt);
+	      printf("num_variables=%d,paramCnt=%d, in level %s\n",num_variables,*paramCnt,key);
 	      fprintf(stderr,"added new parameter, adjust the num_variables in phys_constants.h\n");
 	    }
 
