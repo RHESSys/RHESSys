@@ -42,6 +42,9 @@ int	parse_dyn_flag( char *input_string)
 	else if ((strncmp(input_string,"CONSTANT",8) == 0) ||
 		(strncmp(input_string, "constant",8) == 0) )
 		dyn_flag = STATIC;
+	else if ((strncmp(input_string,"DROUGHT",9) == 0) ||
+		(strncmp(input_string, "drought",9) == 0) )
+		dyn_flag = DROUGHT;
 	else {
 		fprintf(stderr,"\n FATAL ERROR - parse_dyn_flag");
 		fprintf(stderr,"\n Flag must be stati or dynamic and is %s" , input_string);

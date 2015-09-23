@@ -189,6 +189,44 @@ void update_phenology(struct zone_object  *zone,
 	}
 
   }
+
+
+ /*--------------------------------------------------------------*/
+  /* drought-deciduous phenology                      */  
+  /*--------------------------------------------------------------*/
+
+  else if (epc.phenology_flag == DROUGHT) {
+	
+  phen->gsi = compute_growingseason_index(zone, epv, epc);
+  
+
+  /* first are we before last possible date for leaf onset */
+    /* are we already in a leaf onset condition */
+      if (phen->gwseasonday > -1 ) { 
+          if  (phen->gwseasonday <= epc.ndays_expand)
+              expand_flag=1;
+          }   
+      else if (phen->gsi > 0.5) {
+              phen->gwseasonday = 1;
+          phen->lfseasonday = -1; 
+          expand_flag=1;
+          phen->expand_startday = day;
+          phen->expand_stopday = day + epc.ndays_expand;
+          }   
+
+
+
+	if (day == phen->litfall_startday){ 
+		litfall_flag = 1;
+		phen->lfseasonday = 1;
+		phen->gwseasonday = -1;
+	}
+
+	else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){ 
+		litfall_flag = 1;
+	}
+
+  }
 	
  /*--------------------------------------------------------------*/
   /* dynamic phenology                      */  
@@ -197,6 +235,7 @@ void update_phenology(struct zone_object  *zone,
   else {
 
   phen->gsi = compute_growingseason_index(zone, epv, epc);
+  
   
 
 
@@ -233,12 +272,17 @@ void update_phenology(struct zone_object  *zone,
           phen->litfall_stopday = day + epc.ndays_litfall;
 	  }   
 
+
+
   } /* end dynamic phenology set up */
     
 
 	
 	phen->daily_allocation = epc.alloc_prop_day_growth;
 	phen->annual_allocation = 0;
+	if (((cs->frootc + cs->frootc_transfer + cs->frootc_store) < ZERO) && (epc.phenology_flag != STATIC)) {
+		printf("\n calling annual allocation because fine roots are zero %lf %lf %lf", cs->frootc, cs->frootc_transfer, cs->frootc_store);
+		phen->annual_allocation=1;} 
 	/*--------------------------------------------------------------*/
 	/*	Leaf expansion - spring leaf out			*/
 	/*--------------------------------------------------------------*/
