@@ -45,8 +45,8 @@ void sort_by_elevation( struct basin_object *basin)
 	/*--------------------------------------------------------------*/
 	/*	sort hillslopes												*/
 	/*--------------------------------------------------------------*/
-	for (i= basin[0].num_hillslopes-2; i > 0; i--) {
-		for (j=0; j < i; j++) {
+	for (i= basin[0].num_hillslopes-2; i >= 0; i--) {
+		for (j=0; j <= i; j++) {
 			if (basin[0].hillslopes[j][0].z < basin[0].hillslopes[j+1][0].z) {
 				temp_hill = basin[0].hillslopes[j];
 				basin[0].hillslopes[j] = basin[0].hillslopes[j+1];
@@ -59,8 +59,8 @@ void sort_by_elevation( struct basin_object *basin)
 	/*--------------------------------------------------------------*/
 	for (h=0; h < basin[0].num_hillslopes; h++) {
 		hillslope = basin[0].hillslopes[h];
-		for (i= hillslope[0].num_zones-2; i > 0; i--) {
-			for (j=0; j < i; j++) {
+		for (i= hillslope[0].num_zones-2; i >= 0; i--) {
+			for (j=0; j <= i; j++) {
 				if (hillslope[0].zones[j][0].z < hillslope[0].zones[j+1][0].z) {
 					temp_zone = hillslope[0].zones[j];
 					hillslope[0].zones[j] = hillslope[0].zones[j+1];
@@ -73,7 +73,7 @@ void sort_by_elevation( struct basin_object *basin)
 		/*--------------------------------------------------------------*/
 		for (z=0; z < hillslope[0].num_zones; z++) {
 			zone = hillslope[0].zones[z];
-			for (i= zone[0].num_patches-2; i > 0; i--) {
+			for (i= zone[0].num_patches-2; i >= 0; i--) {
 				for (j=0; j <= i; j++) {
 					if (zone[0].patches[j][0].z < zone[0].patches[j+1][0].z) {
 						temp_patch = zone[0].patches[j];

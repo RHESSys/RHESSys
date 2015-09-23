@@ -123,6 +123,7 @@ void	output_hillslope(				int basinID,
 			}
 		}
 	}
+
 	arain_throughfall /=  aarea;
 	asnow_throughfall /= aarea ;
 	asat_deficit_z /= aarea ;

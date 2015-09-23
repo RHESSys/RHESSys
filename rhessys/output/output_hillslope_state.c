@@ -58,11 +58,11 @@ void	output_hillslope_state(
 	fprintf(outfile,"\n     ");
 	fprintf(outfile,"%-30.8lf %s",hillslope[0].z, "z");
 	fprintf(outfile,"\n     ");
-	fprintf(outfile,"%-30d %s",hillslope[0].defaults[0][0].ID, "default_ID");
+	fprintf(outfile,"%-30d %s",hillslope[0].defaults[0][0].ID, "hill_parm_ID");
 	fprintf(outfile,"\n     ");
-	fprintf(outfile,"%-30.8lf %s",hillslope[0].gw.storage, "gw_storage");
+	fprintf(outfile,"%-30.8lf %s",hillslope[0].gw.storage, "gw.storage");
 	fprintf(outfile,"\n     ");
-	fprintf(outfile,"%-30.8lf %s",hillslope[0].gw.NO3, "gw_NO3");
+	fprintf(outfile,"%-30.8lf %s",hillslope[0].gw.NO3, "gw.NO3");
 	fprintf(outfile,"\n     ");
 	fprintf(outfile,"%-30d %s",hillslope[0].num_base_stations, "n_basestations");
 	for (i=0; i < hillslope[0].num_base_stations; i++){

@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void	output_growth_hillslope(
+void	output_growth_hillslope(              int  basinID,
 							struct	hillslope_object	*hillslope,
 							struct	date	current_date,
 							FILE *outfile)
@@ -41,7 +41,7 @@ void	output_growth_hillslope(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	int h,z,p,c;
+	int z,p,c;
 	int  layer;
 	double agpsn, aresp;
 	double alai;
@@ -51,14 +51,20 @@ void	output_growth_hillslope(
 	double anpool;
 	double alitrc;
 	double asoilhr;
+	double acloss;
 	double asoilc, asminn, anitrate, asurfaceN;
-	double alitrn, asoiln;
-	double aarea, hill_area, hillslope_area;
+	double alitrn, asoiln, anfix, anuptake;
+	double aarea;
 	double acarbon_balance, anitrogen_balance;
 	double atotaln, adenitrif;
 	double astreamflow_NO3, astreamflow_NH4, astreamflow_DON, astreamflow_DOC;
 	double anitrif, aDOC, aDON, arootdepth;
-	
+	double hstreamflow_NO3, hstreamflow_NH4, hstreamflow_DON, hstreamflow_DOC;
+	double streamNO3_from_surface;
+	double streamNO3_from_sub;
+	double hgwNO3, hgwDON, hgwDOC, hgwNH4;
+	double hgwNO3out, hgwDONout, hgwDOCout, hgwNH4out;
+
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct  canopy_strata_object    *strata;
@@ -66,10 +72,11 @@ void	output_growth_hillslope(
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
+
 	alai = 0.0; acpool=0.0; anpool = 0.0;
 	aleafc = 0.0; afrootc=0.0; awoodc=0.0;
 	aleafn = 0.0; afrootn=0.0; awoodn=0.0;
-	agpsn = 0.0; aresp=0.0;
+	agpsn = 0.0; aresp=0.0; anfix=0.0; anuptake=0.0;
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
@@ -79,15 +86,30 @@ void	output_growth_hillslope(
 	asoilc = 0.0; asminn=0.0;
 	acarbon_balance = 0.0;
 	anitrogen_balance = 0.0;
-	astreamflow_DON = 0.0;
 	astreamflow_DOC = 0.0;
+	hstreamflow_DOC = 0.0;
+	hgwDOC = 0.0;
+	hgwDOCout = 0.0;
+	astreamflow_DON = 0.0;
+	hstreamflow_DON = 0.0;
+	hgwDON = 0.0;
+	hgwDONout = 0.0;
 	astreamflow_NH4 = 0.0;
+	hstreamflow_NH4 = 0.0;
+	hgwNH4 = 0.0;
+	hgwNH4out = 0.0;
 	astreamflow_NO3 = 0.0;
+	hstreamflow_NO3 = 0.0;
+	hgwNO3 = 0.0;
+	hgwNO3out = 0.0;
 	atotaln = 0.0;
 	adenitrif = 0.0;
 	anitrif = 0.0;
 	aDOC = 0.0; aDON = 0.0;
 	arootdepth = 0.0;
+	acloss = 0.0;
+	streamNO3_from_surface = 0.0;
+	streamNO3_from_sub = 0.0;
 	for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			for (p=0; p< zone[0].num_patches; p++){
@@ -112,12 +134,17 @@ void	output_growth_hillslope(
 				astreamflow_NO3 += patch[0].streamflow_NO3 * patch[0].area;
 				astreamflow_DON += patch[0].streamflow_DON * patch[0].area;
 				astreamflow_DOC += patch[0].streamflow_DOC * patch[0].area;
+				streamNO3_from_surface += patch[0].streamNO3_from_surface * patch[0].area;
+				streamNO3_from_sub += patch[0].streamNO3_from_sub * patch[0].area;
 				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
 				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
 				aDON += (patch[0].soil_ns.DON) * patch[0].area;
 				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
+				anfix += (patch[0].ndf.nfix_to_sminn) * patch[0].area;
+				acloss += (patch[0].grazing_Closs) * patch[0].area;
+				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area,
 
 				asoilhr += (
 					patch[0].cdf.litr1c_hr + 
@@ -188,10 +215,23 @@ void	output_growth_hillslope(
 					}
 				}
 				aarea +=  patch[0].area;
-				hill_area += patch[0].area;
 			}
-	}
 
+		}
+/*
+		hgwNO3 = hillslope[0].gw.NO3 ;
+		hgwNH4 = hillslope[0].gw.NH4 ;
+		hgwDOC = hillslope[0].gw.DOC ;
+		hgwDON = hillslope[0].gw.DON ;
+		hgwDONout = hillslope[0].gw.DONout ;
+		hgwDOCout = hillslope[0].gw.DOCout ;
+		hgwNO3out = hillslope[0].gw.NO3out ;
+		hgwNH4out = hillslope[0].gw.NH4out ;
+		hstreamflow_NH4 = hillslope[0].streamflow_NH4 ;
+		hstreamflow_NO3 = hillslope[0].streamflow_NO3 ;
+		hstreamflow_DON = hillslope[0].streamflow_DON ;
+		hstreamflow_DOC = hillslope[0].streamflow_DOC ; */
+		
 	agpsn /= aarea ;
 	aresp /= aarea ;
 	alai /= aarea ;
@@ -218,20 +258,19 @@ void	output_growth_hillslope(
 	astreamflow_NO3 /= aarea;
 	astreamflow_DON /= aarea;
 	astreamflow_DOC /= aarea;
+	streamNO3_from_surface /=aarea;
+	streamNO3_from_sub /=aarea;
 	adenitrif /= aarea;
 	anitrif /= aarea;
 	aDON /= aarea;
 	aDOC /= aarea;
 	arootdepth /= aarea;
-		
-
-	astreamflow_NH4 +=  hillslope[0].streamflow_NH4;
-	astreamflow_NO3 +=  hillslope[0].streamflow_NO3;
-	astreamflow_DON +=  hillslope[0].streamflow_DON;
-	astreamflow_DOC +=  hillslope[0].streamflow_DOC;
+	anfix /= aarea;
+	acloss /= aarea;
+	anuptake /= aarea;
 
 
-	fprintf(outfile,"%ld %ld %ld %l %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%ld %ld %ld %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -245,30 +284,37 @@ void	output_growth_hillslope(
 		asurfaceN * 1000,
 		(aleafc + awoodc + afrootc),
 		(aleafn + awoodn + afrootn),
+		acpool,
 		anpool,
 		alitrc,
 		alitrn,
 		asoilc,
 		asoiln,
-		hillslope[0].gw.NO3,
-		hillslope[0].gw.NH4,
-		hillslope[0].gw.DON,
-		hillslope[0].gw.DOC,
+		hgwNO3,
+		hgwNH4,
+		hgwDON,
+		hgwDOC,
 		astreamflow_NO3*1000.0,
 		astreamflow_NH4*1000.0,
 		astreamflow_DON*1000.0,
 		astreamflow_DOC*1000.0,
-		hillslope[0].gw.NO3out*1000.0,
-		hillslope[0].gw.NH4out*1000.0,
-		hillslope[0].gw.DONout*1000.0,
-		hillslope[0].gw.DOCout*1000.0,
+		hgwNO3out*1000.0,
+		hgwNH4out*1000.0,
+		hgwDONout*1000.0,
+		hgwDOCout*1000.0,
 		adenitrif*1000.0,
 		anitrif*1000.0,
 		aDOC,
 		aDON,
-		arootdepth*1000.0);
+		arootdepth*1000.0,
+		anfix * 1000.0,
+		anuptake * 1000.0,
+		acloss * 1000.0,
+		streamNO3_from_surface * 1000.0,
+		streamNO3_from_sub * 1000.0
+		);
 	/*------------------------------------------*/
-	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 
+	/*printf("\n Hill %d Output %4d %3d %3d \n",*/ 
 	/*	hillslope[0].ID, date.year, date.month, date.day);*/
 	/*------------------------------------------*/
 	return;

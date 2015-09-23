@@ -25,16 +25,17 @@
 #include "rhessys.h"
 
 void	canopy_stratum_daily_F(
-							   struct	world_object		*world,
-							   struct	basin_object		*basin,
-							   struct	hillslope_object	*hillslope, 
-							   struct	zone_object		*zone,
-							   struct	patch_object		*patch,
-							   struct  layer_object		*layer,
-							   struct 	canopy_strata_object 	*stratum,
-							   struct 	command_line_object	*command_line,
-							   struct	tec_entry		*event,
-							   struct 	date 			current_date)
+							   struct	world_object		      *world,
+							   struct	basin_object		      *basin,
+							   struct	hillslope_object	    *hillslope, 
+							   struct	zone_object		        *zone,
+							   struct	patch_object		      *patch,
+							   struct layer_object		      *layer,
+							   struct canopy_strata_object 	*stratum,
+                 struct canopy_strata_object  *shadow_strata,
+							   struct command_line_object	  *command_line,
+							   struct	tec_entry		          *event,
+							   struct date 			            current_date)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
@@ -240,7 +241,22 @@ void	canopy_stratum_daily_F(
 								 struct	zone_object *,
 								 struct	patch_object *);
 	
-	
+	struct 	canopy_strata_object *construct_empty_shadow_strata( 
+		struct command_line_object *,
+		FILE	*,
+		struct	patch_object *,
+		int     num_world_base_stations,
+		struct  base_station_object **world_base_stations,
+		struct	default_object	*defaults);
+
+
+  void	update_shadow_strata(  
+	  struct	world_object		      *world,
+	  struct canopy_strata_object 	*stratum,
+    struct canopy_strata_object   *shadow_strata,
+	  struct command_line_object	  *command_line,
+	  struct date 			            current_date); 
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -318,7 +334,8 @@ void	canopy_stratum_daily_F(
 		patch[0].Kdown_diffuse,
 		patch[0].PAR_direct/1000,
 		patch[0].PAR_diffuse/1000);
-	/*--------------------------------------------------------------*/
+
+  /*--------------------------------------------------------------*/
 	/*	Initialize stratum variables.				*/
 	/*--------------------------------------------------------------*/
 	stratum[0].Kstar_diffuse = 0.0;
@@ -392,9 +409,13 @@ void	canopy_stratum_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	total_incoming_PAR = PAR_diffuse + PAR_direct;
+	NO3_stored=0;
+	NO3_throughfall=0;
+
 	ustar = patch[0].ustar;
 	
 	lhvap = (2.5023e6 - 2430.54 * zone[0].metv.tday)/1000.0; /* KJ/kg H2O */	
+
 
 	/* Lstar calcs are done in patch daily F AFTER this routine, so using yesterday's	*/
 	/* patch total canopy Lstar and scaling back to this stratum by cover fraction.		*/
@@ -1045,7 +1066,6 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].gs = stratum[0].gs_sunlit + stratum[0].gs_shade;
 
-
 	/*--------------------------------------------------------------*/
 	/*	Determine heat flux between stratum and surface.			*/
 	/*	representative of the surface temperature.  Obviously   */
@@ -1292,6 +1312,8 @@ void	canopy_stratum_daily_F(
 		command_line[0].verbose_flag,
 		&(rain_throughfall),
 		stratum);
+
+
 	if (stratum[0].rain_stored > 0){
 	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
 	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
@@ -1546,7 +1568,7 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Do respiration and photosynthesis only for plants	*/
 	/*--------------------------------------------------------------*/
-	if (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO) {
+	if (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO ) {
 		/*--------------------------------------------------------------*/
 		/*	perform maintenance respiration				*/
 		/*	only fluxes are computed here; stores are updated later	*/
@@ -1846,8 +1868,15 @@ void	canopy_stratum_daily_F(
 		   stratum[0].defaults[0][0].epc.tcoef,
 		   stratum[0].defaults[0][0].epc.tmax);
 	}
-
-	
+  
+	/*------------------------------------------------------------------------*/
+	/*	If spinup option is set, update the shadow stratum until the targets  */
+	/*	have been met                                                       	*/
+	/*------------------------------------------------------------------------*/
+	if(command_line[0].vegspinup_flag > 0){
+    update_shadow_strata(world, stratum, shadow_strata, command_line, current_date);
+  }
+  
 	/*--------------------------------------------------------------*/
 	/*      update accumlator variables                             */
 	/*--------------------------------------------------------------*/
@@ -1865,6 +1894,5 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
 		stratum[0].acc_year.length += 1;
 	}
-
 	return;
 } /*end canopy_stratum_daily_F.c*/

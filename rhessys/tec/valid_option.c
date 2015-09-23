@@ -71,11 +71,18 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-vmort") == 0) ||
 		(strcmp(command_line,"-svalt") == 0) ||
 		(strcmp(command_line,"-precip") == 0) ||
+		(strcmp(command_line,"-gwtoriparian") == 0) ||
 		(strcmp(command_line,"-surfaceenergy") == 0) ||
 		(strcmp(command_line,"-firespread") == 0) ||
 		(strcmp(command_line,"-snowdistb") == 0) ||
 		(strcmp(command_line,"-whdr") == 0) ||
+
+		(strcmp(command_line,"-template") == 0) ||
+		(strcmp(command_line,"-fs") == 0) ||
+
+		(strcmp(command_line,"-vegspinup") == 0) ||
 		(strcmp(command_line,"-template") == 0))
+
 		i = 0;
 	if ( i == 0 ){
 		return(1);

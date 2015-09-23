@@ -107,9 +107,6 @@ void  update_drainage_stream(
 	double gamma, total_gamma, percent_tobe_routed;
 	double Nin, Nout;  /* kg/m2 */
 	double t1,t2,t3;
-	double threshold;
-	threshold = patch[0].soil_defaults[0][0].soil_depth * patch[0].soil_defaults[0][0].porosity_0 * 0.99 *
-		   (1 - patch[0].soil_defaults[0][0].sat_store);
 	
 	d=0;
 	route_to_stream = 0.0;
@@ -153,11 +150,7 @@ void  update_drainage_stream(
 		patch[0].soil_defaults[0][0].interval_size,
 		patch[0].transmissivity_profile,
 		patch);
-/*	// the following code is for testing only
-	if (patch[0].ID == 59808){
-	printf("patch[0].ID= %d, sat_def=%f,depth = %f, threshold=%f, route_to_stream = %f,",patch[0].ID,patch[0].sat_deficit,patch[0].soil_defaults[0][0].soil_depth,threshold, route_to_stream);
-	}
-*/
+
 	if (route_to_stream < 0.0) route_to_stream = 0.0;
 
 		
@@ -376,10 +369,6 @@ void  update_drainage_stream(
 		patch[0].return_flow += Qout; 
 		patch[0].hourly_sur2stream_flow += Qout;
 		}
-/*	//the following code is for testing only
-	if (patch[0].ID == 59808){
-	  printf("baseflow*1000 = %.9f, return_flow = %.9f\n",patch[0].base_flow*1000,patch[0].return_flow * 1000);
-	}
-*/
+
 } /*end update_drainage_stream.c*/
 
