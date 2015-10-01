@@ -1272,18 +1272,18 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 static void sub_vertical( double  tstep )        /*  process time-step  */
     {
     unsigned                i, j ;
-    double                  fac, dH2O, dNO3, dNH4, dDOC, dDON ;
+    double                  delz, facN, facC, dH2O, dNO3, dNH4, dDOC, dDON ;
 	struct patch_object *   patch ;
 
-#pragma omp parallel for                                    \
-        default( none )                                     \
-        private( i, fac, dH2O, dNO3, dNH4, dDOC, dDON )     \
-         shared( num_patches, capH2O, plist, satdef,        \
-                 verbose, por_0, por_d, dzsoil, waterz,     \
-                 totH2O, totNO3, totNH4, totDOC, totDON,    \
-                 infH2O, infNO3, infNH4, infDOC, infDON,    \
-                 latH2O, latNO3, latNH4, latDOC, latDON,    \
-                 sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON )   \
+#pragma omp parallel for                                        \
+        default( none )                                         \
+        private( i, facN, facC, delz dH2O, dNO3, dNH4, dDOC, dDON )     \
+         shared( num_patches, capH2O, plist, satdef, verbose,   \
+                 por_0, por_d, Ndecay, Ddecay, dzsoil, waterz,  \
+                 totH2O, totNO3, totNH4, totDOC, totDON,        \
+                 infH2O, infNO3, infNH4, infDOC, infDON,        \
+                 latH2O, latNO3, latNH4, latDOC, latDON,        \
+                 sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON )       \
        schedule( guided )
 
     for ( i = 0; i < num_patches; i++ )     /*  loop on patches  */
@@ -1303,12 +1303,14 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
 
         if ( totH2O[i] > capH2O[i] )        /*  exfiltration to surface  */
             {
-            fac  = ( totH2O[i] - capH2O[i] ) / totH2O[i] ;       /*  excess-water fraction  */
-            dH2O = fac * totH2O[i] ;
-            dNO3 = fac * totNO3[i] ;
-            dNH4 = fac * totNH4[i] ;
-            dDON = fac * totDON[i] ;
-            dDOC = fac * totDOC[i] ;
+            dH2O = ( totH2O[i] - capH2O[i] ) / totH2O[i] ;
+            delz = por_d[i] * log( 1 + dH2O / ( por_0[i] * por_d[i] ) ) ;   /*  soil depth previously occupied by dH2O  */
+            facN = 1.0 - exp( delz * Ndecay[i] ) ;                          /*  fraction of N,D in [0:delz], assuming   */
+            facD = 1.0 - exp( delz * Ddecay[i] ) ;                          /*  decay rate [N,D]decay[i]                */
+            dNO3 = facN * totNO3[i] ;
+            dNH4 = facN * totNH4[i] ;
+            dDON = facD * totDON[i] ;
+            dDOC = facD * totDOC[i] ;
             satdef[i] = 0.0 ;
             sfcH2O[i] = sfcH2O[i] + dH2O ;
             sfcNO3[i] = sfcNO3[i] + dNO3 ;
