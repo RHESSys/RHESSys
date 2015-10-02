@@ -200,10 +200,10 @@ struct stream_list_object construct_stream_routing_topology(
 	
 	m=num_reaches-2;
 	for(i=num_reaches-1;i>=0;--i){
-		for (j=0; j< stream_network[i].num_upstream_neighbours; ++j) {
+		for (j=0; j< stream_network_ini[i].num_upstream_neighbours; ++j) {
 			for(k=0; k< num_reaches; ++k){
 				
-				if(stream_network[i].upstream_neighbours[j]==stream_network_ini[k].reach_ID){
+				if(stream_network_ini[i].upstream_neighbours[j]==stream_network_ini[k].reach_ID){
 					stream_network[m]=stream_network_ini[k];
 					m=m-1;
 					break;
