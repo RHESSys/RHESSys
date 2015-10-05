@@ -113,7 +113,7 @@ double	snowpack_daily_F(
 	double Kstar_direct, Kstar_diffuse, APAR_direct, APAR_diffuse;
 	double Rnet, sublimation, Q_LE, Q_melt, Q_rain;
 	double snow_thresh, rr, aep;
-	
+		
 	water_equivalent_depth = snowpack[0].water_equivalent_depth;
 	surface_age = snowpack[0].surface_age;
 	energy_deficit = snowpack[0].energy_deficit;
@@ -131,6 +131,11 @@ double	snowpack_daily_F(
 	Q_LE = 0.0;
 	Q_melt = 0.0;
 	Q_rain = 0.0;
+	
+	melt = 0.0;
+	T_melt = 0.0;
+	rad_melt = 0.0;
+	precip_melt = 0.0;
 	
 	snow_thresh = 0.0;
 	rr = 0.0;
@@ -504,19 +509,23 @@ double	snowpack_daily_F(
 		printf("%10.6f %10.6f %10.6f %10.6f", rad_melt,T_melt, precip_melt,
 			snowpack_total_water_depth);
 	}
+	
 	/*--------------------------------------------------------------*/
 	/*  Calculate Total Melt										*/
 	/*--------------------------------------------------------------*/
 	melt = min((T_melt + rad_melt + precip_melt), 
 			   snowpack_total_water_depth * area_fraction);
+
+    // T.N, Sep. 2015
+    if (verbose_flag == -1) {
+        printf("%4d %4d %4d %10.6f %10.6f %10.6f %10.6f %10.6f\n", current_date.day, current_date.month, current_date.year, melt, T_melt, rad_melt, precip_melt, snowpack_total_water_depth);
+    }
 	
 	/*--------------------------------------------------------------*/
 	/*  Perform Degree day accumulation								*/
 	/*--------------------------------------------------------------*/
 	energy_deficit = min(max((energy_deficit+T_air),
 						 maximum_energy_deficit),0.001);
-	
-	
 	
 	if ( verbose_flag == -5 ){
 		printf("\nSNOWPACK end: swe=%lf melt=%lf T_melt=%lf rad_melt=%lf precip_melt=%lf Qmelt=%lf Kupsnow=%lf",
@@ -528,6 +537,23 @@ double	snowpack_daily_F(
 			   Q_melt/86.4,
 			   (*Kup_direct_snow+*Kup_diffuse_snow)/86.4);
 	}
+
+	//if ( verbose_flag == -1 ){
+		  ////printf("\nSNOWPACK end: SWE=%lf melt=%lf T_melt=%lf rad_melt=%lf precip_melt=%lf Qmelt=%lf Kupsnow=%lf",
+				 ////snowpack_total_water_depth*area_fraction*1000,
+				 ////melt*1000,
+				 ////T_melt*1000,
+				 ////rad_melt*1000,
+				 ////precip_melt*1000,
+				 ////Q_melt/86.4,
+				 ////(*Kup_direct_snow+*Kup_diffuse_snow)/86.4);
+
+		  //printf("\nMelting contribution: melt=%lf T_melt_per=%lf rad_melt_per=%lf precip_melt_per=%lf",
+				 //melt*1000,
+				 //100*T_melt/melt,
+				 //100*rad_melt/melt,
+				 //100*precip_melt/melt);
+	//}	
 	
 			
 	/*--------------------------------------------------------------*/
@@ -546,6 +572,12 @@ double	snowpack_daily_F(
 	snowpack[0].Q_LE += area_fraction * Q_LE;
 	snowpack[0].Q_melt += area_fraction * Q_melt;
 	snowpack[0].Q_rain += area_fraction * Q_rain;
+	// T.N: Sep. 2015, add more output for patch to check snow melting
+	// *1000 to convert to mm
+	snowpack[0].melt = melt*1000;
+	snowpack[0].T_melt = T_melt*1000;
+	snowpack[0].rad_melt = rad_melt*1000;
+	snowpack[0].precip_melt = precip_melt*1000;
 	
 	/*--------------------------------------------------------------*/
 	/*	update snowpack tracking variables if flagged				*/

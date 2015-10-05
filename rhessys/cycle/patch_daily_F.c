@@ -471,9 +471,14 @@ void		patch_daily_F(
 	patch[0].snowpack.Q_rain = 0.0;
 	patch[0].snowpack.Q_melt = 0.0;
 	
+	// T.N - Sep. 2015
+	patch[0].snowpack.melt = 0.0;
+	patch[0].snowpack.T_melt = 0.0;
+	patch[0].snowpack.rad_melt = 0.0;
+	patch[0].snowpack.precip_melt = 0.0;
+	
 	patch[0].LE_soil = 0.0;
-	
-	
+		
 	patch[0].snowpack.K_reflectance = 0.0;
 	patch[0].snowpack.K_absorptance = 0.0;
 	patch[0].snowpack.PAR_reflectance = 0.0;

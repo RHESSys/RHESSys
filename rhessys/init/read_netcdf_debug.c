@@ -111,7 +111,7 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
 	int idlat, idlont, idday;	//offset
 	
 //	if ( command_line[0].verbose_flag == -3 ){
-//		printf("\nOpening netcdf file...\n");
+		printf("\nOpening netcdf file...\n");
 //	}
 	
     /***open netcdf***/
@@ -121,8 +121,8 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
                         &unlimdimid_in)))
                 ERR(retval);
 //        if ( command_line[0].verbose_flag == -3 ){
-//			printf("ncid=%d ndims_in=%d nvars_in=%d ngatts_in=%d unlimdimid_in=%d\n",ncid, ndims_in, nvars_in, ngatts_in, unlimdimid_in);
-//			printf("Getting dimensions and var id... %d %s %d\n", ncid, NDAYS_NAME, ndaysid);
+			printf("ncid=%d ndims_in=%d nvars_in=%d ngatts_in=%d unlimdimid_in=%d\n",ncid, ndims_in, nvars_in, ngatts_in, unlimdimid_in);
+			printf("Getting dimensions and var id... %d %s %d\n", ncid, NDAYS_NAME, ndaysid);
 //		}
         /***Get the dimension and var id***/
         if((retval = nc_inq_dimid(ncid,NDAYS_NAME, &ndaysid)))
@@ -180,7 +180,7 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
 		return -1;
 	}
 //	if ( command_line[0].verbose_flag == -3 ){
-//		printf("startday=%d duration=%d nday=%d day1=%d dayfin=%d\n",startday, duration,nday, days[0], days[nday-1]);
+		printf("startday=%d duration=%d nday=%d day1=%d dayfin=%d\n",startday, duration,nday, days[0], days[nday-1]);
 //	}
 		
 	if((startday<days[0] || (duration+startday) > days[nday-1])){
@@ -190,7 +190,7 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
 		free(lont);	
 		return -1;
 	}
-	start[0] = startday-days[0] + day_offset;		// netcdf 4.1.3 problem: there is 1 day offset
+	start[0] = startday-days[0]+day_offset;		//netcdf 4.1.3 problem: there is 1 day offset
         start[1] = idlat;           //lat
 	start[2] = idlont;
         count[0] = duration;
@@ -239,7 +239,7 @@ int get_netcdf_var(char *netcdf_filename, char *varname,
 	int idlat, idlont;	//offset
 	
 //	if ( command_line[0].verbose_flag == -3 ){
-//		printf("\nOpening netcdf file...\n");
+		printf("\nOpening netcdf file...\n");
 //	}
 	
 	/***open netcdf***/
@@ -249,7 +249,7 @@ int get_netcdf_var(char *netcdf_filename, char *varname,
                         &unlimdimid_in)))
 		ERR(retval);
 //	if ( command_line[0].verbose_flag == -3 ){	
-//		printf("ncid=%d ndims_in=%d nvars_in=%d ngatts_in=%d unlimdimid_in=%d\n", ncid, ndims_in, nvars_in, ngatts_in, unlimdimid_in);
+		printf("ncid=%d ndims_in=%d nvars_in=%d ngatts_in=%d unlimdimid_in=%d\n", ncid, ndims_in, nvars_in, ngatts_in, unlimdimid_in);
 //	}
 	/***Get the dimension and var id***/
 	if((retval = nc_inq_dimid(ncid, nlat_name, &nlatid)))
@@ -331,11 +331,11 @@ int get_netcdf_xy(char *netcdf_filename, char *nlat_name, char *nlon_name,
 	int idlat, idlont;	//offset
 	
 //	if ( command_line[0].verbose_flag == -3 ){
-/*		printf("\nOpening netcdf file... %s lat=%lf lon=%lf sd=%lf \n",
+		printf("\nOpening netcdf file... %s lat=%lf lon=%lf sd=%lf \n",
 			   netcdf_filename,
 			   rlat,
 			   rlon,
-			   sd); */
+			   sd);
 //	}
 	
 	/***open netcdf***/
@@ -346,7 +346,7 @@ int get_netcdf_xy(char *netcdf_filename, char *nlat_name, char *nlon_name,
 		ERR(retval);
 		
 //	if ( command_line[0].verbose_flag == -3 ){
-//		printf("ncid=%d ndims_in=%d nvars_in=%d ngatts_in=%d unlimdimid_in=%d\n",ncid, ndims_in, nvars_in, ngatts_in, unlimdimid_in);
+		printf("ncid=%d ndims_in=%d nvars_in=%d ngatts_in=%d unlimdimid_in=%d\n",ncid, ndims_in, nvars_in, ngatts_in, unlimdimid_in);
 //	}
 	
 	/***Get the dimension and var id***/

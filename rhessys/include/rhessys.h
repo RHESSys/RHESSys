@@ -502,6 +502,11 @@ struct	snowpack_object
 	double Q_H;     /* sensible heat flux in KJ/m2/d */
 	double Q_rain;   /* rain advective heat flux in KJ/m2/d */
 	double Q_melt;  /* net input for melt in KJ/m2/d */
+	// T.N: Sep 2015, melting output
+	double melt; /* total snow melt m */
+	double T_melt; /* total snow melt due to temp. m */
+	double rad_melt; /* total snow melt due to rad. m */
+	double precip_melt; /* total snow melt due to rain m */
 	};
 
 
@@ -608,27 +613,30 @@ struct base_station_object
 /*----------------------------------------------------------*/
 /*      Define a netcdf base station header object.                                                     */
 /*----------------------------------------------------------*/
+/* T.N, Oct 2015: incldue wind data */
 struct base_station_ncheader_object
 {
         int             lastID;
         FILE    *base_station_file;
         double  effective_lai;                  /* m^2/m^2      */
         double  screen_height;                  /* meters       */
-        double  sdist;                                  /* search distance in native netcdf units */
-        int             year_start;                             /* start year for netcdf time counter (NOT time series start date) */
-        int             day_offset;                             /* day offset from January 1 for netcdf time counter */
-        int             leap_year;                              /* 0 = no leap years, 1 = leap years in netcdf record */
+        double  sdist;                          /* search distance in native netcdf units */
+        int     year_start;                     /* start year for netcdf time counter (NOT time series start date) */
+        int     day_offset;                     /* day offset from January 1 for netcdf time counter */
+        int     leap_year;                      /* 0 = no leap years, 1 = leap years in netcdf record */
         double  precip_mult;                    /* multiplier for precip if not in meters */
-        int             elevflag;                               /* set based on whether elev filename is given */
+        int     elevflag;                       /* set based on whether elev filename is given */
         char    netcdf_x_varname[MAXSTR];       /* variable name for x coordinate in nc file */
         char    netcdf_y_varname[MAXSTR];       /* variable name for y coordinate in nc file */
         char    netcdf_tmax_filename[MAXSTR];   /* filename for tmax nc file */
         char    netcdf_tmin_filename[MAXSTR];   /* filename for tmin nc file */
         char    netcdf_rain_filename[MAXSTR];   /* filename for rain nc file */
+        char    netcdf_wind_filename[MAXSTR];   /* filename for wind nc file */
         char    netcdf_elev_filename[MAXSTR];   /* filename for elev nc file */
         char    netcdf_tmax_varname[MAXSTR];    /* variable name for tmax in nc file */
         char    netcdf_tmin_varname[MAXSTR];    /* variable name for tmin in nc file */
         char    netcdf_rain_varname[MAXSTR];    /* variable name for rain in nc file */
+        char    netcdf_wind_varname[MAXSTR];    /* variable name for wind in nc file */
         char    netcdf_elev_varname[MAXSTR];    /* variable name for elev in nc file */
 };
 /*----------------------------------------------------------*/

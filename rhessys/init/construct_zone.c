@@ -198,7 +198,8 @@ struct zone_object *construct_zone(
 	zone[0].defaults[0] = &defaults[0].zone[i];
 	
 	if ( command_line[0].verbose_flag == -3 ){
-		printf("\nConstructing zone base stations %d", zone[0].ID);
+		printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+		printf("Constructing zone base stations %d \n", zone[0].ID);
 	}	
 	
 	/*--------------------------------------------------------------*/
@@ -214,8 +215,8 @@ struct zone_object *construct_zone(
 	/*	Read each base_station ID and then point to that base station */
 	/*--------------------------------------------------------------*/
 	if (command_line[0].gridded_netcdf_flag == 0){
-	for (i=0 ; i<zone[0].num_base_stations ; i++ ){
-		fscanf(world_file,"%d",&(base_stationID));
+	for (i = 0; i < zone[0].num_base_stations; i++ ){
+		fscanf(world_file, "%d", &(base_stationID));
 		read_record(world_file, record);
 		/*--------------------------------------------------------------*/
 		/*  Point to the appropriate base station in the base           */
@@ -229,7 +230,7 @@ struct zone_object *construct_zone(
 	} /*end for*/
 	}
 	else {
-		fscanf(world_file,"%d",&(dum));
+		fscanf(world_file, "%d", &(dum));
 		read_record(world_file, record);
 	}
 	/*--------------------------------------------------------------*/
@@ -238,14 +239,13 @@ struct zone_object *construct_zone(
 	/*	Construct the list of base stations.			*/
 	/*--------------------------------------------------------------*/
 
-
 	if (command_line[0].dclim_flag == 0) {
 		if(command_line[0].gridded_netcdf_flag == 1){
 			/*--------------------------------------------------------------*/
 			/*	Construct the base_stations.				*/
 			/*--------------------------------------------------------------*/
 			if ( command_line[0].verbose_flag == -3 ){
-				printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d sdist=%lf base_y=%lf base_x=%lf", 
+				printf("Constructing base stations from %s: zoney=%lf zonex=%lf num=%d sdist=%lf base_y=%lf base_x=%lf \n", 
 					   base_station_ncheader[0].netcdf_tmax_filename,
 					   zone[0].y,
 					   zone[0].x,
@@ -253,7 +253,7 @@ struct zone_object *construct_zone(
 					   base_station_ncheader[0].sdist,
 					   base_y,
 					   base_x);
-				printf("\n   STARTING CLOSEST CELL: y=%lf x=%lf",base_y,base_x);
+				printf("STARTING CLOSEST CELL: y=%lf x=%lf \n",base_y,base_x);
 			}
 
 			/* Identify centerpoint coords for closest netcdf cell to zone x, y */
@@ -266,10 +266,10 @@ struct zone_object *construct_zone(
 							  &(base_y), 
 							  &(base_x));
 			if ( command_line[0].verbose_flag == -3 ){
-				printf("\n   CLOSEST CELL: y=%lf x=%lf num=%d",base_y,base_x,*num_world_base_stations);
+				printf("CLOSEST CELL: y=%lf x=%lf num=%d \n",base_y,base_x,*num_world_base_stations);
 			}
 			if(k == -1){
-				fprintf(stderr,"can't locate station data in netcdf for var tmax\n");
+				fprintf(stderr,"Can't locate station data in netcdf for var tmax\n");
 				exit(0);
 			}
 			/* Assign base station based on closest found coordinates */
@@ -285,7 +285,7 @@ struct zone_object *construct_zone(
 			/* If station is not already in list, add it */
 			if (notfound == 1) {
 				if ( command_line[0].verbose_flag == -3 ){
-					printf("\n   Starting construct_netcdf_grid: file=%s num=%d",
+					printf("Starting construct_netcdf_grid: file=%s num=%d \n",
 						   world[0].base_station_files[0],
 						   *num_world_base_stations);
 				}
@@ -300,7 +300,7 @@ struct zone_object *construct_zone(
 															   world[0].duration);
 				world[0].num_base_stations = *num_world_base_stations;
 				if ( command_line[0].verbose_flag == -3 ){
-					printf("\n   Assigning base station: file=%s num=%d lai=%lf notfound=%d lastid=%d numworld=%d ID=%d LAI=%lf",
+					printf("Assigning base station: file=%s num=%d lai=%lf notfound=%d lastid=%d numworld=%d ID=%d LAI=%lf \n",
 						   world[0].base_station_files[0],
 						   *num_world_base_stations,
 						   (*(world_base_stations[j])).effective_lai,
@@ -314,18 +314,20 @@ struct zone_object *construct_zone(
 				zone[0].base_stations[0] = world_base_stations[j];
 				
 				if ( command_line[0].verbose_flag == -3 ){
-					printf("\n   Zone base station: lai=%lf tmin=%lf tmax=%lf rain=%lf",
+					printf("Zone base station: lai=%lf tmin=%lf tmax=%lf rain=%lf wind=%lf \n",
 						   (*(zone[0].base_stations[0])).effective_lai,
 						   (*(zone[0].base_stations[0])).daily_clim[0].tmin[0],
 						   (*(zone[0].base_stations[0])).daily_clim[0].tmax[0],
-						   (*(zone[0].base_stations[0])).daily_clim[0].rain[0]);
+						   (*(zone[0].base_stations[0])).daily_clim[0].rain[0],
+						   (*(zone[0].base_stations[0])).daily_clim[0].wind[0]);
 				}
 			}
 		}
 	}
 	
 	if ( command_line[0].verbose_flag == -3 ){
-		printf("\n   Ending zone base station: num=%d worldnum=%d",*num_world_base_stations,world[0].num_base_stations);
+		printf("Ending zone base station: num=%d worldnum=%d \n", *num_world_base_stations, world[0].num_base_stations);
+		printf("------------------------------\n");
 	}
 	
 	/*--------------------------------------------------------------*/

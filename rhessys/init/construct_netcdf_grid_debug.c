@@ -117,9 +117,9 @@ struct base_station_object *construct_netcdf_grid (
 	/* allocate daily_optional_clim_sequence_flags struct and make sure set to 0 */
 	memset(&daily_flags, 0, sizeof(struct daily_optional_clim_sequence_flags));
 
-	/*printf("Construct netcdf cell: START lastID=%d lai=%lf \n", 
+	printf("Construct netcdf cell: START lastID=%d lai=%lf \n", 
 		   base_station_ncheader[0].lastID, 
-		   base_station_ncheader[0].effective_lai);*/
+		   base_station_ncheader[0].effective_lai);
 	
 	i = base_station_ncheader[0].lastID + 1;
 
@@ -217,8 +217,8 @@ struct base_station_object *construct_netcdf_grid (
 								base_station_ncheader[0].leap_year);
 	   
 		tempdata = (float *) alloc(duration.day * sizeof(float), "tempdata", "construct_netcdf_grid");
-		//printf("net_y:%f net_x:%f\n", net_y, net_x);
-		//printf("tmax filename:%s varname:%s sdist:%f instartday:%d dura:%d\n", base_station_ncheader[0].netcdf_tmax_filename,  base_station_ncheader[0].netcdf_tmax_varname, base_station_ncheader[0].sdist, instartday, duration.day);
+		printf("net_y:%f net_x:%f\n", net_y, net_x);
+		printf("tmax filename:%s varname:%s sdist:%f instartday:%d dura:%d\n", base_station_ncheader[0].netcdf_tmax_filename,  base_station_ncheader[0].netcdf_tmax_varname, base_station_ncheader[0].sdist, instartday, duration.day);
 		
 		/* ------------------ TMAX ------------------ */
 		k = get_netcdf_var_timeserias(
@@ -240,7 +240,7 @@ struct base_station_object *construct_netcdf_grid (
 		}
 		for (j = 0; j < duration.day; j++){
 			base_station[0].daily_clim[0].tmax[j] = (double)tempdata[j];
-			//printf("day:%d tmax:%f\n", j, base_station[0].daily_clim[0].tmax[j]);
+			printf("day:%d tmax:%f\n", j, base_station[0].daily_clim[0].tmax[j]);
 		}
 	
 		/* ------------------ TMIN ------------------ */
@@ -263,7 +263,7 @@ struct base_station_object *construct_netcdf_grid (
 		}
 		for(j = 0; j < duration.day; j++){
 			base_station[0].daily_clim[0].tmin[j] = (double)tempdata[j];
-			//printf("day:%d tmin:%f\n", j, base_station[0].daily_clim[0].tmin[j]);
+			printf("day:%d tmin:%f\n", j, base_station[0].daily_clim[0].tmin[j]);
 		}
 	
 		/* ------------------ PRECIP ------------------ */
@@ -286,7 +286,7 @@ struct base_station_object *construct_netcdf_grid (
 		}
 		for(j = 0; j < duration.day; j++){
 			base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult;
-			//printf("day:%d rain:%f\n", j, base_station[0].daily_clim[0].rain[j]);
+			printf("day:%d rain:%f\n", j, base_station[0].daily_clim[0].rain[j]);
 		}
 		
 		/* T.N, Oct. 2015: include wind data */
@@ -310,7 +310,7 @@ struct base_station_object *construct_netcdf_grid (
 		}
 		for(j = 0; j < duration.day; j++){
 			base_station[0].daily_clim[0].wind[j] = (double)tempdata[j];
-			//printf("day:%d wind:%f\n", j, base_station[0].daily_clim[0].wind[j]);
+			printf("day:%d wind:%f\n", j, base_station[0].daily_clim[0].wind[j]);
 		}
 		
 		/* ------------------ ELEV ------------------ */
