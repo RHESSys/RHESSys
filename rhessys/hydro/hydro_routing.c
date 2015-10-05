@@ -1272,12 +1272,12 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 static void sub_vertical( double  tstep )        /*  process time-step  */
     {
     unsigned                i, j ;
-    double                  delz, facN, facC, dH2O, dNO3, dNH4, dDOC, dDON ;
+    double                  delz, facN, facC, facD, dH2O, dNO3, dNH4, dDOC, dDON ;
 	struct patch_object *   patch ;
 
 #pragma omp parallel for                                        \
         default( none )                                         \
-        private( i, facN, facC, delz dH2O, dNO3, dNH4, dDOC, dDON )     \
+        private( i, facN, facC, facD, delz dH2O, dNO3, dNH4, dDOC, dDON )     \
          shared( num_patches, capH2O, plist, satdef, verbose,   \
                  por_0, por_d, Ndecay, Ddecay, dzsoil, waterz,  \
                  totH2O, totNO3, totNH4, totDOC, totDON,        \
