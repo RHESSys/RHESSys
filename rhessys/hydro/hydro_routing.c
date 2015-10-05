@@ -1396,6 +1396,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
     nsoil   = (unsigned *) alloc( num_patches * sizeof(  double ), "nsoil",  "hydro_routing/init_hydro_routing()" ) ;
     dzsoil  = (double   *) alloc( num_patches * sizeof(  double ), "dzsoil", "hydro_routing/init_hydro_routing()" ) ;
     pscale  = (double   *) alloc( num_patches * sizeof(  double ), "pscale", "hydro_routing/init_hydro_routing()" ) ;
+    patchm  = (double   *) alloc( num_patches * sizeof(  double ), "patchm", "hydro_routing/init_hydro_routing()" ) ;
 
     retdep  = (double   *) alloc( num_patches * sizeof(  double ), "retdep", "hydro_routing/init_hydro_routing()" ) ;
     rootzs  = (double   *) alloc( num_patches * sizeof(  double ), "rootzs", "hydro_routing/init_hydro_routing()" ) ;
@@ -1523,6 +1524,16 @@ static void init_hydro_routing( struct command_line_object * command_line,
     diagf = 0.5 * sqrt( 0.5 ) ;     /*  "perimeter" factor for diagonals */
     basin_area = 0.0 ;
 
+#pragma omp parallel for                        \
+        default( none )                         \
+        private( i )                            \
+         shared( num_patches, basin, plist )
+
+    for ( i = 0; i < num_patches; i++ )
+        {
+        plist [i] = basin->route_list->list[i] ;
+        }
+
 #pragma omp parallel for                                                \
         default( none )                                                 \
         private( i, j, k, patch, neigh, gfac, dx, dy )                  \
@@ -1568,6 +1579,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
         sfcknl[i] = sqrt( tan( patch->slope_max ) ) / ( patch->mannN * psize[i] ) ;
         dcount[i] = patch->surface_innundation_list->num_neighbours ;
         cancap[i] = patch->litter.rain_capacity ;
+        patchm[i] = patch->m;
 
         sfccnti[i] = 0 ;
         subcnto[i] = patch->innundation_list->num_neighbours ;
