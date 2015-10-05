@@ -1362,15 +1362,15 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     /*  Establish subsurface-routing option  */
 
-    if ( 0 )
+    if ( command_line->var_timestep_mode == VAR_ROUTING_MODE_CHEM_WELL_MIXED )
         {
         sub_routing = &sub_routing0 ;
         }
-    else if ( 1 )
+    else if ( command_line->var_timestep_mode == VAR_ROUTING_MODE_CHEM_EXPONENTIAL )
         {
         sub_routing = &sub_routing1 ;
         }
-    else if ( 1 )
+    else if ( command_line->var_timestep_mode == VAR_ROUTING_MODE_NO_MOUNDING )
         {
         sub_routing = &sub_routing2 ;
         }
