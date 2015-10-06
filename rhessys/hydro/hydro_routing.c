@@ -1763,7 +1763,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
     /*  NOTE that we don't need per-zone decomposition on the hillslopes  */
 
     k = 0 ;
-    for ( h = 0 ; i < num_hills ; h++ )
+    for ( h = 0 ; h < num_hills ; h++ )
         {
         hillslo[h] = k ;
         hillslope = basin->hillslopes[h] ;
