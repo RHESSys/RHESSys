@@ -129,7 +129,7 @@ void	output_csv_growth_patch(
 		patch[0].rootzone.depth*1000.0,
 		patch[0].area);
 	if (check <= 0) {
-		fprintf(stdout, "\nWARNING: output_csv_growth error has occured in output_csv_growth_patch");
+		fprintf(stdout, "WARNING: output_csv_growth error has occured in output_csv_growth_patch \n");
 	}
 	return;
 } /*end output_csv_growth_patch*/

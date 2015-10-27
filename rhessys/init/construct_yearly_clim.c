@@ -110,7 +110,7 @@ struct	yearly_clim_object *construct_yearly_clim(
 		}
 		else{
 			fprintf(stderr,
-				"WARNING -  clim sequence %s not found./n",sequence_name);
+				"WARNING -  clim sequence %s not found.\n",sequence_name);
 		} /*end if-else*/
 	} /*end for*/
 	return(yearly_clim);

@@ -65,7 +65,7 @@ void	output_csv_monthly_basin(
 		);
 	if (check <= 0) {
 		fprintf(stdout,
-			"\nWARNING: output error has occured in output_csv_monthly_basin");
+			"WARNING: output error has occured in output_csv_monthly_basin \n");
 	}
 	/*--------------------------------------------------------------*/
 	/*	reset accumulator variables				*/

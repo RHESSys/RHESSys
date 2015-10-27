@@ -1,4 +1,4 @@
-PGM  = rhessys5.19oct05_wind
+PGM  = rhessys5.19oct22_basedebug
 VERSION = 5.19omp
 CC = gcc 
 #CFLAGS = -O -std=c99

@@ -143,8 +143,8 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		if ( (default_object_list[i].epc.leaflitr_cn <
 			default_object_list[i].epc.leaf_cn) && (command_line[0].grow_flag > 0) ){
-			fprintf(stderr, "\nWARNING construct_stratum_defaults");
-			fprintf(stderr, "\n  leaf litter C:N < leaf C:N");
+			fprintf(stderr, "WARNING construct_stratum_defaults \n");
+			fprintf(stderr, "   leaf litter C:N < leaf C:N \n");
 		}
 		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 1.0, 1);
 		default_object_list[i].epc.froot_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.froot_turnover", "%lf", 0.27, 1);
@@ -168,9 +168,9 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.leaflitr_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flig", "%lf", 0.24, 1);
 
 		if ( (float)(epc->leaflitr_flig + epc->leaflitr_flab + fcel) != 1.0 )	{
-			fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
-			fprintf(stderr,"\n  litter proportions of labile, cell. and lignin must sum to 1.0");
-			fprintf(stderr," \n for default ID %d \n", default_object_list[i].ID);
+			fprintf(stderr,"FATAL ERROR construct_stratum_defaults \n");
+			fprintf(stderr,"  litter proportions of labile, cell. and lignin must sum to 1.0 \n");
+			fprintf(stderr," for default ID %d \n", default_object_list[i].ID);
 			exit(EXIT_FAILURE);
 		}
 		lig_cel_ratio = epc->leaflitr_flig/fcel;
@@ -220,8 +220,8 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.deadwood_flig = getDoubleParam(&paramCnt, &paramPtr, "epc.deadwood_flig", "%lf", 0.48, 1);
 		if (epc->veg_type == TREE) {
 			if ( (float)(epc->deadwood_flig + fcel) != 1.0 ){
-				fprintf(stderr,"\nFATAL ERROR construct_stratum_defaults");
-				fprintf(stderr,"\n  dead wood proportions of labile, cell. and lignin must sum to 1.0\n");
+				fprintf(stderr,"FATAL ERROR construct_stratum_defaults \n");
+				fprintf(stderr,"  dead wood proportions of labile, cell. and lignin must sum to 1.0 \n");
 				exit(EXIT_FAILURE);
 			}
 			lig_cel_ratio = epc->deadwood_flig/fcel;

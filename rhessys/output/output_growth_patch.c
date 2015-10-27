@@ -180,7 +180,7 @@ void	output_growth_patch(
 		patch[0].grazing_Closs * 1000.0,
 		patch[0].area);
 	if (check <= 0) {
-		fprintf(stdout, "\nWARNING: output_growth error has occured in output_growth_patch");
+		fprintf(stdout, "WARNING: output_growth error has occured in output_growth_patch \n");
 	}
 	return;
 } /*end output_growth_patch*/

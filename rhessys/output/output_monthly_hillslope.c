@@ -66,7 +66,7 @@ void	output_monthly_hillslope(	int basinID,
 		);
 	if (check <= 0) {
 		fprintf(stdout,
-			"\nWARNING: output error has occured in output_monthly_hillslope");
+			"WARNING: output error has occured in output_monthly_hillslope \n");
 	}
 	/*--------------------------------------------------------------*/
 	/*	reset accumulator variables				*/

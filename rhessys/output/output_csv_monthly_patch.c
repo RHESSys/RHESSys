@@ -74,7 +74,7 @@ void	output_csv_monthly_patch(
 
 	if (check <= 0) {
 		fprintf(stdout,
-			"\nWARNING: output error has occured in output_csv_monthly_patch");
+			"WARNING: output error has occured in output_csv_monthly_patch \n");
 	}
 	/*--------------------------------------------------------------*/
 	/*	reset accumulator variables				*/

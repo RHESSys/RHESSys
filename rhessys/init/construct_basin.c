@@ -251,14 +251,14 @@ struct basin_object *construct_basin(
 	if (command_line[0].snow_scale_flag == 1) {
 		check_snow_scale /= basin[0].area;
 		if (fabs(check_snow_scale - 1.0) > ZERO	) {
-			printf("\n *******  WARNING  ********** ");
-			printf("\n Basin-wide  average snow scale is %lf", check_snow_scale);
-			printf("\n Snow rescaling will alter net precip input by this scale factor\n\n");
+			printf(" *******  WARNING  ********** \n");
+			printf(" Basin-wide  average snow scale is %lf \n", check_snow_scale);
+			printf(" Snow rescaling will alter net precip input by this scale factor \n");
 			}
 		if (command_line[0].snow_scale_tol > ZERO) {
 			if ((check_snow_scale > command_line[0].snow_scale_tol) || 
 				(check_snow_scale < 1/command_line[0].snow_scale_tol)) {
-				printf("Basin-wide  average snow scale %lf is outside tolerance %lf", 
+				printf("Basin-wide average snow scale %lf is outside tolerance %lf \n", 
 				check_snow_scale, command_line[0].snow_scale_tol);
 				printf("\n Exiting\n");
 				exit(EXIT_FAILURE);

@@ -399,7 +399,7 @@ void  update_drainage_land(
 			
 
 	if (NO3_leached_to_surface < 0.0)
-		printf("WARNING %d %lf",patch[0].ID, NO3_leached_to_surface);
+		printf("WARNING %d %lf \n", patch[0].ID, NO3_leached_to_surface);
 
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/
@@ -417,7 +417,7 @@ void  update_drainage_land(
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
-		if (Qin < 0) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);
+		if (Qin < 0) printf("WARNING negative routing from patch %d with gamma %lf \n", patch[0].ID, total_gamma);
 		if (command_line[0].grow_flag > 0) {
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch) 
 				/ neigh[0].area;

@@ -84,7 +84,7 @@ void	output_csv_patch(
 		litterS,
 		patch[0].area);
 	if (check <= 0) {
-		fprintf(stdout, "\nWARNING: output error has occured in output_csv_patch");
+		fprintf(stdout, "WARNING: output error has occured in output_csv_patch \n");
 	}
 	return;
 } /*end output_csv_patch*/

@@ -259,7 +259,7 @@ void zone_daily_I(
 		} /* end stocastic noise addition */
 
 
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].rain =  temp * isohyet_adjustment;
 			flag++;
 		}
@@ -270,7 +270,7 @@ void zone_daily_I(
 
 		
 		temp = zone[0].base_stations[i][0].daily_clim[0].tmin[day];
-		if (temp != -999.0) {
+		if (temp != -999.0 || temp != -9999.0) {
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin == NULL) {
 			if (zone[0].rain > ZERO)
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
@@ -289,7 +289,7 @@ void zone_daily_I(
 	
 		temp = zone[0].base_stations[i][0].daily_clim[0].tmax[day];
 
-		if (temp != -999.0) {
+		if (temp != -999.0 || temp != -9999.0) {
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax == NULL) {
 			if (zone[0].rain > ZERO)
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
@@ -395,7 +395,7 @@ void zone_daily_I(
 	
 	if ( zone[0].base_stations[0][0].daily_clim[0].snow != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].snow[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].snow = temp * isohyet_adjustment;
 		}
 
@@ -411,7 +411,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].daytime_rain_duration!=NULL){
 		temp=zone[0].base_stations[0][0].daily_clim[0].daytime_rain_duration[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].daytime_rain_duration = temp * 3600;
 		}
 	}
@@ -435,23 +435,21 @@ void zone_daily_I(
 	/*	If not present we make use of a fixed base_station_effective*/
 	/*	lai provided with each base station object.					*/
 	/*--------------------------------------------------------------*/
-	if(zone[0].base_stations[0][0].daily_clim[0].base_station_effective_lai
-		!= NULL ){
+	if(zone[0].base_stations[0][0].daily_clim[0].base_station_effective_lai	!= NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].base_station_effective_lai[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].base_station_effective_lai = temp;
 		}
 	}
 	else{
-		zone[0].base_station_effective_lai =
-			zone[0].base_stations[0][0].effective_lai;
+		zone[0].base_station_effective_lai = zone[0].base_stations[0][0].effective_lai;
 	}
 	/*--------------------------------------------------------------*/
 	/*	cloud fraction												*/
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].cloud_fraction != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].cloud_fraction[day];
-		if ( temp != -999.0 ) zone[0].cloud_fraction = temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].cloud_fraction = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	cloud opacity												*/
@@ -463,7 +461,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].cloud_opacity != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].cloud_opacity[day];
-		if ( temp != -999.0 ) zone[0].cloud_opacity = temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].cloud_opacity = temp;
 	}
 	else{
 		zone[0].cloud_opacity = 0.8;
@@ -487,7 +485,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].Delta_T != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].Delta_T[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].Delta_T = temp;
 		}
 		else{
@@ -515,7 +513,7 @@ void zone_daily_I(
 	/* but warn user of problem with their climate inputs		*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].Delta_T < -ZERO) {
-		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d", 
+		printf("WARNING: Maximum temperature is less than minimum temperature on %d %d %d \n", 
 			current_date.day, current_date.month, current_date.year); 
 		zone[0].Delta_T = zone[0].Delta_T * -1.0;
 	}
@@ -526,7 +524,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].Kdown_direct != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].Kdown_direct[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].Kdown_direct = temp;
 			zone[0].Kdown_direct_flag = 1;
 		}
@@ -538,7 +536,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].Kdown_diffuse != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].Kdown_diffuse[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].Kdown_diffuse = temp;
 			zone[0].Kdown_diffuse_flag = 1;
 		}
@@ -554,7 +552,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].PAR_diffuse != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].PAR_diffuse[day];
-		if ( temp != -999.0 ) zone[0].PAR_diffuse = temp * 1000000;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].PAR_diffuse = temp * 1000000;
 	}
 	/*--------------------------------------------------------------*/
 	/*	PAR_direct			(umol/(m2*day))??							*/
@@ -567,7 +565,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].PAR_direct != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].PAR_direct[day];
-		if ( temp != -999.0 ) zone[0].PAR_direct = temp * 1000000;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].PAR_direct = temp * 1000000;
 	}
 	/*--------------------------------------------------------------*/
 	/*	bulk atmospheric transmissivity	(includes clouds)			*/
@@ -575,7 +573,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].atm_trans != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].atm_trans[day];
-		if ( temp != -999.0 ) zone[0].atm_trans = temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].atm_trans = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	tsoil		(deg C)												*/
@@ -584,13 +582,13 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tsoil != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tsoil[day];
-		if ( temp != -999.0 ) zone[0].metv.tsoil = temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].metv.tsoil = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/* if it is the first day of the simulation running average of the tsoil */
 	/* will not yet be set so initialize to tavg */
 	/*--------------------------------------------------------------*/
-	 if (zone[0].metv.tsoil_sum < -998.0)
+	 if (zone[0].metv.tsoil_sum < -999.0)
 		zone[0].metv.tsoil_sum = zone[0].metv.tavg;
 	/*--------------------------------------------------------------*/
 	/*	Wind speed at screen height.								*/
@@ -607,7 +605,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].wind != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].wind[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].wind = temp;
 		}
 		else{
@@ -624,7 +622,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].wind_direction != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].wind_direction[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].wind_direction = temp;
 		}
 		else{
@@ -642,13 +640,13 @@ void zone_daily_I(
 	if ( zone[0].base_stations[0][0].daily_clim[0].ndep_NO3 != NULL )
 		{
 		temp = zone[0].base_stations[0][0].daily_clim[0].ndep_NO3[day];
-		if ( temp != -999.0 ) zone[0].ndep_NO3 = temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].ndep_NO3 = temp;
 	}
 		else zone[0].ndep_NO3 = zone[0].defaults[0][0].ndep_NO3;
 	if ( zone[0].base_stations[0][0].daily_clim[0].ndep_NH4 != NULL )
 		{
 		temp = zone[0].base_stations[0][0].daily_clim[0].ndep_NH4[day];
-		if ( temp != -999.0 ) zone[0].ndep_NH4 = temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].ndep_NH4 = temp;
 	}
 		else zone[0].ndep_NH4 = 0.0;
 	/*--------------------------------------------------------------*/
@@ -656,14 +654,14 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].CO2 != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].CO2[day];
-		if ( temp != -999.0 ) zone[0].CO2 = temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].CO2 = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*      vpd - Pa - daylight mean value.                         */
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].vpd != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].vpd[day];
-		if ( temp != -999.0 ) zone[0].metv.vpd = temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].metv.vpd = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	relative humidity											*/
@@ -674,7 +672,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].relative_humidity != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].relative_humidity[day];
-		if ( temp != -999.0 ) zone[0].relative_humidity= temp;
+		if ( temp != -999.0 || temp != -9999.0 ) zone[0].relative_humidity= temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	Dewpoint temperature										*/
@@ -687,7 +685,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tdewpoint != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tdewpoint[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].tdewpoint = temp-( z_delta )
 				* zone[0].defaults[0][0].dewpoint_lapse_rate;
 		}
@@ -706,7 +704,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tavg != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tavg[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].metv.tavg = temp-( z_delta )
 				* zone[0].defaults[0][0].lapse_rate;
 
@@ -726,7 +724,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].LAI_scalar != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].LAI_scalar[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].LAI_scalar = temp;
 		}
 	} /*end if*/
@@ -738,7 +736,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].Ldown != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].Ldown[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].Ldown = temp;
 		}
 	} /*end if*/
@@ -747,7 +745,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].dayl != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].dayl[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			zone[0].metv.dayl = temp;
 			zone[0].daylength_flag = 1;
 		}
@@ -774,7 +772,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tday != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tday[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			temp = temp - ( z_delta )
 				* zone[0].defaults[0][0].lapse_rate;
 			zone[0].metv.tday = temp;
@@ -794,7 +792,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tnight != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tnight[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			temp = temp - ( z_delta ) *
 				zone[0].defaults[0][0].lapse_rate;
 			zone[0].metv.tnight = temp;
@@ -820,7 +818,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tnightmax != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tnightmax[day];
-		if ( temp != -999.0 ){
+		if ( temp != -999.0 || temp != -9999.0 ){
 			temp = temp - ( z_delta )
 				* zone[0].defaults[0][0].lapse_rate;
 			zone[0].metv.tnightmax = temp;

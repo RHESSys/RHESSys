@@ -108,7 +108,7 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 		rlist->list[i] = patch;
 
 		if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
-			printf("\n WARNING lateral Ksat (%lf) are close to zero for patch %d",
+			printf("WARNING lateral Ksat (%lf) are close to zero for patch %d \n",
 				patch[0].soil_defaults[0][0].Ksat_0, patch[0].ID);
 		
 		if (patch[0].soil_defaults[0][0].m < ZERO)
@@ -161,7 +161,7 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 				sizeof(struct neighbour_object), "neighbours", "construct_routing_topology");
 		num_neighbours = assign_neighbours(innundation_list->neighbours, num_neighbours, basin, routing_file);
 		if ((num_neighbours == -9999) && (patch[0].drainage_type != STREAM)) {
-			printf("\n WARNING sum of patch %d neigh gamma is not equal to 1.0", patch[0].ID); 
+			printf("WARNING sum of patch %d neigh gamma is not equal to 1.0 \n", patch[0].ID); 
 		} else {
 			innundation_list->num_neighbours = num_neighbours;
 		}

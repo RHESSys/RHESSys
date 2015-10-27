@@ -68,7 +68,7 @@ void	output_csv_yearly_hillslope(	int basinID,
 		);
 	if (check <= 0) {
 		fprintf(stdout,
-			"\nWARNING: output error has occured in output_csv_yearly_hillslope");
+			"WARNING: output error has occured in output_csv_yearly_hillslope \n");
 	}
 	/*--------------------------------------------------------------*/
 	/*	reset accumulator variables				*/
