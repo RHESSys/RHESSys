@@ -160,6 +160,7 @@ void compute_subsurface_routing_hourly(
 			patch[0].surface_Qin = 0.0;
 			patch[0].surface_Qout = 0.0;
 
+			patch[0].overland_flow = 0.0;
 
 
 			patch[0].interim_sat = patch[0].sat_deficit - patch[0].unsat_storage;

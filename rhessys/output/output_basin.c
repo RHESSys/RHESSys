@@ -2,13 +2,13 @@
 /* 																*/
 /*					output_basin						*/
 /*																*/
-/*	output_hourly_basin - creates output files objects.		*/
+/*	output_basin - creates output files objects.		*/
 /*																*/
 /*	NAME														*/
-/*	output_hourly_basin - outputs current contents of a basin.			*/
+/*	output_basin - outputs current contents of a basin.			*/
 /*																*/
 /*	SYNOPSIS													*/
-/*	void	output_hourly_basin( int routing_flag,										*/	
+/*	void	output_basin( int routing_flag,										*/	
 /*					struct	basin_object	*basin,				*/
 /*					struct	date	date,  						*/
 /*					FILE 	*outfile)							*/
@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void	output_24hours_basin(			int routing_flag,
+void	output_basin(			int routing_flag,
 					 struct	basin_object	*basin,
 					 struct	date	date,
 					 FILE *outfile)
