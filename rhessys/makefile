@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-PGM  = rhessys5.19oct27
-VERSION = 5.19omp
-=======
-PGM  = rhessys5.20.0
+PGM  = rhessys5.20.0nov10
 VERSION = 5.20.0
->>>>>>> upstream/develop
 CC = gcc 
 #CFLAGS = -O -std=c99
 CFLAGS = -Wall -g -fopenmp -std=c99
