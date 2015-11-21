@@ -141,7 +141,6 @@ double	compute_varbased_flow(
 	
 	}
 
-	flow = flow*gamma;
-
+	flow = gamma*flow;
 	  return(flow);
 } /*compute_varbased_flow*/

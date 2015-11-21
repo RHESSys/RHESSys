@@ -236,7 +236,7 @@ struct stream_list_object construct_stream_routing_topology(
                   stream_network[k].reservoir.flag_min_flow_storage=flag_min_flow_storage;
                   stream_network[k].reservoir.min_storage=min_storage*10000.0;
                   stream_network[k].reservoir.min_outflow=min_outflow;
-				  stream_network[k].reservoir.initial_storage=min_storage*10000.0;
+		 stream_network[k].reservoir.initial_storage=min_storage*10000.0;
 				 printf("%d %d %lf %lf\n",stream_network[k].reach_ID,stream_network[k].reservoir.reservoir_ID,stream_network[k].reservoir.min_storage,stream_network[k].reservoir.min_outflow);
 				  for(j=0;j<12;j++){
 				      stream_network[k].reservoir.month_max_storage[j]=month_max_storage[j]*10000.0;

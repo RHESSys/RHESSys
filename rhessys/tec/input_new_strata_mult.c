@@ -75,6 +75,7 @@ void input_new_strata_mult(
 		double,
 		double,
 		double,
+		double,
 		double);
 
 	void	*alloc(	size_t,
@@ -332,6 +333,7 @@ void input_new_strata_mult(
 			rootc, 
 			canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
+			canopy_strata[0].defaults[0][0].epc.root_max_depth,
 			patch[0].soil_defaults[0][0].effective_soil_depth)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from construct_canopy_strata()\n");

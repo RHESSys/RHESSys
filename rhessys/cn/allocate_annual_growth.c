@@ -458,10 +458,12 @@ int allocate_annual_growth(				int id,
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
 		cs->leafc_transfer = 0.0;
 		cs->leafc = 0.0;
+		cs->frootc = 0.0; 
 		cs->frootc_transfer = 0.0;
 		ns->leafn_transfer = 0.0;
 		ns->frootn_transfer = 0.0;
 		ns->leafn = 0.0;
+		ns->frootn = 0.0;
 		cdf->gresp_store_to_gresp_transfer = 0.0;
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 
