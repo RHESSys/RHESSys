@@ -76,7 +76,7 @@ double  compute_stream_routing(struct command_line_object *command_line,
     double dt;
     double xarea;
     double lateral_input_flow,streamflow;
-	double Qout,Qin,previous_lateral_input,length,initial_flow,temp,sum;
+	double Qout,Qin,previous_lateral_input,length,initial_flow,sum;
 	
 
 	struct patch_object *patch;
@@ -100,17 +100,22 @@ double  compute_stream_routing(struct command_line_object *command_line,
 	   for (j=0; j <stream_network[i].num_lateral_inputs; j++) {
 	            patch=stream_network[i].lateral_inputs[j];
 		   if (patch[0].drainage_type == STREAM  ){
-	      lateral_input_flow += (patch[0].streamflow)*patch[0].area/(3600*24*stream_network[i].length); //unit:m2/s
+	      		lateral_input_flow += (patch[0].streamflow)*patch[0].area/dt/(stream_network[i].length); //unit:m2/s
 			   sum+= (patch[0].streamflow)*patch[0].area;}
 		   
 	
 	}
+
+/* for now turn off routing of deep groundwater because we don't know how to allocate across reaches and will
+double count this way */
+/*
 		for (j=0; j <stream_network[i].num_neighbour_hills; j++) {
 			hillslope=stream_network[i].neighbour_hill[j];
-			lateral_input_flow += (hillslope[0].base_flow)*hillslope[0].area/(3600*24*stream_network[i].length); //unit:m2/s
+			lateral_input_flow += (hillslope[0].base_flow)*hillslope[0].area/dt/(stream_network[i].length); //unit:m2/s
 			sum+= (hillslope[0].base_flow)*hillslope[0].area;
 						
 		}
+*/
           
 	   /*calulate alfa from manning conductivity, wetperimeter, and streamslope*/
            if(stream_network[i].stream_slope <=0 ) stream_network[i].stream_slope=0.01;
@@ -135,7 +140,7 @@ double  compute_stream_routing(struct command_line_object *command_line,
 		previous_lateral_input=stream_network[i].previous_lateral_input;
 		length=stream_network[i].length;
 		Qout=nonlinear_kimetic_wave(alfa,Qin,initial_flow,lateral_input_flow,previous_lateral_input,length,dt);
-        stream_network[i].Qout=Qout;
+        	stream_network[i].Qout=Qout; 
 		
 
 		/*calulate water depth for next time step */
@@ -153,6 +158,7 @@ double  compute_stream_routing(struct command_line_object *command_line,
 		/*calulate initial flow and previous lateral input for next time step */
 		stream_network[i].initial_flow=Qout;
 		stream_network[i].previous_lateral_input=lateral_input_flow;
+		stream_network[i].previous_Qin=Qin;
 		stream_network[i].Qin=0.0;
 		
         /*calulate income flow  for downstream neighbours */
@@ -161,13 +167,12 @@ double  compute_stream_routing(struct command_line_object *command_line,
                             for(k=i;k<num_reaches;k++)
                                if(stream_network[k].reach_ID == downstream_neighbour){
                                     stream_network[k].Qin += Qout/stream_network[i].num_downstream_neighbours;
-								   temp=stream_network[k].Qin;
 					break;			
 	}	
 	}
 	}
  
-    streamflow=stream_network[num_reaches-1].Qout;
+    	streamflow=stream_network[num_reaches-1].Qout;
 	return(streamflow);
 
 } /*end compute_stream_routing.c*/
@@ -267,40 +272,40 @@ double nonlinear_kimetic_wave(double alfa,double Qin,double initial_flow,double 
 	double storage;
 	double outflow;
 
+	/* change inflow to m3/day from m3/s */
+	inflow = inflow*dt;
+
 	storage=current_reservoir->initial_storage;
-     
-	
 	outflow=current_reservoir->min_outflow;
-	
-	storage=current_reservoir->initial_storage+(inflow-outflow)*dt*86400;
-	
-        if(storage>current_reservoir->month_max_storage[current_date.month-1]){
-		
-            outflow=outflow+(storage-current_reservoir->month_max_storage[current_date.month-1])/(dt*86400);
-		
-		storage=current_reservoir->month_max_storage[current_date.month-1];
-		
+	storage=current_reservoir->initial_storage+inflow-outflow;
+
+	/* check to see if maximum storage has been exceeded */	
+        if(storage > current_reservoir->month_max_storage[current_date.month-1]){
+            outflow=outflow+(storage-current_reservoir->month_max_storage[current_date.month-1]);
+	    storage=current_reservoir->month_max_storage[current_date.month-1];
 	}
-	if(storage<current_reservoir->min_storage){
-		if(current_reservoir->flag_min_flow_storage==0 && storage<0)/*min_flow has higher priority*/{
-			storage=0;
-			outflow=(current_reservoir->initial_storage-storage)/(dt*86400)+inflow;
+
+	/* check to see if minimum storage not reached */
+	if(storage < current_reservoir->min_storage){
+		/*min_flow has higher priority*/
+		if(current_reservoir->flag_min_flow_storage==0 && storage<0)
+		{
+			outflow=min(current_reservoir->initial_storage+inflow, current_reservoir->min_outflow);
+			storage= current_reservoir->initial_storage+inflow-outflow;
 		}
-			
-		
-		if(current_reservoir->flag_min_flow_storage!=0) /*min_storage has higher priority*/{
-			storage=current_reservoir->min_storage;
-			outflow=(current_reservoir->initial_storage-storage)/(dt*86400)+inflow;
+		 /*min_storage has higher priority*/
+		if(current_reservoir->flag_min_flow_storage!=0) {
+			storage= min(current_reservoir->min_storage, current_reservoir->initial_storage+inflow);
+			outflow = (current_reservoir->initial_storage-storage) + inflow;
 		}
-			
 		
 	}
 	current_reservoir->initial_storage=storage;
-	
+
+	/* change outflow to m3/s */	
+	outflow = outflow/dt;
+
 	return(outflow);
-
-
-
 
 
 	 }
