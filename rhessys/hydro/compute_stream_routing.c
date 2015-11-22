@@ -26,7 +26,11 @@
 /*											*/
 /*											*/
 /*	PROGRAMMER NOTES								*/
-/*											*/
+/*    code was developed from */
+/* 
+/*		Applied Hydrology . */
+/* Chou, V.T.; Maidment, D.R.; Mays, L.W. Applied Hydrology; McGraw-Hill: New York, NY, USA, 1988 */
+/* p283-285, p294-300									*/
 /*			                                   */
 /*--------------------------------------------------------------*/
 #include <stdio.h>
