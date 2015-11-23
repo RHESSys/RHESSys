@@ -176,23 +176,25 @@ void	output_patch(struct  command_line_object * command_line,
 		}
 
 		//printf("RHESSys.output_patch(): get response...");
-		char response[2];
-		rc = zmq_recv(world_output_files->patchdbmq_requester, response, 1, 0);
-		if (rc == -1) {
-			if (errno == EFSM) {
-				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
-			} else {
-				printf("output_patch: zeromq returned, output_patch:185: %d, exiting...\n", errno);
+		if (0) {
+			char response[2];
+			rc = zmq_recv(world_output_files->patchdbmq_requester, response, 1, 0);
+			if (rc == -1) {
+				if (errno == EFSM) {
+					printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
+				} else {
+					printf("output_patch: zeromq returned, output_patch:185: %d, exiting...\n", errno);
+				}
+				exit(EXIT_FAILURE);
 			}
-			exit(EXIT_FAILURE);
-		}
-		//printf("done\n");
+			//printf("done\n");
 
-		//response[1] = 0;
-		if (response[0] != 'A') {
-			printf("output_patch: expected patchdbmq server to return %s, but received: %s, exiting...\n",
-					"A", response);
-			exit(EXIT_FAILURE);
+			//response[1] = 0;
+			if (response[0] != 'A') {
+				printf("output_patch: expected patchdbmq server to return %s, but received: %s, exiting...\n",
+						"A", response);
+				exit(EXIT_FAILURE);
+			}
 		}
 
 //
