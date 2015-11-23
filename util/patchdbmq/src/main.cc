@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <queue>
 
 #include <zmq.h>
 #include <cassandra.h>
@@ -12,6 +13,7 @@
 #include "patch.pb.h"
 #include "patchdb.h"
 
+#define NUM_CONCURRENT_REQUESTS 1000
 
 using namespace std;
 
@@ -38,6 +40,8 @@ static CassSession* cass_session;
 static const CassPrepared *var_by_date_patch_stmt;
 static const CassPrepared *patch_by_var_date_stmt;
 //static CassBatch* patchdb_batch;
+
+static std::queue<CassFuture *> insert_future_queue;
 
 void _cass_init(char *cass_hostname, char *cass_keyspace) {
 	init_patchdb(cass_hostname, cass_keyspace,
@@ -138,10 +142,19 @@ void _bind_to_stmts_and_write(const char* patchid,
 	CassStatement* statement = NULL;
 	CassFuture* future = NULL;
 
-//	if (num_statements > MAX_STATEMENTS) {
-//		_cass_write_data();
-//		_cass_prep_stmt();
-//	}
+	size_t outstanding_inserts = insert_future_queue.size();
+	if (outstanding_inserts >= NUM_CONCURRENT_REQUESTS) {
+		for (int i = outstanding_inserts; i > 0; i--) {
+			future = insert_future_queue.front();
+			insert_future_queue.pop();
+			cass_future_wait(future);
+			rc = cass_future_error_code(future);
+			if (rc != CASS_OK) {
+				patchdb_print_error(future, "Error writing to patchdb");
+			}
+		}
+		future = NULL;
+	}
 
 	statement = cass_prepared_bind(var_by_date_patch_stmt);
 	cass_statement_bind_string(statement, 0, var);
@@ -150,12 +163,15 @@ void _bind_to_stmts_and_write(const char* patchid,
 	cass_statement_bind_double(statement, 3, value);
 //	cass_batch_add_statement(patchdb_batch, statement);
 	future = cass_session_execute(cass_session, statement);
-	cass_future_wait(future);
-	rc = cass_future_error_code(future);
-	if (rc != CASS_OK) {
-		patchdb_print_error(future, "Error writing to variables_by_date_patch");
-	}
-	cass_future_free(future);
+	insert_future_queue.push(future);
+
+//	cass_future_wait(future);
+//	rc = cass_future_error_code(future);
+//	if (rc != CASS_OK) {
+//		patchdb_print_error(future, "Error writing to variables_by_date_patch");
+//	}
+//	cass_future_free(future);
+
 	cass_statement_free(statement);
 
 	statement = cass_prepared_bind(patch_by_var_date_stmt);
@@ -165,12 +181,15 @@ void _bind_to_stmts_and_write(const char* patchid,
 	cass_statement_bind_double(statement, 3, value);
 //	cass_batch_add_statement(patchdb_batch, statement);
 	future = cass_session_execute(cass_session, statement);
-	cass_future_wait(future);
-	rc = cass_future_error_code(future);
-	if (rc != CASS_OK) {
-		patchdb_print_error(future,  "Error writing to patches_by_variable_date");
-	}
-	cass_future_free(future);
+	insert_future_queue.push(future);
+
+//	cass_future_wait(future);
+//	rc = cass_future_error_code(future);
+//	if (rc != CASS_OK) {
+//		patchdb_print_error(future,  "Error writing to patches_by_variable_date");
+//	}
+//	cass_future_free(future);
+
 	cass_statement_free(statement);
 
 //	num_statements += 2;
@@ -252,6 +271,7 @@ int main (int argc, char **argv) {
 				snprintf(date, 16, "%d-%02d-%02d",
 						 year, month, day);
 				fprintf(debug, "Date changed to: %s\n", date);
+				fflush(debug);
 
 //				date = cass_date_from_epoch(datestr);
 			}
