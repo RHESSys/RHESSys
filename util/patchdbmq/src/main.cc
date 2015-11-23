@@ -281,7 +281,7 @@ int main (int argc, char **argv) {
 			fprintf(debug, "\tPatch ID: %s\n", patchid);
 
 			// Bind data to prepared statements
-			fprintf("\tPre cassandra send\n");
+			fprintf(debug, "\tPre cassandra send\n");
 
 			_bind_to_stmts_and_write(patchid, date, "rain_thr", (cass_double_t)p.rain_throughfall());
 			_bind_to_stmts_and_write(patchid, date, "detention_store", (cass_double_t)p.detention_store());
