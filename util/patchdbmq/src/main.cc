@@ -325,6 +325,7 @@ int main (int argc, char **argv) {
 			zmq_send (responder, "A", 1, 0);
 
 			fprintf(debug, "\tPost zmq send\n");
+			fflush(debug);
 
 			break;
 		}
