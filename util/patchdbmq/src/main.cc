@@ -51,7 +51,7 @@ void _cass_init(char *cass_hostname, char *cass_keyspace) {
 							"date text,"
 							"patchid text,"
 							"value double,"
-							"PRIMARY KEY (variable, d, patchid));");
+							"PRIMARY KEY (variable, date, patchid));");
 	patchdb_execute_query(cass_session, query);
 
 	// Table partitioned by patch ID and clustered by variable then date
@@ -60,7 +60,7 @@ void _cass_init(char *cass_hostname, char *cass_keyspace) {
 							"variable text,"
 							"date text,"
 							"value double,"
-							"PRIMARY KEY (patchid, variable, d));");
+							"PRIMARY KEY (patchid, variable, date));");
 	patchdb_execute_query(cass_session, query);
 }
 
