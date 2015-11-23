@@ -13,7 +13,7 @@
 #include "patch.pb.h"
 #include "patchdb.h"
 
-#define NUM_CONCURRENT_REQUESTS 10000
+#define NUM_CONCURRENT_REQUESTS 100000
 
 using namespace std;
 
