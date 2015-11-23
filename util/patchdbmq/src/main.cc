@@ -243,9 +243,9 @@ int main (int argc, char **argv) {
 			// Refresh date
 			if (p.year() != year || p.month() != month || p.day() != day) {
 //				//printf("Need to make prepared statements...\n");
-//				year = p.year();
-//				month = p.month();
-//				day = p.day();
+				year = p.year();
+				month = p.month();
+				day = p.day();
 //				_cass_write_data();
 //				_cass_prep_stmt();
 
