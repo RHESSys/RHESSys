@@ -153,6 +153,7 @@ void _bind_to_stmts_and_write(const char* patchid,
 			if (rc != CASS_OK) {
 				patchdb_print_error(future, "Error writing to patchdb");
 			}
+			cass_future_free(future);
 		}
 		fprintf(debug, "; now %zu outstanding\n", insert_future_queue.size());
 		future = NULL;
