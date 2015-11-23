@@ -65,7 +65,11 @@ void init_patchdb(char* hostname,
 	*cluster = cass_cluster_new();
 	*session = cass_session_new();
 	cass_cluster_set_contact_points(*cluster, hostname);
-	cass_cluster_set_write_bytes_high_water_mark(*cluster, 64 * 1024 * 1024);
+
+	cass_cluster_set_write_bytes_high_water_mark(*cluster, 128 * 1024 * 1024);
+	cass_cluster_set_num_threads_io(*cluster, 8);
+	cass_cluster_set_queue_size_io(*cluster, 65536);
+
 	CassFuture* connect_future = cass_session_connect(*session, *cluster);
 
 	if (cass_future_error_code(connect_future) != CASS_OK) {
