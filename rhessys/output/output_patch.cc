@@ -176,7 +176,7 @@ void	output_patch(struct  command_line_object * command_line,
 		}
 
 		//printf("RHESSys.output_patch(): get response...");
-		if (0) {
+		if (1) {
 			char response[2];
 			rc = zmq_recv(world_output_files->patchdbmq_requester, response, 1, 0);
 			if (rc == -1) {
