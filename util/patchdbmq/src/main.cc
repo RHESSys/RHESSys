@@ -48,7 +48,7 @@ void _cass_init(char *cass_hostname, char *cass_keyspace) {
 	// Table partitioned by variable and clustered by date then patch ID
 	snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS variables_by_date_patch ("
 							"variable text,"
-							"d date,"
+							"date text,"
 							"patchid text,"
 							"value double,"
 							"PRIMARY KEY (variable, d, patchid));");
@@ -58,7 +58,7 @@ void _cass_init(char *cass_hostname, char *cass_keyspace) {
 	snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS patches_by_variable_date ("
 							"patchid text,"
 							"variable text,"
-							"d date,"
+							"date text,"
 							"value double,"
 							"PRIMARY KEY (patchid, variable, d));");
 	patchdb_execute_query(cass_session, query);
@@ -81,7 +81,7 @@ void _cass_prep_stmt() {
 	CassError rc = CASS_OK;
 	char query[128];
 	snprintf(query, 128, "INSERT INTO variables_by_date_patch "
-			"(variable,d,patchid,value) "
+			"(variable,date,patchid,value) "
 			"VALUES (?,?,?,?);");
 	//printf(query);
 	rc = patchdb_prepare_statement(cass_session,
@@ -91,7 +91,7 @@ void _cass_prep_stmt() {
 	}
 
 	snprintf(query, 128, "INSERT INTO patches_by_variable_date "
-			"(patchid,variable,d,value) "
+			"(patchid,variable,date,value) "
 			"VALUES (?,?,?,?);");
 	//printf(query);
 	rc = patchdb_prepare_statement(cass_session,
@@ -133,7 +133,7 @@ void _cass_prep_stmt() {
 //}
 
 void _bind_to_stmts_and_write(const char* patchid,
-		const cass_uint32_t date, const char* var, cass_double_t value) {
+		const char* date, const char* var, cass_double_t value) {
 	CassError rc = CASS_OK;
 	CassStatement* statement = NULL;
 	CassFuture* future = NULL;
@@ -145,7 +145,7 @@ void _bind_to_stmts_and_write(const char* patchid,
 
 	statement = cass_prepared_bind(var_by_date_patch_stmt);
 	cass_statement_bind_string(statement, 0, var);
-	cass_statement_bind_uint32(statement, 1, date);
+	cass_statement_bind_string(statement, 1, date);
 	cass_statement_bind_string(statement, 2, patchid);
 	cass_statement_bind_double(statement, 3, value);
 //	cass_batch_add_statement(patchdb_batch, statement);
@@ -161,7 +161,7 @@ void _bind_to_stmts_and_write(const char* patchid,
 	statement = cass_prepared_bind(patch_by_var_date_stmt);
 	cass_statement_bind_string(statement, 0, patchid);
 	cass_statement_bind_string(statement, 1, var);
-	cass_statement_bind_uint32(statement, 2, date);
+	cass_statement_bind_string(statement, 2, date);
 	cass_statement_bind_double(statement, 3, value);
 //	cass_batch_add_statement(patchdb_batch, statement);
 	future = cass_session_execute(cass_session, statement);
@@ -207,8 +207,8 @@ int main (int argc, char **argv) {
     debug = fopen("/tmp/patchdb.debug", "w");
 
     char patchid[64];
-    char datestr[16];
-    cass_uint32_t date;
+    char date[16];
+//    cass_uint32_t date;
 
     int year = -1;
     int month = -1;
@@ -249,10 +249,11 @@ int main (int argc, char **argv) {
 //				_cass_write_data();
 //				_cass_prep_stmt();
 
-				snprintf(datestr, 16, "%d-%02d-%02d",
+				snprintf(date, 16, "%d-%02d-%02d",
 						 year, month, day);
-				fprintf(debug, "Date changed to: %s\n", datestr);
-				date = cass_date_to_epoch(datestr);
+				fprintf(debug, "Date changed to: %s\n", date);
+
+//				date = cass_date_from_epoch(datestr);
 			}
 
 			snprintf(patchid, 64, "%d:%d:%d:%d", p.basin_id(),
