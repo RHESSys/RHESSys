@@ -15,12 +15,8 @@
 
 using namespace std;
 
-const size_t MAX_STATEMENTS = 64000;
-size_t num_statements = 0;
-
-int year = -1;
-int month = -1;
-int day = -1;
+//const size_t MAX_STATEMENTS = 64000;
+//size_t num_statements = 0;
 
 FILE *debug;
 void quit(int sig);
@@ -41,7 +37,7 @@ static CassCluster* cass_cluster;
 static CassSession* cass_session;
 static const CassPrepared *var_by_date_patch_stmt;
 static const CassPrepared *patch_by_var_date_stmt;
-static CassBatch* patchdb_batch;
+//static CassBatch* patchdb_batch;
 
 void _cass_init(char *cass_hostname, char *cass_keyspace) {
 	init_patchdb(cass_hostname, cass_keyspace,
@@ -52,35 +48,41 @@ void _cass_init(char *cass_hostname, char *cass_keyspace) {
 	// Table partitioned by variable and clustered by date then patch ID
 	snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS variables_by_date_patch ("
 							"variable text,"
-							"date timestamp,"
+							"d date,"
 							"patchid text,"
 							"value double,"
-							"PRIMARY KEY (variable, date, patchid));");
+							"PRIMARY KEY (variable, d, patchid));");
 	patchdb_execute_query(cass_session, query);
 
 	// Table partitioned by patch ID and clustered by variable then date
 	snprintf(query, MAXSTR, "CREATE TABLE IF NOT EXISTS patches_by_variable_date ("
 							"patchid text,"
 							"variable text,"
-							"date timestamp,"
+							"d date,"
 							"value double,"
-							"PRIMARY KEY (patchid, variable, date));");
+							"PRIMARY KEY (patchid, variable, d));");
 	patchdb_execute_query(cass_session, query);
+}
+
+void _cass_destroy() {
+	// Free prepared statements
+	cass_prepared_free(var_by_date_patch_stmt);
+	cass_prepared_free(patch_by_var_date_stmt);
 }
 
 void _cass_prep_stmt() {
 	/*
 	 * Make prepared statements for this day
 	 */
-	char datestr[16];
-	snprintf(datestr, 16, "%d-%02d-%02d",
-			year, month, day);
+//	char datestr[16];
+//	snprintf(datestr, 16, "%d-%02d-%02d",
+//			year, month, day);
 	// Make prepared statements for this day
 	CassError rc = CASS_OK;
 	char query[128];
 	snprintf(query, 128, "INSERT INTO variables_by_date_patch "
-			"(variable,date,patchid,value) "
-			"VALUES (?,'%s',?,?);", datestr);
+			"(variable,d,patchid,value) "
+			"VALUES (?,?,?,?);");
 	//printf(query);
 	rc = patchdb_prepare_statement(cass_session,
 			(const char*)&query, &var_by_date_patch_stmt);
@@ -89,8 +91,8 @@ void _cass_prep_stmt() {
 	}
 
 	snprintf(query, 128, "INSERT INTO patches_by_variable_date "
-			"(patchid,variable,date,value) "
-			"VALUES (?,?,'%s',?);", datestr);
+			"(patchid,variable,d,value) "
+			"VALUES (?,?,?,?);");
 	//printf(query);
 	rc = patchdb_prepare_statement(cass_session,
 			(const char*)&query, &patch_by_var_date_stmt);
@@ -99,61 +101,79 @@ void _cass_prep_stmt() {
 	}
 
 	// Make batch for batch execution
-	patchdb_batch = cass_batch_new(CASS_BATCH_TYPE_UNLOGGED);
+//	patchdb_batch = cass_batch_new(CASS_BATCH_TYPE_UNLOGGED);
 }
 
-void _cass_write_data(void) {
+//void _cass_write_data(void) {
+//
+//	if (num_statements > 0) {
+//		printf("Writing data to Cassandra...\n");
+//		CassError cass_rc = CASS_OK;
+//		CassFuture* future = NULL;
+//		future = cass_session_execute_batch(cass_session,
+//					patchdb_batch);
+//		cass_future_wait(future);
+//
+//		cass_rc = cass_future_error_code(future);
+//		if (cass_rc != CASS_OK) {
+//			patchdb_print_error(future, "Batch execution of output_patch");
+//			exit(EXIT_FAILURE);
+//		}
+//
+//		cass_future_free(future);
+//		// Free batch
+//		cass_batch_free(patchdb_batch);
+//
+//		// Free prepared statements
+//		cass_prepared_free(var_by_date_patch_stmt);
+//		cass_prepared_free(patch_by_var_date_stmt);
+//	}
+//
+//	num_statements = 0;
+//}
 
-	if (num_statements > 0) {
-		printf("Writing data to Cassandra...\n");
-		CassError cass_rc = CASS_OK;
-		CassFuture* future = NULL;
-		future = cass_session_execute_batch(cass_session,
-					patchdb_batch);
-		cass_future_wait(future);
-
-		cass_rc = cass_future_error_code(future);
-		if (cass_rc != CASS_OK) {
-			patchdb_print_error(future, "Batch execution of output_patch");
-			exit(EXIT_FAILURE);
-		}
-
-		cass_future_free(future);
-		// Free batch
-		cass_batch_free(patchdb_batch);
-
-		// Free prepared statements
-		cass_prepared_free(var_by_date_patch_stmt);
-		cass_prepared_free(patch_by_var_date_stmt);
-	}
-
-	num_statements = 0;
-}
-
-void _bind_to_stmts(const char* patchid, const char* var, cass_double_t value) {
-	//CassError rc = CASS_OK;
+void _bind_to_stmts_and_write(const char* patchid,
+		const cass_uint32_t date, const char* var, cass_double_t value) {
+	CassError rc = CASS_OK;
 	CassStatement* statement = NULL;
+	CassFuture* future = NULL;
 
-	if (num_statements > MAX_STATEMENTS) {
-		_cass_write_data();
-		_cass_prep_stmt();
-	}
+//	if (num_statements > MAX_STATEMENTS) {
+//		_cass_write_data();
+//		_cass_prep_stmt();
+//	}
 
 	statement = cass_prepared_bind(var_by_date_patch_stmt);
 	cass_statement_bind_string(statement, 0, var);
-	cass_statement_bind_string(statement, 1, patchid);
-	cass_statement_bind_double(statement, 2, value);
-	cass_batch_add_statement(patchdb_batch, statement);
+	cass_statement_bind_uint32(statement, 1, date);
+	cass_statement_bind_string(statement, 2, patchid);
+	cass_statement_bind_double(statement, 3, value);
+//	cass_batch_add_statement(patchdb_batch, statement);
+	future = cass_session_execute(cass_session, statement);
+	cass_future_wait(future);
+	rc = cass_future_error_code(future);
+	if (rc != CASS_OK) {
+		patchdb_print_error(future, "Error writing to variables_by_date_patch");
+	}
+	cass_future_free(future);
 	cass_statement_free(statement);
 
 	statement = cass_prepared_bind(patch_by_var_date_stmt);
 	cass_statement_bind_string(statement, 0, patchid);
 	cass_statement_bind_string(statement, 1, var);
-	cass_statement_bind_double(statement, 2, value);
-	cass_batch_add_statement(patchdb_batch, statement);
+	cass_statement_bind_uint32(statement, 2, date);
+	cass_statement_bind_double(statement, 3, value);
+//	cass_batch_add_statement(patchdb_batch, statement);
+	future = cass_session_execute(cass_session, statement);
+	cass_future_wait(future);
+	rc = cass_future_error_code(future);
+	if (rc != CASS_OK) {
+		patchdb_print_error(future,  "Error writing to patches_by_variable_date");
+	}
+	cass_future_free(future);
 	cass_statement_free(statement);
 
-	num_statements += 2;
+//	num_statements += 2;
 }
 
 int main (int argc, char **argv) {
@@ -187,6 +207,15 @@ int main (int argc, char **argv) {
     debug = fopen("/tmp/patchdb.debug", "w");
 
     char patchid[64];
+    char datestr[16];
+    cass_uint32_t date;
+
+    int year = -1;
+    int month = -1;
+    int day = -1;
+
+    // Create prepared statements
+    _cass_prep_stmt();
 
     bool loop = true;
     while (loop) {
@@ -210,56 +239,62 @@ int main (int argc, char **argv) {
     	case m.OUTPUT_PATCH:
 		{
 			rhessys::OutputPatch p = m.outputpatch();
+
+			// Refresh date
+			if (p.year() != year || p.month() != month || p.day() != day) {
+//				//printf("Need to make prepared statements...\n");
+//				year = p.year();
+//				month = p.month();
+//				day = p.day();
+//				_cass_write_data();
+//				_cass_prep_stmt();
+
+				snprintf(datestr, 16, "%d-%02d-%02d",
+						 year, month, day);
+				fprintf(debug, "Date changed to: %s\n", datestr);
+				date = cass_date_to_epoch(datestr);
+			}
+
 			snprintf(patchid, 64, "%d:%d:%d:%d", p.basin_id(),
 					 p.hill_id(), p.zone_id(), p.patch_id());
-			fprintf(debug, "%s\n", patchid);
-
-			// Prepare statements (if needed)
-			if (p.year() != year || p.month() != month || p.day() != day) {
-				//printf("Need to make prepared statements...\n");
-				year = p.year();
-				month = p.month();
-				day = p.day();
-				_cass_write_data();
-				_cass_prep_stmt();
-			}
+					 fprintf(debug, "\t%s\n", patchid);
 
 			// Bind data to prepared statements
 			//printf("Pre-bind\n");
-			_bind_to_stmts(patchid, "rain_thr", (cass_double_t)p.rain_throughfall());
-			_bind_to_stmts(patchid, "detention_store", (cass_double_t)p.detention_store());
-			_bind_to_stmts(patchid, "sat_def_z", (cass_double_t)p.sat_deficit_z());
-			_bind_to_stmts(patchid, "sat_def", (cass_double_t)p.sat_deficit());
-			_bind_to_stmts(patchid, "rz_storage", (cass_double_t)p.rz_storage());
-			_bind_to_stmts(patchid, "potential_sat", (cass_double_t)p.potential_sat());
-			_bind_to_stmts(patchid, "rz_field_capacity", (cass_double_t)p.field_capacity());
-			_bind_to_stmts(patchid, "rz_wilting_point", (cass_double_t)p.wilting_point());
-			_bind_to_stmts(patchid, "unsat_stor", (cass_double_t)p.unsat_storage());
-			_bind_to_stmts(patchid, "rz_drainage", (cass_double_t)p.rz_drainage());
-			_bind_to_stmts(patchid, "unsat_drain", (cass_double_t)p.unsat_drainage());
-			_bind_to_stmts(patchid, "sublimation", (cass_double_t)p.sublimation());
-			_bind_to_stmts(patchid, "return", (cass_double_t)p.return_flow());
-			_bind_to_stmts(patchid, "evap", (cass_double_t)p.evaporation());
-			_bind_to_stmts(patchid, "evap_surface", (cass_double_t)p.evaporation_surf());
-			_bind_to_stmts(patchid, "soil_evap", (cass_double_t)p.soil_evap());
-			_bind_to_stmts(patchid, "snow", (cass_double_t)p.snow());
-			_bind_to_stmts(patchid, "snow_melt", (cass_double_t)p.snow_melt());
-			_bind_to_stmts(patchid, "trans_sat", (cass_double_t)p.trans_sat());
-			_bind_to_stmts(patchid, "trans_unsat", (cass_double_t)p.trans_unsat());
-			_bind_to_stmts(patchid, "Qin", (cass_double_t)p.q_in());
-			_bind_to_stmts(patchid, "Qout", (cass_double_t)p.q_out());
-			_bind_to_stmts(patchid, "psn", (cass_double_t)p.psn());
-			_bind_to_stmts(patchid, "root_zone.S", (cass_double_t)p.rootzone_s());
-			_bind_to_stmts(patchid, "root.depth", (cass_double_t)p.rootzone_depth());
-			_bind_to_stmts(patchid, "litter.rain_stor", (cass_double_t)p.litter_rain_stored());
-			_bind_to_stmts(patchid, "litter.S", (cass_double_t)p.litter_s());
-			_bind_to_stmts(patchid, "area", (cass_double_t)p.area());
-			_bind_to_stmts(patchid, "pet", (cass_double_t)p.pet());
-			_bind_to_stmts(patchid, "lai", (cass_double_t)p.lai());
-			_bind_to_stmts(patchid, "baseflow", (cass_double_t)p.baseflow());
-			_bind_to_stmts(patchid, "streamflow", (cass_double_t)p.streamflow());
-			_bind_to_stmts(patchid, "pcp", (cass_double_t)p.precip());
-			_bind_to_stmts(patchid, "recharge", (cass_double_t)p.recharge());
+			_bind_to_stmts_and_write(patchid, date, "rain_thr", (cass_double_t)p.rain_throughfall());
+			_bind_to_stmts_and_write(patchid, date, "detention_store", (cass_double_t)p.detention_store());
+			_bind_to_stmts_and_write(patchid, date, "sat_def_z", (cass_double_t)p.sat_deficit_z());
+			_bind_to_stmts_and_write(patchid, date, "sat_def", (cass_double_t)p.sat_deficit());
+			_bind_to_stmts_and_write(patchid, date, "rz_storage", (cass_double_t)p.rz_storage());
+			_bind_to_stmts_and_write(patchid, date, "potential_sat", (cass_double_t)p.potential_sat());
+			_bind_to_stmts_and_write(patchid, date, "rz_field_capacity", (cass_double_t)p.field_capacity());
+			_bind_to_stmts_and_write(patchid, date, "rz_wilting_point", (cass_double_t)p.wilting_point());
+			_bind_to_stmts_and_write(patchid, date, "unsat_stor", (cass_double_t)p.unsat_storage());
+			_bind_to_stmts_and_write(patchid, date, "rz_drainage", (cass_double_t)p.rz_drainage());
+			_bind_to_stmts_and_write(patchid, date, "unsat_drain", (cass_double_t)p.unsat_drainage());
+			_bind_to_stmts_and_write(patchid, date, "sublimation", (cass_double_t)p.sublimation());
+			_bind_to_stmts_and_write(patchid, date, "return", (cass_double_t)p.return_flow());
+			_bind_to_stmts_and_write(patchid, date, "evap", (cass_double_t)p.evaporation());
+			_bind_to_stmts_and_write(patchid, date, "evap_surface", (cass_double_t)p.evaporation_surf());
+			_bind_to_stmts_and_write(patchid, date, "soil_evap", (cass_double_t)p.soil_evap());
+			_bind_to_stmts_and_write(patchid, date, "snow", (cass_double_t)p.snow());
+			_bind_to_stmts_and_write(patchid, date, "snow_melt", (cass_double_t)p.snow_melt());
+			_bind_to_stmts_and_write(patchid, date, "trans_sat", (cass_double_t)p.trans_sat());
+			_bind_to_stmts_and_write(patchid, date, "trans_unsat", (cass_double_t)p.trans_unsat());
+			_bind_to_stmts_and_write(patchid, date, "Qin", (cass_double_t)p.q_in());
+			_bind_to_stmts_and_write(patchid, date, "Qout", (cass_double_t)p.q_out());
+			_bind_to_stmts_and_write(patchid, date, "psn", (cass_double_t)p.psn());
+			_bind_to_stmts_and_write(patchid, date, "root_zone.S", (cass_double_t)p.rootzone_s());
+			_bind_to_stmts_and_write(patchid, date, "root.depth", (cass_double_t)p.rootzone_depth());
+			_bind_to_stmts_and_write(patchid, date, "litter.rain_stor", (cass_double_t)p.litter_rain_stored());
+			_bind_to_stmts_and_write(patchid, date, "litter.S", (cass_double_t)p.litter_s());
+			_bind_to_stmts_and_write(patchid, date, "area", (cass_double_t)p.area());
+			_bind_to_stmts_and_write(patchid, date, "pet", (cass_double_t)p.pet());
+			_bind_to_stmts_and_write(patchid, date, "lai", (cass_double_t)p.lai());
+			_bind_to_stmts_and_write(patchid, date, "baseflow", (cass_double_t)p.baseflow());
+			_bind_to_stmts_and_write(patchid, date, "streamflow", (cass_double_t)p.streamflow());
+			_bind_to_stmts_and_write(patchid, date, "pcp", (cass_double_t)p.precip());
+			_bind_to_stmts_and_write(patchid, date, "recharge", (cass_double_t)p.recharge());
 			//printf("Post-bind\n");
 
 			zmq_send (responder, "A", 1, 0);
@@ -272,9 +307,10 @@ int main (int argc, char **argv) {
 			fclose(debug);
 
 			// Write any outstanding data
-			_cass_write_data();
+			//_cass_write_data();
 
 			// Shutdown Cassandra connection
+			_cass_destroy();
 			destroy_patchdb(cass_cluster, cass_session);
 			zmq_send (responder, "A", 1, 0);
 			sleep(2); // Sleep to make sure client receives response before we close
@@ -293,6 +329,7 @@ void quit(int sig) {
 	fclose(debug);
 
 	// Shutdown Cassandra connection
+	_cass_destroy();
 	destroy_patchdb(cass_cluster, cass_session);
 
     exit(sig);

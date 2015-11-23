@@ -77,7 +77,7 @@ void init_patchdb(char* hostname,
 
 	char query[MAXSTR];
 	// TODO: remove "IF NOT EXISTS" for production use
-	snprintf(query, MAXSTR, "CREATE KEYSPACE IF NOT EXISTS %s WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '1' };", keyspace_name);
+	snprintf(query, MAXSTR, "CREATE KEYSPACE IF NOT EXISTS %s WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '3' };", keyspace_name);
 	patchdb_execute_query(*session, query);
 
 	// Use the newly created keyspace
