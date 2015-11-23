@@ -3,7 +3,7 @@ DOCDIR = docs
 RHESSYS_BIN = /usr/local/bin
 CC  = g++
 INCLUDES = -Iinclude -I/usr/local/include -I../../rhessys/output/filtering
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -std=c++11
 #CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
 LDLIBS = -L/usr/local/lib -lzmq -lcassandra `pkg-config --cflags --libs protobuf`
 
