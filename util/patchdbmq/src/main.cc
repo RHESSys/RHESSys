@@ -260,7 +260,7 @@ int main (int argc, char **argv) {
 			rhessys::OutputPatch p = m.outputpatch();
 
 			// Refresh date
-			if (p.year() != year || p.month() != month || p.day() != day) {
+			if (p.day() != day || p.month() != month || p.year() != year) {
 //				//printf("Need to make prepared statements...\n");
 				year = p.year();
 				month = p.month();
