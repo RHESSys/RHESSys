@@ -144,6 +144,7 @@ void _bind_to_stmts_and_write(const char* patchid,
 
 	size_t outstanding_inserts = insert_future_queue.size();
 	if (outstanding_inserts >= NUM_CONCURRENT_REQUESTS) {
+		fprintf(debug, "*** Outstanding inserts == %zu, waiting ***", outstanding_inserts);
 		for (int i = outstanding_inserts; i > 0; i--) {
 			future = insert_future_queue.front();
 			insert_future_queue.pop();
