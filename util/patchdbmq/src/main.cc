@@ -286,6 +286,8 @@ int main (int argc, char **argv) {
 			// Bind data to prepared statements
 //			fprintf(debug, "\tPre cassandra send\n");
 
+			zmq_send(responder, "A", 1, 0);
+
 			_bind_to_stmts_and_write(patchid, date, "rain_thr", (cass_double_t)p.rain_throughfall());
 			_bind_to_stmts_and_write(patchid, date, "detention_store", (cass_double_t)p.detention_store());
 			_bind_to_stmts_and_write(patchid, date, "sat_def_z", (cass_double_t)p.sat_deficit_z());
@@ -323,7 +325,7 @@ int main (int argc, char **argv) {
 
 //			fprintf(debug, "\tPost cassandra send\n");
 
-			zmq_send (responder, "A", 1, 0);
+//			zmq_send (responder, "A", 1, 0);
 
 //			fprintf(debug, "\tPost zmq send\n");
 //			fflush(debug);
