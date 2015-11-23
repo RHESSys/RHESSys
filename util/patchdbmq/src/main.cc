@@ -258,7 +258,7 @@ int main (int argc, char **argv) {
 
 			snprintf(patchid, 64, "%d:%d:%d:%d", p.basin_id(),
 					 p.hill_id(), p.zone_id(), p.patch_id());
-					 fprintf(debug, "\t%s\n", patchid);
+//			fprintf(debug, "\t%s\n", patchid);
 
 			// Bind data to prepared statements
 			//printf("Pre-bind\n");
