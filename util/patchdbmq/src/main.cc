@@ -278,10 +278,11 @@ int main (int argc, char **argv) {
 
 			snprintf(patchid, 64, "%d:%d:%d:%d", p.basin_id(),
 					 p.hill_id(), p.zone_id(), p.patch_id());
-//			fprintf(debug, "\t%s\n", patchid);
+			fprintf(debug, "\tPatch ID: %s\n", patchid);
 
 			// Bind data to prepared statements
-			//printf("Pre-bind\n");
+			fprintf("\tPre cassandra send\n");
+
 			_bind_to_stmts_and_write(patchid, date, "rain_thr", (cass_double_t)p.rain_throughfall());
 			_bind_to_stmts_and_write(patchid, date, "detention_store", (cass_double_t)p.detention_store());
 			_bind_to_stmts_and_write(patchid, date, "sat_def_z", (cass_double_t)p.sat_deficit_z());
@@ -316,10 +317,13 @@ int main (int argc, char **argv) {
 			_bind_to_stmts_and_write(patchid, date, "streamflow", (cass_double_t)p.streamflow());
 			_bind_to_stmts_and_write(patchid, date, "pcp", (cass_double_t)p.precip());
 			_bind_to_stmts_and_write(patchid, date, "recharge", (cass_double_t)p.recharge());
-			//printf("Post-bind\n");
+
+			fprintf(debug, "\tPost cassandra send\n");
 
 			zmq_send (responder, "A", 1, 0);
-			//printf("Post zmq send\n");
+
+			fprintf(debug, "\tPost zmq send\n");
+
 			break;
 		}
     	case m.END_SIM:
