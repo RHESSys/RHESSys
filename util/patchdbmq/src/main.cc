@@ -144,7 +144,7 @@ void _bind_to_stmts_and_write(const char* patchid,
 
 	size_t outstanding_inserts = insert_future_queue.size();
 	if (outstanding_inserts >= NUM_CONCURRENT_REQUESTS) {
-		fprintf(debug, "*** Outstanding inserts == %zu, waiting", outstanding_inserts);
+//		fprintf(debug, "*** Outstanding inserts == %zu, waiting", outstanding_inserts);
 		for (int i = outstanding_inserts; i > 0; i--) {
 			future = insert_future_queue.front();
 			insert_future_queue.pop();
@@ -155,7 +155,7 @@ void _bind_to_stmts_and_write(const char* patchid,
 			}
 			cass_future_free(future);
 		}
-		fprintf(debug, "; now %zu outstanding\n", insert_future_queue.size());
+//		fprintf(debug, "; now %zu outstanding\n", insert_future_queue.size());
 		future = NULL;
 	}
 
@@ -281,10 +281,10 @@ int main (int argc, char **argv) {
 
 			snprintf(patchid, 64, "%d:%d:%d:%d", p.basin_id(),
 					 p.hill_id(), p.zone_id(), p.patch_id());
-			fprintf(debug, "\tPatch ID: %s\n", patchid);
+//			fprintf(debug, "\tPatch ID: %s\n", patchid);
 
 			// Bind data to prepared statements
-			fprintf(debug, "\tPre cassandra send\n");
+//			fprintf(debug, "\tPre cassandra send\n");
 
 			_bind_to_stmts_and_write(patchid, date, "rain_thr", (cass_double_t)p.rain_throughfall());
 			_bind_to_stmts_and_write(patchid, date, "detention_store", (cass_double_t)p.detention_store());
@@ -321,12 +321,12 @@ int main (int argc, char **argv) {
 			_bind_to_stmts_and_write(patchid, date, "pcp", (cass_double_t)p.precip());
 			_bind_to_stmts_and_write(patchid, date, "recharge", (cass_double_t)p.recharge());
 
-			fprintf(debug, "\tPost cassandra send\n");
+//			fprintf(debug, "\tPost cassandra send\n");
 
 			zmq_send (responder, "A", 1, 0);
 
-			fprintf(debug, "\tPost zmq send\n");
-			fflush(debug);
+//			fprintf(debug, "\tPost zmq send\n");
+//			fflush(debug);
 
 			break;
 		}
