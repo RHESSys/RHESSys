@@ -280,9 +280,9 @@ void update_phenology(struct zone_object  *zone,
 
 	if (expand_flag == 1) {
 		if (day <= phen->expand_stopday) 
-			remdays_transfer = max(1.0,(phen->expand_stopday - day));
+			remdays_transfer = MAX(1.0,(phen->expand_stopday - day));
 		else
-			remdays_transfer = max(1.0,(phen->expand_stopday + 365 - day));
+			remdays_transfer = MAX(1.0,(phen->expand_stopday + 365 - day));
 
 	
 		cdf->leafc_transfer_to_leafc = 2.0*cs->leafc_transfer / remdays_transfer;
@@ -485,12 +485,12 @@ void update_phenology(struct zone_object  *zone,
 		/*--------------------------------------------------------------*/
 
 		if (cs->live_stemc > ZERO) {
-			cdf->livestemc_to_deadstemc = min(epv->day_livestem_turnover, cs->live_stemc);
+			cdf->livestemc_to_deadstemc = MIN(epv->day_livestem_turnover, cs->live_stemc);
 			
-			ndf->livestemn_to_deadstemn= min(cdf->livestemc_to_deadstemc 
+			ndf->livestemn_to_deadstemn= MIN(cdf->livestemc_to_deadstemc 
 						/ epc.livewood_cn, ns->live_stemn);
 		
-			excess_n = max(0.0, ndf->livestemn_to_deadstemn -
+			excess_n = MAX(0.0, ndf->livestemn_to_deadstemn -
 						(cdf->livestemc_to_deadstemc / epc.deadwood_cn ) );
 			ns->retransn += excess_n;
 			cs->live_stemc -= cdf->livestemc_to_deadstemc;
@@ -499,11 +499,11 @@ void update_phenology(struct zone_object  *zone,
 			ns->dead_stemn += (ndf->livestemn_to_deadstemn - excess_n);
 		}
 		if (cs->live_crootc > ZERO) {
-			cdf->livecrootc_to_deadcrootc = min(epv->day_livecroot_turnover, cs->live_crootc);
-			ndf->livecrootn_to_deadcrootn= min(cdf->livecrootc_to_deadcrootc 
+			cdf->livecrootc_to_deadcrootc = MIN(epv->day_livecroot_turnover, cs->live_crootc);
+			ndf->livecrootn_to_deadcrootn= MIN(cdf->livecrootc_to_deadcrootc 
 						/ epc.livewood_cn, ns->live_crootn);
 		
-			excess_n = max(0.0, ndf->livecrootn_to_deadcrootn -
+			excess_n = MAX(0.0, ndf->livecrootn_to_deadcrootn -
 						(cdf->livecrootc_to_deadcrootc / epc.deadwood_cn ) );
 			ns->retransn += excess_n;
 			cs->live_crootc -= cdf->livecrootc_to_deadcrootc;
@@ -564,7 +564,7 @@ void update_phenology(struct zone_object  *zone,
 
 	perc_sunlit = 0.0;
 	if ((cs->leafc > ZERO) && (epc.veg_type != NON_VEG)) {
-		epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit + 
+		epv->proj_lai = MAX((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit + 
 			epv->proj_sla_shade * (1-perc_sunlit))), 0.0);
 		new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
 				(1.0 - exp(-0.5*(1-gap_fraction)*
@@ -576,7 +576,7 @@ void update_phenology(struct zone_object  *zone,
 				perc_sunlit = (epv->proj_lai_sunlit) / (epv->proj_lai_sunlit + epv->proj_lai_shade);
 			else
 				perc_sunlit = 1.0;
-			epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit + 
+			epv->proj_lai = MAX((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit + 
 				epv->proj_sla_shade * (1-perc_sunlit))), 0.0);
 			new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
 					(1.0 - exp(-0.5*(1-gap_fraction)*
@@ -603,8 +603,8 @@ void update_phenology(struct zone_object  *zone,
 
 	if (epc.veg_type == TREE)  {
 		sai = epc.proj_swa*(1.0-exp(-0.175*(cs->live_stemc+cs->dead_stemc)));
-		epv->proj_pai = max(epv->proj_lai + sai, 0.0);
-		epv->all_pai = max(epv->all_lai + sai, 0.0);
+		epv->proj_pai = MAX(epv->proj_lai + sai, 0.0);
+		epv->all_pai = MAX(epv->all_lai + sai, 0.0);
 	}
 	else {
 		epv->proj_pai = epv->proj_lai;

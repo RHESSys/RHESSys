@@ -96,7 +96,7 @@ double	compute_surface_heat_flux(
 			temp2 = tdeep;
 		}
 		if ( rain_capacity > 0 ){
-			surface_heat_flux = max(min_heat_cap +	(max_heat_cap - min_heat_cap)
+			surface_heat_flux = MAX(min_heat_cap +	(max_heat_cap - min_heat_cap)
 				* (rain_stored /  rain_capacity),0)	/ deltaz	* ( temp1 - temp2 );
 		}
 		else{

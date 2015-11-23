@@ -129,7 +129,7 @@ int allocate_daily_growth(int nlimit,
 	/*--------------------------------------------------------------*/
 	if (nlimit == 1)
 		if (total_soil_frootc > ZERO)
-			soil_nsupply = min(ndf->potential_N_uptake,
+			soil_nsupply = MIN(ndf->potential_N_uptake,
 			(ndf_patch->plant_avail_uptake *
 			cs->frootc / total_soil_frootc));
 		else
@@ -137,7 +137,7 @@ int allocate_daily_growth(int nlimit,
 	else
 		soil_nsupply = ndf->potential_N_uptake;
 		
-	soil_nsupply = max(soil_nsupply, 0.0);
+	soil_nsupply = MAX(soil_nsupply, 0.0);
 		/*----------------------------------------------------------------
 		now compare the combined decomposition immobilization and plant
 		growth N demands against the available soil mineral N pool.
@@ -149,7 +149,7 @@ int allocate_daily_growth(int nlimit,
 		N to meet the plant demand */
 		sum_plant_nsupply = ns->retransn + soil_nsupply;
 		if (sum_plant_nsupply > 0.0){
-			ndf->retransn_to_npool = min(ns->retransn,ndf->potential_N_uptake
+			ndf->retransn_to_npool = MIN(ns->retransn,ndf->potential_N_uptake
 				* (ns->retransn/sum_plant_nsupply));
 		}
 		else{
@@ -189,14 +189,14 @@ int allocate_daily_growth(int nlimit,
 			plant_calloc = plant_nalloc  *  mean_cn;
 			if  (epc.nfix == 1){
 				sminn_to_npool = soil_nsupply;
-				excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
+				excess_c = MAX(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 				cost_fix = -0.625*(exp(-3.62 + 0.27 * Tsoil*(1 - 0.5 * Tsoil / 25.15)) - 2);
 				if (cost_fix > ZERO) 
 					amt_fix = cost_fix/2.0 * excess_c / mean_cn;
 				else
 					amt_fix = 0.0;
 
-				amt_fix = min(excess_c, amt_fix);
+				amt_fix = MIN(excess_c, amt_fix);
 				plant_calloc = plant_calloc + excess_c - amt_fix;
 				plant_nalloc = plant_calloc/mean_cn;
 				ndf_patch->nfix_to_sminn = plant_nalloc - ndf->retransn_to_npool-sminn_to_npool;
@@ -215,7 +215,7 @@ int allocate_daily_growth(int nlimit,
 					else ndf->retransn_to_npool = 0.0;
 					plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 					plant_calloc = plant_nalloc  * mean_cn;
-					excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
+					excess_c = MAX(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 					cdf->psn_to_cpool -= excess_c;
 					ns->nlimit = 1;
 				}
@@ -226,8 +226,8 @@ int allocate_daily_growth(int nlimit,
 	growth and storage pools */
 
 
-	plant_nalloc = max(plant_nalloc, 0.0);
-	plant_calloc = max(plant_calloc, 0.0);
+	plant_nalloc = MAX(plant_nalloc, 0.0);
+	plant_calloc = MAX(plant_calloc, 0.0);
 	
 	
 
@@ -338,18 +338,18 @@ int allocate_daily_growth(int nlimit,
 	/*---------------------------------------------------------------------------	*/
 	/*	shift allocation to stemwood if leafc max has been reached		*/
 	/*---------------------------------------------------------------------------	*/
-			excess_allocation_to_leaf = min(cdf->cpool_to_leafc,  excess_c);
+			excess_allocation_to_leaf = MIN(cdf->cpool_to_leafc,  excess_c);
 			cdf->cpool_to_leafc -= excess_allocation_to_leaf;
 			cdf->cpool_to_deadstemc += fdead*excess_allocation_to_leaf;
 			cdf->cpool_to_livestemc += flive*excess_allocation_to_leaf;
-			ndf->npool_to_leafn = max(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
+			ndf->npool_to_leafn = MAX(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
 			ndf->npool_to_deadstemn += fdead*excess_allocation_to_leaf / cndw ;
 			ndf->npool_to_livestemn += flive*excess_allocation_to_leaf / cnlw;
 		}
 		else {
-		     excess_allocation_to_leaf = min(cdf->cpool_to_leafc,  excess_c);
+		     excess_allocation_to_leaf = MIN(cdf->cpool_to_leafc,  excess_c);
 		     cdf->cpool_to_leafc -= excess_allocation_to_leaf;
-		     ndf->npool_to_leafn = max(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
+		     ndf->npool_to_leafn = MAX(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
 
 		     cs->cpool += excess_allocation_to_leaf;
 		     ns->npool += excess_allocation_to_leaf / cnl;

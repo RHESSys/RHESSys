@@ -58,16 +58,16 @@ double	compute_potential_rain_interception(
 	interception_coef = 1-stratum[0].gap_fraction;
 	
 	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) 
-		potential_interception = min(interception_coef * rain,
+		potential_interception = MIN(interception_coef * rain,
 			stratum[0].epv.proj_pai
 			* stratum[0].defaults[0][0].specific_rain_capacity
 			- stratum[0].rain_stored);
 	else 
-		potential_interception = min(rain, (
+		potential_interception = MIN(rain, (
 			stratum[0].defaults[0][0].specific_rain_capacity 
 			- stratum[0].rain_stored));
 
-	potential_interception = max(potential_interception, 0.0);
+	potential_interception = MAX(potential_interception, 0.0);
 
 	return( potential_interception );
 } /*end compute_potential_rain_interception */

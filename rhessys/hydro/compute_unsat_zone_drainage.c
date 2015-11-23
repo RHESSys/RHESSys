@@ -96,12 +96,12 @@ double	compute_unsat_zone_drainage(
 	else
 		Ksat2 = Ksat_0 * sqrt(S) * pow(1 - pow(1-pow(S,1/p2),p2),2);
 
-	Ksat = min(Ksat1,Ksat2);
+	Ksat = MIN(Ksat1,Ksat2);
 
 	/*--------------------------------------------------------------*/
 	/*	Compute unsat zone drainage.				*/
 	/*--------------------------------------------------------------*/
-	unsat_zone_drainage = max(min( potential_drainage,	Ksat ),0);
+	unsat_zone_drainage = MAX(MIN( potential_drainage,	Ksat ),0);
 
 	return(unsat_zone_drainage);
 } /*compute_unsat_zone_drainage*/

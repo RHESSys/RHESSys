@@ -82,15 +82,15 @@ double	compute_nonvascular_stratum_conductance(
 	/*		Use a forward prediction of the end of day storage		*/
 	/*		by assuming a 1mm daytime evaporation from the stratum.	*/
 	/*--------------------------------------------------------------*/
-	approx_day_end_storage = max(0,rain_stored - 0.001 );
+	approx_day_end_storage = MAX(0,rain_stored - 0.001 );
 	if (rain_capacity <  0.00000000000001)
 		adjusted_storage = 0.0;
 	else
-		adjusted_storage = max(0,((rain_stored + approx_day_end_storage )/2.0)
+		adjusted_storage = MAX(0,((rain_stored + approx_day_end_storage )/2.0)
 		/ ( rain_capacity));
 	/*--------------------------------------------------------------*/
 	/*		Use linear fit if storage is > 0						*/
 	/*--------------------------------------------------------------*/
-	stratum_conductance = max(gsurf_slope*adjusted_storage + gsurf_intercept ,0);
+	stratum_conductance = MAX(gsurf_slope*adjusted_storage + gsurf_intercept ,0);
 	return(stratum_conductance);
 } /*end compute_nonvascular_stratum_conductance*/

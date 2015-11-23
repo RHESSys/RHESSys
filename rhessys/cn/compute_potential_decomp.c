@@ -103,8 +103,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	if (std > ZERO) {
 		for (i=0; i<NUM_NORMAL; i++) {
 			thetai = theta + NORMAL[i]*std;
-			thetai = min(1.0, thetai);
-			thetai = max(0.1, thetai);
+			thetai = MIN(1.0, thetai);
+			thetai = MAX(0.1, thetai);
 			w_scalar  += (pow( ((thetai -b) / (a-b)), d*(b-a)/(a-c))
 					* pow( ((thetai-c)/ (a-c)), d)) * 1.0/NUM_NORMAL;
 			}

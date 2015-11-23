@@ -42,8 +42,8 @@ double	leaf_conductance_CO2_curve(	double CO2, double coef_CO2)
 	/*	mean stratum conductance reduction			*/
 	/*--------------------------------------------------------------*/
 	m_CO2 = (1 - (1 - coef_CO2)*(CO2/350-1));
-	m_CO2 = min(1.0, m_CO2);
-	m_CO2 = max(0.0, m_CO2);
+	m_CO2 = MIN(1.0, m_CO2);
+	m_CO2 = MAX(0.0, m_CO2);
 
 
 	return (m_CO2);

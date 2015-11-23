@@ -100,7 +100,7 @@ double	compute_potential_exfiltration(
 		Ksat_average = m_z* Ksat_0 *(1-exp(-1*sat_deficit_z/m_z)) / sat_deficit_z;
 	else
 		Ksat_average = Ksat_0;
-	S = max(0,min(S,1));
+	S = MAX(0,MIN(S,1));
 	
 	/*--------------------------------------------------------------*/
 	/*	Plug everything into the equation for max infiltration  */
@@ -115,7 +115,7 @@ double	compute_potential_exfiltration(
 			* pore_size_index) * porosity_average;
 
 
-	potential_exfiltration = min(max((S-wilting_point)*porosity_average,0.0), potential_exfiltration);
+	potential_exfiltration = MIN(MAX((S-wilting_point)*porosity_average,0.0), potential_exfiltration);
 
 	return(potential_exfiltration);
 } /*potential_exfiltration*/

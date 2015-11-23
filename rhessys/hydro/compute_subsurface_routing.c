@@ -268,16 +268,16 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 			if (patch[0].sat_deficit > patch[0].rootzone.potential_sat) {
 				patch[0].rootzone.S =
-						min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
+						MIN(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
 				patch[0].S = patch[0].unsat_storage
 						/ (patch[0].sat_deficit
 								- patch[0].rootzone.potential_sat);
 			} else {
 				patch[0].rootzone.S =
-						min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
+						MIN((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 								/ patch[0].rootzone.potential_sat, 1.0);
 				patch[0].S =
-						min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
+						MIN(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
 			}
 
 			/*--------------------------------------------------------------*/
@@ -587,7 +587,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							patch[0].sat_deficit_z, patch[0].sat_deficit_z,
 							patch[0].preday_sat_deficit_z);
 
-					add_field_capacity = max(add_field_capacity, 0.0);
+					add_field_capacity = MAX(add_field_capacity, 0.0);
 					patch[0].sat_deficit += add_field_capacity;
 
 					if ((patch[0].sat_deficit_z > patch[0].rootzone.depth)
@@ -612,7 +612,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								patch[0].soil_defaults[0][0].porosity_decay,
 								patch[0].sat_deficit_z, patch[0].sat_deficit_z,
 								0.0);
-						add_field_capacity = max(add_field_capacity, 0.0);
+						add_field_capacity = MAX(add_field_capacity, 0.0);
 						patch[0].sat_deficit += add_field_capacity;
 						patch[0].rz_storage += add_field_capacity;
 					}
@@ -630,7 +630,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								patch[0].soil_defaults[0][0].porosity_decay,
 								patch[0].sat_deficit_z, patch[0].sat_deficit_z,
 								0.0);
-						add_field_capacity = max(add_field_capacity, 0.0);
+						add_field_capacity = MAX(add_field_capacity, 0.0);
 						patch[0].sat_deficit += add_field_capacity;
 						patch[0].unsat_storage += add_field_capacity;
 					}
@@ -825,7 +825,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					/*	soil drainage and storage update	     	 */
 					/*-------------------------------------------------------*/
 					patch[0].rootzone.S =
-							min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
+							MIN(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
 					rz_drainage = compute_unsat_zone_drainage(
 							command_line[0].verbose_flag,
 							patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -842,7 +842,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					patch[0].unsat_storage += rz_drainage;
 
 					patch[0].S =
-							min(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat), 1.0);
+							MIN(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat), 1.0);
 					unsat_drainage = compute_unsat_zone_drainage(
 							command_line[0].verbose_flag,
 							patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -860,7 +860,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					patch[0].unsat_storage = 0.0;
 
 					patch[0].S =
-							min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
+							MIN(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
 					rz_drainage = compute_unsat_zone_drainage(
 							command_line[0].verbose_flag,
 							patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -883,10 +883,10 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 				if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
 					patch[0].rootzone.S =
-							min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
+							MIN(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
 				else
 					patch[0].rootzone.S =
-							min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
+							MIN((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 									/ patch[0].rootzone.potential_sat, 1.0);
 
 				/*-------------------c------------------------------------------------------*/
@@ -1004,7 +1004,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						&& (command_line[0].p != NULL )) {
 					patch[0].acc_month.theta += patch[0].rootzone.S;
 					patch[0].acc_month.sm_deficit +=
-							max(0.0,
+							MAX(0.0,
 									(patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage));
 					patch[0].acc_month.et += (patch[0].transpiration_unsat_zone
 							+ patch[0].evaporation_surf
@@ -1025,9 +1025,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 									- patch[0].soil_cs.DOC_Qout_total);
 					patch[0].acc_month.psn += patch[0].net_plant_psn;
 					patch[0].acc_month.snowpack =
-							max(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
+							MAX(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
 					patch[0].acc_month.lai =
-							max(patch[0].acc_month.lai, patch[0].lai);
+							MAX(patch[0].acc_month.lai, patch[0].lai);
 					patch[0].acc_month.leach += (patch[0].soil_ns.leach
 							+ patch[0].surface_ns_leach);
 					patch[0].acc_month.length += 1;
@@ -1083,7 +1083,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					}
 
 					patch[0].acc_year.snowpack =
-							max(patch[0].snowpack.water_equivalent_depth,
+							MAX(patch[0].snowpack.water_equivalent_depth,
 									patch[0].acc_year.snowpack);
 
 					/* transpiration water stress computations */
@@ -1139,7 +1139,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].acc_year.sm_deficit = (patch[0].PET
 								+ patch[0].PE - tmp);
 					patch[0].acc_year.lai =
-							max(patch[0].acc_year.lai, patch[0].lai);
+							MAX(patch[0].acc_year.lai, patch[0].lai);
 
 					tmp = patch[0].sat_deficit - patch[0].unsat_storage
 							- patch[0].rz_storage;
@@ -1150,7 +1150,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].acc_year.ndays_sat70 += 1;
 
 					tmp =
-							max(0.0, (patch[0].rootzone.field_capacity/patch[0].rootzone.potential_sat -
+							MAX(0.0, (patch[0].rootzone.field_capacity/patch[0].rootzone.potential_sat -
 											patch[0].wilting_point*patch[0].soil_defaults[0][0].porosity_0))
 									/ 2.0
 									+ patch[0].wilting_point

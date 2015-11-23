@@ -458,7 +458,7 @@ void	canopy_stratum_daily_F(
 	/*	and seasonal low water content				*/
 	/*	(for use in dynamic version to limit allocation)	*/
 	/*--------------------------------------------------------------*/
-	stratum[0].epv.min_vwc = min((patch[0].unsat_storage / patch[0].sat_deficit),
+	stratum[0].epv.min_vwc = MIN((patch[0].unsat_storage / patch[0].sat_deficit),
 		stratum[0].epv.min_vwc);
 	if ( command_line[0].verbose_flag >2  )
 		printf("\n fparabs %f min_vwc %f",stratum[0].epv.max_fparabs,
@@ -884,8 +884,8 @@ void	canopy_stratum_daily_F(
 		potential_rainy_evaporation_rate = 0.0;
 	}
 
-	potential_evaporation_rate = max(0,potential_evaporation_rate);
-	potential_rainy_evaporation_rate = max(0,potential_rainy_evaporation_rate);
+	potential_evaporation_rate = MAX(0,potential_evaporation_rate);
+	potential_rainy_evaporation_rate = MAX(0,potential_rainy_evaporation_rate);
 
 
 	/*--------------------------------------------------------------*/
@@ -893,8 +893,8 @@ void	canopy_stratum_daily_F(
 	/*	since condensation/dew dep is the same as rain		*/
 	/*--------------------------------------------------------------*/
 	if ( zone[0].rain > 0 ){
-		potential_evaporation_rate = max(0,potential_evaporation_rate);
-		potential_rainy_evaporation_rate= max(0,potential_rainy_evaporation_rate);
+		potential_evaporation_rate = MAX(0,potential_evaporation_rate);
+		potential_rainy_evaporation_rate= MAX(0,potential_rainy_evaporation_rate);
 	}
 	if ( command_line[0].verbose_flag > 2  )
 		printf("\n%8d -444.12 ",julday(current_date)-2449000);
@@ -919,8 +919,8 @@ void	canopy_stratum_daily_F(
 		rnet_trans_shade = 0.0;
 		}
 			
-	rnet_trans_shade = max(rnet_trans_shade, 0.0);
-	rnet_trans_sunlit = max(rnet_trans_sunlit, 0.0);
+	rnet_trans_shade = MAX(rnet_trans_shade, 0.0);
+	rnet_trans_sunlit = MAX(rnet_trans_sunlit, 0.0);
 
 	if ( (rnet_trans_sunlit > ZERO ) &&
 		(stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO ) &&
@@ -1001,9 +1001,9 @@ void	canopy_stratum_daily_F(
 	if  ( (stratum[0].epv.height == 0 ) && ( stratum[0].rootzone.depth > 0 ) 
 		&& (stratum[0].epv.proj_lai > ZERO) ){
 		if ( stratum[0].potential_evaporation > ZERO ){
-			transpiration = min(stratum[0].potential_evaporation,
+			transpiration = MIN(stratum[0].potential_evaporation,
 				patch[0].cap_rise);
-			potential_transpiration = min(stratum[0].potential_evaporation,
+			potential_transpiration = MIN(stratum[0].potential_evaporation,
 				patch[0].cap_rise);
 			stratum[0].potential_evaporation -=	transpiration;
 		}
@@ -1040,7 +1040,7 @@ void	canopy_stratum_daily_F(
 	/*	assuming rainy happens as much as it can.		*/
 	/*--------------------------------------------------------------*/
 	if ( stratum[0].evaporation > ZERO ){
-		rainy_evaporation =  min(zone[0].daytime_rain_duration *
+		rainy_evaporation =  MIN(zone[0].daytime_rain_duration *
 			potential_rainy_evaporation_rate,
 			stratum[0].evaporation );
 		dry_evaporation = stratum[0].evaporation - rainy_evaporation;
@@ -1109,7 +1109,7 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	if ( stratum[0].rootzone.depth > ZERO ){
 		stratum[0].transpiration_sat_zone = transpiration
-			* max(0, 1 - ( patch[0].sat_deficit_z
+			* MAX(0, 1 - ( patch[0].sat_deficit_z
 			/ stratum[0].rootzone.depth ) );
 		stratum[0].transpiration_unsat_zone = transpiration
 			- stratum[0].transpiration_sat_zone;
@@ -1194,7 +1194,7 @@ void	canopy_stratum_daily_F(
 			/* note multiply by 1000; accounted for in compute_farq_psn by a /1000 */
 			/*	this is done for numerical precision			*/
 			/*--------------------------------------------------------------*/
-			psnin.g = max(stratum[0].defaults[0][0].epc.gl_smax ,
+			psnin.g = MAX(stratum[0].defaults[0][0].epc.gl_smax ,
 				stratum[0].defaults[0][0].epc.gl_c ) *
 				stratum[0].defaults[0][0].lai_stomatal_fraction * 1000 / 1.6;
 			if ((psnin.lnc > 0.0) && (psnin.irad > 0.0))
@@ -1399,7 +1399,7 @@ void	canopy_stratum_daily_F(
 		if (stratum[0].acc_year.minNSC = -999)
 			stratum[0].acc_year.minNSC = stratum[0].cs.cpool;
 		else
-			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
+			stratum[0].acc_year.minNSC = MIN(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
 		stratum[0].acc_year.length += 1;
 	}
 	return;

@@ -60,7 +60,7 @@ double	compute_litter_rain_stored(
 	/*	m = m2PlANT / m2ground *  ( (kg  / m2 * day * m2PLANT )	*/
 	/*		* ( 1 m3 H20 / 1000 kg H20 )			*/
 	/*--------------------------------------------------------------*/
-	potential_interception = min(  patch[0].detention_store,
+	potential_interception = MIN(  patch[0].detention_store,
 		 litter[0].rain_capacity
 		- litter[0].rain_stored);
 
@@ -75,7 +75,7 @@ double	compute_litter_rain_stored(
 	/*	Compute amount of storage evaporated.			*/
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
-	storage_evaporated = min(potential_evaporation,litter[0].rain_stored);
+	storage_evaporated = MIN(potential_evaporation,litter[0].rain_stored);
 	/*--------------------------------------------------------------*/
 	/*	Update amount of rain in storage after evaporation.	*/
 	/*	m = m							*/
@@ -91,9 +91,9 @@ double	compute_litter_rain_stored(
 	/* 	m = m							*/
 	/*--------------------------------------------------------------*/
 	potential_interception_evaporated  =
-		min( potential_evaporation, potential_interception);
+		MIN( potential_evaporation, potential_interception);
 
-	potential_interception_evaporated = max(0.0, potential_interception_evaporated);
+	potential_interception_evaporated = MAX(0.0, potential_interception_evaporated);
 	/*--------------------------------------------------------------*/
 	/*	Update the potential interception after evaporation.	*/
 	/* 	m -= m							*/
@@ -124,7 +124,7 @@ double	compute_litter_rain_stored(
 	/*  Update rain storage.										*/
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
-	rain_storage = min( litter[0].rain_stored + potential_interception,
+	rain_storage = MIN( litter[0].rain_stored + potential_interception,
 		 litter[0].rain_capacity );
 	if( verbose_flag > 2)
 		printf("%8.6f ",rain_storage);
@@ -132,7 +132,7 @@ double	compute_litter_rain_stored(
 	/*	Update rain throughfall.									*/
 	/*	m += m							*/
 	/*--------------------------------------------------------------*/
-	throughfall += max(potential_interception - (rain_storage
+	throughfall += MAX(potential_interception - (rain_storage
 		- litter[0].rain_stored),0);
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);

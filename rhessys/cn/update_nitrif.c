@@ -124,8 +124,8 @@ int update_nitrif(
 		if (std > ZERO) {
 			for (i=0; i<NUM_NORMAL; i++) {
 				thetai = theta + NORMAL[i]*std;
-				thetai = min(1.0, thetai);
-				thetai = max(0.0, thetai);
+				thetai = MIN(1.0, thetai);
+				thetai = MAX(0.0, thetai);
 				water_scalar  += 1.0/NUM_NORMAL * (
 						 pow( ((thetai -b) / (a-b)), d*(b-a)/(a-c))
 						* pow( ((thetai-c)/ (a-c)), d) );
@@ -161,9 +161,9 @@ int update_nitrif(
 	/*	update state and flux variables				*/
 	/* 	convert from g to kg					*/
 	/*--------------------------------------------------------------*/
-	nitrify = min(nitrify/1000, ns_soil->sminn);
-	nitrify = max(nitrify, 0.0);
-	nitrify = min(nitrify, max_nit_rate);
+	nitrify = MIN(nitrify/1000, ns_soil->sminn);
+	nitrify = MAX(nitrify, 0.0);
+	nitrify = MIN(nitrify, max_nit_rate);
 	ndf->sminn_to_nitrate = nitrify;
 	ns_soil->sminn -= (nitrify);
 	ns_soil->nitrate += (nitrify);

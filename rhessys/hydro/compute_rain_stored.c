@@ -85,7 +85,7 @@ double	compute_rain_stored(
 	/*	Compute amount of storage evaporated.			*/
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
-	storage_evaporated =	min(potential_evaporation,stratum[0].rain_stored);
+	storage_evaporated =	MIN(potential_evaporation,stratum[0].rain_stored);
 	/*--------------------------------------------------------------*/
 	/*	Update amount of rain in storage after evaporation.	*/
 	/*	m = m							*/
@@ -101,7 +101,7 @@ double	compute_rain_stored(
 	/* 	m = m							*/
 	/*--------------------------------------------------------------*/
 	potential_interception_evaporated  =
-		min( potential_evaporation, potential_interception);
+		MIN( potential_evaporation, potential_interception);
 	/*--------------------------------------------------------------*/
 	/*	Update the potential interception after evaporation.	*/
 	/* 	m -= m							*/
@@ -127,7 +127,7 @@ double	compute_rain_stored(
 	/*  Update rain storage.										*/
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
-	rain_storage = min( stratum[0].rain_stored + potential_interception,
+	rain_storage = MIN( stratum[0].rain_stored + potential_interception,
 		stratum[0].epv.all_pai
 		* stratum[0].defaults[0][0].specific_rain_capacity );
 	if( verbose_flag > 2)
@@ -136,7 +136,7 @@ double	compute_rain_stored(
 	/*	Update rain throughfall.									*/
 	/*	m += m							*/
 	/*--------------------------------------------------------------*/
-	throughfall += max(potential_interception
+	throughfall += MAX(potential_interception
 		- (rain_storage - stratum[0].rain_stored),0);
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);

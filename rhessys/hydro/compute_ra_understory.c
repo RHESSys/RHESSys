@@ -90,7 +90,7 @@ double	compute_ra_understory(
 	/*	Equation supplied by Xuewen Wang rhessys C code.	*/
 	/*--------------------------------------------------------------*/
 	d_o =  pow(10.0, (0.979 * log10(h_o+0.001) - 0.154));
-	d_u =  max(0.01*h_o, pow(10.0, (0.979 * log10(h_u+001) - 0.154)));
+	d_u =  MAX(0.01*h_o, pow(10.0, (0.979 * log10(h_u+001) - 0.154)));
 	/*--------------------------------------------------------------*/
 	/*	Compute the roughness length zo (m)			*/
 	/*								*/
@@ -98,7 +98,7 @@ double	compute_ra_understory(
 	/*	Richard Fernandes:  This should change with snow pack .	*/
 	/*--------------------------------------------------------------*/
 	zo_o = pow(10.0, (0.997 * log10(h_o+0.001) - 0.883));
-	zo_u = max(0.01*h_o, pow(10.0, (0.997 * log10(h_u+0.001) - 0.883)));
+	zo_u = MAX(0.01*h_o, pow(10.0, (0.997 * log10(h_u+0.001) - 0.883)));
 	if ( h_o < d_o ){
 		fprintf(stderr,
 			"FATAL ERROR: screen height < zero plane stratum\n");
@@ -115,14 +115,14 @@ double	compute_ra_understory(
 	/*--------------------------------------------------------------*/
 	/*	compute exponential decay of wind throught the canopy  */
 	/*--------------------------------------------------------------*/
-	*u = max((*u * exp(cn*max(h_u, 0.1*h_o)/h_o - 1)), 0.0);
+	*u = MAX((*u * exp(cn*MAX(h_u, 0.1*h_o)/h_o - 1)), 0.0);
 	/*--------------------------------------------------------------*/
 	/*	if, this canopy below extends to 0.1*ho of the surface	*/
 	/* 	include a logarithmic profile componenet of the near	*/
 	/*	surface resistance					*/
 	/*--------------------------------------------------------------*/
 	if ( h_u <= 0.1*h_o )
-		ra_u += pow(log( (0.1*h_o)/ max(zo_u, 0.01 )),2.0) / (*u * 0.41*0.41);
+		ra_u += pow(log( (0.1*h_o)/ MAX(zo_u, 0.01 )),2.0) / (*u * 0.41*0.41);
 	/*--------------------------------------------------------------*/
 	/*	update conductance below this patch			*/
 	/*--------------------------------------------------------------*/

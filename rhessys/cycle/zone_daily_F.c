@@ -318,7 +318,7 @@ void		zone_daily_F(
 					zone[0].rain = 0.0;
 				}
 				else{
-					zone[0].snow = min((zone[0].defaults[0][0].max_snow_temp
+					zone[0].snow = MIN((zone[0].defaults[0][0].max_snow_temp
 						- zone[0].metv.tavg) * zone[0].rain / snow_rain_range, zone[0].rain);
 					zone[0].rain = zone[0].rain - zone[0].snow;
 				}
@@ -346,7 +346,7 @@ void		zone_daily_F(
 		}
 		else{
 			zone[0].daytime_rain_duration =
-				min( zone[0].metv.dayl,zone[0].daytime_rain_duration);
+				MIN( zone[0].metv.dayl,zone[0].daytime_rain_duration);
 		}
 	}
 	/*--------------------------------------------------------------*/
@@ -445,7 +445,7 @@ void		zone_daily_F(
 		/*	Limited to at least 0.0 as per rhessys C code.		*/
 		/*--------------------------------------------------------------*/
 
-		zone[0].metv.vpd = max(es - zone[0].e_dewpoint,0.0);
+		zone[0].metv.vpd = MAX(es - zone[0].e_dewpoint,0.0);
 		if (zone[0].relative_humidity == -999.0) {
 			if (es > ZERO)
 				zone[0].relative_humidity = zone[0].e_dewpoint / es;

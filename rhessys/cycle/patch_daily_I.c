@@ -220,7 +220,7 @@ void		patch_daily_I(
 		if (patch[0].sat_deficit_z > patch[0].rootzone.depth)	
 		patch[0].rootzone.S = patch[0].rz_storage/patch[0].rootzone.potential_sat;
 		else
-		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)/patch[0].rootzone.potential_sat,1.0);
+		patch[0].rootzone.S = MIN((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)/patch[0].rootzone.potential_sat,1.0);
 	else
 		patch[0].rootzone.S = 0.0;
 	}
@@ -411,7 +411,7 @@ void		patch_daily_I(
 				current_date );
 		}
 	}
-	patch[0].grazing_Closs = min(edible_leafc, patch[0].grazing_Closs);
+	patch[0].grazing_Closs = MIN(edible_leafc, patch[0].grazing_Closs);
 	if (cnt > 0)
 		patch[0].grazing_mean_nc = grazing_mean_nc / cnt;
 
@@ -442,7 +442,7 @@ void		patch_daily_I(
 				
 				
 		}
-		patch[0].rootzone.depth = max(patch[0].rootzone.depth, 
+		patch[0].rootzone.depth = MAX(patch[0].rootzone.depth, 
 			 patch[0].canopy_strata[stratum][0].rootzone.depth);
 	}
 	patch[0].effective_lai = patch[0].effective_lai / patch[0].num_canopy_strata;

@@ -471,7 +471,7 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	
 	/*	Calculate initial pond height		*/
-	pond_height = max(0.0,-1 * patch[0].sat_deficit_z + patch[0].detention_store);
+	pond_height = MAX(0.0,-1 * patch[0].sat_deficit_z + patch[0].detention_store);
 	
 	/*--------------------------------------------------------------*/
 	/* Layers above snowpack and pond */
@@ -482,7 +482,7 @@ void		patch_daily_F(
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) &&
 			(patch[0].layers[layer].height > pond_height) ){
 			patch[0].snowpack.overstory_fraction = 1.0;
-			patch[0].snowpack.overstory_height = min(patch[0].snowpack.overstory_height,
+			patch[0].snowpack.overstory_height = MIN(patch[0].snowpack.overstory_height,
 				patch[0].layers[layer].height);
 			patch[0].Kdown_direct_final = patch[0].layers[layer].null_cover * patch[0].Kdown_direct;
 			patch[0].Kdown_diffuse_final = patch[0].layers[layer].null_cover * patch[0].Kdown_diffuse;
@@ -890,7 +890,7 @@ void		patch_daily_F(
 	/* infiltration excess will removed during routing portion	*/
 	/*--------------------------------------------------------------*/
 	
-	infiltration = min(infiltration,patch[0].detention_store);
+	infiltration = MIN(infiltration,patch[0].detention_store);
 	/*--------------------------------------------------------------*/
 	/* added an surface N flux to surface N pool	and		*/
 	/* allow infiltration of surface N				*/
@@ -1052,7 +1052,7 @@ void		patch_daily_F(
 		-1.0 * patch[0].sat_deficit);
 	temp = patch[0].sat_deficit_z;
 	
-	available_sat_water = min((compute_delta_water(
+	available_sat_water = MIN((compute_delta_water(
 			0, 
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
@@ -1060,7 +1060,7 @@ void		patch_daily_F(
 			patch[0].rootzone.depth,
 			patch[0].sat_deficit_z)), sat_zone_patch_demand);
 
-	available_sat_water = max(available_sat_water, 0.0);
+	available_sat_water = MAX(available_sat_water, 0.0);
 
 	patch[0].sat_deficit += available_sat_water;
 	sat_zone_patch_demand -= available_sat_water;        
@@ -1095,7 +1095,7 @@ void		patch_daily_F(
 				patch[0].sat_deficit_z,
 				patch[0].sat_deficit_z,
 				temp);
-			add_field_capacity = max(add_field_capacity, 0.0);
+			add_field_capacity = MAX(add_field_capacity, 0.0);
 			patch[0].sat_deficit += add_field_capacity;
 			if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) && (patch[0].preday_sat_deficit_z > patch[0].rootzone.depth))				
 				patch[0].unsat_storage += add_field_capacity;
@@ -1115,8 +1115,8 @@ void		patch_daily_F(
 	/*	met and still field capacity. 				*/
 	/*--------------------------------------------------------------*/
 	water_above_field_cap =
-		max((patch[0].rz_storage - patch[0].rootzone.field_capacity), 0);
-	water_above_field_cap = min(unsat_zone_patch_demand, water_above_field_cap);
+		MAX((patch[0].rz_storage - patch[0].rootzone.field_capacity), 0);
+	water_above_field_cap = MIN(unsat_zone_patch_demand, water_above_field_cap);
 	patch[0].rz_storage = patch[0].rz_storage - water_above_field_cap;
 	unsat_zone_patch_demand = unsat_zone_patch_demand - water_above_field_cap;
 
@@ -1175,8 +1175,8 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	fill the leftover demand with cap rise.			*/
 	/*--------------------------------------------------------------*/
-	cap_rise = max(min(patch[0].potential_cap_rise, min(unsat_zone_patch_demand, water_below_field_cap)), 0.0);
-	cap_rise = min((compute_delta_water(
+	cap_rise = MAX(MIN(patch[0].potential_cap_rise, MIN(unsat_zone_patch_demand, water_below_field_cap)), 0.0);
+	cap_rise = MIN((compute_delta_water(
 			0, 
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
@@ -1184,7 +1184,7 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].soil_depth,
 			patch[0].sat_deficit_z)), cap_rise);
 
-	unsat_zone_patch_demand -= min(cap_rise, unsat_zone_patch_demand);
+	unsat_zone_patch_demand -= MIN(cap_rise, unsat_zone_patch_demand);
 	patch[0].cap_rise += cap_rise;
 	patch[0].potential_cap_rise -= cap_rise;
 	patch[0].sat_deficit += cap_rise;				
@@ -1193,14 +1193,14 @@ void		patch_daily_F(
 	/*	the unsat zone.  We are going below field cap now!!	*/
 	/*	First guess at change in sat storage to meet demand.	*/
 	/*--------------------------------------------------------------*/
-	delta_unsat_zone_storage = min(unsat_zone_patch_demand, patch[0].rz_storage);
+	delta_unsat_zone_storage = MIN(unsat_zone_patch_demand, patch[0].rz_storage);
 
 	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO)) {
 	patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
-	patch[0].wilting_point = patch[0].wilting_point * (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
-	delta_unsat_zone_storage = min(patch[0].rz_storage-patch[0].wilting_point, delta_unsat_zone_storage);
-	delta_unsat_zone_storage = max(delta_unsat_zone_storage, 0.0);
+	patch[0].wilting_point = patch[0].wilting_point * (MIN(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
+	delta_unsat_zone_storage = MIN(patch[0].rz_storage-patch[0].wilting_point, delta_unsat_zone_storage);
+	delta_unsat_zone_storage = MAX(delta_unsat_zone_storage, 0.0);
 	
 
 	} else {
@@ -1343,7 +1343,7 @@ void		patch_daily_F(
 		/*	soil drainage and storage update	     	 */
 		/*-------------------------------------------------------*/
 		
-		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
+		patch[0].rootzone.S = MIN(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
 		patch[0].rz_drainage = compute_unsat_zone_drainage(
 			command_line[0].verbose_flag,
 			patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -1359,7 +1359,7 @@ void		patch_daily_F(
 		patch[0].unsat_storage +=  patch[0].rz_drainage;
 		
 		patch[0].S = patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat);	
-		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
+		patch[0].rootzone.S = MIN(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
 		patch[0].unsat_drainage = compute_unsat_zone_drainage(
 			command_line[0].verbose_flag,
 			patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -1377,7 +1377,7 @@ void		patch_daily_F(
 		patch[0].rz_storage += patch[0].unsat_storage;	/* transfer left water in unsat storage to rootzone layer */
 		patch[0].unsat_storage = 0.0;   
 
-		patch[0].S = min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
+		patch[0].S = MIN(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
 		patch[0].rz_drainage = compute_unsat_zone_drainage(
 			command_line[0].verbose_flag,
 			patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -1399,9 +1399,9 @@ void		patch_daily_F(
 	/*     Final rootzone saturation calculation      */
 	/* ---------------------------------------------- */
 	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
-		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
+		patch[0].rootzone.S = MIN(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
 	else 
-		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
+		patch[0].rootzone.S = MIN((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 			/ patch[0].rootzone.potential_sat, 1.0);								
 	/*-----------------------------------------------------*/
 	/*  re-Compute potential saturation for rootzone layer   */

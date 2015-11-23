@@ -56,9 +56,9 @@ double	compute_growingseason_index(struct zone_object *zone,
 	else
 		idayl = (zone[0].metv.dayl_ravg - epc.gs_dayl_min)/(epc.gs_dayl_range);
 	
-	itmin = max(itmin, 0.0);
-	ivpd = max(ivpd, 0.0);
-	idayl = max(idayl, 0.0);
+	itmin = MAX(itmin, 0.0);
+	ivpd = MAX(ivpd, 0.0);
+	idayl = MAX(idayl, 0.0);
 	
 	gsi = idayl*itmin*ivpd;
 	/* printf("\n tmin %lf %lf vpd %lf %lf dayl %lf %lf gsi %lf", itmin,

@@ -71,7 +71,7 @@ double	compute_vapour_conductance(
 		conductance = 99999999;
 	}
 	else{
-		theta = unsat_storage/min(sat_deficit,active_zone_depth);
+		theta = unsat_storage/MIN(sat_deficit,active_zone_depth);
 		if ( theta > 0.185 ){
 			conductance = 0.001429;
 		}

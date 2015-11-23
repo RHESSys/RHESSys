@@ -118,8 +118,8 @@ double	compute_field_capacity(
 	/*--------------------------------------------------------------*/
 	/*	Make sure p and p_0 are non zero.			*/
 	/*--------------------------------------------------------------*/
-	p = max(p,0.00000001);
-	p_0 = max(p_0,0.00000001);
+	p = MAX(p,0.00000001);
+	p_0 = MAX(p_0,0.00000001);
 	if (z < ZERO) z = 0.0;
 	if (z_surface < ZERO) z_surface = 0.0;
 
@@ -180,8 +180,8 @@ double	compute_field_capacity(
 		z,
 		z_surface);
 
-	field_capacity = min(field_capacity,max_field_capacity);
-	field_capacity = max(field_capacity, 0.0);	
+	field_capacity = MIN(field_capacity,max_field_capacity);
+	field_capacity = MAX(field_capacity, 0.0);	
 	
 	return(field_capacity);
 } /*compute_field_capacity*/ 

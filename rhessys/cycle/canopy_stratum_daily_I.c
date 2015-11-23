@@ -150,10 +150,10 @@ void	canopy_stratum_daily_I(
 		stratum[0].rootzone.S = 1.0;
 
 	else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)  	
-		stratum[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
+		stratum[0].rootzone.S = MIN(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
 	
 	else  
-		stratum[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat 
+		stratum[0].rootzone.S = MIN((patch[0].rz_storage + patch[0].rootzone.potential_sat 
 			- patch[0].sat_deficit)
 			/ patch[0].rootzone.potential_sat, 1.0);							
 	 /*--------------------------------------------------------------*/

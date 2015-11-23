@@ -54,7 +54,7 @@ int	compute_froot_litfall(
 	/*------------------------------------------------------*/
 	/*	Don't allow more leaves to fall than exist	*/
 	/*------------------------------------------------------*/
-	litfallc = min(cs->frootc, litfallc);
+	litfallc = MIN(cs->frootc, litfallc);
 	/*------------------------------------------------------*/
 	/*	determine carbon and nitrgoen to labile, cellulose and lignan pools */
 	/*------------------------------------------------------*/

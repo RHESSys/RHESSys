@@ -202,7 +202,7 @@ void zone_daily_I(
 		else
 			isohyet_adjustment = zone[0].precip_lapse_rate;
 
-		isohyet_adjustment = max(0.0, isohyet_adjustment);
+		isohyet_adjustment = MAX(0.0, isohyet_adjustment);
 		/*--------------------------------------------------------------*/
 		/*		if the base station's value for a parameter is present	*/
 		/*			replace it.											*/
@@ -451,7 +451,7 @@ void zone_daily_I(
 		}
 		else{
 			zone[0].Delta_T = zone[0].metv.tmax - zone[0].metv.tmin;
-			if ( (zone[0].rain + max(zone[0].snow,0.0)) > zone[0].defaults[0][0].pptmin){
+			if ( (zone[0].rain + MAX(zone[0].snow,0.0)) > zone[0].defaults[0][0].pptmin){
 				zone[0].Delta_T =	zone[0].Delta_T * 0.75;
 			}
 		} /*end if else*/
@@ -465,7 +465,7 @@ void zone_daily_I(
 		/*		there is a substantial amoun of rain (>1inch)			*/
 		/*		From C code for rhessys.								*/
 		/*--------------------------------------------------------------*/
-		if ( (zone[0].rain + max(0.0,zone[0].snow)) > zone[0].defaults[0][0].pptmin){
+		if ( (zone[0].rain + MAX(0.0,zone[0].snow)) > zone[0].defaults[0][0].pptmin){
 			zone[0].Delta_T =	zone[0].Delta_T * 0.75;
 		}
 	}

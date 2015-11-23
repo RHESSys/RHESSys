@@ -165,7 +165,7 @@ void		surface_daily_F(
 	/* but only do this if there is actually a detention_store capacity to hold water */
 	/*--------------------------------------------------------------*/
 	
-    	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
+    	if ( (patch[0].detention_store > (MAX(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
                                         && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
 	
 			/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
@@ -182,7 +182,7 @@ void		surface_daily_F(
 	
 			/*** Use Penman with rsurface=0 for open water evaporation. ***/
 	
-			patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
+			patch[0].ga = MAX((patch[0].ga * patch[0].stability_correction),0.0001);
 		
 			detention_store_potential_dry_evaporation_rate = penman_monteith(
 				command_line[0].verbose_flag,
@@ -210,8 +210,8 @@ void		surface_daily_F(
 
 			// Avoid over-estimating ET from surfaces with no detention store size 
 			//   (e.g. impervious surface) by gating ET by detention_store_size
-			detention_store_evaporation = min(detention_store_potential_evaporation,
-							  min(patch[0].detention_store, 
+			detention_store_evaporation = MIN(detention_store_potential_evaporation,
+							  MIN(patch[0].detention_store, 
 							      patch[0].soil_defaults[0][0].detention_store_size) );
 	
 	}
@@ -406,14 +406,14 @@ void		surface_daily_F(
 
 		else rnet_evap = 0.0;
 
-		rnet_evap_litter = min(litter->proj_pai,1)*rnet_evap;
-		rnet_evap_soil = max(0.0, rnet_evap-rnet_evap_litter);
+		rnet_evap_litter = MIN(litter->proj_pai,1)*rnet_evap;
+		rnet_evap_soil = MAX(0.0, rnet_evap-rnet_evap_litter);
 
 		if (rnet_evap < 0.0) rnet_evap = 0.0;
 		/*--------------------------------------------------------------*/
 		/*	Make sure ga and gsurf are non-zero.			*/
 		/*--------------------------------------------------------------*/
-		patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
+		patch[0].ga = MAX((patch[0].ga * patch[0].stability_correction),0.0001);
 		/*--------------------------------------------------------------*/
 		/*	Estimate potential evap rates.				*/
 		/*--------------------------------------------------------------*/
@@ -455,19 +455,19 @@ void		surface_daily_F(
 			1/(patch[0].ga),
 			2) ;
 		
-		PE_rainy_rate = max(0, PE_rainy_rate);
-		PE_rate = max(0, PE_rate);
+		PE_rainy_rate = MAX(0, PE_rainy_rate);
+		PE_rate = MAX(0, PE_rate);
 
-		potential_evaporation_rate = max(0,potential_evaporation_rate);
-		potential_rainy_evaporation_rate = max(0,potential_rainy_evaporation_rate);
+		potential_evaporation_rate = MAX(0,potential_evaporation_rate);
+		potential_rainy_evaporation_rate = MAX(0,potential_rainy_evaporation_rate);
 		/*--------------------------------------------------------------*/
 		/*	Do not allow negative potential evap if it raining	*/
 		/*	since condensation/dew dep is the same as rain		*/
 		/*--------------------------------------------------------------*/
 		if ( zone[0].rain > 0 ){
-			potential_evaporation_rate = max(0,potential_evaporation_rate);
+			potential_evaporation_rate = MAX(0,potential_evaporation_rate);
 			potential_rainy_evaporation_rate =
-				max(0,potential_rainy_evaporation_rate);
+				MAX(0,potential_rainy_evaporation_rate);
 		}
 		/*--------------------------------------------------------------*/
 		/*	Compute potential evaporation of litter. 		*/
@@ -533,7 +533,7 @@ void		surface_daily_F(
 			/*	base soil evapotration/ exfiltration will only occur 	*/
 			/*	on exposed soil layers					*/
 			/*--------------------------------------------------------------*/
-			exfiltration =	min(soil_potential_evaporation,
+			exfiltration =	MIN(soil_potential_evaporation,
 				patch[0].potential_exfiltration);
 		
 			

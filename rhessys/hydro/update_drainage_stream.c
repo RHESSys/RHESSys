@@ -339,17 +339,17 @@ void  update_drainage_stream(
 	if ((patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) &&
 		(patch[0].detention_store > ZERO)) {
 		Qout = (patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size);
-		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_NO3;
+		Nout = (MIN(1.0, Qout / patch[0].detention_store)) * patch[0].surface_NO3;
 		patch[0].surface_NO3  -= Nout;
 		patch[0].streamflow_NO3 += Nout;
 		patch[0].surface_ns_leach += Nout;
-		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_DOC;
+		Nout = (MIN(1.0, Qout / patch[0].detention_store)) * patch[0].surface_DOC;
 		patch[0].surface_DOC  -= Nout;
 		patch[0].streamflow_DOC += Nout;
-		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_DON;
+		Nout = (MIN(1.0, Qout / patch[0].detention_store)) * patch[0].surface_DON;
 		patch[0].surface_DON  -= Nout;
 		patch[0].streamflow_DON += Nout;
-		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_NH4;
+		Nout = (MIN(1.0, Qout / patch[0].detention_store)) * patch[0].surface_NH4;
 		patch[0].surface_NH4  -= Nout;
 		patch[0].streamflow_NH4 += Nout;
 		patch[0].detention_store -= Qout;

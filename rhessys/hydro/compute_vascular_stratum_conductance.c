@@ -127,7 +127,7 @@ double	compute_vascular_stratum_conductance(
 		if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > stratum[0].rootzone.potential_sat)) {
 			patch[0].wilting_point = exp(-100.0*log(-1.0*LWP_stom_closure/patch[0].soil_defaults[0][0].psi_air_entry) 
 			* patch[0].soil_defaults[0][0].pore_size_index) * patch[0].soil_defaults[0][0].porosity_0;
-			patch[0].wilting_point = patch[0].wilting_point * (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat)) ;
+			patch[0].wilting_point = patch[0].wilting_point * (MIN(patch[0].sat_deficit, patch[0].rootzone.potential_sat)) ;
 			if (patch[0].rz_storage < patch[0].wilting_point) m_LWP = 0.0;
 
 			}
@@ -164,7 +164,7 @@ double	compute_vascular_stratum_conductance(
 	/*--------------------------------------------------------------*/
 	/*	Ensure that streatum conductance is non-zero.		*/
 	/*--------------------------------------------------------------*/
-	stratum_conductance = max(stratum_conductance,0.0000001);
+	stratum_conductance = MAX(stratum_conductance,0.0000001);
 
 
 	stratum[0].mult_conductance.APAR = m_APAR;			

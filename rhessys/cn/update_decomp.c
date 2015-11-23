@@ -204,11 +204,11 @@ int update_decomp(
 	cs_litr->litr1c_hr_snk += cdf->litr1c_hr;
 	cs_litr->litr1c       -= cdf->litr1c_hr;
 	if (cs_litr->litr1c - cdf->litr1c_to_soil1c < 0.0) {
-		cdf->litr1c_to_soil1c = max(cs_litr->litr1c,0.0);
+		cdf->litr1c_to_soil1c = MAX(cs_litr->litr1c,0.0);
 		ndf->litr1n_to_soil1n = cdf->litr1c_to_soil1c / cn_l1 ;
 	}
 	if (ns_litr->litr1n - ndf->litr1n_to_soil1n < 0.0) {
-		ndf->litr1n_to_soil1n = max(ns_litr->litr1n,0.0);
+		ndf->litr1n_to_soil1n = MAX(ns_litr->litr1n,0.0);
 		cdf->litr1c_to_soil1c = cdf->litr1c_to_soil1c * cn_l1 ;
 	}
 	cs_soil->soil1c       += cdf->litr1c_to_soil1c;
@@ -217,15 +217,15 @@ int update_decomp(
 	cs_litr->litr2c_hr_snk += cdf->litr2c_hr;
 	cs_litr->litr2c       -= cdf->litr2c_hr;
 	if (cs_litr->litr2c - cdf->litr2c_to_soil2c < 0.0) {
-		cdf->litr2c_to_soil2c = max(cs_litr->litr2c,0.0);
-		ndf->litr2n_to_soil2n = max(ns_litr->litr2n,0.0);
+		cdf->litr2c_to_soil2c = MAX(cs_litr->litr2c,0.0);
+		ndf->litr2n_to_soil2n = MAX(ns_litr->litr2n,0.0);
 	}
 	cs_soil->soil2c       += cdf->litr2c_to_soil2c;
 	cs_litr->litr2c       -= cdf->litr2c_to_soil2c;
 	/* Fluxes from shielded to unshielded cellulose pools */
 	if (cs_litr->litr3c - cdf->litr3c_to_litr2c < 0.0) {
-		cdf->litr3c_to_litr2c = max(cs_litr->litr3c,0.0);
-		ndf->litr3n_to_litr2n = max(ns_litr->litr3n,0.0);
+		cdf->litr3c_to_litr2c = MAX(cs_litr->litr3c,0.0);
+		ndf->litr3n_to_litr2n = MAX(ns_litr->litr3n,0.0);
 	}
 	cs_litr->litr2c       += cdf->litr3c_to_litr2c;
 	cs_litr->litr3c       -= cdf->litr3c_to_litr2c;
@@ -233,8 +233,8 @@ int update_decomp(
 	cs_litr->litr4c_hr_snk += cdf->litr4c_hr;
 	cs_litr->litr4c       -= cdf->litr4c_hr;
 	if (cs_litr->litr4c - cdf->litr4c_to_soil3c < 0.0) {
-		cdf->litr4c_to_soil3c = max(cs_litr->litr4c,0.0);
-		ndf->litr4n_to_soil3n = max(ns_litr->litr4n,0.0);
+		cdf->litr4c_to_soil3c = MAX(cs_litr->litr4c,0.0);
+		ndf->litr4n_to_soil3n = MAX(ns_litr->litr4n,0.0);
 	}
 	cs_soil->soil3c       += cdf->litr4c_to_soil3c;
 	cs_litr->litr4c       -= cdf->litr4c_to_soil3c;
@@ -242,8 +242,8 @@ int update_decomp(
 	cs_soil->soil1c_hr_snk += cdf->soil1c_hr;
 	cs_soil->soil1c       -= cdf->soil1c_hr;
 	if (cs_soil->soil1c - cdf->soil1c_to_soil2c < 0.0) {
-		cdf->soil1c_to_soil2c = max(cs_soil->soil1c, 0.0);
-		ndf->soil1n_to_soil2n = max(ns_soil->soil1n, 0.0);
+		cdf->soil1c_to_soil2c = MAX(cs_soil->soil1c, 0.0);
+		ndf->soil1n_to_soil2n = MAX(ns_soil->soil1n, 0.0);
 	}
 	cs_soil->soil2c       += cdf->soil1c_to_soil2c;
 	cs_soil->soil1c       -= cdf->soil1c_to_soil2c;
@@ -251,8 +251,8 @@ int update_decomp(
 	cs_soil->soil2c_hr_snk += cdf->soil2c_hr;
 	cs_soil->soil2c       -= cdf->soil2c_hr;
 	if (cs_soil->soil2c - cdf->soil2c_to_soil3c < 0.0) {
-		cdf->soil2c_to_soil3c = max(cs_soil->soil2c, 0.0);
-		ndf->soil2n_to_soil3n = max(ns_soil->soil2n, 0.0);
+		cdf->soil2c_to_soil3c = MAX(cs_soil->soil2c, 0.0);
+		ndf->soil2n_to_soil3n = MAX(ns_soil->soil2n, 0.0);
 	}
 	cs_soil->soil3c       += cdf->soil2c_to_soil3c;
 	cs_soil->soil2c       -= cdf->soil2c_to_soil3c;
@@ -260,8 +260,8 @@ int update_decomp(
 	cs_soil->soil3c_hr_snk += cdf->soil3c_hr;
 	cs_soil->soil3c       -= cdf->soil3c_hr;
 	if (cs_soil->soil3c - cdf->soil3c_to_soil4c < 0.0) {
-		cdf->soil3c_to_soil4c = max(cs_soil->soil3c, 0.0);
-		ndf->soil3n_to_soil4n = max(ns_soil->soil3n, 0.0);
+		cdf->soil3c_to_soil4c = MAX(cs_soil->soil3c, 0.0);
+		ndf->soil3n_to_soil4n = MAX(ns_soil->soil3n, 0.0);
 	}
 	cs_soil->soil4c       += cdf->soil3c_to_soil4c;
 	cs_soil->soil3c       -= cdf->soil3c_to_soil4c;
@@ -312,8 +312,8 @@ int update_decomp(
 			daily_net_nmin = -1.0 * (ns_soil->sminn + ns_soil->nitrate);
 			
 		}
-		nitrate_immob = min(ns_soil->nitrate, -1.0*daily_net_nmin);
-		ns_soil->nitrate -= max(nitrate_immob,0.0);
+		nitrate_immob = MIN(ns_soil->nitrate, -1.0*daily_net_nmin);
+		ns_soil->nitrate -= MAX(nitrate_immob,0.0);
 		ns_soil->sminn -= (-1.0*daily_net_nmin - nitrate_immob);
 	}
 	/* Fluxes output of mineralized N pool from plant uptake */
@@ -321,22 +321,22 @@ int update_decomp(
 	/*	second soil NH4; and thirds surface NO3, 4th surface NH4 */
 	remaining_uptake = ndf->sminn_to_npool;
 	/* remove from soil nitrate pool */
-	N_uptake = max((min(ns_soil->nitrate, remaining_uptake)),0.0);
+	N_uptake = MAX((MIN(ns_soil->nitrate, remaining_uptake)),0.0);
 	ns_soil->nitrate -= N_uptake;
 	remaining_uptake -= N_uptake;
 
 	/* remove from soil NH4 pool */
-	N_uptake = max((min(ns_soil->sminn, remaining_uptake)),0.0);
+	N_uptake = MAX((MIN(ns_soil->sminn, remaining_uptake)),0.0);
 	ns_soil->sminn -=  N_uptake;
 	remaining_uptake -= N_uptake;
 
 	/* remove from surface NO3 pool */
-	N_uptake = max((min(patch[0].surface_NO3, remaining_uptake)),0.0);
+	N_uptake = MAX((MIN(patch[0].surface_NO3, remaining_uptake)),0.0);
 	patch[0].surface_NO3 -=  N_uptake;
 	remaining_uptake -= N_uptake;
 
 	/* remove from surface NH4 pool */
-	N_uptake = max((min(patch[0].surface_NH4, remaining_uptake)),0.0);
+	N_uptake = MAX((MIN(patch[0].surface_NH4, remaining_uptake)),0.0);
 	patch[0].surface_NH4 -=  N_uptake;
 	remaining_uptake -= N_uptake;
 

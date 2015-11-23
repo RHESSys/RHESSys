@@ -59,7 +59,7 @@ int	compute_leaf_litfall(
 	/*------------------------------------------------------*/
 	/*	Don't allow more leaves to fall than exist	*/
 	/*------------------------------------------------------*/
-	litfallc = min(cs->leafc, litfallc);
+	litfallc = MIN(cs->leafc, litfallc);
 	/*------------------------------------------------------*/
 	/*	determine carbon and nitrgoen to labile, cellulose and lignan pools */
 	/*------------------------------------------------------*/
@@ -77,8 +77,8 @@ int	compute_leaf_litfall(
 		nretrans = 0.0;
 	/* test for negative or zero labile litter N */
 
-	nretrans= max(nretrans, 0.0);
-	n1 = max(n1, 0.0);
+	nretrans= MAX(nretrans, 0.0);
+	n1 = MAX(n1, 0.0);
 
 	if ((n1 < -ZERO) && (grow_flag > 0)){
 		printf("Error in COMPUTE_LEAF_LITFALL - for litfallc %lf\n", litfallc);

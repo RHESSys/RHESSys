@@ -54,8 +54,8 @@ int update_rooting_depth( struct rooting_zone_object *rootzone,
 	rootzone->depth = 3.0 * pow((biomass_carbon_ratio*rootc), root_growth_direction) 
 				/ root_distrib_parm;
 
-	rootzone->depth = min(rootzone->depth, soil_depth);
-	rootzone->depth = max(rootzone->depth, 0.0);
+	rootzone->depth = MIN(rootzone->depth, soil_depth);
+	rootzone->depth = MAX(rootzone->depth, 0.0);
 
 	return (!ok);
 } /* end update_rooting_depth */

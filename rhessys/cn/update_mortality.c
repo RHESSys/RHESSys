@@ -161,7 +161,7 @@ void update_mortality(
 		m_leafn_to_litr3n = m_leafc_to_litr3c / CEL_CN;
 		m_leafn_to_litr4n = m_leafc_to_litr4c / LIG_CN;
 		m_leafn_to_litr1n = mort.mort_leafc*ns->leafn - (m_leafn_to_litr2n+m_leafn_to_litr3n+m_leafn_to_litr4n);
-		m_leafn_to_litr1n = max(m_leafn_to_litr1n, 0.0);
+		m_leafn_to_litr1n = MAX(m_leafn_to_litr1n, 0.0);
 		}
 	else {
 		m_leafn_to_litr1n = 0.0;
@@ -174,7 +174,7 @@ void update_mortality(
 		m_deadleafn_to_litr3n = m_deadleafc_to_litr3c / CEL_CN;
 		m_deadleafn_to_litr4n = m_deadleafc_to_litr4c / LIG_CN;
 		m_deadleafn_to_litr1n = mort.mort_deadleafc*ns->dead_leafn - (m_deadleafn_to_litr2n+m_deadleafn_to_litr3n+m_deadleafn_to_litr4n);
-		m_deadleafn_to_litr1n = max(m_deadleafn_to_litr1n, 0.0);
+		m_deadleafn_to_litr1n = MAX(m_deadleafn_to_litr1n, 0.0);
 	}
 	else {
 		m_deadleafn_to_litr1n = 0.0;
@@ -187,7 +187,7 @@ void update_mortality(
 		m_frootn_to_litr3n = m_frootc_to_litr3c / CEL_CN;
 		m_frootn_to_litr4n = m_frootc_to_litr4c / LIG_CN;
 		m_frootn_to_litr1n = mort.mort_frootc*ns->frootn - (m_frootn_to_litr2n+m_frootn_to_litr3n+m_frootn_to_litr4n);
-		m_frootn_to_litr1n = max(m_frootn_to_litr1n, 0.0);
+		m_frootn_to_litr1n = MAX(m_frootn_to_litr1n, 0.0);
 		}
 	else {
 		m_frootn_to_litr1n = 0.0;

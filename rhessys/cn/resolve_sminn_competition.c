@@ -52,7 +52,7 @@ int resolve_sminn_competition(
 	/*growth N demands against the available soil mineral N pool. */
 	/*--------------------------------------------------------------*/
 	sum_ndemand = ndf->plant_potential_ndemand + ndf->potential_immob;
-	sum_avail = max(ns_soil->sminn + ns_soil->nitrate + ndf->mineralized, 0.0);
+	sum_avail = MAX(ns_soil->sminn + ns_soil->nitrate + ndf->mineralized, 0.0);
 
 	if (sum_ndemand <= sum_avail){
 	/* N availability is not limiting immobilization or plant

@@ -209,7 +209,7 @@ double	compute_N_leached(int verbose_flag,
 	/*if (nleached > total_nitrate)*/
 		/*nleached = total_nitrate;*/
 
-	nleached = max(nleached, 0.0);
+	nleached = MAX(nleached, 0.0);
 	
 	return(nleached);
 } /* end compute_N_leached */

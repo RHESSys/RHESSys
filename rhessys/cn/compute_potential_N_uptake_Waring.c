@@ -86,7 +86,7 @@ double compute_potential_N_uptake_Waring(
 		and use the rest of the available carbon for
 		new growth and storage.
 			-----------------------------------------------*/
-			transfer = min(cs->availc, -cs->cpool);
+			transfer = MIN(cs->availc, -cs->cpool);
 			cs->availc -= transfer;
 			cs->cpool += transfer;
 	} /* end if negative cpool */
@@ -106,7 +106,7 @@ double compute_potential_N_uptake_Waring(
 	/*--------------------------------------------------------------*/
 	
 	if (((cdf->potential_psn_to_cpool) > ZERO) && (cdf->psn_to_cpool > ZERO)) {
-	c = max(cdf->potential_psn_to_cpool, cdf->psn_to_cpool);
+	c = MAX(cdf->potential_psn_to_cpool, cdf->psn_to_cpool);
 	plant_calloc = cs->availc;
 	if ((plant_calloc > ZERO) && (c > 0)){
 		froot = epc.waring_pa / (1.0 + epc.waring_pb * (cdf->psn_to_cpool) / c);

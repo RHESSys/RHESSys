@@ -91,7 +91,7 @@ double	compute_ra_surface(
 	/*	this canopy below is below  0.1*ho of the surface	*/
 	/* 	therefore resistence is  a logarithmic profile 		*/
 	/*--------------------------------------------------------------*/
-	ra_u = pow(log( (h_o)/ max(zo_u, 0.01 ) )/0.41,2.0) / *u;
+	ra_u = pow(log( (h_o)/ MAX(zo_u, 0.01 ) )/0.41,2.0) / *u;
 	/*--------------------------------------------------------------*/
 	/*	update conductance below this patch			*/
 	/*--------------------------------------------------------------*/

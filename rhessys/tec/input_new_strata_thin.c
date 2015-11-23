@@ -423,7 +423,7 @@ void input_new_strata_thin(
 		}
 	}
 	}
-	patch[0].rootzone.depth = max(patch[0].rootzone.depth, canopy_strata[0].rootzone.depth);
+	patch[0].rootzone.depth = MAX(patch[0].rootzone.depth, canopy_strata[0].rootzone.depth);
 	
 		/*--------------------------------------------------------------*/
 		/*	set phenology timing if static allocation		*/

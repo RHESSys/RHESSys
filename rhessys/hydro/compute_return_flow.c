@@ -57,10 +57,10 @@ double	compute_return_flow(
 	/*--------------------------------------------------------------*/
 	/*	Return flow = all water above patch surface.		*/
 	/*--------------------------------------------------------------*/
-	excess = max(0,-1 * sat_deficit - detention_store_size);
-	return_flow = max( 0, excess );
+	excess = MAX(0,-1 * sat_deficit - detention_store_size);
+	return_flow = MAX( 0, excess );
 
-	add_to_litter = max( (litter[0].rain_capacity - litter[0].rain_stored), 0.0);
+	add_to_litter = MAX( (litter[0].rain_capacity - litter[0].rain_stored), 0.0);
 	return_flow -= add_to_litter;
 	litter[0].rain_stored += add_to_litter;
 

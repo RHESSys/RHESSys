@@ -109,7 +109,7 @@ double compute_potential_N_uptake_Dickenson(
 
 
 	fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
-	fleaf = min(fleaf, 1.0);
+	fleaf = MIN(fleaf, 1.0);
 	total_wood = (cs->live_crootc + cs->dead_crootc + cs->live_stemc + cs->dead_stemc);
 
 	
@@ -119,7 +119,7 @@ double compute_potential_N_uptake_Dickenson(
 			fwood= 1.0-fleaf-froot;
 			}
 		else {
-			fleaf = min(fleaf, 0.6);
+			fleaf = MIN(fleaf, 0.6);
 			froot = 0.5*(1-fleaf);
 			fwood = 0.5*(1-fleaf);
 			}

@@ -116,7 +116,7 @@ double	compute_snow_stored(
 	/*--------------------------------------------------------------*/
 	/*	Compute amount of storage sublimated.			*/
 	/*--------------------------------------------------------------*/
-	storage_sublimated = min(potential_sublimation,stratum[0].snow_stored);
+	storage_sublimated = MIN(potential_sublimation,stratum[0].snow_stored);
 	/*--------------------------------------------------------------*/
 	/*	Update amount of snow in storage after sublimation.	*/
 	/*--------------------------------------------------------------*/
@@ -139,7 +139,7 @@ double	compute_snow_stored(
 	/*	Compute amount of potential interception sublimated.	*/
 	/*--------------------------------------------------------------*/
 	potential_interception_sublimated  =
-		min( potential_sublimation, potential_interception);
+		MIN( potential_sublimation, potential_interception);
 	/*--------------------------------------------------------------*/
 	/*	Update the potential interception after sublimation.	*/
 	/*--------------------------------------------------------------*/
@@ -150,7 +150,7 @@ double	compute_snow_stored(
 	/*--------------------------------------------------------------*/
 	/*	Update snow storage					*/
 	/*--------------------------------------------------------------*/
-	snow_storage = min( stratum[0].snow_stored
+	snow_storage = MIN( stratum[0].snow_stored
 		+ potential_interception, stratum[0].epv.all_pai
 		* stratum[0].defaults[0][0].specific_snow_capacity );
 		
@@ -166,16 +166,16 @@ double	compute_snow_stored(
 	/*	Update snow storage					*/
 	/*--------------------------------------------------------------*/
 	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) {
-		snow_storage = min( stratum[0].snow_stored
+		snow_storage = MIN( stratum[0].snow_stored
 			+ potential_interception, stratum[0].epv.all_pai
 			* stratum[0].defaults[0][0].specific_snow_capacity );
-		throughfall += max(potential_interception - (snow_storage - stratum[0].snow_stored),0.0);
+		throughfall += MAX(potential_interception - (snow_storage - stratum[0].snow_stored),0.0);
 		*snow = throughfall;
 		}
 	else {
-		snow_storage = min( stratum[0].snow_stored
+		snow_storage = MIN( stratum[0].snow_stored
 			+ potential_interception, stratum[0].defaults[0][0].specific_snow_capacity );
-		throughfall += max(potential_interception - (snow_storage - stratum[0].snow_stored),0.0);
+		throughfall += MAX(potential_interception - (snow_storage - stratum[0].snow_stored),0.0);
 		*snow = throughfall;
 		}
 	/*--------------------------------------------------------------*/

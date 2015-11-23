@@ -276,9 +276,9 @@ void		patch_daily_I(
 	/*	during the day.	The leftover potyential cap rise is	*/
 	/*	used later to support root uptake after the fact.	*/
 	/*--------------------------------------------------------------*/
-	patch[0].cap_rise = max(
+	patch[0].cap_rise = MAX(
 		0.0,
-		(min(patch[0].potential_cap_rise/2,
+		(MIN(patch[0].potential_cap_rise/2,
 		(patch[0].field_capacity - patch[0].unsat_storage))));
 	if (command_line[0].routing_flag == 0)
 		patch[0].cap_rise = 0.0;
@@ -389,7 +389,7 @@ void		patch_daily_I(
 				
 				
 		}
-		patch[0].rootzone.depth = max(patch[0].rootzone.depth, 
+		patch[0].rootzone.depth = MAX(patch[0].rootzone.depth, 
 			 patch[0].canopy_strata[stratum][0].rootzone.depth);
 	}
 	patch[0].effective_lai = patch[0].effective_lai / patch[0].num_canopy_strata;

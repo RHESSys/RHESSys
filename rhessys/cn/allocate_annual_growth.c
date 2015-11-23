@@ -202,7 +202,7 @@ int allocate_annual_growth(				int id,
         else
                storage_transfer_prop = 1.0;
 
-	storage_transfer_prop = min(storage_transfer_prop,1.0);
+	storage_transfer_prop = MIN(storage_transfer_prop,1.0);
 
 
 	/*--------------------------------------------------------------*/
@@ -213,8 +213,8 @@ int allocate_annual_growth(				int id,
 	if ((total_store < cpool_mort_fract*total_biomass) && (total_biomass > ZERO) && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
 		excess_carbon = 1.0 - total_store/(cpool_mort_fract*total_biomass);
-		excess_carbon = max(excess_carbon,0);
-		excess_carbon = min(1.0,excess_carbon);
+		excess_carbon = MAX(excess_carbon,0);
+		excess_carbon = MIN(1.0,excess_carbon);
 		cs->mortality_fract = excess_carbon;
 		mort.mort_cpool = excess_carbon;
 		mort.mort_leafc = excess_carbon;
@@ -361,7 +361,7 @@ int allocate_annual_growth(				int id,
 
 
 		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
-		fleaf = min(fleaf, 1.0);
+		fleaf = MIN(fleaf, 1.0);
 
 		if (epc.veg_type==TREE) {
 			froot = 0.5*(1-fleaf);
@@ -372,7 +372,7 @@ int allocate_annual_growth(				int id,
 			froot = (1-fleaf);
 		}
 
-		fleaf = max(0.0, fleaf);
+		fleaf = MAX(0.0, fleaf);
 		
 		if (epc.veg_type == TREE){
 		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
@@ -383,8 +383,8 @@ int allocate_annual_growth(				int id,
 
 		carbohydrate_transfer = carbohydrate_transfer/fleaf;
 
-		carbohydrate_transfer = min(cs->cpool, carbohydrate_transfer);		
-		carbohydrate_transfer = max(carbohydrate_transfer, 0.0);
+		carbohydrate_transfer = MIN(cs->cpool, carbohydrate_transfer);		
+		carbohydrate_transfer = MAX(carbohydrate_transfer, 0.0);
 
 		if (mean_cn > ZERO)
 			carbohydrate_transfer_n = carbohydrate_transfer/mean_cn;
@@ -393,11 +393,11 @@ int allocate_annual_growth(				int id,
 
 		if (carbohydrate_transfer > ZERO) {
 		unmetn = carbohydrate_transfer_n - ns->npool;
-		unmetn = max(unmetn, 0.0);
+		unmetn = MAX(unmetn, 0.0);
 		}
 		else unmetn=0.0;
 
-		ns->retransn = max(ns->retransn, 0.0);
+		ns->retransn = MAX(ns->retransn, 0.0);
 		if (unmetn > ns->retransn)   {
 			ndf->retransn_to_npool += ns->retransn;
 			carbohydrate_transfer = (ns->npool+ns->retransn)*mean_cn;
@@ -505,7 +505,7 @@ int allocate_annual_growth(				int id,
 		} /* end if resprout */
 	} /* end if less than min_leaf_carbon */
 	else  {
-		 cs->num_resprout = max(cs->num_resprout-1,0);	
+		 cs->num_resprout = MAX(cs->num_resprout-1,0);	
 		 cs->age += 1;
 		 }
 

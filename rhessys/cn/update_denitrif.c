@@ -90,15 +90,15 @@ int update_denitrif(
 		if (std > 0) {
 			for (i =1; i< NUM_NORMAL; i++) {
 				thetai = theta + std*NORMAL[i];
-				thetai = min(1.0, thetai);
-				thetai = max(0.0, thetai);
+				thetai = MIN(1.0, thetai);
+				thetai = MAX(0.0, thetai);
 				if (thetai > ZERO)
-				water_scalari = min(1.0,a / pow(b,  (c / pow(b, (d*thetai) )) ));
+				water_scalari = MIN(1.0,a / pow(b,  (c / pow(b, (d*thetai) )) ));
 				water_scalar += 1.0/NUM_NORMAL * water_scalari;
 				}
 			}
 		else
-				water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
+				water_scalar = MIN(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
 
 
 		nitrate_ratio = (ns_soil->nitrate)
@@ -121,15 +121,15 @@ int update_denitrif(
 		/*--------------------------------------------------------------*/
 		/*	estimate denitrification				*/
 		/*--------------------------------------------------------------*/
-		denitrify = min(fCO2, fnitrate) * water_scalar;
+		denitrify = MIN(fCO2, fnitrate) * water_scalar;
 	} /* end mineralized N available */
 	else
 		denitrify = 0.0;
 	/*--------------------------------------------------------------*/
 	/*	update state and flux variables				*/
 	/*--------------------------------------------------------------*/
-	denitrify = min(denitrify, ns_soil->nitrate);
-	denitrify = max(0.0, denitrify);
+	denitrify = MIN(denitrify, ns_soil->nitrate);
+	denitrify = MAX(0.0, denitrify);
 	ns_soil->nvolatilized_snk += denitrify;
 	ndf->sminn_to_nvol = denitrify;
 	ns_soil->nitrate -= denitrify;

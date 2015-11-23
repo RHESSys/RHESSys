@@ -106,8 +106,8 @@ double	compute_soil_water_potential(
 	/*--------------------------------------------------------------*/
 	/*      Make sure p and p_0 are non zero.                       */
 	/*--------------------------------------------------------------*/
-	p = max(p,0.00000001);
-	p_0 = max(p_0,0.00000001);
+	p = MAX(p,0.00000001);
+	p_0 = MAX(p_0,0.00000001);
 	/*--------------------------------------------------------------*/
 	/*	compute soil water storage				*/
 	/*--------------------------------------------------------------*/
@@ -149,12 +149,12 @@ double	compute_soil_water_potential(
 		switch(curve) {
 
 		case 1: 
-			LWP_predawn = min(-1.0 * 0.01 * ( psi_air_entry
+			LWP_predawn = MIN(-1.0 * 0.01 * ( psi_air_entry
 				* pow ( S , -1/pore_size_index) ), LWP_min_spring);
 			break;
 		case 2:
 			if (S > ZERO) 
-				LWP_predawn = min( -1.0 * 0.01 * psi_air_entry
+				LWP_predawn = MIN( -1.0 * 0.01 * psi_air_entry
 				* pow( pow(1/S,1/(1-1/pore_size_index)) -1 , 1/pore_size_index )
 					, LWP_min_spring);
 			else LWP_predawn = LWP_stom_closure;
@@ -175,6 +175,6 @@ double	compute_soil_water_potential(
 	/*--------------------------------------------------------------*/
 	/*	Limit the lowest LWP to that of stomatal closure	*/
 	/*--------------------------------------------------------------*/
-	LWP_predawn = max(LWP_predawn, LWP_stom_closure);
+	LWP_predawn = MAX(LWP_predawn, LWP_stom_closure);
 	return(LWP_predawn);
 } /*end compute_soil_water_potential)*/

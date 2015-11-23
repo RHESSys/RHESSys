@@ -81,17 +81,17 @@ double	compute_snow_sublimation(
 	/*	limit sublimation based on available energy		*/
 	/*--------------------------------------------------------------*/
    if ((Qe < 0.0) && (net_radiation >= 0.0))		
-      Qe = min(-Qe, net_radiation);				
+      Qe = MIN(-Qe, net_radiation);				
    else
       Qe = 0.0;
 
-   sublim_floor_wind = max(Qe*seconds_per_day/(hf+hv), 0.0);
+   sublim_floor_wind = MAX(Qe*seconds_per_day/(hf+hv), 0.0);
    sublim_floor_wind /= 1000;		/* convert from mm to meters */
    
 	/*--------------------------------------------------------------*/
 	/*	don't sublimate more snow than available		*/
 	/*--------------------------------------------------------------*/
-   sublim_floor_wind = min (sublim_floor_wind, snowpack_water_equivalent);
+   sublim_floor_wind = MIN (sublim_floor_wind, snowpack_water_equivalent);
 
     return( sublim_floor_wind);
 } /*end compute_snow_sublimation*/

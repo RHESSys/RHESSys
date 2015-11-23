@@ -89,10 +89,10 @@ double	compute_varbased_returnflow( double std,
 			return_flow +=  -1 * sd * perc[i];
 	}
 	}
-	else return_flow = max(-1*(sat_deficit-unsat_storage),0.0);
+	else return_flow = MAX(-1*(sat_deficit-unsat_storage),0.0);
 
-	add_to_litter = max( (litter[0].rain_capacity - litter[0].rain_stored), 0.0);
-	add_to_litter = min(add_to_litter, return_flow);
+	add_to_litter = MAX( (litter[0].rain_capacity - litter[0].rain_stored), 0.0);
+	add_to_litter = MIN(add_to_litter, return_flow);
 	add_to_litter = 0.0;
 	return_flow -= add_to_litter;
 	litter[0].rain_stored += add_to_litter;

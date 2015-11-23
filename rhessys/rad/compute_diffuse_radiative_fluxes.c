@@ -112,7 +112,7 @@ double	compute_diffuse_radiative_fluxes(	int	verbose_flag,
 	/*--------------------------------------------------------------*/
 	if ( *flux_down_ptr != 0 ){
 		S = 0.07 * ( direct_flux / *flux_down_ptr ) *
-			max(0,1.1-0.1*pai*(1-gap_fraction))*exp( -1 * cos(theta_noon));
+			MAX(0,1.1-0.1*pai*(1-gap_fraction))*exp( -1 * cos(theta_noon));
 	}
 	else{
 		S = 0;

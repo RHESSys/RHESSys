@@ -69,15 +69,15 @@ double	compute_potential_snow_interception(
 	/*--------------------------------------------------------------*/
 	interception_coef = (1.0 - stratum[0].gap_fraction);
 	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) 
-		potential_interception = min(interception_coef * snow,
+		potential_interception = MIN(interception_coef * snow,
 			stratum[0].epv.all_pai
 			* stratum[0].defaults[0][0].specific_snow_capacity
 			- stratum[0].snow_stored);
 	else
-		potential_interception = min (snow,
+		potential_interception = MIN (snow,
 			(stratum[0].defaults[0][0].specific_snow_capacity
 			- stratum[0].snow_stored));
 		
-	potential_interception = max(potential_interception, 0.0);
+	potential_interception = MAX(potential_interception, 0.0);
 	return( potential_interception );
 } /*end compute_potential_snow_interception */

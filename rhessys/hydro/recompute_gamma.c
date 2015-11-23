@@ -60,7 +60,7 @@ double recompute_gamma( struct patch_object *patch,
 			else
 				water_table_z2 = z2;
 			if (fabs(z1-z2) > ZERO) {
-				adjustment += max(((water_table_z1 - water_table_z2) / (z1 - z2) *
+				adjustment += MAX(((water_table_z1 - water_table_z2) / (z1 - z2) *
 					patch[0].innundation_list[d].neighbours[i].gamma),0.0);
 			}
 			else adjustment = 0.0;

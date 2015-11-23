@@ -135,14 +135,14 @@ double	compute_ra_overstory(
 	/*--------------------------------------------------------------*/
 	/*	Compute exponential decay  through the canopy			*/
 	/*--------------------------------------------------------------*/
-	*u = max((u_o * exp(cn * (max(h_u, 0.1*h_o)/h_o - 1))), 0.0);
+	*u = MAX((u_o * exp(cn * (MAX(h_u, 0.1*h_o)/h_o - 1))), 0.0);
 	/*--------------------------------------------------------------*/
 	/*	if, this canopy below extends to 0.1*ho of the surface	*/
 	/* 	include a logarithmic profile componenet of the near	*/
 	/*	surface resistance					*/
 	/*--------------------------------------------------------------*/
 	if (h_u <= 0.1*h_o)
-		ra_u += pow(log( (0.1*h_o)/ max(zo_u, 0.01 )),2.0) / (*u * 0.41*0.41);
+		ra_u += pow(log( (0.1*h_o)/ MAX(zo_u, 0.01 )),2.0) / (*u * 0.41*0.41);
 	/*--------------------------------------------------------------*/
 	/*	update conductance below this patch			*/
 	/*--------------------------------------------------------------*/

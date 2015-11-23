@@ -347,7 +347,7 @@ double	top_model(
 	/*	we now limit the baseflow to only remove water above	*/
 	/*	maximum soil depth for all patches			*/
 	/*--------------------------------------------------------------*/
-	effective_sat_deficit = mean_sat_deficit - min(0.5 * mean_sat_deficit ,
+	effective_sat_deficit = mean_sat_deficit - MIN(0.5 * mean_sat_deficit ,
 		0.5 * hillslope[0].aggdefs.psi_air_entry *
 		hillslope[0].aggdefs.porosity_0);
 	base_flow = Q_0 * exp( -1 * effective_sat_deficit
@@ -481,7 +481,7 @@ double	top_model(
 				/*-------------------------------------------------------*/
 				/*	soil drainage and storage update	     	 */
 				/*-------------------------------------------------------*/
-				patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
+				patch[0].rootzone.S = MIN(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
 				rz_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
 					patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -495,7 +495,7 @@ double	top_model(
 				patch[0].rz_storage -=  rz_drainage;
 				patch[0].unsat_storage +=  rz_drainage;	
 										
-				patch[0].S = min(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat), 1.0);
+				patch[0].S = MIN(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat), 1.0);
 				unsat_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
 					patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -513,7 +513,7 @@ double	top_model(
 				patch[0].sat_deficit -= patch[0].unsat_storage;	/* transfer left water in unsat storage to rootzone layer */
 				patch[0].unsat_storage = 0.0;   
 								
-				patch[0].S = min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
+				patch[0].S = MIN(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
 				rz_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
 					patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -628,9 +628,9 @@ double	top_model(
 			/* ---------------------------------------------- */
 		 
 			if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
-				patch[0].rootzone.S = min(patch[0].rz_storage / (patch[0].rootzone.potential_sat), 1.0);
+				patch[0].rootzone.S = MIN(patch[0].rz_storage / (patch[0].rootzone.potential_sat), 1.0);
 			else 
-				patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
+				patch[0].rootzone.S = MIN((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 					/ (patch[0].rootzone.potential_sat), 1.0);
 			
 			total_new_return_flow += patch[0].return_flow * patch[0].area;
@@ -736,8 +736,8 @@ double	top_model(
 			patch[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss;
 			patch[0].acc_month.DON_loss += patch[0].ndf.total_DON_loss;
 			patch[0].acc_month.psn += patch[0].net_plant_psn;
-			patch[0].acc_month.snowpack =  max( patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
-			patch[0].acc_month.lai = max(patch[0].acc_month.lai, patch[0].lai);
+			patch[0].acc_month.snowpack =  MAX( patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
+			patch[0].acc_month.lai = MAX(patch[0].acc_month.lai, patch[0].lai);
 			patch[0].acc_month.length += 1;
 		}
 		if((command_line[0].output_flags.yearly == 1)&&(command_line[0].p != NULL)){
@@ -757,10 +757,10 @@ double	top_model(
 			patch[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss;
 			patch[0].acc_year.burn += patch[0].burn;
 			patch[0].acc_year.psn += patch[0].net_plant_psn;
-			patch[0].acc_year.snowpack =  max( patch[0].snowpack.water_equivalent_depth, patch[0].acc_year.snowpack);
+			patch[0].acc_year.snowpack =  MAX( patch[0].snowpack.water_equivalent_depth, patch[0].acc_year.snowpack);
 			patch[0].acc_year.et += (patch[0].transpiration_unsat_zone
 				+ patch[0].transpiration_sat_zone + patch[0].evaporation);
-			patch[0].acc_year.lai = max(patch[0].acc_year.lai, patch[0].lai);
+			patch[0].acc_year.lai = MAX(patch[0].acc_year.lai, patch[0].lai);
 			
 		}
 	   }

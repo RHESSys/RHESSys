@@ -475,7 +475,7 @@ struct patch_object *construct_patch(
 	/*	use the maximum of the two									*/
 	/*--------------------------------------------------------------*/
 	patch[0].soil_defaults[0][0].detention_store_size = 
-				max(patch[0].landuse_defaults[0][0].detention_store_size,
+				MAX(patch[0].landuse_defaults[0][0].detention_store_size,
 				patch[0].soil_defaults[0][0].detention_store_size);
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  patch base stations 					*/
@@ -562,7 +562,7 @@ struct patch_object *construct_patch(
 			patch[0].canopy_strata[i][0].defaults[0][0].epc.daily_fire_turnover
 				* patch[0].canopy_strata[i][0].cover_fraction;		
 		patch[0].psi_max_veg =
-			min(patch[0].canopy_strata[i][0].defaults[0][0].epc.psi_close,
+			MIN(patch[0].canopy_strata[i][0].defaults[0][0].epc.psi_close,
 				patch[0].psi_max_veg);	
 		patch[0].litter.gl_c +=
 			patch[0].canopy_strata[i][0].defaults[0][0].epc.gl_c
@@ -579,7 +579,7 @@ struct patch_object *construct_patch(
 		patch[0].litter.density +=
 			patch[0].canopy_strata[i][0].defaults[0][0].epc.litter_density
 			* patch[0].canopy_strata[i][0].cover_fraction;
-		patch[0].rootzone.depth = max(patch[0].rootzone.depth, 
+		patch[0].rootzone.depth = MAX(patch[0].rootzone.depth, 
 			 patch[0].canopy_strata[i][0].rootzone.depth);
 	} /*end for*/
 

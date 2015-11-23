@@ -366,8 +366,8 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
 		sai = 0.55*(1.0-exp(-0.175*(canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc)));
-		canopy_strata[0].epv.proj_pai = max(canopy_strata[0].epv.proj_lai + sai, 0.0);
-		canopy_strata[0].epv.all_pai = max(canopy_strata[0].epv.all_lai + sai, 0.0);
+		canopy_strata[0].epv.proj_pai = MAX(canopy_strata[0].epv.proj_lai + sai, 0.0);
+		canopy_strata[0].epv.all_pai = MAX(canopy_strata[0].epv.all_lai + sai, 0.0);
 	}
 	else {
 		canopy_strata[0].epv.proj_pai =  canopy_strata[0].epv.proj_lai;

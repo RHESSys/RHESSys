@@ -251,16 +251,16 @@ double	snowpack_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Perform Degree day accumulation								*/
 	/*--------------------------------------------------------------*/
-	snowpack[0].energy_deficit = max((snowpack[0].energy_deficit+T_air),
+	snowpack[0].energy_deficit = MAX((snowpack[0].energy_deficit+T_air),
 		maximum_energy_deficit);
 	/*--------------------------------------------------------------*/
 	/*  Compute Radiation Melt		                                */
 	/*--------------------------------------------------------------*/
 	if (Q_radiation_net < 0.0) Q_radiation_net = 0.0;
 	if ( (T_air > 0.0) && (snowpack[0].energy_deficit >= 0.0))
-		rad_melt = max((Q_radiation_net / pho_water/latent_heat_melt), 0.0);
+		rad_melt = MAX((Q_radiation_net / pho_water/latent_heat_melt), 0.0);
 	else
-		rad_melt = max((Q_radiation_net / pho_water / latent_heat_vapour), 0.0);
+		rad_melt = MAX((Q_radiation_net / pho_water / latent_heat_vapour), 0.0);
 	/*--------------------------------------------------------------*/
 	/*  Compute Temperature Melt.		                            */
 	/*	since this term essentially covers the latent and sensible */

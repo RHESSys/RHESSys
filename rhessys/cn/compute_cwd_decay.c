@@ -58,7 +58,7 @@ int	compute_cwd_decay(
 	/*	the previous day for soil decomposition limitations	*/
 	/*--------------------------------------------------------------*/
 	rate_scalar = cs_litr->w_scalar * cs_litr->t_scalar;
-	rate_scalar = max(rate_scalar, 0.0);
+	rate_scalar = MAX(rate_scalar, 0.0);
 	/* physical fragmentation of coarse woody debris */
 	kfrag = epc->kfrag_base * rate_scalar;
 	cwdc_loss = kfrag * cs->cwdc;

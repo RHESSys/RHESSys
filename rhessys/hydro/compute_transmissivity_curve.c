@@ -153,13 +153,13 @@ double 	*compute_transmissivity_curve(
 
 		if (m > ZERO)
 			transmissivity_layer = gamma  
-			 * (exp ( -1.0 * (max(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m))); 
+			 * (exp ( -1.0 * (MAX(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m))); 
 		else
 			transmissivity_layer =  gamma * (lower-depth);
 
-		fclayer = max(patch[0].soil_defaults[0][0].interval_size-fclayer,0.0);
+		fclayer = MAX(patch[0].soil_defaults[0][0].interval_size-fclayer,0.0);
 
-		transmissivity_layer = min(fclayer, transmissivity_layer/patch[0].area);  
+		transmissivity_layer = MIN(fclayer, transmissivity_layer/patch[0].area);  
 
 		if (gamma > ZERO)
 			transmissivity[didx] = transmissivity[didx+1]+transmissivity_layer * 
@@ -176,7 +176,7 @@ double 	*compute_transmissivity_curve(
 		lower = patch[0].soil_defaults[0][0].soil_water_cap;
 		depth = 0;
 		if (m > ZERO)
-			transmissivity[initial-1] =   (exp ( -1.0 * (max(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m))); 
+			transmissivity[initial-1] =   (exp ( -1.0 * (MAX(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m))); 
 		else
 			transmissivity[initial-1] =  (lower-depth);
 		

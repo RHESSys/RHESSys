@@ -157,8 +157,8 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	total_gamma = recompute_gamma(patch, patch[0].innundation_list[d].gamma);
 
-	available_sat_water = max(((patch[0].soil_defaults[0][0].soil_water_cap
-			- max(patch[0].sat_deficit,0.0))
+	available_sat_water = MAX(((patch[0].soil_defaults[0][0].soil_water_cap
+			- MAX(patch[0].sat_deficit,0.0))
 			* patch[0].area),0.0);
 
 	/*------------------------------------------------------------*/
@@ -372,16 +372,16 @@ void  update_drainage_land(
 
 		Qout = (patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size);
 		if (command_line[0].grow_flag > 0) {
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
+			Nout = (MIN(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
 			DOC_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_DOC -= Nout;
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
+			Nout = (MIN(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
 			DON_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_DON -= Nout;
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
+			Nout = (MIN(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
 			NO3_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_NO3 -= Nout;
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
+			Nout = (MIN(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
 			NH4_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_NH4 -= Nout;
 			}

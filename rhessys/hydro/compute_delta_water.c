@@ -84,13 +84,13 @@ double	compute_delta_water(
 	/*	However, the case where either z is negative (i.e.	*/
 	/*	above the land surface) must be handled first.		*/
 	/*--------------------------------------------------------------*/
-	delta_water = min(z_initial,0) - min(z_final,0);
+	delta_water = MIN(z_initial,0) - MIN(z_final,0);
 	
 	/*--------------------------------------------------------------*/
 	/*	Now we look at below the land surface.			*/
 	/*--------------------------------------------------------------*/
-	z_final = min(max(z_final,0),soil_depth);
-	z_initial = max(z_initial,0);
+	z_final = MIN(MAX(z_final,0),soil_depth);
+	z_initial = MAX(z_initial,0);
 	if ( ( p != 0 ) && (p < 999.0) ){
 		delta_water += n_0 * p *
 			(exp(-z_final/p) - exp(-z_initial/p));
