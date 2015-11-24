@@ -17,8 +17,6 @@
 
 using namespace std;
 
-//const size_t MAX_STATEMENTS = 64000;
-//size_t num_statements = 0;
 
 FILE *debug;
 void quit(int sig);
@@ -39,7 +37,6 @@ static CassCluster* cass_cluster;
 static CassSession* cass_session;
 static const CassPrepared *var_by_date_patch_stmt;
 static const CassPrepared *patch_by_var_date_stmt;
-//static CassBatch* patchdb_batch;
 
 static std::queue<CassFuture *> insert_future_queue;
 
@@ -76,18 +73,13 @@ void _cass_destroy() {
 
 void _cass_prep_stmt() {
 	/*
-	 * Make prepared statements for this day
+	 * Make prepared statements
 	 */
-//	char datestr[16];
-//	snprintf(datestr, 16, "%d-%02d-%02d",
-//			year, month, day);
-	// Make prepared statements for this day
 	CassError rc = CASS_OK;
 	char query[128];
 	snprintf(query, 128, "INSERT INTO variables_by_date_patch "
 			"(variable,date,patchid,value) "
 			"VALUES (?,?,?,?);");
-	//printf(query);
 	rc = patchdb_prepare_statement(cass_session,
 			(const char*)&query, &var_by_date_patch_stmt);
 	if (rc != CASS_OK) {
@@ -97,44 +89,12 @@ void _cass_prep_stmt() {
 	snprintf(query, 128, "INSERT INTO patches_by_variable_date "
 			"(patchid,variable,date,value) "
 			"VALUES (?,?,?,?);");
-	//printf(query);
 	rc = patchdb_prepare_statement(cass_session,
 			(const char*)&query, &patch_by_var_date_stmt);
 	if (rc != CASS_OK) {
 		exit(EXIT_FAILURE);
 	}
-
-	// Make batch for batch execution
-//	patchdb_batch = cass_batch_new(CASS_BATCH_TYPE_UNLOGGED);
 }
-
-//void _cass_write_data(void) {
-//
-//	if (num_statements > 0) {
-//		printf("Writing data to Cassandra...\n");
-//		CassError cass_rc = CASS_OK;
-//		CassFuture* future = NULL;
-//		future = cass_session_execute_batch(cass_session,
-//					patchdb_batch);
-//		cass_future_wait(future);
-//
-//		cass_rc = cass_future_error_code(future);
-//		if (cass_rc != CASS_OK) {
-//			patchdb_print_error(future, "Batch execution of output_patch");
-//			exit(EXIT_FAILURE);
-//		}
-//
-//		cass_future_free(future);
-//		// Free batch
-//		cass_batch_free(patchdb_batch);
-//
-//		// Free prepared statements
-//		cass_prepared_free(var_by_date_patch_stmt);
-//		cass_prepared_free(patch_by_var_date_stmt);
-//	}
-//
-//	num_statements = 0;
-//}
 
 void _bind_to_stmts_and_write(const char* patchid,
 		const char* date, const char* var, cass_double_t value) {
@@ -144,7 +104,6 @@ void _bind_to_stmts_and_write(const char* patchid,
 
 	size_t outstanding_inserts = insert_future_queue.size();
 	if (outstanding_inserts >= NUM_CONCURRENT_REQUESTS) {
-//		fprintf(debug, "*** Outstanding inserts == %zu, waiting", outstanding_inserts);
 		for (int i = outstanding_inserts; i > 0; i--) {
 			future = insert_future_queue.front();
 			insert_future_queue.pop();
@@ -155,7 +114,6 @@ void _bind_to_stmts_and_write(const char* patchid,
 			}
 			cass_future_free(future);
 		}
-//		fprintf(debug, "; now %zu outstanding\n", insert_future_queue.size());
 		future = NULL;
 	}
 
@@ -164,16 +122,8 @@ void _bind_to_stmts_and_write(const char* patchid,
 	cass_statement_bind_string(statement, 1, date);
 	cass_statement_bind_string(statement, 2, patchid);
 	cass_statement_bind_double(statement, 3, value);
-//	cass_batch_add_statement(patchdb_batch, statement);
 	future = cass_session_execute(cass_session, statement);
 	insert_future_queue.push(future);
-
-//	cass_future_wait(future);
-//	rc = cass_future_error_code(future);
-//	if (rc != CASS_OK) {
-//		patchdb_print_error(future, "Error writing to variables_by_date_patch");
-//	}
-//	cass_future_free(future);
 
 	cass_statement_free(statement);
 
@@ -182,20 +132,11 @@ void _bind_to_stmts_and_write(const char* patchid,
 	cass_statement_bind_string(statement, 1, var);
 	cass_statement_bind_string(statement, 2, date);
 	cass_statement_bind_double(statement, 3, value);
-//	cass_batch_add_statement(patchdb_batch, statement);
 	future = cass_session_execute(cass_session, statement);
 	insert_future_queue.push(future);
 
-//	cass_future_wait(future);
-//	rc = cass_future_error_code(future);
-//	if (rc != CASS_OK) {
-//		patchdb_print_error(future,  "Error writing to patches_by_variable_date");
-//	}
-//	cass_future_free(future);
-
 	cass_statement_free(statement);
 
-//	num_statements += 2;
 }
 
 int main (int argc, char **argv) {
@@ -230,7 +171,6 @@ int main (int argc, char **argv) {
 
     char patchid[64];
     char date[16];
-//    cass_uint32_t date;
 
     int year = -1;
     int month = -1;
@@ -264,29 +204,18 @@ int main (int argc, char **argv) {
 
 			// Refresh date
 			if (p.day() != day || p.month() != month || p.year() != year) {
-//				//printf("Need to make prepared statements...\n");
 				year = p.year();
 				month = p.month();
 				day = p.day();
-//				_cass_write_data();
-//				_cass_prep_stmt();
 
 				snprintf(date, 16, "%d-%02d-%02d",
 						 year, month, day);
 				fprintf(debug, "Date changed to: %s\n", date);
 				fflush(debug);
-
-//				date = cass_date_from_epoch(datestr);
 			}
 
 			snprintf(patchid, 64, "%d:%d:%d:%d", p.basin_id(),
 					 p.hill_id(), p.zone_id(), p.patch_id());
-//			fprintf(debug, "\tPatch ID: %s\n", patchid);
-
-			// Bind data to prepared statements
-//			fprintf(debug, "\tPre cassandra send\n");
-
-//			zmq_send(responder, "A", 1, 0);
 
 //			_bind_to_stmts_and_write(patchid, date, "rain_thr", (cass_double_t)p.rain_throughfall());
 //			_bind_to_stmts_and_write(patchid, date, "detention_store", (cass_double_t)p.detention_store());
@@ -323,12 +252,7 @@ int main (int argc, char **argv) {
 //			_bind_to_stmts_and_write(patchid, date, "pcp", (cass_double_t)p.precip());
 //			_bind_to_stmts_and_write(patchid, date, "recharge", (cass_double_t)p.recharge());
 
-//			fprintf(debug, "\tPost cassandra send\n");
-
 			zmq_send(responder, "A", 1, 0);
-
-//			fprintf(debug, "\tPost zmq send\n");
-//			fflush(debug);
 
 			break;
 		}
@@ -336,9 +260,6 @@ int main (int argc, char **argv) {
 			printf("patchdbmq: Recv. EndSim\n");
 			fprintf(debug, "Received EndSim message\n");
 			fclose(debug);
-
-			// Write any outstanding data
-			//_cass_write_data();
 
 			// Shutdown Cassandra connection
 			_cass_destroy();
