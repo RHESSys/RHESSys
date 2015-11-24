@@ -405,8 +405,8 @@ int	main( int main_argc, char **main_argv)
 							command_line->patchdb_server,
 							command_line->patchdb_hostname,
 							command_line->patchdb_keyspace,
-							PATCHDB_SOCKET_PATH, NULL);
-
+							"tcp://*:5555", NULL);
+							//PATCHDB_SOCKET_PATH, NULL);
 			return(ret);
 		} else {
 			printf("done.\n");
