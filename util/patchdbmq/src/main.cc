@@ -182,48 +182,48 @@ int main (int argc, char **argv) {
 
     bool loop = true;
     while (loop) {
-    	char buff[1024];
+//    	char buff[1024];
     	zmq_msg_t msg;
-//    	int rc = zmq_msg_init(&msg);
-//    	assert(rc == 0);
+    	int rc = zmq_msg_init(&msg);
+    	assert(rc == 0);
     	/* Block until a message is available to be received from socket */
-    	rc = zmq_recv(responder, buff, 1024, 0);
+//    	rc = zmq_recv(responder, buff, 1024, 0);
     	//rc = zmq_msg_recv(&msg, responder, 0);
-    	//rc = zmq_recvmsg(responder, &msg, 0);
+    	rc = zmq_recvmsg(responder, &msg, 0);
     	//assert(rc != -1);
     	if (rc == -1) {
     		switch(errno) {
     			case EAGAIN:
     				printf("Non-blocking mode was requested and no messages are available at the moment.");
-    				exit(EXIT_FAILURE);
     				break;
     			case ENOTSUP:
     				printf("The zmq_recv() operation is not supported by this socket type.");
-    				exit(EXIT_FAILURE);
     				break;
     			case EFSM:
     				printf("The zmq_recv() operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.");
-    				exit(EXIT_FAILURE);
     				break;
     			case ETERM:
     				printf("The 0MQ context associated with the specified socket was terminated.");
-    				exit(EXIT_FAILURE);
     				break;
     			case ENOTSOCK:
     				printf("The provided socket was invalid.");
-    				exit(EXIT_FAILURE);
     				break;
     			case EINTR:
     				printf("The operation was interrupted by delivery of a signal before a message was available.");
-    				exit(EXIT_FAILURE);
+    				break;
+    			case EFAULT:
+    				printf("The message passed to the function was invalid.");
+    				break;
+    			default:
+    				printf("errno was %d, exiting ...", errno);
     				break;
     		}
-
+			exit(EXIT_FAILURE);
     	}
 
     	// De-serialize message Protocol Buffers message
-    	rc = zmq_msg_init_data(&msg, buff, 1024, NULL, NULL);
-    	assert(rc != -1);
+//    	rc = zmq_msg_init_data(&msg, buff, 1024, NULL, NULL);
+//    	assert(rc != -1);
     	rhessys::PatchDBMesg m;
     	_ZmqToPb(&msg, &m);
     	/* Release message */
