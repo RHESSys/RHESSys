@@ -810,8 +810,8 @@ $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
 $(OBJ)/params.o: util/params.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) util/params.c -o $(OBJ)/params.o
-$(OBJ)/patchdb.o: output/patchdb.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) output/patchdb.c -o $(OBJ)/patchdb.o
+$(OBJ)/patchdb.o: output/patchdb.cc
+	$(CC) -c $(CFLAGS) $(INCLUDES) output/patchdb.cc -o $(OBJ)/patchdb.o
 
 $(OBJ)/main.o: main.cc setversion
 	$(CC) -c $(CFLAGS) $(INCLUDES) main.cc -o $(OBJ)/main.o

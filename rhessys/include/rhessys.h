@@ -196,8 +196,6 @@
 #define P1HIGH 5
 #define P2HIGH 6
 
-#define PATCHDB_SOCKET_PATH "ipc:///tmp/patchdbmq"
-
 /*----------------------------------------------------------*/
 /*      Define min and max macros                           */
 /*----------------------------------------------------------*/

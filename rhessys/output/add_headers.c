@@ -30,6 +30,8 @@
 
 #include "rhessys.h"
 #include "functions.h"
+#include "patchdb.h"
+
 
 void add_headers(struct world_output_file_object *world_output_files, 
 			struct command_line_object *command_line)
@@ -320,8 +322,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 
 	if (command_line[0].patchdb_flag) {
 		// Connect to patchdbmq server
-		world_output_files->patchdbmq_context = zmq_ctx_new();
-		world_output_files->patchdbmq_requester = zmq_socket(world_output_files->patchdbmq_context, ZMQ_REQ);
+		world_output_files->patchdbmq_requester = zmq_socket(world_output_files->patchdbmq_context, ZMQ_PAIR);
 		zmq_connect(world_output_files->patchdbmq_requester, PATCHDB_SOCKET_PATH);
 	}
 

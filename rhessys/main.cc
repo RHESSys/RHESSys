@@ -292,12 +292,14 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include <zmq.h>
 
 #include "rhessys.h"
 #include "functions.h"
 
+#include "patchdb.h"
 #include "zmqutil.h"
 #include "patch.pb.h"
 
@@ -389,28 +391,28 @@ int	main( int main_argc, char **main_argv)
 		return(EXIT_SUCCESS);
 	}
 
-	pid_t patchdb_pid = -1;
-	if (command_line[0].patchdb_flag) {
-		// Start patchdbmq server
-		printf("Starting patchdb message queue server %s... ",
-			command_line[0].patchdb_server);
-		patchdb_pid = fork();
-		printf("\tprocess id: %d\n", patchdb_pid);
-		if (patchdb_pid < 0) {
-				printf("\nUnable to start patchdb message queue server %s\n",
-						command_line[0].patchdb_server);
-		} else if (patchdb_pid == 0) {
-			// Run patchdbmq server
-			int ret = execl(command_line->patchdb_server,
-							command_line->patchdb_server,
-							command_line->patchdb_hostname,
-							command_line->patchdb_keyspace,
-							PATCHDB_SOCKET_PATH, NULL);
-			return(ret);
-		} else {
-			printf("done.\n");
-		}
-	}
+//	pid_t patchdb_pid = -1;
+//	if (command_line[0].patchdb_flag) {
+//		// Start patchdbmq server
+//		printf("Starting patchdb message queue server %s... ",
+//			command_line[0].patchdb_server);
+//		patchdb_pid = fork();
+//		printf("\tprocess id: %d\n", patchdb_pid);
+//		if (patchdb_pid < 0) {
+//				printf("\nUnable to start patchdb message queue server %s\n",
+//						command_line[0].patchdb_server);
+//		} else if (patchdb_pid == 0) {
+//			// Run patchdbmq server
+//			int ret = execl(command_line->patchdb_server,
+//							command_line->patchdb_server,
+//							command_line->patchdb_hostname,
+//							command_line->patchdb_keyspace,
+//							PATCHDB_SOCKET_PATH, NULL);
+//			return(ret);
+//		} else {
+//			printf("done.\n");
+//		}
+//	}
 
 	//sleep(10);
 
@@ -443,6 +445,21 @@ int	main( int main_argc, char **main_argv)
 		growth_output = construct_output_files(prefix, command_line );
 	}
 	else growth_output = NULL;
+
+	pthread_t patchdb_thread;
+	if (command_line[0].patchdb_flag) {
+		// Set up zeromq context
+		output->patchdbmq_context = zmq_ctx_new();
+
+		// Set up arguments to patchdb server thread
+		PatchDBArgs args;
+		args.context = output->patchdbmq_context;
+		args.cass_hostname = command_line->patchdb_hostname;
+		args.cass_keyspace = command_line->patchdb_keyspace;
+		args.socket_path = PATCHDB_SOCKET_PATH;
+
+		pthread_create(&patchdb_thread, NULL, patchdbserver, (void *)&args);
+	}
 
 	add_headers(output, command_line);
 		if (command_line[0].grow_flag > 0)
@@ -506,68 +523,73 @@ int	main( int main_argc, char **main_argv)
 		fprintf(stderr,"FINISHED DES COMMAND LINE\n");
 	
 
-	// Kill patchdb message queue server
-	if (patchdb_pid > 0) {
-		// TODO: Tell patchdb that we are done ...
-
-		printf("Stopping patchdb (%d) message queue server %s... ",
-				patchdb_pid,
-				command_line[0].patchdb_server);
-		//kill(patchdb_pid, SIGTERM);
-		rhessys::PatchDBMesg m;
-		m.set_type(m.END_SIM);
-		rhessys::EndSim *e = m.mutable_endsim();
-		e->set_mesg("E");
-
-		zmq_msg_t msg;
-		int rc = PbToZmq(&m, &msg);
-		if (rc == -1) {
-			printf("Unable to create zeromq message");
-			exit(EXIT_FAILURE);
-		}
-		// TODO: send as multipart mesg to we can send control
-		// information.
-		// See: http://zguide.zeromq.org/page:all#Multipart-Messages
-		rc = zmq_sendmsg(output->patchdbmq_requester,
-				&msg, 0);
-
-		if (rc == -1) {
-			if (errno == EFSM) {
-				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
-			} else {
-				printf("output_patch: zeromq returned, main:540: %s, exiting...\n", strerror(errno));
-			}
-			exit(EXIT_FAILURE);
-		}
-
-		//printf("Waiting for close response from zeromq server...");
-
-		char response[2];
-		rc = zmq_recv(output->patchdbmq_requester, response, 1, 0);
-		if (rc == -1) {
-			if (errno == EFSM) {
-				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
-			} else {
-				printf("output_patch: zeromq returned, main:550: %d, exiting...\n", errno);
-			}
-			exit(EXIT_FAILURE);
-		}
-
-		if (response[0] != 'A') {
-			printf("output_patch: expected patchdbmq server to return %s, but received: %s, exiting...\n",
-					"A", response);
-			exit(EXIT_FAILURE);
-		}
-
-		//printf("\nReceived %s from zeromq server\n", response);
-
-		// Close zeromq socket
+	if (command_line[0].patchdb_flag) {
 		zmq_close(output->patchdbmq_requester);
 		zmq_ctx_destroy(output->patchdbmq_context);
-
-		kill(patchdb_pid, SIGTERM);
-		printf("done.\n");
 	}
+
+	// Kill patchdb message queue server
+//	if (patchdb_pid > 0) {
+//		// TODO: Tell patchdb that we are done ...
+//
+//		printf("Stopping patchdb (%d) message queue server %s... ",
+//				patchdb_pid,
+//				command_line[0].patchdb_server);
+//		//kill(patchdb_pid, SIGTERM);
+//		rhessys::PatchDBMesg m;
+//		m.set_type(m.END_SIM);
+//		rhessys::EndSim *e = m.mutable_endsim();
+//		e->set_mesg("E");
+//
+//		zmq_msg_t msg;
+//		int rc = PbToZmq(&m, &msg);
+//		if (rc == -1) {
+//			printf("Unable to create zeromq message");
+//			exit(EXIT_FAILURE);
+//		}
+//		// TODO: send as multipart mesg to we can send control
+//		// information.
+//		// See: http://zguide.zeromq.org/page:all#Multipart-Messages
+//		rc = zmq_sendmsg(output->patchdbmq_requester,
+//				&msg, 0);
+//
+//		if (rc == -1) {
+//			if (errno == EFSM) {
+//				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
+//			} else {
+//				printf("output_patch: zeromq returned, main:540: %s, exiting...\n", strerror(errno));
+//			}
+//			exit(EXIT_FAILURE);
+//		}
+//
+//		//printf("Waiting for close response from zeromq server...");
+//
+//		char response[2];
+//		rc = zmq_recv(output->patchdbmq_requester, response, 1, 0);
+//		if (rc == -1) {
+//			if (errno == EFSM) {
+//				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
+//			} else {
+//				printf("output_patch: zeromq returned, main:550: %d, exiting...\n", errno);
+//			}
+//			exit(EXIT_FAILURE);
+//		}
+//
+//		if (response[0] != 'A') {
+//			printf("output_patch: expected patchdbmq server to return %s, but received: %s, exiting...\n",
+//					"A", response);
+//			exit(EXIT_FAILURE);
+//		}
+//
+//		//printf("\nReceived %s from zeromq server\n", response);
+//
+//		// Close zeromq socket
+//		zmq_close(output->patchdbmq_requester);
+//		zmq_ctx_destroy(output->patchdbmq_context);
+//
+//		kill(patchdb_pid, SIGTERM);
+//		printf("done.\n");
+//	}
 
 	/*--------------------------------------------------------------*/
 	/*	The end.													*/

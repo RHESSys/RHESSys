@@ -1075,12 +1075,12 @@ struct	command_line_object	*construct_command_line(
 				}
 				strcpy(command_line[0].patchdb_keyspace, main_argv[i]);
 				i++;
-				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,"FATAL ERROR: patchdb message queue server file path not specified\n");
-					exit(EXIT_FAILURE);
-				}
-				strcpy(command_line[0].patchdb_server, main_argv[i]);
-				i++;
+//				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+//					fprintf(stderr,"FATAL ERROR: patchdb message queue server file path not specified\n");
+//					exit(EXIT_FAILURE);
+//				}
+//				strcpy(command_line[0].patchdb_server, main_argv[i]);
+//				i++;
 			}
 			/*--------------------------------------------------------------*/
 			/*		the option must be invalid.								*/
