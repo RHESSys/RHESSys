@@ -31,7 +31,6 @@
 #include <time.h>
 #include <errno.h>
 
-//#include <cassandra.h>
 #include <zmq.h>
 
 #include "rhessys.h"
