@@ -182,15 +182,11 @@ int main (int argc, char **argv) {
 
     bool loop = true;
     while (loop) {
-//    	char buff[1024];
     	zmq_msg_t msg;
     	int rc = zmq_msg_init(&msg);
     	assert(rc == 0);
     	/* Block until a message is available to be received from socket */
-//    	rc = zmq_recv(responder, buff, 1024, 0);
     	rc = zmq_msg_recv(&msg, responder, 0);
-    	//rc = zmq_recvmsg(responder, &msg, 0);
-    	//assert(rc != -1);
     	if (rc == -1) {
     		switch(errno) {
     			case EAGAIN:
@@ -222,8 +218,6 @@ int main (int argc, char **argv) {
     	}
 
     	// De-serialize message Protocol Buffers message
-//    	rc = zmq_msg_init_data(&msg, buff, 1024, NULL, NULL);
-//    	assert(rc != -1);
     	rhessys::PatchDBMesg m;
     	_ZmqToPb(&msg, &m);
     	/* Release message */
