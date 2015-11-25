@@ -41,25 +41,6 @@
 
 using namespace std;
 
-//void _write_to_patchdb(struct world_output_file_object *world_output_files,
-//		char* patchid, char* var, cass_double_t value) {
-//	CassError rc = CASS_OK;
-//	CassStatement* statement = NULL;
-//
-//	statement = cass_prepared_bind(world_output_files->var_by_date_patch_stmt);
-//	cass_statement_bind_string(statement, 0, var);
-//	cass_statement_bind_string(statement, 1, patchid);
-//	cass_statement_bind_double(statement, 2, value);
-//	cass_batch_add_statement(world_output_files->patchdb_batch, statement);
-//	cass_statement_free(statement);
-//
-//	statement = cass_prepared_bind(world_output_files->patch_by_var_date_stmt);
-//	cass_statement_bind_string(statement, 0, patchid);
-//	cass_statement_bind_string(statement, 1, var);
-//	cass_statement_bind_double(statement, 2, value);
-//	cass_batch_add_statement(world_output_files->patchdb_batch, statement);
-//	cass_statement_free(statement);
-//}
 
 void	output_patch(struct  command_line_object * command_line,
 					 struct world_output_file_object *world_output_files,
