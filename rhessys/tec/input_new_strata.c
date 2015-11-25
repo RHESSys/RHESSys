@@ -289,6 +289,7 @@ void input_new_strata(
 		canopy_strata[0].cs.deadcroot_gr_snk = 0.0;
 		canopy_strata[0].cs.froot_mr_snk = 0.0;
 		canopy_strata[0].cs.froot_gr_snk = 0.0;
+		canopy_strata[0].cs.nppcum = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
@@ -408,7 +409,33 @@ void input_new_strata(
 		/*---------------------------------------------------------------*/
 		canopy_strata[0].phen.nretdays = 365;
 	}
+
+	else if (canopy_strata[0].defaults[0][0].epc.phenology_flag == DROUGHT ) {
+		canopy_strata[0].phen.expand_startday =
+			canopy_strata[0].defaults[0][0].epc.day_leafon;
+		canopy_strata[0].phen.expand_stopday =
+			canopy_strata[0].phen.expand_startday
+			+ canopy_strata[0].defaults[0][0].epc.ndays_expand;
+		canopy_strata[0].phen.litfall_startday =
+			canopy_strata[0].defaults[0][0].epc.day_leafoff;
+		canopy_strata[0].phen.litfall_stopday =
+			canopy_strata[0].phen.litfall_startday
+			+ canopy_strata[0].defaults[0][0].epc.ndays_litfall;
+		if (canopy_strata[0].phen.expand_stopday > 365)
+			canopy_strata[0].phen.expand_stopday -= 365;
+		if (canopy_strata[0].phen.litfall_stopday > 365)
+			canopy_strata[0].phen.litfall_stopday -= 365;
+		/*---------------------------------------------------------------*/
+		/* assume this is 365 for now since we don't know when next      */
+		/* year's growing season will start                              */
+		/*---------------------------------------------------------------*/
+		canopy_strata[0].phen.nretdays = 365;
+		canopy_strata[0].phen.gwseasonday = -1;
+		canopy_strata[0].phen.lfseasonday = -1;
+	}
+
 	else {
+
 		fprintf(stderr,"\nFATAL ERROR - construct_canopy_stratum.c");
 		fprintf(stderr,"\n phenology flag must be set to 0 for STATIC");
 		fprintf(stderr,"\n since dynamic phenology timing not yet implemented");

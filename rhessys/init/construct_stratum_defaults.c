@@ -306,6 +306,9 @@ struct stratum_default *construct_stratum_defaults(
 	        default_object_list[i].epc.gs_psi_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_psi_min", "%lf", -15.0, 1);
 		default_object_list[i].epc.gs_psi_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_psi_max", "%lf", -14.0, 1);
 		default_object_list[i].epc.gs_ravg_days = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_ravg_days", "%lf", 6, 1);
+		default_object_list[i].epc.gs_npp_on = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_npp_on", "%lf", 1, 1);
+		default_object_list[i].epc.gs_npp_slp = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_npp_slp", "%lf", 187, 1);
+		default_object_list[i].epc.gs_npp_intercpt = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_npp_intercpt", "%lf", 197, 1);
 		default_object_list[i].epc.max_storage_percent = getDoubleParam(&paramCnt, &paramPtr, "epc.max_storage_percent", "%lf", 0.2, 1);
 		default_object_list[i].epc.min_percent_leafg = getDoubleParam(&paramCnt, &paramPtr, "epc.min_percent_leafg", "%lf", default_object_list[i].epc.leaf_turnover, 1);
 		default_object_list[i].epc.dickenson_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.dickenson_pa", "%lf", 0.25, 1);

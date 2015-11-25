@@ -2055,6 +2055,7 @@ struct phenology_struct
         int litfall_startday;       /* (yday) yearday of litterfall growth */
         int expand_stopday;       /* (yday) yearday of last leaf growth */
         int litfall_stopday;       /* (yday) yearday of last litterfall growth */
+	double litfall_nppstart;       /* (yday) yearday of litterfall for drought deciduous */
         int ngrowthdays; /* (days) days between onday and next offday */
         int nretdays;    /* (days) days between allocations */
                 int gwseasonday; /* (day) day within the growing season */
@@ -2075,6 +2076,7 @@ struct cstate_struct
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
     double totalc;          /* (kgC/m2) previous days plant carbon total */
     double net_psn;         /* (kgC/m2)  net photosynthesis (psn-respiration) */
+    double nppcum;          /* (kgC/m2) cumulative daily npp (net_psn) */
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
@@ -2464,6 +2466,9 @@ struct epconst_struct
         double gs_psi_max;         /* (mPa) upper soil moisture psi  threshold for leaf onset mPa */
         double gs_psi_range;       /* (mPa)  psi range for leaf onset */
         double gs_ravg_days;       /* (days)  length of averaging window for gs controls  */
+        int gs_npp_on;          /* (1 or 2) determines whether dynamic drought senescence is turned on */
+        double gs_npp_slp;          /* slope of nppcum/litfall start curve */
+        double gs_npp_intercpt;	   /* intercept of nppcum/litfall start curve */
         double coef_CO2;        /* DIM 0-1  conductance sensitivity to CO2 */ 
         int day_leafon;        /* (DIM) yearday leaves on */
         int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */

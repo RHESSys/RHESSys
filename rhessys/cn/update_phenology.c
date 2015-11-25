@@ -74,7 +74,8 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/
-	long	yearday( struct date);
+	long	yearday(struct date);
+	long	wateryearday(struct date);
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
 		double,
@@ -145,7 +146,7 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 
 	int ok=1;
-	long day;
+	long day, wyday;
 	double perc_sunlit, leaflitfallc, frootlitfallc;
 	double	rootc, sai, new_proj_lai_sunlit;
 	double excess_n;
@@ -158,6 +159,7 @@ void update_phenology(struct zone_object  *zone,
 	frootlitfallc = 0.0;
 	litfall_flag = 0;
 	day = yearday(current_date);
+	wyday = wateryearday(current_date);
 
 
  /*--------------------------------------------------------------*/
@@ -195,37 +197,57 @@ void update_phenology(struct zone_object  *zone,
   /* drought-deciduous phenology                      */  
   /*--------------------------------------------------------------*/
 
-  else if (epc.phenology_flag == DROUGHT) {
+  else if (epc.phenology_flag == DROUGHT) {		/* Possibly need a flag to prevent greenup/sensescence more than once a wateryear */
 	
-  phen->gsi = compute_growingseason_index(zone, epv, epc);
+  	phen->gsi = compute_growingseason_index(zone, epv, epc);
   
 
-  /* first are we before last possible date for leaf onset */
-    /* are we already in a leaf onset condition */
-      if (phen->gwseasonday > -1 ) { 
-          if  (phen->gwseasonday <= epc.ndays_expand)
-              expand_flag=1;
-          }   
-      else if (phen->gsi > 0.5) {
-              phen->gwseasonday = 1;
-          phen->lfseasonday = -1; 
-          expand_flag=1;
-          phen->expand_startday = day;
-          phen->expand_stopday = day + epc.ndays_expand;
-          }   
+  	/* first are we before last possible date for leaf onset */
+    	/* are we already in a leaf onset condition */
+      	if (phen->gwseasonday > -1 ) { 
+        	if  (phen->gwseasonday <= epc.ndays_expand)
+          	    expand_flag=1;
+          	}   
+      	else if (phen->gsi > 0.5) {
+          	phen->gwseasonday = 1;
+         	phen->lfseasonday = -1; 
+         	expand_flag=1;
+          	phen->expand_startday = day;
+          	phen->expand_stopday = day + epc.ndays_expand;
+        }   
 
 
 
-	if (day == phen->litfall_startday){ 
-		litfall_flag = 1;
-		phen->lfseasonday = 1;
-		phen->gwseasonday = -1;
+	/* cumulative NPP / litfall start relation  */
+	
+	if (epc.gs_npp_on == 1) {
+
+		phen->litfall_nppstart = epc.gs_npp_slp * cs->nppcum + epc.gs_npp_intercpt;	/* litfall_nppstart is wateryear day */
+
+		if (phen->lfseasonday > -1 ) {     
+          		if  (phen->lfseasonday <= epc.ndays_litfall){
+             			 litfall_flag=1;
+          		}
+		}
+
+		else if (wyday >= phen->litfall_nppstart && phen->gwseasonday > 0){
+			litfall_flag = 1;
+			phen->lfseasonday = 1;
+			phen->gwseasonday = -1;		
+		}
 	}
 
-	else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){ 
-		litfall_flag = 1;
-	}
+	else {
+		if (day == phen->litfall_startday){ 
+			litfall_flag = 1;
+			phen->lfseasonday = 1;
+			phen->gwseasonday = -1;
+		}
 
+		else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){ 
+			litfall_flag = 1;
+		}
+	}
   }
 	
  /*--------------------------------------------------------------*/
