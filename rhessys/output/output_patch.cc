@@ -161,7 +161,7 @@ void	output_patch(struct  command_line_object * command_line,
 			exit(EXIT_FAILURE);
 		}
 
-		rc = zmq_msg_send(&msg, world_output_files->patchdbmq_requester, ZMQ_NOBLOCK);
+		rc = zmq_msg_send(&msg, world_output_files->patchdbmq_requester, 0);
 
 		if (rc == -1) {
 			if (errno == EFSM) {
