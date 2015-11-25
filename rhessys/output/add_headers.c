@@ -350,8 +350,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		// Connect to patchdbmq server
 		world_output_files->patchdbmq_context = zmq_ctx_new();
 		world_output_files->patchdbmq_requester = zmq_socket(world_output_files->patchdbmq_context, ZMQ_REQ);
-		//zmq_connect(world_output_files->patchdbmq_requester, PATCHDB_SOCKET_PATH);
-		zmq_connect(world_output_files->patchdbmq_requester, "tcp://localhost:5555");
+		zmq_connect(world_output_files->patchdbmq_requester, PATCHDB_SOCKET_PATH);
 	}
 
 	/*--------------------------------------------------------------*/
