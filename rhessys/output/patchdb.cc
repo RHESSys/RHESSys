@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <queue>
 #include <errno.h>
+#include <pthread.h>
 
 #include <zmq.h>
 #include <cassandra.h>
@@ -63,7 +64,7 @@ CassError patchdb_execute_query(CassSession* session, const char* query) {
 	rc = cass_future_error_code(future);
 	if (rc != CASS_OK) {
 		patchdb_print_error(future, query);
-		exit(EXIT_FAILURE);
+		pthread_exit(NULL);
 	}
 
 	cass_future_free(future);
@@ -91,7 +92,7 @@ void init_patchdb(char* hostname,
 
 	if (cass_future_error_code(connect_future) != CASS_OK) {
 		patchdb_print_error(connect_future, NULL);
-		exit(EXIT_FAILURE);
+		pthread_exit(NULL);
 	}
 
 	printf("patchdb: Creating keyspace %s ... ", keyspace_name);
@@ -191,7 +192,7 @@ void _cass_prep_stmt(CassSession* cass_session,
 	rc = patchdb_prepare_statement(cass_session,
 			(const char*)&query, &var_by_date_patch_stmt);
 	if (rc != CASS_OK) {
-		exit(EXIT_FAILURE);
+		pthread_exit(NULL);
 	}
 
 	snprintf(query, 128, "INSERT INTO patches_by_variable_date "
@@ -200,7 +201,7 @@ void _cass_prep_stmt(CassSession* cass_session,
 	rc = patchdb_prepare_statement(cass_session,
 			(const char*)&query, &patch_by_var_date_stmt);
 	if (rc != CASS_OK) {
-		exit(EXIT_FAILURE);
+		pthread_exit(NULL);
 	}
 }
 
@@ -330,7 +331,7 @@ void *patchdbserver(void *args) {
     				printf("errno was %d, exiting ...", errno);
     				break;
     		}
-			exit(EXIT_FAILURE);
+    		pthread_exit(NULL);
     	}
 
     	// De-serialize message Protocol Buffers message
@@ -421,7 +422,7 @@ void *patchdbserver(void *args) {
     		break;
     	}
     }
-    return EXIT_SUCCESS;
+    return NULL;
 }
 
 //void quit(int sig) {
