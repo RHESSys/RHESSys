@@ -188,8 +188,8 @@ int main (int argc, char **argv) {
     	assert(rc == 0);
     	/* Block until a message is available to be received from socket */
 //    	rc = zmq_recv(responder, buff, 1024, 0);
-    	//rc = zmq_msg_recv(&msg, responder, 0);
-    	rc = zmq_recvmsg(responder, &msg, 0);
+    	rc = zmq_msg_recv(&msg, responder, 0);
+    	//rc = zmq_recvmsg(responder, &msg, 0);
     	//assert(rc != -1);
     	if (rc == -1) {
     		switch(errno) {
