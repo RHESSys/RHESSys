@@ -185,8 +185,9 @@ int main (int argc, char **argv) {
     	int rc = zmq_msg_init(&msg);
     	assert(rc == 0);
     	/* Block until a message is available to be received from socket */
+    	rc = zmq_recv(responder, &msg, 1024, 0);
     	//rc = zmq_msg_recv(&msg, responder, 0);
-    	rc = zmq_recvmsg(responder, &msg, 0);
+    	//rc = zmq_recvmsg(responder, &msg, 0);
     	assert(rc != -1);
 
     	// De-serialize message Protocol Buffers message
