@@ -176,7 +176,7 @@ void	output_patch(struct  command_line_object * command_line,
 		//printf("RHESSys.output_patch(): get response...");
 
 		char response[2];
-		rc = zmq_recv(world_output_files->patchdbmq_requester, response, 1, 0);
+		rc = zmq_recv(world_output_files->patchdbmq_requester, response, ZMQ_NOBLOCK);
 		if (rc == -1) {
 			if (errno == EFSM) {
 				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
