@@ -218,6 +218,8 @@ int main (int argc, char **argv) {
 			snprintf(patchid, 64, "%d:%d:%d:%d", p.basin_id(),
 					 p.hill_id(), p.zone_id(), p.patch_id());
 
+			zmq_send(responder, "A", 1, 0);
+
 //			_bind_to_stmts_and_write(patchid, date, "rain_thr", (cass_double_t)p.rain_throughfall());
 //			_bind_to_stmts_and_write(patchid, date, "detention_store", (cass_double_t)p.detention_store());
 //			_bind_to_stmts_and_write(patchid, date, "sat_def_z", (cass_double_t)p.sat_deficit_z());
@@ -253,7 +255,7 @@ int main (int argc, char **argv) {
 //			_bind_to_stmts_and_write(patchid, date, "pcp", (cass_double_t)p.precip());
 //			_bind_to_stmts_and_write(patchid, date, "recharge", (cass_double_t)p.recharge());
 
-			zmq_send(responder, "A", 1, 0);
+//			zmq_send(responder, "A", 1, 0);
 
 			break;
 		}
