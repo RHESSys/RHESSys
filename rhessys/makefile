@@ -4,7 +4,7 @@ VERSION = 5.18.r2
 CC = g++ 
 #CFLAGS = -O -std=c99
 #CFLAGS = -g -std=c99
-CFLAGS = -g 
+CFLAGS = -g -std=c++11 -pthread
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 INCLUDES = -I/usr/local/include -Iinclude -Ioutput/filtering
@@ -811,7 +811,7 @@ $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 $(OBJ)/params.o: util/params.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) util/params.c -o $(OBJ)/params.o
 $(OBJ)/patchdb.o: output/patchdb.cc
-	$(CC) -c $(CFLAGS) $(INCLUDES) output/patchdb.cc -o $(OBJ)/patchdb.o
+	$(CC) -c $(CFLAGS) $(INCLUDES) output/patchdb.cc -o $(OBJ)/patchdb.o 
 
 $(OBJ)/main.o: main.cc setversion
 	$(CC) -c $(CFLAGS) $(INCLUDES) main.cc -o $(OBJ)/main.o
