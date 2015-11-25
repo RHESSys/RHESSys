@@ -255,8 +255,6 @@ int main (int argc, char **argv) {
 //			_bind_to_stmts_and_write(patchid, date, "pcp", (cass_double_t)p.precip());
 //			_bind_to_stmts_and_write(patchid, date, "recharge", (cass_double_t)p.recharge());
 
-//			zmq_send(responder, "A", 1, 0);
-
 			break;
 		}
     	case m.END_SIM:
