@@ -415,14 +415,15 @@ void *patchdbserver(void *args) {
 			// Shutdown Cassandra connection
 			_cass_destroy(var_by_date_patch_stmt, patch_by_var_date_stmt);
 			destroy_patchdb(cass_cluster, cass_session);
-			zmq_send (responder, "A", 1, 0);
-			sleep(2); // Sleep to make sure client receives response before we close
+			zmq_send(responder, "A", 1, 0);
+			zmq_close(responder);
 			loop = false;
 			break;
     	default:
     		break;
     	}
     }
+    printf("Patchdb thread returning");
     return NULL;
 }
 

@@ -566,8 +566,9 @@ int	main( int main_argc, char **main_argv)
 					"A", response);
 			exit(EXIT_FAILURE);
 		}
-
+		printf("Calling pthread_join on IO thread ...");
 		pthread_join(patchdb_thread, NULL);
+		printf(" done\n");
 		zmq_close(output->patchdbmq_requester);
 		zmq_ctx_destroy(output->patchdbmq_context);
 	}
