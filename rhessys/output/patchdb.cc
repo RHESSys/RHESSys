@@ -190,7 +190,7 @@ void _cass_prep_stmt(CassSession* cass_session,
 			"(variable,date,patchid,value) "
 			"VALUES (?,?,?,?);");
 	rc = patchdb_prepare_statement(cass_session,
-			(const char*)&query, &var_by_date_patch_stmt);
+			(const char*)query, &var_by_date_patch_stmt);
 	if (rc != CASS_OK) {
 		pthread_exit(NULL);
 	}
@@ -199,7 +199,7 @@ void _cass_prep_stmt(CassSession* cass_session,
 			"(patchid,variable,date,value) "
 			"VALUES (?,?,?,?);");
 	rc = patchdb_prepare_statement(cass_session,
-			(const char*)&query, &patch_by_var_date_stmt);
+			(const char*)query, &patch_by_var_date_stmt);
 	if (rc != CASS_OK) {
 		pthread_exit(NULL);
 	}
