@@ -524,6 +524,49 @@ int	main( int main_argc, char **main_argv)
 	
 
 	if (command_line[0].patchdb_flag) {
+
+		printf("Stopping patchdb message queue thread");
+		rhessys::PatchDBMesg m;
+		m.set_type(m.END_SIM);
+		rhessys::EndSim *e = m.mutable_endsim();
+		e->set_mesg("E");
+
+		zmq_msg_t msg;
+		int rc = PbToZmq(&m, &msg);
+		if (rc == -1) {
+			printf("Unable to create zeromq message");
+			exit(EXIT_FAILURE);
+		}
+		rc = zmq_msg_send(&msg, output->patchdbmq_requester, 0);
+
+		if (rc == -1) {
+			if (errno == EFSM) {
+				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
+			} else {
+				printf("output_patch: zeromq returned, main:540: %s, exiting...\n", strerror(errno));
+			}
+			exit(EXIT_FAILURE);
+		}
+
+		//printf("Waiting for close response from zeromq server...");
+
+		char response[2];
+		rc = zmq_recv(output->patchdbmq_requester, response, 1, 0);
+		if (rc == -1) {
+			if (errno == EFSM) {
+				printf("output_patch: zeromq: operation cannot be performed on this socket at the moment due to the socket not being in the appropriate state.\n");
+			} else {
+				printf("output_patch: zeromq returned, main:550: %d, exiting...\n", errno);
+			}
+			exit(EXIT_FAILURE);
+		}
+
+		if (response[0] != 'A') {
+			printf("output_patch: expected patchdbmq server to return %s, but received: %s, exiting...\n",
+					"A", response);
+			exit(EXIT_FAILURE);
+		}
+
 		pthread_join(patchdb_thread, NULL);
 		zmq_close(output->patchdbmq_requester);
 		zmq_ctx_destroy(output->patchdbmq_context);
