@@ -185,7 +185,7 @@ void _cass_prep_stmt(CassSession* cass_session,
 	 * Make prepared statements
 	 */
 	CassError rc = CASS_OK;
-	char query[128];
+	char *query = (char *)malloc(128);
 	snprintf(query, 128, "INSERT INTO variables_by_date_patch "
 			"(variable,date,patchid,value) "
 			"VALUES (?,?,?,?);");
@@ -203,6 +203,7 @@ void _cass_prep_stmt(CassSession* cass_session,
 	if (rc != CASS_OK) {
 		pthread_exit(NULL);
 	}
+	free(query);
 }
 
 void _bind_to_stmts_and_write(std::queue<CassFuture *> insert_future_queue,
