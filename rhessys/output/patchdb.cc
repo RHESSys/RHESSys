@@ -75,20 +75,20 @@ CassError patchdb_execute_query(CassSession* session, const char* query) {
 
 void init_patchdb(char* hostname,
 				  char* keyspace_name,
-				  CassCluster* cluster,
-				  CassSession* session) {
+				  CassCluster** cluster,
+				  CassSession** session) {
 
 	printf("patchdb: Connecting to Cassandra cluster at %s ...\n", hostname);
 
-	cluster = cass_cluster_new();
-	session = cass_session_new();
-	cass_cluster_set_contact_points(cluster, hostname);
+	*cluster = cass_cluster_new();
+	*session = cass_session_new();
+	cass_cluster_set_contact_points(*cluster, hostname);
 
-	cass_cluster_set_write_bytes_high_water_mark(cluster, 128 * 1024 * 1024);
+	cass_cluster_set_write_bytes_high_water_mark(*cluster, 128 * 1024 * 1024);
 	//cass_cluster_set_num_threads_io(*cluster, 8);
-	cass_cluster_set_queue_size_io(cluster, 65536);
+	cass_cluster_set_queue_size_io(*cluster, 65536);
 
-	CassFuture* connect_future = cass_session_connect(session, cluster);
+	CassFuture* connect_future = cass_session_connect(*session, *cluster);
 
 	if (cass_future_error_code(connect_future) != CASS_OK) {
 		patchdb_print_error(connect_future, NULL);
@@ -100,11 +100,11 @@ void init_patchdb(char* hostname,
 	char query[MAXSTR];
 	// TODO: remove "IF NOT EXISTS" for production use
 	snprintf(query, MAXSTR, "CREATE KEYSPACE IF NOT EXISTS %s WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '3' };", keyspace_name);
-	patchdb_execute_query(session, query);
+	patchdb_execute_query(*session, query);
 
 	// Use the newly created keyspace
 	snprintf(query, MAXSTR, "USE %s;", keyspace_name);
-	patchdb_execute_query(session, query);
+	patchdb_execute_query(*session, query);
 
 	printf("done\n");
 
@@ -147,8 +147,6 @@ int _ZmqToPb(zmq_msg_t *src, ::google::protobuf::Message *dest) {
 
 void _cass_init(char *cass_hostname, char *cass_keyspace,
 				CassCluster* cass_cluster, CassSession* cass_session) {
-	init_patchdb(cass_hostname, cass_keyspace,
-				 cass_cluster, cass_session);
 	// Make tables
 	char query[MAXSTR];
 	printf("patchdb: Creating tables ... ");
@@ -269,6 +267,8 @@ void *patchdbserver(void *args) {
 	std::queue<CassFuture *> insert_future_queue;
 
 	// Setup connection to Cassandra cluster
+	init_patchdb(cass_hostname, cass_keyspace,
+			 	 &cass_cluster, &cass_session);
 	_cass_init(cass_hostname, cass_keyspace, cass_cluster, cass_session);
 
 	// Verify that the version of the library that we linked against is
