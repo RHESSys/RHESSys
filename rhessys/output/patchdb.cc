@@ -138,13 +138,6 @@ int _ZmqToPb(zmq_msg_t *src, ::google::protobuf::Message *dest) {
     return rc;
 }
 
-//static CassCluster* cass_cluster;
-//static CassSession* cass_session;
-//static const CassPrepared *var_by_date_patch_stmt;
-//static const CassPrepared *patch_by_var_date_stmt;
-//
-//static std::queue<CassFuture *> insert_future_queue;
-
 void _cass_init(char *cass_hostname, char *cass_keyspace,
 				CassCluster* cass_cluster, CassSession* cass_session) {
 	// Make tables
@@ -233,21 +226,6 @@ void _bind_to_stmts_and_write(std::queue<CassFuture *>& insert_future_queue,
 	CassError rc = CASS_OK;
 	CassStatement* statement = NULL;
 	CassFuture* future = NULL;
-
-//	size_t outstanding_inserts = insert_future_queue.size();
-//	if (outstanding_inserts >= NUM_CONCURRENT_REQUESTS) {
-//		for (int i = outstanding_inserts; i > 0; i--) {
-//			future = insert_future_queue.front();
-//			insert_future_queue.pop();
-//			cass_future_wait(future);
-//			rc = cass_future_error_code(future);
-//			if (rc != CASS_OK) {
-//				patchdb_print_error(future, "Error writing to patchdb");
-//			}
-//			cass_future_free(future);
-//		}
-//		future = NULL;
-//	}
 
 	make_outstanding_writes(insert_future_queue);
 
@@ -448,16 +426,4 @@ void *patchdbserver(void *args) {
     printf("Patchdb thread returning");
     return NULL;
 }
-
-//void quit(int sig) {
-//	// TODO: Make sure outstanding data are written to the DB before quitting
-//	fprintf(debug, "Received SIGTERM\n");
-//	fclose(debug);
-//
-//	// Shutdown Cassandra connection
-//	_cass_destroy();
-//	destroy_patchdb(cass_cluster, cass_session);
-//
-//    exit(sig);
-//}
 
