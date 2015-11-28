@@ -256,6 +256,7 @@ void _bind_to_stmts_and_write(std::queue<CassFuture *>& insert_future_queue,
 	cass_statement_bind_string(statement, 1, date);
 	cass_statement_bind_string(statement, 2, patchid);
 	cass_statement_bind_double(statement, 3, value);
+	cass_statement_set_consistency(statement, CASS_CONSISTENCY_ONE);
 	future = cass_session_execute(cass_session, statement);
 	insert_future_queue.push(future);
 
@@ -266,6 +267,7 @@ void _bind_to_stmts_and_write(std::queue<CassFuture *>& insert_future_queue,
 	cass_statement_bind_string(statement, 1, var);
 	cass_statement_bind_string(statement, 2, date);
 	cass_statement_bind_double(statement, 3, value);
+	cass_statement_set_consistency(statement, CASS_CONSISTENCY_ONE);
 	future = cass_session_execute(cass_session, statement);
 	insert_future_queue.push(future);
 
