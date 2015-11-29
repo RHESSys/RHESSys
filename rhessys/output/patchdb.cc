@@ -86,7 +86,7 @@ void init_patchdb(char* hostname,
 
 	cass_cluster_set_write_bytes_high_water_mark(*cluster, 128 * 1024 * 1024);
 	cass_cluster_set_write_bytes_low_water_mark(*cluster, 64 * 1024 * 1024);
-	cass_cluster_set_num_threads_io(*cluster, 2);
+	cass_cluster_set_num_threads_io(*cluster, 1);
 	cass_cluster_set_queue_size_io(*cluster, 65536);
 
 	cass_cluster_set_pending_requests_high_water_mark(*cluster, 1024);
