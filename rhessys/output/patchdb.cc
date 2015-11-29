@@ -287,7 +287,9 @@ void *patchdbserver(void *args) {
     int rc = zmq_bind(responder, socket_path);
     assert (rc == 0);
 
+#ifdef DEBUG
     FILE *debug = fopen("/tmp/patchdb.debug", "w");
+#endif
 
     char patchid[64];
     char date[16];
@@ -359,8 +361,10 @@ void *patchdbserver(void *args) {
 
 				snprintf(date, 16, "%d-%02d-%02d",
 						 year, month, day);
+#ifdef DEBUG
 				fprintf(debug, "Date changed to: %s\n", date);
 				fflush(debug);
+#endif
 			}
 
 			snprintf(patchid, 64, "%d:%d:%d:%d", p.basin_id(),
@@ -409,8 +413,10 @@ void *patchdbserver(void *args) {
 			printf("patchdbmq: Recv. EndSim, committing outstanding writes\n");
     		make_outstanding_writes(insert_future_queue);
 
+#ifdef DEBUG
 			fprintf(debug, "Received EndSim message\n");
 			fclose(debug);
+#endif DEBUG
 
 			// Shutdown Cassandra connection
 			_cass_destroy(var_by_date_patch_stmt, patch_by_var_date_stmt);
