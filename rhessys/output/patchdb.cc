@@ -425,6 +425,10 @@ void *patchdbserver(void *args) {
     		printf("Cassandra stats:\n\trequests/second: mean: %f\n\tlatency us: median: %llu\n",
     				metrics.requests.mean_rate,
 					metrics.requests.median);
+    		printf("\ttotal connections: %llu\n",
+    				metrics.stats.total_connections);
+    		printf("\tavailable connections: %llu\n",
+    		    	metrics.stats.available_connections);
 			printf("\tnum exceeded_pending_requests_water_mark: %llu\n",
 					metrics.stats.exceeded_pending_requests_water_mark);
     		printf("\tnum exceeded_write_bytes_water_mark: %llu\n",
