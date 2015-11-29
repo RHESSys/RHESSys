@@ -91,8 +91,8 @@ void init_patchdb(char* hostname,
 
 //	cass_cluster_set_pending_requests_high_water_mark(*cluster, 1024);
 //	cass_cluster_set_pending_requests_low_water_mark(*cluster, 512);
-//	cass_cluster_set_core_connections_per_host(*cluster, 2);
-//	cass_cluster_set_max_connections_per_host(*cluster, 8);
+	cass_cluster_set_core_connections_per_host(*cluster, 2);
+	cass_cluster_set_max_connections_per_host(*cluster, 8);
 
 	CassFuture* connect_future = cass_session_connect(*session, *cluster);
 
