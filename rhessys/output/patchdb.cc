@@ -420,6 +420,16 @@ void *patchdbserver(void *args) {
 			printf("patchdbmq: Recv. EndSim, committing outstanding writes\n");
     		make_outstanding_writes(insert_future_queue);
 
+    		CassMetrics metrics;
+    		cass_session_get_metrics(cass_session, &metrics);
+    		printf("Cassandra stats:\n\trequests/second: mean: %f\n\tlatency us: median: %llu\n",
+    				metrics.requests.mean_rate,
+					metrics.requests.median);
+			printf("\tnum exceeded_pending_requests_water_mark: %llu\n",
+					metrics.stats.exceeded_pending_requests_water_mark);
+    		printf("\tnum exceeded_write_bytes_water_mark: %llu\n",
+					metrics.stats.exceeded_write_bytes_water_mark);
+
 #ifdef DEBUG
 			fprintf(debug, "Received EndSim message\n");
 			fclose(debug);
