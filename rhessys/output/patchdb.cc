@@ -85,8 +85,15 @@ void init_patchdb(char* hostname,
 	cass_cluster_set_contact_points(*cluster, hostname);
 
 	cass_cluster_set_write_bytes_high_water_mark(*cluster, 128 * 1024 * 1024);
+	cass_cluster_set_write_bytes_low_water_mark(*cluster, 64 * 1024 * 1024);
 	//cass_cluster_set_num_threads_io(*cluster, 8);
 	cass_cluster_set_queue_size_io(*cluster, 65536);
+
+//	cass_cluster_set_pending_requests_high_water_mark(*cluster, 1024);
+//	cass_cluster_set_pending_requests_low_water_mark(*cluster, 512);
+//	cass_cluster_set_num_threads_io(cluster, 4);
+//	cass_cluster_set_core_connections_per_host(cluster, 2);
+//	cass_cluster_set_max_connections_per_host(cluster, 8);
 
 	CassFuture* connect_future = cass_session_connect(*session, *cluster);
 
@@ -416,7 +423,7 @@ void *patchdbserver(void *args) {
 #ifdef DEBUG
 			fprintf(debug, "Received EndSim message\n");
 			fclose(debug);
-#endif DEBUG
+#endif
 
 			// Shutdown Cassandra connection
 			_cass_destroy(var_by_date_patch_stmt, patch_by_var_date_stmt);
