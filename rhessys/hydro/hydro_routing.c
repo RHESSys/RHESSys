@@ -729,7 +729,7 @@ static void sub_routing2( double   tstep,        /*  external time step      */
             k     = subdexo[i][j] ;
             z2    = patchz[k] ;
             w2    = waterz[k] ;
-            slope = ( z1 - z2 ) / subdist[i][j] ;
+            slope = ( z1 - z2 ) / subdist[i][j] ; // TODO: Carlie: This variable does not appear to be used
             if ( fabs( z1 - z2 ) > EPSILON )
                 {
                 asum = asum + max( 0.0, subgama[k][j] * (w1 - w2) / (z1 - z2) ) ;
@@ -779,7 +779,7 @@ static void sub_routing2( double   tstep,        /*  external time step      */
         dDOC = -compute_N_leached( verbose, totDOC[i], outH2O[i], satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DOCads[i], transp ) ;
         for ( j = 0; j < subcnti[i]; j++ )
             {
-            k     = subdexi[i][j] ;
+            k     = subdexi[i][j] ; // TODO: Carlie: This variable does not appear to be used
             n     = subnbri[i][j] ;
             transp = plist[n]->transmissivity_profile ;
             dH2O += outH2O[n] ;
@@ -928,7 +928,7 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
                 litH2O[i] = litH2O[i] + thruH2O[i] * dt ;   /*  rain falls preferentially on canopy   */
                 litNO3[i] = litNO3[i] + thruNO3[i] * dt ;   /*  rain falls preferentially on canopy   */
                 capacity  = cancap[i] - litH2O[i] ;         /*  available canopy/litter storage       */
-                water     = litH2O[i] + sfcH2O[i] ;         /*  available total surface+canopy water  */
+                water     = litH2O[i] + sfcH2O[i] ;         /*  available total surface+canopy water  */ // TODO: Carlie: This variable does not appear to be used
 
                 if ( capacity < 0.0 )        /*  excess canopy water, etc., to surface  */
                     {
@@ -1195,7 +1195,7 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 
     /*  Main processing loop  */
 
-    for ( t = tstep ; t > EPSILON ; t-=dt )
+    for ( t = tstep ; t > EPSILON ; t-=dt ) // TODO: Carlie: The variable 'dt' does not appear to be initialized before use.
         {
 
         /*  Compute tributary inflow rate (M^3/sec, Kg/Sec)  */
@@ -1264,7 +1264,7 @@ static void stream_routing( double  tstep )        /*  process time-step  */
                 strmflo[i] = area * vel ;
                 }
             else{
-                strmflo[i] = resflow( reslist[i], tribH2O[i], dt ) ;
+                strmflo[i] = resflow( reslist[i], tribH2O[i], dt ) ; // TODO: Carlie: The variable 'dt' does not appear to be initialized before use.
                 }
             if ( strmH2O[i] > EPSILON )
                 {
@@ -1377,12 +1377,12 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
             satdef[i] = 0.0 ;
             unsH2O[i] = 0.0 ;
             sfcH2O[i] = sfcH2O[i] + dH2O ;
-            sfcNO3[i] = sfcNO3[i] + dNO3 ;
+            sfcNO3[i] = sfcNO3[i] + dNO3 ; // TODO: Carlie: The variable 'dNO3' does not appear to be initialized before use.
             sfcNH4[i] = sfcNH4[i] + dNH4 ;
             sfcDON[i] = sfcDON[i] + dDON ;
             sfcDOC[i] = sfcDOC[i] + dDOC ;
             totH2O[i] = totH2O[i] - dH2O ;      /*  == capH2O[i]    */
-            totNO3[i] = totNO3[i] - dNO3 ;
+            totNO3[i] = totNO3[i] - dNO3 ; // TODO: Carlie: The variable 'dNO3' does not appear to be initialized before use.
             totNH4[i] = totNH4[i] - dNH4 ;
             totDON[i] = totDON[i] - dDON ;
             totDOC[i] = totDOC[i] - dDOC ;
@@ -1759,7 +1759,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
             {
             neigh = plist[ subdexo[i][j] ] ;
             k     = patchdex( neigh ) ;
-            m     = MAXNEIGHBOR * k + subcnti[k]  ;
+            m     = MAXNEIGHBOR * k + subcnti[k]  ; // TODO: Carlie: The variable 'm' does not appear to be used.
             subcnti[k]++  ;
             subdexi[k][j] = i ;
             subnbri[k][j] = k ;
@@ -1910,6 +1910,7 @@ void hydro_routing( struct command_line_object * command_line,
         {
     	printf("Calling init_hydro_routing...\n");
         init_hydro_routing( command_line, basin ) ;
+        printf("init_hydro_routing finished\n");
         }
 
 
