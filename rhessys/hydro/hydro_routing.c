@@ -1710,8 +1710,8 @@ static void init_hydro_routing( struct command_line_object * command_line,
         for ( j = 0; j < subcnto[i]; j++ )
             {
             neigh = patch->innundation_list->neighbours[j].patch;
-            dx    = neigh->x - plist[j]->x ;
-            dy    = neigh->y - plist[j]->y ;
+            dx    = neigh->x - patch->x ;
+            dy    = neigh->y - patch->y ;
             subdist[i][j] = sqrt( dx*dx + dy*dy )  ;
             subdexo[i][j] = patchdex( neigh ) ;
             if ( dx+dy < 1.1*subdist[i][j] )
