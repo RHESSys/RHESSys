@@ -1588,7 +1588,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     reslist = (struct reservoir_object * *) alloc(num_strm * sizeof(struct reservoir_object *), "reslist", "hydro_routing/init_hydro_routing()" ) ;
 
-    hillist = (struct hillslope_object * *) alloc(num_strm * sizeof(struct hillslope_object *), "hillist", "hydro_routing/init_hydro_routing()" ) ;
+    hillist = basin->hillslopes;
 
     /*  Initialize data structures for patches.  */
     /*  Invert orientation of drainage matrices  */
