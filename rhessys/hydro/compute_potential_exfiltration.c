@@ -74,8 +74,8 @@ double	compute_potential_exfiltration(
 									   double	m_z,
 									   double	psi_air_entry,
 									   double	pore_size_index,
-									   double 	p_0,
-									   double	p)
+									   double 	p,
+									   double	p_0)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
