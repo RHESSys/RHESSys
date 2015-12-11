@@ -1932,10 +1932,12 @@ void hydro_routing( struct command_line_object * command_line,
         sfcDOC[i] = patch->surface_DOC ;
         sfcDON[i] = patch->surface_DON ;
 
+#ifdef DEBUG
         if (patch->sat_deficit < 0.0) {
         	printf("WARNING: patch->sat_deficit is %.2f for patch idx %d\n",
         			patch->sat_deficit, i);
         }
+#endif
 
         satdef[i] = patch->sat_deficit ;
         unsH2O[i] = patch->rz_storage + patch->unsat_storage ;
@@ -2021,10 +2023,12 @@ void hydro_routing( struct command_line_object * command_line,
 
         /*  soil drainage and storage update  */
         
+#ifdef DEBUG
         if (satdef[i] < 0.0) {
         	printf("WARNING: satdef is %.2f for patch idx %d\n",
         			satdef[i], i);
         }
+#endif
 
         satz = patchz[i] - waterz[i] ;
         if ( ( satz ) <= EPSILON )                 /*  fully-saturated patch  */
@@ -2054,7 +2058,11 @@ void hydro_routing( struct command_line_object * command_line,
             qq = 1.0 - pp ;
             patch->rz_storage      = pp * unsH2O[i] ;
             patch->unsat_storage   = qq * unsH2O[i] ;
-            patch->sat_deficit     = satdef[i] ;
+            if (satdef[i] < ZERO) {
+            	patch->sat_deficit = 0.0;
+            } else {
+            	patch->sat_deficit = satdef[i] ;
+            }
             patch->sat_deficit_z   = patch->z - waterz[i] ;
             }
 
