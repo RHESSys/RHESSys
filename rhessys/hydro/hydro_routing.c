@@ -161,7 +161,7 @@ extern double	compute_varbased_flow( int      num_soil_intervals,
 				                       double * transmissivity,
 				                       struct   patch_object *patch ) ;
 
-extern double	compute_field_capacity(
+extern double	compute_layer_field_capacity(
 							   int	verbose_flag,
 							   int	curve,
 							   double	psi_air_entry,
