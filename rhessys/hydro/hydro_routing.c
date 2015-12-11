@@ -1658,15 +1658,17 @@ static void init_hydro_routing( struct command_line_object * command_line,
         cancap[i] = patch->litter.rain_capacity ;
         patchm[i] = patch->m;
 
-        rtcap[i]  = compute_layer_field_capacity( verbose, 
-                                                 tpcurv[i], 
-                                                 psiair[i], 
-                                                 pordex[i], 
-                                                 p3parm[i], 
-                                                 p4parm[i], 
-                                                  por_0[i], 
-                                                  por_d[i], 
-                                                  rootz[i], rootz[i], 0.0 ) ;       /*  root-zone field capacity  */
+        if (rootz[i] > ZERO) {
+			rtcap[i]  = compute_layer_field_capacity( verbose,
+													 tpcurv[i],
+													 psiair[i],
+													 pordex[i],
+													 p3parm[i],
+													 p4parm[i],
+													  por_0[i],
+													  por_d[i],
+													  rootz[i], rootz[i], 0.0 ) ;       /*  root-zone field capacity  */
+        }
 
         minH2O[i] = compute_layer_field_capacity( verbose, 
                                                  tpcurv[i], 
