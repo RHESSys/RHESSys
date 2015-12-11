@@ -2043,7 +2043,7 @@ void hydro_routing( struct command_line_object * command_line,
             patch->rz_storage      = unsH2O[i] + rtcap[i] ;
             patch->unsat_storage   = 0.0 ;
             patch->sat_deficit     = satdef[i] ;
-            patch->sat_deficit_z   = patch->z - waterz[i] ;
+            patch->sat_deficit_z   = patch->z - waterz[i] ; // TODO: Should this just be satz?
             }
         else{                                   /*  unsaturated-zone water table  */
             dCAP = compute_layer_field_capacity( verbose, 
