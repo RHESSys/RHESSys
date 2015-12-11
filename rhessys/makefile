@@ -2,13 +2,13 @@ PGM  = rhessys5.19
 VERSION = 5.19
 CC = gcc 
 #CFLAGS = -O -std=c99
-CFLAGS =-Wall -g -std=c99
+CFLAGS =-Wall -g -std=c99 -DDEBUG
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
 CC     := gcc 
 # CFLAGS := -O3 -std=c99 -m64 -march=native -mtune=native -fopenmp -ffast-math -funroll-loops
-CFLAGS := -g -std=c99 -m64
+CFLAGS := -g -std=c99 -m64 -DDEBUG
 
 #CC     := icc 
 #CFLAGS := -O3  -traceback -xHost -openmp
