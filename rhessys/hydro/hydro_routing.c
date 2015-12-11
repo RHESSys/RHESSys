@@ -1352,7 +1352,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                           kfac*ksat_0[i], 
                                                unsH2O[i] - fldcap ) ;
         unsH2O[i] = unsH2O[i] + infH2O[i] - drain;
-        satdef[i] = satdef[i] - latH2O[i] + drain ;
+        satdef[i] = satdef[i] + latH2O[i] - drain ;
         totH2O[i] = totH2O[i] + infH2O[i] - latH2O[i] ;
         totNO3[i] = totNO3[i] + infNO3[i] + latNO3[i] ;
         totNH4[i] = totNH4[i] + infNH4[i] + latNH4[i] ;
