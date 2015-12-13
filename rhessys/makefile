@@ -959,6 +959,8 @@ install:
 
 clean:
 	rm -f $(OBJECTS)
+	rm -f $(OBJDIR_TESTS)/*
+	rm -f $(TESTS_TO_RUN)
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)
