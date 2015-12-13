@@ -1,10 +1,27 @@
 PGM  = rhessys5.20.0
 VERSION = 5.20.0
 CC = gcc 
+INCLUDES = -Iinclude
 #CFLAGS = -O -std=c99
 CFLAGS =-Wall -g -std=c99
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
+
+# Retro fitting from CF
+CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -Wmacro-redefined -std=c99
+LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
+
+SRCS := $(shell find clim cn cycle hydro init rad tec util -name '*.c')
+OBJDIR := OBJ
+
+TESTS_ROOTDIR = test
+SRCDIR_TESTS = $(TESTS_ROOTDIR)/src
+SRCS_TESTS := $(shell find $(SRCDIR_TESTS) -name '*.c')
+TESTSDIR = $(TESTS_ROOTDIR)
+OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
+OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
+TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
+TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
 
 OS := $(shell uname)
 
@@ -299,6 +316,7 @@ all:	dir rhessys
 
 dir:
 	mkdir -p $(OBJ)
+	mkdir -p $(OBJDIR_TESTS)
 
 ifdef netcdf
 ifdef wmfire
@@ -317,6 +335,27 @@ rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM) 
 endif
 endif
+
+# For debugging purposes; usage: make print-NAMEOFMAKEVARIABLE
+print-%  : ; @echo $* = $($*)
+
+OBJECTS_NO_MAIN := $(patsubst $(OBJ)/main.o,,$(OBJECTS))
+test: dir $(TESTS)
+	# Run each unit test
+	$(patsubst %,%;,$(TESTS_TO_RUN))
+	
+$(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS) 
+ifeq ($(OS), Darwin)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+else ifeq ($(OS), Linux)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -lbsd -o $@
+else
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+endif
+	cp $@ $(TESTS_ROOTDIR)
+
+$(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
+	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $< 
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
