@@ -8,7 +8,14 @@ RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
 # Retro fitting from CF
-CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -Wmacro-redefined -std=c99
+ifeq ($(OS), Darwin)
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -Wmacro-redefined -std=c99
+else ifeq ($(OS), Linux)
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+else
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+endif
+
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
 
 SRCS := $(shell find clim cn cycle hydro init rad tec util -name '*.c')
