@@ -21,4 +21,14 @@ void *alloc(size_t size, char *array_name, char *calling_function);
 
 struct routing_list_object *construct_topmodel_patchlist(struct basin_object * const basin);
 
+double	compute_potential_exfiltration(int 	verbose_flag,
+									   double	S,
+									   double 	sat_deficit_z,
+									   double	Ksat_0,
+									   double	m_z,
+									   double	psi_air_entry,
+									   double	pore_size_index,
+									   double 	p,
+									   double	p_0);
+
 #endif

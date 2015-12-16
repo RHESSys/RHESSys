@@ -62,6 +62,7 @@
 /*--------------------------------------------------------------*/
 #include <stdlib.h>
 #include "rhessys.h"
+#include "functions.h"
 
 void		patch_daily_I(
 						  struct	world_object *world,
@@ -124,18 +125,6 @@ void		patch_daily_I(
 	
 	double	compute_capillary_rise(
 		int,
-		double,
-		double,
-		double,
-		double,
-		double);
-
-
-	double  compute_potential_exfiltration(
-		int,
-		double,
-		double,
-		double,
 		double,
 		double,
 		double,
