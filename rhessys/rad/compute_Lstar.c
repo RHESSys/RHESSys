@@ -19,6 +19,9 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
+
+
 #include "phys_constants.h"
 #include "rhessys.h"
 
@@ -53,6 +56,17 @@ void	compute_Lstar(
 	Lup_pond = 0.0;
 	KstarH = 0.0;
 	
+	double Ldown_canopy_night = 0.0;
+	double Ldown_canopy_day = 0.0;
+	double Ldown_subcanopy_night = 0.0;
+	double Ldown_subcanopy_day = 0.0;
+	double Lup_soil_night = 0.0;
+	double Lup_soil_day = 0.0;
+	double Lup_snow_night = 0.0;
+	double Lup_snow_day = 0.0;
+	double Lup_pond_night = 0.0;
+	double Lup_pond_day = 0.0;
+
 	
 	/*--------------------------------------------------------------*/
 	/*	Use daylength for longwave computations.	*/
@@ -74,7 +88,6 @@ void	compute_Lstar(
 	else
 		Tcan = patch[0].T_canopy;
 	
-		
 	if (patch[0].overstory_fraction > 0.0) {
 		
 		skyview = 1.0 - patch[0].overstory_fraction;
@@ -92,22 +105,42 @@ void	compute_Lstar(
 		/*** End Ldown model from Pomeroy et al 2009 ***/
 	
 		/* With day/night split (not highly sensitive) */
-		/*patch[0].Lup_canopy_night = ess_veg * SBC * pow( zone[0].metv.tnight + 273.0, 4.0 ) * nightlength / 1000.0;
-		patch[0].Lup_canopy_day = ess_veg * SBC * pow( zone[0].metv.tday +	273.0, 4.0 ) * daylength / 1000.0;
-		patch[0].Lup_canopy =   patch[0].Lup_canopy_day  + patch[0].Lup_canopy_night + (1 - ess_veg) * zone[0].Ldown;
-		Ldown_canopy = patch[0].Lup_canopy_day  + patch[0].Lup_canopy_night;*/
+#ifdef DEBUG
+		// Remove asserts once debugged
+		assert(zone->metv.tday != -999.0);
+		assert(zone->metv.tnight != -999.0);
+		assert(zone->Ldown_night != -999.0);
+		assert(zone->Ldown_day != -999.0);
+#endif
+
+		Ldown_canopy_night = ess_veg * SBC * pow( zone[0].metv.tnight + 273.0, 4.0 ) * nightlength / 1000.0;
+		Lup_canopy_night = Ldown_canopy_night + (1 - ess_veg) * zone->Ldown_night; // TODO: Make sure Ldown_canopy_night and zone->Ldown_night are consistent
+		Ldown_canopy_day = ess_veg * SBC * pow( zone[0].metv.tday +	273.0, 4.0 ) * daylength / 1000.0;
+		Lup_canopy_day = Ldown_canopy_day + (1 - ess_veg) * zone->Ldown_day; // TODO: Make sure Ldown_canopy_day and zone->Ldown_day are consistent
+		//patch[0].Lup_canopy =   patch[0].Lup_canopy_day  + patch[0].Lup_canopy_night + (1 - ess_veg) * zone[0].Ldown;
+		Ldown_canopy = Ldown_canopy_day  + Ldown_canopy_night;
+		Lup_canopy = Lup_canopy_day + Lup_canopy_night;
 
 		/* Without day/night split */
-		Lup_canopy = ess_veg * SBC * pow( (Tcan) + 273.0, 4.0 ) * 86400 / 1000.0
+		/*Lup_canopy = ess_veg * SBC * pow( (Tcan) + 273.0, 4.0 ) * 86400 / 1000.0
 								+ (1 - ess_veg) * zone[0].Ldown; /* added canopy reflected Ldown from atmosphere */
-		Ldown_canopy = ess_veg * SBC * pow( (Tcan) + 273.0, 4.0 ) * 86400 / 1000.0;
+
+//		Ldown_canopy = ess_veg * SBC * pow( (Tcan) + 273.0, 4.0 ) * 86400 / 1000.0;
+
 		/* Ldown at surface (entire patch) */
-		patch[0].Ldown_subcanopy = ( skyview * zone[0].Ldown ) 
-						+ ((1 - skyview) * Ldown_canopy);
+//		patch[0].Ldown_subcanopy = ( skyview * zone[0].Ldown )
+//						+ ((1 - skyview) * Ldown_canopy);
 						/*+ (B * KstarH);*/
+
 		/* note that Kstar_canopy has already been reduced by cover fraction, so B * KstarH is outside of (1-skyview) multiplier */
 		/*patch[0].Kstar_canopy -= B * KstarH;*/
 		
+		Ldown_subcanopy_night = ( skyview * zone->Ldown_night )
+								+ ((1 - skyview) * Ldown_canopy_night);
+		Ldown_subcanopy_day = ( skyview * zone->Ldown_day )
+								+ ((1 - skyview) * Ldown_canopy_day);
+		patch->Ldown_subcanopy = Ldown_subcanopy_night + Ldown_subcanopy_day;
+
 	}
 	else {
 		/* zero out L canopies if no canopy present */
@@ -115,31 +148,49 @@ void	compute_Lstar(
 		Lup_canopy_night = 0.0;
 		Lup_canopy = 0.0;
 		Ldown_canopy = 0.0;
-		patch[0].Ldown_subcanopy = zone[0].Ldown;
+		patch[0].Ldown_subcanopy = zone[0].Ldown; // TODO: Check to see if we need day and night portions
 		skyview = 1.0;
 	}
 	
-	/* snow case */
+	/* Determine surface longwave emissions */
 	if ( patch[0].snowpack.water_equivalent_depth > 0 ) {
-		Lup_snow = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * seconds_per_day / 1000.0 
-								+ (1 - ess_snow) * patch[0].Ldown_subcanopy;
+		/* snow case */
+		//		Lup_snow = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * seconds_per_day / 1000.0
+		//								+ (1 - ess_snow) * patch[0].Ldown_subcanopy;
+		Lup_snow_night = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * nightlength / 1000.0
+				+ (1 - ess_snow) * Ldown_subcanopy_night;
+		Lup_snow_day = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * daylength / 1000.0
+				+ (1 - ess_snow) * Ldown_subcanopy_day;
+		Lup_snow = Lup_snow_night + Lup_snow_day;
+
 		/* ignoring reflected L between snow and soil surfaces */
-		Lup_soil = 0.0;
+		Lup_soil_night = Lup_soil_day = Lup_soil = 0.0;
+	}
+	else if ( patch[0].detention_store > (patch[0].litter.rain_capacity - patch[0].litter.rain_stored) ) {
+		/* ponded water case */
+		//			Lup_pond = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * seconds_per_day / 1000.0
+		//									+ (1 - ess_water) * patch[0].Ldown_subcanopy;
+		Lup_pond_night = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * nightlength / 1000.0
+				+ (1 - ess_water) * Ldown_subcanopy_night;
+		Lup_pond_day = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * daylength / 1000.0
+				+ (1 - ess_water) * Ldown_subcanopy_day;
+		Lup_pond = Lup_pond_night + Lup_pond_day;
+
+		/* ignoring reflected L between water and soil surfaces */
+		Lup_soil_night = Lup_soil_day = Lup_soil = 0.0;
 	}
 	else {
-		/* ponded water case */
-		if ( patch[0].detention_store > (patch[0].litter.rain_capacity - patch[0].litter.rain_stored) ) {
-			Lup_pond = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * seconds_per_day / 1000.0 
-									+ (1 - ess_water) * patch[0].Ldown_subcanopy;
-			/* ignoring reflected L between water and soil surfaces */
-			Lup_soil = 0.0;
-		}
 		/* bare soil case */
-		else {
-			Lup_snow = 0.0;
-			Lup_soil = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * seconds_per_day / 1000.0
-								+ (1 - ess_soil) * patch[0].Ldown_subcanopy;
-		}
+		Lup_snow_night = Lup_snow_day = Lup_snow = 0.0;
+
+		//		Lup_soil = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * seconds_per_day / 1000.0
+		//				+ (1 - ess_soil) * patch[0].Ldown_subcanopy;
+
+		Lup_soil_night = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * nightlength / 1000.0
+				+ (1 - ess_soil) * Ldown_subcanopy_night;
+		Lup_soil_day = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * daylength / 1000.0
+				+ (1 - ess_soil) * Ldown_subcanopy_day;
+		Lup_soil = Lup_soil_night + Lup_soil_day;
 	}
 		
 	/*--------------------------------------------------------------*/

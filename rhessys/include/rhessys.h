@@ -969,6 +969,8 @@ struct zone_object
         double  LAI_temp_adjustment;                    /* 0 - 1        */
         double  LAI_scalar;                             /* DIM          */
         double  Ldown;                                  /* W/m2         */
+        double  Ldown_night;							/* W/m2			*/
+        double  Ldown_day;								/* W/m2			*/
         double  ndep_NO3;                               /* kg/m2/day    */
         double  ndep_NH4;                               /* kg/m2/day    */
         double  PAR_direct;                             /* umol(m^2*day)        */

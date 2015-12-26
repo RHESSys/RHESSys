@@ -359,6 +359,8 @@ void zone_daily_I(
 	zone[0].Kdown_direct_adjustment = -999.0;
 	zone[0].Kdown_direct_flag = 0;
 	zone[0].Ldown = -999.0;
+	zone->Ldown_night = -999.0;
+	zone->Ldown_day = -999.0;
 	zone[0].PAR_direct = -999.0;
 	zone[0].PAR_diffuse = -999.0;
 	zone[0].daytime_rain_duration = -999.0;
