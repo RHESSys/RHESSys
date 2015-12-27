@@ -72,7 +72,7 @@ void	compute_Lstar(
 	/*	Use daylength for longwave computations.	*/
 	/*--------------------------------------------------------------*/
 	daylength = zone[0].metv.dayl;
-	nightlength = seconds_per_day - daylength;
+	nightlength = SECONDS_PER_DAY - daylength;
 	
 	/* Snow surface temp estimate from Brubaker 1996 as referenced in Dingman */
 	/*Tss = patch[0].snowpack.T;*/

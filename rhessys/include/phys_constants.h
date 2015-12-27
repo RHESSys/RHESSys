@@ -26,7 +26,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 #define HVAP 42.7       /* Heat of vaporization, kJ/mol */
 #define KELVIN 273.16
 #define PI	3.14159265359
-#define seconds_per_day 86400
+#define SECONDS_PER_DAY 86400
 #define ICE_DENSITY 917.0 	/* (kg/m3) density of ice */
 
 /*physiological constants	*/

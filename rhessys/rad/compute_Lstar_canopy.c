@@ -58,7 +58,7 @@ double	compute_Lstar_canopy(
 	/*	Use daylength for longwave computations.	*/
 	/*--------------------------------------------------------------*/
 	daylength = zone[0].metv.dayl;
-	nightlength = seconds_per_day - daylength;
+	nightlength = SECONDS_PER_DAY - daylength;
 	
 	/* Snow surface temp estimate from Brubaker 1996 as referenced in Dingman */
 	/*Tss = patch[0].snowpack.T;*/
@@ -85,7 +85,7 @@ double	compute_Lstar_canopy(
 	
 	/* snow case */
 	if ( patch[0].snowpack.water_equivalent_depth > 0 ) {
-		Lup_snow = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * seconds_per_day / 1000.0 
+		Lup_snow = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * SECONDS_PER_DAY / 1000.0 
 								+ (1 - ess_snow) * Ldown_canopy;
 		/* ignoring reflected L between snow and soil surfaces */
 		Lup_soil = 0.0;
@@ -93,7 +93,7 @@ double	compute_Lstar_canopy(
 	else {
 		/* ponded water case */
 		if ( patch[0].detention_store > (patch[0].litter.rain_capacity - patch[0].litter.rain_stored) ) {
-			Lup_pond = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * seconds_per_day / 1000.0 
+			Lup_pond = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * SECONDS_PER_DAY / 1000.0 
 									+ (1 - ess_water) * Ldown_canopy;
 			/* ignoring reflected L between water and soil surfaces */
 			Lup_soil = 0.0;
@@ -101,7 +101,7 @@ double	compute_Lstar_canopy(
 		/* bare soil case */
 		else {
 			Lup_snow = 0.0;
-			Lup_soil = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * seconds_per_day / 1000.0
+			Lup_soil = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * SECONDS_PER_DAY / 1000.0
 								+ (1 - ess_soil) * Ldown_canopy;
 		}
 	}
