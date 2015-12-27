@@ -1547,11 +1547,19 @@ struct patch_object
         double  lna;                    /* unitless     */
         double  lai;                    /* unitless     */
         double  Lup_soil;               /* Kj/(m^2*day) */
-        double  Lup;            /* Kj/(m^2*day) */
+        double  Lup;            		/* Kj/(m^2*day) */
         double  Lstar_canopy;           /* Kj/(m^2*day) */
+        double  Lstar_canopy_night;     /* Kj/(m^2*day) */
+        double  Lstar_canopy_day;       /* Kj/(m^2*day) */
         double  Lstar_snow;             /* Kj/(m^2*day) */
+        double  Lstar_snow_night;       /* Kj/(m^2*day) */
+        double  Lstar_snow_day;         /* Kj/(m^2*day) */
         double  Lstar_soil;             /* Kj/(m^2*day) */
+        double  Lstar_soil_night;       /* Kj/(m^2*day) */
+        double  Lstar_soil_day;         /* Kj/(m^2*day) */
         double  Lstar_pond;             /* Kj/(m^2*day) */
+        double  Lstar_pond_night;       /* Kj/(m^2*day) */
+        double  Lstar_pond_day;         /* Kj/(m^2*day) */
         double  Ldown_subcanopy;        /* Kj/(m^2*day) */
         double  m;              /* m^-1 */
         double  m_z;            /* m^-1 */
