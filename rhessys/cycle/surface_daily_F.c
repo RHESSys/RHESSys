@@ -124,8 +124,12 @@ void		surface_daily_F(
 	/*--------------------------------------------------------------*/
 	double  detention_store_evaporation;
 	double  detention_store_potential_evaporation;
-	double  detention_store_potential_dry_evaporation_rate;
-	double  detention_store_potential_rainy_evaporation_rate;
+	double  detention_store_potential_evaporation_night;
+	double  detention_store_potential_evaporation_day;
+	double  detention_store_potential_dry_evaporation_rate_night;
+	double  detention_store_potential_rainy_evaporation_rate_night;
+	double  detention_store_potential_dry_evaporation_rate_day;
+	double  detention_store_potential_rainy_evaporation_rate_day;
 	double  albedo;
 	double	dry_evaporation;
 	double	Kstar_direct;
@@ -191,9 +195,18 @@ void		surface_daily_F(
 	
 	double daylength = zone->metv.dayl;
 	double nightlength = SECONDS_PER_DAY - daylength;
+	double day_propotion = daylength / SECONDS_PER_DAY;
 
-	double surface_heat_flux_day = (daylength / SECONDS_PER_DAY) * patch->surface_heat_flux;
+	double surface_heat_flux_day = day_propotion * patch->surface_heat_flux;
 	double surface_heat_flux_night = patch->surface_heat_flux - surface_heat_flux_day;
+
+	double rain_duration_day = zone->daytime_rain_duration * day_propotion;
+	double rain_duration_night = zone->daytime_rain_duration - rain_duration_day;
+
+#ifdef DEBUG
+	assert(daylength > rain_duration_day);
+	assert(nightlength > rain_duration_night);
+#endif
 
 	/*patch[0].stability_correction = compute_stability_correction(
 					 command_line[0].verbose_flag,
@@ -260,21 +273,43 @@ void		surface_daily_F(
 
 		patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
 
-		detention_store_potential_dry_evaporation_rate = penman_monteith(
+		detention_store_potential_dry_evaporation_rate_night = penman_monteith(
 				command_line[0].verbose_flag,
-				zone[0].metv.tday,
+				zone[0].metv.tnight,
 				zone[0].metv.pa,
-				zone[0].metv.vpd,
-				rnet_evap_pond,
+				zone[0].metv.vpd, // May need to calculate VPD for night
+				rnet_evap_pond_night,
 				0.0,
 				1/(patch[0].ga),
 				2) ;
-		detention_store_potential_rainy_evaporation_rate = penman_monteith(
+		detention_store_potential_dry_evaporation_rate_day = penman_monteith(
+						command_line[0].verbose_flag,
+						zone[0].metv.tday,
+						zone[0].metv.pa,
+						zone[0].metv.vpd, // May need to calculate VPD based on tday as
+										  // presently VPD is calculated based on a
+										  // saturation vapor deficit calculated using tavg (arithmatic mean)
+										  // not the sine-wave method of Running et al. 1987 (used to calc. tday),
+										  // but we are using tday as input to penman_monteith
+						rnet_evap_pond_day,
+						0.0,
+						1/(patch[0].ga),
+						2) ;
+		detention_store_potential_rainy_evaporation_rate_night = penman_monteith(
+						command_line[0].verbose_flag,
+						zone[0].metv.tnight,
+						zone[0].metv.pa,
+						10,
+						rnet_evap_pond_night,
+						0.0,
+						1/(patch[0].ga),
+						2) ;
+		detention_store_potential_rainy_evaporation_rate_day = penman_monteith(
 				command_line[0].verbose_flag,
 				zone[0].metv.tday,
 				zone[0].metv.pa,
 				10,
-				rnet_evap_pond,
+				rnet_evap_pond_day,
 				0.0,
 				1/(patch[0].ga),
 				2) ;
@@ -282,10 +317,20 @@ void		surface_daily_F(
 		/* Added adjustment for rain duration. Assumes rain duration input	*/
 		/* is # of hours over 24-hr day and we divide into daylight vs.		*/
 		/* night rain hours following total daylight hour fraction.			*/
-		detention_store_potential_evaporation  = detention_store_potential_dry_evaporation_rate
-				* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
-				+ detention_store_potential_rainy_evaporation_rate
-				* (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
+//		detention_store_potential_evaporation  = detention_store_potential_dry_evaporation_rate
+//				* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
+//				+ detention_store_potential_rainy_evaporation_rate
+//				* (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
+
+		detention_store_potential_evaporation_night = (detention_store_potential_dry_evaporation_rate_night
+		                * (nightlength - rain_duration_night) )
+		                + (detention_store_potential_rainy_evaporation_rate_night
+		                * rain_duration_night);
+		detention_store_potential_evaporation_day = (detention_store_potential_dry_evaporation_rate_day
+		                * (daylength - rain_duration_day) )
+		                + (detention_store_potential_rainy_evaporation_rate_day
+		                * rain_duration_day);
+		detention_store_potential_evaporation = detention_store_potential_evaporation_day + detention_store_potential_evaporation_night;
 
 		// Avoid over-estimating ET from surfaces with no detention store size
 		//   (e.g. impervious surface) by gating ET by detention_store_size
