@@ -189,6 +189,12 @@ void		surface_daily_F(
 	hv = (2.5023e6 - 2430.54 * zone[0].metv.tday) / 1000; /* changed to match hv used in penman monteith */
 	water_density = 1000;	/* density of water in kg/m^3 */
 	
+	double daylength = zone->metv.dayl;
+	double nightlength = SECONDS_PER_DAY - daylength;
+
+	double surface_heat_flux_day = (daylength / SECONDS_PER_DAY) * patch->surface_heat_flux;
+	double surface_heat_flux_night = patch->surface_heat_flux - surface_heat_flux_day;
+
 	/*patch[0].stability_correction = compute_stability_correction(
 					 command_line[0].verbose_flag,
 					 0.0,
@@ -237,24 +243,24 @@ void		surface_daily_F(
 
 		/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 		/*** reflected by water surface based on water albedo. ***/
-		
-		if (zone[0].metv.dayl > ZERO) {
-				rnet_evap_pond = 1000 * ( (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse) 
-										+ patch[0].Lstar_pond
-										/* - patch[0].Lstar_soil */ /* Lstar_soil is assumed 0 when ponded water */
-										+ patch[0].surface_heat_flux ) 
-										/ zone[0].metv.dayl;
-				if (rnet_evap_pond <= ZERO) {
-					rnet_evap_pond = 0.0;
-				}
-			}
-			else rnet_evap_pond = 0.0;
-	
-			/*** Use Penman with rsurface=0 for open water evaporation. ***/
-	
-			patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
-		
-			detention_store_potential_dry_evaporation_rate = penman_monteith(
+
+//		rnet_evap_pond = 1000 * ( (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse)
+//				+ patch[0].Lstar_pond
+//				/* - patch[0].Lstar_soil */ /* Lstar_soil is assumed 0 when ponded water */
+//				+ patch[0].surface_heat_flux ) / zone[0].metv.dayl;
+		double rnet_evap_pond_night = 1000 * ( patch->Lstar_pond_night + surface_heat_flux_night) / nightlength;
+		double rnet_evap_pond_day = 1000 * ( (1 - WATER_ALBEDO) * (patch->Kdown_direct + patch->Kdown_diffuse)
+				+ patch->Lstar_pond_day + surface_heat_flux_day) / daylength;
+		rnet_evap_pond = rnet_evap_pond_night + rnet_evap_pond_day;
+		if (rnet_evap_pond <= ZERO) {
+			rnet_evap_pond = 0.0;
+		}
+
+		/*** Use Penman with rsurface=0 for open water evaporation. ***/
+
+		patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
+
+		detention_store_potential_dry_evaporation_rate = penman_monteith(
 				command_line[0].verbose_flag,
 				zone[0].metv.tday,
 				zone[0].metv.pa,
@@ -263,7 +269,7 @@ void		surface_daily_F(
 				0.0,
 				1/(patch[0].ga),
 				2) ;
-			detention_store_potential_rainy_evaporation_rate = penman_monteith(
+		detention_store_potential_rainy_evaporation_rate = penman_monteith(
 				command_line[0].verbose_flag,
 				zone[0].metv.tday,
 				zone[0].metv.pa,
@@ -272,30 +278,30 @@ void		surface_daily_F(
 				0.0,
 				1/(patch[0].ga),
 				2) ;
-		
-			/* Added adjustment for rain duration. Assumes rain duration input	*/
-			/* is # of hours over 24-hr day and we divide into daylight vs.		*/
-			/* night rain hours following total daylight hour fraction.			*/ 
-			detention_store_potential_evaporation  = detention_store_potential_dry_evaporation_rate
-					* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
-					+ detention_store_potential_rainy_evaporation_rate
-					* (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
-								
-			// Avoid over-estimating ET from surfaces with no detention store size 
-			//   (e.g. impervious surface) by gating ET by detention_store_size
-			detention_store_evaporation = min(detention_store_potential_evaporation, 
-						min(patch[0].detention_store,
-							patch[0].soil_defaults[0][0].detention_store_size));
-		
+
+		/* Added adjustment for rain duration. Assumes rain duration input	*/
+		/* is # of hours over 24-hr day and we divide into daylight vs.		*/
+		/* night rain hours following total daylight hour fraction.			*/
+		detention_store_potential_evaporation  = detention_store_potential_dry_evaporation_rate
+				* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
+				+ detention_store_potential_rainy_evaporation_rate
+				* (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
+
+		// Avoid over-estimating ET from surfaces with no detention store size
+		//   (e.g. impervious surface) by gating ET by detention_store_size
+		detention_store_evaporation = min(detention_store_potential_evaporation,
+				min(patch[0].detention_store,
+						patch[0].soil_defaults[0][0].detention_store_size));
+
 		patch[0].detention_store -= detention_store_evaporation;
-		
+
 		patch[0].Kup_direct += (1 - patch[0].overstory_fraction) 
-					* WATER_ALBEDO * patch[0].Kdown_direct;
+							* WATER_ALBEDO * patch[0].Kdown_direct;
 		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction)
-					* WATER_ALBEDO * patch[0].Kdown_diffuse;	
+							* WATER_ALBEDO * patch[0].Kdown_diffuse;
+	} else {
+		detention_store_evaporation = 0.0;
 	}
-	
-	else detention_store_evaporation = 0.0;
 	
 	
 	/*** If snowpack is over detention store, then add evaporated water to snowpack. ***/
