@@ -286,6 +286,8 @@ void		surface_daily_F(
 				0.0,
 				1/(patch[0].ga),
 				2) ;
+		detention_store_potential_dry_evaporation_rate_night = max(0.0, detention_store_potential_dry_evaporation_rate_night);
+
 		detention_store_potential_dry_evaporation_rate_day = penman_monteith(
 						command_line[0].verbose_flag,
 						zone[0].metv.tday,
@@ -299,6 +301,8 @@ void		surface_daily_F(
 						0.0,
 						1/(patch[0].ga),
 						2) ;
+		detention_store_potential_dry_evaporation_rate_day = max(0.0, detention_store_potential_dry_evaporation_rate_day);
+
 		detention_store_potential_rainy_evaporation_rate_night = penman_monteith(
 						command_line[0].verbose_flag,
 						zone[0].metv.tnight,
@@ -308,6 +312,8 @@ void		surface_daily_F(
 						0.0,
 						1/(patch[0].ga),
 						2) ;
+		detention_store_potential_rainy_evaporation_rate_night = max(0.0, detention_store_potential_rainy_evaporation_rate_night);
+
 		detention_store_potential_rainy_evaporation_rate_day = penman_monteith(
 				command_line[0].verbose_flag,
 				zone[0].metv.tday,
@@ -317,6 +323,7 @@ void		surface_daily_F(
 				0.0,
 				1/(patch[0].ga),
 				2) ;
+		detention_store_potential_rainy_evaporation_rate_day = max(0.0, detention_store_potential_rainy_evaporation_rate_day);
 
 		/* Added adjustment for rain duration. Assumes rain duration input	*/
 		/* is # of hours over 24-hr day and we divide into daylight vs.		*/
