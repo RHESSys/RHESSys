@@ -21,8 +21,10 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
-#include "phys_constants.h"
+
 #include "rhessys.h"
+#include "phys_constants.h"
+#include "functions.h"
 
 void	canopy_stratum_daily_F(
 							   struct	world_object		      *world,
@@ -232,14 +234,6 @@ void	canopy_stratum_daily_F(
 		struct litter_n_object *,
 		int,
 		struct mortality_struct);
-	
-	double	 compute_Lstar_canopy(
-								 int	,
-								 double	*,
-								 double	,
-								 double ,
-								 struct	zone_object *,
-								 struct	patch_object *);
 	
 	struct 	canopy_strata_object *construct_empty_shadow_strata( 
 		struct command_line_object *,
@@ -593,14 +587,12 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Calculate net longwave.										*/
 	/*--------------------------------------------------------------*/	
-	stratum[0].Lstar = compute_Lstar_canopy(
-						   command_line[0].verbose_flag,
-						   &(patch[0].Ldown),
-						   stratum[0].Kstar_direct + stratum[0].Kstar_diffuse,
-						   stratum[0].snow_stored,
-						   zone,
-						   patch);
-		
+	compute_Lstar_canopy(command_line[0].verbose_flag,
+			stratum[0].Kstar_direct + stratum[0].Kstar_diffuse,
+			stratum[0].snow_stored,
+			zone,
+			patch,
+			stratum);
 		
 	 stratum[0].Lstar = 0.0;
 

@@ -22,13 +22,12 @@
 #include "phys_constants.h"
 #include "rhessys.h"
 
-double	compute_Lstar_canopy(
-					  int	verbose_flag,
-					  double *Ldown,
-					  double KstarH,
-					  double snow_stored,
-					  struct	zone_object	*zone,
-					  struct	patch_object	*patch) 
+void compute_Lstar_canopy(int	verbose_flag,
+						  double KstarH,
+						  double snow_stored,
+						  struct	zone_object	*zone,
+						  struct	patch_object	*patch,
+						  struct	canopy_strata_object *stratum)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -74,11 +73,10 @@ double	compute_Lstar_canopy(
 		Tcan = zone[0].metv.tavg;
 
 	
-	Ldownini= *Ldown;
-	
+	Ldownini = patch->Ldown;
 	
 	Lup_canopy = ess_veg * SBC * pow( Tcan + 273.0, 4.0 ) * 86400 / 1000.0
-					+ (1 - ess_veg) * *Ldown; /* added canopy reflected Ldown from atmosphere */
+					+ (1 - ess_veg) * patch->Ldown; /* added canopy reflected Ldown from atmosphere */
 	Ldown_canopy = ess_veg * SBC * pow( Tcan + 273.0, 4.0 ) * 86400 / 1000.0;
 		
 	/*KstarH -= B * KstarH;*/ /*removing in canopy stratum daily f*/
@@ -117,25 +115,25 @@ double	compute_Lstar_canopy(
 		/*--------------------------------------------------------------*/
 		/*	Compute with a snow layer									*/
 		/*--------------------------------------------------------------*/
-		Lstar = Lup_snow + *Ldown - Lup_canopy - Ldown_canopy;
+		Lstar = Lup_snow + patch->Ldown - Lup_canopy - Ldown_canopy;
 	}
 	else {
 		/*--------------------------------------------------------------*/
 		/*	Compute with ponded water									*/
 		/*--------------------------------------------------------------*/		
 		if ( patch[0].detention_store > (patch[0].litter.rain_capacity - patch[0].litter.rain_stored) ) {
-			Lstar = Lup_pond + *Ldown - Lup_canopy - Ldown_canopy;
+			Lstar = Lup_pond + patch->Ldown - Lup_canopy - Ldown_canopy;
 		}
 		else {
 			/*--------------------------------------------------------------*/
 			/*	Compute with bare soil										*/
 			/*--------------------------------------------------------------*/
-			Lstar = Lup_soil + *Ldown - Lup_canopy - Ldown_canopy;
+			Lstar = Lup_soil + patch->Ldown - Lup_canopy - Ldown_canopy;
 		}
 	}
 	
 	/*Lstar += B * KstarH;*/
-	*Ldown = Ldown_canopy;
+	patch->Ldown = Ldown_canopy;
 	
 	if ( verbose_flag == -5 ){
 		printf("\n     LSTAR CAN: SWE=%lf ess_veg=%lf ess_snow=%lf ess_soil=%lf Ldownzone=%lf\n          Ldown=%lf Kstar_canopy=%lf OF=%lf Ldownsub=%lf Tsnow=%lf Tss=%lf Tsoil=%lf Tcan=%lf",
@@ -169,6 +167,6 @@ double	compute_Lstar_canopy(
 	/* underestimation of the canopy net radiation (and transpiration), by not letting Lstar_canopy be strongly negative during growing season */
    if (Tcan > 0 && Lstar < 0) Lstar=0.0;
 	
-    return( Lstar );	
+   stratum->Lstar = Lstar;
 	
 } /*end compute_Lstar*/

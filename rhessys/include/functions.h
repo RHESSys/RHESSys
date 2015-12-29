@@ -31,4 +31,11 @@ double	compute_potential_exfiltration(int 	verbose_flag,
 									   double 	p,
 									   double	p_0);
 
+void compute_Lstar_canopy(int	verbose_flag,
+						  double KstarH,
+						  double snow_stored,
+						  struct	zone_object	*zone,
+						  struct	patch_object	*patch,
+						  struct	canopy_strata_object *stratum);
+
 #endif
