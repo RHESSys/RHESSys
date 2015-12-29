@@ -153,7 +153,11 @@ void		surface_daily_F(
 	double 	fraction_direct_K;
 	double	fraction_diffuse_K;
 	double	fraction_Lstar_pond;
+	double	fraction_Lstar_pond_night;
+	double	fraction_Lstar_pond_day;
 	double	fraction_surface_heat_flux;
+	double	fraction_surface_heat_flux_night;
+	double	fraction_surface_heat_flux_day;
 	double  Kdown_diffuse_in, PAR_diffuse_in, Kstar_diffuse_lit, APAR_diffuse_lit, Kstar_diffuse_soil, APAR_diffuse_soil;
 	double  Kdown_direct_in, PAR_direct_in, Kstar_direct_lit, APAR_direct_lit, Kstar_direct_soil, APAR_direct_soil;
 	double  Kup_direct_soil, Kup_diffuse_soil, Kup_direct_lit, Kup_diffuse_lit;
@@ -386,18 +390,32 @@ void		surface_daily_F(
 			fraction_direct_K = (1-WATER_ALBEDO) * patch[0].Kdown_direct / K_initial;
 			fraction_diffuse_K = (1-WATER_ALBEDO) * patch[0].Kdown_diffuse / K_initial;
 			fraction_Lstar_pond = patch[0].Lstar_soil / K_initial;
+			fraction_Lstar_pond_night = patch->Lstar_soil_night / K_initial;
+			fraction_Lstar_pond_day = patch->Lstar_soil_day / K_initial;
 			fraction_surface_heat_flux = patch[0].surface_heat_flux / K_initial;
+			fraction_surface_heat_flux_night = surface_heat_flux_night / K_initial;
+			fraction_surface_heat_flux_day = surface_heat_flux_day / K_initial;
 		}
 		else {
 			fraction_direct_K = 0.0;
 			fraction_diffuse_K = 0.0;
 			fraction_Lstar_pond = 0.0;
+			fraction_Lstar_pond_night = 0.0;
+			fraction_Lstar_pond_day = 0.0;
 			fraction_surface_heat_flux = 0.0;
+			fraction_surface_heat_flux_night = 0.0;
+			fraction_surface_heat_flux_day = 0.0;
 		}
 		patch[0].Kdown_direct = ((1-WATER_ALBEDO) * patch[0].Kdown_direct) - (fraction_direct_K * K_used);
 		patch[0].Kdown_diffuse = ((1-WATER_ALBEDO) * patch[0].Kdown_diffuse) - (fraction_diffuse_K * K_used);
-		patch[0].Lstar_pond = patch[0].Lstar_soil - (fraction_Lstar_pond * K_used);
+		// Was, which looks wrong: patch[0].Lstar_pond = patch[0].Lstar_soil - (fraction_Lstar_pond * K_used);
+		// Should be:
+		patch->Lstar_pond = patch->Lstar_pond - (fraction_Lstar_pond * K_used);
+		patch->Lstar_pond_night = patch->Lstar_pond_night - (fraction_Lstar_pond_night * K_used);
+		patch->Lstar_pond_day = patch->Lstar_pond_day - (fraction_Lstar_pond_day * K_used);
 		patch[0].surface_heat_flux = patch[0].surface_heat_flux - (fraction_surface_heat_flux * K_used);
+		surface_heat_flux_night = surface_heat_flux_night - (fraction_surface_heat_flux_night * K_used);
+		surface_heat_flux_day = surface_heat_flux_day - (fraction_surface_heat_flux_day * K_used);
 	}
 	
 	if ( command_line[0].verbose_flag == -5 ){
