@@ -269,9 +269,9 @@ void		surface_daily_F(
 		double rnet_evap_pond_day = 1000 * ( (1 - WATER_ALBEDO) * (patch->Kdown_direct + patch->Kdown_diffuse)
 				+ patch->Lstar_pond_day + surface_heat_flux_day) / daylength;
 		rnet_evap_pond = rnet_evap_pond_night + rnet_evap_pond_day;
-		if (rnet_evap_pond <= ZERO) {
-			rnet_evap_pond = 0.0;
-		}
+		if (rnet_evap_pond <= ZERO) rnet_evap_pond = 0.0;
+		if (rnet_evap_pond_night <= ZERO) rnet_evap_pond_night = 0.0;
+		if (rnet_evap_pond_day <= ZERO) rnet_evap_pond_day = 0.0;
 
 		/*** Use Penman with rsurface=0 for open water evaporation. ***/
 
