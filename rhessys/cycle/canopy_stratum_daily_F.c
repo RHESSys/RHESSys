@@ -269,13 +269,19 @@ void	canopy_stratum_daily_F(
 	double	PAR_direct;
 	double  total_incoming_PAR;
 	double	perc_sunlit;
-	double	potential_evaporation_rate;
+	double	potential_evaporation_rate = 0.0;
+	double	potential_evaporation_rate_night = 0.0;
+	double	potential_evaporation_rate_day = 0.0;
 	double	potential_rainy_evaporation_rate;
+	double	potential_rainy_evaporation_rate_night;
+	double	potential_rainy_evaporation_rate_day;
 	double	rainy_evaporation;
 	double	rain_throughfall;
 	double	NO3_throughfall;
 	double	NO3_stored;
 	double	rnet_evap;
+	double  rnet_evap_night;
+	double  rnet_evap_day;
 	double	rnet_trans, rnet_trans_sunlit, rnet_trans_shade;
 	double	snow_throughfall;
 	double	transpiration;
@@ -306,8 +312,10 @@ void	canopy_stratum_daily_F(
 	double	fraction_diffuse_K_used;
 	double	fraction_direct_APAR_used;
 	double	fraction_diffuse_APAR_used;
-	double fraction_L_used;
-	double fraction_surfheat_used;
+	double  fraction_L_used;
+	double	fraction_L_used_night = 0.0;
+	double  fraction_L_used_day = 0.0;
+	double  fraction_surfheat_used;
 	double  lhvap;
 	double	Rnet_used, Rnet_canopy;
 	double	APAR_used;
@@ -358,6 +366,8 @@ void	canopy_stratum_daily_F(
 	dum = 0.0;
 	wetfrac = 0.0;
 	rnet_evap = 0.0;
+	rnet_evap_night = 0.0;
+	rnet_evap_day = 0.0;
 	
 	stratum[0].canopy_drip = 0.0;
 	
@@ -410,6 +420,12 @@ void	canopy_stratum_daily_F(
 	
 	lhvap = (2.5023e6 - 2430.54 * zone[0].metv.tday)/1000.0; /* KJ/kg H2O */	
 
+	double daylength = zone->metv.dayl;
+	double nightlength = SECONDS_PER_DAY - daylength;
+	double day_proportion = daylength / SECONDS_PER_DAY;
+
+	double rain_duration_day = zone->daytime_rain_duration * day_proportion;
+	double rain_duration_night = zone->daytime_rain_duration - rain_duration_day;
 
 	/* Lstar calcs are done in patch daily F AFTER this routine, so using yesterday's	*/
 	/* patch total canopy Lstar and scaling back to this stratum by cover fraction.		*/
@@ -1082,6 +1098,10 @@ void	canopy_stratum_daily_F(
 			stratum[0].defaults[0][0].max_heat_capacity);
 		
 	}
+
+	double surface_heat_flux_day = day_proportion * patch->surface_heat_flux;
+	double surface_heat_flux_night = patch->surface_heat_flux - surface_heat_flux_day;
+
 	if ( command_line[0].verbose_flag > 2 )
 		printf("\n%8d -444.11 ",julday(current_date)-2449000);
 	/*--------------------------------------------------------------*/
@@ -1091,12 +1111,21 @@ void	canopy_stratum_daily_F(
 	/*	Note if surface heat flux makes evap negative we	*/
 	/*	have condensation.  					*/
 	/*--------------------------------------------------------------*/
-	if (zone[0].metv.dayl > ZERO)
-		rnet_evap = 1000 * (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse 
-							+ stratum[0].Lstar + stratum[0].surface_heat_flux) 
-							/ zone[0].metv.dayl;
-	else
-		rnet_evap = 0.0;
+
+	//	if (zone[0].metv.dayl > ZERO)
+	//		rnet_evap = 1000 * (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse
+	//							+ stratum[0].Lstar + stratum[0].surface_heat_flux)
+	//							/ zone[0].metv.dayl;
+	//	else
+	//		rnet_evap = 0.0;
+
+	double rnet_evap_night = 1000 * (stratum->Lstar_night + surface_heat_flux_night)
+												/ nightlength;
+	double rnet_evap_day = 1000 * (stratum->Kstar_direct + stratum->Kstar_diffuse
+			+ stratum->Lstar_day + surface_heat_flux_day)
+												/ daylength;
+	rnet_evap = rnet_evap_night + rnet_evap_day;
+
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n          BEFORE EVAP: rnet_evap=%lf Kstar=%lf Lstar=%lf surfheat=%lf",
 				rnet_evap,
@@ -1110,42 +1139,61 @@ void	canopy_stratum_daily_F(
 	/*	Estimate potential evap rates.				*/
 	/*--------------------------------------------------------------*/
 	if ((stratum[0].gsurf > ZERO) && (stratum[0].ga > ZERO) && (rnet_evap > ZERO)) {
-	potential_evaporation_rate = penman_monteith(
-		command_line[0].verbose_flag,
-		zone[0].metv.tday,
-		zone[0].metv.pa,
-		zone[0].metv.vpd,
-		rnet_evap,
-		1/stratum[0].gsurf,
-		1/stratum[0].ga,
-		2) ;
-	potential_rainy_evaporation_rate = penman_monteith(
-		command_line[0].verbose_flag,
-		zone[0].metv.tday,
-		zone[0].metv.pa,
-		0,
-		rnet_evap,
-		1/stratum[0].gsurf,
-		1/stratum[0].ga,
-		2) ;
-	}
-	else {
-		potential_evaporation_rate = 0.0;
-		potential_rainy_evaporation_rate = 0.0;
+		potential_evaporation_rate_night = penman_monteith(
+				command_line[0].verbose_flag,
+				zone[0].metv.tnight,
+				zone[0].metv.pa,
+				zone[0].metv.vpd, // May need to calculate VPD for night
+				rnet_evap_night,
+				1/stratum[0].gsurf,
+				1/stratum[0].ga,
+				2);
+		potential_evaporation_rate_night = max(0.0, potential_evaporation_rate_night);
+
+		potential_evaporation_rate_day = penman_monteith(
+				command_line[0].verbose_flag,
+				zone[0].metv.tday,
+				zone[0].metv.pa,
+				zone[0].metv.vpd, // May need to calculate VPD based on tday as
+								  // presently VPD is calculated based on a
+								  // saturation vapor deficit calculated using tavg (arithmatic mean)
+								  // not the sine-wave method of Running et al. 1987 (used to calc. tday),
+								  // but we are using tday as input to penman_monteith
+				rnet_evap_day,
+				1/stratum[0].gsurf,
+				1/stratum[0].ga,
+				2);
+		potential_evaporation_rate_day = max(0.0, potential_evaporation_rate_day);
+
+		// Daily average rate
+		potential_evaporation_rate = (potential_evaporation_rate_night + potential_evaporation_rate_day) / 2.0;
+
+		potential_rainy_evaporation_rate_night = penman_monteith(
+				command_line[0].verbose_flag,
+				zone[0].metv.tnight,
+				zone[0].metv.pa,
+				0,
+				rnet_evap_night,
+				1/stratum[0].gsurf,
+				1/stratum[0].ga,
+				2);
+		potential_rainy_evaporation_rate_night = max(0.0, potential_rainy_evaporation_rate_night);
+
+		potential_rainy_evaporation_rate_day = penman_monteith(
+				command_line[0].verbose_flag,
+				zone[0].metv.tday,
+				zone[0].metv.pa,
+				0,
+				rnet_evap_day,
+				1/stratum[0].gsurf,
+				1/stratum[0].ga,
+				2);
+		potential_rainy_evaporation_rate_day = max(0.0, potential_rainy_evaporation_rate_day);
+
+		// Daily average rate
+		potential_rainy_evaporation_rate = (potential_rainy_evaporation_rate_night + potential_rainy_evaporation_rate_day) / 2.0;
 	}
 
-	potential_evaporation_rate = max(0,potential_evaporation_rate);
-	potential_rainy_evaporation_rate = max(0,potential_rainy_evaporation_rate);
-
-
-	/*--------------------------------------------------------------*/
-	/*	Do not allow negative potential evap if it raining	*/
-	/*	since condensation/dew dep is the same as rain		*/
-	/*--------------------------------------------------------------*/
-	if ( zone[0].rain > 0 ){
-		potential_evaporation_rate = max(0,potential_evaporation_rate);
-		potential_rainy_evaporation_rate= max(0,potential_rainy_evaporation_rate);
-	}
 	if ( command_line[0].verbose_flag > 2  )
 		printf("\n%8d -444.12 ",julday(current_date)-2449000);
 	/*--------------------------------------------------------------*/
@@ -1247,10 +1295,18 @@ void	canopy_stratum_daily_F(
 	/*								*/
 	/*	Note that Kstar is converted from Kj/m2*day to W/m2	*/
 	/*--------------------------------------------------------------*/
-	stratum[0].potential_evaporation  = potential_evaporation_rate
-		* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
-		+ potential_rainy_evaporation_rate * (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
-
+//	stratum[0].potential_evaporation  = potential_evaporation_rate
+//		* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
+//		+ potential_rainy_evaporation_rate * (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
+	double potential_evaporation_night = (potential_evaporation_rate_night
+					* (nightlength - rain_duration_night) )
+					+ (potential_rainy_evaporation_rate_night
+					* rain_duration_night);
+	double potential_evaporation_day = (potential_evaporation_rate_day
+						* (daylength - rain_duration_day) )
+						+ (potential_rainy_evaporation_rate_day
+						* rain_duration_day);
+	stratum->potential_evaporation = potential_evaporation_night + potential_evaporation_day;
 
 	/*--------------------------------------------------------------*/
 	/*	If this stratum is on the surface and has a non-zero 	*/
@@ -1335,17 +1391,23 @@ void	canopy_stratum_daily_F(
 	    }
 	}
 
-
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.15 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.4f %8.4f %8.4f %8.4f ",stratum[0].Kstar_direct,
 		stratum[0].Kstar_diffuse,stratum[0].APAR_direct,
 		stratum[0].APAR_diffuse);
-	/*--------------------------------------------------------------*/
-	/*	Separate the evaporation into rainy and dry		*/
-	/*	assuming rainy happens as much as it can.		*/
-	/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------
+	 *	Separate the evaporation into rainy and dry
+	 *	assuming rainy happens as much as it can.
+	 *
+	 *  Note:  For transpiration, we only care about
+	 *  evaporation during daytime hours, not the entire 24-hour period.
+	 *  However, we are now accounting for daytime and nighttime
+	 *  potential evaporation rates separately, but stratum->evaporation
+	 *  is the entire 24-hour flux.   This is not consistent, and may be
+	 *  problematic.
+	 *--------------------------------------------------------------*/
 	if ( stratum[0].evaporation > ZERO ){
 		rainy_evaporation =  min((zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) *
 			potential_rainy_evaporation_rate,
@@ -1449,6 +1511,14 @@ void	canopy_stratum_daily_F(
 			if ( (stratum[0].Lstar > 0) && (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux > 0) ){
 				fraction_L_used = stratum[0].Lstar 
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
+				if (stratum->Lstar_night > 0.0) {
+					fraction_L_used_night = stratum->Lstar_night
+							/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
+				}
+				if (stratum->Lstar_day > 0.0) {
+					fraction_L_used_day = stratum->Lstar_day
+							/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
+				}
 				fraction_direct_K_used = stratum[0].Kstar_direct 
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
 				fraction_diffuse_K_used = stratum[0].Kstar_diffuse 
@@ -1481,6 +1551,8 @@ void	canopy_stratum_daily_F(
 						 / ( stratum[0].Kstar_direct + stratum[0].Kstar_diffuse ) )
 						* (stratum[0].APAR_direct + stratum[0].APAR_diffuse);
 			stratum[0].Lstar -= Rnet_used * fraction_L_used;
+			stratum->Lstar_night -= Rnet_used * fraction_L_used_night;
+			stratum->Lstar_day -= Rnet_used * fraction_L_used_day;
 			stratum[0].Kstar_direct -= Rnet_used * fraction_direct_K_used;
 			stratum[0].Kstar_diffuse -= Rnet_used * fraction_diffuse_K_used;
 			stratum[0].surface_heat_flux -= Rnet_used * fraction_surfheat_used;
