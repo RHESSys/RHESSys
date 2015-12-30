@@ -209,12 +209,12 @@ void		surface_daily_F(
 	
 	double daylength = zone->metv.dayl;
 	double nightlength = SECONDS_PER_DAY - daylength;
-	double day_propotion = daylength / SECONDS_PER_DAY;
+	double day_proportion = daylength / SECONDS_PER_DAY;
 
-	double surface_heat_flux_day = day_propotion * patch->surface_heat_flux;
+	double surface_heat_flux_day = day_proportion * patch->surface_heat_flux;
 	double surface_heat_flux_night = patch->surface_heat_flux - surface_heat_flux_day;
 
-	double rain_duration_day = zone->daytime_rain_duration * day_propotion;
+	double rain_duration_day = zone->daytime_rain_duration * day_proportion;
 	double rain_duration_night = zone->daytime_rain_duration - rain_duration_day;
 
 #ifdef DEBUG
