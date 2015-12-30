@@ -594,7 +594,7 @@ void	canopy_stratum_daily_F(
 			patch,
 			stratum);
 		
-	 stratum[0].Lstar = 0.0;
+	 stratum[0].Lstar = 0.0; // Why are we zeroing out Lstar after it is set in compute_Lstar_canopy?
 
 	if ( stratum[0].Kstar_direct < -1 ) {
 			printf("CANOPY_START ID=%d: pai=%lf snowstor=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n", 

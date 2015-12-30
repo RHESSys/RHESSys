@@ -431,7 +431,11 @@ void		patch_daily_F(
 	patch[0].evaporation_surf = 0.0;
 	patch[0].potential_evaporation = 0.0;
 	patch[0].Ldown = zone[0].Ldown;
+	patch->Ldown_night = zone->Ldown_night;
+	patch->Ldown_day = zone->Ldown_day;
 	patch[0].Ldown_final = 0.0;
+	patch->Ldown_final_night = 0.0;
+	patch->Ldown_final_day = 0.0;
 	
 	patch[0].Kstar_canopy = 0.0;
 	patch[0].Kstar_canopy_final = 0.0;
@@ -664,6 +668,8 @@ void		patch_daily_F(
 			patch[0].PAR_direct_final = patch[0].layers[layer].null_cover * patch[0].PAR_direct;
 			patch[0].PAR_diffuse_final = patch[0].layers[layer].null_cover * patch[0].PAR_diffuse;
 			patch[0].Ldown_final = patch[0].layers[layer].null_cover * patch[0].Ldown;
+			patch->Ldown_final_night = patch->layers[layer].null_cover * patch->Ldown_night;
+			patch->Ldown_final_day = patch->layers[layer].null_cover * patch->Ldown_day;
 			patch[0].Kstar_canopy_final = patch[0].Kstar_canopy;
 			patch[0].LE_canopy_final = patch[0].LE_canopy;
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
@@ -716,6 +722,8 @@ void		patch_daily_F(
 			patch[0].PAR_direct = patch[0].PAR_direct_final;
 			patch[0].PAR_diffuse = patch[0].PAR_diffuse_final;
 			patch[0].Ldown = patch[0].Ldown_final;
+			patch->Ldown_night = patch->Ldown_final_night;
+			patch->Ldown_day = patch->Ldown_final_day;
 			patch[0].Kstar_canopy = patch[0].Kstar_canopy_final;
 			patch[0].LE_canopy = patch[0].LE_canopy_final;
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;

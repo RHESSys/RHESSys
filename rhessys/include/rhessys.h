@@ -1521,7 +1521,11 @@ struct patch_object
         double  Kdown_diffuse_final;    /* Kj/(m^2*day) */
         double  Kup_diffuse_final;      /* Kj/(m^2*day) */
         double  Ldown;  /* Kj/(m^2*day) */
+        double  Ldown_night; 	/* Kj/(m^2*day) */
+        double	Ldown_day;		/* Kj/(m^2*day) */
         double  Ldown_final;    /* Kj/(m^2*day) */
+        double  Ldown_final_night;	/* Kj/(m^2*day) */
+        double 	Ldown_final_day;	/* Kj/(m^2*day) */
         double Kdown_direct_ovund;
         double Kup_direct_ovund;
         double Kdown_diffuse_ovund;
@@ -2630,7 +2634,9 @@ struct  canopy_strata_object
         double  gsurf;                                          /* m/s          */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
-        double  Lstar;                                          /* Kj/(m2*day)  */      
+        double  Lstar;                                          /* Kj/(m2*day)  */
+        double  Lstar_night;									/* Kj/(m2*day)  */
+        double  Lstar_day;										/* Kj/(m2*day)  */
         double  NO3_stored;                                     /* kg/m2        */
         double  PAR_after_reflection;                           /* (umol photon/m2*day) */
         double  ppfd_sunlit;                    /*  (umol/m2/s) PAR photon flux density */
