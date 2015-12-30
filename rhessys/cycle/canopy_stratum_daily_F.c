@@ -1208,19 +1208,19 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 
 	if (zone[0].metv.dayl > ZERO) {
-	rnet_trans_sunlit = 1000 * ((stratum[0].Kstar_direct + (perc_sunlit)*stratum[0].Kstar_diffuse)
-		 + perc_sunlit * (stratum[0].Lstar + stratum[0].surface_heat_flux) ) / zone[0].metv.dayl
-		* ( stratum[0].epv.proj_lai / stratum[0].epv.proj_pai );
+		rnet_trans_sunlit = 1000 * ((stratum[0].Kstar_direct + (perc_sunlit)*stratum[0].Kstar_diffuse)
+				+ perc_sunlit * (stratum->Lstar_day + surface_heat_flux_day) ) / daylength
+						* ( stratum[0].epv.proj_lai / stratum[0].epv.proj_pai );
 
-	rnet_trans_shade = 1000 * (( (1.0-perc_sunlit)*stratum[0].Kstar_diffuse)
-		 + (1.0-perc_sunlit) * (stratum[0].Lstar + stratum[0].surface_heat_flux) ) / zone[0].metv.dayl
-		* ( stratum[0].epv.proj_lai / stratum[0].epv.proj_pai );
+		rnet_trans_shade = 1000 * (( (1.0-perc_sunlit)*stratum[0].Kstar_diffuse)
+				+ (1.0-perc_sunlit) * (stratum->Lstar_day + surface_heat_flux_day) ) / daylength
+						* ( stratum[0].epv.proj_lai / stratum[0].epv.proj_pai );
 	}
 	else {
 		rnet_trans_sunlit = 0.0;
 		rnet_trans_shade = 0.0;
-		}
-			
+	}
+
 	rnet_trans_shade = max(rnet_trans_shade, 0.0);
 	rnet_trans_sunlit = max(rnet_trans_sunlit, 0.0);
 		
