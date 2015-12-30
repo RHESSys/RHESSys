@@ -423,6 +423,7 @@ void	canopy_stratum_daily_F(
 	double daylength = zone->metv.dayl;
 	double nightlength = SECONDS_PER_DAY - daylength;
 	double day_proportion = daylength / SECONDS_PER_DAY;
+	double night_proportion = 1 - day_proportion;
 
 	double rain_duration_day = zone->daytime_rain_duration * day_proportion;
 	double rain_duration_night = zone->daytime_rain_duration - rain_duration_day;
@@ -1165,8 +1166,9 @@ void	canopy_stratum_daily_F(
 				2);
 		potential_evaporation_rate_day = max(0.0, potential_evaporation_rate_day);
 
-		// Daily average rate
-		potential_evaporation_rate = (potential_evaporation_rate_night + potential_evaporation_rate_day) / 2.0;
+		// Daily weighted average rate
+		potential_evaporation_rate = (night_proportion * potential_evaporation_rate_night) +
+				(day_proportion * potential_evaporation_rate_day);
 
 		potential_rainy_evaporation_rate_night = penman_monteith(
 				command_line[0].verbose_flag,
@@ -1190,8 +1192,10 @@ void	canopy_stratum_daily_F(
 				2);
 		potential_rainy_evaporation_rate_day = max(0.0, potential_rainy_evaporation_rate_day);
 
-		// Daily average rate
-		potential_rainy_evaporation_rate = (potential_rainy_evaporation_rate_night + potential_rainy_evaporation_rate_day) / 2.0;
+		// Daily weighted average rate
+		potential_rainy_evaporation_rate = (night_proportion * potential_rainy_evaporation_rate_night) +
+				(day_proportion * potential_rainy_evaporation_rate_day);
+
 	}
 
 	if ( command_line[0].verbose_flag > 2  )
