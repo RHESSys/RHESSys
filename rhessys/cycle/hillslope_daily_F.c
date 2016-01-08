@@ -86,7 +86,6 @@ void		hillslope_daily_F(
 	/*--------------------------------------------------------------*/
 	int	i,j,zone;
 	double slow_store, fast_store,scale;
-	double gw_Qout,gw_Qout_ratio;
 	struct patch_object *patch;
 	
 	#pragma omp parallel for
