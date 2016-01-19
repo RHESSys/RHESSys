@@ -147,9 +147,7 @@ void array2raster(const void* data, const char* name,
 			}
 		}
 
-		if (Rast_put_row(fd, rast, type) < 0) {
-			G_fatal_error("Failed writing raster map <%s>", name);
-		}
+		Rast_put_row(fd, rast, type);
 	}
 
 	G_free(rast);
