@@ -21,8 +21,7 @@ void* raster2array(const char* name, struct Cell_head* header, int* rows,
 
 	// Get header info for the DEM raster map
 	struct Cell_head cellhd;
-	if (Rast_get_cellhd(name, mapset, &cellhd) < 0)
-		G_fatal_error("Unable to open raster map <%s>", name);
+	Rast_get_cellhd(name, mapset, &cellhd);
 
 	// Create a GRASS buffer for the DEM raster
 	void* inrast = Rast_allocate_buf(type);
