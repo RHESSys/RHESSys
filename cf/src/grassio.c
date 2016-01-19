@@ -29,7 +29,7 @@ void* raster2array(const char* name, struct Cell_head* header, int* rows,
 	// Get the max rows and max cols from the window information, since the 
 	// header gives the values for the full raster
 	const int maxr = Rast_window_rows();
-	const int maxc = G_window_cols();
+	const int maxc = Rast_window_cols();
 
 	// Read in the raster line by line, copying it into the double array
 	// rast for return.
