@@ -53,8 +53,7 @@ void* raster2array(const char* name, struct Cell_head* header, int* rows,
 
 	int row, col;
 	for (row = 0; row < maxr; ++row) {
-		if (Rast_get_row(infd, inrast, row, type) < 0)
-			G_fatal_error("Unable to read raster map <%s> row %d", name, row);
+	      Rast_get_row(infd, inrast, row, type);
 
 		for (col = 0; col < maxc; ++col) {
 			int index = col + row * maxc;
