@@ -147,8 +147,10 @@
     sscanf(line,"%s %s %d",item,map,&ext);
     if (*item!='_') 
       error("Expecting \"_\".");
-    if(strcmp(&(item[1]),LEVELNAME[lev])!=0)
-      error("Expecting _levelname.");
+    if(strcmp(&(item[1]),LEVELNAME[lev])!=0){
+      printf("Expecting _levelname %s\n",LEVELNAME[lev]);
+      //error(msg);
+      error("Expecting _levelname.");}
     strcpy(tlevel[lev].map,map);
 	tlevel[lev].extent = ext;
 
