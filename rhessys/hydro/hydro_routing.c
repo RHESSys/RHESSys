@@ -1310,7 +1310,7 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 static void sub_vertical( double  tstep )        /*  process time-step  */
     {
     unsigned                i, j ;
-    double                  delz, facN, facC, facD, dH2O, dNO3, dNH4, dDOC, dDON, fldcap, drain, kfac ;
+    double                  delz, facN, facC, facD, facH2O, dH2O, dNO3, dNH4, dDOC, dDON, fldcap, drain, kfac ;
 	struct patch_object *   patch ;
 
     kfac = 0.5 * tstep / 3600.0 ;
@@ -1318,7 +1318,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
 #pragma omp parallel for                                            \
         default( none )                                             \
         private( i, delz, dH2O, dNO3, dNH4, dDOC, dDON,             \
-                 facN, facC, facD, fldcap, drain )                  \
+                 facN, facC, facD, facH2O, fldcap, drain )          \
          shared( num_patches, capH2O, plist, satdef, unsH2O,        \
                  verbose, por_0, por_d, Ndecay, Ddecay, dzsoil,     \
                  patchz, waterz, tpcurv, psiair, pordex,            \
@@ -1352,8 +1352,8 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                           kfac*ksat_0[i], 
                                                unsH2O[i] - fldcap ) ;
         unsH2O[i] = unsH2O[i] + infH2O[i] - drain;
-        satdef[i] = satdef[i] + latH2O[i] - drain ;
-        totH2O[i] = totH2O[i] + infH2O[i] - latH2O[i] ;
+        satdef[i] = satdef[i] - latH2O[i] - drain ;
+        totH2O[i] = totH2O[i] + infH2O[i] + latH2O[i] ;
         totNO3[i] = totNO3[i] + infNO3[i] + latNO3[i] ;
         totNH4[i] = totNH4[i] + infNH4[i] + latNH4[i] ;
         totDON[i] = totDON[i] + infDON[i] + latDON[i] ;
@@ -1363,8 +1363,9 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
 
         if ( totH2O[i] > capH2O[i] )        /*  exfiltration to surface  */
             {
-            dH2O = ( totH2O[i] - capH2O[i] ) / totH2O[i] ;
-            delz = por_d[i] * log( 1 + dH2O / ( por_0[i] * por_d[i] ) ) ;   /*  soil depth previously occupied by dH2O  */
+        	dH2O = totH2O[i] - capH2O[i] ;
+            facH2O = dH2O / totH2O[i] ;
+            delz = por_d[i] * log( 1 + facH2O / ( por_0[i] * por_d[i] ) ) ;   /*  soil depth previously occupied by facH2O */
             facN = 1.0 - exp( delz * Ndecay[i] ) ;                          /*  fraction of N,D in [0:delz], assuming   */
             facD = 1.0 - exp( delz * Ddecay[i] ) ;                          /*  fraction of N,D in [0:delz], assuming   */
             dNO3 = facN * totNO3[i] ;
@@ -1935,16 +1936,20 @@ void hydro_routing( struct command_line_object * command_line,
         sfcDON[i] = patch->surface_DON ;
 
 #ifdef DEBUG
-        if (patch->sat_deficit < 0.0) {
-        	printf("WARNING: patch->sat_deficit is %.2f for patch idx %d\n",
-        			patch->sat_deficit, i);
-        }
+//        if (patch->sat_deficit < 0.0) {
+//        	printf("WARNING: patch->sat_deficit is %.2f for patch idx %d\n",
+//        			patch->sat_deficit, i);
+//        }
 #endif
 
         satdef[i] = patch->sat_deficit ;
+        if (satdef[i] < 0.0) {
+        	sfcH2O[i] -= satdef[i];	/* negative satdef means there is water above the surface */
+        	satdef[i] = 0.0;
+        }
         unsH2O[i] = patch->rz_storage + patch->unsat_storage ;
 
-        totH2O[i] = maxH2O[i]  - satdef[i] + unsH2O[i] ;    /*  to working vbles for subsfc routing  */
+        totH2O[i] = maxH2O[i] - satdef[i] + unsH2O[i] ;    /*  to working vbles for subsfc routing  */
         totNO3[i] = patch->soil_ns.nitrate ;
         totNH4[i] = patch->soil_ns.sminn ;
         totDON[i] = patch->soil_ns.DON ;
