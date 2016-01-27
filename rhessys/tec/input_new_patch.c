@@ -311,7 +311,7 @@
 	/*--------------------------------------------------------------*/
 	patch[0].soil_defaults[0][0].effective_soil_depth = patch[0].soil_defaults[0][0].soil_depth;
 	
-	/*  patch[0].soil_defaults[0][0].effective_soil_depth = min(patch[0].soil_defaults[0][0].soil_depth,
+	/* patch[0].soil_defaults[0][0].effective_soil_depth = min(patch[0].soil_defaults[0][0].soil_depth,
 				6.9*patch[0].soil_defaults[0][0].m_z);	
 	*/
 	/*--------------------------------------------------------------*/
