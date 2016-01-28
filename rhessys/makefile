@@ -1,5 +1,5 @@
-PGM  = rhessys5.20.0
-VERSION = 5.20.0
+PGM  = rhessys5.20.G7
+VERSION = 5.20.G7
 CC = gcc 
 #CFLAGS = -O -std=c99
 CFLAGS =-Wall -g -std=c99
