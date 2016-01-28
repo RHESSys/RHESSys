@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <grass/gis.h>
-#include <grass/raster.h>
 #include "grassio.h"
 #include "blender.h"
 #include "glb.h"
@@ -105,8 +104,8 @@ main(int argc, char *argv[])
     rnymap   = ymap_raster_opt->answer;
 
     // Get the size of the active module region (http://grass.osgeo.org/programming7/gislib.html#Region)
-    maxr = Rast_window_rows();
-    maxc = Rast_window_cols();
+    maxr = G_window_rows();
+    maxc = G_window_cols();
 
     // Check if the x and y maps already exist in the current mapset
     //char name[GNAME_MAX];
@@ -120,8 +119,8 @@ main(int argc, char *argv[])
     debug = debug_flag->answer;
     verbose = verbose_flag->answer;
 
-    xrast = Rast_allocate_buf(DCELL_TYPE);
-    yrast = Rast_allocate_buf(DCELL_TYPE);
+    xrast = G_allocate_raster_buf(DCELL_TYPE);
+    yrast = G_allocate_raster_buf(DCELL_TYPE);
 
     if (verbose) {
         printf("number of rows: %d\n", maxr);
@@ -133,40 +132,44 @@ main(int argc, char *argv[])
         printf("Writing y location information to map \"%s\"\n", rnymap);
     }
 
-    if ((fdx = Rast_open_new(rnxmap, DCELL_TYPE)) < 0) {
+    if ((fdx = G_open_raster_new(rnxmap, DCELL_TYPE)) < 0) {
         G_fatal_error("Unable to create x values raster map <%s>", rnxmap);
     }
 
-    if ((fdy = Rast_open_new(rnymap, DCELL_TYPE)) < 0) {
+    if ((fdy = G_open_raster_new(rnymap, DCELL_TYPE)) < 0) {
         G_fatal_error("Unable to create y values raster map <%s>", rnymap);
     }
 
     // Allocate space for one row each of x and y locations.
-    xrast = Rast_allocate_buf(DCELL_TYPE);
-    yrast = Rast_allocate_buf(DCELL_TYPE);
+    xrast = G_allocate_raster_buf(DCELL_TYPE);
+    yrast = G_allocate_raster_buf(DCELL_TYPE);
 
     // Loop through the active region
     for (row = 0; row < maxr; ++row) {
         for (col = 0; col < maxc; ++col) {
             index = col + row*maxc;
             // Get the x,y location values (Adding .5 to col, row causes position of center of cell to be returned.)
-            xPosVal = Rast_col_to_easting((double) col + .5, &active_region_header);
-            yPosVal = Rast_row_to_northing((double) row + .5, &active_region_header);
+            xPosVal = G_col_to_easting((double) col + .5, &active_region_header);
+            yPosVal = G_row_to_northing((double) row + .5, &active_region_header);
             //printf("xPos: %7.2f, yPos: %7.2f\n", xPosVal, yPosVal);
             ((double*)xrast)[col] = xPosVal;
             ((double*)yrast)[col] = yPosVal;
         }
 
         // Write out one row of x values
-        Rast_put_row(fdx, xrast, DCELL_TYPE);
+        if (G_put_raster_row(fdx, xrast, DCELL_TYPE) < 0) {
+            G_fatal_error("Failed writing x values raster map <%s>", rnxmap);
+        }
 
         // Write out one row of y values
-        Rast_put_row(fdy, yrast, DCELL_TYPE);
+        if (G_put_raster_row(fdy, yrast, DCELL_TYPE) < 0) {
+            G_fatal_error("Failed writing y values raster map <%s>", rnymap);
+        }
     }
 
     G_free(xrast);
-    Rast_close(fdx);
+    G_close_cell(fdx);
 
     G_free(yrast);
-    Rast_close(fdy);
+    G_close_cell(fdy);
 }

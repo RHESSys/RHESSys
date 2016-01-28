@@ -1,7 +1,7 @@
 PGM = rat
 CC  = gcc 
 RHESSYS_BIN = /usr/local/bin
-GISLIB = -lgrass_gis -lgrass_raster
+GISLIB = -lgrass_gis
 CFLAGS = -g
 OBJECTS = \
 main.o \

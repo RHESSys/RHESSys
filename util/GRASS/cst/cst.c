@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <grass/gis.h>
-#include <grass/raster.h>
 #include "grassio.h"
 #include "blender.h"
 #include "glb.h"

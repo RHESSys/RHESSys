@@ -68,9 +68,7 @@
 
 
 #include	<grass/gis.h>
-#include	<grass/defs/gis.h>
-#include	<grass/raster.h>
-#include	<grass/defs/raster.h>
+#include	<grass/gisdefs.h>
 #include	<stdio.h>        
 #include	<stdlib.h>       
 #include	<string.h>       
@@ -248,9 +246,9 @@ char *argv[];
 					log_output(logfile, temp_str1);
 				}
 			}
-			// have to use temp_table because G_find_raster alters it (p.100 of manual)
+			// have to use temp_table because G_find_cell alters it (p.100 of manual)
 			strcpy(temp_table, table[i]);
-			if (!(mapset = G_find_raster(temp_table, "")))
+			if (!(mapset = G_find_cell(temp_table, "")))
 			{
 				printf("Raster map %s not found\n", table[i]);	
 				/* Logging is currently broken, but want to get this error message out
@@ -587,7 +585,7 @@ char *argv[];
 				}
 			}
 			if (type[covermap] == 'L')
-				sscanf (Rast_get_c_cat((CELL)covercat, &cats), "%lf", &x);
+				sscanf (G_get_cat((CELL)covercat, &cats), "%lf", &x);
 			else
 				x = (double)covercat;
 			sum1 += x * area;

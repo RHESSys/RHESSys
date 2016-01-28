@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <grass/gis.h>
-#include <grass/raster.h>
 
 #include "main.h"
 #include "grassio.h"

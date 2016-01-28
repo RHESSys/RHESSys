@@ -9,7 +9,7 @@ RHESSYS_BIN = /usr/local/bin
 OBJECTS = cst.o grassio.o
 
 LIBS = -lm
-GIS_LIBS = -lgrass_gis -lgrass_raster
+GIS_LIBS = -lgrass_gis
 
 $(PGM): $(OBJECTS)
 	$(CC) $(OBJECTS) -L$(GISBASE)/lib $(GIS_LIBS) $(LIBS) $(CFLAGS) -o $(PGM) 
