@@ -62,9 +62,11 @@
 struct basin_object *construct_basin(
 									 struct	command_line_object	*command_line,
 									 FILE	*world_file,
-									 int		num_world_base_stations,
+									 int	*num_world_base_stations,
 									 struct base_station_object	**world_base_stations,
-									 struct	default_object	*defaults)
+									 struct	default_object	*defaults,
+									 struct base_station_ncheader_object *base_station_ncheader,
+									 struct world_object *world)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
@@ -77,9 +79,11 @@ struct basin_object *construct_basin(
 	struct hillslope_object *construct_hillslope(
 		struct	command_line_object *,
 		FILE    *,
-		int		,
+		int		*,
 		struct base_station_object **,
-		struct	default_object *);
+		struct	default_object *,
+		struct base_station_ncheader_object *,
+		struct world_object *);
 	
 	void	*alloc( 	size_t, char *, char *);
 	
@@ -115,7 +119,7 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	basin = (struct basin_object *) alloc( 1 *
 		sizeof( struct basin_object ),"basin","construct_basin");
-
+	
 	/*--------------------------------------------------------------*/
 	/*	Read in the basinID.									*/
 	/*--------------------------------------------------------------*/
@@ -123,26 +127,23 @@ struct basin_object *construct_basin(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(basin[0].x));
 	read_record(world_file, record);
-     fscanf(world_file,"%lf",&(basin[0].y));
+	fscanf(world_file,"%lf",&(basin[0].y));
 	read_record(world_file, record);
-     fscanf(world_file,"%lf",&(basin[0].z));
+	fscanf(world_file,"%lf",&(basin[0].z));
 	read_record(world_file, record);
-     fscanf(world_file,"%d",&(default_object_ID));
+	fscanf(world_file,"%d",&(default_object_ID));
 	read_record(world_file, record);
-     fscanf(world_file,"%lf",&(basin[0].latitude));
+	fscanf(world_file,"%lf",&(basin[0].latitude));
 	read_record(world_file, record);
-     fscanf(world_file,"%d",&(basin[0].num_base_stations));
-     //basin[0].num_base_stations = 0;
-     read_record(world_file, record);
-     fprintf(stderr,	"\Number of base stations: %d \n",basin[0].num_base_stations);
-     
-
+	fscanf(world_file,"%d",&(basin[0].num_base_stations));
+	read_record(world_file, record);
+	
 	/*--------------------------------------------------------------*/
 	/*	Create cosine of latitude to save future computations.		*/
 	/*--------------------------------------------------------------*/
 	basin[0].cos_latitude = cos(basin[0].latitude*DtoR);
 	basin[0].sin_latitude = sin(basin[0].latitude*DtoR);
-
+	
 	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this basin.			*/
 	/*--------------------------------------------------------------*/
@@ -162,12 +163,11 @@ struct basin_object *construct_basin(
 		/*--------------------------------------------------------------*/
 		basin[0].base_stations[i] = assign_base_station(
 			base_stationID,
-			num_world_base_stations,
+			*num_world_base_stations,
 			world_base_stations);
 		
 	} /*end for*/
 
-	
 	/*--------------------------------------------------------------*/
 	/*	Create the grow subobject if needed.						*/
 	/*--------------------------------------------------------------*/
@@ -182,7 +182,6 @@ struct basin_object *construct_basin(
 		/*	NOTE:  PUT READS FOR GROW SUBOBJECT HERE.					*/
 		/*--------------------------------------------------------------*/
 	} /*end if*/
-	
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this basin                             */
 	/*--------------------------------------------------------------*/
@@ -203,13 +202,13 @@ struct basin_object *construct_basin(
 		}
 	} /* end-while */
 	basin[0].defaults[0] = &defaults[0].basin[i];
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of hillslopes.						*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(basin[0].num_hillslopes));
 	read_record(world_file, record);
-     //fprintf(stderr,	"\Number of hillslopes: %d \n",basin[0].num_hillslopes);
+	
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of pointers to hillslope objects.			*/
 	/*--------------------------------------------------------------*/
@@ -221,19 +220,16 @@ struct basin_object *construct_basin(
 	basin[0].max_slope = 0.0;
 	n_routing_timesteps = 0.0;
 	check_snow_scale = 0.0;
-
 	/*--------------------------------------------------------------*/
 	/*	Construct the hillslopes for this basin.					*/
 	/*--------------------------------------------------------------*/
 	for (i=0; i<basin[0].num_hillslopes; i++){
-
 		basin[0].hillslopes[i] = construct_hillslope(
 			command_line, world_file, num_world_base_stations,
-			world_base_stations,defaults);
- 		basin[0].area += basin[0].hillslopes[i][0].area;
+			world_base_stations, defaults, base_station_ncheader, world);
+		basin[0].area += basin[0].hillslopes[i][0].area;
 		n_routing_timesteps += basin[0].hillslopes[i][0].area *
 			basin[0].hillslopes[i][0].defaults[0][0].n_routing_timesteps;
-  
 		if (basin[0].max_slope < basin[0].hillslopes[i][0].slope)
 			basin[0].max_slope = basin[0].hillslopes[i][0].slope;
 		if (command_line[0].snow_scale_flag == 1) {
@@ -246,7 +242,7 @@ struct basin_object *construct_basin(
 			}	
 		}
 	};
-
+	
 	basin[0].defaults[0][0].n_routing_timesteps = 
 			(int) (n_routing_timesteps / basin[0].area);
 
@@ -321,6 +317,7 @@ struct basin_object *construct_basin(
 	/*	Sort sub-hierarchy in the basin by elevation				*/
 	/*--------------------------------------------------------------*/
 	sort_by_elevation(basin);
+
 	/*--------------------------------------------------------------*/
 	/*	Read in flow routing topology for routing option	*/
 	/*--------------------------------------------------------------*/
@@ -354,7 +351,7 @@ struct basin_object *construct_basin(
 			}
 		}
 	}
-
+	
 	/*--------------------------------------------------------------*/
 	/*	Read in stream routing topology if needed	*/
 	/*--------------------------------------------------------------*/

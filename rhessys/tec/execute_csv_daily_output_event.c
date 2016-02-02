@@ -66,12 +66,14 @@ void	execute_csv_daily_output_event(
 		int, int, int,
 		struct	patch_object *,
 		struct	date,
+		struct command_line *,
 		FILE	*);
 	
 	void output_csv_canopy_stratum(
 		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
+		struct command_line *,
 		FILE	*);
 	
 	/*--------------------------------------------------------------*/
@@ -190,6 +192,7 @@ void	execute_csv_daily_output_event(
 														world[0].basins[b]->hillslopes[h]->zones[z]->ID,
 														world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
 														date,
+														command_line,
 														outfile->patch->daily);
 									}
 									/*------------------------------------------------*/
@@ -223,7 +226,7 @@ void	execute_csv_daily_output_event(
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
-																date, outfile->canopy_stratum->daily);
+																date, command_line, outfile->canopy_stratum->daily);
 										} /* end stratum (c) for loop */
 									} /* end if options */
 								} /* end patch (p) for loop */

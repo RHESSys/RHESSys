@@ -56,7 +56,7 @@ double ** compute_stage_storage(struct patch_object *patch)
     for (l=0; l<(patch[0].scm_defaults[0][0].num_discrete+1); l++){
      stagestorage[l] = (double *)malloc(sizeof(double)*6);
     }
-       
+	
     /*--------------------------------------------------------------*/
     /*  Compute Relevant scm Geometric Features               */
     /*--------------------------------------------------------------*/
@@ -133,7 +133,7 @@ double ** compute_stage_storage(struct patch_object *patch)
                           // Case #2 - Oririce is not fully submerged (from "Elements of Urban Stormwater Design" by H. Rooney Malcolm - 1989 NCSU, Raleigh, NC)
                           else if (htmp > patch[0].scm_defaults[0][0].orifice_H[ori_count]-(patch[0].scm_defaults[0][0].orifice_D[ori_count]/2) && htmp <= patch[0].scm_defaults[0][0].orifice_H[ori_count]+(patch[0].scm_defaults[0][0].orifice_D[ori_count]/2)) {
                              // pond_outflow += 0.372*orifice_coefs[ori_count]*orifice_Ds[ori_count]*pow((htmp-(orifice_Hs[ori_count]-(orifice_Ds[ori_count]/2))),(3/2))*(1/0.0254)*pow((1/0.3048),(3/2)); // the last two are unit conversion factors for the Malcolm, 1989 formula
-                            pond_outflow += 0.6633*patch[0].scm_defaults[0][0].orifice_coef[ori_count]*patch[0].scm_defaults[0][0].orifice_D[ori_count]*pow((htmp-(patch[0].scm_defaults[0][0].orifice_H[ori_count]-(patch[0].scm_defaults[0][0].orifice_D[ori_count]/2))),(3/2));
+                            pond_outflow += 0.6633*patch[0].scm_defaults[0][0].orifice_coef[ori_count]*patch[0].scm_defaults[0][0].orifice_D[ori_count]*pow((htmp-(patch[0].scm_defaults[0][0].orifice_H[ori_count]-(patch[0].scm_defaults[0][0].orifice_D[ori_count]/2))),(1.5));
                           // Case #3 - Orifice is fully submerged
                           } else {
                               pond_outflow += patch[0].scm_defaults[0][0].orifice_coef[ori_count]*PI*pow((patch[0].scm_defaults[0][0].orifice_D[ori_count]),2)/4*pow((2*9.81*(htmp-patch[0].scm_defaults[0][0].orifice_H[ori_count]-(patch[0].scm_defaults[0][0].orifice_D[ori_count]/2))),(0.5));
@@ -167,8 +167,6 @@ double ** compute_stage_storage(struct patch_object *patch)
         
         //fprintf(stderr, "\n%d %f  %f  %f  %f  %f  %f ", k, stagestorage[k][0], stagestorage[k][1],stagestorage[k][2],stagestorage[k][3],stagestorage[k][4],stagestorage[k][5]);
     }
-    
-
     return(stagestorage); 
     
 } /*compute_stage_storage*/

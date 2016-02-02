@@ -77,6 +77,7 @@
 	int		i, dtmp;
 	int		soil_default_object_ID;
 	int		landuse_default_object_ID;
+	int		scm_default_object_ID;
 	char		record[MAXSTR];
 	double	mpar, ltmp;
 
@@ -98,8 +99,13 @@
 	read_record(world_file, record);
 	fscanf(world_file,"%d",&(landuse_default_object_ID));
 	read_record(world_file, record);
-
- 	fscanf(world_file,"%lf",&(ltmp));
+     
+     if (command_line[0].scm_flag == 1) {
+         	fscanf(world_file,"%d",&(scm_default_object_ID));
+          read_record(world_file, record);
+     }
+ 	
+     fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp * patch[0].area;
  	fscanf(world_file,"%lf",&(ltmp));
@@ -279,6 +285,26 @@
 		} /* end-while */
 		patch[0].landuse_defaults[0] = &defaults[0].landuse[i];
 	}
+     
+     
+     if (scm_default_object_ID > 0) {
+		i = 0;
+		while (defaults[0].scm[i].ID != scm_default_object_ID) {
+			i++;
+			/*--------------------------------------------------------------*/
+			/*  Report an error if no match was found.  Otherwise assign    */
+			/*  the default to point to this patch.						    */
+			/*--------------------------------------------------------------*/
+			if ( i>= defaults[0].num_scm_default_files ){
+				fprintf(stderr,
+					"\nFATAL ERROR: in input_new_patch, scm default ID %d not found for patch %d\n" ,
+					scm_default_object_ID, patch[0].ID);
+				exit(EXIT_FAILURE);
+			}
+		} /* end-while */
+		patch[0].scm_defaults[0] = &defaults[0].scm[i];
+	}
+     
 	/*--------------------------------------------------------------*/
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/
 	/*--------------------------------------------------------------*/

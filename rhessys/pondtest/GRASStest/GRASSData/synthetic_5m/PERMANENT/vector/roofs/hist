@@ -1,8 +1,0 @@
-COMMAND: v.in.ogr dsn="roofs.shp" output="roofs" min_area=0.0001 snap=-1
-GISDBASE: /Users/miles/Dropbox/RHESSys/eclipse/RHESSys/cf/test/data/GRASSData
-LOCATION: synthetic_5m MAPSET: PERMANENT USER: miles DATE: Wed Jun 18 15:36:38 2014
------------------------------------------------------
-4 input polygons
-Total area: 838.17 (5 areas)
-Overlapping area: 0 (0 areas)
-Area without category: 0.00423132 (1 areas)

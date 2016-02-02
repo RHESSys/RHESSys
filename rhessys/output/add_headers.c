@@ -3,10 +3,10 @@
 /*					add_headers					*/
 /*																*/
 /*	add_headers - 
-/*																*/
+															*/
 /*	NAME														*/
 /*	add_headers 
-/*																*/
+																*/
 /*	SYNOPSIS													*/
 /*	void add_headers(struct world output_file_object *,				*/
 /*			struct command_line_object *)					*/
@@ -44,11 +44,66 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].b != NULL) {
+	outfile = world_output_files[0].basin[0].hourly;
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n",
+	// the unit is based on mm and day
+		"hour",		
+		"day",
+		"month",
+		"year",
+		"basinID",
+		"pot_surface_infil",
+		//asnow_throughfall * 1000.0,
+		"sat_def_z",
+		"sat_def",
+		"rz_stor",
+		"unsat_stor",
+		"rz_drainage",
+		"unsat_drainage",
+		//acap_rise * 1000.0,
+		//aevaporation * 1000.0,
+		//asnowpack * 1000.0,
+		//atranspiration * 1000.0,
+		"subsur2stream_flow",
+		"sur2stream_flow",
+		"streamflow",
+		//apsn,
+		//alai,
+		"gw.Qout",
+		"gw.storage",
+		"detention_store",
+		"%sat_area",
+		"litter_store",
+		"canopy_store", 
+		//aperc_snow *100,
+		//asublimation * 1000.0,
+		//var_trans,
+		//aacctrans*1000,
+		//var_acctrans,
+		//aPET*1000,
+		//adC13, 
+		"precip", 
+		//amortality_fract*100,
+	  	//atmax, 
+		//atmin, 
+		//asnow*1000.0 ,
+		"routedstreamflow");
+		
+	
+
+
+
+
+
+
+
+
+
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -81,15 +136,32 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"trans_var",
 		"acc_trans",
 		"acctransv_var",
-		"pet", 
-		"dC13", 
+		"pet",
+		"dC13",
 		"precip",
 		"mortf",
 		"tmax",
 		"tmin",
+		"tavg",
+		"vpd",
 		"snowfall",
-		"routedstreamflow"
-		);
+		"recharge",
+		"gpsn",
+		"resp",
+		"gs",
+		"rootdepth",
+		"plantc",
+		"snowmelt",
+		"canopysubl",
+		"routedstreamflow",
+		"canopy_snow",
+		"height",
+		"evap_can","evap_lit","evap_soil",
+		"litrc",
+		"Kdown","Ldown","Kup","Lup",
+		"Kstar_can","Kstar_soil","Kstar_snow",
+		"Lstar_can","Lstar_soil","Lstar_snow",
+		"LE_canopy","LE_soil","LE_snow","Lstar_strat","canopydrip","ga");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
@@ -211,7 +283,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].zone[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n " ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n " ,
 		"day",
 		"month",
 		"year",
@@ -226,7 +298,13 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"Kdown_direct",
 		"Kdown_diffuse",
 		"PAR_direct",
-		"PAR_diffuse","relH","aspect","z","slope","ehr","whr");
+		"PAR_diffuse",
+		"Ldown",
+		"relH","aspect","z","slope","ehr","whr",
+		"tdew","edew",
+		"transmis",
+		"wind",
+		"deltaT","clearskytransmis","tcoeff1","cloudfrac");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
@@ -274,46 +352,229 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Patch file headers					*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].p != NULL) {
-	/*--------------------------------------------------------------*/
-	/*	Daily 							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s  %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
-		"day",
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"rain_thr",
-		"detention_store",
-		"sat_def_z",
-		"sat_def",
-		"rz_storage",
-		"potential_rz_store",
-		"rz_field_capacity",
-		"rz_wilting_point",
-		"unsat_stor",
-		"rz_drainage",
-		"unsat_drain",
-		"sublimation",
-		"return",
-		"evap",
-		"evap_surface",
-		"soil_evap",
-		"snow",
-		"snow_melt",
-		"trans_sat",
-		"trans_unsat",
-		"Qin",
-		"Qout",
-		"psn",
-		"root_zone.S",
-		"root.depth",
-		"litter.rain_stor",
-		"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge","fire.et","fire.pet");
+		
+		if (command_line[0].scm_flag != 1) {
+			/*--------------------------------------------------------------*/
+			/*	Daily - no SCM							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].daily;
+			check = fprintf(outfile,
+							"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+							"day",
+							"month",
+							"year",
+							"basinID",
+							"hillID",
+							"zoneID",
+							"patchID",
+							"rain_thr",
+							"detention_store",
+							"sat_def_z",
+							"sat_def",
+							"rz_storage",
+							"potential_rz_store",
+							"rz_field_capacity",
+							"rz_wilting_point",
+							"unsat_stor",
+							"rz_drainage",
+							"unsat_drain",
+							"sublimation",
+							"return",
+							"evap",
+							"evap_surface",
+							"soil_evap",
+							"snow",
+							"snow_melt",
+							"trans_sat",
+							"trans_unsat",
+							"Qin",
+							"Qout",
+							"psn",
+							"root_zone.S",
+							"root.depth",
+							"litter.rain_stor",
+							"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge",
+							"Kdowndirpch","Kdowndiffpch",
+							"Kupdirpch","Kupdifpch","Luppch",
+							"Kdowndirsubcan","Kdowndifsubcan","Ldownsubcan",
+							"Kstarcan","Kstardirsno","Kstardiffsno",
+							"Lstarcanopy","Lstarsnow","Lstarsoil", 
+							"wind","windsnow","windzone","ga","gasnow","trans_reduc_perc","pch_field_cap",
+							"overland_flow","height","ustar","snow_albedo",
+							"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
+							"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
+							"LEcanopy",
+							"SED","snow_age");
+			/*--------------------------------------------------------------*/
+			/*	Hourly - no SCM							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].hourly;
+			check = fprintf(outfile,
+							"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+							"day",
+							"month",
+							"year",
+							"basinID",
+							"hillID",
+							"zoneID",
+							"patchID",
+							"rain_thr",
+							"detention_store",
+							"sat_def_z",
+							"sat_def",
+							"rz_storage",
+							"potential_rz_store",
+							"rz_field_capacity",
+							"rz_wilting_point",
+							"unsat_stor",
+							"rz_drainage",
+							"unsat_drain",
+							"sublimation",
+							"return",
+							"evap",
+							"evap_surface",
+							"soil_evap",
+							"snow",
+							"snow_melt",
+							"trans_sat",
+							"trans_unsat",
+							"Qin",
+							"Qout",
+							"psn",
+							"root_zone.S",
+							"root.depth",
+							"litter.rain_stor",
+							"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge",
+							"Kdowndirpch","Kdowndiffpch",
+							"Kupdirpch","Kupdifpch","Luppch",
+							"Kdowndirsubcan","Kdowndifsubcan","Ldownsubcan",
+							"Kstarcan","Kstardirsno","Kstardiffsno",
+							"Lstarcanopy","Lstarsnow","Lstarsoil", 
+							"wind","windsnow","windzone","ga","gasnow","trans_reduc_perc","pch_field_cap",
+							"overland_flow","height","ustar","snow_albedo",
+							"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
+							"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
+							"LEcanopy",
+							"SED","snow_age");
+
+
+		} else {
+			/*--------------------------------------------------------------*/
+			/*	Daily - SCM mode							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].daily;
+			check = fprintf(outfile,
+							"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+							"day",
+							"month",
+							"year",
+							"basinID",
+							"hillID",
+							"zoneID",
+							"patchID",
+							"rain_thr",
+							"detention_store",
+							"sat_def_z",
+							"sat_def",
+							"rz_storage",
+							"potential_rz_store",
+							"rz_field_capacity",
+							"rz_wilting_point",
+							"unsat_stor",
+							"rz_drainage",
+							"unsat_drain",
+							"sublimation",
+							"return",
+							"evap",
+							"evap_surface",
+							"soil_evap",
+							"snow",
+							"snow_melt",
+							"trans_sat",
+							"trans_unsat",
+							"Qin",
+							"Qout",
+							"psn",
+							"root_zone.S",
+							"root.depth",
+							"litter.rain_stor",
+							"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge",
+							"Kdowndirpch","Kdowndiffpch",
+							"Kupdirpch","Kupdifpch","Luppch",
+							"Kdowndirsubcan","Kdowndifsubcan","Ldownsubcan",
+							"Kstarcan","Kstardirsno","Kstardiffsno",
+							"Lstarcanopy","Lstarsnow","Lstarsoil", 
+							"wind","windsnow","windzone","ga","gasnow","trans_reduc_perc","pch_field_cap",
+							"overland_flow","height","ustar","snow_albedo",
+							"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
+							"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
+							"LEcanopy",
+							"SED","snow_age",
+							"surface_Qin",  // Add for SCM				
+							"subsurface_Qin",  // Add for SCM
+							"surface_Qout",  // Add for SCM				
+							"subsurface_Qout",  // Add for SCM
+							"scm_ave_height");  // Add for SCM
+			
+			/*--------------------------------------------------------------*/
+			/*	Hourly - SCM mode							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].hourly;
+			check = fprintf(outfile,
+							"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+							"day",
+							"month",
+							"year",
+							"basinID",
+							"hillID",
+							"zoneID",
+							"patchID",
+							"rain_thr",
+							"detention_store",
+							"sat_def_z",
+							"sat_def",
+							"rz_storage",
+							"potential_rz_store",
+							"rz_field_capacity",
+							"rz_wilting_point",
+							"unsat_stor",
+							"rz_drainage",
+							"unsat_drain",
+							"sublimation",
+							"return",
+							"evap",
+							"evap_surface",
+							"soil_evap",
+							"snow",
+							"snow_melt",
+							"trans_sat",
+							"trans_unsat",
+							"Qin",
+							"Qout",
+							"psn",
+							"root_zone.S",
+							"root.depth",
+							"litter.rain_stor",
+							"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge",
+							"Kdowndirpch","Kdowndiffpch",
+							"Kupdirpch","Kupdifpch","Luppch",
+							"Kdowndirsubcan","Kdowndifsubcan","Ldownsubcan",
+							"Kstarcan","Kstardirsno","Kstardiffsno",
+							"Lstarcanopy","Lstarsnow","Lstarsoil", 
+							"wind","windsnow","windzone","ga","gasnow","trans_reduc_perc","pch_field_cap",
+							"overland_flow","height","ustar","snow_albedo",
+							"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
+							"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
+							"LEcanopy",
+							"SED","snow_age",
+							"surface_Qin",  // Add for SCM				
+							"subsurface_Qin",  // Add for SCM
+							"surface_Qout",  // Add for SCM				
+							"subsurface_Qout",  // Add for SCM
+							"scm_ave_height");  // Add for SCM
+			}
+
+		
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
@@ -363,36 +624,86 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Stratum file headers					*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].c != NULL) {
-	/*--------------------------------------------------------------*/
-	/*	Daily 							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].canopy_stratum[0].daily;
-	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
-		"day",
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"stratumID",
-		"lai",
-		"evap",
-		"APAR_direct",
-		"APAR_diffuse",
-		"sublim",
-		"trans",
-		"ga",
-		"gsurf",
-		"gs",
-		"psi",
-		"leaf_day_mr",
-		"psn_to_cpool",
-		"rain_stored",
-		"snow_stored",
-		"rootzone.S",
-		"m_APAR","m_tavg","m_LWP","m_CO2","m_tmin","m_vpd","dC13");
+
+		/*--------------------------------------------------------------*/
+		/*	Check to see if SCM mode is called - requires column heads	*/
+		/*--------------------------------------------------------------*/
+		if (command_line[0].scm_flag != 1){
+
+			/*--------------------------------------------------------------*/
+			/*	Daily - Not SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"evap",
+				"APAR_direct",
+				"APAR_diffuse",
+				"sublim",
+				"trans",
+				"ga",
+				"gsurf",
+				"gs",
+				"psi",
+				"leaf_day_mr",
+				"psn_to_cpool",
+				"rain_stored",
+				"snow_stored",
+				"rootzone.S",
+				"m_APAR","m_tavg","m_LWP","m_CO2","m_tmin","m_vpd","dC13",
+				"Kstar_dir","Kstar_dif",
+				"Lstar","surf_heat",
+				"height","covfrac","vegID");
+			
+		} else {
+			
+			/*--------------------------------------------------------------*/
+			/*	Daily -  SCM mode 							*/
+			/*--------------------------------------------------------------*/
+
+			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"evap",
+				"APAR_direct",
+				"APAR_diffuse",
+				"sublim",
+				"trans",
+				"ga",
+				"gsurf",
+				"gs",
+				"psi",
+				"leaf_day_mr",
+				"psn_to_cpool",
+				"rain_stored",
+				"snow_stored",
+				"rootzone.S",
+				"m_APAR","m_tavg","m_LWP","m_CO2","m_tmin","m_vpd","dC13",
+				"Kstar_dir","Kstar_dif",
+				"Lstar","surf_heat",
+				"height","covfrac","vegID",
+				"algae_chlA",
+				"algae_totalN",
+				"algae_totalC");
+		}
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
@@ -422,22 +733,22 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"psn",
 		"lwp","root_depth");
 	}
-        /*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
 	/*	Stream routing file headers					*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].stro != NULL) {
-	/*--------------------------------------------------------------*/
-	/*	Daily 							*/
-	/*--------------------------------------------------------------*/
-	
+		/*--------------------------------------------------------------*/
+		/*	Daily 							*/
+		/*--------------------------------------------------------------*/
+		
         outfile = world_output_files[0].stream_routing[0].daily;
-	fprintf(outfile,
-		"%s %s %s %s %s\n" ,
-		"day",
-		"month",
-		"year",
-		"reachID",
-		"routedstreamflow");
-  }
+		fprintf(outfile,
+				"%s %s %s %s %s\n" ,
+				"day",
+				"month",
+				"year",
+				"reachID",
+				"routedstreamflow");
+	}	
 	return;
 } /*end add_headers*/

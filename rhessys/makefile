@@ -1,5 +1,5 @@
-PGM  = rhessys5.18.r4.scm.1
-VERSION = 5.18.r4.scm.1
+PGM  = rhessys5.19
+VERSION = 5.19
 CC = gcc 
 #CFLAGS = -O -std=c99
 CFLAGS = -g -std=c99
@@ -9,6 +9,7 @@ OBJ = objects
 OS := $(shell uname)
 
 OBJECTS = \
+$(OBJ)/read_netcdf.o \
 $(OBJ)/Ksat_z_curve.o \
 $(OBJ)/add_growth_headers.o \
 $(OBJ)/add_headers.o \
@@ -17,6 +18,7 @@ $(OBJ)/alloc.o \
 $(OBJ)/allocate_annual_growth.o \
 $(OBJ)/allocate_daily_growth.o \
 $(OBJ)/assign_base_station.o \
+$(OBJ)/assign_base_station_xy.o \
 $(OBJ)/assign_neighbours.o \
 $(OBJ)/basin_daily_F.o \
 $(OBJ)/basin_daily_I.o \
@@ -29,6 +31,7 @@ $(OBJ)/canopy_stratum_growth.o \
 $(OBJ)/canopy_stratum_hourly.o \
 $(OBJ)/check_zero_stores.o \
 $(OBJ)/compute_Lstar.o \
+$(OBJ)/compute_Lstar_canopy.o \
 $(OBJ)/compute_N_leached.o \
 $(OBJ)/compute_N_absorbed.o \
 $(OBJ)/compute_N_settled.o \
@@ -62,6 +65,7 @@ $(OBJ)/compute_nonvascular_stratum_conductance.o \
 $(OBJ)/compute_potential_N_uptake.o \
 $(OBJ)/compute_potential_N_uptake_Dickenson.o \
 $(OBJ)/compute_potential_N_uptake_Waring.o \
+$(OBJ)/compute_potential_N_uptake_combined.o \
 $(OBJ)/compute_potential_decomp.o \
 $(OBJ)/compute_potential_exfiltration.o \
 $(OBJ)/compute_potential_rain_interception.o \
@@ -148,6 +152,7 @@ $(OBJ)/destroy_zone_defaults.o \
 $(OBJ)/execute_daily_growth_output_event.o \
 $(OBJ)/execute_daily_output_event.o \
 $(OBJ)/execute_hourly_output_event.o \
+$(OBJ)/execute_hourly_growth_output_event.o \
 $(OBJ)/execute_monthly_output_event.o \
 $(OBJ)/execute_redefine_strata_event.o \
 $(OBJ)/execute_redefine_world_event.o \
@@ -223,11 +228,14 @@ $(OBJ)/output_yearly_patch.o \
 $(OBJ)/output_yearly_zone.o \
 $(OBJ)/output_zone.o \
 $(OBJ)/output_hourly_zone.o \
+$(OBJ)/output_hourly_basin.o \
+$(OBJ)/output_hourly_growth_basin.o \
 $(OBJ)/output_zone_state.o \
 $(OBJ)/parse_alloc_flag.o \
 $(OBJ)/parse_dyn_flag.o \
 $(OBJ)/parse_phenology_type.o \
 $(OBJ)/parse_veg_type.o \
+$(OBJ)/parse_albedo_flag.o \
 $(OBJ)/patch_daily_F.o  \
 $(OBJ)/patch_daily_I.o  \
 $(OBJ)/patch_hourly.o \
@@ -273,20 +281,28 @@ $(OBJ)/zone_daily_F.o \
 $(OBJ)/zone_daily_I.o \
 $(OBJ)/zone_hourly.o \
 $(OBJ)/construct_ascii_grid.o \
+$(OBJ)/construct_netcdf_grid.o \
+$(OBJ)/construct_netcdf_header.o \
 $(OBJ)/create_random_distrb.o \
 $(OBJ)/skip_basin.o \
 $(OBJ)/skip_hillslope.o \
 $(OBJ)/skip_zone.o \
 $(OBJ)/skip_patch.o \
 $(OBJ)/skip_strata.o \
-$(OBJ)/params.o	
+$(OBJ)/params.o
+
 all:	dir rhessys
 
 dir:
 	mkdir -p $(OBJ)
 
+ifdef netcdf
+rhessys: $(OBJECTS)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
+else
 rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -v -o $(PGM) 
+endif
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
@@ -324,6 +340,8 @@ $(OBJ)/execute_daily_growth_output_event.o: tec/execute_daily_growth_output_even
 	$(CC) -c $(CFLAGS) -I include tec/execute_daily_growth_output_event.c -o $(OBJ)/execute_daily_growth_output_event.o
 $(OBJ)/execute_hourly_output_event.o: tec/execute_hourly_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_hourly_output_event.c -o $(OBJ)/execute_hourly_output_event.o
+$(OBJ)/execute_hourly_growth_output_event.o: tec/execute_hourly_growth_output_event.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_hourly_growth_output_event.c -o $(OBJ)/execute_hourly_growth_output_event.o
 $(OBJ)/execute_state_output_event.o: tec/execute_state_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_state_output_event.c -o $(OBJ)/execute_state_output_event.o
 $(OBJ)/execute_firespread_event.o: tec/execute_firespread_event.c
@@ -422,6 +440,10 @@ $(OBJ)/output_hillslope.o: output/output_hillslope.c
 	$(CC) -c $(CFLAGS) -I include output/output_hillslope.c -o $(OBJ)/output_hillslope.o
 $(OBJ)/output_hourly_zone.o: output/output_hourly_zone.c
 	$(CC) -c $(CFLAGS) -I include output/output_hourly_zone.c -o $(OBJ)/output_hourly_zone.o
+$(OBJ)/output_hourly_basin.o: output/output_hourly_basin.c
+	$(CC) -c $(CFLAGS) -I include output/output_hourly_basin.c -o $(OBJ)/output_hourly_basin.o
+$(OBJ)/output_hourly_growth_basin.o: output/output_hourly_growth_basin.c
+	$(CC) -c $(CFLAGS) -I include output/output_hourly_growth_basin.c -o $(OBJ)/output_hourly_growth_basin.o
 $(OBJ)/output_zone.o: output/output_zone.c
 	$(CC) -c $(CFLAGS) -I include output/output_zone.c -o $(OBJ)/output_zone.o
 $(OBJ)/output_patch.o: output/output_patch.c
@@ -524,6 +546,8 @@ $(OBJ)/assign_neighbours.o: init/assign_neighbours.c
 	$(CC) -c $(CFLAGS) -I include init/assign_neighbours.c -o $(OBJ)/assign_neighbours.o
 $(OBJ)/assign_base_station.o: init/assign_base_station.c
 	$(CC) -c $(CFLAGS) -I include init/assign_base_station.c -o $(OBJ)/assign_base_station.o
+$(OBJ)/assign_base_station_xy.o: init/assign_base_station_xy.c
+	$(CC) -c $(CFLAGS) -I include init/assign_base_station_xy.c -o $(OBJ)/assign_base_station_xy.o
 $(OBJ)/construct_zone.o: init/construct_zone.c
 	$(CC) -c $(CFLAGS) -I include init/construct_zone.c -o $(OBJ)/construct_zone.o
 $(OBJ)/construct_patch.o: init/construct_patch.c
@@ -580,6 +604,8 @@ $(OBJ)/compute_snow_stored.o: hydro/compute_snow_stored.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_snow_stored.c -o $(OBJ)/compute_snow_stored.o
 $(OBJ)/compute_Lstar.o: rad/compute_Lstar.c
 	$(CC) -c $(CFLAGS) -I include rad/compute_Lstar.c -o $(OBJ)/compute_Lstar.o
+$(OBJ)/compute_Lstar_canopy.o: rad/compute_Lstar_canopy.c
+	$(CC) -c $(CFLAGS) -I include rad/compute_Lstar_canopy.c -o $(OBJ)/compute_Lstar_canopy.o
 $(OBJ)/compute_stability_correction.o: hydro/compute_stability_correction.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_stability_correction.c -o $(OBJ)/compute_stability_correction.o
 $(OBJ)/compute_atm_pres.o: clim/compute_atm_pres.c
@@ -779,6 +805,8 @@ $(OBJ)/compute_potential_N_uptake_Waring.o: cn/compute_potential_N_uptake_Waring
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake_Waring.c -o $(OBJ)/compute_potential_N_uptake_Waring.o
 $(OBJ)/compute_potential_N_uptake_Dickenson.o: cn/compute_potential_N_uptake_Dickenson.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake_Dickenson.c -o $(OBJ)/compute_potential_N_uptake_Dickenson.o
+$(OBJ)/compute_potential_N_uptake_combined.o: cn/compute_potential_N_uptake_combined.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake_combined.c -o $(OBJ)/compute_potential_N_uptake_combined.o
 $(OBJ)/compute_litter_rain_stored.o: hydro/compute_litter_rain_stored.c 
 	$(CC) -c $(CFLAGS) -I include hydro/compute_litter_rain_stored.c -o $(OBJ)/compute_litter_rain_stored.o
 $(OBJ)/compute_hourly_litter_rain_stored.o: hydro/compute_hourly_litter_rain_stored.c
@@ -795,6 +823,8 @@ $(OBJ)/parse_veg_type.o: init/parse_veg_type.c
 	$(CC) -c $(CFLAGS) -I include init/parse_veg_type.c -o $(OBJ)/parse_veg_type.o
 $(OBJ)/parse_phenology_type.o: init/parse_phenology_type.c 
 	$(CC) -c $(CFLAGS) -I include init/parse_phenology_type.c -o $(OBJ)/parse_phenology_type.o
+$(OBJ)/parse_albedo_flag.o: init/parse_albedo_flag.c 
+	$(CC) -c $(CFLAGS) -I include init/parse_albedo_flag.c -o $(OBJ)/parse_albedo_flag.o
 $(OBJ)/resolve_sminn_competition.o: cn/resolve_sminn_competition.c 
 	$(CC) -c $(CFLAGS) -I include cn/resolve_sminn_competition.c -o $(OBJ)/resolve_sminn_competition.o
 $(OBJ)/update_C_stratum_daily.o: cn/update_C_stratum_daily.c 
@@ -829,6 +859,21 @@ $(OBJ)/output_template_structure.o: output/output_template_structure.c
 	$(CC) -c $(CFLAGS) -I include output/output_template_structure.c -o $(OBJ)/output_template_structure.o
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
+
+ifdef netcdf
+$(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
+	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid.c -o $(OBJ)/construct_netcdf_grid.o
+$(OBJ)/read_netcdf.o: init/read_netcdf.c
+	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o $(OBJ)/read_netcdf.o
+else
+$(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid_dummy.c
+	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid_dummy.c -o $(OBJ)/construct_netcdf_grid.o
+$(OBJ)/read_netcdf.o: init/read_netcdf_dummy.c
+	$(CC) -c $(CFLAGS) -I include init/read_netcdf_dummy.c -o $(OBJ)/read_netcdf.o
+endif
+
+$(OBJ)/construct_netcdf_header.o: init/construct_netcdf_header.c
+	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_header.c -o $(OBJ)/construct_netcdf_header.o
 $(OBJ)/params.o: util/params.c
 	$(CC) -c $(CFLAGS) -I include util/params.c -o $(OBJ)/params.o
 
@@ -852,3 +897,7 @@ clean:
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)
+
+functest: $(PGM)
+	# Run Python-based functional testing
+	RHESSYS_BIN=$(PGM) python -m unittest discover -s test

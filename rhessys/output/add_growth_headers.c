@@ -41,11 +41,59 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].b != NULL) {
+
+	/*--------------------------------------------------------------*/
+	/*	Hourly							*/
+	/*--------------------------------------------------------------*/
+	outfile = world_output_files[0].basin[0].hourly;
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"hour",
+		"day",
+		"month",
+		"year",
+		"basinID",
+		//"lai",
+		//"gpsn",
+		//"plant_resp",
+		//"soil_resp",
+		//"nitrate",
+		//"sminn",
+		//"surfaceN",
+		//"plantc",
+		//"plantn",
+		//"npool",
+		//"litrc",
+		//"litrn",
+		//"soilc",
+		//"soiln",
+		"gwNO3",
+		"gwNH4",
+		"gwDON",
+		"gwDOC",
+		"streamflow_NO3",
+		"streamflow_NH4",
+		"streamflow_DON",
+		"streamflow_DOC",
+		"gwNO3out",
+		"gwNH4out",
+		"gwDONout",
+		"gwDOCout",
+		//"denitrif",
+		//"nitrif",
+		//"DOC",
+		//"DON",
+		//"root_depth",
+		//"nfix",
+		//"nuptake",
+		//"grazingC",
+		"StreamNO3_from_surface",
+		"StreamNO3_from_sub");	  
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -59,6 +107,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"surfaceN",
 		"plantc",
 		"plantn",
+		"cpool",
 		"npool",
 		"litrc",
 		"litrn",
@@ -114,7 +163,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"day",
 		"month",
 		"year",
-		"basinID",
+		"hillID",
 		"lai",
 		"gpsn",
 		"plant_resp",
@@ -177,62 +226,139 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Patch file headers					*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].p != NULL) {
-	/*--------------------------------------------------------------*/
-	/*	Daily 							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
-		"day",
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"lai",
-		"plantc",
-		"net_psn",
-		"plant_resp",
-		"soil_resp",
-		"litr1c",
-		"litr2c",
-		"litr3c",
-		"litr4c",
-		"litr1n",
-		"litr2n",
-		"litr3n",
-		"litr4n",
-		"lit.rain_cap",
-		"soil1c",
-		"soil2c",
-		"soil3c",
-		"soil4c",
-		"soil1n",
-		"soil2n",
-		"soil3n",
-		"soil4n",
-		"soilDON",
-		"soilDOC",
-		"denitrif",
-		"netleach",
-		"DON_loss",
-		"DOC_loss",
-		"soilNO3",
-		"soilNH4",
-		"streamNO3",
-		"streamNH4",
-		"streamDON",
-		"streamDOC",
-		"surfaceNO3",
-		"surfaceNH4",
-		"surfaceDOC",
-		"surfaceDON",
-		"height",
-		"nuptake",
-		"root_depth",
-		"nfix",
-		"grazingC",
-		"area");
+	
+		/*--------------------------------------------------------------*/
+		/*	Check to see if SCM mode is called - requires column heads	*/
+		/*--------------------------------------------------------------*/
+		if (command_line[0].scm_flag != 1){
+
+			/*--------------------------------------------------------------*/
+			/*	Daily - Not SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].daily;
+			check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"lai",
+				"plantc",
+				"plantn",
+				"net_psn",
+				"plant_resp",
+				"soil_resp",
+				"litr1c",
+				"litr2c",
+				"litr3c",
+				"litr4c",
+				"litr1n",
+				"litr2n",
+				"litr3n",
+				"litr4n",
+				"lit.rain_cap",
+				"soil1c",
+				"soil2c",
+				"soil3c",
+				"soil4c",
+				"soil1n",
+				"soil2n",
+				"soil3n",
+				"soil4n",
+				"soilDON",
+				"soilDOC",
+				"denitrif",
+				"netleach",
+				"DON_loss",
+				"DOC_loss",
+				"soilNO3",
+				"soilNH4",
+				"streamNO3",
+				"streamNH4",
+				"streamDON",
+				"streamDOC",
+				"surfaceNO3",
+				"surfaceNH4",
+				"surfaceDOC",
+				"surfaceDON",
+				"height",
+				"nuptake",
+				"root_depth",
+				"nfix",
+				"grazingC",
+				"area");
+		} else {
+			/*--------------------------------------------------------------*/
+			/*	Daily -  SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].daily;
+			check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"lai",
+				"plantc",
+				"plantn",
+				"net_psn",
+				"plant_resp",
+				"soil_resp",
+				"litr1c",
+				"litr2c",
+				"litr3c",
+				"litr4c",
+				"litr1n",
+				"litr2n",
+				"litr3n",
+				"litr4n",
+				"lit.rain_cap",
+				"soil1c",
+				"soil2c",
+				"soil3c",
+				"soil4c",
+				"soil1n",
+				"soil2n",
+				"soil3n",
+				"soil4n",
+				"soilDON",
+				"soilDOC",
+				"denitrif",
+				"netleach",
+				"DON_loss",
+				"DOC_loss",
+				"soilNO3",
+				"soilNH4",
+				"streamNO3",
+				"streamNH4",
+				"streamDON",
+				"streamDOC",
+				"surfaceNO3",
+				"surfaceNH4",
+				"surfaceDOC",
+				"surfaceDON",
+				"height",
+				"nuptake",
+				"root_depth",
+				"nfix",
+				"grazingC",
+				"area",
+				"surface_DOC_Qin",  // Add for SCM
+				"surface_DOC_Qout",  // Add for SCM
+				"surface_DOC_settled",  // Add for SCM
+				"surface_DON_Qin",  // Add for SCM
+				"surface_DON_Qout",  // Add for SCM
+				"surface_DON_settled",  // Add for SCM
+				"surface_NH4_Qin",  // Add for SCM
+				"surface_NH4_Qout",  // Add for SCM
+				"surface_NO3_Qin",  // Add for SCM
+				"surface_NO3_Qout");  // Add for SCM	
+			}
+						
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
@@ -255,43 +381,99 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Stratum file headers					*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].c != NULL) {
-	/*--------------------------------------------------------------*/
-	/*	Daily 							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].canopy_stratum[0].daily;
-	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
-		"day",
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"stratumID",
-		"proj_lai",
-		"leafc",
-		"leafn",
-		"cpool",
-		"npool",
-		"dead_leafc",
-		"frootc",
-		"frootn",
-		"live_stemc",
-		"live_stemn",
-		"leafc_store",
-		"leafn_store",
-		"dead_stemc",
-		"dead_stemn",
-		"live_crootc",
-		"live_crootn",
-		"dead_crootc",
-		"dead_crootn",
-		"cwdc",
-		"mresp",
-		"gresp",
-		"psn_to_cpool","age","root_depth","gwseasonday","lfseasonday","gsi", "nlimit",
-		"fleaf","froot","fwood","Nuptake","smin2pl","retrans2pl","mort_fract");
+		
+		/*--------------------------------------------------------------*/
+		/*	Check to see if SCM mode is called - requires column heads	*/
+		/*--------------------------------------------------------------*/
+		if (command_line[0].scm_flag != 1){
+			/*--------------------------------------------------------------*/
+			/*	Daily - No SCM Mode							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"proj_lai",
+				"leafc",
+				"leafn",
+				"cpool",
+				"npool",
+				"dead_leafc",
+				"frootc",
+				"frootn",
+				"live_stemc",
+				"live_stemn",
+				"leafc_store",
+				"leafn_store",
+				"dead_stemc",
+				"dead_stemn",
+				"live_crootc",
+				"live_crootn",
+				"dead_crootc",
+				"dead_crootn",
+				"cwdc",
+				"mresp",
+				"gresp",
+				"psn_to_cpool","age","root_depth","gwseasonday","lfseasonday","gsi", "nlimit",
+				"fleaf","froot","fwood","Nuptake","smin2pl","retrans2pl","mort_fract");
+
+			} else {
+			/*--------------------------------------------------------------*/
+			/*	Daily - SCM Mode							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"proj_lai",
+				"leafc",
+				"leafn",
+				"cpool",
+				"npool",
+				"dead_leafc",
+				"frootc",
+				"frootn",
+				"live_stemc",
+				"live_stemn",
+				"leafc_store",
+				"leafn_store",
+				"dead_stemc",
+				"dead_stemn",
+				"live_crootc",
+				"live_crootn",
+				"dead_crootc",
+				"dead_crootn",
+				"cwdc",
+				"mresp",
+				"gresp",
+				"psn_to_cpool","age","root_depth","gwseasonday","lfseasonday","gsi", "nlimit",
+				"fleaf","froot","fwood","Nuptake","smin2pl","retrans2pl","mort_fract",
+				"Aout",  // Add for SCM 
+				"Ain",  // Add for SCM 
+				"chla_settle",  // Add for SCM 
+				"Nuptake_algae",  // Add for SCM 
+				"Nrelease",  // Add for SCM 
+				"Nrespire",  // Add for SCM 
+				"Nsettle",  // Add for SCM 
+				"Cfix",  // Add for SCM 
+				"Crelease",  // Add for SCM 
+				"Crespire",  // Add for SCM 
+				"Csettle");  // Add for SCM
+			}
 
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/

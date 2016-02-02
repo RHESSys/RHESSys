@@ -43,7 +43,7 @@ void	execute_hourly_output_event(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	void output_basin(
+	void output_hourly_basin(
 		int,
 		struct	basin_object *,
 		struct	date,
@@ -62,18 +62,20 @@ void	execute_hourly_output_event(
 	void output_patch(	int, int,int,
 		struct	patch_object *,
 		struct	zone_object *,
-		struct	date,
+		struct	date,		
+		struct command_line *,
 		FILE	*);
 	
 	void output_canopy_stratum( int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
+		struct command_line *,
 		FILE	*);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int	basinID, hillID, patchID, zoneID, stratumID;
-	int b,h,p,z,c;
+	int b,h,p,z,c;		
 	/*--------------------------------------------------------------*/
 	/*	check to see if there are any print options					*/
 	/*--------------------------------------------------------------*/
@@ -90,7 +92,7 @@ void	execute_hourly_output_event(
 			if ( command_line[0].b != NULL ){
 				basinID = command_line[0].b->basinID;
 				if (( world[0].basins[b][0].ID == basinID) || (basinID == -999))
-					output_basin(
+					output_hourly_basin(
 					command_line[0].routing_flag,
 					world[0].basins[b],
 					date,
@@ -104,9 +106,7 @@ void	execute_hourly_output_event(
 				/*--------------------------------------------------------------*/
 				/*	output hillslopes 											*/
 				/*--------------------------------------------------------------*/
-				for(h=0;
-				h < world[0].basins[b][0].num_hillslopes;
-				++h) {
+				for(h=0; h < world[0].basins[b][0].num_hillslopes; ++h) {
 					/*----------------------------------------------------------*/
 					/*	Construct the hillslope output files.						*/
 					/*----------------------------------------------------------*/
@@ -188,6 +188,7 @@ void	execute_hourly_output_event(
 														world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
 														world[0].basins[b]->hillslopes[h]->zones[z],
 														date,
+														command_line,
 														outfile->patch->hourly);
 									}
 									/*-----------------------------------------------*/
@@ -222,6 +223,7 @@ void	execute_hourly_output_event(
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date,
+																command_line,
 																outfile->canopy_stratum->hourly);
 										} /* end stratum (c) for loop */
 									} /* end if options */

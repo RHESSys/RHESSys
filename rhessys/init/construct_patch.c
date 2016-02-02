@@ -105,7 +105,6 @@ struct patch_object *construct_patch(
 	fscanf(world_file,"%d",&(patch[0].ID));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(patch[0].x));
-
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(patch[0].y));
 	read_record(world_file, record);
@@ -668,28 +667,19 @@ struct patch_object *construct_patch(
      /*--------------------------------------------------------------*/
 	/*	Initialize SCM patch variables                              */
 	/*--------------------------------------------------------------*/
-
-     
-     if (command_line[0].scm_flag == 1) {
-          
-          if (scm_default_object_ID > 0) {
-          // NEED TO MAKE A NOTE IN DOCUMENTATION ABOUT HOW NON-SCM SHOULD HAD A DEFAULT ID OF 0 AND THERE HSOULD BE A "NON POND" SCM FILE
-          
-               patch[0].scm_H =0;
-               patch[0].preday_scm_volume = 0;
-               patch[0].scm_temp = 20; //default
-               
-              patch[0].scm_stage_storage = compute_stage_storage(patch);
- 
-              // Write over soil default detention storage and ksat vertical (using infiltrate)
-              patch[0].soil_defaults[0][0].detention_store_size = patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][2];
-          	  patch[0].soil_defaults[0][0].Ksat_0 = patch[0].scm_defaults[0][0].infil_rate;
-          	
-          }
+    if (command_line[0].scm_flag == 1) {
+		if (patch[0].scm_defaults[0][0].ID > 0) {
+		// NEED TO MAKE A NOTE IN DOCUMENTATION ABOUT HOW NON-SCM SHOULD HAD A DEFAULT ID OF 0 AND THERE HSOULD BE A "NON POND" SCM FILE
+			patch[0].scm_H =0;
+			patch[0].preday_scm_volume = 0;
+			patch[0].scm_temp = 20; //default
+			patch[0].scm_stage_storage = compute_stage_storage(patch);
+			// Write over soil default detention storage
+			patch[0].scm_max_detention_size = patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][2];
+			//patch[0].soil_defaults[0][0].Ksat_0 = patch[0].scm_defaults[0][0].infil_rate;         	           
+          } 
      }
 
 	return(patch);
-
-
 } /*end construct_patch.c*/
 

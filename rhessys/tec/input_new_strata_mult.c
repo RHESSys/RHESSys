@@ -240,6 +240,18 @@ void input_new_strata_mult(
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp * canopy_strata[0].ns.retransn;
+     
+          if (command_line[0].scm_flag == 1) {
+               fscanf(world_file,"%lf",&(ltmp));
+               read_record(world_file, record);
+               if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].algae.chla = ltmp;
+               fscanf(world_file,"%lf",&(ltmp));
+               read_record(world_file, record);
+               if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].algae.totalC = ltmp;
+               fscanf(world_file,"%lf",&(ltmp));
+               read_record(world_file, record);
+               if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].algae.totalN = ltmp;
+          }
 		
 
 		/*--------------------------------------------------------------*/

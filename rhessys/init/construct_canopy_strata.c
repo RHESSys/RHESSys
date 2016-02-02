@@ -101,7 +101,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	read_record(world_file, record);
 	fscanf(world_file,"%d",&(default_object_ID));
 	read_record(world_file, record);
-     	fscanf(world_file,"%lf",&(canopy_strata[0].cover_fraction));
+	fscanf(world_file,"%lf",&(canopy_strata[0].cover_fraction));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].gap_fraction));
 	read_record(world_file, record);
@@ -230,7 +230,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		"construct_canopy_strata" );
 	i = 0;
 	while (defaults[0].stratum[i].ID != default_object_ID) {
-          i++;
+		i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
 		/*  the default to point to this canopy_strata.						    */
@@ -313,6 +313,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.deadcroot_gr_snk = 0.0;
 	canopy_strata[0].cs.froot_mr_snk = 0.0;
 	canopy_strata[0].cs.froot_gr_snk = 0.0;
+	canopy_strata[0].NO3_stored = 0.0; // this is for the NO3 deposition on leaves
 	
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables                        */
@@ -461,7 +462,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].phen.nretdays = 365;
 		canopy_strata[0].phen.gwseasonday = -1;
 		canopy_strata[0].phen.lfseasonday = -1;
-		/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
 	/*	set critical soil moisture (at stomatal closure)	*/
 	/*      psi_close is converted to m water tension from MPa using     */
 	/*      1m water tension = 10000 Pa                             */
@@ -471,6 +472,14 @@ struct canopy_strata_object *construct_canopy_strata(
 		((-1.0 * 100.0 * canopy_strata[0].defaults[0][0].epc.psi_close)
 		/ patch[0].soil_defaults[0][0].psi_air_entry),
 		patch[0].soil_defaults[0][0].pore_size_index );
+
+	
+	/*--------------------------------------------------------------*/
+	/* initialize runnning average of psi **** should actually  calc */
+	/* current day psi						*/
+	/*--------------------------------------------------------------*/
+	canopy_strata[0].epv.psi_ravg = canopy_strata[0].defaults[0][0].epc.psi_open;
+
 	/*--------------------------------------------------------------*/
 	/*	for now initialize these accumuling variables		*/
 	/*	note that age really should be a state variable 	*/

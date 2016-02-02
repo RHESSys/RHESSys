@@ -65,7 +65,7 @@ param * readParamFile(int *paramCnt, char *filename)
             strcpy(paramPtr[paramInd].name, strbuf2);
             paramPtr[paramInd].accessed = 0;
             paramPtr[paramInd].defaultValUsed = 0;
-            //printf("param name: %s value %s\n", paramPtr[paramInd].name, paramPtr[paramInd].strVal);
+            //printf("\n%d param name: %s value %s", *paramCnt, paramPtr[paramInd].name, paramPtr[paramInd].strVal);
         }
 
         fclose ( file );

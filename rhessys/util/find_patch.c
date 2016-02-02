@@ -33,6 +33,7 @@ struct patch_object *find_patch( int patch_ID, int zone_ID, int hill_ID,
 	/*------------------------------------------------------*/
 	/*	Local Function Definition. 							*/
 	/*------------------------------------------------------*/
+	
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -46,7 +47,7 @@ struct patch_object *find_patch( int patch_ID, int zone_ID, int hill_ID,
 	/*--------------------------------------------------------------*/
 	i = 0;
 	fnd = 0;
-     while ( (fnd == 0) && (i >= 0) && (i < basin[0].num_hillslopes)) {
+	while ( (fnd == 0) && (i >= 0) && (i < basin[0].num_hillslopes)) {
 		if (basin[0].hillslopes[i][0].ID == hill_ID) {
 			hillslope = basin[0].hillslopes[i];
 			fnd = 1;
@@ -55,13 +56,11 @@ struct patch_object *find_patch( int patch_ID, int zone_ID, int hill_ID,
 			i += 1;
 		}
 	}
-
 	if (fnd == 0){
 		fprintf(stderr,
 			"FATAL ERROR: Could not find hillslope %d in find_patch\n",hill_ID);
 		exit(EXIT_FAILURE);
 	}
- 
 	/*--------------------------------------------------------------*/
 	/*	find zones						*/
 	/*--------------------------------------------------------------*/

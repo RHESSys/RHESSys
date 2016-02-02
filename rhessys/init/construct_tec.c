@@ -171,6 +171,7 @@ struct tec_object	*construct_tec(
 			(strcmp(command,"print_monthly_csv_on") != 0) &&
 			(strcmp(command,"print_yearly_csv_on") != 0) &&
 			(strcmp(command,"print_hourly_on") != 0) &&
+			(strcmp(command,"print_hourly_growth_on") != 0) &&
 			(strcmp(command,"print_monthly_off") != 0) &&
 			(strcmp(command,"print_daily_off") != 0) &&
 			(strcmp(command,"print_daily_growth_off") != 0) &&
@@ -180,12 +181,14 @@ struct tec_object	*construct_tec(
 			(strcmp(command,"print_monthly_csv_off") != 0) &&
 			(strcmp(command,"print_yearly_csv_off") != 0) &&
 			(strcmp(command,"print_hourly_off") != 0) &&
+			(strcmp(command,"print_hourly_growth_off") != 0) &&
 			(strcmp(command,"print_yearly_off") != 0) &&
 			(strcmp(command,"redefine_strata") != 0) &&
 			(strcmp(command,"redefine_world") != 0) &&
 			(strcmp(command,"redefine_world_multiplier") != 0) &&
 			(strcmp(command,"redefine_world_thin_remain") != 0) &&
-			(strcmp(command,"redefine_world_thin_harvest") != 0) &&			
+			(strcmp(command,"redefine_world_thin_harvest") != 0) &&		
+			(strcmp(command,"redefine_world_thin_snags") != 0) &&			
 			(strcmp(command,"roads_on") != 0) &&
 			(strcmp(command,"roads_off") != 0) &&
 			(strcmp(command,"output_current_state") != 0)  ){

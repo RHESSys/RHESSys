@@ -33,8 +33,7 @@ struct base_station_object
 	/*--------------------------------------------------------------*/
 	int	i;
 	struct	base_station_object *base_station;
-
-     /*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
 	/*	Loop through all of the basestations available.			*/
 	/*	and find the record which holds the matching base station	*/
 	/*--------------------------------------------------------------*/

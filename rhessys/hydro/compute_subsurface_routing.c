@@ -54,7 +54,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	double compute_infiltration(int, double, double, double, double, double,
 			double, double, double, double, double);
 			
-	double compute_infiltration_scm(double, double, double);
+	double compute_infiltration_scm(int, double, double, double, double, double,
+			double, double, double, double, double, double);
 
 	double compute_z_final(int, double, double, double, double, double);
 
@@ -95,11 +96,10 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	double preday_basin_detention_store;
 	double add_field_capacity, rz_drainage, unsat_drainage;
 	double streamflow, Qout, Qin_total, Qstr_total;
-     struct zone_object *zone;
 	struct patch_object *patch;
 	struct hillslope_object *hillslope;
 	struct patch_object *neigh;
-     /*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
 	/*	initializations						*/
 	/*--------------------------------------------------------------*/
 	grow_flag = command_line[0].grow_flag;
@@ -143,6 +143,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].Qout = 0.0;
 		patch[0].surface_Qin = 0.0;
 		patch[0].surface_Qout = 0.0;
+		
+		patch[0].overland_flow = 0.0;
 
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
 
@@ -217,7 +219,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				update_drainage_stream(patch, command_line, time_int,
 						verbose_flag);
                } else if (patch[0].drainage_type == SCM) {
-                    update_drainage_scm(zone, patch, command_line, time_int,
+                    update_drainage_scm(0, patch, command_line, time_int,
                verbose_flag, patch[0].scm_stage_storage);
 			} else {
 				update_drainage_land(patch, command_line, time_int,
@@ -290,7 +292,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					+ (patch[0].surface_DON_Qout - patch[0].surface_DON_Qin));
 			patch[0].Qin_total += patch[0].Qin + patch[0].surface_Qin;
 			patch[0].Qout_total += patch[0].Qout + patch[0].surface_Qout;
-            
 
 			patch[0].surface_Qin = 0.0;
 			patch[0].surface_Qout = 0.0;
@@ -425,6 +426,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/*--------------------------------------------------------------*/
 				/*	final overland flow routing				*/
 				/*--------------------------------------------------------------*/
+				patch[0].overland_flow += patch[0].detention_store 
+									- patch[0].soil_defaults[0][0].detention_store_size;
+				
 				if (((excess = patch[0].detention_store
 						- patch[0].soil_defaults[0][0].detention_store_size)
 						> ZERO) && (patch[0].detention_store > ZERO)) {
@@ -672,11 +676,30 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						}	
 					// IF PATCH IS AN SCM - INFILTRATE WATER BASED ON PARAMETERIZED RATE				
 					} else {
-						if (patch[0].detention_store > ZERO) {
-							infiltration = compute_infiltration_scm(
-								time_int,
-								patch[0].scm_defaults[0][0].infil_rate,
-								patch[0].detention_store);
+						if (patch[0].detention_store > ZERO) {					
+							if (patch[0].rootzone.depth > ZERO) {							
+								infiltration = compute_infiltration_scm(verbose_flag,
+										patch[0].sat_deficit_z, patch[0].rootzone.S,
+										patch[0].Ksat_vertical,
+										patch[0].soil_defaults[0][0].Ksat_0_v,
+										patch[0].soil_defaults[0][0].mz_v,
+										patch[0].soil_defaults[0][0].porosity_0,
+										patch[0].soil_defaults[0][0].porosity_decay,
+										(patch[0].detention_store), time_int,
+										patch[0].soil_defaults[0][0].psi_air_entry,
+										patch[0].scm_defaults[0][0].infil_rate);
+							} else {
+								infiltration = compute_infiltration_scm(verbose_flag,
+										patch[0].sat_deficit_z, patch[0].S,
+										patch[0].Ksat_vertical,
+										patch[0].soil_defaults[0][0].Ksat_0_v,
+										patch[0].soil_defaults[0][0].mz_v,
+										patch[0].soil_defaults[0][0].porosity_0,
+										patch[0].soil_defaults[0][0].porosity_decay,
+										(patch[0].detention_store), time_int,
+										patch[0].soil_defaults[0][0].psi_air_entry,
+										patch[0].scm_defaults[0][0].infil_rate);
+							}
 						} else {
 							infiltration = 0.0;
 						}
@@ -1240,11 +1263,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		if (basin_outflow <= command_line[0].thresholds[STREAMFLOW])
 			basin[0].acc_year.num_threshold += 1;
 	}
-
-     /*--------------------------------------------------------------*/
-	/*  set preday scm variables before zeroing out                 */
-	/*--------------------------------------------------------------*/
-
 
 	return;
 

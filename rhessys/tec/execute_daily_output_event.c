@@ -67,14 +67,17 @@ void	execute_daily_output_event(
 		struct	patch_object *,
 		struct	zone_object *,
 		struct	date,
+		struct command_line *,
 		FILE	*);
 	
 	void output_canopy_stratum(
 		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
+		struct command_line *,
 		FILE	*);
-        void output_stream_routing(
+        
+    void output_stream_routing(
 		struct	stream_network_object *,
 		struct	date,
 		FILE	*);
@@ -216,6 +219,7 @@ void	execute_daily_output_event(
 															world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
 															world[0].basins[b]->hillslopes[h]->zones[z],
 															date,
+															command_line,
 															outfile->patch->daily);
 													}
 									}
@@ -250,7 +254,7 @@ void	execute_daily_output_event(
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
-																date, outfile->canopy_stratum->daily);
+																date, command_line, outfile->canopy_stratum->daily);
 										} /* end stratum (c) for loop */
 									} /* end if options */
 								} /* end patch (p) for loop */

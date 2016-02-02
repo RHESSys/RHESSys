@@ -1,1 +1,0 @@
-rhessys5.18.r4.scm.1 ../tecfiles/tec.pondtest -w ../worldfiles/w.pondtest -r ../flowtables/pondtest_subsurface.flow ../flowtables/pondtest_surface.flow -st 1999 10 1 1 -ed 2009 10 2 1 -pre ../out/try.pondtest -s 1 100 -sv 1 100 -g -b

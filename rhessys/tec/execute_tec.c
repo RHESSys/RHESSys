@@ -122,7 +122,7 @@ void	execute_tec(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
-     
+	
 	void	world_daily_F(
 		long,
 		struct world_object *,
@@ -200,8 +200,9 @@ void	execute_tec(
 	/*--------------------------------------------------------------*/
 	/*	Initialize the tec event									*/
 	/*--------------------------------------------------------------*/
+	
 	event =  construct_tec_entry(world[0].end_date,"none");
-
+	
 	/*--------------------------------------------------------------*/
 	/*	Loop from the start of the world to the end of the world.	*/
 	/*--------------------------------------------------------------*/
@@ -267,31 +268,39 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*          Do hourly stuff for the day.                        */
 			/*--------------------------------------------------------------*/
-               //fprintf(stderr,"\nTec event start at hour %d", current_date.hour);
-               
-               world_hourly( world,
+			world_hourly( world,
 				command_line,
 				event,
 				current_date);
-               
-               //fprintf(stderr,"\nTec event start at hour %d", current_date.hour);
-   
+			
 			/*--------------------------------------------------------------*/
 			/*			Perform any requested hourly output					*/
 			/*--------------------------------------------------------------*/
-			if (command_line[0].output_flags.hourly == 1)
-				execute_hourly_output_event(world,command_line,current_date,outfile);
+			if (command_line[0].output_flags.hourly == 1){
+				execute_hourly_output_event(
+							  world,
+							  command_line,
+							  current_date,
+							  outfile);
+			}
 
+			if(command_line[0].output_flags.hourly_growth ==1 &&
+					(command_line[0].grow_flag > 0) ){
+				  execute_hourly_growth_output_event(
+							      world, 
+							      command_line, 
+							      current_date, 
+							      growth_outfile);
+				  
+				};
 			/*--------------------------------------------------------------*/
 			/*			Increment to the next hour.							*/
 			/*--------------------------------------------------------------*/
-               current_date.hour++;
-               //fprintf(stderr,"\nTec event start at hour %d", current_date.hour);
+			current_date.hour++;
 			/*--------------------------------------------------------------*/
 			/*			Check if this is a day end.							*/
 			/*--------------------------------------------------------------*/
 			if ( current_date.hour == 25 ){
-
 				/*--------------------------------------------------------------*/
 				/*			Simulate the world for the end of this day e		*/
 				/*--------------------------------------------------------------*/
@@ -301,7 +310,6 @@ void	execute_tec(
 					command_line,
 					event,
 					current_date);
-			        //printf("%s\n","finish_daily_simulation");
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested daily output					*/
 				/*--------------------------------------------------------------*/
@@ -314,7 +322,6 @@ void	execute_tec(
 						growth_outfile);
 				}
 				if (command_line[0].output_flags.daily == 1) {
-                                                //printf("%s\n","before_daily_output");
 						execute_daily_output_event(
 						world,
 						command_line,

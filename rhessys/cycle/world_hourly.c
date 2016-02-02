@@ -47,7 +47,7 @@ void		world_hourly(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
-
+	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -63,17 +63,14 @@ void		world_hourly(
 	/*--------------------------------------------------------------*/
 	/*	Simulate the basins											*/
 	/*--------------------------------------------------------------*/
-	          //     fprintf(stderr,"\nWorld hourly at hour %d", current_date.hour);
-     for ( basin = 0 ; basin < world[0].num_basin_files ; basin++ ){
+	for ( basin = 0 ; basin < world[0].num_basin_files ; basin++ ){
 		basin_hourly(
 			world,
 			world[0].basins[basin],
 			command_line,
 			event,
 			current_date);
-               //fprintf(stderr, "\nbasin : %d, hour: %d", world[0].basins[basin], current_date.hour);
 	}
-                   //fprintf(stderr,"\n Basins done");
 	/*--------------------------------------------------------------*/
 	/*	Destory world hourly object									*/
 	/*--------------------------------------------------------------*/

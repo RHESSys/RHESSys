@@ -33,6 +33,7 @@ void	output_csv_patch(
 					 int basinID, int hillID, int zoneID,
 					 struct	patch_object	*patch,
 					 struct	date	current_date,
+					 struct command_line_object *command_line,
 					 FILE *outfile)
 {
 	/*------------------------------------------------------*/
@@ -57,34 +58,132 @@ void	output_csv_patch(
 				* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.net_psn ;
 		}
 	}
-	check = fprintf(outfile,"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-		current_date.day,
-		current_date.month,
-		current_date.year,
-		basinID,
-		hillID,
-		zoneID,
-		patch[0].ID,
-		patch[0].rain_throughfall*1000.0,
-		patch[0].detention_store*1000.0,
-		patch[0].sat_deficit_z*1000,
-		patch[0].sat_deficit*1000,
-		patch[0].unsat_storage*1000,
-		patch[0].unsat_drainage*1000,
-		patch[0].cap_rise*1000,
-		patch[0].return_flow*1000.0,
-		patch[0].evaporation*1000.0,
-		patch[0].snowpack.water_equivalent_depth*1000.0,
-		(patch[0].transpiration_sat_zone+patch[0].transpiration_unsat_zone)*1000.0,
-		(patch[0].Qin_total) * 1000.0,
-		(patch[0].Qout_total) * 1000.0,
-		apsn * 1000.0,
-		patch[0].rootzone.S,
-		patch[0].litter.rain_stored*1000.0,
-		litterS,
-		patch[0].area);
-	if (check <= 0) {
-		fprintf(stdout, "\nWARNING: output error has occured in output_csv_patch");
+	
+	/*------------------------------------------------------*/
+	/*	If not SCM mode						*/
+	/*------------------------------------------------------*/
+	if(command_line[0].scm_flag != 1){	
+		check = fprintf(outfile,"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
+			current_date.day,
+			current_date.month,
+			current_date.year,
+			basinID,
+			hillID,
+			zoneID,
+			patch[0].ID,
+			patch[0].rain_throughfall*1000.0,
+			patch[0].detention_store*1000.0,
+			patch[0].sat_deficit_z*1000,
+			patch[0].sat_deficit*1000,
+			patch[0].unsat_storage*1000,
+			patch[0].unsat_drainage*1000,
+			patch[0].cap_rise*1000,
+			patch[0].return_flow*1000.0,
+			patch[0].evaporation*1000.0,
+			patch[0].snowpack.water_equivalent_depth*1000.0,
+			(patch[0].transpiration_sat_zone+patch[0].transpiration_unsat_zone)*1000.0,
+			(patch[0].Qin_total) * 1000.0,
+			(patch[0].Qout_total) * 1000.0,
+			apsn * 1000.0,
+			patch[0].rootzone.S,
+			patch[0].litter.rain_stored*1000.0,
+			litterS,
+			patch[0].area);
+		if (check <= 0) {
+			fprintf(stdout, "\nWARNING: output error has occured in output_csv_patch");
+		}
+	
+	/*------------------------------------------------------*/
+	/*	if SCM mode		 							*/
+	/*------------------------------------------------------*/
+	} else {
+		/*------------------------------------------------------*/
+		/*	if patch is an SCM, output  variables		*/
+		/*------------------------------------------------------*/
+		if(patch[0].scm_defaults[0][0].ID != 0) {
+				check = fprintf(outfile,"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
+				current_date.day,
+				current_date.month,
+				current_date.year,
+				basinID,
+				hillID,
+				zoneID,
+				patch[0].ID,
+				patch[0].rain_throughfall*1000.0,
+				patch[0].detention_store*1000.0,
+				patch[0].sat_deficit_z*1000,
+				patch[0].sat_deficit*1000,
+				patch[0].unsat_storage*1000,
+				patch[0].unsat_drainage*1000,
+				patch[0].cap_rise*1000,
+				patch[0].return_flow*1000.0,
+				patch[0].evaporation*1000.0,
+				patch[0].snowpack.water_equivalent_depth*1000.0,
+				(patch[0].transpiration_sat_zone+patch[0].transpiration_unsat_zone)*1000.0,
+				(patch[0].Qin_total) * 1000.0,
+				(patch[0].Qout_total) * 1000.0,
+				apsn * 1000.0,
+				patch[0].rootzone.S,
+				patch[0].litter.rain_stored*1000.0,
+				litterS,
+				patch[0].area,
+				patch[0].surface_Qin*1000.0,  // SCM Output Variable
+				patch[0].Qin*1000.0,  // SCM Output Variable
+				patch[0].surface_Qout*1000.0,  // SCM Output Variable
+				patch[0].Qout*1000.0,  // SCM Output Variable
+				patch[0].recharge*1000.0,  // SCM Output Variable
+				patch[0].scm_aveheight);  // SCM Output Variable
+				
+				
+			if (check <= 0) {
+				fprintf(stdout, "\nWARNING: output error has occured in output_csv_patch");
+			}
+		
+		/*------------------------------------------------------*/
+		/*	if patch is NOT an SCM, output SCM variables as NaN*/
+		/*------------------------------------------------------*/
+		} else {
+				check = fprintf(outfile,"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%s\n",
+				current_date.day,
+				current_date.month,
+				current_date.year,
+				basinID,
+				hillID,
+				zoneID,
+				patch[0].ID,
+				patch[0].rain_throughfall*1000.0,
+				patch[0].detention_store*1000.0,
+				patch[0].sat_deficit_z*1000,
+				patch[0].sat_deficit*1000,
+				patch[0].unsat_storage*1000,
+				patch[0].unsat_drainage*1000,
+				patch[0].cap_rise*1000,
+				patch[0].return_flow*1000.0,
+				patch[0].evaporation*1000.0,
+				patch[0].snowpack.water_equivalent_depth*1000.0,
+				(patch[0].transpiration_sat_zone+patch[0].transpiration_unsat_zone)*1000.0,
+				(patch[0].Qin_total) * 1000.0,
+				(patch[0].Qout_total) * 1000.0,
+				apsn * 1000.0,
+				patch[0].rootzone.S,
+				patch[0].litter.rain_stored*1000.0,
+				litterS,
+				patch[0].area,
+				patch[0].surface_Qin*1000.0,  // SCM Output Variable
+				patch[0].Qin*1000.0,  // SCM Output Variable
+				patch[0].surface_Qout*1000.0,  // SCM Output Variable
+				patch[0].Qout*1000.0,  // SCM Output Variable
+				patch[0].recharge*1000.0,  // SCM Output Variable
+				"NaN");  // SCM Output Variable
+				
+				
+			if (check <= 0) {
+				fprintf(stdout, "\nWARNING: output error has occured in output_csv_patch");
+			}
+		
+		
+		
+		}
 	}
 	return;
 } /*end output_csv_patch*/

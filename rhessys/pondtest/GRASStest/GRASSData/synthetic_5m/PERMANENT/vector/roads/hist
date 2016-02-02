@@ -1,8 +1,0 @@
-COMMAND: v.in.ogr dsn="roads.shp" output="roads" min_area=0.0001 snap=-1
-GISDBASE: /Users/miles/Dropbox/RHESSys/eclipse/RHESSys/cf/test/data/GRASSData
-LOCATION: synthetic_5m MAPSET: PERMANENT USER: miles DATE: Wed Jun 18 15:33:54 2014
------------------------------------------------------
-2 input polygons
-Total area: 2870.22 (2 areas)
-Overlapping area: 0 (0 areas)
-Area without category: 0 (0 areas)

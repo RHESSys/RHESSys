@@ -162,9 +162,7 @@ void	basin_hourly(
 			command_line,
 			event,
 			current_date);
-               //fprintf(stderr, "\nhillslope : %d, hour: %d", basin[0].hillslopes[hillslope], current_date.hour);
 	}
-     //fprintf(stderr, "\n hillslopes done");
 	/*--------------------------------------------------------------*/
 	/*	Destroy the basin hourly parameter arrayu.					*/
 	/*--------------------------------------------------------------*/
@@ -181,6 +179,5 @@ void	basin_hourly(
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
 	}
-     //fprintf(stderr, "\n basin done");
 	return;
 } /*end basin_hourly.c*/

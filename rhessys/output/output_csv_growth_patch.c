@@ -33,6 +33,7 @@ void	output_csv_growth_patch(
 							int basinID, int hillID, int zoneID,
 							struct	patch_object	*patch,
 							struct	date	current_date,
+							struct command_line_object	*command_line,
 							FILE *outfile)
 {
 	/*------------------------------------------------------*/
@@ -96,40 +97,154 @@ void	output_csv_growth_patch(
 			aheight += strata->cover_fraction * (strata->epv.height) ;
 		}
 	}
-	check = fprintf(outfile,
-		"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
-		current_date.day,
-		current_date.month,
-		current_date.year,
-		basinID,
-		hillID,
-		zoneID,
-		patch[0].ID,
-		alai,
-		aleafc+afrootc+awoodc,
-		apsn*1000.0,
-		aresp*1000.0,
-		asoilhr*1000.0,
-		patch[0].litter_cs.litr1c,
-		patch[0].litter_cs.litr2c,
-		patch[0].litter_cs.litr3c,
-		patch[0].litter_cs.litr4c,
-		patch[0].litter.rain_capacity*1000.0,
-		patch[0].soil_cs.soil1c,
-		patch[0].soil_cs.soil2c,
-		patch[0].soil_cs.soil3c,
-		patch[0].soil_cs.soil4c,
-		patch[0].ndf.denitrif*1000.0,
-		(patch[0].soil_ns.Qin - patch[0].soil_ns.Qout)*1000.0,
-		patch[0].soil_ns.nitrate*1000.0,
-		patch[0].streamflow_N,
-		patch[0].surface_NO3,
-		aheight,
-		patch[0].ndf.sminn_to_npool*1000.0,
-		patch[0].rootzone.depth*1000.0,
-		patch[0].area);
-	if (check <= 0) {
-		fprintf(stdout, "\nWARNING: output_csv_growth error has occured in output_csv_growth_patch");
+	/*------------------------------------------------------*/
+	/*	If not SCM mode						*/
+	/*------------------------------------------------------*/
+	if(command_line[0].scm_flag != 1){
+		check = fprintf(outfile,
+			"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
+			current_date.day,
+			current_date.month,
+			current_date.year,
+			basinID,
+			hillID,
+			zoneID,
+			patch[0].ID,
+			alai,
+			aleafc+afrootc+awoodc,
+			apsn*1000.0,
+			aresp*1000.0,
+			asoilhr*1000.0,
+			patch[0].litter_cs.litr1c,
+			patch[0].litter_cs.litr2c,
+			patch[0].litter_cs.litr3c,
+			patch[0].litter_cs.litr4c,
+			patch[0].litter.rain_capacity*1000.0,
+			patch[0].soil_cs.soil1c,
+			patch[0].soil_cs.soil2c,
+			patch[0].soil_cs.soil3c,
+			patch[0].soil_cs.soil4c,
+			patch[0].ndf.denitrif*1000.0,
+			(patch[0].soil_ns.Qin - patch[0].soil_ns.Qout)*1000.0,
+			patch[0].soil_ns.nitrate*1000.0,
+			patch[0].streamflow_N,
+			patch[0].surface_NO3,
+			aheight,
+			patch[0].ndf.sminn_to_npool*1000.0,
+			patch[0].rootzone.depth*1000.0,
+			patch[0].area);
+		if (check <= 0) {
+			fprintf(stdout, "\nWARNING: output_csv_growth error has occured in output_csv_growth_patch");
+		}
+	/*------------------------------------------------------*/
+	/*	if SCM mode		 							*/
+	/*------------------------------------------------------*/
+	} else {
+		/*------------------------------------------------------*/
+		/*	if patch is an SCM, output  variables		*/
+		/*------------------------------------------------------*/
+		if(patch[0].scm_default_ID != 0) {
+				check = fprintf(outfile,
+				"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf \n",
+				current_date.day,
+				current_date.month,
+				current_date.year,
+				basinID,
+				hillID,
+				zoneID,
+				patch[0].ID,
+				alai,
+				aleafc+afrootc+awoodc,
+				apsn*1000.0,
+				aresp*1000.0,
+				asoilhr*1000.0,
+				patch[0].litter_cs.litr1c,
+				patch[0].litter_cs.litr2c,
+				patch[0].litter_cs.litr3c,
+				patch[0].litter_cs.litr4c,
+				patch[0].litter.rain_capacity*1000.0,
+				patch[0].soil_cs.soil1c,
+				patch[0].soil_cs.soil2c,
+				patch[0].soil_cs.soil3c,
+				patch[0].soil_cs.soil4c,
+				patch[0].ndf.denitrif*1000.0,
+				(patch[0].soil_ns.Qin - patch[0].soil_ns.Qout)*1000.0,
+				patch[0].soil_ns.nitrate*1000.0,
+				patch[0].streamflow_N,
+				patch[0].surface_NO3,
+				aheight,
+				patch[0].ndf.sminn_to_npool*1000.0,
+				patch[0].rootzone.depth*1000.0,
+				patch[0].area,
+				patch[0].surface_DOC_Qin*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DOC_Qout*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DOC_settled*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON_Qin*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON_Qout*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON_settled*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_NH4_Qin*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_NH4_Qout*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_NO3_Qin*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_NO3_Qout*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DOC);  // SCM OUTPUT VARIABLE
+				
+		/*------------------------------------------------------*/
+		/*	if patch is NOT an SCM, output SCM variables as 0	*/
+		/*------------------------------------------------------*/
+		} else {
+				check = fprintf(outfile,
+				"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d,%lf,%lf,%s,%lf,%lf,%s,%lf,%lf,%lf,%lf,%lf,%lf \n",
+				current_date.day,
+				current_date.month,
+				current_date.year,
+				basinID,
+				hillID,
+				zoneID,
+				patch[0].ID,
+				alai,
+				aleafc+afrootc+awoodc,
+				apsn*1000.0,
+				aresp*1000.0,
+				asoilhr*1000.0,
+				patch[0].litter_cs.litr1c,
+				patch[0].litter_cs.litr2c,
+				patch[0].litter_cs.litr3c,
+				patch[0].litter_cs.litr4c,
+				patch[0].litter.rain_capacity*1000.0,
+				patch[0].soil_cs.soil1c,
+				patch[0].soil_cs.soil2c,
+				patch[0].soil_cs.soil3c,
+				patch[0].soil_cs.soil4c,
+				patch[0].ndf.denitrif*1000.0,
+				(patch[0].soil_ns.Qin - patch[0].soil_ns.Qout)*1000.0,
+				patch[0].soil_ns.nitrate*1000.0,
+				patch[0].streamflow_N,
+				patch[0].surface_NO3,
+				aheight,
+				patch[0].ndf.sminn_to_npool*1000.0,
+				patch[0].rootzone.depth*1000.0,
+				patch[0].area,
+				patch[0].surface_DOC_Qin*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DOC_Qout*1000,  // SCM OUTPUT VARIABLE
+				"NaN",  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON_Qin*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON_Qout*1000,  // SCM OUTPUT VARIABLE
+				"NaN",  // SCM OUTPUT VARIABLE
+				patch[0].surface_NH4_Qin*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_NH4_Qout*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_NO3_Qin*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_NO3_Qout*1000,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DOC);  // SCM OUTPUT VARIABLE
+			
+		}
+			
+		if (check <= 0) {
+			fprintf(stdout, "\nWARNING: output_csv_growth error has occured in output_csv_growth_patch");
+		}
+	
+	
 	}
 	return;
 } /*end output_csv_growth_patch*/

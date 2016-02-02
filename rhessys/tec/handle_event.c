@@ -37,6 +37,8 @@
 /*	Sept, 98 - C.Tague	*/
 /*	added comma delimited output event */
 /*																*/
+/*	June, 2014 - X Chen	*/
+/*	added hourly growth output event*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -155,6 +157,12 @@ void	handle_event(
 	else if ( !strcmp(event[0].command,"print_hourly_off") ){
 		command_line[0].output_flags.hourly= 0;
 	}
+	else if ( !strcmp(event[0].command,"print_hourly_growth_on")){
+		command_line[0].output_flags.hourly_growth = 1;
+	}
+	else if ( !strcmp(event[0].command,"print_hourly_growth_off")){
+		command_line[0].output_flags.hourly_growth = 0;
+	}
 	else if ( !strcmp(event[0].command,"output_current_state") ){
 		execute_state_output_event(world, current_date,
 			world[0].end_date,command_line);
@@ -173,7 +181,10 @@ void	handle_event(
 	}		
 	else if ( !strcmp(event[0].command,"redefine_world_thin_harvest") ){
 		execute_redefine_world_thin_event(world, command_line, current_date, 2);
-	}		
+	}
+	else if ( !strcmp(event[0].command,"redefine_world_thin_snags") ){
+		execute_redefine_world_thin_event(world, command_line, current_date, 3);
+	}			
 	else if ( !strcmp(event[0].command,"roads_on") ){
 		command_line[0].road_flag = 1;
 		execute_road_construction_event(world, command_line, current_date);

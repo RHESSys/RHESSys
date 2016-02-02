@@ -143,7 +143,6 @@ double	compute_infiltration(int verbose_flag,
 	/*--------------------------------------------------------------*/
 	/* use Ksat_vertical to limit infiltration only to pervious area */
 	/*--------------------------------------------------------------*/
-
 	infiltration = infiltration * Ksat_vertical;
 	return(infiltration);
 } /*compute_infiltration*/

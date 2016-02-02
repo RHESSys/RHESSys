@@ -36,7 +36,7 @@
 
 
 void  update_drainage_scm(
-					struct zone_object *zone,
+					int zone_hourly_flag,
                          struct patch_object *patch,
                          struct command_line_object *command_line,
 					double time_int,
@@ -67,7 +67,8 @@ void  update_drainage_scm(
 		double,
 		double,
 		double,
-		double *);
+		double *,
+		struct patch_object *);
 
 
 	double compute_N_leached(int,
@@ -107,7 +108,16 @@ void  update_drainage_scm(
 		double,
 		double);
 		
-	double compute_infiltration_scm( double,
+	double compute_infiltration_scm( int,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
 		double,
 		double);
 
@@ -161,12 +171,10 @@ void  update_drainage_scm(
 	NH4_leached_to_surface = 0.0;
 	DOC_leached_to_surface = 0.0;
 	DON_leached_to_surface = 0.0;
-     
-     
+
 	/*--------------------------------------------------------------*/
 	/*	m and K are multiplied by sensitivity analysis variables */
 	/*--------------------------------------------------------------*/
-
 	m = patch[0].m ;
 	Ksat = patch[0].soil_defaults[0][0].Ksat_0 ;
 	d=0;
@@ -179,8 +187,9 @@ void  update_drainage_scm(
 
 	available_sat_water = max(((patch[0].soil_defaults[0][0].soil_water_cap
 			- max(patch[0].sat_deficit,0.0))
-			* patch[0].area),0.0);
-
+			* patch[0].area),0.0);		
+	// POTENTIALLY ADD SOMETHING HERE LIMITING AVAILABLE_SAT_WATER TO INFILTRATION + SUBSRUFACE WATER?
+	//available_sat_water = 0;
 	/*------------------------------------------------------------*/
 	/*	calculate amuount of water output to patches			*/
 	/*	this only computes subsurface flow, not overland flow	*/
@@ -194,8 +203,9 @@ void  update_drainage_scm(
 		patch[0].sat_deficit,
 		total_gamma, 
 		patch[0].soil_defaults[0][0].interval_size,
-		patch[0].transmissivity_profile);
-
+		patch[0].transmissivity_profile,
+		patch);
+		
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 
 		route_to_patch *= (available_sat_water)/(route_to_patch);
@@ -302,6 +312,7 @@ void  update_drainage_scm(
 		patch[0].unsat_storage = 0.0;
 		patch[0].rz_storage = 0.0;
 	}
+	
 	/*--------------------------------------------------------------*/
 	/*	calculated any N-transport associated with return flow  */
 	/*	-note available N reduced by what has already been 	*/
@@ -388,7 +399,7 @@ void  update_drainage_scm(
 	/*--------------------------------------------------------------*/
 	/*	route water and nitrogen lossed due to surface routing    */
 	/*--------------------------------------------------------------*/
-	
+
      /*-----------------------------------------------------------*/
      /* Need to compute total outflow at a sub-houlry time step   */
      /* Use one minute                                            */
@@ -397,12 +408,10 @@ void  update_drainage_scm(
      preday_scm_volume  = patch[0].detention_store - patch[0].surface_Qin;
      preday_scm_inflow  = patch[0].preday_scm_inflow;
      preday_scm_outflow = patch[0].preday_scm_outflow;
-     
      /*-----------------------------------------------------------*/
      /* A) IF HOURLY                                              */
      /*-----------------------------------------------------------*/
-     
-     if (zone[0].hourly_rain_flag!=1) {
+     if (zone_hourly_flag == 1) {
           intused = 3;
           step = 60;
      } else {
@@ -431,7 +440,7 @@ void  update_drainage_scm(
          
                // Check to see if LHS is above max
                if (LHS >= patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][5]) {
-                    scm_outflow_tmp  = (scm_volume - patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][2]); // immediately route excess volume to stream
+                    //scm_outflow_tmp  = ((preday_scm_volume + patch[0].surface_Qin/step) - patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][2]); // immediately route excess volume to stream
                     scm_outflow_tmp += (patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][intused]/step) + patch[0].surface_Qin/step ;  // set outflow rate to that of the maximum depth water and short-circuit extra water out
                     scm_H = patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][0];             // set water level to maximum
                     avek = patch[0].scm_defaults[0][0].num_discrete;
@@ -449,13 +458,13 @@ void  update_drainage_scm(
                     LHS_delta = (LHS - patch[0].scm_stage_storage[k][5])/(patch[0].scm_stage_storage[k+1][5]-patch[0].scm_stage_storage[k][5]);
                     scm_H = h_low + (h_hi-h_low)*LHS_delta;
                     scm_outflow_tmp = out_low + (out_hi-out_low)*LHS_delta;
-                    //scm_volume = vol_low + (vol_hi-vol_low)*LHS_delta;
                     avek = k;
                     break;
+               } else {
+               		avek=0;
                }
              
          }
-         
          scm_outflow_tmp    = max(scm_outflow_tmp,0);
          scm_volume         = preday_scm_volume - scm_outflow_tmp + patch[0].surface_Qin/step;
         
@@ -463,18 +472,28 @@ void  update_drainage_scm(
          preday_scm_outflow = scm_outflow_tmp;
          preday_scm_inflow  = patch[0].surface_Qin; // after the first step, preday inflow is just the inflow
          scm_outflow       += scm_outflow_tmp;
- 
+ 			
+   	// PRINT OUT MINUTELY
+   	//if(patch[0].surface_Qin > 0) {
+	//fprintf(stderr,"\n Month|%d|Day|%d|Hour|%d|Min|%d|IN|%f|SS_IN|%f|OUT|%f|SS_OUT|%f|pre-day V|%f|V|%f", current_date.month, current_date.day,current_date.hour,mins,patch[0].surface_Qin/step,patch[0].Qin/step,scm_outflow_tmp,patch[0].Qout/step,preday_scm_volume+ scm_outflow_tmp - patch[0].surface_Qin/step,scm_volume);
+	// }
      }
-
-     Qout = scm_outflow;
+	// Make sure Qout is not greater than available water (detention store) or less than the amount required to bring the scm back to its parameterized maximum depth
+     Qout = max( min(scm_outflow,patch[0].detention_store), (-patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][2] + patch[0].detention_store) );
      patch[0].scm_H = scm_H;
 
-    
 	 /*-----------------------------------------------------------*/
 	 /* compute constituent surface routing: Qout/detention_store */
 	 /*-----------------------------------------------------------*/  
-     if (command_line[0].grow_flag > 0) {
-          Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
+     if (command_line[0].grow_flag > 0) {        
+		// Loop through layers / strata looking for ALGAE stratum type to determine how much should be routed
+		algae_leached_to_surface = 0; // set to zero because its additive 
+		algaeN_leached_to_surface = 0; // set to zero because its additive 
+		algaeC_leached_to_surface = 0; // set to zero because its additive 
+		if(patch[0].detention_store > 0 && Qout > 0){
+		
+		
+		  Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
           DOC_leached_to_surface = Nout * patch[0].area;
           patch[0].surface_DOC -= Nout;
           Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
@@ -486,36 +505,44 @@ void  update_drainage_scm(
           Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
           NH4_leached_to_surface = Nout * patch[0].area;
           patch[0].surface_NH4 -= Nout;
-          
-
-		// Loop through layers / strata looking for ALGAE stratum type to determine how much should be routed
-		algae_leached_to_surface = 0; // set to zero because its additive 
-		for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
-				
-				if( patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].epc.veg_type == ALGAE ){
-					Aout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla;	          		
-          			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla / patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].algae.chla_to_N;
-          			Cout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla / patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].algae.chla_to_C;
-          			algae_leached_to_surface += Aout * patch[0].area; 		// do += in case there are more than one ALGAE layer... unlikely
-          			algaeN_leached_to_surface += Nout * patch[0].area; 		// do += in case there are more than one ALGAE layer... unlikely
-          			algaeC_leached_to_surface += Cout * patch[0].area; 		// do += in case there are more than one ALGAE layer... unlikely
-          			patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla -= Aout;
-          		}       		
+		
+		
+			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+				for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+					if( patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].epc.veg_type == ALGAE ){
+						Aout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla;	          		
+						Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla / patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].algae.chla_to_N;
+						Cout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla / patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].algae.chla_to_C;
+						algae_leached_to_surface += Aout * patch[0].area; 		// do += in case there are more than one ALGAE layer... unlikely
+						algaeN_leached_to_surface += Nout * patch[0].area; 		// do += in case there are more than one ALGAE layer... unlikely
+						algaeC_leached_to_surface += Cout * patch[0].area; 		// do += in case there are more than one ALGAE layer... unlikely
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla -= Aout;
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Aout += Aout;
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.totalN -= Nout;
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Nout += Nout;
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.totalC -= Cout;
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Cout += Cout;
+					}       		
+				}
 			}
-       	}
+		}
     }
 
      patch[0].detention_store -= Qout;  // Should already have had Qin added to it
      patch[0].surface_Qout = Qout;
      route_to_surface = Qout * patch[0].area;
-
+	 
      if(avek > 0){
           patch[0].scm_ave_height = (patch[0].detention_store*patch[0].area)/((patch[0].scm_stage_storage[0][1]+patch[0].scm_stage_storage[avek][1])/2);
      } else {
           patch[0].scm_ave_height = 0;
      }
-
+	
+	// PRINT OUT HOURLY (or daily) WATER BALANCE:
+	//fprintf(stderr,"\n Day|%d|Hour|%d|det|%f|Qin|%f|Qout|%f|RTS|%f|SS_Qin|%f|SS_Qout|%f", current_date.day,current_date.hour,patch[0].detention_store,patch[0].surface_Qin,patch[0].surface_Qout,route_to_surface,patch[0].Qin,patch[0].Qout);
+	
+	
+	
   	if (NO3_leached_to_surface < 0.0)
 		printf("WARNING %d %lf",patch[0].ID, NO3_leached_to_surface);
 
@@ -526,7 +553,7 @@ void  update_drainage_scm(
      /* and the soil flux trackers, and the soil state variable      */
 	/*--------------------------------------------------------------*/
      
-     // COMMENTED OUT FOR NOW: CAN EAILY ADD I BACK LATER
+     // COMMENTED OUT FOR NOW: ASSUME DISSOLVED FRACTIONS DONT SETTLE - CAN EAILY ADD I BACK LATER
      /*if (command_line[0].grow_flag > 0) {
                 
           Nout = compute_N_settled(
@@ -560,7 +587,7 @@ void  update_drainage_scm(
 	/*	route flow to neighbours				*/
 	/*	route n_leaching if grow flag specfied			*/
 	/*--------------------------------------------------------------*/
-
+ 
 	/*--------------------------------------------------------------*/
 	/* regular downslope routing */
 	/*--------------------------------------------------------------*/
@@ -628,66 +655,76 @@ void  update_drainage_scm(
 			neigh[0].surface_DON += Nin;
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DOC_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_DOC += Nin;
-			
+		
+		
 			/*--------------------------------------------------------------*/
 			/* LOOP THROUGH NEIGHBOR LAYERS LOOKING FOR ALGAE 				*/
 			/* If there are more than one ALGAE layer, too bad - it gets added to first one it finds */
 			/* Also - if the algae C/N ratios are different - it maximizes algae mass transfer, puts the rest in patch.DON/DOC */
 			/*--------------------------------------------------------------*/
-			algae_flag = 0;
-			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-				for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
-					if(neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].epc.veg_type == ALGAE ){
-						
-						algae_flag = 1;
-						
-						// Find MASS ratios											
-						neigh_CtoN = (neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].algae.chla_to_C) / (neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].algae.chla_to_N);
-						uphill_CtoN = (algaeC_leached_to_surface) / (algaeN_leached_to_surface);
-						
-						// Are  C/N ratios approximately the same?
-						// If so - add all of algae flux to DS algae store
-						if ((neigh_CtoN-uphill_CtoN) < 0.01 && (neigh_CtoN-uphill_CtoN) > -0.01) {
-							Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * algae_leached_to_surface) / neigh[0].area;
-							neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla += Nin;
-							// break loop so it only adds to one layer
-							break;
+				if(algae_leached_to_surface > 0 ){
+					algae_flag = 0;
+					if(command_line[0].scm_flag == 1) {
+						for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+							for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+								if(neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].epc.veg_type == ALGAE ){						
+									algae_flag = 1;
+									// Find MASS ratios											
+									neigh_CtoN = (neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].algae.chla_to_N)/(neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].algae.chla_to_C);
+									uphill_CtoN = (algaeC_leached_to_surface) / (algaeN_leached_to_surface);
+									// Are  C/N ratios approximately the same?
+									// If so - add all of algae flux to DS algae store
+									if ((neigh_CtoN-uphill_CtoN) < 0.1 && (neigh_CtoN-uphill_CtoN) > -0.1) {
+										Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * algae_leached_to_surface) / neigh[0].area;
+										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla += Nin;
+										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Ain += Nin;
+										// break loop so it only adds to one layer
+										break;
+									} 
+									// Does the downhill SCM have a smaller MOLAR C/N ratio?
+									// If so - add extra C to DS DOC pool, adjust algae flux by ratio of DOC to US C
 							
-						// Does the downhill SCM have a smaller MOLAR C/N ratio?
-						// If so - add extra C to DS DOC pool, adjust algae flux by ratio of DOC to US C
-						} 
-						else if((neigh_CtoN-uphill_CtoN) <= -0.01) {
-							Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * (algae_leached_to_surface - ((uphill_CtoN-neigh_CtoN)/uphill_CtoN * algaeC_leached_to_surface * algae_leached_to_surface/algaeC_leached_to_surface)))  / neigh[0].area;
-							neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla += Nin;
-							neigh[0].surface_DOC += ((uphill_CtoN-neigh_CtoN)/uphill_CtoN*algaeC_leached_to_surface);
-							// break loop so it only adds to one layer
-							break;
-							
-						// Does the downhill SCM have a greater C/N ratio?
-						// If so - add extra N to DS DON pool, adjust algae flux by ratio of DON to US N
-						} 
-						else {
-							Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * (algae_leached_to_surface - ((-uphill_CtoN+neigh_CtoN)/uphill_CtoN * algaeN_leached_to_surface * algae_leached_to_surface/algaeN_leached_to_surface))) / neigh[0].area;
-							neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla += Nin;
-							neigh[0].surface_DON += ((-uphill_CtoN+neigh_CtoN)/uphill_CtoN*algaeN_leached_to_surface);
-							// break loop so it only adds to one layer
-							break;
+									else if((neigh_CtoN-uphill_CtoN) <= -0.01) {
+										Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * (algae_leached_to_surface * neigh_CtoN/uphill_CtoN)) / neigh[0].area;
+										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla += Nin;
+										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Ain += Nin;
+										neigh[0].surface_DOC += ((uphill_CtoN-neigh_CtoN)/uphill_CtoN*algaeC_leached_to_surface) / neigh[0].area;
+										// break loop so it only adds to one layer
+										break;
+									}
+									// Does the downhill SCM have a greater C/N ratio?
+									// If so - add extra N to DS DON pool, adjust algae flux by ratio of DON to US N
+							 
+									else {
+										Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * (algae_leached_to_surface - (   ((-uphill_CtoN+neigh_CtoN)/uphill_CtoN) / (neigh_CtoN/uphill_CtoN)  * algae_leached_to_surface))) / neigh[0].area;
+										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla += Nin;
+										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Ain += Nin;
+										neigh[0].surface_DON += ((-uphill_CtoN+neigh_CtoN)/uphill_CtoN*algaeN_leached_to_surface) / neigh[0].area;
+										// break loop so it only adds to one layer
+										break;
+									}
 						
+								} 
+							}						
 						}
-						
-					} 
-									      		
-				}
+					// If no algae stratum were found
+					if(algae_flag == 0) {
+						// If neighbor is a stream, add algae to DOC/DON
+						if(neigh[0].drainage_type == STREAM){
+							neigh[0].surface_DON += (patch[0].surface_innundation_list[d].neighbours[j].gamma * algaeN_leached_to_surface) / neigh[0].area;
+							neigh[0].surface_DOC += (patch[0].surface_innundation_list[d].neighbours[j].gamma * algaeC_leached_to_surface) / neigh[0].area;
+						} 
+						// Add to labile litter stores if it is a land or road
+						else {
+							neigh[0].litter_ns.litr1n += (patch[0].surface_innundation_list[d].neighbours[j].gamma * algaeN_leached_to_surface) / neigh[0].area;
+							neigh[0].litter_cs.litr1c +=  (patch[0].surface_innundation_list[d].neighbours[j].gamma * algaeC_leached_to_surface) / neigh[0].area;
+						}
+					}
 
-			}
+					}
+				}
+		}			
 		
-			// If no algae layers found - add algal C and N to DS patch labile litter stores
-			if(algae_flag = 0) {			 
-				neigh[0].litter_ns.litr1n += algaeN_leached_to_surface;
-				neigh[0].litter_cs.litr1c += algaeC_leached_to_surface;
-			}
-			
-		}
 		
 		/*--------------------------------------------------------------*/
 		/*	- now surface water 					*/
@@ -696,6 +733,11 @@ void  update_drainage_scm(
 		/*--------------------------------------------------------------*/
 
 		Qin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * route_to_surface) / neigh[0].area;
+		//if(patch[0].ID==2){
+		//if(neigh[0].ID==1){
+		//fprintf(stderr, "\n Surface from 2: %f  ", Qin);
+		//}
+		// }
 		neigh[0].detention_store += Qin;
 		neigh[0].surface_Qin += Qin;
 		
@@ -705,7 +747,7 @@ void  update_drainage_scm(
 		/* use time_int as duration */
 		/*--------------------------------------------------------------*/
 		
-		
+
 		/*--------------------------------------------------------------*/
 		/* If SCM Flag is on - call different logic for infiltration	*/
 		/*   a bit repetitive, but there may not be an "scm.default.ID" */
@@ -718,18 +760,18 @@ void  update_drainage_scm(
 			
 				if (neigh[0].detention_store > ZERO) {
 					if (neigh[0].rootzone.depth > ZERO) {
-					infiltration = compute_infiltration(
-						verbose_flag,
-						neigh[0].sat_deficit_z,
-						neigh[0].rootzone.S,
-						neigh[0].Ksat_vertical,
-						neigh[0].soil_defaults[0][0].Ksat_0_v,
-						neigh[0].soil_defaults[0][0].mz_v,
-						neigh[0].soil_defaults[0][0].porosity_0,
-						neigh[0].soil_defaults[0][0].porosity_decay,
-						(neigh[0].detention_store),	
-						time_int,
-						neigh[0].soil_defaults[0][0].psi_air_entry);
+						infiltration = compute_infiltration(
+							verbose_flag,
+							neigh[0].sat_deficit_z,
+							neigh[0].rootzone.S,
+							neigh[0].Ksat_vertical,
+							neigh[0].soil_defaults[0][0].Ksat_0_v,
+							neigh[0].soil_defaults[0][0].mz_v,
+							neigh[0].soil_defaults[0][0].porosity_0,
+							neigh[0].soil_defaults[0][0].porosity_decay,
+							(neigh[0].detention_store),	
+							time_int,
+							neigh[0].soil_defaults[0][0].psi_air_entry);
 					}
 					else {
 					infiltration = compute_infiltration(
@@ -751,11 +793,37 @@ void  update_drainage_scm(
 			// IF NEIGHBOR IS AN SCM - INFILTRATE WATER BASED ON PARAMETERIZED RATE
 			} else {
 				if (neigh[0].detention_store > ZERO) {
+					if (neigh[0].rootzone.depth > ZERO) {
 						infiltration = compute_infiltration_scm(
+							verbose_flag,
+							neigh[0].sat_deficit_z,
+							neigh[0].rootzone.S,
+							neigh[0].Ksat_vertical,
+							neigh[0].soil_defaults[0][0].Ksat_0_v,
+							neigh[0].soil_defaults[0][0].mz_v,
+							neigh[0].soil_defaults[0][0].porosity_0,
+							neigh[0].soil_defaults[0][0].porosity_decay,
+							(neigh[0].detention_store),	
 							time_int,
-							neigh[0].scm_defaults[0][0].infil_rate,
-							neigh[0].detention_store);
-				} 
+							neigh[0].soil_defaults[0][0].psi_air_entry,
+							neigh[0].scm_defaults[0][0].infil_rate);
+					}
+					else {
+						infiltration = compute_infiltration_scm(
+							verbose_flag,
+							neigh[0].sat_deficit_z,
+							neigh[0].S,
+							neigh[0].Ksat_vertical,
+							neigh[0].soil_defaults[0][0].Ksat_0_v,
+							neigh[0].soil_defaults[0][0].mz_v,
+							neigh[0].soil_defaults[0][0].porosity_0,
+							neigh[0].soil_defaults[0][0].porosity_decay,
+							(neigh[0].detention_store),	
+							time_int,
+							neigh[0].soil_defaults[0][0].psi_air_entry,
+							neigh[0].scm_defaults[0][0].infil_rate);
+					}
+				}
 				else infiltration = 0.0;
 			}
 
@@ -851,10 +919,8 @@ void  update_drainage_scm(
 
 	}
      
-
      /* end if redistribution flag */
-
 	return;
 
-} /*end update_drainage_land.c*/
+} /*end update_drainage_scm.c*/
 

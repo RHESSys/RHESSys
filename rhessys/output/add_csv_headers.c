@@ -38,6 +38,7 @@ void add_csv_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	FILE *outfile;
 	int check;
+
 	/*--------------------------------------------------------------*/
 	/*	Basin file headers					*/
 	/*--------------------------------------------------------------*/
@@ -239,36 +240,148 @@ void add_csv_headers(struct world_output_file_object *world_output_files,
 	/*	Patch file headers					*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].p != NULL) {
-	/*--------------------------------------------------------------*/
-	/*	Daily 							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,
-		"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" ,
-		"day",
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"rain_thr",
-		"detention_store",
-		"sat_def_z",
-		"sat_def",
-		"unsat_stor",
-		"unsat_drain",
-		"cap",
-		"return",
-		"evap",
-		"snow",
-		"trans ",
-		"Qin",
-		"Qout",
-		"psn",
-		"root_zone.S",
-		"litter.rain_stor",
-		"litter.S","area");
+		/*--------------------------------------------------------------*/
+		/*	Check to see if SCM mode is called - requires column heads	*/
+		/*--------------------------------------------------------------*/
+		if (command_line[0].scm_flag != 1){
+
+			/*--------------------------------------------------------------*/
+			/*	Daily - Not SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].daily;
+			check = fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"rain_thr",
+				"detention_store",
+				"sat_def_z",
+				"sat_def",
+				"unsat_stor",
+				"unsat_drain",
+				"cap",
+				"return",
+				"evap",
+				"snow",
+				"trans ",
+				"Qin",
+				"Qout",
+				"psn",
+				"root_zone.S",
+				"litter.rain_stor",
+				"litter.S","area");
+				
+			/*--------------------------------------------------------------*/
+			/*	Hourly - Not SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].hourly;
+			check = fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"rain_thr",
+				"detention_store",
+				"sat_def_z",
+				"sat_def",
+				"unsat_stor",
+				"unsat_drain",
+				"cap",
+				"return",
+				"evap",
+				"snow",
+				"trans ",
+				"Qin",
+				"Qout",
+				"psn",
+				"root_zone.S",
+				"litter.rain_stor",
+				"litter.S","area");
+		} else {
+			/*--------------------------------------------------------------*/
+			/*	Daily 		- SCM MODE					*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].daily;
+			check = fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"rain_thr",
+				"detention_store",
+				"sat_def_z",
+				"sat_def",
+				"unsat_stor",
+				"unsat_drain",
+				"cap",
+				"return",
+				"evap",
+				"snow",
+				"trans ",
+				"Qin",
+				"Qout",
+				"psn",
+				"root_zone.S",
+				"litter.rain_stor",
+				"litter.S","area",
+				"surface_Qin",  // Add for SCM				
+				"subsurface_Qin",  // Add for SCM
+				"surface_Qout",  // Add for SCM				
+				"subsurface_Qin",  // Add for SCM
+				"recharge",  // Add for SCM
+				"scm_ave_height");  // Add for SCM;
+				
+			/*--------------------------------------------------------------*/
+			/*	Hourly 		- SCM MODE					*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].hourly;
+			check = fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"rain_thr",
+				"detention_store",
+				"sat_def_z",
+				"sat_def",
+				"unsat_stor",
+				"unsat_drain",
+				"cap",
+				"return",
+				"evap",
+				"snow",
+				"trans ",
+				"Qin",
+				"Qout",
+				"psn",
+				"root_zone.S",
+				"litter.rain_stor",
+				"litter.S","area",
+				"surface_Qin",  // Add for SCM				
+				"subsurface_Qin",  // Add for SCM
+				"surface_Qout",  // Add for SCM				
+				"subsurface_Qin",  // Add for SCM
+				"recharge",  // Add for SCM
+				"scm_ave_height");  // Add for SCM;
+		}
+				
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
@@ -312,50 +425,92 @@ void add_csv_headers(struct world_output_file_object *world_output_files,
 	/*	Stratum file headers					*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].c != NULL) {
-	/*--------------------------------------------------------------*/
-	/*	Daily 							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].canopy_stratum[0].daily;
-	fprintf(outfile,
-		"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
-		"day",
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"stratumID",
-		"lai",
-		"evap",
-		"APAR_direct",
-		"APAR_diffuse",
-		"sublim",
-		"trans",
-		"ga",
-		"gsurf",
-		"gs",
-		"psi",
-		"leaf_day_mr",
-		"psn_to_cpool",
-		"rain_stored",
-		"snow_stored",
-		"rootzone.S");
-	/*--------------------------------------------------------------*/
-	/*	Monthly							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].canopy_stratum[0].monthly;
-	fprintf(outfile,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n", 
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"stratumID",
-		"lai",
-		"psn",
-		"lwp");
+		/*--------------------------------------------------------------*/
+		/*	Check to see if SCM mode is called - requires column heads	*/
+		/*--------------------------------------------------------------*/
+		if (command_line[0].scm_flag != 1){
+
+			/*--------------------------------------------------------------*/
+			/*	Daily - Not SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"evap",
+				"APAR_direct",
+				"APAR_diffuse",
+				"sublim",
+				"trans",
+				"ga",
+				"gsurf",
+				"gs",
+				"psi",
+				"leaf_day_mr",
+				"psn_to_cpool",
+				"rain_stored",
+				"snow_stored",
+				"rootzone.S"); 
+		} else {
+		
+			/*--------------------------------------------------------------*/
+			/*	Daily -  SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"evap",
+				"APAR_direct",
+				"APAR_diffuse",
+				"sublim",
+				"trans",
+				"ga",
+				"gsurf",
+				"gs",
+				"psi",
+				"leaf_day_mr",
+				"psn_to_cpool",
+				"rain_stored",
+				"snow_stored",
+				"rootzone.S",
+				"algae_chlA",
+				"algae_totalN",
+				"algae_totalC"); 
+		
+		}
+				
+			/*--------------------------------------------------------------*/
+			/*	Monthly							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].monthly;
+			fprintf(outfile,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n", 
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"psn",
+				"lwp");
 	/*--------------------------------------------------------------*/
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
@@ -370,5 +525,6 @@ void add_csv_headers(struct world_output_file_object *world_output_files,
 		"psn",
 		"lwp","root_depth");
 	}
+	
 	return;
 } /*end add_csv_headers*/

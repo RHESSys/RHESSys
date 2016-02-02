@@ -182,6 +182,17 @@ void	output_canopy_strata_state(
 	fprintf(outfile,"%-30.8f %s", (canopy_strata[0].ns.cwdn), "ns_cwdn");
 	fprintf(outfile,"\n            ");
 	fprintf(outfile,"%-30.8f %s", (canopy_strata[0].ns.retransn), "ns_retransn");
+	
+	if(command_line[0].scm_flag == 1) {
+			fprintf(outfile,"\n            ");
+			fprintf(outfile,"%-30.8f %s", (canopy_strata[0].algae.chla),
+		"algae_chlA");
+			fprintf(outfile,"\n            ");
+			fprintf(outfile,"%-30.8f %s", (canopy_strata[0].algae.totalC), "algae_totalC");
+			fprintf(outfile,"\n            ");
+			fprintf(outfile,"%-30.8f %s", (canopy_strata[0].algae.totalN), "algae_totalN");
+	}
+	
 	fprintf(outfile,"\n            ");
 	fprintf(outfile,"%-30ld %s", (canopy_strata[0].epv.wstress_days),
 		"epv_wstress_days");

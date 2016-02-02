@@ -1,1 +1,0 @@
-1 streams cat $GISDBASE/$LOCATION_NAME/$MAPSET/dbf/ dbf

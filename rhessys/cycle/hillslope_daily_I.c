@@ -77,6 +77,11 @@ void		hillslope_daily_I(
 	/* zero hillslope hydro fluxes					*/
 	/*--------------------------------------------------------------*/
 	hillslope[0].base_flow = 0.0;
+	hillslope[0].gw.Qout = 0.0;
+	hillslope[0].gw.NO3out = 0.0;
+	hillslope[0].gw.NH4out = 0.0;
+	hillslope[0].gw.DOCout = 0.0;
+	hillslope[0].gw.DONout = 0.0;
 	hillslope[0].streamflow_NO3 = 0.0;
 	hillslope[0].streamflow_NH4 = 0.0;
 	hillslope[0].streamflow_DOC = 0.0;
