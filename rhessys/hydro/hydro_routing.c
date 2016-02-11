@@ -2042,9 +2042,17 @@ void hydro_routing( struct command_line_object * command_line,
             patch->sat_deficit     = 0.0 ;
             patch->sat_deficit_z   = 0.0 ;
             }
-        else if ( satz >= rootz[i] )       /*  root-zone water table  */
+        else if ( satz <= rootz[i] )       /*  root-zone water table  */
             {
-            patch->rz_storage      = unsH2O[i] + rtcap[i] ;
+            dCAP = compute_layer_field_capacity( verbose, 
+                                                 tpcurv[i], 
+                                                 psiair[i], 
+                                                 pordex[i], 
+                                                 p3parm[i], 
+                                                 p4parm[i], 
+                                                  por_0[i],
+                                                  por_d[i], satz, satz, 0.0 ) ;
+            patch->rz_storage      = unsH2O[i] + dCAP ;
             patch->unsat_storage   = 0.0 ;
             patch->sat_deficit     = satdef[i] ;
             patch->sat_deficit_z   = patch->z - waterz[i] ; // TODO: Should this just be satz?
@@ -2060,8 +2068,8 @@ void hydro_routing( struct command_line_object * command_line,
                                                   por_d[i], satz, satz, 0.0 ) ;
             pp = rtcap[i] / dCAP ;
             qq = 1.0 - pp ;
-            patch->rz_storage      = pp * unsH2O[i] ;
-            patch->unsat_storage   = qq * unsH2O[i] ;
+            patch->rz_storage      = pp * ( unsH2O[i] + dCAP ) ;
+            patch->unsat_storage   = qq * ( unsH2O[i] + dCAP ) ;
             if (satdef[i] < ZERO) {
             	patch->sat_deficit = 0.0;
             } else {
