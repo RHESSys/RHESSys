@@ -183,13 +183,6 @@ extern double compute_unsat_zone_drainage(int     verbose_flag,
 									      double  Ksat_0,
 									      double  potential_drainage ) ;
 
-extern double	compute_delta_water( int	verbose_flag,
-							         double	n_0,
-							         double	p,
-							         double	soil_depth,
-							         double	z_initial,
-							         double	z_final ) ;
-
 /*  MAXNEIGHBOR should be a multiple of 4, for memory-alignment reasons */
 /*  EPSILON     used for roundoff-tolerance criterion (sec)  = 10 usec  */
 
@@ -1310,7 +1303,7 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 static void sub_vertical( double  tstep )        /*  process time-step  */
     {
     unsigned                i, j ;
-    double                  delz, facN, facC, facD, facH2O, dH2O, dNO3, dNH4, dDOC, dDON, fldcap, drain, kfac ;
+    double                  delz, facN, facC, facD, facH2O, dH2O, dNO3, dNH4, dDOC, dDON, fldcap, drain, kfac, unscap ;
 	struct patch_object *   patch ;
 
     kfac = 0.5 * tstep / 3600.0 ;
@@ -1318,7 +1311,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
 #pragma omp parallel for                                            \
         default( none )                                             \
         private( i, delz, dH2O, dNO3, dNH4, dDOC, dDON,             \
-                 facN, facC, facD, facH2O, fldcap, drain )          \
+                 facN, facC, facD, facH2O, fldcap, drain, unscap )  \
          shared( num_patches, capH2O, plist, satdef, unsH2O,        \
                  verbose, por_0, por_d, Ndecay, Ddecay, dzsoil,     \
                  patchz, waterz, tpcurv, psiair, pordex,            \
@@ -1343,10 +1336,14 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                                p4parm[i], 
                                                 por_0[i], 
                                                 por_d[i], delz, delz, 0.0 ) ;
+        unscap =  compute_delta_water( verbose, 
+                                       por_0[i], 
+                                       por_d[i],
+                                       zsoil[i], patchz[i]-waterz[i], 0.0 ) ;       /*  full-column sat water capacity  */
         drain  = compute_unsat_zone_drainage(  verbose, 
                                                tpcurv[i], 
                                                pordex[i], 
-                                               unsH2O[i], 
+                                               unsH2O[i] / unscap, 
                                                mz_v[i], 
                                                   delz, 
                                           kfac*ksat_0[i], 
@@ -1684,7 +1681,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
         maxH2O[i] = compute_delta_water( verbose, 
                                          por_0[i], 
                                          por_d[i],
-                                         0.0, zsoil[i], 0.0 ) ;       /*  full-column sat water capacity  */
+                                         zsoil[i], zsoil[i], 0.0 ) ;       /*  full-column sat water capacity  */
 
         sfccnti[i] = 0 ;
         subcnto[i] = patch->innundation_list->num_neighbours ;
