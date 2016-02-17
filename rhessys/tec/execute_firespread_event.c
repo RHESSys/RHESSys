@@ -58,6 +58,7 @@ void execute_firespread_event(
 	struct patch_object *patch;
 	struct canopy_strata_object *canopy_strata;
 	struct mortality_struct mort;
+	struct fire_litter_soil_loss_struct fire_loss;
 	int i,j,p, c, layer,strata; 
 	int thin_type;
 	double loss;
@@ -240,17 +241,58 @@ void execute_firespread_event(
 			loss = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 //			printf("in update mortality2\n");
 
-			mort.mort_cpool = loss;
-			mort.mort_leafc = loss;
-			mort.mort_frootc = loss;
-			mort.mort_deadstemc = loss;
-			mort.mort_livestemc = loss;
-			mort.mort_deadcrootc = loss;
-			mort.mort_livecrootc = loss;
+
+			fire_loss.loss_litr1c = loss
+			fire_loss.loss_litr2c = loss
+			fire_loss.loss_litr3c = loss
+			fire_loss.loss_litr4c = loss
+			fire_loss.loss_soil1c = loss
+			fire_loss.loss_soil2c = loss
+			fire_loss.loss_soil3c = loss
+			fire_loss.loss_soil4c = loss
+			fire_loss.loss_cwdc = loss
+
+
+			update_litter_soil_mortality(patch[0].litter,
+				&(patch[0].litter_cs),
+				&(patch[0].litter_ns),
+				&(patch[0].soil_cs),
+				&(patch[0].soil_ns),
+				&(patch[0].fire_loss),
+				&(canopy_strata[0].cs),
+				&(patch[0].cdf),
+				&(canopy_strata[0].ns),
+				&(patch[0].ndf));
+
+
 
 			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 					canopy_strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+
+					// Determine structure of overstory
+					// Pull in biomass/ height
+
+					if (c==0) /* c=0 is the overstory canopy */
+
+						mort.mort_cpool = loss;
+						mort.mort_leafc = loss;
+						mort.mort_frootc = loss;
+						mort.mort_deadstemc = loss;
+						mort.mort_livestemc = loss;
+						mort.mort_deadcrootc = loss;
+						mort.mort_livecrootc = loss;
+
+					if (c > 0) /* we assume everything else is an understory */
+
+						mort.mort_cpool = loss;
+						mort.mort_leafc = loss;
+						mort.mort_frootc = loss;
+						mort.mort_deadstemc = loss;
+						mort.mort_livestemc = loss;
+						mort.mort_deadcrootc = loss;
+						mort.mort_livecrootc = loss;
+
 					update_mortality(canopy_strata[0].defaults[0][0].epc,
 						 &(canopy_strata[0].cs),
 						 &(canopy_strata[0].cdf),

@@ -1214,6 +1214,17 @@ struct  cdayflux_patch_struct
     double m_gresp_store_to_litr1c;      /* (kgC/m2/d) */
     double m_gresp_transfer_to_litr1c;     /* (kgC/m2/d) */
 
+    /* fire fluxes */
+    double m_litr1c_to_atmos;       /* (kgC/m2) labile to atmosphere */
+    double m_litr2c_to_atmos;       /* (kgC/m2) unshielded cellulose to atmosphere */
+    double m_litr3c_to_atmos;       /* (kgC/m2) shielded cellulose to atmosphere */
+    double m_litr4c_to_atmos;       /* (kgC/m2) lignin to atmosphere */
+    double m_soil1c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+    double m_soil2c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+    double m_soil3c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+    double m_soil4c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+    double m_cwdc_to_atmos;       /* (kgC/m2) course woody debris to atmosphere */
+
 
         };
 
@@ -1437,6 +1448,24 @@ struct patch_fire_water_object
         double et;                      /* mm */
 
 };
+
+
+/*----------------------------------------------------------*/
+/*      Define the fire litter soil loss structure.        */
+/*----------------------------------------------------------*/
+struct fire_litter_soil_loss_struct
+{
+        double loss_litr1c;
+        double loss_litr2c;
+        double loss_litr3c;
+        double loss_litr4c;
+	double loss_soil1c;
+	double loss_soil2c;
+	double loss_soil3c;
+	double loss_soil4c;
+	double loss_cwdc;
+};
+
 
 /*----------------------------------------------------------*/
 /*      Define the spinup structure.                        */
@@ -1720,6 +1749,7 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
+	struct fire_litter_soil_loss_struct fire_loss;
         };
 
 /*----------------------------------------------------------*/
