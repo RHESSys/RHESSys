@@ -612,7 +612,7 @@ void	canopy_stratum_daily_F(
 			stratum);
 		
 	// Why were we zeroing out Lstar after it was set in compute_Lstar_canopy?
-	//stratum[0].Lstar = 0.0;
+	// stratum[0].Lstar = 0.0;
 
 	if ( stratum[0].Kstar_direct < -1 ) {
 			printf("CANOPY_START ID=%d: pai=%lf snowstor=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n", 
@@ -1120,12 +1120,13 @@ void	canopy_stratum_daily_F(
 	//	else
 	//		rnet_evap = 0.0;
 
-	double rnet_evap_night = 1000 * (stratum->Lstar_night + surface_heat_flux_night)
-												/ nightlength;
-	double rnet_evap_day = 1000 * (stratum->Kstar_direct + stratum->Kstar_diffuse
-			+ stratum->Lstar_day + surface_heat_flux_day)
-												/ daylength;
+	double rnet_evap_night = 1000 * (stratum->Lstar_night + surface_heat_flux_night) / nightlength;
+	double rnet_evap_day = 1000 * (stratum->Kstar_direct + stratum->Kstar_diffuse + stratum->Lstar_day + surface_heat_flux_day) / daylength;
+
+	if (rnet_evap_night < ZERO) rnet_evap_night = 0.0;
+	if (rnet_evap_day < ZERO) rnet_evap_night = 0.0;
 	rnet_evap = rnet_evap_night + rnet_evap_day;
+
 
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n          BEFORE EVAP: rnet_evap=%lf Kstar=%lf Lstar=%lf surfheat=%lf",
@@ -1422,7 +1423,7 @@ void	canopy_stratum_daily_F(
 		rainy_evaporation = 0;
 		dry_evaporation = stratum[0].evaporation ;
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Compute Canopy transpiration.	m/day			*/
 	/*								*/
@@ -1466,6 +1467,10 @@ void	canopy_stratum_daily_F(
 			potential_transpiration = 0.0;
 		}
 	}
+
+
+	transpiration = max(transpiration, 0.0);
+	potential_transpiration = max(potential_transpiration, 0.0);
 
 	stratum[0].PET = potential_transpiration;
 
