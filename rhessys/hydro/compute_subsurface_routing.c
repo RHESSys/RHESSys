@@ -141,6 +141,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].Qout_total = 0.0;
 		patch[0].Qin = 0.0;
 		patch[0].Qout = 0.0;
+		
 		patch[0].surface_Qin = 0.0;
 		patch[0].surface_Qout = 0.0;
 		
@@ -293,10 +294,12 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].Qin_total += patch[0].Qin + patch[0].surface_Qin;
 			patch[0].Qout_total += patch[0].Qout + patch[0].surface_Qout;
 
-			patch[0].surface_Qin = 0.0;
-			patch[0].surface_Qout = 0.0;
-			patch[0].Qin = 0.0;
-			patch[0].Qout = 0.0;
+// Dont set these fluxes to zero yet, want them to be output!  Set to zero before calling the "update_drainage" routines. - OK for daily, hourly only zeroed out at hour 1...
+//			patch[0].surface_Qin = 0.0;
+//			patch[0].surface_Qout = 0.0;
+//			patch[0].Qin = 0.0;
+//			patch[0].Qout = 0.0;
+
 			if (grow_flag > 0) {
 				patch[0].soil_cs.DOC_Qin_total += patch[0].soil_cs.DOC_Qin;
 				patch[0].soil_cs.DOC_Qout_total += patch[0].soil_cs.DOC_Qout;
@@ -319,14 +322,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].soil_ns.DON_Qin = 0.0;
 				patch[0].soil_cs.DOC_Qout = 0.0;
 				patch[0].soil_cs.DOC_Qin = 0.0;
-				patch[0].surface_NH4_Qout = 0.0;
-				patch[0].surface_NH4_Qin = 0.0;
-				patch[0].surface_NO3_Qout = 0.0;
-				patch[0].surface_NO3_Qin = 0.0;
-				patch[0].surface_DON_Qout = 0.0;
-				patch[0].surface_DON_Qin = 0.0;
-				patch[0].surface_DOC_Qout = 0.0;
-				patch[0].surface_DOC_Qin = 0.0;
+				
+				// No need to zero these fluxes out - code will zero them out if they are zero
+				// This allows these to be output 
+				//patch[0].surface_NH4_Qout = 0.0;
+				//patch[0].surface_NH4_Qin = 0.0;
+				//patch[0].surface_NO3_Qout = 0.0;
+				//patch[0].surface_NO3_Qin = 0.0;
+				//patch[0].surface_DON_Qout = 0.0;
+				//patch[0].surface_DON_Qin = 0.0;
+				//patch[0].surface_DOC_Qout = 0.0;
+				//patch[0].surface_DOC_Qin = 0.0;
 
 			}
 			/*--------------------------------------------------------------*/

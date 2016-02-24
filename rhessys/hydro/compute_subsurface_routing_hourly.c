@@ -124,14 +124,6 @@ void compute_subsurface_routing_hourly(
 		//       the set of patches in the subsurface flow table
 		for (i = 0; i < basin->route_list->num_patches; i++) {
 			patch = basin->route_list->list[i];
-			/*//the following code is for testing only
-			if (i==2000){
-			printf("sat_deficit = %f, soil_dep = %f, n_0 = %f, p = %f\n",
-				patch[0].sat_deficit,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay);
-			}*/
 			patch[0].streamflow = 0.0;
 			patch[0].return_flow = 0.0;
 			patch[0].base_flow = 0.0;
@@ -147,6 +139,7 @@ void compute_subsurface_routing_hourly(
 			patch[0].Qout_total = 0.0;
 			patch[0].Qin = 0.0;
 			patch[0].Qout = 0.0;
+
 			patch[0].surface_Qin = 0.0;
 			patch[0].surface_Qout = 0.0;
 
@@ -201,6 +194,8 @@ void compute_subsurface_routing_hourly(
 			}
 		}
 	}
+	
+
 	/*--------------------------------------------------------------*/
 	/*	calculate Qout for each patch and add appropriate	*/
 	/*	proportion of subsurface outflow to each neighbour	*/
@@ -213,6 +208,17 @@ void compute_subsurface_routing_hourly(
 			patch[0].hourly[0].streamflow_NO3 = 0;
 			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
 			patch[0].hourly[0].streamflow_NO3_from_surface = 0;
+			
+			// ZERO THESE OUT HERE INSTEAD OF AFTER THE "UPDATE_DRAINAGE"
+			patch[0].Qin = 0.0;
+			patch[0].Qout = 0.0;
+			patch[0].surface_Qin = 0.0;
+			patch[0].surface_Qout = 0.0;
+			
+			patch[0].surface_DOC_Qin = 0.0;
+			patch[0].surface_DON_Qin = 0.0;
+			patch[0].surface_NO3_Qin = 0.0;
+			patch[0].surface_NH4_Qin = 0.0;
 		}
 
 		for (i = 0; i < basin->route_list->num_patches; i++) {
@@ -262,7 +268,7 @@ void compute_subsurface_routing_hourly(
 			/*-------------------------------------------------------------------------*/
 			/*	Recompute current actual depth to water table				*/
 			/*-------------------------------------------------------------------------*/
-			patch[0].sat_deficit += (patch[0].Qout - patch[0].Qin); // this part need to put into some where else
+			patch[0].sat_deficit += (patch[0].Qout - patch[0].Qin);
 
 			patch[0].sat_deficit_z = compute_z_final(verbose_flag,
 					patch[0].soil_defaults[0][0].porosity_0,
@@ -313,10 +319,11 @@ void compute_subsurface_routing_hourly(
 			patch[0].Qin_total += patch[0].Qin + patch[0].surface_Qin;
 			patch[0].Qout_total += patch[0].Qout + patch[0].surface_Qout;
 
-			patch[0].surface_Qin = 0.0;
-			patch[0].surface_Qout = 0.0;
-			patch[0].Qin = 0.0;
-			patch[0].Qout = 0.0;
+// Dont set these fluxes to zero yet, want them to be output!  Instead, zero them out before callING THE "UPDATE_DRAINAGE" routines.
+//			patch[0].surface_Qin = 0.0;
+//			patch[0].surface_Qout = 0.0;
+//			patch[0].Qin = 0.0;
+//			patch[0].Qout = 0.0;
 			if (grow_flag > 0) {
 				patch[0].soil_cs.DOC_Qin_total += patch[0].soil_cs.DOC_Qin;
 				patch[0].soil_cs.DOC_Qout_total += patch[0].soil_cs.DOC_Qout;
@@ -339,14 +346,17 @@ void compute_subsurface_routing_hourly(
 				patch[0].soil_ns.DON_Qin = 0.0;
 				patch[0].soil_cs.DOC_Qout = 0.0;
 				patch[0].soil_cs.DOC_Qin = 0.0;
-				patch[0].surface_NH4_Qout = 0.0;
-				patch[0].surface_NH4_Qin = 0.0;
-				patch[0].surface_NO3_Qout = 0.0;
-				patch[0].surface_NO3_Qin = 0.0;
-				patch[0].surface_DON_Qout = 0.0;
-				patch[0].surface_DON_Qin = 0.0;
-				patch[0].surface_DOC_Qout = 0.0;
-				patch[0].surface_DOC_Qin = 0.0;
+				
+				// No need to zero these fluxes out - code will zero them out if they are zero
+				// This allows these to be output 
+				//patch[0].surface_NH4_Qout = 0.0;
+				//patch[0].surface_NH4_Qin = 0.0;
+				//patch[0].surface_NO3_Qout = 0.0;
+				//patch[0].surface_NO3_Qin = 0.0;
+				//patch[0].surface_DON_Qout = 0.0;
+				//patch[0].surface_DON_Qin = 0.0;
+				//patch[0].surface_DOC_Qout = 0.0;
+				//patch[0].surface_DOC_Qin = 0.0;
 
 			}
 			/*--------------------------------------------------------------*/

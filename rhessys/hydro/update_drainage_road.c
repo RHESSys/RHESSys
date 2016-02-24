@@ -556,6 +556,7 @@ void  update_drainage_road(
 		if (command_line[0].grow_flag > 0) {
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
 			patch[0].surface_NO3  -= Nout;
+			patch[0].surface_NO3_Qout = Nout;
 			patch[0].next_stream[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			patch[0].next_stream[0].streamNO3_from_surface += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			patch[0].next_stream[0].hourly[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
@@ -563,19 +564,30 @@ void  update_drainage_road(
 
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
 			patch[0].surface_NH4  -= Nout;
+			patch[0].surface_NH4_Qout = Nout;
+			
 			patch[0].next_stream[0].streamflow_NH4 += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
 			patch[0].surface_DON  -= Nout;
+			patch[0].surface_DON_Qout = Nout;
+			
 			patch[0].next_stream[0].streamflow_DON += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
 			patch[0].surface_DOC  -= Nout;
+			patch[0].surface_DOC_Qout = Nout;
 			patch[0].next_stream[0].streamflow_DOC += (Nout * patch[0].area / patch[0].next_stream[0].area);
 			}
 		patch[0].next_stream[0].streamflow += (Qout * patch[0].area / patch[0].next_stream[0].area);
 		patch[0].next_stream[0].hourly_sur2stream_flow += Qout *  patch[0].area / patch[0].next_stream[0].area;
 		patch[0].detention_store -= Qout;
+		} else {
+			if (command_line[0].grow_flag > 0) {
+				patch[0].surface_DOC_Qout = 0;
+				patch[0].surface_DON_Qout = 0;
+				patch[0].surface_NO3_Qout = 0;
+				patch[0].surface_NH4_Qout = 0;
+			}
 		}
-		
 
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/

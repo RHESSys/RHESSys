@@ -473,10 +473,6 @@ void  update_drainage_scm(
          preday_scm_inflow  = patch[0].surface_Qin; // after the first step, preday inflow is just the inflow
          scm_outflow       += scm_outflow_tmp;
  			
-   	// PRINT OUT MINUTELY
-   	//if(patch[0].surface_Qin > 0) {
-	//fprintf(stderr,"\n Month|%d|Day|%d|Hour|%d|Min|%d|IN|%f|SS_IN|%f|OUT|%f|SS_OUT|%f|pre-day V|%f|V|%f", current_date.month, current_date.day,current_date.hour,mins,patch[0].surface_Qin/step,patch[0].Qin/step,scm_outflow_tmp,patch[0].Qout/step,preday_scm_volume+ scm_outflow_tmp - patch[0].surface_Qin/step,scm_volume);
-	// }
      }
 	// Make sure Qout is not greater than available water (detention store) or less than the amount required to bring the scm back to its parameterized maximum depth
      Qout = max( min(scm_outflow,patch[0].detention_store), (-patch[0].scm_stage_storage[patch[0].scm_defaults[0][0].num_discrete][2] + patch[0].detention_store) );
@@ -490,23 +486,30 @@ void  update_drainage_scm(
 		algae_leached_to_surface = 0; // set to zero because its additive 
 		algaeN_leached_to_surface = 0; // set to zero because its additive 
 		algaeC_leached_to_surface = 0; // set to zero because its additive 
+
 		if(patch[0].detention_store > 0 && Qout > 0){
 		
 		
 		  Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
           DOC_leached_to_surface = Nout * patch[0].area;
           patch[0].surface_DOC -= Nout;
+          patch[0].surface_DOC_Qout = Nout;
+          
           Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
           DON_leached_to_surface = Nout * patch[0].area;
           patch[0].surface_DON -= Nout;
+          patch[0].surface_DON_Qout = Nout;
+          
           Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
           NO3_leached_to_surface = Nout * patch[0].area;
           patch[0].surface_NO3 -= Nout;
+          patch[0].surface_NO3_Qout = Nout;
+          
           Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
           NH4_leached_to_surface = Nout * patch[0].area;
           patch[0].surface_NH4 -= Nout;
-		
-		
+          patch[0].surface_NH4_Qout = Nout;
+			
 			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 				for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
 					if( patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->defaults[0][0].epc.veg_type == ALGAE ){
@@ -517,14 +520,19 @@ void  update_drainage_scm(
 						algaeN_leached_to_surface += Nout * patch[0].area; 		// do += in case there are more than one ALGAE layer... unlikely
 						algaeC_leached_to_surface += Cout * patch[0].area; 		// do += in case there are more than one ALGAE layer... unlikely
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla -= Aout;
-						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Aout += Aout;
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Aout = Aout;
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.totalN -= Nout;
-						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Nout += Nout;
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Nout = Nout;
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.totalC -= Cout;
-						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Cout += Cout;
+						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Cout = Cout;
 					}       		
 				}
 			}
+		} else {
+		    patch[0].surface_DOC_Qout = 0;
+		    patch[0].surface_DON_Qout = 0;
+		    patch[0].surface_NO3_Qout = 0;
+		    patch[0].surface_NH4_Qout = 0;
 		}
     }
 
@@ -649,13 +657,19 @@ void  update_drainage_scm(
 		if (command_line[0].grow_flag > 0) {
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NO3_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NO3 += Nin;
+			neigh[0].surface_NO3_Qin += Nin;
+			
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NH4_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NH4 += Nin;
+			neigh[0].surface_NH4_Qin += Nin;
+						
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DON_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_DON += Nin;
+			neigh[0].surface_DON_Qin += Nin;
+			
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DOC_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_DOC += Nin;
-		
+			neigh[0].surface_DOC_Qin += Nin;
 		
 			/*--------------------------------------------------------------*/
 			/* LOOP THROUGH NEIGHBOR LAYERS LOOKING FOR ALGAE 				*/
@@ -689,6 +703,7 @@ void  update_drainage_scm(
 										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla += Nin;
 										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Ain += Nin;
 										neigh[0].surface_DOC += ((uphill_CtoN-neigh_CtoN)/uphill_CtoN*algaeC_leached_to_surface) / neigh[0].area;
+										neigh[0].surface_DOC_Qin += ((uphill_CtoN-neigh_CtoN)/uphill_CtoN*algaeC_leached_to_surface) / neigh[0].area;
 										// break loop so it only adds to one layer
 										break;
 									}
@@ -700,6 +715,7 @@ void  update_drainage_scm(
 										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.chla += Nin;
 										neigh[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->algae.Ain += Nin;
 										neigh[0].surface_DON += ((-uphill_CtoN+neigh_CtoN)/uphill_CtoN*algaeN_leached_to_surface) / neigh[0].area;
+										neigh[0].surface_DON_Qin += ((-uphill_CtoN+neigh_CtoN)/uphill_CtoN*algaeN_leached_to_surface) / neigh[0].area;									
 										// break loop so it only adds to one layer
 										break;
 									}
@@ -712,7 +728,10 @@ void  update_drainage_scm(
 						// If neighbor is a stream, add algae to DOC/DON
 						if(neigh[0].drainage_type == STREAM){
 							neigh[0].surface_DON += (patch[0].surface_innundation_list[d].neighbours[j].gamma * algaeN_leached_to_surface) / neigh[0].area;
+							neigh[0].surface_DON_Qin += (patch[0].surface_innundation_list[d].neighbours[j].gamma * algaeN_leached_to_surface) / neigh[0].area;
+
 							neigh[0].surface_DOC += (patch[0].surface_innundation_list[d].neighbours[j].gamma * algaeC_leached_to_surface) / neigh[0].area;
+							neigh[0].surface_DOC_Qin += (patch[0].surface_innundation_list[d].neighbours[j].gamma * algaeC_leached_to_surface) / neigh[0].area;
 						} 
 						// Add to labile litter stores if it is a land or road
 						else {
@@ -918,7 +937,6 @@ void  update_drainage_scm(
 	}
 
 	}
-     
      /* end if redistribution flag */
 	return;
 

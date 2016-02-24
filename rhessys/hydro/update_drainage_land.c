@@ -156,7 +156,7 @@ void  update_drainage_land(
 	NH4_leached_to_surface = 0.0;
 	DOC_leached_to_surface = 0.0;
 	DON_leached_to_surface = 0.0;
-
+	
 	/*--------------------------------------------------------------*/
 	/*	m and K are multiplied by sensitivity analysis variables */
 	/*--------------------------------------------------------------*/
@@ -399,21 +399,37 @@ void  update_drainage_land(
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
 			DOC_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_DOC -= Nout;
+			patch[0].surface_DOC_Qout = Nout;
+			
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
 			DON_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_DON -= Nout;
+			patch[0].surface_DON_Qout = Nout;
+			
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
 			NO3_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_NO3 -= Nout;
+			patch[0].surface_NO3_Qout = Nout;
+			
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
 			NH4_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_NH4 -= Nout;
+			patch[0].surface_NH4_Qout = Nout;
 			}
 		route_to_surface = (Qout *  patch[0].area);
 		patch[0].detention_store -= Qout;
 		patch[0].surface_Qout += Qout;
-
+		/// 	WHY IS THIS +=?? DOES IT ASSUME THAT THE SURFACE_QOUT HAS BEEN ZEROED BECASUE IT IS ZEROED AFTER UPDATE_DRAINAGE IS CALLED - THAT IT STUPID BECASUE YOU CAN'T OUTPUT IT
+		// THIS IS ZEROED OUT IN THIS ROUTINE INSTEAD
+		} else {
+			if (command_line[0].grow_flag > 0) {
+				patch[0].surface_DOC_Qout = 0;
+				patch[0].surface_DON_Qout = 0;
+				patch[0].surface_NO3_Qout = 0;
+				patch[0].surface_NH4_Qout = 0;
+			}
 		}
+		
 	if (NO3_leached_to_surface < 0.0)
 		printf("WARNING %d %lf",patch[0].ID, NO3_leached_to_surface);
 
@@ -476,12 +492,20 @@ void  update_drainage_land(
 		if (command_line[0].grow_flag > 0) {
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NO3_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NO3 += Nin;
+			neigh[0].surface_NO3_Qin += Nin;			
+			
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NH4_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NH4 += Nin;
+			neigh[0].surface_NH4_Qin += Nin;
+			
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DON_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_DON += Nin;
+			neigh[0].surface_DON_Qin += Nin;			
+			
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DOC_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_DOC += Nin;
+			neigh[0].surface_DON_Qin += Nin;
+			
 			}
 		
 		/*--------------------------------------------------------------*/

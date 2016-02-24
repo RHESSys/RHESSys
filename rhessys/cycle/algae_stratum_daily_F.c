@@ -258,8 +258,6 @@ void	algae_stratum_daily_F(
 	 /*--------------------------------------------------------------*/
 	 /*	6 - Add settled algae to labile litter pool					 */
 	 /*--------------------------------------------------------------*/
-	 stratum[0].algae.chla_settle = settle;
-	 stratum[0].algae.chla_settle_cum += settle;
 	 stratum[0].algae.Nsettle = settle / stratum[0].defaults[0][0].algae.chla_to_N;
 	 stratum[0].algae.Csettle = settle / stratum[0].defaults[0][0].algae.chla_to_C;
 	 	 
