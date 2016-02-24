@@ -127,7 +127,7 @@ void	execute_hourly_growth_output_event(
 								world[0].basins[b][0].ID,
 								world[0].basins[b]->hillslopes[h],
 								date,
-								outfile->hillslope->daily);
+								outfile->hillslope->hourly);
 					}
 					/*-------------------------------------------------------------*/
 					/*	check to see if there are any lower print options			*/
@@ -158,7 +158,7 @@ void	execute_hourly_growth_output_event(
 											world[0].basins[b][0].hillslopes[h][0].ID,
 											world[0].basins[b]->hillslopes[h]->zones[z],
 											date,
-											outfile->zone->daily);
+											outfile->zone->hourly);
 							}
 							/*-----------------------------------------------------*/
 							/*	check to see if there are any lower print options	  */
@@ -192,7 +192,7 @@ void	execute_hourly_growth_output_event(
 															world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
 															date,
 															command_line,
-															outfile->patch->daily);
+															outfile->patch->hourly);
 													}
 									}
 									/*--------------------------------------------*/
@@ -228,7 +228,7 @@ void	execute_hourly_growth_output_event(
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date,
 																command_line,
-																outfile->canopy_stratum->daily);
+																outfile->canopy_stratum->hourly);
 										} /* end stratum (c) for loop */
 									} /* end if options */
 								} /* end patch (p) for loop */
