@@ -187,6 +187,42 @@ void add_csv_growth_headers(struct world_output_file_object *world_output_files,
 				"N-uptake",
 				"root_depth",
 				"area");
+				
+			/*--------------------------------------------------------------*/
+			/*	Hourly - no SCM Mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].hourly;
+			check = fprintf(outfile,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"lai",
+				"plantc",
+				"net_psn",
+				"plant_resp",
+				"soil_resp",
+				"litr1c",
+				"litr2c",
+				"litr3c",
+				"litr4c",
+				"lit.rain_cap",
+				"soil1c",
+				"soil2c",
+				"soil3c",
+				"soil4c",
+				"denitrif",
+				"netleach",
+				"soilNO3",
+				"streamNO3",
+				"surfaceNO3",
+				"height",
+				"N-uptake",
+				"root_depth",
+				"area");
 		} else {	
 				
 			/*--------------------------------------------------------------*/
@@ -234,8 +270,56 @@ void add_csv_growth_headers(struct world_output_file_object *world_output_files,
 				"surface_NH4_Qout",  // Add for SCM
 				"surface_NO3_Qin",  // Add for SCM
 				"surface_NO3_Qout",  // Add for SCM
-				"surface_DON",  // Add for SCM
-				"surface_DOC");  // Add for SCM
+				"surface_DOC",  // Add for SCM
+				"surface_DON");  // Add for SCM
+				
+			/*--------------------------------------------------------------*/
+			/*	Houlry - SCM Mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].patch[0].hourly;
+			check = fprintf(outfile,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"lai",
+				"plantc",
+				"net_psn",
+				"plant_resp",
+				"soil_resp",
+				"litr1c",
+				"litr2c",
+				"litr3c",
+				"litr4c",
+				"lit.rain_cap",
+				"soil1c",
+				"soil2c",
+				"soil3c",
+				"soil4c",
+				"denitrif",
+				"netleach",
+				"soilNO3",
+				"streamNO3",
+				"surfaceNO3",
+				"height",
+				"N-uptake",
+				"root_depth",
+				"area",
+				"surface_DOC_Qin",  // Add for SCM
+				"surface_DOC_Qout",  // Add for SCM
+				"surface_DOC_settled",  // Add for SCM
+				"surface_DON_Qin",  // Add for SCM
+				"surface_DON_Qout",  // Add for SCM
+				"surface_DON_settled",  // Add for SCM
+				"surface_NH4_Qin",  // Add for SCM
+				"surface_NH4_Qout",  // Add for SCM
+				"surface_NO3_Qin",  // Add for SCM
+				"surface_NO3_Qout",  // Add for SCM
+				"surface_DOC",  // Add for SCM
+				"surface_DON");  // Add for SCM
 			}
 		
 			
@@ -269,6 +353,34 @@ void add_csv_growth_headers(struct world_output_file_object *world_output_files,
 			/*	Daily - NO SCM 							*/
 			/*--------------------------------------------------------------*/
 			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"proj_lai",
+				"leafc",
+				"dead_leafc",
+				"frootc",
+				"live_stemc",
+				"leafc_store",
+				"dead_stemc",
+				"live_crootc",
+				"dead_crootc",
+				"cwdc",
+				"mresp",
+				"gresp",
+				"psn_to_cpool","age","root_depth");
+				
+			/*--------------------------------------------------------------*/
+			/*	Hourly - NO SCM 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].hourly;
 			fprintf(outfile,
 				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
 				"day",
@@ -332,6 +444,45 @@ void add_csv_growth_headers(struct world_output_file_object *world_output_files,
 			"Crelease",  // Add for SCM 
 			"Crespire",  // Add for SCM 
 			"Csettle");  // Add for SCM );
+			
+		/*--------------------------------------------------------------*/
+		/*	Houlry - SCM Mode 							*/
+		/*--------------------------------------------------------------*/
+		outfile = world_output_files[0].canopy_stratum[0].hourly;
+		fprintf(outfile,
+			"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
+			"day",
+			"month",
+			"year",
+			"basinID",
+			"hillID",
+			"zoneID",
+			"patchID",
+			"stratumID",
+			"proj_lai",
+			"leafc",
+			"dead_leafc",
+			"frootc",
+			"live_stemc",
+			"leafc_store",
+			"dead_stemc",
+			"live_crootc",
+			"dead_crootc",
+			"cwdc",
+			"mresp",
+			"gresp",
+			"psn_to_cpool","age","root_depth",
+			"Aout",  // Add for SCM 
+			"Ain",  // Add for SCM 
+			"chla_settle",  // Add for SCM 
+			"Nuptake_algae",  // Add for SCM 
+			"Nrelease",  // Add for SCM 
+			"Nrespire",  // Add for SCM 
+			"Nsettle",  // Add for SCM 
+			"Cfix",  // Add for SCM 
+			"Crelease",  // Add for SCM 
+			"Crespire",  // Add for SCM 
+			"Csettle");  // Add for SCM )
 		}
 	
 	}

@@ -136,8 +136,13 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 				stratum[0].phen.lfseasonday,
 				stratum[0].phen.gsi,
 				stratum[0].ns.nlimit,
-				stratum[0].cdf.fleaf, stratum[0].cdf.froot, stratum[0].cdf.fwood, stratum[0].ndf.actual_N_uptake*1000.0,
-				stratum[0].ndf.sminn_to_npool*1000.0, stratum[0].ndf.retransn_to_npool*1000.0, stratum[0].cs.mortality_fract,
+				stratum[0].cdf.fleaf, 
+				stratum[0].cdf.froot, 
+				stratum[0].cdf.fwood,
+				stratum[0].ndf.actual_N_uptake*1000.0,
+				stratum[0].ndf.sminn_to_npool*1000.0,
+				stratum[0].ndf.retransn_to_npool*1000.0,
+				stratum[0].cs.mortality_fract,
 				stratum[0].algae.Aout*1000,  // SCM OUTPUT ... *1000 to convert kg to g
 				stratum[0].algae.Ain*1000,  // SCM OUTPUT ... *1000 to convert kg to g
 				stratum[0].algae.chla_settle*1000,  // SCM OUTPUT ... *1000 to convert kg to g

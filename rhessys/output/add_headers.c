@@ -663,6 +663,40 @@ void add_headers(struct world_output_file_object *world_output_files,
 				"Kstar_dir","Kstar_dif",
 				"Lstar","surf_heat",
 				"height","covfrac","vegID");
+
+			/*--------------------------------------------------------------*/
+			/*	Houlry - Not SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].hourly;
+			fprintf(outfile,
+				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"evap",
+				"APAR_direct",
+				"APAR_diffuse",
+				"sublim",
+				"trans",
+				"ga",
+				"gsurf",
+				"gs",
+				"psi",
+				"leaf_day_mr",
+				"psn_to_cpool",
+				"rain_stored",
+				"snow_stored",
+				"rootzone.S",
+				"m_APAR","m_tavg","m_LWP","m_CO2","m_tmin","m_vpd","dC13",
+				"Kstar_dir","Kstar_dif",
+				"Lstar","surf_heat",
+				"height","covfrac","vegID");
 			
 		} else {
 			
@@ -671,6 +705,44 @@ void add_headers(struct world_output_file_object *world_output_files,
 			/*--------------------------------------------------------------*/
 
 			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"evap",
+				"APAR_direct",
+				"APAR_diffuse",
+				"sublim",
+				"trans",
+				"ga",
+				"gsurf",
+				"gs",
+				"psi",
+				"leaf_day_mr",
+				"psn_to_cpool",
+				"rain_stored",
+				"snow_stored",
+				"rootzone.S",
+				"m_APAR","m_tavg","m_LWP","m_CO2","m_tmin","m_vpd","dC13",
+				"Kstar_dir","Kstar_dif",
+				"Lstar","surf_heat",
+				"height","covfrac","vegID",
+				"algae_chlA",
+				"algae_totalN",
+				"algae_totalC");
+				
+			/*--------------------------------------------------------------*/
+			/*	Houlry -  SCM mode 							*/
+			/*--------------------------------------------------------------*/
+
+			outfile = world_output_files[0].canopy_stratum[0].hourly;
 			fprintf(outfile,
 				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
 				"day",

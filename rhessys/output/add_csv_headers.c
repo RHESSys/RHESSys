@@ -459,12 +459,75 @@ void add_csv_headers(struct world_output_file_object *world_output_files,
 				"rain_stored",
 				"snow_stored",
 				"rootzone.S"); 
+				
+			/*--------------------------------------------------------------*/
+			/*	Hourly - Not SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].hourly;
+			fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"evap",
+				"APAR_direct",
+				"APAR_diffuse",
+				"sublim",
+				"trans",
+				"ga",
+				"gsurf",
+				"gs",
+				"psi",
+				"leaf_day_mr",
+				"psn_to_cpool",
+				"rain_stored",
+				"snow_stored",
+				"rootzone.S");
 		} else {
 		
 			/*--------------------------------------------------------------*/
 			/*	Daily -  SCM mode 							*/
 			/*--------------------------------------------------------------*/
 			outfile = world_output_files[0].canopy_stratum[0].daily;
+			fprintf(outfile,
+				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
+				"day",
+				"month",
+				"year",
+				"basinID",
+				"hillID",
+				"zoneID",
+				"patchID",
+				"stratumID",
+				"lai",
+				"evap",
+				"APAR_direct",
+				"APAR_diffuse",
+				"sublim",
+				"trans",
+				"ga",
+				"gsurf",
+				"gs",
+				"psi",
+				"leaf_day_mr",
+				"psn_to_cpool",
+				"rain_stored",
+				"snow_stored",
+				"rootzone.S",
+				"algae_chlA",
+				"algae_totalN",
+				"algae_totalC"); 
+
+			/*--------------------------------------------------------------*/
+			/*	Hourly -  SCM mode 							*/
+			/*--------------------------------------------------------------*/
+			outfile = world_output_files[0].canopy_stratum[0].hourly;
 			fprintf(outfile,
 				"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
 				"day",

@@ -186,8 +186,8 @@ void	output_csv_growth_patch(
 				patch[0].surface_NH4_Qout*1000,  // SCM OUTPUT VARIABLE
 				patch[0].surface_NO3_Qin*1000,  // SCM OUTPUT VARIABLE
 				patch[0].surface_NO3_Qout*1000,  // SCM OUTPUT VARIABLE
-				patch[0].surface_DON,  // SCM OUTPUT VARIABLE
-				patch[0].surface_DOC);  // SCM OUTPUT VARIABLE
+				patch[0].surface_DOC,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON);  // SCM OUTPUT VARIABLE
 				
 		/*------------------------------------------------------*/
 		/*	if patch is NOT an SCM, output SCM variables as 0	*/
@@ -235,8 +235,8 @@ void	output_csv_growth_patch(
 				patch[0].surface_NH4_Qout*1000,  // SCM OUTPUT VARIABLE
 				patch[0].surface_NO3_Qin*1000,  // SCM OUTPUT VARIABLE
 				patch[0].surface_NO3_Qout*1000,  // SCM OUTPUT VARIABLE
-				patch[0].surface_DON,  // SCM OUTPUT VARIABLE
-				patch[0].surface_DOC);  // SCM OUTPUT VARIABLE
+				patch[0].surface_DOC,  // SCM OUTPUT VARIABLE
+				patch[0].surface_DON);  // SCM OUTPUT VARIABLE
 			
 		}
 			
