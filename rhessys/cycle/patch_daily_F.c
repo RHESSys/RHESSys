@@ -548,7 +548,7 @@ void		patch_daily_F(
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
 	patch[0].NO3_throughfall = 0;
-
+	patch[0].NH4_throughfall = 0;
 
 	if (command_line[0].snow_scale_flag == 1) {
 		patch[0].snow_throughfall = zone[0].snow * patch[0].snow_redist_scale;
@@ -655,6 +655,7 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
+			patch[0].NH4_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NH4_throughfall;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			if (dum == 0) {
 				patch[0].ga_final = patch[0].layers[layer].null_cover * tmpga;
@@ -706,6 +707,7 @@ void		patch_daily_F(
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;
 			patch[0].snow_throughfall = patch[0].snow_throughfall_final;
 			patch[0].NO3_throughfall = patch[0].NO3_throughfall_final;
+			patch[0].NH4_throughfall = patch[0].NH4_throughfall_final;
 			patch[0].ga = patch[0].ga_final;
 			patch[0].gasnow = patch[0].gasnow_final;
 			patch[0].wind = patch[0].wind_final;
@@ -998,6 +1000,7 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
+			patch[0].NH4_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NH4_throughfall;
 			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
@@ -1021,6 +1024,7 @@ void		patch_daily_F(
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;
 			patch[0].snow_throughfall = patch[0].snow_throughfall_final;
 			patch[0].NO3_throughfall = patch[0].NO3_throughfall_final;
+			patch[0].NH4_throughfall = patch[0].NH4_throughfall_final;
 			patch[0].Tday_surface_offset = patch[0].Tday_surface_offset_final;
 			patch[0].ga = patch[0].ga_final;
 			patch[0].wind = patch[0].wind_final;
@@ -1045,6 +1049,7 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
+			patch[0].NH4_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NH4_throughfall;
 			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
@@ -1068,6 +1073,7 @@ void		patch_daily_F(
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;
 			patch[0].snow_throughfall = patch[0].snow_throughfall_final;
 			patch[0].NO3_throughfall = patch[0].NO3_throughfall_final;
+			patch[0].NH4_throughfall = patch[0].NH4_throughfall_final;
 			patch[0].Tday_surface_offset = patch[0].Tday_surface_offset_final;
 			patch[0].ga = patch[0].ga_final;
 			patch[0].wind = patch[0].wind_final;
@@ -1155,7 +1161,7 @@ void		patch_daily_F(
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
 	//patch[0].surface_NO3 += zone[0].ndep_NO3;
 	patch[0].surface_NO3 += patch[0].NO3_throughfall;
-	patch[0].surface_NH4 += zone[0].ndep_NH4;
+	patch[0].surface_NH4 += patch[0].NH4_throughfall;
 
 	/*--------------------------------------------------------------*/
 	/*	a certain amount of surface_N is incorporated into the */

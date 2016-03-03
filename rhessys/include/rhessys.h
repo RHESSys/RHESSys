@@ -632,6 +632,8 @@ struct	hourly_clim_object
 	{
 	struct clim_event_sequence rain;
 	struct clim_event_sequence rain_duration;
+	struct clim_event_sequence ndep_NO3;
+	struct clim_event_sequence ndep_NH4;
 	};
 
 /*----------------------------------------------------------*/
@@ -883,6 +885,8 @@ struct zone_object
 	int		ID;
 	int 		daylength_flag;			    /*  0 or 1 */
 	int		hourly_rain_flag;		    /*  0 or 1 */
+	int		hourly_NO3_flag;
+	int		hourly_NH4_flag;
 	int	   	Kdown_diffuse_flag;                 /*  0 or 1  */
 	int   		Kdown_direct_flag;                  /*  0 or 1  */
 	int		num_base_stations;				
@@ -968,6 +972,8 @@ struct	zone_hourly_object
 	double	sin_aspect;				/*	DIM	*/
 	double	sin_slope;				/*	DIM	*/
 	double	snow;					/*	m	*/
+	double ndep_NO3;
+	double ndep_NH4;
 	};
 
 
@@ -1589,6 +1595,8 @@ struct patch_object
 	double	rain_throughfall_final;	/* m water	*/	
 	double	NO3_throughfall;	/* kg/m2 day  */
 	double	NO3_throughfall_final;	/* kg/m2 day */
+	double	NH4_throughfall;	/* kg/m2 day  */
+	double	NH4_throughfall_final;	/* kg/m2 day */
 	double	rain_stored;		/* m water	*/
 	double	slope;			/* degrees		*/
 	double	S;			/* m/m		*/
@@ -1767,6 +1775,8 @@ struct	patch_hourly_object
 	double	rain_throughfall;
 	double	NO3_throughfall;
 	double	NO3_throughfall_final;
+	double	NH4_throughfall;
+	double	NH4_throughfall_final;
 	double	infiltration;
 	double	streamflow_NO3_from_surface;
 	double	streamflow_NO3_from_sub;

@@ -72,26 +72,93 @@ void		zone_hourly(
 	/*--------------------------------------------------------------*/
 	int 	patch;
 	int	inx;
+	int	inx_NO3;
+	int	inx_NH4;
 	double	Kdown_direct_flat_toa;
 	double	temp;
 	struct	dated_sequence	clim_event;
+	struct	dated_sequence	clim_event_NO3;
+	struct	dated_sequence	clim_event_NH4;
 	double 	snow_rain_range;
 	/*--------------------------------------------------------------*/
 	/* 	check for hourly precipitation data			*/
+	/* 	ALSO check for hourly NDEP data			*/
 	/* 	for now only assume one base station per zone		*/
 	/*--------------------------------------------------------------*/
 	zone[0].hourly_rain_flag = 0;
+	zone[0].hourly_NO3_flag = 0;
+	zone[0].hourly_NH4_flag = 0;
 	zone[0].hourly[0].rain = 0.0;
 	zone[0].hourly[0].snow = 0.0; 
 	inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
+	inx_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.inx;
+	inx_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.inx;
 
 	if (inx > -999)  {
+
+		/*--------------------------------------------------------------*/
+		/* ndep_NO3
+		/*--------------------------------------------------------------*/	
+		clim_event_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.seq[inx_NO3];
+	
+		while (julday(clim_evenT_NO3.edate) + clim_event_NO3.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
+			zone[0].base_stations[0][0].hourly_clim[0].rndep_NO3.inx += 1;
+			inx_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.inx;
+			clim_event_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.seq[inx_NO3];
+		}
+
+		/*--------------------------------------------------------------*/
+		/* Check to see if there is any ndep_NO3 in this hour */
+		/* set the zone.hour[0] value to it */
+		/*--------------------------------------------------------------*/				
+		if ( (clim_event_NO3.edate.year != 0) &&
+			(julday(clim_event_NO3.edate) == julday(current_date)) && (clim_event_NO3.edate.hour == current_date.hour) ) {
+			zone[0].hourly_NO3_flag = 1;
+			zone[0].hourly[0].ndep_NO3 = clim_event_NO3.value;
+			/*--------------------------------------------------------------*/
+			/*if there is hourly input, turn daily ndep to 0	*/
+			/*--------------------------------------------------------------*/			
+			zone[0].ndep_NO3 = 0;
+		}
+		
+		/*--------------------------------------------------------------*/
+		/*  ndep_NH4
+		/*--------------------------------------------------------------*/		
+		clim_event_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.seq[inx_NH4];
+		
+		while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
+			zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.inx += 1;
+			inx_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.inx;
+			clim_event_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.seq[inx_NH4];
+		}
+		
+		/*--------------------------------------------------------------*/
+		/* Check to see if there is any ndep_NH4 in this hour */
+		/* set the zone.hour[0] value to it */
+		/*--------------------------------------------------------------*/				
+		if ( (clim_event_NH4.edate.year != 0) &&
+			(julday(clim_event_NH4.edate) == julday(current_date)) && (clim_event_NH4.edate.hour == current_date.hour) ) {
+			zone[0].hourly_NH4_flag = 1;
+			zone[0].hourly[0].ndep_NH4 = clim_event_NH4.value;
+			/*--------------------------------------------------------------*/
+			/*if there is hourly input, turn daily ndep to 0	*/
+			/*--------------------------------------------------------------*/			
+			zone[0].ndep_NH4 = 0;
+		}		
+
+
+		/*--------------------------------------------------------------*/
+		/*  Rainfall
+		/*--------------------------------------------------------------*/	
+
 		clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
+		
 		while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
 			zone[0].base_stations[0][0].hourly_clim[0].rain.inx += 1;
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 			clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
 			}
+
 		
 		if ( (clim_event.edate.year != 0) &&
 			(julday(clim_event.edate) == julday(current_date)) && (clim_event.edate.hour == current_date.hour) ) {
@@ -99,11 +166,10 @@ void		zone_hourly(
 			zone[0].hourly[0].rain = clim_event.value;
 
 			/*--------------------------------------------------------------*/
-			/*if there is hourly input, turn daily rain to 0 		*/
+			/*if there is hourly input, turn daily rain to 0	*/
 			/*--------------------------------------------------------------*/
 			zone[0].rain = 0;
-
-
+			
 			/*--------------------------------------------------------------*/
 			/*if temperture is low enough, some of rain will turn to snow	*/
 			/*--------------------------------------------------------------*/

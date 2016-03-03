@@ -117,6 +117,18 @@ struct	hourly_clim_object *construct_hourly_clim(
 				(char *)strcat(file_name,".rain_duration"),
 				start_date);
 		}
+		else if ( strcmp(sequence_name,"ndep_NO3" ) == 0){
+			strcpy(file_name, file_prefix);
+			hourly_clim[0].ndep_NO3 = construct_dated_clim_sequence(
+				(char *)strcat(file_name,".ndep_NO3"),
+				start_date);
+		}
+		else if ( strcmp(sequence_name,"ndep_NH4" ) == 0){
+			strcpy(file_name, file_prefix);
+			hourly_clim[0].ndep_NH4 = construct_dated_clim_sequence(
+				(char *)strcat(file_name,".ndep_NH4"),
+				start_date);
+		}
 		else  {fprintf(stderr,"WARNING-clim sequence %s not found.\n", sequence_name);
 			exit(EXIT_FAILURE);
 			}

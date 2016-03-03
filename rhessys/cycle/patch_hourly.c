@@ -156,7 +156,7 @@ void		patch_hourly(
 	double  theta;
 	struct 	litter_object *litter;
 	/*--------------------------------------------------------------*/
-	/*	process any hourly rainfall				*/
+	/*	process any hourly rainfall or Ndep				*/
 	/*--------------------------------------------------------------*/
 
 	if ( zone[0].hourly_rain_flag == 1)
@@ -164,7 +164,16 @@ void		patch_hourly(
 	else
 		patch[0].hourly[0].rain_throughfall = 0.0;
 
-	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
+	if(zone[0].hourly_NO3_flag == 1)
+		patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3
+	else
+		patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
+
+	if(zone[0].hourly_NH4_flag == 1)
+		patch[0].hourly[0].NH4_throughfall = zone[0].ndep_NO3
+	else
+		patch[0].hourly[0].NH4_throughfall = zone[0].ndep_NO3/24;	
+			
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
@@ -173,6 +182,8 @@ void		patch_hourly(
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
 			patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
+			patch[0].hourly[0].NH4_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NH4_throughfall;
+			
 			for (stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
@@ -190,7 +201,7 @@ void		patch_hourly(
 			/*--------------------------------------------------------------*/
 			patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
 			patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
-
+			patch[0].hourly[0].NH4_throughfall = patch[0].hourly[0].NH4_throughfall_final;
 		}
 	}
       	
@@ -207,6 +218,7 @@ void		patch_hourly(
 		if ( (patch[0].layers[layer].height <= patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
 			patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
+			patch[0].hourly[0].NH4_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NH4_throughfall;
 
 			for ( stratum=0;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
@@ -223,11 +235,13 @@ void		patch_hourly(
 		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
 		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
+		patch[0].hourly[0].NH4_throughfall = patch[0].hourly[0].NH4_throughfall_final;
 	}
 
 
 	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
-
+	patch[0].surface_NH4 += patch[0].hourly[0].NH4_throughfall;
+	
 	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here	
 
 	/*--------------------------------------------------------------*/

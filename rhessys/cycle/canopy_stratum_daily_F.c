@@ -277,6 +277,8 @@ void	canopy_stratum_daily_F(
 	double	rain_throughfall;
 	double	NO3_throughfall;
 	double	NO3_stored;
+	double	NH4_throughfall;
+	double	NH4_stored;
 	double	rnet_evap;
 	double	rnet_trans, rnet_trans_sunlit, rnet_trans_shade;
 	double	snow_throughfall;
@@ -381,7 +383,8 @@ void	canopy_stratum_daily_F(
 	deltaT = 0.0;
 	NO3_stored=0;
 	NO3_throughfall=0;
-
+	NH4_stored=0;
+	NH4_throughfall=0;
 	/*--------------------------------------------------------------*/
 	/*	Initialize temporary variables for transmitted fluxes.	*/
 	/*--------------------------------------------------------------*/
@@ -1307,6 +1310,13 @@ void	canopy_stratum_daily_F(
 	    NO3_throughfall = (rain_throughfall + snow_throughfall)
 		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
+		
+		NH4_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
+	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		* (stratum[0].NH4_stored + patch[0].NH4_throughfall);
+	    NH4_throughfall = (rain_throughfall + snow_throughfall)
+		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		* (stratum[0].NH4_stored + patch[0].NH4_throughfall);
 	   
 	}
 	else{
@@ -1319,10 +1329,20 @@ void	canopy_stratum_daily_F(
 		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall); 
 		
+		NH4_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
+	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		* (stratum[0].NH4_stored + patch[0].NH4_throughfall);
+
+		NH4_throughfall =  (rain_throughfall + snow_throughfall)
+		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		* (stratum[0].NH4_stored + patch[0].NH4_throughfall); 
+		
 	    }
 	    else{
-                NO3_stored = stratum[0].NO3_stored + patch[0].NO3_throughfall;
+        NO3_stored = stratum[0].NO3_stored + patch[0].NO3_throughfall;
 		NO3_throughfall = 0;
+		NH4_stored = stratum[0].NH4_stored + patch[0].NH4_throughfall;
+		NH4_throughfall = 0;
 
 
 	    }
@@ -1840,7 +1860,9 @@ void	canopy_stratum_daily_F(
 	patch[0].NO3_throughfall_final += NO3_throughfall 
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
-
+	patch[0].NH4_throughfall_final += NH4_throughfall 
+		* stratum[0].cover_fraction;
+	stratum[0].NH4_stored = NH4_stored;
 
 
 	
