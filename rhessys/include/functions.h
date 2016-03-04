@@ -38,6 +38,6 @@ void compute_Lstar_canopy(int	verbose_flag,
 						  struct	patch_object	*patch,
 						  struct	canopy_strata_object *stratum);
 
-inline double compute_saturation_vapor_pressure(double temperature);
+double compute_saturation_vapor_pressure(double temperature);
 
 #endif
