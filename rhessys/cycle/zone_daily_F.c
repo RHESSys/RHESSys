@@ -124,6 +124,7 @@
 #include <math.h>
 #include "rhessys.h"
 #include "phys_constants.h"
+#include "functions.h"
 
 
 void		zone_daily_F(
@@ -415,52 +416,21 @@ void		zone_daily_F(
 	/* LDOWN MODEL REPLACED WITH NEW ONE CALCULATED AFTER VAPOR PRESSURE */
 	/*-------------------------------------------------------------------*/
 	
-	/*--------------------------------------------------------------*/
-	/*	Saturation Vapour Pressure	(Pa)							*/
-	/*																*/
-	/*	Note the original rehssys code supplied es in mbar.			*/
-	/*	c.f. eq. 1 Running and Coughlan , 1987, p. 133.				*/
-	/*																*/
-	/*	Since 1 bar = 100 kpa (approx) ; a millibar = 100 Pa approx.*/
-	/*	This explains why the es from the original code was:		*/
-	/*																*/
-	/*	6.1078 * exp((17.269*z[0].metv.tday)/(237.3 +			*/
-	/*									z[0].metv.tday))		*/
-	/*																*/
-	/*	Which is approx 100 times that of the es here.				*/
-	/*																*/
-	/*	Eq. 5.12 p. 110, Jones, "Plants and Microclimate"			*/
-	/*--------------------------------------------------------------*/
+
 	if (  zone[0].metv.vpd == -999.0  ){
-		es = 613.75 * exp( (17.502 * zone[0].metv.tavg)
-			/ ( 240.97 + zone[0].metv.tavg) );
+		es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
 		/*--------------------------------------------------------------*/
 		/*	Make use of relative humidity if available.					*/
 		/*--------------------------------------------------------------*/
 		if ( zone[0].relative_humidity == -999.0 ){
 			/*--------------------------------------------------------------*/
-			/*	Dew Point Vapour Pressure (Pa)								*/
-			/*																*/
-			/*	Note the original rehssys code supplied es in mbar.			*/
-			/*	c.f. eq. 1 Running and Coughlan , 1987, p. 133.				*/
-			/*																*/
-			/*	Since 1 bar = 100 kpa (approx) ; a millibar = 100 Pa approx.*/
-			/*	This explains why the es from the original code was:		*/
-			/*																*/
-			/*	6.1078 * exp((17.269*z[0].tdewpoint)/(237.3 +			*/
-			/*									z[0].tdewpoint))		*/
-			/*																*/
-			/*	Which is approx 100 times that of the es here.				*/
-			/*																*/
-			/*	Eq. 5.12 p. 110, Jones, "Plants and Microclimate"			*/
 			/*	Assuming that tdewpoint is valid for the whole day.		*/
 			/*								*/
 			/*	We cannot make a correction for rain_duration here.	*/
 			/*	Instead we hope that  the dewpoint vapour pressure is	*/
 			/*	measured by a temperature value (night min)		*/
 			/*--------------------------------------------------------------*/
-			zone[0].e_dewpoint = 613.750 * exp( (17.502
-				* zone[0].tdewpoint) / ( 240.97 + zone[0].tdewpoint));
+			zone[0].e_dewpoint = compute_saturation_vapor_pressure(zone[0].tdewpoint);
 		}
 		else{
 			/*--------------------------------------------------------------*/
@@ -489,8 +459,7 @@ void		zone_daily_F(
 	/* Case where vpd is given. Still need to calculate e_dewpoint	*/
 	/* for snowpack sublim and RH for output.						*/
 	else {
-		es = 613.75 * exp( (17.502 * zone[0].metv.tavg)
-						  / ( 240.97 + zone[0].metv.tavg) );
+		es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
 		zone[0].e_dewpoint = es - zone[0].metv.vpd;
 		zone[0].relative_humidity = zone[0].e_dewpoint / es;
 	}
