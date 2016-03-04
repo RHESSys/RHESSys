@@ -432,30 +432,28 @@ void		zone_daily_F(
 			/*	measured by a temperature value (night min)		*/
 			/*--------------------------------------------------------------*/
 			zone[0].e_dewpoint = compute_saturation_vapor_pressure(zone[0].tdewpoint);
+
+			if (es > ZERO) {
+				zone[0].relative_humidity = zone[0].e_dewpoint / es;
+			}
 		}
 		else{
 			/*--------------------------------------------------------------*/
 			/*      Dew Point Vapour Pressure (Pa)                          */
 			/*                                                              */
-			/*      ONly for dayligh conditions with no rain.               */
+			/*      Only for daylight conditions with no rain.              */
 			/*      Eq. 5.13 and 5.14 , p. 110, Jones, "Plants and Microclimate"*/
 			/*--------------------------------------------------------------*/
-			zone[0].e_dewpoint =  zone[0].relative_humidity * es;
+			zone[0].e_dewpoint = zone[0].relative_humidity * es;
 		} /*end if-else*/
+
 		/*--------------------------------------------------------------*/
 		/*	metv.vpd	(Pa)						*/
 		/*								*/
 		/*	Eq. 5.14, p. 110, Jones, "Plants and Microclimate"	*/
 		/*	Limited to at least 0.0 as per rhessys C code.		*/
 		/*--------------------------------------------------------------*/
-
 		zone[0].metv.vpd = max(es - zone[0].e_dewpoint,0.0);
-		if (zone[0].relative_humidity == -999.0) {
-			if (es > ZERO)
-				zone[0].relative_humidity = zone[0].e_dewpoint / es;
-			else
-				zone[0].relative_humidity = -999.0;
-			}
 	}
 	/* Case where vpd is given. Still need to calculate e_dewpoint	*/
 	/* for snowpack sublim and RH for output.						*/
