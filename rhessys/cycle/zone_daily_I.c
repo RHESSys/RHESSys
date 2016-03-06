@@ -372,6 +372,8 @@ void zone_daily_I(
 	zone[0].metv.tnight = -999.0;
 	zone[0].metv.tsoil = -999.0;
 	zone[0].metv.vpd = -999.0;
+	zone[0].metv.vpd_day = -999.0;
+	zone[0].metv.vpd_night = -999.0;
 	zone[0].ndep_NO3 = -999.0;
 	zone[0].ndep_NH4 = -999.0;
 	zone[0].wind = -999.0;

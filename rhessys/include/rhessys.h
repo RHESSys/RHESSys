@@ -872,7 +872,9 @@ struct metvar_struct
         double tsoil_sum;      /* (deg C) daily summation of soil temp     (NEW) */
         double tnight_max;     /* (deg C) nighttime max average air temperature */
         double vpd;            /* (Pa)    vapor pressure deficit */
-        double vpd_ravg;                                /* (Pa) 21 day running average of vpd */
+        double vpd_ravg;       /* (Pa) 21 day running average of vpd */
+        double vpd_day;		   /* (Pa)    vapor pressure deficit during day time hours */
+        double vpd_night;		   /* (Pa)    vapor pressure deficit during night time hours */
 };
 
 /*----------------------------------------------------------*/
