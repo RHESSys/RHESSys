@@ -32,6 +32,9 @@
 /*	PROGRAMMER NOTES					*/
 /*								*/
 /*--------------------------------------------------------------*/
+#include "rhessys.h"
+
+
 double compute_vapor_pressure_deficit(double saturation_vapor_pressure,
 		double dewpoint_vapor_pressure) {
 	return max(saturation_vapor_pressure - dewpoint_vapor_pressure, 0.0);
