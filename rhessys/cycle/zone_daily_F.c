@@ -465,7 +465,7 @@ void		zone_daily_F(
 	if (  zone[0].metv.vpd_night == -999.0  ) {
 		double es = compute_saturation_vapor_pressure(zone[0].metv.tnight);
 		// Assume daily dew point saturation vapor pressure > night time es
-		zone[0].metv.vpd_day = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
+		zone[0].metv.vpd_night = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
 	}
 	
 	/*--------------------------------------------------------------*/
