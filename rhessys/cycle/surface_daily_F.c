@@ -291,7 +291,7 @@ void		surface_daily_F(
 				command_line[0].verbose_flag,
 				zone[0].metv.tnight,
 				zone[0].metv.pa,
-				zone[0].metv.vpd, // May need to calculate VPD for night
+				zone[0].metv.vpd_night,
 				rnet_evap_pond_night,
 				0.0,
 				1/(patch[0].ga),
@@ -302,11 +302,7 @@ void		surface_daily_F(
 						command_line[0].verbose_flag,
 						zone[0].metv.tday,
 						zone[0].metv.pa,
-						zone[0].metv.vpd, // May need to calculate VPD based on tday as
-										  // presently VPD is calculated based on a
-										  // saturation vapor deficit calculated using tavg (arithmatic mean)
-										  // not the sine-wave method of Running et al. 1987 (used to calc. tday),
-										  // but we are using tday as input to penman_monteith
+						zone[0].metv.vpd_day,
 						rnet_evap_pond_day,
 						0.0,
 						1/(patch[0].ga),
@@ -743,7 +739,7 @@ void		surface_daily_F(
 					command_line[0].verbose_flag,
 					zone[0].metv.tnight,
 					zone[0].metv.pa,
-					zone[0].metv.vpd, // May need to calculate VPD for night
+					zone[0].metv.vpd_night,
 					rnet_evap_litter_night,
 					1/patch[0].litter.gsurf,
 					1/(patch[0].ga),
@@ -752,11 +748,7 @@ void		surface_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
-			zone[0].metv.vpd, // May need to calculate VPD based on tday as
-							  // presently VPD is calculated based on a
-							  // saturation vapor deficit calculated using tavg (arithmatic mean)
-							  // not the sine-wave method of Running et al. 1987 (used to calc. tday),
-							  // but we are using tday as input to penman_monteith
+			zone[0].metv.vpd_day,
 			rnet_evap_litter_day,
 			1/patch[0].litter.gsurf,
 			1/(patch[0].ga),
@@ -783,7 +775,7 @@ void		surface_daily_F(
 					command_line[0].verbose_flag,
 					zone[0].metv.tnight,
 					zone[0].metv.pa,
-					zone[0].metv.vpd, // May need to calculate VPD for night
+					zone[0].metv.vpd_night,
 					rnet_evap_litter_night,
 					0.0,
 					1/(patch[0].ga),
@@ -792,11 +784,7 @@ void		surface_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
-			zone[0].metv.vpd, // May need to calculate VPD based on tday as
-							  // presently VPD is calculated based on a
-							  // saturation vapor deficit calculated using tavg (arithmatic mean)
-							  // not the sine-wave method of Running et al. 1987 (used to calc. tday),
-							  // but we are using tday as input to penman_monteith
+			zone[0].metv.vpd_day,
 			rnet_evap_litter_day,
 			0.0,
 			1/(patch[0].ga),
@@ -906,7 +894,7 @@ void		surface_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tnight,
 			zone[0].metv.pa,
-			zone[0].metv.vpd, // May need to calculate VPD for night
+			zone[0].metv.vpd_night,
 			rnet_evap_soil_night,
 			1.0/patch[0].gsurf,
 			1.0/patch[0].ga,
@@ -915,11 +903,7 @@ void		surface_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
-			zone[0].metv.vpd, // May need to calculate VPD based on tday as
-							  // presently VPD is calculated based on a
-							  // saturation vapor deficit calculated using tavg (arithmatic mean)
-							  // not the sine-wave method of Running et al. 1987 (used to calc. tday),
-							  // but we are using tday as input to penman_monteith
+			zone[0].metv.vpd_day,
 			rnet_evap_soil_day,
 			1.0/patch[0].gsurf,
 			1.0/patch[0].ga,

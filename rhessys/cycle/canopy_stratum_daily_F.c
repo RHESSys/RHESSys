@@ -1145,7 +1145,7 @@ void	canopy_stratum_daily_F(
 				command_line[0].verbose_flag,
 				zone[0].metv.tnight,
 				zone[0].metv.pa,
-				zone[0].metv.vpd, // May need to calculate VPD for night
+				zone[0].metv.vpd_night,
 				rnet_evap_night,
 				1/stratum[0].gsurf,
 				1/stratum[0].ga,
@@ -1156,11 +1156,7 @@ void	canopy_stratum_daily_F(
 				command_line[0].verbose_flag,
 				zone[0].metv.tday,
 				zone[0].metv.pa,
-				zone[0].metv.vpd, // May need to calculate VPD based on tday as
-								  // presently VPD is calculated based on a
-								  // saturation vapor deficit calculated using tavg (arithmatic mean)
-								  // not the sine-wave method of Running et al. 1987 (used to calc. tday),
-								  // but we are using tday as input to penman_monteith
+				zone[0].metv.vpd_day,
 				rnet_evap_day,
 				1/stratum[0].gsurf,
 				1/stratum[0].ga,
@@ -1243,7 +1239,7 @@ void	canopy_stratum_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
-			zone[0].metv.vpd,
+			zone[0].metv.vpd_day,
 			rnet_trans_sunlit,
 			1/stratum[0].gs_sunlit,
 			1/stratum[0].ga,
@@ -1252,7 +1248,7 @@ void	canopy_stratum_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
-			zone[0].metv.vpd,
+			zone[0].metv.vpd_day,
 			rnet_trans_sunlit,
 			1/stratum[0].potential_gs_sunlit,
 			1/stratum[0].ga,
@@ -1269,7 +1265,7 @@ void	canopy_stratum_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
-			zone[0].metv.vpd,
+			zone[0].metv.vpd_day,
 			rnet_trans_shade,
 			1/stratum[0].gs_shade,
 			1/stratum[0].ga,
@@ -1278,7 +1274,7 @@ void	canopy_stratum_daily_F(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
-			zone[0].metv.vpd,
+			zone[0].metv.vpd_day,
 			rnet_trans_shade,
 			1/stratum[0].potential_gs_shade,
 			1/stratum[0].ga,
