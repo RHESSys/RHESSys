@@ -421,9 +421,7 @@ void		surface_daily_F(
 		}
 		patch[0].Kdown_direct = ((1-WATER_ALBEDO) * patch[0].Kdown_direct) - (fraction_direct_K * K_used);
 		patch[0].Kdown_diffuse = ((1-WATER_ALBEDO) * patch[0].Kdown_diffuse) - (fraction_diffuse_K * K_used);
-		// Was, which looks wrong: patch[0].Lstar_pond = patch[0].Lstar_soil - (fraction_Lstar_pond * K_used);
-		// Should be:
-		patch->Lstar_pond = patch->Lstar_pond - (fraction_Lstar_pond * K_used);
+		patch[0].Lstar_pond = patch[0].Lstar_soil - (fraction_Lstar_pond * K_used);
 		patch->Lstar_pond_night = patch->Lstar_pond_night - (fraction_Lstar_pond_night * K_used);
 		patch->Lstar_pond_day = patch->Lstar_pond_day - (fraction_Lstar_pond_day * K_used);
 		patch[0].surface_heat_flux = patch[0].surface_heat_flux - (fraction_surface_heat_flux * K_used);
