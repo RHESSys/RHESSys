@@ -8,7 +8,7 @@
 /*			*/
 /*								*/
 /*	SYNOPSIS						*/
-/*	double	compute_saturation_vapor_pressur(				*/
+/*	double	compute_saturation_vapor_pressure(				*/
 /*			double temperature)					*/
 /*								*/
 /*	returns:						*/
