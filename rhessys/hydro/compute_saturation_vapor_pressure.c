@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*/
 /* 								*/
-/*		compute_saturation_vapor_pressur				*/
+/*		compute_saturation_vapor_pressure				*/
 /*								*/
 /*								*/
 /*	NAME							*/
