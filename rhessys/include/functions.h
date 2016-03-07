@@ -40,4 +40,7 @@ void compute_Lstar_canopy(int	verbose_flag,
 
 double compute_saturation_vapor_pressure(double temperature);
 
+double compute_vapor_pressure_deficit(double saturation_vapor_pressure,
+		double dewpoint_vapor_pressure);
+
 #endif

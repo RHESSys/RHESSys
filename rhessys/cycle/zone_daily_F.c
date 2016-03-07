@@ -158,7 +158,6 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 	int 	patch;
 	double snow_rain_range;
-	double	es;
 	double Tcloud, f8, e8z, tau8;
 	/*--------------------------------------------------------------*/
 	/*  Update the forcing functions based on the hourly computation*/
@@ -412,14 +411,11 @@ void		zone_daily_F(
 			/ zone[0].Kdown_direct );
 	}
 
-	
 	/*-------------------------------------------------------------------*/
-	/* LDOWN MODEL REPLACED WITH NEW ONE CALCULATED AFTER VAPOR PRESSURE */
+	/* Vapor pressure deficit - All day									 */
 	/*-------------------------------------------------------------------*/
-	
-
-	if (  zone[0].metv.vpd == -999.0  ){
-		es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
+	if (  zone[0].metv.vpd == -999.0  ) {
+		double es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
 		/*--------------------------------------------------------------*/
 		/*	Make use of relative humidity if available.					*/
 		/*--------------------------------------------------------------*/
@@ -446,21 +442,30 @@ void		zone_daily_F(
 			/*--------------------------------------------------------------*/
 			zone[0].e_dewpoint = zone[0].relative_humidity * es;
 		} /*end if-else*/
-
-		/*--------------------------------------------------------------*/
-		/*	metv.vpd	(Pa)						*/
-		/*								*/
-		/*	Eq. 5.14, p. 110, Jones, "Plants and Microclimate"	*/
-		/*	Limited to at least 0.0 as per rhessys C code.		*/
-		/*--------------------------------------------------------------*/
-		zone[0].metv.vpd = max(es - zone[0].e_dewpoint,0.0);
+		zone[0].metv.vpd = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
 	}
 	/* Case where vpd is given. Still need to calculate e_dewpoint	*/
 	/* for snowpack sublim and RH for output.						*/
 	else {
-		es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
+		double es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
 		zone[0].e_dewpoint = es - zone[0].metv.vpd;
 		zone[0].relative_humidity = zone[0].e_dewpoint / es;
+	}
+	/*-------------------------------------------------------------------*/
+	/* Vapor pressure deficit - Day time							     */
+	/*-------------------------------------------------------------------*/
+	if (  zone[0].metv.vpd_day == -999.0  ) {
+		double es = compute_saturation_vapor_pressure(zone[0].metv.tday);
+		// Assume daily dew point saturation vapor pressure > day time es
+		zone[0].metv.vpd_day = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
+	}
+	/*-------------------------------------------------------------------*/
+	/* Vapor pressure deficit - Night time							     */
+	/*-------------------------------------------------------------------*/
+	if (  zone[0].metv.vpd_night == -999.0  ) {
+		double es = compute_saturation_vapor_pressure(zone[0].metv.tnight);
+		// Assume daily dew point saturation vapor pressure > night time es
+		zone[0].metv.vpd_day = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
 	}
 	
 	/*--------------------------------------------------------------*/
