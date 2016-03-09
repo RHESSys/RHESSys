@@ -101,8 +101,8 @@ void		zone_hourly(
 		/*--------------------------------------------------------------*/	
 		clim_event_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.seq[inx_NO3];
 	
-		while (julday(clim_evenT_NO3.edate) + clim_event_NO3.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
-			zone[0].base_stations[0][0].hourly_clim[0].rndep_NO3.inx += 1;
+		while (julday(clim_event_NO3.edate) + clim_event_NO3.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
+			zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.inx += 1;
 			inx_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.inx;
 			clim_event_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.seq[inx_NO3];
 		}
@@ -126,7 +126,7 @@ void		zone_hourly(
 		/*--------------------------------------------------------------*/		
 		clim_event_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.seq[inx_NH4];
 		
-		while (julday(clim_event.edate) + clim_event.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
+		while (julday(clim_event_NH4.edate) + clim_event_NH4.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
 			zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.inx += 1;
 			inx_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.inx;
 			clim_event_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.seq[inx_NH4];

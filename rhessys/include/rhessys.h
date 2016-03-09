@@ -2696,7 +2696,8 @@ struct	canopy_strata_object
 	double	Kstar_direct;					/* Kj/(m2*day)	*/
 	double	Kstar_diffuse;					/* Kj/(m2*day)	*/
 	double	Lstar;						/* Kj/(m2*day)	*/	
-	double	NO3_stored;					/* kg/m2	*/
+	double	NO3_stored;					/* kg/m2	*/	
+	double	NH4_stored;					/* kg/m2	*/
 	double	PAR_after_reflection;				/* (umol photon/m2*day) */
 	double  ppfd_sunlit;			/*  (umol/m2/s) PAR photon flux density */
 	double  ppfd_shade;			/*  (umol/m2/s) PAR photon flux density */

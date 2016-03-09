@@ -165,14 +165,14 @@ void		patch_hourly(
 		patch[0].hourly[0].rain_throughfall = 0.0;
 
 	if(zone[0].hourly_NO3_flag == 1)
-		patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3
+		patch[0].hourly[0].NO3_throughfall = zone[0].hourly[0].ndep_NO3;
 	else
-		patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
+		patch[0].hourly[0].NO3_throughfall = 0;
 
 	if(zone[0].hourly_NH4_flag == 1)
-		patch[0].hourly[0].NH4_throughfall = zone[0].ndep_NO3
+		patch[0].hourly[0].NH4_throughfall = zone[0].hourly[0].ndep_NH4;
 	else
-		patch[0].hourly[0].NH4_throughfall = zone[0].ndep_NO3/24;	
+		patch[0].hourly[0].NH4_throughfall = 0;	
 			
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/

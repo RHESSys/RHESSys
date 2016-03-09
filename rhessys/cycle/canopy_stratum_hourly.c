@@ -120,11 +120,14 @@ void	canopy_stratum_hourly(
 		* (stratum[0].NH4_stored + patch[0].hourly[0].NH4_throughfall); 
 	    }
 	    else{// rain_throughfall == 0 
-                NO3_stored = stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall;
-		NO3_throughfall = 0;
-		
-                NH4_stored = stratum[0].NO3_stored + patch[0].hourly[0].NH4_throughfall;
-		NH4_throughfall = 0;
+        	//NO3_stored = stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall;
+            //NO3_throughfall = 0;
+			NO3_stored = 0;
+			NO3_throughfall = patch[0].hourly[0].NO3_throughfall;	    
+            //NH4_stored = stratum[0].NO3_stored + patch[0].hourly[0].NH4_throughfall;
+			//NH4_throughfall = 0;				
+			NH4_stored = 0;
+			NH4_throughfall = patch[0].hourly[0].NH4_throughfall;	
 	    }
 	}
 
