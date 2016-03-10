@@ -48,7 +48,20 @@ void execute_firespread_event(
 		struct litter_n_object *,
 		int,
 		struct mortality_struct);
+
 	void *alloc(size_t, char *, char *);
+
+
+	void	update_litter_soil_mortality(
+		struct cdayflux_patch_struct *,
+		struct ndayflux_patch_struct *,
+		struct soil_c_object *,
+		struct soil_n_object *,
+		struct litter_c_object *,
+		struct litter_n_object *,
+		struct fire_litter_soil_loss_struct);
+
+
 
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
@@ -61,7 +74,8 @@ void execute_firespread_event(
 	struct fire_litter_soil_loss_struct fire_loss;
 	int i,j,p, c, layer,strata; 
 	int thin_type;
-	double loss;
+	double height_over,height_under, height_ratio;
+	double pspread,c_loss;
 	double mean_fuel_veg=0,mean_fuel_litter=0,mean_soil_moist=0,mean_fuel_moist=0,mean_relative_humidity=0,
 		mean_wind_direction=0,mean_wind=0,mean_z=0,mean_temp=0,mean_et=0,mean_pet=0;
 	double denom_for_mean=0;
@@ -236,74 +250,215 @@ void execute_firespread_event(
 	    for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
 			patch = world[0].patch_fire_grid[i][j].patches[p];
 
-//			printf("in update mortality\n");
 			patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-			loss = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-//			printf("in update mortality2\n");
+			pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+
+			fire_loss.loss_litr1c = 1;
+			fire_loss.loss_litr2c = 1;
+			fire_loss.loss_litr3c = 1;
+			fire_loss.loss_litr4c = 1;
+			fire_loss.loss_soil1c = 1;
+			fire_loss.loss_soil2c = 0;
+			fire_loss.loss_soil3c = 0;
+			fire_loss.loss_soil4c = 0;
+			fire_loss.loss_litr1n = 1;
+			fire_loss.loss_litr2n = 1;
+			fire_loss.loss_litr3n = 1;
+			fire_loss.loss_litr4n = 1;
+			fire_loss.loss_soil1n = 1;
+			fire_loss.loss_soil2n = 0;
+			fire_loss.loss_soil3n = 0;
+			fire_loss.loss_soil4n = 0;
+
+//			printf("in execute_firespread_event_1\n");
 
 
-			fire_loss.loss_litr1c = loss
-			fire_loss.loss_litr2c = loss
-			fire_loss.loss_litr3c = loss
-			fire_loss.loss_litr4c = loss
-			fire_loss.loss_soil1c = loss
-			fire_loss.loss_soil2c = loss
-			fire_loss.loss_soil3c = loss
-			fire_loss.loss_soil4c = loss
-			fire_loss.loss_cwdc = loss
+			update_litter_soil_mortality(
+				 &(patch[0].cdf),
+				 &(patch[0].ndf),
+				 &(patch[0].soil_cs),
+				 &(patch[0].soil_ns),
+				 &(patch[0].litter_cs),
+				 &(patch[0].litter_ns),
+				 fire_loss);
 
 
-			update_litter_soil_mortality(patch[0].litter,
-				&(patch[0].litter_cs),
-				&(patch[0].litter_ns),
-				&(patch[0].soil_cs),
-				&(patch[0].soil_ns),
-				&(patch[0].fire_loss),
-				&(canopy_strata[0].cs),
-				&(patch[0].cdf),
-				&(canopy_strata[0].ns),
-				&(patch[0].ndf));
-
+//			printf("in execute_firespread_event_4\n");
 
 
 			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
+				for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 					canopy_strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 
-					// Determine structure of overstory
-					// Pull in biomass/ height
 
-					if (c==0) /* c=0 is the overstory canopy */
+/* Do I need an error message here saying that if there are not two canopies, then fire effects may not be implemented (or maybe simplified fire effects??? */
+
+
+					if (layer==0) /* c=0 is the overstory canopy */
+					{
+
+						/* Determine heights of over and under-story*/
+
+						height_over = canopy_strata[0].epv.height;
+						printf("*********************\n");
+						printf("Overstory Height = %f\n", height_over);
+
+						if (patch[0].num_layers > 0)
+						{
+							canopy_strata = patch[0].canopy_strata[(patch[0].layers[1].strata[c])];
+							height_under = canopy_strata[0].epv.height;
+							printf("Understory Height = %f\n", height_under);
+
+							height_ratio = height_over / height_under;
+							printf("Height Ratio = %f\n", height_ratio);
+						}
+
+						if (height_over > overstory_top_height_thresh){
+
+							/* Compute biomass effect on overstory loss */
+
+
+
+						} else if (height_over < overstory_top_height_thresh && height_over > overstory_bot_height_thresh){
+
+							/* Compute mix of biomass and pspread effect on overstory loss */
+
+							/* Compute loss according to pspread */
+
+
+
+							/* Divide loss by amount proportion allocated to spread*/
+
+							/* Compute loss according to biomass */ 
+
+
+
+							/* Combine losses to compute total overstory loss */
+
+
+						else {
+
+							/* Compute pspread effect on overstory loss */
+
+
+							/* This can be non-linear or linear with a threshold for 100% loss */
+
+						}
+
+
+
+						/* Compute overstory burn severity*/
+
+
+						c_aboveground = canopy_strata[0].cs.leafc + canopy_strata[0].cs.live_stemc + canopy_strata[0].cs.dead_stemc
+
+
 
 						mort.mort_cpool = loss;
 						mort.mort_leafc = loss;
-						mort.mort_frootc = loss;
 						mort.mort_deadstemc = loss;
 						mort.mort_livestemc = loss;
+						mort.mort_frootc = loss;
 						mort.mort_deadcrootc = loss;
 						mort.mort_livecrootc = loss;
 
-					if (c > 0) /* we assume everything else is an understory */
+					
+						update_mortality(
+							canopy_strata[0].defaults[0][0].epc,
+							&(canopy_strata[0].cs),
+							&(canopy_strata[0].cdf),
+							&(patch[0].cdf),
+							&(canopy_strata[0].ns),
+							&(canopy_strata[0].ndf),
+							&(patch[0].ndf),
+							&(patch[0].litter_cs),
+							&(patch[0].litter_ns),
+							thin_type,
+							mort);
 
-						mort.mort_cpool = loss;
-						mort.mort_leafc = loss;
-						mort.mort_frootc = loss;
-						mort.mort_deadstemc = loss;
-						mort.mort_livestemc = loss;
-						mort.mort_deadcrootc = loss;
-						mort.mort_livecrootc = loss;
+					}
 
-					update_mortality(canopy_strata[0].defaults[0][0].epc,
-						 &(canopy_strata[0].cs),
-						 &(canopy_strata[0].cdf),
-						 &(patch[0].cdf),
-						 &(canopy_strata[0].ns),
-						 &(canopy_strata[0].ndf),
-						 &(patch[0].ndf),
-						 &(patch[0].litter_cs),
-						 &(patch[0].litter_ns),
-						 thin_type,
-						 mort);
+					if (layer > 0) /* we assume everything else is an understory */
+					{	
+
+
+/* Implement canopy height distinction in this section, just like for overstory? */
+/* Is it needed? A tall under story may still have low bottom branches */ 
+
+						/* Determine the amount of carbon lost in the understory*/
+						if (eff_under_k1 <= 0){
+							fprintf(stderr, "ERROR: eff_under_k1 must be greater than 0.\n");
+    							exit(EXIT_FAILURE);
+						} else if (eff_under_k1 == 1){
+							c_loss_percent = eff_under_k1 * pspread;
+						} else {
+							c_loss_percent = ((eff_under_k1^pspread)-1)/(eff_under_k1-1);
+						}
+
+
+						/* Determine the portion of c_loss_percent that is vaporized from landscape */
+						if (eff_under_k2 <= 0){
+							fprintf(stderr, "ERROR: eff_under_k1 must be greater than 0.\n");
+    							exit(EXIT_FAILURE);
+						} else if (eff_under_k2 == 1){
+							loss_vapor_percent = eff_under_k2 * pspread;
+						} else {
+							loss_vapor_percent = ((eff_under_k2^pspread)-1)/(eff_under_k2-1);
+						}
+
+						/* Compute percent of total carbon that is vaporized */
+						c_loss_vapor_percent = loss_vapor_percent * c_loss_percent;
+						/* Compute percent of total carbon that remains as litter/cwd */
+						c_loss_remain_percent = c_loss_percent - c_loss_vapor_percent;
+						/* Adjust c_loss_remain_percent since update mortality is run twice, with vaporized C removed first */
+						c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
+
+						mort.mort_cpool = c_loss_vapor_percent;
+						mort.mort_leafc = 1;
+						mort.mort_deadstemc = c_loss_vapor_percent;
+						mort.mort_livestemc = c_loss_vapor_percent;
+						mort.mort_frootc = c_loss_vapor_percent;
+						mort.mort_deadcrootc = c_loss_vapor_percent;
+						mort.mort_livecrootc = c_loss_vapor_percent;
+
+						thin_type =2;
+						update_mortality(
+							canopy_strata[0].defaults[0][0].epc,
+							&(canopy_strata[0].cs),
+							&(canopy_strata[0].cdf),
+							&(patch[0].cdf),
+							&(canopy_strata[0].ns),
+							&(canopy_strata[0].ndf),
+							&(patch[0].ndf),
+							&(patch[0].litter_cs),
+							&(patch[0].litter_ns),
+							thin_type,
+							mort);
+
+						/* Determine the portion of loss that remains on landscape */
+						mort.mort_cpool = c_loss_remain_percent_alt;
+						mort.mort_leafc = 0;		// leafc has already been vaporized
+						mort.mort_deadstemc = c_loss_remain_percent_alt;
+						mort.mort_livestemc = c_loss_remain_percent_alt;
+						mort.mort_frootc = c_loss_remain_percent_alt;
+						mort.mort_deadcrootc = c_loss_remain_percent_alt;
+						mort.mort_livecrootc = c_loss_remain_percent_alt;
+
+
+						thin_type =3;
+						update_mortality(
+							canopy_strata[0].defaults[0][0].epc,
+							&(canopy_strata[0].cs),
+							&(canopy_strata[0].cdf),
+							&(patch[0].cdf),
+							&(canopy_strata[0].ns),
+							&(canopy_strata[0].ndf),
+							&(patch[0].ndf),
+							&(patch[0].litter_cs),
+							&(patch[0].litter_ns),
+							thin_type,
+							mort);
+					}
 				}
 			}
 //			printf("in update mortality3\n");
@@ -312,8 +467,6 @@ void execute_firespread_event(
 			
 		}
 	}
-printf("Finished updating mortality\n");
-
 		
 
 	return;

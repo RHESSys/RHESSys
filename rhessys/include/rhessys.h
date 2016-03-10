@@ -1223,8 +1223,6 @@ struct  cdayflux_patch_struct
     double m_soil2c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
     double m_soil3c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
     double m_soil4c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
-    double m_cwdc_to_atmos;       /* (kgC/m2) course woody debris to atmosphere */
-
 
         };
 
@@ -1334,6 +1332,17 @@ struct  ndayflux_patch_struct
     double ndep_to_sminn;    /* (kgN/m2/d) deposition to soil min N pool */
     double nfix_to_sminn;             /* (kgN/m2/d) biological n fixation */
     double N_to_gw;        /* (kgN/m2/day) loss due to leaching to gw */
+
+    /* fire fluxes */
+    double m_litr1n_to_atmos;       /* (kgN/m2) labile to atmosphere */
+    double m_litr2n_to_atmos;       /* (kgN/m2) unshielded cellulose to atmosphere */
+    double m_litr3n_to_atmos;       /* (kgN/m2) shielded cellulose to atmosphere */
+    double m_litr4n_to_atmos;       /* (kgN/m2) lignin to atmosphere */
+    double m_soil1n_to_atmos;       /* (kgN/m2) microbial recycling pool to atmosphere */
+    double m_soil2n_to_atmos;       /* (kgN/m2) microbial recycling pool to atmosphere */
+    double m_soil3n_to_atmos;       /* (kgN/m2) microbial recycling pool to atmosphere */
+    double m_soil4n_to_atmos;       /* (kgN/m2) microbial recycling pool to atmosphere */
+
         };
 /*----------------------------------------------------------*/
 /*      Define a litter objects                             */
@@ -1463,7 +1472,14 @@ struct fire_litter_soil_loss_struct
 	double loss_soil2c;
 	double loss_soil3c;
 	double loss_soil4c;
-	double loss_cwdc;
+        double loss_litr1n;
+        double loss_litr2n;
+        double loss_litr3n;
+        double loss_litr4n;
+	double loss_soil1n;
+	double loss_soil2n;
+	double loss_soil3n;
+	double loss_soil4n;
 };
 
 
@@ -1749,7 +1765,6 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
-	struct fire_litter_soil_loss_struct fire_loss;
         };
 
 /*----------------------------------------------------------*/
