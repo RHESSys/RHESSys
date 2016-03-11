@@ -407,6 +407,9 @@ void input_new_strata_mult(
 		/* year's growing season will start                              */
 		/*---------------------------------------------------------------*/
 		canopy_strata[0].phen.nretdays = 365;
+		canopy_strata[0].phen.gwseasonday = -1;
+		canopy_strata[0].phen.lfseasonday = -1;
+		canopy_strata[0].phen.pheno_flag = 0;
 	}
 	else {
 		fprintf(stderr,"\nFATAL ERROR - construct_canopy_stratum.c");

@@ -2050,7 +2050,7 @@ struct phenology_struct
         double frootlitfalln; /* (kgN/m2) current growth year leaflitter nitrogen */
         double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
         double gsi;             /* (0 to 1) growing season phenology index */
-                int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
+        int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
         int expand_startday;       /* (yday) yearday of first leaf growth */
         int litfall_startday;       /* (yday) yearday of litterfall growth */
         int expand_stopday;       /* (yday) yearday of last leaf growth */
@@ -2058,9 +2058,9 @@ struct phenology_struct
 	double litfall_nppstart;       /* (yday) yearday of litterfall for drought deciduous */
         int ngrowthdays; /* (days) days between onday and next offday */
         int nretdays;    /* (days) days between allocations */
-                int gwseasonday; /* (day) day within the growing season */
-                int lfseasonday; /* (day) day within litter fall period */
-                
+        int gwseasonday; /* (day) day within the growing season */
+        int lfseasonday; /* (day) day within litter fall period */
+        int pheno_flag; /* (0 or 1) flag to prevent green-up more than once per year in drought/dynamic mode */
                 
 };
 

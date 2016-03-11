@@ -197,8 +197,13 @@ void update_phenology(struct zone_object  *zone,
   /* drought-deciduous phenology                      */  
   /*--------------------------------------------------------------*/
 
-  else if (epc.phenology_flag == DROUGHT) {		/* Possibly need a flag to prevent greenup/sensescence more than once a wateryear */
+  else if (epc.phenology_flag == DROUGHT) {
 	
+	/* Resets phenology flag at the beginning of each wateryear*/
+	if (wyday == 1){
+		phen->pheno_flag = 0;
+	}
+
   	phen->gsi = compute_growingseason_index(zone, epv, epc);
   
 
@@ -207,15 +212,15 @@ void update_phenology(struct zone_object  *zone,
       	if (phen->gwseasonday > -1 ) { 
         	if  (phen->gwseasonday <= epc.ndays_expand)
           	    expand_flag=1;
-          	}   
-      	else if (phen->gsi > 0.5) {
+        }   
+      	else if (phen->gsi > 0.5 && phen->pheno_flag == 0) {
           	phen->gwseasonday = 1;
          	phen->lfseasonday = -1; 
          	expand_flag=1;
+		phen->pheno_flag=1;
           	phen->expand_startday = day;
           	phen->expand_stopday = day + epc.ndays_expand;
-        }   
-
+        }
 
 
 	/* cumulative NPP / litfall start relation  */
@@ -255,11 +260,13 @@ void update_phenology(struct zone_object  *zone,
   /*--------------------------------------------------------------*/
 
   else {
+	/* Resets phenology flag at the beginning of each wateryear*/
+	if (wyday == 1){
+		phen->pheno_flag = 0;
+	}
 
   phen->gsi = compute_growingseason_index(zone, epv, epc);
   
-  
-
 
   /* first are we before last possible date for leaf onset */
     /* are we already in a leaf onset condition */
@@ -267,10 +274,11 @@ void update_phenology(struct zone_object  *zone,
           if  (phen->gwseasonday <= epc.ndays_expand)
               expand_flag=1;
           }   
-      else if (phen->gsi > 0.5) {
+      else if (phen->gsi > 0.5 && phen->pheno_flag == 0) {
               phen->gwseasonday = 1;
           phen->lfseasonday = -1; 
           expand_flag=1;
+	  phen->pheno_flag=1;
           phen->expand_startday = day;
           phen->expand_stopday = day + epc.ndays_expand;
           }   

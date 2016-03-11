@@ -432,6 +432,7 @@ void input_new_strata(
 		canopy_strata[0].phen.nretdays = 365;
 		canopy_strata[0].phen.gwseasonday = -1;
 		canopy_strata[0].phen.lfseasonday = -1;
+		canopy_strata[0].phen.pheno_flag = 0;
 	}
 
 	else {

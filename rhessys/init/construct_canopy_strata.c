@@ -491,6 +491,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].phen.nretdays = 365;
 		canopy_strata[0].phen.gwseasonday = -1;
 		canopy_strata[0].phen.lfseasonday = -1;
+		canopy_strata[0].phen.pheno_flag = 0;
 	/*--------------------------------------------------------------*/
 	/*	set critical soil moisture (at stomatal closure)	*/
 	/*      psi_close is converted to m water tension from MPa using     */
