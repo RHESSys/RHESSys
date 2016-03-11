@@ -1081,7 +1081,7 @@ struct	command_line_object	*construct_command_line(
 				i++;
 			}
 			else if (strcmp(main_argv[i], "-longwaveevap") == 0) {
-				command_line[0].evap_use_longwave_flag = 1.0;
+				command_line[0].evap_use_longwave_flag = 1;
 				i++;
 			}
 			/*--------------------------------------------------------------*/
