@@ -603,14 +603,15 @@ void	canopy_stratum_daily_F(
 		
 	/*--------------------------------------------------------------*/
 	/*  Calculate net longwave.										*/
-	/*--------------------------------------------------------------*/	
-	compute_Lstar_canopy(command_line[0].verbose_flag,
-			stratum[0].Kstar_direct + stratum[0].Kstar_diffuse,
-			stratum[0].snow_stored,
-			zone,
-			patch,
-			stratum,
-			command_line[0].evap_use_longwave_flag);
+	/*--------------------------------------------------------------*/
+	if (command_line[0].evap_use_longwave_flag) {
+		compute_Lstar_canopy(command_line[0].verbose_flag,
+				stratum[0].Kstar_direct + stratum[0].Kstar_diffuse,
+				stratum[0].snow_stored,
+				zone,
+				patch,
+				stratum);
+	}
 
 
 	if ( stratum[0].Kstar_direct < -1 ) {

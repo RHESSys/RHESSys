@@ -28,13 +28,8 @@
 void	compute_Lstar(int	verbose_flag,
 					  struct	basin_object	*basin,
 					  struct	zone_object	*zone,
-					  struct	patch_object	*patch,
-					  int use_longwave)
+					  struct	patch_object	*patch)
 {
-	if (!use_longwave) {
-		return;
-	}
-	
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/

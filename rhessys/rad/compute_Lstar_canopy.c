@@ -29,13 +29,8 @@ void compute_Lstar_canopy(int	verbose_flag,
 						  double snow_stored,
 						  struct	zone_object	*zone,
 						  struct	patch_object	*patch,
-						  struct	canopy_strata_object *stratum,
-						  int use_longwave)
+						  struct	canopy_strata_object *stratum)
 {
-	if (!use_longwave) {
-		return;
-	}
-
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/

@@ -734,11 +734,12 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Compute patch level long wave radiation processes.			*/
 	/*--------------------------------------------------------------*/
-	compute_Lstar(command_line[0].verbose_flag,
-				  basin,
-				  zone,
-				  patch,
-				  command_line[0].evap_use_longwave_flag);
+	if (command_line[0].evap_use_longwave_flag) {
+		compute_Lstar(command_line[0].verbose_flag,
+					  basin,
+					  zone,
+					  patch);
+	}
 	
 	
 	/*--------------------------------------------------------------*/

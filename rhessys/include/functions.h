@@ -34,16 +34,14 @@ double	compute_potential_exfiltration(int 	verbose_flag,
 void	compute_Lstar(int	verbose_flag,
 					  struct	basin_object	*basin,
 					  struct	zone_object	*zone,
-					  struct	patch_object	*patch,
-					  int use_longwave);
+					  struct	patch_object	*patch);
 
 void compute_Lstar_canopy(int	verbose_flag,
 						  double KstarH,
 						  double snow_stored,
 						  struct	zone_object	*zone,
 						  struct	patch_object	*patch,
-						  struct	canopy_strata_object *stratum,
-						  int use_longwave);
+						  struct	canopy_strata_object *stratum);
 
 double compute_saturation_vapor_pressure(double temperature);
 
