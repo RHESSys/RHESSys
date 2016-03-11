@@ -19,19 +19,22 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+
 #include "phys_constants.h"
 #include "rhessys.h"
+
 
 void compute_Lstar_canopy(int	verbose_flag,
 						  double KstarH,
 						  double snow_stored,
 						  struct	zone_object	*zone,
 						  struct	patch_object	*patch,
-						  struct	canopy_strata_object *stratum)
+						  struct	canopy_strata_object *stratum,
+						  int use_longwave)
 {
-	/*------------------------------------------------------*/
-	/*	Local Function Declarations.						*/
-	/*------------------------------------------------------*/
+	if (!use_longwave) {
+		return;
+	}
 	
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/

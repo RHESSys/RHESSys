@@ -1947,7 +1947,8 @@ struct  command_line_object
         int             noredist_flag;
         int             vmort_flag;
         int             version_flag;
-	int		FillSpill_flag;	
+        int		FillSpill_flag;
+        int		evap_use_longwave_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];

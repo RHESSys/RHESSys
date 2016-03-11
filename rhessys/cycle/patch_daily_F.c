@@ -91,13 +91,6 @@ void		patch_daily_F(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	void compute_Lstar(
-		int,
-		struct	basin_object	*basin,
-		struct zone_object *,
-		struct patch_object *);
-
-
 	double compute_delta_water(int, double, double,	double, double, double);
 	
 	
@@ -741,11 +734,11 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Compute patch level long wave radiation processes.			*/
 	/*--------------------------------------------------------------*/
-	compute_Lstar(
-				  command_line[0].verbose_flag,
+	compute_Lstar(command_line[0].verbose_flag,
 				  basin,
 				  zone,
-				  patch );
+				  patch,
+				  command_line[0].evap_use_longwave_flag);
 	
 	
 	/*--------------------------------------------------------------*/

@@ -21,19 +21,19 @@
 #include <math.h>
 #include <assert.h>
 
-
 #include "phys_constants.h"
 #include "rhessys.h"
 
-void	compute_Lstar(
-					  int	verbose_flag,
+
+void	compute_Lstar(int	verbose_flag,
 					  struct	basin_object	*basin,
 					  struct	zone_object	*zone,
-					  struct	patch_object	*patch) 
+					  struct	patch_object	*patch,
+					  int use_longwave)
 {
-	/*------------------------------------------------------*/
-	/*	Local Function Declarations.						*/
-	/*------------------------------------------------------*/
+	if (!use_longwave) {
+		return;
+	}
 	
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/

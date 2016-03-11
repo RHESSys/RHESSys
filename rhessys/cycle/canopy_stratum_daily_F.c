@@ -609,7 +609,8 @@ void	canopy_stratum_daily_F(
 			stratum[0].snow_stored,
 			zone,
 			patch,
-			stratum);
+			stratum,
+			command_line[0].evap_use_longwave_flag);
 		
 	// Why were we zeroing out Lstar after it was set in compute_Lstar_canopy?
 	// stratum[0].Lstar = 0.0;
