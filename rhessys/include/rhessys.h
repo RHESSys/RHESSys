@@ -953,7 +953,7 @@ struct zone_object
         double  CO2;                                            /* ppm  */
         double  cos_aspect;                             /*      DIM     */
         double  cos_slope;                              /*      DIM     */
-        double  daytime_rain_duration;                  /* hours/day    */
+        double  rain_duration;                  		/* hours/day    */
         double  Delta_T;                                /* C degrees    */
         double  e_dewpoint;                             /* Pa           */
         double  e_horizon;      /* cos of angle to normal of flat       */

@@ -273,9 +273,9 @@ void		zone_daily_F(
 	/*	daylength if rain 0 if not.					*/
 	/*--------------------------------------------------------------*/
 
-	if ( zone[0].daytime_rain_duration == -999.0 ){
+	if ( zone[0].rain_duration == -999.0 ){
 		if ( zone[0].rain == 0 || (zone[0].snow != 0 ) ){
-			zone[0].daytime_rain_duration = 0;
+			zone[0].rain_duration = 0;
 		}
 		else{
 			/* Old code */
@@ -284,12 +284,12 @@ void		zone_daily_F(
 			 radiation, we are now defining it as # of seconds of rain over
 			 ENTIRE 24-hr period. If no value is given, we assume it rains
 			 over the full day. */
-			zone[0].daytime_rain_duration = 86400;
+			zone[0].rain_duration = 86400;
 		}
 	}
 	else{
 		if ( zone[0].rain == 0 && zone[0].rain_hourly_total == 0){
-			zone[0].daytime_rain_duration = 0;
+			zone[0].rain_duration = 0;
 		}
 		else{
 			/* Old code */
@@ -298,8 +298,8 @@ void		zone_daily_F(
 			/* We adjust this value in the radiation routines to split
 			 into daylight vs. nighttime rain hours, so here we leave
 			 it as-is and just bound to 0:86400 sec. */
-			zone[0].daytime_rain_duration =
-				min( 86400, max(zone[0].daytime_rain_duration,0));
+			zone[0].rain_duration =
+				min( 86400, max(zone[0].rain_duration,0));
 		}
 	}
 	

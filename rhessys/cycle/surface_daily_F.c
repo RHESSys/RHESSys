@@ -214,8 +214,8 @@ void		surface_daily_F(
 	double surface_heat_flux_day = day_proportion * patch->surface_heat_flux;
 	double surface_heat_flux_night = patch->surface_heat_flux - surface_heat_flux_day;
 
-	double rain_duration_day = zone->daytime_rain_duration * day_proportion;
-	double rain_duration_night = zone->daytime_rain_duration - rain_duration_day;
+	double rain_duration_day = zone->rain_duration * day_proportion;
+	double rain_duration_night = zone->rain_duration - rain_duration_day;
 
 #ifdef DEBUG
 	assert(daylength > rain_duration_day);
@@ -388,7 +388,7 @@ void		surface_daily_F(
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n     SURFACE DAILY DET STORE: dayl=%lf raindur=%lf Kused=%lf Kini=%lf Kdowndir=%lf Kdowndif=%lf Lstarsoil=%lf surfheat=%lf evapsurf=%lf", 
 			   zone[0].metv.dayl, 
-			   zone[0].daytime_rain_duration, 
+			   zone[0].rain_duration,
 			   K_used/86.4, 
 			   K_initial/86.4, 
 			   patch[0].Kdown_direct/86.4, 

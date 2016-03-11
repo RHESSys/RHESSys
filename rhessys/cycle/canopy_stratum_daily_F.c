@@ -425,8 +425,8 @@ void	canopy_stratum_daily_F(
 	double day_proportion = daylength / SECONDS_PER_DAY;
 	double night_proportion = 1 - day_proportion;
 
-	double rain_duration_day = zone->daytime_rain_duration * day_proportion;
-	double rain_duration_night = zone->daytime_rain_duration - rain_duration_day;
+	double rain_duration_day = zone->rain_duration * day_proportion;
+	double rain_duration_night = zone->rain_duration - rain_duration_day;
 
 	/* Lstar calcs are done in patch daily F AFTER this routine, so using yesterday's	*/
 	/* patch total canopy Lstar and scaling back to this stratum by cover fraction.		*/
@@ -1352,9 +1352,9 @@ void	canopy_stratum_daily_F(
 				   potential_rainy_evaporation_rate*1000.0,
 				   stratum[0].potential_evaporation,
 				zone[0].metv.dayl,
-			   zone[0].daytime_rain_duration,
-			   (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) ),
-			   (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400)  );
+			   zone[0].rain_duration,
+			   (zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) ),
+			   (zone[0].rain_duration * zone[0].metv.dayl/86400)  );
 		}
 				   
 		
@@ -1410,7 +1410,7 @@ void	canopy_stratum_daily_F(
 	 *  problematic.
 	 *--------------------------------------------------------------*/
 	if ( stratum[0].evaporation > ZERO ){
-		rainy_evaporation =  min((zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) *
+		rainy_evaporation =  min((zone[0].rain_duration * zone[0].metv.dayl/86400) *
 			potential_rainy_evaporation_rate,
 			stratum[0].evaporation );
 		dry_evaporation = stratum[0].evaporation - rainy_evaporation;
@@ -1452,10 +1452,10 @@ void	canopy_stratum_daily_F(
 	if  (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO){
 		if ( stratum[0].potential_evaporation > ZERO ){
 			transpiration  = transpiration_rate *
-				(zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) -
+				(zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
 				dry_evaporation / potential_evaporation_rate);
 			potential_transpiration  = potential_transpiration_rate *
-				(zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) -
+				(zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
 				dry_evaporation / potential_evaporation_rate);
 		}
 		else{
@@ -1621,7 +1621,7 @@ void	canopy_stratum_daily_F(
 			   stratum[0].rain_stored*1000,
 			   wetfrac,
 			   (stratum[0].epv.all_pai * stratum[0].defaults[0][0].specific_snow_capacity),
-			   zone[0].daytime_rain_duration * zone[0].metv.dayl/86400,
+			   zone[0].rain_duration * zone[0].metv.dayl/86400,
 			   Rnet_canopy,
 			   deltaT);
 		}

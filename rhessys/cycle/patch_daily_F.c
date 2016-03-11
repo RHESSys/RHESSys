@@ -1284,10 +1284,10 @@ void		patch_daily_F(
 			/*      - if rain duration is zero, then input is from snow     */
 			/*      melt  assume full daytime duration                      */
 			/*--------------------------------------------------------------*/
-			if (zone[0].daytime_rain_duration <= ZERO) {
+			if (zone[0].rain_duration <= ZERO) {
 				duration = zone[0].metv.dayl/(86400);
 				}
-			else duration = zone[0].daytime_rain_duration/(86400);
+			else duration = zone[0].rain_duration/(86400);
 			
 			if (patch[0].rootzone.depth > ZERO)	{
 				infiltration = compute_infiltration(
