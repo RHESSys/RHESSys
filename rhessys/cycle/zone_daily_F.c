@@ -483,20 +483,16 @@ void		zone_daily_F(
 			* (SBC * 86400/1000) * pow(zone[0].metv.tavg+273.16,4);*/
 		
 		/* Diley-Crawford */
-//		zone[0].Ldown = zone[0].cloud_fraction * (SBC * 86400/1000) * pow(zone[0].metv.tavg+273.16,4)
-//				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273.16)/273.16,6)
-//				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273.16)/25,0.5)) * 86400/1000;
-		
 		/* split by day/night (not sensitive, but needed so that we can partition evap. between day and night) */
-		zone->Ldown_night = zone[0].cloud_fraction * (SBC * (SECONDS_PER_DAY-zone[0].metv.dayl)/1000) * pow(zone[0].metv.tnight+273,4)
+		zone[0].Ldown_night = zone[0].cloud_fraction * (SBC * (SECONDS_PER_DAY-zone[0].metv.dayl)/1000) * pow(zone[0].metv.tnight+273,4)
 						    				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tnight+273)/273.16,6)
 		+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tnight+273)/25,0.5)) * (SECONDS_PER_DAY-zone[0].metv.dayl)/1000;
 
-		zone->Ldown_day = zone[0].cloud_fraction * (SBC * zone[0].metv.dayl/1000) * pow(zone[0].metv.tday+273,4)
+		zone[0].Ldown_day = zone[0].cloud_fraction * (SBC * zone[0].metv.dayl/1000) * pow(zone[0].metv.tday+273,4)
 				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tday+273)/273.16,6)
 		+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tday+273)/25,0.5)) * zone[0].metv.dayl/1000;
 
-		zone->Ldown = zone->Ldown_night + zone->Ldown_day;
+		zone[0].Ldown = zone[0].Ldown_night + zone[0].Ldown_day;
 		
 		/* Diley with Kimball cloud correction per Flerchinger 2009 */
 		/*if ( (current_date.month>=5) && (current_date.month<=10) )
@@ -511,8 +507,8 @@ void		zone_daily_F(
 				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273.16)/25,0.5)) * 86400/1000;*/
 	} else {
 		// Partition observed Ldown into day and night portions (naively, based on day length)
-		zone->Ldown_day = (zone[0].metv.dayl / 86400) * zone->Ldown;
-		zone->Ldown_night = zone->Ldown - zone->Ldown_day;
+		zone[0].Ldown_day = (zone[0].metv.dayl / 86400) * zone[0].Ldown;
+		zone[0].Ldown_night = zone[0].Ldown - zone[0].Ldown_day;
 
 	} /*end if*/
 

@@ -207,15 +207,15 @@ void		surface_daily_F(
 	hv = (2.5023e6 - 2430.54 * zone[0].metv.tday) / 1000; /* changed to match hv used in penman monteith */
 	water_density = 1000;	/* density of water in kg/m^3 */
 	
-	double daylength = zone->metv.dayl;
+	double daylength = zone[0].metv.dayl;
 	double nightlength = SECONDS_PER_DAY - daylength;
 	double day_proportion = daylength / SECONDS_PER_DAY;
 
-	double surface_heat_flux_day = day_proportion * patch->surface_heat_flux;
-	double surface_heat_flux_night = patch->surface_heat_flux - surface_heat_flux_day;
+	double surface_heat_flux_day = day_proportion * patch[0].surface_heat_flux;
+	double surface_heat_flux_night = patch[0].surface_heat_flux - surface_heat_flux_day;
 
-	double rain_duration_day = zone->rain_duration * day_proportion;
-	double rain_duration_night = zone->rain_duration - rain_duration_day;
+	double rain_duration_day = zone[0].rain_duration * day_proportion;
+	double rain_duration_night = zone[0].rain_duration - rain_duration_day;
 
 #ifdef DEBUG
 	assert(daylength > rain_duration_day);
@@ -270,14 +270,9 @@ void		surface_daily_F(
 
 		/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 		/*** reflected by water surface based on water albedo. ***/
-
-//		rnet_evap_pond = 1000 * ( (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse)
-//				+ patch[0].Lstar_pond
-//				/* - patch[0].Lstar_soil */ /* Lstar_soil is assumed 0 when ponded water */
-//				+ patch[0].surface_heat_flux ) / zone[0].metv.dayl;
-		double rnet_evap_pond_night = 1000 * ( patch->Lstar_pond_night + surface_heat_flux_night) / nightlength;
-		double rnet_evap_pond_day = 1000 * ( (1 - WATER_ALBEDO) * (patch->Kdown_direct + patch->Kdown_diffuse)
-				+ patch->Lstar_pond_day + surface_heat_flux_day) / daylength;
+		double rnet_evap_pond_night = 1000 * ( patch[0].Lstar_pond_night + surface_heat_flux_night) / nightlength;
+		double rnet_evap_pond_day = 1000 * ( (1 - WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse)
+				+ patch[0].Lstar_pond_day + surface_heat_flux_day) / daylength;
 		rnet_evap_pond = rnet_evap_pond_night + rnet_evap_pond_day;
 		if (rnet_evap_pond <= ZERO) rnet_evap_pond = 0.0;
 		if (rnet_evap_pond_night <= ZERO) rnet_evap_pond_night = 0.0;
@@ -334,11 +329,6 @@ void		surface_daily_F(
 		/* Added adjustment for rain duration. Assumes rain duration input	*/
 		/* is # of hours over 24-hr day and we divide into daylight vs.		*/
 		/* night rain hours following total daylight hour fraction.			*/
-//		detention_store_potential_evaporation  = detention_store_potential_dry_evaporation_rate
-//				* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
-//				+ detention_store_potential_rainy_evaporation_rate
-//				* (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
-
 		detention_store_potential_evaporation_night = (detention_store_potential_dry_evaporation_rate_night
 		                * (nightlength - rain_duration_night) )
 		                + (detention_store_potential_rainy_evaporation_rate_night
@@ -403,8 +393,8 @@ void		surface_daily_F(
 			fraction_direct_K = (1-WATER_ALBEDO) * patch[0].Kdown_direct / K_initial;
 			fraction_diffuse_K = (1-WATER_ALBEDO) * patch[0].Kdown_diffuse / K_initial;
 			fraction_Lstar_pond = patch[0].Lstar_soil / K_initial;
-			fraction_Lstar_pond_night = patch->Lstar_soil_night / K_initial;
-			fraction_Lstar_pond_day = patch->Lstar_soil_day / K_initial;
+			fraction_Lstar_pond_night = patch[0].Lstar_soil_night / K_initial;
+			fraction_Lstar_pond_day = patch[0].Lstar_soil_day / K_initial;
 			fraction_surface_heat_flux = patch[0].surface_heat_flux / K_initial;
 			fraction_surface_heat_flux_night = surface_heat_flux_night / K_initial;
 			fraction_surface_heat_flux_day = surface_heat_flux_day / K_initial;
@@ -422,8 +412,8 @@ void		surface_daily_F(
 		patch[0].Kdown_direct = ((1-WATER_ALBEDO) * patch[0].Kdown_direct) - (fraction_direct_K * K_used);
 		patch[0].Kdown_diffuse = ((1-WATER_ALBEDO) * patch[0].Kdown_diffuse) - (fraction_diffuse_K * K_used);
 		patch[0].Lstar_pond = patch[0].Lstar_soil - (fraction_Lstar_pond * K_used);
-		patch->Lstar_pond_night = patch->Lstar_pond_night - (fraction_Lstar_pond_night * K_used);
-		patch->Lstar_pond_day = patch->Lstar_pond_day - (fraction_Lstar_pond_day * K_used);
+		patch[0].Lstar_pond_night = patch[0].Lstar_pond_night - (fraction_Lstar_pond_night * K_used);
+		patch[0].Lstar_pond_day = patch[0].Lstar_pond_day - (fraction_Lstar_pond_day * K_used);
 		patch[0].surface_heat_flux = patch[0].surface_heat_flux - (fraction_surface_heat_flux * K_used);
 		surface_heat_flux_night = surface_heat_flux_night - (fraction_surface_heat_flux_night * K_used);
 		surface_heat_flux_day = surface_heat_flux_day - (fraction_surface_heat_flux_day * K_used);
@@ -658,12 +648,12 @@ void		surface_daily_F(
 		/* a reasonable approximation if litter and soil are same 	*/
 		/* temperature and have same emissivity. */
 		double rnet_evap_litter_night = litter[0].cover_fraction
-				* 1000 * (patch->Lstar_soil_night
+				* 1000 * (patch[0].Lstar_soil_night
 						+ surface_heat_flux_night)
 						/ nightlength;
 		double rnet_evap_litter_day = litter[0].cover_fraction
 				* 1000 * (Kstar_direct_lit + Kstar_diffuse_lit
-						+ patch->Lstar_soil_day
+						+ patch[0].Lstar_soil_day
 						+ surface_heat_flux_day)
 						/ daylength;
 		rnet_evap_litter = rnet_evap_litter_night + rnet_evap_litter_day;
@@ -672,48 +662,20 @@ void		surface_daily_F(
 		if (rnet_evap_litter_day <= ZERO) rnet_evap_litter_day = 0.0;
 		/* Assuming net LW for soil is available for soil water evap. */
 		double rnet_evap_soil_night = (1 - litter[0].cover_fraction)
-															* 1000 * (patch->Lstar_soil_night
+															* 1000 * (patch[0].Lstar_soil_night
 																	+ surface_heat_flux_night)
 																	/ nightlength;
 		double rnet_evap_soil_day = (1 - litter[0].cover_fraction)
 													* 1000 * (Kstar_direct_soil + Kstar_diffuse_soil
-															+ patch->Lstar_soil_day
+															+ patch[0].Lstar_soil_day
 															+ surface_heat_flux_day)
 															/ daylength;
 		rnet_evap_soil = rnet_evap_soil_night + rnet_evap_soil_day;
 		if (rnet_evap_soil <= ZERO) rnet_evap_soil = 0.0;
 		if (rnet_evap_soil_night <= ZERO) rnet_evap_soil_night = 0.0;
 		if (rnet_evap_soil_day <= ZERO) rnet_evap_soil_day = 0.0;
+		
 
-//		if (zone[0].metv.dayl > ZERO) {
-//			/* Assuming net LW for litter is same as soil layer, which is	*/
-//			/* a reasonable approximation if litter and soil are same 	*/
-//			/* temperature and have same emissivity. */
-//			rnet_evap_litter = litter[0].cover_fraction
-//									* 1000 * (Kstar_direct_lit + Kstar_diffuse_lit
-//											  + patch[0].Lstar_soil
-//											  + patch[0].surface_heat_flux)
-//									/ zone[0].metv.dayl;
-//				if (rnet_evap_litter <= ZERO) {
-//					rnet_evap_litter = 0.0;
-//				}
-//			/* Assuming net LW for soil is available for soil water evap. */
-//			rnet_evap_soil = (1 - litter[0].cover_fraction)
-//									* 1000 * (Kstar_direct_soil + Kstar_diffuse_soil
-//											  + patch[0].Lstar_soil
-//											  + patch[0].surface_heat_flux)
-//									/ zone[0].metv.dayl;
-//				if (rnet_evap_soil <= ZERO) {
-//					rnet_evap_soil = 0.0;
-//				}
-//		}
-//
-//		else {
-//			rnet_evap_litter = 0.0;
-//			rnet_evap_soil = 0.0;
-//		}
-		
-		
 		if ( command_line[0].verbose_flag == -5 ){
 			printf("\n          SURFACE DAILY EVAP: rnet_lit=%lf rnet_soil=%lf gsurf_lit=%lf gsurf_soil=%lf lit.gl_c=%lf lit.gsurf_slope=%lf lit.gsurf_int=%lf", 
 				   rnet_evap_litter/86.4, 
@@ -822,13 +784,6 @@ void		surface_daily_F(
 		/*								*/
 		/*	Note that Kstar is converted from Kj/m2*day to W/m2	*/
 		/*--------------------------------------------------------------*/
-//		patch[0].potential_evaporation  = potential_evaporation_rate
-//			* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
-//			+ potential_rainy_evaporation_rate * (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
-//		patch[0].PE  = PE_rate
-//			* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
-//			+ PE_rainy_rate * (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
-
 		double potential_evaporation_night = (potential_evaporation_rate_night
 				* (nightlength - rain_duration_night) )
 				+ (potential_rainy_evaporation_rate_night
@@ -837,7 +792,7 @@ void		surface_daily_F(
 				* (daylength - rain_duration_day) )
 				+ (potential_rainy_evaporation_rate_day
 				* rain_duration_day);
-		patch->potential_evaporation = potential_evaporation_night + potential_evaporation_day;
+		patch[0].potential_evaporation = potential_evaporation_night + potential_evaporation_day;
 
 		double PE_night = (PE_rate_night
 				* (nightlength - rain_duration_night) )
@@ -847,7 +802,7 @@ void		surface_daily_F(
 				* (daylength - rain_duration_day) )
 				+ (PE_rainy_rate_day
 				* rain_duration_day);
-		patch->PE = PE_night + PE_day;
+		patch[0].PE = PE_night + PE_day;
 
 		/*--------------------------------------------------------------*/
 		/*	Update rain storage ( this also updates the patch level	*/
@@ -906,11 +861,6 @@ void		surface_daily_F(
 			1.0/patch[0].gsurf,
 			1.0/patch[0].ga,
 			2);
-		
-//		soil_potential_evaporation  = soil_potential_dry_evaporation_rate
-//			* (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) )
-//			+ soil_potential_rainy_evaporation_rate
-//			* (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400);
 
 		double soil_potential_evaporation_night = (soil_potential_dry_evaporation_rate_night
 				* (nightlength - rain_duration_night) )
