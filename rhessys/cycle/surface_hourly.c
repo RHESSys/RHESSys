@@ -62,9 +62,28 @@ void		surface_hourly(
 	/*--------------------------------------------------------------*/
 	/*	LITTER STORE INTERCEPTION:				*/
 	/*--------------------------------------------------------------*/
-    
-	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
-                                        && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) {
+    /* Need to check to see if patch is SCM - some SCM patches may have "zero"  potential soil detention store, but can still store surface water */
+	if(command_line[0].scm_flag == 1){
+		if ( ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))) && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) || ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))) && (patch[0].scm_defaults[0][0].ID != 0))) {
+			det_on_litter_flag = 1;
+		}
+		else {
+			det_on_litter_flag = 0;
+		}
+	} 
+	
+	/* If not in SCM mode, call routines when there is detention store > leaf store AND there is potential soil detention storage */
+	else {
+		if ( ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))	&& (patch[0].soil_defaults[0][0].detention_store_size > 0.0) )) {
+			det_on_litter_flag = 1;
+		}
+		else {
+			det_on_litter_flag = 0;
+		}
+	}
+	
+	/* Case where detention store sits on top of litter - routines */
+	if ( det_on_litter_flag == 1) {
 	/* assume if det store over litter then litter is saturated */
 		litter[0].rain_stored = litter[0].rain_capacity;
 		patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);	
