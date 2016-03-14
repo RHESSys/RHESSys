@@ -155,6 +155,7 @@ void		surface_daily_F(
 	double  Kup_direct_soil, Kup_diffuse_soil, Kup_direct_lit, Kup_diffuse_lit;
 	double  dum;
 	struct	litter_object	*litter;
+	int     det_on_litter_flag;
 	
 
 	/*--------------------------------------------------------------*/
@@ -219,14 +220,35 @@ void		surface_daily_F(
 			   patch[0].evaporation_surf);
 	}
 	
-	/* Case where detention store sits on top of litter */
-	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
-			&& (patch[0].soil_defaults[0][0].detention_store_size > 0.0) ) {
+	/* Case where detention store sits on top of litter - logic tests */
+	
+	/* Need to check to see if patch is SCM - some SCM patches may have "zero"  potential soil detention store, but can still store surface water */
+	if(command_line[0].scm_flag == 1){
+		if ( ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))) && (patch[0].soil_defaults[0][0].detention_store_size > 0.0)) || ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))) && (patch[0].scm_defaults[0][0].ID != 0))) {
+			det_on_litter_flag = 1;
+		}
+		else {
+			det_on_litter_flag = 0;
+		}
+	} 
+	
+	/* If not in SCM mode, call routines when there is detention store > leaf store AND there is potential soil detention storage */
+	else {
+		if ( ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))	&& (patch[0].soil_defaults[0][0].detention_store_size > 0.0) )) {
+			det_on_litter_flag = 1;
+		}
+		else {
+			det_on_litter_flag = 0;
+		}
+	}
+	
+	/* Case where detention store sits on top of litter - routines */
+	if ( det_on_litter_flag == 1) {
 		
 		/* assume if det store over litter then litter is saturated */
 		patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);
 		litter[0].rain_stored = litter[0].rain_capacity;
-	
+
 		/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 		/*** reflected by water surface based on water albedo. ***/
 		
@@ -275,10 +297,27 @@ void		surface_daily_F(
 								
 			// Avoid over-estimating ET from surfaces with no detention store size 
 			//   (e.g. impervious surface) by gating ET by detention_store_size
-			detention_store_evaporation = min(detention_store_potential_evaporation, 
-						min(patch[0].detention_store,
-							patch[0].soil_defaults[0][0].detention_store_size));
-		
+			
+			// NO SCM MODE
+			if(command_line[0].scm_flag != 1) {
+				detention_store_evaporation = min(detention_store_potential_evaporation, 
+							min(patch[0].detention_store,
+								patch[0].soil_defaults[0][0].detention_store_size));
+			}
+			// SCM MODE
+			else {
+				// If not an SCM patch, bound by soil detention store size
+				if(patch[0].scm_defaults[0][0].ID == 0){
+					detention_store_evaporation = min(detention_store_potential_evaporation, 
+							min(patch[0].detention_store,
+								patch[0].soil_defaults[0][0].detention_store_size));
+				}
+				// If an SCM patch - do not bound by soil detention store size
+				else {
+					detention_store_evaporation = min(detention_store_potential_evaporation, patch[0].detention_store);
+				}
+			}
+
 		patch[0].detention_store -= detention_store_evaporation;
 		
 		patch[0].Kup_direct += (1 - patch[0].overstory_fraction) 
@@ -286,9 +325,11 @@ void		surface_daily_F(
 		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction)
 					* WATER_ALBEDO * patch[0].Kdown_diffuse;	
 	}
-	
 	else detention_store_evaporation = 0.0;
 	
+		if(patch[0].ID==2){
+			fprintf(stderr,"\nstore evap = %f",detention_store_evaporation*1000);
+		}	
 	
 	/*** If snowpack is over detention store, then add evaporated water to snowpack. ***/
 	
