@@ -59,6 +59,7 @@ void	output_growth_basin(
 	double atotaln, adenitrif;
 	double astreamflow_NO3, astreamflow_NH4, astreamflow_DON, astreamflow_DOC;
 	double anitrif, aDOC, aDON, arootdepth;
+	double aninput, afertilizer_NO3, afertilizer_NH4;
 	double hstreamflow_NO3, hstreamflow_NH4, hstreamflow_DON, hstreamflow_DOC;
 	double streamNO3_from_surface;
 	double streamNO3_from_sub;
@@ -111,11 +112,15 @@ void	output_growth_basin(
 	acloss = 0.0;
 	streamNO3_from_surface = 0.0;
 	streamNO3_from_sub = 0.0;
+	aninput = 0.0;
+	afertilizer_NO3 = 0.0;
+	afertilizer_NH4 = 0.0;
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
+				aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
 				alitrn += (patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n
@@ -144,6 +149,8 @@ void	output_growth_basin(
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
 				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
+				afertilizer_NO3 += (patch[0].fertilizer_NO3) * patch[0].area;
+				afertilizer_NH4 += (patch[0].fertilizer_NH4) * patch[0].area;
 				aDON += (patch[0].soil_ns.DON) * patch[0].area;
 				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
 				anfix += (patch[0].ndf.nfix_to_sminn) * patch[0].area;
@@ -275,6 +282,9 @@ void	output_growth_basin(
 	anfix /= aarea;
 	acloss /= aarea;
 	anuptake /= aarea;
+	aninput /= aarea;
+	afertilizer_NO3 /= aarea;
+	afertilizer_NH4 /= aarea;
 	astreamflow_NH4 += (hstreamflow_NH4/ basin_area);
 	astreamflow_NO3 += (hstreamflow_NO3/ basin_area);
 	astreamflow_DON += (hstreamflow_DON/ basin_area);
@@ -289,7 +299,7 @@ void	output_growth_basin(
 	hgwDOCout = hgwDOCout / basin_area;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -330,7 +340,9 @@ void	output_growth_basin(
 		anuptake * 1000.0,
 		acloss * 1000.0,
 		streamNO3_from_surface * 1000.0,
-		streamNO3_from_sub * 1000.0
+		streamNO3_from_sub * 1000.0,
+		aninput * 1000.0,
+		(afertilizer_NO3 + afertilizer_NH4)*1000.0
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 

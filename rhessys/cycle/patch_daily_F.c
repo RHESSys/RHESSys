@@ -1172,6 +1172,9 @@ void		patch_daily_F(
 		}
 	*/
 
+	patch[0].fertilizer_NO3_in = fertilizer_NO3;
+	patch[0].fertilizer_NH4_in = fertilizer_NH4;
+
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
 	//patch[0].surface_NO3 += zone[0].ndep_NO3;

@@ -1596,6 +1596,8 @@ struct patch_object
         double  surface_NH4;            /* kg/m2        */
         double  grazing_Closs;          /* kgC/m2       */
         double  grazing_mean_nc;        /* ratio N:Co   */
+        double  fertilizer_NO3_in;         /* kg/m2        */
+        double  fertilizer_NH4_in;         /* kg/m2        */
         double  fertilizer_NO3;         /* kg/m2        */
         double  fertilizer_NH4;         /* kg/m2        */
         double  surface_DOC_Qin_total;  /* kgC/m2 day   */
