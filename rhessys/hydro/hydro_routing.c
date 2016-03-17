@@ -1339,7 +1339,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
         unscap =  compute_delta_water( verbose, 
                                        por_0[i], 
                                        por_d[i],
-                                       zsoil[i], patchz[i]-waterz[i], 0.0 ) ;       /*  full-column sat water capacity  */
+                                       zsoil[i], satdefz, 0.0 ) ;       /*  full-column sat water capacity  */
         drain  = compute_unsat_zone_drainage(  verbose, 
                                                tpcurv[i], 
                                                pordex[i], 
