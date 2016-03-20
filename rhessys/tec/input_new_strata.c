@@ -442,6 +442,14 @@ void input_new_strata(
 		fprintf(stderr,"\n since dynamic phenology timing not yet implemented");
 		exit(EXIT_FAILURE);
 	}
+		
+		/*--------------------------------------------------------------*/
+		/* initialize runnning average of psi **** should actually  calc */
+		/* current day psi						*/
+		/*--------------------------------------------------------------*/
+		canopy_strata[0].epv.psi_ravg = canopy_strata[0].defaults[0][0].epc.psi_close;
+
+
 		/*--------------------------------------------------------------*/
 		/*	for now initialize these accumuling variables		*/
 		/*--------------------------------------------------------------*/

@@ -508,7 +508,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/* initialize runnning average of psi **** should actually  calc */
 	/* current day psi						*/
 	/*--------------------------------------------------------------*/
-	canopy_strata[0].epv.psi_ravg = canopy_strata[0].defaults[0][0].epc.psi_open;
+	canopy_strata[0].epv.psi_ravg = canopy_strata[0].defaults[0][0].epc.psi_close;
 
 	/*--------------------------------------------------------------*/
 	/*	for now initialize these accumuling variables		*/
