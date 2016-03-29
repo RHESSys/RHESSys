@@ -96,7 +96,6 @@ struct zone_object *construct_zone(
 	
 	void	*alloc(size_t, char *, char *);
 	double	atm_pres( double );
-	param * readtag_worldfile(int *, FILE *, char*);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

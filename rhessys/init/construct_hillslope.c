@@ -76,7 +76,6 @@ struct hillslope_object *construct_hillslope(
 	void	*alloc(	size_t,
 		char	*,
 		char	*);
-	param * readtag_worldfile(int *, FILE *,char*);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

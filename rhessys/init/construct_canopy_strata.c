@@ -77,9 +77,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		double);
 
 	void	*alloc(size_t, char *, char *);
-	param	*readtag_worldfile(int *,
-				  FILE *,
-				  char *);
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

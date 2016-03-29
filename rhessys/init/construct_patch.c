@@ -84,9 +84,7 @@ struct patch_object *construct_patch(
 	
 	void	sort_patch_layers(struct patch_object *);
 	void	*alloc(	size_t, char *, char *);
-	param * readtag_worldfile(int *, 
-				  FILE *, 
-				  char*);	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definitions				*/
 	/*--------------------------------------------------------------*/
