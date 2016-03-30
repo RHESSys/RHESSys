@@ -405,6 +405,7 @@ static unsigned  streamdex( unsigned ID )   /*  stream-subscript in strm_ID[]  *
 
 /*------------------------------------------------------------------------------*/
 /*  SUB-SURFACE ROUTING OPTIONS:  RETURN COURANT-STABLE COUPLING TIME STEP      */
+/*      By construction,  outH2O <= totH2O - minH2O   for all schemes           */
 /*------------------------------------------------------------------------------*/
 /*      Original parallel version of sub_routing():  needs total-column water,  */
 /*      and transports pollutants as well-mixed in the water, according to the  */
@@ -496,7 +497,7 @@ static void sub_routing0( double   tstep,        /*  external time step      */
         default( none )                                             \
         private( i, j, k, n, fac, dH2O, dNO3, dNH4, dDOC, dDON )    \
          shared( num_patches, plist, subcnti, subdexi, subnbri,     \
-                 dt, gammaf, outH2O,                                \
+                 dt, gammaf, outH2O, minH2O,                        \
                  totH2O, totNO3, totNH4, totDON, totDOC,            \
                  latH2O, latNO3, latNH4, latDON, latDOC )           \
        schedule( guided )
@@ -504,7 +505,8 @@ static void sub_routing0( double   tstep,        /*  external time step      */
     for ( i = 0; i < num_patches; i++ )     /*  update H2O, NO3, NH4, DON, DOC  */
         {
         fac  =  outH2O[i] / totH2O[i] ;
-        dH2O = -outH2O[i] ;                 /*  = -fac * totH2O[i] */
+        dH2O = -min( outH2O[i], totH2O[i] - minH2O[i] ;
+        fac  = -dH2O / totH2O[i] ;
         dNO3 = -fac * totNO3[i] ;
         dNH4 = -fac * totNH4[i] ;
         dDON = -fac * totDON[i] ;
@@ -536,7 +538,8 @@ static void sub_routing0( double   tstep,        /*  external time step      */
 /*      saturation-deficit instead of total water.                          */
 /*--------------------------------------------------------------------------*/
 
-static void sub_routing1( double   tstep,        /*  external time step      */
+static void sub_routing1( double   tstep,        /*  extern
+            {al time step      */
                           double * substep )     /*  hydro-coupling time step: <= min( CPLMAX, tstep )  */
     {
     double      z1, z2, zz, vel, slope, cmax, dt ;
@@ -636,7 +639,7 @@ static void sub_routing1( double   tstep,        /*  external time step      */
          shared( num_patches, plist, subcnti, subdexi, subnbri, dt,     \
                  outH2O, patchm, satdef, capH2O, gammaf, por_0, por_d,  \
                  Ndecay, Ddecay, zactiv, zsoil, gamsum, verbose,        \
-                 NO3ads, NH4ads, DONads, DOCads,                        \
+                 NO3ads, NH4ads, DONads, DOCads, minH2O,                \
                  totH2O, totNO3, totNH4, totDON, totDOC,                \
                  latH2O, latNO3, latNH4, latDON, latDOC )               \
        schedule( guided )
@@ -648,7 +651,7 @@ static void sub_routing1( double   tstep,        /*  external time step      */
 
         gam  =  gamsum[i] ;
         dgam =  1.0 / gam ;
-        dH2O = -outH2O[i] ;
+        dH2O = -min( outH2O[i], totH2O[i] - minH2O[i] ) ;
         dNO3 = -compute_N_leached( verbose, totNO3[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NO3ads[i], transp ) ;
         dNH4 = -compute_N_leached( verbose, totNH4[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NH4ads[i], transp ) ;
         dDON = -compute_N_leached( verbose, totDON[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DONads[i], transp ) ;
@@ -1311,24 +1314,25 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
 
     kfac = 0.5 * tstep / 3600.0 ;
 
-#pragma omp parallel for                                            \
-        default( none )                                             \
-        private( i, satdefz, dH2O, dNO3, dNH4, dDOC, dDON,             \
-                 facN, facC, facD, facH2O, fldcap, drain, unscap )  \
-         shared( num_patches, capH2O, plist, satdef, unsH2O,        \
-                 verbose, por_0, por_d, Ndecay, Ddecay, dzsoil,     \
-                 patchz, waterz, tpcurv, psiair, pordex,            \
-                 p3parm, p4parm, mz_v, ksat_0, kfac,                \
-                 totH2O, totNO3, totNH4, totDOC, totDON,            \
-                 infH2O, infNO3, infNH4, infDOC, infDON,            \
-                 latH2O, latNO3, latNH4, latDOC, latDON,            \
-                 sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON )           \
+#pragma omp parallel for                                                \
+        default( none )                                                 \
+        private( i, satdefz, dH2O, dNO3, dNH4, dDOC, dDON,              \
+                 facN, facC, facD, facH2O, fldcap, drain, unscap )      \
+         shared( num_patches, capH2O, minH2O, plist, satdef, unsH2O,    \
+                 verbose, por_0, por_d, Ndecay, Ddecay, dzsoil,         \
+                 patchz, waterz, tpcurv, psiair, pordex,                \
+                 p3parm, p4parm, mz_v, ksat_0, kfac,                    \
+                 totH2O, totNO3, totNH4, totDOC, totDON,                \
+                 infH2O, infNO3, infNH4, infDOC, infDON,                \
+                 latH2O, latNO3, latNH4, latDOC, latDON,                \
+                 sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON )               \
        schedule( guided )
 
     for ( i = 0; i < num_patches; i++ )     /*  loop on patches  */
         {
 
         /*  Add infiltration, lateral inflow  */
+        /*  NOTE:  by construction in sub_routing*(), lateral outflow <= totH2O - minH2O  */
 
         satdefz = patchz[i] - waterz[i] ;
         fldcap = compute_layer_field_capacity( verbose, 
@@ -1347,7 +1351,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                                tpcurv[i], 
                                                pordex[i], 
                                                unsH2O[i] / unscap, 
-                                               mz_v[i], 
+                                                mz_v[i], 
                                                   satdefz, 
                                           kfac*ksat_0[i], 
                                                unsH2O[i] - fldcap ) ;
