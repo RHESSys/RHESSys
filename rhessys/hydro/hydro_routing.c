@@ -540,7 +540,7 @@ static void sub_routing1( double   tstep,        /*  external time step      */
                           double * substep )     /*  hydro-coupling time step: <= min( CPLMAX, tstep )  */
     {
     double      z1, z2, zz, vel, slope, cmax, dt ;
-    double      ss, std, ssum, tsum, wsum, fac, gam ;
+    double      ss, std, ssum, tsum, wsum, fac, gam, dgam ;
     double      trans, dH2Odt ;
     double      dH2O, dNO3, dNH4, dDOC, dDON ;
     unsigned    i, j, k, kk, m, mm ;
@@ -622,6 +622,7 @@ static void sub_routing1( double   tstep,        /*  external time step      */
 
     *substep = dt = min( COUMAX / cmax , tstep ) ;
 
+    /**  COMPUTE:     net flow = (-outflow) + SUM{ fraction * inflow }                  **/
     /**  ASSUMPTION:  if the Qout-argument to compute_N_leached() is a *rate* M^3/S     **/
     /**  instead of volume M^3, then the result is a rate Kg/S instead of a mass Kg     **/
     /**  NOTE:  Because both of the redundant calculations in per-pollutant calls, and  **/
@@ -646,6 +647,7 @@ static void sub_routing1( double   tstep,        /*  external time step      */
         transp = patch->transmissivity_profile ;
 
         gam  =  gamsum[i] ;
+        dgam =  1.0 / gam ;
         dH2O = -outH2O[i] ;
         dNO3 = -compute_N_leached( verbose, totNO3[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NO3ads[i], transp ) ;
         dNH4 = -compute_N_leached( verbose, totNH4[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NH4ads[i], transp ) ;
@@ -656,12 +658,13 @@ static void sub_routing1( double   tstep,        /*  external time step      */
             k      = subdexi[i][j] ;
             n      = subnbri[i][j] ;
             gam    = gammaf[k][n] ;
+            fac    = gammaf[k][n] * dgam ;      /*  for normalized fractions of flow into this cell */
             transp = plist[n]->transmissivity_profile ;
-            dH2O += outH2O[n] ;
-            dNO3 += compute_N_leached( verbose, totNO3[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ndecay[n], zactiv[n], zsoil[n], NO3ads[n], transp ) ;
-            dNH4 += compute_N_leached( verbose, totNH4[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ndecay[n], zactiv[n], zsoil[n], NH4ads[n], transp ) ;
-            dDON += compute_N_leached( verbose, totDON[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ddecay[n], zactiv[n], zsoil[n], DONads[n], transp ) ;
-            dDOC += compute_N_leached( verbose, totDOC[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ddecay[n], zactiv[n], zsoil[n], DOCads[n], transp ) ;
+            dH2O += fac * outH2O[n] ;
+            dNO3 += fac * compute_N_leached( verbose, totNO3[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ndecay[n], zactiv[n], zsoil[n], NO3ads[n], transp ) ;
+            dNH4 += fac * compute_N_leached( verbose, totNH4[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ndecay[n], zactiv[n], zsoil[n], NH4ads[n], transp ) ;
+            dDON += fac * compute_N_leached( verbose, totDON[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ddecay[n], zactiv[n], zsoil[n], DONads[n], transp ) ;
+            dDOC += fac * compute_N_leached( verbose, totDOC[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ddecay[n], zactiv[n], zsoil[n], DOCads[n], transp ) ;
             }
 
         latH2O[i] = dt * dH2O ;
@@ -1349,7 +1352,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                           kfac*ksat_0[i], 
                                                unsH2O[i] - fldcap ) ;
         unsH2O[i] = unsH2O[i] + infH2O[i] - drain;
-        satdef[i] = satdef[i] - latH2O[i] - drain ;
+        satdef[i] = satdef[i] - latH2O[i] - drain ;         /*  drainage goes into sat zone, hence decreases satdef  */
         totH2O[i] = totH2O[i] + infH2O[i] + latH2O[i] ;
         totNO3[i] = totNO3[i] + infNO3[i] + latNO3[i] ;
         totNH4[i] = totNH4[i] + infNH4[i] + latNH4[i] ;
@@ -1362,9 +1365,9 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
             {
         	dH2O = totH2O[i] - capH2O[i] ;
             facH2O = dH2O / totH2O[i] ;
-            satdefz = por_d[i] * log( 1 + facH2O / ( por_0[i] * por_d[i] ) ) ;   /*  soil depth previously occupied by facH2O */
-            facN = 1.0 - exp( satdefz * Ndecay[i] ) ;                          /*  fraction of N,D in [0:delz], assuming   */
-            facD = 1.0 - exp( satdefz * Ddecay[i] ) ;                          /*  fraction of N,D in [0:delz], assuming   */
+            satdefz = por_d[i] * log( 1 + facH2O / ( por_0[i] * por_d[i] ) ) ;  /*  soil depth previously occupied by facH2O */
+            facN = 1.0 - exp( satdefz * Ndecay[i] ) ;                           /*  fraction of N,D in [0:delz], assuming   */
+            facD = 1.0 - exp( satdefz * Ddecay[i] ) ;                           /*  fraction of N,D in [0:delz], assuming   */
             dNO3 = facN * totNO3[i] ;
             dNH4 = facN * totNH4[i] ;
             dDON = facD * totDON[i] ;
