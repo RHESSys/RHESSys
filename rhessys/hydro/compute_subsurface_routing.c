@@ -211,14 +211,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	/*--------------------------------------------------------------*/
 	for (k = 0; k < n_timesteps; k++) {
 
-		patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth, 0.0,
-				-1.0 * patch[0].sat_deficit);
-		patch[0].preday_sat_deficit = patch[0].sat_deficit;
-
-
 		for (i = 0; i < basin->route_list->num_patches; i++) {
 			patch = basin->route_list->list[i];
 		      	patch[0].hourly_subsur2stream_flow = 0;
@@ -365,7 +357,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*	that it accumulates flux in from patches		*/
 			/*	(roads) that direct water to the stream			*/
 			/*--------------------------------------------------------------*/
-			if (k >=0){// (n_timesteps - 1))
+			if (k ==(n_timesteps-1) ){
 				      
 			      if ((patch[0].sat_deficit
 						- (patch[0].unsat_storage + patch[0].rz_storage))
