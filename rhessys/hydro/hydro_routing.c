@@ -505,7 +505,7 @@ static void sub_routing0( double   tstep,        /*  external time step      */
     for ( i = 0; i < num_patches; i++ )     /*  update H2O, NO3, NH4, DON, DOC  */
         {
         fac  =  outH2O[i] / totH2O[i] ;
-        dH2O = -min( outH2O[i], totH2O[i] - minH2O[i] ;
+        dH2O = -min( outH2O[i], totH2O[i] - minH2O[i] ) ;
         fac  = -dH2O / totH2O[i] ;
         dNO3 = -fac * totNO3[i] ;
         dNH4 = -fac * totNH4[i] ;
