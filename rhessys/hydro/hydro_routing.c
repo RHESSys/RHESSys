@@ -631,7 +631,7 @@ static void sub_routing1( double   tstep,        /*  external time step      */
 
 #pragma omp parallel for                                                \
         default( none )                                                 \
-        private( i, j, k, n, patch, fac, gam, transp,                   \
+        private( i, j, k, n, patch, fac, gam, dgam, transp,             \
                  dH2O, dNO3, dNH4, dDOC, dDON )                         \
          shared( num_patches, plist, subcnti, subdexi, subnbri, dt,     \
                  outH2O, patchm, satdef, capH2O, gammaf, por_0, por_d,  \
