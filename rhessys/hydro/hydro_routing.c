@@ -432,7 +432,7 @@ static void sub_routing0( double   tstep,        /*  external time step      */
         private( i, j, kk, m, n, patch, z1, z2, zz, trans, slope,   \
                  ssum, tsum, wsum, fac, vel, dH2Odt )               \
          shared( num_patches, plist, pscale, nsoil, dzsoil, perimf, \
-                 normal, perc, waterz, outH2O, gammaf,              \
+                 normal, perc, waterz, outH2O, gammaf, satdef,      \
                  subcnto, subdexo, subdist, psize, totH2O )         \
       reduction( max: cmax )                                        \
        schedule( guided )
@@ -446,13 +446,13 @@ static void sub_routing0( double   tstep,        /*  external time step      */
             tsum = 0.0 ;
             for ( m = 0 ; m < 9 ; m++ )
                 {
-                n = min( (int)nsoil[i], (int) lround( patch->sat_deficit + normal[m]*pscale[i])/dzsoil[i] ) ;
+                n = min( (int)nsoil[i], (int) lround( satdef[i] + normal[m]*pscale[i])/dzsoil[i] ) ;
                 tsum += patch->transmissivity_profile[n] * perc[m] ;
                 }
             trans = tsum / psize [i] ;
             }
         else{
-            n     = min( (int)nsoil[i], (int)lround( patch->sat_deficit/dzsoil[i] ) ) ;
+            n     = min( (int)nsoil[i], (int)lround( satdef[i]/dzsoil[i] ) ) ;
             trans = patch->transmissivity_profile[n] / psize [i] ;
             }
 
@@ -554,14 +554,14 @@ static void sub_routing1( double   tstep,        /*  external time step      */
 
     cmax = COUMAX / min( tstep, CPLMAX ) ;             /*  "Courant-stable for one time-step"  */
 
-#pragma omp parallel for                                            \
-        default( none )                                             \
-        private( i, j, kk, m, n, patch, z1, z2, zz, trans, slope,   \
-                 ssum, tsum, wsum, fac, vel, dH2Odt )               \
-         shared( num_patches, plist, pscale, nsoil, dzsoil, perimf, \
-                 normal, perc, waterz, outH2O, totH2O, minH2O,      \
-                gammaf,  gamsum, subcnto, subdexo, subdist, psize ) \
-      reduction( max: cmax )                                        \
+#pragma omp parallel for                                                \
+        default( none )                                                 \
+        private( i, j, kk, m, n, patch, z1, z2, zz, trans, slope,       \
+                 ssum, tsum, wsum, fac, vel, dH2Odt )                   \
+         shared( num_patches, plist, pscale, nsoil, dzsoil, perimf,     \
+                 normal, perc, waterz, outH2O, totH2O, minH2O, satdef   \
+                gammaf,  gamsum, subcnto, subdexo, subdist, psize )     \
+      reduction( max: cmax )                                            \
        schedule( guided )
 
     for ( i = 0; i < num_patches; i++ )           /*  calculate  dH2Odt[]  */
@@ -573,13 +573,13 @@ static void sub_routing1( double   tstep,        /*  external time step      */
             tsum = 0.0 ;
             for ( m = 0 ; m < 9 ; m++ )
                 {
-                n = min( (int)nsoil[i], (int) lround( patch->sat_deficit + normal[m]*pscale[i])/dzsoil[i] ) ;
+                n = min( (int)nsoil[i], (int) lround( satdef[i] + normal[m]*pscale[i])/dzsoil[i] ) ;
                 tsum += patch->transmissivity_profile[n] * perc[m] ;
                 }
             trans = tsum / psize [i] ;
             }
         else{
-            n     = min( (int)nsoil[i], (int)lround( patch->sat_deficit/dzsoil[i] ) ) ;
+            n     = min( (int)nsoil[i], (int)lround( satdef[i]/dzsoil[i] ) ) ;
             trans = patch->transmissivity_profile[n] / psize [i] ;
             }
 
@@ -2037,7 +2037,7 @@ void hydro_routing( struct command_line_object * command_line,
         }
 #endif
 
-        satz = patchz[i] - waterz[i] ;
+        satz = patchz[i] - waterz[i] ;             /*  waterz is elev a.s.l.; sat_deficit_z is relative to terrain surface  */
         if ( ( satz ) <= EPSILON )                 /*  fully-saturated patch  */
             {
             patch->rz_storage      = 0.0 ;
@@ -2058,7 +2058,7 @@ void hydro_routing( struct command_line_object * command_line,
             patch->rz_storage      = unsH2O[i] + dCAP ;
             patch->unsat_storage   = 0.0 ;
             patch->sat_deficit     = satdef[i] ;
-            patch->sat_deficit_z   = patch->z - waterz[i] ; // TODO: Should this just be satz?
+            patch->sat_deficit_z   = satz ;
             }
         else{                                   /*  unsaturated-zone water table  */
             dCAP = compute_layer_field_capacity( verbose, 
