@@ -480,7 +480,7 @@ static void sub_routing0( double   tstep,        /*  external time step      */
                 gammaf[i][j] = 0.0 ;
                 }
             }
-        outH2O[i] = wsum ;
+        outH2O[i] = min( wsum, max(totH2O[i] - minH2O[i], 0.0) ) ;
         if ( ssum > ZERO )     /*  Normalize gammaf[i][:] and divide by totH2O[i][:] */
             {
             ssum = 1.0 / ( ssum * totH2O[i] ) ;
@@ -608,7 +608,7 @@ static void sub_routing1( double   tstep,        /*  external time step      */
                 gammaf[i][j] = 0.0 ;
                 }
             }
-        outH2O[i] = min( wsum, totH2O[i] - minH2O[i] ) ; ;
+        outH2O[i] = min( wsum, max(totH2O[i] - minH2O[i], 0.0) ) ;
         tsum      = 0.0 ;
         if ( ssum > ZERO )     /*  Normalize gammaf[i][:] */
             {
@@ -746,7 +746,7 @@ static void sub_routing2( double   tstep,        /*  external time step      */
                                       patch->transmissivity_profile, 
                                       patch ) ;
         
-        outH2O[i] = min( dH2O, totH2O[i] - minH2O[i] ) ;
+        outH2O[i] = min( dH2O, max(totH2O[i] - minH2O[i], 0.0) ) ;
         if ( outH2O[i] > EPSILON )
             {
             cmax = max( cmax, totH2O[i] / outH2O[i] ) ;
