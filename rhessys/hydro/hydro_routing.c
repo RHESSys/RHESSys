@@ -538,8 +538,7 @@ static void sub_routing0( double   tstep,        /*  external time step      */
 /*      saturation-deficit instead of total water.                          */
 /*--------------------------------------------------------------------------*/
 
-static void sub_routing1( double   tstep,        /*  extern
-            {al time step      */
+static void sub_routing1( double   tstep,        /*  external time step      */
                           double * substep )     /*  hydro-coupling time step: <= min( CPLMAX, tstep )  */
     {
     double      z1, z2, zz, vel, slope, cmax, dt ;
@@ -770,7 +769,7 @@ static void sub_routing2( double   tstep,        /*  external time step      */
     for ( i = 0; i < num_patches; i++ )     /*  update H2O, NO3, NH4, DON, DOC  */
         {
         transp = plist[i]->transmissivity_profile ;
-        dH2O = -outH2O[i] ;
+        dH2O = -min( outH2O[i], totH2O[i] - minH2O[i] ) ;
         dNO3 = -compute_N_leached( verbose, totNO3[i], outH2O[i], satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NO3ads[i], transp ) ;
         dNH4 = -compute_N_leached( verbose, totNH4[i], outH2O[i], satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NH4ads[i], transp ) ;
         dDON = -compute_N_leached( verbose, totDON[i], outH2O[i], satdef[i], capH2O[i], patchm[i], adjgam[i], por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DONads[i], transp ) ;
