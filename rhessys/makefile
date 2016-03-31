@@ -2,7 +2,7 @@ PGM  = rhessys5.19
 VERSION = 5.19
 CC = gcc 
 #CFLAGS = -O -std=c99
-CFLAGS =-Wall -g -std=c99 -DDEBUG
+#CFLAGS =-Wall -g -std=c99 -DDEBUG
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
