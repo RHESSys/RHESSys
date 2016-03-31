@@ -1460,7 +1460,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     psize   = (double   *) alloc( num_patches * sizeof(  double ), "psize",  "hydro_routing/init_hydro_routing()" ) ;
     parea   = (double   *) alloc( num_patches * sizeof(  double ), "parea",  "hydro_routing/init_hydro_routing()" ) ;
-    nsoil   = (unsigned *) alloc( num_patches * sizeof(  unsigned ), "nsoil",  "hydro_routing/init_hydro_routing()" ) ;
+    nsoil   = (int *) alloc( num_patches * sizeof(  int ), "nsoil",  "hydro_routing/init_hydro_routing()" ) ;
     dzsoil  = (double   *) alloc( num_patches * sizeof(  double ), "dzsoil", "hydro_routing/init_hydro_routing()" ) ;
     pscale  = (double   *) alloc( num_patches * sizeof(  double ), "pscale", "hydro_routing/init_hydro_routing()" ) ;
     patchm  = (double   *) alloc( num_patches * sizeof(  double ), "patchm", "hydro_routing/init_hydro_routing()" ) ;
