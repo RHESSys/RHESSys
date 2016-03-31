@@ -115,6 +115,8 @@
 /*--------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
+
 #include "rhessys.h"
 
 /*	Local function definitions.				*/
@@ -620,6 +622,11 @@ static void sub_routing1( double   tstep,        /*  external time step      */
                 };
             }
             gamsum[i] = tsum ;
+#ifdef DEBUG
+            if (gamsum[i] == 0) {
+            	printf("gamsum[i]=0 for i=%d\n", i);
+            }
+#endif
         }           /*  end loop calculating  dH2Odt[]  */
 
     *substep = dt = min( COUMAX / cmax , tstep ) ;
@@ -648,28 +655,50 @@ static void sub_routing1( double   tstep,        /*  external time step      */
         patch  = plist[i] ;
         transp = patch->transmissivity_profile ;
 
-        gam  =  gamsum[i] ;
-        dgam =  1.0 / gam ;
+//        gam  =  gamsum[i] ;
+//        dgam =  1.0 / gam ;
+
         dH2O = -min( outH2O[i], totH2O[i] - minH2O[i] ) ;
         dNO3 = -compute_N_leached( verbose, totNO3[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NO3ads[i], transp ) ;
         dNH4 = -compute_N_leached( verbose, totNH4[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ndecay[i], zactiv[i], zsoil[i], NH4ads[i], transp ) ;
         dDON = -compute_N_leached( verbose, totDON[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DONads[i], transp ) ;
         dDOC = -compute_N_leached( verbose, totDOC[i], outH2O[i], satdef[i], capH2O[i], patchm[i], gam, por_0[i], por_d[i], Ddecay[i], zactiv[i], zsoil[i], DOCads[i], transp ) ;
-        for ( j = 0; j < subcnti[i]; j++ )
-            {
-            k      = subdexi[i][j] ;
-            n      = subnbri[i][j] ;
-            gam    = gammaf[k][n] ;
-            fac    = gammaf[k][n] * dgam ;      /*  for normalized fractions of flow into this cell */
-            transp = plist[n]->transmissivity_profile ;
-            dH2O += fac * outH2O[n] ;
-            dNO3 += fac * compute_N_leached( verbose, totNO3[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ndecay[n], zactiv[n], zsoil[n], NO3ads[n], transp ) ;
-            dNH4 += fac * compute_N_leached( verbose, totNH4[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ndecay[n], zactiv[n], zsoil[n], NH4ads[n], transp ) ;
-            dDON += fac * compute_N_leached( verbose, totDON[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ddecay[n], zactiv[n], zsoil[n], DONads[n], transp ) ;
-            dDOC += fac * compute_N_leached( verbose, totDOC[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ddecay[n], zactiv[n], zsoil[n], DOCads[n], transp ) ;
-            }
+
+        gam  =  gamsum[i] ;
+#ifdef DEBUG
+        if (gam == 0.0) {
+        	printf("\tgam=0 for i=%d\n", i);
+        }
+#endif
+        if (gam > 0.0) 	/* Only process lateral fluxes if gam > 0.0 */
+        	{
+        	dgam =  1.0 / gam ;
+			for ( j = 0; j < subcnti[i]; j++ )
+				{
+				k      = subdexi[i][j] ;
+				n      = subnbri[i][j] ;
+				gam    = gammaf[k][n] ;
+				fac    = gammaf[k][n] * dgam ;      /*  for normalized fractions of flow into this cell */
+				transp = plist[n]->transmissivity_profile ;
+				dH2O += fac * outH2O[n] ;
+#ifdef DEBUG
+				if (isnan(dH2O)) {
+					printf("\t\tdH2O = NaN for j=%d\n", j);
+				}
+#endif
+				dNO3 += fac * compute_N_leached( verbose, totNO3[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ndecay[n], zactiv[n], zsoil[n], NO3ads[n], transp ) ;
+				dNH4 += fac * compute_N_leached( verbose, totNH4[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ndecay[n], zactiv[n], zsoil[n], NH4ads[n], transp ) ;
+				dDON += fac * compute_N_leached( verbose, totDON[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ddecay[n], zactiv[n], zsoil[n], DONads[n], transp ) ;
+				dDOC += fac * compute_N_leached( verbose, totDOC[n], outH2O[n], satdef[n], capH2O[n], patchm[n], gam, por_0[n], por_d[n], Ddecay[n], zactiv[n], zsoil[n], DOCads[n], transp ) ;
+				}
+        	}
 
         latH2O[i] = dt * dH2O ;
+#ifdef DEBUG
+        if (isnan(latH2O[i])) {
+        	printf("\tlatH2O[i] = NaN for i=%d\n", i);
+        }
+#endif
         latNO3[i] = dt * dNO3 ;
         latNH4[i] = dt * dNH4 ;
         latDON[i] = dt * dDON ;
@@ -1356,6 +1385,11 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                                unsH2O[i] - fldcap ) ;
         unsH2O[i] = unsH2O[i] + infH2O[i] - drain;
         satdef[i] = satdef[i] - latH2O[i] - drain ;         /*  drainage goes into sat zone, hence decreases satdef  */
+#ifdef DEBUG
+        if(isnan(satdef[i])) {
+        	printf("satdef[i] is NaN for i=%d, tstep=%f\n", i, tstep);
+        }
+#endif
         totH2O[i] = totH2O[i] + infH2O[i] + latH2O[i] ;
         totNO3[i] = totNO3[i] + infNO3[i] + latNO3[i] ;
         totNH4[i] = totNH4[i] + infNH4[i] + latNH4[i] ;
@@ -1939,10 +1973,10 @@ void hydro_routing( struct command_line_object * command_line,
         sfcDON[i] = patch->surface_DON ;
 
 #ifdef DEBUG
-//        if (patch->sat_deficit < 0.0) {
-//        	printf("WARNING: patch->sat_deficit is %.2f for patch idx %d\n",
-//        			patch->sat_deficit, i);
-//        }
+        if (patch->sat_deficit < 0.0) {
+        	printf("WARNING: patch->sat_deficit is %.2f for patch idx %d\n",
+        			patch->sat_deficit, i);
+        }
 #endif
 
         satdef[i] = patch->sat_deficit ;
