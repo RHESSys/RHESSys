@@ -16,7 +16,7 @@
 #define NUMLEVELS 6
 #define TOPLEVEL 0
 #define BOTTOMLEVEL (NUMLEVELS - 1)
-static char *LEVELNAME[NUMLEVELS] = {"world","basin","hillslope","zone","patch","stratum"};
+static char *LEVELNAME[NUMLEVELS] = {"world","basin","hillslope","zone","patch","canopy_strata"};
 
 
  struct	date {
