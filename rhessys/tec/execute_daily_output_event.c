@@ -46,7 +46,7 @@ void	execute_daily_output_event(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	void output_24hours_basin(
+	void output_basin(
 		int,
 		struct	basin_object *,
 		struct	date,
@@ -126,7 +126,7 @@ void	execute_daily_output_event(
 			if ( command_line[0].b != NULL ){
 				basinID = command_line[0].b->basinID;
 				if (( world[0].basins[b][0].ID == basinID) || (basinID == -999))
-					output_24hours_basin(
+					output_basin(
 					command_line[0].routing_flag,
 					world[0].basins[b],
 					date,

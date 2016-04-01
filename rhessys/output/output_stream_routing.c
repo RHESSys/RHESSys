@@ -47,12 +47,16 @@ void	output_stream_routing(
 	/*--------------------------------------------------------------*/
 	
 
-	fprintf(outfile,"%d %d %d %d %lf\n",
+	fprintf(outfile, "%d %d %d %d %lf %lf %lf %lf %lf\n", 
                 date.day,
 		date.month,
 		date.year,
                 stream_network[0].reach_ID,
-                stream_network[0].Qout);
+                stream_network[0].Qout * 86400,
+		stream_network[0].previous_lateral_input * stream_network[0].length * 86400,
+                stream_network[0].previous_Qin * 86400,
+		stream_network[0].water_depth,
+		stream_network[0].reservoir.initial_storage/10000);
 
 
 	return;

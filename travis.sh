@@ -3,5 +3,7 @@
 make
 # Run unit tests for CF
 cd cf ; make test ; cd -
+# Run unit tests for RHESSys
+cd rhessys && make test -
 # Run functional tests for RHESSys
-cd rhessys && make functest -
+make functest -

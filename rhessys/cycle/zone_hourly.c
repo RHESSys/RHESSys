@@ -196,7 +196,7 @@ void		zone_hourly(
 		//	zone[0].daytime_rain_duration=0;}
 		
 		if (zone[0].hourly[0].rain+zone[0].hourly[0].snow > 0) {
-			zone[0].daytime_rain_duration += 3600;}
+			zone[0].rain_duration += 3600;}
 	}
 			
 	/*--------------------------------------------------------------*/
