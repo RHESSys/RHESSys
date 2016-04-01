@@ -118,7 +118,7 @@ double	compute_snow_sublimation(
 	
 	if (verbose_flag == -5) {
 		printf("\n                                             SUBLIM: De=%lf ro=%lf vp_air=%lf vp_ice=%lf pa=%lf Qe_pot=%lf subl_pot=%lf", 
-			   De,ro,vp_air,vp_sat_ice,pa,Qe,Qe*seconds_per_day/(hf+hv)/1000.0);
+			   De,ro,vp_air,vp_sat_ice,pa,Qe,Qe*SECONDS_PER_DAY/(hf+hv)/1000.0);
 		printf("\n                                             SUBLIM2: netrad=%lf delta=%lf psych=%lf sublim_rad=%lf sublim_turb=%lf sublim=%lf swe=%lf", 
 			   net_radiation/86.4, delta, psych, sublim_rad, sublim_turb, sublim, snowpack_water_equivalent);
 	}
