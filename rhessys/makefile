@@ -195,7 +195,7 @@ $(OBJ)/leaf_conductance_tavg_curve.o \
 $(OBJ)/leaf_conductance_tmin_curve.o \
 $(OBJ)/leaf_conductance_vpd_curve.o \
 $(OBJ)/main.o \
-$(OBJ)/output_24hours_basin.o \
+$(OBJ)/output_basin.o \
 $(OBJ)/output_stream_routing.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
@@ -417,8 +417,8 @@ $(OBJ)/construct_clim_sequence.o: init/construct_clim_sequence.c
 	$(CC) -c $(CFLAGS) -I include init/construct_clim_sequence.c -o $(OBJ)/construct_clim_sequence.o
 $(OBJ)/construct_dated_clim_sequence.o: init/construct_dated_clim_sequence.c
 	$(CC) -c $(CFLAGS) -I include init/construct_dated_clim_sequence.c -o $(OBJ)/construct_dated_clim_sequence.o
-$(OBJ)/output_24hours_basin.o: output/output_24hours_basin.c
-	$(CC) -c $(CFLAGS) -I include output/output_24hours_basin.c -o $(OBJ)/output_24hours_basin.o
+$(OBJ)/output_basin.o: output/output_basin.c
+	$(CC) -c $(CFLAGS) -I include output/output_basin.c -o $(OBJ)/output_basin.o
 $(OBJ)/output_growth_patch.o: output/output_growth_patch.c
 	$(CC) -c $(CFLAGS) -I include output/output_growth_patch.c -o $(OBJ)/output_growth_patch.o
 $(OBJ)/output_growth_basin.o: output/output_growth_basin.c

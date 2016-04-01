@@ -427,10 +427,10 @@ struct reservoir_object
 {
 int reservoir_ID;
 int flag_min_flow_storage;/*If min_flow has higher priority than min_storage=0, else=1 */
-double month_max_storage[12];
-double min_storage;
-double min_outflow;
-double initial_storage;
+double month_max_storage[12]; /* m3 */
+double min_storage; /* m3 */
+double min_outflow; /* m3/day */
+double initial_storage; /* m3 */
 };
 
 
@@ -451,17 +451,18 @@ int reservoir_ID;
 struct reservoir_object reservoir;
 struct patch_object **lateral_inputs;
 struct hillslope_object **neighbour_hill;
-double length;
+double length; /* m */
 double manning;
-double bottom_width;
-double top_width;
-double max_height;
+double bottom_width; /* m */
+double top_width; /* m */
+double max_height; /* m */
 double stream_slope;
-double initial_flow;
-double water_depth;
-double Qin;
-double previous_lateral_input;
-double Qout;
+double initial_flow; /* m3/s */
+double water_depth; /* m */
+double previous_Qin; /* m3/s */
+double Qin; /* m3/s */
+double previous_lateral_input; /* m2/s */
+double Qout; /* m3/s */
 };
 
 struct stream_list_object

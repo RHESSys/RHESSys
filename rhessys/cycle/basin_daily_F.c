@@ -66,11 +66,11 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/* this part has been moved to basin_hourly			*/
 	/*--------------------------------------------------------------*/
-/*	void	compute_subsurface_routing(
+	void	compute_subsurface_routing(
 		struct command_line_object *,
 		struct basin_object *,
 		int, struct	date);
-*/	
+	
 	double	compute_stream_routing(
 		struct command_line_object *,
 		struct stream_network_object *,

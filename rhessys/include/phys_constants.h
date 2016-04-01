@@ -81,6 +81,8 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     basin_parm_ID //u
     latitude	  //u
     n_basestations //u this one is the indicator for end of the reading process
+    num_hillslopes //u
+
 */
 
 /*-----------------------------------------------------------------------------
@@ -95,6 +97,8 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     gw.storage	  // d 0
     gw.NO3	  // d 0
     n_basestations// u 
+    num_zones    //u
+    
 */
  /*-----------------------------------------------------------------------------
   *  Num of variables (read by tag) in zone = 12, make it 22
@@ -111,7 +115,10 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     precip_lapse_rate //d 1
     e_horizon	  // u
     w_horizon	  // u
-    n_basestations // u 
+    n_basestations // u
+    zone_base_station_ID		    //u    
+    num_patches			    //u
+
 */
 
 /*-----------------------------------------------------------------------------
@@ -155,6 +162,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     soil_cs.soil3c		    // d 0
     soil_cs.soil4c		    // d 0
     n_basestations		    // u
+    num_canopy_strata		    // u
 */
 
  /*-----------------------------------------------------------------------------
