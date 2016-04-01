@@ -1,23 +1,34 @@
-PGM  = rhessys5.20.0
-VERSION = 5.20.0
+VERSION = 5.20.1
+PGM  = rhessys$(VERSION)
 CC = gcc 
+INCLUDES = -Iinclude
 #CFLAGS = -O -std=c99
 #CFLAGS =-Wall -g -std=c99 -DDEBUG
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
-CC     := gcc 
-# CFLAGS := -O3 -std=c99 -m64 -march=native -mtune=native -fopenmp -ffast-math -funroll-loops
-CFLAGS := -g -std=c99 -m64 -DDEBUG
+# Retro fitting from CF
+ifeq ($(OS), Darwin)
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -Wmacro-redefined -std=c99
+else ifeq ($(OS), Linux)
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+else
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+endif
 
-#CC     := icc 
-#CFLAGS := -O3  -traceback -xHost -openmp
+LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
 
-#CC     := pgcc 
-#CFLAGS := -O3  -fast -mp
+SRCS := $(shell find clim cn cycle hydro init rad tec util -name '*.c')
+OBJDIR := OBJ
 
-#CC     := suncc 
-#CFLAGS := -O3    -xarch=avx -xtarget=sandybridge -m64 -xdebugformat=dwarf -openmp
+TESTS_ROOTDIR = test
+SRCDIR_TESTS = $(TESTS_ROOTDIR)/src
+SRCS_TESTS := $(shell find $(SRCDIR_TESTS) -name '*.c')
+TESTSDIR = $(TESTS_ROOTDIR)
+OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
+OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
+TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
+TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
 
 OS := $(shell uname)
 
@@ -94,6 +105,7 @@ $(OBJ)/compute_ra_understory.o \
 $(OBJ)/compute_radiative_fluxes.o \
 $(OBJ)/compute_rain_stored.o \
 $(OBJ)/compute_return_flow.o \
+$(OBJ)/compute_saturation_vapor_pressure.o \
 $(OBJ)/compute_varbased_returnflow.o \
 $(OBJ)/compute_varbased_flow.o \
 $(OBJ)/compute_snow_stored.o \
@@ -108,6 +120,7 @@ $(OBJ)/compute_subsurface_temperature_profile.o \
 $(OBJ)/compute_toc_wind.o \
 $(OBJ)/compute_transmissivity_curve.o \
 $(OBJ)/compute_unsat_zone_drainage.o \
+$(OBJ)/compute_vapor_pressure_deficit.o \
 $(OBJ)/compute_vapour_conductance.o \
 $(OBJ)/compute_vascular_stratum_conductance.o \
 $(OBJ)/compute_year_day.o \
@@ -318,7 +331,8 @@ $(OBJ)/reconstruct_hourly_clim.o \
 all:	dir rhessys
 
 dir:
-	mkdir -p $(OBJ) $(RHESSYS_BIN)
+	mkdir -p $(OBJ)
+	mkdir -p $(OBJDIR_TESTS)
 
 ifdef netcdf
 ifdef wmfire
@@ -337,6 +351,27 @@ rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM) 
 endif
 endif
+
+# For debugging purposes; usage: make print-NAMEOFMAKEVARIABLE
+print-%  : ; @echo $* = $($*)
+
+OBJECTS_NO_MAIN := $(patsubst $(OBJ)/main.o,,$(OBJECTS))
+test: dir $(TESTS)
+	# Run each unit test
+	$(patsubst %,%;,$(TESTS_TO_RUN))
+	
+$(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS) 
+ifeq ($(OS), Darwin)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+else ifeq ($(OS), Linux)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -lbsd -o $@
+else
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+endif
+	cp $@ $(TESTS_ROOTDIR)
+
+$(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
+	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $< 
 
 $(OBJ)/hydro_routing.o: hydro/hydro_routing.c
 	$(CC) -c $(CFLAGS) -I include hydro/hydro_routing.c -o $(OBJ)/hydro_routing.o
@@ -683,6 +718,8 @@ $(OBJ)/compute_nonvascular_stratum_conductance.o: hydro/compute_nonvascular_stra
 	$(CC) -c $(CFLAGS) -I include hydro/compute_nonvascular_stratum_conductance.c -o $(OBJ)/compute_nonvascular_stratum_conductance.o
 $(OBJ)/compute_vascular_stratum_conductance.o: hydro/compute_vascular_stratum_conductance.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_vascular_stratum_conductance.c -o $(OBJ)/compute_vascular_stratum_conductance.o
+$(OBJ)/compute_vapor_pressure_deficit.o: hydro/compute_vapor_pressure_deficit.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_vapor_pressure_deficit.c -o $(OBJ)/compute_vapor_pressure_deficit.o
 $(OBJ)/compute_vapour_conductance.o: hydro/compute_vapour_conductance.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_vapour_conductance.c -o $(OBJ)/compute_vapour_conductance.o
 $(OBJ)/compute_toc_wind.o: clim/compute_toc_wind.c
@@ -721,6 +758,8 @@ $(OBJ)/compute_varbased_flow.o: hydro/compute_varbased_flow.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_varbased_flow.c -o $(OBJ)/compute_varbased_flow.o
 $(OBJ)/compute_return_flow.o: hydro/compute_return_flow.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_return_flow.c -o $(OBJ)/compute_return_flow.o
+$(OBJ)/compute_saturation_vapor_pressure.o: hydro/compute_saturation_vapor_pressure.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_saturation_vapor_pressure.c -o $(OBJ)/compute_saturation_vapor_pressure.o
 $(OBJ)/compute_snow_sublimation.o: hydro/compute_snow_sublimation.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_snow_sublimation.c -o $(OBJ)/compute_snow_sublimation.o
 $(OBJ)/compute_capillary_rise.o: hydro/compute_capillary_rise.c
@@ -942,6 +981,8 @@ install:
 
 neat:
 	rm -f $(OBJECTS)
+	rm -f $(OBJDIR_TESTS)/*
+	rm -f $(TESTS_TO_RUN)
 
 clean:
 	rm -f $(OBJECTS) $(PGM)
@@ -949,6 +990,6 @@ clean:
 clobber:
 	rm -f $(OBJECTS) $(PGM)
 
-functest: $(PGM)
+functest: rhessys
 	# Run Python-based functional testing
 	RHESSYS_BIN=$(PGM) python -m unittest discover -s test

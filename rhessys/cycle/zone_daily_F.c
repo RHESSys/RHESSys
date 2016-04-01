@@ -122,8 +122,10 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+
 #include "rhessys.h"
 #include "phys_constants.h"
+#include "functions.h"
 
 
 void		zone_daily_F(
@@ -156,7 +158,6 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 	int 	patch;
 	double snow_rain_range;
-	double	es;
 	double Tcloud, f8, e8z, tau8;
 	/*--------------------------------------------------------------*/
 	/*  Update the forcing functions based on the hourly computation*/
@@ -272,9 +273,9 @@ void		zone_daily_F(
 	/*	daylength if rain 0 if not.					*/
 	/*--------------------------------------------------------------*/
 
-	if ( zone[0].daytime_rain_duration == -999.0 ){
+	if ( zone[0].rain_duration == -999.0 ){
 		if ( zone[0].rain == 0 || (zone[0].snow != 0 ) ){
-			zone[0].daytime_rain_duration = 0;
+			zone[0].rain_duration = 0;
 		}
 		else{
 			/* Old code */
@@ -283,12 +284,12 @@ void		zone_daily_F(
 			 radiation, we are now defining it as # of seconds of rain over
 			 ENTIRE 24-hr period. If no value is given, we assume it rains
 			 over the full day. */
-			zone[0].daytime_rain_duration = 86400;
+			zone[0].rain_duration = 86400;
 		}
 	}
 	else{
 		if ( zone[0].rain == 0 && zone[0].rain_hourly_total == 0){
-			zone[0].daytime_rain_duration = 0;
+			zone[0].rain_duration = 0;
 		}
 		else{
 			/* Old code */
@@ -297,8 +298,8 @@ void		zone_daily_F(
 			/* We adjust this value in the radiation routines to split
 			 into daylight vs. nighttime rain hours, so here we leave
 			 it as-is and just bound to 0:86400 sec. */
-			zone[0].daytime_rain_duration =
-				min( 86400, max(zone[0].daytime_rain_duration,0));
+			zone[0].rain_duration =
+				min( 86400, max(zone[0].rain_duration,0));
 		}
 	}
 	
@@ -410,89 +411,61 @@ void		zone_daily_F(
 			/ zone[0].Kdown_direct );
 	}
 
-	
 	/*-------------------------------------------------------------------*/
-	/* LDOWN MODEL REPLACED WITH NEW ONE CALCULATED AFTER VAPOR PRESSURE */
+	/* Vapor pressure deficit - All day									 */
 	/*-------------------------------------------------------------------*/
-	
-	/*--------------------------------------------------------------*/
-	/*	Saturation Vapour Pressure	(Pa)							*/
-	/*																*/
-	/*	Note the original rehssys code supplied es in mbar.			*/
-	/*	c.f. eq. 1 Running and Coughlan , 1987, p. 133.				*/
-	/*																*/
-	/*	Since 1 bar = 100 kpa (approx) ; a millibar = 100 Pa approx.*/
-	/*	This explains why the es from the original code was:		*/
-	/*																*/
-	/*	6.1078 * exp((17.269*z[0].metv.tday)/(237.3 +			*/
-	/*									z[0].metv.tday))		*/
-	/*																*/
-	/*	Which is approx 100 times that of the es here.				*/
-	/*																*/
-	/*	Eq. 5.12 p. 110, Jones, "Plants and Microclimate"			*/
-	/*--------------------------------------------------------------*/
-	if (  zone[0].metv.vpd == -999.0  ){
-		es = 613.75 * exp( (17.502 * zone[0].metv.tavg)
-			/ ( 240.97 + zone[0].metv.tavg) );
+	if (  zone[0].metv.vpd == -999.0  ) {
+		double es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
 		/*--------------------------------------------------------------*/
 		/*	Make use of relative humidity if available.					*/
 		/*--------------------------------------------------------------*/
 		if ( zone[0].relative_humidity == -999.0 ){
 			/*--------------------------------------------------------------*/
-			/*	Dew Point Vapour Pressure (Pa)								*/
-			/*																*/
-			/*	Note the original rehssys code supplied es in mbar.			*/
-			/*	c.f. eq. 1 Running and Coughlan , 1987, p. 133.				*/
-			/*																*/
-			/*	Since 1 bar = 100 kpa (approx) ; a millibar = 100 Pa approx.*/
-			/*	This explains why the es from the original code was:		*/
-			/*																*/
-			/*	6.1078 * exp((17.269*z[0].tdewpoint)/(237.3 +			*/
-			/*									z[0].tdewpoint))		*/
-			/*																*/
-			/*	Which is approx 100 times that of the es here.				*/
-			/*																*/
-			/*	Eq. 5.12 p. 110, Jones, "Plants and Microclimate"			*/
 			/*	Assuming that tdewpoint is valid for the whole day.		*/
 			/*								*/
 			/*	We cannot make a correction for rain_duration here.	*/
 			/*	Instead we hope that  the dewpoint vapour pressure is	*/
 			/*	measured by a temperature value (night min)		*/
 			/*--------------------------------------------------------------*/
-			zone[0].e_dewpoint = 613.750 * exp( (17.502
-				* zone[0].tdewpoint) / ( 240.97 + zone[0].tdewpoint));
+			zone[0].e_dewpoint = compute_saturation_vapor_pressure(zone[0].tdewpoint);
+
+			if (es > ZERO) {
+				zone[0].relative_humidity = zone[0].e_dewpoint / es;
+			}
 		}
 		else{
 			/*--------------------------------------------------------------*/
 			/*      Dew Point Vapour Pressure (Pa)                          */
 			/*                                                              */
-			/*      ONly for dayligh conditions with no rain.               */
+			/*      Only for daylight conditions with no rain.              */
 			/*      Eq. 5.13 and 5.14 , p. 110, Jones, "Plants and Microclimate"*/
 			/*--------------------------------------------------------------*/
-			zone[0].e_dewpoint =  zone[0].relative_humidity * es;
+			zone[0].e_dewpoint = zone[0].relative_humidity * es;
 		} /*end if-else*/
-		/*--------------------------------------------------------------*/
-		/*	metv.vpd	(Pa)						*/
-		/*								*/
-		/*	Eq. 5.14, p. 110, Jones, "Plants and Microclimate"	*/
-		/*	Limited to at least 0.0 as per rhessys C code.		*/
-		/*--------------------------------------------------------------*/
-
-		zone[0].metv.vpd = max(es - zone[0].e_dewpoint,0.0);
-		if (zone[0].relative_humidity == -999.0) {
-			if (es > ZERO)
-				zone[0].relative_humidity = zone[0].e_dewpoint / es;
-			else
-				zone[0].relative_humidity = -999.0;
-			}
+		zone[0].metv.vpd = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
 	}
 	/* Case where vpd is given. Still need to calculate e_dewpoint	*/
 	/* for snowpack sublim and RH for output.						*/
 	else {
-		es = 613.75 * exp( (17.502 * zone[0].metv.tavg)
-						  / ( 240.97 + zone[0].metv.tavg) );
+		double es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
 		zone[0].e_dewpoint = es - zone[0].metv.vpd;
 		zone[0].relative_humidity = zone[0].e_dewpoint / es;
+	}
+	/*-------------------------------------------------------------------*/
+	/* Vapor pressure deficit - Day time							     */
+	/*-------------------------------------------------------------------*/
+	if (  zone[0].metv.vpd_day == -999.0  ) {
+		double es = compute_saturation_vapor_pressure(zone[0].metv.tday);
+		// Assume daily dew point saturation vapor pressure > day time es
+		zone[0].metv.vpd_day = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
+	}
+	/*-------------------------------------------------------------------*/
+	/* Vapor pressure deficit - Night time							     */
+	/*-------------------------------------------------------------------*/
+	if (  zone[0].metv.vpd_night == -999.0  ) {
+		double es = compute_saturation_vapor_pressure(zone[0].metv.tnight);
+		// Assume daily dew point saturation vapor pressure > night time es
+		zone[0].metv.vpd_night = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
 	}
 	
 	/*--------------------------------------------------------------*/
@@ -510,17 +483,16 @@ void		zone_daily_F(
 			* (SBC * 86400/1000) * pow(zone[0].metv.tavg+273.16,4);*/
 		
 		/* Diley-Crawford */
-		zone[0].Ldown = zone[0].cloud_fraction * (SBC * 86400/1000) * pow(zone[0].metv.tavg+273.16,4)
-				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273.16)/273.16,6)
-				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273.16)/25,0.5)) * 86400/1000;
-		
-		/* split by day/night (not sensitive) */
-		/*zone[0].Ldown = ( zone[0].cloud_fraction * (SBC * (seconds_per_day-zone[0].metv.dayl)/1000) * pow(zone[0].metv.tnight+273,4)
-						    + (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tnight+273)/273.16,6)
-						    + 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tnight+273)/25,0.5)) * (seconds_per_day-zone[0].metv.dayl)/1000 )
-					+ ( zone[0].cloud_fraction * (SBC * zone[0].metv.dayl/1000) * pow(zone[0].metv.tday+273,4)
-					        + (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tday+273)/273.16,6)
-							+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tday+273)/25,0.5)) * zone[0].metv.dayl/1000 );*/
+		/* split by day/night (not sensitive, but needed so that we can partition evap. between day and night) */
+		zone[0].Ldown_night = zone[0].cloud_fraction * (SBC * (SECONDS_PER_DAY-zone[0].metv.dayl)/1000) * pow(zone[0].metv.tnight+273,4)
+						    				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tnight+273)/273.16,6)
+		+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tnight+273)/25,0.5)) * (SECONDS_PER_DAY-zone[0].metv.dayl)/1000;
+
+		zone[0].Ldown_day = zone[0].cloud_fraction * (SBC * zone[0].metv.dayl/1000) * pow(zone[0].metv.tday+273,4)
+				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tday+273)/273.16,6)
+		+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tday+273)/25,0.5)) * zone[0].metv.dayl/1000;
+
+		zone[0].Ldown = zone[0].Ldown_night + zone[0].Ldown_day;
 		
 		/* Diley with Kimball cloud correction per Flerchinger 2009 */
 		/*if ( (current_date.month>=5) && (current_date.month<=10) )
@@ -533,7 +505,13 @@ void		zone_daily_F(
 		zone[0].Ldown = zone[0].cloud_fraction * f8 * tau8 * (SBC * 86400/1000) * pow(Tcloud,4)
 				+ (1.0 - zone[0].cloud_fraction) * ( 59.38 + 113.7*pow((zone[0].metv.tavg+273.16)/273.16,6)
 				+ 96.96 * pow(4650*(zone[0].e_dewpoint/1000)/(zone[0].metv.tavg+273.16)/25,0.5)) * 86400/1000;*/
+	} else {
+		// Partition observed Ldown into day and night portions (naively, based on day length)
+		zone[0].Ldown_day = (zone[0].metv.dayl / 86400) * zone[0].Ldown;
+		zone[0].Ldown_night = zone[0].Ldown - zone[0].Ldown_day;
+
 	} /*end if*/
+
 	/*--------------------------------------------------------------*/
 	
 	/*--------------------------------------------------------------*/
