@@ -160,6 +160,7 @@ void compute_subsurface_routing_hourly(
 			patch[0].surface_Qin = 0.0;
 			patch[0].surface_Qout = 0.0;
 
+			patch[0].overland_flow = 0.0;
 
 
 			patch[0].interim_sat = patch[0].sat_deficit - patch[0].unsat_storage;
@@ -880,8 +881,7 @@ void compute_subsurface_routing_hourly(
 							patch[0].rootzone.S,
 							patch[0].soil_defaults[0][0].mz_v,
 							patch[0].rootzone.depth,
-							patch[0].soil_defaults[0][0].Ksat_0 / n_timesteps
-									/ 2,
+							patch[0].soil_defaults[0][0].Ksat_0_v / n_timesteps / 2,
 							patch[0].rz_storage
 									- patch[0].rootzone.field_capacity);
 
@@ -896,8 +896,7 @@ void compute_subsurface_routing_hourly(
 							patch[0].soil_defaults[0][0].pore_size_index,
 							patch[0].S, patch[0].soil_defaults[0][0].mz_v,
 							patch[0].sat_deficit_z,
-							patch[0].soil_defaults[0][0].Ksat_0 / n_timesteps
-									/ 2,
+							patch[0].soil_defaults[0][0].Ksat_0_v / n_timesteps / 2,
 							patch[0].unsat_storage - patch[0].field_capacity);
 
 					patch[0].unsat_storage -= unsat_drainage;
@@ -914,8 +913,7 @@ void compute_subsurface_routing_hourly(
 							patch[0].soil_defaults[0][0].pore_size_index,
 							patch[0].S, patch[0].soil_defaults[0][0].mz_v,
 							patch[0].sat_deficit_z,
-							patch[0].soil_defaults[0][0].Ksat_0 / n_timesteps
-									/ 2,
+							patch[0].soil_defaults[0][0].Ksat_0_v / n_timesteps / 2,
 							patch[0].rz_storage
 									- patch[0].rootzone.field_capacity);
 

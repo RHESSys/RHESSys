@@ -26,7 +26,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
 #define HVAP 42.7       /* Heat of vaporization, kJ/mol */
 #define KELVIN 273.16
 #define PI	3.14159265359
-#define seconds_per_day 86400
+#define SECONDS_PER_DAY 86400
 #define ICE_DENSITY 917.0 	/* (kg/m3) density of ice */
 
 /*physiological constants	*/
@@ -82,6 +82,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     latitude	  //u
     n_basestations //u this one is the indicator for end of the reading process
     num_hillslopes //u
+
 */
 
 /*-----------------------------------------------------------------------------
@@ -95,8 +96,9 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     hill_parm_ID  // u
     gw.storage	  // d 0
     gw.NO3	  // d 0
-    n_basestations// u
-    num_zones     //u
+    n_basestations// u 
+    num_zones    //u
+    
 */
  /*-----------------------------------------------------------------------------
   *  Num of variables (read by tag) in zone = 12, make it 22
@@ -114,8 +116,9 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     e_horizon	  // u
     w_horizon	  // u
     n_basestations // u
-    zone_base_station_ID //u
-    num_patches //u
+    zone_base_station_ID		    //u    
+    num_patches			    //u
+
 */
 
 /*-----------------------------------------------------------------------------
@@ -159,7 +162,7 @@ Iribane, J.V. and W.L. Godson, 1981.  Atmospheric Thermodynamics. 2nd
     soil_cs.soil3c		    // d 0
     soil_cs.soil4c		    // d 0
     n_basestations		    // u
-    num_canopy_strata               //u
+    num_canopy_strata		    // u
 */
 
  /*-----------------------------------------------------------------------------

@@ -81,7 +81,7 @@ void	output_zone_state(
 	for (i=0; i < zone[0].num_base_stations; i++){
 		fprintf(outfile,"\n       ");
 		fprintf(outfile,"%-30ld %s",zone[0].base_stations[i][0].ID,
-			"p_base_station_ID");
+			"zone_base_station_ID");
 	}
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30ld %s",zone[0].num_patches, "num_patches");

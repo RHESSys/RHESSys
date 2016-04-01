@@ -19,21 +19,18 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+
 #include "phys_constants.h"
 #include "rhessys.h"
 
-double	compute_Lstar_canopy(
-					  int	verbose_flag,
-					  double *Ldown,
-					  double KstarH,
-					  double snow_stored,
-					  struct	zone_object	*zone,
-					  struct	patch_object	*patch) 
+
+void compute_Lstar_canopy(int	verbose_flag,
+						  double KstarH,
+						  double snow_stored,
+						  struct	zone_object	*zone,
+						  struct	patch_object	*patch,
+						  struct	canopy_strata_object *stratum)
 {
-	/*------------------------------------------------------*/
-	/*	Local Function Declarations.						*/
-	/*------------------------------------------------------*/
-	
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -54,11 +51,25 @@ double	compute_Lstar_canopy(
 	Lstar = 0.0;
 	B = 0.023;
 	
+	double Lup_canopy_night = 0.0;
+	double Lup_canopy_day = 0.0;
+	double Ldown_canopy_night = 0.0;
+	double Ldown_canopy_day = 0.0;
+	double Lup_soil_night = 0.0;
+	double Lup_soil_day = 0.0;
+	double Lup_snow_night = 0.0;
+	double Lup_snow_day = 0.0;
+	double Lup_pond_night = 0.0;
+	double Lup_pond_day = 0.0;
+
+	double Lstar_night = 0.0;
+	double Lstar_day = 0.0;
+
 	/*--------------------------------------------------------------*/
 	/*	Use daylength for longwave computations.	*/
 	/*--------------------------------------------------------------*/
 	daylength = zone[0].metv.dayl;
-	nightlength = seconds_per_day - daylength;
+	nightlength = SECONDS_PER_DAY - daylength;
 	
 	/* Snow surface temp estimate from Brubaker 1996 as referenced in Dingman */
 	/*Tss = patch[0].snowpack.T;*/
@@ -74,37 +85,50 @@ double	compute_Lstar_canopy(
 		Tcan = zone[0].metv.tavg;
 
 	
-	Ldownini= *Ldown;
+	Ldownini = patch[0].Ldown;
 	
+	// Tcan was using arithmatic average air temperature (tavg), which differs from the daytime average
+	//   air temperature (tday), which is used in compute_Lstar().  Now using daytime (tday) and
+	//   nighttime (tnight) average air temperature to be consistent with compute_Lstar().
+	Ldown_canopy_night = ess_veg * SBC * pow( zone[0].metv.tnight + 273.0, 4.0 ) * nightlength / 1000.0;
+	Lup_canopy_night = Ldown_canopy_night + (1 - ess_veg) * patch[0].Ldown_night;
+	Ldown_canopy_day = ess_veg * SBC * pow( zone[0].metv.tday +	273.0, 4.0 ) * daylength / 1000.0;
+	Lup_canopy_day = Ldown_canopy_day + (1 - ess_veg) * patch[0].Ldown_day;
+	Ldown_canopy = Ldown_canopy_day  + Ldown_canopy_night;
+	Lup_canopy = Lup_canopy_day + Lup_canopy_night;
 	
-	Lup_canopy = ess_veg * SBC * pow( Tcan + 273.0, 4.0 ) * 86400 / 1000.0
-					+ (1 - ess_veg) * *Ldown; /* added canopy reflected Ldown from atmosphere */
-	Ldown_canopy = ess_veg * SBC * pow( Tcan + 273.0, 4.0 ) * 86400 / 1000.0;
-		
-	/*KstarH -= B * KstarH;*/ /*removing in canopy stratum daily f*/
-	
-	/* snow case */
 	if ( patch[0].snowpack.water_equivalent_depth > 0 ) {
-		Lup_snow = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * seconds_per_day / 1000.0 
-								+ (1 - ess_snow) * Ldown_canopy;
+		/* snow case */
+		Lup_snow_night = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * nightlength / 1000.0
+				+ (1 - ess_snow) * Ldown_canopy_night;
+		Lup_snow_day = ess_snow * SBC * pow( 273.0 + Tss ,4.0) * daylength / 1000.0
+				+ (1 - ess_snow) * Ldown_canopy_day;
+		Lup_snow = Lup_snow_night + Lup_snow_day;
+
 		/* ignoring reflected L between snow and soil surfaces */
-		Lup_soil = 0.0;
+		Lup_soil_night = Lup_soil_day = Lup_soil = 0.0;
 	}
-	else {
+	else if ( patch[0].detention_store > (patch[0].litter.rain_capacity - patch[0].litter.rain_stored) ) {
 		/* ponded water case */
-		if ( patch[0].detention_store > (patch[0].litter.rain_capacity - patch[0].litter.rain_stored) ) {
-			Lup_pond = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * seconds_per_day / 1000.0 
-									+ (1 - ess_water) * Ldown_canopy;
-			/* ignoring reflected L between water and soil surfaces */
-			Lup_soil = 0.0;
-		}
+		Lup_pond_night = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * nightlength / 1000.0
+				+ (1 - ess_water) * Ldown_canopy_night;
+		Lup_pond_day = ess_water * SBC * pow( 273.0 + Tpond ,4.0) * daylength / 1000.0
+				+ (1 - ess_water) * Ldown_canopy_day;
+		Lup_pond = Lup_pond_night + Lup_pond_day;
+
+		/* ignoring reflected L between water and soil surfaces */
+		Lup_soil_night = Lup_soil_day = Lup_soil = 0.0;
+	} else {
 		/* bare soil case */
-		else {
-			Lup_snow = 0.0;
-			Lup_soil = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * seconds_per_day / 1000.0
-								+ (1 - ess_soil) * Ldown_canopy;
-		}
+		Lup_snow_night = Lup_snow_day = Lup_snow = 0.0;
+
+		Lup_soil_night = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * nightlength / 1000.0
+				+ (1 - ess_soil) * Ldown_canopy_night;
+		Lup_soil_day = ess_soil * SBC * pow( Tsoil + 273.0 , 4.0) * daylength / 1000.0
+				+ (1 - ess_soil) * Ldown_canopy_day;
+		Lup_soil = Lup_soil_night + Lup_soil_day;
 	}
+
 		
 	/*--------------------------------------------------------------*/
 	/*	Compute daily Lstars.										*/
@@ -117,25 +141,29 @@ double	compute_Lstar_canopy(
 		/*--------------------------------------------------------------*/
 		/*	Compute with a snow layer									*/
 		/*--------------------------------------------------------------*/
-		Lstar = Lup_snow + *Ldown - Lup_canopy - Ldown_canopy;
+		Lstar = Lup_snow + patch[0].Ldown - Lup_canopy - Ldown_canopy;
+		Lstar_night = Lup_snow_night + patch[0].Ldown_night - Lup_canopy_night - Ldown_canopy_night;
+		Lstar_day = Lup_snow_day + patch[0].Ldown_day - Lup_canopy_day - Ldown_canopy_day;
 	}
-	else {
+	else if ( patch[0].detention_store > (patch[0].litter.rain_capacity - patch[0].litter.rain_stored) ) {
 		/*--------------------------------------------------------------*/
 		/*	Compute with ponded water									*/
-		/*--------------------------------------------------------------*/		
-		if ( patch[0].detention_store > (patch[0].litter.rain_capacity - patch[0].litter.rain_stored) ) {
-			Lstar = Lup_pond + *Ldown - Lup_canopy - Ldown_canopy;
-		}
-		else {
-			/*--------------------------------------------------------------*/
-			/*	Compute with bare soil										*/
-			/*--------------------------------------------------------------*/
-			Lstar = Lup_soil + *Ldown - Lup_canopy - Ldown_canopy;
-		}
+		/*--------------------------------------------------------------*/
+		Lstar = Lup_pond + patch[0].Ldown - Lup_canopy - Ldown_canopy;
+		Lstar_night = Lup_pond_night + patch[0].Ldown_night - Lup_canopy_night - Ldown_canopy_night;
+		Lstar_day = Lup_pond_day + patch[0].Ldown_day - Lup_canopy_day - Ldown_canopy_day;
+	} else {
+		/*--------------------------------------------------------------*/
+		/*	Compute with bare soil										*/
+		/*--------------------------------------------------------------*/
+		Lstar = Lup_soil + patch[0].Ldown - Lup_canopy - Ldown_canopy;
+		Lstar_night = Lup_soil_night + patch[0].Ldown_night - Lup_canopy_night - Ldown_canopy_night;
+		Lstar_day = Lup_soil_day + patch[0].Ldown_day - Lup_canopy_day - Ldown_canopy_day;
 	}
-	
-	/*Lstar += B * KstarH;*/
-	*Ldown = Ldown_canopy;
+
+	patch[0].Ldown = Ldown_canopy;
+	patch[0].Ldown_night = Ldown_canopy_night;
+	patch[0].Ldown_day = Ldown_canopy_day;
 	
 	if ( verbose_flag == -5 ){
 		printf("\n     LSTAR CAN: SWE=%lf ess_veg=%lf ess_snow=%lf ess_soil=%lf Ldownzone=%lf\n          Ldown=%lf Kstar_canopy=%lf OF=%lf Ldownsub=%lf Tsnow=%lf Tss=%lf Tsoil=%lf Tcan=%lf",
@@ -167,8 +195,12 @@ double	compute_Lstar_canopy(
 
 	/* Longwave from the canopy is unstable - due to poor estimation of cnaopy temperature - we prevent large longwave losses (that lead to  */
 	/* underestimation of the canopy net radiation (and transpiration), by not letting Lstar_canopy be strongly negative during growing season */
-   if (Tcan > 0 && Lstar < 0) Lstar=0.0;
+   if (Tcan > 0.0 && Lstar < 0.0) Lstar = 0.0;
+   if (zone[0].metv.tnight > 0.0 && Lstar_night < 0.0) Lstar_night = 0.0;
+   if (zone[0].metv.tday > 0.0 && Lstar_day < 0.0) Lstar_day = 0.0;
 	
-    return( Lstar );	
+   stratum[0].Lstar = Lstar;
+   stratum[0].Lstar_night = Lstar_night;
+   stratum[0].Lstar_day = Lstar_day;
 	
 } /*end compute_Lstar*/
