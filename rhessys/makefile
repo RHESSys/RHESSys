@@ -4,6 +4,7 @@ CC = gcc
 INCLUDES = -Iinclude
 #CFLAGS = -O -std=c99
 #CFLAGS =-Wall -g -std=c99 -DDEBUG
+CFLAGS =-Wall -g -std=c99
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
