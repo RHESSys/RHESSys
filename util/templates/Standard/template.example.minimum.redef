@@ -1,0 +1,12 @@
+_world BASIN_MAP 1
+ _basin	BASIN_MAP 1
+	n_basestations 	value -9999	
+  	_hillslope HILLSLOPE_MAP 1
+		n_basestations	value -9999 	
+		_zone HILL_OR_PATCH_MAP 1 
+			n_basestations	  value -9999	
+			zone_base_station_ID   value -9999	
+			 _patch PATCH_MAP 1
+				n_basestations		value -9999 
+				_canopy_strata PATCH_MAP 1	
+					n_basestations 		value -9999 

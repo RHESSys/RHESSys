@@ -1,0 +1,45 @@
+1
+../defs/basin.def
+1
+../defs/hill.def
+1
+../defs/zone.def
+1
+../defs/soil_SOILTYPE.def
+1
+../defs/lu_undev.def
+1
+../defs/veg_VEGTYPE.def
+1
+../clim/CLIMSTATION_base
+_world BASIN_MAP 1
+ _basin	BASIN_MAP 1
+	z		aver DEM_MAP
+	basin_parm_ID	dvalue 1
+	latitude	value XX.XX 
+	n_basestations 	dvalue 0	
+  	_hillslope HILLSLOPE_MAP 1
+		z		aver DEM_MAP
+		hill_parm_ID	dvalue 1	
+		n_basestations	dvalue 0 	
+		_zone HILL_OR_PATCH_MAP 1 
+			z		  aver DEM_MAP
+			zone_parm_ID  	  dvalue 1  
+			area		  area	
+			slope		  aver slope	
+			aspect		  spavg aspect slope	
+			e_horizon    	  eqn 0.01 0.0 ehr.100	
+			w_horizon    	  eqn 0.01 0.0 whr.100	
+			n_basestations	  dvalue 1	
+			zone_base_station_ID   dvalue 101	
+			 _patch PATCH_MAP 1
+				z		     	aver DEM_MAP
+				soil_parm_ID	     	dvalue 3.0 
+				landuse_parm_ID	     	dvalue 1	
+				area		     	area	
+				slope		     	aver slope	
+				n_basestations		dvalue 0
+				_canopy_strata PATCH_MAP 1	
+					veg_parm_ID		dvalue 7.0 
+					rootzone.depth		value 1.0
+					n_basestations 		dvalue 0 
