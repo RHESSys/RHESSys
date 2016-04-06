@@ -79,7 +79,6 @@
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
 	int		i,j,dtmp;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
 	int		paramCnt=0;
@@ -98,7 +97,7 @@
 		zone[0].z = ltmp;
 		zone[0].metv.pa	= atm_pres( zone[0].z );
 		}
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",0,1); 	
+	zone[0].zone_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",zone[0].zone_parm_ID,1); 	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",zone[0].area,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].area = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",zone[0].slope,1);
@@ -128,9 +127,9 @@
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this zone								*/
 	/*--------------------------------------------------------------*/
-	if (default_object_ID > 0) {
+	if (zone[0].zone_parm_ID > 0) {
 		i = 0;
-		while (defaults[0].zone[i].ID != default_object_ID) {
+		while (defaults[0].zone[i].ID != zone[0].zone_parm_ID) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*  Report an error if no match was found.  Otherwise assign    */
@@ -139,7 +138,7 @@
 			if ( i>= defaults[0].num_zone_default_files ){
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_zone, zone default ID %d not found.\n",
-					default_object_ID);
+					zone[0].zone_parm_ID);
 				exit(EXIT_FAILURE);
 			}
 		} /* end-while */

@@ -514,6 +514,7 @@ struct basin_object
         int             ID;                                                                     
         int             num_base_stations;
         int             num_hillslopes;
+	int		basin_parm_ID;
         double  area;                   /*  m2          */
 	      double  area_withsnow;			/*  m2 		*/
         double  x;                      /*  meters      */      
@@ -802,6 +803,7 @@ struct hillslope_object
         int             ID;
         int             num_base_stations;
         int             num_zones;
+	int		hill_parm_ID;
         double  x;                      /*      meters  */
         double  y;                      /*      meters  */
         double  z;                      /* meters       */
@@ -941,6 +943,7 @@ struct zone_object
         int             Kdown_direct_flag;                  /*  0 or 1  */
         int             num_base_stations;                              
         int             num_patches;
+	int		zone_parm_ID;
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
         double  z;                                      /* meters       */
@@ -1487,6 +1490,9 @@ struct patch_object
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
         int             target_status;
+	int		soil_parm_ID;
+	int		landuse_parm_ID;
+	double		mpar;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */
@@ -2622,7 +2628,8 @@ struct  canopy_strata_object
         {
         int             patch_ID;
         int             ID;
-        int             num_base_stations;                              
+        int             num_base_stations;     
+	int		veg_parm_ID;
         double  APAR_direct;                                    /* (umol photon/m2*day) */
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;

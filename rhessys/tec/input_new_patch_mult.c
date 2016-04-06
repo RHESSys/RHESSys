@@ -77,10 +77,8 @@
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
 	int		i, dtmp;
-	int		soil_default_object_ID;
-	int		landuse_default_object_ID;
 	char		record[MAXSTR];
-	double	mpar, ltmp;
+	double	       ltmp;
 	int		paramCnt=0;
 	param		*paramPtr=NULL;
 	
@@ -96,8 +94,8 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].y = ltmp * patch[0].y;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp * patch[0].z;
-	soil_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",0,1);
-	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",0,1);
+	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",patch[0].soil_parm_ID,1);
+	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",1,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp * patch[0].area;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",1,1);
@@ -106,7 +104,8 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].lna = ltmp * patch[0].lna;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",1,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].Ksat_vertical = ltmp * patch[0].Ksat_vertical;
-	mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",0,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",1,1);
+	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].mpar = ltmp * patch[0].mpar;
 	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"std","%lf",1,1);
 	if (command_line[0].stdev_flag == 1) {
@@ -220,9 +219,9 @@
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this patch								*/
 	/*--------------------------------------------------------------*/
-	if (soil_default_object_ID > 0) {
+	if (patch[0].soil_parm_ID > 0) {
 		i = 0;
-		while (defaults[0].soil[i].ID != soil_default_object_ID) {
+		while (defaults[0].soil[i].ID != patch[0].soil_parm_ID) {
 			i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -231,7 +230,7 @@
 		if ( i>= defaults[0].num_soil_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in input_new_patch, soil default ID %d not found for patch %d\n" ,
-				soil_default_object_ID, patch[0].ID);
+				patch[0].soil_parm_ID, patch[0].ID);
 			exit(EXIT_FAILURE);
 			}
 		} /* end-while */
@@ -239,9 +238,9 @@
 	patch[0].soil_defaults[0] = &defaults[0].soil[i];
 	}
 
-	if (landuse_default_object_ID > 0) {
+	if (patch[0].landuse_parm_ID > 0) {
 		i = 0;
-		while (defaults[0].landuse[i].ID != landuse_default_object_ID) {
+		while (defaults[0].landuse[i].ID != patch[0].landuse_parm_ID) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*  Report an error if no match was found.  Otherwise assign    */
@@ -250,7 +249,7 @@
 			if ( i>= defaults[0].num_landuse_default_files ){
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_patch, landuse default ID %d not found for patch %d\n" ,
-					landuse_default_object_ID, patch[0].ID);
+					patch[0].landuse_parm_ID, patch[0].ID);
 				exit(EXIT_FAILURE);
 			}
 		} /* end-while */
@@ -259,10 +258,10 @@
 	/*--------------------------------------------------------------*/
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/
 	/*--------------------------------------------------------------*/
-	if (mpar > ZERO) {
-		patch[0].original_m = mpar;
-		patch[0].soil_defaults[0][0].m = mpar * command_line[0].sen[M];
-		patch[0].soil_defaults[0][0].m_z = mpar * command_line[0].sen[M] / 
+	if (patch[0].mpar > ZERO) {
+		patch[0].original_m = patch[0].mpar;
+		patch[0].soil_defaults[0][0].m = patch[0].mpar * command_line[0].sen[M];
+		patch[0].soil_defaults[0][0].m_z = patch[0].mpar * command_line[0].sen[M] / 
 				patch[0].soil_defaults[0][0].porosity_0;
 	}
 

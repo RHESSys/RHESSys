@@ -102,7 +102,6 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
 	int		i, k, j;
-	int		default_object_ID;
 	int		notfound;
 	int     *dum;
 	float   base_x, base_y;	
@@ -133,7 +132,7 @@ struct zone_object *construct_zone(
 	zone[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0,1);
 	zone[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0,1);
 	zone[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,0);
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",-9999,0);
+	zone[0].zone_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_parm_ID","%d",-9999,0);
 	zone[0].area = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",-9999,0);
 	zone[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,0);
 	zone[0].aspect = getDoubleWorldfile(&paramCnt,&paramPtr,"aspect","%lf",-9999,0);
@@ -175,7 +174,7 @@ struct zone_object *construct_zone(
 		alloc( sizeof(struct zone_default *),"defaults",
 		"construct_zone" );
 	i = 0;
-	while (defaults[0].zone[i].ID != default_object_ID) {
+	while (defaults[0].zone[i].ID != zone[0].zone_parm_ID) {
 		i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -184,7 +183,7 @@ struct zone_object *construct_zone(
 		if ( i>= defaults[0].num_zone_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_zone, zone default ID %d not found.\n",
-				default_object_ID);
+				zone[0].zone_parm_ID);
 			exit(EXIT_FAILURE);
 		}
 	} /* end-while */
