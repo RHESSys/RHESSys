@@ -1190,7 +1190,7 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 
     for ( i = 0 ; i < num_strm ; i++ )
         {
-        dH2O = 0.0 ;
+        dH2O = 0.0 ;    /*  accumulators for inflow from patches */
         dNO3 = 0.0 ;
         dNH4 = 0.0 ;
         dDON = 0.0 ;
@@ -1200,15 +1200,15 @@ static void stream_routing( double  tstep )        /*  process time-step  */
             k = strmdex[j] ;
             q = 1.0 - strmfac[j] ;      /*  remaining fraction after lateral-flow scavenging  */
             p = strmfac[j] * parea[k] ; /*  fraction of head scavenged from patch * area of patch  */
-            dH2O      = p * sfcH2O[i] ;
+            dH2O     += p * sfcH2O[i] ;
             sfcH2O[i] = q * sfcH2O[i] ;
-            dNO3      = p * sfcNO3[i] ;
+            dNO3     += p * sfcNO3[i] ;
             sfcNO3[i] = q * sfcNO3[i] ;
-            dNH4      = p * sfcNH4[i] ;
+            dNH4     += p * sfcNH4[i] ;
             sfcNH4[i] = q * sfcNH4[i] ;
-            dDON      = p * sfcDON[i] ;
+            dDON     += p * sfcDON[i] ;
             sfcDON[i] = q * sfcDON[i] ;
-            dDOC      = p * sfcDOC[i] ;
+            dDOC     += p * sfcDOC[i] ;
             sfcDOC[i] = q * sfcDOC[i] ;
             }
         latsH2O[i] = ddt * dH2O ;
