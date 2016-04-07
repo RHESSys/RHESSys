@@ -94,18 +94,18 @@ void		zone_hourly(
 	inx_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.inx;
 	inx_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.inx;
 
-	if (inx > -999)  {
+	if (inx_NO3 > -999)  {
 
 		/*--------------------------------------------------------------*/
 		/* ndep_NO3
 		/*--------------------------------------------------------------*/	
 		clim_event_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.seq[inx_NO3];
-	
 		while (julday(clim_event_NO3.edate) + clim_event_NO3.edate.hour/24.0 < julday(current_date) + current_date.hour/24.0) {
 			zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.inx += 1;
 			inx_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.inx;
 			clim_event_NO3 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NO3.seq[inx_NO3];
 		}
+
 
 		/*--------------------------------------------------------------*/
 		/* Check to see if there is any ndep_NO3 in this hour */
@@ -120,7 +120,9 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/			
 			zone[0].ndep_NO3 = 0;
 		}
-		
+	}
+
+	if (inx_NH4 > -999)  {
 		/*--------------------------------------------------------------*/
 		/*  ndep_NH4
 		/*--------------------------------------------------------------*/		
@@ -131,7 +133,7 @@ void		zone_hourly(
 			inx_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.inx;
 			clim_event_NH4 = zone[0].base_stations[0][0].hourly_clim[0].ndep_NH4.seq[inx_NH4];
 		}
-		
+
 		/*--------------------------------------------------------------*/
 		/* Check to see if there is any ndep_NH4 in this hour */
 		/* set the zone.hour[0] value to it */
@@ -145,8 +147,9 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/			
 			zone[0].ndep_NH4 = 0;
 		}		
+	}
 
-
+	if (inx > -999)  {
 		/*--------------------------------------------------------------*/
 		/*  Rainfall
 		/*--------------------------------------------------------------*/	
@@ -264,7 +267,7 @@ void		zone_hourly(
 		if (zone[0].hourly[0].rain+zone[0].hourly[0].snow > 0) {
 			zone[0].daytime_rain_duration += 3600;}
 	}
-			
+	
 	/*--------------------------------------------------------------*/
 	/*	Compute zone hourly radiation forcings.								*/
 	/*--------------------------------------------------------------*/
@@ -425,7 +428,7 @@ void		zone_hourly(
 				/*} /*end if */
 			} /*end if*/
 			} /*end if*/
-		} /*end if*/
+		} /*end if*/								
 		/*--------------------------------------------------------------*/
 		/*	Cycle through the patches 									*/
 		/*--------------------------------------------------------------*/

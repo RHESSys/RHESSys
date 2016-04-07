@@ -83,6 +83,8 @@ struct	hourly_clim_object *construct_hourly_clim(
 	/*--------------------------------------------------------------*/
 	hourly_clim[0].rain.inx = -999;
 	hourly_clim[0].rain_duration.inx = -999;
+	hourly_clim[0].ndep_NH4.inx = -999;
+	hourly_clim[0].ndep_NO3.inx = -999;
 	
 	/*--------------------------------------------------------------*/
 	/*	Read the still open base station file for the number of		*/

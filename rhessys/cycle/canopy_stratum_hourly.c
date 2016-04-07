@@ -119,7 +119,7 @@ void	canopy_stratum_hourly(
 		/ (stratum[0].rain_stored + rain_throughfall) 
 		* (stratum[0].NH4_stored + patch[0].hourly[0].NH4_throughfall); 
 	    }
-	    else{// rain_throughfall == 0 
+	    else{// NO storage AND no rain .... Assume it all falls through
         	//NO3_stored = stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall;
             //NO3_throughfall = 0;
 			NO3_stored = 0;
@@ -135,11 +135,11 @@ void	canopy_stratum_hourly(
 
 	patch[0].hourly[0].NO3_throughfall_final += NO3_throughfall 
 		* stratum[0].cover_fraction;
-	stratum[0].NO3_stored = NO3_stored; 
+	stratum[0].NO3_stored = NO3_stored; // I wonder if this should be a += .. seems to be no memory of what is stored
 	
 	patch[0].hourly[0].NH4_throughfall_final += NH4_throughfall 
 		* stratum[0].cover_fraction;
-	stratum[0].NH4_stored = NH4_stored; 
+	stratum[0].NH4_stored = NH4_stored; // I wonder if this should be a += .. seems to be no memory of what is stored
 
 	/*--------------------------------------------------------------*/
 	/*	Destroy the canopy stratum hourly object.					*/

@@ -136,8 +136,8 @@ void	algae_stratum_daily_F(
          nitconc         = patch[0].surface_NO3 / patch[0].detention_store; //kg/m^3
          sminnconc       = patch[0].surface_NH4 / patch[0].detention_store;   //kg/m^3
          chlaconc        = stratum[0].algae.chla / patch[0].detention_store;  //kg/m^3
-         npref           = ((nitconc * sminnconc) / ((stratum[0].defaults[0][0].algae.npref_coeff + sminnconc)*(stratum[0].defaults[0][0].algae.npref_coeff + nitconc)) + (sminnconc * stratum[0].defaults[0][0].algae.npref_coeff)/((nitconc + sminnconc)*(stratum[0].defaults[0][0].algae.npref_coeff + nitconc)));
-         
+         npref           = ((nitconc*1000*1000 * sminnconc*1000*1000) / ((stratum[0].defaults[0][0].algae.npref_coeff*1000000 + sminnconc*1000*1000)*(stratum[0].defaults[0][0].algae.npref_coeff*1000000 + nitconc*1000*1000)) + (sminnconc*1000*1000 * stratum[0].defaults[0][0].algae.npref_coeff*1000000)/((nitconc*1000*1000 + sminnconc*1000*1000)*(stratum[0].defaults[0][0].algae.npref_coeff*1000000 + nitconc*1000*1000)));
+       
          scm_photo_depth = min(patch[0].scm_ave_height, stratum[0].defaults[0][0].algae.scm_photo_depth);
                   
          /* 1.1 - Temperature Effects:  Empirical equation from Stefan and Prudhomme 1993 - for streams, but best I found */

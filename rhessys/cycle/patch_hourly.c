@@ -158,7 +158,6 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 	/*	process any hourly rainfall or Ndep				*/
 	/*--------------------------------------------------------------*/
-
 	if ( zone[0].hourly_rain_flag == 1)
 		patch[0].hourly[0].rain_throughfall = zone[0].hourly[0].rain;
 	else
@@ -167,13 +166,13 @@ void		patch_hourly(
 	if(zone[0].hourly_NO3_flag == 1)
 		patch[0].hourly[0].NO3_throughfall = zone[0].hourly[0].ndep_NO3;
 	else
-		patch[0].hourly[0].NO3_throughfall = 0;
+		patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
 
 	if(zone[0].hourly_NH4_flag == 1)
 		patch[0].hourly[0].NH4_throughfall = zone[0].hourly[0].ndep_NH4;
 	else
-		patch[0].hourly[0].NH4_throughfall = 0;	
-			
+		patch[0].hourly[0].NH4_throughfall = zone[0].ndep_NH4/24;
+				
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
@@ -241,7 +240,6 @@ void		patch_hourly(
 
 	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 	patch[0].surface_NH4 += patch[0].hourly[0].NH4_throughfall;
-	
 	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here	
 
 	/*--------------------------------------------------------------*/
@@ -623,6 +621,5 @@ void		patch_hourly(
 	theta = patch[0].rootzone.S;
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
-	
 
 } /*end patch_hourly.c*/

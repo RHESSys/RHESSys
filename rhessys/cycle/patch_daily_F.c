@@ -430,7 +430,6 @@ void		patch_daily_F(
 	/* 	case we use the temperature from the previous day		*/
 	/*	alos for the Kdowns and PAR (for now Ldown can be kept )	*/
 	/*--------------------------------------------------------------*/
-
 	if (command_line[0].surface_energy_flag == 0) 
 		patch[0].Tsoil = zone[0].metv.tsoil;
 
@@ -2206,6 +2205,5 @@ void		patch_daily_F(
 if ( command_line[0].verbose_flag == -5 ){
 	printf("\n***END PATCH DAILY: exfil_unsat=%lf",patch[0].exfiltration_unsat_zone);
 }
-	
 	return;
 } /*end patch_daily_F.c*/

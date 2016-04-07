@@ -327,10 +327,6 @@ void		surface_daily_F(
 	}
 	else detention_store_evaporation = 0.0;
 	
-		if(patch[0].ID==2){
-			fprintf(stderr,"\nstore evap = %f",detention_store_evaporation*1000);
-		}	
-	
 	/*** If snowpack is over detention store, then add evaporated water to snowpack. ***/
 	
 	if (patch[0].snowpack.water_equivalent_depth > ZERO) {
