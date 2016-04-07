@@ -307,9 +307,11 @@ static double * gwcoef ;        /*  [num_patches]: patch[0].soil_defaults[0][0].
 
 /*  Surface-routing Drainage Matrix  */
 
-static int      * sfccnti ;     /*   used as sfccnti[num_patches]                */
-static NBRuint  * sfcndxi ;     /*   used as sfcndxi[num_patches][MAXNEIGHBOR]:  outflow-subscripts   */
+static int      * sfccnto ;     /*   used as sfccnti[num_patches]  number of  outflow-neighbors         */
+static int      * sfccnti ;     /*   used as sfccnti[num_patches]  number of   inflow-neighbors         */
+static NBRuint  * sfcndxi ;     /*   used as sfcndxi[num_patches][MAXNEIGHBOR]:  outflow-subscripts     */
 static NBRdble  * sfcgama ;     /*   used as sfcgama[num_patches][MAXNEIGHBOR]   */
+static NBRdble  * outgama ;     /*   used as outgama[num_patches][MAXNEIGHBOR]                          */
 
 /*  Sub-Surface-routing Drainage Matrix  */
 
@@ -915,7 +917,7 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
          shared( num_patches, plist, mz_v, ksat_0, ksatv, por_d, por_0, \
                  dt, sfccnti, sfcndxi, sfcgama, rootzs, psiair,         \
                  sfcH2O, sfcNO3, sfcNH4, sfcDOC, sfcDON,                \
-                 thruH2O,thruNO3,                                       \
+                 thruH2O,thruNO3, patchz, waterz,                       \
                  litH2O, litNO3, litNH4, litDON, litDOC, cancap,        \
                  gndH2O, gndNO3, gndNH4, gndDOC, gndDON, gwcoef,        \
                  infH2O, infNO3, infNH4, infDOC, infDON,                \
@@ -1024,7 +1026,7 @@ static void sfc_routing( double  tstep )        /*  process time-step  */
 
             if ( ( rootzs[i] < 1.0 ) && ( ksat_0[i] > ZERO ) )
                 {
-                z     = plist[i]->sat_deficit_z ;
+                z     = patchz[i] - waterz[i] ;     /* sat-deficit Z (M b.g.l)  */
 
 	            /*	use mean K and p (porosity) given current saturation depth   */
 
@@ -1582,6 +1584,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
     sfccnti = (int      *) alloc( num_patches * sizeof(     int ), "sfccnti", "hydro_routing/init_hydro_routing()" ) ;
     sfcndxi = (NBRuint  *) alloc( num_patches * sizeof( NBRuint ), "sfcndxi", "hydro_routing/init_hydro_routing()" ) ;
     sfcgama = (NBRdble  *) alloc( num_patches * sizeof( NBRdble ), "sfcgama", "hydro_routing/init_hydro_routing()" ) ;
+    outgama = (NBRdble  *) alloc( num_patches * sizeof( NBRdble ), "outgama", "hydro_routing/init_hydro_routing()" ) ;
 
     subcnto = (int      *) alloc( num_patches * sizeof(     int ), "subcnto", "hydro_routing/init_hydro_routing()" ) ;
     subcnti = (int      *) alloc( num_patches * sizeof(     int ), "subcnti", "hydro_routing/init_hydro_routing()" ) ;
@@ -1651,9 +1654,9 @@ static void init_hydro_routing( struct command_line_object * command_line,
                  retdep, rootzs, ksatv, ksat_0, mz_v, psiair, zsoil,    \
                  nsoil, dzsoil, std_scale, pscale, Ndecay, Ddecay,      \
                  NO3ads, NH4ads, DONads, DOCads, patchz, totgama,       \
-                 sfcknl, dcount, dfrac, capH2O, p3parm, p4parm, tpcurv, \
-                 pordex, por_0, por_d, gwcoef, minH2O, maxH2O, rootz,   \
-                 subdist, subgama, subdexo, perimf, diagf,              \
+                 sfcknl, sfccnto, outgama, capH2O, p3parm, p4parm,      \
+                 tpcurv, pordex, por_0, por_d, gwcoef, minH2O, maxH2O,  \
+                 rootz, subdist, subgama, subdexo, perimf, diagf,       \
                  subcnti, subcnto, zactiv, cancap, rtcap,               \
                  litH2O, litNO3, litNH4, litDOC, litDON, verbose  )     \
       reduction( +:  basin_area )                                       \
@@ -1691,8 +1694,9 @@ static void init_hydro_routing( struct command_line_object * command_line,
         tpcurv[i] = patch->soil_defaults[0][0].theta_psi_curve ;
         pordex[i] = patch->soil_defaults[0][0].pore_size_index ;
         gwcoef[i] = patch->soil_defaults[0][0].sat_to_gw_coeff / ( 24.0*3600.0*100.0 ) ;    /* %/Day ~~> 1/Sec  */
+        sfccnto[i]= plist [i]->surface_innundation_list->num_neighbours ;      /*  outflow neighbor-count  */
+        sfccnti[i]= 0 ;                                                        /*  inflow neighbor-count (initialization) */
         sfcknl[i] = sqrt( tan( patch->slope_max ) ) / ( patch->mannN * psize[i] ) ;
-        dcount[i] = patch->surface_innundation_list->num_neighbours ;
         cancap[i] = patch->litter.rain_capacity ;
         patchm[i] = patch->m;
 
@@ -1734,17 +1738,23 @@ static void init_hydro_routing( struct command_line_object * command_line,
         litDOC[i] = 0.0 ;
 
         totgama[i] = patch->innundation_list->gamma ;
-
+  
         gfac = 0.0 ;
-        for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions  */
+        for ( j = 0; j < sfccnto[i]; j++ )       /*  compute normalized outflow-fractions  */
             {
             gfac += patch->surface_innundation_list->neighbours[j].gamma ;
             }
-        gfac = 1.0 / gfac ;
-        for ( j = 0; j < dcount[i]; j++ )       /*  compute normalized outflow-fractions from         */
-            {                                   /*  flow-rates gamma and uphill/downhill area ratios  */
-            neigh = patch->surface_innundation_list->neighbours[j].patch;
-            dfrac[i][j] = gfac * patch->surface_innundation_list->neighbours[j].gamma  * patch->area / neigh->area ;
+
+        if ( gfac > 0.0 )
+            {
+            gfac = 1.0 / gfac ;
+            for ( j = 0 ; j < sfccnto[i] ; j++ )
+                {
+                neigh = patch->surface_innundation_list->neighbours[j].patch ;
+                m     = patchdex( neigh ) ;
+                sfcdexo[i][j] = m ;
+                outgama[i][j] = gfac * neigh->gamma * patch->area / neigh->area ;
+                }
             }
 
         for ( j = 0; j < subcnto[i]; j++ )
@@ -1768,25 +1778,32 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
     for ( i = 0; i < num_patches; i++ )
         {
+        if ( sfccnto[i] >= MAXNEIGHBOR-1 )
+            {
+            fprintf( stderr, "ERROR:  matrix-overflow in hydro_routing.c:  increase MAXNEIGHBOR and re-=compile" );
+            exit(EXIT_FAILURE);
+            }
+
         patch = plist [i] ;
 
         /*  invert the surface-routing table  */
 
-        for ( j = 0; j < dcount[i]; j++ )
+        for ( k = 0 ; k < num_patches ; k++ )       /*  linear search ;-(  */
             {
-            neigh = patch->surface_innundation_list->neighbours[j].patch ;
-            k = patchdex( neigh ) ;
-            if ( sfccnti[k] < MAXNEIGHBOR-1 )
+            for ( j = 0 ; j < sfccnto[j]  ; j++ )
                 {
-                m = sfccnti[k] ;
-                sfccnti[k]++ ;
-                sfcndxi[k][m] = j ;
-                sfcgama[k][m] = dfrac[k][j] ;
-                break ;
-                }
-            else{
-                fprintf( stderr, "ERROR:  matrix-overflow in hydro_routing.c:  increase MAXNEIGHBOR and re-=compile" );
-                exit(EXIT_FAILURE);
+                if ( sfcdexo[k][j] == i )
+                    {
+
+                    /*  patch i is j'th outflow for this patch k */
+                    /*  i.e., this patch k is some inflow for patch i  */
+
+                    m = sfccnti[k] ;        /*  current inflow count  */
+                    sfccnti[i]++ ;
+                    sfcdexi[i][m] = k ;
+                    sfcgama[i][m] = outgama[k][j] ;
+                    break
+                    }
                 }
             }
 
