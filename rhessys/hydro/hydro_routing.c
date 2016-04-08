@@ -1591,6 +1591,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
     invhill = (double   *) alloc( num_patches * sizeof(  double ), "invhill", "hydro_routing/init_hydro_routing()" ) ;
 
     sfcknl  = (double   *) alloc( num_patches * sizeof(  double ), "sfcknl",  "hydro_routing/init_hydro_routing()" ) ;
+    sfccnto = (int      *) alloc( num_patches * sizeof(     int ), "sfccnto", "hydro_routing/init_hydro_routing()" ) ;
     sfccnti = (int      *) alloc( num_patches * sizeof(     int ), "sfccnti", "hydro_routing/init_hydro_routing()" ) ;
     sfcndxi = (NBRuint  *) alloc( num_patches * sizeof( NBRuint ), "sfcndxi", "hydro_routing/init_hydro_routing()" ) ;
     sfcndxo = (NBRuint  *) alloc( num_patches * sizeof( NBRuint ), "sfcndxo", "hydro_routing/init_hydro_routing()" ) ;
@@ -1705,8 +1706,8 @@ static void init_hydro_routing( struct command_line_object * command_line,
         tpcurv[i] = patch->soil_defaults[0][0].theta_psi_curve ;
         pordex[i] = patch->soil_defaults[0][0].pore_size_index ;
         gwcoef[i] = patch->soil_defaults[0][0].sat_to_gw_coeff / ( 24.0*3600.0*100.0 ) ;    /* %/Day ~~> 1/Sec  */
-        sfccnto[i]= plist [i]->surface_innundation_list->num_neighbours ;      /*  outflow neighbor-count  */
-        sfccnti[i]= 0 ;                                                        /*  inflow neighbor-count (initialization) */
+        sfccnto[i] = plist[i]->surface_innundation_list->num_neighbours ;      /*  outflow neighbor-count  */
+        sfccnti[i] = 0 ;                                                        /*  inflow neighbor-count (initialization) */
         sfcknl[i] = sqrt( tan( patch->slope_max ) ) / ( patch->mannN * psize[i] ) ;
         cancap[i] = patch->litter.rain_capacity ;
         patchm[i] = patch->m;
