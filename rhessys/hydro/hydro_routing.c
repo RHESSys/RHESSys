@@ -310,6 +310,7 @@ static double * gwcoef ;        /*  [num_patches]: patch[0].soil_defaults[0][0].
 static int      * sfccnto ;     /*   used as sfccnti[num_patches]  number of  outflow-neighbors         */
 static int      * sfccnti ;     /*   used as sfccnti[num_patches]  number of   inflow-neighbors         */
 static NBRuint  * sfcndxi ;     /*   used as sfcndxi[num_patches][MAXNEIGHBOR]:  outflow-subscripts     */
+static NBRuint  * sfcndxo ;     /*   used as sfcndxi[num_patches][MAXNEIGHBOR]:  outflow-subscripts     */
 static NBRdble  * sfcgama ;     /*   used as sfcgama[num_patches][MAXNEIGHBOR]   */
 static NBRdble  * outgama ;     /*   used as outgama[num_patches][MAXNEIGHBOR]                          */
 
@@ -438,7 +439,7 @@ static void sub_routing0( double   tstep,        /*  external time step      */
                  ssum, tsum, wsum, fac, vel, dH2Odt )               \
          shared( num_patches, plist, pscale, nsoil, dzsoil, perimf, \
                  normal, perc, waterz, outH2O, gammaf, satdef,      \
-                 subcnto, subdexo, subdist, psize, totH2O )         \
+                 subcnto, subdexo, subdist, psize, minH2O, totH2O ) \
       reduction( max: cmax )                                        \
        schedule( guided )
 
@@ -565,7 +566,7 @@ static void sub_routing1( double   tstep,        /*  external time step      */
         private( i, j, kk, m, n, patch, z1, z2, zz, trans, slope,       \
                  ssum, tsum, wsum, fac, vel, dH2Odt )                   \
          shared( num_patches, plist, pscale, nsoil, dzsoil, perimf,     \
-                 normal, perc, waterz, outH2O, totH2O, minH2O, satdef   \
+                 normal, perc, waterz, outH2O, totH2O, minH2O, satdef,  \
                 gammaf,  gamsum, subcnto, subdexo, subdist, psize )     \
       reduction( max: cmax )                                            \
        schedule( guided )
@@ -792,7 +793,7 @@ static void sub_routing2( double   tstep,        /*  external time step      */
          shared( num_patches, plist, subcnti, subdexi, subnbri,         \
                  dt, outH2O, verbose, satdef, capH2O, patchm,           \
                  adjgam, por_0, por_d, Ndecay, Ddecay, zactiv,          \
-                 zsoil, NO3ads, NH4ads, DONads, DOCads,                 \
+                 zsoil, NO3ads, NH4ads, DONads, DOCads, minH2O,         \
                  totH2O, totNO3, totNH4, totDON, totDOC,                \
                  latH2O, latNO3, latNH4, latDON, latDOC )               \
        schedule( guided )
@@ -1351,7 +1352,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
          shared( num_patches, capH2O, minH2O, plist, satdef, unsH2O,    \
                  verbose, por_0, por_d, Ndecay, Ddecay, dzsoil,         \
                  patchz, waterz, tpcurv, psiair, pordex,                \
-                 p3parm, p4parm, mz_v, ksat_0, kfac,                    \
+                 p3parm, p4parm, mz_v, ksat_0, kfac, zsoil,             \
                  totH2O, totNO3, totNH4, totDOC, totDON,                \
                  infH2O, infNO3, infNH4, infDOC, infDON,                \
                  latH2O, latNO3, latNH4, latDOC, latDON,                \
@@ -1381,8 +1382,8 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                                tpcurv[i], 
                                                pordex[i], 
                                                unsH2O[i] / unscap, 
-                                                mz_v[i], 
-                                                  satdefz, 
+                                                 mz_v[i], 
+                                                 satdefz, 
                                           kfac*ksat_0[i], 
                                                unsH2O[i] - fldcap ) ;
         unsH2O[i] = unsH2O[i] + infH2O[i] - drain;
@@ -1583,6 +1584,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
     sfcknl  = (double   *) alloc( num_patches * sizeof(  double ), "sfcknl",  "hydro_routing/init_hydro_routing()" ) ;
     sfccnti = (int      *) alloc( num_patches * sizeof(     int ), "sfccnti", "hydro_routing/init_hydro_routing()" ) ;
     sfcndxi = (NBRuint  *) alloc( num_patches * sizeof( NBRuint ), "sfcndxi", "hydro_routing/init_hydro_routing()" ) ;
+    sfcndxo = (NBRuint  *) alloc( num_patches * sizeof( NBRuint ), "sfcndxo", "hydro_routing/init_hydro_routing()" ) ;
     sfcgama = (NBRdble  *) alloc( num_patches * sizeof( NBRdble ), "sfcgama", "hydro_routing/init_hydro_routing()" ) ;
     outgama = (NBRdble  *) alloc( num_patches * sizeof( NBRdble ), "outgama", "hydro_routing/init_hydro_routing()" ) ;
 
@@ -1647,19 +1649,19 @@ static void init_hydro_routing( struct command_line_object * command_line,
         plist [i] = basin->route_list->list[i] ;
         }
 
-#pragma omp parallel for                                                \
-        default( none )                                                 \
-        private( i, j, k, patch, neigh, gfac, dx, dy )                  \
-         shared( num_patches, basin, plist, parea, psize, sfccnti,      \
-                 retdep, rootzs, ksatv, ksat_0, mz_v, psiair, zsoil,    \
-                 nsoil, dzsoil, std_scale, pscale, Ndecay, Ddecay,      \
-                 NO3ads, NH4ads, DONads, DOCads, patchz, totgama,       \
-                 sfcknl, sfccnto, outgama, capH2O, p3parm, p4parm,      \
-                 tpcurv, pordex, por_0, por_d, gwcoef, minH2O, maxH2O,  \
-                 rootz, subdist, subgama, subdexo, perimf, diagf,       \
-                 subcnti, subcnto, zactiv, cancap, rtcap,               \
-                 litH2O, litNO3, litNH4, litDOC, litDON, verbose  )     \
-      reduction( +:  basin_area )                                       \
+#pragma omp parallel for                                                    \
+        default( none )                                                     \
+        private( i, j, k, m, patch, neigh, gfac, dx, dy )                   \
+         shared( num_patches, basin, plist, parea, psize,  retdep, rootzs,  \
+                 ksatv, ksat_0, mz_v, psiair, nsoil, zsoil, dzsoil, rootz,  \
+                 std_scale, pscale, Ndecay, Ddecay, NO3ads, NH4ads,         \
+                 DONads, DOCads, patchz, totgama, sfccnti, sfccnto,         \
+                 sfcndxo, sfcknl, outgama, capH2O, p3parm, p4parm, tpcurv,  \
+                 pordex, por_0, por_d, gwcoef, minH2O, maxH2O, subdist,     \
+                 subgama, subcnti, subcnto, subdexo, perimf, diagf, zactiv, \
+                 cancap, rtcap, patchm, verbose,                            \
+                 litH2O, litNO3, litNH4, litDOC, litDON ),                  \
+      reduction( +:  basin_area )                                           \
        schedule( guided )
 
     for ( i = 0; i < num_patches; i++ )
@@ -1727,7 +1729,6 @@ static void init_hydro_routing( struct command_line_object * command_line,
                                          por_d[i],
                                          zsoil[i], zsoil[i], 0.0 ) ;       /*  full-column sat water capacity  */
 
-        sfccnti[i] = 0 ;
         subcnto[i] = patch->innundation_list->num_neighbours ;
         subcnti[i] = 0 ;
 
@@ -1752,8 +1753,8 @@ static void init_hydro_routing( struct command_line_object * command_line,
                 {
                 neigh = patch->surface_innundation_list->neighbours[j].patch ;
                 m     = patchdex( neigh ) ;
-                sfcdexo[i][j] = m ;
-                outgama[i][j] = gfac * neigh->gamma * patch->area / neigh->area ;
+                sfcndxo[i][j] = m ;
+                outgama[i][j] = gfac * patch->surface_innundation_list->neighbours[j].gamma * patch->area / neigh->area ;
                 }
             }
 
@@ -1792,7 +1793,7 @@ static void init_hydro_routing( struct command_line_object * command_line,
             {
             for ( j = 0 ; j < sfccnto[j]  ; j++ )
                 {
-                if ( sfcdexo[k][j] == i )
+                if ( sfcndxo[k][j] == i )
                     {
 
                     /*  patch i is j'th outflow for this patch k */
@@ -1800,9 +1801,9 @@ static void init_hydro_routing( struct command_line_object * command_line,
 
                     m = sfccnti[k] ;        /*  current inflow count  */
                     sfccnti[i]++ ;
-                    sfcdexi[i][m] = k ;
+                    sfcndxi[i][m] = k ;
                     sfcgama[i][m] = outgama[k][j] ;
-                    break
+                    break ;
                     }
                 }
             }
