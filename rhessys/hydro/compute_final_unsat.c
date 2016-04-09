@@ -25,6 +25,7 @@
 /*  tolerance:  1.0e-3 mm   */
 
 #define     EPSILON         (1.0e-6)
+#define     D34             (1.0 / 3.4)
 
 /*  macro for the theta-calculation from "compute_field_capacity.c"     */
 /*  Four cases:                                                         */
@@ -38,6 +39,9 @@
       : ( CURVE == 1 ? pow( PSIAIR / PSI, PORDEX )                      \
           : ( CURVE == 2 ? pow( 1.0 + pow( PSI/PSIAIR, P3 ), -PORDEX )  \
                          : exp( ( log( PSI ) - P3 ) / P4 ) ) ) )
+
+#define     DINGMAN( POR_0, PSIAIR, PORDEX, PSI )                       \
+    ( POR_0 * PSI * pow( D34 * PSIAIR , PORDEX ) 
 
 void    compute_final_unsat(
                            int     tpcurv,      /*  IN:  patch->soil_defaults[0][0].theta_psi_curve */
@@ -54,7 +58,7 @@ void    compute_final_unsat(
 					       double *unsh2o       /*  INOUT:  unsat-zone water storage (vertical M)   */
                            )
     {
-    double  zsat, unsat, dunsat, unsfac, depth, psi, theta, poros, zfac ;
+    double  zsat, unsat, unslyr, airlyr, unsfac, depth, psi, theta, poros, fraclyr ;
 
     zsat   = *satdefz ;
     unsat  = *unsh2o ;
@@ -65,27 +69,28 @@ void    compute_final_unsat(
 
         /* For positive  delh2o, integrate upwards until delh20 is exhausted.   */
         /* Depth  zsat  decrements by INTERVAL_SIZE  while unsaturated-zone     */
-        /* water  unsat and "new" water  delh2o  decrement by                   */
-        /* unsfac times total water capacity  for the layer                     */
+        /* unsat-zone water  unsat decrements by unslyr == unsfac times theta   */
+        /* "new" water  delh2o     decrements by airlyr == remaining porosity   */
 
-        for ( psi = 0.0, depth = zsat ; depth > 0.0 ; depth -= INTERVAL_SIZE, psi -= INTERVAL_SIZE )
+        for ( psi = 0.0, depth = zsat ; depth > 0.0 ; depth -= INTERVAL_SIZE, psi += INTERVAL_SIZE )
             {
             theta  = THETA( tpcurv, psi, psiair, pordex, p3parm, p4parm ) ;
             poros  = por_0 * exp( -depth / por_d ) ;
-            dunsat = INTERVAL_SIZE * unsfac * poros * theta ;           /*  unsat water for this layer   */
+            unslyr = INTERVAL_SIZE * poros * unsfac * theta ;           /*  unsat water for this layer   */
+            airlyr = INTERVAL_SIZE * poros - unslyr ;                   /*  this-layer air-filled space  */
 
-            if ( dunsat < delh2o )     /*  this layer does not exhaust  delh20     */
+            if ( airlyr < delh2o )     /*  this layer does not exhaust  delh20     */
                 {
-                delh2o -= dunsat ;
+                delh2o -= airlyr ;
                 zsat   -= INTERVAL_SIZE ;
-                unsat   = max( fldcap, unsat - dunsat ) ;
+                unsat   = unsat - unslyr ;
                 }
 
-            else            /*  fraction  zfac  of this layer exhausts delh20:  finish up and quit loop    */
+            else            /*  fraction  fraclyr  of this layer exhausts delh20:  finish up and quit loop    */
                 {
-                zfac  = delh2o / dunsat ;
-                zsat -= zfac * INTERVAL_SIZE ;
-                unsat = max( fldcap, unsat - zfac * dunsat ) ;
+                fraclyr  = delh2o / airlyr ;
+                zsat    -= fraclyr * INTERVAL_SIZE ;
+                unsat    = unsat - fraclyr * unslyr ;
                 break ;
                 }
             }
@@ -93,32 +98,35 @@ void    compute_final_unsat(
         *unsh2o  = unsat ;
         }
 
-    else if ( delh2o < -EPSILON )             /*  *case that water table  moves downwards  */
+    else if ( delh2o < -EPSILON )             /*  *case that water table  moves downwards   */
         {
 
-        /* For negative  delh2o, integrate downwards until delh20 is exhausted. */
-        /* Depth  zsat  increments by INTERVAL_SIZE  while unsaturated-zone     */
-        /* water  unsat and "new" water  delh2o  decrement by                   */
-        /* unsfac times total water capacity  for the layer                     */
+        /* TODO:  Is this formulation for "theta" correct for this case ??                  */
+
+        /* For negative  delh2o, integrate downwards until delh20 is exhausted.             */
+        /* Depth  zsat  increments by INTERVAL_SIZE                                         */
+        /* unsaturated-zone water  unsat  decrements by unslyr == unsfac times theta        */
+        /* (negative) "new" water  delh2o increments by airlyr == remaining porosity        */
 
         for ( psi = 0.0, depth = zsat ; depth < zsoil; depth += INTERVAL_SIZE, psi += INTERVAL_SIZE )
             {
-            theta   = THETA( tpcurv, psi, psiair, pordex, p3parm, p4parm ) ;
+            theta  = THETA( tpcurv, psi, psiair, pordex, p3parm, p4parm ) ;
             poros  = por_0 * exp( -depth / por_d ) ;
-            dunsat = INTERVAL_SIZE * unsfac * poros * theta ;           /*  unsat water for this layer   */
+            unslyr = INTERVAL_SIZE * poros * unsfac * theta ;           /*  unsat water for this layer   */
+            airlyr = INTERVAL_SIZE * poros - unslyr ;                   /*  available air-filled space   */
 
-            if ( dunsat < -delh2o )     /*  this layer does not exhaust  delh20     */
+            if ( airlyr < -delh2o )     /*  this layer does not exhaust  delh20  (which is negative)   */
                 {
-                delh2o -= dunsat ;
+                delh2o += airlyr ;                          /*  add this available space to (negative) delh20  */
                 zsat   += INTERVAL_SIZE ;
-                unsat   = max( fldcap, unsat - dunsat ) ;
+                unsat   = unsat + unslyr ;
                 }
 
-            else        /*  fraction  zfac  of this layer exhausts delh20:  finish up and quit loop     */
+            else        /*  fraction  fraclyr  of this layer exhausts delh20:  finish up and quit loop     */
                 {
-                zfac   = -delh2o / dunsat ;
-                zsat  +=  zfac * INTERVAL_SIZE ;
-                unsat  =  max( fldcap, unsat - zfac * dunsat ) ;
+                fraclyr = -delh2o / unslyr ;
+                zsat   +=  fraclyr * INTERVAL_SIZE ;
+                unsat   =  unsat + fraclyr * unslyr ;
                 break ;
                 }
             }

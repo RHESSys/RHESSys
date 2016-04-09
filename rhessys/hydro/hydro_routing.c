@@ -1340,18 +1340,20 @@ static void stream_routing( double  tstep )        /*  process time-step  */
 static void sub_vertical( double  tstep )        /*  process time-step  */
     {
     unsigned                i, j ;
-    double                  satdefz, facN, facC, facD, facH2O, delH2O, dNO3, dNH4, dDOC, dDON, fldcap, drain, kfac, unscap ;
+    double                  facN, facC, facD, facH2O, delH2O;
+    double                  dH2O, dNO3, dNH4, dDOC, dDON; 
+    double                  satdefz, fldcap, drain, kfac, unscap ;
 	struct patch_object *   patch ;
 
     kfac = 0.5 * tstep / 3600.0 ;
 
 #pragma omp parallel for                                            \
         default( none )                                             \
-        private( i, satdefz, delH2O, dNO3, dNH4, dDOC, dDON,        \
+        private( i, satdefz, delH2O, dH2O, dNO3, dNH4, dDOC, dDON,  \
                  facN, facC, facD, facH2O, fldcap, drain, unscap )  \
          shared( num_patches, capH2O, plist, satdef, unsH2O,        \
                  verbose, por_0, por_d, Ndecay, Ddecay, dzsoil,     \
-                 patchz, waterz, tpcurv, psiair, pordex,            \
+                 zsoil, patchz, waterz, tpcurv, psiair, pordex,     \
                  p3parm, p4parm, mz_v, ksat_0, kfac,        		\
                  totH2O, totNO3, totNH4, totDOC, totDON,            \
                  infH2O, infNO3, infNH4, infDOC, infDON,            \
@@ -1363,6 +1365,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
         {
 
         /*  Add infiltration, lateral inflow  */
+        /*  NOTE:  by construction in sub_routing*(), lateral outflow <= COUMAX * ( totH2O - minH2O ) */
 
         satdefz = patchz[i] - waterz[i] ;
         fldcap = compute_layer_field_capacity( verbose, 
@@ -1397,8 +1400,8 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
 
         if ( totH2O[i] > capH2O[i] )        /*  exfiltration to surface  */
             {
-        	delH2O = totH2O[i] - capH2O[i] ;
-            facH2O = delH2O / totH2O[i] ;
+            dH2O    = totH2O[i] - capH2O[i] ;
+            facH2O  = dH2O / totH2O[i] ;
             satdefz = por_d[i] * log( 1 + facH2O / ( por_0[i] * por_d[i] ) ) ;  /*  soil depth previously occupied by dH2O  */
             facN = 1.0 - exp( satdefz * Ndecay[i] ) ;                           /*  fraction of N,D in [0:delz], assuming   */
             facD = 1.0 - exp( satdefz * Ddecay[i] ) ;                           /*  fraction of N,D in [0:delz], assuming   */
@@ -1408,12 +1411,12 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
             dDOC = facD * totDOC[i] ;
             satdef[i] = 0.0 ;
             unsH2O[i] = 0.0 ;
-            sfcH2O[i] = sfcH2O[i] + delH2O ;
+            sfcH2O[i] = sfcH2O[i] + dH2O ;
             sfcNO3[i] = sfcNO3[i] + dNO3 ;
             sfcNH4[i] = sfcNH4[i] + dNH4 ;
             sfcDON[i] = sfcDON[i] + dDON ;
             sfcDOC[i] = sfcDOC[i] + dDOC ;
-            totH2O[i] = totH2O[i] - delH2O ;          /*  == capH2O[i]    */
+            totH2O[i] = totH2O[i] - dH2O ;          /*  == capH2O[i]    */
             totNO3[i] = totNO3[i] - dNO3 ;
             totNH4[i] = totNH4[i] - dNH4 ;
             totDON[i] = totDON[i] - dDON ;
