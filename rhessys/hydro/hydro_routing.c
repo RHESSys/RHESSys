@@ -185,6 +185,21 @@ extern double compute_unsat_zone_drainage(int     verbose_flag,
 									      double  Ksat_0,
 									      double  potential_drainage ) ;
 
+void    compute_final_unsat(
+                           int     tpcurv,      /*  IN:  patch->soil_defaults[0][0].theta_psi_curve */
+                           double  psiair,      /*  IN:  patch->soil_defaults[0][0].psi_air_entry   */
+                           double  pordex,      /*  IN:  patch->soil_defaults[0][0].pore_size_index */
+                           double  p3parm,      /*  IN:  patch->soil_defaults[0][0].p3              */
+                           double  p4parm,      /*  IN:  patch->soil_defaults[0][0].p4              */
+                           double  por_0,       /*  IN:  patch->Ksoil_defaults[0][0].porosity_0     */
+                           double  por_d,       /*  IN:  patch->soil_defaults[0][0].porosity_decay  */
+                           double  zsoil,       /*  IN:  soil depth        (M b.g.l.)               */
+                           double  fldcap,      /*  IN:  unsat-zone field capacity (vertical M)     */
+                           double  delh2o,      /*  IN:  water change      (vertical M)             */
+					       double *satdefz,     /*  INOUT:  water table depth (M b.g.l.)            */
+					       double *unsh2o       /*  INOUT:  unsat-zone water storage (vertical M)   */
+                           ) ;
+
 /*  MAXNEIGHBOR should be a multiple of 4, for memory-alignment reasons */
 /*  EPSILON     used for roundoff-tolerance criterion (sec)  = 10 usec  */
 
@@ -1428,7 +1443,7 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
             satdef[i] = satdef[i] - delH2O ;        /*  net new water reduces satdef[]  */
             unsH2O[i] = unsH2O[i] - drain ;         /*  subtract drainage first  */
             compute_final_unsat( tpcurv[i],
-                                 psiair,
+                                 psiair[i],
                                  pordex[i],
                                  p3parm[i],
                                  p4parm[i],
@@ -1437,8 +1452,8 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
                                  zsoil[i],
                                  fldcap,
                                  delH2O,
-                                 satdefz,
-                                 unsH2O[i] ) ;
+                               & satdefz,
+                               & unsH2O[i] ) ;
             waterz[i] = patchz[i] - satdefz ;
             unsH2O[i] = unsH2O[i] + infH2O[i] ;         /*  add infiltration afterwards  */
             }
