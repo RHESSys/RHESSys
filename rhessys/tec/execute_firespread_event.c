@@ -256,10 +256,12 @@ void execute_firespread_event(
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 	    for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
-			patch = world[0].patch_fire_grid[i][j].patches[p];
+		patch = world[0].patch_fire_grid[i][j].patches[p];
 
-			patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-			pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+		patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+		pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+
+		if (pspread > 0){
 
 			/* Calculate litter biomass for use later in canopy effects */
 			understory_litter_c = patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c;
@@ -486,7 +488,7 @@ void execute_firespread_event(
 					c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
 
 					mort.mort_cpool = c_loss_vapor_percent;
-					mort.mort_leafc = 1;
+					mort.mort_leafc = c_loss_vapor_percent;
 					mort.mort_deadstemc = c_loss_vapor_percent;
 					mort.mort_livestemc = c_loss_vapor_percent;
 					mort.mort_frootc = c_loss_vapor_percent;
@@ -509,7 +511,7 @@ void execute_firespread_event(
 
 					/* Determine the portion of loss that remains on landscape */
 					mort.mort_cpool = c_loss_remain_percent_alt;
-					mort.mort_leafc = 0;		// leafc has already been vaporized
+					mort.mort_leafc = c_loss_remain_percent_alt;
 					mort.mort_deadstemc = c_loss_remain_percent_alt;
 					mort.mort_livestemc = c_loss_remain_percent_alt;
 					mort.mort_frootc = c_loss_remain_percent_alt;
@@ -533,6 +535,7 @@ void execute_firespread_event(
 
 				}
 			}
+		    }	
 		}
 	    }
 	}
