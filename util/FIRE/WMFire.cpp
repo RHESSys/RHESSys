@@ -56,15 +56,16 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 	if(def.fire_verbose==1)
 		cout<<"Defaults: moisture k1 and k2, load k1"<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"\n";
 	timeval t1;
+	long seed;
 	if(def.ran_seed!=0)
 		seed=def.ran_seed;
 	else
 	{
 		#if defined(_WIN32) || defined(__WIN32__)
-			long seed=1; 
+			seed=1; 
 		#else
 			gettimeofday(&t1, NULL); 
-			long seed=-t1.tv_usec;
+			seed=-t1.tv_usec;
 		// seed the rng using a high resolution clock#include <sys/time.h>
 		#endif
 	}
