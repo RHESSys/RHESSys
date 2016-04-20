@@ -122,7 +122,7 @@ void	algae_stratum_daily_F(
              stratum[0].algae.chla = stratum[0].defaults[0][0].algae.chla_resprout_conc * patch[0].area * patch[0].detention_store;
              stratum[0].algae.totalN = stratum[0].algae.chla * 1/stratum[0].defaults[0][0].algae.chla_to_N;
              stratum[0].algae.totalC = stratum[0].algae.chla * 1/stratum[0].defaults[0][0].algae.chla_to_C;
-             fprintf(stderr, "RESPROUTING ALGAE in Patch No. %d\n", patch[0].ID);
+             //fprintf(stderr, "RESPROUTING ALGAE in Patch No. %d\n", patch[0].ID);
          } 
     
          /*--------------------------------------------------------------*/
@@ -137,7 +137,7 @@ void	algae_stratum_daily_F(
          sminnconc       = patch[0].surface_NH4 / patch[0].detention_store;   //kg/m^3
          chlaconc        = stratum[0].algae.chla / patch[0].detention_store;  //kg/m^3
          npref           = ((nitconc*1000*1000 * sminnconc*1000*1000) / ((stratum[0].defaults[0][0].algae.npref_coeff*1000000 + sminnconc*1000*1000)*(stratum[0].defaults[0][0].algae.npref_coeff*1000000 + nitconc*1000*1000)) + (sminnconc*1000*1000 * stratum[0].defaults[0][0].algae.npref_coeff*1000000)/((nitconc*1000*1000 + sminnconc*1000*1000)*(stratum[0].defaults[0][0].algae.npref_coeff*1000000 + nitconc*1000*1000)));
-       
+         
          scm_photo_depth = min(patch[0].scm_ave_height, stratum[0].defaults[0][0].algae.scm_photo_depth);
                   
          /* 1.1 - Temperature Effects:  Empirical equation from Stefan and Prudhomme 1993 - for streams, but best I found */
@@ -154,7 +154,6 @@ void	algae_stratum_daily_F(
          /* 1.3 - Nutrient Limitation (Michaelis-Menten model): */     
 	     growth_rate = growth_rate * min((nitconc + sminnconc) / (stratum[0].defaults[0][0].algae.nitro_halfsat + (nitconc+sminnconc)), stratum[0].defaults[0][0].algae.phos_conc / (stratum[0].defaults[0][0].algae.phos_halfsat + stratum[0].defaults[0][0].algae.phos_conc)); 
 		 max_nitlimited_growth = (patch[0].surface_NO3 + patch[0].surface_NH4) * stratum[0].defaults[0][0].algae.chla_to_N;
-         
          /* 1.4 - Gross Growth */                                         
          growth = min(max(growth_rate * stratum[0].algae.chla,0),max_nitlimited_growth); // kg/m^2/d      
 
@@ -162,26 +161,44 @@ void	algae_stratum_daily_F(
          /*	2 - Compute Respiration                                      */
          /*--------------------------------------------------------------*/
          respire = stratum[0].algae.chla * stratum[0].defaults[0][0].algae.respire_rate * pow(stratum[0].defaults[0][0].algae.respire_temp_theta, (patch[0].scm_temp-stratum[0].defaults[0][0].algae.respire_temp_baseT));  // kg/m^2/d
-         if(respire > stratum[0].algae.chla + growth){
-         	respire = stratum[0].algae.chla + growth;
-         } 
-         
+
          /*--------------------------------------------------------------*/
          /*	3 - Compute Death                                   */
          /*--------------------------------------------------------------*/
          death = stratum[0].algae.chla * stratum[0].defaults[0][0].algae.death_rate *pow(stratum[0].defaults[0][0].algae.death_temp_theta, (patch[0].scm_temp-stratum[0].defaults[0][0].algae.death_temp_baseT)); // kg/m^2/d
-         if(death > stratum[0].algae.chla + growth - respire){
-         	death = stratum[0].algae.chla + growth - respire;
-         } 
-         
+
          /*--------------------------------------------------------------*/
          /*	4 - Compute Settling                                      */
          /*--------------------------------------------------------------*/  
          settle = stratum[0].algae.chla * (stratum[0].defaults[0][0].algae.chla_settling_rate/patch[0].scm_ave_height); // kg/m2/d
-         if(settle > stratum[0].algae.chla + growth - death - respire){
-         	settle = stratum[0].algae.chla + growth - death - respire;
-         } 
-                 
+
+
+		/*--------------------------------------------------------------*/
+		/* Check that not more algae is lost than exists				*/
+		/* And if so, partition losses in order:						*/
+		/* 1) Settling													*/
+		/* 2) Death														*/
+		/* 3) Respiration												*/
+		/*--------------------------------------------------------------*/
+         if( (respire + death + settle) > stratum[0].algae.chla) {
+			if( settle >=  stratum[0].algae.chla) {
+				settle = stratum[0].algae.chla;
+				respire = 0;
+				death = 0;
+			}
+			else {
+				if( (respire + death)  > (stratum[0].algae.chla-settle) ){
+					if(death >=  (stratum[0].algae.chla-settle)) {
+						death = stratum[0].algae.chla-settle;
+						respire = 0;	
+					}
+					else if(death < (stratum[0].algae.chla-settle) ) {
+						respire = stratum[0].algae.chla-settle-death;
+					}
+				 }
+			}
+		 }
+    
          /*--------------------------------------------------------------*/
          /*	5 - Calculate state variables/fluxes for N specieis and C   */
          /*--------------------------------------------------------------*/
@@ -238,6 +255,7 @@ void	algae_stratum_daily_F(
              patch[0].surface_NO3 -= (stratum[0].algae.Nuptake - patch[0].surface_NH4);
              patch[0].surface_NH4 = 0;
              patch[0].surface_NH4 += stratum[0].algae.Nrespire;
+
          }
                                             
     } else {
@@ -376,6 +394,6 @@ void	algae_stratum_daily_F(
     stratum[0].algae.Nin = 0;
     stratum[0].algae.Nout = 0;
     stratum[0].algae.Cin = 0;
-    stratum[0].algae.Cout = 0;
+    stratum[0].algae.Cout = 0;    
 	return;
 } /*end algae_stratum_daily_F.c*/
