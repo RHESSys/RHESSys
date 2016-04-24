@@ -54,11 +54,15 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 {
 	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: \n"<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
 	if(def.fire_verbose==1)
-		cout<<"Defaults: moisture k1 and k2, load k1"<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"\n";
+		cout<<"Defaults: moisture k1 and k2, load k1, ranseed  "<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"   "<<def.ran_seed<<"\n";
 	timeval t1;
 	long seed;
 	if(def.ran_seed!=0)
+	{
+		if(def.fire_verbose==1)
+			cout<<"Should be set seed = "<<def.ran_seed<<"\n";
 		seed=def.ran_seed;
+	}	
 	else
 	{
 		#if defined(_WIN32) || defined(__WIN32__)
