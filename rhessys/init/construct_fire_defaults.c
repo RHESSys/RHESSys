@@ -149,7 +149,7 @@ struct fire_default *construct_fire_defaults(
 		printf("veg_k2: %lf\n",default_object_list[i].veg_k2);
 		default_object_list[i].mean_ign=getDoubleParam(&paramCnt, &paramPtr, "mean_ign", "%lf", 1, 1);
 		printf("mean_ign: %lf\n",default_object_list[i].mean_ign);
-		default_object_list[i].ran_seed=getDoubleParam(&paramCnt, &paramPtr, "ran_seed", "%d", 0, 1);
+		default_object_list[i].ran_seed=getIntParam(&paramCnt, &paramPtr, "ran_seed", "%d", 0, 1);
 		printf("ran_seed: %d\n",default_object_list[i].ran_seed);
 
  
