@@ -7,6 +7,8 @@ CFLAGS =-Wall -g -std=c99
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
+DEFINES       = -DLIU_NETCDF_READER -DNETCDF_TEMPERATURE_UNIT_IS_KELVIN -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
+
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
 	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -Wmacro-redefined -std=c99
