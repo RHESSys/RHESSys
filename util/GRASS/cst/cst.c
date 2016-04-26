@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <grass/gis.h>
-#include <grass/raster.h>
 #include "grassio.h"
 #include "blender.h"
 #include "glb.h"
@@ -783,7 +782,7 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
     int adjacentStreamId;
     int downstreamReachCount = 1;
     int maxDownstreamReachCount = 10;
-    double elevationDiffThreshold = 10;
+    double elevationDiffThreshold = 0.0;
     double streamMidPoint;
     streamEntry *adjacentStreamPtr = NULL;
     streamEntry *currentDownstreamPtr = NULL;
@@ -840,7 +839,7 @@ int checkStreamIntxns(streamEntry *currentStreamPtr, int streamId, int nRow, int
             return 0;
         }
 
-        if ((currentStreamPtr->minElevation - streamMidPoint) > elevationDiffThreshold) {
+        if ((currentStreamPtr->minElevation - streamMidPoint) >= elevationDiffThreshold) {
             /* Connect the adjacent stream reach to the current stream reach */
             addStreamIntxn(currentStreamPtr, adjacentStreamPtr, nRow, nCol, index);
             currentStreamPtr->downstreamReachMinElevation = currentDownstreamPtr->minElevation;

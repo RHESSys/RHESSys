@@ -91,13 +91,6 @@ void		patch_daily_F(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	void compute_Lstar(
-		int,
-		struct	basin_object	*basin,
-		struct zone_object *,
-		struct patch_object *);
-
-
 	double compute_delta_water(int, double, double,	double, double, double);
 	
 	
@@ -431,7 +424,11 @@ void		patch_daily_F(
 	patch[0].evaporation_surf = 0.0;
 	patch[0].potential_evaporation = 0.0;
 	patch[0].Ldown = zone[0].Ldown;
+	patch[0].Ldown_night = zone[0].Ldown_night;
+	patch[0].Ldown_day = zone[0].Ldown_day;
 	patch[0].Ldown_final = 0.0;
+	patch[0].Ldown_final_night = 0.0;
+	patch[0].Ldown_final_day = 0.0;
 	
 	patch[0].Kstar_canopy = 0.0;
 	patch[0].Kstar_canopy_final = 0.0;
@@ -664,6 +661,8 @@ void		patch_daily_F(
 			patch[0].PAR_direct_final = patch[0].layers[layer].null_cover * patch[0].PAR_direct;
 			patch[0].PAR_diffuse_final = patch[0].layers[layer].null_cover * patch[0].PAR_diffuse;
 			patch[0].Ldown_final = patch[0].layers[layer].null_cover * patch[0].Ldown;
+			patch[0].Ldown_final_night = patch[0].layers[layer].null_cover * patch[0].Ldown_night;
+			patch[0].Ldown_final_day = patch[0].layers[layer].null_cover * patch[0].Ldown_day;
 			patch[0].Kstar_canopy_final = patch[0].Kstar_canopy;
 			patch[0].LE_canopy_final = patch[0].LE_canopy;
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
@@ -716,6 +715,8 @@ void		patch_daily_F(
 			patch[0].PAR_direct = patch[0].PAR_direct_final;
 			patch[0].PAR_diffuse = patch[0].PAR_diffuse_final;
 			patch[0].Ldown = patch[0].Ldown_final;
+			patch[0].Ldown_night = patch[0].Ldown_final_night;
+			patch[0].Ldown_day = patch[0].Ldown_final_day;
 			patch[0].Kstar_canopy = patch[0].Kstar_canopy_final;
 			patch[0].LE_canopy = patch[0].LE_canopy_final;
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;
@@ -733,11 +734,12 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Compute patch level long wave radiation processes.			*/
 	/*--------------------------------------------------------------*/
-	compute_Lstar(
-				  command_line[0].verbose_flag,
-				  basin,
-				  zone,
-				  patch );
+	if (command_line[0].evap_use_longwave_flag) {
+		compute_Lstar(command_line[0].verbose_flag,
+					  basin,
+					  zone,
+					  patch);
+	}
 	
 	
 	/*--------------------------------------------------------------*/
@@ -1276,10 +1278,10 @@ void		patch_daily_F(
 			/*      - if rain duration is zero, then input is from snow     */
 			/*      melt  assume full daytime duration                      */
 			/*--------------------------------------------------------------*/
-			if (zone[0].daytime_rain_duration <= ZERO) {
+			if (zone[0].rain_duration <= ZERO) {
 				duration = zone[0].metv.dayl/(86400);
 				}
-			else duration = zone[0].daytime_rain_duration/(86400);
+			else duration = zone[0].rain_duration/(86400);
 			
 			if (patch[0].rootzone.depth > ZERO)	{
 				infiltration = compute_infiltration(
@@ -1887,7 +1889,7 @@ void		patch_daily_F(
 			patch[0].S,
 			patch[0].soil_defaults[0][0].mz_v,
 			patch[0].sat_deficit_z,
-			patch[0].soil_defaults[0][0].Ksat_0 / 2,
+			patch[0].soil_defaults[0][0].Ksat_0_v / 2,
 			patch[0].rz_storage - patch[0].rootzone.field_capacity);		
 
 		unsat_drainage = 0.0;
