@@ -96,6 +96,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].vegspinup_flag = 0;		
 	command_line[0].vgsen_flag = 0;
 	command_line[0].FillSpill_flag=0;	
+	command_line[0].evap_use_longwave_flag = 0;
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
@@ -1077,6 +1078,10 @@ struct	command_line_object	*construct_command_line(
 				} /*end if*/
 			else if (strcmp(main_argv[i],"-netcdfgrid") == 0 ){
 				command_line[0].gridded_netcdf_flag = 1;
+				i++;
+			}
+			else if (strcmp(main_argv[i], "-longwaveevap") == 0) {
+				command_line[0].evap_use_longwave_flag = 1;
 				i++;
 			}
 			/*--------------------------------------------------------------*/
