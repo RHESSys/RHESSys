@@ -33,8 +33,8 @@
 /*	double	psi_air_entry (Pa) -  air entry pressure.	*/
 /*	double	pore_size_index (DIM) - Brooks Corey pore size  */
 /*			index parameter.			*/
-/*	double 	p  (dim) - porosity  decay rate	        	*/
-/*	double 	p_0  (m-1) - porosity   at surface 		*/
+/*	double 	p  (m-1) - porosity  decay rate 		*/
+/*	double 	p_0  (dim) - porosity  at surface 		*/
 /*								*/
 /*	DESCRIPTION						*/
 /*	Estimates the maximum possible rate of exfiltration of	*/
