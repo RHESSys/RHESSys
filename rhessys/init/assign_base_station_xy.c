@@ -56,9 +56,9 @@ struct base_station_object
         while ( (*(base_stations[i])).ID != basestation_id ) {
         #else
         #ifdef LIU_NETCDF_READER
-        while ( !is_approximately(x,(*(base_stations[i])).x,dist_tol) && !is_approximately(y,(*(base_stations[i])).y,dist_tol) ) {
+        while ( !is_approximately(x,(*(base_stations[i])).x,dist_tol) || !is_approximately(y,(*(base_stations[i])).y,dist_tol) ) {
         #else
-		while ( (x != (*(base_stations[i])).x) && (y != (*(base_stations[i])).y) ) {
+        while ( (x != (*(base_stations[i])).x) || (y != (*(base_stations[i])).y) ) {
         #endif
         #endif
             //printf("\n      Assign: Starting while loop: i:%d\tzone_baseid:%d\tbstation_id:%d\tbstation_x:%lf\tbstation_y:%lf\n",i,basestation_id,(*(base_stations[i])).ID,(*(base_stations[i])).x,(*(base_stations[i])).y);
