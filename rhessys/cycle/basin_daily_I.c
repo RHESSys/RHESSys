@@ -74,7 +74,7 @@ void		basin_daily_I(
 	double	sinegeom;
 	double	coshss;
 	double	hss;
-	int	hillslope;
+    //160420LML int	hillslope;
 	/*--------------------------------------------------------------*/
 	/*	Daylength (seconds)											*/
 	/*	Now using GBGC computation taken from Jones,		*/
@@ -100,7 +100,8 @@ void		basin_daily_I(
 	/*--------------------------------------------------------------*/
 	/*	Simulate the hillslopes in this basin for the whole day		*/
 	/*--------------------------------------------------------------*/
-	for ( hillslope = 0 ; hillslope < basin[0].num_hillslopes; hillslope ++ ){
+    #pragma omp parallel for
+    for (int hillslope = 0 ; hillslope < basin[0].num_hillslopes; hillslope ++ ){
 		hillslope_daily_I(
 			day,
 			world,

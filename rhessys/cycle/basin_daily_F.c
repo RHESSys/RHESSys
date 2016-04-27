@@ -42,6 +42,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+#include <omp.h>
 #include "rhessys.h"
 
 void	basin_daily_F(
@@ -87,7 +88,8 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int	h, z, p,inx;
+    //160420LML int	h,
+    int z, p,inx;
 	double	scale;
 	struct	hillslope_object *hillslope;
 	struct	zone_object *zone;
@@ -104,8 +106,9 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Simulate the hillslopes in this basin for the whole day		*/
 	/*--------------------------------------------------------------*/
-
-	for ( h = 0 ; h < basin[0].num_hillslopes; h ++ ){
+    #pragma omp parallel for schedule(dynamic) num_threads(4)
+    for (int h = 0 ; h < basin[0].num_hillslopes; h ++ ){
+        //fprintf(stderr,"hillslope in basin_daily:%d\tthread#:%d\n",h,omp_get_thread_num());
 		hillslope_daily_F(	day,
 			world,
 			basin,

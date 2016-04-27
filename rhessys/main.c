@@ -361,7 +361,7 @@ int	main( int main_argc, char **main_argv)
 		struct world_output_file_object *,
 		struct command_line_object * );
 
-	
+
 	srand((unsigned)(time(0)));
 
 	/*--------------------------------------------------------------*/
@@ -473,7 +473,7 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	/*	The end.													*/
 	/*--------------------------------------------------------------*/
-	clock_t endClock =clock();
+    clock_t endClock =clock();
 	
 	printf("time cost = %ld seconds\n",(endClock - startClock)/CLOCKS_PER_SEC);
 

@@ -205,7 +205,13 @@
 #define max(a,b)    ((a) > (b) ? (a) : (b))
 #define min(a,b)    ((a) < (b) ? (a) : (b))
 
+#ifdef LIU_NETCDF_READER
+int is_approximately(const double value,const double target,const double tolerance);
+#endif
 int read_record( FILE *, char *);
+#ifdef LIU_NETCDF_READER
+int get_netcdf_station_number(char *base_station_filename);                      /*160419LML*/
+#endif
 
 /*----------------------------------------------------------*/
 /*      Define types                                        */
@@ -594,6 +600,10 @@ struct base_station_object
         {
         int             ID;
         FILE    *base_station_file;
+        #ifdef LIU_NETCDF_READER
+        double lon;
+        double lat;
+        #endif
         double  x;                              /*   meters     */
         double  y;                              /*   meters     */
         double  z;                              /*   meters     */
@@ -610,10 +620,12 @@ struct base_station_object
 /*----------------------------------------------------------*/
 struct base_station_ncheader_object
 {
-        int             lastID;
+        #ifndef LIU_NETCDF_READER
         FILE    *base_station_file;
         double  effective_lai;                  /* m^2/m^2      */
         double  screen_height;                  /* meters       */
+        #endif
+        int             lastID;
         double  sdist;                                  /* search distance in native netcdf units */
         int             year_start;                             /* start year for netcdf time counter (NOT time series start date) */
         int             day_offset;                             /* day offset from January 1 for netcdf time counter */
@@ -695,7 +707,7 @@ struct  daily_clim_object
 /*----------------------------------------------------------*/
         double  *tmax;                  /*   degrees C  */
         double  *tmin;                  /*   degrees C  */
-        double  *rain;                  /* mm   water   */      
+        double  *rain;                  /*   m   water  */
 
 /*----------------------------------------------------------*/
 /*       Non - Critical data.                                                                   */

@@ -31,13 +31,17 @@ int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *)
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
 
 struct base_station_object *construct_netcdf_grid (
+                                #ifdef LIU_NETCDF_READER
+                                struct base_station_object *base_station_in,
+                                #endif
 								struct base_station_ncheader_object *base_station_ncheader,
 								int			*num_world_base_stations,
 								float		zone_x,
 								float		zone_y,
 								float		zone_z,
-								struct		date start_date,
-								struct		date duration)
+                                struct		date *start_date,
+                                struct		date *duration
+                                )
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
@@ -78,9 +82,7 @@ struct base_station_object *construct_netcdf_grid (
 	};
 	
 	void	*alloc( 	size_t, char *, char *);
-	
 	struct	base_station_object *base_station;
-	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -109,11 +111,8 @@ struct base_station_object *construct_netcdf_grid (
 
 	int instartday;		//days since Jan 1, STARTYEAR
 	float *tempdata;	//temporary memory to read netcdf data
-	
-	int baseid;
-
-	
-	setvbuf(stdout,NULL,_IONBF,0);
+    int baseid;
+    setvbuf(stdout,NULL,_IONBF,0);
 	/* allocate daily_optional_clim_sequence_flags struct and make sure set to 0 */
 	memset(&daily_flags, 0, sizeof(struct daily_optional_clim_sequence_flags));
 
@@ -124,18 +123,25 @@ struct base_station_object *construct_netcdf_grid (
 	i = base_station_ncheader[0].lastID + 1;
 
 	/* Allocate for the new base station cell */
+    #ifdef LIU_NETCDF_READER
+    base_station = base_station_in;
+    #else
 	base_station = (struct base_station_object*) alloc(1 * sizeof(struct base_station_object),
 														   "base_station", "construct_netcdf_grid");
+    #endif
 
+    #ifndef LIU_NETCDF_READER
 	base_station[0].ID = base_station_ncheader[0].lastID + 1;
 	base_station[0].x = zone_x;
 	base_station[0].y = zone_y;
 	base_station[0].effective_lai = base_station_ncheader[0].effective_lai;
 	base_station[0].screen_height = base_station_ncheader[0].screen_height;
-	
-	
-	net_x = zone_x;
+    net_x = zone_x;
 	net_y = zone_y;
+    #else
+    net_x = base_station[0].x;
+    net_y = base_station[0].y;
+    #endif
 	
 	/*--------------------------------------------------------------*/
 	/* Allocate daily clim structures and clim seqs					*/
@@ -145,9 +151,9 @@ struct base_station_object *construct_netcdf_grid (
 		base_station[0].daily_clim = (struct daily_clim_object *)
 			alloc(1*sizeof(struct daily_clim_object),"daily_clim","construct_netcdf_grid" );
 		//duration.day is a long that was passed into construct_ascii as a date struct
-		base_station[0].daily_clim[0].tmax = (double *) alloc(duration.day * sizeof(double),"tmax", "construct_netcdf_grid");
-		base_station[0].daily_clim[0].tmin = (double *) alloc(duration.day * sizeof(double),"tmin", "construct_netcdf_grid");
-		base_station[0].daily_clim[0].rain = (double *) alloc(duration.day * sizeof(double),"rain", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].tmax = (double *) alloc(duration->day * sizeof(double),"tmax", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].tmin = (double *) alloc(duration->day * sizeof(double),"tmin", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].rain = (double *) alloc(duration->day * sizeof(double),"rain", "construct_netcdf_grid");
 		/*--------------------------------------------------------------*/
 		/*	initialize the rest of the clim sequences as null	*/
 		/*--------------------------------------------------------------*/
@@ -182,7 +188,7 @@ struct base_station_object *construct_netcdf_grid (
 		/*Check if any flags are set in the optional clim sequence struct*/
 		if ( daily_flags.daytime_rain_duration == 1 ) {
 			   base_station[0].daily_clim[0].daytime_rain_duration = (double *) 
-			alloc(duration.day * sizeof(double),"day_rain_dur", "construct_netcdf_grid");
+            alloc(duration->day * sizeof(double),"day_rain_dur", "construct_netcdf_grid");
 
 		}
 		/*--------------------------------------------------------------*/
@@ -207,15 +213,14 @@ struct base_station_object *construct_netcdf_grid (
 		/*	Initialize non - critical sequences.						*/
 		base_station[0].hourly_clim[0].rain.inx = -999;
 		base_station[0].hourly_clim[0].rain_duration.inx = -999;
-		
 		/* Calculate start day index */
-		instartday = get_indays(start_date.year,
-								start_date.month,
-								start_date.day,
+        instartday = get_indays(start_date->year,
+                                start_date->month,
+                                start_date->day,
 								base_station_ncheader[0].year_start,
 								base_station_ncheader[0].leap_year);
 	   
-		tempdata = (float *) alloc(duration.day * sizeof(float),"tempdata","construct_netcdf_grid");
+        tempdata = (float *) alloc(duration->day * sizeof(float),"tempdata","construct_netcdf_grid");
 		/*printf("net_y:%f net_x:%f\n",base_station[0].net_y,base_station[0].net_x);*/
 		/*printf("tmax filename:%s varname:%s sdist:%f instartday:%d dura:%d\n",base_station[0].netcdf_tmax_filename, base_station[0].netcdf_tmax_varname,base_station[0].sdist,instartday,duration.day);*/
 		
@@ -230,14 +235,19 @@ struct base_station_object *construct_netcdf_grid (
 									  base_station_ncheader[0].sdist,
 									  instartday,
 									  base_station_ncheader[0].day_offset,
-									  (int)duration.day,
+                                      (int)duration->day,
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var tmax\n");
 			exit(0);
 		}
-		for (j=0;j<duration.day;j++){
-			base_station[0].daily_clim[0].tmax[j] = (double)tempdata[j];
+        for (j=0;j<duration->day;j++){
+			base_station[0].daily_clim[0].tmax[j] = 
+			    #ifdef NETCDF_TEMPERATURE_UNIT_IS_KELVIN
+		            (double)tempdata[j] - 273.15;
+			    #else
+			    (double)tempdata[j];
+			    #endif
 			/*printf("day:%d tmax:%f\n",j,base_station[0].daily_clim[0].tmax[j]);*/
 		}
 	
@@ -252,14 +262,19 @@ struct base_station_object *construct_netcdf_grid (
 									  base_station_ncheader[0].sdist,
 									  instartday,
 									  base_station_ncheader[0].day_offset,
-									  duration.day,
+                                      duration->day,
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var tmin\n");
 			exit(0);
 		}
-		for(j=0;j<duration.day;j++){
-			base_station[0].daily_clim[0].tmin[j] = (double)tempdata[j];
+        for(j=0;j<duration->day;j++){
+			base_station[0].daily_clim[0].tmin[j] = 
+			    #ifdef NETCDF_TEMPERATURE_UNIT_IS_KELVIN
+		            (double)tempdata[j] - 273.15;
+			    #else
+			    (double)tempdata[j];
+			    #endif
 			/*printf("day:%d tmin:%f\n",j,base_station[0].daily_clim[0].tmin[j]);*/
 		}
 	
@@ -274,20 +289,30 @@ struct base_station_object *construct_netcdf_grid (
 									  base_station_ncheader[0].sdist,
 									  instartday,
 									  base_station_ncheader[0].day_offset,
-									  duration.day,
+                                      duration->day,
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var rain\n");
 			exit(0);
 		}
-		for(j=0;j<duration.day;j++){
+        for(j=0;j<duration->day;j++){
 			base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult;
-			/*printf("day:%d rain:%f\n",j,base_station[0].daily_clim[0].rain[j]);*/
+            //printf("day:%d rain:%f\t multiplier:%lf\tvarname:%s\n",j,base_station[0].daily_clim[0].rain[j],base_station_ncheader[0].precip_mult,base_station_ncheader[0].netcdf_rain_varname);
 		}
 	
+        #ifdef CHECK_NCCLIM_DATA
+        for (j = 0; j < 60; j++) {
+            fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n",j,base_station[0].ID,base_station[0].x,base_station[0].y
+                            ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]);
+        }
+        #endif
+
+
 		/* ------------------ ELEV ------------------ */
 		if (base_station_ncheader[0].elevflag == 0) {
+            #ifndef LIU_NETCDF_READER
 			base_station[0].z = zone_z;
+            #endif
 		}
 		else {
 			tempdata = (float *) alloc(1 * sizeof(float),"tempdata","construct_netcdf_grid");
@@ -316,9 +341,10 @@ struct base_station_object *construct_netcdf_grid (
 		   base_station[0].y,
 		   base_station[0].effective_lai,
 		   i);*/
-	
+    #ifndef LIU_NETCDF_READER
 	*num_world_base_stations +=1;
 	base_station_ncheader[0].lastID +=1;
+    #endif
 
 	return(base_station);
 }

@@ -25,7 +25,14 @@ struct base_station_object
 					 float		y,
 					 int		num_base_stations,
 					 int		*notfound,
-					 struct	base_station_object	**base_stations)
+                     struct	base_station_object	**base_stations
+                     #ifdef LIU_NETCDF_READER
+                     ,double dist_tol
+                     #endif
+                     #ifdef FIND_STATION_BASED_ON_ID
+                     ,const int basestation_id
+                     #endif
+        )
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
@@ -45,8 +52,16 @@ struct base_station_object
 		return 0;
 	}
 	else {
-		//printf("\n      Assign: Starting while loop: %lf %lf",(*(base_stations[i])).x,(*(base_stations[i])).y);
+        #ifdef FIND_STATION_BASED_ON_ID
+        while ( (*(base_stations[i])).ID != basestation_id ) {
+        #else
+        #ifdef LIU_NETCDF_READER
+        while ( !is_approximately(x,(*(base_stations[i])).x,dist_tol) && !is_approximately(y,(*(base_stations[i])).y,dist_tol) ) {
+        #else
 		while ( (x != (*(base_stations[i])).x) && (y != (*(base_stations[i])).y) ) {
+        #endif
+        #endif
+            //printf("\n      Assign: Starting while loop: i:%d\tzone_baseid:%d\tbstation_id:%d\tbstation_x:%lf\tbstation_y:%lf\n",i,basestation_id,(*(base_stations[i])).ID,(*(base_stations[i])).x,(*(base_stations[i])).y);
 			i++;
 			/*--------------------------------------------------------------*/
 			/*	Report an error if no match was found.  Otherwise assign	*/
