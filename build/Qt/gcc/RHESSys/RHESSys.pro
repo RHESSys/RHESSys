@@ -266,7 +266,6 @@ SOURCES += \
     ../../../../rhessys/output/output_canopy_stratum.c \
     ../../../../rhessys/output/output_canopy_strata_state.c \
     ../../../../rhessys/output/output_basin_state.c \
-    #../../../../rhessys/output/output_24hours_basin.c \
     ../../../../rhessys/output/add_headers.c \
     ../../../../rhessys/output/add_growth_headers.c \
     ../../../../rhessys/output/add_csv_headers.c \
@@ -346,9 +345,11 @@ SOURCES += \
     ../../../../rhessys/util/alloc.c \
     ../../../../rhessys/main.c \
     ../../../../rhessys/tec/execute_firespread_event.c \
-    ../../../../rhessys/output/output_24hours_basin.c \
     ../../../../util/FIRE/WMFire.cpp \
-    ../../../../util/FIRE/RanNums.cpp
+    ../../../../util/FIRE/RanNums.cpp \
+    ../../../../rhessys/hydro/compute_saturation_vapor_pressure.c \
+    ../../../../rhessys/hydro/compute_vapor_pressure_deficit.c \
+    ../../../../rhessys/output/output_basin.c
 
 OTHER_FILES += \
     ../../../../rhessys/cycle/patch_daily_F.c,v
