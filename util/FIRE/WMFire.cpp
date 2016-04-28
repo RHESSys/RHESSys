@@ -54,16 +54,25 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 {
 	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: \n"<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
 	if(def.fire_verbose==1)
-		cout<<"Defaults: moisture k1 and k2, load k1"<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"\n";
+		cout<<"Defaults: moisture k1 and k2, load k1, ranseed  "<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"   "<<def.ran_seed<<"\n";
 	timeval t1;
-	#if defined(_WIN32) || defined(__WIN32__)
-		long seed=1; 
-	#else
-		gettimeofday(&t1, NULL); 
-		long seed=-t1.tv_usec;
-	// seed the rng using a high resolution clock#include <sys/time.h>
-	#endif
-	
+	long seed;
+	if(def.ran_seed!=0)
+	{
+		if(def.fire_verbose==1)
+			cout<<"Should be set seed = "<<def.ran_seed<<"\n";
+		seed=def.ran_seed;
+	}	
+	else
+	{
+		#if defined(_WIN32) || defined(__WIN32__)
+			seed=1; 
+		#else
+			gettimeofday(&t1, NULL); 
+			seed=-t1.tv_usec;
+		// seed the rng using a high resolution clock#include <sys/time.h>
+		#endif
+	}
 //	srand(t1.tv_usec * t1.tv_sec);
             // this is the source for random numbers for the entire application
 	boost::mt19937 rngEngine;
@@ -620,14 +629,27 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		{
 			if(def_.spread_calc_type<7)
 				cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et; // use absolute deficit for fm
-			else
+			else 
 			{
-				if(fireGrid_[cur_row][cur_col].pet>0)
-					cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+				if(def_.spread_calc_type<8) // now 8 is for using understory deficit only for fire initiation
+				{
+					if(fireGrid_[cur_row][cur_col].pet>0)
+						cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+					else
+						cur_moist=0;
+				}
 				else
-					cur_moist=0;
+				{
+					if(fireGrid_[cur_row][cur_col].pet>0)
+						cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+					else
+						cur_moist=0;
+				}
 			}
-			p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+			if(def_.spread_calc_type<7)
+				p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+			else
+				p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
 			if(def_.fire_verbose==1)
 				cout<<"using deficit for moisture: cur_moist, et, pet: "<<cur_moist<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"\n";
 		}	
@@ -639,7 +661,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		if(def_.fire_verbose==1)
 			cout<<"in test ignition p_load "<<p_load<<" load: "<<cur_load<<"SpreadType: "<<def_.spread_calc_type<<"\n\n";
 		pIgn=p_moisture*p_load;		
-		if(def_.veg_ign==1)
+		if(def_.veg_ign==1)// *** check!*********
 		{
 			p_veg=1-1/(1+exp(-(def_.veg_k1*(fireGrid_[cur_row][cur_col].fuel_veg-def_.veg_k2))));
 			pIgn=pIgn*p_veg;

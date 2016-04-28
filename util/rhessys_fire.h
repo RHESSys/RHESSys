@@ -41,7 +41,11 @@ struct fire_default {
 	double veg_k1; // for ignition use veg fuel
 	double veg_k2; // for ignition use veg fuel
 	double mean_ign; // mean number of ignitions per month, for a monthly poisson draw
-
+	long ran_seed; // 0 for stochastic runs, or integer seed for deterministic runs and debugging
+	double moisture_ign_k1;
+	double moisture_ign_k2;
+	double load_ign_k1;
+	double load_ign_k2;
 //	char **patch_file_name;
 };
 
@@ -61,6 +65,8 @@ struct fire_object
 	double et;
 	double pet;
 	int ign_available; /* 1 if available for ignition, 0 otherwise*/
+	double et_under; //evapotranspiration of only the understory
+	double pet_under; //potential evapotranspiration of only the understory
 };	
 
 #ifdef __cplusplus
