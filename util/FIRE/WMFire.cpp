@@ -61,7 +61,7 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 	{
 		if(def.fire_verbose==1)
 			cout<<"Should be set seed = "<<def.ran_seed<<"\n";
-		seed=def.ran_seed;
+		seed=def.ran_seed+year+month;
 	}	
 	else
 	{
