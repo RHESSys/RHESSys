@@ -156,7 +156,7 @@
 #define MAXSTR  1024
 #define DtoR      0.01745329    
 #define PI      3.14159265359
-#define seconds_per_day 86400
+#define SECONDS_PER_DAY 86400
 #define ess_snow        0.97
 #define ess_soil        0.95
 #define ess_veg         0.98
@@ -873,7 +873,9 @@ struct metvar_struct
         double tsoil_sum;      /* (deg C) daily summation of soil temp     (NEW) */
         double tnight_max;     /* (deg C) nighttime max average air temperature */
         double vpd;            /* (Pa)    vapor pressure deficit */
-        double vpd_ravg;                                /* (Pa) 21 day running average of vpd */
+        double vpd_ravg;       /* (Pa) 21 day running average of vpd */
+        double vpd_day;		   /* (Pa)    vapor pressure deficit during day time hours */
+        double vpd_night;		   /* (Pa)    vapor pressure deficit during night time hours */
 };
 
 /*----------------------------------------------------------*/
@@ -952,7 +954,7 @@ struct zone_object
         double  CO2;                                            /* ppm  */
         double  cos_aspect;                             /*      DIM     */
         double  cos_slope;                              /*      DIM     */
-        double  daytime_rain_duration;                  /* hours/day    */
+        double  rain_duration;                  		/* hours/day    */
         double  Delta_T;                                /* C degrees    */
         double  e_dewpoint;                             /* Pa           */
         double  e_horizon;      /* cos of angle to normal of flat       */
@@ -970,6 +972,8 @@ struct zone_object
         double  LAI_temp_adjustment;                    /* 0 - 1        */
         double  LAI_scalar;                             /* DIM          */
         double  Ldown;                                  /* W/m2         */
+        double  Ldown_night;							/* W/m2			*/
+        double  Ldown_day;								/* W/m2			*/
         double  ndep_NO3;                               /* kg/m2/day    */
         double  ndep_NH4;                               /* kg/m2/day    */
         double  PAR_direct;                             /* umol(m^2*day)        */
@@ -1520,7 +1524,11 @@ struct patch_object
         double  Kdown_diffuse_final;    /* Kj/(m^2*day) */
         double  Kup_diffuse_final;      /* Kj/(m^2*day) */
         double  Ldown;  /* Kj/(m^2*day) */
+        double  Ldown_night; 	/* Kj/(m^2*day) */
+        double	Ldown_day;		/* Kj/(m^2*day) */
         double  Ldown_final;    /* Kj/(m^2*day) */
+        double  Ldown_final_night;	/* Kj/(m^2*day) */
+        double 	Ldown_final_day;	/* Kj/(m^2*day) */
         double Kdown_direct_ovund;
         double Kup_direct_ovund;
         double Kdown_diffuse_ovund;
@@ -1546,11 +1554,19 @@ struct patch_object
         double  lna;                    /* unitless     */
         double  lai;                    /* unitless     */
         double  Lup_soil;               /* Kj/(m^2*day) */
-        double  Lup;            /* Kj/(m^2*day) */
+        double  Lup;            		/* Kj/(m^2*day) */
         double  Lstar_canopy;           /* Kj/(m^2*day) */
+        double  Lstar_canopy_night;     /* Kj/(m^2*day) */
+        double  Lstar_canopy_day;       /* Kj/(m^2*day) */
         double  Lstar_snow;             /* Kj/(m^2*day) */
+        double  Lstar_snow_night;       /* Kj/(m^2*day) */
+        double  Lstar_snow_day;         /* Kj/(m^2*day) */
         double  Lstar_soil;             /* Kj/(m^2*day) */
+        double  Lstar_soil_night;       /* Kj/(m^2*day) */
+        double  Lstar_soil_day;         /* Kj/(m^2*day) */
         double  Lstar_pond;             /* Kj/(m^2*day) */
+        double  Lstar_pond_night;       /* Kj/(m^2*day) */
+        double  Lstar_pond_day;         /* Kj/(m^2*day) */
         double  Ldown_subcanopy;        /* Kj/(m^2*day) */
         double  m;              /* m^-1 */
         double  m_z;            /* m^-1 */
@@ -1934,7 +1950,8 @@ struct  command_line_object
         int             noredist_flag;
         int             vmort_flag;
         int             version_flag;
-	int		FillSpill_flag;	
+        int		FillSpill_flag;
+        int		evap_use_longwave_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
@@ -2623,7 +2640,9 @@ struct  canopy_strata_object
         double  gsurf;                                          /* m/s          */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
-        double  Lstar;                                          /* Kj/(m2*day)  */      
+        double  Lstar;                                          /* Kj/(m2*day)  */
+        double  Lstar_night;									/* Kj/(m2*day)  */
+        double  Lstar_day;										/* Kj/(m2*day)  */
         double  NO3_stored;                                     /* kg/m2        */
         double  PAR_after_reflection;                           /* (umol photon/m2*day) */
         double  ppfd_sunlit;                    /*  (umol/m2/s) PAR photon flux density */
