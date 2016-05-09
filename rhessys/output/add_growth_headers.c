@@ -134,7 +134,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"nuptake",
 		"grazingC",
 		"StreamNO3_from_surface",
-		"StreamNO3_from_sub", "NInput","fertilizer_store");
+		"StreamNO3_from_sub", "N_dep","fertilizer_store");
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
