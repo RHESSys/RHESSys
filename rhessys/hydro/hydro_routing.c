@@ -185,20 +185,18 @@ extern double compute_unsat_zone_drainage(int     verbose_flag,
 									      double  Ksat_0,
 									      double  potential_drainage ) ;
 
-void    compute_final_unsat(
-                           int     tpcurv,      /*  IN:  patch->soil_defaults[0][0].theta_psi_curve */
-                           double  psiair,      /*  IN:  patch->soil_defaults[0][0].psi_air_entry   */
-                           double  pordex,      /*  IN:  patch->soil_defaults[0][0].pore_size_index */
-                           double  p3parm,      /*  IN:  patch->soil_defaults[0][0].p3              */
-                           double  p4parm,      /*  IN:  patch->soil_defaults[0][0].p4              */
-                           double  por_0,       /*  IN:  patch->Ksoil_defaults[0][0].porosity_0     */
-                           double  por_d,       /*  IN:  patch->soil_defaults[0][0].porosity_decay  */
-                           double  zsoil,       /*  IN:  soil depth        (M b.g.l.)               */
-                           double  fldcap,      /*  IN:  unsat-zone field capacity (vertical M)     */
-                           double  delh2o,      /*  IN:  water change      (vertical M)             */
-					       double *satdefz,     /*  INOUT:  water table depth (M b.g.l.)            */
-					       double *unsh2o       /*  INOUT:  unsat-zone water storage (vertical M)   */
-                           ) ;
+extern void compute_final_unsat( int     curve,       /*  IN:  patch->soil_defaults[0][0].theta_psi_curve */
+                                 double  psiair,      /*  IN:  patch->soil_defaults[0][0].psi_air_entry   */
+                                 double  pordex,      /*  IN:  patch->soil_defaults[0][0].pore_size_index */
+                                 double  p3parm,      /*  IN:  patch->soil_defaults[0][0].p3              */
+                                 double  p4parm,      /*  IN:  patch->soil_defaults[0][0].p4              */
+                                 double  por_0,       /*  IN:  patch->Ksoil_defaults[0][0].porosity_0     */
+                                 double  por_d,       /*  IN:  patch->soil_defaults[0][0].porosity_decay  */
+                                 double  zsoil,       /*  IN:  soil depth        (M b.g.l.)               */
+                                 double  delh2o,      /*  IN:  water change      (vertical M)             */
+					             double *satdefz,     /*  INOUT:  water table depth (M b.g.l.)            */
+					             double *unsh2o,      /*  INOUT:  water table depth (M b.g.l.)            */
+					             double *satdef ) ;   /*  INOUT:  saturation deficit (M)                  */
 
 /*  MAXNEIGHBOR should be a multiple of 4, for memory-alignment reasons */
 /*  EPSILON     used for roundoff-tolerance criterion (sec)  = 10 usec  */
@@ -1382,29 +1380,6 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
         /*  Add infiltration, lateral inflow  */
         /*  NOTE:  by construction in sub_routing*(), lateral outflow <= COUMAX * ( totH2O - minH2O ) */
 
-        satdefz = patchz[i] - waterz[i] ;
-        fldcap = compute_layer_field_capacity( verbose, 
-                                               tpcurv[i], 
-                                               psiair[i], 
-                                               pordex[i], 
-                                               p3parm[i], 
-                                               p4parm[i], 
-                                                por_0[i], 
-                                                por_d[i], satdefz, satdefz, 0.0 ) ;
-        unscap =  compute_delta_water( verbose, 
-                                       por_0[i], 
-                                       por_d[i],
-                                       zsoil[i], satdefz, 0.0 ) ;       /*  full-column sat water capacity  */
-
-        drain  = compute_unsat_zone_drainage( verbose,
-                                              tpcurv[i],
-                                              pordex[i],
-                                              unsH2O[i] / unscap,
-                                                mz_v[i],
-                                                satdefz,
-                                         kfac*ksat_0[i],
-                                              unsH2O[i] - fldcap ) ;   /*  at most unsH2O[i] - fldcap  */
-
         totH2O[i] = totH2O[i] + infH2O[i] + latH2O[i] ;
         totNO3[i] = totNO3[i] + infNO3[i] + latNO3[i] ;
         totNH4[i] = totNH4[i] + infNH4[i] + latNH4[i] ;
@@ -1438,23 +1413,49 @@ static void sub_vertical( double  tstep )        /*  process time-step  */
             totDOC[i] = totDOC[i] - dDOC ;
             waterz[i] = patchz[i] ;
             }
-        else{
-            delH2O    = latH2O[i] + drain ;
-            satdef[i] = satdef[i] - delH2O ;        /*  net new water reduces satdef[]  */
-            unsH2O[i] = unsH2O[i] - drain ;         /*  subtract drainage first  */
+        else
+            {
+            satdefz = patchz[i] - waterz[i] ;
+
+            fldcap  = integrate_fldcap( 0.0, satdefz, satdefz,
+                                        tpcurv[i],
+                                        psiair[i],
+                                        pordex[i],
+                                        p3parm[i],
+                                        p4parm[i],
+                                         por_0[i],
+                                         por_d[i] ) ;
+
+            unscap  =  compute_delta_water( verbose, 
+                                            por_0[i], 
+                                            por_d[i],
+                                            zsoil[i], satdefz, 0.0 ) ;       /*  full-column sat water capacity  */
+
+            drain  = compute_unsat_zone_drainage( verbose,
+                                                  tpcurv[i],
+                                                  pordex[i],
+                                                  unsH2O[i] / unscap,
+                                                    mz_v[i],
+                                                    satdefz,
+                                             kfac*ksat_0[i],
+                                                  unsH2O[i] - fldcap ) ;   /*  at most unsH2O[i] - fldcap  */
+
+            delH2O    = latH2O[i] - drain ;
+            unsH2O[i] = unsH2O[i] - drain ;                 /*  subtract drainage before computation  */
             compute_final_unsat( tpcurv[i],
                                  psiair[i],
                                  pordex[i],
                                  p3parm[i],
                                  p4parm[i],
-                                 por_0[i],
-                                 por_d[i],
-                                 zsoil[i],
-                                 fldcap,
-                                 delH2O,
-                               & satdefz,
-                               & unsH2O[i] ) ;
+                                  por_0[i],
+                                  por_d[i],
+                                  zsoil[i],
+                                    delH2O,
+                               &   satdefz,
+                               & unsH2O[i],
+                               & satdef[i] ) ;
             waterz[i] = patchz[i] - satdefz ;
+            satdef[i] = satdef[i] - infH2O[i] ;
             unsH2O[i] = unsH2O[i] + infH2O[i] ;         /*  add infiltration afterwards  */
             }
 
