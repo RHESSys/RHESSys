@@ -126,7 +126,14 @@ struct stream_list_object construct_stream_routing_topology(
 			   &(stream_network_ini[i].length),
 			   &(stream_network_ini[i].num_lateral_inputs));
 		
-		
+	
+		/* initializations */
+		stream_network_ini[i].initial_flow=0.0;
+		stream_network_ini[i].previous_lateral_input=0.0;
+		stream_network_ini[i].previous_Qin=0.0;
+		stream_network_ini[i].Qin=0.0;
+		stream_network_ini[i].Qout=0.0;
+	
 		/*find neighbouring hillslopes by reach_ID, one hill ID is reach_ID-1, another is reach_ID*/
 		
 		
@@ -223,30 +230,29 @@ struct stream_list_object construct_stream_routing_topology(
 	      } /*end if*/
 	      fscanf(reservoir_file,"%d",&num_reservoir);
 			
-		  for(i=0;i<num_reservoir;i++){
-	      fscanf(reservoir_file,"%d %d %d %lf %lf",&reach_ID,&reservoir_ID,&flag_min_flow_storage, &min_storage, &min_outflow);
-			 
-			  for(j=0;j<12;j++){
-				fscanf(reservoir_file,"%lf",&month_max_storage[j]);
+	  for(i=0;i<num_reservoir;i++){
+	      	fscanf(reservoir_file,"%d %d %d %lf %lf",
+			&reach_ID,&reservoir_ID,&flag_min_flow_storage, &min_storage, &min_outflow);
+	 	for(j=0;j<12;j++){
+			fscanf(reservoir_file,"%lf",&month_max_storage[j]);
 							  }
-		      for(k=0;k<num_reaches;k++)
-			   if(stream_network[k].reach_ID==reach_ID){
-				  stream_network[k].reservoir_ID=reservoir_ID;
-                  stream_network[k].reservoir.reservoir_ID=reservoir_ID;
-                  stream_network[k].reservoir.flag_min_flow_storage=flag_min_flow_storage;
-                  stream_network[k].reservoir.min_storage=min_storage*10000.0;
-                  stream_network[k].reservoir.min_outflow=min_outflow;
-				  stream_network[k].reservoir.initial_storage=min_storage*10000.0;
-				 printf("%d %d %lf %lf\n",stream_network[k].reach_ID,stream_network[k].reservoir.reservoir_ID,stream_network[k].reservoir.min_storage,stream_network[k].reservoir.min_outflow);
-				  for(j=0;j<12;j++){
-				      stream_network[k].reservoir.month_max_storage[j]=month_max_storage[j]*10000.0;
-					  				  }
-				   
-
-			    }/*end if*/
-
-		  }
-		}/*end if*/
+	      	for(k=0;k<num_reaches;k++)
+		   if(stream_network[k].reach_ID==reach_ID){
+			stream_network[k].reservoir_ID=reservoir_ID;
+                  	stream_network[k].reservoir.reservoir_ID=reservoir_ID;
+                  	stream_network[k].reservoir.flag_min_flow_storage=flag_min_flow_storage;
+                  	stream_network[k].reservoir.min_storage=min_storage*10000.0;
+                  	stream_network[k].reservoir.min_outflow=min_outflow;
+		  	stream_network[k].reservoir.initial_storage=min_storage*10000.0;
+		 printf("%d %d %lf %lf\n",
+			stream_network[k].reach_ID,stream_network[k].reservoir.reservoir_ID,
+			stream_network[k].reservoir.min_storage,stream_network[k].reservoir.min_outflow);
+		  	for(j=0;j<12;j++){
+		      		stream_network[k].reservoir.month_max_storage[j]=month_max_storage[j]*10000.0;
+		  	} /* end monthly storage assignment */
+		}/*end reach search*/
+	} /* end reservoir */
+	} /* end reservoir flag */
 
         /*--------------------------------------------------------------*/
         /*   code to construct stream_list                              */

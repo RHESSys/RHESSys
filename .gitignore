@@ -15,3 +15,5 @@ objects/
 # Editor leftovers
 *~
 
+# Fire-spread model files 
+*.dylib
