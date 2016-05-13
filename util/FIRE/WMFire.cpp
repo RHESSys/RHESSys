@@ -61,7 +61,7 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 	{
 		if(def.fire_verbose==1)
 			cout<<"Should be set seed = "<<def.ran_seed<<"\n";
-		seed=def.ran_seed+year+month;
+		seed=def.ran_seed;
 	}	
 	else
 	{
@@ -122,7 +122,7 @@ LandScape::LandScape(double cell_res,struct fire_object **fire_grid,struct fire_
 			{
 				IgnitionCells ic = {i, j}; // the cell indices give the current row and column for this pixel available for ignition
 				ignCells_.push_back(ic);		// 0 indicates that the pixel has not been burned
-				n_ign_++;
+				n_ign_++; // this indexes the number of cells available for ignition
 			}
 		}
 	}
@@ -450,8 +450,8 @@ void LandScape::chooseIgnPix(GenerateRandom& rng)
 	else
 	{
 		int vecID=0;
-		vecID=int(floor(rng()*(n_ign_+1)));
-		cur_fire_.ignRow=ignCells_[vecID].rowId;
+		vecID=int(floor(rng()*(n_ign_+1))); // n_ign_ just counts how many pixels are available for ignition
+		cur_fire_.ignRow=ignCells_[vecID].rowId; // extract the row and column of this randomly drawn pixel
 		cur_fire_.ignCol=ignCells_[vecID].colId;
 	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
 	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
