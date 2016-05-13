@@ -180,7 +180,6 @@ void zone_daily_I(
 	
 	int	inx;
 	struct	dated_sequence	clim_event;
-
 	zone[0].rain_hourly_total = 0.0;
 	zone[0].snow_hourly_total = 0.0;
 	/*--------------------------------------------------------------*/
@@ -256,7 +255,6 @@ void zone_daily_I(
 			zone[0].rain =  temp * isohyet_adjustment;
 			flag++;
 		}
-
 		/*--------------------------------------------------------------*/
 		/* 	temperature lapse rates with elevation can be daily values or constant (zone defaults) 		*/
 		/*--------------------------------------------------------------*/
@@ -279,7 +277,7 @@ void zone_daily_I(
 			flag++;
 		}
 			
-	
+		
 		temp = zone[0].base_stations[i][0].daily_clim[0].tmax[day];
 
 		if (temp != -999.0) {
@@ -1026,7 +1024,7 @@ void zone_daily_I(
 			   trans_coeff1,
 			   trans_coeff2);
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches 									*/
 	/*--------------------------------------------------------------*/
@@ -1041,5 +1039,4 @@ void zone_daily_I(
 			event,
 			current_date );
 	}
-
 } /*end zone_daily_I.c*/

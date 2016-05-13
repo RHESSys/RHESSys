@@ -171,8 +171,8 @@ void		patch_hourly(
 	if(zone[0].hourly_NH4_flag == 1)
 		patch[0].hourly[0].NH4_throughfall = zone[0].hourly[0].ndep_NH4;
 	else
-		patch[0].hourly[0].NH4_throughfall = zone[0].ndep_NH4/24;
-				
+		patch[0].hourly[0].NH4_throughfall = zone[0].ndep_NH4/24;	
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
@@ -218,7 +218,7 @@ void		patch_hourly(
 			patch[0].rain_throughfall_final = 0.0;
 			patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
 			patch[0].hourly[0].NH4_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NH4_throughfall;
-
+			
 			for ( stratum=0;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
@@ -234,7 +234,7 @@ void		patch_hourly(
 		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
 		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
-		patch[0].hourly[0].NH4_throughfall = patch[0].hourly[0].NH4_throughfall_final;
+		patch[0].hourly[0].NH4_throughfall = patch[0].hourly[0].NH4_throughfall_final;	
 	}
 
 
@@ -621,5 +621,5 @@ void		patch_hourly(
 	theta = patch[0].rootzone.S;
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
-
+	
 } /*end patch_hourly.c*/

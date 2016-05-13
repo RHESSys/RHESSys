@@ -233,6 +233,7 @@ struct zone_object *construct_zone(
 		fscanf(world_file,"%d",&(dum));
 		read_record(world_file, record);
 	}
+
 	/*--------------------------------------------------------------*/
 	/* NETCDF BASE STATIONS */
 	/*--------------------------------------------------------------*/

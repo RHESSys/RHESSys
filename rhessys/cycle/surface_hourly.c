@@ -52,7 +52,7 @@ void		surface_hourly(
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
 	struct	litter_object	*litter;
-	int		det_on_litter_flag;
+	int 	det_on_litter_flag;
 	
 	/*--------------------------------------------------------------*/
 	/*	Initialize litter variables.				*/

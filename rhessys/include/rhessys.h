@@ -2670,6 +2670,9 @@ struct        algae_strata_object
     double Csettle;
     double Cout;
     double Cin;
+    double resprouted_chla_cum;  /* kg/m^2 */
+    double resprouted_N_cum;  /* kg/m^2 */
+    double resprouted_C_cum;  /* kg/m^2 */
 };
 
 /*----------------------------------------------------------*/

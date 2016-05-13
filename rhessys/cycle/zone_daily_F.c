@@ -184,7 +184,7 @@ void		zone_daily_F(
 			zone[0].cloud = zone[0].cloud_opacity * zone[0].cloud_fraction * 12.0;
 		}
 	
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Make use of more accurate basin daylength 		*/
 	/*	if it is not given and the zone horizons are 0		*/
@@ -663,6 +663,5 @@ void		zone_daily_F(
 		zone[0].acc_month.K_diffuse += zone[0].Kdown_diffuse;
 		zone[0].acc_month.length += 1;
 	}
-
 	return;
 } /*end zone_daily_F.c*/
