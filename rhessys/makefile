@@ -259,6 +259,7 @@ $(OBJ)/update_gw_drainage.o \
 $(OBJ)/update_hillslope_accumulator.o \
 $(OBJ)/update_litter_interception_capacity.o \
 $(OBJ)/update_mortality.o \
+$(OBJ)/update_litter_soil_mortality.o \
 $(OBJ)/update_branch_mortality.o \
 $(OBJ)/update_nitrif.o \
 $(OBJ)/update_phenology.o \
@@ -849,6 +850,8 @@ $(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
+$(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c 
+	$(CC) -c $(CFLAGS) -I include cn/update_litter_soil_mortality.c -o $(OBJ)/update_litter_soil_mortality.o
 $(OBJ)/update_branch_mortality.o: cn/update_branch_mortality.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_branch_mortality.c -o $(OBJ)/update_branch_mortality.o
 $(OBJ)/update_nitrif.o: cn/update_nitrif.c 
