@@ -21,6 +21,11 @@ void *alloc(size_t size, char *array_name, char *calling_function);
 
 struct routing_list_object *construct_topmodel_patchlist(struct basin_object * const basin);
 
+void hydro_routing( struct command_line_object * command_line,
+                    double                       extstep,   /*  external time step  */
+                    struct	date	             current_date,
+                    struct basin_object        * basin );
+
 double	compute_potential_exfiltration(int 	verbose_flag,
 									   double	S,
 									   double 	sat_deficit_z,

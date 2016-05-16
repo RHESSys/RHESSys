@@ -247,6 +247,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	} /* end-while */
 	canopy_strata[0].defaults[0] = &defaults[0].stratum[i];
 
+	canopy_strata->mannN = canopy_strata->defaults[0]->mannN;
+
 	/*--------------------------------------------------------------*/
 	/* if spinup module is called assign spinup defaults            */
 	/*--------------------------------------------------------------*/

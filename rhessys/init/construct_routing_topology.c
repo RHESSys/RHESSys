@@ -191,7 +191,23 @@ struct routing_list_object *construct_routing_topology(char *routing_filename,
 				patch[0].soil_defaults[0][0].interval_size = patch[0].soil_defaults[0][0].soil_water_cap / MAX_NUM_INTERVAL;
 				}
 			patch[0].transmissivity_profile = compute_transmissivity_curve(gamma, patch, command_line);
+		} else {
+			/* Determine slope of maximum descent based on surface flow network */
+			double max_slope = -1.0;
+			struct patch_object *neigh;
+			for (int i = 0; i < patch->innundation_list->num_neighbours; i++) {
+				neigh = patch->innundation_list->neighbours[i].patch;
+				/* Only consider down-slope neighbors */
+				if (neigh->z < patch->z) {
+					double dist = sqrt(pow(neigh->x - patch->x, 2) +
+									  pow(neigh->y - patch->y, 2));
+					double slope = (patch->z - neigh->z) / dist;
+					slope = atan(slope); // Convert to radians
+					if (slope > max_slope) max_slope = slope;
+				}
 			}
+			if (max_slope != -1.0) patch->slope_max = max_slope;
+		}
 
 
 	}

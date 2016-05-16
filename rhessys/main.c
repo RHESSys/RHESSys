@@ -289,8 +289,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rhessys.h"
 #include <time.h>
+
+#include "rhessys.h"
+#include "functions.h"
 
 // The $$RHESSYS_VERSION$$ string will be replaced by the make
 // script to reflect the current RHESSys version.
@@ -432,6 +434,7 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	fprintf(stderr,"Beginning Simulation\n");
 	execute_tec( tec, command_line, output, growth_output, world );
+
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED EXE TEC\n");
 	

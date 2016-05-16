@@ -33,7 +33,9 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "rhessys.h"
+#include "functions.h"
 
 void	basin_hourly(
 					 struct	world_object	*world,
@@ -185,10 +187,19 @@ void	basin_hourly(
 	/* this part is nearly the same as in the basin_daily_F		*/
 
 	if ( command_line[0].routing_flag == 1 && zone_p[0].hourly_rain_flag==1) { 
-		compute_subsurface_routing_hourly(command_line,
-			basin,
-			basin[0].defaults[0][0].n_routing_timesteps,
-			current_date);
+
+		if (command_line->var_timestep_routing_flag == 1) {
+			printf("Calling hydro_routing with routing mode %d...\n", command_line->var_timestep_mode);
+			hydro_routing(command_line, SECONDS_PER_HOUR, current_date, basin);
+
+		} else {
+			printf("Calling compute_subsurface_routing_hourly...\n");
+			compute_subsurface_routing_hourly(command_line,
+				basin,
+				basin[0].defaults[0][0].n_routing_timesteps,
+				current_date);
+		}
+
 	}
 
 

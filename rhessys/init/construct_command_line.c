@@ -75,6 +75,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].prefix_flag = 0;
 	command_line[0].verbose_flag = 0;
 	command_line[0].routing_flag = 0;
+	command_line[0].var_timestep_routing_flag = 0;
 	command_line[0].surface_routing_flag = 0;
 	command_line[0].stream_routing_flag = 0;
 	command_line[0].reservoir_operation_flag = 0;
@@ -644,6 +645,29 @@ struct	command_line_object	*construct_command_line(
 				}
 			} /*end if*/
 
+			/*--------------------------------------------------------------*/
+			/*		Check if the variable timestep routing option file is next.	*/
+			/*--------------------------------------------------------------*/
+			else if ( strcmp(main_argv[i], "-varrouting") == 0 ) {
+				command_line[0].var_timestep_routing_flag = 1;
+				i++;
+
+				if (i < main_argc && !valid_option(main_argv[i]) == 1) {
+					if (strcmp(main_argv[i], VAR_ROUTING_MODE_CHEM_WELL_MIXED_STR) == 0) {
+						command_line[0].var_timestep_mode = VAR_ROUTING_MODE_CHEM_WELL_MIXED;
+					} else if (strcmp(main_argv[i], VAR_ROUTING_MODE_CHEM_EXPONENTIAL_STR) == 0) {
+						command_line[0].var_timestep_mode = VAR_ROUTING_MODE_CHEM_EXPONENTIAL;
+					} else if (strcmp(main_argv[i], VAR_ROUTING_MODE_NO_MOUNDING_STR) == 0) {
+						command_line[0].var_timestep_mode = VAR_ROUTING_MODE_NO_MOUNDING;
+					} else {
+						fprintf(stderr,"FATAL ERROR: Unknown option for -varrouting: %s\n", main_argv[i]);
+						exit(EXIT_FAILURE);
+					}
+				} else {
+					command_line[0].var_timestep_mode = VAR_ROUTING_MODE_CHEM_EXPONENTIAL;
+				}
+				i++;
+			} /*end if*/
 
 			/*--------------------------------------------------------------*/
 			/*		Check if the stream routing option file is next.				*/
@@ -1098,6 +1122,13 @@ struct	command_line_object	*construct_command_line(
 			} /*end if*/
 		} /*end if*/
 	} /*end while*/
+
+	/* Validate dependencies */
+	if (command_line[0].var_timestep_routing_flag && (!command_line[0].routing_flag)) {
+		fprintf(stderr,
+				"Variable time step routing was specified, but routing flag and flowtable(s) were not\nspecified.\n");
+		exit(EXIT_FAILURE);
+	}
 
 	return(command_line);
 } /*end construct_command_line*/
