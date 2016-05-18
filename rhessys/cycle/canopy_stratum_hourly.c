@@ -112,7 +112,7 @@ void	canopy_stratum_hourly(
 	    }
 	}
 
-
+	
 
 	patch[0].hourly[0].NO3_throughfall_final += NO3_throughfall 
 		* stratum[0].cover_fraction;

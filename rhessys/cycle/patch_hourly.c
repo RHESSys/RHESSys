@@ -156,7 +156,7 @@ void		patch_hourly(
 	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;// in stdzone file, the n_deposition is in kg/m2/yr
 	
 	// the following code is for test only
-        //printf("")
+        
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
@@ -164,9 +164,12 @@ void		patch_hourly(
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
-			/* NO3_throughfall_final collects NO3_throughfall first from null_cover area */
+			/* NO3_throughfall_final collects NO3_throughfall first from null_cover area (usually null_cover=0) */
 			/* Then use it to sum up the NO3_thoughfall from canopy cover */
 	    		patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
+			//printf("null_cover=%f, NO3_throughfall_final(g/m2/d)=%f\n",patch[0].layers[layer].null_cover,
+			//	      patch[0].hourly[0].NO3_throughfall_final*1000);
+			
 			for (stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
@@ -179,6 +182,7 @@ void		patch_hourly(
 					event,
 					current_date );
 			}
+			
 			/*--------------------------------------------------------------*/
 			/*	process any hourly throughfallthat falls on a snowpack */
 			/*--------------------------------------------------------------*/
@@ -188,6 +192,9 @@ void		patch_hourly(
 		}
 	}
       	
+	//printf("(g/m2/d) h = %d,before NO3_throughfall = %f, after NO3_throughfall = %f,canopy_NO3=%f\n",
+	//	 current_date.hour, zone[0].ndep_NO3*1000, patch[0].hourly[0].NO3_throughfall*1000,patch[0].canopy_strata[0]->NO3_stored*1000);
+
 	if (patch[0].snowpack.water_equivalent_depth > 0.0) {
 		patch[0].snowpack.water_equivalent_depth
 			+= patch[0].hourly[0].rain_throughfall;
@@ -219,7 +226,7 @@ void		patch_hourly(
 		}
 
 	}
-
+	
 
 	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 	//patch[0].surface_NO3 +=
