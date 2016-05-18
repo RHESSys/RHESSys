@@ -17,8 +17,9 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+#include <limits.h>                                                              //160517LML
 #include "rhessys.h"
-
+double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); //160517LML
 #ifdef LIU_NETCDF_READER
 /*160419LML get the station numbers from station file                         */
 int get_netcdf_station_number(char *base_station_filename)
@@ -101,8 +102,8 @@ struct base_station_ncheader_object *construct_netcdf_header (
         basestation[0].ID               = -9999;
         basestation[0].effective_lai    = -9999;
         basestation[0].screen_height    = -9999;
-        basestation[0].x                = -9999;
-        basestation[0].y                = -9999;
+        basestation[0].proj_x           = -9999;
+        basestation[0].proj_y           = -9999;
         basestation[0].lat              = -9999;
         basestation[0].lon              = -9999;
         //basestation[0].has_constructed  = 0;
@@ -114,9 +115,10 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	while (fgets(buffer, sizeof(buffer), base_station_file) != NULL) {
 		if (buffer != NULL) {
 			sscanf(buffer, "%s %s", first, second);
-            if(strcmp(second,"location_searching_distance") == 0){
+            /*160517LML if(strcmp(second,"location_searching_distance") == 0){
             base_station_ncheader[0].sdist = atof(first);
-            } else if (strcmp(second, "year_start_index") == 0){
+            } else */
+            if (strcmp(second, "year_start_index") == 0){
                 base_station_ncheader[0].year_start = atoi(first);
             } else if (strcmp(second, "day_offset") == 0){
                 base_station_ncheader[0].day_offset = atoi(first);
@@ -124,6 +126,8 @@ struct base_station_ncheader_object *construct_netcdf_header (
                 base_station_ncheader[0].leap_year = atoi(first);
             } else if (strcmp(second, "precip_multiplier") == 0){
                 base_station_ncheader[0].precip_mult = atof(first);
+            } else if (strcmp(second, "temperature_unit") == 0){
+                base_station_ncheader[0].temperature_unit = first[0];
             } else if(strcmp(second,"netcdf_var_x") == 0){
                 strcpy(base_station_ncheader[0].netcdf_x_varname,first);
             } else if(strcmp(second,"netcdf_var_y") == 0){
@@ -150,15 +154,15 @@ struct base_station_ncheader_object *construct_netcdf_header (
             else if (strcmp(second, "base_station_id") == 0) {
                 baseid++;
                 world[0].base_stations[baseid][0].ID = atoi(first);
-            } else if (strcmp(second, "x_coordinate") == 0) {
-                world[0].base_stations[baseid][0].x = atof(first);
-            } else if (strcmp(second, "y_coordinate") == 0) {
-                world[0].base_stations[baseid][0].y = atof(first);
+            } else if (strcmp(second, "xc"/*160517LML "x_coordinate"*/) == 0) {
+                world[0].base_stations[baseid][0].proj_x = atof(first);
+            } else if (strcmp(second, "yc"/*160517LMLLML "y_coordinate"*/) == 0) {
+                world[0].base_stations[baseid][0].proj_y = atof(first);
             } else if (strcmp(second, "z_coordinate") == 0) {
                 world[0].base_stations[baseid][0].z = atof(first);
-            } else if (strcmp(second, "lon_coordinate") == 0) {
+            } else if (strcmp(second, "lon") == 0) {
                 world[0].base_stations[baseid][0].lon = atof(first);
-            } else if (strcmp(second, "lat_coordinate") == 0) {
+            } else if (strcmp(second, "lat") == 0) {
                 world[0].base_stations[baseid][0].lat = atof(first);
             }
             #endif
@@ -198,7 +202,8 @@ struct base_station_ncheader_object *construct_netcdf_header (
 				}*/
 		}
 		}//end_read_basestationfile
-		
+        base_station_ncheader[0].resolution_dd = calc_resolution(true,world[0].base_stations,world[0].num_base_stations);
+        base_station_ncheader[0].resolution_meter = calc_resolution(false,world[0].base_stations,world[0].num_base_stations);
 	fclose(base_station_file);	
     printf("finish reading base info\n");
     //printf("\nFinished construct netcdf header: lastID=%d lai=%lf ht=%lf sdist=%lf yr=%d day=%d lpyr=%d pmult=%lf",
@@ -207,7 +212,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 		   base_station_ncheader[0].lastID,
            //base_station_ncheader[0].effective_lai,
            //base_station_ncheader[0].screen_height,
-		   base_station_ncheader[0].sdist,
+           //160517LML base_station_ncheader[0].sdist,
 		   base_station_ncheader[0].year_start,
 		   base_station_ncheader[0].day_offset,
 		   base_station_ncheader[0].leap_year,
@@ -215,4 +220,33 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	
 	return(base_station_ncheader);
 }
-
+//160517LML_____________________________________________________________________
+typedef struct Location{
+    double x;
+    double y;
+} Location;
+//160517LML_____________________________________________________________________
+double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers)
+{
+    Location *sites  = (Location*)calloc(station_numbers, sizeof(Location));
+    for (int i = 0; i < station_numbers; i++) {
+        if (geographic_unit) {
+            sites[i].x = basestations[i][0].lon;
+            sites[i].y = basestations[i][0].lat;
+        } else {
+            sites[i].x = basestations[i][0].proj_x;
+            sites[i].y = basestations[i][0].proj_y;
+        }
+    }
+    //find the nearest distance
+    double mindist = LONG_MAX;
+    for (int i = 0; i < station_numbers - 1; i++) {
+        for (int j = i + 1; j < station_numbers; j++) {
+            double dist = (sites[i].x - sites[j].x) * (sites[i].x - sites[j].x)
+                         +(sites[i].y - sites[j].y) * (sites[i].y - sites[j].y);
+            if (dist < mindist) mindist = dist;
+        }
+    }
+    free(sites);
+    return sqrt(mindist);
+}
