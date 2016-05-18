@@ -648,6 +648,7 @@ void zone_daily_I(
 		temp = zone[0].base_stations[0][0].daily_clim[0].ndep_NO3[day];
 		if ( temp != -999.0 ) zone[0].ndep_NO3 = temp;
 	}
+
 		else zone[0].ndep_NO3 = zone[0].defaults[0][0].ndep_NO3;
 	if ( zone[0].base_stations[0][0].daily_clim[0].ndep_NH4 != NULL )
 		{
@@ -655,6 +656,12 @@ void zone_daily_I(
 		if ( temp != -999.0 ) zone[0].ndep_NH4 = temp;
 	}
 		else zone[0].ndep_NH4 = 0.0;
+
+
+		 
+		
+	//printf("day=%d,ndep=%.8f\n",current_date.day,zone[0].ndep_NO3);
+		
 	/*--------------------------------------------------------------*/
 	/*	CO2 -ppm - atmospheric CO2  concentration time series	*/
 	/*--------------------------------------------------------------*/
