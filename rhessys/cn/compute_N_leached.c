@@ -192,8 +192,8 @@ double	compute_N_leached(int verbose_flag,
 		// z2 = initial
 		// z1 = final
 		//the following code is for testing only
-		printf("n_0=%f,p=%f,z2_water=%f,z2=%f,z1=%f,available_water=%f\n",
-			    n_0,p,z2_water,z2,z1,available_water);
+		//printf("n_0=%f,p=%f,z2_water=%f,z2=%f,z1=%f,available_water=%f\n",
+		//	    n_0,p,z2_water,z2,z1,available_water);
 		
 		nabsorbed=compute_N_absorbed(verbose_flag,
 			z1,
@@ -221,8 +221,8 @@ double	compute_N_leached(int verbose_flag,
 
 	/*if (nleached > total_nitrate)*/
        // the following code is for testing only
-         printf("total_nitrate=%f,navaiabl10^6e=%f,nleached*10^6 = %f,nabsorbed10*6=%f,Qout=%f,avai_water=%f,z1=%f,z2=%f,\n",
-	     total_nitrate*1000,navail*1000000,nleached*1000000,nabsorbed*1000000,Qout*1000,available_water*1000,z1,z2);
+        // printf("total_nitrate=%f,navaiabl10^6e=%f,nleached*10^6 = %f,nabsorbed10*6=%f,Qout=%f,avai_water=%f,z1=%f,z2=%f,\n",
+	  //   total_nitrate*1000,navail*1000000,nleached*1000000,nabsorbed*1000000,Qout*1000,available_water*1000,z1,z2);
 
 	nleached = max(nleached, 0.0);
 	

@@ -156,7 +156,6 @@ void		patch_hourly(
 	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;// in stdzone file, the n_deposition is in kg/m2/yr
 	
 	// the following code is for test only
-        
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
@@ -229,7 +228,6 @@ void		patch_hourly(
 	
 
 	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
-	//patch[0].surface_NO3 +=
 
 	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
 
