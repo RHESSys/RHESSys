@@ -82,6 +82,8 @@ double	compute_varbased_flow(
 	p = patch[0].soil_defaults[0][0].porosity_decay;
 	n_0 = patch[0].soil_defaults[0][0].porosity_0;
 	soil_depth = patch[0].soil_defaults[0][0].soil_depth;
+	
+	/* The following 3 variables are for FS only, won't affect result unless specificaly defined in soil default file*/
 	threshold = n_0 * p * (1 - exp(-soil_depth/p))*(1 - patch[0].soil_defaults[0][0].fs_threshold);
 	fs_spill = patch[0].soil_defaults[0][0].fs_spill;
 	fs_percolation = patch[0].soil_defaults[0][0].fs_percolation;

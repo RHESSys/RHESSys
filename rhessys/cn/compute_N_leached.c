@@ -110,7 +110,8 @@ double	compute_N_leached(int verbose_flag,
 	/*------------------------------------------------------*/
 	if ((s1 == 0.0) && (s2 == 0.0)) {
 		
-		z2 = -1.0 * p * log (1 - (Qout) / (p * n_0));
+		//z2 = -1.0 * p * log (1 - (Qout) / (p * n_0));
+		z2=z2_N;
 		z1 = 0.0;
 		if (N_decay_rate > ZERO) {	
 			navail = total_nitrate
@@ -137,6 +138,9 @@ double	compute_N_leached(int verbose_flag,
 		else 
 		  nleached = navail-nabsorbed;
 		if (nleached > navail) nleached=navail;	
+
+
+
 	}
 	
 	else {
@@ -185,7 +189,11 @@ double	compute_N_leached(int verbose_flag,
 			n_0,p,z2_water,
 			z2,
 			z1);
-
+		// z2 = initial
+		// z1 = final
+		//the following code is for testing only
+		printf("n_0=%f,p=%f,z2_water=%f,z2=%f,z1=%f,available_water=%f\n",
+			    n_0,p,z2_water,z2,z1,available_water);
 		
 		nabsorbed=compute_N_absorbed(verbose_flag,
 			z1,
