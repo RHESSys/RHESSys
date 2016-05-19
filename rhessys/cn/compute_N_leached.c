@@ -84,7 +84,13 @@ double	compute_N_leached(int verbose_flag,
 	double Q, Qtotal;
 	double z1, z2;
 	double	available_water,septic_depth;
-
+	/* 
+	 *Qout = 	route_to_stream / patch[0].area,
+	 s1 = patch[0].sat_deficit,
+	 s2 = patch[0].soil_defaults[0][0].soil_water_cap,
+	 z2_N = active_zone_z
+	 z2_water = soil_depth
+	 * */
 	nleached = 0.0;
 	Qtotal = 0.0;
 	nabsorbed=0.0;
@@ -115,6 +121,7 @@ double	compute_N_leached(int verbose_flag,
 		else {
 			navail = total_nitrate * (z2-z1)/z2_N;
 		}
+
 		nabsorbed=compute_N_absorbed(verbose_flag,
 						z1,
 						z2,
@@ -205,7 +212,9 @@ double	compute_N_leached(int verbose_flag,
 	/*------------------------------------------------------*/
 
 	/*if (nleached > total_nitrate)*/
-		/*nleached = total_nitrate;*/
+       // the following code is for testing only
+         printf("total_nitrate=%f,navaiabl10^6e=%f,nleached*10^6 = %f,nabsorbed10*6=%f,Qout=%f,avai_water=%f,z1=%f,z2=%f,\n",
+	     total_nitrate*1000,navail*1000000,nleached*1000000,nabsorbed*1000000,Qout*1000,available_water*1000,z1,z2);
 
 	nleached = max(nleached, 0.0);
 	

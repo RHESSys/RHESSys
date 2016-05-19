@@ -94,9 +94,14 @@ void	canopy_stratum_hourly(
 		* (stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall);
 	    tmp1 = (stratum[0].rain_stored) / (stratum[0].rain_stored + rain_throughfall) ;
 	    tmp2 = (rain_throughfall) / (stratum[0].rain_stored + rain_throughfall) ;
+	    
+	    //printf("h=%d,d=%d,rain_stor=%f,rain_throughfall=%f, NO3_stored=%f, NO3_throughfall=%f\n",
+		//current_date.hour,current_date.day,stratum[0].rain_stored,rain_throughfall,NO3_stored*1000,NO3_throughfall*1000);
+	
 		
 	}
 	else{//stratum[0].rain_stored == 0 
+	    
 	    if (rain_throughfall > 0){
 		NO3_stored = (stratum[0].rain_stored) 
 	      	/ (stratum[0].rain_stored + rain_throughfall) 
@@ -110,6 +115,8 @@ void	canopy_stratum_hourly(
                 NO3_stored = stratum[0].NO3_stored + patch[0].hourly[0].NO3_throughfall;
 		NO3_throughfall = 0;
 	    }
+	    //printf("h=%d,d=%d,rain_stor=%f,rain_throughfall=%f, NO3_stored=%f, NO3_throughfall=%f\n",
+		//current_date.hour,current_date.day,stratum[0].rain_stored,rain_throughfall,NO3_stored*1000,NO3_throughfall*1000);
 	}
 
 	

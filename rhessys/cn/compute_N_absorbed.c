@@ -52,7 +52,7 @@ double	compute_N_absorbed(int verbose_flag,
 	
 	bulk_density = PARTICLE_DENSITY * (1.0 - n_0) * 1000;
 	nabsorbed=n_0*(z2-z1)*N_absorption_rate*bulk_density;
-	
+	//printf("N_absorption_rate=%f\n",N_absorption_rate);
 	nabsorbed=max(nabsorbed, 0.0);
 	
 	return(nabsorbed);

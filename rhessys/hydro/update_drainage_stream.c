@@ -174,6 +174,10 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].soil_depth,
 			patch[0].soil_defaults[0][0].NO3_adsorption_rate,
 			patch[0].transmissivity_profile);
+
+		//the following code is for testing only
+	//	printf("route_to_stream=%f,NO3_leached_to_stream=%f\n",route_to_stream,NO3_leached_to_stream*1000);
+		
 		patch[0].soil_ns.NO3_Qout += NO3_leached_to_stream;
 
 
