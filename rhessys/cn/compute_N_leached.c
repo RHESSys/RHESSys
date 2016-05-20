@@ -85,12 +85,13 @@ double	compute_N_leached(int verbose_flag,
 	double z1, z2;
 	double	available_water,septic_depth;
 	/* 
-	 *Qout = 	route_to_stream / patch[0].area,
+	 Qout = 	route_to_stream / patch[0].area,
 	 s1 = patch[0].sat_deficit,
 	 s2 = patch[0].soil_defaults[0][0].soil_water_cap,
 	 z2_N = active_zone_z
 	 z2_water = soil_depth
-	 * */
+	  */
+	
 	nleached = 0.0;
 	Qtotal = 0.0;
 	nabsorbed=0.0;

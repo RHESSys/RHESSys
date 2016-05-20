@@ -413,9 +413,6 @@ void	canopy_stratum_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	total_incoming_PAR = PAR_diffuse + PAR_direct;
-	NO3_stored=0;
-	NO3_throughfall=0;
-
 	ustar = patch[0].ustar;
 	
 	lhvap = (2.5023e6 - 2430.54 * zone[0].metv.tday)/1000.0; /* KJ/kg H2O */	
@@ -1381,6 +1378,9 @@ void	canopy_stratum_daily_F(
 	    }
 	}
 
+	//printf("in stratadailyF, NO3_stored= %f, NO3_throughfall=%.9f,rain_stored=%f, throughfall=%f,stratum[0].NO3_stored=%.9f,patch[0].NO3_throughfall=%.9f\n",
+	//	  NO3_stored,NO3_throughfall,stratum[0].rain_stored,rain_throughfall,
+	//	  stratum[0].NO3_stored,patch[0].NO3_throughfall);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.15 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
@@ -1895,10 +1895,19 @@ void	canopy_stratum_daily_F(
 		* stratum[0].cover_fraction;
 	patch[0].snow_throughfall_final += snow_throughfall
 		* stratum[0].cover_fraction;
+
+	if(stratum[0].defaults[0][0].epc.veg_type == NON_VEG){
+		NO3_throughfall = patch[0].NO3_throughfall;
+		NO3_stored = 0;
+		//printf("THIS IS NON_VEG, stratum[0].store = %.9f\n",stratum[0].rain_stored);
+	}
+	
 	patch[0].NO3_throughfall_final += NO3_throughfall 
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
 
+        //printf("in stratumdailyF, NO3_throughfall=%.9f,patch[0].NO3_throughfall=%.9f,patch[0].NO3_throughfall_final=%.9f,stratum[0].NO3_stored=%.9f\n",
+	//                           NO3_throughfall, patch[0].NO3_throughfall, patch[0].NO3_throughfall_final,stratum[0].NO3_stored);
 
 
 	

@@ -668,6 +668,7 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
+			//printf("in patchdailyF, before call canopy F, patch[0].NO3_throughfall=%.9f\n",patch[0].NO3_throughfall);
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			if (dum == 0) {
 				patch[0].ga_final = patch[0].layers[layer].null_cover * tmpga;
@@ -728,6 +729,8 @@ void		patch_daily_F(
 			patch[0].windsnow = patch[0].windsnow_final;
 			patch[0].ustar = patch[0].ustar_final;
 			patch[0].T_canopy = patch[0].T_canopy_final;
+			//printf("in above patch[0].NO3_throughfall=%.9f\n",patch[0].NO3_throughfall);
+			
 		}
 	}
 	
@@ -1067,6 +1070,8 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
+			//printf("in patchdailyF,below the pond, before canopy_stratum_daily_F,patch[0].NO3_throughfall=%.9f\n",
+			//	      patch[0].NO3_throughfall);
 			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
@@ -1174,11 +1179,16 @@ void		patch_daily_F(
 		}
 	*/
 
+
+
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
 	//patch[0].surface_NO3 += zone[0].ndep_NO3;
-	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
+	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
+
+	//printf("d=%d,patch[0].NO3_throughfall=%.9f,patch[0].surface_NO3=%.9f,zone[0].rain=%f\n",
+	//    current_date.day,patch[0].NO3_throughfall,patch[0].surface_NO3,zone[0].rain);
 
 	/*--------------------------------------------------------------*/
 	/*	a certain amount of surface_N is incorporated into the */
@@ -1221,8 +1231,9 @@ void		patch_daily_F(
 	/*	Add rain throughfall to detention store for infiltration	*/
 	/*	and evaporation routines.									*/
 	
+	
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
-	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
+	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 
 
 	/* Calculate det store, litter, and bare soil evap first */

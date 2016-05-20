@@ -234,6 +234,7 @@ void zone_daily_I(
 		/*		we do not adjust for slope, cloudyness or lai as yet	*/
 		/*--------------------------------------------------------------*/
 		temp = zone[0].base_stations[i][0].daily_clim[0].rain[day];
+
 		/*--------------------------------------------------------------*/
 		/* 	allow for stocastic noise in precip scaling 		*/
 		/*--------------------------------------------------------------*/
@@ -263,7 +264,6 @@ void zone_daily_I(
 			zone[0].rain =  temp * isohyet_adjustment;
 			flag++;
 		}
-
 		/*--------------------------------------------------------------*/
 		/* 	temperature lapse rates with elevation can be daily values or constant (zone defaults) 		*/
 		/*--------------------------------------------------------------*/

@@ -802,9 +802,9 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			/*--------------------------------------------------------------*/
 			/* List the hourly record for all base station, resemble the hourly records*/
 			/*--------------------------------------------------------------*/
-			if(world[0].num_base_stations > 1){
-			    resemble_hourly_date(world);
-			}
+			//if(world[0].num_base_stations > 1){
+			//    resemble_hourly_date(world);
+			//<t_úX>}
 
 		}
 	} /*end if dclim_flag*/
