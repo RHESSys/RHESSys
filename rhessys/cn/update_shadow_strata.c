@@ -43,7 +43,7 @@ void	update_shadow_strata(
   
  // printf("\ntarget met: %d", stratum[0].target.met);
 
-  if(stratum[0].target.met == 0){
+  if((stratum[0].target.met == 0) || (stratum[0].target.met == 2 )){
     shadow_strata[0].cover_fraction = stratum[0].cover_fraction;
     shadow_strata[0].gap_fraction = stratum[0].gap_fraction;
     shadow_strata[0].rootzone.depth = stratum[0].rootzone.depth;
@@ -106,6 +106,7 @@ void	update_shadow_strata(
 
   if(current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years){
     stratum[0].target.met = 1;
+    printf("\nexceeded max years for patch:%d", stratum[0].patch_ID);
   }	
 
 	return;

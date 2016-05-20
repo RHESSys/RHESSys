@@ -156,5 +156,6 @@ struct landuse_default *construct_landuse_defaults(
     
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
+        free(paramPtr);
 	return(default_object_list);
 } /*end construct_landuse_defaults*/

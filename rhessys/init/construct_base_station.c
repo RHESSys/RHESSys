@@ -235,11 +235,13 @@ struct	base_station_object *construct_base_station(
 	/*--------------------------------------------------------------*/
 	/*	create the annual climate object for this base station		*/
 	/*--------------------------------------------------------------*/
+	if (strcmp(clim_object_file_prefix,"NULL") != 0) {
 	base_station[0].yearly_clim = construct_yearly_clim(
 		base_station[0].base_station_file,
 		clim_object_file_prefix,
 		start_date,
 		duration.year );
+	}
 	
 	/*--------------------------------------------------------------*/
 	/*	read in the name of the monthly clim object prefix.			*/
@@ -249,11 +251,13 @@ struct	base_station_object *construct_base_station(
 	/*--------------------------------------------------------------*/
 	/*	create the monthly climate object for this base station		*/
 	/*--------------------------------------------------------------*/
+	if (strcmp(clim_object_file_prefix,"NULL") != 0) {
 	base_station[0].monthly_clim = construct_monthly_clim(
 		base_station[0].base_station_file,
 		clim_object_file_prefix,
 		start_date,
 		duration.month );
+	}
 	
 	/*--------------------------------------------------------------*/
 	/*	read in the name of the daily clim object prefix.			*/
@@ -276,19 +280,23 @@ struct	base_station_object *construct_base_station(
 	/*	read in the name of the hourly clim object prefix.			*/
 	/*--------------------------------------------------------------*/
 	fscanf(base_station[0].base_station_file, "%s",clim_object_file_prefix);
+	printf("\n Reading from %d %s   ", base_station[0].ID, clim_object_file_prefix);
 	read_record(base_station[0].base_station_file, record);
 	/*--------------------------------------------------------------*/
 	/*	create the hourly climate object for this base station		*/
 	/*--------------------------------------------------------------*/
+	if (strcmp(clim_object_file_prefix,"NULL") != 0) {
 	base_station[0].hourly_clim = construct_hourly_clim(
 		base_station[0].base_station_file,
 		clim_object_file_prefix,
 		start_date,
 		duration.hour);
+	}
 	/*--------------------------------------------------------------*/
 	/*	now check to see if there are additional sequences to be read */
 	/*--------------------------------------------------------------*/
 	if (fscanf(base_station[0].base_station_file, "%s",clim_object_file_prefix) != EOF) {
+		printf("\n Now from %d %s   ", base_station[0].ID, clim_object_file_prefix);
 		read_record(base_station[0].base_station_file, record);
 		base_station[0].dated_input = construct_dated_input(
 			base_station[0].base_station_file,

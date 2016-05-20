@@ -207,10 +207,17 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 		/*		compute isohyet difference adjustment					*/
 		/*--------------------------------------------------------------*/
+		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_precip == NULL) {
 		if (zone[0].defaults[0][0].lapse_rate_precip_default != -999.0)
 			isohyet_adjustment = zone[0].defaults[0][0].lapse_rate_precip_default*z_delta+1.0;
 		else
 			isohyet_adjustment = zone[0].precip_lapse_rate;
+
+		}
+		else {
+			isohyet_adjustment = 
+			zone[0].base_stations[i][0].daily_clim[0].lapse_rate_precip[day]*z_delta + 1.0;
+			}
 
 		isohyet_adjustment = max(0.0, isohyet_adjustment);
 		/*--------------------------------------------------------------*/
@@ -352,9 +359,11 @@ void zone_daily_I(
 	zone[0].Kdown_direct_adjustment = -999.0;
 	zone[0].Kdown_direct_flag = 0;
 	zone[0].Ldown = -999.0;
+	zone->Ldown_night = -999.0;
+	zone->Ldown_day = -999.0;
 	zone[0].PAR_direct = -999.0;
 	zone[0].PAR_diffuse = -999.0;
-	zone[0].daytime_rain_duration = -999.0;
+	zone[0].rain_duration = -999.0;
 	zone[0].snow = -999.0;
 	zone[0].relative_humidity = -999.0;
 	zone[0].tdewpoint = -999.0;
@@ -363,6 +372,8 @@ void zone_daily_I(
 	zone[0].metv.tnight = -999.0;
 	zone[0].metv.tsoil = -999.0;
 	zone[0].metv.vpd = -999.0;
+	zone[0].metv.vpd_day = -999.0;
+	zone[0].metv.vpd_night = -999.0;
 	zone[0].ndep_NO3 = -999.0;
 	zone[0].ndep_NH4 = -999.0;
 	zone[0].wind = -999.0;
@@ -405,7 +416,7 @@ void zone_daily_I(
 	if ( zone[0].base_stations[0][0].daily_clim[0].daytime_rain_duration!=NULL){
 		temp=zone[0].base_stations[0][0].daily_clim[0].daytime_rain_duration[day];
 		if ( temp != -999.0 ){
-			zone[0].daytime_rain_duration = temp * 3600;
+			zone[0].rain_duration = temp * 3600;
 		}
 	}
 	inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
@@ -413,7 +424,7 @@ void zone_daily_I(
 	if(inx>-999){
 		clim_event=zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx+1];
 		if ((clim_event.edate.year!=0)&&(julday(clim_event.edate)==julday(current_date))){
-			zone[0].daytime_rain_duration = 0;
+			zone[0].rain_duration = 0;
 		}
 	}
 

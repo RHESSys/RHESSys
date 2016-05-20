@@ -84,6 +84,7 @@ int zero_stratum_daily_flux(
 	cdf->froot_mr = 0.0;
 	cdf->livestem_mr = 0.0;
 	cdf->livecroot_mr = 0.0;
+  cdf->total_mr = 0.0;
 	/* growth respiration fluxes */
 	cdf->transfer_leaf_gr = 0.0;
 	cdf->cpool_froot_gr = 0.0;

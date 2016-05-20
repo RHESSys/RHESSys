@@ -44,5 +44,8 @@ int	parse_albedo_flag( char *input_string)
 		fprintf(stderr,"\n Flag must be age or bats and is %s" , input_string);
 		exit(EXIT_FAILURE);
 	}
+
+	free(input_string);
+	
 	return(albedo_flag);
 }/*end parse_albedo_flag.c*/

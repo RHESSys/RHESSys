@@ -146,5 +146,9 @@ struct hillslope_default *construct_hillslope_defaults(
     
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
+
+                if (paramPtr != NULL)
+                    free(paramPtr);
+		    
 	return(default_object_list);
 } /*end construct_hillslope_defaults*/

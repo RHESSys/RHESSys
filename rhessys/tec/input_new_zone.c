@@ -103,6 +103,7 @@
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].area = ltmp;
  	fscanf(world_file,"%lf",&(ltmp));
 	read_record(world_file, record);
+
 	if (fabs(ltmp - NULLVAL) >= ZERO) {
 		zone[0].slope = ltmp * DtoR;
 		zone[0].cos_slope = cos(zone[0].slope);

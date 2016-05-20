@@ -130,6 +130,7 @@ void		patch_hourly(
 	int 	update_gw_drainage(
 			struct patch_object *,
 			struct hillslope_object *,
+			struct zone_object *,
 			struct command_line_object *,
 			struct date); 
 	/*--------------------------------------------------------------*/
@@ -152,7 +153,9 @@ void		patch_hourly(
 	else
 		patch[0].hourly[0].rain_throughfall = 0.0;
 
-	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
+	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24; 
+
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
@@ -160,7 +163,9 @@ void		patch_hourly(
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
-			patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
+			/* NO3_throughfall_final collects NO3_throughfall first from null_cover area */
+			/* Then use it to sum up the NO3_thoughfall from canopy cover */
+	    		patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
 			for (stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
@@ -208,15 +213,16 @@ void		patch_hourly(
 					event,
 					current_date );
 			}
-		}
 		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
-		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
+		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;	
+		}
+
 	}
 
 
 	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 
-	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;//maybe add the Qin here	
+	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
 
 	/*--------------------------------------------------------------*/
 	/*	include any detention storage as throughfall		*/
@@ -247,14 +253,19 @@ void		patch_hourly(
 		/*	move both nitrogen and water				       	*/
 		/*------------------------------------------------------------------------*/
 		if (command_line[0].gw_flag > 0 ){
+
+
 		if ( update_gw_drainage(patch,
 				hillslope,
+				zone,
 				command_line,
 				current_date) != 0) {
 				fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
 				exit(EXIT_FAILURE);
 			}
-		}		
+		}
+	  
+	
 		net_inflow=patch[0].detention_store;
 		/*--------------------------------------------------------------*/
 		/*      - if rain duration is zero, then input is from snow     */
@@ -467,7 +478,7 @@ void		patch_hourly(
 			patch[0].S,
 			patch[0].soil_defaults[0][0].mz_v,
 			patch[0].sat_deficit_z,
-			patch[0].soil_defaults[0][0].Ksat_0 / 2,
+			patch[0].soil_defaults[0][0].Ksat_0_v / basin[0].defaults[0][0].n_routing_timesteps / 2,
 			patch[0].rz_storage - patch[0].rootzone.field_capacity);		
 
 		unsat_drainage = 0.0;
@@ -486,10 +497,10 @@ void		patch_hourly(
 	/* ---------------------------------------------- */
 	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
 		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
-	else 
+	else {
 		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 			/ patch[0].rootzone.potential_sat, 1.0);	
-	return;
+	}
 
 	/*-----------------------------------------------------*/
 	/*  re-Compute potential saturation for rootzone layer   */
@@ -517,5 +528,6 @@ void		patch_hourly(
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
 	
+
 
 } /*end patch_hourly.c*/
