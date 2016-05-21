@@ -275,7 +275,7 @@ void	output_growth_basin(
 	streamNO3_from_sub /=aarea;
 	canopy_NO3_stored /=aarea;
 	ndep = zone[0].ndep_NO3;
-
+	
 	adenitrif /= aarea;
 	anitrif /= aarea;
 	aDON /= aarea;
@@ -299,7 +299,7 @@ void	output_growth_basin(
 
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
