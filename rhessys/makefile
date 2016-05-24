@@ -70,6 +70,7 @@ $(OBJ)/compute_direct_radiative_PAR_fluxes.o \
 $(OBJ)/compute_direct_radiative_fluxes.o \
 $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
+$(OBJ)/compute_fire_effects.o \
 $(OBJ)/compute_growingseason_index.o \
 $(OBJ)/compute_layer_field_capacity.o \
 $(OBJ)/compute_froot_litfall.o \
@@ -740,6 +741,8 @@ $(OBJ)/compute_growingseason_index.o: cn/compute_growingseason_index.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_growingseason_index.c -o $(OBJ)/compute_growingseason_index.o
 $(OBJ)/compute_field_capacity.o: hydro/compute_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_field_capacity.c -o $(OBJ)/compute_field_capacity.o
+$(OBJ)/compute_fire_effects.o: cn/compute_fire_effects.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_fire_effects.c -o $(OBJ)/compute_fire_effects.o
 $(OBJ)/compute_transmissivity_curve.o: hydro/compute_transmissivity_curve.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_transmissivity_curve.c -o $(OBJ)/compute_transmissivity_curve.o
 $(OBJ)/compute_infiltration.o: hydro/compute_infiltration.c
