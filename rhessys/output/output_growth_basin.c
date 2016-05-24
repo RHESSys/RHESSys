@@ -267,6 +267,8 @@ void	output_growth_basin(
 	astreamflow_DOC /= aarea;
 	streamNO3_from_surface /=aarea;
 	streamNO3_from_sub /=aarea;
+  canopy_NO3_stored /=aarea;
+  ndep = (zone[0].ndep_NO3 + zone[0].ndep_NH4);
 	adenitrif /= aarea;
 	anitrif /= aarea;
 	aDON /= aarea;
@@ -289,7 +291,7 @@ void	output_growth_basin(
 	hgwDOCout = hgwDOCout / basin_area;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -330,7 +332,9 @@ void	output_growth_basin(
 		anuptake * 1000.0,
 		acloss * 1000.0,
 		streamNO3_from_surface * 1000.0,
-		streamNO3_from_sub * 1000.0
+		streamNO3_from_sub * 1000.0,
+    canopy_NO3_stored,
+    ndep
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 
