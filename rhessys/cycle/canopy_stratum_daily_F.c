@@ -1836,7 +1836,13 @@ void	canopy_stratum_daily_F(
 		* stratum[0].cover_fraction;
 	patch[0].snow_throughfall_final += snow_throughfall
 		* stratum[0].cover_fraction;
-	patch[0].NO3_throughfall_final += NO3_throughfall 
+ 
+ if(stratum[0].defaults[0][0].epc.veg_type == NON_VEG){
+      NO3_throughfall= patch[0].NO3_throughfall;
+      NO3_stored = 0;
+ }
+
+	patch[0].NO3_throughfall_final += NO3_throughfall
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
 

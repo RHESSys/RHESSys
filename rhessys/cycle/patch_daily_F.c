@@ -1175,7 +1175,7 @@ void		patch_daily_F(
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
 	//patch[0].surface_NO3 += zone[0].ndep_NO3;
-	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
+	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 
 	/*--------------------------------------------------------------*/
@@ -1220,7 +1220,7 @@ void		patch_daily_F(
 	/*	and evaporation routines.									*/
 	
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
-	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
+	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 
 
 	/* Calculate det store, litter, and bare soil evap first */
