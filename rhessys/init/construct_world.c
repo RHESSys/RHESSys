@@ -795,16 +795,17 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			
 			for (i=0; i<world[0].num_base_stations; i++ ) {
 				world[0].base_stations[i] = construct_base_station(
-													world[0].base_station_files[i],
-													world[0].start_date, world[0].duration);
+								world[0].base_station_files[i],
+								world[0].start_date, world[0].duration);
 			} /*end for*/
 
 			/*--------------------------------------------------------------*/
 			/* List the hourly record for all base station, resemble the hourly records*/
 			/*--------------------------------------------------------------*/
+			/*
 			if(world[0].num_base_stations > 1){
 			    resemble_hourly_date(world);
-			}
+			}*/
 
 		}
 	} /*end if dclim_flag*/

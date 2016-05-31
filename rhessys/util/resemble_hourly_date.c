@@ -74,7 +74,7 @@ void resemble_hourly_date(struct world_object *world){
   }
   else{
   /*-----------------------------------------------------------------------------
-   *  1.  List the days which has hourly record for any base station
+   *  1.  List the days which have hourly records for any base station
    *-----------------------------------------------------------------------------*/
   union_date_init(world, world[0].base_stations);
   /*-----------------------------------------------------------------------------
