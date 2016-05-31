@@ -219,7 +219,7 @@ void		patch_hourly(
 	}
 
 
-	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
+	//patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
 
 	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
 

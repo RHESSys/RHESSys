@@ -64,6 +64,8 @@ void	output_growth_basin(
 	double streamNO3_from_sub;
 	double hgwNO3, hgwDON, hgwDOC, hgwNH4;
 	double hgwNO3out, hgwDONout, hgwDOCout, hgwNH4out;
+  double canopy_NO3_stored;
+  double ndep;
 
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
@@ -111,6 +113,8 @@ void	output_growth_basin(
 	acloss = 0.0;
 	streamNO3_from_surface = 0.0;
 	streamNO3_from_sub = 0.0;
+  canopy_NO3_stored = 0.0;
+  ndep = 0.0;
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
@@ -216,6 +220,8 @@ void	output_growth_basin(
 							* patch[0].area;
 						acpool += strata->cover_fraction*strata->cs.cpool*patch[0].area;
 						anpool += strata->cover_fraction*strata->ns.npool*patch[0].area;
+            canopy_NO3_stored += strata->cover_fraction *
+                  strata->NO3_stored*patch[0].area;
 					}
 				}
 				aarea +=  patch[0].area;
