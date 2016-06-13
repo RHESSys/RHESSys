@@ -151,6 +151,8 @@ struct fire_default *construct_fire_defaults(
 		printf("mean_ign: %lf\n",default_object_list[i].mean_ign);
 		default_object_list[i].ran_seed=getIntParam(&paramCnt, &paramPtr, "ran_seed", "%d", 0, 1);
 		printf("ran_seed: %d\n",default_object_list[i].ran_seed);
+		default_object_list[i].calc_fire_effects=getIntParam(&paramCnt, &paramPtr, "calc_fire_effects", "%d", 0, 1);
+		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
 
  
 /*--------------------------------------------------------------*/
