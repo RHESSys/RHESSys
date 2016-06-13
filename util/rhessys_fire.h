@@ -46,6 +46,7 @@ struct fire_default {
 	double moisture_ign_k2;
 	double load_ign_k1;
 	double load_ign_k2;
+	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
 //	char **patch_file_name;
 };
 
