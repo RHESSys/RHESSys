@@ -118,7 +118,7 @@ void	canopy_stratum_hourly(
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
 
-	
+	printf("hour=%d, stratum[0].NO3_stored * 10^6=%.9f\n",current_date.hour,stratum[0].NO3_stored);
 	/*--------------------------------------------------------------*/
 	/*	Destroy the canopy stratum hourly object.					*/
 	/*--------------------------------------------------------------*/

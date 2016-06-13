@@ -536,7 +536,9 @@ void		patch_daily_F(
 	/*	process any daily rainfall				*/
 	/*--------------------------------------------------------------*/
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
-
+	
+	//the following line is for testing only
+	//printf("patch[0].rain_throughfall=%.9f\n", patch[0].rain_throughfall); this point has rain_throughfall
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
 	patch[0].NO3_throughfall = 0;
@@ -730,6 +732,10 @@ void		patch_daily_F(
 		}
 	}
 	
+	printf("In patch_daily_F,point 1 patch[0].NO3_throughfall * 10^6= %.9f, rain=%.9f, patch[0].rain_throughfall=%.9f\n", 
+	    patch[0].NO3_throughfall * 1000000,
+	    zone[0].rain,
+	    patch[0].rain_throughfall);
 	/*--------------------------------------------------------------*/
 	/*	Compute patch level long wave radiation processes.			*/
 	/*--------------------------------------------------------------*/

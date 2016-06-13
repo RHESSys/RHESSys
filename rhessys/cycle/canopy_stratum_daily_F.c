@@ -279,8 +279,8 @@ void	canopy_stratum_daily_F(
 	double	potential_rainy_evaporation_rate;
 	double	rainy_evaporation;
 	double	rain_throughfall;
-	//double	NO3_throughfall;
-	//double	NO3_stored;
+	double	NO3_throughfall;
+	double	NO3_stored;
 	double	rnet_evap;
 	double	rnet_trans, rnet_trans_sunlit, rnet_trans_shade;
 	double	snow_throughfall;
@@ -384,8 +384,8 @@ void	canopy_stratum_daily_F(
 	stratum[0].evaporation = 0.0;
 	
 	deltaT = 0.0;
-	//NO3_stored=0;
-	//NO3_throughfall=0;
+	NO3_stored=0;
+	NO3_throughfall=0;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize temporary variables for transmitted fluxes.	*/
@@ -409,8 +409,8 @@ void	canopy_stratum_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	total_incoming_PAR = PAR_diffuse + PAR_direct;
-	//NO3_stored=0;
-	//NO3_throughfall=0;
+	NO3_stored=0;
+	NO3_throughfall=0;
 
 	ustar = patch[0].ustar;
 	
@@ -1314,7 +1314,7 @@ void	canopy_stratum_daily_F(
 		stratum);
 
 
-	/*if (stratum[0].rain_stored > 0){
+	if (stratum[0].rain_stored > 0){
 	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
 	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
@@ -1340,7 +1340,7 @@ void	canopy_stratum_daily_F(
 
 
 	    }
-	}*/
+	}
 
 
 	if ( command_line[0].verbose_flag > 1 )
@@ -1837,14 +1837,14 @@ void	canopy_stratum_daily_F(
 	patch[0].snow_throughfall_final += snow_throughfall
 		* stratum[0].cover_fraction;
  
- /*if(stratum[0].defaults[0][0].epc.veg_type == NON_VEG){
-      NO3_throughfall= patch[0].NO3_throughfall;
-      NO3_stored = 0;
- }*/
+        if(stratum[0].defaults[0][0].epc.veg_type == NON_VEG){
+	      NO3_throughfall= patch[0].NO3_throughfall;
+	      NO3_stored = 0;
+	}
 
-	/*patch[0].NO3_throughfall_final += NO3_throughfall
+	patch[0].NO3_throughfall_final += NO3_throughfall
 		* stratum[0].cover_fraction;
-	stratum[0].NO3_stored = NO3_stored;*/
+	stratum[0].NO3_stored = NO3_stored;
 
 
 
