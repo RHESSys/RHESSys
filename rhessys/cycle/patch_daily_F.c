@@ -538,7 +538,7 @@ void		patch_daily_F(
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
 	
 	//the following line is for testing only
-	//printf("patch[0].rain_throughfall=%.9f\n", patch[0].rain_throughfall); this point has rain_throughfall
+	//printf("patch[0].rain_throughfall=%.9f\n", patch[0].rain_throughfall); //this point has rain_throughfall
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
 	patch[0].NO3_throughfall = 0;
@@ -721,7 +721,7 @@ void		patch_daily_F(
 			patch[0].Kstar_canopy = patch[0].Kstar_canopy_final;
 			patch[0].LE_canopy = patch[0].LE_canopy_final;
 			patch[0].rain_throughfall = patch[0].rain_throughfall_final;
-			patch[0].snow_throughfall = patch[0].snow_throughfall_final;
+			patch[0].snow_throughfall = patch[0].snow_throughfall_final;			
 			patch[0].NO3_throughfall = patch[0].NO3_throughfall_final;
 			patch[0].ga = patch[0].ga_final;
 			patch[0].gasnow = patch[0].gasnow_final;
@@ -732,10 +732,13 @@ void		patch_daily_F(
 		}
 	}
 	
-	printf("In patch_daily_F,point 1 patch[0].NO3_throughfall * 10^6= %.9f, rain=%.9f, patch[0].rain_throughfall=%.9f\n", 
-	    patch[0].NO3_throughfall * 1000000,
-	    zone[0].rain,
-	    patch[0].rain_throughfall);
+        // Testing. At this point, the NO3_throughfall has value
+	//	      	printf("In patch_daily_F,Point 1 patch[0].NO3_throughfall * 10^6= %.9f, rain=%.9f, patch[0].rain_throughfall=%.9f\n", 
+	//		
+	//		patch[0].NO3_throughfall * 1000000,
+	//		zone[0].rain,
+	//		patch[0].rain_throughfall);
+
 	/*--------------------------------------------------------------*/
 	/*	Compute patch level long wave radiation processes.			*/
 	/*--------------------------------------------------------------*/
@@ -1054,7 +1057,15 @@ void		patch_daily_F(
 			patch[0].T_canopy = patch[0].T_canopy_final;
 		}
 	}
-		
+
+        // Testing. At this point, it has NO3_throughfall.
+	//	      	printf("In patch_daily_F,Point 2 patch[0].NO3_throughfall * 10^6= %.9f, rain=%.9f, patch[0].rain_throughfall=%.9f\n", 
+	//		
+	//		patch[0].NO3_throughfall * 1000000,
+	//		zone[0].rain,
+	//		patch[0].rain_throughfall);
+
+
 	/*--------------------------------------------------------------*/
 	/*	Layers below the pond.					*/
 	/*--------------------------------------------------------------*/
@@ -1103,6 +1114,14 @@ void		patch_daily_F(
 		}
 	}
 	
+        // Testing. NO3_throughfall has value
+	//	      	printf("In patch_daily_F,Point 3 patch[0].NO3_throughfall * 10^6= %.9f, rain=%.9f, patch[0].rain_throughfall=%.9f\n", 
+	//		
+	//		patch[0].NO3_throughfall * 1000000,
+	//		zone[0].rain,
+	//		patch[0].rain_throughfall);
+
+
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n     PATCH DAILY POST LAYERS: ga=%lf Kdowndirpch=%lf Kdowndiffpch=%lf rainthru=%lf snowthru=%lf wind=%lf ustar=%lf Tcan=%lf", 
 			   patch[0].ga,patch[0].Kdown_direct/86.4, patch[0].Kdown_diffuse/86.4, 
@@ -1183,6 +1202,10 @@ void		patch_daily_F(
 	patch[0].surface_NO3 += zone[0].ndep_NO3;
 	//patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
+
+	printf("zone[0].ndep_NO3=%.9f, patch[0].NO3_throughfall=%.9f\n",
+		zone[0].ndep_NO3,
+		patch[0].NO3_throughfall);
 
 	/*--------------------------------------------------------------*/
 	/*	a certain amount of surface_N is incorporated into the */

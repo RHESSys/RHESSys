@@ -397,6 +397,7 @@ void	canopy_stratum_daily_F(
 	Kup_direct = patch[0].Kup_direct;
 	PAR_direct = patch[0].PAR_direct;
 	rain_throughfall = patch[0].rain_throughfall;
+	printf("In canopy stratum, rain_throughfall=%.9f\n",rain_throughfall);
 	snow_throughfall = patch[0].snow_throughfall;
 	ga = patch[0].ga;
 	gasnow = patch[0].gasnow;
@@ -1306,14 +1307,22 @@ void	canopy_stratum_daily_F(
 			   (zone[0].metv.dayl - (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400) ),
 			   (zone[0].daytime_rain_duration * zone[0].metv.dayl/86400)  );
 		}
-				   
+
+	// the following is for testing only
+	    printf("Point 1, stratum[0].rain_stored=%.9f, rain_throughfall=%.9f\n",
+	    stratum[0].rain_stored,
+	    rain_throughfall);			   
 		
 	stratum[0].rain_stored  = compute_rain_stored(
 		command_line[0].verbose_flag,
 		&(rain_throughfall),
 		stratum);
 
-
+	// the following is for testing only
+	printf("Point 2, stratum[0].rain_stored=%.9f, rain_throughfall=%.9f\n",
+	    stratum[0].rain_stored,
+	    rain_throughfall);
+	
 	if (stratum[0].rain_stored > 0){
 	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
 	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
