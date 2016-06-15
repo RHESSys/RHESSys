@@ -397,7 +397,6 @@ void	canopy_stratum_daily_F(
 	Kup_direct = patch[0].Kup_direct;
 	PAR_direct = patch[0].PAR_direct;
 	rain_throughfall = patch[0].rain_throughfall;
-	printf("In canopy stratum, rain_throughfall=%.9f\n",rain_throughfall);
 	snow_throughfall = patch[0].snow_throughfall;
 	ga = patch[0].ga;
 	gasnow = patch[0].gasnow;

@@ -1203,9 +1203,7 @@ void		patch_daily_F(
 	//patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 
-	printf("zone[0].ndep_NO3=%.9f, patch[0].NO3_throughfall=%.9f\n",
-		zone[0].ndep_NO3,
-		patch[0].NO3_throughfall);
+
 
 	/*--------------------------------------------------------------*/
 	/*	a certain amount of surface_N is incorporated into the */

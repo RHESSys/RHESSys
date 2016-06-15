@@ -63,8 +63,6 @@ double	compute_rain_stored(
 	/*	Transfer potential evaporation to a working variable.	*/
 	/*--------------------------------------------------------------*/
 	potential_evaporation = stratum[0].potential_evaporation;
-	//testing
-	printf("Compute_rain_stored.c, rain=%.9f\n",*rain);
 	/*--------------------------------------------------------------*/
 	/*	Compute amount potentially intercepted.			*/
 	/*	m = m2PlANT / m2ground *  ( (kg  / m2 * day * m2PLANT )	*/
@@ -162,12 +160,7 @@ double	compute_rain_stored(
 	
 	
 	*rain = throughfall;
-	//testing
-	printf("In compute_rain_stored, rain=%.9f, rain_stored=%.9f, stratum[0].evaporation=%.9f, potential_interception=%.9f\n",
-	    *rain,
-	    rain_storage,
-	    stratum[0].evaporation,
-	    potential_interception);
+
 
 	
 	return( rain_storage);
