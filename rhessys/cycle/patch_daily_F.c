@@ -361,6 +361,20 @@ void		patch_daily_F(
 								 double	,
 								 double *,
 								 double *);
+
+
+	void	update_mortality(
+		struct epconst_struct,
+		struct cstate_struct *,
+		struct cdayflux_struct *,
+		struct cdayflux_patch_struct *,
+		struct nstate_struct *,
+		struct ndayflux_struct *,
+		struct ndayflux_patch_struct *,
+		struct litter_c_object *,
+		struct litter_n_object *,
+		int,
+		struct mortality_struct);
 	
 	
 
@@ -372,6 +386,7 @@ void		patch_daily_F(
 	int stratum, ch, inx;
 	int	vegtype;
 	int dum;
+	double  biomass_removal_percent;
 	double	cap_rise, tmp, wilting_point;
 	double	delta_unsat_zone_storage;
 	double  infiltration, lhvap;
@@ -405,6 +420,7 @@ void		patch_daily_F(
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
+	struct  mortality_struct mort;
 	
 	/*--------------------------------------------------------------*/
 	/*	We assume the zone soil temp applies to the patch as well.	*/
@@ -583,6 +599,57 @@ void		patch_daily_F(
 	}
 
 
+	/*--------------------------------------------------------------*/
+	/* remove a percentage of biomass on a particular date, based   */
+	/* on time series input						*/
+	/*--------------------------------------------------------------*/
+	if (patch[0].base_stations != NULL) {
+		inx = patch[0].base_stations[0][0].dated_input[0].biomass_removal_percent.inx;
+		if (inx > -999) {
+			clim_event = patch[0].base_stations[0][0].dated_input[0].biomass_removal_percent.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].biomass_removal_percent.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].biomass_removal_percent.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].biomass_removal_percent.seq[inx];
+				}
+			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+					biomass_removal_percent = clim_event.value;
+					mort.mort_cpool=biomass_removal_percent;
+					mort.mort_leafc=biomass_removal_percent;
+					mort.mort_deadleafc=biomass_removal_percent;
+					mort.mort_deadstemc=biomass_removal_percent;
+					mort.mort_livestemc=biomass_removal_percent;
+					mort.mort_deadcrootc=biomass_removal_percent;
+					mort.mort_livecrootc=biomass_removal_percent;
+					mort.mort_frootc=biomass_removal_percent;
+					
+					for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+					/*--------------------------------------------------------------*/
+					/*	Cycle through the canopy strata				*/
+					/*--------------------------------------------------------------*/
+					for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+					strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
+					printf("\n Removing %f of biomass for stratum %d\n", biomass_removal_percent, strata[0].ID);
+					update_mortality(strata[0].defaults[0][0].epc,
+						&(strata[0].cs),
+						&(strata[0].cdf),
+						&(patch[0].cdf),
+						&(strata[0].ns),
+						&(strata[0].ndf),
+						&(patch[0].ndf),
+						&(patch[0].litter_cs),
+						&(patch[0].litter_ns),
+						2,
+						mort);
+
+					}
+				}
+
+				}
+			} 
+	}
+
+
 
 	/*--------------------------------------------------------------*/
 	/*	Compute the stability correction factor for aero cond	*/
@@ -702,7 +769,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
-            patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
+            					patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -1174,10 +1241,13 @@ void		patch_daily_F(
 		}
 	*/
 
+	patch[0].fertilizer_NO3_in = fertilizer_NO3;
+	patch[0].fertilizer_NH4_in = fertilizer_NH4;
+
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
 	//patch[0].surface_NO3 += zone[0].ndep_NO3;
-	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
+	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 
 	/*--------------------------------------------------------------*/
@@ -1222,7 +1292,7 @@ void		patch_daily_F(
 	/*	and evaporation routines.									*/
 	
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
-	patch[0].surface_NO3 += 1/2 * patch[0].NO3_throughfall;
+	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 
 
 	/* Calculate det store, litter, and bare soil evap first */
