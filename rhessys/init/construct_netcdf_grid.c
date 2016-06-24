@@ -30,7 +30,7 @@ int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, floa
 int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
 int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
-/**/
+*/
 
 struct base_station_object *construct_netcdf_grid (
                                 #ifdef LIU_NETCDF_READER
