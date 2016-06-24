@@ -235,7 +235,7 @@ struct base_station_object *construct_netcdf_grid (
                                       base_station_ncheader[0].netcdf_x_varname,*/
 									  net_y,
 									  net_x,
-                                      base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
+                                      (float)base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       (int)duration->day,
@@ -268,7 +268,7 @@ struct base_station_object *construct_netcdf_grid (
                                       base_station_ncheader[0].netcdf_x_varname,*/
                                       net_y,
 									  net_x,
-                                      base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
+                                      (float)base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       duration->day,
@@ -302,7 +302,7 @@ struct base_station_object *construct_netcdf_grid (
                                       base_station_ncheader[0].netcdf_x_varname,*/
                                       net_y,
 									  net_x,
-                                      base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
+                                      (float)base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       duration->day,
@@ -342,7 +342,7 @@ struct base_station_object *construct_netcdf_grid (
                                base_station_ncheader[0].netcdf_x_varname,*/
                                net_y,
 							   net_x,
-                               base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
+                               (float)base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
                                elev_tempdata);
 			if (k == -1){
 				fprintf(stderr,"can't locate station data in netcdf for var elev\n");
