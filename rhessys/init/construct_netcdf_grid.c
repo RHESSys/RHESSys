@@ -108,6 +108,8 @@ struct base_station_object *construct_netcdf_grid (
 	char	buffertmax[MAXSTR*100];
 	char	buffertmin[MAXSTR*100];
 	char	bufferrain[MAXSTR*100];
+    char *lat_name = "lat";                                                      //160624LML
+    char *lon_name = "lon";                                                      //160624LML
 	
 	FILE*	base_station_file;
 
@@ -216,9 +218,9 @@ struct base_station_object *construct_netcdf_grid (
 		base_station[0].hourly_clim[0].rain.inx = -999;
 		base_station[0].hourly_clim[0].rain_duration.inx = -999;
 		/* Calculate start day index */
-        instartday = get_indays(start_date->year,
-                                start_date->month,
-                                start_date->day,
+        instartday = get_indays((int)start_date->year,
+                                (int)start_date->month,
+                                (int)start_date->day,
 								base_station_ncheader[0].year_start,
 								base_station_ncheader[0].leap_year);
 	   
@@ -229,8 +231,8 @@ struct base_station_object *construct_netcdf_grid (
         k = get_netcdf_var_timeserias(
 									  base_station_ncheader[0].netcdf_tmax_filename,
 									  base_station_ncheader[0].netcdf_tmax_varname,
-                                      "lat",
-                                      "lon",
+                                      lat_name, //160624LML "lat",
+                                      lon_name, //160624LML "lon",
                                       /*160517LML base_station_ncheader[0].netcdf_y_varname,
                                       base_station_ncheader[0].netcdf_x_varname,*/
 									  net_y,
@@ -262,8 +264,8 @@ struct base_station_object *construct_netcdf_grid (
 		k = get_netcdf_var_timeserias(
 									  base_station_ncheader[0].netcdf_tmin_filename,
 									  base_station_ncheader[0].netcdf_tmin_varname,
-                                      "lat",
-                                      "lon",
+                                      lat_name, //160624LML "lat",
+                                      lon_name, //160624LML "lon",
                                       /*160517LML base_station_ncheader[0].netcdf_y_varname,
                                       base_station_ncheader[0].netcdf_x_varname,*/
                                       net_y,
@@ -296,8 +298,8 @@ struct base_station_object *construct_netcdf_grid (
 		k = get_netcdf_var_timeserias(
 									  base_station_ncheader[0].netcdf_rain_filename,
 									  base_station_ncheader[0].netcdf_rain_varname,
-                                      "lat",
-                                      "lon",
+                                      lat_name, //160624LML "lat",
+                                      lon_name, //160624LML "lon",
                                       /*160517LML base_station_ncheader[0].netcdf_y_varname,
                                       base_station_ncheader[0].netcdf_x_varname,*/
                                       net_y,
@@ -336,8 +338,8 @@ struct base_station_object *construct_netcdf_grid (
 			k = get_netcdf_var(
 							   base_station_ncheader[0].netcdf_elev_filename,
 							   base_station_ncheader[0].netcdf_elev_varname,
-                               "lat",
-                               "lon",
+                               lat_name, //160624LML "lat",
+                               lon_name, //160624LML "lon",
                                /*160517LML base_station_ncheader[0].netcdf_y_varname,
                                base_station_ncheader[0].netcdf_x_varname,*/
                                net_y,
