@@ -273,8 +273,8 @@ struct zone_object *construct_zone(
 			k = get_netcdf_xy(base_station_ncheader[0].netcdf_tmax_filename, 
 							  base_station_ncheader[0].netcdf_y_varname,
 							  base_station_ncheader[0].netcdf_x_varname,
-							  zone[0].y, 
-							  zone[0].x, 
+                              (float)zone[0].y,
+                              (float)zone[0].x,
 							  base_station_ncheader[0].sdist, 
 							  &(base_y), 
 							  &(base_x));
