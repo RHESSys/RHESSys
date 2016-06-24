@@ -935,10 +935,10 @@ $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
 
 ifdef netcdf
-$(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
+$$(OBJ)/read_netcdf.o: init/read_netcdf.c
+	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o 
+$(OBJ)/read_netcdf.o(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid.c -o $(OBJ)/construct_netcdf_grid.o
-$(OBJ)/read_netcdf.o: init/read_netcdf.c
-	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o $(OBJ)/read_netcdf.o
 else
 $(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid_dummy.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid_dummy.c -o $(OBJ)/construct_netcdf_grid.o
