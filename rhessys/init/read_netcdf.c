@@ -83,7 +83,7 @@ int locate(float *data, int n, float x, float md){
 		return -1;
 	}
 }
-
+//_____________________________________________________________________________/
 int get_netcdf_var_timeserias(char *netcdf_filename, char *varname, 
 							  char *nlat_name, char *nlon_name, 
 							  float rlat, float rlon, float sd, 
@@ -207,8 +207,7 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
 	free(lont);
 	return 0;
 }
-
-
+//_____________________________________________________________________________/
 int get_netcdf_var(char *netcdf_filename, char *varname, 
 				   char *nlat_name, char *nlon_name,
 				   float rlat, float rlon, float sd, float *data){
@@ -297,8 +296,7 @@ int get_netcdf_var(char *netcdf_filename, char *varname,
 	free(lont);
 	return 0;
 }
-
-
+//_____________________________________________________________________________/
 int get_netcdf_xy(char *netcdf_filename, char *nlat_name, char *nlon_name,
 				  float rlat, float rlon, float sd, float *y, float *x){
 	/***Read netcdf format metdata by using lat,lon as index and return x, y coords
