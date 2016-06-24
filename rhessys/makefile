@@ -6,6 +6,9 @@ INCLUDES = -Iinclude
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
+netcdf=FALSE
+wmfire=FALSE
+
 DEFINES       = -DLIU_NETCDF_READER -DNETCDF_TEMPERATURE_UNIT_IS_KELVIN -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
 CFLAGS =-Wall -g -std=c99 $(DEFINES)
 
@@ -332,10 +335,10 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM) 
 endif
 else
 ifdef wmfire
@@ -937,8 +940,6 @@ $(OBJ)/read_netcdf.o: init/read_netcdf.c
 else
 $(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid_dummy.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid_dummy.c -o $(OBJ)/construct_netcdf_grid.o
-$(OBJ)/read_netcdf.o: init/read_netcdf_dummy.c
-	$(CC) -c $(CFLAGS) -I include init/read_netcdf_dummy.c -o $(OBJ)/read_netcdf.o
 endif
 
 $(OBJ)/construct_netcdf_header.o: init/construct_netcdf_header.c

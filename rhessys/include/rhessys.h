@@ -630,7 +630,6 @@ typedef struct base_station_ncheader_object
         //160517LML double  sdist;                                  /* search distance in native netcdf units */
         double          resolution_dd;                                           /*(DD) 160517LML resolution in geocoordinate. Estimated from grid cell distribution*/
         double          resolution_meter;                                        /*(meter) 160517LML resolution in projected coordinate. Estimated from grid cell distribution*/
->>>>>>> e5efeedad2682833e62c06789177a46e6aca8254
         int             year_start;                             /* start year for netcdf time counter (NOT time series start date) */
         int             day_offset;                             /* day offset from January 1 for netcdf time counter */
         int             leap_year;                              /* 0 = no leap years, 1 = leap years in netcdf record */
