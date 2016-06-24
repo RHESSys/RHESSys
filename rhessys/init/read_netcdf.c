@@ -167,7 +167,7 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
 	idlat = locate(lat,nlat,rlat,sd);
 	idlont = locate(lont,nlont,rlon,sd);
 	if(idlat == -1 || idlont == -1){
-        fprintf(stderr,"rlat:%lf\trlon:%lf can't locate the station get_netcdf_var_timeserias\n",rlat,rlon);
+        fprintf(stderr,"rlat:%lf\trlon:%lf can't locate the station get_netcdf_var_timeseries\n",rlat,rlon);
  		free(days);
 		free(lat);
 		free(lont);	

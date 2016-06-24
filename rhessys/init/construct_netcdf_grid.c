@@ -316,7 +316,8 @@ struct base_station_object *construct_netcdf_grid (
 	
         #ifdef CHECK_NCCLIM_DATA
         for (j = 0; j < 60; j++) {
-            fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n",j,base_station[0].ID,base_station[0].proj_x,base_station[0].proj_y
+            fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n"
+                            ,j,base_station[0].ID,base_station[0].proj_x,base_station[0].proj_y,base_station[0].lon, base_station[0].lat
                             ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]);
         }
         #endif
