@@ -800,8 +800,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
                                                            world[0].base_stations[i],
                                                            world[0].base_station_ncheader,
                                                            &world[0].num_base_stations,
-                                                           world[0].base_stations[i][0].x,
-                                                           world[0].base_stations[i][0].y,
+                                                           world[0].base_stations[i][0].proj_x,
+                                                           world[0].base_stations[i][0].proj_y,
                                                            world[0].base_stations[i][0].z,
                                                            &world[0].start_date,
                                                            &world[0].duration);

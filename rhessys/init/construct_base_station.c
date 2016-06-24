@@ -215,9 +215,9 @@ struct	base_station_object *construct_base_station(
 	fscanf(base_station[0].base_station_file, "%d",&(base_station[0].ID));
 	read_record(base_station[0].base_station_file, record);
 	printf("\n Reading Base station %d", base_station[0].ID);
-	fscanf(base_station[0].base_station_file, "%lf",&(base_station[0].x));
+    fscanf(base_station[0].base_station_file, "%lf",&(base_station[0].proj_x));
 	read_record(base_station[0].base_station_file, record);
-	fscanf(base_station[0].base_station_file, "%lf",&(base_station[0].y));
+    fscanf(base_station[0].base_station_file, "%lf",&(base_station[0].proj_y));
 	read_record(base_station[0].base_station_file, record);
 	fscanf(base_station[0].base_station_file,	"%lf",&(base_station[0].z));
 	read_record(base_station[0].base_station_file, record);

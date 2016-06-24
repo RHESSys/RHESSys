@@ -129,7 +129,9 @@ void	output_csv_basin(			int routing_flag,
 						astreamflow += patch[0].streamflow*patch[0].area;
 						areturn_flow += patch[0].return_flow * patch[0].area;
 						abase_flow += patch[0].base_flow * patch[0].area;
+                        #ifndef NO_UPDATE_160419
 						astreamflow_N += patch[0].streamflow_N * patch[0].area;
+                        #endif
 				}
 				else {
 						/* for Topmodel version compute only return flow and later added to streamflow */
@@ -150,11 +152,15 @@ void	output_csv_basin(			int routing_flag,
 			}
 		}
 		hbase_flow += hillslope[0].base_flow * hill_area;
+        #ifndef NO_UPDATE_160419
 		hstreamflow_N += hillslope[0].streamflow_N * hill_area;
+        #endif
 		hgw += hillslope[0].gw.storage * hill_area;
 		hgwN += hillslope[0].gw.NO3 * hill_area;
 		hgwQout += hillslope[0].gw.Qout * hill_area;
+        #ifndef NO_UPDATE_160419
 		hgwNout += hillslope[0].gw.Nout * hill_area;
+        #endif
 		basin_area += hill_area;
 	}
 	arain_throughfall /=  aarea;

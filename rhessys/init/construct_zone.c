@@ -73,10 +73,11 @@ struct zone_object *construct_zone(
 		float ,
 		int ,
 		int *,
-        struct base_station_object **
-        #ifdef LIU_NETCDF_READER
-        ,double
-        #endif
+        struct base_station_object **,
+        const struct base_station_ncheader_object *                               //160518LML
+        //160517LML #ifdef LIU_NETCDF_READER
+        //160517LML ,double
+        //160517LML #endif
         #ifdef FIND_STATION_BASED_ON_ID
         ,const int
         #endif
@@ -255,12 +256,13 @@ struct zone_object *construct_zone(
 			/*	Construct the base_stations.				*/
 			/*--------------------------------------------------------------*/
 			if ( command_line[0].verbose_flag == -3 ){
-				printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d sdist=%lf base_y=%lf base_x=%lf", 
+                //160517LML printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d sdist=%lf base_y=%lf base_x=%lf",
+                printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d base_y=%lf base_x=%lf",
 					   base_station_ncheader[0].netcdf_tmax_filename,
 					   zone[0].y,
 					   zone[0].x,
 					   *num_world_base_stations,
-					   base_station_ncheader[0].sdist,
+                       //160517LML base_station_ncheader[0].sdist,
 					   base_y,
 					   base_x);
 				printf("\n   STARTING CLOSEST CELL: y=%lf x=%lf",base_y,base_x);
@@ -291,14 +293,15 @@ struct zone_object *construct_zone(
 																   base_y,
 																   *num_world_base_stations,
 																   &(notfound),
-                                                                   world_base_stations
-                                                                   #ifdef LIU_NETCDF_READER
-                                                                   ,base_station_ncheader[0].sdist / 3.0
-                                                                   #endif
-                                                                   #ifdef FIND_STATION_BASED_ON_ID
-                                                                   ,basestation_id
-                                                                   #endif
-                                                                    );
+                                        world_base_stations,
+                                        world[0].base_station_ncheader
+                                        //160517LML #ifdef LIU_NETCDF_READER
+                                        //160517LML ,base_station_ncheader[0].sdist / 3.0
+                                        //160517LML #endif
+                                        #ifdef FIND_STATION_BASED_ON_ID
+                                        ,basestation_id
+                                        #endif
+                                        );
 			}
 			else notfound = 1;
 			/* If station is not already in list, add it */
