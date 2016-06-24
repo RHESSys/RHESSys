@@ -6,8 +6,8 @@ INCLUDES = -Iinclude
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
-netcdf=FALSE
-wmfire=FALSE
+#netcdf ?=FALSE
+#wmfire ?=FALSE
 
 DEFINES       = -DLIU_NETCDF_READER -DNETCDF_TEMPERATURE_UNIT_IS_KELVIN -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
 CFLAGS =-Wall -g -std=c99 $(DEFINES)
@@ -37,8 +37,10 @@ TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
 
 OS := $(shell uname)
 
+# 
+# $(OBJ)/read_netcdf.o \
+
 OBJECTS = \
-$(OBJ)/read_netcdf.o \
 $(OBJ)/Ksat_z_curve.o \
 $(OBJ)/add_growth_headers.o \
 $(OBJ)/add_headers.o \
