@@ -207,7 +207,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	fclose(base_station_file);	
     printf("finish reading base info\n");
     //printf("\nFinished construct netcdf header: lastID=%d lai=%lf ht=%lf sdist=%lf yr=%d day=%d lpyr=%d pmult=%lf",
-    printf("\nFinished construct netcdf file:%s: lastID=%d\tsdist=%lf\tyr=%d\tday=%d\tlpyr=%d\tpmult=%lf\n",
+    printf("\nFinished construct netcdf file:%s: lastID=%d\tyear_start=%d\tday_offset=%d\tlpyr=%d\tpmult=%lf\n",
            base_station_filename,
 		   base_station_ncheader[0].lastID,
            //base_station_ncheader[0].effective_lai,
