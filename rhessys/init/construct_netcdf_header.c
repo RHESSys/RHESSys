@@ -207,9 +207,10 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	fclose(base_station_file);	
     printf("finish reading base info\n");
     //printf("\nFinished construct netcdf header: lastID=%d lai=%lf ht=%lf sdist=%lf yr=%d day=%d lpyr=%d pmult=%lf",
-    printf("\nFinished construct netcdf file:%s: lastID=%d\tyear_start=%d\tday_offset=%d\tlpyr=%d\tpmult=%lf\n",
+    printf("\nFinished construct netcdf file:%s:\n\tnum_stations = %d\tresolution_dd = %lf\t\tyear_start = %d\tday_offset = %d\tlpyr = %d\tpmult = %lf\n\n",
            base_station_filename,
-		   base_station_ncheader[0].lastID,
+           world[0].num_base_stations,
+           base_station_ncheader[0].resolution_dd,
            //base_station_ncheader[0].effective_lai,
            //base_station_ncheader[0].screen_height,
            //160517LML base_station_ncheader[0].sdist,

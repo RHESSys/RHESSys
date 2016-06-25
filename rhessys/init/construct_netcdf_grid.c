@@ -247,9 +247,9 @@ struct base_station_object *construct_netcdf_grid (
 			exit(0);
 		}
         for (j=0;j<duration->day;j++){
-            if (base_station_ncheader[0].temperature_unit == 'K')                //160517LML
+            if ((base_station_ncheader[0].temperature_unit == 'K') || (tempdata[j] > 150.0)) //160517LML 160625LML kinds of hard coded for temperature > 150
                 base_station[0].daily_clim[0].tmax[j] =  (double)tempdata[j] - 273.15;
-            else if (base_station_ncheader[0].temperature_unit == 'C')
+            else //160625LML if (base_station_ncheader[0].temperature_unit == 'C')
                 base_station[0].daily_clim[0].tmax[j] =  (double)tempdata[j];
                 /*160517LML
                 #ifdef NETCDF_TEMPERATURE_UNIT_IS_KELVIN
@@ -319,7 +319,7 @@ struct base_station_object *construct_netcdf_grid (
 		}
 	
         #ifdef CHECK_NCCLIM_DATA
-        for (j = 0; j < 60; j++) {
+        for (j = 0; j < (duration->day < 60 ? duration->day : 60); j++) {
             fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n"
                             ,j,base_station[0].ID,base_station[0].proj_x,base_station[0].proj_y,base_station[0].lon, base_station[0].lat
                             ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]);
