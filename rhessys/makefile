@@ -327,7 +327,7 @@ $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
 
 ifdef netcdf
-OBJECTS += $(OBJ)/read_netcdf.o \
+OBJECTS += $(OBJ)/read_netcdf.o
 endif
 
 all:	dir rhessys
