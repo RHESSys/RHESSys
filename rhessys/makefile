@@ -37,8 +37,6 @@ TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
 
 OS := $(shell uname)
 
-# 
-# $(OBJ)/read_netcdf.o \
 
 OBJECTS = \
 $(OBJ)/Ksat_z_curve.o \
@@ -327,6 +325,10 @@ $(OBJ)/union_date_combine.o \
 $(OBJ)/get_num_daywhourly.o \
 $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
+
+ifdef netcdf
+OBJECTS += $(OBJ)/read_netcdf.o \
+endif
 
 all:	dir rhessys
 
