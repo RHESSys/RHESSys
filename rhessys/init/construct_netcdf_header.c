@@ -17,7 +17,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
-#include <limits.h>                                                              //160517LML
+#include <float.h>                                                               //160625LML <limits.h>                                                              //160517LML
 #include "rhessys.h"
 double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); //160517LML
 #ifdef LIU_NETCDF_READER
@@ -234,13 +234,20 @@ double calc_resolution(const bool geographic_unit,const struct  base_station_obj
         if (geographic_unit) {
             sites[i].x = basestations[i][0].lon;
             sites[i].y = basestations[i][0].lat;
+            #ifdef CHECK_NCCLIM_DATA
+            printf("Station_id = %d\t\tx_coordonate = %lf\ty_coordinate = %lf\n",basestations[i][0].ID,sites[i].x,sites[i].y);
+            #endif
         } else {
             sites[i].x = basestations[i][0].proj_x;
             sites[i].y = basestations[i][0].proj_y;
         }
     }
     //find the nearest distance
-    double mindist = LONG_MAX;
+    double mindist = (double)FLT_MAX;
+    #ifdef CHECK_NCCLIM_DATA
+    if (geographic_unit) printf("\nmindist = %e\n",mindist);
+    #endif
+
     for (int i = 0; i < station_numbers - 1; i++) {
         for (int j = i + 1; j < station_numbers; j++) {
             double dist = (sites[i].x - sites[j].x) * (sites[i].x - sites[j].x)
