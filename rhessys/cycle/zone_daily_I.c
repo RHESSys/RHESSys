@@ -200,7 +200,7 @@ void zone_daily_I(
 		/*		lapse rate amount for this base station to the zone.	*/
 		/*--------------------------------------------------------------*/
 		/* If netcdf climate data used and no elevation grid provided, assume base station and zone are same z */
-		if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
+        if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
 			z_delta = 0.0;
 		}
 		else z_delta = zone[0].z - zone[0].base_stations[i][0].z;
@@ -310,6 +310,7 @@ void zone_daily_I(
 			zone[0].metv.tmax += command_line[0].tmax_add;
 			zone[0].metv.tmin += command_line[0].tmin_add;
 			}
+        i++;                                                                     /*160419LML*/
 	} /*end while*/
 	/*--------------------------------------------------------------*/
 	/*	Check if we filled in all of the critical parameters.		*/
@@ -381,7 +382,8 @@ void zone_daily_I(
 	zone[0].LAI_scalar = -999.0;
 	
 	/* Re-use z_delta */
-	if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
+    /*160419LML seems there is an asumption that each zone has one station.*/
+    if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
 		z_delta = 0.0;
 	}
 	else z_delta = zone[0].z - zone[0].base_stations[0][0].z;	

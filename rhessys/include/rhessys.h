@@ -205,7 +205,18 @@
 #define max(a,b)    ((a) > (b) ? (a) : (b))
 #define min(a,b)    ((a) < (b) ? (a) : (b))
 
+#ifdef LIU_NETCDF_READER
+int is_approximately(const double value,const double target,const double tolerance);
+#endif
 int read_record( FILE *, char *);
+#ifdef LIU_NETCDF_READER
+int get_netcdf_station_number(char *base_station_filename);                      /*160419LML*/
+/*160624LML moved here*/
+int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, float *);
+int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
+int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
+int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
+#endif
 
 /*----------------------------------------------------------*/
 /*      Define types                                        */
@@ -591,35 +602,44 @@ struct basin_default
 /*----------------------------------------------------------*/
 /*      Define a base station object.                                                   */
 /*----------------------------------------------------------*/
-struct base_station_object
+typedef struct base_station_object
         {
         int             ID;
         FILE    *base_station_file;
-        double  x;                              /*   meters     */
-        double  y;                              /*   meters     */
-        double  z;                              /*   meters     */
-        double  effective_lai;                  /* m^2/m^2      */
-        double  screen_height;                  /* meters       */
+        #ifdef LIU_NETCDF_READER
+        double lon;
+        double lat;
+        #endif
+        double  proj_x;                                                          /* (meters) x coordinate of projection     */
+        double  proj_y;                                                          /* (meters) y coordinate of projection     */
+        double  z;                                                               /*   meters     */
+        double  effective_lai;                                                   /* m^2/m^2      */
+        double  screen_height;                                                   /* meters       */
         struct  hourly_clim_object       *hourly_clim;
         struct  daily_clim_object        *daily_clim;
         struct  monthly_clim_object      *monthly_clim;
         struct  yearly_clim_object       *yearly_clim;
         struct  dated_input_object       *dated_input;
-        };
+        } base_station_object;
 /*----------------------------------------------------------*/
 /*      Define a netcdf base station header object.                                                     */
 /*----------------------------------------------------------*/
-struct base_station_ncheader_object
+typedef struct base_station_ncheader_object
 {
-        int             lastID;
+        #ifndef LIU_NETCDF_READER
         FILE    *base_station_file;
         double  effective_lai;                  /* m^2/m^2      */
         double  screen_height;                  /* meters       */
-        double  sdist;                                  /* search distance in native netcdf units */
+        #endif
+        int             lastID;
+        //160517LML double  sdist;                                  /* search distance in native netcdf units */
+        double          resolution_dd;                                           /*(DD) 160517LML resolution in geocoordinate. Estimated from grid cell distribution*/
+        double          resolution_meter;                                        /*(meter) 160517LML resolution in projected coordinate. Estimated from grid cell distribution*/
         int             year_start;                             /* start year for netcdf time counter (NOT time series start date) */
         int             day_offset;                             /* day offset from January 1 for netcdf time counter */
         int             leap_year;                              /* 0 = no leap years, 1 = leap years in netcdf record */
         double  precip_mult;                    /* multiplier for precip if not in meters */
+        char    temperature_unit;               /* 160517LML K: Kelvin C: Celsius */
         int             elevflag;                               /* set based on whether elev filename is given */
         char    netcdf_x_varname[MAXSTR];       /* variable name for x coordinate in nc file */
         char    netcdf_y_varname[MAXSTR];       /* variable name for y coordinate in nc file */
@@ -631,7 +651,7 @@ struct base_station_ncheader_object
         char    netcdf_tmin_varname[MAXSTR];    /* variable name for tmin in nc file */
         char    netcdf_rain_varname[MAXSTR];    /* variable name for rain in nc file */
         char    netcdf_elev_varname[MAXSTR];    /* variable name for elev in nc file */
-};
+} base_station_ncheader_object;
 /*----------------------------------------------------------*/
 /*      Define dated climate sequence                       */
 /*----------------------------------------------------------*/
@@ -697,7 +717,7 @@ struct  daily_clim_object
 /*----------------------------------------------------------*/
         double  *tmax;                  /*   degrees C  */
         double  *tmin;                  /*   degrees C  */
-        double  *rain;                  /* mm   water   */      
+        double  *rain;                  /*   m   water  */
 
 /*----------------------------------------------------------*/
 /*       Non - Critical data.                                                                   */

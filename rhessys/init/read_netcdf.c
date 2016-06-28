@@ -83,7 +83,7 @@ int locate(float *data, int n, float x, float md){
 		return -1;
 	}
 }
-
+//_____________________________________________________________________________/
 int get_netcdf_var_timeserias(char *netcdf_filename, char *varname, 
 							  char *nlat_name, char *nlon_name, 
 							  float rlat, float rlon, float sd, 
@@ -167,7 +167,7 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
 	idlat = locate(lat,nlat,rlat,sd);
 	idlont = locate(lont,nlont,rlon,sd);
 	if(idlat == -1 || idlont == -1){
-		fprintf(stderr,"can't locate the station\n");
+        fprintf(stderr,"rlat:%lf\trlon:%lf\tsd:%lf\tlat[0]:%lf\tlont[0]:%lf can't locate the station get_netcdf_var_timeseries\n",rlat,rlon,sd,lat[0],lont[0]);
  		free(days);
 		free(lat);
 		free(lont);	
@@ -207,8 +207,7 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
 	free(lont);
 	return 0;
 }
-
-
+//_____________________________________________________________________________/
 int get_netcdf_var(char *netcdf_filename, char *varname, 
 				   char *nlat_name, char *nlon_name,
 				   float rlat, float rlon, float sd, float *data){
@@ -270,7 +269,7 @@ int get_netcdf_var(char *netcdf_filename, char *varname,
 	idlat = locate(lat,nlat,rlat,sd);
 	idlont = locate(lont,nlont,rlon,sd);
 	if(idlat == -1 || idlont == -1){
-		fprintf(stderr,"can't locate the station\n");
+        fprintf(stderr,"rlat:%lf\trlon:%lf can't locate the station get_netcdf_var\n",rlat,rlon);
 		free(lat);
 		free(lont);	
 		return -1;
@@ -297,8 +296,7 @@ int get_netcdf_var(char *netcdf_filename, char *varname,
 	free(lont);
 	return 0;
 }
-
-
+//_____________________________________________________________________________/
 int get_netcdf_xy(char *netcdf_filename, char *nlat_name, char *nlon_name,
 				  float rlat, float rlon, float sd, float *y, float *x){
 	/***Read netcdf format metdata by using lat,lon as index and return x, y coords
@@ -359,7 +357,7 @@ int get_netcdf_xy(char *netcdf_filename, char *nlat_name, char *nlon_name,
 	idlat = locate(lat,nlat,rlat,sd);
 	idlont = locate(lont,nlont,rlon,sd);
 	if(idlat == -1 || idlont == -1){
-		fprintf(stderr,"can't locate the station\n");
+        fprintf(stderr,"rlat:%lf\trlon:%lf can't locate the station get_netcdf_xy\n",rlat,rlon);
 		free(lat);
 		free(lont);	
 		return -1;

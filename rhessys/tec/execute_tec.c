@@ -263,21 +263,24 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*			Simulate the world for the start of this day e		*/
 			/*--------------------------------------------------------------*/
+            if ( current_date.hour == 1 ) printf("Current_date year = %d mon = %d day = %d\r",
+                   current_date.year,current_date.month,current_date.day);
+            //fflush(stdout);
 			if ( current_date.hour == 1 ){
-				world_daily_I(
+                world_daily_I(
 					day,
 					world,
 					command_line,
 					event,
-					current_date);
+                    current_date);
 			} /*end if*/
 			/*--------------------------------------------------------------*/
 			/*          Do hourly stuff for the day.                        */
 			/*--------------------------------------------------------------*/
-			world_hourly( world,
+            world_hourly( world,
 				command_line,
 				event,
-				current_date);
+                current_date);
 			
 			/*--------------------------------------------------------------*/
 			/*			Perform any requested hourly output					*/
@@ -310,12 +313,12 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*			Simulate the world for the end of this day e		*/
 				/*--------------------------------------------------------------*/
-				world_daily_F(
+                world_daily_F(
 					day,
 					world,
 					command_line,
 					event,
-					current_date);
+                    current_date);
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested daily output					*/
 				/*--------------------------------------------------------------*/
@@ -425,7 +428,7 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/
-				printf("Year %d\n", current_date.year);
+                printf("\nYear %d\n", current_date.year);
 				year = year + 1;
 				current_date.year= next_date.year;
 			}  /*end if*/
