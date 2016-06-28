@@ -369,7 +369,6 @@ struct base_station_object *construct_netcdf_grid (
 	base_station_ncheader[0].lastID +=1;
     #endif
   printf( "BASE STATION ID? %d\n", base_station[0].ID );
-printf("end of netcdf_grid line 373 \n");
 	return(base_station);
 }
 

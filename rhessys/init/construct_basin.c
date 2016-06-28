@@ -156,6 +156,7 @@ struct basin_object *construct_basin(
 	for (i=0 ; i<basin[0].num_base_stations; i++) {
     
 		fscanf(world_file,"%d",&(base_stationID));
+    printf( "*** RECORD %d ***\n", i );
 		read_record(world_file, record);
     //printf ("Base Station ID %d \n", basin[0].base_stations[i][0].ID);
 		/*--------------------------------------------------------------*/
