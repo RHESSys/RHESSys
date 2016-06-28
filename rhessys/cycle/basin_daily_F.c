@@ -106,9 +106,8 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Simulate the hillslopes in this basin for the whole day		*/
 	/*--------------------------------------------------------------*/
-    #pragma omp parallel for schedule(dynamic) num_threads(4)
+    #pragma omp parallel for                                                     //160627LML schedule(dynamic) num_threads(4)
     for (int h = 0 ; h < basin[0].num_hillslopes; h ++ ){
-        //fprintf(stderr,"hillslope in basin_daily:%d\tthread#:%d\n",h,omp_get_thread_num());
 		hillslope_daily_F(	day,
 			world,
 			basin,
@@ -116,7 +115,7 @@ void	basin_daily_F(
 			command_line, 
 			event,
 			current_date );
-	}
+    }
 
         hillslope = basin[0].hillslopes[0];
 	zone = hillslope[0].zones[0];
@@ -129,12 +128,12 @@ void	basin_daily_F(
 	/*  For routing option - route water between patches within     */
 	/*      the basin:  this part has been moved to basin_hourly    */
 	/*--------------------------------------------------------------*/
-   	if ( command_line[0].routing_flag == 1 && zone[0].hourly_rain_flag == 0) {
+    if ( command_line[0].routing_flag == 1 && zone[0].hourly_rain_flag == 0) {
 		compute_subsurface_routing(command_line,
 			basin,
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
-	}
+    }
 	
 	/*--------------------------------------------------------------*/
 	/*  For stream routing option - route water between patches within     */
@@ -157,8 +156,8 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/* update hillslope accumulator					*/
 	/*--------------------------------------------------------------*/
-	update_hillslope_accumulator(command_line,
-					basin);
+    update_hillslope_accumulator(command_line,
+                    basin);
 
 	return;
 } /*end basin_daily_F*/

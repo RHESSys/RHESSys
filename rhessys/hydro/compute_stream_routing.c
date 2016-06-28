@@ -69,40 +69,42 @@ double  compute_stream_routing(struct command_line_object *command_line,
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
 
-	int i;
-	int j;
-	int k;
-    int downstream_neighbour;
-    double alfa;
-    double tangent;
-    double stagelow;
-    double manning_new;
+    //160628LML int i;
+    //160628LML int j;
+    //160628LML int k;
+    //160628LML int downstream_neighbour;
+    //160628LML double alfa;
+    //160628LML double tangent;
+    //160628LML double stagelow;
+    //160628LML double manning_new;
     double dt;
-    double xarea;
-    double lateral_input_flow,streamflow;
-	double Qout,Qin,previous_lateral_input,length,initial_flow,sum;
+    //160628LML double xarea;
+    //160628LML double lateral_input_flow,streamflow;
+    //160628LML double Qout,Qin,previous_lateral_input,length,initial_flow,sum;
 	
 
-	struct patch_object *patch;
-	struct hillslope_object *hillslope;
+    //160628LML struct patch_object *patch;
+    //160628LML struct hillslope_object *hillslope;
 
 	/*--------------------------------------------------------------*/
 	/* route water from top to bottom				*/
 	/*--------------------------------------------------------------*/
 
 	dt=86400.0;
-	streamflow=0.0;
-	sum=0.0;
-	for (i = 0; i < num_reaches; i++) {
+    double streamflow=0.0;
+    double sum=0.0;
+    printf("\nnum_reaches = %d\n",num_reaches);
+    #pragma omp parallel for reduction(+ : sum)                                  //160628LML
+    for (int i = 0; i < num_reaches; i++) {
 	/* calculate total lateral input from patches */
-	   lateral_input_flow = 0.0;
-		Qout=0.0;
-		Qin=0.0;
-		previous_lateral_input=0.0;
-		length=0.0;
-		initial_flow=0.0;
-	   for (j=0; j <stream_network[i].num_lateral_inputs; j++) {
-	            patch=stream_network[i].lateral_inputs[j];
+       double lateral_input_flow = 0.0;
+        double Qout=0.0;
+        double Qin=0.0;
+        double previous_lateral_input=0.0;
+        double length=0.0;
+        double initial_flow=0.0;
+       for (int j=0; j <stream_network[i].num_lateral_inputs; j++) {
+                struct patch_object *patch=stream_network[i].lateral_inputs[j];
 		   if (patch[0].drainage_type == STREAM  ){
 	      		lateral_input_flow += (patch[0].streamflow)*patch[0].area/dt/(stream_network[i].length); //unit:m2/s
 			   sum+= (patch[0].streamflow)*patch[0].area;}
@@ -123,14 +125,15 @@ double count this way */
           
 	   /*calulate alfa from manning conductivity, wetperimeter, and streamslope*/
            if(stream_network[i].stream_slope <=0 ) stream_network[i].stream_slope=0.01;
-	   alfa = pow(stream_network[i].manning*pow(stream_network[i].bottom_width,(2.0/3.0))*pow((1/stream_network[i].stream_slope),-0.5),0.6);
-	   tangent = (stream_network[i].top_width-stream_network[i].bottom_width)/(2*stream_network[i].max_height);
+       double alfa = pow(stream_network[i].manning*pow(stream_network[i].bottom_width,(2.0/3.0))*pow((1/stream_network[i].stream_slope),-0.5),0.6);
+       double tangent = (stream_network[i].top_width-stream_network[i].bottom_width)/(2*stream_network[i].max_height);
 	   if(tangent <= 0.0) tangent=0.0001;
 	   alfa = alfa*pow((1+2*sqrt(1+tangent*tangent)*stream_network[i].water_depth/stream_network[i].bottom_width),0.4);
         
 
 	    /*consider variation of manning N when water level rise*/
-	   stagelow = 0.5;
+       double stagelow = 0.5;
+       double manning_new = 0;
 	   if(stream_network[i].water_depth > stagelow*stream_network[i].max_height) 
 	       manning_new = stream_network[i].manning*2.3;
 	   else
@@ -148,7 +151,7 @@ double count this way */
 		
 
 		/*calulate water depth for next time step */
-		xarea=alfa*pow(stream_network[i].Qin,0.6);
+        double xarea=alfa*pow(stream_network[i].Qin,0.6);
 		stream_network[i].water_depth=(-stream_network[i].bottom_width+sqrt(abs(stream_network[i].bottom_width*stream_network[i].bottom_width+4*tangent*xarea)))/(2*tangent);
         	
 		
@@ -166,9 +169,9 @@ double count this way */
 		stream_network[i].Qin=0.0;
 		
         /*calulate income flow  for downstream neighbours */
-	     for (j=0; j< stream_network[i].num_downstream_neighbours; j++) {
-			 downstream_neighbour=stream_network[i].downstream_neighbours[j];
-                            for(k=i;k<num_reaches;k++)
+         for (int j=0; j< stream_network[i].num_downstream_neighbours; j++) {
+             int downstream_neighbour=stream_network[i].downstream_neighbours[j];
+                            for(int k=i;k<num_reaches;k++)
                                if(stream_network[k].reach_ID == downstream_neighbour){
                                     stream_network[k].Qin += Qout/stream_network[i].num_downstream_neighbours;
 					break;			

@@ -133,8 +133,9 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	//	printf("allocate the fire grid\n");
 			
 		// then initialize values: e.g., 0's 
-		 for(i=0;i<grid_dimX;i++){
-			for(j=0;j<grid_dimY;j++){
+         #pragma omp parallel for                                                //160628LML
+         for(int i=0;i<grid_dimX;i++){
+            for(int j=0;j<grid_dimY;j++){
 				fire_grid[j][i].occupied_area=0;
 				fire_grid[j][i].num_patches=0;
 				fire_grid[j][i].tmp_patch=0;	
@@ -148,22 +149,23 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	// of the patch and area arrays, then one more navigation to calculate the areas and
 	// assign the patches to each grid cell
 		for (b=0; b< world[0].num_basin_files; ++b) {
-		 for (h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
-		   for (z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
-				tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
-		    for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
-				patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p];
-				halfSideLength=sqrt(patch[0].area)/2; // assuming a square patch, this is half the length of each side
-				curMinX=patch[0].x-halfSideLength; // the min x value for this patch is the center x value minus half the side length
-				curMaxX=patch[0].x+halfSideLength;// the max x value for this patch is the center x value plus half the side length
-				curMinY=patch[0].y-halfSideLength;// the min y value for this patch is the center y value minus half the side length
-				curMaxY=patch[0].y+halfSideLength;// the max y value for this patch is the center y value plus half the side length
+         #pragma omp parallel for                                                //160628LML
+         for (int h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
+           for (int z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
+                double tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
+            for (int p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
+                struct patch_object *patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p];
+                double halfSideLength=sqrt(patch[0].area)/2; // assuming a square patch, this is half the length of each side
+                double curMinX=patch[0].x-halfSideLength; // the min x value for this patch is the center x value minus half the side length
+                double curMaxX=patch[0].x+halfSideLength;// the max x value for this patch is the center x value plus half the side length
+                double curMinY=patch[0].y-halfSideLength;// the min y value for this patch is the center y value minus half the side length
+                double curMaxY=patch[0].y+halfSideLength;// the max y value for this patch is the center y value plus half the side length
 
 	      // Now translate the x-coordinate to grid indices--
-				minXpix=floor((curMinX-minx)/cell_res); // the left-most column that overlaps the current pixel
-				maxXpix=ceil((curMaxX-minx)/cell_res); // the right-most column that overlaps the current pixel
-				maxYpix=grid_dimY-floor((curMinY-miny)/cell_res);// the top-most row that overlaps the current pixel, reoriented so 0,0 is at the top
-				minYpix=grid_dimY-ceil((curMaxY-miny)/cell_res);// the bottom-most row that overlaps the current pixel, reoriented so 0,0 is at the top
+                double minXpix=floor((curMinX-minx)/cell_res); // the left-most column that overlaps the current pixel
+                double maxXpix=ceil((curMaxX-minx)/cell_res); // the right-most column that overlaps the current pixel
+                double maxYpix=grid_dimY-floor((curMinY-miny)/cell_res);// the top-most row that overlaps the current pixel, reoriented so 0,0 is at the top
+                double minYpix=grid_dimY-ceil((curMaxY-miny)/cell_res);// the bottom-most row that overlaps the current pixel, reoriented so 0,0 is at the top
 	// check if the patch occupies just 1 grid cell
 				if(minXpix==maxXpix) // the width of the patch is within a single column of pixels
 					maxXpix=maxXpix+1; // so the i,j loop will work--it should just loop to the current pixel
@@ -171,9 +173,11 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					maxYpix=maxYpix+1; // so the i,j loop will work--it should just loop to the current pixel
 	    // so now we loop through each pixel pair starting with minX and minY, and ending with < maxX and maxY (In C)
 	    // in the case that the patch overlaps with >1 pixel in both directions
-				for(i =minXpix; i<maxXpix; i++){
-					for(j =minYpix; j<maxYpix; j++)
+                for(int i =minXpix; i<maxXpix; i++){
+                    for(int j =minYpix; j<maxYpix; j++) {
+                        #pragma omp critical
 						fire_grid[j][i].num_patches=fire_grid[j][i].num_patches+1; // tally the number of patches that occupy each grid cell
+                    }
 				}
 		} /* end patches */
 		}
@@ -182,13 +186,14 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 
 	//	printf("after tallying the number of patches per grid cell\n");
 		// allocate the arrays for each grid cell
-		for(i=0;i<grid_dimX;i++){
-			for(j=0;j<grid_dimY;j++){	
+        #pragma omp parallel for                                                 //160628LML
+        for(int i=0;i<grid_dimX;i++){
+            for(int j=0;j<grid_dimY;j++){
 	//printf("number of patches: col %d row %d num patches %d\n",i,j,fire_grid[j][i].num_patches); 			
 				fire_grid[j][i].patches=(struct patch_object **) malloc(fire_grid[j][i].num_patches*sizeof(struct patch_object *)); // looks like we're going to need to navigate the patch hierarchy three times.  the second time is simply to tally the number of patches in each grid
 				fire_grid[j][i].prop_patch_in_grid=(double *) malloc(fire_grid[j][i].num_patches*sizeof(double)); // looks like we're going to need to navigate the patch hierarchy three times.  the second time is simply to tally the number of patches in each grid
 				fire_grid[j][i].prop_grid_in_patch=(double *) malloc(fire_grid[j][i].num_patches*sizeof(double)); // looks like we're going to need to navigate the patch hierarchy three times.  the second time is simply to tally the number of patches in each grid
-				for(k=0;k<fire_grid[j][i].num_patches;k++){
+                for(int k=0;k<fire_grid[j][i].num_patches;k++){
 					fire_grid[j][i].prop_grid_in_patch[k]=0;
 					fire_grid[j][i].prop_patch_in_grid[k]=0;
 				}
@@ -228,14 +233,15 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 
 	   // so now we loop through each pixel pair starting with minX and minY, and ending with < maxX and maxY (In C)
 	    // in the case that the patch overlaps with >1 pixel in both directions
-				for(i =minXpix; i<maxXpix; i++) {
-					for(j =minYpix; j<maxYpix; j++){
+                #pragma omp parallel for                                         //160628LML
+                for(int i =minXpix; i<maxXpix; i++) {
+                    for(int j =minYpix; j<maxYpix; j++){
 						fire_grid[j][i].patches[fire_grid[j][i].tmp_patch]=patch; // this is the current patch in the loop
-						cellMinX=i*cell_res+minx; 
-						cellMaxY=maxy-j*cell_res;
-						cellMaxX=(i+1)*cell_res+minx ;
-						cellMinY=maxy-(j+1)*cell_res;
-						areaPatchInGrid=calc_patch_area_in_grid(curMinX,curMinY,curMaxX,curMaxY,cellMaxX,cellMaxY,cellMinX,cellMinY,cell_res);
+                        double cellMinX=i*cell_res+minx;
+                        double cellMaxY=maxy-j*cell_res;
+                        double cellMaxX=(i+1)*cell_res+minx ;
+                        double cellMinY=maxy-(j+1)*cell_res;
+                        double areaPatchInGrid=calc_patch_area_in_grid(curMinX,curMinY,curMaxX,curMaxY,cellMaxX,cellMaxY,cellMinX,cellMinY,cell_res);
 	//					if(areaPatchInGrid<0)
 	//						printf("error, areaPatchInGrid <0\n");
 						fire_grid[j][i].occupied_area=fire_grid[j][i].occupied_area+areaPatchInGrid;
@@ -253,10 +259,11 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	//	printf("after calculating area of overlap between patches and grid cells\n");
 	/* finally, navigate the grid cells one more time to calculate the proportions of each patch in each
 		grid cell, given the total area occupied in each grid cell calculated above. */
-		for(i=0;i<grid_dimX;i++){
-			for(j=0;j<grid_dimY;j++){
+        #pragma omp parallel for                                                 //160628LML
+        for(int i=0;i<grid_dimX;i++){
+            for(int j=0;j<grid_dimY;j++){
 				if(fire_grid[j][i].occupied_area>0){
-					for(k=0;k<fire_grid[j][i].num_patches;k++)
+                    for(int k=0;k<fire_grid[j][i].num_patches;k++)
 						fire_grid[j][i].prop_patch_in_grid[k]=fire_grid[j][i].prop_patch_in_grid[k]/fire_grid[j][i].occupied_area;
 				}
 			}
@@ -273,13 +280,15 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 
 		
 		fire_grid=(struct patch_fire_object **) malloc(grid_dimY*sizeof(struct patch_fire_object *)); // first allocate the rows
-		for(i=0;i<grid_dimY;i++) // for each row, allocate the columns
+        #pragma omp parallel for                                                 //160628LML
+        for(int i=0;i<grid_dimY;i++) // for each row, allocate the columns
 			fire_grid[i]=(struct patch_fire_object *) malloc(grid_dimX*sizeof(struct patch_fire_object ));
 		printf("allocate the fire grid\n");
 			
 		// then initialize values: e.g., 0's 
-		 for(i=0;i<grid_dimX;i++){
-			for(j=0;j<grid_dimY;j++){
+        #pragma omp parallel for                                                 //160628LML
+         for(int i=0;i<grid_dimX;i++){
+            for(int j=0;j<grid_dimY;j++){
 				fire_grid[j][i].occupied_area=0;
 				fire_grid[j][i].num_patches=0;
 				fire_grid[j][i].tmp_patch=0;					
@@ -492,12 +501,14 @@ struct fire_object **construct_fire_grid(struct world_object *world)
 	struct fire_object **fire_grid;
 	int i,j;
 	fire_grid=(struct fire_object **) malloc(world[0].num_fire_grid_row*sizeof(struct fire_object *)); // first allocate the rows
-	for(i=0;i<world[0].num_fire_grid_row;i++) // for each row, allocate the columns
+    #pragma omp parallel for                                                     //160628LML
+    for(int i=0;i<world[0].num_fire_grid_row;i++) // for each row, allocate the columns
 		fire_grid[i]=(struct fire_object *) malloc(world[0].num_fire_grid_col*sizeof(struct fire_object ));
 		
 	// then initialize values: e.g., 0's 
-	 for(i=0;i<world[0].num_fire_grid_row;i++){
-		for(j=0;j<world[0].num_fire_grid_col;j++){
+     #pragma omp parallel for                                                    //160628LML
+     for(int i=0;i<world[0].num_fire_grid_row;i++){
+        for(int j=0;j<world[0].num_fire_grid_col;j++){
 			fire_grid[i][j].burn=0;
 			fire_grid[i][j].fuel_veg=0;
 			fire_grid[i][j].fuel_litter=0;
