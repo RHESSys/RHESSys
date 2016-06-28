@@ -153,11 +153,9 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	/*      Read each base_station ID and then point to that base_statio*/
 	/*--------------------------------------------------------------*/
-  printf( "************* BEFORE READING BASE STATION IDS %d %d  **********\n", basin[0].ID, basin[0].num_base_stations);
 	for (i=0 ; i<basin[0].num_base_stations; i++) {
     
 		fscanf(world_file,"%d",&(base_stationID));
-    printf( "*** RECORD %d ***\n", i );
 		read_record(world_file, record);
     //printf ("Base Station ID %d \n", basin[0].base_stations[i][0].ID);
 		/*--------------------------------------------------------------*/
@@ -169,9 +167,7 @@ struct basin_object *construct_basin(
 			*num_world_base_stations,
 			world_base_stations);
 		
-    printf ("Base Station ID %d \n", basin[0].base_stations[i][0].ID);
 	} /*end for*/
-  printf("OUTSIDE OF FOR LOOP\n");
 	/*--------------------------------------------------------------*/
 	/*	Create the grow subobject if needed.						*/
 	/*--------------------------------------------------------------*/

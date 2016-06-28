@@ -370,6 +370,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct fire_object **construct_fire_grid(struct world_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
+	struct base_station_object *construct_netcdf_grid(struct base_station_object *, struct base_station_ncheader *, int *, float, float, float, struct date *, struct date *);
   void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
 
@@ -794,7 +795,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
             #ifdef LIU_NETCDF_READER
             //#pragma omp parallel for
             for (int i = 0; i < world[0].num_base_stations; i++) {
-                    printf("station %d ID:%d\n",i,world[0].base_stations[i]->ID);
+                //printf("station %d ID:%d\n",i,world[0].base_stations[i]->ID);
                 //fprintf(stderr,"\ni:%d\tstart_year:%d\tx:%lf\ty:%lf\tduration_days:%d\n",
                 //        i,world[0].start_date.year,world[0].base_stations[i][0].x,world[0].base_stations[i][0].y,world[0].duration.day);
                 world[0].base_stations[i] = construct_netcdf_grid(
@@ -807,7 +808,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
                                                            &world[0].start_date,
                                                            &world[0].duration);
 
-                printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID ); 
+                //printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID ); 
             }
             #endif
 			/*printf("\n  file=%s firstID=%d num=%d numfiles=%d lai=%lf screenht=%lf sdist=%lf startyr=%d dayoffset=%d leapyr=%d precipmult=%lf",

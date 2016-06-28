@@ -55,7 +55,6 @@ struct base_station_object
 	}
 	else {
         #ifdef FIND_STATION_BASED_ON_ID
-          printf("assign I = %d\n",i);
         while ( (*(base_stations[i])).ID != basestation_id ) {
                 
         #else
