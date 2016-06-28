@@ -256,13 +256,13 @@ struct zone_object *construct_zone(
 			/*	Construct the base_stations.				*/
 			/*--------------------------------------------------------------*/
 			if ( command_line[0].verbose_flag == -3 ){
-                //160517LML printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d sdist=%lf base_y=%lf base_x=%lf",
+                //160517LML printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d resolution_meter=%lf base_y=%lf base_x=%lf",
                 printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d base_y=%lf base_x=%lf",
 					   base_station_ncheader[0].netcdf_tmax_filename,
 					   zone[0].y,
 					   zone[0].x,
 					   *num_world_base_stations,
-                       //160517LML base_station_ncheader[0].sdist,
+                       //160517LML base_station_ncheader[0].resolution_meter,
 					   base_y,
 					   base_x);
 				printf("\n   STARTING CLOSEST CELL: y=%lf x=%lf",base_y,base_x);
@@ -275,7 +275,7 @@ struct zone_object *construct_zone(
 							  base_station_ncheader[0].netcdf_x_varname,
                               (float)zone[0].y,
                               (float)zone[0].x,
-							  base_station_ncheader[0].sdist, 
+							  base_station_ncheader[0].resolution_meter, 
 							  &(base_y), 
 							  &(base_x));
 			if ( command_line[0].verbose_flag == -3 ){
@@ -296,7 +296,7 @@ struct zone_object *construct_zone(
                                         world_base_stations,
                                         world[0].base_station_ncheader
                                         //160517LML #ifdef LIU_NETCDF_READER
-                                        //160517LML ,base_station_ncheader[0].sdist / 3.0
+                                        //160517LML ,base_station_ncheader[0].resolution_meter / 3.0
                                         //160517LML #endif
                                         #ifdef FIND_STATION_BASED_ON_ID
                                         ,basestation_id

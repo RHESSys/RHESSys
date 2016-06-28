@@ -805,6 +805,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
                                                            world[0].base_stations[i][0].z,
                                                            &world[0].start_date,
                                                            &world[0].duration);
+printf("station %d ID:%d\n",i,world[0].base_stations[i]->ID);
             }
             #endif
 			/*printf("\n  file=%s firstID=%d num=%d numfiles=%d lai=%lf screenht=%lf sdist=%lf startyr=%d dayoffset=%d leapyr=%d precipmult=%lf",
@@ -831,6 +832,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 				world[0].base_stations[i] = construct_base_station(
 								world[0].base_station_files[i],
 								world[0].start_date, world[0].duration);
+      
 			} /*end for*/
 
 			/*--------------------------------------------------------------*/

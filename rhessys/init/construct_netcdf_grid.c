@@ -225,8 +225,8 @@ struct base_station_object *construct_netcdf_grid (
 								base_station_ncheader[0].leap_year);
 	   
         tempdata = (float *) alloc(duration->day * sizeof(float),"tempdata","construct_netcdf_grid");
-		/*printf("net_y:%f net_x:%f\n",base_station[0].net_y,base_station[0].net_x);*/
-		/*printf("tmax filename:%s varname:%s sdist:%f instartday:%d dura:%d\n",base_station[0].netcdf_tmax_filename, base_station[0].netcdf_tmax_varname,base_station[0].sdist,instartday,duration.day);*/
+		/* printf("net_y:%f net_x:%f\n",base_station[0].net_y,base_station[0].net_x);
+		printf("tmax filename:%s varname:%s sdist:%f instartday:%d dura:%d\n",base_station[0].netcdf_tmax_filename, base_station[0].netcdf_tmax_varname,base_station[0].sdist,instartday,duration.day); */
 		/* ------------------ TMAX ------------------ */
         k = get_netcdf_var_timeserias(
 									  base_station_ncheader[0].netcdf_tmax_filename,
@@ -318,13 +318,13 @@ struct base_station_object *construct_netcdf_grid (
             //printf("day:%d rain:%f\t multiplier:%lf\tvarname:%s\n",j,base_station[0].daily_clim[0].rain[j],base_station_ncheader[0].precip_mult,base_station_ncheader[0].netcdf_rain_varname);
 		}
 	
-        #ifdef CHECK_NCCLIM_DATA
+       /* #ifdef CHECK_NCCLIM_DATA
         for (j = 0; j < (duration->day < 60 ? duration->day : 60); j++) {
             fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n"
                             ,j,base_station[0].ID,base_station[0].proj_x,base_station[0].proj_y,base_station[0].lon, base_station[0].lat
                             ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]);
         }
-        #endif
+        #endif*/
 
 
 		/* ------------------ ELEV ------------------ */
