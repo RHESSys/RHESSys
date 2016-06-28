@@ -794,6 +794,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
             #ifdef LIU_NETCDF_READER
             //#pragma omp parallel for
             for (int i = 0; i < world[0].num_base_stations; i++) {
+                    printf("station %d ID:%d\n",i,world[0].base_stations[i]->ID);
                 //fprintf(stderr,"\ni:%d\tstart_year:%d\tx:%lf\ty:%lf\tduration_days:%d\n",
                 //        i,world[0].start_date.year,world[0].base_stations[i][0].x,world[0].base_stations[i][0].y,world[0].duration.day);
                 world[0].base_stations[i] = construct_netcdf_grid(
@@ -805,7 +806,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
                                                            world[0].base_stations[i][0].z,
                                                            &world[0].start_date,
                                                            &world[0].duration);
-printf("station %d ID:%d\n",i,world[0].base_stations[i]->ID);
+
+                printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID ); 
             }
             #endif
 			/*printf("\n  file=%s firstID=%d num=%d numfiles=%d lai=%lf screenht=%lf sdist=%lf startyr=%d dayoffset=%d leapyr=%d precipmult=%lf",

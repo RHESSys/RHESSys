@@ -55,7 +55,9 @@ struct base_station_object
 	}
 	else {
         #ifdef FIND_STATION_BASED_ON_ID
+          printf("assign I = %d\n",i);
         while ( (*(base_stations[i])).ID != basestation_id ) {
+                
         #else
         while (!is_close_to_station(x,y,base_stations[i],ncheader)) {
         /*160518LML !is_approximately(x,(*(base_stations[i])).x,dist_tol) || !is_approximately(y,(*(base_stations[i])).y,dist_tol) */

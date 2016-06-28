@@ -271,7 +271,6 @@ struct basin_object *construct_basin(
 			}
 	}
 
-  printf( 'LINE 274\n');
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables for this patch         */
 	/*--------------------------------------------------------------*/
@@ -372,6 +371,6 @@ struct basin_object *construct_basin(
 			basin[0].stream_list.stream_network = NULL;
 			basin[0].stream_list.streamflow = 0.0;
 		}
-
+  printf( "END CONSTRUCT BASIN\n");
 	return(basin);
 } /*end construct_basin.c*/

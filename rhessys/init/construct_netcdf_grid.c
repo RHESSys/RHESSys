@@ -118,6 +118,8 @@ struct base_station_object *construct_netcdf_grid (
     int baseid;
     setvbuf(stdout,NULL,_IONBF,0);
 	/* allocate daily_optional_clim_sequence_flags struct and make sure set to 0 */
+
+printf("beginning of netcdf_grid line 122 \n");
 	memset(&daily_flags, 0, sizeof(struct daily_optional_clim_sequence_flags));
 
 	/*printf("\n      Construct netcdf cell: START lastID=%d lai=%lf",
@@ -367,7 +369,8 @@ struct base_station_object *construct_netcdf_grid (
 	*num_world_base_stations +=1;
 	base_station_ncheader[0].lastID +=1;
     #endif
-
+  printf( "BASE STATION ID? %d\n", base_station[0].ID );
+printf("end of netcdf_grid line 373 \n");
 	return(base_station);
 }
 
