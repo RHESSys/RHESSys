@@ -14,9 +14,9 @@ CONFIG   -= app_bundle
 QMAKE_CC = gcc -std=c99
 QMAKE_CXXFLAGS += -fpermissive
 #-std=c++0x
-#QMAKE_CXXFLAGS += -fopenmp
-#QMAKE_CFLAGS += -fopenmp
-#QMAKE_LFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_CFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
 #QMAKE_CFLAGS += -STD=C99
 
 TEMPLATE = app
@@ -356,7 +356,6 @@ OTHER_FILES += \
 HEADERS += \
     ../../../../rhessys/cycle/canopy_stratum_daily_F.new \
     ../../../../rhessys/hydro/compute_varbased_returnflow.normal \
-    ../../../../rhessys/hydro/compute_subsurface_routing.orig \
     ../../../../rhessys/include/rhessys.h \
     ../../../../rhessys/include/phys_constants.h \
     ../../../../rhessys/include/params.h \

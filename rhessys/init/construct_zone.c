@@ -275,7 +275,7 @@ struct zone_object *construct_zone(
 							  base_station_ncheader[0].netcdf_x_varname,
                               (float)zone[0].y,
                               (float)zone[0].x,
-							  base_station_ncheader[0].sdist, 
+                              base_station_ncheader[0].resolution_meter,
 							  &(base_y), 
 							  &(base_x));
 			if ( command_line[0].verbose_flag == -3 ){

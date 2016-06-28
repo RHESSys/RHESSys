@@ -222,13 +222,13 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	/*	Construct the hillslopes for this basin.					*/
 	/*--------------------------------------------------------------*/
-	for (i=0; i<basin[0].num_hillslopes; i++){
+    for (int i=0; i<basin[0].num_hillslopes; i++){
 		basin[0].hillslopes[i] = construct_hillslope(
 			command_line, world_file, num_world_base_stations,
 			world_base_stations, defaults, base_station_ncheader, world);
-		basin[0].area += basin[0].hillslopes[i][0].area;
-		n_routing_timesteps += basin[0].hillslopes[i][0].area *
-			basin[0].hillslopes[i][0].defaults[0][0].n_routing_timesteps;
+        basin[0].area += basin[0].hillslopes[i][0].area;
+        n_routing_timesteps += basin[0].hillslopes[i][0].area *
+        basin[0].hillslopes[i][0].defaults[0][0].n_routing_timesteps;
 		if (basin[0].max_slope < basin[0].hillslopes[i][0].slope)
 			basin[0].max_slope = basin[0].hillslopes[i][0].slope;
 		if (command_line[0].snow_scale_flag == 1) {
@@ -241,7 +241,7 @@ struct basin_object *construct_basin(
 			}	
 		}
 	};
-	
+
 	basin[0].defaults[0][0].n_routing_timesteps = 
 			(int) (n_routing_timesteps / basin[0].area);
 

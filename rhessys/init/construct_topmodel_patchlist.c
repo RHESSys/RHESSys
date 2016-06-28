@@ -11,6 +11,7 @@ struct routing_list_object *construct_topmodel_patchlist(struct basin_object * c
 
 	// How many patches are there in the basin?
 	num_patches = 0;
+    #pragma omp parallel for reduction(+ : num_patches)                          //160628LML
 	for (int h = 0; h < basin->num_hillslopes; h++) {
 		struct hillslope_object const * hill = basin->hillslopes[h];
 		for (int z = 0; z < hill->num_zones; z++) {
