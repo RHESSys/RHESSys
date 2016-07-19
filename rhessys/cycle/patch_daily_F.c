@@ -671,6 +671,7 @@ void		patch_daily_F(
 			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				pspread = clim_event.value;
 
+				printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
 				compute_fire_effects(
 					patch,
 					pspread);
