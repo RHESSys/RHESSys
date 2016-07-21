@@ -1402,7 +1402,7 @@ void	canopy_stratum_daily_F(
 		}
 	}
 
-	stratum[0].PET = potential_transpiration;
+	stratum[0].PET = potential_transpiration; // PET only for this stratum, MCK
 
 	/*--------------------------------------------------------------*/
 	/*	Separate the transpiration into unsat and sat zone	*/
@@ -1834,7 +1834,7 @@ void	canopy_stratum_daily_F(
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
 
-
+	// // calculate et just like in patch, but also by cover fraction, a variable we include MCK, patch - level variable multiplied by stratum cover fraction, just like those variables above
 
 	
 	patch[0].ga_final += ga * stratum[0].cover_fraction;
@@ -1844,6 +1844,18 @@ void	canopy_stratum_daily_F(
 	patch[0].ustar_final += ustar * stratum[0].cover_fraction;
 	patch[0].T_canopy_final += (zone[0].metv.tavg + deltaT) * stratum[0].cover_fraction;
 
+	/* track variables for fire spread */
+	if(strata[0].epv.height<=strata[0].defaults[0][0].understory_height_thresh)
+	{	
+		patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +  
+		(strata[0].transpiration_sat_zone + strata[0].transpiration_unsat_zone
+		+ strata[0].evaporation))/
+		(patch[0].fire_defaults[0][0].ndays_average + 1); 
+
+		patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +  
+		(strata[0].PET))/
+		(patch[0].fire_defaults[0][0].ndays_average + 1); 
+	}
 	
 	if ( command_line[0].verbose_flag == -5 ){
 	printf("\n          STRATUM DAILY END Kdir=%lf Kdif=%lf Kupdir=%lf Kupdif=%lf Lstar=%lf Lstarpch=%lf Rnet_used=%lf Kstar_can=%lf rnetevap=%lf dayl=%lf Tcan=%lf \n          ??? topt=%lf tcoef=%lf tmax=%lf",
