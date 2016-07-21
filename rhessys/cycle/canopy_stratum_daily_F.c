@@ -1847,6 +1847,7 @@ void	canopy_stratum_daily_F(
 	/* track variables for fire spread */
 	if(stratum[0].epv.height<=stratum[0].defaults[0][0].understory_height_thresh)
 	{	
+		printf("Found an understory stratum!\n");
 		patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +  
 		(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone
 		+ stratum[0].evaporation))/
