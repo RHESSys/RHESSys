@@ -682,6 +682,7 @@ void		patch_daily_F(
 						command_line,
 						event,
 						current_date );
+				
 				dum += 1;
 			}
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
@@ -1996,6 +1997,7 @@ void		patch_daily_F(
 		patch[0].fire.pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.pet    
 				+ patch[0].PET) / 
 		(patch[0].fire_defaults[0][0].ndays_average + 1);
+
 		}
 	
 

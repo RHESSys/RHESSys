@@ -95,7 +95,8 @@ void execute_firespread_event(
 // add code here to define understory et and pet to calculate understory deficit. The definition of understory here
 // will be the same as that for fire effects below
 
-// default value to determine if you are in the understory canopy_strata_upper[0].defaults[0][0].understory_height_thresh
+// default value to determine if you are in the understory, compare layer height to stratum-level height threshold (canopy_strata_upper[0].defaults[0][0].understory_height_thresh,
+// compared to patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])].epv.height
 
 	/*--------------------------------------------------------------*/
 	/* update fire grid variables			*/
