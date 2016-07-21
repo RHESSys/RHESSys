@@ -102,6 +102,7 @@ void execute_firespread_event(
 	/* update fire grid variables			*/
 	/* first reset the values				*/
 	/*--------------------------------------------------------------*/
+	printf("In WMFire\n");
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 		if(world[0].patch_fire_grid[i][j].occupied_area==0)
