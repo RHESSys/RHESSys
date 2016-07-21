@@ -656,7 +656,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		}	
 
 		if(def_.fire_verbose==1)
-			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<" et, pet, underET, underPET"<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"  "<<fireGrid_[cur_row][cur_col].understory_et<<"   "<<fireGrid_[cur_row][cur_col].understory_pet<<"\n\n";
+			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<"\n\n";
 		cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_veg;
 		p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 		if(def_.fire_verbose==1)
@@ -682,7 +682,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		}
 	}
 	if(def_.fire_verbose==1)
-		cout<<"in test ignition pIgn: "<<pIgn<<"ign: "<<ign<<"temperature: "<<fireGrid_[cur_row][cur_col].temp<<"\n\n";
+		cout<<"in test ignition pIgn: "<<pIgn<<"ign: "<<ign<<"temperature: "<<fireGrid_[cur_row][cur_col].temp<<" et, pet, underET, underPET"<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"  "<<fireGrid_[cur_row][cur_col].understory_et<<"   "<<fireGrid_[cur_row][cur_col].understory_pet<<"\n\n";
 	return ign;
 }
 
