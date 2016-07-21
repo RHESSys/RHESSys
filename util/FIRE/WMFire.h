@@ -36,6 +36,7 @@ struct LocalFireNodes
 	double pLoad;
 	double pDef;
 	double pWind;
+	double pUnderDef;
     LocalFireNodes() : iter(-1)
     {}
 };

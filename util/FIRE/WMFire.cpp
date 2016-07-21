@@ -148,6 +148,7 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 			localFireGrid_[i][j].pDef=-1;
 			localFireGrid_[i][j].pLoad=-1;
 			localFireGrid_[i][j].pWind=-1;
+			localFireGrid_[i][j].pUnderDef=-1;
 			
 //			cout<<fireGrid_[i][j].burn<<"\t";
 			fireGrid_[i][j].wind_direction=fireGrid_[i][j].wind_direction*3.141593/180; // transform wind direction to radians, for RHESSys
@@ -641,7 +642,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 				else
 				{
 					if(fireGrid_[cur_row][cur_col].pet>0)
-						cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+						cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
 					else
 						cur_moist=0;
 				}
@@ -651,7 +652,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 			else
 				p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
 			if(def_.fire_verbose==1)
-				cout<<"using deficit for moisture: cur_moist, et, pet: "<<cur_moist<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"\n";
+				cout<<"using deficit for moisture: cur_moist, et, pet, underET, underPET: "<<cur_moist<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"  "<<fireGrid_[cur_row][cur_col].understory_et<<"   "<<fireGrid_[cur_row][cur_col].understory_pet<<"\n";
 		}	
 
 		if(def_.fire_verbose==1)

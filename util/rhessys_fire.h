@@ -66,8 +66,8 @@ struct fire_object
 	double et;
 	double pet;
 	int ign_available; /* 1 if available for ignition, 0 otherwise*/
-	double et_under; //evapotranspiration of only the understory
-	double pet_under; //potential evapotranspiration of only the understory
+	double understory_et; //evapotranspiration of only the understory
+	double understory_pet; //potential evapotranspiration of only the understory
 };	
 
 #ifdef __cplusplus
