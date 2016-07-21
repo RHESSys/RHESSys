@@ -651,12 +651,12 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 				p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
 			else
 				p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
-			if(def_.fire_verbose==1)
-				cout<<"using deficit for moisture: cur_moist, et, pet, underET, underPET: "<<cur_moist<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"  "<<fireGrid_[cur_row][cur_col].understory_et<<"   "<<fireGrid_[cur_row][cur_col].understory_pet<<"\n";
+//			if(def_.fire_verbose==1)
+//				cout<<"using deficit for moisture: cur_moist: "<<cur_moist"\n";
 		}	
 
 		if(def_.fire_verbose==1)
-			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<"\n\n";
+			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<" et, pet, underET, underPET"<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"  "<<fireGrid_[cur_row][cur_col].understory_et<<"   "<<fireGrid_[cur_row][cur_col].understory_pet<<<<"\n\n";
 		cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_veg;
 		p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 		if(def_.fire_verbose==1)
