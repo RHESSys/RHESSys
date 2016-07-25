@@ -192,8 +192,8 @@ void execute_firespread_event(
 			world[0].fire_grid[i][j].temp += patch[0].zone[0].metv.tavg*patch_fire_grid[i][j].prop_patch_in_grid[p];// temperature? mk
 			world[0].fire_grid[i][j].et += patch[0].fire.et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			world[0].fire_grid[i][j].pet += patch[0].fire.pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
-			world[0].fire_grid[i][j].understory_et += patch[0].fire.et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
-			world[0].fire_grid[i][j].understory_pet += patch[0].fire.pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+			world[0].fire_grid[i][j].understory_et += patch[0].fire.understory_et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+			world[0].fire_grid[i][j].understory_pet += patch[0].fire.understory_pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 	//printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
 
 		}
