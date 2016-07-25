@@ -1858,6 +1858,8 @@ void	canopy_stratum_daily_F(
 			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +  
 			(stratum[0].PET))/
 			(patch[0].fire_defaults[0][0].ndays_average + 1); 
+		printf("Debugging understory et and pet,stratum PET, stratum transpiration sat and unsat, stratum evaporation: %lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",patch[0].fire.understory_et,patch[0].fire.understory_pet, stratum[0].PET,stratum[0].transpiration_sat_zone, stratum[0].transpiration_unsat_zone,stratum[0].evaporation);
+			
 	//	}
 	}
 	
