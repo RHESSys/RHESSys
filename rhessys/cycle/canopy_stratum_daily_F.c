@@ -1845,17 +1845,20 @@ void	canopy_stratum_daily_F(
 	patch[0].T_canopy_final += (zone[0].metv.tavg + deltaT) * stratum[0].cover_fraction;
 
 	/* track variables for fire spread */
-	if(stratum[0].epv.height<=stratum[0].defaults[0][0].understory_height_thresh)
-	{	
-		printf("Found an understory stratum!\n");
-		patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +  
-		(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone
-		+ stratum[0].evaporation))/
-		(patch[0].fire_defaults[0][0].ndays_average + 1); 
+	if (command_line[0].firespread_flag == 1) {
+		printf("***********\n###########\nCurrent stratum height %lf\n***************\n#################\n",stratum[0].epv.height);
+		if(stratum[0].epv.height<=stratum[0].defaults[0][0].understory_height_thresh)
+		{	
+			printf("Found an understory stratum!\n");
+			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +  
+			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone
+			+ stratum[0].evaporation))/
+			(patch[0].fire_defaults[0][0].ndays_average + 1); 
 
-		patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +  
-		(stratum[0].PET))/
-		(patch[0].fire_defaults[0][0].ndays_average + 1); 
+			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +  
+			(stratum[0].PET))/
+			(patch[0].fire_defaults[0][0].ndays_average + 1); 
+		}
 	}
 	
 	if ( command_line[0].verbose_flag == -5 ){
