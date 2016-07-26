@@ -1402,6 +1402,11 @@ void	canopy_stratum_daily_F(
 		}
 	}
 
+	printf("Debugging transpiration and potential transpiration rates: %lf  %lf\n",transpiration_rate,potential_transpiration_rate);
+	if(transpiration_rate>potential_transpiration_rate)
+	{
+		printf("*********\n**********Something wrong!!!**********\n\n");
+	}
 	stratum[0].PET = potential_transpiration; // PET only for this stratum, MCK
 
 	/*--------------------------------------------------------------*/
