@@ -1851,8 +1851,8 @@ void	canopy_stratum_daily_F(
 	//	{	
 	//		printf("Found an understory stratum!\n");
 			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +  
-			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone
-			+ stratum[0].evaporation))/
+			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone)/
+		//	+ stratum[0].evaporation))/ // MCK: look at et without the evaporation part
 			(patch[0].fire_defaults[0][0].ndays_average + 1); 
 
 			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +  
