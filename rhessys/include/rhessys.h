@@ -514,6 +514,7 @@ struct basin_object
         int             ID;                                                                     
         int             num_base_stations;
         int             num_hillslopes;
+	int		basin_parm_ID;
         double  area;                   /*  m2          */
 	      double  area_withsnow;			/*  m2 		*/
         double  x;                      /*  meters      */      
@@ -672,7 +673,6 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
         struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
-        struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */
         struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
         };
@@ -803,6 +803,7 @@ struct hillslope_object
         int             ID;
         int             num_base_stations;
         int             num_zones;
+	int		hill_parm_ID;
         double  x;                      /*      meters  */
         double  y;                      /*      meters  */
         double  z;                      /* meters       */
@@ -942,6 +943,7 @@ struct zone_object
         int             Kdown_direct_flag;                  /*  0 or 1  */
         int             num_base_stations;                              
         int             num_patches;
+	int		zone_parm_ID;
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
         double  z;                                      /* meters       */
@@ -1488,6 +1490,9 @@ struct patch_object
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
         int             target_status;
+	int		soil_parm_ID;
+	int		landuse_parm_ID;
+	double		mpar;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */
@@ -1613,8 +1618,6 @@ struct patch_object
         double  surface_NH4;            /* kg/m2        */
         double  grazing_Closs;          /* kgC/m2       */
         double  grazing_mean_nc;        /* ratio N:Co   */
-        double  fertilizer_NO3_in;         /* kg/m2        */
-        double  fertilizer_NH4_in;         /* kg/m2        */
         double  fertilizer_NO3;         /* kg/m2        */
         double  fertilizer_NH4;         /* kg/m2        */
         double  surface_DOC_Qin_total;  /* kgC/m2 day   */
@@ -2625,7 +2628,8 @@ struct  canopy_strata_object
         {
         int             patch_ID;
         int             ID;
-        int             num_base_stations;                              
+        int             num_base_stations;     
+	int		veg_parm_ID;
         double  APAR_direct;                                    /* (umol photon/m2*day) */
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;

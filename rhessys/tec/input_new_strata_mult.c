@@ -39,6 +39,8 @@
 #include <stdlib.h>
 #include "rhessys.h"
 #define ONE 1.0
+#include "params.h"
+
 void input_new_strata_mult(
 											  struct	command_line_object	*command_line,
 											  FILE	*world_file,
@@ -78,189 +80,143 @@ void input_new_strata_mult(
 	void	*alloc(	size_t,
 		char	*,
 		char	*);
+
+	param	*readtag_worldfile(int *,
+				  FILE *,
+				  char *);		
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
 	int	i, dtmp, num_lines;
-	int	default_object_ID;
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
-
+	int	paramCnt=0;
+	param	*paramPtr=NULL;
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.		*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(default_object_ID));
-	read_record(world_file, record);
+	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cover_fraction = ltmp * canopy_strata[0].cover_fraction;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].gap_fraction = ltmp * canopy_strata[0].gap_fraction;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].rootzone.depth = ltmp * canopy_strata[0].rootzone.depth;
-	    fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].snow_stored = ltmp * canopy_strata[0].snow_stored;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].rain_stored = ltmp * canopy_strata[0].rain_stored;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cpool = ltmp * canopy_strata[0].cs.cpool;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc = ltmp * canopy_strata[0].cs.leafc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.dead_leafc = ltmp * canopy_strata[0].cs.dead_leafc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc_store = ltmp * canopy_strata[0].cs.leafc_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc_transfer = ltmp * canopy_strata[0].cs.leafc_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.live_stemc = ltmp * canopy_strata[0].cs.live_stemc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.livestemc_store = ltmp * canopy_strata[0].cs.livestemc_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.livestemc_transfer = ltmp * canopy_strata[0].cs.livestemc_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.dead_stemc = ltmp * canopy_strata[0].cs.dead_stemc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.deadstemc_store = ltmp * canopy_strata[0].cs.deadstemc_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.deadstemc_transfer = ltmp * canopy_strata[0].cs.deadstemc_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.live_crootc = ltmp * canopy_strata[0].cs.live_crootc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.livecrootc_store = ltmp * canopy_strata[0].cs.livecrootc_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.livecrootc_transfer = ltmp * canopy_strata[0].cs.livecrootc_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.dead_crootc = ltmp * canopy_strata[0].cs.dead_crootc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.deadcrootc_store = ltmp * canopy_strata[0].cs.deadcrootc_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.deadcrootc_transfer = ltmp * canopy_strata[0].cs.deadcrootc_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.frootc = ltmp * canopy_strata[0].cs.frootc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.frootc_store = ltmp * canopy_strata[0].cs.frootc_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.frootc_transfer = ltmp * canopy_strata[0].cs.frootc_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cwdc = ltmp * canopy_strata[0].cs.cwdc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.prev_leafcalloc = ltmp * canopy_strata[0].epv.prev_leafcalloc;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.npool = ltmp * canopy_strata[0].ns.npool;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.leafn = ltmp * canopy_strata[0].ns.leafn;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.dead_leafn = ltmp * canopy_strata[0].ns.dead_leafn;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.leafn_store = ltmp * canopy_strata[0].ns.leafn_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.leafn_transfer = ltmp * canopy_strata[0].ns.leafn_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.live_stemn = ltmp * canopy_strata[0].ns.live_stemn;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.livestemn_store = ltmp * canopy_strata[0].ns.livestemn_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.livestemn_transfer = ltmp * canopy_strata[0].ns.livestemn_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.dead_stemn = ltmp * canopy_strata[0].ns.dead_stemn;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.deadstemn_store = ltmp * canopy_strata[0].ns.deadstemn_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.deadstemn_transfer = ltmp * canopy_strata[0].ns.deadstemn_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.live_crootn = ltmp * canopy_strata[0].ns.live_crootn;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.livecrootn_store = ltmp * canopy_strata[0].ns.livecrootn_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.livecrootn_transfer = ltmp * canopy_strata[0].ns.livecrootn_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.dead_crootn = ltmp * canopy_strata[0].ns.dead_crootn;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.deadcrootn_store = ltmp * canopy_strata[0].ns.deadcrootn_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.deadcrootn_transfer = ltmp * canopy_strata[0].ns.deadcrootn_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.frootn = ltmp * canopy_strata[0].ns.frootn;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.frootn_store = ltmp * canopy_strata[0].ns.frootn_store;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.frootn_transfer = ltmp * canopy_strata[0].ns.frootn_transfer;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.cwdn = ltmp * canopy_strata[0].ns.cwdn;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp * canopy_strata[0].ns.retransn;
-		
+	canopy_strata[0].veg_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1,1);	
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cover_fraction = ltmp * canopy_strata[0].cover_fraction;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].gap_fraction = ltmp * canopy_strata[0].gap_fraction;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].rootzone.depth = ltmp * canopy_strata[0].rootzone.depth;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_stored","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].snow_stored = ltmp * canopy_strata[0].snow_stored;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"rain_stored","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].rain_stored = ltmp * canopy_strata[0].rain_stored;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cpool = ltmp * canopy_strata[0].cs.cpool;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc = ltmp * canopy_strata[0].cs.leafc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.dead_leafc = ltmp * canopy_strata[0].cs.dead_leafc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc_store = ltmp * canopy_strata[0].cs.leafc_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc_transfer = ltmp * canopy_strata[0].cs.leafc_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.live_stemc = ltmp * canopy_strata[0].cs.live_stemc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.livestemc_store = ltmp * canopy_strata[0].cs.livestemc_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.livestemc_transfer = ltmp * canopy_strata[0].cs.livestemc_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_stemc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.dead_stemc = ltmp * canopy_strata[0].cs.dead_stemc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadstemc_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.deadstemc_store = ltmp * canopy_strata[0].cs.deadstemc_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadstemc_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.deadstemc_transfer = ltmp * canopy_strata[0].cs.deadstemc_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_crootc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.live_crootc = ltmp * canopy_strata[0].cs.live_crootc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livecrootc_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.livecrootc_store = ltmp * canopy_strata[0].cs.livecrootc_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livecrootc_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.livecrootc_transfer = ltmp * canopy_strata[0].cs.livecrootc_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_crootc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.dead_crootc = ltmp * canopy_strata[0].cs.dead_crootc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadcrootc_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.deadcrootc_store = ltmp * canopy_strata[0].cs.deadcrootc_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadcrootc_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.deadcrootc_transfer = ltmp * canopy_strata[0].cs.deadcrootc_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.frootc = ltmp * canopy_strata[0].cs.frootc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.frootc_store = ltmp * canopy_strata[0].cs.frootc_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.frootc_transfer = ltmp * canopy_strata[0].cs.frootc_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cwdc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cwdc = ltmp * canopy_strata[0].cs.cwdc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.prev_leafcalloc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.prev_leafcalloc = ltmp * canopy_strata[0].epv.prev_leafcalloc;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.npool","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.npool = ltmp * canopy_strata[0].ns.npool;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.leafn = ltmp * canopy_strata[0].ns.leafn;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_leafn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.dead_leafn = ltmp * canopy_strata[0].ns.dead_leafn;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.leafn_store = ltmp * canopy_strata[0].ns.leafn_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.leafn_transfer = ltmp * canopy_strata[0].ns.leafn_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.live_stemn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.live_stemn = ltmp * canopy_strata[0].ns.live_stemn;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livestemn_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.livestemn_store = ltmp * canopy_strata[0].ns.livestemn_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livestemn_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.livestemn_transfer = ltmp * canopy_strata[0].ns.livestemn_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_stemn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.dead_stemn = ltmp * canopy_strata[0].ns.dead_stemn;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadstemn_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.deadstemn_store = ltmp * canopy_strata[0].ns.deadstemn_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadstemn_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.deadstemn_transfer = ltmp * canopy_strata[0].ns.deadstemn_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.live_crootn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.live_crootn = ltmp * canopy_strata[0].ns.live_crootn;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livecrootn_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.livecrootn_store = ltmp * canopy_strata[0].ns.livecrootn_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livecrootn_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.livecrootn_transfer = ltmp * canopy_strata[0].ns.livecrootn_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_crootn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.dead_crootn = ltmp * canopy_strata[0].ns.dead_crootn;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadcrootn_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.deadcrootn_store = ltmp * canopy_strata[0].ns.deadcrootn_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadcrootn_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.deadcrootn_transfer = ltmp * canopy_strata[0].ns.deadcrootn_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.frootn = ltmp * canopy_strata[0].ns.frootn;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn_store","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.frootn_store = ltmp * canopy_strata[0].ns.frootn_store;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn_transfer","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.frootn_transfer = ltmp * canopy_strata[0].ns.frootn_transfer;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.cwdn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.cwdn = ltmp * canopy_strata[0].ns.cwdn;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp * canopy_strata[0].ns.retransn;
 
-		/*--------------------------------------------------------------*/
-		/*	intialized annual flux variables			*/
-		/*--------------------------------------------------------------*/
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.wstress_days = ltmp * canopy_strata[0].epv.wstress_days;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.max_fparabs = ltmp * canopy_strata[0].epv.max_fparabs;
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.min_vwc = ltmp * canopy_strata[0].epv.min_vwc;
+	/*--------------------------------------------------------------*/
+	/*	intialized annual flux variables			*/
+	/*--------------------------------------------------------------*/
+	ltmp = getIntWorldfile(&paramCnt,&paramPtr,"epv.wstress_days","%d",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.wstress_days = ltmp * canopy_strata[0].epv.wstress_days;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.max_fparabs","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.max_fparabs = ltmp * canopy_strata[0].epv.max_fparabs;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.min_vwc = ltmp * canopy_strata[0].epv.min_vwc;
+	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",canopy_strata[0].num_base_stations,0);	
 
+	
 		/*--------------------------------------------------------------*/
 		/*	Assign	defaults for this canopy_strata								*/
 		/*--------------------------------------------------------------*/
-		if (default_object_ID > 0) {
+		if (canopy_strata[0].veg_parm_ID > 0) {
 			i=0;
-			while (defaults[0].stratum[i].ID != default_object_ID) {
+			while (defaults[0].stratum[i].ID != canopy_strata[0].veg_parm_ID) {
 				i++;
 				/*--------------------------------------------------------------*/
 				/*  Report an error if no match was found.  Otherwise assign    */
@@ -269,7 +225,7 @@ void input_new_strata_mult(
 				if ( i>= defaults[0].num_stratum_default_files ){
 					fprintf(stderr,
 						"\nFATAL ERROR: in construct_canopy_strata, canopy_strata default ID %d not found.\n" ,
-						default_object_ID);
+						canopy_strata[0].veg_parm_ID);
 					exit(EXIT_FAILURE);
 				}
 			} /* end-while */
@@ -427,8 +383,8 @@ void input_new_strata_mult(
 		/*--------------------------------------------------------------*/
 		/*	Read in the number of  strata base stations 					*/
 		/*--------------------------------------------------------------*/
- 		fscanf(world_file,"%d",&(dtmp));
-		read_record(world_file, record);
+ 		/*  fscanf(world_file,"%d",&(dtmp));
+		read_record(world_file, record);*/
 		if (dtmp > 0) {
 			canopy_strata[0].num_base_stations = dtmp * canopy_strata[0].num_base_stations;
 			/*--------------------------------------------------------------*/
@@ -455,6 +411,10 @@ void input_new_strata_mult(
 					world_base_stations);
 			} /*end for*/
 		}
+
+	if(paramPtr!=NULL){
+	  free(paramPtr);
+	}
 			 
 	return;
 } /*end input_new_strata.c*/
