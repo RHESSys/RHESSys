@@ -1401,6 +1401,8 @@ void	canopy_stratum_daily_F(
 			potential_transpiration = 0.0;
 		}
 	}
+	
+	stratum[0].PET = potential_transpiration; // PET only for this stratum, MCK
 
 	/*--------------------------------------------------------------*/
 	/*	Separate the transpiration into unsat and sat zone	*/
