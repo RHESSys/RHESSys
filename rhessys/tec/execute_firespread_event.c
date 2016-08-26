@@ -118,7 +118,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].wind = 0.0;
 				    world[0].fire_grid[i][j].z=0.0; // mk: add so we can calculate the current elevation as the weighted mean elevation of the patches
 				    world[0].fire_grid[i][j].temp=0.0;
-				    world[0].fire_grid[i][j].et=0.0;
+				    world[0].fire_grid[i][j].et=1.0; // mk: should be 1 so that the deficit in the buffer is zero
 				    world[0].fire_grid[i][j].pet=1.0;
 				    world[0].fire_grid[i][j].understory_et=0.0;
 				    world[0].fire_grid[i][j].understory_pet=1.0;
