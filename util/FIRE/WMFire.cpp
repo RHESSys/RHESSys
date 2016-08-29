@@ -613,7 +613,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 	double pIgn=0;
 	double p_moisture,p_load,cur_load,cur_moist,p_veg;
 
-	double ign_moisture_k2=def_.moisture_k2*def_.ign_def_mod;
+	double ign_moisture_k2=def_.moisture_k2//; apply the modifier to the probability rather than the location parameter*def_.ign_def_mod;
 	if(ign_moisture_k2>1)
 		ign_moisture_k2=1;
 	// for WMFire, do we make this based on load and moisture (probably)
@@ -661,6 +661,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 		if(def_.fire_verbose==1)
 			cout<<"in test ignition p_load "<<p_load<<" load: "<<cur_load<<"SpreadType: "<<def_.spread_calc_type<<"\n\n";
+		p_moisture=p_moisture*def_.ign_def_mod; // a multiplier to modify the ignition probability relative to the spread probability
 		pIgn=p_moisture*p_load;		
 		if(def_.veg_ign==1)// *** check!*********
 		{
