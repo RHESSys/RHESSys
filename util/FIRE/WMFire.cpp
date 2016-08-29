@@ -613,7 +613,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 	double pIgn=0;
 	double p_moisture,p_load,cur_load,cur_moist,p_veg;
 
-	double ign_moisture_k2=def_.moisture_k2//; apply the modifier to the probability rather than the location parameter*def_.ign_def_mod;
+	double ign_moisture_k2=def_.moisture_k2; //apply the modifier to the probability rather than the location parameter*def_.ign_def_mod;
 	if(ign_moisture_k2>1)
 		ign_moisture_k2=1;
 	// for WMFire, do we make this based on load and moisture (probably)
