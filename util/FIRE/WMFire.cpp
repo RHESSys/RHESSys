@@ -647,7 +647,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 						cur_moist=0;
 				}
 			}
-			if(def_.spread_calc_type<7)
+			if(def_.spread_calc_type<9) // use 9 for completely separate curve for ignition moisture, rather than a simple multiplier
 				p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
 			else
 				p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
@@ -661,7 +661,8 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 		if(def_.fire_verbose==1)
 			cout<<"in test ignition p_load "<<p_load<<" load: "<<cur_load<<"SpreadType: "<<def_.spread_calc_type<<"\n\n";
-		p_moisture=p_moisture*def_.ign_def_mod; // a multiplier to modify the ignition probability relative to the spread probability
+		if(def_.spread_calc_type<9)
+			p_moisture=p_moisture*def_.ign_def_mod; // a multiplier to modify the ignition probability relative to the spread probability
 		pIgn=p_moisture*p_load;		
 		if(def_.veg_ign==1)// *** check!*********
 		{
