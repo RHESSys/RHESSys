@@ -575,7 +575,7 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	case 7: // multiplicative with relative def
 		temp_pBurn=p_slope*p_winddir*p_moisture*p_load; 
 		break;
-	case 8: // minimum with relative def
+/*	case 8: // minimum with relative def--but now 
 		temp_pBurn=1;
 		if(p_slope<temp_pBurn)
 			temp_pBurn=p_slope;
@@ -588,9 +588,10 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		break;
 	case 9: // mean with realtive def
 		temp_pBurn=(p_slope+p_winddir+p_moisture+p_load)/4; // 
-		break;
+		break;*/
 	default: // for now default to multiplicative
 		temp_pBurn=p_slope*p_winddir*p_moisture*p_load; // if including wind direction, the overall pSpread is the product of the individual pSpreads.
+		break;
 	}		
 	
 	localFireGrid_[new_row][new_col].pSlope=p_slope;
