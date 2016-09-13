@@ -105,6 +105,10 @@ struct fire_default *construct_fire_defaults(
 		printf("winddir_k1: %lf\n",default_object_list[i].winddir_k1);
  		default_object_list[i].winddir_k2=getDoubleParam(&paramCnt, &paramPtr, "winddir_k2", "%lf", 1, 1);
 		printf("winddir_k2: %lf\n",default_object_list[i].winddir_k2);
+		default_object_list[i].moisture_ign_k1=getDoubleParam(&paramCnt, &paramPtr, "moisture_ign_k1", "%lf", 0.8, 1);
+		printf("moisture_ign_k1: %lf\n",default_object_list[i].moisture_ign_k1);
+		default_object_list[i].moisture_ign_k2=getDoubleParam(&paramCnt, &paramPtr, "moisture_ign_k2", "%lf", 0.15, 1);
+		printf("moisture_ign_k2: %lf\n",default_object_list[i].moisture_ign_k2);
 		default_object_list[i].windmax=getDoubleParam(&paramCnt, &paramPtr, "windmax", "%lf", 100, 1);
 		printf("windmax: %lf\n",default_object_list[i].windmax);
 		default_object_list[i].ignition_col=getDoubleParam(&paramCnt, &paramPtr, "ignition_col", "%lf", -1, 1);
