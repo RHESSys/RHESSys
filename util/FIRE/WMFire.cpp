@@ -600,8 +600,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	localFireGrid_[new_row][new_col].pLoad=p_load;
 
 	// Here we would put other pSpread calculations, depending on the parent node and the node being tested for spread
-//	if(def_.fire_verbose==1)
-//		cout<<"burn test, slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
+	if(def_.fire_verbose==1)
+		cout<<"burn test, pburn: "<<temp_pBurn<<" slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
 	return temp_pBurn;
 }
 
