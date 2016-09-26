@@ -219,10 +219,13 @@ void	canopy_stratum_daily_I(
 			+ cs->dead_crootc + cs->deadcrootc_store + cs->deadcrootc_transfer);
 
 	
-		daily_mortality = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+		daily_mortality = stratum[0].defaults[0][0].epc.max_daily_mortality;
 
-		if (cs->age > 20) 
-			daily_mortality = daily_mortality - daily_mortality*min(1.0, (cs->age-20.0)/100.0);
+		if (cs->age > stratum[0].defaults[0][0].epc.daily_mortality_threshold) 
+			daily_mortality = daily_mortality - daily_mortality*min(1.0, 
+				(cs->age-stratum[0].defaults[0][0].epc.daily_mortality_threshold)/100.0);
+
+		daily_mortality = max(daily_mortality, stratum[0].defaults[0][0].epc.min_daily_mortality);
 
 		mort.mort_cpool = daily_mortality;
 		mort.mort_leafc = daily_mortality;

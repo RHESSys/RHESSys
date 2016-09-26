@@ -2507,7 +2507,9 @@ struct epconst_struct
     double kfrag_base;        /* (1/day) daily coarse woody debris fragmentation rate */
     double storage_transfer_prop; /* (DIM) percent of storage allocated in a given year */
     double branch_turnover; /* (1/day) daily mortality turnover */
-    double daily_mortality_turnover; /* (1/day) daily mortality turnover */
+    double min_daily_mortality; /* (1/day) daily mortality turnover */
+    double max_daily_mortality; /* (1/day) daily mortality turnover */
+    double daily_mortality_threshold; /* years, age at which mortality starts to decline */
     double daily_fire_turnover; /* (1/day) daily fire loss */
     double froot_cn;     /* (kgC/kgN) C:N for fine roots */
     double leaf_cn;      /* (kgC/kgN) C:N for leaves */
