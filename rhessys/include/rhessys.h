@@ -1927,6 +1927,7 @@ struct  command_line_object
         int             reservoir_operation_flag;
         int             ddn_routing_flag;
         int             dclim_flag;
+        int             clim_repeat_flag;
         int             road_flag;
         int             vsen_flag;
         int             vsen_alt_flag;
