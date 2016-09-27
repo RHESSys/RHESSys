@@ -76,7 +76,8 @@ void reconstruct_hourly_clim(struct world_object * world,
 
     hourly_clim = (*base_stations[i]).hourly_clim;
     daily_clim = (*base_stations[i]).daily_clim;
-    
+ 
+
     num_di = get_num_daywhourly(base_stations[i]);
     if(num_di == num_d && num_di>=2){
       /*  it has the hourly record for union_date already */

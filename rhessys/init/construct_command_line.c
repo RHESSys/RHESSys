@@ -78,6 +78,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].surface_routing_flag = 0;
 	command_line[0].stream_routing_flag = 0;
 	command_line[0].reservoir_operation_flag = 0;
+	command_line[0].clim_repeat_flag = 0;
 	command_line[0].dclim_flag = 0;
 	command_line[0].ddn_routing_flag = 0;
 	command_line[0].tec_flag = 0;
@@ -200,6 +201,13 @@ struct	command_line_object	*construct_command_line(
 				/*Read in the tmp value		*/
 				/*-------------------------------*/
 				command_line[0].cpool_mort_fract = (double)atof(main_argv[i]);
+				i++;
+			}
+			/*------------------------------------------*/
+			/*Check if the distributed climate flag is next.           */
+			/*------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-climrepeat") == 0 ){
+				command_line[0].clim_repeat_flag = 1;
 				i++;
 			}
 			/*------------------------------------------*/
