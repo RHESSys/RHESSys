@@ -217,33 +217,23 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	/*	proportion of subsurface outflow to each neighbour	*/
 	/*--------------------------------------------------------------*/
     for (int k = 0; k < n_timesteps; k++) {
-        /*160628LML moved bellow
-		patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth, 0.0,
-				-1.0 * patch[0].sat_deficit);
-		patch[0].preday_sat_deficit = patch[0].sat_deficit;
-        /**/
-
         #pragma omp parallel for                                                 //160628LML
         for (int i = 0; i < basin->route_list->num_patches; i++) {
             struct patch_object *patch = basin->route_list->list[i];
-            //160628LML moved here
+
             patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
                     patch[0].soil_defaults[0][0].porosity_0,
                     patch[0].soil_defaults[0][0].porosity_decay,
                     patch[0].soil_defaults[0][0].soil_depth, 0.0,
                     -1.0 * patch[0].sat_deficit);
             patch[0].preday_sat_deficit = patch[0].sat_deficit;
-            //160628LML end move
-
 		      	patch[0].hourly_subsur2stream_flow = 0;
-			patch[0].hourly_sur2stream_flow = 0;
-			patch[0].hourly_stream_flow = 0;
-			patch[0].hourly[0].streamflow_NO3 = 0;
-			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
-			patch[0].hourly[0].streamflow_NO3_from_surface = 0;			
+
+            patch[0].hourly_sur2stream_flow = 0;
+            patch[0].hourly_stream_flow = 0;
+            patch[0].hourly[0].streamflow_NO3 = 0;
+            patch[0].hourly[0].streamflow_NO3_from_sub = 0;
+            patch[0].hourly[0].streamflow_NO3_from_surface = 0;			
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
 			/*	is routed to downslope patches; saturated throughflow	*/
@@ -253,19 +243,19 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*								*/
 			/*	regular land patches - route to downslope neighbours    */
 			/*--------------------------------------------------------------*/
-			if ((patch[0].drainage_type == ROAD)
-					&& (command_line[0].road_flag == 1)) {
-				update_drainage_road(patch, command_line, time_int,
-						verbose_flag);
-			} else if (patch[0].drainage_type == STREAM) {
-				update_drainage_stream(patch, command_line, time_int,
-						verbose_flag);
-			} else {
-				update_drainage_land(patch, command_line, time_int,
-						verbose_flag);
-			}
+            if ((patch[0].drainage_type == ROAD)
+                            && (command_line[0].road_flag == 1)) {
+                    update_drainage_road(patch, command_line, time_int,
+                                    verbose_flag);
+            } else if (patch[0].drainage_type == STREAM) {
+                    update_drainage_stream(patch, command_line, time_int,
+                                    verbose_flag);
+            } else {
+                    update_drainage_land(patch, command_line, time_int,
+                                    verbose_flag);
+            }
 
-		} /* end i */
+        } /* end i */
 
 		/*--------------------------------------------------------------*/
 		/*	update soil moisture and nitrogen stores		*/

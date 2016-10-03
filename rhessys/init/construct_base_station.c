@@ -149,7 +149,8 @@
 struct	base_station_object *construct_base_station(
 													char	*base_station_filename,
 													struct	date start_date,
-													struct	date duration)
+													struct	date duration, 
+													int  clim_repeat_flag)
 {
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
@@ -158,19 +159,19 @@ struct	base_station_object *construct_base_station(
 		FILE	*,
 		char	*,
 		struct date,
-		long);
+		long,int);
 	
 	struct	monthly_clim_object	*construct_monthly_clim(
 		FILE	*,
 		char	*,
 		struct date,
-		long);
+		long,int);
 	
 	struct	daily_clim_object	*construct_daily_clim(
 		FILE	*,
 		char	*,
 		struct date,
-		long);
+		long,int);
 	
 	struct	hourly_clim_object	*construct_hourly_clim(
 		FILE	*,
@@ -240,7 +241,7 @@ struct	base_station_object *construct_base_station(
 		base_station[0].base_station_file,
 		clim_object_file_prefix,
 		start_date,
-		duration.year );
+		duration.year, clim_repeat_flag );
 	}
 	
 	/*--------------------------------------------------------------*/
@@ -256,7 +257,7 @@ struct	base_station_object *construct_base_station(
 		base_station[0].base_station_file,
 		clim_object_file_prefix,
 		start_date,
-		duration.month );
+		duration.month, clim_repeat_flag );
 	}
 	
 	/*--------------------------------------------------------------*/
@@ -274,7 +275,7 @@ struct	base_station_object *construct_base_station(
 			base_station[0].base_station_file,
 			clim_object_file_prefix,
 			start_date,
-			duration.day);
+			duration.day, clim_repeat_flag);
 	}
 	/*--------------------------------------------------------------*/
 	/*	read in the name of the hourly clim object prefix.			*/
