@@ -212,7 +212,7 @@ int read_record( FILE *, char *);
 #ifdef LIU_NETCDF_READER
 int get_netcdf_station_number(char *base_station_filename);                      /*160419LML*/
 /*160624LML moved here*/
-int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, float *);
+int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, int, float *);
 int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
 int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01

@@ -26,7 +26,7 @@
 #include "rhessys.h"
 
 /*160624LML moved to rhessys.h
-int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, float *);
+int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, int, float *);
 int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
 int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
@@ -232,9 +232,9 @@ struct base_station_object *construct_netcdf_grid (
         k = get_netcdf_var_timeserias(
 									  base_station_ncheader[0].netcdf_tmax_filename,
 									  base_station_ncheader[0].netcdf_tmax_varname,
-                                      lat_name, //160624LML "lat",
-                                      lon_name, //160624LML "lon",
-                                      /*160517LML base_station_ncheader[0].netcdf_y_varname,
+                                      lat_name,
+                                      lon_name,
+                                      /*base_station_ncheader[0].netcdf_y_varname,
                                       base_station_ncheader[0].netcdf_x_varname,*/
 									  net_y,
 									  net_x,
@@ -242,6 +242,7 @@ struct base_station_object *construct_netcdf_grid (
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       (int)duration->day,
+                    1, // XXX read from command line
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var tmax\n");
@@ -275,6 +276,7 @@ struct base_station_object *construct_netcdf_grid (
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       duration->day,
+                    1, // XXX read from command line
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var tmin\n");
@@ -309,6 +311,7 @@ struct base_station_object *construct_netcdf_grid (
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       duration->day,
+                    1, // XXX read from command line
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var rain\n");
