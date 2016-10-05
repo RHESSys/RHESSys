@@ -203,7 +203,7 @@ Nov. 17, 2011
   start[0] = startday-days[0]+day_offset;		//netcdf 4.1.3 problem: there is 1 day offset
   start[1] = idlat;           //lat
   start[2] = idlont;
-  count[0] = shouldRepeat ? 1 :read_duration;
+  count[0] = read_duration;
   count[1] = 1;
   count[2] = 1;
   /***Read netcdf data***/ 
@@ -213,7 +213,6 @@ Nov. 17, 2011
     free(lont);
     ERR(retval);
   }
-
 
   if( shouldRepeat ) {
     // XXX put Naomi's code in here
