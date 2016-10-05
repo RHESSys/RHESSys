@@ -151,7 +151,7 @@ Nov. 17, 2011
   days = (int *) alloc(nday * sizeof(int),"days","get_netcdf_var_timeserias");
   lat = (float *) alloc(nlat * sizeof(float),"lat","get_netcdf_var_timeserias");
   lont = (float *) alloc(nlont * sizeof(float),"lont","get_netcdf_var_timeserias");
-  /* get dimention var */
+  /* get dimension var */
   if ((retval = nc_get_var_int(ncid, dayid, &days[0]))){
     free(days);
     free(lat);
@@ -185,8 +185,10 @@ Nov. 17, 2011
   int read_duration = duration;
   int shouldRepeat = 0;
 
+  shouldRepeat = 1;// XXX artificial flag for testing; remove and get rid of subsequent instances
+
   if((startday<days[0] || (duration+startday) > days[nday-1])){
-    if( clim_repeat_flag == 0 ) {
+    if( clim_repeat_flag == 0 || shouldRepeat != 1 ) {
       fprintf(stderr,"time period is out of the range of metdata\n");
       free(days);
       free(lat);
@@ -197,11 +199,11 @@ Nov. 17, 2011
       shouldRepeat = 1;
     }
   }
-
+  
   start[0] = startday-days[0]+day_offset;		//netcdf 4.1.3 problem: there is 1 day offset
   start[1] = idlat;           //lat
   start[2] = idlont;
-  count[0] = read_duration;
+  count[0] = shouldRepeat ? 1 :read_duration;
   count[1] = 1;
   count[2] = 1;
   /***Read netcdf data***/ 
@@ -212,7 +214,7 @@ Nov. 17, 2011
     ERR(retval);
   }
 
-  shouldRepeat = 1;
+
   if( shouldRepeat ) {
     // XXX put Naomi's code in here
     // pseudocode:
