@@ -946,7 +946,7 @@ void	canopy_stratum_daily_F(
 	m_tmin_sunlit = stratum[0].mult_conductance.tmin;
 	m_vpd_sunlit = stratum[0].mult_conductance.vpd;
 
-
+	/*
 	stratum[0].potential_gs_sunlit = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
 		stratum[0].defaults[0][0].epc.psi_curve,
@@ -973,6 +973,12 @@ void	canopy_stratum_daily_F(
 		stratum[0].defaults[0][0].epc.coef_CO2,
 		stratum[0].ID,
 		stratum, patch);
+	*/
+
+	/* subsituting a simpler max conductance value */
+	stratum[0].potential_gs_sunlit = stratum[0].defaults[0][0].epc.gl_smax * 
+			stratum[0].defaults[0][0].lai_stomatal_fraction * stratum[0].epv.proj_lai_sunlit;
+
 
 	stratum[0].gs_shade = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
@@ -1010,7 +1016,7 @@ void	canopy_stratum_daily_F(
 
 
 
-
+	/*
 	stratum[0].potential_gs_shade = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
 		stratum[0].defaults[0][0].epc.psi_curve,
@@ -1037,6 +1043,12 @@ void	canopy_stratum_daily_F(
 		stratum[0].defaults[0][0].epc.coef_CO2,
 		stratum[0].ID,
 		stratum, patch);
+	*/
+
+	/* subsituting a simpler max conductance value */
+	stratum[0].potential_gs_shade = stratum[0].defaults[0][0].epc.gl_smax * 
+			stratum[0].defaults[0][0].lai_stomatal_fraction * stratum[0].epv.proj_lai_shade;
+
 
 
 	/* keep track of conductance multipliers actually used an indication of stress */
