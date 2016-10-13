@@ -183,14 +183,11 @@ Nov. 17, 2011
   /*printf("\nstartday=%d duration=%d nday=%d day1=%d dayfin=%d\n",startday,duration,nday,days[0],days[nday-1]);*/
   //int MAX_DATA_SIZE = days[ nday - 1 ];
   int read_duration = duration;
-  int shouldRepeat = 0;
-
-  shouldRepeat = 1;// XXX artificial flag for testing; remove and get rid of subsequent instances
   
   //fprintf(stderr, "days being measured: read_duration %d, nday %d\n", read_duration, nday );
 
   if((startday<days[0] || (duration+startday) > days[nday-1])){
-    if( clim_repeat_flag == 0 || shouldRepeat != 1 ) {
+    if( clim_repeat_flag == 0) {
       fprintf(stderr,"time period is out of the range of metdata\n");
       free(days);
       free(lat);
@@ -198,7 +195,7 @@ Nov. 17, 2011
       return -1;
     }else{
       //read_duration = nday;
-      shouldRepeat = 1;
+      clim_repeat_flag = 1;
     }
   }
   
@@ -206,19 +203,19 @@ Nov. 17, 2011
   fprintf( stderr, "start day:%d daysNeeded:%d\n", startday-days[0]+day_offset, daysNeeded );
 
  
-  // if shouldRepeat, start reading from 0 index
-  start[0] = shouldRepeat ? 0 : startday-days[0]+day_offset;		//netcdf 4.1.3 problem: there is 1 day offset
+  // if clim_repeat_flag, start reading from 0 index
+  start[0] = clim_repeat_flag ? 0 : startday-days[0]+day_offset;		//netcdf 4.1.3 problem: there is 1 day offset
   start[1] = idlat;           //lat
   start[2] = idlont;
   
-  // if shouldRepeat, read all the available data (nday stores the total number of available days)
-  count[0] = shouldRepeat ? nday : nday - startday-days[0]+day_offset;//read_duration;
+  // if clim_repeat_flag, read all the available data (nday stores the total number of available days)
+  count[0] = clim_repeat_flag ? nday : nday - startday-days[0]+day_offset;//read_duration;
   count[1] = 1;
   count[2] = 1;
   /***Read netcdf data***/ 
   float * allActualData;
  
-  if( !shouldRepeat ) {
+  if( !clim_repeat_flag ) {
     if ((retval = nc_get_vara_float(ncid,temp_varid,start,count,&data[0]))){
       free(days);
       free(lat);
@@ -261,7 +258,7 @@ Nov. 17, 2011
  *    data: an array passed as an argument to this function to be populated with the requested netcdf data
  */
 
-  if( shouldRepeat ) {
+  if( clim_repeat_flag ) {
     // XXX put Naomi's code in here
     // pseudocode:
     struct date target_date;
@@ -314,7 +311,7 @@ Nov. 17, 2011
   free(days);
   free(lat);
   free(lont);
-  if( shouldRepeat ) {
+  if( clim_repeat_flag ) {
     free( allActualData );
   }
   return 0;
