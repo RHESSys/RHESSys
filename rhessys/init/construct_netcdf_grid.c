@@ -36,7 +36,8 @@ struct base_station_object *construct_netcdf_grid (
                                 #ifdef LIU_NETCDF_READER
                                 struct base_station_object *base_station_in,
                                 #endif
-								struct base_station_ncheader_object *base_station_ncheader,
+								struct command_line_object *command_line,
+                struct base_station_ncheader_object *base_station_ncheader,
 								int			*num_world_base_stations,
 								float		zone_x,
 								float		zone_y,
@@ -108,8 +109,8 @@ struct base_station_object *construct_netcdf_grid (
 	char	buffertmax[MAXSTR*100];
 	char	buffertmin[MAXSTR*100];
 	char	bufferrain[MAXSTR*100];
-    char *lat_name = "lat";                                                      //160624LML
-    char *lon_name = "lon";                                                      //160624LML
+    char *lat_name = "lat";       
+    char *lon_name = "lon";    
 	
 	FILE*	base_station_file;
 
@@ -118,6 +119,7 @@ struct base_station_object *construct_netcdf_grid (
     int baseid;
     setvbuf(stdout,NULL,_IONBF,0);
 	/* allocate daily_optional_clim_sequence_flags struct and make sure set to 0 */
+
 
 	memset(&daily_flags, 0, sizeof(struct daily_optional_clim_sequence_flags));
 
@@ -144,8 +146,8 @@ struct base_station_object *construct_netcdf_grid (
     net_x = zone_x;
 	net_y = zone_y;
     #else
-    net_x = base_station[0].lon;                                                 //160518LML x;
-    net_y = base_station[0].lat;                                                 //160518LML y;
+    net_x = base_station[0].lon;                                                 // x;
+    net_y = base_station[0].lat;                                                 // y;
     #endif
 	
 	/*--------------------------------------------------------------*/
@@ -224,8 +226,10 @@ struct base_station_object *construct_netcdf_grid (
                                 (int)start_date->day,
 								base_station_ncheader[0].year_start,
 								base_station_ncheader[0].leap_year);
-	   
-        tempdata = (float *) alloc(duration->day * sizeof(float),"tempdata","construct_netcdf_grid");
+
+	  if( command_line[0].clim_repeat_flag ) { 
+      tempdata = (float *) alloc(duration->day * sizeof(float),"tempdata","construct_netcdf_grid");
+    }
 		/* printf("net_y:%f net_x:%f\n",base_station[0].net_y,base_station[0].net_x);
 		printf("tmax filename:%s varname:%s sdist:%f instartday:%d dura:%d\n",base_station[0].netcdf_tmax_filename, base_station[0].netcdf_tmax_varname,base_station[0].sdist,instartday,duration.day); */
 		/* ------------------ TMAX ------------------ */
@@ -242,14 +246,14 @@ struct base_station_object *construct_netcdf_grid (
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       (int)duration->day,
-                    1, // XXX read from command line
+                    command_line[0].clim_repeat_flag,
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var tmax\n");
 			exit(0);
 		}
         for (j=0;j<duration->day;j++){
-            if ((base_station_ncheader[0].temperature_unit == 'K') || (tempdata[j] > 150.0)) //160517LML 160625LML kinds of hard coded for temperature > 150
+            if ((base_station_ncheader[0].temperature_unit == 'K') || (tempdata[j] > 150.0)) // kind of hard coded for temperature > 150
                 base_station[0].daily_clim[0].tmax[j] =  (double)tempdata[j] - 273.15;
             else //160625LML if (base_station_ncheader[0].temperature_unit == 'C')
                 base_station[0].daily_clim[0].tmax[j] =  (double)tempdata[j];
@@ -276,7 +280,7 @@ struct base_station_object *construct_netcdf_grid (
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       duration->day,
-                    1, // XXX read from command line
+                    command_line[0].clim_repeat_flag,
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var tmin\n");
@@ -311,7 +315,7 @@ struct base_station_object *construct_netcdf_grid (
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       duration->day,
-                    1, // XXX read from command line
+                    command_line[0].clim_repeat_flag,
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var rain\n");
@@ -337,7 +341,6 @@ struct base_station_object *construct_netcdf_grid (
 			base_station[0].z = zone_z;
             #endif
 		}
-		else {
             float *elev_tempdata = (float *) alloc(1 * sizeof(float),"tempdata","construct_netcdf_grid");
 			k = get_netcdf_var(
 							   base_station_ncheader[0].netcdf_elev_filename,
@@ -359,8 +362,9 @@ struct base_station_object *construct_netcdf_grid (
 		}
 
 		
-		free(tempdata);
-	
+	  if( command_line[0].clim_repeat_flag ) { 
+		  free(tempdata);
+	  }
 	/*printf("\n      Construct netcdf cell: END ID=%d x=%lf y=%lf lai=%lf i=%d",
 		   base_station[0].ID,
 		   base_station[0].x,

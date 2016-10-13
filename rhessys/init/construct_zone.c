@@ -94,7 +94,8 @@ struct zone_object *construct_zone(
         #ifdef LIU_NETCDF_READER
         struct base_station_object *,
         #endif
-		struct base_station_ncheader_object *,
+		struct command_line_object *command_line,
+    struct base_station_ncheader_object *,
 		int *,
 		float,
 		float,
@@ -108,6 +109,7 @@ struct zone_object *construct_zone(
 	double	atm_pres( double );
 	
 	/*--------------------------------------------------------------*/
+	/*	Local variable definition.									*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
@@ -268,7 +270,7 @@ struct zone_object *construct_zone(
 				printf("\n   STARTING CLOSEST CELL: y=%lf x=%lf",base_y,base_x);
 			}
 
-            #ifndef FIND_STATION_BASED_ON_ID
+#ifndef FIND_STATION_BASED_ON_ID
 			/* Identify centerpoint coords for closest netcdf cell to zone x, y */
 			k = get_netcdf_xy(base_station_ncheader[0].netcdf_tmax_filename, 
 							  base_station_ncheader[0].netcdf_y_varname,
@@ -282,10 +284,10 @@ struct zone_object *construct_zone(
 				printf("\n   CLOSEST CELL: y=%lf x=%lf num=%d",base_y,base_x,*num_world_base_stations);
 			}
 			if(k == -1){
-                fprintf(stderr,"can't locate station data in netcdf according to zone coordinates!\n");
+              fprintf(stderr,"can't locate station data in netcdf according to zone coordinates!\n");
 				exit(0);
 			}
-            #endif
+#endif
 			/* Assign base station based on closest found coordinates */
 			if (*num_world_base_stations > 0) {
 				zone[0].base_stations[0] =	assign_base_station_xy(
@@ -305,12 +307,14 @@ struct zone_object *construct_zone(
 			}
 			else notfound = 1;
 			/* If station is not already in list, add it */
-            #ifdef LIU_NETCDF_READER
-            if (notfound) {
-                fprintf(stderr,"can't locate station data in netcdf!!!\n");
-                exit(0);
-            }
-            #else
+#ifdef LIU_NETCDF_READER
+
+      if (notfound) {
+        // XXX
+       fprintf(stderr,"can't locate station data in netcdf!!!\n");
+       exit(0);
+      }
+#else
 			if (notfound == 1) {
 				if ( command_line[0].verbose_flag == -3 ){
 					printf("\n   Starting construct_netcdf_grid: file=%s num=%d",
@@ -318,7 +322,8 @@ struct zone_object *construct_zone(
 						   *num_world_base_stations);
 				}
 				j = *num_world_base_stations;
-				world_base_stations[j] = construct_netcdf_grid(
+				world_base_stations[j] = construct_netcdf_grid( 
+                                 command_line,
 															   base_station_ncheader,  
 															   num_world_base_stations,
 															   base_x,
@@ -364,8 +369,6 @@ struct zone_object *construct_zone(
 	read_record(world_file, record);
 	/*--------------------------------------------------------------*/
 	/*	Allocate list of pointers to patch objects .				*/
-	/*--------------------------------------------------------------*/
-	zone[0].patches = ( struct patch_object ** )
 		alloc( zone[0].num_patches * sizeof( struct patch_object *),
 		"patches","construct_zone");
 	/*--------------------------------------------------------------*/
