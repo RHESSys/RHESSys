@@ -42,8 +42,8 @@ struct base_station_object *construct_netcdf_grid (
 								float		zone_y,
 								float		zone_z,
                                 struct		date *start_date,
-                                struct		date *duration
-				struct command_line_object *command_line,
+                                struct		date *duration,
+				                        struct command_line_object *command_line
                                 )
 {
 	/*--------------------------------------------------------------*/
@@ -339,6 +339,7 @@ struct base_station_object *construct_netcdf_grid (
 			base_station[0].z = zone_z;
             #endif
 		}
+      else {
             float *elev_tempdata = (float *) alloc(1 * sizeof(float),"tempdata","construct_netcdf_grid");
 			k = get_netcdf_var(
 							   base_station_ncheader[0].netcdf_elev_filename,
