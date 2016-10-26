@@ -36,7 +36,6 @@ struct base_station_object *construct_netcdf_grid (
                                 #ifdef LIU_NETCDF_READER
                                 struct base_station_object *base_station_in,
                                 #endif
-								struct command_line_object *command_line,
                 struct base_station_ncheader_object *base_station_ncheader,
 								int			*num_world_base_stations,
 								float		zone_x,
@@ -44,6 +43,7 @@ struct base_station_object *construct_netcdf_grid (
 								float		zone_z,
                                 struct		date *start_date,
                                 struct		date *duration
+				struct command_line_object *command_line,
                                 )
 {
 	/*--------------------------------------------------------------*/
@@ -238,15 +238,13 @@ struct base_station_object *construct_netcdf_grid (
 									  base_station_ncheader[0].netcdf_tmax_varname,
                                       lat_name,
                                       lon_name,
-                                      /*base_station_ncheader[0].netcdf_y_varname,
-                                      base_station_ncheader[0].netcdf_x_varname,*/
 									  net_y,
 									  net_x,
-                                      (float)base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
+                                      (float)base_station_ncheader[0].resolution_dd,
 									  instartday,
 									  base_station_ncheader[0].day_offset,
                                       (int)duration->day,
-                    command_line[0].clim_repeat_flag,
+                    			command_line[0].clim_repeat_flag,
 									  tempdata);
 		if (k == -1){
 			fprintf(stderr,"can't locate station data in netcdf for var tmax\n");

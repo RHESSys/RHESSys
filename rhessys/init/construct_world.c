@@ -370,7 +370,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct fire_object **construct_fire_grid(struct world_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
-	struct base_station_object *construct_netcdf_grid(struct base_station_object *, struct base_station_ncheader *, int *, float, float, float, struct date *, struct date *);
+	struct base_station_object *construct_netcdf_grid(struct base_station_object *, struct base_station_ncheader *, int *, float, float, float, struct date *, struct date *, struct command_line_object *);
   void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
 
@@ -803,7 +803,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
                                                            world[0].base_stations[i][0].proj_y,
                                                            world[0].base_stations[i][0].z,
                                                            &world[0].start_date,
-                                                           &world[0].duration);
+                                                           &world[0].duration,
+							   command_line);
 
                 //printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID ); 
             }
