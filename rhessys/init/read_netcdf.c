@@ -290,7 +290,7 @@ Nov. 17, 2011
       }
 
       if( j < nday && target_fnd == 1 ) {
-        fprintf( stderr, "match! j: %d, i: %d\n", j, i );
+        //fprintf( stderr, "match! j: %d, i: %d\n", j, i );
         data[i]  = allActualData[j];
       } else {
         fprintf( stderr, "target_date.day %d, target_date.month %d, target_date.year %d\n", target_date.day, target_date.month, target_date.year ); 
