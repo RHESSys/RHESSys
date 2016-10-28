@@ -74,10 +74,10 @@ struct zone_object *construct_zone(
 		int ,
 		int *,
         struct base_station_object **,
-        const struct base_station_ncheader_object *                               //160518LML
-        //160517LML #ifdef LIU_NETCDF_READER
-        //160517LML ,double
-        //160517LML #endif
+        const struct base_station_ncheader_object *
+        //#ifdef LIU_NETCDF_READER
+        //,double
+        //#endif
         #ifdef FIND_STATION_BASED_ON_ID
         ,const int
         #endif
@@ -246,25 +246,25 @@ struct zone_object *construct_zone(
         read_record(world_file, record);
 	}
 	/*--------------------------------------------------------------*/
-	/* NETCDF BASE STATIONS */
+	/* NETCDF BASE STATIONS                                         */
 	/*--------------------------------------------------------------*/
-	/*	Construct the list of base stations.			*/
+	/*	Construct the list of base stations.		                  	*/
 	/*--------------------------------------------------------------*/
 
 
 	if (command_line[0].dclim_flag == 0) {
 		if(command_line[0].gridded_netcdf_flag == 1){
 			/*--------------------------------------------------------------*/
-			/*	Construct the base_stations.				*/
+			/*	Construct the base_stations.				                        */
 			/*--------------------------------------------------------------*/
 			if ( command_line[0].verbose_flag == -3 ){
-                //160517LML printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d resolution_meter=%lf base_y=%lf base_x=%lf",
+                //printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d resolution_meter=%lf base_y=%lf base_x=%lf",
                 printf("\n   Constructing base stations from %s: zoney=%lf zonex=%lf num=%d base_y=%lf base_x=%lf",
 					   base_station_ncheader[0].netcdf_tmax_filename,
 					   zone[0].y,
 					   zone[0].x,
 					   *num_world_base_stations,
-                       //160517LML base_station_ncheader[0].resolution_meter,
+                       // base_station_ncheader[0].resolution_meter,
 					   base_y,
 					   base_x);
 				printf("\n   STARTING CLOSEST CELL: y=%lf x=%lf",base_y,base_x);
@@ -297,9 +297,9 @@ struct zone_object *construct_zone(
 																   &(notfound),
                                         world_base_stations,
                                         world[0].base_station_ncheader
-                                        //160517LML #ifdef LIU_NETCDF_READER
-                                        //160517LML ,base_station_ncheader[0].resolution_meter / 3.0
-                                        //160517LML #endif
+                                        //#ifdef LIU_NETCDF_READER
+                                        //,base_station_ncheader[0].resolution_meter / 3.0
+                                        //#endif
                                         #ifdef FIND_STATION_BASED_ON_ID
                                         ,basestation_id
                                         #endif
@@ -310,7 +310,6 @@ struct zone_object *construct_zone(
 #ifdef LIU_NETCDF_READER
 
       if (notfound) {
-        // XXX
        fprintf(stderr,"can't locate station data in netcdf!!!\n");
        exit(0);
       }
@@ -369,6 +368,8 @@ struct zone_object *construct_zone(
 	read_record(world_file, record);
 	/*--------------------------------------------------------------*/
 	/*	Allocate list of pointers to patch objects .				*/
+  /*--------------------------------------------------------------*/
+  zone[0].patches = (struct patch_object ** ) 
 		alloc( zone[0].num_patches * sizeof( struct patch_object *),
 		"patches","construct_zone");
 	/*--------------------------------------------------------------*/
