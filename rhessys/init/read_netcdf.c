@@ -209,7 +209,7 @@ Nov. 17, 2011
   start[2] = idlont;
   
   // if clim_repeat_flag, read all the available data (nday stores the total number of available days)
-  count[0] = clim_repeat_flag ? nday : nday - startday-days[0]+day_offset;//read_duration;
+  count[0] = clim_repeat_flag ? nday : duration;//nday - startday-days[0]+day_offset;//read_duration;
   count[1] = 1;
   count[2] = 1;
   /***Read netcdf data***/ 
