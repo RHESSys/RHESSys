@@ -153,7 +153,8 @@ void		patch_hourly(
 	else
 		patch[0].hourly[0].rain_throughfall = 0.0;
 
-	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;// in stdzone file, the n_deposition is in kg/m2/yr
+	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24; 
+
 
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
@@ -477,7 +478,7 @@ void		patch_hourly(
 			patch[0].S,
 			patch[0].soil_defaults[0][0].mz_v,
 			patch[0].sat_deficit_z,
-			patch[0].soil_defaults[0][0].Ksat_0 / 2,
+			patch[0].soil_defaults[0][0].Ksat_0_v / basin[0].defaults[0][0].n_routing_timesteps / 2,
 			patch[0].rz_storage - patch[0].rootzone.field_capacity);		
 
 		unsat_drainage = 0.0;
