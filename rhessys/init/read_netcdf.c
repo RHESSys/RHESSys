@@ -200,7 +200,7 @@ Nov. 17, 2011
   }
   
   int daysNeeded = duration - ( nday - startday-days[0]+day_offset );
-  fprintf( stderr, "start day:%d daysNeeded:%d\n", startday-days[0]+day_offset, daysNeeded );
+  //fprintf( stderr, "start day:%d daysNeeded:%d\n", startday-days[0]+day_offset, daysNeeded );
 
  
   // if clim_repeat_flag, start reading from 0 index
@@ -223,7 +223,7 @@ Nov. 17, 2011
       ERR(retval);
     }
   }else{
-    fprintf( stderr, "READING ALL AVAILABLE DATA\n" );
+    //fprintf( stderr, "READING ALL AVAILABLE DATA\n" );
     allActualData  = (float *) alloc(nday * sizeof(float),"allActualData","get_netcdf_var_timeserias");
     if ((retval = nc_get_vara_float(ncid,temp_varid,start,count,&allActualData[0]))){
       free(days);
@@ -232,7 +232,7 @@ Nov. 17, 2011
       ERR(retval);
     }
   }
-  fprintf( stderr, "WE HAVE READ NETCDF\n" );
+  //fprintf( stderr, "WE HAVE READ NETCDF\n" );
 
 /*
  * 1. Read all data from netcdf and store in separate array (allActualData). DONE
@@ -272,7 +272,7 @@ Nov. 17, 2011
  * next comes looping through and artifically creating the other data points.
  */   
 
-    fprintf( stderr, "start_date %d, startday %d, durationRequest %d, days in dataset %d\n", start_date, startday, duration, nday );
+    //fprintf( stderr, "start_date %d, startday %d, durationRequest %d, days in dataset %d\n", start_date, startday, duration, nday );
 
     for( int i = amountToMemCopy; i < duration; i++ ) {
       int target_fnd = 0;
