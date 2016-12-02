@@ -56,5 +56,6 @@ int	parse_alloc_flag( char *input_string)
 		fprintf(stderr,"\n Flag must be static or dynamic and is %s" , input_string);
 		exit(EXIT_FAILURE);
 	}
+	free(input_string);
 	return(alloc_flag);
 }/*end parse_alloc_flag.c*/

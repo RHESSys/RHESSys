@@ -45,5 +45,7 @@ int	parse_phenology_type( char *input_string)
 		fprintf(stderr,"\n Must be either DECID or EVERGREEN");
 		exit(EXIT_FAILURE);
 		}
+
+	free(input_string);	
 	return(veg_type);
 }/*parse_phenology_type.c*/

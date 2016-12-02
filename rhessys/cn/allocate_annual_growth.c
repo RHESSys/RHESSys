@@ -188,6 +188,9 @@ int allocate_annual_growth(				int id,
 	/* Changed to just be live C */
 	/*total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->dead_stemc +
 			cs->live_crootc + cs->dead_crootc);*/
+	if (cs->cpool > ZERO) 
+	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool);
+	else
 	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc);
 
 	/* Changed to just be live C */

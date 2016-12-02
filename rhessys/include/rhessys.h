@@ -156,7 +156,7 @@
 #define MAXSTR  1024
 #define DtoR      0.01745329    
 #define PI      3.14159265359
-#define seconds_per_day 86400
+#define SECONDS_PER_DAY 86400
 #define ess_snow        0.97
 #define ess_soil        0.95
 #define ess_veg         0.98
@@ -299,6 +299,7 @@ struct world_object
         struct  fire_object             **fire_grid;
 	struct patch_fire_object **patch_fire_grid;  //mk
         struct  spinup_thresholds_list_object  *spinup_thresholds ;   
+	struct  date			**master_hourly_date;	
         };
 
 
@@ -426,10 +427,10 @@ struct reservoir_object
 {
 int reservoir_ID;
 int flag_min_flow_storage;/*If min_flow has higher priority than min_storage=0, else=1 */
-double month_max_storage[12];
-double min_storage;
-double min_outflow;
-double initial_storage;
+double month_max_storage[12]; /* m3 */
+double min_storage; /* m3 */
+double min_outflow; /* m3/day */
+double initial_storage; /* m3 */
 };
 
 
@@ -450,17 +451,18 @@ int reservoir_ID;
 struct reservoir_object reservoir;
 struct patch_object **lateral_inputs;
 struct hillslope_object **neighbour_hill;
-double length;
+double length; /* m */
 double manning;
-double bottom_width;
-double top_width;
-double max_height;
+double bottom_width; /* m */
+double top_width; /* m */
+double max_height; /* m */
 double stream_slope;
-double initial_flow;
-double water_depth;
-double Qin;
-double previous_lateral_input;
-double Qout;
+double initial_flow; /* m3/s */
+double water_depth; /* m */
+double previous_Qin; /* m3/s */
+double Qin; /* m3/s */
+double previous_lateral_input; /* m2/s */
+double Qout; /* m3/s */
 };
 
 struct stream_list_object
@@ -669,6 +671,9 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NO3;                                     /* kg/m2/day    */
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
+        struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
+        struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */
+        struct clim_event_sequence  pspread;   	 	   	                    /* 0-1        */
         struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
         };
@@ -706,6 +711,7 @@ struct  daily_clim_object
         double  *dayl;                  /* seconds / day */
         double  *daytime_rain_duration;         /* hours/day    */
         double  *Delta_T;               /*      degrees C / day         */
+        double  *lapse_rate_precip;               /*      m / m           */
         double  *lapse_rate_tmin;               /*      degrees C / m           */
         double  *lapse_rate_tmax;               /*      degrees C / m           */
         double  *dewpoint;                      /*      degrees C       */
@@ -869,7 +875,9 @@ struct metvar_struct
         double tsoil_sum;      /* (deg C) daily summation of soil temp     (NEW) */
         double tnight_max;     /* (deg C) nighttime max average air temperature */
         double vpd;            /* (Pa)    vapor pressure deficit */
-        double vpd_ravg;                                /* (Pa) 21 day running average of vpd */
+        double vpd_ravg;       /* (Pa) 21 day running average of vpd */
+        double vpd_day;		   /* (Pa)    vapor pressure deficit during day time hours */
+        double vpd_night;		   /* (Pa)    vapor pressure deficit during night time hours */
 };
 
 /*----------------------------------------------------------*/
@@ -948,7 +956,7 @@ struct zone_object
         double  CO2;                                            /* ppm  */
         double  cos_aspect;                             /*      DIM     */
         double  cos_slope;                              /*      DIM     */
-        double  daytime_rain_duration;                  /* hours/day    */
+        double  rain_duration;                  		/* hours/day    */
         double  Delta_T;                                /* C degrees    */
         double  e_dewpoint;                             /* Pa           */
         double  e_horizon;      /* cos of angle to normal of flat       */
@@ -966,6 +974,8 @@ struct zone_object
         double  LAI_temp_adjustment;                    /* 0 - 1        */
         double  LAI_scalar;                             /* DIM          */
         double  Ldown;                                  /* W/m2         */
+        double  Ldown_night;							/* W/m2			*/
+        double  Ldown_day;								/* W/m2			*/
         double  ndep_NO3;                               /* kg/m2/day    */
         double  ndep_NH4;                               /* kg/m2/day    */
         double  PAR_direct;                             /* umol(m^2*day)        */
@@ -1051,59 +1061,61 @@ struct  landuse_default
         double  grazing_Closs;                  /* kgC/m2/day */
 };
 /*----------------------------------------------------------*/
-/*      Define an soil  default object.                                         */
+/*	Define an soil 	default object.						*/
 /*----------------------------------------------------------*/
-struct  soil_default
-        {
-        int             ID;                                                             
-        int     theta_psi_curve;                                /* unitless */
-        double  albedo;                                         /* 0 to 1   */
-        double  interval_size;                                  /* m */
-        double  Ksat_0;                                         /* meters/day */
-        double  Ksat_0_v;                                       /* meters/day */
-        double  m;                                              /* m^-1 */
-        double  m_v;                                            /* m^-1 */
-        double  m_z;                                            /* m^-1 */
-        double  mz_v;                                           /* m^-1 */
-        double  porosity_0;                                             /* unitless */
-        double  porosity_decay;                                         /* m^-1 */
-        double  p3;                                             /* unitless */
-        double  p4;                                             /* unitless */
-        double  pore_size_index;                                /* unitless */
-        double  psi_air_entry;                                  /* m */
-        double  psi_max;                                        /* m */
-        double  sat_to_gw_coeff;                                /* percent/day */
-        double  soil_depth;                                     /* m */
-        double  effective_soil_depth;                                   /* m */
-        double  soil_water_cap;                                 /* m of water */
-        double  deltaz;                                         /* m */
-        double  min_heat_capacity;                              /* J/m3/K */
-        double  detention_store_size;                           /* m water */
-        double  max_heat_capacity;                              /* J/m3/K */
-        double  maximum_snow_energy_deficit;                    /* degree days */
-        double  snow_water_capacity;                            /* m */
-        double  snow_light_ext_coef;                            /* (DIM) radiation extinction */
-        double  snow_melt_Tcoef;                                /* unitless */
-        int snow_albedo_flag;   /* (DIM) set as 1 for age model and 2 for BATS model */
-        double  bats_b;                         /* unitless */
-        double  bats_r3;                                /* unitless */
-        double  active_zone_z;                                  /* m */
-        double  DOM_decay_rate;                                 /* kg N /m */
-        double  DON_adsorption_rate;                            /* kg /kg soil */
-        double  DOC_adsorption_rate;                            /* kg /kg soil */
-        double  N_decay_rate;                                   /* kg N /m */
-        double  NO3_adsorption_rate;                            /* kg /kg soil */
-        double  NH4_adsorption_rate;                            /* kg /kg soil */
-        double  denitrif_proportion;                            /* (DIM) 0-1 */
-        double  DON_production_rate;                                    /* (DIM) 0-1 */
-        double  gl_c;                                           /* m/s */
-        double  gsurf_slope;                                    /* (DIM) */
-        double  gsurf_intercept;                                /* m/s */
-        double  theta_mean_std_p1;                              /* DIM */
-        double  theta_mean_std_p2;                              /* DIM */
-        double  sat_store;                                      /* percent of max sat_deficit, for fill and spill  */
-        struct soil_class       soil_type;
-        };
+struct	soil_default
+	{
+	int		ID;								
+	int	theta_psi_curve;				/* unitless */
+	double	albedo;						/* 0 to 1   */
+	double	interval_size;					/* m */
+	double	Ksat_0;						/* meters/day */
+	double	Ksat_0_v;					/* meters/day */
+	double	m;						/* m^-1	*/
+	double	m_v;						/* m^-1	*/
+	double	m_z;						/* m^-1	*/
+	double	mz_v;						/* m^-1	*/
+	double	porosity_0;						/* unitless */
+	double	porosity_decay;						/* m^-1 */
+	double	p3;						/* unitless */
+	double	p4;						/* unitless */
+	double	pore_size_index;				/* unitless */
+	double	psi_air_entry;					/* m */
+	double	psi_max;					/* m */
+	double	sat_to_gw_coeff;				/* percent/day */
+	double	soil_depth;					/* m */
+	double	effective_soil_depth;					/* m */
+	double	soil_water_cap;					/* m of water */
+	double	deltaz;						/* m */
+	double	min_heat_capacity;				/* J/m3/K */
+	double	detention_store_size;				/* m water */
+	double	max_heat_capacity;				/* J/m3/K */
+	double	maximum_snow_energy_deficit;			/* degree days */
+	double  snow_water_capacity;				/* m */
+	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
+	double  snow_melt_Tcoef;				/* unitless */
+	double	fs_spill;					/* multiplier*/
+	double	fs_percolation;					/* multiplier */
+	double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */	
+	int	snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
+	double  bats_b;				/* unitless */
+	double  bats_r3;				/* unitless */
+	double  active_zone_z;					/* m */
+	double  DOM_decay_rate;					/* kg N /m */
+	double  DON_adsorption_rate;				/* kg /kg soil */
+	double  DOC_adsorption_rate;				/* kg /kg soil */
+	double  N_decay_rate;					/* kg N /m */
+	double  NO3_adsorption_rate;				/* kg /kg soil */
+	double  NH4_adsorption_rate;				/* kg /kg soil */
+	double  denitrif_proportion;				/* (DIM) 0-1 */
+	double	DON_production_rate;					/* (DIM) 0-1 */
+	double	gl_c;						/* m/s */
+	double	gsurf_slope;					/* (DIM) */
+	double  gsurf_intercept;				/* m/s */
+	double  theta_mean_std_p1;				/* DIM */
+	double  theta_mean_std_p2;				/* DIM */
+	struct soil_class	soil_type;
+	};
 
 
 /*----------------------------------------------------------*/
@@ -1355,6 +1367,7 @@ struct  litter_object
         double depth;                   /* m */
         double density;                 /* m/kgC */
         double rain_stored;             /* m */
+	double NO3_stored;		/* kg/m2 */
         double gsurf;
         double proj_pai;
         double rain_capacity;
@@ -1511,6 +1524,7 @@ struct stratum_spinup_object
 /*      Define an patch object                              */      
 /*----------------------------------------------------------*/
 struct patch_object
+
         {
         int             zone_ID;
         int             default_flag;
@@ -1542,11 +1556,12 @@ struct patch_object
         double  gasnow;                 /* m/s */         
         double  gasnow_final;           /* m/s */         
         double  gw_drainage;            /* m/day */
-        double  hourly_rz_drainage;     /* m water by Xiaoli */
-        double  hourly_unsat_drainage;  /* m water by Xiaoli */
-        double  hourly_subsur2stream_flow;      /* m water by Xiaoli */
-        double  hourly_sur2stream_flow;  /* m water by Xiaoli */
-        double  hourly_stream_flow;     /* m water by Xiaoli */
+	double	gw_drainage_hourly;     /* m/day  */	
+        double  hourly_rz_drainage;     /* m water  */
+        double  hourly_unsat_drainage;  /* m water  */
+        double  hourly_subsur2stream_flow;      /* m water */
+        double  hourly_sur2stream_flow;  /* m water  */
+        double  hourly_stream_flow;     /* m water */
         double  interim_sat;            /* m */
         double  stream_gamma;           /* meters**2/day        */
         double  Kdown_direct;           /* Kj/(m^2*day) */
@@ -1558,7 +1573,11 @@ struct patch_object
         double  Kdown_diffuse_final;    /* Kj/(m^2*day) */
         double  Kup_diffuse_final;      /* Kj/(m^2*day) */
         double  Ldown;  /* Kj/(m^2*day) */
+        double  Ldown_night; 	/* Kj/(m^2*day) */
+        double	Ldown_day;		/* Kj/(m^2*day) */
         double  Ldown_final;    /* Kj/(m^2*day) */
+        double  Ldown_final_night;	/* Kj/(m^2*day) */
+        double 	Ldown_final_day;	/* Kj/(m^2*day) */
         double Kdown_direct_ovund;
         double Kup_direct_ovund;
         double Kdown_diffuse_ovund;
@@ -1584,11 +1603,19 @@ struct patch_object
         double  lna;                    /* unitless     */
         double  lai;                    /* unitless     */
         double  Lup_soil;               /* Kj/(m^2*day) */
-        double  Lup;            /* Kj/(m^2*day) */
+        double  Lup;            		/* Kj/(m^2*day) */
         double  Lstar_canopy;           /* Kj/(m^2*day) */
+        double  Lstar_canopy_night;     /* Kj/(m^2*day) */
+        double  Lstar_canopy_day;       /* Kj/(m^2*day) */
         double  Lstar_snow;             /* Kj/(m^2*day) */
+        double  Lstar_snow_night;       /* Kj/(m^2*day) */
+        double  Lstar_snow_day;         /* Kj/(m^2*day) */
         double  Lstar_soil;             /* Kj/(m^2*day) */
+        double  Lstar_soil_night;       /* Kj/(m^2*day) */
+        double  Lstar_soil_day;         /* Kj/(m^2*day) */
         double  Lstar_pond;             /* Kj/(m^2*day) */
+        double  Lstar_pond_night;       /* Kj/(m^2*day) */
+        double  Lstar_pond_day;         /* Kj/(m^2*day) */
         double  Ldown_subcanopy;        /* Kj/(m^2*day) */
         double  m;              /* m^-1 */
         double  m_z;            /* m^-1 */
@@ -1634,6 +1661,8 @@ struct patch_object
         double  surface_NH4;            /* kg/m2        */
         double  grazing_Closs;          /* kgC/m2       */
         double  grazing_mean_nc;        /* ratio N:Co   */
+        double  fertilizer_NO3_in;         /* kg/m2        */
+        double  fertilizer_NH4_in;         /* kg/m2        */
         double  fertilizer_NO3;         /* kg/m2        */
         double  fertilizer_NH4;         /* kg/m2        */
         double  surface_DOC_Qin_total;  /* kgC/m2 day   */
@@ -1666,7 +1695,7 @@ struct patch_object
         double  unsat_drainage;         /* m water      */
         double  PET;            /* m water      */
         double  PE;             /* m water      */
-	      double  precip_with_assim;    /* m water */
+        double  precip_with_assim;    /* m water */
         double  rz_drainage;            /* m water      */
         double  wind;                   /* m/s          */
         double  wind_final;             /* m/s          */
@@ -1970,6 +1999,8 @@ struct  command_line_object
         int             noredist_flag;
         int             vmort_flag;
         int             version_flag;
+        int		FillSpill_flag;
+        int		evap_use_longwave_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
@@ -1995,6 +2026,9 @@ struct  command_line_object
         double  vsen_alt[2];
         double  std_scale;
         double  thresholds[2];
+	double	fs_spill;
+	double	fs_percolation;
+	double	fs_threshold;
         struct  output_flag     output_flags;
         struct  b_option        *b;
         struct  h_option        *h;
@@ -2006,6 +2040,7 @@ struct  command_line_object
         struct  date            start_date;
         struct  date            end_date;
         };
+
 
 
 /*----------------------------------------------------------*/
@@ -2660,7 +2695,9 @@ struct  canopy_strata_object
         double  gsurf;                                          /* m/s          */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
-        double  Lstar;                                          /* Kj/(m2*day)  */      
+        double  Lstar;                                          /* Kj/(m2*day)  */
+        double  Lstar_night;									/* Kj/(m2*day)  */
+        double  Lstar_day;										/* Kj/(m2*day)  */
         double  NO3_stored;                                     /* kg/m2        */
         double  PAR_after_reflection;                           /* (umol photon/m2*day) */
         double  ppfd_sunlit;                    /*  (umol/m2/s) PAR photon flux density */
