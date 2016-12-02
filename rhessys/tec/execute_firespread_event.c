@@ -263,9 +263,12 @@ void execute_firespread_event(
 				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 
 	
-				compute_fire_effects(
-					patch,
-					pspread);
+				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
+				{
+					compute_fire_effects(
+						patch,
+						pspread);
+				}
 
 			}
 		}
