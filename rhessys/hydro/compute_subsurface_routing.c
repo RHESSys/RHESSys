@@ -1003,9 +1003,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*	if(k==n_timesteps-1){
 				    if (patch[0].drainage_type == STREAM) {
 					    patch[0].streamflow += patch[0].return_flow
-							    + patch[0].base_flow;*/
+							    + patch[0].base_flow;
 				    }
-				}
+				} */
 
 		} /* end i */
 
