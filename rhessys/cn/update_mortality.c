@@ -231,7 +231,7 @@ void update_mortality(
 	/* ---------------------------------------- */
 	/* CARBON mortality state variable update   */
 	/* ---------------------------------------- */
-	
+
 	/* ABOVEGROUND C POOLS */
 	
 	/* Only add dead leaf and stem c to litter and cwd pools if thintyp   */
@@ -295,37 +295,48 @@ void update_mortality(
 	/* gresp... group in with aboveground? */
 	cs->gresp_store       -= m_gresp_store_to_litr1c;
 	cs->gresp_transfer      -= m_gresp_transfer_to_litr1c;
-	
+
 	/* BELOWGROUND C POOLS */
-	/* Belowground dead c goes to litter and cwd in all cases. */
+
+	if (thintyp != 2) {
+		/*   Fine root mortality */
+		cs_litr->litr1c    += m_frootc_to_litr1c;
+		cs_litr->litr2c    += m_frootc_to_litr2c;
+		cs_litr->litr3c    += m_frootc_to_litr3c;
+		cs_litr->litr4c    += m_frootc_to_litr4c;
+		cs_litr->litr1c    += m_frootc_store_to_litr1c;
+		cs_litr->litr1c    += m_frootc_transfer_to_litr1c;
+
+		if (epc.veg_type == TREE){
+			/* Coarse root wood mortality */
+			cs->cwdc       += m_livecrootc_to_cwdc;
+			cs->cwdc       += m_deadcrootc_to_cwdc;
+			cs_litr->litr1c       += m_livecrootc_store_to_litr1c;
+			cs_litr->litr1c       += m_deadcrootc_store_to_litr1c;
+			cs_litr->litr1c         += m_livecrootc_transfer_to_litr1c;
+			cs_litr->litr1c         += m_deadcrootc_transfer_to_litr1c;
+		}
+	}
+
+	/* Remove belowground dead c from carbon stores in all cases. */
+
 	/*   Fine root mortality */
-	cs_litr->litr1c    += m_frootc_to_litr1c;
 	cs->frootc         -= m_frootc_to_litr1c;
-	cs_litr->litr2c    += m_frootc_to_litr2c;
 	cs->frootc         -= m_frootc_to_litr2c;
-	cs_litr->litr3c    += m_frootc_to_litr3c;
 	cs->frootc         -= m_frootc_to_litr3c;
-	cs_litr->litr4c    += m_frootc_to_litr4c;
 	cs->frootc         -= m_frootc_to_litr4c;
-	cs_litr->litr1c    += m_frootc_store_to_litr1c;
 	cs->frootc_store   -= m_frootc_store_to_litr1c;
-	cs_litr->litr1c         += m_frootc_transfer_to_litr1c;
 	cs->frootc_transfer     -= m_frootc_transfer_to_litr1c;
+
 	if (epc.veg_type == TREE){
 		/* Coarse root wood mortality */
-		cs->cwdc       += m_livecrootc_to_cwdc;
 		cs->live_crootc -= m_livecrootc_to_cwdc;
-		cs->cwdc       += m_deadcrootc_to_cwdc;
 		cs->dead_crootc -= m_deadcrootc_to_cwdc;		
-		cs_litr->litr1c       += m_livecrootc_store_to_litr1c;
 		cs->livecrootc_store  -= m_livecrootc_store_to_litr1c;
-		cs_litr->litr1c       += m_deadcrootc_store_to_litr1c;
 		cs->deadcrootc_store  -= m_deadcrootc_store_to_litr1c;
-		cs_litr->litr1c         += m_livecrootc_transfer_to_litr1c;
 		cs->livecrootc_transfer -= m_livecrootc_transfer_to_litr1c;
-		cs_litr->litr1c         += m_deadcrootc_transfer_to_litr1c;
 		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
-		}
+	}
 	
 	/* ---------------------------------------- */
 	/* NITROGEN mortality state variable update */
@@ -394,35 +405,46 @@ void update_mortality(
 		}
 
 	/* BELOWGROUND N POOLS */
-	/* Belowground dead n goes to litter and cwd in all cases. */
+
+	if (thintyp != 2) {
+		/*   Fine root mortality */
+		ns_litr->litr1n    += m_frootn_to_litr1n;
+		ns_litr->litr2n    += m_frootn_to_litr2n;
+		ns_litr->litr3n    += m_frootn_to_litr3n;
+		ns_litr->litr4n    += m_frootn_to_litr4n;
+		ns_litr->litr1n         += m_frootn_store_to_litr1n;
+		ns_litr->litr1n         += m_frootn_transfer_to_litr1n;
+
+		if (epc.veg_type == TREE){
+			/* Coarse root mortality */
+			ns_litr->litr1n     += m_livecrootn_to_litr1n;
+			ns->cwdn       += m_livecrootn_to_cwdn;
+			ns->cwdn       += m_deadcrootn_to_cwdn;
+			ns_litr->litr1n         += m_livecrootn_store_to_litr1n;
+			ns_litr->litr1n         += m_deadcrootn_store_to_litr1n;
+			ns_litr->litr1n         += m_livecrootn_transfer_to_litr1n;
+			ns_litr->litr1n         += m_deadcrootn_transfer_to_litr1n;
+		}
+	}
+
+	/* Remove belowground dead n from stores in all cases. */
+
 	/*   Fine root mortality */
-	ns_litr->litr1n    += m_frootn_to_litr1n;
 	ns->frootn         -= m_frootn_to_litr1n;
-	ns_litr->litr2n    += m_frootn_to_litr2n;
 	ns->frootn         -= m_frootn_to_litr2n;
-	ns_litr->litr3n    += m_frootn_to_litr3n;
 	ns->frootn         -= m_frootn_to_litr3n;
-	ns_litr->litr4n    += m_frootn_to_litr4n;
 	ns->frootn         -= m_frootn_to_litr4n;
-	ns_litr->litr1n         += m_frootn_store_to_litr1n;
 	ns->frootn_store      -= m_frootn_store_to_litr1n;
-	ns_litr->litr1n         += m_frootn_transfer_to_litr1n;
 	ns->frootn_transfer     -= m_frootn_transfer_to_litr1n;
+
 	if (epc.veg_type == TREE){
 		/* Coarse root mortality */
-		ns_litr->litr1n     += m_livecrootn_to_litr1n;
 		ns->live_crootn -= m_livecrootn_to_litr1n;
-		ns->cwdn       += m_livecrootn_to_cwdn;
 		ns->live_crootn -= m_livecrootn_to_cwdn;
-		ns->cwdn       += m_deadcrootn_to_cwdn;
 		ns->dead_crootn -= m_deadcrootn_to_cwdn;
-		ns_litr->litr1n         += m_livecrootn_store_to_litr1n;
 		ns->livecrootn_store  -= m_livecrootn_store_to_litr1n;
-		ns_litr->litr1n         += m_deadcrootn_store_to_litr1n;
 		ns->deadcrootn_store  -= m_deadcrootn_store_to_litr1n;
-		ns_litr->litr1n         += m_livecrootn_transfer_to_litr1n;
 		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
-		ns_litr->litr1n         += m_deadcrootn_transfer_to_litr1n;
 		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;		
 	}
 	return;
