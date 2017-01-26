@@ -2475,6 +2475,7 @@ struct epconst_struct
         int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */
         int ndays_expand;      /* (DIM) number of transition days leaf on to/from off  */
         int ndays_litfall;  /* (DIM) number of transition days for full leaf drop  */
+	double gsi_thresh;	/* (0 to 1) gsi threshold for initiating phenological change */
         int phenology_flag;     /* (DIM) set as 1 for dynamic phenology */
         int allocation_flag;    /* (DIM) set as 1 for dynamic allocation */
         int veg_type;           /* (DIM) set as 1 for tree; 0 for grass */

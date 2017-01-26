@@ -213,7 +213,7 @@ void update_phenology(struct zone_object  *zone,
         	if  (phen->gwseasonday <= epc.ndays_expand)
           	    expand_flag=1;
         }   
-      	else if (phen->gsi > 0.5 && phen->pheno_flag == 0) {
+      	else if (phen->gsi > epc.gsi_thresh && phen->pheno_flag == 0) {
           	phen->gwseasonday = 1;
          	phen->lfseasonday = -1; 
          	expand_flag=1;
@@ -274,7 +274,7 @@ void update_phenology(struct zone_object  *zone,
           if  (phen->gwseasonday <= epc.ndays_expand)
               expand_flag=1;
           }   
-      else if (phen->gsi > 0.5 && phen->pheno_flag == 0) {
+      else if (phen->gsi > epc.gsi_thresh && phen->pheno_flag == 0) {
               phen->gwseasonday = 1;
           phen->lfseasonday = -1; 
           expand_flag=1;
@@ -294,7 +294,7 @@ void update_phenology(struct zone_object  *zone,
               litfall_flag=1;
           }
  
-	else if ((phen->gsi < 0.5) && (phen->gwseasonday > epc.ndays_expand)){
+	else if ((phen->gsi < epc.gsi_thresh) && (phen->gwseasonday > epc.ndays_expand)){
                 phen->lfseasonday = 1;
           phen->gwseasonday = -1; 
           litfall_flag=1;
