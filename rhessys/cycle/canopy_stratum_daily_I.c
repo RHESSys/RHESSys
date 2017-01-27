@@ -127,7 +127,7 @@ void	canopy_stratum_daily_I(
 	struct nstate_struct *ns;
 	double wilting_point;
 	struct mortality_struct mort;
-	double leafcloss_perc;
+	double leafcloss_perc, daily_mortality;
 
 	/*--------------------------------------------------------------*/
 	/* no processing at present for non-veg types			*/
@@ -218,15 +218,23 @@ void	canopy_stratum_daily_I(
 			+ cs->live_crootc + cs->livecrootc_store + cs->livecrootc_transfer
 			+ cs->dead_crootc + cs->deadcrootc_store + cs->deadcrootc_transfer);
 
-		
-		mort.mort_cpool = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		mort.mort_leafc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		mort.mort_deadleafc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		mort.mort_livestemc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		mort.mort_deadstemc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		mort.mort_livecrootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		mort.mort_deadcrootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
-		mort.mort_frootc = stratum[0].defaults[0][0].epc.daily_mortality_turnover;
+	
+		daily_mortality = stratum[0].defaults[0][0].epc.max_daily_mortality;
+
+		if (cs->age > stratum[0].defaults[0][0].epc.daily_mortality_threshold) 
+			daily_mortality = daily_mortality - daily_mortality*min(1.0, 
+				(cs->age-stratum[0].defaults[0][0].epc.daily_mortality_threshold)/100.0);
+
+		daily_mortality = max(daily_mortality, stratum[0].defaults[0][0].epc.min_daily_mortality);
+
+		mort.mort_cpool = daily_mortality;
+		mort.mort_leafc = daily_mortality;
+		mort.mort_deadleafc = daily_mortality;
+		mort.mort_livestemc = daily_mortality;
+		mort.mort_deadstemc = daily_mortality;
+		mort.mort_livecrootc = daily_mortality;
+		mort.mort_deadcrootc = daily_mortality;
+		mort.mort_frootc = daily_mortality;
 		update_mortality(stratum[0].defaults[0][0].epc,
 			&(stratum[0].cs),
 			&(stratum[0].cdf),
