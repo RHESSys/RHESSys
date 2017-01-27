@@ -48,12 +48,13 @@ struct	daily_clim_object *construct_daily_clim(
 												FILE	*base_station_file,
 												char	*file_prefix,
 												struct	date	start_date,
-												long	duration)
+												long	duration,
+												int	clim_repeat_flag)
 {
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/
-	double	*construct_clim_sequence( char *, struct date, long);
+	double	*construct_clim_sequence( char *, struct date, long, int);
 	void	*alloc(	size_t, char *, char *);
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/
@@ -82,17 +83,17 @@ struct	daily_clim_object *construct_daily_clim(
 	daily_clim[0].tmin = construct_clim_sequence(
 		(char *)strcat(file_name,".tmin"),
 		start_date,
-		duration);
+		duration, clim_repeat_flag);
 	strcpy(file_name, file_prefix);
 	daily_clim[0].tmax = construct_clim_sequence(
 		(char *)strcat(file_name,".tmax"),
 		start_date,
-		duration);
+		duration, clim_repeat_flag);
 	strcpy(file_name, file_prefix);
 	daily_clim[0].rain = construct_clim_sequence(
 		(char *)strcat(file_name,".rain"),
 		start_date,
-		duration);
+		duration, clim_repeat_flag);
 	/*--------------------------------------------------------------*/
 	/*	initialize the rest of the clim sequences as null	*/
 	/*--------------------------------------------------------------*/
@@ -157,7 +158,7 @@ struct	daily_clim_object *construct_daily_clim(
 			daily_clim[0].dayl = construct_clim_sequence(
 				(char *)strcat(file_name,".dayl"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"daytime_rain_duration") == 0 ){
 			strcpy(file_name, file_prefix);
@@ -165,105 +166,105 @@ struct	daily_clim_object *construct_daily_clim(
 			daily_clim[0].daytime_rain_duration = construct_clim_sequence(
 				(char *)strcat(file_name,".daytime_rain_duration"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"LAI_scalar") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].LAI_scalar = construct_clim_sequence(
 				(char *)strcat(file_name,".LAI_scalar"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"Ldown") == 0 ) {
 			strcpy(file_name, file_prefix);
 			daily_clim[0].Ldown = construct_clim_sequence(
 				(char *)strcat(file_name,".Ldown"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"Kdown_diffuse") == 0 ) {
 			strcpy(file_name, file_prefix);
 			daily_clim[0].Kdown_diffuse = construct_clim_sequence(
 				(char *)strcat(file_name,".Kdown_diffuse"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"Kdown_direct") == 0 ) {
 			strcpy(file_name, file_prefix);
 			daily_clim[0].Kdown_direct = construct_clim_sequence(
 				(char *)strcat(file_name,".Kdown_direct"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"PAR_diffuse") == 0 ) {
 			strcpy(file_name, file_prefix);
 			daily_clim[0].PAR_diffuse = construct_clim_sequence(
 				(char *)strcat(file_name,".PAR_diffuse"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"PAR_direct") == 0 ) {
 			strcpy(file_name, file_prefix);
 			daily_clim[0].PAR_direct = construct_clim_sequence(
 				(char *)strcat(file_name,".PAR_direct"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"relative_humidity") == 0 ) {
 			strcpy(file_name, file_prefix);
 			daily_clim[0].relative_humidity = construct_clim_sequence(
 				(char *)strcat(file_name,".relative_humidity"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"tday") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].tday = construct_clim_sequence(
 				(char *)strcat(file_name,".tday"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"tnightmax") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].tnightmax = construct_clim_sequence(
 				(char *)strcat(file_name,".tnightmax"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"tsoil") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].tsoil = construct_clim_sequence(
 				(char *)strcat(file_name,".tsoil"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"CO2") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].CO2 = construct_clim_sequence(
 				(char *)strcat(file_name,".CO2"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"vpd") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].vpd = construct_clim_sequence(
 				(char *)strcat(file_name,".vpd"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"tavg") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].tavg = construct_clim_sequence(
 				(char *)strcat(file_name,".tavg"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"snow") == 0 ) {
 			strcpy(file_name, file_prefix);
 			daily_clim[0].snow = construct_clim_sequence(
 				(char *)strcat(file_name,".snow"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 
 		else if ( strcmp(sequence_name,"wind") == 0 ){
@@ -271,63 +272,63 @@ struct	daily_clim_object *construct_daily_clim(
 			daily_clim[0].wind = construct_clim_sequence(
 				(char *)strcat(file_name,".wind"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"wind_direction") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].wind_direction = construct_clim_sequence(
 				(char *)strcat(file_name,".wind_direction"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"ndep_NH4") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].ndep_NH4 = construct_clim_sequence(
 				(char *)strcat(file_name,".ndep_NH4"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"ndep_NO3") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].ndep_NO3 = construct_clim_sequence(
 				(char *)strcat(file_name,".ndep_NO3"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"lapse_rate_tmax") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].lapse_rate_tmax = construct_clim_sequence(
 				(char *)strcat(file_name,".lapse_rate_tmax"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"lapse_rate_tmin") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].lapse_rate_tmin = construct_clim_sequence(
 				(char *)strcat(file_name,".lapse_rate_tmin"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"lapse_rate_precip") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].lapse_rate_precip = construct_clim_sequence(
 				(char *)strcat(file_name,".lapse_rate_precip"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"tdewpoint") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].tdewpoint = construct_clim_sequence(
 				(char *)strcat(file_name,".tdewpoint"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else if ( strcmp(sequence_name,"atm_trans") == 0 ){
 			strcpy(file_name, file_prefix);
 			daily_clim[0].atm_trans = construct_clim_sequence(
 				(char *)strcat(file_name,".atm_trans"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		
 		

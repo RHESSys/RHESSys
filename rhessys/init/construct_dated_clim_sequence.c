@@ -100,7 +100,6 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		exit(EXIT_FAILURE);
 	} /*end if*/
 	
-	printf("\nCount days in the dated climate file %s\n", file);
 	/*--------------------------------------------------------------*/
 	/*	First, calculate how many day it has in the record			*/
 	/*--------------------------------------------------------------*/
@@ -110,6 +109,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	tmp_date.hour = start_date.hour;
 
 	fscanf(sequence_file,"%d",&num_records);
+	printf("\nThere are %d days in the dated climate file %s\n", num_records, file);
 	for ( i=0 ; i<num_records ; i++ ){
 		if(fscanf(sequence_file,"%ld %ld %ld %ld %lf",
 			&cur_date.year,

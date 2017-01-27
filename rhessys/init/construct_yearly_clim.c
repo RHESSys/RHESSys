@@ -42,12 +42,13 @@ struct	yearly_clim_object *construct_yearly_clim(
 												  FILE	*base_station_file,
 												  char	*file_prefix,
 												  struct	date	start_date,
-												  long	duration)
+												  long	duration, 
+												int clim_repeat_flag)
 {
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/
-	double	*construct_clim_sequence( char *, struct date, long);
+	double	*construct_clim_sequence( char *, struct date, long, int);
 	void	*alloc(	size_t, char *, char *);
 	
 	/*--------------------------------------------------------------*/
@@ -106,7 +107,7 @@ struct	yearly_clim_object *construct_yearly_clim(
 			yearly_clim[0].temp = construct_clim_sequence(
 				(char *)strcat(file_name,".temp"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else{
 			fprintf(stderr,
