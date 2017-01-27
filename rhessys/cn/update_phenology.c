@@ -205,8 +205,7 @@ void update_phenology(struct zone_object  *zone,
 	}
 
   	phen->gsi = compute_growingseason_index(zone, epv, epc);
-  
-
+ 
   	/* first are we before last possible date for leaf onset */
     	/* are we already in a leaf onset condition */
       	if (phen->gwseasonday > -1 ) { 
@@ -220,6 +219,7 @@ void update_phenology(struct zone_object  *zone,
 		phen->pheno_flag=1;
           	phen->expand_startday = day;
           	phen->expand_stopday = day + epc.ndays_expand;
+
         }
 
 
@@ -267,7 +267,6 @@ void update_phenology(struct zone_object  *zone,
 
   phen->gsi = compute_growingseason_index(zone, epv, epc);
   
-
   /* first are we before last possible date for leaf onset */
     /* are we already in a leaf onset condition */
       if (phen->gwseasonday > -1 ) { 
@@ -283,7 +282,7 @@ void update_phenology(struct zone_object  *zone,
           phen->expand_stopday = day + epc.ndays_expand;
           }   
 
-/* now determine if we are before the last possible date of leaf drop */
+  /* now determine if we are before the last possible date of leaf drop */
      
       /* are we already in a leaf offset */
       if (phen->lfseasonday > -1 ) { 

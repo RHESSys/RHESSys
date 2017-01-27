@@ -2467,6 +2467,7 @@ struct epconst_struct
         double gs_psi_max;         /* (mPa) upper soil moisture psi  threshold for leaf onset mPa */
         double gs_psi_range;       /* (mPa)  psi range for leaf onset */
         double gs_ravg_days;       /* (days)  length of averaging window for gs controls  */
+	double gsi_thresh;	/* (0 to 1) gsi threshold for initiating phenological change */
         int gs_npp_on;          /* (1 or 2) determines whether dynamic drought senescence is turned on */
         double gs_npp_slp;          /* slope of nppcum/litfall start curve */
         double gs_npp_intercpt;	   /* intercept of nppcum/litfall start curve */
@@ -2475,7 +2476,6 @@ struct epconst_struct
         int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */
         int ndays_expand;      /* (DIM) number of transition days leaf on to/from off  */
         int ndays_litfall;  /* (DIM) number of transition days for full leaf drop  */
-	double gsi_thresh;	/* (0 to 1) gsi threshold for initiating phenological change */
         int phenology_flag;     /* (DIM) set as 1 for dynamic phenology */
         int allocation_flag;    /* (DIM) set as 1 for dynamic allocation */
         int veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
