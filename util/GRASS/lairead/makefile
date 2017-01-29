@@ -6,7 +6,7 @@ CFPATH = ../../../cf
 #CFLAGS = -O -I$(GISBASE)/include -I$(CFPATH)/include
 CFLAGS = -g -I$(GISBASE)/include -I$(CFPATH)/include
 RHESSYS_BIN = /usr/local/bin
-GIS_LIBS = -lgrass_gis
+GIS_LIBS = -lgrass_gis -lgrass_raster
 
 OBJECTS = main.o read_allom_table.o build_flow_table.o sys.o fileio.o \
 	find_patch.o change_world.o print_flow_table.o zero_flow_table.o link_patch_veg.o grassio.o
