@@ -34,7 +34,6 @@ struct canopy_strata_object *construct_empty_shadow_strata(
                                                                                                          struct canopy_strata_object *stratum,
                                                                                                          struct default_object  *defaults)
 {
-printf("calling construct_empty_shadow_stratum\n");
   
       /*--------------------------------------------------------------*/
         /*      Local function definition.                              */

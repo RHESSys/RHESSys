@@ -92,6 +92,35 @@ int locate(float *data, int n, float x, float md){
   }
 }
 //_____________________________________________________________________________/
+/* wrapDateIndexPointer
+** find first starting index in data to loop through
+** that matches target data month/year, returns index integer.
+**
+** month - month of first data point to matche
+** day   - day of first data point to match
+** start_date  - base index for starting search
+** data_length - length of actual data array being used for generating repeats
+*/
+int wrapDateIndexPointer( int month, int day, int start_date, int data_length ) {
+  int index = 0;
+  int targetFound = 0;
+  struct date candidateDate;
+
+  while( targetFound == 0 && index < data_length ) {
+    candidateDate = caldat( start_date + index );
+    if( candidateDate.month == month && candidateDate.day == day ){
+      return index;
+    }else{
+      index++;
+    }
+  }
+
+  if( targetFound == 0 ) {
+    fprintf( stderr, 'error finding next date in repeat clim data.\n' );
+    ERR(-1);
+  }
+}
+
 int get_netcdf_var_timeserias(char *netcdf_filename, char *varname, 
     char *nlat_name, char *nlon_name, 
     float rlat, float rlon, float sd, 
@@ -234,71 +263,62 @@ Nov. 17, 2011
   }
   //fprintf( stderr, "WE HAVE READ NETCDF\n" );
 
-/*
- * 1. Read all data from netcdf and store in separate array (allActualData). DONE
- * 2. Determine start index to read from allAcutalData.
- * 3. memcpy start index to end of allActualData into passed data[] array (assuming we want that many days)
- * 4. we are now at the end of the allActualData array. Starting from the beginning of allActualData, we try
- *    to find matching month/day combinations for subsequent required data points. So for each further required data point, we:
- *    - increment a counter
- *    - check the value held in allActualData at the counter position
- *    - if the month and day of the value is the same as the month and data we need for our next data point, copy the value into our target data[] array.
- *    - else repeat this process
- *
- * 5. For each step in the above loop, check to see if we've filled in the required amount of data; if so, return. Also check to see if we've passed the end
- *    of the allActualData array... if so, reset counter to 0.
- *
- * 6. Need to read clim_repeat_flag from command line to determine whether any of this takes place.
+/* Check for Climate repeat flag. If flag is set, cycle through clim data
  *
  * Variables:
  *    nday : the total number of days in the actual netcdf file
+ *    startday: the start of the metadata, the starting index to read from allActualData... the first date requested when this function is called
+ *    start_date : index that says where in the netcdf data array we begin to read from
  *    allActualData: the entire dataset from the netcdf file, irrespective of how much data is requested by the user
- *    startday: the starting index to read from allActualData... the first date requested when this function is called.
- *    duration: the number of days of requested data... 
+ *    duration: the number of days of requested data
  *    data: an array passed as an argument to this function to be populated with the requested netcdf data
  */
 
   if( clim_repeat_flag ) {
-    // XXX put Naomi's code in here
-    // pseudocode:
     struct date target_date;
     struct date curr_date;
     int start_date = startday - days[0] + day_offset;
-    int amountToMemCopy = nday - start_date;
-
-    memcpy( &allActualData[ start_date ], &data[0], amountToMemCopy );
+    int amountToMemCopy = nday - start_date; 
+    struct date start_of_repeat = caldat( nday ); // first day in requested data where we need to begin repeating data
+    
+    fprintf( stderr, "start with copying %d days of %d total netcdf.", amountToMemCopy, nday);
+    memcpy( &data[0], &allActualData[ start_date ], amountToMemCopy * sizeof(float) );
 /* 
  * now we should have all the data from the start date to the end of the actual data copied over. 
  * next comes looping through and artifically creating the other data points.
  */   
 
-    //fprintf( stderr, "start_date %d, startday %d, durationRequest %d, days in dataset %d\n", start_date, startday, duration, nday );
+int new_data_index = amountToMemCopy;
+int repeat_data_index = 0; // index inside of netcdf data where we are getting records to repeat
+int base_date_index = start_date + new_data_index;
+struct date first_date_for_new_data = caldat( base_date_index );
+int new_data_length = duration;
+int total_days_in_netcdf_data = nday;
 
-    for( int i = amountToMemCopy; i < duration; i++ ) {
-      int target_fnd = 0;
-      int j = 0;
-      
-      // our next data point to populate
-      target_date = caldat( start_date + i );
+repeat_data_index = wrapDateIndexPointer( first_date_for_new_data.month,
+                                          first_date_for_new_data.day,
+                                          start_date,
+                                          nday );
 
-      while( target_fnd == 0 && j < nday ) {	
-          curr_date = caldat( start_date + j );
-          if ((curr_date.month == target_date.month) && (curr_date.day == target_date.day)) {
-            target_fnd = 1;
-          }
-          j++;
-      }
+struct date next_date_to_fill;
+for( int i = new_data_index; i < new_data_length; i++ ) {
+  next_date_to_fill = caldat( base_date_index + i );
 
-      if( j < nday && target_fnd == 1 ) {
-        //fprintf( stderr, "match! j: %d, i: %d\n", j, i );
-        data[i]  = allActualData[j];
-      } else {
-        fprintf( stderr, "target_date.day %d, target_date.month %d, target_date.year %d\n", target_date.day, target_date.month, target_date.year ); 
-        fprintf(stderr,"FATAL ERROR: in construct_clim_sequence\n");
-        fprintf(stderr,"\n not enough data in base climate to repeat\n");
-        exit(EXIT_FAILURE);
-      }
+  if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) { // LEAP YEAR!!!
+    data[ i ] = data[ i - 1 ]; // use previous day of data for feb. 29th
+  }else{
+    if( repeat_data_index >= total_days_in_netcdf_data ) {
+      repeat_data_index = wrapDateIndexPointer( next_date_to_fill.month,
+                                next_date_to_fill.day,
+                                base_date_index,
+                                total_days_in_netcdf_data );
     }
+    data[ i ] = allActualData[ repeat_data_index++ ];
+  }
+}
+
+    fprintf( stderr, "start_date %d, startday %d, durationRequest %d, days in dataset %d\n", start_date, startday, duration, nday );
+
   }
 
   if ((retval = nc_close(ncid))){
