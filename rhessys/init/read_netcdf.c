@@ -132,8 +132,6 @@ sd: the minimum distance for searching nearby grid in netcdf
 startday: startday of metdata (since STARTYEAR-01-01)
 duration: days of required metdata
 
-Mingliang Liu
-Nov. 17, 2011
    ************************************************************/
 
   int ncid, temp_varid,ndaysid,nlatid,nlontid;
