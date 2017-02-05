@@ -325,7 +325,7 @@ Nov. 17, 2011
           output_data[ i ] = real_netcdf_data[ i ];
         }else{
           // use previous day of data for feb. 29th
-          output_data[ i ] = real_netcdf_data[ i - 1 ];
+          output_data[ i ] = output_data[ i - 1 ];
         }
       }else{
         // if the repeat day is feb. 29th, just skip it.
