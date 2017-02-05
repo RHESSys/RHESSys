@@ -101,7 +101,7 @@ int locate(float *data, int n, float x, float md){
 ** start_date  - base index for starting search
 ** data_length - length of actual data array being used for generating repeats
 */
-int wrapDateIndexPointer( int month, int day, int start_date, int data_length ) {
+int wrap_repeat_date( int month, int day, int start_date, int data_length ) {
   int index = 0;
   int targetFound = 0;
   struct date candidateDate;
@@ -121,9 +121,9 @@ int wrapDateIndexPointer( int month, int day, int start_date, int data_length ) 
   }
 }
 
-int get_netcdf_var_timeserias(char *netcdf_filename, char *varname, 
-    char *nlat_name, char *nlon_name, 
-    float rlat, float rlon, float sd, 
+int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
+    char *nlat_name, char *nlon_name,
+    float rlat, float rlon, float sd,
     int startday, int day_offset, int duration, int clim_repeat_flag, float *data ){
   /***Read netcdf format metdata by using lat,lon as index
 varname: variable name
@@ -184,19 +184,19 @@ Nov. 17, 2011
   if ((retval = nc_get_var_int(ncid, dayid, &days[0]))){
     free(days);
     free(lat);
-    free(lont);	
+    free(lont);
     ERR(retval);
   }
   if ((retval = nc_get_var_float(ncid, latid, &lat[0]))){
     free(days);
     free(lat);
-    free(lont);	
+    free(lont);
     ERR(retval);
   }
   if ((retval = nc_get_var_float(ncid, lontid, &lont[0]))){
     free(days);
     free(lat);
-    free(lont);	
+    free(lont);
     ERR(retval);
   }
   /*locate the record */
@@ -206,13 +206,13 @@ Nov. 17, 2011
     fprintf(stderr,"rlat:%lf\trlon:%lf\tsd:%lf\tlat[0]:%lf\tlont[0]:%lf can't locate the station get_netcdf_var_timeseries\n",rlat,rlon,sd,lat[0],lont[0]);
     free(days);
     free(lat);
-    free(lont);	
+    free(lont);
     return -1;
   }
   /*printf("\nstartday=%d duration=%d nday=%d day1=%d dayfin=%d\n",startday,duration,nday,days[0],days[nday-1]);*/
   //int MAX_DATA_SIZE = days[ nday - 1 ];
   int read_duration = duration;
-  
+
   //fprintf(stderr, "days being measured: read_duration %d, nday %d\n", read_duration, nday );
 
   if((startday<days[0] || (duration+startday) > days[nday-1])){
@@ -220,30 +220,30 @@ Nov. 17, 2011
       fprintf(stderr,"time period is out of the range of metdata\n");
       free(days);
       free(lat);
-      free(lont);	
+      free(lont);
       return -1;
     }else{
       //read_duration = nday;
       clim_repeat_flag = 1;
     }
   }
-  
+
   int daysNeeded = duration - ( nday - startday-days[0]+day_offset );
   //fprintf( stderr, "start day:%d daysNeeded:%d\n", startday-days[0]+day_offset, daysNeeded );
 
- 
+
   // if clim_repeat_flag, start reading from 0 index
   start[0] = clim_repeat_flag ? 0 : startday-days[0]+day_offset;		//netcdf 4.1.3 problem: there is 1 day offset
   start[1] = idlat;           //lat
   start[2] = idlont;
-  
+
   // if clim_repeat_flag, read all the available data (nday stores the total number of available days)
   count[0] = clim_repeat_flag ? nday : duration;//nday - startday-days[0]+day_offset;//read_duration;
   count[1] = 1;
   count[2] = 1;
-  /***Read netcdf data***/ 
+  /***Read netcdf data***/
   float * allActualData;
- 
+
   if( !clim_repeat_flag ) {
     if ((retval = nc_get_vara_float(ncid,temp_varid,start,count,&data[0]))){
       free(days);
@@ -275,50 +275,76 @@ Nov. 17, 2011
  */
 
   if( clim_repeat_flag ) {
+    float * real_netcdf_data = allActualData;
+    float * output_data = data;
+    int total_days_in_netcdf_data = nday;
     struct date target_date;
     struct date curr_date;
+
+    // index that says where in the netcdf data array we begin to read from
     int start_date = startday - days[0] + day_offset;
-    int amountToMemCopy = nday - start_date; 
-    struct date start_of_repeat = caldat( nday ); // first day in requested data where we need to begin repeating data
-    
-    fprintf( stderr, "start with copying %d days of %d total netcdf.", amountToMemCopy, nday);
-    memcpy( &data[0], &allActualData[ start_date ], amountToMemCopy * sizeof(float) );
-/* 
- * now we should have all the data from the start date to the end of the actual data copied over. 
- * next comes looping through and artifically creating the other data points.
- */   
 
-int new_data_index = amountToMemCopy;
-int repeat_data_index = 0; // index inside of netcdf data where we are getting records to repeat
-int base_date_index = start_date + new_data_index;
-struct date first_date_for_new_data = caldat( base_date_index );
-int new_data_length = duration;
-int total_days_in_netcdf_data = nday;
+    // how many days of existing, sequential, real netcdf data to copy
+    // directly into the beginning of our output_data array.
+    int amount_to_memcpy = total_days_in_netcdf_data - start_date;
 
-repeat_data_index = wrapDateIndexPointer( first_date_for_new_data.month,
+    // first day in requested data where we need to begin repeating data
+    struct date start_of_repeat = caldat( total_days_in_netcdf_data );
+
+    fprintf( stderr, "start with copying %d days of %d total netcdf.", amount_to_memcpy, nday);
+    memcpy( &output_data[0], &real_netcdf_data[ start_date ], amount_to_memcpy * sizeof(float) );
+
+    // now we should have all the data from the start date to the end of the actual data copied over.
+    // next comes looping through and creating repeated data as needed...
+
+    int new_data_index = amount_to_memcpy;
+
+    // index inside of netcdf data where we are getting records to repeat
+    int repeat_data_index = 0;
+    int base_date_index = start_date + new_data_index;
+    int new_data_length = duration;
+    struct date first_date_for_new_data = caldat( base_date_index );
+
+    // determine initial index to start drawing repeated data from
+    repeat_data_index = wrap_repeat_date( first_date_for_new_data.month,
                                           first_date_for_new_data.day,
                                           start_date,
-                                          nday );
+                                          total_days_in_netcdf_data );
 
-struct date next_date_to_fill;
-for( int i = new_data_index; i < new_data_length; i++ ) {
-  next_date_to_fill = caldat( base_date_index + i );
+    struct date next_date_to_fill;
+    struct date candidate_repeat_date;
 
-  if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) { // LEAP YEAR!!!
-    data[ i ] = data[ i - 1 ]; // use previous day of data for feb. 29th
-  }else{
-    if( repeat_data_index >= total_days_in_netcdf_data ) {
-      repeat_data_index = wrapDateIndexPointer( next_date_to_fill.month,
-                                next_date_to_fill.day,
-                                base_date_index,
-                                total_days_in_netcdf_data );
+    for( int i = new_data_index; i < new_data_length; i++ ) {
+      next_date_to_fill    = caldat( base_date_index + i );
+      candidate_repeat_date = caldat( start_date + repeat_data_index );
+
+      // Test to see if next day is feb. 29th in a leap year
+      if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
+        // if the current year of netcdf data is also a leap year...
+        if( LEAPYR( candidate_repeat_date.year ) ) {
+          output_data[ i ] = real_netcdf_data[ i ];
+        }else{
+          // use previous day of data for feb. 29th
+          output_data[ i ] = real_netcdf_data[ i - 1 ];
+        }
+      }else{
+        // if the repeat day is feb. 29th, just skip it.
+        if( candidate_repeat_date.month == 2 && candidate_repeat_date.day == 29 ) {
+          repeat_data_index++;
+        }
+
+        if( repeat_data_index > nday ) {
+          repeat_data_index = wrap_repeat_date( next_date_to_fill.month,
+                                                next_date_to_fill.day,
+                                                base_date_index,
+                                                total_days_in_netcdf_data );
+        }
+
+        output_data[ i ] = real_netcdf_data[ repeat_data_index++ ];
+      }
     }
-    data[ i ] = allActualData[ repeat_data_index++ ];
-  }
-}
 
     fprintf( stderr, "start_date %d, startday %d, durationRequest %d, days in dataset %d\n", start_date, startday, duration, nday );
-
   }
 
   if ((retval = nc_close(ncid))){
@@ -337,7 +363,7 @@ for( int i = new_data_index; i < new_data_length; i++ ) {
   return 0;
 }
 //_____________________________________________________________________________/
-int get_netcdf_var(char *netcdf_filename, char *varname, 
+int get_netcdf_var(char *netcdf_filename, char *varname,
     char *nlat_name, char *nlon_name,
     float rlat, float rlon, float sd, float *data){
   /***Read netcdf format metdata by using lat,lon as index
@@ -385,12 +411,12 @@ sd: the minimum distance for searching nearby grid in netcdf
   /* get dimention var */
   if ((retval = nc_get_var_float(ncid, latid, &lat[0]))){
     free(lat);
-    free(lont);	
+    free(lont);
     ERR(retval);
   }
   if ((retval = nc_get_var_float(ncid, lontid, &lont[0]))){
     free(lat);
-    free(lont);	
+    free(lont);
     ERR(retval);
   }
   /*locate the record */
@@ -399,7 +425,7 @@ sd: the minimum distance for searching nearby grid in netcdf
   if(idlat == -1 || idlont == -1){
     fprintf(stderr,"rlat:%lf\trlon:%lf can't locate the station get_netcdf_var\n",rlat,rlon);
     free(lat);
-    free(lont);	
+    free(lont);
     return -1;
   }
 
@@ -407,7 +433,7 @@ sd: the minimum distance for searching nearby grid in netcdf
   start[1] = idlont;
   count[0] = 1;
   count[1] = 1;
-  /***Read netcdf data***/ 
+  /***Read netcdf data***/
   if ((retval = nc_get_vara_float(ncid,temp_varid,start,count,&data[0]))){
     free(lat);
     free(lont);
@@ -472,12 +498,12 @@ sd: the minimum distance for searching nearby grid in netcdf
   /* get dimention var */
   if ((retval = nc_get_var_float(ncid, latid, &lat[0]))){
     free(lat);
-    free(lont);	
+    free(lont);
     ERR(retval);
   }
   if ((retval = nc_get_var_float(ncid, lontid, &lont[0]))){
     free(lat);
-    free(lont);	
+    free(lont);
     ERR(retval);
   }
 
@@ -487,7 +513,7 @@ sd: the minimum distance for searching nearby grid in netcdf
   if(idlat == -1 || idlont == -1){
     fprintf(stderr,"rlat:%lf\trlon:%lf can't locate the station get_netcdf_xy\n",rlat,rlon);
     free(lat);
-    free(lont);	
+    free(lont);
     return -1;
   }
   else {
