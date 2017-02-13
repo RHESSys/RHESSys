@@ -89,7 +89,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
     double preday_basin_detention_store = 0;
     //160628LML double add_field_capacity, rz_drainage, unsat_drainage;
     //160628LML double streamflow, Qout, Qin_total, Qstr_total;
-    //160628LML struct patch_object *patch;
+    //struct patch_object *patch;
     //160628LML struct hillslope_object *hillslope;
     //160628LML struct patch_object *neigh;
 	/*--------------------------------------------------------------*/
@@ -204,7 +204,11 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			
 
 		}
+      if ( patch[0].ID == 170802){
+        fprintf(stderr, "\n   Line is 207 NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
+        } //XXXXX
 	}
+ 
     basin[0].preday_basin_rz_storage = preday_basin_rz_storage;                  //160628LML
     basin[0].preday_basin_unsat_storage = preday_basin_unsat_storage;            //160628LML
     basin[0].preday_basin_sat_deficit = preday_basin_sat_deficit;                //160628LML
@@ -233,7 +237,11 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             patch[0].hourly_stream_flow = 0;
             patch[0].hourly[0].streamflow_NO3 = 0;
             patch[0].hourly[0].streamflow_NO3_from_sub = 0;
-            patch[0].hourly[0].streamflow_NO3_from_surface = 0;			
+            patch[0].hourly[0].streamflow_NO3_from_surface = 0;
+        if ( patch[0].ID == 170802){
+        fprintf(stderr, "\n  line is 242  NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
+        } //XXXXX
+			
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
 			/*	is routed to downslope patches; saturated throughflow	*/
@@ -377,7 +385,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							  + patch[0].hourly_sur2stream_flow;
 		
    //if (k >=0){ 
-     if (k == (n_timesteps - 1)) //EJH changed back to previous version
+     if (k == (n_timesteps - 1))
 			  {     
 			      if ((patch[0].sat_deficit
 						- (patch[0].unsat_storage + patch[0].rz_storage))
@@ -459,6 +467,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].surface_NH4 += Nout;
 						patch[0].soil_ns.sminn -= Nout;
 					}
+        if ( patch[0].ID == 170802){
+        fprintf(stderr, "\n line is 471  NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
+        } //XXXXX
 				}
 
 				/*--------------------------------------------------------------*/
@@ -754,6 +765,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							/ patch[0].detention_store) * patch[0].surface_DOC);
 					patch[0].surface_DON -= ((infiltration
 							/ patch[0].detention_store) * patch[0].surface_DON);
+        if ( patch[0].ID == 170802){
+        fprintf(stderr, "\n line is 769  NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
+        } //XXXXX
 				}
 
 				/*--------------------------------------------------------------*/
@@ -1006,6 +1020,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							    + patch[0].base_flow;
 				    }
 				} */
+    if ( patch[0].ID == 170802){
+        fprintf(stderr,"\n line is 1024  NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
+        } //XXXXX
 
 		} /* end i */
 
