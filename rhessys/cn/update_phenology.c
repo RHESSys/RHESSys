@@ -68,6 +68,7 @@ void update_phenology(struct zone_object  *zone,
 					  double	cover_fraction,
 					  double	gap_fraction,
 					  double	theta_noon,
+					  int 		wyday_start,	
 					  struct date current_date,
 					  int	grow_flag)
 {
@@ -75,7 +76,9 @@ void update_phenology(struct zone_object  *zone,
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/
 	long	yearday(struct date);
-	long	wateryearday(struct date);
+	long	wateryearday(
+		struct date,
+		int);
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
 		double,
@@ -159,7 +162,7 @@ void update_phenology(struct zone_object  *zone,
 	frootlitfallc = 0.0;
 	litfall_flag = 0;
 	day = yearday(current_date);
-	wyday = wateryearday(current_date);
+	wyday = wateryearday(current_date, wyday_start);
 
 
  /*--------------------------------------------------------------*/

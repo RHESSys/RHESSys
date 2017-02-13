@@ -526,7 +526,7 @@ struct basin_object
         double  theta_noon;             /*      rads    */
         double  sin_latitude;           /*      DIM     */
         double  max_slope;              /*      degrees */
-        
+
         /*      used in subsurface computation          */
         double basin_outflow;
         double basin_rz_storage;
@@ -586,6 +586,7 @@ struct basin_default
         {
         int                     ID;
         int             n_routing_timesteps;    /* number per day */ 
+        int     	wyday_start;            /* Year day that designates the first day of wateryear (non-leap year) */
         struct          basin_grow_default      *grow_defaults;
         };
 
