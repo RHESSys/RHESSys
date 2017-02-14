@@ -217,33 +217,23 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	/*	proportion of subsurface outflow to each neighbour	*/
 	/*--------------------------------------------------------------*/
     for (int k = 0; k < n_timesteps; k++) {
-        /*160628LML moved bellow
-		patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth, 0.0,
-				-1.0 * patch[0].sat_deficit);
-		patch[0].preday_sat_deficit = patch[0].sat_deficit;
-        /**/
-
         #pragma omp parallel for                                                 //160628LML
         for (int i = 0; i < basin->route_list->num_patches; i++) {
             struct patch_object *patch = basin->route_list->list[i];
-            //160628LML moved here
+
             patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
                     patch[0].soil_defaults[0][0].porosity_0,
                     patch[0].soil_defaults[0][0].porosity_decay,
                     patch[0].soil_defaults[0][0].soil_depth, 0.0,
                     -1.0 * patch[0].sat_deficit);
             patch[0].preday_sat_deficit = patch[0].sat_deficit;
-            //160628LML end move
-
 		      	patch[0].hourly_subsur2stream_flow = 0;
-			patch[0].hourly_sur2stream_flow = 0;
-			patch[0].hourly_stream_flow = 0;
-			patch[0].hourly[0].streamflow_NO3 = 0;
-			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
-			patch[0].hourly[0].streamflow_NO3_from_surface = 0;			
+
+            patch[0].hourly_sur2stream_flow = 0;
+            patch[0].hourly_stream_flow = 0;
+            patch[0].hourly[0].streamflow_NO3 = 0;
+            patch[0].hourly[0].streamflow_NO3_from_sub = 0;
+            patch[0].hourly[0].streamflow_NO3_from_surface = 0;			
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
 			/*	is routed to downslope patches; saturated throughflow	*/
@@ -253,19 +243,19 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*								*/
 			/*	regular land patches - route to downslope neighbours    */
 			/*--------------------------------------------------------------*/
-			if ((patch[0].drainage_type == ROAD)
-					&& (command_line[0].road_flag == 1)) {
-				update_drainage_road(patch, command_line, time_int,
-						verbose_flag);
-			} else if (patch[0].drainage_type == STREAM) {
-				update_drainage_stream(patch, command_line, time_int,
-						verbose_flag);
-			} else {
-				update_drainage_land(patch, command_line, time_int,
-						verbose_flag);
-			}
+            if ((patch[0].drainage_type == ROAD)
+                            && (command_line[0].road_flag == 1)) {
+                    update_drainage_road(patch, command_line, time_int,
+                                    verbose_flag);
+            } else if (patch[0].drainage_type == STREAM) {
+                    update_drainage_stream(patch, command_line, time_int,
+                                    verbose_flag);
+            } else {
+                    update_drainage_land(patch, command_line, time_int,
+                                    verbose_flag);
+            }
 
-		} /* end i */
+        } /* end i */
 
 		/*--------------------------------------------------------------*/
 		/*	update soil moisture and nitrogen stores		*/
@@ -547,16 +537,18 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                             double DOC_out = 0;
                             double Nout = 0;
 							if (grow_flag > 0) {
-                                double NO3_out = Qout / patch[0].detention_store
+                                NO3_out = Qout / patch[0].detention_store
 										* patch[0].surface_NO3;
-                                double NH4_out = Qout / patch[0].detention_store
+                                NH4_out = Qout / patch[0].detention_store
 										* patch[0].surface_NH4;
-                                double DON_out = Qout / patch[0].detention_store
+                                DON_out = Qout / patch[0].detention_store
 										* patch[0].surface_DON;
-                                double DOC_out = Qout / patch[0].detention_store
+                                DOC_out = Qout / patch[0].detention_store
 										* patch[0].surface_DOC;
 								Nout = NO3_out + NH4_out + DON_out;
 							}
+                            #pragma omp critical
+                            {
 							if (neigh[0].drainage_type == STREAM) {
 								neigh[0].Qin_total += Qout * patch[0].area
 										/ neigh[0].area;
@@ -604,6 +596,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								}
 
 							}
+                            }  //omp critical
 						}
 						if (grow_flag > 0) {
 							patch[0].surface_DOC -= (excess
@@ -761,6 +754,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					patch[0].surface_DON -= ((infiltration
 							/ patch[0].detention_store) * patch[0].surface_DON);
 				}
+
+                //if (k == 23) printf("k:%d\tpatch #%d\tsurface_NO3:%f\tsurface_NH4:%f\tsurface_DON:%f\tsoil_smin:%f\tsoil_DON:%f\n",
+                //    k,i,patch[0].surface_NO3,patch[0].surface_NH4,patch[0].surface_DON,patch[0].soil_ns.sminn,patch[0].soil_ns.DON);
 
 				/*--------------------------------------------------------------*/
 				/*	Determine if the infifltration will fill up the unsat	*/
@@ -1001,7 +997,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				 * is the summation of 24 hours return_flow and base_flow from previous 
 				 * calculation*/
 				/*-----------------------------------------------------------------------*/
-				if(k==n_timesteps-1){
+                if(k==(n_timesteps-1)){
 				    if (patch[0].drainage_type == STREAM) {
 					    patch[0].streamflow += patch[0].return_flow
 							    + patch[0].base_flow;
