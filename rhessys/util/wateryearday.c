@@ -58,8 +58,6 @@ long 	wateryearday(struct date calendar_date,
 		}
 	}
 
-rintf("\n wateryear day = %d", wyday);
-
 	return(wyday);
 }/*end wateryearday.c*/
 
