@@ -204,9 +204,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			
 
 		}
-      if ( patch[0].ID == 170802){
-        fprintf(stderr, "\n   Line is 207 NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
-        } //XXXXX
 	}
  
     basin[0].preday_basin_rz_storage = preday_basin_rz_storage;                  //160628LML
@@ -238,9 +235,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             patch[0].hourly[0].streamflow_NO3 = 0;
             patch[0].hourly[0].streamflow_NO3_from_sub = 0;
             patch[0].hourly[0].streamflow_NO3_from_surface = 0;
-        if ( patch[0].ID == 170802){
-        fprintf(stderr, "\n  line is 242  NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
-        } //XXXXX
 			
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
@@ -467,9 +461,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].surface_NH4 += Nout;
 						patch[0].soil_ns.sminn -= Nout;
 					}
-        if ( patch[0].ID == 170802){
-        fprintf(stderr, "\n line is 471  NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
-        } //XXXXX
 				}
 
 				/*--------------------------------------------------------------*/
@@ -552,16 +543,18 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                             double DOC_out = 0;
                             double Nout = 0;
 							if (grow_flag > 0) {
-                                double NO3_out = Qout / patch[0].detention_store
+                                NO3_out = Qout / patch[0].detention_store
 										* patch[0].surface_NO3;
-                                double NH4_out = Qout / patch[0].detention_store
+                                NH4_out = Qout / patch[0].detention_store
 										* patch[0].surface_NH4;
-                                double DON_out = Qout / patch[0].detention_store
+                                DON_out = Qout / patch[0].detention_store
 										* patch[0].surface_DON;
-                                double DOC_out = Qout / patch[0].detention_store
+                                DOC_out = Qout / patch[0].detention_store
 										* patch[0].surface_DOC;
 								Nout = NO3_out + NH4_out + DON_out;
 							}
+              #pragma omp critical
+              {
 							if (neigh[0].drainage_type == STREAM) {
 								neigh[0].Qin_total += Qout * patch[0].area
 										/ neigh[0].area;
@@ -609,6 +602,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								}
 
 							}
+              } //omp critical
 						}
 						if (grow_flag > 0) {
 							patch[0].surface_DOC -= (excess
@@ -765,9 +759,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							/ patch[0].detention_store) * patch[0].surface_DOC);
 					patch[0].surface_DON -= ((infiltration
 							/ patch[0].detention_store) * patch[0].surface_DON);
-        if ( patch[0].ID == 170802){
-        fprintf(stderr, "\n line is 769  NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
-        } //XXXXX
 				}
 
 				/*--------------------------------------------------------------*/
@@ -1020,10 +1011,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							    + patch[0].base_flow;
 				    }
 				} */
-    if ( patch[0].ID == 170802){
-        fprintf(stderr,"\n line is 1024  NO3_Qout=%lf surfaceNO3=%lf\n", patch[0].soil_ns.NO3_Qout,patch[0].surface_NO3);
-        } //XXXXX
 
+    /*if ( patch[0].ID == 214494){
+        fprintf(stderr, "\n   Line is 770 NO3_Qout=%lf surfaceNO3=%lf surfaceDOC%lf\n=", patch[0].soil_ns.NO3_Qout,
+        patch[0].surface_NO3,patch[0].surface_DOC);
+        } */ 
+
+   
 		} /* end i */
 
 	} /* end k  */
