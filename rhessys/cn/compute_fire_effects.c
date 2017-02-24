@@ -104,9 +104,9 @@ void compute_fire_effects(
 	fire_loss.loss_soil4c = 0;
 	fire_loss.loss_litr1n = 1;
 	fire_loss.loss_litr2n = 1;
-	fire_loss.loss_litr3n = 1;
-	fire_loss.loss_litr4n = 1;
-	fire_loss.loss_soil1n = 1;
+	fire_loss.loss_litr3n = 0.85;
+	fire_loss.loss_litr4n = 0.71;
+	fire_loss.loss_soil1n = 0.71;
 	fire_loss.loss_soil2n = 0;
 	fire_loss.loss_soil3n = 0;
 	fire_loss.loss_soil4n = 0;
@@ -159,10 +159,11 @@ printf("\n -------------------");
 			/* Calculate coarse woody debris removed			*/
 			/*--------------------------------------------------------------*/
 
+			/* Litter consumption is approximated based CONSUME model outputs */
 			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) */
-			/* Need to update with CONSUME formula */
-			m_cwdc_to_atmos = canopy_strata_upper[0].cs.cwdc * .5;
-			m_cwdn_to_atmos = canopy_strata_upper[0].ns.cwdn * .5;
+			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified eqn to exclude moisture and intercept through zero) */
+			m_cwdc_to_atmos = canopy_strata_upper[0].cs.cwdc * .339;
+			m_cwdn_to_atmos = canopy_strata_upper[0].ns.cwdn * .339;
 			canopy_strata_upper[0].cs.cwdc -= m_cwdc_to_atmos;
 			canopy_strata_upper[0].ns.cwdn -= m_cwdn_to_atmos;
 
@@ -171,7 +172,7 @@ printf("\n -------------------");
 			/* Calculate effects when upper layer is tall			*/
 			/*--------------------------------------------------------------*/
 
-// Note that when this code requires that height thresholds for differnt canopies be the same or anomolous behavior may occur.
+			// Note that when this code requires that height thresholds for differnt canopies be the same or anomolous behavior may occur.
 
 			if (layer_upper_height > canopy_strata_upper[0].defaults[0][0].overstory_height_thresh){
 
