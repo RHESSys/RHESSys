@@ -130,7 +130,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
-    #pragma omp parallel for reduction(+ : preday_basin_rz_storage,preday_basin_unsat_storage,preday_basin_sat_deficit,preday_basin_return_flow,preday_basin_detention_store,basin_area)  //160628LML
+   /* #pragma omp parallel for reduction(+ : preday_basin_rz_storage,preday_basin_unsat_storage,preday_basin_sat_deficit,preday_basin_return_flow,preday_basin_detention_store,basin_area)  //160628LML*/
     for (int i = 0; i < basin->route_list->num_patches; i++) {
         struct	patch_object *patch = basin->route_list->list[i];
 		patch[0].streamflow = 0.0;
@@ -218,7 +218,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	/*	proportion of subsurface outflow to each neighbour	*/
 	/*--------------------------------------------------------------*/
     for (int k = 0; k < n_timesteps; k++) {
-        #pragma omp parallel for                                                 //160628LML
+       // #pragma omp parallel for                                                 //160628LML
         for (int i = 0; i < basin->route_list->num_patches; i++) {
             struct patch_object *patch = basin->route_list->list[i];
 
@@ -263,7 +263,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
-        #pragma omp parallel for                                                 //160628LML
+       // #pragma omp parallel for                                                 //160628LML
         for (int i = 0; i < basin->route_list->num_patches; i++) {
             struct patch_object *patch = basin->route_list->list[i];
             int d = 0;                                                           //160628LML
@@ -553,8 +553,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 										* patch[0].surface_DOC;
 								Nout = NO3_out + NH4_out + DON_out;
 							}
-              #pragma omp critical
-              {
+             // #pragma omp critical
+             // {
 							if (neigh[0].drainage_type == STREAM) {
 								neigh[0].Qin_total += Qout * patch[0].area
 										/ neigh[0].area;
@@ -602,7 +602,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								}
 
 							}
-              } //omp critical
+           //   } //omp critical
 						}
 						if (grow_flag > 0) {
 							patch[0].surface_DOC -= (excess
