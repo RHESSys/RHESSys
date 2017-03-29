@@ -96,7 +96,7 @@ int locate(float *data, int n, float x, float md){
 ** find first starting index in data to loop through
 ** that matches target data month/year, returns index integer.
 **
-** month - month of first data point to matche
+** month - month of first data point to match
 ** day   - day of first data point to match
 ** start_date  - base index for starting search
 ** data_length - length of actual data array being used for generating repeats
@@ -330,14 +330,16 @@ duration: days of required metdata
         if( candidate_repeat_date.month == 2 && candidate_repeat_date.day == 29 ) {
           repeat_data_index++;
         }
-
         if( repeat_data_index > nday ) {
           repeat_data_index = wrap_repeat_date( next_date_to_fill.month,
                                                 next_date_to_fill.day,
                                                 base_date_index,
                                                 total_days_in_netcdf_data );
         }
-
+        
+        candidate_repeat_date = caldat( start_date + repeat_data_index);
+        if( candidate_repeat_date.month != next_date_to_fill.month) { fprintf( stderr, "candidate month: %d, target month %d\n", candidate_repeat_date.month, next_date_to_fill.month );
+        }
         output_data[ i ] = real_netcdf_data[ repeat_data_index++ ];
       }
     }
