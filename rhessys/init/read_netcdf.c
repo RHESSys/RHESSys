@@ -109,9 +109,9 @@ int wrap_repeat_date( int month, int day, int start_date, int data_length ) {
   while( targetFound == 0 && index < data_length ) {
     candidateDate = caldat( start_date + index );
     if( candidateDate.month == month && candidateDate.day == day ){
-      return index;
+        targetFound = 1;
     }else{
-      index++;
+        index++;
     }
   }
 
@@ -119,6 +119,7 @@ int wrap_repeat_date( int month, int day, int start_date, int data_length ) {
     fprintf( stderr, 'error finding next date in repeat clim data.\n' );
     ERR(-1);
   }
+  return index;
 }
 
 int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
@@ -338,7 +339,8 @@ duration: days of required metdata
         }
         
         candidate_repeat_date = caldat( start_date + repeat_data_index);
-        if( candidate_repeat_date.month != next_date_to_fill.month) { fprintf( stderr, "candidate month: %d, target month %d\n", candidate_repeat_date.month, next_date_to_fill.month );
+        if( candidate_repeat_date.month == next_date_to_fill.month) { 
+            fprintf( stderr, "\ncandidate month: %d, target month %d\n", candidate_repeat_date.month, next_date_to_fill.month );
         }
         output_data[ i ] = real_netcdf_data[ repeat_data_index++ ];
       }
