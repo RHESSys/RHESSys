@@ -304,22 +304,22 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
 
     // index inside of netcdf data where we are getting records to repeat
     int repeat_data_index = 0;
-    int base_date_index = startday + new_data_index;
+    int base_date_index = start_date_index + new_data_index;
     int new_data_length = duration;
     struct date first_date_for_new_data = caldat( output_data[base_date_index] );
 
     // determine initial index to start drawing repeated data from
     repeat_data_index = wrap_repeat_date( first_date_for_new_data.month,
                                           first_date_for_new_data.day,
-                                          startday,
+                                          days[ start_date_index ],
                                           total_days_in_netcdf_data );
 
     struct date next_date_to_fill;
     struct date candidate_repeat_date;
 
     for( int i = new_data_index; i < new_data_length; i++ ) {
-      next_date_to_fill    = caldat( base_date_index + i );
-      candidate_repeat_date = caldat( startday + repeat_data_index );
+      next_date_to_fill  = caldat( days[ base_date_index + i ] );
+      candidate_repeat_date = caldat( days [startday + repeat_data_index] );
 
       // Test to see if next day is feb. 29th in a leap year
       if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
@@ -338,11 +338,11 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
         if( repeat_data_index > nday ) {
           repeat_data_index = wrap_repeat_date( next_date_to_fill.month,
                                                 next_date_to_fill.day,
-                                                base_date_index,
+                                                days[0],
                                                 total_days_in_netcdf_data );
         }
         
-        candidate_repeat_date = caldat( startday + repeat_data_index);
+        candidate_repeat_date = caldat( days[ startday + repeat_data_index ]);
         if( candidate_repeat_date.month != next_date_to_fill.month) { fprintf( stderr, "candidate month: %d, target month %d\n", candidate_repeat_date.month, next_date_to_fill.month );
         }
 
