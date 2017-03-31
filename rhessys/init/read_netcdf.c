@@ -60,7 +60,7 @@ int get_indays(int year,int mon,int day, int year_start, int leap_year){
 
 /***Locate a value in an monotonic array***/
 int locate(float *data, int n, float x, float md){
-  int ascnd;	//1: if ascending
+  int ascnd;    //1: if ascending
   int jl,ju,jm;
   float corl,coru,cormin;
   if(n<2){
@@ -72,7 +72,7 @@ int locate(float *data, int n, float x, float md){
   jl = 0;
   ju = n-1;
   while((ju-jl) > 1){
-    jm = (ju+jl) >> 1;	//compute a midpoint
+    jm = (ju+jl) >> 1;  //compute a midpoint
     if((x >= data[jm]) == ascnd)
       jl = jm;
     else
@@ -132,9 +132,9 @@ rlat,rlon: latitue and longitude of site location
 sd: the minimum distance for searching nearby grid in netcdf
 startday: startday of metdata (since STARTYEAR-01-01)
 duration: days of required metdata
-day_offset: this is an adjustment read in from the base station file to adjust for offset 
+day_offset: this is an adjustment read in from the base station file to adjust for offset
    that occurs in some versions of netcdf
-clim_repeat_flag: command line object that tells RHESSys to recycle through netcdf data 
+clim_repeat_flag: command line object that tells RHESSys to recycle through netcdf data
    for long simulations
 
    ************************************************************/
@@ -147,7 +147,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
   float *lat,*lont;
   size_t start[3],count[3];
   int retval;
-  int idlat,idlont;	//offset
+  int idlat,idlont;     //offset
   /*printf("\n   Opening netcdf file...\n");*/
   /***open netcdf***/
   if((retval = nc_open(netcdf_filename, NC_NOWRITE, &ncid)))
@@ -237,9 +237,9 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
      flag is set then we assume that we need to read through all the data (so we can loop through
      if the flag is not set, we read the amount requested by the user, assuming that they requested
      a valid range of data. If they did not, return an error */
- 
+
   // if clim_repeat_flag, start reading from 0 index
-  start[0] = clim_repeat_flag ? 0 : startday-days[0]+day_offset;		//netcdf 4.1.3 problem: there is 1 day offset
+  start[0] = clim_repeat_flag ? 0 : startday-days[0]+day_offset;                //netcdf 4.1.3 problem: there is 1 day offset
   start[1] = idlat;           //lat
   start[2] = idlont;
 
@@ -287,39 +287,43 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
     struct date target_date;
     struct date curr_date;
 
+    int requested_output_data_length = duration;
+
     // index that says where in the netcdf data array we begin to read from
-    int start_date_index = startday - days[0] + day_offset;
+    int read_start_index = startday - days[0] + day_offset;
+    int start_date_index = read_start_index;
 
     // how many days of existing, sequential, real netcdf data to copy
     // directly into the beginning of our output_data array.
-    int amount_to_memcpy = total_days_in_netcdf_data - start_date_index;
+    int amount_to_memcpy = total_days_in_netcdf_data - read_start_index;
 
     fprintf( stderr, "start with copying %d days of %d total netcdf.", amount_to_memcpy, nday);
-    memcpy( &output_data[0], &real_netcdf_data[ start_date_index ], amount_to_memcpy * sizeof(float) );
+    memcpy( &output_data[ 0 ], &real_netcdf_data[ read_start_index ], amount_to_memcpy * sizeof(float) );
 
     // now we should have all the data from the start date to the end of the actual data copied over.
     // next comes looping through and creating repeated data as needed...
 
-    int new_data_index = amount_to_memcpy;
+    int next_write_index = amount_to_memcpy;
 
     // index inside of netcdf data where we are getting records to repeat
-    int repeat_data_index = 0;
-    int base_date_index = start_date_index + new_data_index;
-    int new_data_length = duration;
-    struct date first_date_for_new_data = caldat( output_data[base_date_index] );
+    int read_data_index = 0;
+
+    // get date object for next day after the last day held in days[]
+    int last_date_in_netcdf_data = days[ total_days_in_netcdf_data - 1];
+    struct date first_date_for_new_data = caldat( last_date_in_netcdf_data + 1 );
 
     // determine initial index to start drawing repeated data from
-    repeat_data_index = wrap_repeat_date( first_date_for_new_data.month,
-                                          first_date_for_new_data.day,
-                                          days[ start_date_index ],
-                                          total_days_in_netcdf_data );
+    read_data_index = wrap_repeat_date( first_date_for_new_data.month,
+                                        first_date_for_new_data.day,
+                                        days[ 0 ],
+                                        total_days_in_netcdf_data );
 
     struct date next_date_to_fill;
     struct date candidate_repeat_date;
 
-    for( int i = new_data_index; i < new_data_length; i++ ) {
-      next_date_to_fill  = caldat( days[ base_date_index + i ] );
-      candidate_repeat_date = caldat( days [startday + repeat_data_index] );
+    for( int i = next_write_index; i < requested_output_data_length; i++ ) {
+      next_date_to_fill  = caldat( last_date_in_netcdf_data + i );
+      candidate_repeat_date = caldat( days[ read_data_index] );
 
       // Test to see if next day is feb. 29th in a leap year
       if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
@@ -333,24 +337,25 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
       }else{
         // if the repeat day is feb. 29th, just skip it.
         if( candidate_repeat_date.month == 2 && candidate_repeat_date.day == 29 ) {
-          repeat_data_index++;
+          read_data_index++;
         }
-        if( repeat_data_index > nday ) {
-          repeat_data_index = wrap_repeat_date( next_date_to_fill.month,
-                                                next_date_to_fill.day,
-                                                days[0],
-                                                total_days_in_netcdf_data );
-        }
-        
-        candidate_repeat_date = caldat( days[ startday + repeat_data_index ]);
-        if( candidate_repeat_date.month != next_date_to_fill.month) { fprintf( stderr, "candidate month: %d, target month %d\n", candidate_repeat_date.month, next_date_to_fill.month );
+        if( read_data_index >= total_days_in_netcdf_data ) {
+          read_data_index = wrap_repeat_date( next_date_to_fill.month,
+                                              next_date_to_fill.day,
+                                              days[0],
+                                              total_days_in_netcdf_data );
         }
 
-        output_data[ i ] = real_netcdf_data[ repeat_data_index++ ];
+        candidate_repeat_date = caldat( days[ read_data_index ] );
+        if( candidate_repeat_date.month != next_date_to_fill.month) {
+            fprintf( stderr, "candidate month: %d, target month %d\n", candidate_repeat_date.month, next_date_to_fill.month );
+        }
+
+        output_data[ i ] = real_netcdf_data[ read_data_index++ ];
       }
     }
 
-    fprintf( stderr, "start_date_index %d, startday %d, durationRequest %d, days in dataset %d\n", start_date_index, startday, duration, nday );
+    fprintf( stderr, "read_start_index %d, startday %d, durationRequest %d, days in dataset %d\n", read_start_index, startday, duration, nday );
   }
 
   if ((retval = nc_close(ncid))){
@@ -386,7 +391,7 @@ sd: the minimum distance for searching nearby grid in netcdf
   float *lat,*lont;
   size_t start[2],count[2];
   int retval;
-  int idlat,idlont;	//offset
+  int idlat,idlont;     //offset
   /*printf("\n   Opening netcdf file...\n");*/
   /***open netcdf***/
   if((retval = nc_open(netcdf_filename, NC_NOWRITE, &ncid)))
@@ -471,7 +476,7 @@ sd: the minimum distance for searching nearby grid in netcdf
   float *lat,*lont;
   //size_t start[3],count[3];
   int retval;
-  int idlat,idlont;	//offset
+  int idlat,idlont;     //offset
   /*printf("\n   Opening netcdf file... %s lat=%lf lon=%lf sd=%lf",
     netcdf_filename,
     rlat,
