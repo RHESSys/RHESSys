@@ -98,16 +98,16 @@ int locate(float *data, int n, float x, float md){
 **
 ** month - month of first data point to match
 ** day   - day of first data point to match
-** start_date  - base index for starting search
+** start_date_index  - base index for starting search
 ** data_length - length of actual data array being used for generating repeats
 */
-int wrap_repeat_date( int month, int day, int start_date, int data_length ) {
+int wrap_repeat_date( int month, int day, int start_date_index, int data_length ) {
   int index = 0;
   int targetFound = 0;
   struct date candidateDate;
 
   while( targetFound == 0 && index < data_length ) {
-    candidateDate = caldat( start_date + index );
+    candidateDate = caldat( start_date_index + index );
     if( candidateDate.month == month && candidateDate.day == day ){
       return index;
     }else{
@@ -131,6 +131,10 @@ rlat,rlon: latitue and longitude of site location
 sd: the minimum distance for searching nearby grid in netcdf
 startday: startday of metdata (since STARTYEAR-01-01)
 duration: days of required metdata
+day_offset: this is an adjustment read in from the base station file to adjust for offset 
+   that occurs in some versions of netcdf
+clim_repeat_flag: command line object that tells RHESSys to recycle through netcdf data 
+   for long simulations
 
    ************************************************************/
 
@@ -226,10 +230,13 @@ duration: days of required metdata
     }
   }
 
-  int daysNeeded = duration - ( nday - startday-days[0]+day_offset );
   //fprintf( stderr, "start day:%d daysNeeded:%d\n", startday-days[0]+day_offset, daysNeeded );
 
-
+  /* Here we need to determine how much data we need to read from the netcdf file. If the clim repeat
+     flag is set then we assume that we need to read through all the data (so we can loop through
+     if the flag is not set, we read the amount requested by the user, assuming that they requested
+     a valid range of data. If they did not, return an error */
+ 
   // if clim_repeat_flag, start reading from 0 index
   start[0] = clim_repeat_flag ? 0 : startday-days[0]+day_offset;		//netcdf 4.1.3 problem: there is 1 day offset
   start[1] = idlat;           //lat
@@ -265,8 +272,8 @@ duration: days of required metdata
  *
  * Variables:
  *    nday : the total number of days in the actual netcdf file
- *    startday: the start of the metadata, the starting index to read from allActualData... the first date requested when this function is called
- *    start_date : index that says where in the netcdf data array we begin to read from
+ *    startday: the start of the metdata, the starting index to read from allActualData... the first date requested when this function is called
+ *    start_date_index : index that says where in the netcdf data array we begin to read from
  *    allActualData: the entire dataset from the netcdf file, irrespective of how much data is requested by the user
  *    duration: the number of days of requested data
  *    data: an array passed as an argument to this function to be populated with the requested netcdf data
@@ -280,17 +287,14 @@ duration: days of required metdata
     struct date curr_date;
 
     // index that says where in the netcdf data array we begin to read from
-    int start_date = startday - days[0] + day_offset;
+    int start_date_index = startday - days[0] + day_offset;
 
     // how many days of existing, sequential, real netcdf data to copy
     // directly into the beginning of our output_data array.
-    int amount_to_memcpy = total_days_in_netcdf_data - start_date;
-
-    // first day in requested data where we need to begin repeating data
-    struct date start_of_repeat = caldat( total_days_in_netcdf_data );
+    int amount_to_memcpy = total_days_in_netcdf_data - start_date_index;
 
     fprintf( stderr, "start with copying %d days of %d total netcdf.", amount_to_memcpy, nday);
-    memcpy( &output_data[0], &real_netcdf_data[ start_date ], amount_to_memcpy * sizeof(float) );
+    memcpy( &output_data[0], &real_netcdf_data[ start_date_index ], amount_to_memcpy * sizeof(float) );
 
     // now we should have all the data from the start date to the end of the actual data copied over.
     // next comes looping through and creating repeated data as needed...
@@ -299,14 +303,14 @@ duration: days of required metdata
 
     // index inside of netcdf data where we are getting records to repeat
     int repeat_data_index = 0;
-    int base_date_index = start_date + new_data_index;
+    int base_date_index = startday + new_data_index;
     int new_data_length = duration;
-    struct date first_date_for_new_data = caldat( base_date_index );
+    struct date first_date_for_new_data = caldat( output_data[base_date_index] );
 
     // determine initial index to start drawing repeated data from
     repeat_data_index = wrap_repeat_date( first_date_for_new_data.month,
                                           first_date_for_new_data.day,
-                                          start_date,
+                                          startday,
                                           total_days_in_netcdf_data );
 
     struct date next_date_to_fill;
@@ -314,7 +318,7 @@ duration: days of required metdata
 
     for( int i = new_data_index; i < new_data_length; i++ ) {
       next_date_to_fill    = caldat( base_date_index + i );
-      candidate_repeat_date = caldat( start_date + repeat_data_index );
+      candidate_repeat_date = caldat( startday + repeat_data_index );
 
       // Test to see if next day is feb. 29th in a leap year
       if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
@@ -337,14 +341,14 @@ duration: days of required metdata
                                                 total_days_in_netcdf_data );
         }
         
-        candidate_repeat_date = caldat( start_date + repeat_data_index);
+        candidate_repeat_date = caldat( startday + repeat_data_index);
         if( candidate_repeat_date.month != next_date_to_fill.month) { fprintf( stderr, "candidate month: %d, target month %d\n", candidate_repeat_date.month, next_date_to_fill.month );
         }
         output_data[ i ] = real_netcdf_data[ repeat_data_index++ ];
       }
     }
 
-    fprintf( stderr, "start_date %d, startday %d, durationRequest %d, days in dataset %d\n", start_date, startday, duration, nday );
+    fprintf( stderr, "start_date_index %d, startday %d, durationRequest %d, days in dataset %d\n", start_date_index, startday, duration, nday );
   }
 
   if ((retval = nc_close(ncid))){
