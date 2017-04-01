@@ -29,7 +29,7 @@ struct date
         };
 int monthdays[12]={31,28,31,30,31,30,31,31,30,31,30,31};
 void *alloc(size_t, char *, char *);
-struct  date julday(long);
+struct  date caldat(long);
 /****from year,mon,day converted to days since STARTYEAR-01-01****/
 int get_indays(int year,int mon,int day, int year_start, int leap_year){
   int inday=0;
@@ -107,7 +107,7 @@ int wrap_repeat_date( int month, int day, int start_date_index, int data_length 
   struct date candidateDate;
 
   while( targetFound == 0 && index < data_length ) {
-    candidateDate = julday( start_date_index + index );
+    candidateDate = caldat( start_date_index + index );
     if( candidateDate.month == month && candidateDate.day == day ){
         targetFound = 1;
     }else{
@@ -310,7 +310,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
 
     // get date object for next day after the last day held in days[]
     int last_date_in_netcdf_data = days[ total_days_in_netcdf_data - 1];
-    struct date first_date_for_new_data = julday( last_date_in_netcdf_data + 1 );
+    struct date first_date_for_new_data = caldat( last_date_in_netcdf_data + 1 );
 
     // determine initial index to start drawing repeated data from
     read_data_index = wrap_repeat_date( first_date_for_new_data.month,
@@ -322,8 +322,8 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
     struct date candidate_repeat_date;
 
     for( int i = next_write_index; i < requested_output_data_length; i++ ) {
-      next_date_to_fill  = julday( last_date_in_netcdf_data + i );
-      candidate_repeat_date = julday( days[ read_data_index] );
+      next_date_to_fill  = caldat( last_date_in_netcdf_data + i );
+      candidate_repeat_date = caldat( days[ read_data_index] );
 
       // Test to see if next day is feb. 29th in a leap year
       if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
@@ -352,7 +352,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
                                               total_days_in_netcdf_data );
         }
 
-        candidate_repeat_date = julday( days[ read_data_index ] );
+        candidate_repeat_date = caldat( days[ read_data_index ] );
         if( candidate_repeat_date.month != next_date_to_fill.month) {
             fprintf( stderr, "candidate month: %d, target month %d\n", candidate_repeat_date.month, next_date_to_fill.month );
         }
