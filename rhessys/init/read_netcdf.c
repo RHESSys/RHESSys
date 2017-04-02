@@ -354,7 +354,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
 
         candidate_repeat_date = caldat( days[ read_data_index ] );
         if( candidate_repeat_date.month != next_date_to_fill.month) {
-            fprintf( stderr, "candidate month: %d, target month %d target year %d\n", candidate_repeat_date.month, next_date_to_fill.month, next_dat_to_fill.year );
+            fprintf( stderr, "candidate month: %d, target month %d target year %d\n", candidate_repeat_date.month, next_date_to_fill.month, next_date_to_fill.year );
         }
 
         output_data[ i ] = real_netcdf_data[ read_data_index++ ];
