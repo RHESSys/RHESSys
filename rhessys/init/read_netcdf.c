@@ -297,7 +297,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
     // directly into the beginning of our output_data array.
     int amount_to_memcpy = total_days_in_netcdf_data - read_start_index;
 
-    fprintf( stderr, "start with copying %d days of %d total netcdf.", amount_to_memcpy, nday);
+    fprintf( stderr, "start with copying %d days of %d total netcdf.\n", amount_to_memcpy, nday);
     memcpy( &output_data[ 0 ], &real_netcdf_data[ read_start_index ], amount_to_memcpy * sizeof(float) );
 
     // now we should have all the data from the start date to the end of the actual data copied over.
@@ -323,13 +323,13 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
 
     for( int i = next_write_index; i < requested_output_data_length; i++ ) {
       next_date_to_fill  = caldat( last_date_in_netcdf_data + i - next_write_index );
-      candidate_repeat_date = caldat( days[0] + read_data_index );
+      candidate_repeat_date = caldat( days[0] + read_data_index ); //XXXXX this is adding the month/day index to the current day, but since not all years have 365 days, might mess up the day count.
 
       // Test to see if next day is feb. 29th in a leap year
       if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
         // if the current year of netcdf data is also a leap year...
         if( LEAPYR( candidate_repeat_date.year ) ) {
-          if( read_data_index == total_days_in_netcdf_data ) {
+          if( read_data_index >= total_days_in_netcdf_data ) {
             read_data_index = wrap_repeat_date( next_date_to_fill.month,
                               next_date_to_fill.day,
                               days[0],
@@ -345,24 +345,24 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
         if( candidate_repeat_date.month == 2 && candidate_repeat_date.day == 29 ) {
           read_data_index++;
         }
-        if( read_data_index >= total_days_in_netcdf_data ) {
+        if( read_data_index >= total_days_in_netcdf_data ) { // should it be == or >= XXXXXXX
           read_data_index = wrap_repeat_date( next_date_to_fill.month,
                                               next_date_to_fill.day,
                                               days[0],
                                               total_days_in_netcdf_data );
         }
 
-        candidate_repeat_date = caldat( days[0] + read_data_index );
+        output_data[ i ] = real_netcdf_data[ read_data_index++ ];
+     
         if( candidate_repeat_date.month != next_date_to_fill.month) {
             fprintf( stderr, "candidate month: %d, target month %d, target year %d\n", candidate_repeat_date.month, next_date_to_fill.month, next_date_to_fill.year );
         }
-
-        output_data[ i ] = real_netcdf_data[ read_data_index++ ];
-      }
-    }
+      } // end last else
+    } // end for loop
 
     fprintf( stderr, "read_start_index %d, startday %d, durationRequest %d, days in dataset %d\n", read_start_index, startday, duration, nday );
-  }
+  
+ } // end if clim_repeat_flag
 
   if ((retval = nc_close(ncid))){
     free(days);
