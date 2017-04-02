@@ -119,7 +119,7 @@ int wrap_repeat_date( int month, int day, int start_date_index, int data_length 
     fprintf( stderr, 'error finding next date in repeat clim data.\n' );
     ERR(-1);
   }
-  return start_date_index + index;
+  return index;
 }
 
 int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
@@ -323,7 +323,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
 
     for( int i = next_write_index; i < requested_output_data_length; i++ ) {
       next_date_to_fill  = caldat( last_date_in_netcdf_data + i );
-      candidate_repeat_date = caldat( days[ read_data_index] );
+      candidate_repeat_date = caldat( days[0] + read_data_index );
 
       // Test to see if next day is feb. 29th in a leap year
       if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
@@ -352,7 +352,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
                                               total_days_in_netcdf_data );
         }
 
-        candidate_repeat_date = caldat( days[ read_data_index ] );
+        candidate_repeat_date = caldat( days[0] + read_data_index );
         if( candidate_repeat_date.month != next_date_to_fill.month) {
             fprintf( stderr, "candidate month: %d, target month %d, target year %d\n", candidate_repeat_date.month, next_date_to_fill.month, next_date_to_fill.year );
         }
