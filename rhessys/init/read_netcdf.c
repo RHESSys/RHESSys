@@ -119,7 +119,7 @@ int wrap_repeat_date( int month, int day, int start_date_index, int data_length 
     fprintf( stderr, 'error finding next date in repeat clim data.\n' );
     ERR(-1);
   }
-  return index;
+  return start_date_index + index;
 }
 
 int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
