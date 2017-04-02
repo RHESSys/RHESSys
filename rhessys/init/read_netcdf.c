@@ -329,7 +329,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
       if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
         // if the current year of netcdf data is also a leap year...
         if( LEAPYR( candidate_repeat_date.year ) ) {
-          if( read_data_index = total_days_in_netcdf_data ) {
+          if( read_data_index == total_days_in_netcdf_data ) {
             read_data_index = wrap_repeat_date( next_date_to_fill.month,
                               next_date_to_fill.day,
                               days[0],
