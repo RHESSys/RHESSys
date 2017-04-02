@@ -323,7 +323,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
 
     for( int i = next_write_index; i < requested_output_data_length; i++ ) {
       next_date_to_fill  = caldat( last_date_in_netcdf_data + i - next_write_index );
-      candidate_repeat_date = caldat( days[0] + read_data_index ); //XXXXX this is adding the month/day index to the current day, but since not all years have 365 days, might mess up the day count.
+      candidate_repeat_date = caldat( days[0] + read_data_index ); //day[0] is the point we start reading netcdfdata (it doesn't change)
 
       // Test to see if next day is feb. 29th in a leap year
       if( next_date_to_fill.month == 2 && next_date_to_fill.day == 29 ) {
@@ -344,12 +344,15 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
         // if the repeat day is feb. 29th, just skip it.
         if( candidate_repeat_date.month == 2 && candidate_repeat_date.day == 29 ) {
           read_data_index++;
+          candidate_repeat_date = caldat( days[0] + read_data_index );
         }
-        if( read_data_index >= total_days_in_netcdf_data ) { // should it be == or >= XXXXXXX
+        if( read_data_index >= total_days_in_netcdf_data ) {
           read_data_index = wrap_repeat_date( next_date_to_fill.month,
                                               next_date_to_fill.day,
                                               days[0],
                                               total_days_in_netcdf_data );
+
+          candidate_repeat_date = caldat( days[0] + read_data_index );
         }
 
         output_data[ i ] = real_netcdf_data[ read_data_index++ ];
