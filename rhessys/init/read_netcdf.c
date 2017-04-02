@@ -322,7 +322,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
     struct date candidate_repeat_date;
 
     for( int i = next_write_index; i < requested_output_data_length; i++ ) {
-      next_date_to_fill  = caldat( last_date_in_netcdf_data + i );
+      next_date_to_fill  = caldat( last_date_in_netcdf_data + i - next_write_index );
       candidate_repeat_date = caldat( days[0] + read_data_index );
 
       // Test to see if next day is feb. 29th in a leap year
