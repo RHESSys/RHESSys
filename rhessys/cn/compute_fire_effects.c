@@ -160,8 +160,8 @@ printf("\n -------------------");
 			/*--------------------------------------------------------------*/
 
 			/* Litter consumption is approximated based CONSUME model outputs */
-			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) */
-			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified eqn to exclude moisture and intercept through zero) */
+			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
+			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
 			m_cwdc_to_atmos = canopy_strata_upper[0].cs.cwdc * .339;
 			m_cwdn_to_atmos = canopy_strata_upper[0].ns.cwdn * .339;
 			canopy_strata_upper[0].cs.cwdc -= m_cwdc_to_atmos;
