@@ -112,24 +112,10 @@ double	compute_ra_overstory(
 	zo_u = 0.1 * h_u;
 
 
-	/* New threshold code with ref height always above canopy height - see Heddeland p37*/
+	/* Threshold code with ref height always above canopy height - see Heddeland p37*/
 	if ( z < (h_o + 2)){
 		z = h_o + 2;
 	}
-
-	/* New threshold code - occasionally produces faster wind speeds in understory*/
-	/*if ( z <= (d_o + zo_o)){
-		fprintf(stderr,
-			"screen height < zero plane of patch highest stratum\n");
-		z = d_o + zo_o + 0.0001;
-	}*/
-
-	/* Old threshold code - Occasionally produces negative wind speeds */
-	/*if ( z < d_o){
-		fprintf(stderr,
-			"screen height < zero plane of patch highest stratum\n");
-		z = d_o + 0.0001;
-	}*/
 
 	/*--------------------------------------------------------------*/
 	/*	Compute the resistance to momentum transfer from a sourc*/
