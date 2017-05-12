@@ -585,30 +585,7 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].min_heat_capacity,
 		patch[0].soil_defaults[0][0].max_heat_capacity);
 
-	/*----------------------------------------------------------------------*/
-	/*	Compute the no-canopy aerodynamic resistance at 2m as a baseline	*/
-	/*	for null covers	*/
-	/*----------------------------------------------------------------------*/
-	tmpra = compute_ra_overstory(
-								 command_line[0].verbose_flag,
-								 0.0,
-								 0.4,
-								 &(tmpwind),
-								 &(tmpwindcan),
-								 &(tmpwindsnow),
-								 &(tmpustar),
-								 zone[0].base_stations[0][0].screen_height,
-								 0.0,
-								 0.0,
-								 &(tmpga),
-								 &(tmpgasnow));
-	
-	/* Set values for no stratum case. These will be overwritten if veg present. */
-	patch[0].ga = tmpga;
-	patch[0].gasnow = tmpgasnow;
-	patch[0].wind = tmpwind;
-	patch[0].windsnow = tmpwindsnow;
-	patch[0].ustar = tmpustar;
+
 	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height greater than the	*/
@@ -617,7 +594,7 @@ void		patch_daily_F(
 	
 	/*	Calculate initial pond height		*/
 	pond_height = max(0.0,-1 * patch[0].sat_deficit_z + patch[0].detention_store);
-	
+
 	/*--------------------------------------------------------------*/
 	/* Layers above snowpack and pond */
 	/*--------------------------------------------------------------*/
@@ -645,9 +622,9 @@ void		patch_daily_F(
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
-			if (dum == 0) {
-				patch[0].ga_final = patch[0].layers[layer].null_cover * tmpga;
-				patch[0].gasnow_final = patch[0].layers[layer].null_cover * tmpgasnow;
+			if (dum == 0) {				
+				patch[0].ga_final = tmpga;
+				patch[0].gasnow_final = tmpgasnow;
 				patch[0].wind_final = patch[0].layers[layer].null_cover * tmpwind;
 				patch[0].windsnow_final = patch[0].layers[layer].null_cover * tmpwindsnow;
 				patch[0].ustar_final = patch[0].layers[layer].null_cover * tmpustar;
@@ -988,7 +965,6 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
-			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
@@ -1036,7 +1012,6 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
-			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){

@@ -102,15 +102,10 @@ void	canopy_stratum_daily_F(
 	double  compute_ra_overstory(
 		int     ,
 		double  ,
-		double  ,
-		double *,
-		double *,
-		double *,
 		double *,
 		double  ,
 		double  ,
 		double	,
-		double *,
 		double *);
 	
 	double  compute_ra_understory(
@@ -659,62 +654,20 @@ void	canopy_stratum_daily_F(
 			/*		Highest layer in patch.				*/
 			/*--------------------------------------------------------------*/
 			if ( stratum[0].epv.height == patch[0].layers[0].height ){
-				/*if ( stratum[0].epv.height > 0.0 ) {*/
-				if ( command_line[0].verbose_flag == -5 ){
-					printf("\n          CASE1 atten:%lf trunk=%lf screen=%lf ht=%lf base=%lf wind=%lf", 
-						   stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
-						   (1.0 - stratum[0].defaults[0][0].epc.crown_ratio),
-						   zone[0].base_stations[0][0].screen_height,
-						   stratum[0].epv.height,
-						   layer[0].base,
-						   wind);
-				}
-					stratum[0].ga = 1.0 / compute_ra_overstory(
-						command_line[0].verbose_flag,
-						stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
-						(1.0 - stratum[0].defaults[0][0].epc.crown_ratio),
-						&(wind),
-						&(windcan),
-						&(windsnow),
-						&(ustar),
-						zone[0].base_stations[0][0].screen_height,
-						stratum[0].epv.height,
-						layer[0].base,
-						&(ga),
-						&(gasnow));
-				/*	}
-				else {
-					stratum[0].ga = 1.0 / compute_ra_surface(
-					   command_line[0].verbose_flag,
-					   0.0,
-					   &(wind),
-					   zone[0].base_stations[0][0].screen_height,
-					   layer[0].base,
-					   &(ga));
-				}*/
-			}
-			/* NOT HIGHEST LAYER IN PATCH */
-			/* Assumes wind speed from highest layer was already attenuated to top of this layer */
-			else {
 				stratum[0].ga = 1.0 / compute_ra_overstory(
-					   command_line[0].verbose_flag,
-					   stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
-					   (1.0 - stratum[0].defaults[0][0].epc.crown_ratio),
-					   &(wind),
-					   &(windcan),
-					   &(windsnow),
-					   &(ustar),
-					   2.0,
-					   stratum[0].epv.height,
-					   layer[0].base,
-					   &(ga),
-					   &(gasnow));
+					command_line[0].verbose_flag,
+					stratum[0].defaults[0][0].wind_attenuation_coeff,
+					&(wind),
+					zone[0].base_stations[0][0].screen_height,
+					stratum[0].epv.height,
+					layer[0].base,
+					&(ga));
 			}
-			/*----------------------- OLD CODE --------------------------------------------*/
+
 			/*--------------------------------------------------------------*/
 			/*		Layer is not the highest and is >0.1highest ht.	*/
 			/*--------------------------------------------------------------*/
-			/*else if (stratum[0].epv.height > (patch[0].layers[0].height * 0.1) ){
+			else if (stratum[0].epv.height > (patch[0].layers[0].height * 0.1) ){
 				if ( command_line[0].verbose_flag == -5 ){
 					printf("\nCASE2");
 				}
@@ -728,11 +681,11 @@ void	canopy_stratum_daily_F(
 					&(ga));
 				windsnow = wind;
 				gasnow = ga;
-			}*/
+			}
 			/*--------------------------------------------------------------*/
 			/*		Layer is <0.1highest ht. in height.		*/
 			/*--------------------------------------------------------------*/
-			/*else{
+			else{
 				if ( command_line[0].verbose_flag == -5 ){
 					printf("\nCASE3");
 				}
@@ -747,8 +700,7 @@ void	canopy_stratum_daily_F(
 					&(ga));
 				windsnow = wind;
 				gasnow = ga;
-			}*/
-			/*----------------------- END OLD CODE ----------------------------------------*/
+			}
 		}
 		else{
 
@@ -1836,9 +1788,8 @@ void	canopy_stratum_daily_F(
 
 
 
-	
-	patch[0].ga_final += ga * stratum[0].cover_fraction;
-	patch[0].gasnow_final += gasnow * stratum[0].cover_fraction;
+	patch[0].ga_final = ga;
+	patch[0].gasnow_final = gasnow;
 	patch[0].wind_final += wind * stratum[0].cover_fraction;
 	patch[0].windsnow_final += windsnow * stratum[0].cover_fraction;
 	patch[0].ustar_final += ustar * stratum[0].cover_fraction;
