@@ -50,7 +50,6 @@ struct	dated_input_object *construct_dated_input(
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/
-/*	double	*construct_clim_sequence( char *, struct date, long);*/
 	struct clim_event_sequence construct_dated_clim_sequence(char *,
 		struct date);
 	void	*alloc(size_t, char *, char *);
@@ -82,6 +81,8 @@ struct	dated_input_object *construct_dated_input(
 	dated_input[0].fertilizer_NO3.inx = -999;
 	dated_input[0].fertilizer_NH4.inx = -999;
 	dated_input[0].irrigation.inx = -999;
+	dated_input[0].snow_melt_input.inx = -999;
+	dated_input[0].biomass_removal_percent.inx = -999;
 	dated_input[0].PH.inx = -999;
 	dated_input[0].grazing_Closs.inx = -999;
 	
@@ -124,6 +125,18 @@ struct	dated_input_object *construct_dated_input(
 				(char *)strcat(file_name,".irrigation"),
 				start_date);
 		}
+		else if ( strcmp(sequence_name,"snow_melt_input" ) == 0){
+			strcpy(file_name, file_prefix);
+			dated_input[0].snow_melt_input = construct_dated_clim_sequence(
+				(char *)strcat(file_name,".snow_melt_input"),
+				start_date);
+		}
+		else if ( strcmp(sequence_name,"biomass_removal_percent" ) == 0){
+			strcpy(file_name, file_prefix);
+			dated_input[0].biomass_removal_percent = construct_dated_clim_sequence(
+				(char *)strcat(file_name,".biomass_removal_percent"),
+				start_date);
+		}
 		else if ( strcmp(sequence_name,"PH" ) == 0) {
 			strcpy(file_name, file_prefix);
 			dated_input[0].PH = construct_dated_clim_sequence(
@@ -139,5 +152,6 @@ struct	dated_input_object *construct_dated_input(
 		else  fprintf(stderr,"WARNING-clim sequence %s not found.\n",
 			sequence_name);
 	} /*end for*/
+
 	return(dated_input);
 } /*end construct_dated_input*/

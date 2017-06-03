@@ -51,6 +51,7 @@ void	update_soil_moisture(
 		patch[0].surface_DOC -= infiltration /net_inflow * patch[0].surface_DOC;
 		patch[0].surface_DON -= infiltration /net_inflow * patch[0].surface_DON;
 		}
+	
 
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%4d %2d %2d  -333.1 ",

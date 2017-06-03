@@ -129,21 +129,21 @@ void		hillslope_hourly(
 		slow_store = min(hillslope[0].defaults[0][0].gw_loss_fast_threshold, hillslope[0].gw.storage);
 	      	hillslope[0].gw.hourly_Qout = slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_coeff/24; 
 		fast_store = max(0.0,hillslope[0].gw.storage - hillslope[0].defaults[0][0].gw_loss_fast_threshold);
-		hillslope[0].gw.hourly_Qout += slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24; 
+		hillslope[0].gw.hourly_Qout += fast_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24; 
 	    }
 
 		hillslope[0].hourly_base_flow += hillslope[0].gw.hourly_Qout;
-		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;
-
+		
 		hillslope[0].gw.hourly_NH4out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
 		hillslope[0].gw.hourly_NO3out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
 		hillslope[0].gw.hourly_DONout = hillslope[0].gw.hourly_Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;
 		hillslope[0].gw.hourly_DOCout = hillslope[0].gw.hourly_Qout * hillslope[0].gw.DOC / hillslope[0].gw.storage;
-
 	      	hillslope[0].gw.NO3out += hillslope[0].gw.hourly_NO3out;
 		hillslope[0].gw.NH4out += hillslope[0].gw.hourly_NH4out;
 		hillslope[0].gw.DOCout += hillslope[0].gw.hourly_DOCout;
 		hillslope[0].gw.DONout += hillslope[0].gw.hourly_DONout;
+
+		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;
 
 
 		hillslope[0].hourly_streamflow_NO3 += hillslope[0].gw.hourly_NO3out;
@@ -159,8 +159,9 @@ void		hillslope_hourly(
 		hillslope[0].streamflow_NH4 +=hillslope[0].hourly_streamflow_NH4;
 		hillslope[0].streamflow_DOC +=hillslope[0].hourly_streamflow_DOC;
 		hillslope[0].streamflow_DON +=hillslope[0].hourly_streamflow_DON;
+
 	}
-	/* for the gwtoriparian scenario, I haven't tested it yet - Xiaoli*/
+	
 	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag == 1)) {
 		hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
 					hillslope[0].defaults[0][0].gw_loss_coeff / 24;
@@ -174,7 +175,7 @@ void		hillslope_hourly(
 			slow_store = min(hillslope[0].defaults[0][0].gw_loss_fast_threshold, hillslope[0].gw.storage);
 			hillslope[0].gw.hourly_Qout = slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_coeff/24; 
 			fast_store = max(0.0,hillslope[0].gw.storage - hillslope[0].defaults[0][0].gw_loss_fast_threshold);
-			hillslope[0].gw.hourly_Qout += slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24; 
+			hillslope[0].gw.hourly_Qout += fast_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24; 
 	      	}
 
 		hillslope[0].gw.hourly_NH4out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
@@ -227,8 +228,6 @@ void		hillslope_hourly(
 		hillslope[0].streamflow_DON +=hillslope[0].hourly_streamflow_DON;
 
 	}
-
-
 	hillslope[0].gw.Qout += hillslope[0].gw.hourly_Qout; // this is the daily gw.Qout, used in hillslop_daily_F
 	hillslope[0].base_flow += hillslope[0].hourly_base_flow; // daily base_flow
  

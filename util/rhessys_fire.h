@@ -8,7 +8,8 @@ extern "C" {
 /**********************************************************/
 struct fire_default {
 	int ID;
-	double veg_fuel_weighting ;	
+	double veg_fuel_weighting;	
+
 	double ndays_average;
 	double load_k1; // k1 for the fuel load sigmoid function
 	double moisture_k1; //k1 for the fuel moisture sigmoid function
@@ -35,7 +36,8 @@ struct fire_default {
 	double kappa1_rvm;
 	double kappa2_rvm;
 	double p_rvm;	
-	double ign_def_mod;
+	double ign_def_mod; // modifier for ignition moisture_k2, multiply the threshold deficit by this value
+	int veg_ign; // use vegetation for ignition? If so, use the parameters below
 	double veg_k1; // for ignition use veg fuel
 	double veg_k2; // for ignition use veg fuel
 

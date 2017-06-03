@@ -62,6 +62,7 @@
 /*--------------------------------------------------------------*/
 #include <stdlib.h>
 #include "rhessys.h"
+#include "functions.h"
 
 void		patch_daily_I(
 						  struct	world_object *world,
@@ -124,18 +125,6 @@ void		patch_daily_I(
 	
 	double	compute_capillary_rise(
 		int,
-		double,
-		double,
-		double,
-		double,
-		double);
-
-
-	double  compute_potential_exfiltration(
-		int,
-		double,
-		double,
-		double,
 		double,
 		double,
 		double,
@@ -294,7 +283,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit_z,
-			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.depth;
+			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.field_capacity;
 		
 		if ( command_line[0].verbose_flag == -5 ){
 			printf("\n***PCHDAILYI CASE2: satdefz=%lf rzdepth=%lf rzFC=%lf FC=%lf",
@@ -467,7 +456,7 @@ void		patch_daily_I(
 	/*--------------------------------------------------------------*/
 	/*	Calculate effective patch lai from stratum					*/
 	/*	- for later use by zone_daily_F								*/
-	/*      Accumulate root biomass for patch soil -
+	/*      Accumulate root biomass for patch soil -		*/
 	/*      required for N updake from soil                         */
 	/*	also determine total plant carbon			*/
 	/*	- if grow option is specified				*/

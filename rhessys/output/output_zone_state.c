@@ -55,7 +55,7 @@ void	output_zone_state(
 	/*	output zone information									*/
 	/*--------------------------------------------------------------*/
 	fprintf(outfile,"\n       ");
-	fprintf(outfile,"%-30ld %s",zone[0].ID, "zone ID");
+	fprintf(outfile,"%-30ld %s",zone[0].ID, "zone_ID");
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30.8f %s",zone[0].x, "x");
 	fprintf(outfile,"\n       ");
@@ -63,7 +63,7 @@ void	output_zone_state(
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30.8f %s",zone[0].z, "z");
 	fprintf(outfile,"\n       ");
-	fprintf(outfile,"%-30ld %s",zone[0].defaults[0][0].ID, "default_ID");
+	fprintf(outfile,"%-30ld %s",zone[0].defaults[0][0].ID, "zone_parm_ID");
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30.8f %s",zone[0].area, "area");
 	fprintf(outfile,"\n       ");
@@ -71,8 +71,7 @@ void	output_zone_state(
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30.8f %s",zone[0].aspect / DtoR, "aspect");
 	fprintf(outfile,"\n       ");
-	fprintf(outfile,"%-30.8f %s",zone[0].precip_lapse_rate,
-		"isohyet");
+	fprintf(outfile,"%-30.8f %s",zone[0].precip_lapse_rate, "precip_lapse_rate");
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30.8f %s",zone[0].e_horizon, "e_horizon");
 	fprintf(outfile,"\n       ");
@@ -82,7 +81,7 @@ void	output_zone_state(
 	for (i=0; i < zone[0].num_base_stations; i++){
 		fprintf(outfile,"\n       ");
 		fprintf(outfile,"%-30ld %s",zone[0].base_stations[i][0].ID,
-			"p_base_station_ID");
+			"zone_base_station_ID");
 	}
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30ld %s",zone[0].num_patches, "num_patches");

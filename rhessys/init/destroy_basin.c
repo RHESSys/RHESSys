@@ -56,6 +56,15 @@ void destroy_basin(
 	if ( basin[0].num_base_stations > 0 )
 		free( basin[0].base_stations);
 	/*--------------------------------------------------------------*/
+	/*	destroy the list of route_list: need further free	*/
+	/*--------------------------------------------------------------*/
+        if (command_line[0].routing_flag==1){
+	    free(basin[0].route_list[0].list);
+	    free(basin[0].route_list); 
+	    free(basin[0].surface_route_list[0].list);
+	    free(basin[0].surface_route_list);	    
+	}
+	/*--------------------------------------------------------------*/
 	/*	Destroy the main basin object.								*/
 	/*--------------------------------------------------------------*/
 	free(basin);

@@ -66,11 +66,11 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/* this part has been moved to basin_hourly			*/
 	/*--------------------------------------------------------------*/
-/*	void	compute_subsurface_routing(
+	void	compute_subsurface_routing(
 		struct command_line_object *,
 		struct basin_object *,
 		int, struct	date);
-*/	
+	
 	double	compute_stream_routing(
 		struct command_line_object *,
 		struct stream_network_object *,
@@ -87,10 +87,13 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int	h, z, p;
+	int	h, z, p,inx;
 	double	scale;
 	struct	hillslope_object *hillslope;
+	struct	zone_object *zone;
 	struct	patch_object *patch; 
+	struct	dated_sequence	clim_event;
+
 	/*--------------------------------------------------------------*/
 	/* 	track basin scale snow for snow assimilation 			*/
 	/*--------------------------------------------------------------*/
@@ -112,21 +115,24 @@ void	basin_daily_F(
 			current_date );
 	}
 
+        hillslope = basin[0].hillslopes[0];
+	zone = hillslope[0].zones[0];
 	basin[0].snowpack.surface_age /=  basin[0].area_withsnow;
 	basin[0].snowpack.T /=  basin[0].area_withsnow;
 	basin[0].snowpack.energy_deficit /=  basin[0].area_withsnow;
+
 
 	/*--------------------------------------------------------------*/
 	/*  For routing option - route water between patches within     */
 	/*      the basin:  this part has been moved to basin_hourly    */
 	/*--------------------------------------------------------------*/
-/*   	 if ( command_line[0].routing_flag == 1) {
+   	if ( command_line[0].routing_flag == 1 && zone[0].hourly_rain_flag == 0) {
 		compute_subsurface_routing(command_line,
 			basin,
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
 	}
-*/
+	
 	/*--------------------------------------------------------------*/
 	/*  For stream routing option - route water between patches within     */
 	/*      the basin                                               */

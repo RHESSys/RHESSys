@@ -188,6 +188,9 @@ int allocate_annual_growth(				int id,
 	/* Changed to just be live C */
 	/*total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->dead_stemc +
 			cs->live_crootc + cs->dead_crootc);*/
+	if (cs->cpool > ZERO) 
+	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool);
+	else
 	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc);
 
 	/* Changed to just be live C */
@@ -510,7 +513,7 @@ int allocate_annual_growth(				int id,
 		} /* end if resprout */
 	} /* end if less than min_leaf_carbon */
 	else  {
-		 cs->num_resprout = max(cs->num_resprout-1,0);	
+		 // cs->num_resprout = max(cs->num_resprout-1,0);	
 		 cs->age += 1;
 		 }
 

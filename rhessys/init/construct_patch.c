@@ -63,12 +63,10 @@ struct patch_object *construct_patch(
 		int     num_world_base_stations,
 		struct  base_station_object **world_base_stations,
 		struct	default_object	*defaults);
-	struct 	canopy_strata_object *construct_empty_shadow_strata( 
+	  struct 	canopy_strata_object *construct_empty_shadow_strata( 
 		struct command_line_object *,
-		FILE	*,
 		struct	patch_object *,
-		int     num_world_base_stations,
-		struct  base_station_object **world_base_stations,
+    struct  canopy_strata_object *stratum,
 		struct	default_object	*defaults);
 	double	compute_z_final( 	int,
 		double,
@@ -184,6 +182,8 @@ struct patch_object *construct_patch(
 		read_record(world_file, record);
 		}
 
+
+
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;
 	patch[0].surface_Tnight = -999.9;
@@ -192,6 +192,7 @@ struct patch_object *construct_patch(
 	patch[0].streamflow = 0.0;
 	patch[0].return_flow = 0.0;
 	patch[0].gw_drainage = 0.0;
+	patch[0].gw_drainage_hourly = 0.0;
 	patch[0].infiltration_excess = 0.0;
 	patch[0].streamflow_NH4 = 0.0;
 	patch[0].streamflow_NO3 = 0.0;
@@ -321,6 +322,7 @@ struct patch_object *construct_patch(
 	patch[0].soil_ns.nleached_snk = 0.0;
 	patch[0].soil_ns.nvolatilized_snk = 0.0;
 
+	patch[0].litter.NO3_stored = 0.0;
 	patch[0].surface_NO3 = 0.0;
 	patch[0].surface_NH4 = 0.0;
 	patch[0].surface_DOC = 0.0;
@@ -328,7 +330,7 @@ struct patch_object *construct_patch(
 	patch[0].fertilizer_NO3 = 0.0;
 	patch[0].fertilizer_NH4 = 0.0;
 	patch[0].grazing_Closs = 0.0;
-	
+
   /*--------------------------------------------------------------*/
   /*   Initialize shadow litter and soil objects for this  patch. */
   /*--------------------------------------------------------------*/
@@ -353,6 +355,7 @@ struct patch_object *construct_patch(
     patch[0].shadow_soil_ns[0].soil3n = patch[0].soil_ns.soil3n; 
     patch[0].shadow_soil_ns[0].soil4n = patch[0].soil_ns.soil4n; 
   }
+
 
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this patch								*/
@@ -400,7 +403,8 @@ struct patch_object *construct_patch(
 
 	
 	/*--------------------------------------------------------------*/
-	/* if fire spread module is called assign fire defaults         */
+	/* if fire spread module is called assign fire defaults		*/
+
 	/*--------------------------------------------------------------*/
 	if (command_line[0].firespread_flag == 1) {
 	patch[0].fire_defaults = (struct fire_default **)
@@ -424,7 +428,8 @@ struct patch_object *construct_patch(
 	}
 
 	/*--------------------------------------------------------------*/
-	/* if surface energy module is called assign fire defaults      */
+	/* if surface energy module is called assign fire defaults	*/
+
 	/*--------------------------------------------------------------*/
 	if (command_line[0].surface_energy_flag == 1) {
 
@@ -652,11 +657,9 @@ struct patch_object *construct_patch(
 	for ( i=0 ; i<patch[0].num_canopy_strata ; i++ ){
 		patch[0].shadow_strata[i] = construct_empty_shadow_strata(
 			command_line,
-			world_file,
 			patch,
-			num_world_base_stations,
-			world_base_stations,defaults);
-       
+      patch[0].canopy_strata[i],
+      defaults);
 		patch[0].shadow_strata[i][0].ID = patch[0].canopy_strata[i][0].ID;
 		patch[0].shadow_strata[i][0].defaults = patch[0].canopy_strata[i][0].defaults;
 		patch[0].shadow_strata[i][0].base_stations = patch[0].canopy_strata[i][0].base_stations;
@@ -699,6 +702,8 @@ struct patch_object *construct_patch(
 		-1*patch[0].sat_deficit);
 	patch[0].preday_sat_deficit_z = patch[0].sat_deficit_z;
 	
+
+
 	return(patch);
 } /*end construct_patch.c*/
 

@@ -22,4 +22,11 @@ double getDoubleParam(int *paramCnt, param **paramPtr , char *paramName, char *r
 void   printParams(int paramCnt, param *params, char *outFilename);
 int string_length(char *s);
 
+
+char * getStrWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *readFormat, char *defaultVal, int useDefaultVal);
+int    getIntWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, int defaultVal, int useDefaultVal);
+float  getFloatWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, float defaultVal, int useDefaultVal);
+double getDoubleWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, double defaultVal, int useDefaultVal);
+
+
 #endif

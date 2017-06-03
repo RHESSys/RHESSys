@@ -5,8 +5,8 @@
 //#include "util.h"
 #include "RanNums.h"
 #include "boost/multi_array.hpp"
-#include "../util/WMFireInterface.h"
-
+//#include "../util/WMFireInterface.h"
+#include "../WMFireInterface.h"
 //#include "../util/rhessys_fire.h" // header file shared between RHESSys and WMFire
 
 

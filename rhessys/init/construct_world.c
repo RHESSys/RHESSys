@@ -361,7 +361,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
 	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *); 
 	struct base_station_object *construct_base_station(char *,
-		struct date, struct date);
+		struct date, struct date, int);
 	struct basin_object *construct_basin(struct command_line_object *, FILE *, int *, 
 		struct base_station_object **, struct default_object *, 
 		struct base_station_ncheader_object *, struct world_object *);
@@ -371,9 +371,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
   void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
-/*
-	void  construct_dclim(struct world_object *);
-*/
+
+	void resemble_hourly_date(struct world_object *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -793,15 +792,24 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			
 			for (i=0; i<world[0].num_base_stations; i++ ) {
 				world[0].base_stations[i] = construct_base_station(
-													world[0].base_station_files[i],
-													world[0].start_date, world[0].duration);
+								world[0].base_station_files[i],
+								world[0].start_date, world[0].duration,
+								command_line[0].clim_repeat_flag);
 			} /*end for*/
+
+			/*--------------------------------------------------------------*/
+			/* List the hourly record for all base station, resemble the hourly records*/
+			/*--------------------------------------------------------------*/
+			/*
+			if(world[0].num_base_stations > 1){
+			    resemble_hourly_date(world);
+			}*/
+
 		}
 	} /*end if dclim_flag*/
-	/*
-	 construct_dclim(world);
-	 */
 	
+        
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the world ID.							*/
 	/*--------------------------------------------------------------*/

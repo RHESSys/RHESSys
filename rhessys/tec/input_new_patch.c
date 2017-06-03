@@ -160,7 +160,7 @@
 	if (command_line[0].snow_scale_flag == 1) {
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
-		if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snow_redist_scale = ltmp;
+              	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snow_redist_scale = ltmp;
 		}
 
 
@@ -309,8 +309,11 @@
 	/* compute a biological soil depth based on the minimum of soil depth */
 	/* and m, K parameters defining conductivity < 0.1% original value */
 	/*--------------------------------------------------------------*/
-	patch[0].soil_defaults[0][0].effective_soil_depth = min(patch[0].soil_defaults[0][0].soil_depth,
+	patch[0].soil_defaults[0][0].effective_soil_depth = patch[0].soil_defaults[0][0].soil_depth;
+	
+	/* patch[0].soil_defaults[0][0].effective_soil_depth = min(patch[0].soil_defaults[0][0].soil_depth,
 				6.9*patch[0].soil_defaults[0][0].m_z);	
+	*/
 	/*--------------------------------------------------------------*/
 	/* detention store size can vary with both soil and landuse		*/
 	/*	use the maximum of the two									*/

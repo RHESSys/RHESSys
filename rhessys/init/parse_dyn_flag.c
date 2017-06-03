@@ -47,5 +47,6 @@ int	parse_dyn_flag( char *input_string)
 		fprintf(stderr,"\n Flag must be stati or dynamic and is %s" , input_string);
 		exit(EXIT_FAILURE);
 	}
+	free(input_string);
 	return(dyn_flag);
 }/*end parse_dyn_flag.c*/
