@@ -130,6 +130,13 @@ void update_mortality(
 	m_frootc_to_litr2c = mort.mort_frootc * cs->frootc * epc.frootlitr_fucel;
 	m_frootc_to_litr3c = mort.mort_frootc * cs->frootc * epc.frootlitr_fscel;
 	m_frootc_to_litr4c = mort.mort_frootc * cs->frootc * epc.frootlitr_flig;
+
+//m_frootc_to_soil1c = mort.mort_frootc * cs->frootc * epc.frootsoil_flab;
+//m_frootc_to_soil2c = mort.mort_frootc * cs->frootc * epc.frootsoil_fucel;
+//m_frootc_to_soil3c = mort.mort_frootc * cs->frootc * epc.frootsoil_fscel;
+//m_frootc_to_soil4c = mort.mort_frootc * cs->frootc * epc.frootsoil_flig;
+
+
 	/* mortality fluxes out of storage and transfer pools */
 	/* Assumes cpool mortality fraction applies to all non-structural stores and transfers */
 	m_leafc_store_to_litr1c  = mort.mort_cpool * cs->leafc_store;
