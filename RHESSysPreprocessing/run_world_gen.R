@@ -27,8 +27,8 @@ if (Sys.info()[4] == "Williams-MacBook-Pro-8.local" ) { #laptop paths
 typepars = c(gisbasepath,homepath,gisdb,location_name,mapsetname)
 remove(gisbasepath,homepath,gisdb,location_name,mapsetname)
 
-template = "remoretestingnewworldgeneration/template.2strata"
-worldfile = "remoretestingnewworldgeneration/world.czo2strata"
+template = "remoretestingnewworldgeneration/template.1strata"
+worldfile = "remoretestingnewworldgeneration/world.czo1strata"
 
 type = "GRASS"
 overwrite = "yes"
