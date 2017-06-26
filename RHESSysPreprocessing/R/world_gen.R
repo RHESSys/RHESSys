@@ -11,12 +11,13 @@
 #' vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 #' Example parameters are included in an example script included in this package. See initGRASS help
 #' for more info on parameters.
-#' @param overwrite Overwrite existing worldfile. Overwrites on any non-NULL arguement.
+#' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
+#' @param asprules The path and filename to the rules file.  Using this argument enables aspatial patches.
 #' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}
 #' @author Will Burke
 
 # ---------- Function start ----------
-world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=NULL) {
+world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FALSE, asprules=NULL) {
 
   timer = proc.time() #start timer
 
@@ -37,25 +38,28 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=NU
     worldfile = paste(substr(worldfile, 1, (nchar(dirname(worldfile))+1)),worldname,sep="")
   }
 
-  if (file.exists(worldfile) & is.null(overwrite)) {
+  if (!is.logical(overwrite)) {stop("overwrite must be logical")} # check overwrite inputs
+  if (file.exists(worldfile) & overwrite == FALSE) {
     t = menu(c("Yes","No"),title=paste("Worldfile",worldfile,"already exists. Overwrite?"))
     if (t==2) {stop("world_gen exited without completing")}
   }
 
-  #readmap = GIS_read(type = type,readin = template,typepars = typepars)
+  if (!is.null(asprules)) {asp_check = TRUE} else {asp_hcheck = FALSE} # check for aspatial patches
+  if (asp_check) { if(!file.exists(asprules) ) {asp_check=FALSE}}
 
   # ---------- Read in template ----------
   con = file(template, open ="r") # commect to file
   read = readLines(con) # read file, default reads entire file, line by line
   close(con)
 
-  tempclean = strsplit(trimws(read),"[ \t]+") # remove leading/trailing whitespaces, split strings by spaces or tabs
-  levindex = which(startsWith(trimws(read), "_")) # find lines that start w/ "_", get row nums of levels
+  readtrim = trimws(read)
+  tempclean = strsplit(readtrim,"[ \t]+") # remove leading/trailing whitespaces, split strings by spaces or tabs
+  levindex = which(startsWith(readtrim, "_")) # find lines that start w/ "_", get row nums of levels
   levmaps = lapply(tempclean[levindex],"[",2)# level map names, for use in GRASS
   tempindex = levindex[2]:length(tempclean)
   tempindex = tempindex[! tempindex %in% levindex] #make index for template, excluding def files and levels
 
-  # get all maps - looks at last element of each row and checks if it's a number, if not num, gets that element, excluding "area"
+  # Find all maps
   mapsall = vector()
   mapindex = vector()
   for (i in tempindex) {
@@ -69,6 +73,12 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=NU
   maps = unique(mapsall[!is.na(mapsall)]) # get rid of NAs, get rid of duplicates
   mapindex = mapindex[!is.na(mapindex)] # index of rows w/ maps
   maps_in = c(unlist(levmaps), maps) # combine level maps and all other maps into vector
+
+  if (asp_check) { # if using aspatial patches, get rules value or map
+    asp_map = tempclean[[which(startsWith(readtrim,"asp_rule"))]][3]
+    if (is.character(asp_map)) {
+    maps_in = c(maps_in,asp_map) }}
+
   mapnames = sapply(tempclean[mapindex], function(x) x[1])
   mapinfo = cbind(c("world","basin","hillslope","zone","patch","strata", mapnames),c(unlist(levmaps),mapsall[!is.na(mapsall)]))
   colnames(mapinfo) = c("Mapname","Map")
@@ -125,10 +135,8 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=NU
       else {
         ct = ct+1
         read[[ct]] = raster(path)
-
       }
     }
-
     print("this doesn't work yet")
     stop("world_gen function stopped")
     # to add: check that spatial data covers same area. Downscale cell sizes to smallest common size
@@ -156,8 +164,7 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=NU
     for (s in stratum) {
       if (length(s) > 1 & i > levindex[6]) {
 
-        if(is.na(tempclean[[i]][2])) { # do nothing - put error here?
-        } else if(tempclean[[i]][2] == "value") { #use value
+        if(tempclean[[i]][2] == "value") { #use value
           statevars[[i]][s] = as.double(tempclean[[i]][3])
         } else if(tempclean[[i]][2] == "dvalue") { #integer value
           statevars[[i]][s] = as.integer(tempclean[[i]][3])
@@ -171,8 +178,7 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=NU
 
       } else {
 
-        if(is.na(tempclean[[i]][2])) { # do nothing
-        } else if(tempclean[[i]][2] == "value") { #use value
+        if(tempclean[[i]][2] == "value") { #use value
           statevars[[i]] = as.double(tempclean[[i]][3])
         } else if(tempclean[[i]][2] == "dvalue") { #integer value
           statevars[[i]] = as.integer(tempclean[[i]][3])
@@ -200,6 +206,8 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=NU
       }
     }
   }
+
+  if(asp_check) {statevars = aspatial_patches(asprules,statevars,asp_map)} # aspatial patch processing
 
   # ---------- Build world file ----------
   print("Begin writing world file",quote=FALSE)

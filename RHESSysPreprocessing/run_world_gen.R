@@ -1,37 +1,45 @@
 # run_world_gen
 # Will Burke 5/24/17
 
-if (Sys.info()[4] == "Williams-MacBook-Pro-8.local" ) { #laptop paths
-  setwd("~/Google Drive/UCSB/Research/rhessys/g2wtest/")
-  gisbasepath = "/Applications/GRASS-6.4.app/Contents/MacOS"
-  homepath = "/Users/William/Google Drive/UCSB/Research/rhessys/g2wtest"
-  gisdb = "/Users/William/Google Drive/UCSB/Research/rhessys/g2wtest"
-  location_name = "GRASSczo"
-  mapsetname = "PERMANENT"
-} else if (.Platform$OS.type == "unix") { # work mac paths
-  setwd("~/Google Drive/UCSB/Research/rhessys/g2wtest")
-  gisbasepath = "/Applications/GRASS-6.4.app/Contents/MacOS"
-  homepath = "/Users/wburke/Google Drive/UCSB/Research/rhessys/g2wtest"
-  gisdb = "/Users/wburke/Google Drive/UCSB/Research/rhessys/g2wtest"
-  location_name = "GRASSczo"
-  mapsetname = "PERMANENT"
-} else { # PC paths
-  setwd("D://Google Drive/UCSB/Research/rhessys/g2wtest/")
-  gisbasepath = "D:\\Program Files\\GRASS GIS 6.4.4"
-  homepath = "D:\\Google Drive\\UCSB\\Research\\rhessys\\g2wtest"
-  gisdb = "D:\\Google Drive\\UCSB\\Research\\rhessys\\g2wtest"
-  location_name = "GRASSczo"
-  mapsetname = "PERMANENT"
-}
+# This is a script showing gow the world_gen function should be run. Replace below where needed.
 
-typepars = c(gisbasepath,homepath,gisdb,location_name,mapsetname)
-remove(gisbasepath,homepath,gisdb,location_name,mapsetname)
+# First, set your working directory.  Additional files world_gen makes will be located here (typepars, cf_maps)
+# Set the path below to that directory:
+setwd("~/Documents/examplefolder")
 
-template = "remoretestingnewworldgeneration/template.1strata"
-worldfile = "remoretestingnewworldgeneration/world.czo1strata"
+# Next, choose your method of GIS. (GRASS GIS is currently the only method.)
+GIStype = "GRASS"
 
-type = "GRASS"
-overwrite = "yes"
+# Set your GRASS GIS environment using the variables listed below.
 
-world_gen(template=template,worldfile=worldfile,type=type,typepars=typepars,overwrite=overwrite)
+# Your gisbase is the location of GRASS GIS on your system, typically:
+gisbase = "/Applications/GRASS-6.4.app/Contents/MacOS"
+
+# Home is the directory where a gisrc file will be created. This can be any directory and doesn't matter.
+home = "~/Documents"
+
+# Your gisdb is the location of your GRASS GIS database - ie the folder that contains your GRASS GIS projects
+gisdb = "~/Documents/mygrassgisprojects"
+
+# Your location is the name of your GRASS GIS location of interest
+location = "MyGRASSGISlocation"
+
+# Lastly, indicate your mapset in your GRASS GIS location.  By default this is "PERMANENT".
+mapset = "PERMANENT"
+
+# These GIS environment variables are combined into a vector, and removed.
+typepars = c(gisbase,home,gisdb,location,mapset)
+remove(gisbase,home,gisdb,location,mapset)
+
+# template is the path and name of your template file.
+template = "/templates/example.template"
+
+# worldfile is the path and name of your worldfile
+worldfile = "/worldfile/exmaple.world"
+
+# overwrite is a TRUE/FALSE indicating if you want to overwrite an existing worldfile.
+overwrite = FALSE
+
+# Finally, run the function.  It may take a minute or two.
+world_gen(template,worldfile,type,typepars,overwrite)
 
