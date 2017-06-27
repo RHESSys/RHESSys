@@ -265,6 +265,9 @@ struct patch_object *construct_patch(
 	if (command_line[0].firespread_flag == 1) {
 		patch[0].fire.et = 0.0;
 		patch[0].fire.pet = 0.0;
+		patch[0].fire.understory_et = 0;
+		patch[0].fire.understory_pet = 0;
+		// here set fire.understory_et and fire.understory_pet = 0;
 		}	
 	/*--------------------------------------------------------------*/
 	/*	Variables for the dynamic version are included here     */

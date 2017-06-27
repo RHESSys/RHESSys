@@ -1468,6 +1468,8 @@ struct patch_fire_water_object
 {
         double pet;                     /* mm */
         double et;                      /* mm */
+	double understory_et; /*mm; understory layer et*/
+	double understory_pet; /*mm; understory layer pet*/
 
 };
 

@@ -46,6 +46,7 @@ struct fire_default {
 	double moisture_ign_k2;
 	double load_ign_k1;
 	double load_ign_k2;
+	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
 //	char **patch_file_name;
 };
 
@@ -65,8 +66,8 @@ struct fire_object
 	double et;
 	double pet;
 	int ign_available; /* 1 if available for ignition, 0 otherwise*/
-	double et_under; //evapotranspiration of only the understory
-	double pet_under; //potential evapotranspiration of only the understory
+	double understory_et; //evapotranspiration of only the understory
+	double understory_pet; //potential evapotranspiration of only the understory
 };	
 
 #ifdef __cplusplus
