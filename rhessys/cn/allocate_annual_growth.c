@@ -513,7 +513,7 @@ int allocate_annual_growth(				int id,
 		} /* end if resprout */
 	} /* end if less than min_leaf_carbon */
 	else  {
-		 cs->num_resprout = max(cs->num_resprout-1,0);	
+		 // cs->num_resprout = max(cs->num_resprout-1,0);	
 		 cs->age += 1;
 		 }
 
