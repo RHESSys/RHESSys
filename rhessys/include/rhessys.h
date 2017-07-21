@@ -974,6 +974,7 @@ struct zone_object
         double  LAI_scalar;                             /* DIM          */
         double  Ldown;                                  /* W/m2         */
 	double	max_rootdepth;				/* m		*/
+	double	max_wilting_point;				/* %		*/
         double  Ldown_night;							/* W/m2			*/
         double  Ldown_day;								/* W/m2			*/
         double  ndep_NO3;                               /* kg/m2/day    */
