@@ -104,7 +104,7 @@ void	update_shadow_strata(
     stratum[0].target.met = 1;
   }
 
-  if(current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years){
+  if((current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years) && current_date.month==9 && current_date.day==30){
     stratum[0].target.met = 1;
     printf("\nexceeded max years for patch:%d", stratum[0].patch_ID);
   }	
