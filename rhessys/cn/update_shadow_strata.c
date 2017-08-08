@@ -43,7 +43,7 @@ void	update_shadow_strata(
   
  // printf("\ntarget met: %d", stratum[0].target.met);
 
-  if((stratum[0].target.met != 1){
+  if(stratum[0].target.met != 1){
     shadow_strata[0].cover_fraction = stratum[0].cover_fraction;
     shadow_strata[0].gap_fraction = stratum[0].gap_fraction;
     shadow_strata[0].rootzone.depth = stratum[0].rootzone.depth;
@@ -105,7 +105,7 @@ void	update_shadow_strata(
     stratum[0].target.met = 1;*/
      
  if((stratum[0].epv.proj_lai >= (stratum[0].target.lai - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai))
- +    && ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc))) {
+     && ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc))) {
       // TODO: add && for all the possible targets
       stratum[0].target.met = 1;
     }
