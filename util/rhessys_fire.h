@@ -45,7 +45,7 @@ struct fire_default {
 	double veg_k2; // for ignition use veg fuel, this is a temporary parameter used in development, not likely to be retained in final model. not necessary for spread_calc_type=7 or =9
 	double mean_ign; // mean number of ignitions per month, for a monthly poisson draw. mandatory parameter value
 	long ran_seed; // 0 for stochastic runs, or integer seed for deterministic runs and debugging
-	double moisture_ign_k1; // alternative model for ignition probability under development. for spread_calc_type = 8 or 9 (check! might only be 9)
+	double moisture_ign_k1; // alternative model for ignition probability under development. for spread_calc_type = 8 or 9 (check! might only be 9). If there is no understory, then overall et and pet is used for ignition moisture. possibly replace with an aet with a fixed rooting depth, bec def in understory with shallow roots might overrepresent deficit (an imaginary understory) to represent moisture condition down there
 	double moisture_ign_k2;// alternative model for ignition probability under development. for spread_calc_type = 8 or 9 (check! might only be 9)
 	double load_ign_k1;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	double load_ign_k2;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
