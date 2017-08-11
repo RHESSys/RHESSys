@@ -508,8 +508,6 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	canopy_strata[0].epv.psi_ravg = canopy_strata[0].defaults[0][0].epc.psi_open;
 
-	/* for now start everything as an overstory; this variable will be reset if fire effects is computed */
-	canopy_strata[0].overstory=1;
 	/*--------------------------------------------------------------*/
 	/*	for now initialize these accumuling variables		*/
 	/*	note that age really should be a state variable 	*/

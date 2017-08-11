@@ -46,6 +46,7 @@ void	output_growth_basin(
 	double p_over, p_under;
 	double agpsn, aresp;
 	double alai;
+	double leafc, frootc, woodc;	
 	double aleafc, afrootc, awoodc;
 	double aleafn, afrootn, awoodn;
 	double acpool;
@@ -215,14 +216,15 @@ void	output_growth_basin(
 							+ strata->ns.deadcrootn_transfer
 							+ strata->ns.deadstemn_transfer
 							+ strata->ns.cwdn + strata->ns.retransn + strata->ns.npool ) * patch[0].area;
-						aleafc += strata->cover_fraction	* (strata->cs.leafc
+						leafc = strata->cover_fraction	* (strata->cs.leafc
 							+ strata->cs.leafc_store + strata->cs.leafc_transfer )
 							* patch[0].area;
-
-						afrootc += strata->cover_fraction * (strata->cs.frootc
+						aleafc += leafc;
+						frootc = strata->cover_fraction * (strata->cs.frootc
 							+ strata->cs.frootc_store + strata->cs.frootc_transfer)
 							* patch[0].area;
-						awoodc += strata->cover_fraction	* (strata->cs.live_crootc
+						afrootc += frootc;
+						woodc = strata->cover_fraction	* (strata->cs.live_crootc
 							+ strata->cs.live_stemc + strata->cs.dead_crootc
 							+ strata->cs.dead_stemc + strata->cs.livecrootc_store
 							+ strata->cs.livestemc_store + strata->cs.deadcrootc_store
@@ -232,6 +234,7 @@ void	output_growth_basin(
 							+ strata->cs.deadcrootc_transfer
 							+ strata->cs.deadstemc_transfer
 							+ strata->cs.cwdc + strata->cs.cpool)* patch[0].area;
+						awoodc += woodc;
 						arootdepth += strata->cover_fraction * (strata->rootzone.depth)
 							* patch[0].area;
 						alai += strata->cover_fraction * (strata->epv.proj_lai)
@@ -250,15 +253,15 @@ void	output_growth_basin(
 									strata->cs.leafc * patch[0].area * p_over;
 						aoverstory_stemc += strata->cover_fraction * (strata->cs.live_stemc 
 							+ strata->cs.dead_stemc) * patch[0].area * p_over;
-						aoverstory_biomassc += (awoodc + afrootc + aleafc) * p_over;
+						aoverstory_biomassc += (woodc + frootc + leafc) * p_over;
 
 						aunderstory_height += strata->cover_fraction * 
-								strata->epv.height * patch[0].area * p_over;
+								strata->epv.height * patch[0].area * p_under;
 						aunderstory_leafc += strata->cover_fraction * 
-									strata->cs.leafc * patch[0].area * p_over;
+									strata->cs.leafc * patch[0].area * p_under;
 						aunderstory_stemc += strata->cover_fraction * (strata->cs.live_stemc 
-							+ strata->cs.dead_stemc) * patch[0].area * p_over;
-						aunderstory_biomassc += (awoodc + afrootc + aleafc) * p_over;
+							+ strata->cs.dead_stemc) * patch[0].area * p_under;
+						aunderstory_biomassc += (woodc + frootc + leafc) * p_under;
 					
 				}
 				}
