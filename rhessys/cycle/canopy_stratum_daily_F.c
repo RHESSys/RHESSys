@@ -1873,7 +1873,7 @@ void	canopy_stratum_daily_F(
 	/* track variables for fire spread */
 	if (command_line[0].firespread_flag == 1) {
 //		printf("***********\n###########\nCurrent stratum height %lf\n***************\n#################\n",stratum[0].epv.height);
-		if(stratum[0].epv.height<=stratum[0].defaults[0][0].understory_height_thresh)
+		if(stratum[0].epv.height<=patch[0].soil_defaults[0][0].understory_height_thresh)
 		{	
 //			printf("Found an understory stratum!\n");
 			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +  

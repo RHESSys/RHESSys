@@ -242,8 +242,8 @@ void	output_growth_basin(
 						acpool += strata->cover_fraction*strata->cs.cpool*patch[0].area;
 						anpool += strata->cover_fraction*strata->ns.npool*patch[0].area;
 
-						p_under = max(0.0,(strata->defaults[0][0].overstory_height_thresh - strata->epv.height)) /
-						(strata->defaults[0][0].overstory_height_thresh-strata->defaults[0][0].understory_height_thresh);
+						p_under = max(0.0,(patch->soil_defaults[0][0].overstory_height_thresh - strata->epv.height)) /
+						(patch->soil_defaults[0][0].overstory_height_thresh-patch->soil_defaults[0][0].understory_height_thresh);
 						p_under = min(1.0, p_under);
 						p_over = 1.0-p_under;
 

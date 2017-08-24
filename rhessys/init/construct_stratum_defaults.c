@@ -296,9 +296,6 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		/*	Fire effect parameters					*/
 		/*--------------------------------------------------------------*/
-
-		default_object_list[i].overstory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "overstory_height_thresh", "%lf", 5, 1);
-		default_object_list[i].understory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "understory_height_thresh", "%lf", 2, 1);
 		default_object_list[i].pspread_loss_rel = getDoubleParam(&paramCnt, &paramPtr, "pspread_loss_rel", "%lf", 1, 1);
  		default_object_list[i].vapor_loss_rel = getDoubleParam(&paramCnt, &paramPtr, "vapor_loss_rel", "%lf", 1, 1);
 		default_object_list[i].biomass_loss_rel_k1 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k1", "%lf", -.02, 1);

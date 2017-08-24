@@ -1114,6 +1114,8 @@ struct	soil_default
 	double  gsurf_intercept;				/* m/s */
 	double  theta_mean_std_p1;				/* DIM */
 	double  theta_mean_std_p2;				/* DIM */
+	double  overstory_height_thresh;        /* Defines lower limit of overstory (m) */
+	double  understory_height_thresh;       /* Defines upper limit of understory (m) */
 	struct soil_class	soil_type;
 	};
 
@@ -2645,8 +2647,6 @@ struct  stratum_default
         double  ustar_overu;                    /* DIM  */
         struct  epconst_struct  epc;
         struct  mrconst_struct  mrc;
-	double overstory_height_thresh;		/* Defines lower limit of overstory (m?) */
-	double understory_height_thresh;  	/* Defines upper limit of understory (m?) */
 	double pspread_loss_rel; 		/* Relation between probability of spread and percent carbon loss */
 	double vapor_loss_rel; 			/* Relation between percent carbon loss and percent carbon vaporized */
 	double biomass_loss_rel_k1; 		/* k1 for the biomass sigmoid function (steepness of curve) */
