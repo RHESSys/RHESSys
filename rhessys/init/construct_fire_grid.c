@@ -350,7 +350,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		printf("done assigning dem\n");
 	}
 	// for debugging, write out the fire grid and patches
-/*	FILE *gridout;
+	FILE *gridout;
 
 	gridout=fopen("FireGridPatchCheckOccupiedArea.txt","w");
 	for(i=0;i<grid_dimY;i++){
@@ -401,7 +401,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}
 		fprintf(gridout,"\n");
 	}
-	fclose(gridout);*/
+	fclose(gridout);
 
 	/* done allocating fire grid, return to RHESSys*/
 	return(fire_grid);	
