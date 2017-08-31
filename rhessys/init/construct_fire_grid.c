@@ -317,7 +317,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 									patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p];
 									if(patch[0].ID==tmpPatchID)
 									{
-										//printf("now filling in array--found a match!\n");
+										printf("now filling in array--found a match!\n");
 										fire_grid[i][j].patches[0]=patch;
 										//printf("patch1\n");
 										fire_grid[i][j].occupied_area=cell_res*cell_res;
