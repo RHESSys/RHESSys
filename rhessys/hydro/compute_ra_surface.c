@@ -80,7 +80,7 @@ double	compute_ra_surface(
 	/* set current resistance at the top of the layer		*/
 	/*--------------------------------------------------------------*/
 	ra = 1.0/(*ga);
-	printf("\nSURF:cn=%lf u_top=%lf h_o=%lf h_u=%lf ga_top=%lf ra_top=%lf",cn,*u,h_o,h_u,*ga,ra);
+	/*printf("\nSURF:cn=%lf u_top=%lf h_o=%lf h_u=%lf ga_top=%lf ra_top=%lf",cn,*u,h_o,h_u,*ga,ra);*/
 
 	/*--------------------------------------------------------------*/
 	/*	Compute the roughness length zo (m)			*/
@@ -102,6 +102,6 @@ double	compute_ra_surface(
 	/*	update conductance below this patch			*/
 	/*--------------------------------------------------------------*/
 	*ga = 1/ra_u;
-	printf(" u_bot=%lf ga_bot=%lf ra_bot=%lf",*u,*ga,ra_u);
+	/*printf(" u_bot=%lf ga_bot=%lf ra_bot=%lf",*u,*ga,ra_u);*/
 	return(ra);
 } /*compute_ra_surface*/ 

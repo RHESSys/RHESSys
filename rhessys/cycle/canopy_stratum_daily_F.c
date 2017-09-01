@@ -104,15 +104,10 @@ void	canopy_stratum_daily_F(
 	double  compute_ra_overstory(
 		int     ,
 		double  ,
-		double  ,
-		double *,
-		double *,
-		double *,
 		double *,
 		double  ,
 		double  ,
 		double	,
-		double *,
 		double *);
 	
 	double  compute_ra_understory(
@@ -673,62 +668,20 @@ void	canopy_stratum_daily_F(
 			/*		Highest layer in patch.				*/
 			/*--------------------------------------------------------------*/
 			if ( stratum[0].epv.height == patch[0].layers[0].height ){
-				/*if ( stratum[0].epv.height > 0.0 ) {*/
-				if ( command_line[0].verbose_flag == -5 ){
-					printf("\n          CASE1 atten:%lf trunk=%lf screen=%lf ht=%lf base=%lf wind=%lf", 
-						   stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
-						   (1.0 - stratum[0].defaults[0][0].epc.crown_ratio),
-						   zone[0].base_stations[0][0].screen_height,
-						   stratum[0].epv.height,
-						   layer[0].base,
-						   wind);
-				}
-					stratum[0].ga = 1.0 / compute_ra_overstory(
-						command_line[0].verbose_flag,
-						stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
-						(1.0 - stratum[0].defaults[0][0].epc.crown_ratio),
-						&(wind),
-						&(windcan),
-						&(windsnow),
-						&(ustar),
-						zone[0].base_stations[0][0].screen_height,
-						stratum[0].epv.height,
-						layer[0].base,
-						&(ga),
-						&(gasnow));
-				/*	}
-				else {
-					stratum[0].ga = 1.0 / compute_ra_surface(
-					   command_line[0].verbose_flag,
-					   0.0,
-					   &(wind),
-					   zone[0].base_stations[0][0].screen_height,
-					   layer[0].base,
-					   &(ga));
-				}*/
-			}
-			/* NOT HIGHEST LAYER IN PATCH */
-			/* Assumes wind speed from highest layer was already attenuated to top of this layer */
-			else {
 				stratum[0].ga = 1.0 / compute_ra_overstory(
-					   command_line[0].verbose_flag,
-					   stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
-					   (1.0 - stratum[0].defaults[0][0].epc.crown_ratio),
-					   &(wind),
-					   &(windcan),
-					   &(windsnow),
-					   &(ustar),
-					   2.0,
-					   stratum[0].epv.height,
-					   layer[0].base,
-					   &(ga),
-					   &(gasnow));
+					command_line[0].verbose_flag,
+					stratum[0].defaults[0][0].wind_attenuation_coeff,
+					&(wind),
+					zone[0].base_stations[0][0].screen_height,
+					stratum[0].epv.height,
+					layer[0].base,
+					&(ga));
 			}
-			/*----------------------- OLD CODE --------------------------------------------*/
+
 			/*--------------------------------------------------------------*/
 			/*		Layer is not the highest and is >0.1highest ht.	*/
 			/*--------------------------------------------------------------*/
-			/*else if (stratum[0].epv.height > (patch[0].layers[0].height * 0.1) ){
+			else if (stratum[0].epv.height > (patch[0].layers[0].height * 0.1) ){
 				if ( command_line[0].verbose_flag == -5 ){
 					printf("\nCASE2");
 				}
@@ -742,11 +695,11 @@ void	canopy_stratum_daily_F(
 					&(ga));
 				windsnow = wind;
 				gasnow = ga;
-			}*/
+			}
 			/*--------------------------------------------------------------*/
 			/*		Layer is <0.1highest ht. in height.		*/
 			/*--------------------------------------------------------------*/
-			/*else{
+			else{
 				if ( command_line[0].verbose_flag == -5 ){
 					printf("\nCASE3");
 				}
@@ -761,8 +714,7 @@ void	canopy_stratum_daily_F(
 					&(ga));
 				windsnow = wind;
 				gasnow = ga;
-			}*/
-			/*----------------------- END OLD CODE ----------------------------------------*/
+			}
 		}
 		else{
 
@@ -946,7 +898,7 @@ void	canopy_stratum_daily_F(
 	m_tmin_sunlit = stratum[0].mult_conductance.tmin;
 	m_vpd_sunlit = stratum[0].mult_conductance.vpd;
 
-
+	/*
 	stratum[0].potential_gs_sunlit = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
 		stratum[0].defaults[0][0].epc.psi_curve,
@@ -973,6 +925,12 @@ void	canopy_stratum_daily_F(
 		stratum[0].defaults[0][0].epc.coef_CO2,
 		stratum[0].ID,
 		stratum, patch);
+	*/
+
+	/* subsituting a simpler max conductance value */
+	stratum[0].potential_gs_sunlit = stratum[0].defaults[0][0].epc.gl_smax * 
+			stratum[0].defaults[0][0].lai_stomatal_fraction * stratum[0].epv.proj_lai_sunlit;
+
 
 	stratum[0].gs_shade = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
@@ -1010,7 +968,7 @@ void	canopy_stratum_daily_F(
 
 
 
-
+	/*
 	stratum[0].potential_gs_shade = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
 		stratum[0].defaults[0][0].epc.psi_curve,
@@ -1037,6 +995,12 @@ void	canopy_stratum_daily_F(
 		stratum[0].defaults[0][0].epc.coef_CO2,
 		stratum[0].ID,
 		stratum, patch);
+	*/
+
+	/* subsituting a simpler max conductance value */
+	stratum[0].potential_gs_shade = stratum[0].defaults[0][0].epc.gl_smax * 
+			stratum[0].defaults[0][0].lai_stomatal_fraction * stratum[0].epv.proj_lai_shade;
+
 
 
 	/* keep track of conductance multipliers actually used an indication of stress */
@@ -1452,9 +1416,7 @@ void	canopy_stratum_daily_F(
 			potential_transpiration = 0.0;
 		}
 	}
-
-
-	transpiration = max(transpiration, 0.0);
+	transpiration = max(transpiration, 0.0); // MCK, test
 	potential_transpiration = max(potential_transpiration, 0.0);
 
 	stratum[0].PET = potential_transpiration;
@@ -1899,16 +1861,33 @@ void	canopy_stratum_daily_F(
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
 
+	// // calculate et just like in patch, but also by cover fraction, a variable we include MCK, patch - level variable multiplied by stratum cover fraction, just like those variables above
 
-
-	
-	patch[0].ga_final += ga * stratum[0].cover_fraction;
-	patch[0].gasnow_final += gasnow * stratum[0].cover_fraction;
+	patch[0].ga_final = ga;
+	patch[0].gasnow_final = gasnow;
 	patch[0].wind_final += wind * stratum[0].cover_fraction;
 	patch[0].windsnow_final += windsnow * stratum[0].cover_fraction;
 	patch[0].ustar_final += ustar * stratum[0].cover_fraction;
 	patch[0].T_canopy_final += (zone[0].metv.tavg + deltaT) * stratum[0].cover_fraction;
 
+	/* track variables for fire spread */
+	if (command_line[0].firespread_flag == 1) {
+//		printf("***********\n###########\nCurrent stratum height %lf\n***************\n#################\n",stratum[0].epv.height);
+		if(stratum[0].epv.height<=patch[0].soil_defaults[0][0].understory_height_thresh)
+		{	
+//			printf("Found an understory stratum!\n");
+			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +  
+			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone))/(patch[0].fire_defaults[0][0].ndays_average + 1); 
+		//	+ stratum[0].evaporation))/ // MCK: look at et without the evaporation part
+			
+
+			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +  
+			(stratum[0].PET))/
+			(patch[0].fire_defaults[0][0].ndays_average + 1); 
+//		printf("Debugging understory et and pet,stratum PET, stratum transpiration sat and unsat, stratum evaporation: %lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",patch[0].fire.understory_et,patch[0].fire.understory_pet, stratum[0].PET,stratum[0].transpiration_sat_zone, stratum[0].transpiration_unsat_zone,stratum[0].evaporation);
+			
+		}
+	}
 	
 	if ( command_line[0].verbose_flag == -5 ){
 	printf("\n          STRATUM DAILY END Kdir=%lf Kdif=%lf Kupdir=%lf Kupdif=%lf Lstar=%lf Lstarpch=%lf Rnet_used=%lf Kstar_can=%lf rnetevap=%lf dayl=%lf Tcan=%lf \n          ??? topt=%lf tcoef=%lf tmax=%lf",

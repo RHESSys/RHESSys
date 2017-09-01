@@ -63,7 +63,7 @@ struct patch_object *construct_patch(
 		int     num_world_base_stations,
 		struct  base_station_object **world_base_stations,
 		struct	default_object	*defaults);
-	struct 	canopy_strata_object *construct_empty_shadow_strata( 
+	  struct 	canopy_strata_object *construct_empty_shadow_strata( 
 		struct command_line_object *,
 		struct	patch_object *,
 		struct  canopy_strata_object *stratum,
@@ -263,6 +263,9 @@ struct patch_object *construct_patch(
 	if (command_line[0].firespread_flag == 1) {
 		patch[0].fire.et = 0.0;
 		patch[0].fire.pet = 0.0;
+		patch[0].fire.understory_et = 0;
+		patch[0].fire.understory_pet = 0;
+		// here set fire.understory_et and fire.understory_pet = 0;
 		}	
 	/*--------------------------------------------------------------*/
 	/*	Variables for the dynamic version are included here     */

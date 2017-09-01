@@ -376,7 +376,12 @@ void		patch_daily_F(
 		int,
 		struct mortality_struct);
 	
-	
+
+	void	compute_fire_effects(
+		struct patch_object *,
+		double);
+
+
 
 	long julday( struct date);
 	/*--------------------------------------------------------------*/
@@ -386,6 +391,7 @@ void		patch_daily_F(
 	int stratum, ch, inx;
 	int	vegtype;
 	int dum;
+	double  pspread;
 	double  biomass_removal_percent;
 	double	cap_rise, tmp, wilting_point;
 	double	delta_unsat_zone_storage;
@@ -613,17 +619,17 @@ void		patch_daily_F(
 				clim_event = patch[0].base_stations[0][0].dated_input[0].biomass_removal_percent.seq[inx];
 				}
 			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
-					biomass_removal_percent = clim_event.value;
-					mort.mort_cpool=biomass_removal_percent;
-					mort.mort_leafc=biomass_removal_percent;
-					mort.mort_deadleafc=biomass_removal_percent;
-					mort.mort_deadstemc=biomass_removal_percent;
-					mort.mort_livestemc=biomass_removal_percent;
-					mort.mort_deadcrootc=biomass_removal_percent;
-					mort.mort_livecrootc=biomass_removal_percent;
-					mort.mort_frootc=biomass_removal_percent;
+				biomass_removal_percent = clim_event.value;
+				mort.mort_cpool=biomass_removal_percent;
+				mort.mort_leafc=biomass_removal_percent;
+				mort.mort_deadleafc=biomass_removal_percent;
+				mort.mort_deadstemc=biomass_removal_percent;
+				mort.mort_livestemc=biomass_removal_percent;
+				mort.mort_deadcrootc=biomass_removal_percent;
+				mort.mort_livecrootc=biomass_removal_percent;
+				mort.mort_frootc=biomass_removal_percent;
 					
-					for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					/*--------------------------------------------------------------*/
 					/*	Cycle through the canopy strata				*/
 					/*--------------------------------------------------------------*/
@@ -644,9 +650,34 @@ void		patch_daily_F(
 
 					}
 				}
+			}
+		} 
+	}
 
+
+	/*--------------------------------------------------------------*/
+	/* call fire effects on a particular date, based  		*/
+	/* on time series input						*/
+	/*--------------------------------------------------------------*/
+	if (patch[0].base_stations != NULL) {
+		inx = patch[0].base_stations[0][0].dated_input[0].pspread.inx;
+		if (inx > -999) {
+			clim_event = patch[0].base_stations[0][0].dated_input[0].pspread.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].pspread.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].pspread.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].pspread.seq[inx];
 				}
-			} 
+			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+				pspread = clim_event.value;
+
+				printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
+				compute_fire_effects(
+					patch,
+					pspread);
+
+			}
+		} 
 	}
 
 
@@ -674,30 +705,7 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].min_heat_capacity,
 		patch[0].soil_defaults[0][0].max_heat_capacity);
 
-	/*----------------------------------------------------------------------*/
-	/*	Compute the no-canopy aerodynamic resistance at 2m as a baseline	*/
-	/*	for null covers	*/
-	/*----------------------------------------------------------------------*/
-	tmpra = compute_ra_overstory(
-								 command_line[0].verbose_flag,
-								 0.0,
-								 0.4,
-								 &(tmpwind),
-								 &(tmpwindcan),
-								 &(tmpwindsnow),
-								 &(tmpustar),
-								 zone[0].base_stations[0][0].screen_height,
-								 0.0,
-								 0.0,
-								 &(tmpga),
-								 &(tmpgasnow));
-	
-	/* Set values for no stratum case. These will be overwritten if veg present. */
-	patch[0].ga = tmpga;
-	patch[0].gasnow = tmpgasnow;
-	patch[0].wind = tmpwind;
-	patch[0].windsnow = tmpwindsnow;
-	patch[0].ustar = tmpustar;
+
 	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height greater than the	*/
@@ -706,7 +714,7 @@ void		patch_daily_F(
 	
 	/*	Calculate initial pond height		*/
 	pond_height = max(0.0,-1 * patch[0].sat_deficit_z + patch[0].detention_store);
-	
+
 	/*--------------------------------------------------------------*/
 	/* Layers above snowpack and pond */
 	/*--------------------------------------------------------------*/
@@ -736,9 +744,9 @@ void		patch_daily_F(
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
-			if (dum == 0) {
-				patch[0].ga_final = patch[0].layers[layer].null_cover * tmpga;
-				patch[0].gasnow_final = patch[0].layers[layer].null_cover * tmpgasnow;
+			if (dum == 0) {				
+				patch[0].ga_final = tmpga;
+				patch[0].gasnow_final = tmpgasnow;
 				patch[0].wind_final = patch[0].layers[layer].null_cover * tmpwind;
 				patch[0].windsnow_final = patch[0].layers[layer].null_cover * tmpwindsnow;
 				patch[0].ustar_final = patch[0].layers[layer].null_cover * tmpustar;
@@ -773,6 +781,7 @@ void		patch_daily_F(
 						command_line,
 						event,
 						current_date );
+				
 				dum += 1;
 			}
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
@@ -1086,7 +1095,6 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
-			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
@@ -1134,7 +1142,6 @@ void		patch_daily_F(
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
-			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
@@ -1489,7 +1496,7 @@ void		patch_daily_F(
 			/*--------------------------------------------------------------*/
 		/* add canopy evaporation and snow sublimation to PET						*/
 			/*--------------------------------------------------------------*/
-		patch[0].PET = patch[0].evaporation+patch[0].evaporation_surf;
+		/*patch[0].PET = patch[0].evaporation+patch[0].evaporation_surf;*/
 
 	if ( command_line[0].verbose_flag > 1 ) {
 		printf("\n%ld %ld %ld  -335.1 ",
@@ -1816,9 +1823,9 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/* add soil evap to PET																					*/
 	/*--------------------------------------------------------------*/
-
+/*
 	patch[0].PET += (patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone);
-
+*/
 	/*--------------------------------------------------------------*/
 	/* in order to restrict denitri/nitrific on non-veg patches type */
 	/* 	tag vegtype							*/	
@@ -2099,6 +2106,7 @@ void		patch_daily_F(
 		patch[0].fire.pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.pet    
 				+ patch[0].PET) / 
 		(patch[0].fire_defaults[0][0].ndays_average + 1);
+
 		}
 	
 

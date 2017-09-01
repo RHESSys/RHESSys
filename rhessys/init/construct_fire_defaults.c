@@ -105,6 +105,10 @@ struct fire_default *construct_fire_defaults(
 		printf("winddir_k1: %lf\n",default_object_list[i].winddir_k1);
  		default_object_list[i].winddir_k2=getDoubleParam(&paramCnt, &paramPtr, "winddir_k2", "%lf", 1, 1);
 		printf("winddir_k2: %lf\n",default_object_list[i].winddir_k2);
+		default_object_list[i].moisture_ign_k1=getDoubleParam(&paramCnt, &paramPtr, "moisture_ign_k1", "%lf", 0.8, 1);
+		printf("moisture_ign_k1: %lf\n",default_object_list[i].moisture_ign_k1);
+		default_object_list[i].moisture_ign_k2=getDoubleParam(&paramCnt, &paramPtr, "moisture_ign_k2", "%lf", 0.15, 1);
+		printf("moisture_ign_k2: %lf\n",default_object_list[i].moisture_ign_k2);
 		default_object_list[i].windmax=getDoubleParam(&paramCnt, &paramPtr, "windmax", "%lf", 100, 1);
 		printf("windmax: %lf\n",default_object_list[i].windmax);
 		default_object_list[i].ignition_col=getDoubleParam(&paramCnt, &paramPtr, "ignition_col", "%lf", -1, 1);
@@ -142,11 +146,17 @@ struct fire_default *construct_fire_defaults(
 		default_object_list[i].ign_def_mod=getDoubleParam(&paramCnt, &paramPtr, "ign_def_mod", "%lf", 1 , 1);
 		printf("ign_def_mod: %lf\n",default_object_list[i].ign_def_mod);
 		default_object_list[i].veg_k1=getDoubleParam(&paramCnt, &paramPtr, "veg_k1", "%lf", 0.8, 1);
+ 		default_object_list[i].veg_ign=getIntParam(&paramCnt, &paramPtr, "veg_ign", "%d", 0, 1);
+		printf("veg_ign: %d\n",default_object_list[i].veg_ign);
   		printf("veg_k1: %lf\n",default_object_list[i].veg_k1);
 		default_object_list[i].veg_k2=getDoubleParam(&paramCnt, &paramPtr, "veg_k2", "%lf", 10, 1);
 		printf("veg_k2: %lf\n",default_object_list[i].veg_k2);
- 		default_object_list[i].veg_ign=getDoubleParam(&paramCnt, &paramPtr, "veg_ign", "%d", 10, 1);
-		printf("veg_ign: %d\n",default_object_list[i].veg_ign);
+		default_object_list[i].mean_ign=getDoubleParam(&paramCnt, &paramPtr, "mean_ign", "%lf", 1, 1);
+		printf("mean_ign: %lf\n",default_object_list[i].mean_ign);
+		default_object_list[i].ran_seed=getIntParam(&paramCnt, &paramPtr, "ran_seed", "%d", 0, 1);
+		printf("ran_seed: %d\n",default_object_list[i].ran_seed);
+		default_object_list[i].calc_fire_effects=getIntParam(&paramCnt, &paramPtr, "calc_fire_effects", "%d", 0, 1);
+		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
 
  
 /*--------------------------------------------------------------*/

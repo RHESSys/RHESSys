@@ -131,17 +131,16 @@ double	compute_vascular_stratum_conductance(
 		m_LWP = leaf_conductance_LWP_curve(LWP_curve, LWP_predawn,
 			LWP_min_spring,LWP_stom_closure,LWP_threshold, LWP_slp, LWP_intercpt );
 
-		if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > patch[0].rootzone.potential_sat)) {
-
-			/* Adjust check to make proportional to stratum-specific rooting depth */
-			if ( (patch[0].rz_storage * stratum[0].rootzone.depth / patch[0].rootzone.depth ) < wilting_point) {
-				m_LWP = 0.0;
-					}
-				}
+//		if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > patch[0].rootzone.potential_sat)) {
+//
+//			/* Adjust check to make proportional to stratum-specific rooting depth */
+//			if ( (patch[0].rz_storage * stratum[0].rootzone.depth / patch[0].rootzone.depth ) < wilting_point) {
+//				m_LWP = 0.0;
+//					}
+//				}
 
 			}
 	else m_LWP=1.0;
-
 
 	/*--------------------------------------------------------------*/
 	/*	mean daytime temperature multiplier.			*/

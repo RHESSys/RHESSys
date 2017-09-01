@@ -31,6 +31,12 @@ struct IgnitionCells // attributes of cells available for ignition, will draw ra
 struct LocalFireNodes
 {
 	int iter;
+	int failedIter;
+	double pSlope;
+	double pLoad;
+	double pDef;
+	double pWind;
+	double pUnderDef;
     LocalFireNodes() : iter(-1)
     {}
 };
@@ -81,6 +87,9 @@ public:
 	void Reset();
  	void Burn(GenerateRandom& rng);
 	void initializeCurrentFire(GenerateRandom& rng);
+	void chooseIgnPix(GenerateRandom& rng);
+	void drawNumIgn(double lambda, GenerateRandom& rng); // to test whether the randomly chosen cell should ignite
+
 	void writeFire(long month, long year,struct fire_default def);
 	struct fire_object** &FireGrids() { return fireGrid_; }
 	fire_default& FireDefault() {return def_;}
@@ -94,6 +103,7 @@ private:
 	int buffer_;     // how many cells from edge will ignitions not be allowed?
 	double cell_res_; // the resolution of each pixel, so the area of a pixel is cell_res_^2
 	int n_ign_; // the number of cells available for ignition
+	int n_cur_ign_; // a random draw for the number of ignitions to test for this run
 	int borders_[4];
 	std::vector<BurnedCells> firstBurned_;
 	std::vector<IgnitionCells> ignCells_;

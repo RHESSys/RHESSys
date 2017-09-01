@@ -308,25 +308,26 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 			for(j=0;j<grid_dimX;j++){
 				tmpPatchID=-9999;
 				fscanf(patchesIn,"%d\t",&tmpPatchID);
-//				printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,i,j);
+		//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,i,j);
 				if(tmpPatchID>=0){ // then find the corresponding patch and allocate it--only one patch per grid cell!
-//					printf("numPatches 0: %d\n",fire_grid[j][i].num_patches);	
+				//	printf("numPatches 0: %d\n",fire_grid[j][i].num_patches);	
 			//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,j,i);
 					fire_grid[i][j].num_patches=1;
-//					printf("numPatches 1: %d\n",fire_grid[j][i].num_patches);
+					//printf("numPatches 1: %d\n",fire_grid[j][i].num_patches);
 					fire_grid[i][j].patches=(struct patch_object **) malloc(fire_grid[i][j].num_patches*sizeof(struct patch_object *));
 					fire_grid[i][j].prop_patch_in_grid=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double)); 
 					fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double)); 
-//					printf("allocated patch array\n");
+					//printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files);
 					for (b=0; b< world[0].num_basin_files; ++b) {
 						for (h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
 							for (z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
 								tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
 								for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
 									patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p];
+				//					printf("is my world ok? %d\n",&patch[0].ID);
 									if(patch[0].ID==tmpPatchID)
 									{
-										//printf("now filling in array--found a match!\n");
+				//						printf("now filling in array--found a match!\n");
 										fire_grid[i][j].patches[0]=patch;
 										//printf("patch1\n");
 										fire_grid[i][j].occupied_area=cell_res*cell_res;
@@ -359,7 +360,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		printf("done assigning dem\n");
 	}
 	// for debugging, write out the fire grid and patches
-/*	FILE *gridout;
+	FILE *gridout;
 
 	gridout=fopen("FireGridPatchCheckOccupiedArea.txt","w");
 	for(i=0;i<grid_dimY;i++){
@@ -410,7 +411,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}
 		fprintf(gridout,"\n");
 	}
-	fclose(gridout);*/
+	fclose(gridout);
 
 	/* done allocating fire grid, return to RHESSys*/
 	return(fire_grid);	

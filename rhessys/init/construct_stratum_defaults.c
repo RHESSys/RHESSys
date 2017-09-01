@@ -293,6 +293,13 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.crown_ratio = getDoubleParam(&paramCnt, &paramPtr, "epc.crown_ratio", "%lf", 0.6, 1);
 		if (epc->veg_type != TREE)
 			default_object_list[i].epc.crown_ratio = 1.0;
+		/*--------------------------------------------------------------*/
+		/*	Fire effect parameters					*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].pspread_loss_rel = getDoubleParam(&paramCnt, &paramPtr, "pspread_loss_rel", "%lf", 1, 1);
+ 		default_object_list[i].vapor_loss_rel = getDoubleParam(&paramCnt, &paramPtr, "vapor_loss_rel", "%lf", 1, 1);
+		default_object_list[i].biomass_loss_rel_k1 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k1", "%lf", -.02, 1);
+		default_object_list[i].biomass_loss_rel_k2 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k2", "%lf", 200, 1);
 		
 		/*--------------------------------------------------------------*/
 		/* default values for phenology (leaf onset/offset) model parameters */
