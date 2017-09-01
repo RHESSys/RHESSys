@@ -299,9 +299,9 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 			for(j=0;j<grid_dimX;j++){
 				tmpPatchID=-9999;
 				fscanf(patchesIn,"%d\t",&tmpPatchID);
-				printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,i,j);
+		//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,i,j);
 				if(tmpPatchID>=0){ // then find the corresponding patch and allocate it--only one patch per grid cell!
-//					printf("numPatches 0: %d\n",fire_grid[j][i].num_patches);	
+					printf("numPatches 0: %d\n",fire_grid[j][i].num_patches);	
 			//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,j,i);
 					fire_grid[i][j].num_patches=1;
 //					printf("numPatches 1: %d\n",fire_grid[j][i].num_patches);
