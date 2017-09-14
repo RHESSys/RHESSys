@@ -65,33 +65,33 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-    //160628LML int i, d;
-    //160628LML int j, k;
+	int i, d;
+	int j, k;
 	int grow_flag, verbose_flag;
 	double time_int, tmp;
-    //160628LML double theta, m, Ksat, Nout;
-    //160628LML double NO3_out, NH4_out, DON_out, DOC_out;
-    //160628LML double return_flow, excess;
-    //160628LML double water_balance, infiltration;
-    //160628LML double innundation_depth;
+	double theta, m, Ksat, Nout;
+	double NO3_out, NH4_out, DON_out, DOC_out;
+	double return_flow, excess;
+	double water_balance, infiltration;
+	double innundation_depth;
 	double basin_outflow;
 	double basin_rz_storage;
 	double basin_unsat_storage;
 	double basin_sat_deficit;
 	double basin_return_flow;
 	double basin_detention_store;
-    double basin_area = 0;
-    double preday_basin_unsat_storage = 0;
-    double preday_basin_rz_storage = 0;
-    double preday_basin_sat_deficit = 0;
-    double preday_sat_deficit = 0;
-    double preday_basin_return_flow = 0;
-    double preday_basin_detention_store = 0;
-    //160628LML double add_field_capacity, rz_drainage, unsat_drainage;
-    //160628LML double streamflow, Qout, Qin_total, Qstr_total;
-    //struct patch_object *patch;
-    //160628LML struct hillslope_object *hillslope;
-    //160628LML struct patch_object *neigh;
+	double basin_area;
+	double preday_basin_unsat_storage;
+	double preday_basin_rz_storage;
+	double preday_basin_sat_deficit;
+	double preday_sat_deficit;
+	double preday_basin_return_flow;
+	double preday_basin_detention_store;
+	double add_field_capacity, rz_drainage, unsat_drainage;
+	double streamflow, Qout, Qin_total, Qstr_total;
+	struct patch_object *patch;
+	struct hillslope_object *hillslope;
+	struct patch_object *neigh;
 	/*--------------------------------------------------------------*/
 	/*	initializations						*/
 	/*--------------------------------------------------------------*/
@@ -111,10 +111,10 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	preday_basin_sat_deficit = 0.0;
 	preday_basin_return_flow = 0.0;
 	preday_basin_detention_store = 0.0;
-    //160628LML streamflow = 0.0;
-    //160628LML Qin_total = 0.0;
-    //160628LML Qstr_total = 0.0;
-    //160628LML d = 0;
+	streamflow = 0.0;
+	Qin_total = 0.0;
+	Qstr_total = 0.0;
+	d = 0;
 	basin[0].basin_outflow = 0.0;
 	basin[0].basin_area = 0.0;
 	basin[0].basin_unsat_storage = 0.0;
@@ -126,31 +126,30 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	basin[0].preday_basin_unsat_storage = 0.0;
 	basin[0].preday_basin_sat_deficit = 0.0;
 	basin[0].preday_basin_return_flow = 0.0;
-	basin[0].preday_basin_detention_store = 0.0;	
-	
+	basin[0].preday_basin_detention_store = 0.0;
+
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
-   /* #pragma omp parallel for reduction(+ : preday_basin_rz_storage,preday_basin_unsat_storage,preday_basin_sat_deficit,preday_basin_return_flow,preday_basin_detention_store,basin_area)  //160628LML*/
-    for (int i = 0; i < basin->route_list->num_patches; i++) {
-        struct	patch_object *patch = basin->route_list->list[i];
+	for (i = 0; i < basin->route_list->num_patches; i++) {
+		patch = basin->route_list->list[i];
 		patch[0].streamflow = 0.0;
 		patch[0].return_flow = 0.0;
 		patch[0].base_flow = 0.0;
 		patch[0].infiltration_excess = 0.0;
-        /*160628LML basin[0].*/preday_basin_rz_storage += patch[0].rz_storage * patch[0].area;
-        /*160628LML basin[0].*/preday_basin_unsat_storage += patch[0].unsat_storage * patch[0].area;
-        /*160628LML basin[0].*/preday_basin_sat_deficit += patch[0].sat_deficit * patch[0].area;
-        /*160628LML basin[0].*/preday_basin_return_flow += patch[0].return_flow * patch[0].area;
-        /*160628LML basin[0].*/preday_basin_detention_store += patch[0].detention_store
+		basin[0].preday_basin_rz_storage += patch[0].rz_storage * patch[0].area;
+		basin[0].preday_basin_unsat_storage += patch[0].unsat_storage * patch[0].area;
+		basin[0].preday_basin_sat_deficit += patch[0].sat_deficit * patch[0].area;
+		basin[0].preday_basin_return_flow += patch[0].return_flow * patch[0].area;
+		basin[0].preday_basin_detention_store += patch[0].detention_store
 				* patch[0].area;
-        /*160628LML basin[0].*/basin_area += patch[0].area;
+		basin[0].basin_area += patch[0].area;
 		patch[0].Qin_total = 0.0;
 		patch[0].Qout_total = 0.0;
 		patch[0].Qin = 0.0;
 		patch[0].Qout = 0.0;
 		patch[0].surface_Qin = 0.0;
 		patch[0].surface_Qout = 0.0;
-		
+
 		patch[0].overland_flow = 0.0;
 
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
@@ -198,44 +197,36 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].surface_DON_Qin = 0.0;
 			patch[0].surface_DOC_Qout = 0.0;
 			patch[0].surface_DOC_Qin = 0.0;
-			
+
 			patch[0].streamNO3_from_surface	= 0.0;
 			patch[0].streamNO3_from_sub = 0.0;
-			
+
 
 		}
 	}
- 
-    basin[0].preday_basin_rz_storage = preday_basin_rz_storage;                  //160628LML
-    basin[0].preday_basin_unsat_storage = preday_basin_unsat_storage;            //160628LML
-    basin[0].preday_basin_sat_deficit = preday_basin_sat_deficit;                //160628LML
-    basin[0].preday_basin_return_flow = preday_basin_return_flow;                //160628LML
-    basin[0].preday_basin_detention_store = preday_basin_detention_store;        //160628LML
-    basin[0].basin_area = basin_area;                                            //160628LML
 
 	/*--------------------------------------------------------------*/
 	/*	calculate Qout for each patch and add appropriate	*/
 	/*	proportion of subsurface outflow to each neighbour	*/
 	/*--------------------------------------------------------------*/
-    for (int k = 0; k < n_timesteps; k++) {
-       // #pragma omp parallel for                                                 //160628LML
-        for (int i = 0; i < basin->route_list->num_patches; i++) {
-            struct patch_object *patch = basin->route_list->list[i];
+	for (k = 0; k < n_timesteps; k++) {
 
-            patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
-                    patch[0].soil_defaults[0][0].porosity_0,
-                    patch[0].soil_defaults[0][0].porosity_decay,
-                    patch[0].soil_defaults[0][0].soil_depth, 0.0,
-                    -1.0 * patch[0].sat_deficit);
-            patch[0].preday_sat_deficit = patch[0].sat_deficit;
+		patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
+				patch[0].soil_defaults[0][0].porosity_0,
+				patch[0].soil_defaults[0][0].porosity_decay,
+				patch[0].soil_defaults[0][0].soil_depth, 0.0,
+				-1.0 * patch[0].sat_deficit);
+		patch[0].preday_sat_deficit = patch[0].sat_deficit;
+
+
+		for (i = 0; i < basin->route_list->num_patches; i++) {
+			patch = basin->route_list->list[i];
 		      	patch[0].hourly_subsur2stream_flow = 0;
-
-            patch[0].hourly_sur2stream_flow = 0;
-            patch[0].hourly_stream_flow = 0;
-            patch[0].hourly[0].streamflow_NO3 = 0;
-            patch[0].hourly[0].streamflow_NO3_from_sub = 0;
-            patch[0].hourly[0].streamflow_NO3_from_surface = 0;
-			
+			patch[0].hourly_sur2stream_flow = 0;
+			patch[0].hourly_stream_flow = 0;
+			patch[0].hourly[0].streamflow_NO3 = 0;
+			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
+			patch[0].hourly[0].streamflow_NO3_from_surface = 0;
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
 			/*	is routed to downslope patches; saturated throughflow	*/
@@ -245,28 +236,27 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*								*/
 			/*	regular land patches - route to downslope neighbours    */
 			/*--------------------------------------------------------------*/
-            if ((patch[0].drainage_type == ROAD)
-                            && (command_line[0].road_flag == 1)) {
-                    update_drainage_road(patch, command_line, time_int,
-                                    verbose_flag);
-            } else if (patch[0].drainage_type == STREAM) {
-                    update_drainage_stream(patch, command_line, time_int,
-                                    verbose_flag);
-            } else {
-                    update_drainage_land(patch, command_line, time_int,
-                                    verbose_flag);
-            }
+			if ((patch[0].drainage_type == ROAD)
+					&& (command_line[0].road_flag == 1)) {
+				update_drainage_road(patch, command_line, time_int,
+						verbose_flag);
+			} else if (patch[0].drainage_type == STREAM) {
+				update_drainage_stream(patch, command_line, time_int,
+						verbose_flag);
+			} else {
+				update_drainage_land(patch, command_line, time_int,
+						verbose_flag);
+			}
 
-        } /* end i */
+		} /* end i */
 
 		/*--------------------------------------------------------------*/
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
-       // #pragma omp parallel for                                                 //160628LML
-        for (int i = 0; i < basin->route_list->num_patches; i++) {
-            struct patch_object *patch = basin->route_list->list[i];
-            int d = 0;                                                           //160628LML
+		for (i = 0; i < basin->route_list->num_patches; i++) {
+			patch = basin->route_list->list[i];
+
 			/*--------------------------------------------------------------*/
 			/*	update subsurface 				*/
 			/*-------------------------------------------------------------------------*/
@@ -375,25 +365,31 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*	that it accumulates flux in from patches		*/
 			/*	(roads) that direct water to the stream			*/
 			/*--------------------------------------------------------------*/
-		patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
-							  + patch[0].hourly_sur2stream_flow;
-		
-   //if (k >=0){ 
-     if (k == (n_timesteps - 1))
-			  {     
+			//if (k >=0){// (n_timesteps - 1)) //incorporate Tungs bug fix
+			/* T.N Apr 2016: back to 5.18, only update fluxes by the end of day */
+            /* This will prevent an artificial huge rainfall intensity during
+            infiltration calculation. Check infiltration in update_drainage_land.c
+            as  well */
+            /* See also: https://github.com/RHESSys/RHESSys/pull/85 */
+
+             patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
+                    + patch[0].hourly_sur2stream_flow;
+
+			if (k == (n_timesteps -1))
+            {
 			      if ((patch[0].sat_deficit
 						- (patch[0].unsat_storage + patch[0].rz_storage))
 						< -1.0 * ZERO) {
-                    double excess = -1.0
+					excess = -1.0
 							* (patch[0].sat_deficit - patch[0].unsat_storage
 									- patch[0].rz_storage);
 					patch[0].detention_store += excess;
 					patch[0].sat_deficit = 0.0;
 					patch[0].unsat_storage = 0.0;
 					patch[0].rz_storage = 0.0;
-					
+
 					if (grow_flag > 0) {
-                        double Nout =
+						Nout =
 								compute_N_leached(verbose_flag,
 										patch[0].soil_cs.DOC, excess, 0.0, 0.0,
 										patch[0].m,
@@ -410,7 +406,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].soil_cs.DOC -= Nout;
 					}
 					if (grow_flag > 0) {
-                        double Nout =
+						Nout =
 								compute_N_leached(verbose_flag,
 										patch[0].soil_ns.DON, excess, 0.0, 0.0,
 										patch[0].m,
@@ -427,7 +423,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].soil_ns.DON -= Nout;
 					}
 					if (grow_flag > 0) {
-                        double Nout =
+						Nout =
 								compute_N_leached(verbose_flag,
 										patch[0].soil_ns.nitrate, excess, 0.0,
 										0.0, patch[0].m,
@@ -445,7 +441,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					}
 
 					if (grow_flag > 0) {
-                        double Nout =
+						Nout =
 								compute_N_leached(verbose_flag,
 										patch[0].soil_ns.sminn, excess, 0.0,
 										0.0, patch[0].m,
@@ -466,9 +462,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/*--------------------------------------------------------------*/
 				/*	final overland flow routing				*/
 				/*--------------------------------------------------------------*/
-				patch[0].overland_flow += patch[0].detention_store 
+				patch[0].overland_flow += patch[0].detention_store
 									- patch[0].soil_defaults[0][0].detention_store_size;
-                double excess = 0;                                               //160628LML
+
 				if (((excess = patch[0].detention_store
 						- patch[0].soil_defaults[0][0].detention_store_size)
 						> ZERO) && (patch[0].detention_store > ZERO)) {
@@ -517,13 +513,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].detention_store -= excess;
 						patch[0].Qout_total += excess;
 						patch[0].hourly_sur2stream_flow += excess;
-						
+
 					} else {
 						/*--------------------------------------------------------------*/
 						/* determine which innundation depth to consider		*/
 						/*--------------------------------------------------------------*/
 						if (patch[0].num_innundation_depths > 0) {
-                            double innundation_depth = patch[0].detention_store;
+							innundation_depth = patch[0].detention_store;
 							d = 0;
 							while ((innundation_depth
 									> patch[0].innundation_list[d].critical_depth)
@@ -534,27 +530,20 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							d = 0;
 						}
 
-                        for (int j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
-                            struct patch_object *neigh = patch->surface_innundation_list[d].neighbours[j].patch;
-                            double Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
-                            double NO3_out = 0;
-                            double NH4_out = 0;
-                            double DON_out = 0;
-                            double DOC_out = 0;
-                            double Nout = 0;
+						for (j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
+							neigh = patch->surface_innundation_list[d].neighbours[j].patch;
+							Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
 							if (grow_flag > 0) {
-                                NO3_out = Qout / patch[0].detention_store
+								NO3_out = Qout / patch[0].detention_store
 										* patch[0].surface_NO3;
-                                NH4_out = Qout / patch[0].detention_store
+								NH4_out = Qout / patch[0].detention_store
 										* patch[0].surface_NH4;
-                                DON_out = Qout / patch[0].detention_store
+								DON_out = Qout / patch[0].detention_store
 										* patch[0].surface_DON;
-                                DOC_out = Qout / patch[0].detention_store
+								DOC_out = Qout / patch[0].detention_store
 										* patch[0].surface_DOC;
 								Nout = NO3_out + NH4_out + DON_out;
 							}
-             // #pragma omp critical
-             // {
 							if (neigh[0].drainage_type == STREAM) {
 								neigh[0].Qin_total += Qout * patch[0].area
 										/ neigh[0].area;
@@ -602,7 +591,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								}
 
 							}
-           //   } //omp critical
 						}
 						if (grow_flag > 0) {
 							patch[0].surface_DOC -= (excess
@@ -629,7 +617,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				}
 
 				/*-------------------------------------------------------------------------*/
-				/*Recompute current actual depth to water table				*/
+				/* Recompute current actual depth to water table				*/
 				/*-------------------------------------------------------------------------*/
 				patch[0].sat_deficit_z = compute_z_final(verbose_flag,
 						patch[0].soil_defaults[0][0].porosity_0,
@@ -648,7 +636,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				if ((patch[0].sat_deficit_z > patch[0].preday_sat_deficit_z)
 						&& (patch[0].sat_deficit_z
 								< patch[0].soil_defaults[0][0].soil_depth * 0.9)) {
-                    double add_field_capacity = compute_layer_field_capacity(
+					add_field_capacity = compute_layer_field_capacity(
 							command_line[0].verbose_flag,
 							patch[0].soil_defaults[0][0].theta_psi_curve,
 							patch[0].soil_defaults[0][0].psi_air_entry,
@@ -674,7 +662,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				if (patch[0].rootzone.depth > ZERO) {
 					if ((patch[0].sat_deficit > ZERO)
 							&& (patch[0].rz_storage == 0.0)) {
-                        double add_field_capacity = compute_layer_field_capacity(
+						add_field_capacity = compute_layer_field_capacity(
 								command_line[0].verbose_flag,
 								patch[0].soil_defaults[0][0].theta_psi_curve,
 								patch[0].soil_defaults[0][0].psi_air_entry,
@@ -692,7 +680,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				} else {
 					if ((patch[0].sat_deficit > ZERO)
 							&& (patch[0].unsat_storage == 0.0)) {
-                        double add_field_capacity = compute_layer_field_capacity(
+						add_field_capacity = compute_layer_field_capacity(
 								command_line[0].verbose_flag,
 								patch[0].soil_defaults[0][0].theta_psi_curve,
 								patch[0].soil_defaults[0][0].psi_air_entry,
@@ -713,7 +701,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/* try to infiltrate this water					*/
 				/* use time_int as duration */
 				/*--------------------------------------------------------------*/
-                double infiltration = 0;                                         //160628LML
+
 				if (patch[0].detention_store > ZERO)
 					if (patch[0].rootzone.depth > ZERO) {
 						infiltration = compute_infiltration(verbose_flag,
@@ -762,7 +750,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				}
 
 				/*--------------------------------------------------------------*/
-				/*	Determine if the infifltration will fill up the unsat	*/
+				/*	Determine if the infiltration will fill up the unsat	*/
 				/*	zone or not.						*/
 				/*	We use the strict assumption that sat deficit is the	*/
 				/*	amount of water needed to saturate the soil.		*/
@@ -887,8 +875,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/*--------------------------------------------------------------*/
 				/*      Recompute patch soil moisture storage                   */
 				/*--------------------------------------------------------------*/
-                double rz_drainage = 0.0;                                        //160628LML
-                double unsat_drainage = 0.0;                                     //160628LML
 				if (patch[0].sat_deficit < ZERO) {
 					patch[0].S = 1.0;
 					patch[0].rootzone.S = 1.0;
@@ -973,51 +959,47 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 
 				/* ******************************** this is done by each hour*/
-				//patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
-					//		  + patch[0].hourly_sur2stream_flow;
-			
-       if (patch[0].drainage_type == STREAM) {
-					    patch[0].streamflow += patch[0].return_flow
-							    + patch[0].base_flow;
-				    }
+				/* patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
+							  + patch[0].hourly_sur2stream_flow;*/
+
+				//basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;
+                if (patch[0].drainage_type == STREAM) {
+					patch[0].streamflow += patch[0].return_flow
+						+ patch[0].base_flow;
+				}
 
 				/*--------------------------------------------------------------*/
 				/* final stream flow calculations				*/
 				/*--------------------------------------------------------------*/
 
-				basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;							  
+				basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;
 				basin[0].basin_outflow += (patch[0].streamflow) * patch[0].area;
 				basin[0].basin_unsat_storage += patch[0].unsat_storage * patch[0].area;
 				basin[0].basin_sat_deficit += patch[0].sat_deficit * patch[0].area;
 				basin[0].basin_rz_storage += patch[0].rz_storage * patch[0].area;
 				basin[0].basin_detention_store += patch[0].detention_store
 						* patch[0].area;
-				
+
 				/*---------------------------------------------------------------------*/
 				/*update accumulator variables                                            */
 				/*-----------------------------------------------------------------------*/
 				/* the accumulator is updated in update_basin_patch_accumulator.c in basin_daily_F.c*/
 
 
-			}
+			} /* End of if (k == (n_timesteps -1)) */
+
 				/*---------------------------------------------------------------------*/
 				/*update daily output: the patch[0].base_flow and patch[0].return_flow
-				 * is the summation of 24 hours return_flow and base_flow from previous 
+				 * is the summation of 24 hours return_flow and base_flow from previous
 				 * calculation*/
 				/*-----------------------------------------------------------------------*/
-			/*	if(k==n_timesteps-1){
+				/*if(k==n_timesteps-1){
 				    if (patch[0].drainage_type == STREAM) {
 					    patch[0].streamflow += patch[0].return_flow
 							    + patch[0].base_flow;
 				    }
-				} */
+				}*/
 
-    /*if ( patch[0].ID == 214494){
-        fprintf(stderr, "\n   Line is 770 NO3_Qout=%lf surfaceNO3=%lf surfaceDOC%lf\n=", patch[0].soil_ns.NO3_Qout,
-        patch[0].surface_NO3,patch[0].surface_DOC);
-        } */ 
-
-   
 		} /* end i */
 
 	} /* end k  */
@@ -1031,7 +1013,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	basin[0].basin_unsat_storage /= basin_area;
 	basin[0].basin_detention_store /= basin_area;
 	basin[0].basin_sat_deficit /= basin_area;
-    double water_balance = basin[0].preday_basin_rz_storage + basin[0].preday_basin_unsat_storage
+	water_balance = basin[0].preday_basin_rz_storage + basin[0].preday_basin_unsat_storage
 			+ basin[0].preday_basin_detention_store - basin[0].preday_basin_sat_deficit
 			- (basin[0].basin_rz_storage + basin[0].basin_unsat_storage + basin[0].basin_detention_store
 					- basin[0].basin_sat_deficit) - basin[0].basin_outflow;
