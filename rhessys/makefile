@@ -1,6 +1,6 @@
 VERSION = 5.20.1
 PGM  = rhessys$(VERSION)
-CC = gcc 
+CC = icc 
 INCLUDES = -Iinclude
 
 RHESSYS_BIN = /usr/local/bin
