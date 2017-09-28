@@ -19,3 +19,5 @@ objects/
 libwmfire.dylib
 libwmfire.so
 
+.Rproj.user
+
