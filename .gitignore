@@ -15,3 +15,7 @@ objects/
 # Editor leftovers
 *~
 
+# Libraries
+libwmfire.dylib
+libwmfire.so
+
