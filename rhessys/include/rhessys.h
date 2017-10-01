@@ -1974,6 +1974,7 @@ struct  command_line_object
         double  veg_sen3;
         double  tmax_add;
         double  tmin_add;
+	double	ptransfer_prop;
         double  fire_grid_res;
         double  sat_to_gw_coeff_mult;
         double  gw_loss_coeff_mult;
