@@ -30,3 +30,9 @@ g2w/grass2world/g2w
 # Editor leftovers
 *~
 
+# Libraries
+libwmfire.dylib
+libwmfire.so
+
+.Rproj.user
+
