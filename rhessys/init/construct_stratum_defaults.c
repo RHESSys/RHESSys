@@ -298,8 +298,8 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].pspread_loss_rel = getDoubleParam(&paramCnt, &paramPtr, "pspread_loss_rel", "%lf", 1, 1);
  		default_object_list[i].vapor_loss_rel = getDoubleParam(&paramCnt, &paramPtr, "vapor_loss_rel", "%lf", 1, 1);
-		default_object_list[i].biomass_loss_rel_k1 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k1", "%lf", -.02, 1);
-		default_object_list[i].biomass_loss_rel_k2 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k2", "%lf", 200, 1);
+		default_object_list[i].biomass_loss_rel_k1 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k1", "%lf", -10, 1);
+		default_object_list[i].biomass_loss_rel_k2 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k2", "%lf", 1, 1);
 		
 		/*--------------------------------------------------------------*/
 		/* default values for phenology (leaf onset/offset) model parameters */
