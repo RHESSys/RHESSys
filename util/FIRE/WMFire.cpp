@@ -1031,8 +1031,10 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	{
 		ofstream sizeOut;
 		sizeOut.open("FireSizes.txt", ofstream::app);
+		//sizeOut.open("FireSizes.txt", ofstream::out | ofstream::app);
 		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\t"<<n_cur_ign_<<"\n";
 		sizeOut.close();
+
 	}	
 	
 	return ;
