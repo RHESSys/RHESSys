@@ -259,6 +259,43 @@ void	execute_daily_output_event(
 															}
 										} /* end stratum (c) for loop */
 									} /* end if options */
+
+									/*------------------------------------------------*/
+									/*	Construct the fire output files		  */
+									/*------------------------------------------------*/
+									if ( command_line[0].c != NULL ){
+										/*----------------------------------------------*/
+										/*	output fire 								*/
+										/*----------------------------------------------*/
+										for(c=0;
+										c < world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].num_canopy_strata;
+										++c){
+											basinID = command_line[0].c->basinID;
+											hillID = command_line[0].c->hillID;
+											zoneID = command_line[0].c->zoneID;
+											patchID = command_line[0].c->patchID;
+											stratumID = command_line[0].c->stratumID;
+											if (( world[0].basins[b][0].ID == basinID)
+												|| (basinID == -999))
+												if (( world[0].basins[b][0].hillslopes[h][0].ID == hillID)
+													|| (hillID == -999))
+													if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID == zoneID)
+														|| (zoneID == -999))
+														if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID == patchID)
+															||	(patchID == -999))
+															if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].canopy_strata[c][0].ID == stratumID)
+																|| (stratumID == -999)) {
+																output_fire(
+																world[0].basins[b][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
+																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
+																date, outfile->fire->daily);
+															}
+										} /* end stratum (c) for loop */
+									} /* end if options */
+
 								} /* end patch (p) for loop */
 							} /* end if options */
 						} /* end zone (z) for  loop*/

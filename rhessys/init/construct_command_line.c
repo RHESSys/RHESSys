@@ -821,6 +821,32 @@ struct	command_line_object	*construct_command_line(
 					}/*end if*/
 				} /*end if*/
 			} /*end if*/
+
+                        /*--------------------------------------------------------------*/
+			/*		Check if the fire output flag is next.    				*/
+			/*--------------------------------------------------------------*/
+			else if( strcmp(main_argv[i],"-f") == 0 ){
+				/*--------------------------------------------------------------*/
+				/*			Allocate the basin output specifier.				*/
+				/*--------------------------------------------------------------*/
+				command_line[0].f = (struct f_option *)
+					alloc(sizeof(struct f_option), "f","construct_command_line" );
+				command_line[0].f[0].fireID 	= -999;
+                               
+				/*--------------------------------------------------------------*/
+				/*			Check that the next arguement exists.				*/
+				/*--------------------------------------------------------------*/
+				i++;
+				if (i < main_argc){
+					/*----------------------------------------------*/
+					/*Check that the next arguement is a basinID		*/
+					/*----------------------------------------------*/
+					if ( valid_option(main_argv[i]) == 0){
+						command_line[0].f[0].fireID = (int)atoi(main_argv[i]);
+						i++;
+					}/*end if*/
+				} /*end if*/
+			} /*end if*/
 			
                         /*--------------------------------------------------------------*/
 			/*		Check if the basin output flag is next.    				*/
