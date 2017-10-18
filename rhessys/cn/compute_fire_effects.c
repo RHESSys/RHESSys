@@ -87,6 +87,9 @@ void compute_fire_effects(
 
 	/* Calculate litter biomass for use later in canopy effects */
 	understory_litter_c = patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c;
+  if (understory_litter_c > 2.5) { 
+        printf("\n understory litter C > 2 !! patchID=%d, litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", patch[0].ID, patch[0].litter_cs.litr1c, patch[0].litter_cs.litr2c, patch[0].litter_cs.litr3c, patch[0].litter_cs.litr4c);
+  }
 
 	/* Litter consumption is approximated based CONSUME model outputs */
 	/* Consumption 1hr-fuel = 1 * 1hr-fuel */
@@ -181,7 +184,7 @@ int whichUnderCalc=0;  //XXXXX
 				if (layer_lower_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
 
 					understory_c_loss = understory_litter_c;
-          int whichUnderCalc=1;  //XXXXX
+          whichUnderCalc=1;  //XXXXX
 
 				} else if (layer_lower_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && layer_lower_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
 
@@ -198,7 +201,7 @@ int whichUnderCalc=0;  //XXXXX
 						layer_lower_c_loss_percent = (pow(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel,pspread)-1)/(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel-1);
 					}
 					understory_c_loss = (layer_lower_c * layer_lower_c_loss_percent * layer_lower_height_adj) + understory_litter_c;	// layer_lower_height_adj accounts for adjustment for lower layer height
-          int whichUnderCalc=2;  //XXXXX
+          whichUnderCalc=2;  //XXXXX
 
 				} else if (layer_lower_height < patch[0].soil_defaults[0][0].understory_height_thresh) {
 
@@ -212,7 +215,7 @@ int whichUnderCalc=0;  //XXXXX
 						layer_lower_c_loss_percent = (pow(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel,pspread)-1)/(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel-1);
 					}
 					understory_c_loss = (layer_lower_c * layer_lower_c_loss_percent) + understory_litter_c;
-          int whichUnderCalc=3;  //XXXXX
+          whichUnderCalc=3;  //XXXXX
 				}
 
 //printf("\n -------------------");
@@ -272,7 +275,7 @@ int whichUnderCalc=0;  //XXXXX
 
 					layer_lower_c_loss_percent = layer_upper_c_loss_percent_understory_comp;		/* percent c lost is same for upper and lower layer since lost is based on pspread for both */
 					understory_c_loss = (layer_lower_c * layer_lower_c_loss_percent * layer_lower_height_adj) + understory_litter_c;	// layer_lower_height_adj accounts for height adjustment for lower layer
-          int whichUnderCalc=4;  //XXXXX
+          whichUnderCalc=4;  //XXXXX
 
 					/* Sigmoidal function to relate understory carbon loss to percent loss in the upper layer */
 					layer_upper_c_loss_percent_adj2 = (1 - 1/(1+exp(-canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k1*(understory_c_loss - canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k2)))) * (1-layer_upper_height_adj);		// layer_upper_height_adj accounts for upper layer height adjustment
@@ -303,7 +306,7 @@ int whichUnderCalc=0;  //XXXXX
 
 					layer_lower_c_loss_percent = layer_upper_c_loss_percent_understory_comp;		/* percent c lost is same for upper and lower layer since lost is based on pspread for both */
 					understory_c_loss = (layer_lower_c * layer_lower_c_loss_percent) + understory_litter_c;
-          int whichUnderCalc=5;  //XXXXX
+          whichUnderCalc=5;  //XXXXX
 
 					/* Sigmoidal function to relate understory carbon loss to percent loss in the upper layer */
 					layer_upper_c_loss_percent_adj2 = (1 - 1/(1+exp(-canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k1*(understory_c_loss - canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k2)))) * (1-layer_upper_height_adj);		// layer_upper_height_adj accounts for upper layer height adjustment
@@ -383,10 +386,10 @@ if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //X
 			/* Adjust c_loss_remain_percent since update mortality is run twice, with vaporized C removed first */
 			c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
 			if (c_loss_vapor_percent==1){
-            printf("\n C loss vapor percent = 1!!! patchID =%d, layer_upper_c_loss_percent=%lf, layer_upper_height=%lf, \n whichCalc=%d, layer_lower_c=%lf, layer_lower_c_loss_percent=%lf, understory_litter_c=%lf, c_loss_remain_percent_alt=%lf\n", patch[0].ID, layer_upper_c_loss_percent, layer_upper_height, whichCalc, layer_lower_c, layer_lower_c_loss_percent, understory_litter_c, c_loss_remain_percent_alt);
+            printf("\n C loss vapor percent = 1!!! patchID =%d, layer_upper_c_loss_percent=%lf, layer_upper_height=%lf, \n whichCalc=%d, layer_lower_c=%lf, layer_lower_c_loss_percent=%lf, understory_litter_c=%lf, c_loss_remain_percent_alt=%lf", patch[0].ID, layer_upper_c_loss_percent, layer_upper_height, whichCalc, layer_lower_c, layer_lower_c_loss_percent, understory_litter_c, c_loss_remain_percent_alt);
       } 
 			if (c_loss_vapor_percent==1){
-            printf("\n C  layer_upper_c_loss_percent=%lf\n, understory_c_loss=%lf, \n whichUnderCalc=%d\n", layer_upper_c_loss_percent, understory_c_loss, whichUnderCalc);
+            printf("\n understory_c_loss=%lf, whichUnderCalc=%d\n litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", understory_c_loss, whichUnderCalc, patch[0].litter_cs.litr1c, patch[0].litter_cs.litr2c, patch[0].litter_cs.litr3c, patch[0].litter_cs.litr4c);
       } 
 //error checking in case above line produces a divide by zero error
 //error checking in case above line produces a divide by zero error
