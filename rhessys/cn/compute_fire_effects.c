@@ -85,6 +85,8 @@ void compute_fire_effects(
 
 	if (pspread > 0){
 
+  printf("\n patch ID = %d, pspread = %lf", patch[0].ID, pspread);
+
 	/* Calculate litter biomass for use later in canopy effects */
 	understory_litter_c = patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c;
   if (understory_litter_c > 2.5) { 
@@ -394,7 +396,7 @@ if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //X
 //error checking in case above line produces a divide by zero error
 //error checking in case above line produces a divide by zero error
 		/*	if (c_loss_vapor_percent==1){
-            c_loss_remain_percent_alt = 0;
+            c_loss_remain_percent_alt = 0.05;
       } else {
             c_loss_remain_percent_alt = c_loss_remain_percent / (1-c_loss_vapor_percent);
       } */
@@ -438,7 +440,7 @@ if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //X
 //printf("\n upper_leafc2 = %lf", canopy_strata_upper[0].cs.leafc);
 //printf("\n upper_cwdc2 = %lf", canopy_strata_upper[0].cs.cwdc);
 
-			thin_type =1;
+		/*	thin_type =1;
 			update_mortality(
 				canopy_strata_upper[0].defaults[0][0].epc,
 				&(canopy_strata_upper[0].cs),
@@ -450,7 +452,7 @@ if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //X
 				&(patch[0].litter_cs),
 				&(patch[0].litter_ns),
 				thin_type,
-				mort);
+				mort);*/
 
 //printf("\n upper_leafc3 = %lf", canopy_strata_upper[0].cs.leafc);
 //printf("\n upper_cwdc3 = %lf", canopy_strata_upper[0].cs.cwdc);
