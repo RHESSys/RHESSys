@@ -364,7 +364,12 @@ void compute_fire_effects(
 //printf("\n c_loss_remain_percent = %lf", c_loss_remain_percent);
 
 			/* Adjust c_loss_remain_percent since update mortality is run twice, with vaporized C removed first */
-			c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
+			if (abs(c_loss_vapor_percent-1.0) < ZERO){
+				c_loss_remain_percent_alt = 0;
+			} else {
+				c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
+			}
+
 //printf("\n c_loss_remain_percent_alt = %lf", c_loss_remain_percent_alt);
 
 			mort.mort_cpool = c_loss_vapor_percent;
