@@ -386,7 +386,12 @@ if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //X
 //printf("\n c_loss_remain_percent = %lf", c_loss_remain_percent);
 
 			/* Adjust c_loss_remain_percent since update mortality is run twice, with vaporized C removed first */
-			c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
+			//c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
+      if (fabs(c_loss_vapor_percent-1.0) < ZERO) {
+            c_loss_remain_percent_alt = 0;
+      } else {
+             c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
+      }
 			if (c_loss_vapor_percent==1){
             printf("\n C loss vapor percent = 1!!! patchID =%d, layer_upper_c_loss_percent=%lf, layer_upper_height=%lf, \n whichCalc=%d, layer_lower_c=%lf, layer_lower_c_loss_percent=%lf, understory_litter_c=%lf, c_loss_remain_percent_alt=%lf", patch[0].ID, layer_upper_c_loss_percent, layer_upper_height, whichCalc, layer_lower_c, layer_lower_c_loss_percent, understory_litter_c, c_loss_remain_percent_alt);
       } 
@@ -400,8 +405,9 @@ if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //X
       } else {
             c_loss_remain_percent_alt = c_loss_remain_percent / (1-c_loss_vapor_percent);
       } */
-
-//printf("\n c_loss_remain_percent_alt = %lf", c_loss_remain_percent_alt);
+printf("\n c_loss_remain_percent_alt = %lf", c_loss_remain_percent_alt);
+    // c_loss_vapor_percent = max(min(1.0, c_loss_vapor_percent), 0);
+    // c_loss_remain_percent_alt = max(min(1.0, c_loss_remain_percent_alt), 0);
  
 			mort.mort_cpool = c_loss_vapor_percent;
 			mort.mort_leafc = c_loss_vapor_percent;
@@ -440,7 +446,7 @@ if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //X
 //printf("\n upper_leafc2 = %lf", canopy_strata_upper[0].cs.leafc);
 //printf("\n upper_cwdc2 = %lf", canopy_strata_upper[0].cs.cwdc);
 
-		/*	thin_type =1;
+			thin_type =1;
 			update_mortality(
 				canopy_strata_upper[0].defaults[0][0].epc,
 				&(canopy_strata_upper[0].cs),
@@ -452,7 +458,7 @@ if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //X
 				&(patch[0].litter_cs),
 				&(patch[0].litter_ns),
 				thin_type,
-				mort);*/
+				mort);
 
 //printf("\n upper_leafc3 = %lf", canopy_strata_upper[0].cs.leafc);
 //printf("\n upper_cwdc3 = %lf", canopy_strata_upper[0].cs.cwdc);

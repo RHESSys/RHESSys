@@ -454,6 +454,9 @@ void update_mortality(
 		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
 		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;		
 	}*/
+  
+ 
+printf("\n at the end of update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
 	return;
 }/*end update_mortality*/
 
