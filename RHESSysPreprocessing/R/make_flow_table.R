@@ -24,12 +24,6 @@ make_flow_table<-function(flw,output_file){
       cat(out_string)
       cat("\n")
     }
-    if (flw[[i]]$Landtype==2){
-      cat("\t")
-      cat(flw[[i]]$Roadtype)
-      cat("\n")
-    }
   }
   sink()
 }
-#

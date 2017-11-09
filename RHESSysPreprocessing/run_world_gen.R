@@ -8,7 +8,7 @@
 setwd("~/Documents/examplefolder")
 
 # Next, choose your method of GIS. (GRASS GIS is currently the only method.)
-GIStype = "GRASS"
+type = "GRASS"
 
 # Set your GRASS GIS environment using the variables listed below.
 

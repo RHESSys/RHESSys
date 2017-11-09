@@ -1,4 +1,4 @@
-# Make unique ID for each patch. Return patch matrix of unique id's and table
+# Make unique ID for each patch. Return patch matrix of unique id's and table 
 # of basin, hill, zone and patch data whose index is the unique patch id.
 build_unique_patch<-function(basin.m,hill.m,zone.m,patch.m){
   p_rows<-nrow(patch.m)
@@ -22,9 +22,8 @@ build_unique_patch<-function(basin.m,hill.m,zone.m,patch.m){
       }
     }
   }
-
+  
   id_table<-data.frame(do.call(rbind,id_table))
   colnames(id_table)<-c("Basin","Hill","Zone","Patch")
   return(list(id_table,unique_patch))
 }
-#
