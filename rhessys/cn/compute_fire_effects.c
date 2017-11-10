@@ -364,11 +364,13 @@ void compute_fire_effects(
 //printf("\n c_loss_remain_percent = %lf", c_loss_remain_percent);
 
 			/* Adjust c_loss_remain_percent since update mortality is run twice, with vaporized C removed first */
-			if (abs(c_loss_vapor_percent-1.0) < ZERO){
+			if (fabs(c_loss_vapor_percent-1.0) < ZERO){
 				c_loss_remain_percent_alt = 0;
 			} else {
 				c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
 			}
+
+			c_loss_vapor_percent = max(min(1.0,c_loss_vapor_percent), 0);
 
 //printf("\n c_loss_remain_percent_alt = %lf", c_loss_remain_percent_alt);
 
@@ -379,6 +381,7 @@ void compute_fire_effects(
 			mort.mort_frootc = c_loss_vapor_percent;
 			mort.mort_deadcrootc = c_loss_vapor_percent;
 			mort.mort_livecrootc = c_loss_vapor_percent;
+			mort.mort_deadleafc = c_loss_vapor_percent;
 
 //printf("\n upper_leafc1 = %lf", canopy_strata_upper[0].cs.leafc);
 //printf("\n upper_cwdc1 = %lf", canopy_strata_upper[0].cs.cwdc);
@@ -405,6 +408,7 @@ void compute_fire_effects(
 			mort.mort_frootc = c_loss_remain_percent_alt;
 			mort.mort_deadcrootc = c_loss_remain_percent_alt;
 			mort.mort_livecrootc = c_loss_remain_percent_alt;
+			mort.mort_deadleafc = c_loss_remain_percent_alt;
 
 //printf("\n upper_leafc2 = %lf", canopy_strata_upper[0].cs.leafc);
 //printf("\n upper_cwdc2 = %lf", canopy_strata_upper[0].cs.cwdc);
