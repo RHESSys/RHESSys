@@ -416,6 +416,7 @@ printf("\n c_loss_remain_percent_alt = %lf", c_loss_remain_percent_alt);
 			mort.mort_frootc = c_loss_vapor_percent;
 			mort.mort_deadcrootc = c_loss_vapor_percent;
 			mort.mort_livecrootc = c_loss_vapor_percent;
+      mort.mort_deadleafc = c_loss_vapor_percent;
 
 //printf("\n upper_leafc1 = %lf", canopy_strata_upper[0].cs.leafc);
 //printf("\n upper_cwdc1 = %lf", canopy_strata_upper[0].cs.cwdc);
@@ -442,6 +443,7 @@ printf("\n c_loss_remain_percent_alt = %lf", c_loss_remain_percent_alt);
 			mort.mort_frootc = c_loss_remain_percent_alt;
 			mort.mort_deadcrootc = c_loss_remain_percent_alt;
 			mort.mort_livecrootc = c_loss_remain_percent_alt;
+      mort.mort_deadleafc = c_loss_remain_percent_alt;
 
 //printf("\n upper_leafc2 = %lf", canopy_strata_upper[0].cs.leafc);
 //printf("\n upper_cwdc2 = %lf", canopy_strata_upper[0].cs.cwdc);
