@@ -21,6 +21,7 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
 
   timer = proc.time() #start timer
 
+  # ---------- Load/install packages if needed ----------
   if(!require("circular")){install.packages("circular")} #check for circular package, install if not present
   library(circular)
 
@@ -36,6 +37,18 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
   } else if(!endsWith(worldname,".world")) {
     worldname = paste(worldname,".world",sep="")
     worldfile = paste(substr(worldfile, 1, (nchar(dirname(worldfile))+1)),worldname,sep="")
+  }
+
+  if (type=="GRASS"){ # determine which version of GRASS is being used automatically
+    if (unlist(gregexpr("7.",typepars[1])) > unlist(gregexpr("6.",typepars[1]))){
+      type = "GRASS7"
+    }
+    else if (unlist(gregexpr("7.",typepars[1])) < unlist(gregexpr("6.",typepars[1]))){
+      type = "GRASS6"
+    }
+    else{
+      stop("Type must be specified explicitly as GRASS6 or GRASS7")
+    }
   }
 
   if (!is.logical(overwrite)) {stop("overwrite must be logical")} # check overwrite inputs
@@ -58,7 +71,7 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
   levmaps = lapply(tempclean[levindex],"[",2)# level map names, for use in GRASS
   tempindex = levindex[2]:length(tempclean)
   tempindex = tempindex[! tempindex %in% levindex] #make index for template, excluding def files and levels
-  allvarnames = unlist(lapply(tempclean,"[[",1)) #all names of state variables in template (for aspatial patches)
+  allvarnames = unlist(lapply(tempclean[tempindex],"[[",1)) #all names of state variables in template (for aspatial patches)
 
   # Find all maps
   mapsall = vector()
@@ -87,7 +100,7 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
 
   # ---------- Spatial data ----------
   # GRASS 6.4.4 ----------
-  if (type == "GRASS") {
+  if (type == "GRASS6") {
 
     if(!require("spgrass6")){install.packages("spgrass6")}
     if(!require("rgdal")){install.packages("rgdal")}
