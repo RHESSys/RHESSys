@@ -21,6 +21,7 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
 
   timer = proc.time() #start timer
 
+  # ---------- Load/install packages if needed ----------
   if(!require("circular")){install.packages("circular")} #check for circular package, install if not present
   library(circular)
 
@@ -38,13 +39,25 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
     worldfile = paste(substr(worldfile, 1, (nchar(dirname(worldfile))+1)),worldname,sep="")
   }
 
+  if (type=="GRASS"){ # determine which version of GRASS is being used automatically
+    if (unlist(gregexpr("7.",typepars[1])) > unlist(gregexpr("6.",typepars[1]))){
+      type = "GRASS7"
+    }
+    else if (unlist(gregexpr("7.",typepars[1])) < unlist(gregexpr("6.",typepars[1]))){
+      type = "GRASS6"
+    }
+    else{
+      stop("Type must be specified explicitly as GRASS6 or GRASS7")
+    }
+  }
+
   if (!is.logical(overwrite)) {stop("overwrite must be logical")} # check overwrite inputs
   if (file.exists(worldfile) & overwrite == FALSE) {
     t = menu(c("Yes","No"),title=paste("Worldfile",worldfile,"already exists. Overwrite?"))
     if (t==2) {stop("world_gen exited without completing")}
   }
 
-  if (!is.null(asprules)) {asp_check = TRUE} else {asp_hcheck = FALSE} # check for aspatial patches
+  if (!is.null(asprules)) {asp_check = TRUE} else {asp_check = FALSE} # check for aspatial patches
   if (asp_check) { if(!file.exists(asprules) ) {asp_check=FALSE}}
 
   # ---------- Read in template ----------
@@ -58,6 +71,7 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
   levmaps = lapply(tempclean[levindex],"[",2)# level map names, for use in GRASS
   tempindex = levindex[2]:length(tempclean)
   tempindex = tempindex[! tempindex %in% levindex] #make index for template, excluding def files and levels
+  allvarnames = unlist(lapply(tempclean[tempindex],"[[",1)) #all names of state variables in template (for aspatial patches)
 
   # Find all maps
   mapsall = vector()
@@ -77,7 +91,7 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
   if (asp_check) { # if using aspatial patches, get rules value or map
     asp_map = tempclean[[which(startsWith(readtrim,"asp_rule"))]][3]
     if (is.character(asp_map)) {
-    maps_in = c(maps_in,asp_map) }}
+      maps_in = c(maps_in,asp_map) }}
 
   mapnames = sapply(tempclean[mapindex], function(x) x[1])
   mapinfo = cbind(c("world","basin","hillslope","zone","patch","strata", mapnames),c(unlist(levmaps),mapsall[!is.na(mapsall)]))
@@ -85,8 +99,8 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
   mapinfo = unique(mapinfo)
 
   # ---------- Spatial data ----------
-  # GRASS GIS spatial data ----------
-  if (type == "GRASS") {
+  # GRASS 6.4.4 ----------
+  if (type == "GRASS6") {
 
     if(!require("spgrass6")){install.packages("spgrass6")}
     if(!require("rgdal")){install.packages("rgdal")}
@@ -117,7 +131,41 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
     }
     #read in maps ----------
     readmap = readRAST(maps_in) #may get large in memory
-  } #end GRASS spatial data
+  } #end GRASS 6 spatial data
+
+  # GRASS 7 ----------
+  if (type == "GRASS7") {
+
+    if(!require("rgrass7")){install.packages("rgrass7")}
+    if(!require("rgdal")){install.packages("rgdal")}
+    library(rgrass7)
+    library(rgdal)
+
+    initGRASS( # Initialize GRASS environment
+      gisBase = typepars[1],
+      home = typepars[2],
+      gisDbase = typepars[3],
+      location = typepars[4],
+      mapset = typepars[5],
+      override = TRUE)
+
+    region = paste("g.region rast=",maps_in[1]," -d", sep = '') #set region to map used for world level
+    if (.Platform$OS.type == "unix") {
+      system(region) #mac
+    } else {
+      shell(region) #windows
+    }
+
+    #set mask - throws warning if mask is already set, but code still runs
+    mask = paste("g.copy rast=",maps_in[1],",MASK",sep="")
+    if (.Platform$OS.type == "unix") {
+      system(mask) #mac
+    } else {
+      shell(mask) #windows
+    }
+    #read in maps ----------
+    readmap = readRAST(maps_in) #may get large in memory
+  } #end GRASS 7 spatial data
 
   # Raster spatial data ----------
   if (type == "raster") {
@@ -153,61 +201,63 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
   for (i in 1:6) {levlist[i] = list(levstrct[,i])}
 
   # ---------- Build R list containing values based on template and maps ----------
-  statevars = list() # set up list to store state variables
-  stratum = 1:tempclean[[levindex[6]]][3] # stratum vector
+  #statevars = as.list(rep(0,length(tempclean))) # set up list to store state variable
+  statevars = vector("list",length(tempclean))
+  stratum =  1 # stratum default
 
-  # this section could use refining -_-
+  #oldw <- getOption("warn") # supress warnings for replacing values w/ arrays - easier this way
+  #options(warn = -1)
+
   for (i in tempindex) {
     curindex = sum(i > levindex) # index based on current row relative to levels
     levagg = levlist[1:curindex] # aggregate by levels above curren row
+    if (i > levindex[6]) { stratum = 1:tempclean[[levindex[6]]][3] } # for stratum level of template
 
     for (s in stratum) {
-      if (length(s) > 1 & i > levindex[6]) {
+      if(tempclean[[i]][2] == "value") { #use value
+        statevars[[i]][[s]] = as.double(tempclean[[i]][2+s])
+      } else if(tempclean[[i]][2] == "dvalue") { #integer value
+        statevars[[i]][[s]] = as.integer(tempclean[[i]][2+s])
+      } else if(tempclean[[i]][2] == "aver") { #average
+        maptmp = as.vector(t(mapdf[tempclean[[i]][2+s]]))
+        statevars[[i]][[s]] = aggregate(maptmp, by = levagg, FUN = "mean")
+      } else if(tempclean[[i]][2] == "mode") { #median
+        maptmp = as.vector(t(mapdf[tempclean[[i]][2+s]]))
+        statevars[[i]][[s]] = aggregate(maptmp, by = levagg, FUN = "median")
+      } else if(tempclean[[i]][2] == "eqn") {
+        # only for horizons old version -- use mean, without multiplying moving forward
+        maptmp = as.vector(t(mapdf[tempclean[[i]][5]]))
+        statevars[[i]][[s]] = aggregate(maptmp, by = levagg, FUN = "mean")
+        statevars[[i]][[s]][,"x"] = statevars[[i]][[s]][,"x"] * as.numeric(tempclean[[i]][3])
+      } else if(tempclean[[i]][2] == "spavg") { #spherical average
+        maptmp = as.vector(t(mapdf[tempclean[[i]][3]]))
+        maptmpangles = circular(maptmp,units="degrees",type="angles",modulo="2pi",template="geographics")
+        #avgangles = aggregate(maptmpangles, by = levagg, FUN = "mean.circular")[,"x"]
+        #avgangles = circular(avgangles,units="degrees",type="angles",modulo="2pi",template="geographics")
+        statevars[[i]][[s]] = aggregate(maptmpangles, by = levagg, FUN = "mean.circular")
+      } else if(tempclean[[i]][2] == "area") { #only for state var area
+        statevars[[i]][[s]] = aggregate(cellarea, by = levagg, FUN = "sum")
+      } else { print(paste("Unexpected 2nd element on line",i)) }
 
-        if(tempclean[[i]][2] == "value") { #use value
-          statevars[[i]][s] = as.double(tempclean[[i]][3])
-        } else if(tempclean[[i]][2] == "dvalue") { #integer value
-          statevars[[i]][s] = as.integer(tempclean[[i]][3])
-        } else if(tempclean[[i]][2] == "aver") { #average
-          maptmp = as.vector(t(mapdf[tempclean[[i]][3]]))
-          statevars[[i]][s] = aggregate(maptmp, by = levagg, FUN = "mean")
-        } else if(tempclean[[i]][2] == "mode") { #median
-          maptmp = as.vector(t(mapdf[tempclean[[i]][3]]))
-          statevars[[i]][s] = aggregate(maptmp, by = levagg, FUN = "median")
-        }
-
-      } else {
-
-        if(tempclean[[i]][2] == "value") { #use value
-          statevars[[i]] = as.double(tempclean[[i]][3])
-        } else if(tempclean[[i]][2] == "dvalue") { #integer value
-          statevars[[i]] = as.integer(tempclean[[i]][3])
-        } else if(tempclean[[i]][2] == "aver") { # average
-          maptmp = as.vector(t(mapdf[tempclean[[i]][3]]))
-          statevars[[i]] = aggregate(maptmp, by = levagg, FUN = "mean")
-        } else if(tempclean[[i]][2] == "mode") { #median
-          maptmp = as.vector(t(mapdf[tempclean[[i]][3]]))
-          statevars[[i]] = aggregate(maptmp, by = levagg, FUN = "median")
-        } else if(tempclean[[i]][2] == "eqn") {
-          # only for horizons old version -- use mean, without multiplying moving forward
-          maptmp = as.vector(t(mapdf[tempclean[[i]][5]]))
-          statevars[[i]] = aggregate(maptmp, by = levagg, FUN = "mean")
-          statevars[[i]][,"x"] = statevars[[i]][,"x"] * as.numeric(tempclean[[i]][3])
-        } else if(tempclean[[i]][2] == "spavg") { #spherical average
-          maptmp = as.vector(t(mapdf[tempclean[[i]][3]]))
-          maptmpangles = circular(maptmp,units="degrees",type="angles",modulo="2pi",template="geographics")
-          #avgangles = aggregate(maptmpangles, by = levagg, FUN = "mean.circular")[,"x"]
-          #avgangles = circular(avgangles,units="degrees",type="angles",modulo="2pi",template="geographics")
-          statevars[[i]] = aggregate(maptmpangles, by = levagg, FUN = "mean.circular")
-        } else if(tempclean[[i]][2] == "area") { #only for state var area
-          statevars[[i]] = aggregate(cellarea, by = levagg, FUN = "sum")
-        } else { print(paste("Unexpected 2nd element on line",i)) }
-
-      }
     }
   }
+  #options(warn = oldw) # turn warnings back on
 
-  if(asp_check) {statevars = aspatial_patches(asprules,statevars,asp_map)} # aspatial patch processing
+  # ----------- Aspatial Patch Processing
+  if (asp_check) {
+    if (is.character(asp_map)) {
+      asp_mapdata = mapdf[asp_map]
+    } else{
+      asp_mapdata = asp_map
+    }
+    lret = aspatial_patches(asprules, statevars, asp_mapdata, levlist, tempclean)
+    rulevars = lret[[1]]
+    sindex = lret[[2]]
+  }
+
+  stratum = 1:tempclean[[levindex[6]]][3] #make sure correct number of stratum
+
+  # Insert TRY here
 
   # ---------- Build world file ----------
   print("Begin writing world file",quote=FALSE)
@@ -224,9 +274,9 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
   for (b in basin) { #basins
     cat("\t",b,"\t\t\t", "basin_ID\n",sep="")
     for (i in (levindex[2]+1):(levindex[3]-1)) {
-      if (length(statevars[[i]]) >1) {
-        var = statevars[[i]][statevars[[i]][2]==b ,"x"]
-      } else { var = statevars[[i]] }
+      if (length(statevars[[i]][[1]]) >1) {
+        var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b ,"x"]
+      } else { var = statevars[[i]][[1]] }
       varname = tempclean[[i]][1]
       cat("\t",var,"\t\t\t",varname,"\n",sep="")
     }
@@ -236,9 +286,9 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
     for (h in hillslopes) { #hillslopes
       cat("\t\t",h,"\t\t\t", "hillslope_ID\n",sep="")
       for (i in (levindex[3]+1):(levindex[4]-1)) {
-        if (length(statevars[[i]]) >1) {
-          var = statevars[[i]][statevars[[i]][2]==b & statevars[[i]][3]==h ,"x"]
-        } else { var = statevars[[i]] }
+        if (length(statevars[[i]][[1]]) >1) {
+          var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b & statevars[[i]][[1]][3]==h ,"x"]
+        } else { var = statevars[[i]][[1]] }
         varname = tempclean[[i]][1]
         cat("\t\t",var,"\t\t\t",varname,"\n",sep="")
       }
@@ -248,40 +298,112 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
       for (z in zones) { #zones
         cat("\t\t\t",z,"\t\t\t", "zone_ID\n",sep="")
         for (i in (levindex[4]+1):(levindex[5]-1)) {
-          if (length(statevars[[i]]) >1) {
-            var = statevars[[i]][statevars[[i]][2]==b & statevars[[i]][3]==h & statevars[[i]][4]==z ,"x"]
-          } else { var = statevars[[i]] }
+          if (length(statevars[[i]][[1]]) >1) {
+            var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b & statevars[[i]][[1]][3]==h & statevars[[i]][[1]][4]==z ,"x"]
+          } else { var = statevars[[i]][[1]] }
           varname = tempclean[[i]][1]
           cat("\t\t\t",var,"\t\t\t",varname,"\n",sep="")
         }
         patches = unique(levstrct[levstrct[,4]==z & levstrct[,3]==h & levstrct[,2]==b, 5])
-        cat("\t\t\t",length(patches),"\t\t\t","num_patches\n",sep="")
+        cat("\t\t\t",length(patches),"\t\t\t","num_patches\n",sep="") #Should this be the number of spatial patches?????????~~~~~~~~~~
 
-        for (p in patches) { #patches
-          cat("\t\t\t\t",p,"\t\t\t", "patch_ID\n",sep="")
-          for (i in (levindex[5]+1):(levindex[6]-1)) {
-            if (length(statevars[[i]]) >1) {
-              var = statevars[[i]][statevars[[i]][2]==b & statevars[[i]][3]==h & statevars[[i]][4]==z & statevars[[i]][5]==p ,"x"]
-            } else { var = statevars[[i]] }
-            varname = tempclean[[i]][1]
-            cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
+        #---------- Start aspatial patches and stratum
+        if(asp_check) {
+          if(is.data.frame(asp_mapdata)){
+            levstrct = cbind(levstrct,unname(as.matrix(asp_mapdata)))
+          } else if (is.numeric(asp_mapdata)) {
+            levstrct = cbind(levstrct, rep(asp_mapdata,length(levstrct[,1])) )
           }
-          cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep="")
 
-          for (s in stratum) { #stratum
-            cat("\t\t\t\t\t", s,"\t\t\t", "stratum_ID\n",sep="")
-            for (i in (levindex[6]+1):length(tempclean)) {
-              if (length(statevars[[i]]) >1) {  ########## make sure this works @@@@@@@@@@@@@
-                var = statevars[[i]][statevars[[i]][ncol(statevars[[i]])-1]==p ,"x"]
-              } else { var = statevars[[i]] }
-              varname = tempclean[[i]][1]
-              cat("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
+          for (p in patches){ #iterate through spatial patches
+            ruleid = unique(levstrct[(levstrct[,5]==p & levstrct[,4]==z & levstrct[,3]==h & levstrct[,2]==b),7])
+            if(length(ruleid)!=1){stop("something's wrong with the ruleid")}
+            asp_index = 1:length(rulevars[[ruleid]])
+
+            for (asp in asp_index){ #iterate through aspatial patches, 1-n for each spatial patch
+              pnum = (p*10) + asp
+              cat("\t\t\t\t",pnum,"\t\t\t", "patch_ID\n",sep="")
+              cat("\t\t\t\t",p,"\t\t\t", "patch_family\n",sep="")
+
+              rvpind = 1:(as.numeric(sindex[1])-1)
+              rvindex1 = which(! names(rulevars[[ruleid]][[asp]][rvpind]) %in% allvarnames)#include patch state vars from rulevars that aren't in template
+              for (i in rvindex1) {
+                var = rulevars[[ruleid]][[asp]][[i]][[1]]
+                varname = names(rulevars[[ruleid]][[asp]][i])
+                cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
+              }
+
+              for (i in (levindex[5]+1):(levindex[6]-1)) { #iterate through template-based state variables
+                if (length(statevars[[i]][[1]]) >1) {
+                  var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b & statevars[[i]][[1]][3]==h & statevars[[i]][[1]][4]==z & statevars[[i]][[1]][5]==p ,"x"]
+                } else { var = statevars[[i]][[1]] }
+                varname = tempclean[[i]][1]
+                if(varname %in% names(rulevars[[ruleid]][[asp]])) {var = rulevars[[ruleid]][[asp]][[varname]][[1]] } # if variable is in rulevars, replace with rulevars version
+                cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
+              }
+
+              rvsind = as.numeric(sindex[1]):length(rulevars[[ruleid]][[asp]])
+              rvslen = unlist(lapply(rulevars[[ruleid]][[asp]][rvsind],length))
+              if(sum(ifelse(length(stratum) != rvslen,TRUE,FALSE)) > 0 ) {
+                warning("Varying numbers of stratum in template and rules document. Values will be replicated to fill in missing strata.")
+              }
+
+              cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep="")
+
+              for (s in stratum) { #stratum
+                cat("\t\t\t\t\t", s,"\t\t\t", "stratum_ID\n",sep="")
+
+                rvindex2 = which(! names(rulevars[[ruleid]][[asp]][rvsind]) %in% allvarnames)#include strata state vars from rulevars that aren't in template
+                for (i in rvindex2) {
+                  var = rulevars[[ruleid]][[asp]][[i]][[s]]
+                  varname = names(rulevars[[ruleid]][[asp]][i])
+                  cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
+                }
+
+                for (i in (levindex[6]+1):length(tempclean)) {
+                  if (length(statevars[[i]][[s]]) >1) {  ########## make sure this works @@@@/// is this needed???
+                    var = statevars[[i]][[1]][statevars[[i]][ncol(statevars[[i]])-1]==p ,"x"]
+                  } else { var = statevars[[i]][[s]] }
+                  varname = tempclean[[i]][1]
+                  if(varname %in% names(rulevars[[ruleid]][[asp]])) {var = rulevars[[ruleid]][[asp]][[varname]][[s]] } # if variable is in rulevars, replace with rulevars version
+                  cat("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
+
+                }
+              }
             }
           }
+
+          # end aspatial patches
+
+        } else {
+          for (p in patches) { #patches
+            cat("\t\t\t\t",p,"\t\t\t", "patch_ID\n",sep="")
+            for (i in (levindex[5]+1):(levindex[6]-1)) {
+              if (length(statevars[[i]][[1]]) >1) {
+                var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b & statevars[[i]][[1]][3]==h & statevars[[i]][[1]][4]==z & statevars[[i]][[1]][5]==p ,"x"]
+              } else { var = statevars[[i]][[1]] }
+              varname = tempclean[[i]][1]
+              cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
+            }
+            cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep="")
+
+            for (s in stratum) { #stratum
+              cat("\t\t\t\t\t", s,"\t\t\t", "stratum_ID\n",sep="")
+              for (i in (levindex[6]+1):length(tempclean)) {
+                if (length(statevars[[i]][[s]]) >1) {  ########## make sure this works @@@@/// is this needed???
+                  var = statevars[[i]][[1]][statevars[[i]][ncol(statevars[[i]])-1]==p ,"x"]
+                } else { var = statevars[[i]][[s]] }
+                varname = tempclean[[i]][1]
+                cat("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
+              }
+            }
+          }# end non aspatial patch +stratum
+
         }
       }
     }
   }
+
   sink()
 
   print(paste("Created worldfile:",worldfile),quote=FALSE)
@@ -301,4 +423,3 @@ world_gen = function(template, worldfile, type = 'GRASS', typepars, overwrite=FA
   print(paste("Total function time:", round((proc.time() - timer)[3],digits=1),"seconds"),quote=FALSE)
 
 } # end function
-

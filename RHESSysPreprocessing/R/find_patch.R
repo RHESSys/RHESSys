@@ -1,3 +1,4 @@
+#
 find_patch<-function(flw,patch_num){
   num_p<-length(flw)
   for (i in 1:num_p){
@@ -6,3 +7,4 @@ find_patch<-function(flw,patch_num){
     }
   }
 }
+#
