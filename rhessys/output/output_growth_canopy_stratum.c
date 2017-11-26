@@ -43,9 +43,10 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+		/* (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer)* 1000.0,*/
 
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf \n",
+		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -55,7 +56,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		patchID,
 		stratum[0].ID,
 		stratum[0].epv.proj_lai,
-		(stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer)* 1000.0,
+		(stratum[0].cs.leafc)* 1000.0,
 		(stratum[0].ns.leafn + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer)* 1000.0,
 		stratum[0].cs.cpool * 1000.0,
 		stratum[0].ns.npool * 1000.0,
@@ -74,6 +75,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		(stratum[0].ns.dead_crootn + stratum[0].ns.deadcrootn_store + stratum[0].ns.deadcrootn_transfer)* 1000.0,
 		stratum[0].cs.cwdc * 1000.0,
 		stratum[0].cdf.total_mr*1000.0,
+		(stratum[0].cdf.leaf_day_mr+stratum[0].cdf.leaf_night_mr)*1000.0,
 		stratum[0].cdf.total_gr*1000.0,
 		stratum[0].cdf.psn_to_cpool * 1000.0,
 		stratum[0].cs.age,

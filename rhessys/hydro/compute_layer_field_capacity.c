@@ -147,6 +147,7 @@ double	compute_layer_field_capacity(
 						z_water_table,
 						z_layer);
 
+	
 	field_capacity = full_field_capacity - partial_field_capacity;
 
 	return(field_capacity);

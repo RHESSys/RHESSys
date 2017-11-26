@@ -578,6 +578,7 @@ void update_phenology(struct zone_object  *zone,
 		epv->proj_pai = epv->proj_lai;
 		epv->all_pai = epv->all_lai;
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	update height						*/
 	/*--------------------------------------------------------------*/
