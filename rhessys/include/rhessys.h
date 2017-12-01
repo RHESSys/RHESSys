@@ -321,6 +321,7 @@ struct  world_output_file_object
         struct  output_files_object             *zone;
         struct  output_files_object             *patch;
         struct  output_files_object             *canopy_stratum;
+        struct  output_files_object             *fire;
         struct  output_files_object             *shadow_strata;
         struct  output_files_object             *stream_routing;
         };
@@ -1948,6 +1949,18 @@ struct  c_option
         };
 
 /*----------------------------------------------------------*/
+/*      Define a f_option object.                                                               */
+/*----------------------------------------------------------*/
+struct  f_option
+        {
+        int             basinID;
+        int             hillID;
+        int             zoneID;
+        int             patchID;
+        int             stratumID;
+        };
+
+/*----------------------------------------------------------*/
 /*      Define output flags object.                                                             */
 /*----------------------------------------------------------*/
 struct  output_flag
@@ -2038,6 +2051,7 @@ struct  command_line_object
         struct  z_option        *z;
         struct  p_option        *p;
         struct  c_option        *c;
+	struct  f_option	*f;
         struct  stro_option     *stro;
         struct  date            output_yearly_date;
         struct  date            start_date;

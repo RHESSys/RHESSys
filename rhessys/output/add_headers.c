@@ -516,6 +516,47 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"psn",
 		"lwp","root_depth");
 	}
+
+
+	/*--------------------------------------------------------------*/
+	/*	Fire file headers					*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].f != NULL) {
+	/*--------------------------------------------------------------*/
+	/*	Daily 							*/
+	/*--------------------------------------------------------------*/
+	outfile = world_output_files[0].fire[0].daily;
+	fprintf(outfile,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+		"day",
+		"month",
+		"year",
+		"basinID",
+		"hillID",
+		"zoneID",
+		"patchID",
+		"stratumID",
+		"lai",
+		"evap",
+		"APAR_direct",
+		"APAR_diffuse",
+		"sublim",
+		"trans",
+		"ga",
+		"gsurf",
+		"gs",
+		"psi",
+		"leaf_day_mr",
+		"psn_to_cpool",
+		"rain_stored",
+		"snow_stored",
+		"rootzone.S",
+		"m_APAR","m_tavg","m_LWP","m_CO2","m_tmin","m_vpd","dC13",
+		"Kstar_dir","Kstar_dif",
+		"Lstar","surf_heat",
+		"height","covfrac","vegID");
+	}
+
 	/*--------------------------------------------------------------*/
 	/*	Stream routing file headers					*/
 	/*--------------------------------------------------------------*/

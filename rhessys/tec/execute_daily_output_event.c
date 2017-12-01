@@ -74,11 +74,19 @@ void	execute_daily_output_event(
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
+
+	void output_fire(
+		int, int, int, int,
+		struct	canopy_strata_object *,
+		struct	date,
+		FILE	*);
+
 	void output_shadow_strata(
 		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
+
         void output_stream_routing(
 		struct	stream_network_object *,
 		struct	date,
@@ -86,7 +94,7 @@ void	execute_daily_output_event(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int	basinID, hillID, patchID, zoneID, stratumID,reachID;
+	int	basinID, hillID, patchID, zoneID, stratumID, reachID;
 	int b,h,p,z,c,s;
 	/*--------------------------------------------------------------*/
 	/*	check to see if there are any print options					*/
@@ -263,7 +271,7 @@ void	execute_daily_output_event(
 									/*------------------------------------------------*/
 									/*	Construct the fire output files		  */
 									/*------------------------------------------------*/
-									if ( command_line[0].c != NULL ){
+									if ( command_line[0].f != NULL ){
 										/*----------------------------------------------*/
 										/*	output fire 								*/
 										/*----------------------------------------------*/
@@ -293,7 +301,7 @@ void	execute_daily_output_event(
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date, outfile->fire->daily);
 															}
-										} /* end stratum (c) for loop */
+										} /* end fire (f) for loop */
 									} /* end if options */
 
 								} /* end patch (p) for loop */
