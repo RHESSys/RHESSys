@@ -67,27 +67,7 @@ void compute_fire_effects(
 	struct fire_litter_soil_loss_struct fire_loss;
 	int c, layer;
 	int thin_type;
-	double m_cwdc_to_atmos;
-	double m_cwdn_to_atmos;
 	double litter_c_consumed;
-	double understory_c_consumed;
-	double canopy_target_height;
-	double canopy_subtarget_height;
-	double canopy_subtarget_c;
-	double canopy_target_height_u_prop;
-	double canopy_subtarget_height_u_prop;
-	double canopy_target_prop_mort;				/* (0-1) */
-	double canopy_subtarget_prop_mort;			/* (0-1) */
-	double canopy_target_prop_mort_consumed;		/* (0-1) */
-	double canopy_subtarget_prop_mort_consumed;		/* (0-1) */
-	double canopy_target_prop_mort_u_component;		/* (0-1) */
-	double canopy_target_prop_mort_o_component;		/* (0-1) */
-	double canopy_target_prop_c_consumed;			/* (0-1) */
-	double canopy_subtarget_prop_c_consumed;		/* (0-1) */
-	double canopy_target_prop_c_remain;			/* (0-1) */
-	double canopy_target_prop_c_remain_adjusted;		/* (0-1) */
-	double canopy_target_prop_c_remain_adjusted_leafc;	/* (0-1) */
-
 
 	/*--------------------------------------------------------------*/
 	/*	Compute litter and soil removed.			*/
@@ -158,18 +138,18 @@ void compute_fire_effects(
 
 			/* Calculates metrics for targer canopy */
 			canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
-			canopy_target_height = canopy_target[0].epv.height;
+			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 
 			/* Calculates metrics for next lowest canopy (subtarget canopy) */
 			if (patch[0].num_layers > (layer+1)){
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
-				canopy_subtarget_height = canopy_subtarget[0].epv.height;
-				canopy_subtarget_c = canopy_subtarget[0].cs.leafc + 
+				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
+				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc + 
 						canopy_subtarget[0].cs.live_stemc + 
 						canopy_subtarget[0].cs.dead_stemc;
 			} else {
-				canopy_subtarget_height = 0;
-				canopy_subtarget_c = 0;
+				canopy_target[0].fe.canopy_subtarget_height = 0;
+				canopy_target[0].fe.canopy_subtarget_c = 0;
 			}
 
 
@@ -180,73 +160,73 @@ void compute_fire_effects(
 			/* Litter consumption is approximated based CONSUME model outputs */
 			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
 			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
-			m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339;
-			m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
-			canopy_target[0].cs.cwdc -= m_cwdc_to_atmos;
-			canopy_target[0].ns.cwdn -= m_cwdn_to_atmos;
+			canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339;
+			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
+			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
+			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 
 
 			/*--------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is tall			*/
 			/*--------------------------------------------------------------*/
 
-			if (canopy_target_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
+			if (canopy_target[0].fe.canopy_target_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
 
 				/* Determine the amount of understory carbon consumed, which is used to */
 				/* compute how well fire is propogated to overstory */
 
 				/* Is subtarget canopy tall? */
-				if (canopy_subtarget_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
+				if (canopy_target[0].fe.canopy_subtarget_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
 
-					understory_c_consumed = litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
 
 				/* Is subtarget canopy of intermediate or short height? Then calculate mortality/consumption of understory */
-				} else if (canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh){
+				} else if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh){
 
 					/* Determine the proportion of carbon mortality in the subtarget canopy */
 					if (canopy_target[0].defaults[0][0].understory_mort <= 0){
 						fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     						exit(EXIT_FAILURE);
 					} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
-						canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
 					} else {
-						canopy_subtarget_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
+						canopy_target[0].fe.canopy_subtarget_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
 					}
 
 					/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
-					if (canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_subtarget_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
+					if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target[0].fe.canopy_subtarget_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
 
 						/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
-						canopy_subtarget_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_subtarget_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
+						canopy_target[0].fe.canopy_subtarget_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target[0].fe.canopy_subtarget_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
 
-						canopy_subtarget_prop_mort = canopy_subtarget_prop_mort * canopy_subtarget_height_u_prop;
+						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
 					}
 
 					/* Determine the proportion of subtarget canopy mortality consumed */
 					if (canopy_target[0].defaults[0][0].consumption == 1){
-						canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_subtarget_prop_mort;
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
 					} else {
-						canopy_subtarget_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_subtarget_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_subtarget_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 					}
 
 					/* Determine the proportion of subtarget canopy carbon consumed */
-					canopy_subtarget_prop_c_consumed = canopy_subtarget_prop_mort * canopy_subtarget_prop_mort_consumed;
+					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-					understory_c_consumed = (canopy_subtarget_c * canopy_subtarget_prop_c_consumed) + litter_c_consumed;					
+					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;					
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
-				canopy_target_prop_mort = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2)))));
+				canopy_target[0].fe.canopy_target_prop_mort = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2)))));
 
 				/* Determine the proportion of target canopy mortality consumed */
 				if (canopy_target[0].defaults[0][0].consumption <= 0){
 					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
     					exit(EXIT_FAILURE);
 				} else if (canopy_target[0].defaults[0][0].consumption == 1){
-					canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target_prop_mort;
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
 				} else {
-					canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
 
 
@@ -254,10 +234,10 @@ void compute_fire_effects(
 			/* Calculate fire effects when target canopy is an intermediate height	*/
 			/*--------------------------------------------------------------*/
 
-			} else if (canopy_target_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
+			} else if (canopy_target[0].fe.canopy_target_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target[0].fe.canopy_target_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
 
 				/* Determine the proportion of target canopy attributed to understory. Proportion overstory is 1 - canopy_target_height_u_prop */
-				canopy_target_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
+				canopy_target[0].fe.canopy_target_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target[0].fe.canopy_target_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
 
 
 
@@ -270,13 +250,13 @@ void compute_fire_effects(
 					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     					exit(EXIT_FAILURE);
 				} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
-					canopy_target_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+					canopy_target[0].fe.canopy_target_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
 				} else {
-					canopy_target_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
+					canopy_target[0].fe.canopy_target_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
 				}
 
 				/* Adjust canopy_target_prop_mort to only account for understory component */
-				canopy_target_prop_mort_u_component = canopy_target_prop_mort * canopy_target_height_u_prop;
+				canopy_target[0].fe.canopy_target_prop_mort_u_component = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_height_u_prop;
 
 
 
@@ -290,49 +270,49 @@ void compute_fire_effects(
 					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     					exit(EXIT_FAILURE);
 				} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
-					canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
 				} else {
-					canopy_subtarget_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
+					canopy_target[0].fe.canopy_subtarget_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
 				}
 
 				/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
-				if (canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_subtarget_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
+				if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target[0].fe.canopy_subtarget_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
 
 					/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
-					canopy_subtarget_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_subtarget_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
+					canopy_target[0].fe.canopy_subtarget_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target[0].fe.canopy_subtarget_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
 
-					canopy_subtarget_prop_mort = canopy_subtarget_prop_mort * canopy_subtarget_height_u_prop;
+					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
 				}
 
 				/* Determine the proportion of subtarget canopy mortality consumed */
 				if (canopy_target[0].defaults[0][0].consumption == 1){
-					canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_subtarget_prop_mort;
+					canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
 				} else {
-					canopy_subtarget_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_subtarget_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+					canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_subtarget_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
 
 				/* Determine the proportion of subtarget canopy carbon consumed */
-				canopy_subtarget_prop_c_consumed = canopy_subtarget_prop_mort * canopy_subtarget_prop_mort_consumed;
+				canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 				/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-				understory_c_consumed = (canopy_subtarget_c * canopy_subtarget_prop_c_consumed) + litter_c_consumed;	
+				canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;	
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) and then account for target canopy height allocation */
-				canopy_target_prop_mort_o_component = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2))))) * (1-canopy_target_height_u_prop);
+				canopy_target[0].fe.canopy_target_prop_mort_o_component = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2))))) * (1-canopy_target[0].fe.canopy_target_height_u_prop);
 
 
 				/* ------------------------------------------------------------------------ */
 				/* Combine target canopy mortality from overstory and understory components */
-				canopy_target_prop_mort = max(min(canopy_target_prop_mort_u_component + canopy_target_prop_mort_o_component,1.0),0);
+				canopy_target[0].fe.canopy_target_prop_mort = max(min(canopy_target[0].fe.canopy_target_prop_mort_u_component + canopy_target[0].fe.canopy_target_prop_mort_o_component,1.0),0);
 
 				/* Determine the proportion of target canopy mortality consumed */
 				if (canopy_target[0].defaults[0][0].consumption <= 0){
 					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
     					exit(EXIT_FAILURE);
 				} else if (canopy_target[0].defaults[0][0].consumption == 1){
-					canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target_prop_mort;
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
 				} else {
-					canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
 	
 
@@ -340,23 +320,23 @@ void compute_fire_effects(
 			/* Calculate fire effects when target canopy is short			*/
 			/*--------------------------------------------------------------*/
 
-			} else if (canopy_target_height < patch[0].soil_defaults[0][0].understory_height_thresh) {
+			} else if (canopy_target[0].fe.canopy_target_height < patch[0].soil_defaults[0][0].understory_height_thresh) {
 
 				/* Determine the proportion of carbon mortality in the target canopy */
 				if (canopy_target[0].defaults[0][0].understory_mort <= 0){
 					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     					exit(EXIT_FAILURE);
 				} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
-					canopy_target_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+					canopy_target[0].fe.canopy_target_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
 				} else {
-					canopy_target_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
+					canopy_target[0].fe.canopy_target_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
 				}
 
 				/* Determine the proportion of target canopy mortality consumed */
 				if (canopy_target[0].defaults[0][0].consumption == 1){
-					canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target_prop_mort;
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
 				} else {
-					canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
 			}
 
@@ -366,16 +346,16 @@ void compute_fire_effects(
 			/*--------------------------------------------------------------*/
 
 			/* Determine the proportion of total target canopy carbon that is consumed by fire */
-			canopy_target_prop_c_consumed = canopy_target_prop_mort * canopy_target_prop_mort_consumed;
+			canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_prop_mort_consumed;
 
-			mort.mort_cpool = canopy_target_prop_c_consumed;
-			mort.mort_leafc = canopy_target_prop_c_consumed;
-			mort.mort_deadstemc = canopy_target_prop_c_consumed;
-			mort.mort_livestemc = canopy_target_prop_c_consumed;
-			mort.mort_frootc = canopy_target_prop_c_consumed;
-			mort.mort_deadcrootc = canopy_target_prop_c_consumed;
-			mort.mort_livecrootc = canopy_target_prop_c_consumed;
-			mort.mort_deadleafc = canopy_target_prop_c_consumed;
+			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_deadstemc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_livestemc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_frootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_deadcrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 
 			thin_type =2;	/* Harvest option */
 			update_mortality(
@@ -393,33 +373,33 @@ void compute_fire_effects(
 
 
 			/* Compute proportion of total target canopy carbon that is killed but remains as litter/cwd */
-			canopy_target_prop_c_remain = canopy_target_prop_mort - canopy_target_prop_c_consumed;
+			canopy_target[0].fe.canopy_target_prop_c_remain = canopy_target[0].fe.canopy_target_prop_mort - canopy_target[0].fe.canopy_target_prop_c_consumed;
 
 			/* Adjust canopy_target_prop_c_remain since update mortality is run twice. Vegetation carbon */
 			/* stores on the second call to update_mortality have already been altered during the first call. */
 			/* The following adjustment accounts for this change. */
-			if (fabs(canopy_target_prop_c_remain - 1.0) < ZERO){
-				canopy_target_prop_c_remain_adjusted = 0;
+			if (fabs(canopy_target[0].fe.canopy_target_prop_c_remain - 1.0) < ZERO){
+				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = 0;
 			} else {
-				canopy_target_prop_c_remain_adjusted = canopy_target_prop_c_remain / (1 - canopy_target_prop_c_remain);
+				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = canopy_target[0].fe.canopy_target_prop_c_remain / (1 - canopy_target[0].fe.canopy_target_prop_c_remain);
 			}
 
 
 			/* For understory vegetation, complete mortality of leaves was assumed if a patch was burned, regardless of pspread */
 			/* Following code adjusts canopy_target_prop_c_remain_adjusted to be 1 when canopy is understory */
 			/* Also note that leafc_transfer and leafc_storage pools are not killed by fire */
-			canopy_target_height_u_prop = max(min((patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh),1.0),0);
-			canopy_target_prop_c_remain_adjusted_leafc = (canopy_target_prop_c_remain_adjusted * (1 - canopy_target_height_u_prop)) + canopy_target_height_u_prop;
+			canopy_target[0].fe.canopy_target_height_u_prop = max(min((patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target[0].fe.canopy_target_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh),1.0),0);
+			canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc = (canopy_target[0].fe.canopy_target_prop_c_remain_adjusted * (1 - canopy_target[0].fe.canopy_target_height_u_prop)) + canopy_target[0].fe.canopy_target_height_u_prop;
 
 			/* Determine the portion of mortality that remains on landscape */
-			mort.mort_cpool = canopy_target_prop_c_remain_adjusted;
-			mort.mort_leafc = canopy_target_prop_c_remain_adjusted_leafc;
-			mort.mort_deadstemc = canopy_target_prop_c_remain_adjusted;
-			mort.mort_livestemc = canopy_target_prop_c_remain_adjusted;
-			mort.mort_frootc = canopy_target_prop_c_remain_adjusted;
-			mort.mort_deadcrootc = canopy_target_prop_c_remain_adjusted;
-			mort.mort_livecrootc = canopy_target_prop_c_remain_adjusted;
-			mort.mort_deadleafc = canopy_target_prop_c_remain_adjusted_leafc;
+			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
+			mort.mort_deadstemc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_livestemc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_frootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_deadcrootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
 
 			thin_type =1;
 			update_mortality(

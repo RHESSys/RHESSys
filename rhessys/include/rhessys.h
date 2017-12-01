@@ -2623,7 +2623,33 @@ struct epconst_struct
 } ;
 
 
-        
+/*----------------------------------------------------------*/
+/*      Define a fire effects object.                                                */
+/*----------------------------------------------------------*/
+struct  fire_effects_object { 
+	double  m_cwdc_to_atmos;
+	double  m_cwdn_to_atmos;
+
+	double  canopy_target_height;
+	double  canopy_target_height_u_prop;
+	double  canopy_target_prop_mort;
+	double  canopy_target_prop_mort_consumed;
+	double  canopy_target_prop_mort_u_component;
+	double  canopy_target_prop_mort_o_component;
+	double  canopy_target_prop_c_consumed;
+	double  canopy_target_prop_c_remain;
+	double  canopy_target_prop_c_remain_adjusted;
+	double  canopy_target_prop_c_remain_adjusted_leafc;
+
+	double  canopy_subtarget_height;
+	double  canopy_subtarget_height_u_prop;
+	double  canopy_subtarget_prop_mort;
+	double  canopy_subtarget_prop_mort_consumed;
+	double  canopy_subtarget_prop_c_consumed;
+	double  canopy_subtarget_c;
+	double  understory_c_consumed;
+};
+
 
 /*----------------------------------------------------------*/
 /*      Define a stratum default object.                                                */
@@ -2730,6 +2756,7 @@ struct  canopy_strata_object
         struct  nstate_struct   ns;
         struct  ndayflux_struct ndf;                            
         struct  phenology_struct phen;
+	struct  fire_effects_object fe;
         struct  base_station_object     **base_stations;
         struct  stratum_default **defaults;
         struct  spinup_default  **spinup_defaults;  
