@@ -2623,14 +2623,6 @@ struct epconst_struct
 } ;
 
 
-
-
-
-        
-
-
-
-
         
 
 /*----------------------------------------------------------*/
@@ -2661,10 +2653,10 @@ struct  stratum_default
         double  ustar_overu;                    /* DIM  */
         struct  epconst_struct  epc;
         struct  mrconst_struct  mrc;
-	double pspread_loss_rel; 		/* Relation between probability of spread and percent carbon loss */
-	double vapor_loss_rel; 			/* Relation between percent carbon loss and percent carbon vaporized */
-	double biomass_loss_rel_k1; 		/* k1 for the biomass sigmoid function (steepness of curve) */
-	double biomass_loss_rel_k2; 		/* k2 for the biomass sigmoid function (centerpoint of curve) */
+	double understory_mort; 		/* Relation between probability of spread and proportion understory mortality */
+	double consumption; 			/* Relation between proportion understory mortality and proportion consumed */
+	double overstory_mort_k1; 		/* Steepness of sigmoid function relating understory biomass consumed and overstory mortality */
+	double overstory_mort_k2; 		/* Centerpoint of sigmoid function relating understory biomass consumed and overstory mortality */
 };
 
 /*----------------------------------------------------------*/
