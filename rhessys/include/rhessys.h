@@ -651,6 +651,19 @@ typedef struct base_station_ncheader_object
         char    netcdf_tmin_varname[MAXSTR];    /* variable name for tmin in nc file */
         char    netcdf_rain_varname[MAXSTR];    /* variable name for rain in nc file */
         char    netcdf_elev_varname[MAXSTR];    /* variable name for elev in nc file */
+#ifdef LIU_EXTEND_CLIM_VAR
+        double  rhum_mult;                    /* multiplier for relative humidity to 0-1 */
+        char    netcdf_huss_filename[MAXSTR];   /* filename for specific humidity nc file */
+        char    netcdf_huss_varname[MAXSTR];    /* variable name for specific humidity in nc file */
+        char    netcdf_rmax_filename[MAXSTR];   /* filename for relative humidity max nc file */
+        char    netcdf_rmax_varname[MAXSTR];    /* variable name for relative humidity max in nc file */
+        char    netcdf_rmin_filename[MAXSTR];   /* filename for relative humidity min nc file */
+        char    netcdf_rmin_varname[MAXSTR];    /* variable name for relative humidity min in nc file */
+        char    netcdf_rsds_filename[MAXSTR];   /* filename for shortwave radiation nc file */
+        char    netcdf_rsds_varname[MAXSTR];    /* variable name for shortwave radiation in nc file */
+        char    netcdf_was_filename[MAXSTR];   /* filename for wind speed nc file */
+        char    netcdf_was_varname[MAXSTR];    /* variable name for wind speed in nc file */
+#endif
 } base_station_ncheader_object;
 /*----------------------------------------------------------*/
 /*      Define dated climate sequence                       */
@@ -756,6 +769,12 @@ struct  daily_clim_object
         double  *vpd;                           /*      Pa              */
         double  *wind;                          /*      m/s             */
         double  *wind_direction;                /*      degrees         */
+#ifdef LIU_EXTEND_CLIM_VAR
+        double  *relative_humidity_max;         /*      0 - 1                 */
+        double  *relative_humidity_min;         /*      0 - 1                 */
+        double  *surface_shortwave_rad;         /*      W m-2  daily average  */
+        double  *specific_humidity;             /*      kg/kg  daily average  */
+#endif
         };    
         
 

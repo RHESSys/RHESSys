@@ -17,6 +17,7 @@ QMAKE_CXXFLAGS += -fpermissive
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_CFLAGS += -fopenmp
 QMAKE_LFLAGS += -fopenmp
+
 #QMAKE_CFLAGS += -STD=C99
 
 TEMPLATE = app
@@ -27,7 +28,9 @@ DEFINES += NO_UPDATE_160419 \
            LIU_NETCDF_READER \
            CHECK_NCCLIM_DATA \
            FIND_STATION_BASED_ON_ID \
-           RUN_WITH_SPINUP_PERIOD_USING_RANDOM_CLIMATE_YEAR_DATA
+           LIU_EXTEND_CLIM_VAR \
+           LIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
+
 
 SOURCES += \
     ../../../../rhessys/clim/compute_toc_wind.c \
@@ -348,7 +351,9 @@ SOURCES += \
     ../../../../util/FIRE/RanNums.cpp \
     ../../../../rhessys/hydro/compute_saturation_vapor_pressure.c \
     ../../../../rhessys/hydro/compute_vapor_pressure_deficit.c \
-    ../../../../rhessys/output/output_basin.c
+    ../../../../rhessys/output/output_basin.c \
+    ../../../../rhessys/cn/compute_fire_effects.c \
+    ../../../../rhessys/cn/update_litter_soil_mortality.c
 
 OTHER_FILES += \
     ../../../../rhessys/cycle/patch_daily_F.c,v

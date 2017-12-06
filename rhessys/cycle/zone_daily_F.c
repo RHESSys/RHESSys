@@ -170,6 +170,14 @@ void		zone_daily_F(
 			zone[0].Kdown_direct = zone[0].Kdown_direct_calc;
 			zone[0].Kdown_diffuse_flat = zone[0].Kdown_diffuse_flat_calc;
 			zone[0].Kdown_diffuse = zone[0].Kdown_diffuse_calc;
+#ifdef LIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
+            double rsds_obs = zone[0].base_stations[0][0].daily_clim[0].surface_shortwave_rad[day] * (double)SECONDS_PER_DAY;
+            double adj = rsds_obs * 0.001 / (zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat);
+            zone[0].Kdown_direct        *= adj;
+            zone[0].Kdown_diffuse       *= adj;
+            zone[0].Kdown_direct_flat   *= adj;
+            zone[0].Kdown_diffuse_flat  *= adj;
+#endif
 		}
 	/* Otherwise use input Kdowns and calculate transmissivity as	*/
 	/* ratio between given and calculated, then generate cloud		*/
