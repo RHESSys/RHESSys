@@ -1340,6 +1340,7 @@ struct  ndayflux_patch_struct
     /* denitrification  (volatilization) */
         double sminn_to_nvol;                /* (kgN/ms/d) */
         double denitrif;                        /* (kgN/m2/day) */
+        double surface_denitrif;                        /* (kgN/m2/day) */
 
 
     /* daily N sources and sinks */

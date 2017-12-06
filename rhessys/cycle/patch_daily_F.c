@@ -284,6 +284,11 @@ void		patch_daily_F(
 		double,
 		double);
 
+	double  compute_pond_denitrif(
+		double,
+		struct cdayflux_patch_struct *,
+		struct litter_c_object *,
+		struct litter_n_object *);
 	
 	int	resolve_sminn_competition(
 		struct  soil_n_object   *,
@@ -416,6 +421,7 @@ void		patch_daily_F(
 	double 	surfaceN_to_soil;
 	double	FERT_TO_SOIL;
 	double	pond_height;
+	double	surface_denitrif;
 	double tmpra, tmpga, tmpgasnow, tmpwind, tmpwindcan, tmpwindsnow, tmpustar;
 	double Kup_direct_snow, Kup_diffuse_snow;
 	double Kdown_direct_covered, Kdown_diffuse_covered, Kdown_direct_exposed, Kdown_diffuse_exposed;
@@ -2083,6 +2089,16 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_denitrif() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
+
+		if (patch[0].surface_NO3 > ZERO & patch[0].detention_store > ZERO &
+			patch[0].soil_defaults[0][0].detention_store_size > ZERO) {
+		surface_denitrif = compute_pond_denitrif(patch[0].surface_NO3, 
+				&(patch[0].cdf),
+				&(patch[0].litter_cs),
+				&(patch[0].litter_ns));
+		patch[0].surface_NO3 -= surface_denitrif;
+		patch[0].ndf.surface_denitrif += surface_denitrif;
+		}	
 
 	}
 

@@ -141,6 +141,7 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	/* denitrification fluxes */
 	ndf->sminn_to_nvol = 0.0;
 	ndf->denitrif = 0.0;
+	ndf->surface_denitrif = 0.0;
 	ndf->sminn_to_nitrate = 0.0;
 	ndf->nfix_to_sminn = 0.0;
 	ndf->DON_to_gw = 0.0;

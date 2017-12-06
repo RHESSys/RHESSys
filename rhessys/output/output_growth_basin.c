@@ -44,7 +44,7 @@ void	output_growth_basin(
 	int h,z,p,c;
 	int  layer;
 	double p_over, p_under;
-	double agpsn, aresp;
+	double agpsn, aresp, arespleaf;
 	double alai;
 	double leafc, frootc, woodc;	
 	double aleafc, afrootc, awoodc;
@@ -81,7 +81,7 @@ void	output_growth_basin(
 	alai = 0.0; acpool=0.0; anpool = 0.0;
 	aleafc = 0.0; afrootc=0.0; awoodc=0.0;
 	aleafn = 0.0; afrootn=0.0; awoodn=0.0;
-	agpsn = 0.0; aresp=0.0; anfix=0.0; anuptake=0.0;
+	agpsn = 0.0; arespleaf=0.0; aresp=0.0; anfix=0.0; anuptake=0.0;
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
@@ -160,7 +160,7 @@ void	output_growth_basin(
 				streamNO3_from_sub += patch[0].streamNO3_from_sub * patch[0].area;
 				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
-				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
+				adenitrif += (patch[0].ndf.denitrif+patch[0].ndf.surface_denitrif) * patch[0].area;	
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
 				afertilizer_NO3 += (patch[0].fertilizer_NO3) * patch[0].area;
 				afertilizer_NH4 += (patch[0].fertilizer_NH4) * patch[0].area;
@@ -200,6 +200,8 @@ void	output_growth_basin(
 							+ strata->cdf.cpool_deadcroot_gr
 							+ strata->cdf.froot_mr + strata->cdf.cpool_froot_gr
 							+ strata->cdf.cpool_to_gresp_store)	* patch[0].area;
+						arespleaf += strata->cover_fraction
+							* (strata->cdf.leaf_day_mr + strata->cdf.leaf_night_mr) * patch[0].area;
 						aleafn += strata->cover_fraction	* (strata->ns.leafn
 							+ strata->ns.leafn_store + strata->ns.leafn_transfer)
 							* patch[0].area;
@@ -288,6 +290,7 @@ void	output_growth_basin(
 	}
 	agpsn /= aarea ;
 	aresp /= aarea ;
+	arespleaf /= aarea ;
 	alai /= aarea ;
 	anitrate /= aarea;
 	asurfaceN /= aarea;
@@ -347,7 +350,7 @@ void	output_growth_basin(
 	hgwDOCout = hgwDOCout / basin_area;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -355,6 +358,7 @@ void	output_growth_basin(
 		alai,
 		agpsn * 1000,
 		aresp * 1000,
+		arespleaf * 1000,
 		asoilhr * 1000,
 		anitrate * 1000,
 		asminn * 1000,

@@ -279,6 +279,7 @@ $(OBJ)/update_N_stratum_daily.o \
 $(OBJ)/update_basin_patch_accumulator.o \
 $(OBJ)/update_decomp.o \
 $(OBJ)/update_denitrif.o \
+$(OBJ)/compute_pond_denitrif.o \
 $(OBJ)/update_dissolved_organic_losses.o \
 $(OBJ)/update_drainage_land.o \
 $(OBJ)/update_drainage_road.o \
@@ -910,6 +911,8 @@ $(OBJ)/update_gw_drainage.o: hydro/update_gw_drainage.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_gw_drainage.c -o $(OBJ)/update_gw_drainage.o
 $(OBJ)/update_denitrif.o: cn/update_denitrif.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_denitrif.c -o $(OBJ)/update_denitrif.o
+$(OBJ)/compute_pond_denitrif.o: cn/compute_pond_denitrif.c 
+	$(CC) -c $(CFLAGS) -I include cn/compute_pond_denitrif.c -o $(OBJ)/compute_pond_denitrif.o
 $(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c 

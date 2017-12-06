@@ -45,7 +45,7 @@ void	output_growth_patch(
 	int check, c, layer;
 	double apsn;
 	double aheight;
-	double alai, aresp, asoilhr;
+	double alitrhr, alai, aresp, asoilhr;
 	double aleafc, aleafn, afrootc, afrootn, awoodc, awoodn;
 	double atotalN, apredaytN;
 
@@ -62,6 +62,7 @@ void	output_growth_patch(
 	aheight = 0.0;
 	atotalN = 0.0;
 	apredaytN = 0.0;
+	alitrhr = 0.0;
 
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
@@ -82,10 +83,11 @@ void	output_growth_patch(
 				* (strata->ns.frootn + strata->ns.frootn_store
 				+ strata->ns.frootn_transfer);			
 
-			asoilhr += (
+			alitrhr += (
 					patch[0].cdf.litr1c_hr + 
 					patch[0].cdf.litr2c_hr + 
-					patch[0].cdf.litr4c_hr + 
+					patch[0].cdf.litr4c_hr );
+			asoilhr += (
 					patch[0].cdf.soil1c_hr + 
 					patch[0].cdf.soil2c_hr + 
 					patch[0].cdf.soil3c_hr + 
@@ -126,7 +128,7 @@ void	output_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
-		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -139,6 +141,7 @@ void	output_growth_patch(
 		aleafn+afrootn+awoodn,
 		apsn*1000,
 		aresp*1000,
+		alitrhr*1000,
 		asoilhr*1000,
 		patch[0].litter_cs.litr1c,
 		patch[0].litter_cs.litr2c,
@@ -160,6 +163,7 @@ void	output_growth_patch(
 		patch[0].soil_ns.DON,
 		patch[0].soil_cs.DOC,
 		patch[0].ndf.denitrif*1000.0,
+		patch[0].ndf.surface_denitrif*1000.0,
 		patch[0].soil_ns.leach*1000.0,
 		(patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total)*1000.0,
 		(patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total)*1000.0,
