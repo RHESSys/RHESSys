@@ -151,6 +151,31 @@ struct base_station_ncheader_object *construct_netcdf_header (
                 strcpy(base_station_ncheader[0].netcdf_elev_varname,first);
                 base_station_ncheader[0].elevflag = 1;
             }
+#ifdef LIU_EXTEND_CLIM_VAR
+            else if (strcmp(second, "rhum_multiplier") == 0){
+                           base_station_ncheader[0].rhum_mult = atof(first);
+            } else if(strcmp(second,"netcdf_huss_filename") == 0){
+                strcpy(base_station_ncheader[0].netcdf_huss_filename,first);
+            } else if(strcmp(second,"netcdf_var_huss") == 0){
+                strcpy(base_station_ncheader[0].netcdf_huss_varname,first);
+            } else if(strcmp(second,"netcdf_rmax_filename") == 0){
+                strcpy(base_station_ncheader[0].netcdf_rmax_filename,first);
+            } else if(strcmp(second,"netcdf_var_rmax") == 0){
+                strcpy(base_station_ncheader[0].netcdf_rmax_varname,first);
+            } else if(strcmp(second,"netcdf_rmin_filename") == 0){
+                strcpy(base_station_ncheader[0].netcdf_rmin_filename,first);
+            } else if(strcmp(second,"netcdf_var_rmin") == 0){
+                strcpy(base_station_ncheader[0].netcdf_rmin_varname,first);
+            } else if(strcmp(second,"netcdf_rsds_filename") == 0){
+                strcpy(base_station_ncheader[0].netcdf_rsds_filename,first);
+            } else if(strcmp(second,"netcdf_var_rsds") == 0){
+                strcpy(base_station_ncheader[0].netcdf_rsds_varname,first);
+            } else if(strcmp(second,"netcdf_was_filename") == 0){
+                strcpy(base_station_ncheader[0].netcdf_was_filename,first);
+            } else if(strcmp(second,"netcdf_var_was") == 0){
+                strcpy(base_station_ncheader[0].netcdf_was_varname,first);
+            }
+#endif
             #ifdef LIU_NETCDF_READER
             else if (strcmp(second, "base_station_id") == 0) {
                 baseid++;

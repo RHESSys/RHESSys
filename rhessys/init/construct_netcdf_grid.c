@@ -161,6 +161,17 @@ struct base_station_object *construct_netcdf_grid (
         base_station[0].daily_clim[0].tmax = (double *) alloc(duration->day * sizeof(double),"tmax", "construct_netcdf_grid");
         base_station[0].daily_clim[0].tmin = (double *) alloc(duration->day * sizeof(double),"tmin", "construct_netcdf_grid");
         base_station[0].daily_clim[0].rain = (double *) alloc(duration->day * sizeof(double),"rain", "construct_netcdf_grid");
+#ifdef LIU_EXTEND_CLIM_VAR
+        base_station[0].daily_clim[0].relative_humidity_max = (double *) alloc(duration->day * sizeof(double),"relative_humidity_max", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].relative_humidity_min = (double *) alloc(duration->day * sizeof(double),"relative_humidity_min", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].relative_humidity     = (double *) alloc(duration->day * sizeof(double),"relative_humidity", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].specific_humidity     = (double *) alloc(duration->day * sizeof(double),"specific_humidity", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].surface_shortwave_rad = (double *) alloc(duration->day * sizeof(double),"surface_shortwave_rad", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].wind                  = (double *) alloc(duration->day * sizeof(double),"wind", "construct_netcdf_grid");
+#else
+        base_station[0].daily_clim[0].relative_humidity = NULL;
+        base_station[0].daily_clim[0].wind              = NULL;
+#endif
         /*--------------------------------------------------------------*/
         /*	initialize the rest of the clim sequences as null	*/
         /*--------------------------------------------------------------*/
@@ -179,7 +190,6 @@ struct base_station_object *construct_netcdf_grid (
         base_station[0].daily_clim[0].PAR_diffuse = NULL;
         base_station[0].daily_clim[0].PAR_direct = NULL;
         base_station[0].daily_clim[0].daytime_rain_duration = NULL; 
-        base_station[0].daily_clim[0].relative_humidity = NULL;
         base_station[0].daily_clim[0].snow = NULL;
         base_station[0].daily_clim[0].tdewpoint = NULL;
         base_station[0].daily_clim[0].tday = NULL;
@@ -188,7 +198,6 @@ struct base_station_object *construct_netcdf_grid (
         base_station[0].daily_clim[0].tavg = NULL;
         base_station[0].daily_clim[0].tsoil = NULL;
         base_station[0].daily_clim[0].vpd = NULL;
-        base_station[0].daily_clim[0].wind = NULL;
         base_station[0].daily_clim[0].ndep_NO3 = NULL;
         base_station[0].daily_clim[0].ndep_NH4 = NULL;
 
@@ -232,105 +241,112 @@ struct base_station_object *construct_netcdf_grid (
         //}
         /* printf("net_y:%f net_x:%f\n",base_station[0].net_y,base_station[0].net_x);
            printf("tmax filename:%s varname:%s sdist:%f instartday:%d dura:%d\n",base_station[0].netcdf_tmax_filename, base_station[0].netcdf_tmax_varname,base_station[0].sdist,instartday,duration.day); */
-        /* ------------------ TMAX ------------------ */
-        k = get_netcdf_var_timeserias(
-                        base_station_ncheader[0].netcdf_tmax_filename,
-                        base_station_ncheader[0].netcdf_tmax_varname,
-                        lat_name,
-                        lon_name,
-                        net_y,
-                        net_x,
-                        (float)base_station_ncheader[0].resolution_dd,
-                        instartday,
-                        base_station_ncheader[0].day_offset,
-                        (int)duration->day,
-                        command_line[0].clim_repeat_flag,
-                        tempdata);
-        if (k == -1){
-                fprintf(stderr,"can't locate station data in netcdf for var tmax\n");
+        enum CLIM_VARS {CLM_TMAX, CLM_TMIN, CLM_RAIN, CLM_HUSS, CLM_RMAX,
+                        CLM_RMIN, CLM_RSDS, CLM_WAS, clim_vars_counts};
+        for (int var = 0; var < clim_vars_counts; var ++) {
+            char *filename;
+            char *var_name;
+            switch (var) {
+            case CLM_TMAX:
+                filename = base_station_ncheader[0].netcdf_tmax_filename;
+                var_name = base_station_ncheader[0].netcdf_tmax_varname;
+                break;
+            case CLM_TMIN:
+                filename = base_station_ncheader[0].netcdf_tmin_filename;
+                var_name = base_station_ncheader[0].netcdf_tmin_varname;
+                break;
+            case CLM_RAIN:
+                filename = base_station_ncheader[0].netcdf_rain_filename;
+                var_name = base_station_ncheader[0].netcdf_rain_varname;
+                break;
+#ifdef LIU_EXTEND_CLIM_VAR
+            case CLM_HUSS:
+                filename = base_station_ncheader[0].netcdf_huss_filename;
+                var_name = base_station_ncheader[0].netcdf_huss_varname;
+                break;
+            case CLM_RMAX:
+                filename = base_station_ncheader[0].netcdf_rmax_filename;
+                var_name = base_station_ncheader[0].netcdf_rmax_varname;
+                break;
+            case CLM_RMIN:
+                filename = base_station_ncheader[0].netcdf_rmin_filename;
+                var_name = base_station_ncheader[0].netcdf_rmin_varname;
+                break;
+            case CLM_RSDS:
+                filename = base_station_ncheader[0].netcdf_rsds_filename;
+                var_name = base_station_ncheader[0].netcdf_rsds_varname;
+                break;
+            case CLM_WAS:
+                filename = base_station_ncheader[0].netcdf_was_filename;
+                var_name = base_station_ncheader[0].netcdf_was_varname;
+                break;
+#endif
+            default:
+                break;
+            } //switch
+            k = get_netcdf_var_timeserias(filename, var_name, lat_name,
+                   lon_name, net_y, net_x,
+                   (float)base_station_ncheader[0].resolution_dd, instartday,
+                   base_station_ncheader[0].day_offset, (int)duration->day,
+                   command_line[0].clim_repeat_flag, tempdata);
+            if (k == -1){
+                fprintf(stderr,"can't locate station data in netcdf for var %s\n", var_name);
                 exit(0);
-        }
-        for (j=0;j<duration->day;j++){
-                if ((base_station_ncheader[0].temperature_unit == 'K') || (tempdata[j] > 150.0)) // kind of hard coded for temperature > 150
+            }
+            for (j=0;j<duration->day;j++){
+                if (var == CLM_TMAX) {
+                    if ((base_station_ncheader[0].temperature_unit == 'K') || (tempdata[j] > 150.0)) // kind of hard coded for temperature > 150
                         base_station[0].daily_clim[0].tmax[j] =  (double)tempdata[j] - 273.15;
-                else //160625LML if (base_station_ncheader[0].temperature_unit == 'C')
+                    else
                         base_station[0].daily_clim[0].tmax[j] =  (double)tempdata[j];
-                /*160517LML
-#ifdef NETCDF_TEMPERATURE_UNIT_IS_KELVIN
-(double)tempdata[j] - 273.15;
-#else
-(double)tempdata[j];
-#endif*/
-                /*printf("day:%d tmax:%f\n",j,base_station[0].daily_clim[0].tmax[j]);*/
-        }
-
-        /* ------------------ TMIN ------------------ */
-        k = get_netcdf_var_timeserias(
-                        base_station_ncheader[0].netcdf_tmin_filename,
-                        base_station_ncheader[0].netcdf_tmin_varname,
-                        lat_name, //160624LML "lat",
-                        lon_name, //160624LML "lon",
-                        /*160517LML base_station_ncheader[0].netcdf_y_varname,
-                          base_station_ncheader[0].netcdf_x_varname,*/
-                        net_y,
-                        net_x,
-                        (float)base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
-                        instartday,
-                        base_station_ncheader[0].day_offset,
-                        duration->day,
-                        command_line[0].clim_repeat_flag,
-                        tempdata);
-        if (k == -1){
-                fprintf(stderr,"can't locate station data in netcdf for var tmin\n");
-                exit(0);
-        }
-        for(j=0;j<duration->day;j++){
-                if (base_station_ncheader[0].temperature_unit == 'K')                //160517LML
+                } else if (var == CLM_TMIN) {
+                    if ((base_station_ncheader[0].temperature_unit == 'K') || (tempdata[j] > 150.0)) // kind of hard coded for temperature > 150
                         base_station[0].daily_clim[0].tmin[j] =  (double)tempdata[j] - 273.15;
-                else if (base_station_ncheader[0].temperature_unit == 'C')
+                    else
                         base_station[0].daily_clim[0].tmin[j] =  (double)tempdata[j];
-                /*160517LML
-                  base_station[0].daily_clim[0].tmin[j] = 
-#ifdef NETCDF_TEMPERATURE_UNIT_IS_KELVIN
-(double)tempdata[j] - 273.15;
-#else
-(double)tempdata[j];
-#endif*/
-                /*printf("day:%d tmin:%f\n",j,base_station[0].daily_clim[0].tmin[j]);*/
+                } else if (var == CLM_RAIN) {
+                    base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult;
+                }
+#ifdef LIU_EXTEND_CLIM_VAR
+                else if (var == CLM_HUSS) {
+                    base_station[0].daily_clim[0].specific_humidity[j] = (double)tempdata[j];
+                } else if (var == CLM_RMAX) {
+                    base_station[0].daily_clim[0].relative_humidity_max[j] = (double)tempdata[j] * base_station_ncheader[0].rhum_mult;
+                } else if (var == CLM_RMIN) {
+                    base_station[0].daily_clim[0].relative_humidity_min[j] = (double)tempdata[j] * base_station_ncheader[0].rhum_mult;
+                } else if (var == CLM_RSDS) {
+                    base_station[0].daily_clim[0].surface_shortwave_rad[j] = (double)tempdata[j];
+                } else if (var == CLM_WAS) {
+                    base_station[0].daily_clim[0].wind[j] = (double)tempdata[j];
+                }
+#endif
+            } //j
+        } //var
+#ifdef LIU_EXTEND_CLIM_VAR
+        for (j=0;j<duration->day;j++) {
+            struct  daily_clim_object *daily_clim = &base_station[0].daily_clim[0];
+            daily_clim->relative_humidity[j] =
+                (daily_clim->relative_humidity_max[j]
+                 + daily_clim->relative_humidity_min[j]) / 2.0;
         }
-
-        /* ------------------ PRECIP ------------------ */
-        k = get_netcdf_var_timeserias(
-                        base_station_ncheader[0].netcdf_rain_filename,
-                        base_station_ncheader[0].netcdf_rain_varname,
-                        lat_name, //160624LML "lat",
-                        lon_name, //160624LML "lon",
-                        /*160517LML base_station_ncheader[0].netcdf_y_varname,
-                          base_station_ncheader[0].netcdf_x_varname,*/
-                        net_y,
-                        net_x,
-                        (float)base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
-                        instartday,
-                        base_station_ncheader[0].day_offset,
-                        duration->day,
-                        command_line[0].clim_repeat_flag,
-                        tempdata);
-        if (k == -1){
-                fprintf(stderr,"can't locate station data in netcdf for var rain\n");
-                exit(0);
-        }
-        for(j=0;j<duration->day;j++){
-                base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult;
-                //printf("day:%d rain:%f\t multiplier:%lf\tvarname:%s\n",j,base_station[0].daily_clim[0].rain[j],base_station_ncheader[0].precip_mult,base_station_ncheader[0].netcdf_rain_varname);
-        }
-
-        /* #ifdef CHECK_NCCLIM_DATA
+#endif
+#ifdef CHECK_NCCLIM_DATA
            for (j = 0; j < (duration->day < 60 ? duration->day : 60); j++) {
+#ifndef LIU_EXTEND_CLIM_VAR
            fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n"
            ,j,base_station[0].ID,base_station[0].proj_x,base_station[0].proj_y,base_station[0].lon, base_station[0].lat
            ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]);
+#else
+           fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\thuss:%lf\trmax:%lf\trmin:%lf\trsds:%lf\twas:%lf\n"
+               ,j,base_station[0].ID,base_station[0].proj_x,base_station[0].proj_y,base_station[0].lon, base_station[0].lat
+               ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]
+               ,base_station[0].daily_clim[0].specific_humidity[j],base_station[0].daily_clim[0].relative_humidity_max[j]
+               ,base_station[0].daily_clim[0].relative_humidity_min[j],base_station[0].daily_clim[0].surface_shortwave_rad[j]
+               ,base_station[0].daily_clim[0].wind[j]);
+
+#endif
            }
-#endif*/
+#endif
 
 
         /* ------------------ ELEV ------------------ */
