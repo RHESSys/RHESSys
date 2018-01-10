@@ -2218,6 +2218,7 @@ struct  psnin_struct
         double Rd;              /* (umol/m2/s) dark respiration rate */
         double lnc;             /* (kg Nleaf/m2) leaf nitrogen per unit area */
         double flnr;            /* (kg NRub/kg Nleaf) fract. of leaf N in Rubisco */
+	double netpabs;		/* (mol/mol) fPAR effectively abosorbed */
 } ;
 
 struct  psnout_struct
@@ -2510,6 +2511,7 @@ struct epconst_struct
         double lai_ratio;      /* (DIM) all-sided LA / one-sided LA ratio */
         double int_coef;       /* (kg/m2/LAI/d) canopy precip interception coef */
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
+	double netpabs;		/* (mol/mol) fPAR effectively abosorbed */
         double flnr;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double ppfd_coef;      /* (s/m2/umol) shape parameter for ppfd hyperbola */
         double topt;           /* (deg C) optimum air temperature for gs */

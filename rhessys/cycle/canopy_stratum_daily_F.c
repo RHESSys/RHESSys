@@ -1638,6 +1638,7 @@ void	canopy_stratum_daily_F(
 			psnin.pa = zone[0].metv.pa;
 			psnin.co2 = zone[0].CO2;
 			psnin.flnr = stratum[0].defaults[0][0].epc.flnr;
+			psnin.netpabs = stratum[0].defaults[0][0].epc.netpabs;
 			psnin.t = zone[0].metv.tday;
 			psnin.irad = stratum[0].ppfd_sunlit;
 			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_sla_sunlit > ZERO))
@@ -1652,6 +1653,7 @@ void	canopy_stratum_daily_F(
 			psnin.g = max(stratum[0].defaults[0][0].epc.gl_smax ,
 				stratum[0].defaults[0][0].epc.gl_c ) *
 				stratum[0].defaults[0][0].lai_stomatal_fraction * 1000 / 1.6;
+			/* printf("\n ID %d sun pot", stratum[0].ID); */
 			if ((psnin.lnc > 0.0) && (psnin.irad > 0.0))
 				compute_farq_psn(&psnin, &psnout, 1);
 			else
@@ -1674,6 +1676,7 @@ void	canopy_stratum_daily_F(
 					/ stratum[0].epv.proj_sla_shade ;
 			else
 				psnin.lnc = 0.0;
+			/* printf("\n ID %d shade pot", stratum[0].ID); */
 
 			if ((psnin.lnc > 0.0) && (psnin.irad > 0.0))
 				compute_farq_psn(&psnin, &psnout, 1);
@@ -1717,6 +1720,7 @@ void	canopy_stratum_daily_F(
 					/ stratum[0].epv.proj_sla_sunlit;
 			else
 				psnin.lnc = 0.0;
+			/* printf("\n ID %d sun actual", stratum[0].ID); */
 			if ((psnin.lnc > 0.0) && (psnin.irad > 0.0)) {
 				if ( compute_farq_psn(&psnin, &psnout, 1)){
 					fprintf(stderr,
@@ -1741,6 +1745,7 @@ void	canopy_stratum_daily_F(
 				* zone[0].metv.dayl*12.011e-9);
 			else
 				psnin.Rd = 0.0;
+
 			/*--------------------------------------------------------------*/
 			/* note multiply by 1000; accounted for in compute_farq_psn by a /1000 */
 			/*	this is done for numerical precision			*/
@@ -1755,6 +1760,7 @@ void	canopy_stratum_daily_F(
 					/ stratum[0].epv.proj_sla_shade;
 			else
 				psnin.lnc = 0.0;
+			/* printf("\n ID %d shade actual", stratum[0].ID); */
 			if ((psnin.lnc > 0.0) && (psnin.irad > 0.0)) {
 				if ( compute_farq_psn(&psnin, &psnout, 1)){
 					fprintf(stderr,

@@ -54,6 +54,7 @@ double compute_potential_N_uptake_Dickenson(
 	/*------------------------------------------------------*/
 	double day_gpp;     /* daily gross production */
 	double day_mresp;   /* daily total maintenance respiration */
+	double f1;		/* froot to leaf alloc ratio */
 	double cnl;         /* RATIO   leaf C:N      */
 	double cnfr;        /* RATIO   fine root C:N */
 	double cnlw;        /* RATIO   live wood C:N */
@@ -99,6 +100,9 @@ double compute_potential_N_uptake_Dickenson(
 	} /* end if negative cpool */
 
 	/* assign local values for the allocation control parameters */
+
+	f1 = epc.alloc_frootc_leafc;
+
 	cnl = epc.leaf_cn;
 	cnfr = epc.froot_cn;
 	cnlw = epc.livewood_cn;
@@ -114,8 +118,8 @@ double compute_potential_N_uptake_Dickenson(
 
 	
 	if (epc.veg_type==TREE) {
-		if (2*fleaf < 0.8) {
-			froot = fleaf;
+		if (fleaf*(1+f1) < 0.8) {
+			froot = f1*fleaf;
 			fwood= 1.0-fleaf-froot;
 			}
 		else {

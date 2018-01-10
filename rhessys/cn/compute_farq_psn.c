@@ -57,6 +57,7 @@ Farquhar photosynthesis routine
 	  smitch added:
 
   	  in->c3	flag for C3 photosynthesis (alternative = C4)
+	  in->netpabs;	(mol/mol) photons absorbed by PSII per e- xported 
 	  
 	   Of these, t and Rd are used multiple times, and so are copied into local
 	   variables.  The others are referenced by their struct names.
@@ -109,7 +110,7 @@ Farquhar photosynthesis routine
 	double A;      /* (umol/m2/s) net assimilation rate */
 	double aa,bb,cc,det;
 	/* New vbl introduced in BGC 4.1.1 for Jmax calc - ppe - smitch 2001 */
-	double ppe;	/* (mol/mol) photons absorbed by PSII per e- xported */
+	double netpabs;	/* (mol/mol) photons absorbed by PSII per e- xported */
 	int c3;		/* c3 flag to match bgc */
 	/*------------------------------------------------------------------
 	the weight proportion of Rubisco to its nitrogen content, fnr, is
@@ -139,9 +140,6 @@ Farquhar photosynthesis routine
 	static double q10Ko = 1.2;    /* (DIM) Q_10 for ko */
 	static double act25 = 3.6;    /* (umol/mgRubisco/min) Rubisco activity */
 	static double q10act = 2.4;   /* (DIM) Q_10 for Rubisco activity */
-	/* new constant used in calculating Jmax - smitch 2001 */
-	static double pabs = 0.85;    /* (DIM) fPAR effectively absorbed by
-					PSII */
 
 	/* local variables  */
 	Rd = in->Rd;
@@ -153,20 +151,17 @@ Farquhar photosynthesis routine
 	Ca = in->co2 * in->pa / 1e6;
 	/* smitch - Add adjustment of  parameters for C3/C4 psn */
 	c3 = 0;
-	/* tague for Laura: FOR NOW WE WILL HARDCODE C3 */
-	in->c3 = 1;
         
 	if (in->c3)
         {
-                ppe = 2.6;
 		c3 = 1;
         }
         else /* C4 */
         {
-                ppe = 3.5;
                 Ca *= 10.0;
         }
 
+	netpabs = in->netpabs;
 	/* calculate atmospheric O2 in Pa, assumes 21% O2 by volume */
 	O2 = 0.21 * in->pa;
 	/* correct kinetic constants for temperature, and do unit conversions */
@@ -230,8 +225,8 @@ Farquhar photosynthesis routine
         Plant Cell and Env.
         */
         aa = 0.7;
-        bb = -Jmax - (in->irad*pabs/ppe);
-        cc = Jmax * in->irad*pabs/ppe;
+        bb = -Jmax - (in->irad*netpabs);
+        cc = Jmax * in->irad*netpabs;
         J = (-bb - sqrt(bb*bb - 4.0*aa*cc))/(2.0*aa);
 
 	/*---------------------------------------------------------------
@@ -287,15 +282,14 @@ Farquhar photosynthesis routine
 		out->J = J;
 		out->Av = Av;
 		out->Aj = Aj;
-	/*
-		printf("\n %lf %lf %lf %lf %lf %lf", A, out->Ci, out->Vmax, out->Jmax, out->dC13, out->Ca); 
-	*/
+
 /*
-                 printf("psnin: %lf %lf %lf %lf %lf %lf %lf %lf %d %lf\n",
+		printf(" %lf %lf %lf %lf %lf %lf", A, out->Ci, out->Vmax, out->Jmax, out->dC13, out->Ca); 
+                 printf(" psnin: %lf %lf %lf %lf %lf %lf %lf %lf %d %lf ",
                                 in->pa, in->co2, t, in->irad,
                                 g, in->Rd, in->lnc, in->flnr,
-                                c3, ppe);
-                                printf("psnout: %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+                               c3, netpabs);
+                   printf(" psnout: %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
                                 g, O2, Ca, Ca - A/g,
                                 out->gamma, Kc, Ko, act,
                                 Vmax, Jmax, J, Av,
