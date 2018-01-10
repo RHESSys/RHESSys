@@ -183,7 +183,7 @@ int allocate_annual_growth(				int id,
  		}
          }
 
-	total_store =  cs->cpool;
+	total_store =  cs->cpool+cs->leafc_store+cs->frootc_store+cs->livestemc_store+cs->deadstemc_store+cs->livecrootc_store+cs->deadcrootc_store;
 	
 	/* Changed to just be live C */
 	/*total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->dead_stemc +
@@ -292,8 +292,7 @@ int allocate_annual_growth(				int id,
 
 
 	/*--------------------------------------------------------------*
-	/*  we include a delay on storage output so that the
-		veg does not die in a bad year -esp. for Grasses	*/
+	/*  we include a delay on storage output so that the veg does not die in a bad year -esp. for Grasses	*/
 	/*--------------------------------------------------------------*/
 	cdf->leafc_store_to_leafc_transfer = cs->leafc_store * storage_transfer_prop;
 	cs->cpool += cs->leafc_store * (1.0-storage_transfer_prop);
@@ -440,7 +439,7 @@ int allocate_annual_growth(				int id,
 	/*	we allow only a certain amount of resprouting based on 	*/
 	/*	a stratum default file parameterization 		*/
 	/*--------------------------------------------------------------*/
-	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) {
+	if ((((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon)) || (cs->mortality_fract > 0.9)) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
 		printf("\n Resprouting stratum %d", id);
@@ -458,10 +457,12 @@ int allocate_annual_growth(				int id,
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
 		cs->leafc_transfer = 0.0;
 		cs->leafc = 0.0;
+		cs->frootc = 0.0; 
 		cs->frootc_transfer = 0.0;
 		ns->leafn_transfer = 0.0;
 		ns->frootn_transfer = 0.0;
 		ns->leafn = 0.0;
+		ns->frootn = 0.0;
 		cdf->gresp_store_to_gresp_transfer = 0.0;
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 

@@ -110,5 +110,13 @@ int update_gw_drainage(
 		patch[0].surface_NO3 -= N_loss;
 		}
 
+	if (patch[0].soil_ns.nitrate > ZERO) {
+		N_loss = sat_to_gw_coeff * patch[0].soil_ns.nitrate; 
+		hillslope[0].gw.NO3 += (N_loss * patch[0].area / hillslope[0].area);
+		patch[0].ndf.N_to_gw += N_loss;
+		patch[0].soil_ns.nitrate -= N_loss;
+		}
+
+
 	return (!ok);
 } /* end update_gw_drainage.c */

@@ -167,7 +167,11 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	ks2 = ks2_base * rate_scalar;
 	ks3 = ks3_base * rate_scalar;
 	ks4 = ks4_base * rate_scalar;
-	
+
+	/* remove impact of slow soil pools */	
+	kl4 = 0.0;     /* lignin litter pool */
+	ks3 = 0.0;   /* slow microbial recycling pool */
+	ks4 = 0.0;   /* recalcitrant SOM (humus) pool */
 	
 	/* initialize the potential loss and mineral N flux variables */
 	plitr1c_loss = plitr2c_loss = plitr3c_loss = plitr4c_loss = 0.0;

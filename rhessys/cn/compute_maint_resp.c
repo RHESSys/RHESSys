@@ -70,8 +70,9 @@ tissue N content and respiration rate given in:
 	double t1;
 	double exponent;
 
-	if (epc->Tacclim == 1)
+	if (epc->Tacclim == 1) {
 		q10 = epc->Tacclim_intercpt - epc->Tacclim_slp * cs->Tacc;
+		}
 
 	/* leaf day and night maintenance respiration when leaves on */
 	if (cs->leafc > ZERO){

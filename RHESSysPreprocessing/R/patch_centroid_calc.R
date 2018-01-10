@@ -13,6 +13,7 @@ patch_centroid_calc<-function(patch_data,num_patches,cell_length){
   }
   patch_coord[,1:2]<-patch_coord[,1:2]/patch_coord[,3]
   patch_coord[,3]<-cell_length^2*patch_coord[,3]
-  
+
   return(patch_coord)
 }
+#

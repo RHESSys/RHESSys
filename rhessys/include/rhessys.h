@@ -974,6 +974,8 @@ struct zone_object
         double  LAI_temp_adjustment;                    /* 0 - 1        */
         double  LAI_scalar;                             /* DIM          */
         double  Ldown;                                  /* W/m2         */
+	double	max_rootdepth;				/* m		*/
+	double	max_wilting_point;				/* %		*/
         double  Ldown_night;							/* W/m2			*/
         double  Ldown_day;								/* W/m2			*/
         double  ndep_NO3;                               /* kg/m2/day    */
@@ -1700,6 +1702,7 @@ struct patch_object
         double  PE;             /* m water      */
         double  precip_with_assim;    /* m water */
         double  rz_drainage;            /* m water      */
+        double  water_transfer;         /* m water         */
         double  wind;                   /* m/s          */
         double  wind_final;             /* m/s          */
         double  windsnow;                       /* m/s          */
@@ -2003,6 +2006,7 @@ struct  command_line_object
         int             noredist_flag;
         int             vmort_flag;
         int             version_flag;
+	int		ptransfer_flag;
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
         char    *output_prefix;
@@ -2021,6 +2025,7 @@ struct  command_line_object
         double  veg_sen3;
         double  tmax_add;
         double  tmin_add;
+	double	ptransfer_prop;
         double  fire_grid_res;
         double  sat_to_gw_coeff_mult;
         double  gw_loss_coeff_mult;
@@ -2601,6 +2606,7 @@ struct epconst_struct
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
+    double root_max_depth; /*  (m) maximum root depth */
         double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
     int     max_years_resprout; /* num years of resprouting before death */
     double waring_pa; /* parameter for Waring allometric equation */

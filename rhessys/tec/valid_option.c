@@ -80,6 +80,7 @@ int	 valid_option( char *command_line){
 
 		(strcmp(command_line,"-template") == 0) ||
 		(strcmp(command_line,"-fs") == 0) ||
+		(strcmp(command_line,"-ptransfer") == 0) ||
 
 		(strcmp(command_line,"-vegspinup") == 0) ||
 		(strcmp(command_line,"-template") == 0))

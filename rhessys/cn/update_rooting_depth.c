@@ -12,6 +12,7 @@
 /*			double rootc, 				*/
 /*		  double root_growth_direction,			*/
 /*		   double root_distrib_parm,			*/
+/*		   double max_root_depth,			*/
 /*		   double soil _depth)				*/
 /*                                                              */
 /*  OPTIONS                                                     */
@@ -37,6 +38,7 @@ int update_rooting_depth( struct rooting_zone_object *rootzone,
 						   double rootc,
 						   double root_growth_direction,
 						   double root_distrib_parm,
+						   double root_max_depth,
 						   double soil_depth)
 {
 	/*------------------------------------------------------*/
@@ -56,6 +58,7 @@ int update_rooting_depth( struct rooting_zone_object *rootzone,
 
 	rootzone->depth = min(rootzone->depth, soil_depth-0.0001);
 	rootzone->depth = max(rootzone->depth, 0.0);
+	rootzone->depth = min(rootzone->depth, root_max_depth);
 
 	return (!ok);
 } /* end update_rooting_depth */

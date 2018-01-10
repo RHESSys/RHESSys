@@ -80,6 +80,7 @@ void update_phenology(struct zone_object  *zone,
 		double,
 		double,
 		double,
+		double,
 		double);
 	void	update_litter_interception_capacity (double, 
 		double,
@@ -512,7 +513,7 @@ void update_phenology(struct zone_object  *zone,
 	rootc = cs->frootc+cs->live_crootc+cs->dead_crootc;
 	if ((grow_flag > 0) && (rootc > ZERO)){
 		if (ok && update_rooting_depth(
-			rootzone, rootc, epc.root_growth_direction, epc.root_distrib_parm,
+			rootzone, rootc, epc.root_growth_direction, epc.root_distrib_parm, epc.root_max_depth,
 			effective_soil_depth)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from update_phenology()\n");
@@ -577,6 +578,7 @@ void update_phenology(struct zone_object  *zone,
 		epv->proj_pai = epv->proj_lai;
 		epv->all_pai = epv->all_lai;
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	update height						*/
 	/*--------------------------------------------------------------*/

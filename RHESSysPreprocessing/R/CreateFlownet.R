@@ -37,7 +37,7 @@ CreateFlownet = function(cfname, type = "GRASS", readin = "cf_maps", typepars = 
     cfname = paste(substr(cfname, 1, (nchar(dirname(cfname))+1)),cfbasename,sep="")
   }
 
-  if(typepars =="load") {load("typepars")}
+  if(typepars[1] =="load") {load("typepars")}
 
   mapsin = cfmaps[cfmaps[,2]!="none" & cfmaps[,1]!="cell_length",2]
 
@@ -49,29 +49,33 @@ CreateFlownet = function(cfname, type = "GRASS", readin = "cf_maps", typepars = 
   #map_ar_clean = map_ar
   dimnames(map_ar_clean)[[3]] = colnames(readmap@data)
 
+  patch_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="patch",2]]
+  patch_elevation_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="z",2]]
+  hill_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="hillslope",2]]
+  basin_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="basin",2]]
+  zone_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="zone",2]]
+  slope_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="slope",2]]
+  stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="stream",2]]
+  celllength = as.numeric(cfmaps[cfmaps[,1]=="cell_length",2])
+  smooth_flag = FALSE
 
+  road_data = replace(raw_basin_data,raw_basin_data==1,0)
 
-  raw_patch_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="patch",2]]
-  raw_patch_elevation_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="z",2]]
-  raw_hill_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="hillslope",2]]
-  raw_basin_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="basin",2]]
-  raw_zone_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="zone",2]]
-  raw_slope_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="slope",2]]
-  raw_stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="stream",2]]
-  cell_length = as.numeric(cfmaps[cfmaps[,1]=="cell_length",2])
-
-
+  #----------Run actual flownet calculations----------
   CF1 = patch_data_analysis(
-    raw_patch_data,
-    raw_patch_elevation_data,
-    raw_hill_data,
-    raw_basin_data,
-    raw_zone_data,
-    raw_slope_data,
-    raw_stream_data,
-    cell_length
+    raw_patch_data = patch_data,
+    raw_patch_elevation_data = patch_elevation_data,
+    raw_basin_data = basin_data,
+    raw_hill_data = hill_data,
+    raw_zone_data = zone_data,
+    raw_slope_data = slope_data,
+    raw_stream_data = stream_data,
+    raw_road_data = road_data,
+    road_width = 0,
+    cell_length=celllength,
+    smooth_flag=TRUE
   )
 
 
-  CF2 = make_flow_table(CF1, cfname)
+  make_flow_table(CF1, cfname)
 }

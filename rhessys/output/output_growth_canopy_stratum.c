@@ -43,6 +43,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+		/* (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer)* 1000.0,*/
 
 	fprintf(outfile,
 		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf \n",
@@ -55,7 +56,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		patchID,
 		stratum[0].ID,
 		stratum[0].epv.proj_lai,
-		(stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer)* 1000.0,
+		(stratum[0].cs.leafc)* 1000.0,
 		(stratum[0].ns.leafn + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer)* 1000.0,
 		stratum[0].cs.cpool * 1000.0,
 		stratum[0].ns.npool * 1000.0,
