@@ -10,7 +10,7 @@ OBJ = objects
 #wmfire ?=FALSE
 
 DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
-CFLAGS =-Wall -g -std=c99 -fopenmp -O2 $(DEFINES)
+CFLAGS =-Wall -g -std=c99 -qopenmp -O2 $(DEFINES)
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
@@ -339,10 +339,10 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -qopenmp -L./lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -qopenmp -v -o $(PGM) 
 endif
 else
 ifdef wmfire
