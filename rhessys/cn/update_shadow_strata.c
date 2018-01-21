@@ -106,7 +106,9 @@ void	update_shadow_strata(
   if (stratum[0].epv.proj_lai >= (stratum[0].target.lai - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai)) {
     if ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc)) {
       if (stratum[0].epv.height >= (stratum[0].target.height - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.height)) {
-        stratum[0].target.met = 1;
+        if(((current_date.year - command_line[0].start_date.year) > stratum[0].target.age) && current_date.month==9 && current_date.day==30){
+          stratum[0].target.met = 1;
+        }
       }
     }
   }

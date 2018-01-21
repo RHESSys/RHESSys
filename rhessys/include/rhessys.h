@@ -2699,6 +2699,7 @@ struct  stratum_default
               double lai;
               double total_stemc;
               double height;
+              double age;
               int    met;
        };
 /*----------------------------------------------------------*/
