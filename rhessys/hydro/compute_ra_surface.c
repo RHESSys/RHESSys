@@ -88,7 +88,11 @@ double	compute_ra_surface(
 	/*	Equation supplied by Xuewen Wang rhessys C code.	*/
 	/*	Richard Fernandes:  This should change with snow pack .	*/
 	/*--------------------------------------------------------------*/
+/*
 	zo_u =  pow(10.0, (0.997 * log10(h_u+0.001) - 0.883));
+*/
+	zo_u = 0.1 * h_u;
+
 	/*--------------------------------------------------------------*/
 	/*	compute exponential decay of wind throught the canopy  */
 	/*--------------------------------------------------------------*/
