@@ -11,42 +11,57 @@
 #' vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 #' Example parameters are shown in the example script for world_gen. See initGRASS help for more info on parameters.
 
-CreateFlownet = function(cfname, type = "GRASS", readin = "cf_maps", typepars = "load") {
+
+CreateFlownet = function(cfname,
+                         type = "raster",
+                         readin = "cf_maps",
+                         typepars = "load",
+                         asp_list = NULL,
+                         streams = NULL,
+                         roads = NULL,
+                         impervious = NULL,
+                         roofs = NULL,
+                         wrapper = FALSE) {
 
   # ---------- Read and check inputs ----------
-
-  cfmaps = as.matrix(read.table("cf_maps",header=TRUE))
-
-  if (cfmaps[10,2]=="none"|is.na(cfmaps[10,2])) { # Check for streams map, since it isn't automatically generated. Menu allows input of stream map
-    t = menu(c("Specify map","Abort function"),
-             title="Missing stream map. Specify one now, or abort function and edit cf_maps file?")
-    if (t==2) {stop("Function aborted")}
-    if (t==1) {
-      stream = readline("Stream map:")
-      cfmaps[10,2] = stream
-      write.table(cfmaps,file="cf_maps",sep="\t\t",row.names=FALSE,quote = FALSE)
-    }
+  if (wrapper==FALSE){
+    if(typepars[1] =="load") {load("typepars")}
+    cfmaps = as.matrix(read.table("cf_maps",header=TRUE))
+  } else if(wrapper==TRUE){
+    cfmaps = readin
   }
 
   cfbasename = basename(cfname) # Coerce .flow extension
   if (startsWith(cfbasename,"Flow.") | startsWith(cfbasename,"flow.")) {
     cfbasename = paste(substr(cfbasename,6,nchar(cfbasename)),".flow",sep="")
-    cfname = paste(substr(cfname, 1, (nchar(dirname(cfname))+1)),cfbasename,sep="")
   } else if(!endsWith(cfbasename,".flow")) {
     cfbasename = paste(cfbasename,".flow",sep="")
-    cfname = paste(substr(cfname, 1, (nchar(dirname(cfname))+1)),cfbasename,sep="")
+  }
+  cfname = file.path(dirname(cfname),cfbasename)
+
+  # Check for streams map, menu allows input of stream map
+  if (stream==NULL & (cfmaps[cfmaps[,1]=="stream",2]=="none"|is.na(cfmaps[cfmaps[,1]=="stream",2]))) {
+    t = menu(c("Specify map","Abort function"),
+             title="Missing stream map. Specify one now, or abort function and edit cf_maps file?")
+    if (t==2) {stop("Function aborted")}
+    if (t==1) {
+      stream = readline("Stream map:")
+      cfmaps[cfmaps[,1]=="stream",2] = stream
+      write.table(cfmaps,file="cf_maps",sep="\t\t",row.names=FALSE,quote = FALSE)
+    }
   }
 
-  if(typepars[1] =="load") {load("typepars")}
+  if(!roads == NULL){cfmaps[cfmaps[,1]=="roads",2]=roads}
+  if(!impervious == NULL){cfmaps[cfmaps[,1]=="impervious",2]=impervious}
+  if(!roofs == NULL){cfmaps[cfmaps[,1]=="roofs",2]=roofs}
 
   mapsin = cfmaps[cfmaps[,2]!="none" & cfmaps[,1]!="cell_length",2]
 
   # ---------- Use GIS_read to ingest maps and convert them to an array ----------
 
-  readmap = GIS_read(type, mapsin, typepars)
+  readmap = GIS_read(mapsin, type, typepars)
   map_ar = as.array(readmap)
   map_ar_clean = map_ar[!apply(is.na(map_ar), 1, all), !apply(is.na(map_ar), 2, all), ]
-  #map_ar_clean = map_ar
   dimnames(map_ar_clean)[[3]] = colnames(readmap@data)
 
   patch_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="patch",2]]
@@ -76,6 +91,87 @@ CreateFlownet = function(cfname, type = "GRASS", readin = "cf_maps", typepars = 
     smooth_flag=TRUE
   )
 
+  if(!is.null(asp_list)){ # start aspatial
+
+    # TEST STUFFF -------------
+
+    # set dir
+    cfname = "~/Google Drive/UCSB/Research/rhessys/flownet_test/cf_test_out"
+    cfname = "D:/Google Drive/UCSB/Research/rhessys/flownet_test/cf_test_out"
+
+    #contruct 3x3 world
+    raw_patch_data = matrix(c(1:9), ncol = 3, nrow = 3)
+    raw_patch_elevation_data = matrix(c(6, 5, 4, 5, 3, 2, 4, 2, 1), ncol = 3, nrow = 3)
+    raw_basin_data = matrix(4444, ncol = 3, nrow = 3)
+    raw_hill_data = matrix(2222, ncol = 3, nrow = 3)
+    raw_zone_data = matrix(3333, ncol = 3, nrow = 3)
+    raw_slope_data = matrix(10, ncol = 3, nrow = 3)
+    raw_stream_data = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0), ncol = 3, nrow = 3)
+    raw_road_data = matrix(0, ncol = 3, nrow = 3)
+    road_width = 0
+    cell_length = 1
+    smooth_flag = FALSE
+
+    # run flownet  - build list
+    CF1 = patch_data_analysis(
+      raw_patch_data,
+      raw_patch_elevation_data,
+      raw_basin_data,
+      raw_hill_data,
+      raw_zone_data,
+      raw_slope_data,
+      raw_stream_data,
+      raw_road_data,
+      cell_length,
+      road_width,
+      smooth_flag
+    )
+    asp_map = matrix(c(2,2,2,2,3,3,3,3,3),nrow = 3,ncol = 3)
+
+    # Start aspatial flownet ----------
+
+    # Headers of flownet
+    names(CF1[[1]])
+
+    # import: existing flownet, asp/rule map, rule list with proportionate areas
+    asp_map = map_ar_clean[, ,cfmaps[cfmaps[,1]=="asp_rule",2]]
+
+    patch_ID = unlist(lapply(CF1, "[[",9))
+    CF2 = list()
+    for(i in raw_patch_data){ # iterate through physical patches
+      for(x in 1:asp_map[i]){ #iterate through aspatial patches
+
+        # Add all aspatial patches
+        CF2 = c(CF2,CF1[which(patch_ID==i)])
+        CF2[[length(CF2)]]$PatchID = CF2[[length(CF2)]]$PatchID * 100 + x # aspatial patch ID is old patch ID *100 + aspatial number
+        CF2[[length(CF2)]]["PatchFamilyID"] = CF1[[which(patch_ID==i)]]$PatchID # retain old patch ID as patch family ID XXXXXXXXX IF CF2 DOESNT WORK REMOVE THIS
+
+        # Neighbors
+        old_nbrs = CF2[[length(CF2)]]$Neighbors
+        new_nbrs = vector(mode="numeric")
+        for(a in old_nbrs){ # loop through old neighbors
+          for(b in 1:asp_map[a]){ # for each asp for each neighbor
+            new_nbrs = c(new_nbrs,a*100+b)
+          }
+        }
+        CF2[[length(CF2)]]$Neighbors = new_nbrs
+
+        # Gammas --- new gamme = old gamme * % area
+        old_gamma = CF2[[length(CF2)]]$
+        new_gamma = vector(mode="numeric")
+        for(a in old_gamma){ # loop through old gamma
+          for(b in 1:asp_map[a]){ # for each asp for each gamma
+
+            new_gamma = c(new_gamma,a*100+b)
+          }
+        }
+        # CF2[[length(CF2)]]$ gamma = new_gamma
+
+
+      } # end asp loop
+    } # end spatial patch loop
+
+  } # end aspatial
 
   make_flow_table(CF1, cfname)
 }

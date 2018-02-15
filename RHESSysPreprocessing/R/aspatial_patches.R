@@ -4,13 +4,14 @@
 
 aspatial_patches = function(asprules,statevars,asp_mapdata,levlist,tempclean) {
 
-  # --------- Read subpatch rules file ----------
+  # --------- Read rules file ----------
 
   con = file(asprules, open ="r") # commect to file
   readrules = readLines(con) # read file, default reads entire file, line by line
   close(con)
 
   rtrim = trimws(readrules)
+  rtrim = rtrim[!rtrim==""]
   idind1 = which(startsWith(rtrim,"ID")) # index IDs
   rhead = rtrim[1:idind1[1] - 1] # get header
   rsplit = strsplit(rtrim[idind1[1]:length(rtrim)],"[ \t]+") # split values, ignoring header
@@ -23,7 +24,7 @@ aspatial_patches = function(asprules,statevars,asp_mapdata,levlist,tempclean) {
   #rlevind = which(startsWith(trimws(readrules), "_")) # find levels in rules
   #this is ugly but whatever
 
-  idmap = as.numeric(unique(asp_mapdata))
+  idmap = as.numeric(unique(asp_mapdata)[[1]]) # get rule IDs from map/input
   rlevin = matrix(nrow = length(idmap),ncol = 2)
   for (id in idmap) {
     ct = 0

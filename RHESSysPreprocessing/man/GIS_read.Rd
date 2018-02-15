@@ -4,20 +4,23 @@
 \alias{GIS_read}
 \title{GIS_read}
 \usage{
-GIS_read(type, readin, typepars)
+GIS_read(read_in, type, typepars)
 }
 \arguments{
-\item{type}{GIS type to be used. Currently only supports GRASS GIS.}
+\item{read_in}{Character vector of maps to be read in by the chosen method.}
 
-\item{readin}{Template file or vector containing character strings of map names.}
+\item{type}{GIS type to be used. Options are GRASS(will auto-detect GRASS6 or GRASS7) GRASS6, GRASS7, or raster.}
 
-\item{typepars}{Parameters needed based on GIS type used. For Grass GIS type, typepars is a
+\item{typepars}{Parameters needed based on GIS type used. For GRASS GIS type, typepars is a
 vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 Example parameters are included in an example script included in this package. See initGRASS help
-for more info on parameters.}
+for more info on parameters. For raster type, typepars is a file path to a folder containing the rasters indicated in read_in.}
+}
+\value{
+Returns a LargeSpatialGridDataFrame containing all the maps indicated in read_in
 }
 \description{
-Read in GIS maps. Returns a spatial data frame containing all maps. 6/6/17.
+Read in GIS maps. Returns a spatial data frame containing all maps. 2/14/18.
 }
 \author{
 Will Burke
