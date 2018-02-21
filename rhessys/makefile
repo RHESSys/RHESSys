@@ -1,5 +1,6 @@
-VERSION = 5.20.1
-PGM  = rhessys$(VERSION)
+PGM  = rhessys5.19.worldtag
+VERSION = 5.19
+
 CC = gcc 
 INCLUDES = -Iinclude
 #CFLAGS = -O -std=c99
