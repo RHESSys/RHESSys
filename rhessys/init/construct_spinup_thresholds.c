@@ -60,6 +60,8 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 	struct	canopy_strata_object	*strata;
   double  target_lai;
   double  target_total_stemc;
+  double  target_height;
+  double  target_age;
   struct  target_read *target_array;	
 	char	  record[MAXSTR];
 	
@@ -114,8 +116,14 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
           strata->target.lai = target_array[j].value;
         } 
         if( strcmp (target_array[j].name,"total_stemc") == 0 ) {
-            strata->target.total_stemc = target_array[j].value;
+          strata->target.total_stemc = target_array[j].value;
         }
+	if( strcmp (target_array[j].name, "height") == 0 ) {
++         strata->target.height = target_array[j].value;
++        }
++        if( strcmp (target_array[j].name,"age") == 0 ) {
++         strata->target.age = target_array[j].value;
++        }
      }
   }
 
