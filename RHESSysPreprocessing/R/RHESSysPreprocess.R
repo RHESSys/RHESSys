@@ -23,17 +23,19 @@
 #' @param wrapper wrapper is an internal arguement that indivates to world_gen if it should output the required data to
 #' memory(if being run in congunction with CreateFlownet), or to files, if being fun separately.
 #' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{Raster}}
+#' @author Will Burke
 
 RHESSysPreprocess = function(template,
                              name,
-                             type = 'GRASS',
+                             type = 'Raster',
                              typepars,
                              overwrite = FALSE,
-                             asprules = NULL,
                              streams = NULL,
                              roads = NULL,
                              impervious = NULL,
                              roofs = NULL,
+                             asprules = NULL,
+                             meta = TRUE,
                              wrapper = TRUE) {
 
   # check name input - remove prefix or sufixes
@@ -53,7 +55,7 @@ RHESSysPreprocess = function(template,
   worldfile = name_clean
   cfname = name_clean
 
-  rm(name, basename, name_clean) # cleanup to help debugging
+  rm(name, basename) # cleanup to help debugging
 
   # run world_gen
   world_gen_out = world_gen(template,
@@ -68,17 +70,34 @@ RHESSysPreprocess = function(template,
   world_cfmaps = world_gen_out[[2]]
   world_asp_list = world_gen_out[[1]]
 
+
   # run CreateFlownet
+  print("Begin CreateFlownet")
   CreateFlownet(cfname,
                 type,
                 readin = world_cfmaps,
                 typepars = world_typepars,
                 asp_list = world_asp_list,
-                streams = NULL,
-                roads = NULL,
-                impervious = NULL,
-                roofs = NULL,
+                streams,
+                roads,
+                impervious,
+                roofs,
                 wrapper)
 
+if(meta){
+  build_meta(
+    name_clean,
+    template,
+    worldfile,
+    cfname,
+    type,
+    typepars,
+    world_cfmaps,
+    streams,
+    roads,
+    impervious,
+    roofs
+  )
+}
 
 } # end function

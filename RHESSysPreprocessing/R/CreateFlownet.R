@@ -10,6 +10,7 @@
 #' but can be overwritten if you want to use a differen GIS environment. For Grass GIS type, typepars is a
 #' vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 #' Example parameters are shown in the example script for world_gen. See initGRASS help for more info on parameters.
+#' @author Will Burke
 
 
 CreateFlownet = function(cfname,
@@ -40,25 +41,24 @@ CreateFlownet = function(cfname,
   cfname = file.path(dirname(cfname),cfbasename)
 
   # Check for streams map, menu allows input of stream map
-  if (stream==NULL & (cfmaps[cfmaps[,1]=="stream",2]=="none"|is.na(cfmaps[cfmaps[,1]=="stream",2]))) {
+  if (is.null(streams) & (cfmaps[cfmaps[,1]=="streams",2]=="none"|is.na(cfmaps[cfmaps[,1]=="streams",2]))) {
     t = menu(c("Specify map","Abort function"),
              title="Missing stream map. Specify one now, or abort function and edit cf_maps file?")
     if (t==2) {stop("Function aborted")}
     if (t==1) {
-      stream = readline("Stream map:")
-      cfmaps[cfmaps[,1]=="stream",2] = stream
-      write.table(cfmaps,file="cf_maps",sep="\t\t",row.names=FALSE,quote = FALSE)
+      streams = readline("Stream map:")
     }
   }
+  cfmaps[cfmaps[,1]=="streams",2] = streams
+  if(wrapper==FALSE){write.table(cfmaps,file="cf_maps",sep="\t\t",row.names=FALSE,quote = FALSE)}
 
-  if(!roads == NULL){cfmaps[cfmaps[,1]=="roads",2]=roads}
-  if(!impervious == NULL){cfmaps[cfmaps[,1]=="impervious",2]=impervious}
-  if(!roofs == NULL){cfmaps[cfmaps[,1]=="roofs",2]=roofs}
+  if(!is.null(roads)){cfmaps[cfmaps[,1]=="roads",2]=roads}
+  if(!is.null(impervious)){cfmaps[cfmaps[,1]=="impervious",2]=impervious}
+  if(!is.null(roofs)){cfmaps[cfmaps[,1]=="roofs",2]=roofs}
 
   mapsin = cfmaps[cfmaps[,2]!="none" & cfmaps[,1]!="cell_length",2]
 
   # ---------- Use GIS_read to ingest maps and convert them to an array ----------
-
   readmap = GIS_read(mapsin, type, typepars)
   map_ar = as.array(readmap)
   map_ar_clean = map_ar[!apply(is.na(map_ar), 1, all), !apply(is.na(map_ar), 2, all), ]
@@ -70,11 +70,11 @@ CreateFlownet = function(cfname,
   basin_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="basin",2]]
   zone_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="zone",2]]
   slope_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="slope",2]]
-  stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="stream",2]]
+  stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="streams",2]]
   celllength = as.numeric(cfmaps[cfmaps[,1]=="cell_length",2])
   smooth_flag = FALSE
 
-  road_data = replace(raw_basin_data,raw_basin_data==1,0)
+  road_data = replace(basin_data,basin_data==1,0)
 
   #----------Run actual flownet calculations----------
   CF1 = patch_data_analysis(
@@ -93,85 +93,79 @@ CreateFlownet = function(cfname,
 
   if(!is.null(asp_list)){ # start aspatial
 
-    # TEST STUFFF -------------
-
-    # set dir
-    cfname = "~/Google Drive/UCSB/Research/rhessys/flownet_test/cf_test_out"
-    cfname = "D:/Google Drive/UCSB/Research/rhessys/flownet_test/cf_test_out"
-
-    #contruct 3x3 world
-    raw_patch_data = matrix(c(1:9), ncol = 3, nrow = 3)
-    raw_patch_elevation_data = matrix(c(6, 5, 4, 5, 3, 2, 4, 2, 1), ncol = 3, nrow = 3)
-    raw_basin_data = matrix(4444, ncol = 3, nrow = 3)
-    raw_hill_data = matrix(2222, ncol = 3, nrow = 3)
-    raw_zone_data = matrix(3333, ncol = 3, nrow = 3)
-    raw_slope_data = matrix(10, ncol = 3, nrow = 3)
-    raw_stream_data = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0), ncol = 3, nrow = 3)
-    raw_road_data = matrix(0, ncol = 3, nrow = 3)
-    road_width = 0
-    cell_length = 1
-    smooth_flag = FALSE
-
-    # run flownet  - build list
-    CF1 = patch_data_analysis(
-      raw_patch_data,
-      raw_patch_elevation_data,
-      raw_basin_data,
-      raw_hill_data,
-      raw_zone_data,
-      raw_slope_data,
-      raw_stream_data,
-      raw_road_data,
-      cell_length,
-      road_width,
-      smooth_flag
-    )
-    asp_map = matrix(c(2,2,2,2,3,3,3,3,3),nrow = 3,ncol = 3)
-
     # Start aspatial flownet ----------
-
-    # Headers of flownet
-    names(CF1[[1]])
 
     # import: existing flownet, asp/rule map, rule list with proportionate areas
     asp_map = map_ar_clean[, ,cfmaps[cfmaps[,1]=="asp_rule",2]]
 
-    patch_ID = unlist(lapply(CF1, "[[",9))
-    CF2 = list()
-    for(i in raw_patch_data){ # iterate through physical patches
-      for(x in 1:asp_map[i]){ #iterate through aspatial patches
+    patch_ID = unlist(lapply(CF1, "[[",9)) # patch IDs from cf1
+    numbers = unlist(lapply(CF1, "[[",1)) # flow list numbers
+
+    rulevars = asp_list[[1]] # subset rules by ID
+
+    CF2 = list() # empty list for new flow list
+
+    for(p in patch_data[!is.na(patch_data)] ){ # iterate through physical patches
+
+      id = asp_map[which(patch_data==p)] # get rule ID for patch p
+      id = unique(id)
+      if(length(id)>1){stop(paste("multiple aspatial rules for patch",p))} # if multiple rules for a single patch
+      asp_count = length(rulevars[[id]]) # get number of aspatial patches for current patch
+
+      for(asp in 1:asp_count){ #iterate through aspatial patches
 
         # Add all aspatial patches
-        CF2 = c(CF2,CF1[which(patch_ID==i)])
-        CF2[[length(CF2)]]$PatchID = CF2[[length(CF2)]]$PatchID * 100 + x # aspatial patch ID is old patch ID *100 + aspatial number
-        CF2[[length(CF2)]]["PatchFamilyID"] = CF1[[which(patch_ID==i)]]$PatchID # retain old patch ID as patch family ID XXXXXXXXX IF CF2 DOESNT WORK REMOVE THIS
+        CF2 = c(CF2,CF1[which(patch_ID==p)])
+        CF2[[length(CF2)]]$PatchID = CF2[[length(CF2)]]$PatchID * 100 + asp # aspatial patch ID is old patch ID *100 + aspatial number
+        CF2[[length(CF2)]]$Number = CF2[[length(CF2)]]$Number * 100 + asp # same modification to number
+        CF2[[length(CF2)]]["PatchFamilyID"] = CF1[[which(patch_ID==p)]]$PatchID # retain old patch ID as patch family ID XXXXXXXXX IF CF2 DOESNT WORK REMOVE THIS
+        CF2[[length(CF2)]]$Area = CF2[[length(CF2)]]$Area * rulevars[[id]][[asp]]$pct_family_area[[1]] # change area
 
-        # Neighbors
+        #STILL NEED:
+        # BOARDER
+        # SLOPE
+        # TOTAL GAMMA?
+
+        # Changes for each neighbor
         old_nbrs = CF2[[length(CF2)]]$Neighbors
         new_nbrs = vector(mode="numeric")
-        for(a in old_nbrs){ # loop through old neighbors
-          for(b in 1:asp_map[a]){ # for each asp for each neighbor
-            new_nbrs = c(new_nbrs,a*100+b)
+        old_gammas = CF2[[length(CF2)]]$Gamma_i
+        new_gammas = vector(mode="numeric")
+        old_slope = CF2[[length(CF2)]]$Slope
+        new_slope = vector(mode="numeric")
+        old_boarder = CF2[[length(CF2)]]$Boarder
+        new_boarder = vector(mode="numeric")
+
+        for(nbr in old_nbrs){ # loop through old neighbors - neighbors are numbers not patches
+          nbr_patch = patch_ID[numbers==nbr]
+          nbr_id = asp_map[which(patch_data==nbr_patch)]
+          nbr_id = unique(nbr_id)
+          if(length(nbr_id)>1){stop(paste("multiple aspatial rules for patch",nbr_patch))} # if multiple rules for a single patch
+          nbr_asp_ct =length(rulevars[[nbr_id]])
+          gamma = old_gammas[which(old_nbrs==nbr)]
+          new_slope = c(new_slope,rep(old_slope[old_nbrs[nbr]],nbr_asp_ct))
+          new_boarder = c(new_boarder,rep(old_boarder[old_nbrs[nbr]],nbr_asp_ct))
+
+          for(nbr_asp in 1:nbr_asp_ct){ # for each asp for each neighbor
+            new_nbrs = c(new_nbrs,nbr*100+nbr_asp) # use same convention as above
+            new_gammas = c(new_gammas, gamma * rulevars[[nbr_id]][[nbr_asp]][["pct_family_area"]][[1]] )
+
           }
         }
         CF2[[length(CF2)]]$Neighbors = new_nbrs
-
-        # Gammas --- new gamme = old gamme * % area
-        old_gamma = CF2[[length(CF2)]]$
-        new_gamma = vector(mode="numeric")
-        for(a in old_gamma){ # loop through old gamma
-          for(b in 1:asp_map[a]){ # for each asp for each gamma
-
-            new_gamma = c(new_gamma,a*100+b)
-          }
-        }
-        # CF2[[length(CF2)]]$ gamma = new_gamma
-
+        CF2[[length(CF2)]]$Gamma_i = new_gammas
+        CF2[[length(CF2)]]$Slope = new_slope
+        CF2[[length(CF2)]]$Boarder = new_boarder
 
       } # end asp loop
     } # end spatial patch loop
 
+    CF1 = CF2
   } # end aspatial
 
   make_flow_table(CF1, cfname)
+
+  print(paste("Created flowtable:",cfname))
+
 }
+

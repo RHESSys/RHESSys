@@ -76,6 +76,21 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
   # structure to iterate through levels ---- input object with unique ID's for each unit at each level, will iterate through
   levels = unname(data.matrix(map_df[1:6], length(map_df[[6]])))
 
+  # ----------- Aspatial Patch Processing --> NAS INTRODUCED BY COERCION HERE -----
+  asp_map = template_clean[[which(var_names=="asp_rule")]][3]
+  lret = NULL
+  if (asp_check) {
+    if (!is.numeric(asp_map)) {
+      asp_mapdata = map_df[asp_map]
+    } else if (is.numeric(asp_map)) {
+      asp_mapdata = asp_map
+    }
+    lret = aspatial_patches(asprules, asp_mapdata)
+    rulevars = lret[[1]]
+    strata_index = lret[[2]]
+  }
+  if(wrapper==FALSE){f = save(lret, file = paste(fpath,"/lret",sep = ""))}
+
   # ---------- Build list containing values based on template and maps ----------
   statevars = vector("list",length(template_clean))
 
@@ -115,19 +130,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
     }
   }
 
-  # ----------- Aspatial Patch Processing --> NAS INTRODUCED BY COERCION HERE -----
-  if (asp_check) {
-    if (is.na(as.numeric(asp_map))) {
-      asp_mapdata = map_df[asp_map]
-    } else{
-      asp_mapdata = asp_map
-    }
-    lret = aspatial_patches(asprules, statevars, asp_mapdata, level_list, template_clean)
-    rulevars = lret[[1]]
-    sindex = lret[[2]]
-  }
 
-  if(wrapper==FALSE){f = save(lret, file = paste(fpath,"/lret",sep = ""))}
 
   # ---------- Build world file ----------
   print("Begin writing world file",quote=FALSE)
@@ -196,7 +199,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
               cat("\t\t\t\t",pnum,"\t\t\t", "patch_ID\n",sep="")
               if (p>1) {cat("\t\t\t\t",p,"\t\t\t", "patch_family\n",sep="")}
 
-              rvpind = 1:(as.numeric(sindex[1])-1)
+              rvpind = 1:(strata_index[[1]]-1)
               rvindex1 = which(! names(rulevars[[ruleid]][[asp]][rvpind]) %in% var_names[var_index])#include patch state vars from rulevars that aren't in template
               for (i in rvindex1) {
                 var = rulevars[[ruleid]][[asp]][[i]][[1]]
@@ -210,14 +213,16 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
                 } else { var = statevars[[i]][[1]] }
                 varname = template_clean[[i]][1]
                 if(varname %in% names(rulevars[[ruleid]][[asp]])) {var = rulevars[[ruleid]][[asp]][[varname]][[1]] } # if variable is in rulevars, replace with rulevars version
+                if(template_clean[[i]][1] =="area"){ var = var * rulevars[[ruleid]][[asp]][["pct_family_area"]][[1]] } # variable is area, adjust for pct_family_area
                 cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
               }
 
-              rvsind = as.numeric(sindex[1]):length(rulevars[[ruleid]][[asp]])
+              rvsind = strata_index[[1]]:length(rulevars[[ruleid]][[asp]])
               rvslen = unlist(lapply(rulevars[[ruleid]][[asp]][rvsind],length))
-              if(sum(ifelse(length(stratum) != rvslen,TRUE,FALSE)) > 0 ) {
-                warning("Varying numbers of stratum in template and rules document. Values will be replicated to fill in missing strata.")
-              }
+
+              #if(sum(ifelse(length(stratum) != rvslen,TRUE,FALSE)) > 0 ) {
+                #warning("Varying numbers of stratum in template and rules document. Values will be replicated to fill in missing strata.")
+              #}
 
               cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep="")
 
@@ -279,11 +284,13 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
 
   #----------Output parameters for CreateFlownet-----------
-  cfmaps = rbind(map_info[1:6,],map_info[map_info[,1] == "z",],
-                 map_info[map_info[,1] == "slope",],
-                 map_info[map_info[,1] == "asp_rule",],
+  cfmaps = rbind(map_info,
                  c("cell_length",read_maps@grid@cellsize[1]),
-                 c("stream","none"), c("roads","none"), c("impervious","none"),c("roofs","none"))
+                 c("streams","none"), c("roads","none"), c("impervious","none"),c("roofs","none"))
+
+  # map_info[1:6,],map_info[map_info[,1] == "z",],
+  # map_info[map_info[,1] == "slope",],
+  # map_info[map_info[,1] == "asp_rule",]
 
   if (wrapper == FALSE) {
     f = file.create(paste(fpath, "/cf_maps", sep = ""))
