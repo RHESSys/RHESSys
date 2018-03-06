@@ -1,7 +1,19 @@
 # run_RHESSysPreprocess
-# Will Burke 2/15/18
+# Will Burke 3/5/18
 
-# This is a script showing how the RHESSysPreprocess.R function should be run. Replace below where needed.
+# Instructions
+# ------------
+# This is an example script showing how the RHESSysPreprocess.R function should be run.
+# 1) Copy this script, and edit where indicated.
+# 2) Run the RHESSysPreprocess.R function at the bottom.
+# 3) The funciton will produce:
+#       - worldfile
+#       - flowtable
+#       - metadata (if not supressed)
+
+# Notes: Filepaths
+# ----------------
+# This script uses relative filepaths. This means that it will look folders and files relative to your current working directory.
 
 # First, set your working directory.
 # Set the path below to that directory:

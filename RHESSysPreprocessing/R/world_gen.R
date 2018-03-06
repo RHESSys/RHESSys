@@ -74,12 +74,20 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
   cellarea = rep(cellarea, length(map_df[,6]))
 
   # structure to iterate through levels ---- input object with unique ID's for each unit at each level, will iterate through
-  levels = unname(data.matrix(map_df[1:6], length(map_df[[6]])))
+  w_map = map_info[map_info[,1]=="world",2]
+  b_map = map_info[map_info[,1]=="basin",2]
+  h_map = map_info[map_info[,1]=="hillslope",2]
+  z_map = map_info[map_info[,1]=="zone",2]
+  p_map = map_info[map_info[,1]=="patch",2]
+  s_map = map_info[map_info[,1]=="strata",2]
+
+  levels = unname(data.matrix(map_df[c(w_map,b_map,h_map,z_map,p_map,s_map)], length(map_df[p_map]) ))
 
   # ----------- Aspatial Patch Processing --> NAS INTRODUCED BY COERCION HERE -----
-  asp_map = template_clean[[which(var_names=="asp_rule")]][3]
+
   lret = NULL
   if (asp_check) {
+    asp_map = template_clean[[which(var_names=="asp_rule")]][3]
     if (!is.numeric(asp_map)) {
       asp_mapdata = map_df[asp_map]
     } else if (is.numeric(asp_map)) {
