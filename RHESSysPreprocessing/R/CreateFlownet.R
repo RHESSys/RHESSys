@@ -57,11 +57,13 @@ CreateFlownet = function(cfname,
   if(!is.null(roofs)){cfmaps[cfmaps[,1]=="roofs",2]=roofs}
 
   mapsin = cfmaps[cfmaps[,2]!="none" & cfmaps[,1]!="cell_length",2]
+  maps_in = unique(mapsin)
 
   # ---------- Use GIS_read to ingest maps and convert them to an array ----------
-  readmap = GIS_read(mapsin, type, typepars)
+  readmap = GIS_read(maps_in, type, typepars)
   map_ar = as.array(readmap)
-  map_ar_clean = map_ar[!apply(is.na(map_ar), 1, all), !apply(is.na(map_ar), 2, all), ]
+  #map_ar_clean = map_ar[!apply(is.na(map_ar), 1, all), !apply(is.na(map_ar), 2, all), ] # PRETTRY SURE I FIXED THIS
+  map_ar_clean = map_ar
   dimnames(map_ar_clean)[[3]] = colnames(readmap@data)
 
   patch_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="patch",2]]

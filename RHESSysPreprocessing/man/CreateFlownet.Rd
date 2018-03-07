@@ -25,3 +25,6 @@ Example parameters are shown in the example script for world_gen. See initGRASS 
 \description{
 Creates the flow network used by RHESSys
 }
+\author{
+Will Burke
+}

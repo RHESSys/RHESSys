@@ -4,7 +4,7 @@
 \alias{aspatial_patches}
 \title{Aspatial Patch Generation}
 \usage{
-aspatial_patches(asprules, statevars, asp_mapdata, levlist, tempclean)
+aspatial_patches(asprules, asp_mapdata)
 }
 \description{
 Aspatial Patch Generation

@@ -4,9 +4,9 @@
 \alias{RHESSysPreprocess}
 \title{RHESSysPreprocess}
 \usage{
-RHESSysPreprocess(template, name, type = "GRASS", typepars,
-  overwrite = FALSE, asprules = NULL, streams = NULL, roads = NULL,
-  impervious = NULL, roofs = NULL, wrapper = TRUE)
+RHESSysPreprocess(template, name, type = "Raster", typepars,
+  overwrite = FALSE, streams = NULL, roads = NULL, impervious = NULL,
+  roofs = NULL, asprules = NULL, meta = TRUE, wrapper = TRUE)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
@@ -31,10 +31,17 @@ for additional information and supported filetypes.}
 
 \item{overwrite}{Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.}
 
+\item{streams}{Streams map to be used in building the flowtable.}
+
+\item{roads}{Roads map, an optional input for flowtable creation.}
+
+\item{impervious}{Impervious map, an optional input for flowtable creation.}
+
+\item{roofs}{Roofs map, an optional input for flowtable creation.}
+
 \item{asprules}{The path and filename to the rules file.  Using this argument enables aspatial patches.}
 
-\item{wrapper}{wrapper is an internal arguement that indivates to world_gen if it should output the required data to
-memory(if being run in congunction with CreateFlownet), or to files, if being fun separately.}
+\item{meta}{TRUE/FALSE flag for the creation of a metadata file.}
 }
 \description{
 Preforms RHESSys Preprocessing, comprise of two main steps: generating a world file, and generating a flow table.
@@ -42,4 +49,7 @@ World file is generated via world_gen.R, and flow table is generated via CreateF
 }
 \seealso{
 \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{Raster}}
+}
+\author{
+Will Burke
 }

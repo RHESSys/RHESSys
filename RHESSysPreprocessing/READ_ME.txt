@@ -8,12 +8,26 @@ Compatible with GRASS GIS - versions 6.4.x and 7.x. Also compatible with raster 
 -----Contents-----
 Package contains a few main components:
 RHESSysPreprocess.R			An all-in-one function that runs both world_gen.R and CreateFlownet.R
-world_gen.R					Creates a worldfile for use in RHESSys (replaces g2w)
-CreateFlownet.R				Creates a RHESSys flowtable (replaces cf)
+world_gen.R						Creates a worldfile for use in RHESSys (replaces g2w)
+CreateFlownet.R					Creates a RHESSys flowtable (replaces cf)
 
 Additionally, the package contains a variety of functions that constitute the above functions. Of note are:
 template_read.R				Reads a template file and produces a clean template in list form, indices of levels and variables, and maps.
-GIS_read.R					Reads an input type of GIS (GRASS or raster) and produces a LargeSpatialGridDataFrame containing all maps.
+GIS_read.R						Reads an input type of GIS (GRASS or raster) and produces a LargeSpatialGridDataFrame containing all maps.
+build_meta.R						Builds a metadata file, automatically generates most fields.
+
+-----Installation-----
+Installation/loading of this package can be done a few ways:
+1) Install package (easiest)
+	- Open RHESSysPreprocessing.Rproj
+	- Under the "Build" menu, select "Install and restart". This installs the package effectively like it's an R package downloaded from CRAN.
+	- Close the package (under "File" - "Close Project")
+	- Load the package via: library(RHESSysPreprocessing)
+2) Source the functions
+	- For each function needed, use source() to load it. This will present problems if dependent functions are not loaded.
+3) Run from within the RHESSysPreprocessing project
+	- Open RHESSysPreprocessing.Rproj
+	- Under the "Build" menu, select "Load All"
 
 -----Instructions-----
 Prerequisites: 

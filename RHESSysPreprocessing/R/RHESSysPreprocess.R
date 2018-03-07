@@ -19,9 +19,12 @@
 #' containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
 #' for additional information and supported filetypes.
 #' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
+#' @param streams Streams map to be used in building the flowtable.
+#' @param roads Roads map, an optional input for flowtable creation.
+#' @param impervious Impervious map, an optional input for flowtable creation.
+#' @param roofs Roofs map, an optional input for flowtable creation.
 #' @param asprules The path and filename to the rules file.  Using this argument enables aspatial patches.
-#' @param wrapper wrapper is an internal arguement that indivates to world_gen if it should output the required data to
-#' memory(if being run in congunction with CreateFlownet), or to files, if being fun separately.
+#' @param meta TRUE/FALSE flag for the creation of a metadata file.
 #' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{Raster}}
 #' @author Will Burke
 
@@ -55,9 +58,7 @@ RHESSysPreprocess = function(template,
   worldfile = name_clean
   cfname = name_clean
 
-  rm(name, basename) # cleanup to help debugging
-
-  # run world_gen
+    # run world_gen
   world_gen_out = world_gen(template,
                             worldfile,
                             type,

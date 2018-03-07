@@ -92,28 +92,49 @@ GIS_read = function(read_in,type,typepars) {
     if(!require("raster")){install.packages("raster")}
     library(raster)
 
-    # import rasters - using spatialgriddataframe format for consistancy
-    ct = 0
+    # new method - import as raster stack to allow processing as rasterlayers
+    file_paths = vector(mode = "character")
     for (name in maps_in){
-      ct = ct+1
       file = list.files(path=typepars, pattern = paste("^",name,"$",sep =""),full.names = TRUE)
-
       if (length(file) == 0){ # check for file (name listed in template + path in typepars) since list.files doesn't throw an error on no return
         stop(paste("No file named:",name,"at path:",typepars))}
       if(length(file) > 1){ # can only be one file for each name in maps_in
         stop(paste("multiple files containing name:",name,"check directory:",typepars))}
-      read = as(raster(file),"SpatialGridDataFrame") # read in map
-      names(read) = name # fix names, names with dots get treated as suffixes and removeed by default
-      if(!exists("readmap")){readmap = read} # initalize readmap if not already
-
-      if(!identicalCRS(read,readmap)){stop(paste("Projection of",name,"doesn't match"))} # check projections match
-      if(sum(read@grid@cellcentre.offset) != sum(readmap@grid@cellcentre.offset) | # check cell centers match
-         sum(read@grid@cellsize) != sum(readmap@grid@cellsize) | # check sell sizes match
-         sum(read@grid@cells.dim) != sum(readmap@grid@cells.dim) ){ # check cell dimensions match
-        stop(paste("Grid topology (cell size, cell center offset, dimensions) of",name,"doesn't match"))}
-
-      readmap = cbind(readmap,read) # append current map to map dataframe
+      file_paths = c(file_paths,file)
     }
+
+    read_stack = stack(file_paths) # read in rasters
+    names(read_stack) = maps_in
+    values(read_stack)[apply(values(read_stack)==0,FUN = all,MARGIN = 1)] = NA # get rid of 0's for background/NA - if a cell for all layers is 0, set to NA
+    read_stack = trim(read_stack) #get rid of extra background
+    readmap = as(read_stack,"SpatialGridDataFrame")
+
+    # import rasters - using spatialgriddataframe format for consistancy
+    # ct = 0
+    # for (name in maps_in){
+    #   ct = ct+1
+    #   file = list.files(path=typepars, pattern = paste("^",name,"$",sep =""),full.names = TRUE)
+    #
+    #   if (length(file) == 0){ # check for file (name listed in template + path in typepars) since list.files doesn't throw an error on no return
+    #     stop(paste("No file named:",name,"at path:",typepars))}
+    #   if(length(file) > 1){ # can only be one file for each name in maps_in
+    #     stop(paste("multiple files containing name:",name,"check directory:",typepars))}
+    #
+    #   read_raster = raster(file, native=TRUE)
+    #   if(sum(unique(getValues(read_raster))==0)>=1){values(read_raster)[values(read_raster)==0] = NA} # THIS IS ONLY NEEDED FOR ASCII
+    #   read = as(read_raster,"SpatialGridDataFrame") # read in map
+    #   names(read) = name # fix names, names with dots get treated as suffixes and removeed by default
+    #   if(!exists("readmap")){readmap = read} # initalize readmap if not already
+    #   #compareRaster(read,readmap,res = FALSE)
+    #   if(!identicalCRS(read,readmap)){stop(paste("Projection of",name,"doesn't match"))} # check projections match
+    #   if(sum(read@grid@cellcentre.offset) != sum(readmap@grid@cellcentre.offset) | # check cell centers match
+    #      sum(read@grid@cellsize) != sum(readmap@grid@cellsize) | # check sell sizes match
+    #      sum(read@grid@cells.dim) != sum(readmap@grid@cells.dim) ){ # check cell dimensions match
+    #     stop(paste("Grid topology (cell size, cell center offset, dimensions) of",name,"doesn't match"))}
+    #
+    #   readmap = cbind(readmap,read) # append current map to map dataframe
+    # }
+
   } # end raster spatial data
 
   return(readmap)
