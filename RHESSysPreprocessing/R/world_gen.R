@@ -22,7 +22,7 @@
 #' @author Will Burke
 
 # ---------- Function start ----------
-world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=FALSE, asprules=NULL, wrapper = FALSE) {
+world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=FALSE, header = FALSE, asprules=NULL, wrapper = FALSE) {
 
   # ---------- Check inputs ----------
   if (!file.exists(template)) {
@@ -59,6 +59,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
   level_index = template_list[[3]]
   var_index = template_list[[4]]
   map_info = template_list[[5]]
+  head = template_list[[6]]
   maps_in = unique(map_info[,2])
 
   if (asp_check) { # if using aspatial patches, get rules value or map
@@ -141,7 +142,6 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
 
   # ---------- Build world file ----------
-  print("Begin writing world file",quote=FALSE)
   stratum = 1:template_clean[[level_index[6]]][3] #make sure correct number of stratum
   # create/open file
   sink(worldfile)
@@ -290,6 +290,13 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
   print(paste("Created worldfile:",worldfile),quote=FALSE)
 
+  if (header) {
+    headfile = paste(substr(worldfile,0,(nchar(worldfile)-5)),"hdr",sep = "")
+    sink(headfile)
+    cat(head)
+    sink()
+    print(paste("Created header file:",headfile),quote=FALSE)
+  }
 
   #----------Output parameters for CreateFlownet-----------
   cfmaps = rbind(map_info,

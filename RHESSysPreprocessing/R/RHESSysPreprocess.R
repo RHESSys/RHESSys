@@ -32,12 +32,13 @@ RHESSysPreprocess = function(template,
                              name,
                              type = 'Raster',
                              typepars,
-                             overwrite = FALSE,
                              streams = NULL,
+                             overwrite = FALSE,
                              roads = NULL,
                              impervious = NULL,
                              roofs = NULL,
                              asprules = NULL,
+                             header = FALSE,
                              meta = TRUE,
                              wrapper = TRUE) {
 
@@ -58,14 +59,16 @@ RHESSysPreprocess = function(template,
   worldfile = name_clean
   cfname = name_clean
 
-    # run world_gen
-  world_gen_out = world_gen(template,
-                            worldfile,
-                            type,
-                            typepars,
-                            overwrite,
-                            asprules,
-                            wrapper)
+  # run world_gen
+  print("Begin world_gen.R",quote=FALSE)
+  world_gen_out = world_gen(template = template,
+                            worldfile = worldfile,
+                            type = type,
+                            typepars = typepars,
+                            overwrite = overwrite,
+                            header = header,
+                            asprules = asprules,
+                            wrapper = wrapper)
 
   world_typepars = world_gen_out[[3]]
   world_cfmaps = world_gen_out[[2]]
@@ -73,7 +76,7 @@ RHESSysPreprocess = function(template,
 
 
   # run CreateFlownet
-  print("Begin CreateFlownet")
+  print("Begin CreateFlownet.R",quote=FALSE)
   CreateFlownet(cfname,
                 type,
                 readin = world_cfmaps,

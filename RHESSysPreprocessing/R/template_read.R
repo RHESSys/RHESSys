@@ -14,7 +14,11 @@ template_read = function(template){
   read = readLines(con) # read file, default reads entire file, line by line
   close(con)
 
-  template_clean = strsplit(trimws(read),"[ \t]+") # remove whitespaces, split strings by spaces or tabs
+  trim = trimws(read)
+  trimlines = trim[trim!=""]
+  head = trimlines[1:min(which(startsWith(trimlines, "_")))]
+  template_clean = strsplit(trimlines,"[ \t]+") # remove whitespaces, split strings by spaces or tabs
+
   var_names = unlist(lapply(template_clean,"[[",1)) #all names of state variables in template
 
   level_index = which(startsWith(var_names, "_")) # find lines that start w/ "_", get row nums of levels
@@ -39,7 +43,7 @@ template_read = function(template){
   colnames(map_info) = c("MapName","Map")
   map_info = unique(map_info)
 
-  template_list = list(template_clean,var_names,level_index,var_index,map_info)
+  template_list = list(template_clean,var_names,level_index,var_index,map_info,head)
   return(template_list)
 
 }

@@ -167,7 +167,7 @@ CreateFlownet = function(cfname,
 
   make_flow_table(CF1, cfname)
 
-  print(paste("Created flowtable:",cfname))
+  print(paste("Created flowtable:",cfname),quote=FALSE)
 
 }
 

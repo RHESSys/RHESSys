@@ -125,6 +125,6 @@ build_meta = function(name,
 
   write.table(meta_out,file = table_name,row.names = FALSE)
 
-  print(paste("Created Metadata:",table_name))
+  print(paste("Created metadata:",table_name),quote=FALSE)
 
 }
