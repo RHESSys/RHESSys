@@ -16,7 +16,7 @@ template_read = function(template){
 
   trim = trimws(read)
   trimlines = trim[trim!=""]
-  head = trimlines[1:min(which(startsWith(trimlines, "_")))]
+  head = trimlines[1:(min(which(startsWith(trimlines, "_")))-1)]
   template_clean = strsplit(trimlines,"[ \t]+") # remove whitespaces, split strings by spaces or tabs
 
   var_names = unlist(lapply(template_clean,"[[",1)) #all names of state variables in template

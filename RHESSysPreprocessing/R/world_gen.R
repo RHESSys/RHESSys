@@ -292,9 +292,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
   if (header) {
     headfile = paste(substr(worldfile,0,(nchar(worldfile)-5)),"hdr",sep = "")
-    sink(headfile)
-    cat(head)
-    sink()
+    write(head,file = headfile)
     print(paste("Created header file:",headfile),quote=FALSE)
   }
 
