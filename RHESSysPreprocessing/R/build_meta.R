@@ -10,8 +10,6 @@
 
 build_meta = function(name,
                       template,
-                      worldfile,
-                      flownet,
                       type,
                       typepars,
                       cf_maps,
@@ -25,6 +23,7 @@ build_meta = function(name,
   #---------- Build table ----------
 
   vars = c(
+    "Project Name",
     "Template",
     "Worldfile",
     "Flowtable",
@@ -74,10 +73,10 @@ build_meta = function(name,
   meta_out["Datetime", 2] = as.character(Sys.time())
 
   as.character(Sys.time())
-  #write.table(Sys.time(),"",row.names = FALSE)
 
   #---------- Map info ----------
 
+  meta_out["Project Name",2] = basename(name)
   meta_out["Worldfile",2] = worldfile
   meta_out["Template",2] = template
   meta_out["Flowtable",2] = flownet
@@ -93,27 +92,6 @@ build_meta = function(name,
     meta_out["location", 2] = typepars[4]
     meta_out["mapset", 2] = typepars[5]
   }
-
-  # meta_out["World", 2] = cf_maps[cf_maps[, 1] == "world", 2]
-  # meta_out["Basin", 2] = cf_maps[cf_maps[, 1] == "basin", 2]
-  # meta_out["Zone", 2] = cf_maps[cf_maps[, 1] == "zone", 2]
-  # meta_out["Hillslope", 2] = cf_maps[cf_maps[, 1] == "hillslope", 2]
-  # meta_out["Patch", 2] = cf_maps[cf_maps[, 1] == "patch", 2]
-  # meta_out["Strata", 2] = cf_maps[cf_maps[, 1] == "strata", 2]
-
-  # meta_out["Rule", 2] = cf_maps[cf_maps[, 1] == "asp_rule", 2]
-  # meta_out["Streams", 2] = cf_maps[cf_maps[, 1] == "stream", 2]
-  # meta_out["Roads", 2] = cf_maps[cf_maps[, 1] == "roads", 2]
-  # meta_out["Impervious", 2] = cf_maps[cf_maps[, 1] == "impervious", 2]
-  # meta_out["Roofs", 2] = cf_maps[cf_maps[, 1] == "roofs", 2]
-  # #meta_out["Vegetation", 2] = cf_maps[cf_maps[, 1] == "vegetation", 2]
-  # meta_out["Elevation", 2] = cf_maps[cf_maps[, 1] == "z", 2]
-  # meta_out["Groundwater Storage", 2] = cf_maps[cf_maps[, 1] == "gw.storage", 2]
-  # meta_out["Slope", 2] = cf_maps[cf_maps[, 1] == "slope", 2]
-  # meta_out["Aspect", 2] = cf_maps[cf_maps[, 1] == "aspect", 2]
-  # meta_out["East Horizon", 2] = cf_maps[cf_maps[, 1] == "e_horizon", 2]
-  # meta_out["West Horizon", 2] = cf_maps[cf_maps[, 1] == "w_horizon", 2]
-  # meta_out["Soils", 2] = cf_maps[cf_maps[, 1] == "soil_parm_ID", 2]
 
   meta_out = rbind(meta_out,cf_maps[cf_maps[,2]!="cell_length",])
 

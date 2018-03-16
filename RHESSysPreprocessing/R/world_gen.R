@@ -272,8 +272,8 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
             for (s in stratum) { #stratum
               cat("\t\t\t\t\t", s,"\t\t\t", "stratum_ID\n",sep="")
               for (i in (level_index[6]+1):length(template_clean)) {
-                if (length(statevars[[i]][[s]]) >1) {  ########## make sure this works @@@@/// is this needed???
-                  var = statevars[[i]][[1]][statevars[[i]][ncol(statevars[[i]])-1]==p ,"x"]
+                if (length(statevars[[i]][[s]]) >1) { # no need to specify stratum since spatially its the same as patch
+                  var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b & statevars[[i]][[1]][3]==h & statevars[[i]][[1]][4]==z & statevars[[i]][[1]][5]==p ,"x"]
                 } else { var = statevars[[i]][[s]] }
                 varname = template_clean[[i]][1]
                 cat("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")

@@ -77,30 +77,28 @@ RHESSysPreprocess = function(template,
 
   # run CreateFlownet
   print("Begin CreateFlownet.R",quote=FALSE)
-  CreateFlownet(cfname,
-                type,
+  CreateFlownet(cfname = cfname,
+                type = type,
                 readin = world_cfmaps,
                 typepars = world_typepars,
                 asp_list = world_asp_list,
-                streams,
-                roads,
-                impervious,
-                roofs,
-                wrapper)
+                streams = streams,
+                roads = raods,
+                impervious = impervious,
+                roofs = roofs,
+                wrapper = wrapper)
 
 if(meta){
   build_meta(
-    name_clean,
-    template,
-    worldfile,
-    cfname,
-    type,
-    typepars,
-    world_cfmaps,
-    streams,
-    roads,
-    impervious,
-    roofs
+    name = name_clean,
+    template = template,
+    type = type,
+    typepars = typepars,
+    cf_maps = world_cfmaps,
+    streams = streams,
+    roads = roads,
+    impervious = impervious,
+    roofs = roofs
   )
 }
 
