@@ -50,6 +50,7 @@ $(OBJ)/cal_date_lt.o \
 $(OBJ)/caldat.o \
 $(OBJ)/canopy_stratum_daily_F.o \
 $(OBJ)/canopy_stratum_daily_I.o \
+$(OBJ)/canopy_stratum_daily_growth_I.o \
 $(OBJ)/canopy_stratum_growth.o \
 $(OBJ)/canopy_stratum_hourly.o \
 $(OBJ)/check_zero_stores.o \
@@ -803,6 +804,8 @@ $(OBJ)/patch_daily_I.o: cycle/patch_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/patch_daily_I.c -o $(OBJ)/patch_daily_I.o
 $(OBJ)/patch_daily_F.o: cycle/patch_daily_F.c  
 	$(CC) -c $(CFLAGS) -I include cycle/patch_daily_F.c -o $(OBJ)/patch_daily_F.o
+$(OBJ)/canopy_stratum_daily_growth_I.o: cycle/canopy_stratum_daily_growth_I.c
+	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_daily_growth_I.c -o $(OBJ)/canopy_stratum_daily_growth_I.o
 $(OBJ)/canopy_stratum_daily_I.o: cycle/canopy_stratum_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_daily_I.c -o $(OBJ)/canopy_stratum_daily_I.o
 $(OBJ)/canopy_stratum_daily_F.o: cycle/canopy_stratum_daily_F.c

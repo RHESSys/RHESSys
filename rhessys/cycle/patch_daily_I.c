@@ -87,6 +87,17 @@ void		patch_daily_I(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
+
+	void   canopy_stratum_daily_growth_I(
+		struct	world_object *,
+		struct	basin_object *,
+		struct 	hillslope_object *,
+		struct  zone_object *,
+		struct	patch_object *,
+		struct canopy_strata_object *,
+		struct command_line_object *,
+		struct tec_entry *,
+		struct date);
 	
 	double	compute_layer_field_capacity(
 		int,
@@ -181,6 +192,7 @@ void		patch_daily_I(
 	double	cnt, count, theta;
 	
 	double  edible_leafc, grazing_mean_nc, grazing_Closs;
+	double preday_rootzone_depth, rz_transfer;
 	struct  canopy_strata_object *strata;
 	struct  dated_sequence	clim_event;
 
@@ -196,7 +208,97 @@ void		patch_daily_I(
 
 	patch[0].precip_with_assim = 0.0;
 
-	
+
+
+	/*--------------------------------------------------------------*/
+	/*	Cycle through the canopy layers for growth and carbon changes.			*/
+	/*--------------------------------------------------------------*/
+	edible_leafc = 0.0;
+	grazing_mean_nc = 0.0;
+	cnt = 0;
+	preday_rootzone_depth = patch[0].rootzone.depth;
+	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+		/*--------------------------------------------------------------*/
+		/*	Cycle through the canopy strata				*/
+		/*--------------------------------------------------------------*/
+		for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+
+			strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
+			patch[0].preday_rain_stored += strata->cover_fraction * strata->rain_stored;
+			patch[0].preday_snow_stored += strata->cover_fraction * strata->snow_stored;
+			if ((strata[0].defaults[0][0].epc.edible == 1) && (strata[0].cs.leafc > ZERO)) {
+				edible_leafc += strata->cs.leafc * strata->cover_fraction;
+				cnt += 1;
+				grazing_mean_nc += strata->ns.leafn/strata->cs.leafc * strata->cover_fraction;
+				}
+			canopy_stratum_daily_growth_I(
+				world,
+				basin,
+				hillslope,
+				zone,
+				patch,
+				patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
+				command_line,
+				event,
+				current_date );
+		}
+	}
+	patch[0].grazing_Closs = min(edible_leafc, patch[0].grazing_Closs);
+	if (cnt > 0)
+		patch[0].grazing_mean_nc = grazing_mean_nc / cnt;
+
+	/*--------------------------------------------------------------*/
+	/*	Calculate effective patch lai from stratum					*/
+	/*	- for later use by zone_daily_F								*/
+	/*      Accumulate root biomass for patch soil -		*/
+	/*      required for N updake from soil                         */
+	/*	also determine total plant carbon			*/
+	/*	- if grow option is specified				*/
+	/*--------------------------------------------------------------*/
+	patch[0].effective_lai = 0.0;
+	patch[0].soil_cs.frootc = 0.0;
+	patch[0].rootzone.depth = 0.0;
+	count = 0.0;
+	for ( stratum=0 ; stratum<patch[0].num_canopy_strata; stratum++){
+		patch[0].effective_lai += patch[0].canopy_strata[stratum][0].epv.proj_lai;
+		if (command_line[0].grow_flag > 0) {
+			patch[0].soil_cs.frootc
+				+= patch[0].canopy_strata[stratum][0].cover_fraction
+				* patch[0].canopy_strata[stratum][0].cs.frootc;
+			patch[0].preday_totalc
+				+= patch[0].canopy_strata[stratum][0].cover_fraction
+				* patch[0].canopy_strata[stratum][0].cs.preday_totalc;
+			patch[0].preday_totaln
+				+= patch[0].canopy_strata[stratum][0].cover_fraction
+				* patch[0].canopy_strata[stratum][0].ns.preday_totaln;
+				
+				
+		}
+		patch[0].rootzone.depth = max(patch[0].rootzone.depth, 
+			 patch[0].canopy_strata[stratum][0].rootzone.depth);
+	}
+	patch[0].effective_lai = patch[0].effective_lai / patch[0].num_canopy_strata;
+	/*--------------------------------------------------------------*/
+	/* if rooting depth changed we need to transfer water to/from rz_storage */
+	/*--------------------------------------------------------------*/
+	if ((fabs(patch[0].rootzone.depth - preday_rootzone_depth) > ZERO) && (preday_rootzone_depth > ZERO)) {
+	rz_transfer = (patch[0].rootzone.depth - preday_rootzone_depth)/
+			preday_rootzone_depth * patch[0].rz_storage;			
+
+	patch[0].rz_storage += rz_transfer;
+	if (patch[0].unsat_storage > fabs(rz_transfer))
+		patch[0].unsat_storage -= rz_transfer;
+	else
+		patch[0].sat_deficit += rz_transfer;
+	}
+
+	/*--------------------------------------------------------------*/
+	/*	re-sort patch layers to account for any changes in 	*/
+	/*	height							*/
+	/*------------------------------------------------------------------------*/
+	sort_patch_layers(patch);
+
+
 	/*-----------------------------------------------------*/
 	/*  Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/			
@@ -418,11 +520,8 @@ void		patch_daily_I(
 	patch[0].grazing_Closs = grazing_Closs;
 
 	/*--------------------------------------------------------------*/
-	/*	Cycle through the canopy layers.			*/
+	/*	Cycle through the canopy layers for hydrology .			*/
 	/*--------------------------------------------------------------*/
-	edible_leafc = 0.0;
-	grazing_mean_nc = 0.0;
-	cnt = 0;
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		/*--------------------------------------------------------------*/
 		/*	Cycle through the canopy strata				*/
@@ -430,13 +529,6 @@ void		patch_daily_I(
 		for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
 
 			strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
-			patch[0].preday_rain_stored += strata->cover_fraction * strata->rain_stored;
-			patch[0].preday_snow_stored += strata->cover_fraction * strata->snow_stored;
-			if ((strata[0].defaults[0][0].epc.edible == 1) && (strata[0].cs.leafc > ZERO)) {
-				edible_leafc += strata->cs.leafc * strata->cover_fraction;
-				cnt += 1;
-				grazing_mean_nc += strata->ns.leafn/strata->cs.leafc * strata->cover_fraction;
-				}
 			canopy_stratum_daily_I(
 				world,
 				basin,
@@ -449,46 +541,6 @@ void		patch_daily_I(
 				current_date );
 		}
 	}
-	patch[0].grazing_Closs = min(edible_leafc, patch[0].grazing_Closs);
-	if (cnt > 0)
-		patch[0].grazing_mean_nc = grazing_mean_nc / cnt;
-
-	/*--------------------------------------------------------------*/
-	/*	Calculate effective patch lai from stratum					*/
-	/*	- for later use by zone_daily_F								*/
-	/*      Accumulate root biomass for patch soil -		*/
-	/*      required for N updake from soil                         */
-	/*	also determine total plant carbon			*/
-	/*	- if grow option is specified				*/
-	/*--------------------------------------------------------------*/
-	patch[0].effective_lai = 0.0;
-	patch[0].soil_cs.frootc = 0.0;
-	patch[0].rootzone.depth = 0.0;
-	count = 0.0;
-	for ( stratum=0 ; stratum<patch[0].num_canopy_strata; stratum++){
-		patch[0].effective_lai += patch[0].canopy_strata[stratum][0].epv.proj_lai;
-		if (command_line[0].grow_flag > 0) {
-			patch[0].soil_cs.frootc
-				+= patch[0].canopy_strata[stratum][0].cover_fraction
-				* patch[0].canopy_strata[stratum][0].cs.frootc;
-			patch[0].preday_totalc
-				+= patch[0].canopy_strata[stratum][0].cover_fraction
-				* patch[0].canopy_strata[stratum][0].cs.preday_totalc;
-			patch[0].preday_totaln
-				+= patch[0].canopy_strata[stratum][0].cover_fraction
-				* patch[0].canopy_strata[stratum][0].ns.preday_totaln;
-				
-				
-		}
-		patch[0].rootzone.depth = max(patch[0].rootzone.depth, 
-			 patch[0].canopy_strata[stratum][0].rootzone.depth);
-	}
-	patch[0].effective_lai = patch[0].effective_lai / patch[0].num_canopy_strata;
-	/*--------------------------------------------------------------*/
-	/*	re-sort patch layers to account for any changes in 	*/
-	/*	height							*/
-	/*------------------------------------------------------------------------*/
-	sort_patch_layers(patch);
 
 
 	/*------------------------------------------------------------------------*/
