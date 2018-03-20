@@ -1,5 +1,5 @@
 VERSION = 5.20.1
-PGM  = rhessys$(VERSION).shortvars
+PGM  = rhessys$(VERSION)
 CC = icc
 #CXX = g++
 INCLUDES = -Iinclude
@@ -10,7 +10,7 @@ OBJ = objects
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
-DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
+DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID  -DLIU_EXTEND_CLIM_VAR -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD 
 CFLAGS =-Wall -g -std=c99 -qopenmp -O2 $(DEFINES)
 
 # Retro fitting from CF
