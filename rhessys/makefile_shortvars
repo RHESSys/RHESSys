@@ -1,5 +1,5 @@
 VERSION = 5.20.1
-program  = rhessys$(VERSION)
+PGM  = rhessys$(VERSION).shortvars
 CC = icc
 #CXX = g++
 INCLUDES = -Iinclude
