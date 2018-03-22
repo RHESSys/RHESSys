@@ -40,6 +40,9 @@ CreateFlownet = function(cfname,
   }
   cfname = file.path(dirname(cfname),cfbasename)
 
+  if (!is.logical(overwrite)) {stop("overwrite must be logical")} # check overwrite inputs
+  if (file.exists(cfname) & overwrite == FALSE) {stop(noquote(paste("Flowtable",cfname,"already exists.")))}
+
   # Check for streams map, menu allows input of stream map
   if (is.null(streams) & (cfmaps[cfmaps[,1]=="streams",2]=="none"|is.na(cfmaps[cfmaps[,1]=="streams",2]))) {
     t = menu(c("Specify map","Abort function"),

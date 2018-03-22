@@ -26,7 +26,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
   # ---------- Check inputs ----------
   if (!file.exists(template)) {
-    print(paste("template does not exist or is not located at specified path:",template),quote=FALSE) #check if template exists
+    print(paste("Template does not exist or is not located at specified path:",template),quote=FALSE) #check if template exists
   }
 
   worldname = basename(worldfile)# Coerce .world extension
@@ -38,10 +38,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
   worldfile = file.path(dirname(worldfile),worldname)
 
   if (!is.logical(overwrite)) {stop("overwrite must be logical")} # check overwrite inputs
-  if (file.exists(worldfile) & overwrite == FALSE) {
-    t = menu(c("Yes","No"),title=paste("Worldfile",worldfile,"already exists. Overwrite?"))
-    if (t==2) {stop("world_gen exited without completing")}
-  }
+  if (file.exists(worldfile) & overwrite == FALSE) {stop(noquote(paste("Worldfile",worldfile,"already exists.")))}
 
   if (!is.null(asprules)) {asp_check = TRUE} else {asp_check = FALSE} # check for aspatial patches
   if (asp_check) { if(!file.exists(asprules) ) {asp_check=FALSE}}

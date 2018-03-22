@@ -42,8 +42,12 @@ RHESSysPreprocess = function(template,
                              meta = TRUE,
                              wrapper = TRUE) {
 
-  # check name input - remove prefix or sufixes
-  basename = basename(name)
+  # ---------- Check Inputs ----------
+  if (!file.exists(template)) { # check if template exists
+    print(paste("Template does not exist or is not located at specified path:",template),quote=FALSE)
+  }
+
+  basename = basename(name) # check Name
   if (startsWith(basename, "World.") |
       startsWith(basename, "world.")) {
     basename = substr(basename, 7, nchar(basename))
@@ -59,8 +63,38 @@ RHESSysPreprocess = function(template,
   worldfile = name_clean
   cfname = name_clean
 
-  # run world_gen
+  if (!dir.exists(dirname(name))) { # check if output dir exists, menu to create
+    t = menu(
+      c("Yes", "No [Exit]"),
+      title = paste("Ouput directory path:",dirname(name),"is not valid. Create folder(s)?"))
+    if (t == 1) {
+      dir.create(dirname(name), recursive = TRUE)
+    }
+    if (t == 2) {
+      stop("RHESSysPreprocess.R exited without completing")
+    }
+  }
+
+  if (!type %in% c("Raster", "RASTER", "raster", "GRASS", "GRASS6", "GRASS7")) { # check if type is valid
+    stop(noquote(paste("Type '", type, "' not recognized.", sep = "")))
+  }
+
+  if (!is.logical(overwrite)) { # check overwrite type
+    stop("Overwrite must be logical")
+  }
+
+  # ---------- Run world_gen ----------
   print("Begin world_gen.R",quote=FALSE)
+
+  if (file.exists(worldfile) & overwrite == FALSE) { # check for worldfile overwrite
+    t = menu(c("Yes", "No [Exit]"), title = noquote(paste(
+      "Worldfile", worldfile, "already exists. Overwrite?"
+    )))
+    if (t == 2) {
+      stop("RHESSysPreprocess.R exited without completing")
+    }
+  }
+
   world_gen_out = world_gen(template = template,
                             worldfile = worldfile,
                             type = type,
@@ -74,32 +108,45 @@ RHESSysPreprocess = function(template,
   world_cfmaps = world_gen_out[[2]]
   world_asp_list = world_gen_out[[1]]
 
-
-  # run CreateFlownet
+  # ---------- Run CreateFlownet ----------
   print("Begin CreateFlownet.R",quote=FALSE)
+
+  if (file.exists(cfname) & overwrite == FALSE) { # check for flownet overwrite
+    t = menu(c("Yes", "No [Exit]"), title = noquote(paste(
+      "Flowtable", cfname, "already exists. Overwrite?"
+    )))
+    if (t == 2) {
+      stop("RHESSysPreprocess.R exited without completing")
+    }
+  }
+
   CreateFlownet(cfname = cfname,
                 type = type,
                 readin = world_cfmaps,
                 typepars = world_typepars,
                 asp_list = world_asp_list,
                 streams = streams,
-                roads = raods,
+                roads = roads,
                 impervious = impervious,
                 roofs = roofs,
                 wrapper = wrapper)
 
-if(meta){
-  build_meta(
-    name = name_clean,
-    template = template,
-    type = type,
-    typepars = typepars,
-    cf_maps = world_cfmaps,
-    streams = streams,
-    roads = roads,
-    impervious = impervious,
-    roofs = roofs
-  )
-}
+  # ---------- Run build_meta ----------
+  if(meta){
+    build_meta(
+      name = name_clean,
+      world = worldfile,
+      flow = cfname,
+      template = template,
+      type = type,
+      typepars = typepars,
+      cf_maps = world_cfmaps,
+      streams = streams,
+      roads = roads,
+      impervious = impervious,
+      roofs = roofs,
+      asp_rule = asprules
+    )
+  }
 
 } # end function
