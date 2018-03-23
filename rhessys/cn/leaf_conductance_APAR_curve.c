@@ -48,9 +48,9 @@ double	leaf_conductance_APAR_curve(	double	APAR,
 	/*	APAR was the only factor.				*/
 	/*--------------------------------------------------------------*/
 
-	if (APAR_coef > ZERO) {
-	m_APAR = ( APAR * APAR_coef ) / ( 1.0 + APAR * APAR_coef );
-	}
-	else m_APAR=1;
+	if (APAR_coef > ZERO)
+		m_APAR = ( APAR * APAR_coef ) / ( 1.0 + APAR * APAR_coef );
+	else
+		m_APAR = 1;
 	return(m_APAR);
 } /*end leaf_conductance_APAR_curve*/

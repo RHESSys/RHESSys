@@ -50,6 +50,7 @@ $(OBJ)/cal_date_lt.o \
 $(OBJ)/caldat.o \
 $(OBJ)/canopy_stratum_daily_F.o \
 $(OBJ)/canopy_stratum_daily_I.o \
+$(OBJ)/canopy_stratum_daily_growth_I.o \
 $(OBJ)/canopy_stratum_growth.o \
 $(OBJ)/canopy_stratum_hourly.o \
 $(OBJ)/check_zero_stores.o \
@@ -225,6 +226,7 @@ $(OBJ)/output_stream_routing.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
 $(OBJ)/output_canopy_stratum.o \
+$(OBJ)/output_fire.o \
 $(OBJ)/output_growth_basin.o \
 $(OBJ)/output_growth_canopy_stratum.o \
 $(OBJ)/output_growth_hillslope.o \
@@ -524,6 +526,8 @@ $(OBJ)/output_patch.o: output/output_patch.c
 	$(CC) -c $(CFLAGS) -I include output/output_patch.c -o $(OBJ)/output_patch.o
 $(OBJ)/output_canopy_stratum.o: output/output_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_canopy_stratum.c -o $(OBJ)/output_canopy_stratum.o
+$(OBJ)/output_fire.o: output/output_fire.c
+	$(CC) -c $(CFLAGS) -I include output/output_fire.c -o $(OBJ)/output_fire.o
 $(OBJ)/output_basin_state.o: output/output_basin_state.c
 	$(CC) -c $(CFLAGS) -I include output/output_basin_state.c -o $(OBJ)/output_basin_state.o
 $(OBJ)/output_hillslope_state.o: output/output_hillslope_state.c
@@ -800,6 +804,8 @@ $(OBJ)/patch_daily_I.o: cycle/patch_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/patch_daily_I.c -o $(OBJ)/patch_daily_I.o
 $(OBJ)/patch_daily_F.o: cycle/patch_daily_F.c  
 	$(CC) -c $(CFLAGS) -I include cycle/patch_daily_F.c -o $(OBJ)/patch_daily_F.o
+$(OBJ)/canopy_stratum_daily_growth_I.o: cycle/canopy_stratum_daily_growth_I.c
+	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_daily_growth_I.c -o $(OBJ)/canopy_stratum_daily_growth_I.o
 $(OBJ)/canopy_stratum_daily_I.o: cycle/canopy_stratum_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_daily_I.c -o $(OBJ)/canopy_stratum_daily_I.o
 $(OBJ)/canopy_stratum_daily_F.o: cycle/canopy_stratum_daily_F.c

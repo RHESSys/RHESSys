@@ -321,6 +321,7 @@ struct  world_output_file_object
         struct  output_files_object             *zone;
         struct  output_files_object             *patch;
         struct  output_files_object             *canopy_stratum;
+        struct  output_files_object             *fire;
         struct  output_files_object             *shadow_strata;
         struct  output_files_object             *stream_routing;
         };
@@ -1952,6 +1953,18 @@ struct  c_option
         };
 
 /*----------------------------------------------------------*/
+/*      Define a f_option object.                                                               */
+/*----------------------------------------------------------*/
+struct  f_option
+        {
+        int             basinID;
+        int             hillID;
+        int             zoneID;
+        int             patchID;
+        int             stratumID;
+        };
+
+/*----------------------------------------------------------*/
 /*      Define output flags object.                                                             */
 /*----------------------------------------------------------*/
 struct  output_flag
@@ -2044,6 +2057,7 @@ struct  command_line_object
         struct  z_option        *z;
         struct  p_option        *p;
         struct  c_option        *c;
+	struct  f_option	*f;
         struct  stro_option     *stro;
         struct  date            output_yearly_date;
         struct  date            start_date;
@@ -2618,15 +2632,33 @@ struct epconst_struct
 } ;
 
 
+/*----------------------------------------------------------*/
+/*      Define a fire effects object.                                                */
+/*----------------------------------------------------------*/
+struct  fire_effects_object { 
+	double  m_cwdc_to_atmos;
+	double  m_cwdn_to_atmos;
 
+	double  canopy_target_height;
+	double  canopy_target_height_u_prop;
+	double  canopy_target_prop_mort;
+	double  canopy_target_prop_mort_consumed;
+	double  canopy_target_prop_mort_u_component;
+	double  canopy_target_prop_mort_o_component;
+	double  canopy_target_prop_c_consumed;
+	double  canopy_target_prop_c_remain;
+	double  canopy_target_prop_c_remain_adjusted;
+	double  canopy_target_prop_c_remain_adjusted_leafc;
 
+	double  canopy_subtarget_height;
+	double  canopy_subtarget_height_u_prop;
+	double  canopy_subtarget_prop_mort;
+	double  canopy_subtarget_prop_mort_consumed;
+	double  canopy_subtarget_prop_c_consumed;
+	double  canopy_subtarget_c;
+	double  understory_c_consumed;
+};
 
-        
-
-
-
-
-        
 
 /*----------------------------------------------------------*/
 /*      Define a stratum default object.                                                */
@@ -2656,10 +2688,10 @@ struct  stratum_default
         double  ustar_overu;                    /* DIM  */
         struct  epconst_struct  epc;
         struct  mrconst_struct  mrc;
-	double pspread_loss_rel; 		/* Relation between probability of spread and percent carbon loss */
-	double vapor_loss_rel; 			/* Relation between percent carbon loss and percent carbon vaporized */
-	double biomass_loss_rel_k1; 		/* k1 for the biomass sigmoid function (steepness of curve) */
-	double biomass_loss_rel_k2; 		/* k2 for the biomass sigmoid function (centerpoint of curve) */
+	double understory_mort; 		/* Relation between probability of spread and proportion understory mortality */
+	double consumption; 			/* Relation between proportion understory mortality and proportion consumed */
+	double overstory_mort_k1; 		/* Steepness of sigmoid function relating understory biomass consumed and overstory mortality */
+	double overstory_mort_k2; 		/* Centerpoint of sigmoid function relating understory biomass consumed and overstory mortality */
 };
 
 /*----------------------------------------------------------*/
@@ -2733,6 +2765,7 @@ struct  canopy_strata_object
         struct  nstate_struct   ns;
         struct  ndayflux_struct ndf;                            
         struct  phenology_struct phen;
+	struct  fire_effects_object fe;
         struct  base_station_object     **base_stations;
         struct  stratum_default **defaults;
         struct  spinup_default  **spinup_defaults;  
