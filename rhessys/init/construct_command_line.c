@@ -78,6 +78,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].surface_routing_flag = 0;
 	command_line[0].stream_routing_flag = 0;
 	command_line[0].reservoir_operation_flag = 0;
+	command_line[0].clim_repeat_flag = 0;
 	command_line[0].dclim_flag = 0;
 	command_line[0].ddn_routing_flag = 0;
 	command_line[0].tec_flag = 0;
@@ -96,6 +97,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].vegspinup_flag = 0;		
 	command_line[0].vgsen_flag = 0;
 	command_line[0].FillSpill_flag=0;	
+	command_line[0].evap_use_longwave_flag = 0;
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
@@ -199,6 +201,13 @@ struct	command_line_object	*construct_command_line(
 				/*Read in the tmp value		*/
 				/*-------------------------------*/
 				command_line[0].cpool_mort_fract = (double)atof(main_argv[i]);
+				i++;
+			}
+			/*------------------------------------------*/
+			/*Check if the distributed climate flag is next.           */
+			/*------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-climrepeat") == 0 ){
+				command_line[0].clim_repeat_flag = 1;
 				i++;
 			}
 			/*------------------------------------------*/
@@ -1077,6 +1086,10 @@ struct	command_line_object	*construct_command_line(
 				} /*end if*/
 			else if (strcmp(main_argv[i],"-netcdfgrid") == 0 ){
 				command_line[0].gridded_netcdf_flag = 1;
+				i++;
+			}
+			else if (strcmp(main_argv[i], "-longwaveevap") == 0) {
+				command_line[0].evap_use_longwave_flag = 1;
 				i++;
 			}
 			/*--------------------------------------------------------------*/

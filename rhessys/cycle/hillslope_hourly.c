@@ -133,17 +133,17 @@ void		hillslope_hourly(
 	    }
 
 		hillslope[0].hourly_base_flow += hillslope[0].gw.hourly_Qout;
-		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;
-
+		
 		hillslope[0].gw.hourly_NH4out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
 		hillslope[0].gw.hourly_NO3out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
 		hillslope[0].gw.hourly_DONout = hillslope[0].gw.hourly_Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;
 		hillslope[0].gw.hourly_DOCout = hillslope[0].gw.hourly_Qout * hillslope[0].gw.DOC / hillslope[0].gw.storage;
-
 	      	hillslope[0].gw.NO3out += hillslope[0].gw.hourly_NO3out;
 		hillslope[0].gw.NH4out += hillslope[0].gw.hourly_NH4out;
 		hillslope[0].gw.DOCout += hillslope[0].gw.hourly_DOCout;
 		hillslope[0].gw.DONout += hillslope[0].gw.hourly_DONout;
+
+		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;
 
 
 		hillslope[0].hourly_streamflow_NO3 += hillslope[0].gw.hourly_NO3out;
@@ -159,6 +159,7 @@ void		hillslope_hourly(
 		hillslope[0].streamflow_NH4 +=hillslope[0].hourly_streamflow_NH4;
 		hillslope[0].streamflow_DOC +=hillslope[0].hourly_streamflow_DOC;
 		hillslope[0].streamflow_DON +=hillslope[0].hourly_streamflow_DON;
+
 	}
 	
 	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag == 1)) {

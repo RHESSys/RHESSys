@@ -54,25 +54,33 @@
 #include "rhessys.h"
 
 double *construct_clim_sequence(char *file, struct date start_date,
-								long duration)
+								long duration, int clim_repeat_flag)
 {
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(size_t, char *, char *);
 	long	julday(struct date);
+	struct  date caldat(long);
 	/*--------------------------------------------------------------*/
 	/*	local variable declarations 								*/
 	/*--------------------------------------------------------------*/
-	long	i;
+	int	target_fnd;
+	int 	remaining, segs;
+	int	avail_length, needed_length;
+	long	s,l;
+	long	i,j;
 	long	first_date_julian;
 	long	start_date_julian;
+	long	target_date_julian;
 	long	offset;
 	double	value;
 	double	*sequence;
 	FILE	*sequence_file;
 	struct	date	first_date;
-	
+	struct	date	target_date, curr_date;
+
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate the clim sequence.									*/
 	/*--------------------------------------------------------------*/
@@ -125,9 +133,45 @@ double *construct_clim_sequence(char *file, struct date start_date,
 	/*--------------------------------------------------------------*/
 	for ( i=0 ; i<duration ; i++ ){
 		if ( fscanf(sequence_file,"%lf",&value) == EOF  ) {
+			if (clim_repeat_flag == 0) {
 			fprintf(stderr,"FATAL ERROR: in construct_clim_sequence\n");
 			fprintf(stderr,"\n end date beyond end of clim sequence\n");
 			exit(EXIT_FAILURE);
+			}
+			else {
+			target_date_julian = first_date_julian + offset + i;
+			target_date = caldat(target_date_julian);
+			target_fnd = 0;
+			j = 0;
+			while ((target_fnd == 0) && (j < i)) {	
+				curr_date = caldat(first_date_julian + offset + j);
+				if ((curr_date.month == target_date.month) 
+					&& (curr_date.day == target_date.day)) target_fnd=1;
+				j = j+1;
+			}
+			if (j < i) {
+				avail_length = i-j;
+				needed_length = duration - i;
+				segs = floor(needed_length/avail_length);
+				for (s = 0; s < segs; s++) {
+					for (l = 0; l<avail_length; l++) {
+						*(sequence+i) = *(sequence+j+l);
+						i = i + 1;
+					}
+				}
+
+				remaining = needed_length-segs*avail_length;
+				for (l=0; l < remaining; l++) {
+						*(sequence+i) = *(sequence+j+l);
+						i = i + 1;
+				}
+			}
+			else {
+				fprintf(stderr,"FATAL ERROR: in construct_clim_sequence\n");
+				fprintf(stderr,"\n not enough data in base climate to repeat\n");
+				exit(EXIT_FAILURE);
+				}
+			}
 		}
 		else{
 			*(sequence+i) = value;
