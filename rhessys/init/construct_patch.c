@@ -177,9 +177,9 @@ struct patch_object *construct_patch(
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",0.0,1);
 	
 	patch[0].litter_cs.litr1c =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.0,1);
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.031,1);
 	patch[0].litter_ns.litr1n =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",0.0,1);
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",0.00093,1);
 	patch[0].litter_cs.litr2c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",0.0,1);
 	patch[0].litter_cs.litr3c =
