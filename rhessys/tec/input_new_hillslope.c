@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "params.h"
 
 void input_new_hillslope(
 											 struct	command_line_object	*command_line,
@@ -65,45 +66,43 @@ void input_new_hillslope(
 	void	*alloc(	size_t,
 		char	*,
 		char	*);
-	
+	param	*readtag_worldfile(int *,
+				  FILE *,
+				  char *);	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int		i,j, dtmp;
 	int		base_stationID;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
-	
+	int		paramCnt=0;
+	param		*paramPtr=NULL;	
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the hillslope record from the world file.			*/
 	/*--------------------------------------------------------------*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	paramPtr = readtag_worldfile(&paramCnt,world_file,"Hillslope");
+
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",hillslope[0].x,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].x = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",hillslope[0].y,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].y = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",hillslope[0].z,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].z = ltmp;
- 	fscanf(world_file,"%d",&(default_object_ID));
-	read_record(world_file, record);
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	hillslope[0].hill_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",hillslope[0].hill_parm_ID,1);	 	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",hillslope[0].gw.storage,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.storage = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",hillslope[0].gw.NO3,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.NO3 = ltmp;
 
-
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);		
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this hillslope                             */
 	/*--------------------------------------------------------------*/
-	if (default_object_ID > 0) {	
+	if (hillslope[0].hill_parm_ID > 0) {	
 		i = 0;
-		while (defaults[0].hillslope[i].ID != default_object_ID) {
+		while (defaults[0].hillslope[i].ID != hillslope[0].hill_parm_ID) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*  Report an error if no match was found.  Otherwise assign    */
@@ -112,7 +111,7 @@ void input_new_hillslope(
 			if ( i>= defaults[0].num_hillslope_default_files ){
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_hillslope,hillslope default ID %d not found.\n",
-					default_object_ID);
+					hillslope[0].hill_parm_ID);
 				exit(EXIT_FAILURE);
 			}
 		} /* end-while */
@@ -121,8 +120,8 @@ void input_new_hillslope(
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of base stations for this hillslope.		*/
 	/*--------------------------------------------------------------*/
- 	fscanf(world_file,"%d",&(dtmp));
-	read_record(world_file, record);
+ 	/*  fscanf(world_file,"%d",&(dtmp));
+	read_record(world_file, record);*/
 	if (dtmp > 0) {
 		hillslope[0].num_base_stations = dtmp;
 		hillslope[0].base_stations = (struct base_station_object **)
@@ -147,5 +146,8 @@ void input_new_hillslope(
 		} /*end for*/
 	}
 	
+	if(paramPtr!=NULL){
+	  free(paramPtr);
+	}
 	return;
 } /*end input_new_hillslope.c*/
