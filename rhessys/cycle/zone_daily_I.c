@@ -175,7 +175,7 @@ void zone_daily_I(
 	double	Tlapse_adjustment;
 	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
 	double 	added_root_water, p_added_water, added_sat_water, added_water, excess_sat_water; 
-	double  excess_root_water, area_receiving, area_giving, reduced_transfer;
+	double  excess_root_water_volume, added_water_volume, excess_root_water, area_receiving, area_giving, reduced_transfer;
 
 	
 
@@ -1065,12 +1065,13 @@ void zone_daily_I(
 	}	
 	if (command_line[0].ptransfer_flag==1) {
 	excess_root_water = 0.0;
+	excess_root_water_volume = 0.0;
 	area_giving = 0.0;
 	area_receiving = 0.0;
 	for ( p=0 ; p<zone[0].num_patches; p++ ){
 		patch= zone[0].patches[p];
 		patch[0].water_transfer=0.0;
-		if (patch[0].rootzone.depth < zone[0].max_rootdepth) {
+		if (patch[0].rootzone.depth < zone[0].max_rootdepth)  {
 			if (patch[0].sat_deficit_z > patch[0].rootzone.depth) {
 				excess_root_water += (patch[0].unsat_storage   *
 						min(zone[0].max_rootdepth, patch[0].sat_deficit_z)/ 
@@ -1080,6 +1081,7 @@ void zone_daily_I(
 			patch[0].water_transfer = -excess_root_water;
 			patch[0].unsat_storage -= excess_root_water;
 			area_giving += patch[0].area;
+			excess_root_water_volume -= (excess_root_water * patch[0].area);
 			}
 		
 		}
@@ -1089,31 +1091,31 @@ void zone_daily_I(
 	}
 
 
-	if (excess_root_water > ZERO) {
-	excess_root_water = excess_root_water * area_giving;
-	added_water=0.0;
+	if (excess_root_water_volume < ZERO) {
+	added_water_volume=0.0;
+	excess_root_water = -excess_root_water_volume/area_receiving;
 	for ( p=0 ; p<zone[0].num_patches; p++ ){
 		patch= zone[0].patches[p];
-		if (patch[0].rootzone.depth >= zone[0].max_rootdepth)	{
+		if (patch[0].rootzone.depth >= zone[0].max_rootdepth)  {
 
-		         p_added_water = max(0.0, min(patch[0].area*(patch[0].rootzone.field_capacity-patch[0].rz_storage),
-					excess_root_water*patch[0].area/area_receiving)/patch[0].area);
-			added_water += p_added_water;
+		         p_added_water = max(0.0, min((patch[0].rootzone.field_capacity-patch[0].rz_storage),
+					excess_root_water));
 			patch[0].rz_storage += p_added_water;
-			patch[0].water_transfer = p_added_water;
+			patch[0].water_transfer += p_added_water;
+			added_water_volume += p_added_water*patch[0].area;
 		}
 	}
 
-	added_root_water = added_water;
-        reduced_transfer = added_root_water-excess_root_water/area_giving;
-
+        reduced_transfer = (-excess_root_water_volume-added_water_volume)/area_giving;
 
 	if (reduced_transfer > ZERO ) {
 		for ( p=0 ; p<zone[0].num_patches; p++ ){
 			patch= zone[0].patches[p];
-			if (patch[0].rootzone.depth < zone[0].max_rootdepth) {
-				patch[0].unsat_storage += reduced_transfer * patch[0].area/area_giving;
-				patch[0].water_transfer += reduced_transfer * patch[0].area/area_giving;
+			if (patch[0].rootzone.depth < zone[0].max_rootdepth)  {
+			   if (patch[0].sat_deficit_z > patch[0].rootzone.depth) {
+				patch[0].unsat_storage += reduced_transfer ;
+				patch[0].water_transfer += reduced_transfer;
+				}
 			}
 		}
 		}

@@ -62,7 +62,7 @@ void	output_basin(			int routing_flag,
 	double apsn, alai, acrain, acsnow;
 	double abase_flow, hbase_flow,  hstreamflow_NO3, hstreamflow_NH4;
 	double	aacctrans, var_acctrans, var_trans;
-	double aPET, adC13, amortality_fract, apcp, apcpassim;
+	double aPET, aPETp, adC13, amortality_fract, apcp, apcpassim;
 	double	hgw;
 	double atmin, atmax, atavg, avpd, asnow;
 	double	hgwQout;
@@ -106,6 +106,7 @@ void	output_basin(			int routing_flag,
 	arecharge = 0.0;
 	apsn = 0.0 ;
 	aPET = 0.0;
+	aPETp = 0.0;
 	aarea =  0.0 ;
 	abase_flow = 0.0;
 	hbase_flow = 0.0;
@@ -204,6 +205,7 @@ void	output_basin(			int routing_flag,
 					aperc_snow += patch[0].area;
 				asnowmelt += patch[0].snow_melt*patch[0].area;
 				aPET += (patch[0].PET) * patch[0].area;
+				aPETp += (patch[0].PETp) * patch[0].area;
 				alitter_store += patch[0].litter.rain_stored * patch[0].area;
 				adetention_store += patch[0].detention_store*patch[0].area;
 				aacctrans += patch[0].acc_year_trans * patch[0].area; 
@@ -326,6 +328,7 @@ void	output_basin(			int routing_flag,
 
 	apcpassim /=  aarea;
 	aPET /=  aarea;
+	aPETp /=  aarea;
 	acrain /=  aarea;
 	arecharge /= aarea;
 	arain_throughfall /=  aarea;
@@ -415,7 +418,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -449,6 +452,7 @@ void	output_basin(			int routing_flag,
 		aacctrans*1000,
 		var_acctrans,
 		aPET*1000,
+		aPETp*1000,
 		adC13, 
 		apcp*1000.0,
 		apcpassim*1000.0, 

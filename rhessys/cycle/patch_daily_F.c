@@ -712,6 +712,20 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].max_heat_capacity);
 
 
+
+	/*--------------------------------------------------------------*/
+	/*	 computed a vegetation independent pet 			*/
+	/* 	not used in the model - purely for output		*/
+	/*--------------------------------------------------------------*/
+		patch[0].PETp = penman_monteith(
+				command_line[0].verbose_flag,
+				zone[0].metv.tday,
+				zone[0].metv.pa,
+				zone[0].metv.vpd_day,
+				1000.0* (zone[0].Kdown_direct+zone[0].Kdown_diffuse)/zone[0].metv.dayl,
+				0.0,
+				1/patch[0].ga,
+				2) * zone[0].metv.dayl;
 	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height greater than the	*/

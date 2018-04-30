@@ -361,6 +361,7 @@ struct accumulate_patch_object
    double maxtrans;
    double maxpet;
    double PET;
+   double PETp;
    double lai;
    double snowpack;
    double sm_deficit;
@@ -1700,6 +1701,7 @@ struct patch_object
         double  exfiltration_unsat_zone;/* m water      */
         double  unsat_drainage;         /* m water      */
         double  PET;            /* m water      */
+        double  PETp;            /* m water      */
         double  PE;             /* m water      */
         double  precip_with_assim;    /* m water */
         double  rz_drainage;            /* m water      */
@@ -2752,6 +2754,7 @@ struct  canopy_strata_object
         double  sublimation;                                    /*  meters      */
         double  surface_heat_flux;                              /*  kJ/day      */
         double  PET;                                            /*  m water/day */
+        double  PETp;                                            /*  m water/day */
         double  PE;                                             /*  m water/day */
         double  transpiration_unsat_zone;                       /*  m water/day */
         double  transpiration_sat_zone;                         /* m water /day */

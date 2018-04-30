@@ -637,6 +637,8 @@ void	canopy_stratum_daily_F(
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.6 ",julday(current_date)-2449000);
 
+	
+	
 	/*--------------------------------------------------------------*/
 	/*	Compute conductance aerodynamic.			*/
 	/*--------------------------------------------------------------*/
