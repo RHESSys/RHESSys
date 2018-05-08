@@ -2805,6 +2805,7 @@ struct patch_fire_object
 	double occupied_area; /*gives the total patch area in the current grid	*/
 	struct fire_default_object *defaults;
 	double elev; // elevation if read in from grid
+	int wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
 };	
 
 /*----------------------------------------------------------*/
