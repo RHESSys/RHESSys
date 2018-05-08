@@ -92,7 +92,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].understory_pet=1.0;
 				    world[0].fire_grid[i][j].ign_available=0;
 
-			//	  printf("No fire in buffer\n");
+				  printf("No fire in buffer\n");
 			  }
 			  else // if denom_for_mean==0, then this initializes the buffer, otherwise the mean is filled in below
 			  {
@@ -130,7 +130,7 @@ void execute_firespread_event(
 		    world[0].fire_grid[i][j].understory_pet=0.0;
 		    world[0].fire_grid[i][j].ign_available=1;	/* then make this available for ignition */
 		}
-	//    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
+	    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) {
 			patch = world[0].patch_fire_grid[i][j].patches[p];
 			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	
@@ -148,7 +148,7 @@ void execute_firespread_event(
 						patch_fire_grid[i][j].prop_patch_in_grid[p] ;
 				}
 			}
-		//	printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
+			printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
 			
 
 			world[0].fire_grid[i][j].soil_moist += patch[0].rootzone.S * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];	
