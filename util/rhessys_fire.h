@@ -50,6 +50,7 @@ struct fire_default {
 	double load_ign_k1;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	double load_ign_k2;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
+	int include_wui; //0 for no WUI grid, 1 for wui grid--0 by default
 //	char **patch_file_name;
 };
 
