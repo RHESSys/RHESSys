@@ -465,6 +465,31 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].ns.leafn_store = 0.0;
 		*/
 	}
+	
+	/*--------------------------------------------------------------*/
+	/*	initialize fire effects variables			*/
+	/*--------------------------------------------------------------*/
+	canopy_strata[0].fe.m_cwdc_to_atmos = 0.0;
+	canopy_strata[0].fe.m_cwdn_to_atmos = 0.0;
+	canopy_strata[0].fe.canopy_target_height = 0.0;
+	canopy_strata[0].fe.canopy_target_height_u_prop = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_mort = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_mort_consumed = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_mort_u_component = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_mort_o_component = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_c_consumed = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_c_remain = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_c_remain_adjusted = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_c_remain_adjusted_leafc = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_height = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_height_u_prop = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_prop_mort = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_prop_mort_consumed = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_prop_c_consumed = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_c = 0.0;
+	canopy_strata[0].fe.understory_c_consumed = 0.0;
+
+
 	/*--------------------------------------------------------------*/
 	/*	set phenology timing if static allocation		*/
 	/*  and initialize for dynamic runs				*/

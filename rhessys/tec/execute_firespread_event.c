@@ -92,7 +92,9 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].understory_pet=1.0;
 				    world[0].fire_grid[i][j].ign_available=0;
 
+
 				  printf("No fire in buffer\n");
+
 			  }
 			  else // if denom_for_mean==0, then this initializes the buffer, otherwise the mean is filled in below
 			  {
@@ -130,25 +132,33 @@ void execute_firespread_event(
 		    world[0].fire_grid[i][j].understory_pet=0.0;
 		    world[0].fire_grid[i][j].ign_available=1;	/* then make this available for ignition */
 		}
-	    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
+    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) {
-			patch = world[0].patch_fire_grid[i][j].patches[p];
+//printf("Patch p: %d\n",p);			
+patch = world[0].patch_fire_grid[i][j].patches[p];
+//printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c);
 			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	
 				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p];
-			if( patch[0].litter.rain_capacity!=0)	// then update the fuel moisture, otherwise don't change it
+//printf("Patch p2: %d\n",p);
+		
+	if( patch[0].litter.rain_capacity!=0)	// then update the fuel moisture, otherwise don't change it
 			    world[0].fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
 							patch_fire_grid[i][j].prop_patch_in_grid[p];
 /*			fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
 						patch_fire_grid[i][j].prop_patch_in_grid[p];
 */
-			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+//printf("Patch p: %d\n",p);
+		
+	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
+//printf("Layers: %d\n",layer);
+
 				world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 				* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc) *
 						patch_fire_grid[i][j].prop_patch_in_grid[p] ;
 				}
 			}
-			printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
+//			printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
 			
 
 			world[0].fire_grid[i][j].soil_moist += patch[0].rootzone.S * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];	

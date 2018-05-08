@@ -92,16 +92,28 @@ double	compute_ra_understory(
 	/*								*/
 	/*	Equation supplied by Xuewen Wang rhessys C code.	*/
 	/*--------------------------------------------------------------*/
+/*
 	d_o =  pow(10.0, (0.979 * log10(h_o+0.001) - 0.154));
 	d_u =  max(0.01*h_o, pow(10.0, (0.979 * log10(h_u+0.001) - 0.154)));
+*/
+
+	d_o = 0.7 * h_o;
+	d_u = 0.7 * h_u;
+
 	/*--------------------------------------------------------------*/
 	/*	Compute the roughness length zo (m)			*/
 	/*								*/
 	/*	Equation supplied by Xuewen Wang rhessys C code.	*/
 	/*	Richard Fernandes:  This should change with snow pack .	*/
 	/*--------------------------------------------------------------*/
+/*
 	zo_o = pow(10.0, (0.997 * log10(h_o+0.001) - 0.883));
 	zo_u = max(0.01*h_o, pow(10.0, (0.997 * log10(h_u+0.001) - 0.883)));
+*/
+
+	zo_o = 0.1 * h_o;
+	zo_u = 0.1 * h_u;
+
 	
 	/*printf("\nUNDER:cn=%lf u_toc=%lf h_o=%lf h_u=%lf ga_toc=%lf ra_toc=%lf",cn,*u,h_o,h_u,*ga,ra);*/
 	
