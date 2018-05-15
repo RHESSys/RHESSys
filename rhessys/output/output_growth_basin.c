@@ -46,6 +46,7 @@ void	output_growth_basin(
 	double p_over, p_under;
 	double agpsn, aresp, arespleaf;
 	double alai;
+	double alai_sunlit, alai_shade;
 	double leafc, frootc, woodc;	
 	double aleafc, afrootc, awoodc;
 	double aleafn, afrootn, awoodn;
@@ -79,6 +80,8 @@ void	output_growth_basin(
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
 	alai = 0.0; acpool=0.0; anpool = 0.0;
+	alai_sunlit = 0.0;
+	alai_shade = 0.0;
 	aleafc = 0.0; afrootc=0.0; awoodc=0.0;
 	aleafn = 0.0; afrootn=0.0; awoodn=0.0;
 	agpsn = 0.0; arespleaf=0.0; aresp=0.0; anfix=0.0; anuptake=0.0;
@@ -241,6 +244,10 @@ void	output_growth_basin(
 							* patch[0].area;
 						alai += strata->cover_fraction * (strata->epv.proj_lai)
 							* patch[0].area;
+						alai_sunlit += strata->cover_fraction * (strata->epv.proj_lai_sunlit)
+							* patch[0].area;
+						alai_shade += strata->cover_fraction * (strata->epv.proj_lai_shade)
+							* patch[0].area;
 						acpool += strata->cover_fraction*strata->cs.cpool*patch[0].area;
 						anpool += strata->cover_fraction*strata->ns.npool*patch[0].area;
 
@@ -292,6 +299,8 @@ void	output_growth_basin(
 	aresp /= aarea ;
 	arespleaf /= aarea ;
 	alai /= aarea ;
+	alai_shade /= aarea ;
+	alai_sunlit /= aarea ;
 	anitrate /= aarea;
 	asurfaceN /= aarea;
 	acpool /= aarea ;
@@ -350,11 +359,13 @@ void	output_growth_basin(
 	hgwDOCout = hgwDOCout / basin_area;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
 		basin[0].ID,
+		alai_sunlit,
+		alai_shade,
 		alai,
 		agpsn * 1000,
 		aresp * 1000,

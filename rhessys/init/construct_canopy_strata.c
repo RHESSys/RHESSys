@@ -492,6 +492,26 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].epv.proj_sla_shade = canopy_strata[0].defaults[0][0].epc.proj_sla *
 			canopy_strata[0].defaults[0][0].epc.shade_sla_mult;
 
+	/*--------------------------------------------------------------*/
+	/*	light use efficiency varies with SLA following Evans and Pooter */
+	/*    triggered by a 9999 value in netpabs   */
+	/*--------------------------------------------------------------*/
+	if (canopy_strata[0].defaults[0][0].epc.netpabs > 1.0) {
+			canopy_strata[0].defaults[0][0].epc.netpabs_shade = max(0.0, min(1.0, 1.0/(canopy_strata[0].epv.proj_sla_shade*
+								canopy_strata[0].defaults[0][0].epc.netpabs_sla_parm)*10));
+			canopy_strata[0].defaults[0][0].epc.netpabs_sunlit = max(0.0, min(1.0, 1.0/(canopy_strata[0].epv.proj_sla_sunlit*
+								canopy_strata[0].defaults[0][0].epc.netpabs_sla_parm)*10));
+		}
+	else {
+		canopy_strata[0].defaults[0][0].epc.netpabs_shade = canopy_strata[0].defaults[0][0].epc.netpabs;
+		canopy_strata[0].defaults[0][0].epc.netpabs_sunlit = canopy_strata[0].defaults[0][0].epc.netpabs;
+		}
+	
+	printf("\n Using netpabs for sunlit %lf and shade %lf given sla of %lf and %lf",
+			canopy_strata[0].defaults[0][0].epc.netpabs_sunlit,
+			canopy_strata[0].defaults[0][0].epc.netpabs_shade,
+			canopy_strata[0].epv.proj_sla_sunlit,
+			canopy_strata[0].epv.proj_sla_shade);
 
 
 	if ( canopy_strata[0].cs.leafc <= 1.0/canopy_strata[0].epv.proj_sla_sunlit) {

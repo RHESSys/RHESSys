@@ -2533,7 +2533,12 @@ struct epconst_struct
         double int_coef;       /* (kg/m2/LAI/d) canopy precip interception coef */
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
 	double netpabs;		/* (mol/mol) fPAR effectively abosorbed */
+	double netpabs_sla_parm;		/* scale parameter for netpabs = 1/(SLA*parm) relationship 1 is default */
+	double netpabs_shade;		/* (mol/mol) fPAR effectively abosorbed */
+	double netpabs_sunlit;		/* (mol/mol) fPAR effectively abosorbed */
         double flnr;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
+        double flnr_shade;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
+        double flnr_sunlit;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double ppfd_coef;      /* (s/m2/umol) shape parameter for ppfd hyperbola */
         double topt;           /* (deg C) optimum air temperature for gs */
         double tmax;           /* (deg C) maximum air temperature for gs */
