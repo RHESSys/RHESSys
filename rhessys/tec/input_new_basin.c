@@ -14,8 +14,8 @@
 /*			int		num_world_base_stations,					*/
 /*			struct base_station_object	**world_base_stations,	*/
 /*			struct basin_object	**basin_list,					*/
-/*			struct default_object *defaults,
-/* 																*/
+/*			struct default_object *defaults,   */
+/* 														      */
 /*																*/
 /*	OPTIONS														*/
 /*																*/
@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
+#include "params.h"
 
 void input_new_basin(
 									 struct	command_line_object	*command_line,
@@ -47,34 +48,39 @@ void input_new_basin(
 	
 	
 	void	*alloc( 	size_t, char *, char *);
-	
+	param	*readtag_worldfile(int *,
+				  FILE *,
+				  char *);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
 	int		i,dtmp;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
-	
+	int		paramCnt=0;
+	param		*paramPtr=NULL;	
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the basinID.									*/
 	/*--------------------------------------------------------------*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	paramPtr=readtag_worldfile(&paramCnt,world_file,"Basin");
+	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",basin[0].x,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].x = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",basin[0].y,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].y = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",basin[0].z,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].z = ltmp;
- 	fscanf(world_file,"%d",&(default_object_ID));
-	read_record(world_file, record);
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+
+	basin[0].basin_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",basin[0].basin_parm_ID,1);		
+
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",basin[0].latitude,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",basin[0].num_base_stations,1);	
+	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  {
 		basin[0].latitude = ltmp;
 		basin[0].cos_latitude = cos(basin[0].latitude*DtoR);
@@ -84,8 +90,9 @@ void input_new_basin(
 	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this basin.			*/
 	/*--------------------------------------------------------------*/
- 	fscanf(world_file,"%d",&(dtmp));
-	read_record(world_file, record);
+  	/*  fscanf(world_file,"%d",&(dtmp));
+	read_record(world_file, record);*/
+	
 	if (dtmp > 0) {
 		basin[0].num_base_stations = dtmp;
 		basin[0].base_stations = (struct base_station_object **)
@@ -113,9 +120,9 @@ void input_new_basin(
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this basin                             */
 	/*--------------------------------------------------------------*/
-	if (default_object_ID > 0) {
+	if (basin[0].basin_parm_ID > 0) {
 		i = 0;
-		while (defaults[0].basin[i].ID != default_object_ID) {
+		while (defaults[0].basin[i].ID != basin[0].basin_parm_ID) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*  Report an error if no match was found.  Otherwise assign    */
@@ -124,13 +131,17 @@ void input_new_basin(
 			if ( i>= defaults[0].num_basin_default_files ){
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_basin,basin default ID %d not found.\n",
-					default_object_ID);
+					basin[0].basin_parm_ID);
 				exit(EXIT_FAILURE);
 			}
 		} /* end-while */
 		basin[0].defaults[0] = &defaults[0].basin[i];
 	}
 	
+	if(paramPtr!=NULL){
+	  free(paramPtr);
+	}
+
 
 	return;
 } /*end input_new_basin.c*/

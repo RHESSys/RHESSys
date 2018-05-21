@@ -40,7 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
-
+#include "params.h"
 struct canopy_strata_object *construct_canopy_strata(
 													 struct	command_line_object	*command_line,
 													 FILE	*world_file,
@@ -77,17 +77,18 @@ struct canopy_strata_object *construct_canopy_strata(
 		double);
 
 	void	*alloc(size_t, char *, char *);
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
 	int	i;
 	double	sai, rootc;
-	int	default_object_ID; 
 	int     spinup_default_object_ID; 
 	char	record[MAXSTR];
 	struct	canopy_strata_object	*canopy_strata;
-	
+	int	paramCnt=0;
+	param	*paramPtr=NULL;	
 	/*--------------------------------------------------------------*/
 	/*  Allocate a canopy_strata object.                                */
 	/*--------------------------------------------------------------*/
@@ -98,115 +99,118 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.	*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(canopy_strata[0].ID));
-	read_record(world_file, record);
-	fscanf(world_file,"%d",&(default_object_ID));
-	read_record(world_file, record);
-	if (command_line[0].vegspinup_flag > 0){
-	    fscanf(world_file,"%d",&(spinup_default_object_ID));
-	    read_record(world_file, record);
-        }
-  fscanf(world_file,"%lf",&(canopy_strata[0].cover_fraction));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].gap_fraction));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].rootzone.depth));
-	read_record(world_file, record);
-		if (command_line[0].tmp_value > ZERO)
-			canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
+	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 
-	fscanf(world_file,"%lf",&(canopy_strata[0].snow_stored));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].rain_stored));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.cpool));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.leafc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.dead_leafc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.leafc_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.leafc_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.live_stemc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.livestemc_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.livestemc_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.dead_stemc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.deadstemc_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.deadstemc_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.live_crootc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.livecrootc_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.livecrootc_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.dead_crootc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.deadcrootc_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.deadcrootc_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.frootc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.frootc_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.frootc_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].cs.cwdc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].epv.prev_leafcalloc));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.npool));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.leafn));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.dead_leafn));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.leafn_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.leafn_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.live_stemn));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.livestemn_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.livestemn_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.dead_stemn));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.deadstemn_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.deadstemn_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.live_crootn));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.livecrootn_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.livecrootn_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.dead_crootn));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.deadcrootn_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.deadcrootn_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.frootn));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.frootn_store));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.frootn_transfer));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.cwdn));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].ns.retransn));
-	read_record(world_file, record);
+	canopy_strata[0].ID = getIntWorldfile(&paramCnt, &paramPtr, "canopy_strata_ID","%d",-9999,0);
+
+	canopy_strata[0].veg_parm_ID = getIntWorldfile(&paramCnt, &paramPtr, "veg_parm_ID","%d",-9999,0);
+
+	if (command_line[0].vegspinup_flag > 0){
+	    spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,0);
+        }
+	canopy_strata[0].cover_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1.0,1);
+	
+	canopy_strata[0].gap_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",0.0,1);
+	
+	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",-9999,0);
+
+	if (command_line[0].tmp_value > ZERO){
+		canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
+	}
+
+	canopy_strata[0].snow_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_stored","%lf",0.0,1);
+	
+	canopy_strata[0].rain_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"rain_stored","%lf",0.0,1);
+	
+	canopy_strata[0].cs.cpool = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",0.0,1);
+	
+	canopy_strata[0].cs.leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",0.0,1);
+	
+	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
+	
+	canopy_strata[0].cs.leafc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",0.0,1);
+	
+	canopy_strata[0].cs.leafc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].cs.live_stemc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",0.0,1);
+	
+	canopy_strata[0].cs.livestemc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_store","%lf",0.0,1);
+	
+	canopy_strata[0].cs.livestemc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].cs.dead_stemc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_stemc","%lf",0.0,1);
+	
+	canopy_strata[0].cs.deadstemc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadstemc_store","%lf",0.0,1);
+	
+	canopy_strata[0].cs.deadstemc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadstemc_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].cs.live_crootc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_crootc","%lf",0.0,1);
+	
+	canopy_strata[0].cs.livecrootc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livecrootc_store","%lf",0.0,1);
+	
+	canopy_strata[0].cs.livecrootc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livecrootc_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].cs.dead_crootc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_crootc","%lf",0.0,1);
+	
+	canopy_strata[0].cs.deadcrootc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadcrootc_store","%lf",0.0,1);
+	
+	canopy_strata[0].cs.deadcrootc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadcrootc_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].cs.frootc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc","%lf",0.0,1);
+	
+	canopy_strata[0].cs.frootc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc_store","%lf",0.0,1);
+	
+	canopy_strata[0].cs.frootc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].cs.cwdc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cwdc","%lf",0.0,1);
+	
+	canopy_strata[0].epv.prev_leafcalloc = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.prev_leafcalloc","%lf",0.0,1);
+	
+	canopy_strata[0].ns.npool = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.npool","%lf",0.0,1);
+	
+	canopy_strata[0].ns.leafn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn","%lf",0.0,1);
+	
+	canopy_strata[0].ns.dead_leafn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_leafn","%lf",0.0,1);
+	
+	canopy_strata[0].ns.leafn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn_store","%lf",0.0,1);
+	
+	canopy_strata[0].ns.leafn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].ns.live_stemn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.live_stemn","%lf",0.0,1);
+	
+	canopy_strata[0].ns.livestemn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livestemn_store","%lf",0.0,1);
+	
+	canopy_strata[0].ns.livestemn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livestemn_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].ns.dead_stemn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_stemn","%lf",0.0,1);
+	
+	canopy_strata[0].ns.deadstemn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadstemn_store","%lf",0.0,1);
+	
+	canopy_strata[0].ns.deadstemn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadstemn_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].ns.live_crootn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.live_crootn","%lf",0.0,1);
+	
+	canopy_strata[0].ns.livecrootn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livecrootn_store","%lf",0.0,1);
+	
+	canopy_strata[0].ns.livecrootn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livecrootn_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].ns.dead_crootn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_crootn","%lf",0.0,1);
+	
+	canopy_strata[0].ns.deadcrootn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadcrootn_store","%lf",0.0,1);
+	
+	canopy_strata[0].ns.deadcrootn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadcrootn_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].ns.frootn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn","%lf",0.0,1);
+	
+	canopy_strata[0].ns.frootn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn_store","%lf",0.0,1);
+	
+	canopy_strata[0].ns.frootn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn_transfer","%lf",0.0,1);
+	
+	canopy_strata[0].ns.cwdn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.cwdn","%lf",0.0,1);
+	
+	canopy_strata[0].ns.retransn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",0.0,1);
+	
+
 
 	if (command_line[0].vegspinup_flag > 0){
      canopy_strata[0].target.lai = NULLVAL;
@@ -219,14 +223,20 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(canopy_strata[0].epv.wstress_days));
+	/*  fscanf(world_file,"%d",&(canopy_strata[0].epv.wstress_days));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].epv.max_fparabs));
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].epv.min_vwc));
-	read_record(world_file, record);
+	read_record(world_file, record);*/
 	
+	canopy_strata[0].epv.wstress_days  = getIntWorldfile(&paramCnt,&paramPtr,"epv.wstress_days","%lf",0,1);
 
+	canopy_strata[0].epv.max_fparabs = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.max_fparabs","%lf",0.0,1);
+	
+	canopy_strata[0].epv.min_vwc = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",0.0,1);
+
+	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this canopy_strata								*/
 	/*--------------------------------------------------------------*/
@@ -234,7 +244,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		alloc( sizeof(struct stratum_default *),"defaults",
 		"construct_canopy_strata" );
 	i = 0;
-	while (defaults[0].stratum[i].ID != default_object_ID) {
+	while (defaults[0].stratum[i].ID != canopy_strata[0].veg_parm_ID) {
 		i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -243,7 +253,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		if ( i>= defaults[0].num_stratum_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_canopy_strata, canopy_strata default ID %d not found.\n" ,
-				default_object_ID);
+				canopy_strata[0].veg_parm_ID);
 			exit(EXIT_FAILURE);
 		}
 	} /* end-while */
@@ -548,8 +558,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  strata base stations 					*/
 	/*--------------------------------------------------------------*/
-	fscanf(world_file,"%d",&(canopy_strata[0].num_base_stations));
-	read_record(world_file, record);
+	/*  fscanf(world_file,"%d",&(canopy_strata[0].num_base_stations));
+	read_record(world_file, record);*/
 	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this strata.			*/
 	/*--------------------------------------------------------------*/
@@ -572,5 +582,9 @@ struct canopy_strata_object *construct_canopy_strata(
 			num_world_base_stations,
 			world_base_stations);
 	} /*end for*/
+
+	if(paramPtr!=NULL){
+	  free(paramPtr);
+	}
 	return(canopy_strata);
 } /*end construct_canopy_strata.c*/
