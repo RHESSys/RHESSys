@@ -349,9 +349,26 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}
 		fclose(demIn);
 		printf("done assigning dem\n");
+		printf("assigning dem\n");
+
+		if(def.include_wui==1)
+		{
+			FILE *wuiIn;
+			wuiIn=fopen("../auxdata/WUIGrid.txt","r");
+			// for now do away with the header, so this file has no header
+			for(i=0; i<grid_dimY;i++){
+				for(j=0;j<grid_dimX;j++){				
+					fscanf(wuiIn,"%d\t",&fire_grid[i][j].wui_flag);
+				}
+			}
+			fclose(wuiIn);
+			printf("done assigning wui\n");
+		}
 	}
 	// for debugging, write out the fire grid and patches
-	FILE *gridout;
+	
+	// comment out for now.
+/*	FILE *gridout;
 
 	gridout=fopen("FireGridPatchCheckOccupiedArea.txt","w");
 	for(i=0;i<grid_dimY;i++){
@@ -402,7 +419,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}
 		fprintf(gridout,"\n");
 	}
-	fclose(gridout);
+	fclose(gridout);*/
 
 	/* done allocating fire grid, return to RHESSys*/
 	return(fire_grid);	

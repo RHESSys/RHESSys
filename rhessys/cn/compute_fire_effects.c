@@ -61,37 +61,19 @@ void compute_fire_effects(
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 
-	struct canopy_strata_object *canopy_strata_upper;
-	struct canopy_strata_object *canopy_strata_lower;
+	struct canopy_strata_object *canopy_target;
+	struct canopy_strata_object *canopy_subtarget;
 	struct mortality_struct mort;
 	struct fire_litter_soil_loss_struct fire_loss;
 	int c, layer;
 	int thin_type;
-	double m_cwdc_to_atmos, m_cwdn_to_atmos;
-	double understory_litter_c;
-	double layer_upper_height,layer_lower_height;
-	double layer_upper_height_adj, layer_lower_height_adj;
-	double layer_lower_c;
-	double layer_lower_c_loss_percent, understory_c_loss;
-	double layer_upper_c_loss_percent, layer_upper_c_loss_percent_understory_comp;
-	double layer_upper_c_loss_percent_adj1, layer_upper_c_loss_percent_adj2;
-	double loss_vapor_percent, c_loss_vapor_percent;
-	double c_loss_remain_percent, c_loss_remain_percent_alt;
-
+	double litter_c_consumed;
 
 	/*--------------------------------------------------------------*/
 	/*	Compute litter and soil removed.			*/
 	/*--------------------------------------------------------------*/
 
 	if (pspread > 0){
-
-  printf("\n patch ID = %d, pspread = %lf", patch[0].ID, pspread);
-
-	/* Calculate litter biomass for use later in canopy effects */
-	understory_litter_c = patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c;
-  if (understory_litter_c > 2.5) { 
-        printf("\n understory litter C > 2 !! patchID=%d, litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", patch[0].ID, patch[0].litter_cs.litr1c, patch[0].litter_cs.litr2c, patch[0].litter_cs.litr3c, patch[0].litter_cs.litr4c);
-  }
 
 	/* Litter consumption is approximated based CONSUME model outputs */
 	/* Consumption 1hr-fuel = 1 * 1hr-fuel */
@@ -115,6 +97,11 @@ void compute_fire_effects(
 	fire_loss.loss_soil3n = 0;
 	fire_loss.loss_soil4n = 0;
 
+	/* Calculate litter consumed for use later in canopy effects */
+	litter_c_consumed = patch[0].litter_cs.litr1c * fire_loss.loss_litr1c + 
+			patch[0].litter_cs.litr2c * fire_loss.loss_litr2c + 
+			patch[0].litter_cs.litr3c * fire_loss.loss_litr3c + 
+			patch[0].litter_cs.litr4c * fire_loss.loss_litr4c;
 
 	update_litter_soil_mortality(
 		 &(patch[0].cdf),
@@ -125,40 +112,45 @@ void compute_fire_effects(
 		 &(patch[0].litter_ns),
 		 fire_loss);
 
-//printf("\n -------------------");
-//printf("\n understory_litter_c = %lf", understory_litter_c);
-//printf("\n -------------------");
-
-
 	/*--------------------------------------------------------------*/
 	/*		Compute vegetation effects.			*/
 	/*--------------------------------------------------------------*/
 
-int whichCalc = 0;  //XXX 
-int whichUnderCalc=0;  //XXXXX
+	/* For each patch that burns (pspread > 0), fire effects is computed 
+	for each canopy starting with the tallest and proceeding down 
+	though the canopies. The canopy being evaluated for fire effects for 
+	any given iteration is referred to as the target canopy. Fire effects 
+	in the target canopy depend on the height of the target canopy. For 
+	short target canopies (height < understory_height_thresh), mortality 
+	is a function of pspread. For tall target canopies (height > 
+	overstory_height_thresh), fire effects are a function of the litter 
+	and understory biomass consumed by the fire. In this situation, it 
+	is necessary to additionally compute mortality and consumption for 
+	canopies below the target canopy. While in theory the fire effects 
+	code should account for all understory canopies below target
+	canopy, the current code only computes mortality/consumption for next 
+	lowest canopy. Hence, code may need to be revised if working with more 
+	than two canopies. */
+	
 
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 
-			/* Calculates metrics for targer layer */
-			canopy_strata_upper = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
-			layer_upper_height = canopy_strata_upper[0].epv.height;
+			/* Calculates metrics for targer canopy */
+			canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 
-			/* Calculates metrics for next lowest layer (May be redone to calculate all remaining lower layers) */
+			/* Calculates metrics for next lowest canopy (subtarget canopy) */
 			if (patch[0].num_layers > (layer+1)){
-				canopy_strata_lower = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
-				layer_lower_height = canopy_strata_lower[0].epv.height;
-				layer_lower_c = canopy_strata_lower[0].cs.leafc + canopy_strata_lower[0].cs.live_stemc + canopy_strata_lower[0].cs.dead_stemc;
+				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
+				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
+				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc + 
+						canopy_subtarget[0].cs.live_stemc + 
+						canopy_subtarget[0].cs.dead_stemc;
 			} else {
-				layer_lower_height = 0;
-				layer_lower_c = 0;
+				canopy_target[0].fe.canopy_subtarget_height = 0;
+				canopy_target[0].fe.canopy_subtarget_c = 0;
 			}
-
-//printf("\n -------------------");
-//printf("\n layer_upper_height = %lf", layer_upper_height);
-//printf("\n layer_lower_height = %lf", layer_lower_height);
-//printf("\n layer_lower_c = %lf", layer_lower_c);
-//printf("\n -------------------");
 
 
 			/*--------------------------------------------------------------*/
@@ -168,306 +160,264 @@ int whichUnderCalc=0;  //XXXXX
 			/* Litter consumption is approximated based CONSUME model outputs */
 			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
 			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
-			m_cwdc_to_atmos = canopy_strata_upper[0].cs.cwdc * .339;
-			m_cwdn_to_atmos = canopy_strata_upper[0].ns.cwdn * .339;
-			canopy_strata_upper[0].cs.cwdc -= m_cwdc_to_atmos;
-			canopy_strata_upper[0].ns.cwdn -= m_cwdn_to_atmos;
+			canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339;
+			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
+			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
+			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 
 
 			/*--------------------------------------------------------------*/
-			/* Calculate effects when upper layer is tall			*/
+			/* Calculate fire effects when target canopy is tall			*/
 			/*--------------------------------------------------------------*/
 
-			// Note that when this code requires that height thresholds for differnt canopies be the same or anomolous behavior may occur.
-      
+			if (canopy_target[0].fe.canopy_target_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
 
-			if (layer_upper_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
+				/* Determine the amount of understory carbon consumed, which is used to */
+				/* compute how well fire is propogated to overstory */
 
-				if (layer_lower_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
+				/* Is subtarget canopy tall? */
+				if (canopy_target[0].fe.canopy_subtarget_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
 
-					understory_c_loss = understory_litter_c;
-          whichUnderCalc=1;  //XXXXX
+					canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
 
-				} else if (layer_lower_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && layer_lower_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
+				/* Is subtarget canopy of intermediate or short height? Then calculate mortality/consumption of understory */
+				} else if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh){
 
-					/* Determines the percent of loss attributed to understory. 1-layer_lower_height_adj gives loss attributed to overstory) */
-					layer_lower_height_adj = (patch[0].soil_defaults[0][0].overstory_height_thresh - layer_lower_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
-
-					/* Determine the amount of carbon lost in the understory component of the lower layer */
-					if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel <= 0){
-						fprintf(stderr, "ERROR: canopy_strata_upper[0].defaults[0][0].pspread_loss_rel must be greater than 0.\n");
+					/* Determine the proportion of carbon mortality in the subtarget canopy */
+					if (canopy_target[0].defaults[0][0].understory_mort <= 0){
+						fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     						exit(EXIT_FAILURE);
-					} else if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel == 1){
-						layer_lower_c_loss_percent = canopy_strata_upper[0].defaults[0][0].pspread_loss_rel * pspread;
+					} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
+						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
 					} else {
-						layer_lower_c_loss_percent = (pow(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel,pspread)-1)/(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel-1);
-					}
-					understory_c_loss = (layer_lower_c * layer_lower_c_loss_percent * layer_lower_height_adj) + understory_litter_c;	// layer_lower_height_adj accounts for adjustment for lower layer height
-          whichUnderCalc=2;  //XXXXX
-
-				} else if (layer_lower_height < patch[0].soil_defaults[0][0].understory_height_thresh) {
-
-					/* Determine the amount of carbon lost in the lower layer */
-					if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel <= 0){
-						fprintf(stderr, "ERROR: canopy_strata_upper[0].defaults[0][0].pspread_loss_rel must be greater than 0.\n");
-    						exit(EXIT_FAILURE);
-					} else if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel == 1){
-						layer_lower_c_loss_percent = canopy_strata_upper[0].defaults[0][0].pspread_loss_rel * pspread;
-					} else {
-						layer_lower_c_loss_percent = (pow(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel,pspread)-1)/(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel-1);
-					}
-					understory_c_loss = (layer_lower_c * layer_lower_c_loss_percent) + understory_litter_c;
-          whichUnderCalc=3;  //XXXXX
-				}
-
-//printf("\n -------------------");
-//printf("\n layer_lower_c_loss_percent = %lf", layer_lower_c_loss_percent);
-//printf("\n understory_c_loss = %lf", understory_c_loss);
-//printf("\n -------------------");
-
-
-				/* Sigmoidal function to relate understory carbon loss to percent loss in the upper layer */
-				layer_upper_c_loss_percent = 1 - (1/(1+exp(-(canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k1*(understory_c_loss - canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k2)))));
-        whichCalc=1;
-
-				/* Determine the portion of c_loss_percent in the upper layer that is vaporized */
-				if (canopy_strata_upper[0].defaults[0][0].vapor_loss_rel <= 0){
-					fprintf(stderr, "ERROR: canopy_strata_upper[0].defaults[0][0].vapor_loss_rel must be greater than 0.\n");
-    					exit(EXIT_FAILURE);
-				} else if (canopy_strata_upper[0].defaults[0][0].vapor_loss_rel == 1){
-					loss_vapor_percent = canopy_strata_upper[0].defaults[0][0].vapor_loss_rel * layer_upper_c_loss_percent;
-				} else {
-					loss_vapor_percent = (pow(canopy_strata_upper[0].defaults[0][0].vapor_loss_rel,layer_upper_c_loss_percent)-1)/(canopy_strata_upper[0].defaults[0][0].vapor_loss_rel-1);
-				}
-
-//leafc_loss_percent = layer_upper_c_loss_percent
-//leafc_vapor_percent = loss_vapor_percent
-
-			/*--------------------------------------------------------------*/
-			/* Calculate effects when upper layer is an intermediate height	*/
-			/*--------------------------------------------------------------*/
-
-			} else if (layer_upper_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && layer_upper_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
-
-				/* Determines the percent of upper canopy loss attributed to understory. 1-layer_upper_height_adj gives loss attributed to overstory) */
-				layer_upper_height_adj = (patch[0].soil_defaults[0][0].overstory_height_thresh - layer_upper_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
-
-				if (layer_lower_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && layer_lower_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
-
-					/* Determines the percent of lower canopy loss attributed to understory. 1-layer_lower_height_adj gives loss attributed to overstory) */
-					layer_lower_height_adj = (patch[0].soil_defaults[0][0].overstory_height_thresh - layer_lower_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
-
-
-					/* ---Determine loss for understory component of upper layer--- */
-
-					/* Function to relate pspread to percent loss in the upper layer */
-					if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel <= 0){
-						fprintf(stderr, "ERROR: canopy_strata_upper[0].defaults[0][0].pspread_loss_rel must be greater than 0.\n");
-    						exit(EXIT_FAILURE);
-					} else if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel == 1){
-						layer_upper_c_loss_percent_understory_comp = canopy_strata_upper[0].defaults[0][0].pspread_loss_rel * pspread;
-					} else {
-						layer_upper_c_loss_percent_understory_comp = (pow(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel,pspread)-1)/(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel-1);
+						canopy_target[0].fe.canopy_subtarget_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
 					}
 
-					layer_upper_c_loss_percent_adj1 = layer_upper_c_loss_percent_understory_comp * layer_lower_height_adj * layer_upper_height_adj;	// layer_lower_height_adj and layer_upper_height_adj account for height adjustments to both layers 
+					/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
+					if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target[0].fe.canopy_subtarget_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
 
+						/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
+						canopy_target[0].fe.canopy_subtarget_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target[0].fe.canopy_subtarget_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
 
-					/* ---Determine loss for overstory component of upper layer--- */
-
-					layer_lower_c_loss_percent = layer_upper_c_loss_percent_understory_comp;		/* percent c lost is same for upper and lower layer since lost is based on pspread for both */
-					understory_c_loss = (layer_lower_c * layer_lower_c_loss_percent * layer_lower_height_adj) + understory_litter_c;	// layer_lower_height_adj accounts for height adjustment for lower layer
-          whichUnderCalc=4;  //XXXXX
-
-					/* Sigmoidal function to relate understory carbon loss to percent loss in the upper layer */
-					layer_upper_c_loss_percent_adj2 = (1 - 1/(1+exp(-canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k1*(understory_c_loss - canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k2)))) * (1-layer_upper_height_adj);		// layer_upper_height_adj accounts for upper layer height adjustment
-
-					/* Combine losses due to overstory and understory components of upper layer */
-					layer_upper_c_loss_percent = layer_upper_c_loss_percent_adj1 + layer_upper_c_loss_percent_adj2;		// This may need to be capped at 1.
-
-          whichCalc=2;
-
-				} else if (layer_lower_height < patch[0].soil_defaults[0][0].understory_height_thresh) {
-
-					/* ---Determine loss for understory component of upper layer--- */
-
-					/* Function to relate pspread to percent loss in the upper layer */
-					if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel <= 0){
-						fprintf(stderr, "ERROR: canopy_strata_upper[0].defaults[0][0].pspread_loss_rel must be greater than 0.\n");
-    						exit(EXIT_FAILURE);
-					} else if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel == 1){
-						layer_upper_c_loss_percent_understory_comp = canopy_strata_upper[0].defaults[0][0].pspread_loss_rel * pspread;
-					} else {
-						layer_upper_c_loss_percent_understory_comp = (pow(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel,pspread)-1)/(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel-1);
+						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
 					}
 
-					layer_upper_c_loss_percent_adj1 = layer_upper_c_loss_percent_understory_comp * layer_upper_height_adj;		// layer_upper_height_adj accounts for upper layer height adjustment
+					/* Determine the proportion of subtarget canopy mortality consumed */
+					if (canopy_target[0].defaults[0][0].consumption == 1){
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
+					} else {
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_subtarget_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+					}
 
+					/* Determine the proportion of subtarget canopy carbon consumed */
+					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
-					/* ---Determine loss for overstory component of upper layer--- */
-
-					layer_lower_c_loss_percent = layer_upper_c_loss_percent_understory_comp;		/* percent c lost is same for upper and lower layer since lost is based on pspread for both */
-					understory_c_loss = (layer_lower_c * layer_lower_c_loss_percent) + understory_litter_c;
-          whichUnderCalc=5;  //XXXXX
-
-					/* Sigmoidal function to relate understory carbon loss to percent loss in the upper layer */
-					layer_upper_c_loss_percent_adj2 = (1 - 1/(1+exp(-canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k1*(understory_c_loss - canopy_strata_upper[0].defaults[0][0].biomass_loss_rel_k2)))) * (1-layer_upper_height_adj);		// layer_upper_height_adj accounts for upper layer height adjustment
-
-					/* Combine losses due to overstory and understory components of upper layer */
-					layer_upper_c_loss_percent = layer_upper_c_loss_percent_adj1 + layer_upper_c_loss_percent_adj2;		// This may need to be capped at 1.
-          whichCalc=3;
+					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
+					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;					
 				}
 
+				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
+				canopy_target[0].fe.canopy_target_prop_mort = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2)))));
 
-				/* Determine the portion of c_loss_percent that is vaporized from strata */
-				if (canopy_strata_upper[0].defaults[0][0].vapor_loss_rel <= 0){
-					fprintf(stderr, "ERROR: canopy_strata_upper[0].defaults[0][0].vapor_loss_rel must be greater than 0.\n");
+				/* Determine the proportion of target canopy mortality consumed */
+				if (canopy_target[0].defaults[0][0].consumption <= 0){
+					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
     					exit(EXIT_FAILURE);
-				} else if (canopy_strata_upper[0].defaults[0][0].vapor_loss_rel == 1){
-					loss_vapor_percent = canopy_strata_upper[0].defaults[0][0].vapor_loss_rel * layer_upper_c_loss_percent;
+				} else if (canopy_target[0].defaults[0][0].consumption == 1){
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
 				} else {
-					loss_vapor_percent = (pow(canopy_strata_upper[0].defaults[0][0].vapor_loss_rel,layer_upper_c_loss_percent)-1)/(canopy_strata_upper[0].defaults[0][0].vapor_loss_rel-1);
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
-
-
-//leafc_loss_percent = (layer_upper_height_adj) + (layer_upper_c_loss_percent_adj2) /* Leaf loss attributed to understory component (assumed to 100%) plus leaf loss attributed to overstory component (assumed to be based on understory biomass))  */
-//leafc_vapor_percent = loss_vapor_percent
 
 
 			/*--------------------------------------------------------------*/
-			/* Calculate effects when upper layer is short			*/
+			/* Calculate fire effects when target canopy is an intermediate height	*/
 			/*--------------------------------------------------------------*/
 
-			} else if (layer_upper_height < patch[0].soil_defaults[0][0].understory_height_thresh) {
+			} else if (canopy_target[0].fe.canopy_target_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target[0].fe.canopy_target_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
 
-				/* Upper layer acts as a understory. Loss is a function of pspread */
-				if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel <= 0){
-					fprintf(stderr, "ERROR: canopy_strata_upper[0].defaults[0][0].pspread_loss_rel must be greater than 0.\n");
+				/* Determine the proportion of target canopy attributed to understory. Proportion overstory is 1 - canopy_target_height_u_prop */
+				canopy_target[0].fe.canopy_target_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target[0].fe.canopy_target_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
+
+
+
+				/* ------- Determine mortality/consumption for understory component of target canopy ------- */
+
+				/* This involves computing the mortality/consumption of the target canopy based on pspread. */
+
+				/* Determine the proportion of carbon mortality in the target canopy */
+				if (canopy_target[0].defaults[0][0].understory_mort <= 0){
+					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     					exit(EXIT_FAILURE);
-				} else if (canopy_strata_upper[0].defaults[0][0].pspread_loss_rel == 1){
-					layer_upper_c_loss_percent = canopy_strata_upper[0].defaults[0][0].pspread_loss_rel * pspread;
-          whichCalc=4;
+				} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
+					canopy_target[0].fe.canopy_target_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
 				} else {
-					layer_upper_c_loss_percent = (pow(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel,pspread)-1)/(canopy_strata_upper[0].defaults[0][0].pspread_loss_rel-1);
-          whichCalc=5;
+					canopy_target[0].fe.canopy_target_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
 				}
 
-//leafc_loss_percent = 1
-//leafc_vapor_percent = loss_vapor_percent
+				/* Adjust canopy_target_prop_mort to only account for understory component */
+				canopy_target[0].fe.canopy_target_prop_mort_u_component = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_height_u_prop;
 
-				/* Determine the portion of c_loss_percent that is vaporized from landscape */
-				if (canopy_strata_upper[0].defaults[0][0].vapor_loss_rel <= 0){
-					fprintf(stderr, "ERROR: canopy_strata_upper[0].defaults[0][0].vapor_loss_rel must be greater than 0.\n");
+
+
+				/* ------- Determine mortality/consumption for overstory component of target canopy ------- */
+
+				/* This involves computing the consumption of the subtarget canopy, which is used to determine target 
+				canopy mortality/consumption. */
+
+				/* Determine the proportion of carbon mortality in the subtarget canopy */
+				if (canopy_target[0].defaults[0][0].understory_mort <= 0){
+					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     					exit(EXIT_FAILURE);
-				} else if (canopy_strata_upper[0].defaults[0][0].vapor_loss_rel == 1){
-					loss_vapor_percent = canopy_strata_upper[0].defaults[0][0].vapor_loss_rel * layer_upper_c_loss_percent;
+				} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
+					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
 				} else {
-					loss_vapor_percent = (pow(canopy_strata_upper[0].defaults[0][0].vapor_loss_rel,layer_upper_c_loss_percent)-1)/(canopy_strata_upper[0].defaults[0][0].vapor_loss_rel-1);
+					canopy_target[0].fe.canopy_subtarget_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
+				}
+
+				/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
+				if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target[0].fe.canopy_subtarget_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
+
+					/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
+					canopy_target[0].fe.canopy_subtarget_height_u_prop = (patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target[0].fe.canopy_subtarget_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh);
+
+					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
+				}
+
+				/* Determine the proportion of subtarget canopy mortality consumed */
+				if (canopy_target[0].defaults[0][0].consumption == 1){
+					canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
+				} else {
+					canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_subtarget_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+				}
+
+				/* Determine the proportion of subtarget canopy carbon consumed */
+				canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
+
+				/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
+				canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;	
+
+				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) and then account for target canopy height allocation */
+				canopy_target[0].fe.canopy_target_prop_mort_o_component = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2))))) * (1-canopy_target[0].fe.canopy_target_height_u_prop);
+
+
+				/* ------------------------------------------------------------------------ */
+				/* Combine target canopy mortality from overstory and understory components */
+				canopy_target[0].fe.canopy_target_prop_mort = max(min(canopy_target[0].fe.canopy_target_prop_mort_u_component + canopy_target[0].fe.canopy_target_prop_mort_o_component,1.0),0);
+
+				/* Determine the proportion of target canopy mortality consumed */
+				if (canopy_target[0].defaults[0][0].consumption <= 0){
+					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
+    					exit(EXIT_FAILURE);
+				} else if (canopy_target[0].defaults[0][0].consumption == 1){
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
+				} else {
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+				}
+	
+
+			/*--------------------------------------------------------------*/
+			/* Calculate fire effects when target canopy is short			*/
+			/*--------------------------------------------------------------*/
+
+			} else if (canopy_target[0].fe.canopy_target_height < patch[0].soil_defaults[0][0].understory_height_thresh) {
+
+				/* Determine the proportion of carbon mortality in the target canopy */
+				if (canopy_target[0].defaults[0][0].understory_mort <= 0){
+					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
+    					exit(EXIT_FAILURE);
+				} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
+					canopy_target[0].fe.canopy_target_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+				} else {
+					canopy_target[0].fe.canopy_target_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
+				}
+
+				/* Determine the proportion of target canopy mortality consumed */
+				if (canopy_target[0].defaults[0][0].consumption == 1){
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
+				} else {
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
 			}
+
 
 			/*--------------------------------------------------------------*/
 			/* Compute effects						*/
 			/*--------------------------------------------------------------*/
 
-//printf("\n layer_upper_c_loss_percent = %lf", layer_upper_c_loss_percent);
-//printf("\n loss_vapor_percent = %lf", loss_vapor_percent);
+			/* Determine the proportion of total target canopy carbon that is consumed by fire */
+			canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_prop_mort_consumed;
 
-if( layer_upper_c_loss_percent >1) { layer_upper_c_loss_percent = 1.;        //XXXX added this in case it exceeds 1
-        whichCalc=6;
-}
-
-			/* Compute percent of total carbon that is vaporized */
-			c_loss_vapor_percent = loss_vapor_percent * layer_upper_c_loss_percent;
-//printf("\n c_loss_vapor_percent = %lf", c_loss_vapor_percent);
-
-			/* Compute percent of total carbon that remains as litter/cwd */
-			c_loss_remain_percent = layer_upper_c_loss_percent - c_loss_vapor_percent;
-//printf("\n c_loss_remain_percent = %lf", c_loss_remain_percent);
-
-			/* Adjust c_loss_remain_percent since update mortality is run twice, with vaporized C removed first */
-			//c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
-      if (fabs(c_loss_vapor_percent-1.0) < ZERO) {
-            c_loss_remain_percent_alt = 0;
-      } else {
-             c_loss_remain_percent_alt = c_loss_remain_percent / (1 - c_loss_vapor_percent);
-      }
-			if (c_loss_vapor_percent==1){
-            printf("\n C loss vapor percent = 1!!! patchID =%d, layer_upper_c_loss_percent=%lf, layer_upper_height=%lf, \n whichCalc=%d, layer_lower_c=%lf, layer_lower_c_loss_percent=%lf, understory_litter_c=%lf, c_loss_remain_percent_alt=%lf", patch[0].ID, layer_upper_c_loss_percent, layer_upper_height, whichCalc, layer_lower_c, layer_lower_c_loss_percent, understory_litter_c, c_loss_remain_percent_alt);
-      } 
-			if (c_loss_vapor_percent==1){
-            printf("\n understory_c_loss=%lf, whichUnderCalc=%d\n litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", understory_c_loss, whichUnderCalc, patch[0].litter_cs.litr1c, patch[0].litter_cs.litr2c, patch[0].litter_cs.litr3c, patch[0].litter_cs.litr4c);
-      } 
-//error checking in case above line produces a divide by zero error
-//error checking in case above line produces a divide by zero error
-		/*	if (c_loss_vapor_percent==1){
-            c_loss_remain_percent_alt = 0.05;
-      } else {
-            c_loss_remain_percent_alt = c_loss_remain_percent / (1-c_loss_vapor_percent);
-      } */
-printf("\n c_loss_remain_percent_alt = %lf", c_loss_remain_percent_alt);
-    // c_loss_vapor_percent = max(min(1.0, c_loss_vapor_percent), 0);
-    // c_loss_remain_percent_alt = max(min(1.0, c_loss_remain_percent_alt), 0);
- 
-			mort.mort_cpool = c_loss_vapor_percent;
-			mort.mort_leafc = c_loss_vapor_percent;
-			mort.mort_deadstemc = c_loss_vapor_percent;
-			mort.mort_livestemc = c_loss_vapor_percent;
-			mort.mort_frootc = c_loss_vapor_percent;
-			mort.mort_deadcrootc = c_loss_vapor_percent;
-			mort.mort_livecrootc = c_loss_vapor_percent;
-      mort.mort_deadleafc = c_loss_vapor_percent;
-
-//printf("\n upper_leafc1 = %lf", canopy_strata_upper[0].cs.leafc);
-//printf("\n upper_cwdc1 = %lf", canopy_strata_upper[0].cs.cwdc);
+			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_deadstemc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_livestemc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_frootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_deadcrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 
 			thin_type =2;	/* Harvest option */
 			update_mortality(
-				canopy_strata_upper[0].defaults[0][0].epc,
-				&(canopy_strata_upper[0].cs),
-				&(canopy_strata_upper[0].cdf),
+				canopy_target[0].defaults[0][0].epc,
+				&(canopy_target[0].cs),
+				&(canopy_target[0].cdf),
 				&(patch[0].cdf),
-				&(canopy_strata_upper[0].ns),
-				&(canopy_strata_upper[0].ndf),
+				&(canopy_target[0].ns),
+				&(canopy_target[0].ndf),
 				&(patch[0].ndf),
 				&(patch[0].litter_cs),
 				&(patch[0].litter_ns),
 				thin_type,
 				mort);
 
-			/* Determine the portion of loss that remains on landscape */
-			mort.mort_cpool = c_loss_remain_percent_alt;
-			mort.mort_leafc = c_loss_remain_percent_alt;
-			mort.mort_deadstemc = c_loss_remain_percent_alt;
-			mort.mort_livestemc = c_loss_remain_percent_alt;
-			mort.mort_frootc = c_loss_remain_percent_alt;
-			mort.mort_deadcrootc = c_loss_remain_percent_alt;
-			mort.mort_livecrootc = c_loss_remain_percent_alt;
-      mort.mort_deadleafc = c_loss_remain_percent_alt;
 
-//printf("\n upper_leafc2 = %lf", canopy_strata_upper[0].cs.leafc);
-//printf("\n upper_cwdc2 = %lf", canopy_strata_upper[0].cs.cwdc);
+			/* Compute proportion of total target canopy carbon that is killed but remains as litter/cwd */
+			canopy_target[0].fe.canopy_target_prop_c_remain = canopy_target[0].fe.canopy_target_prop_mort - canopy_target[0].fe.canopy_target_prop_c_consumed;
+
+			/* Adjust canopy_target_prop_c_remain since update mortality is run twice. Vegetation carbon */
+			/* stores on the second call to update_mortality have already been altered during the first call. */
+			/* The following adjustment accounts for this change. */
+			if (fabs(canopy_target[0].fe.canopy_target_prop_c_remain - 1.0) < ZERO){
+				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = 0;
+			} else {
+				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = canopy_target[0].fe.canopy_target_prop_c_remain / (1 - canopy_target[0].fe.canopy_target_prop_c_remain);
+			}
+
+
+			/* For understory vegetation, complete mortality of leaves was assumed if a patch was burned, regardless of pspread */
+			/* Following code adjusts canopy_target_prop_c_remain_adjusted to be 1 when canopy is understory */
+			/* Also note that leafc_transfer and leafc_storage pools are not killed by fire */
+			canopy_target[0].fe.canopy_target_height_u_prop = max(min((patch[0].soil_defaults[0][0].overstory_height_thresh - canopy_target[0].fe.canopy_target_height)/(patch[0].soil_defaults[0][0].overstory_height_thresh-patch[0].soil_defaults[0][0].understory_height_thresh),1.0),0);
+			canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc = (canopy_target[0].fe.canopy_target_prop_c_remain_adjusted * (1 - canopy_target[0].fe.canopy_target_height_u_prop)) + canopy_target[0].fe.canopy_target_height_u_prop;
+
+			/* Determine the portion of mortality that remains on landscape */
+			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
+			mort.mort_deadstemc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_livestemc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_frootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_deadcrootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
 
 			thin_type =1;
 			update_mortality(
-				canopy_strata_upper[0].defaults[0][0].epc,
-				&(canopy_strata_upper[0].cs),
-				&(canopy_strata_upper[0].cdf),
+				canopy_target[0].defaults[0][0].epc,
+				&(canopy_target[0].cs),
+				&(canopy_target[0].cdf),
 				&(patch[0].cdf),
-				&(canopy_strata_upper[0].ns),
-				&(canopy_strata_upper[0].ndf),
+				&(canopy_target[0].ns),
+				&(canopy_target[0].ndf),
 				&(patch[0].ndf),
 				&(patch[0].litter_cs),
 				&(patch[0].litter_ns),
 				thin_type,
 				mort);
 
-//printf("\n upper_leafc3 = %lf", canopy_strata_upper[0].cs.leafc);
-//printf("\n upper_cwdc3 = %lf", canopy_strata_upper[0].cs.cwdc);
-
 			}
 		}
-	}
+	} /* end if(pspread > 0 ) */
 
 	return;
 } /*end compute_fire_effects.c*/
