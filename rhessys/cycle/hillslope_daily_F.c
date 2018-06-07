@@ -59,6 +59,11 @@ void		hillslope_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local Function Declarations.                                */
 	/*--------------------------------------------------------------*/
+	void	compute_subsurface_routing(
+		struct command_line_object *,
+		struct hillslope_object *,
+		int, struct	date);
+
 	void zone_daily_F(
 		long,
 		struct world_object *,
@@ -121,6 +126,16 @@ void		hillslope_daily_F(
 	}
 
 
+	/*--------------------------------------------------------------*/
+	/*  For routing option - route water between patches within     */
+	/*      the hillslope                                           */
+	/*--------------------------------------------------------------*/
+    if ( command_line[0].routing_flag == 1 && zone[0].hourly_rain_flag == 0) {
+		compute_subsurface_routing(command_line,
+			hillslope,
+			basin[0].defaults[0][0].n_routing_timesteps,
+			current_date);
+    }
 
 	/*----------------------------------------------------------------------*/
 	/*	accumulate monthly and yearly streamflow variables		*/

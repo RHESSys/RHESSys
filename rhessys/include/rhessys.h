@@ -539,22 +539,6 @@ struct basin_object
         double  sin_latitude;           /*      DIM     */
         double  max_slope;              /*      degrees */
         
-        /*      used in subsurface computation          */
-        double basin_outflow;
-        double basin_rz_storage;
-        double basin_unsat_storage;
-        double basin_sat_deficit;
-        double basin_return_flow;
-        double basin_detention_store;
-        double basin_area;
-        double preday_basin_unsat_storage;
-        double preday_basin_rz_storage;
-        double preday_basin_sat_deficit;
-        double preday_sat_deficit;
-        double preday_basin_return_flow;
-        double preday_basin_detention_store;
-        /*                                              */
-        
         struct  base_station_object     **base_stations;
         struct  basin_default           **defaults;
         struct  basin_hourly_object     *hourly;
@@ -562,8 +546,6 @@ struct basin_object
         struct  hillslope_object        **hillslopes;
         struct  patch_object            *outside_region;
         struct  stream_list_object      stream_list;
-        struct  routing_list_object     *route_list;
-        struct  routing_list_object *surface_route_list;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  snowpack_object snowpack;
@@ -872,6 +854,25 @@ struct hillslope_object
         struct  zone_object             **zones;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
+
+        struct  routing_list_object     *route_list;
+        struct  routing_list_object     *surface_route_list;
+
+/*      used in subsurface computation          */
+        double hillslope_outflow;
+        double hillslope_rz_storage;
+        double hillslope_unsat_storage;
+        double hillslope_sat_deficit;
+        double hillslope_return_flow;
+        double hillslope_detention_store;
+        double hillslope_area;
+        double preday_hillslope_unsat_storage;
+        double preday_hillslope_rz_storage;
+        double preday_hillslope_sat_deficit;
+        double preday_sat_deficit;
+        double preday_hillslope_return_flow;
+        double preday_hillslope_detention_store;
+
         };
 
 /*----------------------------------------------------------*/

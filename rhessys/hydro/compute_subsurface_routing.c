@@ -10,7 +10,7 @@
 /*	SYNOPSIS									*/
 /*	struct routing_list_object compute_subsurface_routing( 				*/
 /*							struct command_line_object command */
-/*							struct basin_object *basinn)	*/
+/*							struct hillslope_object *hillslopen)	*/
 /*				 			int,			 	*/
 /*							struct date *current_date)	*/
 /*											*/
@@ -34,7 +34,7 @@
 #include "rhessys.h"
 
 void compute_subsurface_routing(struct command_line_object *command_line,
-		struct basin_object *basin, int n_timesteps, struct date current_date) {
+		struct hillslope_object *hillslope, int n_timesteps, struct date current_date) {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
@@ -74,19 +74,19 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	double return_flow, excess;
 	double water_balance, infiltration;
 	double innundation_depth;
-	double basin_outflow;
-	double basin_rz_storage;
-	double basin_unsat_storage;
-	double basin_sat_deficit;
-	double basin_return_flow;
-	double basin_detention_store;
-	double basin_area;
-	double preday_basin_unsat_storage;
-	double preday_basin_rz_storage;
-	double preday_basin_sat_deficit;
+	double hillslope_outflow;
+	double hillslope_rz_storage;
+	double hillslope_unsat_storage;
+	double hillslope_sat_deficit;
+	double hillslope_return_flow;
+	double hillslope_detention_store;
+	double hillslope_area;
+	double preday_hillslope_unsat_storage;
+	double preday_hillslope_rz_storage;
+	double preday_hillslope_sat_deficit;
 	double preday_sat_deficit;
-	double preday_basin_return_flow;
-	double preday_basin_detention_store;
+	double preday_hillslope_return_flow;
+	double preday_hillslope_detention_store;
 	double add_field_capacity, rz_drainage, unsat_drainage;
 	double streamflow, Qout, Qin_total, Qstr_total;
 	struct patch_object *patch;
@@ -99,50 +99,50 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	verbose_flag = command_line[0].verbose_flag;
 
 	time_int = 1.0 / n_timesteps;
-	basin_outflow = 0.0;
-	basin_area = 0.0;
-	basin_unsat_storage = 0.0;
-	basin_rz_storage = 0.0;
-	basin_sat_deficit = 0.0;
-	basin_return_flow = 0.0;
-	basin_detention_store = 0.0;
-	preday_basin_rz_storage = 0.0;
-	preday_basin_unsat_storage = 0.0;
-	preday_basin_sat_deficit = 0.0;
-	preday_basin_return_flow = 0.0;
-	preday_basin_detention_store = 0.0;
+	hillslope_outflow = 0.0;
+	hillslope_area = 0.0;
+	hillslope_unsat_storage = 0.0;
+	hillslope_rz_storage = 0.0;
+	hillslope_sat_deficit = 0.0;
+	hillslope_return_flow = 0.0;
+	hillslope_detention_store = 0.0;
+	preday_hillslope_rz_storage = 0.0;
+	preday_hillslope_unsat_storage = 0.0;
+	preday_hillslope_sat_deficit = 0.0;
+	preday_hillslope_return_flow = 0.0;
+	preday_hillslope_detention_store = 0.0;
 	streamflow = 0.0;
 	Qin_total = 0.0;
 	Qstr_total = 0.0;
 	d = 0;
-	basin[0].basin_outflow = 0.0;
-	basin[0].basin_area = 0.0;
-	basin[0].basin_unsat_storage = 0.0;
-	basin[0].basin_rz_storage = 0.0;
-	basin[0].basin_sat_deficit = 0.0;
-	basin[0].basin_return_flow = 0.0;
-	basin[0].basin_detention_store = 0.0;
-	basin[0].preday_basin_rz_storage = 0.0;
-	basin[0].preday_basin_unsat_storage = 0.0;
-	basin[0].preday_basin_sat_deficit = 0.0;
-	basin[0].preday_basin_return_flow = 0.0;
-	basin[0].preday_basin_detention_store = 0.0;	
+	hillslope[0].hillslope_outflow = 0.0;
+	hillslope[0].hillslope_area = 0.0;
+	hillslope[0].hillslope_unsat_storage = 0.0;
+	hillslope[0].hillslope_rz_storage = 0.0;
+	hillslope[0].hillslope_sat_deficit = 0.0;
+	hillslope[0].hillslope_return_flow = 0.0;
+	hillslope[0].hillslope_detention_store = 0.0;
+	hillslope[0].preday_hillslope_rz_storage = 0.0;
+	hillslope[0].preday_hillslope_unsat_storage = 0.0;
+	hillslope[0].preday_hillslope_sat_deficit = 0.0;
+	hillslope[0].preday_hillslope_return_flow = 0.0;
+	hillslope[0].preday_hillslope_detention_store = 0.0;	
 	
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
-	for (i = 0; i < basin->route_list->num_patches; i++) {
-		patch = basin->route_list->list[i];
+	for (i = 0; i < hillslope->route_list->num_patches; i++) {
+		patch = hillslope->route_list->list[i];
 		patch[0].streamflow = 0.0;
 		patch[0].return_flow = 0.0;
 		patch[0].base_flow = 0.0;
 		patch[0].infiltration_excess = 0.0;
-		basin[0].preday_basin_rz_storage += patch[0].rz_storage * patch[0].area;
-		basin[0].preday_basin_unsat_storage += patch[0].unsat_storage * patch[0].area;
-		basin[0].preday_basin_sat_deficit += patch[0].sat_deficit * patch[0].area;
-		basin[0].preday_basin_return_flow += patch[0].return_flow * patch[0].area;
-		basin[0].preday_basin_detention_store += patch[0].detention_store
+		hillslope[0].preday_hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
+		hillslope[0].preday_hillslope_unsat_storage += patch[0].unsat_storage * patch[0].area;
+		hillslope[0].preday_hillslope_sat_deficit += patch[0].sat_deficit * patch[0].area;
+		hillslope[0].preday_hillslope_return_flow += patch[0].return_flow * patch[0].area;
+		hillslope[0].preday_hillslope_detention_store += patch[0].detention_store
 				* patch[0].area;
-		basin[0].basin_area += patch[0].area;
+		hillslope[0].hillslope_area += patch[0].area;
 		patch[0].Qin_total = 0.0;
 		patch[0].Qout_total = 0.0;
 		patch[0].Qin = 0.0;
@@ -219,8 +219,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
 
 
-		for (i = 0; i < basin->route_list->num_patches; i++) {
-			patch = basin->route_list->list[i];
+		for (i = 0; i < hillslope->route_list->num_patches; i++) {
+			patch = hillslope->route_list->list[i];
 		      	patch[0].hourly_subsur2stream_flow = 0;
 			patch[0].hourly_sur2stream_flow = 0;
 			patch[0].hourly_stream_flow = 0;
@@ -232,7 +232,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*	is routed to downslope patches; saturated throughflow	*/
 			/*	above the cut and overland flow is routed to the stream	*/
 			/*								*/
-			/*	for streams, no routing - all exported from basin	*/
+			/*	for streams, no routing - all exported from hillslope	*/
 			/*								*/
 			/*	regular land patches - route to downslope neighbours    */
 			/*--------------------------------------------------------------*/
@@ -254,8 +254,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
-		for (i = 0; i < basin->route_list->num_patches; i++) {
-			patch = basin->route_list->list[i];
+		for (i = 0; i < hillslope->route_list->num_patches; i++) {
+			patch = hillslope->route_list->list[i];
 
 			/*--------------------------------------------------------------*/
 			/*	update subsurface 				*/
@@ -957,7 +957,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/* patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 							  + patch[0].hourly_sur2stream_flow;*/
 			
-				//basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;							  
+				//hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;							  
                                 if (patch[0].drainage_type == STREAM) {
 					patch[0].streamflow += patch[0].return_flow
 						+ patch[0].base_flow;
@@ -967,18 +967,18 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/* final stream flow calculations				*/
 				/*--------------------------------------------------------------*/
 
-				basin[0].basin_return_flow += (patch[0].return_flow) * patch[0].area;
-				basin[0].basin_outflow += (patch[0].streamflow) * patch[0].area;
-				basin[0].basin_unsat_storage += patch[0].unsat_storage * patch[0].area;
-				basin[0].basin_sat_deficit += patch[0].sat_deficit * patch[0].area;
-				basin[0].basin_rz_storage += patch[0].rz_storage * patch[0].area;
-				basin[0].basin_detention_store += patch[0].detention_store
+				hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
+				hillslope[0].hillslope_outflow += (patch[0].streamflow) * patch[0].area;
+				hillslope[0].hillslope_unsat_storage += patch[0].unsat_storage * patch[0].area;
+				hillslope[0].hillslope_sat_deficit += patch[0].sat_deficit * patch[0].area;
+				hillslope[0].hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
+				hillslope[0].hillslope_detention_store += patch[0].detention_store
 						* patch[0].area;
 				
 				/*---------------------------------------------------------------------*/
 				/*update accumulator variables                                            */
 				/*-----------------------------------------------------------------------*/
-				/* the accumulator is updated in update_basin_patch_accumulator.c in basin_daily_F.c*/
+				/* the accumulator is updated in update_hillslope_patch_accumulator.c in hillslope_daily_F.c*/
 
 
 			}
@@ -998,25 +998,25 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 	} /* end k  */
 
-	basin[0].basin_outflow /= basin_area;
-	basin[0].preday_basin_rz_storage /= basin_area;
-	basin[0].preday_basin_unsat_storage /= basin_area;
-	basin[0].preday_basin_detention_store /= basin_area;
-	basin[0].preday_basin_sat_deficit /= basin_area;
-	basin[0].basin_rz_storage /= basin_area;
-	basin[0].basin_unsat_storage /= basin_area;
-	basin[0].basin_detention_store /= basin_area;
-	basin[0].basin_sat_deficit /= basin_area;
-	water_balance = basin[0].preday_basin_rz_storage + basin[0].preday_basin_unsat_storage
-			+ basin[0].preday_basin_detention_store - basin[0].preday_basin_sat_deficit
-			- (basin[0].basin_rz_storage + basin[0].basin_unsat_storage + basin[0].basin_detention_store
-					- basin[0].basin_sat_deficit) - basin[0].basin_outflow;
+	hillslope[0].hillslope_outflow /= hillslope_area;
+	hillslope[0].preday_hillslope_rz_storage /= hillslope_area;
+	hillslope[0].preday_hillslope_unsat_storage /= hillslope_area;
+	hillslope[0].preday_hillslope_detention_store /= hillslope_area;
+	hillslope[0].preday_hillslope_sat_deficit /= hillslope_area;
+	hillslope[0].hillslope_rz_storage /= hillslope_area;
+	hillslope[0].hillslope_unsat_storage /= hillslope_area;
+	hillslope[0].hillslope_detention_store /= hillslope_area;
+	hillslope[0].hillslope_sat_deficit /= hillslope_area;
+	water_balance = hillslope[0].preday_hillslope_rz_storage + hillslope[0].preday_hillslope_unsat_storage
+			+ hillslope[0].preday_hillslope_detention_store - hillslope[0].preday_hillslope_sat_deficit
+			- (hillslope[0].hillslope_rz_storage + hillslope[0].hillslope_unsat_storage + hillslope[0].hillslope_detention_store
+					- hillslope[0].hillslope_sat_deficit) - hillslope[0].hillslope_outflow;
 
 
 	if((command_line[0].output_flags.yearly == 1)
 			&& (command_line[0].b != NULL )) {
-		if (basin_outflow <= command_line[0].thresholds[STREAMFLOW])
-			basin[0].acc_year.num_threshold += 1;
+		if (hillslope_outflow <= command_line[0].thresholds[STREAMFLOW])
+			hillslope[0].acc_year.num_threshold += 1;
 	}
 
 	return;
