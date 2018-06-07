@@ -33,8 +33,8 @@
 
 #include "rhessys.h"
 
-struct routing_list_object *construct_routing_topology(
-		  struct hillslope_object *hillslope,
+struct routing_list_object *construct_routing_topology(char *routing_filename,
+		  struct basin_object *basin,
 		  struct command_line_object *command_line,
 		  bool surface)
 													  
@@ -61,6 +61,7 @@ struct routing_list_object *construct_routing_topology(
 	int		patch_ID, zone_ID, hill_ID;
 	int		drainage_type;
 	double	x,y,z, area, gamma, width;
+	FILE	*routing_file;
 	struct routing_list_object	*rlist;
 	struct	patch_object	*patch;
 	struct	patch_object	*stream;
@@ -70,8 +71,13 @@ struct routing_list_object *construct_routing_topology(
 	rlist = (struct routing_list_object	*)alloc( sizeof(struct routing_list_object), "rlist", "construct_routing_topology");
 	
 	/*--------------------------------------------------------------*/
-	/*  Scan                     */
+	/*  Try to open the routing file in read mode.                    */
 	/*--------------------------------------------------------------*/
+	if ( (routing_file = fopen(routing_filename,"r")) == NULL ){
+		fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
+			routing_filename);
+		exit(EXIT_FAILURE);
+	} /*end if*/
 	fscanf(routing_file,"%d",&num_patches);
 	rlist->num_patches = num_patches;
 	rlist->list = (struct patch_object **)alloc(
@@ -194,4 +200,3 @@ struct routing_list_object *construct_routing_topology(
 
 	return(rlist);
 } /*end construct_routing_topology.c*/
-

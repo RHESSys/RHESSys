@@ -115,8 +115,6 @@ struct basin_object *construct_basin(
 	struct basin_object	*basin;
 	param	*paramPtr=NULL;
 	int	paramCnt=0;
-  FILE	*routing_file;
-
 	/*--------------------------------------------------------------*/
 	/*	Allocate a basin object.								*/
 	/*--------------------------------------------------------------*/
@@ -325,22 +323,11 @@ struct basin_object *construct_basin(
 	/*	Read in flow routing topology for routing option	*/
 	/*--------------------------------------------------------------*/
 	if ( command_line[0].routing_flag == 1 ) {
-
-	/*--------------------------------------------------------------*/
-	/*  Try to open the routing file in read mode.                    */
-	/*--------------------------------------------------------------*/
-	  if ( (routing_file = fopen(command_line[0].routing_filename,"r")) == NULL ){
-		  fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
-			command_line[0].routing_filename);
-		  exit(EXIT_FAILURE);
-	  } /*end if*/
-
-	  int num_hillslopes;
-   	fscanf(routing_file,"%d",&num_hillslopes);
-	  struct **hillslope_object list = (struct hillslope_object **)alloc(
-		num_hillslopes * sizeof(struct hillslope_object *), "hillslope list",
-		"construct_basin");
-
+		basin[0].outside_region = (struct patch_object *) alloc (1 *
+			sizeof(struct patch_object) , "patch",
+			"construct_basin");
+		basin[0].outside_region[0].sat_deficit = 0.0;
+		basin[0].outside_region[0].ID = 0;
 		if ( command_line[0].ddn_routing_flag == 1 ) {
 			basin->route_list = construct_ddn_routing_topology( command_line[0].routing_filename, basin);
 		} else {
