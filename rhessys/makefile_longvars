@@ -49,6 +49,7 @@ $(OBJ)/allocate_daily_growth.o \
 $(OBJ)/assign_base_station.o \
 $(OBJ)/assign_base_station_xy.o \
 $(OBJ)/assign_neighbours.o \
+$(OBJ)/assign_neighbours_in_hillslope.o \
 $(OBJ)/basin_daily_F.o \
 $(OBJ)/basin_daily_I.o \
 $(OBJ)/basin_hourly.o \
@@ -198,6 +199,7 @@ $(OBJ)/execute_yearly_output_event.o \
 $(OBJ)/find_basin.o \
 $(OBJ)/find_hillslope_in_basin.o \
 $(OBJ)/find_patch.o \
+$(OBJ)/find_patch_in_hillslope.o \
 $(OBJ)/find_patch_in_zone.o \
 $(OBJ)/find_stratum.o \
 $(OBJ)/find_stratum_in_patch.o \
@@ -581,6 +583,8 @@ $(OBJ)/find_stratum.o: util/find_stratum.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum.c -o $(OBJ)/find_stratum.o
 $(OBJ)/find_stratum_in_patch.o: util/find_stratum_in_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum_in_patch.c -o $(OBJ)/find_stratum_in_patch.o
+$(OBJ)/find_patch_in_hillslope.o: util/find_patch_in_hillslope.c
+	$(CC) -c $(CFLAGS) -I include util/find_patch_in_hillslope.c -o $(OBJ)/find_patch_in_hillslope.o
 $(OBJ)/find_patch_in_zone.o: util/find_patch_in_zone.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch_in_zone.c -o $(OBJ)/find_patch_in_zone.o
 $(OBJ)/find_zone_in_hillslope.o: util/find_zone_in_hillslope.c
@@ -627,6 +631,8 @@ $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
 	$(CC) -c $(CFLAGS) -I include init/construct_hillslope.c -o $(OBJ)/construct_hillslope.o
 $(OBJ)/assign_neighbours.o: init/assign_neighbours.c
 	$(CC) -c $(CFLAGS) -I include init/assign_neighbours.c -o $(OBJ)/assign_neighbours.o
+$(OBJ)/assign_neighbours_in_hillslope.o: init/assign_neighbours_in_hillslope.c
+	$(CC) -c $(CFLAGS) -I include init/assign_neighbours_in_hillslope.c -o $(OBJ)/assign_neighbours_in_hillslope.o
 $(OBJ)/assign_base_station.o: init/assign_base_station.c
 	$(CC) -c $(CFLAGS) -I include init/assign_base_station.c -o $(OBJ)/assign_base_station.o
 $(OBJ)/assign_base_station_xy.o: init/assign_base_station_xy.c

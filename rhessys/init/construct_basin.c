@@ -103,6 +103,11 @@ struct basin_object *construct_basin(
 		char *,
 		struct basin_object *, 
 		struct	command_line_object *);
+
+
+  struct hillslope_object *find_hillslope_in_basin(
+		int hillslope_ID,
+    struct basin_object *basin);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
@@ -115,6 +120,9 @@ struct basin_object *construct_basin(
 	struct basin_object	*basin;
 	param	*paramPtr=NULL;
 	int	paramCnt=0;
+  FILE	*routing_file;
+  struct hillslope_object *hillslope;
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate a basin object.								*/
 	/*--------------------------------------------------------------*/
@@ -222,22 +230,21 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	/*	Construct the hillslopes for this basin.					*/
 	/*--------------------------------------------------------------*/
-    for (int i=0; i<basin[0].num_hillslopes; i++){
+  for (int i=0; i<basin[0].num_hillslopes; i++){
       printf("reading hillslope %d\n", i);
-		basin[0].hillslopes[i] = construct_hillslope(
-			command_line, world_file, num_world_base_stations,
-			world_base_stations, defaults, base_station_ncheader, world);
-        basin[0].area += basin[0].hillslopes[i][0].area;
-        n_routing_timesteps += basin[0].hillslopes[i][0].area *
-        basin[0].hillslopes[i][0].defaults[0][0].n_routing_timesteps;
-		if (basin[0].max_slope < basin[0].hillslopes[i][0].slope)
-			basin[0].max_slope = basin[0].hillslopes[i][0].slope;
-		if (command_line[0].snow_scale_flag == 1) {
-			for (z = 0; z < basin[0].hillslopes[i][0].num_zones; z++) {
-				for (j=0; j < basin[0].hillslopes[i][0].zones[z][0].num_patches; j++) { 
-				check_snow_scale +=
-				basin[0].hillslopes[i][0].zones[z][0].patches[j][0].snow_redist_scale *
-				basin[0].hillslopes[i][0].zones[z][0].patches[j][0].area;
+		  basin[0].hillslopes[i] = construct_hillslope(
+			  command_line, world_file, num_world_base_stations,
+			  world_base_stations, defaults, base_station_ncheader, world
+      );
+
+      basin[0].area += basin[0].hillslopes[i][0].area;
+      n_routing_timesteps += basin[0].hillslopes[i][0].area * basin[0].hillslopes[i][0].defaults[0][0].n_routing_timesteps;
+		  if (basin[0].max_slope < basin[0].hillslopes[i][0].slope)
+			  basin[0].max_slope = basin[0].hillslopes[i][0].slope;
+		  if (command_line[0].snow_scale_flag == 1) {
+			  for (z = 0; z < basin[0].hillslopes[i][0].num_zones; z++) {
+				  for (j=0; j < basin[0].hillslopes[i][0].zones[z][0].num_patches; j++) { 
+				  check_snow_scale += basin[0].hillslopes[i][0].zones[z][0].patches[j][0].snow_redist_scale * basin[0].hillslopes[i][0].zones[z][0].patches[j][0].area;
 				}
 			}	
 		}
@@ -323,51 +330,91 @@ struct basin_object *construct_basin(
 	/*	Read in flow routing topology for routing option	*/
 	/*--------------------------------------------------------------*/
 	if ( command_line[0].routing_flag == 1 ) {
-		basin[0].outside_region = (struct patch_object *) alloc (1 *
-			sizeof(struct patch_object) , "patch",
-			"construct_basin");
-		basin[0].outside_region[0].sat_deficit = 0.0;
-		basin[0].outside_region[0].ID = 0;
-		if ( command_line[0].ddn_routing_flag == 1 ) {
-			basin->route_list = construct_ddn_routing_topology( command_line[0].routing_filename, basin);
-		} else {
-			basin->route_list = construct_routing_topology( command_line[0].routing_filename, basin,
-						command_line, false);
-			if ( command_line->surface_routing_flag ) {
-				printf("\tReading surface routing table\n");
-				basin->surface_route_list =
-						construct_routing_topology( command_line->surface_routing_filename, basin,
-								command_line, true);
-				if ( basin->surface_route_list->num_patches != basin->route_list->num_patches ) {
-					fprintf(stderr,
-							"\nFATAL ERROR: in construct_basin, surface routing table has %d patches, but subsurface routing table has %d patches. The number of patches must be identical.\n",
-							basin->surface_route_list->num_patches, basin->route_list->num_patches);
-					exit(EXIT_FAILURE);
-				}
-			} else {
-				// No surface routing table specified, use sub-surface for surface
-				basin->surface_route_list =
-						construct_routing_topology( command_line->routing_filename, basin,
-								command_line, true);
-			}
-		}
-	} else { // command_line[0].routing_flag != 1
-		// For TOPMODEL mode, make a dummy route list consisting of all patches
-		// in the basin, in no particular order.
-		basin->route_list = construct_topmodel_patchlist(basin);
-	}
-	
+
 	/*--------------------------------------------------------------*/
+	/*  Try to open the routing file in read mode.                    */
+	/*--------------------------------------------------------------*/
+	  if ( (routing_file = fopen(command_line[0].routing_filename,"r")) == NULL ){
+		  fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
+			command_line[0].routing_filename);
+		  exit(EXIT_FAILURE);
+	  } /*end if*/
+
+	  int num_hillslopes;
+      fscanf(routing_file,"%d",&num_hillslopes);
+      struct hillslope_object **list = (struct hillslope_object **) alloc(
+        num_hillslopes * sizeof(struct hillslope_object *), 
+        "hillslope list", //should still be patch list, but rlist needs to be attached to hillslope not the basin
+        "construct_basin"
+      );
+
+      // steps:
+      // 1. get hillslope ID by reading from routing file
+      // 2. get pointer to hillslope using id from #1 and 
+      //    find_hillslope_in_basin()
+      // 3. call construct_routing_topology and pass in hillslope
+      //    from #2
+
+    // THIS IS WHERE OPENMP WILL PARALLELIZE STUFF
+	  for (int i=0; i<num_hillslopes; i++){
+          
+          hillslope = find_hillslope_in_basin(hillslope[0].ID, basin);
+          if ( command_line[0].ddn_routing_flag == 1 ) {
+              hillslope->route_list = construct_ddn_routing_topology( routing_file, hillslope);
+          } else {
+              hillslope->route_list = construct_routing_topology( routing_file, hillslope, command_line, false);
+
+              if ( command_line->surface_routing_flag == 1 ) {
+                  printf("\tReading surface routing table\n");
+                  hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true);
+
+                  if ( hillslope->surface_route_list->num_patches != hillslope->route_list->num_patches ) {
+                      fprintf(stderr,
+                              "\nFATAL ERROR: in construct_hillslope, surface routing table has %d patches, but subsurface routing table has %d patches. The number of patches must be identical.\n",
+                              hillslope->surface_route_list->num_patches, hillslope->route_list->num_patches);
+                      exit(EXIT_FAILURE);
+                  }
+              } else {
+                  // No surface routing table specified, use sub-surface for surface
+                  hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true);
+              }
+          }
+      
+          //construct_routing_topology(hillslope, command_line, false);
+      }	
+	} else { // command_line[0].routing_flag != 1
+        // For TOPMODEL mode, make a dummy route list consisting of all patches
+        // in the hillslope, in no particular order.
+        hillslope->route_list = construct_topmodel_patchlist(hillslope);
+  }
+/* XXXX how do we deal with alt file? Is there an alt file name in the command line?
+	if ( command_line[0].ddn_routing_flag == 1 ) {
+	  if ( (routing_file = fopen(routing_filename,"r")) == NULL ){
+		  fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
+			routing_filename);
+		  exit(0);
+	} 
+	fscanf(routing_file,"%d",&num_patches);
+	struct = (struct patch_object **)alloc(
+		num_patches * sizeof(struct patch_object *), "patch list",
+		"construct_routing_topography"); */
+
+// XXXX
+
+
+/*--------------------------------------------------------------*/
 	/*	Read in stream routing topology if needed	*/
 	/*--------------------------------------------------------------*/
-	if ( command_line[0].stream_routing_flag == 1) {
-			basin[0].stream_list = construct_stream_routing_topology( command_line[0].stream_routing_filename, basin,
-						command_line);
-	}
-		else { 
-			basin[0].stream_list.stream_network = NULL;
-			basin[0].stream_list.streamflow = 0.0;
-		}
-  printf( "END CONSTRUCT BASIN\n");
+    if ( command_line[0].stream_routing_flag == 1) {
+        basin[0].stream_list = construct_stream_routing_topology( command_line[0].stream_routing_filename, basin,
+                command_line);
+    }
+    else { 
+        basin[0].stream_list.stream_network = NULL;
+        basin[0].stream_list.streamflow = 0.0;
+    }
+    printf( "END CONSTRUCT BASIN\n");
+	
+    fclose(routing_file);
 	return(basin);
 } /*end construct_basin.c*/

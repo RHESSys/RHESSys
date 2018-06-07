@@ -93,7 +93,6 @@ void compute_subsurface_routing_hourly(
 	double add_field_capacity, rz_drainage, unsat_drainage;
 	double streamflow, Qout, Qin_total, Qstr_total;
 	struct patch_object *patch;
-	struct hillslope_object *hillslope;
 	struct patch_object *neigh;
 	struct litter_object *litter;
 	d=0;

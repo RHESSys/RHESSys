@@ -31,18 +31,18 @@
 #include <stdlib.h>
 #include "rhessys.h"
 
-struct routing_list_object *construct_ddn_routing_topology(char *routing_filename,
-		  struct basin_object *basin)
-													  
-{
+struct routing_list_object *construct_ddn_routing_topology(
+  FILE * routing_file, 
+  struct hillslope_object *hillslope
+){
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	struct patch_object *find_patch(int, int, int, struct basin_object *);
+	struct patch_object *find_patch_in_hillslope(int, int, struct hillslope_object *);
 	
 	int assign_neighbours (struct neighbour_object *,
 		int,
-		struct basin_object *,
+    struct hillslope_object *,
 		FILE *);
 	
 	void *alloc(size_t, char *, char *);
@@ -52,10 +52,9 @@ struct routing_list_object *construct_ddn_routing_topology(char *routing_filenam
 	/*--------------------------------------------------------------*/
 	int		i, d;
 	int		num_patches, num_innundation_depths, num_neighbours;
-	int		patch_ID, zone_ID, hill_ID;
+	int		patch_ID, zone_ID, hill_ID, hillslope_ID;
 	int		drainage_type;
 	double	x,y,z, area, gamma, width, critical_depth;
-	FILE	*routing_file;
 	struct routing_list_object	*rlist;
 	struct	patch_object	*patch;
 	struct	patch_object	*stream;
@@ -65,11 +64,12 @@ struct routing_list_object *construct_ddn_routing_topology(char *routing_filenam
 	/*--------------------------------------------------------------*/
 	/*  Try to open the routing file in read mode.                    */
 	/*--------------------------------------------------------------*/
-	if ( (routing_file = fopen(routing_filename,"r")) == NULL ){
-		fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
-			routing_filename);
-		exit(EXIT_FAILURE);
-	} /*end if*/
+	//if ( (routing_file = fopen(routing_filename,"r")) == NULL ){
+	//	fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
+	//		routing_filename);
+	//	exit(EXIT_FAILURE);
+	//}
+  fscanf(routing_file,"%d",&hillslope_ID);
 	fscanf(routing_file,"%d",&num_patches);
 	rlist->num_patches = num_patches;
 	rlist->list = (struct patch_object **)alloc(
@@ -92,10 +92,12 @@ struct routing_list_object *construct_ddn_routing_topology(char *routing_filenam
 			&drainage_type,
 			&num_innundation_depths);
 
-		if  ( (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) )
-			patch = find_patch(patch_ID, zone_ID, hill_ID, basin);
-		else
-			patch = basin[0].outside_region;
+		if  ( (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) ) {
+			patch = find_patch_in_hillslope(patch_ID, zone_ID, hillslope );
+		}else{
+      fprintf(stderr,"\nFATAL ERROR: in construct_routing_topology, could not findpatch with ID:%d in hillslope ID:%d.\n", patch_ID, hill_ID );
+      exit(EXIT_FAILURE);
+    }
 		rlist->list[i] = patch;
 		patch[0].num_innundation_depths = num_innundation_depths;
 		patch[0].stream_gamma = 0.0;
@@ -122,7 +124,7 @@ struct routing_list_object *construct_ddn_routing_topology(char *routing_filenam
 			/*--------------------------------------------------------------*/
 			patch[0].innundation_list[d].neighbours = (struct neighbour_object *)alloc(num_neighbours *
 			sizeof(struct neighbour_object), "neighbours", "assign_neighbours");
-			patch[0].innundation_list[d].num_neighbours = assign_neighbours(patch[0].innundation_list[d].neighbours, num_neighbours, basin, routing_file);
+			patch[0].innundation_list[d].num_neighbours = assign_neighbours_in_hillslope(patch[0].innundation_list[d].neighbours, num_neighbours,  hillslope, routing_file);
 		
 		}
 		if (drainage_type == 2) {
@@ -133,7 +135,7 @@ struct routing_list_object *construct_ddn_routing_topology(char *routing_filenam
 				&width);
 			patch[0].stream_gamma = gamma;
 			patch[0].road_cut_depth = width * tan(patch[0].slope);
-			stream = find_patch(patch_ID, zone_ID, hill_ID, basin);
+			stream = find_patch_in_hillslope(patch_ID, zone_ID, hillslope);
 			patch[0].next_stream = stream;
 		}
 	}
