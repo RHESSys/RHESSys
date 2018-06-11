@@ -1,0 +1,72 @@
+2	   stratum_default_ID
+TREE	   epc.veg.type
+0.800000	   K_absorptance
+0.150000	   K_reflectance
+0.050000	   K_transmittance
+0.800000	   PAR_absorptance
+0.000000	   PAR_reflectance
+0.200000	   PAR_transmittance
+0.540000	   epc.ext_coef
+0.000500	  specific_rain_capacity
+0.001000	  specific_snow_capacity
+0.005000	  wind_attenuation_coef
+-999.9000	  ustar_overu
+2.000000	  mrc.q10
+0.200000	  mrc.per_N
+0.250000	  epc.gr_perc
+1.000000	  lai_stomatal_fraction
+0.100000	  epc.flnr
+0.030000	  epc.ppfd_coef
+15.000000	  epc.topt
+40.000000	  epc.tmax
+0.200000	  epc.tcoef
+-0.34000	  epc.psi_open     # was 0.5, changed to match White paper
+-2.200000	  epc.psi_close    # was -2.3
+0.000000	  epc.vpd_open
+3000.0000	  epc.vpd_close
+0.006000	  epc.gl_smax
+0.000600	  epc.gl_c         # is this cuticular conductance? Was 0.006, changed to 0.0006 to match White paper
+0.000000	  gsurf_slope
+1000000.000000	  gsurf_intercept
+static  	  epc.phenology_flag
+DECID	      epc.phenology.type
+20.000000	  epc.max_lai
+25.000000	  epc.proj_sla
+2.000000	  epc.lai_ratio
+1.500000	  epc.proj_swa
+0.000000	  epc.leaf_turnover      # was 0.30 but changed to zero since deciduous makes it 100%
+125.000000	  epc.day_leafon
+275.000000	  epc.day_leafoff
+30.000000	  epc.ndays_expand
+30.000000	  epc.ndays_litfall
+40.000000	  epc.leaf_cn            # originally 67.79, White paper = 25
+60.000000	  epc.leaflitr_cn        # White paper = 55
+0.000000	  min_heat_capacity
+0.000000	  max_heat_capacity
+dickenson	  epc.allocation_flag
+1.000000	  epc.storage_transfer_prop
+1.000000	  epc.froot_turnover
+0.800000	  epc.livewood_turnover
+0.010000	  epc.kfrag_base
+0.005000	  epc.daily_mortality_turnover
+48.00000	  epc.froot_cn
+70.00000	  epc.livewood_cn
+0.420000	  epc.leaflitr_flab
+0.480000	  epc.leaflitr_fcel
+0.100000	  epc.leaflitr_flig
+0.340000	  epc.frootlitr_flab
+0.440000	  epc.frootlitr_fcel
+0.220000	  epc.frootlitr_flig
+0.250000	  epc.deadwood_fcel
+0.750000	  epc.deadwood_flig
+1.200000	  epc.alloc_frootc_leafc
+0.220000	  epc.alloc_crootc_stemc
+2.200000	  epc.alloc_stemc_leafc
+0.160000	  epc.alloc_livewoodc_woodc
+0.150000	  epc.maxlgf
+0.100000	  epc.alloc_prop_day_growth
+0.000000	  epc.daily_fire_turnover
+0.570000	  epc.height_to_stem_exp
+11.390000	  epc.height_to_stem_coef
+0.01        epc.resprout_leaf_carbon
+2           pspread_loss_rel

@@ -1,0 +1,73 @@
+1 stratum_default_ID 
+TREE	   epc.veg.type
+0.800000	   K_absorptance
+0.100000	   K_reflectance
+0.100000	   K_transmittance
+1.000000	   PAR_absorptance
+0.000000	   PAR_reflectance
+0.000000	   PAR_transmittance
+0.400000	   epc.ext_coef
+0.000500	  specific_rain_capacity
+0.000500	  specific_snow_capacity
+0.002000	  wind_attenuation_coef
+-999.900000	  ustar_overu
+2.000000	  mrc.q10
+0.210000	  mrc.per_N
+0.200000	  epc.gr_perc
+1.000000	  lai_stomatal_fraction
+0.100000	  epc.flnr
+0.030000	  epc.ppfd_coef
+12.000000	  epc.topt
+40.000000	  epc.tmax
+0.200000	  epc.tcoef
+-0.500000	  epc.psi_open
+-2.000000	  epc.psi_close
+0.000000	  epc.vpd_open
+3100.000000	  epc.vpd_close
+0.006000	  epc.gl_smax
+0.0006000	  epc.gl_c    # old is 0.00600 dec-8-2017
+0.000000	  gsurf_slope
+1000000.000000	  gsurf_intercept
+static  	  epc.phenology_flag
+EVERGREEN	  epc.phenology.type
+12.000000	  epc.max_lai
+3.3	        epc.proj_sla              #Averaged from White, Sala, Law
+2.38000	  epc.lai_ratio        # old is 2.406
+1.400000	  epc.proj_swa
+0.260000	  epc.leaf_turnover         #White paper
+90.000000	  epc.day_leafon
+260.000000	  epc.day_leafoff
+30.000000	  epc.ndays_expand
+30.000000	  epc.ndays_litfall
+40.920000	  epc.leaf_cn    #average from Hart, Firestone, and Paul + lodgepole average from White paper dec-8-2017
+93.000000	  epc.leaflitr_cn  # old is 77.1 
+0.000000	  min_heat_capacity
+0.000000	  max_heat_capacity
+dickenson	  epc.allocation_flag
+1.000000	  epc.storage_transfer_prop
+0.420000	  epc.froot_turnover
+0.010000	  epc.livewood_turnover
+0.010000	  epc.kfrag_base
+0.005000	  epc.daily_mortality_turnover   # old is 0.002 dec-8-2017
+58.000000	  epc.froot_cn   # old is 57.6
+250.000000	  epc.livewood_cn
+0.250000	  epc.leaflitr_flab
+0.480000	  epc.leaflitr_fcel
+0.270000	  epc.leaflitr_flig
+0.200500	  epc.frootlitr_flab
+0.514500	  epc.frootlitr_fcel
+0.285000	  epc.frootlitr_flig
+0.500000	  epc.deadwood_fcel
+0.500000	  epc.deadwood_flig
+0.9310000	  epc.alloc_frootc_leafc
+0.270000	  epc.alloc_crootc_stemc  # old is 0.3 dec-8-2017
+0.851000	  epc.alloc_stemc_leafc   # old is 0.4 -dec-8-2017
+0.0710000	  epc.alloc_livewoodc_woodc  #old is 0.6 dec-8-2017
+0.050000	  epc.maxlgf
+0.100000	  epc.alloc_prop_day_growth
+0.000000	  epc.daily_fire_turnover
+0.570000	  epc.height_to_stem_exp
+11.390000	  epc.height_to_stem_coef
+0.150000    epc.dickenson_pa
+0.005000    epc.max_daily_mortality   # old is 0.002
+0.002000    epc.min_daily_mortality

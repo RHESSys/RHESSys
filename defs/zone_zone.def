@@ -1,0 +1,20 @@
+
+ 
+ 
+1 zone_default_ID
+1.000000 zone_default_ID
+0.000029 atm_trans_lapse_rate
+0.001500 dewpoint_lapse_rate
+10.000000 max_effective_lai
+0.006400 lapse_rate        # lapse rate 6.5 per km 0.0065 per m
+0.025400 pptmin
+0.750000 sea_level_clear_sky_trans
+0.400000 temcf
+0.003000 trans_coeff1
+2.200000 trans_coeff2
+1.000000 wind
+4.893549 max_snow_temp               # calibration Dec 8 2017
+0.000000 min_rain_temp               # calibration from tung Dec 8 2017
+0.00400 n_deposition             # old is 0.000400 dec 8 2017 (Kg/m2/year)
+0.007000 wet_lapse_rate
+ 
