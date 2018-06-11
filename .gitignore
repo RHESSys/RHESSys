@@ -3,12 +3,21 @@
 *.pyc
 rhessys/rhessys5.20.1
 
+.nfs*
+rhessys/.nfs*
+rhessys/cycle/.nfs*
+
+
 
 # Build directories
 objects/
 build/Qt/gcc/bin/
 build/Qt/gcc/RHESSys/RHESSys.pro.user
 build/Qt/gcc/RHESSys/RHESSys.pro.user.2.7pre1
+
+
+
+
 
 #Qt git structure
 .directory
