@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include "rhessys.h"
 
+#define THREADS 8
 void	basin_hourly(
 					 struct	world_object	*world,
 					 struct 	basin_object 	*basin,
@@ -161,7 +162,7 @@ void	basin_hourly(
 	/*	Note that solar geometry except for cos_sza may be garbage	*/
 	/*	if cos_sza < 0 (no daylight).								*/
 	/*--------------------------------------------------------------*/
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(THREADS)
     for (int hillslope=0 ; hillslope < basin[0].num_hillslopes ;hillslope++ ){
 		hillslope_hourly(
 			world,

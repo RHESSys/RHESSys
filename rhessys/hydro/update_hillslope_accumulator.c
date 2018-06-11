@@ -24,6 +24,7 @@
 /*--------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
+#define THREADS 8
 void update_hillslope_accumulator(
 			struct command_line_object *command_line,
 			struct basin_object *basin){
@@ -38,7 +39,7 @@ void update_hillslope_accumulator(
 	/*--------------------------------------------------------------------------------------*/
 	/* update hillslope accumulator								*/
 	/*--------------------------------------------------------------------------------------*/
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(THREADS)
     for (int h = 0 ; h < basin[0].num_hillslopes; h++ ){
         struct hillslope_object *hillslope = basin[0].hillslopes[h];
 		hillslope[0].acc_month.length += 1;

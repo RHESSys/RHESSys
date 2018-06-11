@@ -293,7 +293,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 
 		int tmpPatchID;
 		FILE *patchesIn;
-		patchesIn=fopen("../auxdata/patchGrid.txt","r");
+		patchesIn=fopen("/fastscratch/e.hanan/FireSpread/JC/auxdata/patchGrid.txt","r");
 		// for now do away with the header
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){
@@ -308,7 +308,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					fire_grid[i][j].patches=(struct patch_object **) malloc(fire_grid[i][j].num_patches*sizeof(struct patch_object *));
 					fire_grid[i][j].prop_patch_in_grid=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double)); 
 					fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double)); 
-					printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files);
+					//printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files);
 					for (b=0; b< world[0].num_basin_files; ++b) {
 						for (h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
 							for (z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
@@ -318,7 +318,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				//					printf("is my world ok? %d\n",&patch[0].ID);
 									if(patch[0].ID==tmpPatchID)
 									{
-										printf("now filling in array--found a match!\n");
+				//						printf("now filling in array--found a match!\n");
 										fire_grid[i][j].patches[0]=patch;
 										//printf("patch1\n");
 										fire_grid[i][j].occupied_area=cell_res*cell_res;
@@ -340,7 +340,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		fclose(patchesIn);
 		printf("assigning dem\n");
 		FILE *demIn;
-		demIn=fopen("../auxdata/DemGrid.txt","r");
+		demIn=fopen("/fastscratch/e.hanan/FireSpread/JC/auxdata/DemGrid.txt","r");
 		// for now do away with the header, so this file has no header
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){				

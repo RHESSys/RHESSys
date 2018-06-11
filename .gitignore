@@ -6,8 +6,10 @@ rhessys/rhessys5.20.1
 .nfs*
 rhessys/.nfs*
 rhessys/cycle/.nfs*
-
-
+*.swp
+rhessys/hydro/*.swp
+rhessys/init/*.swp
+rhessys/tec/*.swp
 
 # Build directories
 objects/

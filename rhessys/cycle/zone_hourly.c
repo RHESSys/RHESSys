@@ -36,7 +36,7 @@
 /*	- added a check on cos_slope_beam_angle			*/
 /*	so that if it is negative - addition to			*/
 /*	direct radiation is zero (not negative)			*/
-/*	i.e if sun is behind a hill, no direct radiation	*/ 
+/*	i.e if sun is behind a hill, no direct radiation	*/
 /*	is added						*/
 /*																*/
 /*--------------------------------------------------------------*/
@@ -64,7 +64,7 @@ void		zone_hourly(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
-	
+
 	void	*alloc(	size_t, char *, char *);
 	long  julday( struct date );
 	/*--------------------------------------------------------------*/
@@ -82,7 +82,7 @@ void		zone_hourly(
 	/*--------------------------------------------------------------*/
 	zone[0].hourly_rain_flag = 0;
 	zone[0].hourly[0].rain = 0.0;
-	zone[0].hourly[0].snow = 0.0; 
+	zone[0].hourly[0].snow = 0.0;
 	inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 
 	if (inx > -999)  {
@@ -92,7 +92,7 @@ void		zone_hourly(
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain.inx;
 			clim_event = zone[0].base_stations[0][0].hourly_clim[0].rain.seq[inx];
 			}
-		
+
 		if ( (clim_event.edate.year != 0) &&
 			(julday(clim_event.edate) == julday(current_date)) && (clim_event.edate.hour == current_date.hour) ) {
 			zone[0].hourly_rain_flag = 1;
@@ -107,7 +107,7 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/
 			/*if temperture is low enough, some of rain will turn to snow	*/
 			/*--------------------------------------------------------------*/
-			
+
 			/*--------------------------------------------------------------*/
 			/*	.metv.tavg	(degrees C)				*/
 			/*--------------------------------------------------------------*/
@@ -163,7 +163,7 @@ void		zone_hourly(
 					zone[0].hourly[0].snow = 0.0;
 				}
 			}
-			
+
 
 			inx = zone[0].base_stations[0][0].hourly_clim[0].rain_duration.inx;
 			/*--------------------------------------------------------------*/
@@ -187,18 +187,18 @@ void		zone_hourly(
 	}
 	zone[0].snow_hourly_total += zone[0].hourly[0].snow;
 	zone[0].rain_hourly_total += zone[0].hourly[0].rain;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	count the daytime_rain_duration				*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].hourly_rain_flag==1) {
 		//if (current_date.hour==1) {
 		//	zone[0].daytime_rain_duration=0;}
-		
+
 		if (zone[0].hourly[0].rain+zone[0].hourly[0].snow > 0) {
 			zone[0].rain_duration += 3600;}
 	}
-			
+
 	/*--------------------------------------------------------------*/
 	/*	Compute zone hourly radiation forcings.								*/
 	/*--------------------------------------------------------------*/
@@ -230,7 +230,7 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/
 			zone[0].hourly[0].Kdown_BOA
 				= world[0].Io * zone[0].hourly[0].direct_attenuation;
-			if (command_line[0].verbose_flag > 5) 
+			if (command_line[0].verbose_flag > 5)
 				printf("\n Io(W/m^2)= %f, Atm_trans= %f, air_mass= %f direct_att= %f Kdown_BOA(W/m^2)= %f ",
 				world[0].Io,
 				zone[0].atm_trans,
@@ -264,8 +264,11 @@ void		zone_hourly(
 			/*	the zone is still in shade.  We should decide if we should	*/
 			/*	define daylength (and horizons) based on basin or zone.		*/
 			/*--------------------------------------------------------------*/
+			//ren change if //
 			if ( (basin[0].hourly[0].cos_sza > zone[0].e_horizon) &&
-				(basin[0].hourly[0].cos_sza > zone[0].w_horizon) ){
+				(basin[0].hourly[0].cos_sza > zone[0].w_horizon) ) 
+			//ren//
+			/*	if( basin[0].hourly[0].cos_sza >0.5*(zone[0].e_horizon+zone[0].w_horizon)){ */
 				/*--------------------------------------------------------------*/
 				/*	Increment zone daylength				*/
 				/*--------------------------------------------------------------*/
@@ -281,7 +284,7 @@ void		zone_hourly(
 					/*     Required to adjust max temp.                            */
 					/*-------------------------------------------------------------*/
 					zone[0].hourly[0].Kdown_direct_flat
-						= basin[0].hourly[0].cos_sza * zone[0].hourly[0].Kdown_BOA;
+						= basin[0].hourly[0].cos_sza * zone[0].hourly[0].Kdown_BOA; 
 					/*-------------------------------------------------------------*/
 					/*     Cosine of beam slope angle. (no units)                  */
 					/*                                                             */
@@ -311,7 +314,7 @@ void		zone_hourly(
 					/*----------------------------------------------------------*/
 					zone[0].hourly[0].Kdown_direct
 						= zone[0].hourly[0].cos_beam_slope
-						* zone[0].hourly[0].Kdown_BOA;
+						* zone[0].hourly[0].Kdown_BOA; 
 					/*-------------------------------------------------------------*/
 					/*		Diffuse Radiation Calculations			*/
 					/*		Source Daymet - Peter Thorto			*/
@@ -328,10 +331,10 @@ void		zone_hourly(
 						zone[0].hourly[0].Kdown_diffuse_flat = 0.0;
 					else
 						zone[0].hourly[0].Kdown_diffuse_flat
-							= temp * (1.0 - temp / Kdown_direct_flat_toa);
+							= temp * (1.0 - temp / Kdown_direct_flat_toa); 
 					zone[0].hourly[0].Kdown_diffuse
 						= zone[0].hourly[0].Kdown_diffuse_flat
-						* pow(cos(zone[0].slope/2.0),2.0);
+						* pow(cos(zone[0].slope/2.0),2.0); 
 					if ( command_line[0].verbose_flag > 5 )
 						printf("\n-111.3 cos_sza : %8.4f Kdown_dir_flat= %8.4f Kdown_dif_flat= %8.4f ",
 						basin[0].hourly[0].cos_sza,
@@ -356,7 +359,7 @@ void		zone_hourly(
 						+= zone[0].hourly[0].Kdown_diffuse_flat * 3600 / 1000;
 					zone[0].Kdown_diffuse_calc
 						+= zone[0].hourly[0].Kdown_diffuse * 3600 / 1000;
-				/*} end if */ 
+				/*} end if */
 			} /*end if*/
 			} /*end if*/
 		} /*end if*/
