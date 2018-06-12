@@ -10,6 +10,11 @@ rhessys/cycle/.nfs*
 rhessys/hydro/*.swp
 rhessys/init/*.swp
 rhessys/tec/*.swp
+*.bak
+rhessys/hydro/*.bak
+rhessys/init/*.bak
+rhessys/cn/*.bak
+rhessys/tec/*.bak
 
 # Build directories
 objects/
