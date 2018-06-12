@@ -94,6 +94,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].noredist_flag = 0;
 	command_line[0].surface_energy_flag = 0;
 	command_line[0].firespread_flag = 0;
+	command_line[0].beetlespread_flag =0;
 	command_line[0].vegspinup_flag = 0;		
 	command_line[0].vgsen_flag = 0;
 	command_line[0].FillSpill_flag=0;	
@@ -273,6 +274,24 @@ struct	command_line_object	*construct_command_line(
 					i++;
 				}/*end if*/
 			}/* end if */
+           /*-------------------------------------------------*/
+           /* beetle outbreak options       */
+           /*-------------------------------------------------*/
+            else if ( strcmp(main_argv[i],"-beetlespread") == 0 ){
+				printf("\n Running with beetle outbreak turned on");
+				command_line[0].beetlespread_flag = 1;
+				i++;
+				command_line[0].beetle_grid_res = 100; // default 30 meters what if the beetle grid is small than the patch grid
+				/*-------------------------------*/
+				/*Read in the beetle spread grid parameters		*/
+				/*-------------------------------*/
+			if (  (i != main_argc) && (valid_option(main_argv[i])==0) ){
+					command_line[0].beetle_grid_res = (double)atof(main_argv[i]);
+					i++;
+				}/*end if*/
+			}/* end if */
+
+
 
 			/*-------------------------------------------------*/
 			/*	surface energy option */

@@ -91,6 +91,7 @@ struct patch_object *construct_patch(
 	int		soil_default_object_ID;
 	int		landuse_default_object_ID;
 	int		fire_default_object_ID;
+	int  beetle_default_object_ID;
 	int		surface_energy_default_object_ID;
 	char		record[MAXSTR];
 	struct patch_object *patch;
@@ -139,6 +140,15 @@ struct patch_object *construct_patch(
 		fscanf(world_file,"%d",&(fire_default_object_ID));
 		read_record(world_file, record);
 		}
+
+/* read the input from worldfile if the beetlespread_flag is set */
+    if (command_line[0].beetlespread_flag == 1) {
+		fscanf(world_file,"%d",&(beetle_default_object_ID));
+		read_record(world_file, record);
+		}
+
+
+
 
 	if (command_line[0].surface_energy_flag == 1) {
 		fscanf(world_file,"%d",&(surface_energy_default_object_ID));
@@ -429,6 +439,33 @@ struct patch_object *construct_patch(
 	} /* end-while */
 	patch[0].fire_defaults[0] = &defaults[0].fire[i];
 	}
+
+/* if beetlespread flag is set assign beetle defaults values */
+
+if (command_line[0].beetlespread_flag == 1) {
+	patch[0].beetle_defaults = (struct beetle_default **)
+		alloc( sizeof(struct beetle_default *),"defaults",
+		"construct_patch" );
+	i = 0;
+	while (defaults[0].beetle[i].ID != beetle_default_object_ID) {
+		i++;
+		/*--------------------------------------------------------------*/
+		/*  Report an error if no match was found.  Otherwise assign    */
+		/*  the default to point to this patch.						    */
+		/*--------------------------------------------------------------*/
+		if ( i>= defaults[0].num_beetle_default_files ){
+			fprintf(stderr,
+				"\nFATAL ERROR: in construct_patch, fire default ID %d not found for patch %d\n" ,
+				beetle_default_object_ID, patch[0].ID);
+			exit(EXIT_FAILURE);
+		}
+	} /* end-while */
+	patch[0].beetle_defaults[0] = &defaults[0].beetle[i];
+	}
+
+
+
+
 
 	/*--------------------------------------------------------------*/
 	/* if surface energy module is called assign fire defaults	*/

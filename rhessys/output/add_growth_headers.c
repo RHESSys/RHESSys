@@ -403,7 +403,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", //add the beetle snag output
 		"year",
 		"basinID",
 		"hillID",
@@ -419,7 +419,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"stemn",
 		"cwdc",
 		"cwdn",
-		"psn","cpool", "mortfract");
+		"psn","cpool", "mortfract", "snagc", "snagn", "redneedlec", "redneedlen");
 	}
 
 

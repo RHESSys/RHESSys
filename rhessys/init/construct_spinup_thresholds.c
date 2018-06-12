@@ -83,14 +83,14 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
   target_array = (struct target_read *)alloc( sizeof(struct target_read)*num_targets, "target_array", "construct_spinup_thresholds");
   
   for (j=0; j< num_targets; j++){
-    fscanf(spinup_thresholds_file, "%s", target_array[j].name 	);
-    read_record(spinup_thresholds_file, record);
+    fscanf(spinup_thresholds_file, "%s", target_array[j].name 	);// the lai file you created
+    read_record(spinup_thresholds_file, record);//here could be LAI scan is scan not reading
   }
 	/*--------------------------------------------------------------*/
 	/*	Read in  each stratum record and find it			          		*/
 	/*	add it to the world level spinup_thresholds list	          */
 	/*--------------------------------------------------------------*/
-  read_record(spinup_thresholds_file, record);
+  read_record(spinup_thresholds_file, record);// read the id
 
   for (i=0; i< num_stratum; ++i) {  
 		fscanf(spinup_thresholds_file,"%d %d %d %d %d",
@@ -107,7 +107,7 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 			exit(EXIT_FAILURE);
     }
 
-    strata->target.met = 0;
+    strata->target.met = 0;// strata is after you find it in row 101 so no need the index
      
       for (j=0; j< num_targets; ++j) {
 		      fscanf(spinup_thresholds_file,"%lf", &target_array[j].value);

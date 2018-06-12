@@ -29,7 +29,7 @@
 #include "rhessys.h"
 
 /*-----------------------------------------------
- ead a record upto a new line or eof
+ read a record upto a new line or eof
 from axing's oksis.h
 fp      - file pointer
 record  - character string of the record itself

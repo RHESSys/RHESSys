@@ -177,6 +177,13 @@ void	execute_tec(
 		struct	command_line_object	*,
 		struct	date);
 	
+	void    execute_beetlespread_event(
+						world,
+						command_line,
+						current_date
+
+
+	);
 	void	execute_state_output_event(
 		struct world_object *,
 		struct date,
@@ -425,6 +432,20 @@ void	execute_tec(
 				/*				Do yearly stuff.								*/
 				/*--------------------------------------------------------------*/
 				
+				/*--------------------------------------------------------------*/
+				/* if beetle spread is called - initiate beetle spread routine 	*/
+				/*--------------------------------------------------------------*/
+	     		if (command_line[0].beetlespread_flag == 1 && current_date.year ==world[0].defaults[0].beetle[0].year_attack) {
+					execute_beetlespread_event(
+						world,
+						command_line,
+						current_date);
+				}
+
+
+
+
+
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/

@@ -251,7 +251,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
   float * allActualData;
 
   if( !clim_repeat_flag ) {
-    if ((retval = nc_get_vara_float(ncid,temp_varid,start,count,&data[0]))){
+    if ((retval = nc_get_vara_float(ncid,temp_varid,start,count,&data[0]))){ //here is the data
       free(days);
       free(lat);
       free(lont);
@@ -281,7 +281,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
  */
 
   if( clim_repeat_flag ) {
-    float * real_netcdf_data = allActualData;
+    float * real_netcdf_data = allActualData; //here from line 263 the climate result
     float * output_data = data;
     int total_days_in_netcdf_data = nday;
     struct date target_date;

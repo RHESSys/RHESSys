@@ -69,6 +69,15 @@ void	output_patch_state(
 		fprintf(outfile,"\n          ");
 	}
 
+	/* if the beetle_spread flag is set , output these parameters*/
+
+		if (command_line[0].beetlespread_flag == 1) {
+		fprintf(outfile,"%-30ld %s",patch[0].beetle_defaults[0][0].ID, "beetle_parm_ID");
+		fprintf(outfile,"\n          ");
+	}
+
+
+
 	if (command_line[0].surface_energy_flag == 1) {
 		fprintf(outfile,"%-30ld %s",patch[0].surface_energy_defaults[0][0].ID, "surface_energy_parm_ID");
 		fprintf(outfile,"\n          ");

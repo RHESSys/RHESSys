@@ -358,6 +358,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct landuse_default *construct_landuse_defaults(int, char **, struct command_line_object *);
 	struct stratum_default *construct_stratum_defaults(int, char **, struct command_line_object *);
 	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
+	struct beetle_default *construct_beetle_defaults(int, char **, struct command_line_object *);
 	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
 	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *); 
 	struct base_station_object *construct_base_station(char *,
@@ -368,6 +369,11 @@ struct world_object *construct_world(struct command_line_object *command_line){
         struct world_object *);
 	struct fire_patch_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default def);
 	struct fire_object **construct_fire_grid(struct world_object *);
+	/* construct the beetle grid, following the example of fire patch object */
+    struct beetle_patch_object **construct_patch_beetle_grid(struct world_object *, struct command_line_object *,struct beetle_default def);
+	struct beetle_object **construct_beetle_grid(struct world_object *);
+
+
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
 	struct base_station_object *construct_netcdf_grid(struct base_station_object *, struct base_station_ncheader *, int *, float, float, float, struct date *, struct date *, struct command_line_object *);
@@ -607,6 +613,24 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].defaults[0].num_fire_default_files);
 	}
 	
+
+		if (command_line[0].beetlespread_flag == 1) {
+		fscanf(header_file,"%d",&(world[0].defaults[0].num_beetle_default_files));
+		read_record(header_file, record);
+		/*--------------------------------------------------------------*/
+		/*	Read in the beetle default files.			*/
+		/*--------------------------------------------------------------*/
+		world[0].beetle_default_files= construct_filename_list( header_file,
+			world[0].defaults[0].num_beetle_default_files);
+	}
+
+
+
+
+
+
+
+
 	/*--------------------------------------------------------------*/
 	/*	If surface energy option has been set                             */
 	/* Read in the number of surface energy default files.		*/
@@ -728,6 +752,17 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].defaults[0].num_fire_default_files,
 			world[0].fire_default_files, command_line);
 	}
+
+	/* if the beetlespread flag is set */
+		if (command_line[0].beetlespread_flag == 1) {
+		world[0].defaults[0].beetle = construct_beetle_defaults(
+			world[0].defaults[0].num_beetle_default_files,
+			world[0].beetle_default_files, command_line);
+	}
+
+
+
+
 
 	printf("\nConstructed fire defaults\n");
 	/*--------------------------------------------------------------*/
@@ -905,6 +940,15 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].fire_grid = construct_fire_grid(world);
 
 	}	
+	/* if the beetlespread flag is set */
+
+    world[0].num_beetle_grid_row = 0; //using the fire grid
+	world[0].num_beetle_grid_col = 0;
+	if (command_line[0].beetlespread_flag == 1) {
+		world[0].patch_beetle_grid = construct_patch_beetle_grid(world, command_line,*(world[0].defaults[0].beetle));
+		world[0].beetle_grid = construct_beetle_grid(world);
+
+	}
 	/*--------------------------------------------------------------*/
 	/*	Close the world_file and header (if necessary)	         	*/
 	/*--------------------------------------------------------------*/

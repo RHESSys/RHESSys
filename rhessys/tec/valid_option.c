@@ -78,6 +78,7 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-whdr") == 0) ||
 		(strcmp(command_line,"-netcdf") == 0) ||
 		(strcmp(command_line,"-climrepeat") == 0) ||
+		(strcmp(command_line, "-beetlespread")==0) ||
 
 		(strcmp(command_line,"-template") == 0) ||
 		(strcmp(command_line,"-fs") == 0) ||

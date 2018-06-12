@@ -510,7 +510,7 @@ struct base_station_object **construct_ascii_grid (
 		for (i=0; i < num_base_stations; i++) {
 			
 			if (i==0) {
-				tokc = strtok_r(buffertmax, " ", &lasttmax);
+				tokc = strtok_r(buffertmax, " ", &lasttmax);// string splitting, by "", should return the first part
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmax[j]));
 				tokc = strtok_r(buffertmin, " ", &lasttmin);
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmin[j]));

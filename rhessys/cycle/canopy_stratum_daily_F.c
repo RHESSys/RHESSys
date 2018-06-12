@@ -246,6 +246,35 @@ void	canopy_stratum_daily_F(
 	  struct command_line_object	  *command_line,
 	  struct date 			            current_date); 
 
+
+   int compute_snag_decay(
+
+					  struct cstate_struct *cs,
+					  struct nstate_struct *ns,
+					  struct cdayflux_patch_struct *cdf, //daily carbon flux
+					  struct ndayflux_patch_struct *ndf,  // daily nitrogen flux
+					  int year_attack,  // the day that start have beetle attack impact
+					  int year_delay,
+					  int half_life,
+					  struct date current_day); // current day that
+
+    int compute_redneedle_decay(
+                      struct epconst_struct epc,
+					  //double cover_fraction,
+					  struct cstate_struct *cs,
+					  struct nstate_struct *ns,
+					  struct litter_c_object *cs_litr,
+					  struct litter_n_object *ns_litr,
+					  struct cdayflux_patch_struct *cdf, //daily carbon flux
+					  struct ndayflux_patch_struct *ndf,  // daily nitrogen flux
+					  int year_attack,  // the year that start have beetle attack impact
+					  int year_delay,
+					  int half_life,
+					  struct date current_day);
+
+
+
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -320,6 +349,7 @@ void	canopy_stratum_daily_F(
 	double max_snow_albedo_increase, wetfrac;
 	double deltaT;
 
+int ok=0; //for beetle outbreak
 	struct	psnin_struct	psnin;
 	struct	psnout_struct	psnout;
 	struct mortality_struct mort;
@@ -1914,7 +1944,62 @@ void	canopy_stratum_daily_F(
 	if(command_line[0].vegspinup_flag > 0){
     update_shadow_strata(world, stratum, shadow_strata, command_line, current_date);
   }
-  
+
+   /***********************************************************************/
+   /* if beetle attack first update the snag pool after the delay years */
+   /**********************************************************************/
+
+
+    if(command_line[0].beetlespread_flag >0 && current_date.year > (world[0].defaults[0].beetle[0].year_attack + world[0].defaults[0].beetle[0].year_delay )){ // here the year attack should debug
+
+//
+    ok = compute_snag_decay(
+                       &(stratum[0].cs),
+                       &(stratum[0].ns),
+                       &(patch[0].cdf),
+                       &(patch[0].ndf),
+                       world[0].defaults[0].beetle[0].year_attack,
+                       world[0].defaults[0].beetle[0].year_delay,
+                       world[0].defaults[0].beetle[0].half_life,
+                       current_date);
+
+       if (ok ==2) {
+        fprintf(stderr, "FATAL ERROR: in computed snag pool decay, the current date is before the beetle attack date");
+       exit(EXIT_FAILURE);
+
+    };
+
+  }
+
+
+
+   /*****************************************************************/
+   /* if the beetle attack, update the dead leaf( red needle pool) */
+   /****************************************************************/
+
+    if(command_line[0].beetlespread_flag >0 && current_date.year > (world[0].defaults[0].beetle[0].year_attack + world[0].defaults[0].beetle[0].leaf_year_delay )){ // here the year attack should debug
+
+
+
+      ok = compute_redneedle_decay(
+                    stratum[0].defaults[0][0].epc,
+                    &(stratum[0].cs),
+                    &(stratum[0].ns),
+                    &(patch[0].litter_cs),
+                    &(patch[0].litter_ns),
+                    &(patch[0].cdf),
+                    &(patch[0].ndf),
+                    world[0].defaults[0].beetle[0].year_attack,
+                    world[0].defaults[0].beetle[0].leaf_year_delay,
+                    world[0].defaults[0].beetle[0].leaf_half_life,
+                    current_date );
+
+         if (ok ==2) {
+        fprintf(stderr, "FATAL ERROR: in computed dead foliage pool decay, the current date is before the beetle attack date");
+       exit(EXIT_FAILURE);
+
+    };
+  }
 	/*--------------------------------------------------------------*/
 	/*      update accumlator variables                             */
 	/*--------------------------------------------------------------*/

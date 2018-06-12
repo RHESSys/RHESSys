@@ -68,6 +68,8 @@ $(OBJ)/compute_annual_turnover.o \
 $(OBJ)/compute_atm_pres.o \
 $(OBJ)/compute_capillary_rise.o \
 $(OBJ)/compute_cwd_decay.o \
+$(OBJ)/compute_snag_decay.o\
+$(OBJ)/compute_redneedle_decay.o \
 $(OBJ)/compute_deadleaf_turnover.o \
 $(OBJ)/compute_delta_water.o \
 $(OBJ)/compute_diffuse_radiative_PAR_fluxes.o \
@@ -144,11 +146,13 @@ $(OBJ)/construct_output_files.o \
 $(OBJ)/construct_output_fileset.o \
 $(OBJ)/construct_patch.o \
 $(OBJ)/construct_fire_grid.o \
+$(OBJ)/construct_beetle_grid.o\
 $(OBJ)/construct_routing_topology.o \
 $(OBJ)/construct_stream_routing_topology.o \
 $(OBJ)/construct_ddn_routing_topology.o \
 $(OBJ)/construct_surface_energy_defaults.o \
 $(OBJ)/construct_fire_defaults.o \
+$(OBJ)/construct_beetle_defaults.o\
 $(OBJ)/construct_soil_defaults.o \
 $(OBJ)/construct_spinup_thresholds.o \
 $(OBJ)/construct_spinup_defaults.o \
@@ -173,6 +177,7 @@ $(OBJ)/destroy_output_files.o \
 $(OBJ)/destroy_output_fileset.o \
 $(OBJ)/destroy_patch.o \
 $(OBJ)/destroy_fire_defaults.o \
+$(OBJ)/destroy_beetle_defaults.o\
 $(OBJ)/destroy_surface_energy_defaults.o \
 $(OBJ)/destroy_soil_defaults.o \
 $(OBJ)/destroy_stratum_defaults.o \
@@ -191,6 +196,7 @@ $(OBJ)/execute_redefine_world_mult_event.o \
 $(OBJ)/execute_redefine_world_thin_event.o \
 $(OBJ)/execute_road_construction_event.o \
 $(OBJ)/execute_firespread_event.o \
+$(OBJ)/execute_beetlespread_event.o \
 $(OBJ)/execute_state_output_event.o \
 $(OBJ)/execute_tec.o \
 $(OBJ)/execute_yearly_growth_output_event.o \
@@ -293,6 +299,7 @@ $(OBJ)/update_gw_drainage.o \
 $(OBJ)/update_hillslope_accumulator.o \
 $(OBJ)/update_litter_interception_capacity.o \
 $(OBJ)/update_mortality.o \
+$(OBJ)/update_beetle_attack_mortality.o \
 $(OBJ)/update_litter_soil_mortality.o \
 $(OBJ)/update_branch_mortality.o \
 $(OBJ)/update_nitrif.o \
@@ -427,6 +434,8 @@ else
 $(OBJ)/execute_firespread_event.o: tec/execute_firespread_event_dummy.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event_dummy.c -o $(OBJ)/execute_firespread_event.o
 endif
+$(OBJ)/execute_beetlespread_event.o: tec/execute_beetlespread_event.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_beetlespread_event.c -o $(OBJ)/execute_beetlespread_event.o
 $(OBJ)/execute_tec.o: tec/execute_tec.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_tec.c -o $(OBJ)/execute_tec.o
 $(OBJ)/construct_command_line.o: init/construct_command_line.c
@@ -447,6 +456,8 @@ $(OBJ)/construct_surface_energy_defaults.o: init/construct_surface_energy_defaul
 	$(CC) -c $(CFLAGS) -I include init/construct_surface_energy_defaults.c -o $(OBJ)/construct_surface_energy_defaults.o
 $(OBJ)/construct_fire_defaults.o: init/construct_fire_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_defaults.c -o $(OBJ)/construct_fire_defaults.o
+$(OBJ)/construct_beetle_defaults.o: init/construct_beetle_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/construct_beetle_defaults.c -o $(OBJ)/construct_beetle_defaults.o
 $(OBJ)/construct_soil_defaults.o: init/construct_soil_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/construct_soil_defaults.c -o $(OBJ)/construct_soil_defaults.o
 $(OBJ)/construct_spinup_thresholds.o: init/construct_spinup_thresholds.c
@@ -623,6 +634,8 @@ $(OBJ)/construct_topmodel_patchlist.o: init/construct_topmodel_patchlist.c
 	$(CC) -c $(CFLAGS) -I include init/construct_topmodel_patchlist.c -o $(OBJ)/construct_topmodel_patchlist.o
 $(OBJ)/construct_fire_grid.o: init/construct_fire_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_grid.c -o $(OBJ)/construct_fire_grid.o
+$(OBJ)/construct_beetle_grid.o: init/construct_beetle_grid.c
+	$(CC) -c $(CFLAGS) -I include init/construct_beetle_grid.c -o $(OBJ)/construct_beetle_grid.o
 $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
 	$(CC) -c $(CFLAGS) -I include init/construct_hillslope.c -o $(OBJ)/construct_hillslope.o
 $(OBJ)/assign_neighbours.o: init/assign_neighbours.c
@@ -653,6 +666,8 @@ $(OBJ)/destroy_surface_energy_defaults.o: init/destroy_surface_energy_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/destroy_surface_energy_defaults.c -o $(OBJ)/destroy_surface_energy_defaults.o
 $(OBJ)/destroy_fire_defaults.o: init/destroy_fire_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/destroy_fire_defaults.c -o $(OBJ)/destroy_fire_defaults.o
+$(OBJ)/destroy_beetle_defaults.o: init/destroy_beetle_defaults.c
+	$(CC) -c $(CFLAGS) -I include init/destroy_beetle_defaults.c -o $(OBJ)/destroy_beetle_defaults.o
 $(OBJ)/destroy_soil_defaults.o: init/destroy_soil_defaults.c
 	$(CC) -c $(CFLAGS) -I include init/destroy_soil_defaults.c -o $(OBJ)/destroy_soil_defaults.o
 $(OBJ)/destroy_landuse_defaults.o: init/destroy_landuse_defaults.c
@@ -862,6 +877,10 @@ $(OBJ)/compute_annual_litfall.o: cn/compute_annual_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_annual_litfall.c -o $(OBJ)/compute_annual_litfall.o
 $(OBJ)/compute_cwd_decay.o: cn/compute_cwd_decay.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_cwd_decay.c -o $(OBJ)/compute_cwd_decay.o
+$(OBJ)/compute_snag_decay.o: cn/compute_snag_decay.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_snag_decay.c -o $(OBJ)/compute_snag_decay.o
+$(OBJ)/compute_redneedle_decay.o: cn/compute_redneedle_decay.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_redneedle_decay.c -o $(OBJ)/compute_redneedle_decay.o
 $(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c 
 	$(CC) -c $(CFLAGS) -I include cn/compute_deadleaf_turnover.c -o $(OBJ)/compute_deadleaf_turnover.o
 $(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c 
@@ -924,6 +943,8 @@ $(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
+$(OBJ)/update_beetle_attack_mortality.o: cn/update_beetle_attack_mortality.c
+	$(CC) -c $(CFLAGS) -I include cn/update_beetle_attack_mortality.c -o $(OBJ)/update_beetle_attack_mortality.o
 $(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_litter_soil_mortality.c -o $(OBJ)/update_litter_soil_mortality.o
 $(OBJ)/update_branch_mortality.o: cn/update_branch_mortality.c 

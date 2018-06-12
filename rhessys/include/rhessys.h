@@ -256,6 +256,8 @@ struct  default_object
         struct  stratum_default         *stratum;
         int             num_fire_default_files;
         struct  fire_default            *fire;
+        int             num_beetle_default_files;
+        struct  beetle_default           *beetle;
         int             num_surface_energy_default_files;
         struct  surface_energy_default          *surface_energy;
         int             num_spinup_default_files;
@@ -279,6 +281,10 @@ struct world_object
         int             ID;    
         int             num_fire_grid_row;
         int             num_fire_grid_col;
+        /* for beetle_grid */
+        int             num_beetle_grid_row;
+        int             num_beetle_grid_col;
+
         int             target_status;
         long    num_years;
         long    num_days;
@@ -292,6 +298,8 @@ struct world_object
         char    **landuse_default_files;
         char    **stratum_default_files;
         char    **fire_default_files;
+       char    **beetle_default_files; // for bark beetles
+
         char    **surface_energy_default_files;
         char    **spinup_default_files;
         char    **spinup_thresholds_files;  
@@ -308,7 +316,9 @@ struct world_object
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;
+        struct  beetle_object           **beetle_grid; //NR
 	struct patch_fire_object **patch_fire_grid;  //mk
+	    struct patch_beetle_object **patch_beetle_grid; //NR
         struct  spinup_thresholds_list_object  *spinup_thresholds ;   
 	struct  date			**master_hourly_date;	
         };
@@ -1229,6 +1239,9 @@ struct  cdayflux_patch_struct
     double cwdc_to_litr3c;   /* (kgC/m2/d) CWD to shielded cellulose litter */
     double cwdc_to_litr4c;   /* (kgC/m2/d) CWD to lignin litter */
 
+    /* beetle caused snag pool decay flux */
+
+    double snagc_to_cwdc;
     /* daily heterotroph respiration fluxes */
     double litr1c_hr;         /* (kgC/m2/d) labile litter respiration */
     double litr2c_hr;         /* (kgC/m2/d) unshielded cellulose litter resp */
@@ -1332,6 +1345,9 @@ struct  ndayflux_patch_struct
     double cwdn_to_litr3n;   /* (kgN/m2/d) CWD to shielded cellulose N */
     double cwdn_to_litr4n;   /* (kgN/m2/d) CWD to lignin N */
 
+    /* snag pool nitrogen decay caused by beetle attack */
+
+    double snagn_to_cwdn;
     /* daily N immobilization & mineralization fluxes */
     double plant_potential_ndemand; /* (kgN/m2/d) potential N demand from plants              */
     double plant_avail_uptake; /* (kgN/m2/d) available N uptake from plants           */
@@ -1754,6 +1770,8 @@ struct patch_object
         struct  soil_default            **soil_defaults;
         struct  landuse_default         **landuse_defaults;
         struct  fire_default            **fire_defaults;
+    struct  beetle_default          **beetle_defaults; // for bark beetles
+
         struct  surface_energy_default  **surface_energy_defaults;
         struct  grow_patch_object       *grow;
         struct  canopy_strata_object    **canopy_strata;
@@ -1837,6 +1855,16 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
+ /*---------------------------------------------------------------------------------*/
+/*      beetle related climate stuff, mainly seasonal temperature and precipitation */
+/*----------------------------------------------------------------------------------*/
+        double Tfall; //for future beetle outbreak model
+        double Tss;
+        double Tmin;
+        double mort;
+        double Precip_wy;
+
+
         };
 
 /*----------------------------------------------------------*/
@@ -2031,6 +2059,7 @@ struct  command_line_object
         int             start_flag;
         int             end_flag;
         int             firespread_flag;
+        int             beetlespread_flag; // for bark beetle NR
         int             prev_flag;
         int             gw_flag;
         int             tchange_flag;
@@ -2060,6 +2089,7 @@ struct  command_line_object
         double  tmax_add;
         double  tmin_add;
         double  fire_grid_res;
+        double  beetle_grid_res; // for beetle grid
         double  sat_to_gw_coeff_mult;
         double  gw_loss_coeff_mult;
         double  snow_scale_tol;
@@ -2197,6 +2227,8 @@ struct cstate_struct
     double dead_crootc;     /* (kgC/m2) dead coarse root C */
     double frootc;          /* (kgC/m2) fine root C */ 
 
+    double snagc; //beetle snag pool
+    double redneedlec; // dead leaf after beetle attack
     double leafc_transfer;      /* (kgC/m2) leaf C to be allocated from last season */
     double livestemc_transfer; /* (kgC/m2) live stemwood C to be allocated from last season */
     double deadstemc_transfer; /* (kgC/m2) dead stemwood C to be allocated from last season */
@@ -2434,6 +2466,9 @@ struct epvar_struct
     double livecrootn_transfer;/* (kgN/m2) live coarse root C to be allocated from last season */
     double deadcrootn_transfer;/* (kgN/m2) dead coarse root C to be allocated from last season */
     double frootn_transfer;     /* (kgN/m2) leaf C to be allocated from last season */
+
+    double snagn; //beetle snag pool
+    double redneedlen; // beetle caused red needle
 
     double leafn_store;     /* (kgN/m2) stored leaf N stored from year's growth */
     double livestemn_store; /* (kgN/m2) live stemwood C stored from this years growth */
@@ -2814,6 +2849,56 @@ struct patch_fire_object
 	struct fire_default_object *defaults;
 	double elev; // elevation if read in from grid
 };	
+
+/* this is for beetle grid */
+struct patch_beetle_object
+
+{
+   int num_patches;
+   int tmp_patch; // which patch among the num_patches are we on?
+   struct patch_object **patches;
+   double *prop_patch_in_grid;
+   double *prop_grid_in_patch;
+   double occupied_area;
+   struct beetle_default_object *defaults;
+   double elev; // does beetle needs elevation? maybe not
+
+};
+
+/* define the beetle_object and and beetle_default_object */
+
+struct beetle_default {
+     int ID;
+     double attack_mortality;
+     int year_delay; //snag pool delay
+     int half_life;
+     int n_rows;
+     int n_cols;
+     int beetle_in_buffer;
+     int year_attack;
+     int leaf_year_delay; //red needle delay uear
+     int leaf_half_life;  // red needle half life
+
+
+};
+
+struct beetle_object
+{
+
+double mort; // prescribed mortality from defs
+double Tfall; // for future couple the beetle outbreak model
+double Tss;  // for future couple the beetle outbreak model
+double Tmin; // for future couple the beetle outbreak model
+double Precip_wy; // for future couple the beetle outbreak model
+int Yattack;  // prescribed attack time from defs
+double abc; // above ground carbon for prescribed mortality  >60kg/m2 is dense forest
+
+
+
+
+
+};
+
 
 /*----------------------------------------------------------*/
 /* Define Surface Temperature Object */

@@ -42,7 +42,7 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*--------------------------------------------------------------*/
 
   	fprintf(outfile,
-       		 "%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f %f %f  \n",
+       		 "%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
 		
         	current_date.year,
         	basinID,
@@ -68,7 +68,11 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
         	stratum[0].ns.cwdn,
 		stratum[0].acc_year.psn,
 		stratum[0].acc_year.minNSC,
-		stratum[0].cs.mortality_fract);
+		stratum[0].cs.mortality_fract,
+		stratum[0].cs.snagc, // output the snag pool for beetle attack both carbon and nitrogen
+		stratum[0].ns.snagn,
+		stratum[0].cs.redneedlec,
+		stratum[0].ns.redneedlen);
 
 	stratum[0].acc_year.psn = 0.0;
 	stratum[0].acc_year.minNSC = -999;
