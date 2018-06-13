@@ -2105,7 +2105,7 @@ void		patch_daily_F(
 
 		patch[0].fire.pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.pet    
 				+ patch[0].PET) / 
-		(patch[0].fire_defaults[0][0].ndays_average + 1);
+		(patch[0].fire_defaults[0][0].ndays_average + 1);}
 
 
 /**************************************************************************/
