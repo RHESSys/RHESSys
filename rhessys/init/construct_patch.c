@@ -455,7 +455,7 @@ if (command_line[0].beetlespread_flag == 1) {
 		/*--------------------------------------------------------------*/
 		if ( i>= defaults[0].num_beetle_default_files ){
 			fprintf(stderr,
-				"\nFATAL ERROR: in construct_patch, fire default ID %d not found for patch %d\n" ,
+				"\nFATAL ERROR: in construct_patch, beetle default ID %d not found for patch %d\n" ,
 				beetle_default_object_ID, patch[0].ID);
 			exit(EXIT_FAILURE);
 		}

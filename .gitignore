@@ -15,6 +15,7 @@ rhessys/hydro/*.bak
 rhessys/init/*.bak
 rhessys/cn/*.bak
 rhessys/tec/*.bak
+*.swo
 
 # Build directories
 objects/
