@@ -266,7 +266,7 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/
 			//ren change if //
 			if ( (basin[0].hourly[0].cos_sza > zone[0].e_horizon) &&
-				(basin[0].hourly[0].cos_sza > zone[0].w_horizon) ) 
+				(basin[0].hourly[0].cos_sza > zone[0].w_horizon) ) {
 			//ren//
 			/*	if( basin[0].hourly[0].cos_sza >0.5*(zone[0].e_horizon+zone[0].w_horizon)){ */
 				/*--------------------------------------------------------------*/
@@ -284,7 +284,7 @@ void		zone_hourly(
 					/*     Required to adjust max temp.                            */
 					/*-------------------------------------------------------------*/
 					zone[0].hourly[0].Kdown_direct_flat
-						= basin[0].hourly[0].cos_sza * zone[0].hourly[0].Kdown_BOA; 
+						= basin[0].hourly[0].cos_sza * zone[0].hourly[0].Kdown_BOA;
 					/*-------------------------------------------------------------*/
 					/*     Cosine of beam slope angle. (no units)                  */
 					/*                                                             */
@@ -314,7 +314,7 @@ void		zone_hourly(
 					/*----------------------------------------------------------*/
 					zone[0].hourly[0].Kdown_direct
 						= zone[0].hourly[0].cos_beam_slope
-						* zone[0].hourly[0].Kdown_BOA; 
+						* zone[0].hourly[0].Kdown_BOA;
 					/*-------------------------------------------------------------*/
 					/*		Diffuse Radiation Calculations			*/
 					/*		Source Daymet - Peter Thorto			*/
@@ -331,10 +331,10 @@ void		zone_hourly(
 						zone[0].hourly[0].Kdown_diffuse_flat = 0.0;
 					else
 						zone[0].hourly[0].Kdown_diffuse_flat
-							= temp * (1.0 - temp / Kdown_direct_flat_toa); 
+							= temp * (1.0 - temp / Kdown_direct_flat_toa);
 					zone[0].hourly[0].Kdown_diffuse
 						= zone[0].hourly[0].Kdown_diffuse_flat
-						* pow(cos(zone[0].slope/2.0),2.0); 
+						* pow(cos(zone[0].slope/2.0),2.0);
 					if ( command_line[0].verbose_flag > 5 )
 						printf("\n-111.3 cos_sza : %8.4f Kdown_dir_flat= %8.4f Kdown_dif_flat= %8.4f ",
 						basin[0].hourly[0].cos_sza,
