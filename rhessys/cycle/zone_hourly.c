@@ -266,7 +266,9 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/
 			//ren change if //
 			if ( (basin[0].hourly[0].cos_sza > zone[0].e_horizon) &&
+
 				(basin[0].hourly[0].cos_sza > zone[0].w_horizon) ) {
+
 			//ren//
 			/*	if( basin[0].hourly[0].cos_sza >0.5*(zone[0].e_horizon+zone[0].w_horizon)){ */
 				/*--------------------------------------------------------------*/
