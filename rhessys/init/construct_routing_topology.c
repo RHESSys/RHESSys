@@ -33,7 +33,8 @@
 
 #include "rhessys.h"
 
-struct routing_list_object *construct_routing_topology(FILE *routing_file,
+struct routing_list_object *construct_routing_topology(
+      FILE *routing_file,
       struct hillslope_object *hillslope,
 		  struct command_line_object *command_line,
 		  bool surface)
@@ -59,7 +60,6 @@ struct routing_list_object *construct_routing_topology(FILE *routing_file,
 	/*--------------------------------------------------------------*/
 	int		i,d,j;
 	int		num_patches, num_neighbours;
-    int     hillslope_ID; // part of hillslope data as opposed to hill_ID, which is part of patch data
 	int		patch_ID, zone_ID, hill_ID;
 	int		drainage_type;
 	double	x,y,z, area, gamma, width;
@@ -80,7 +80,6 @@ struct routing_list_object *construct_routing_topology(FILE *routing_file,
 	//	exit(EXIT_FAILURE);
 	//} /*end if*/
 
-  fscanf(routing_file, "%d", &hillslope_ID);
 	fscanf(routing_file,"%d",&num_patches);
 	rlist->num_patches = num_patches;
 	rlist->list = (struct patch_object **)alloc(

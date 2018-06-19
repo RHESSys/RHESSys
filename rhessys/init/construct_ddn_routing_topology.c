@@ -52,7 +52,7 @@ struct routing_list_object *construct_ddn_routing_topology(
 	/*--------------------------------------------------------------*/
 	int		i, d;
 	int		num_patches, num_innundation_depths, num_neighbours;
-	int		patch_ID, zone_ID, hill_ID, hillslope_ID;
+	int		patch_ID, zone_ID, hill_ID;
 	int		drainage_type;
 	double	x,y,z, area, gamma, width, critical_depth;
 	struct routing_list_object	*rlist;
@@ -69,7 +69,6 @@ struct routing_list_object *construct_ddn_routing_topology(
 	//		routing_filename);
 	//	exit(EXIT_FAILURE);
 	//}
-  fscanf(routing_file,"%d",&hillslope_ID);
 	fscanf(routing_file,"%d",&num_patches);
 	rlist->num_patches = num_patches;
 	rlist->list = (struct patch_object **)alloc(

@@ -77,7 +77,7 @@ struct patch_object *find_patch_in_hillslope( int patch_ID, int zone_ID,
 	if (fnd == 0) {
 		fprintf(stderr,
 			"FATAL ERROR: Could not find patch %d in zone %d hill %d\n",
-			patch_ID, zone_ID, hill_ID);
+			patch_ID, zone_ID, hillslope[0].ID);
 		exit(EXIT_FAILURE);
 	}
 	return(patch);

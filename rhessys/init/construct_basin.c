@@ -121,7 +121,9 @@ struct basin_object *construct_basin(
 	param	*paramPtr=NULL;
 	int	paramCnt=0;
   FILE	*routing_file;
+  FILE  *surface_routing_file;
   struct hillslope_object *hillslope;
+  int hillslope_ID;
 
 	/*--------------------------------------------------------------*/
 	/*	Allocate a basin object.								*/
@@ -334,19 +336,33 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	/*  Try to open the routing file in read mode.                    */
 	/*--------------------------------------------------------------*/
-	  if ( (routing_file = fopen(command_line[0].routing_filename,"r")) == NULL ){
-		  fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
-			command_line[0].routing_filename);
+	  if( (routing_file = fopen(command_line[0].routing_filename,"r")) == NULL ){
+		  fprintf(
+        stderr,
+        "FATAL ERROR:  Cannot open routing file %s\n",
+			  command_line[0].routing_filename
+      );
 		  exit(EXIT_FAILURE);
-	  } /*end if*/
+	  } 
 
 	  int num_hillslopes;
-      fscanf(routing_file,"%d",&num_hillslopes);
-      struct hillslope_object **list = (struct hillslope_object **) alloc(
-        num_hillslopes * sizeof(struct hillslope_object *), 
-        "hillslope list", //should still be patch list, but rlist needs to be attached to hillslope not the basin
-        "construct_basin"
-      );
+    fscanf(routing_file,"%d",&num_hillslopes);
+    struct hillslope_object **list = (struct hillslope_object **) alloc(
+      num_hillslopes * sizeof(struct hillslope_object *), 
+      "hillslope list", //should still be patch list, but rlist needs to be attached to hillslope not the basin
+      "construct_basin"
+    );
+
+    if( command_line[0].surface_routing_flag == 1 ) {
+     	if( (surface_routing_file = fopen(command_line[0].surface_routing_filename,"r")) == NULL ){
+		    fprintf(
+          stderr,
+          "FATAL ERROR:  Cannot open surface routing file %s\n",
+			    command_line[0].surface_routing_filename
+        );
+		    exit(EXIT_FAILURE);
+	    }   
+    }
 
       // steps:
       // 1. get hillslope ID by reading from routing file
@@ -357,21 +373,24 @@ struct basin_object *construct_basin(
 
     // THIS IS WHERE OPENMP WILL PARALLELIZE STUFF
 	  for (int i=0; i<num_hillslopes; i++){
-          
-          hillslope = find_hillslope_in_basin(hillslope[0].ID, basin);
+          fscanf( routing_file, "%d", &hillslope_ID );
+          hillslope = find_hillslope_in_basin( hillslope_ID, basin );
           if ( command_line[0].ddn_routing_flag == 1 ) {
+              // XXX neeeds to be different file for surface routing
               hillslope->route_list = construct_ddn_routing_topology( routing_file, hillslope);
           } else {
               hillslope->route_list = construct_routing_topology( routing_file, hillslope, command_line, false);
 
               if ( command_line->surface_routing_flag == 1 ) {
                   printf("\tReading surface routing table\n");
-                  hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true);
+                  hillslope->surface_route_list = construct_routing_topology( surface_routing_file, hillslope, command_line, true);
 
                   if ( hillslope->surface_route_list->num_patches != hillslope->route_list->num_patches ) {
-                      fprintf(stderr,
-                              "\nFATAL ERROR: in construct_hillslope, surface routing table has %d patches, but subsurface routing table has %d patches. The number of patches must be identical.\n",
-                              hillslope->surface_route_list->num_patches, hillslope->route_list->num_patches);
+                      fprintf(
+                        stderr,
+                        "\nFATAL ERROR: in construct_hillslope, surface routing table has %d patches, but subsurface routing table has %d patches. The number of patches must be identical.\n",
+                        hillslope->surface_route_list->num_patches, hillslope->route_list->num_patches
+                      );
                       exit(EXIT_FAILURE);
                   }
               } else {
@@ -387,7 +406,7 @@ struct basin_object *construct_basin(
         // in the hillslope, in no particular order.
         hillslope->route_list = construct_topmodel_patchlist(hillslope);
   }
-/* XXXX how do we deal with alt file? Is there an alt file name in the command line?
+/* XXX how do we deal with alt file? Is there an alt file name in the command line?
 	if ( command_line[0].ddn_routing_flag == 1 ) {
 	  if ( (routing_file = fopen(routing_filename,"r")) == NULL ){
 		  fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",

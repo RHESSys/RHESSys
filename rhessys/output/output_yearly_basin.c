@@ -44,8 +44,16 @@ void	output_yearly_basin(
 	int check;
 
 
-	if (basin->route_list->num_patches > 0)
-		basin[0].acc_year.length /= basin->route_list->num_patches;
+//	if (basin->route_list->num_patches > 0)
+//		basin[0].acc_year.length /= basin->route_list->num_patches;
+  int patchCount = 0;
+  for( int i = 0; i < basin[0].num_hillslopes; i++ ) {
+    struct hillslope_object *hillslope = basin[0].hillslopes[i];
+    patchCount += hillslope->route_list->num_patches;
+  }
+  if( patchCount == 0 ) patchCount = 1;
+  basin[0].acc_year.length /= patchCount;
+
 	if (basin[0].acc_year.length == 0) basin[0].acc_year.length = 1;
 
 

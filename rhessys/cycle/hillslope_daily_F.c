@@ -130,11 +130,13 @@ void		hillslope_daily_F(
 	/*  For routing option - route water between patches within     */
 	/*      the hillslope                                           */
 	/*--------------------------------------------------------------*/
-    if ( command_line[0].routing_flag == 1 && zone[0].hourly_rain_flag == 0) {
-		compute_subsurface_routing(command_line,
-			hillslope,
-			basin[0].defaults[0][0].n_routing_timesteps,
-			current_date);
+    if ( command_line[0].routing_flag == 1 && hillslope[0].zones[0]->hourly_rain_flag == 0) {
+		  compute_subsurface_routing(
+        command_line,
+			  hillslope,
+			  basin[0].defaults[0][0].n_routing_timesteps,
+			  current_date
+      );
     }
 
 	/*----------------------------------------------------------------------*/
