@@ -228,8 +228,8 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
 					printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n",
 																curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY);
 
-                    printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n maxXpix %d, maxYpix %d\n",
-																curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY, maxXpix, maxYpix);
+           /*         printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n maxXpix %d, maxYpix %d\n",
+																curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY, maxXpix, maxYpix); */ //N.R 20180619
 	   // so now we loop through each pixel pair starting with minX and minY, and ending with < maxX and maxY (In C)
 	    // in the case that the patch overlaps with >1 pixel in both directions
                 #pragma omp parallel for                                         //160628LML
@@ -243,8 +243,8 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
                         double areaPatchInGrid=calc_beetle_patch_area_in_grid(curMinX,curMinY,curMaxX,curMaxY,cellMaxX,cellMaxY,cellMinX,cellMinY,cell_res);
 	//					if(areaPatchInGrid<0)  // cur is patch x y and cell is beetle patch x y
 	//						printf("error, areaPatchInGrid <0\n");
-	                    printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n maxXpix %d, maxYpix %d\n",
-																curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY, maxXpix, maxYpix);
+	         /*           printf("out of bounds! curMinX %lf curMinY %lf minXpix %d minYpix %d grid_dimX %d grid_dimY %d\n maxXpix %d, maxYpix %d\n",
+																curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY, maxXpix, maxYpix); */ //N.R 20180619
 						beetle_grid[j][i].occupied_area=beetle_grid[j][i].occupied_area+areaPatchInGrid;
 		// calculate the total area of the current patch that overlaps with the current grid cell
 						beetle_grid[j][i].prop_grid_in_patch[beetle_grid[j][i].tmp_patch]=areaPatchInGrid/patch[0].area; // the proportion of patch area occupied by this grid

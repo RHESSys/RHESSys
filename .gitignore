@@ -28,8 +28,13 @@ objects/*.yearly
 objects/*.monthly
 objects/*.params
 objects/*hourly
-
-
+basin_input/
+clim/
+rhessys/result/
+boost/
+rhessys/rhessys5
+Fire*.txt
+rhessys/RhessyDEMOut.txt
 
 
 #Qt git structure

@@ -228,7 +228,7 @@ void execute_beetlespread_event(
 //			printf("in update mortality\n");
 			patch[0].mort = world[0].beetle_grid[i][j].mort * world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p];
 			loss = world[0].beetle_grid[i][j].mort * world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p];
-			printf("in update mortality, the mortality is %lf, and the prop_grid_in_patch is %lf\n",world[0].beetle_grid[i][j].mort, world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p]  );
+			/*printf("in update mortality, the mortality is %lf, and the prop_grid_in_patch is %lf\n",world[0].beetle_grid[i][j].mort, world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p]  );*///N.R 20180619
 
 			mort.mort_cpool = loss;
 			mort.mort_leafc = loss;

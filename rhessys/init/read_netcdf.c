@@ -297,7 +297,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
     // directly into the beginning of our output_data array.
     int amount_to_memcpy = total_days_in_netcdf_data - read_start_index;
 
-    fprintf( stderr, "start with copying %d days of %d total netcdf.\n", amount_to_memcpy, nday);
+    /*fprintf( stderr, "start with copying %d days of %d total netcdf.\n", amount_to_memcpy, nday);*/ //N.R. 20180619
     memcpy( &output_data[ 0 ], &real_netcdf_data[ read_start_index ], amount_to_memcpy * sizeof(float) );
 
     // now we should have all the data from the start date to the end of the actual data copied over.
@@ -356,15 +356,15 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
         }
 
         output_data[ i ] = real_netcdf_data[ read_data_index++ ];
-     
+
         /*if( candidate_repeat_date.month != next_date_to_fill.month) {
             fprintf( stderr, "candidate month: %d, target month %d, target year %d\n", candidate_repeat_date.month, next_date_to_fill.month, next_date_to_fill.year );
         }*/
       } // end last else
     } // end for loop
 
-    fprintf( stderr, "read_start_index %d, startday %d, durationRequest %d, days in dataset %d\n", read_start_index, startday, duration, nday );
-  
+   /* fprintf( stderr, "read_start_index %d, startday %d, durationRequest %d, days in dataset %d\n", read_start_index, startday, duration, nday ); */ //N.R 20180619
+
  } // end if clim_repeat_flag
 
   if ((retval = nc_close(ncid))){
