@@ -9,6 +9,7 @@
 #' for more info on parameters. For raster type, typepars is a file path to a folder containing the rasters indicated in read_in.
 #' @return Returns a LargeSpatialGridDataFrame containing all the maps indicated in read_in
 #' @author Will Burke
+#' @export
 
 GIS_read = function(read_in,type,typepars) {
 
@@ -26,12 +27,7 @@ GIS_read = function(read_in,type,typepars) {
   # ---------- spatial read in ----------
   # GRASS 6.4.4 ----------
   if (type == "GRASS6") {
-    if(!require("spgrass6")){install.packages("spgrass6")}
-    if(!require("rgdal")){install.packages("rgdal")}
-    library(spgrass6)
-    library(rgdal)
-
-    initGRASS( # Initialize GRASS environment
+    spgrass6::initGRASS( # Initialize GRASS environment
       gisBase = typepars[1],
       home = typepars[2],
       gisDbase = typepars[3],
@@ -52,17 +48,12 @@ GIS_read = function(read_in,type,typepars) {
       shell(mask) #windows
     }
     #read in maps
-    readmap = readRAST(maps_in)
+    readmap = spgrass6::readRAST(maps_in)
   } #end GRASS 6 spatial data
 
   # GRASS 7 ----------
   if (type == "GRASS7") {
-    if(!require("rgrass7")){install.packages("rgrass7")}
-    if(!require("rgdal")){install.packages("rgdal")}
-    library(rgrass7)
-    library(rgdal)
-
-    initGRASS( # Initialize GRASS environment
+    rgrass7::initGRASS( # Initialize GRASS environment
       gisBase = typepars[1],
       home = typepars[2],
       gisDbase = typepars[3],
@@ -84,14 +75,11 @@ GIS_read = function(read_in,type,typepars) {
       shell(mask) #windows
     }
     #read in maps ----------
-    readmap = readRAST(maps_in)
+    readmap = rgrass7::readRAST(maps_in)
   } #end GRASS 7 spatial data
 
   # Raster spatial data ----------
   if (type == "raster" | type == "Raster" | type =="RASTER") {
-    if(!require("raster")){install.packages("raster")}
-    library(raster)
-
     # new method - import as raster stack to allow processing as rasterlayers
     file_paths = vector(mode = "character")
     for (name in maps_in){
@@ -103,10 +91,10 @@ GIS_read = function(read_in,type,typepars) {
       file_paths = c(file_paths,file)
     }
 
-    read_stack = stack(file_paths) # read in rasters
+    read_stack = raster::stack(file_paths) # read in rasters
     names(read_stack) = maps_in
-    values(read_stack)[apply(values(read_stack)==0,FUN = all,MARGIN = 1)] = NA # get rid of 0's for background/NA - if a cell for all layers is 0, set to NA
-    read_stack = trim(read_stack) #get rid of extra background
+    raster::values(read_stack)[apply(raster::values(read_stack)==0,FUN = all,MARGIN = 1)] = NA # get rid of 0's for background/NA - if a cell for all layers is 0, set to NA
+    read_stack = raster::trim(read_stack) #get rid of extra background
     readmap = as(read_stack,"SpatialGridDataFrame")
 
     # import rasters - using spatialgriddataframe format for consistancy

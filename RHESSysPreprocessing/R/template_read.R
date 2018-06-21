@@ -6,6 +6,7 @@
 #' @return Returns a list containing (in order): template in list form, variable name vector, index of levels,
 #' index of variables, full table of maps and associated variables
 #' @author Will Burke
+#' @export
 
 template_read = function(template){
 

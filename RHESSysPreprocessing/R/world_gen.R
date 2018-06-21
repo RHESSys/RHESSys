@@ -18,8 +18,9 @@
 #' for additional information and supported filetypes.
 #' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
 #' @param asprules The path and filename to the rules file.  Using this argument enables aspatial patches.
-#' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{Raster}}
+#' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
 #' @author Will Burke
+#' @export
 
 # ---------- Function start ----------
 world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=FALSE, header = FALSE, asprules=NULL, wrapper = FALSE) {

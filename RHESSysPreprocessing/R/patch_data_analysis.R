@@ -1,9 +1,18 @@
 # Analyize patch data. cell_length is size of cell in meters. smooth_flag is a boolean that smoothes jagged
 # patch borders, do not use when some cells are unique patches.
-patch_data_analysis<-function(raw_patch_data,raw_patch_elevation_data,
-                              raw_hill_data,raw_basin_data,raw_zone_data,
-                              raw_slope_data,raw_stream_data,raw_road_data=NULL,
-                              cell_length,road_width=NULL,smooth_flag=FALSE){
+patch_data_analysis <-
+  function(raw_patch_data,
+           raw_patch_elevation_data,
+           raw_hill_data,
+           raw_basin_data,
+           raw_zone_data,
+           raw_slope_data,
+           raw_stream_data,
+           raw_road_data = NULL,
+           cell_length,
+           road_width = NULL,
+           smooth_flag = FALSE) {
+
 
   # Error checking and NULL handling -----
   if(cell_length<=0){stop("Cell length is <=0")}
