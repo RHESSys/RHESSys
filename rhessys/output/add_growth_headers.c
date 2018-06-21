@@ -1,19 +1,4 @@
-/*--------------------------------------------------------------*/
-/* 																*/
-/*					add_growth_headers					*/
-/*																*/
-/*	add_growth_headers - 												    	*/
-/*	NAME														*/
-/*	add_growth_headers    													*/
-/*	SYNOPSIS													*/
-/*	void add_growth_headers(struct world output_file_object *,				*/
-/*			struct command_line_object *)					*/
-/*																*/
-/*	OPTIONS														*/
-/*																*/
-/*	DESCRIPTION													*/
-/*																*/
-/*	Adds headers for yearly, monthly, daily and	*/
+/* */
 /*	hourly basin output 					*/
 /*																*/
 /*	PROGRAMMER NOTES											*/
@@ -93,11 +78,13 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
 
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
 		"basinID",
+		"lai_sunlit",
+		 "lai_shade",
 		"lai",
 		"gpsn",
 		"plant_resp",

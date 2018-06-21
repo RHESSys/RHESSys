@@ -111,8 +111,14 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].lai_stomatal_fraction = 	getDoubleParam(&paramCnt, &paramPtr, "lai_stomatal_fraction", "%lf", 1.0, 1);
 
 /* values combined 0.85 / 2.6 from Biome BGC 4.1.1 */
+		/* if this is 9999 we will make this dynamics as 1/sla*10 from Evans and Poorter, 2001) */
 		default_object_list[i].epc.netpabs = 		getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs", "%lf", 0.7, 1);
+		default_object_list[i].epc.netpabs_sla_parm = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_sla_parm", "%lf", 1.0, 1);
+
+
 		default_object_list[i].epc.flnr = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr", "%lf", 0.1, 1);
+		default_object_list[i].epc.flnr_sunlit = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr_sunlit", "%lf", 9999, 1);
+		default_object_list[i].epc.flnr_shade = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr_shade", "%lf",9999 , 1);
 		default_object_list[i].epc.ppfd_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ppfd_coef", "%lf", 0.03, 1);
 		default_object_list[i].epc.topt = 		getDoubleParam(&paramCnt, &paramPtr, "epc.topt", "%lf", 15.0, 1);
 		default_object_list[i].epc.tmax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.tmax", "%lf", 40.0, 1);
@@ -358,8 +364,11 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.psi_threshold =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_threshold", "%lf", -1, 1);
 		default_object_list[i].epc.psi_slp =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_slp", "%lf", 0.2, 1);
 		default_object_list[i].epc.psi_intercpt =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_intercpt", "%lf", 1.0, 1);
-		default_object_list[i].epc.shade_sla_mult = getDoubleParam(&paramCnt, &paramPtr, "ecp.shade_sla_mult","%lf", 1.0,1);
 
+		/*--------------------------------------------------------------*/
+		/* set sunlit sla multiplier			*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].epc.shade_sla_mult  = getDoubleParam(&paramCnt, &paramPtr, "epc.shade_sla_mult", "%lf", 1.0, 1);
 
 		/*--------------------------------------------------------------*/
 		/*	Apply sensitivity analysis if appropriate		*/
@@ -370,6 +379,14 @@ struct stratum_default *construct_stratum_defaults(
 			default_object_list[i].epc.shade_sla_mult *= command_line[0].veg_sen2;
 		}
 
+		/*--------------------------------------------------------------*/
+		/* set sunlit and shaded if not available 	flnr		*/
+		/* triffered by values > 1 */
+		/*--------------------------------------------------------------*/
+		if (default_object_list[i].epc.flnr_shade > 1.0)
+			default_object_list[i].epc.flnr_shade = default_object_list[i].epc.flnr;
+		if (default_object_list[i].epc.flnr_sunlit > 1.0)
+			default_object_list[i].epc.flnr_sunlit = default_object_list[i].epc.flnr;
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/

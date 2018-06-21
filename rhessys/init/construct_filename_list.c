@@ -44,7 +44,9 @@ char	**construct_filename_list( FILE *file, int num_filenames){
 		file_list[i] = (char *) alloc(256 *sizeof(char),
 			"file_list","construct_fdilename_list");
 		fscanf( file, "%s", file_list[i]);
+	printf("\n %s", file_list[i]);
 		read_record(file, record);
 	}
+
 	return(file_list);
 } /*end construct_filename_list*/

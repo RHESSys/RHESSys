@@ -361,6 +361,7 @@ struct accumulate_patch_object
    double maxtrans;
    double maxpet;
    double PET;
+   double PETp;
    double lai;
    double snowpack;
    double sm_deficit;
@@ -1700,6 +1701,7 @@ struct patch_object
         double  exfiltration_unsat_zone;/* m water      */
         double  unsat_drainage;         /* m water      */
         double  PET;            /* m water      */
+        double  PETp;            /* m water      */
         double  PE;             /* m water      */
         double  precip_with_assim;    /* m water */
         double  rz_drainage;            /* m water      */
@@ -2532,7 +2534,12 @@ struct epconst_struct
         double int_coef;       /* (kg/m2/LAI/d) canopy precip interception coef */
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
 	double netpabs;		/* (mol/mol) fPAR effectively abosorbed */
+	double netpabs_sla_parm;		/* scale parameter for netpabs = 1/(SLA*parm) relationship 1 is default */
+	double netpabs_shade;		/* (mol/mol) fPAR effectively abosorbed */
+	double netpabs_sunlit;		/* (mol/mol) fPAR effectively abosorbed */
         double flnr;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
+        double flnr_shade;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
+        double flnr_sunlit;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double ppfd_coef;      /* (s/m2/umol) shape parameter for ppfd hyperbola */
         double topt;           /* (deg C) optimum air temperature for gs */
         double tmax;           /* (deg C) maximum air temperature for gs */
@@ -2753,6 +2760,7 @@ struct  canopy_strata_object
         double  sublimation;                                    /*  meters      */
         double  surface_heat_flux;                              /*  kJ/day      */
         double  PET;                                            /*  m water/day */
+        double  PETp;                                            /*  m water/day */
         double  PE;                                             /*  m water/day */
         double  transpiration_unsat_zone;                       /*  m water/day */
         double  transpiration_sat_zone;                         /* m water /day */
