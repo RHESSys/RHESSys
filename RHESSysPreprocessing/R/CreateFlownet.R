@@ -66,7 +66,7 @@ CreateFlownet = function(cfname,
   maps_in = unique(mapsin)
 
   # ------------------------------ Use GIS_read to get maps ------------------------------
-  readmap = GIS_read(maps_in, type, typepars)
+  readmap = GIS_read(maps_in, type, typepars, map_info = cfmaps)
   map_ar = as.array(readmap)
   #map_ar_clean = map_ar[!apply(is.na(map_ar), 1, all), !apply(is.na(map_ar), 2, all), ] # PRETTRY SURE I FIXED THIS
   map_ar_clean = map_ar

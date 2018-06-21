@@ -65,7 +65,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
       stop("Missing asp_rule state variable in template")}}
 
   # ---------- spatial read in ----------
-  read_maps = GIS_read(maps_in,type,typepars)
+  read_maps = GIS_read(maps_in,type,typepars,map_info)
 
   # process map data  ----------
   map_df = as.data.frame(read_maps) #make data frame for ease of use

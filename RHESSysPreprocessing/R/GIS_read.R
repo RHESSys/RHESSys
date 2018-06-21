@@ -1,7 +1,7 @@
 #' GIS_read
 #'
 #' Read in GIS maps. Returns a spatial data frame containing all maps. 2/14/18.
-#' @param read_in Character vector of maps to be read in by the chosen method.
+#' @param maps_in Character vector of maps to be read in by the chosen method.
 #' @param type GIS type to be used. Options are GRASS(will auto-detect GRASS6 or GRASS7) GRASS6, GRASS7, or raster.
 #' @param typepars Parameters needed based on GIS type used. For GRASS GIS type, typepars is a
 #' vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
@@ -11,9 +11,7 @@
 #' @author Will Burke
 #' @export
 
-GIS_read = function(read_in,type,typepars) {
-
-  maps_in = read_in
+GIS_read = function(maps_in,type,typepars,map_info) {
 
   if (type == "GRASS") {
     # determine which version of GRASS is being used automatically
@@ -96,14 +94,13 @@ GIS_read = function(read_in,type,typepars) {
     raster::values(read_stack)[apply(raster::values(read_stack)==0,FUN = all,MARGIN = 1)] = NA # get rid of 0's for background/NA - if a cell for all layers is 0, set to NA
     read_stack = raster::trim(read_stack) #get rid of extra background
 
-    # this is kind of expirimental  -- will mask data by first of the shortest (smallest) of input maps
-    map_len = vector(mode="numeric",length = length(read_stack[1]))
-    for (i in 1:length(read_stack[1])){
-      map_len[i] = length(read_stack[[i]][!is.na(read_stack[[i]])])
+    if(exists("map_info")){
+      read_stack = raster::mask(read_stack,read_stack[[map_info[map_info[,1]=="world",2]]])# mask by map used for world level
     }
-    read_stack = raster::mask(read_stack,read_stack[[min(which(map_len == min(map_len)))]])
 
     readmap = as(read_stack,"SpatialGridDataFrame")
+
+    # OLD ----- read rasters 1 by 1 instead of as stack >_>
 
     # import rasters - using spatialgriddataframe format for consistancy
     # ct = 0
