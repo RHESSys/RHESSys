@@ -95,6 +95,14 @@ GIS_read = function(read_in,type,typepars) {
     names(read_stack) = maps_in
     raster::values(read_stack)[apply(raster::values(read_stack)==0,FUN = all,MARGIN = 1)] = NA # get rid of 0's for background/NA - if a cell for all layers is 0, set to NA
     read_stack = raster::trim(read_stack) #get rid of extra background
+
+    # this is kind of expirimental  -- will mask data by first of the shortest (smallest) of input maps
+    map_len = vector(mode="numeric",length = length(read_stack[1]))
+    for (i in 1:length(read_stack[1])){
+      map_len[i] = length(read_stack[[i]][!is.na(read_stack[[i]])])
+    }
+    read_stack = raster::mask(read_stack,read_stack[[min(which(map_len == min(map_len)))]])
+
     readmap = as(read_stack,"SpatialGridDataFrame")
 
     # import rasters - using spatialgriddataframe format for consistancy
