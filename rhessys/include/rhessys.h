@@ -2171,6 +2171,7 @@ struct cstate_struct
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
+    double leafc_age;           /* (years) age */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */

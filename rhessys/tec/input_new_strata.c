@@ -113,6 +113,8 @@ void input_new_strata(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].rain_stored = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",canopy_strata[0].cs.cpool,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cpool = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",canopy_strata[0].cs.leafc_age,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc_age = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",canopy_strata[0].cs.leafc,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",canopy_strata[0].cs.dead_leafc,1);

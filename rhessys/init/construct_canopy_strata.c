@@ -240,6 +240,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.cpool = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",0.0,1);
 	
 	canopy_strata[0].cs.leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",0.0,1);
+
+	canopy_strata[0].cs.leafc_age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",1.0,1);
 	
 	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
 	
