@@ -233,7 +233,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
               cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep="")
 
               for (s in stratum) { #stratum
-                cat("\t\t\t\t\t", s,"\t\t\t", "stratum_ID\n",sep="")
+                cat("\t\t\t\t\t", s,"\t\t\t", "canopy_strata_ID\n",sep="")
 
                 rvindex2 = which(! names(rulevars[[ruleid]][[asp]][rvsind]) %in% var_names[var_index])#include strata state vars from rulevars that aren't in template
                 for (i in rvindex2) {
@@ -268,7 +268,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
             cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep="")
 
             for (s in stratum) { #stratum
-              cat("\t\t\t\t\t", s,"\t\t\t", "stratum_ID\n",sep="")
+              cat("\t\t\t\t\t", s,"\t\t\t", "canopy_strata_ID\n",sep="")
               for (i in (level_index[6]+1):length(template_clean)) {
                 if (length(statevars[[i]][[s]]) >1) { # no need to specify stratum since spatially its the same as patch
                   var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b & statevars[[i]][[1]][3]==h & statevars[[i]][[1]][4]==z & statevars[[i]][[1]][5]==p ,"x"]

@@ -119,12 +119,14 @@ patch_data_analysis <-
   colnames(flw_struct)<-c("Number","Centroidx","Centroidy","Area","Centroidz","Mean_Slope","Landtype","Roadtype")
   flw_struct<-cbind(flw_struct,id_data)
 
-  patch_borders<-matrix(0,nrow=length(patches),ncol=length(patches))
 
-  # -------------------- find neighbors (previously find border row) --------------------
+
+  # -------------------- find neighbors cell by cell (previously find border row) --------------------
   # patch_data is patch data with NA replaced by 0, patches is a vector of ordered patch numbers
   # patch_borders is an array, initailly 0 but will be filled with the number of times patch i
   # touches patch j. the diagonal will be the number of times patch i touches anything.
+
+  patch_borders<-matrix(0,nrow=length(patches),ncol=length(patches))
 
   #iterate through
   p_rows<-nrow(patch_data)
@@ -132,10 +134,9 @@ patch_data_analysis <-
 
   for (i in 1:p_rows) { # loop through all rows and cols of input patch data
     for (j in 1:p_cols){
-
       if (i < p_rows & j < p_cols){ # if both current row and col are less than max
-        if ((patch_data[i,j]*patch_data[i,j+1]!=0)){  # patch itself, and +1 in cols dir aren't 0
-          if (patch_data[i,j]!=patch_data[i,j+1]){  # rt. side boundary
+        if ((patch_data[i,j]*patch_data[i,j+1] != 0)){  # if patch itself, and +1 in x dir aren't 0
+          if (patch_data[i,j]!=patch_data[i,j+1]){  # if +1 in x dir is different patch
             patch_ij<-which(patches==patch_data[i,j])   #index of patch i,j
             patch_ij1<-which(patches==patch_data[i,j+1])  #index of patch i,j+1
 
@@ -146,8 +147,8 @@ patch_data_analysis <-
             patch_borders[patch_ij1,patch_ij1]<-patch_borders[patch_ij1,patch_ij1]+1
           }
         }
-        if ((patch_data[i,j]*patch_data[i+1,j]!=0)){ # patch itself and +1 in row dir
-          if (patch_data[i,j]!=patch_data[i+1,j]){  #lower boundary
+        if ((patch_data[i,j]*patch_data[i+1,j]!=0)){ # if patch itself and +1 in y dir
+          if (patch_data[i,j]!=patch_data[i+1,j]){  # if +1 in y dir is different patch
             patch_ij<-which(patches==patch_data[i,j])   #index of patch i,j
             patch_i1j<-which(patches==patch_data[i+1,j])  #index of patch i+1,j
 
@@ -192,6 +193,91 @@ patch_data_analysis <-
 
     } # for j
   } # for i
+
+
+  # -------------------- D8 neighbor search and border count --------------------
+  # patch_borders<-matrix(0,nrow=length(patches),ncol=length(patches))
+  # #iterate through
+  # p_rows<-nrow(patch_data)
+  # p_cols<-ncol(patch_data)
+  #
+  # for (i in 1:p_rows) { # loop through all rows and cols of input patch data
+  #   for (j in 1:p_cols){
+  #     if(patch_data[i,j]!=0){ # only look for neighbors if current cell is actually a patch
+  #       if(i < p_rows & j < p_cols){ # ----- all rows/cols except last -----
+  #         if(patch_data[i,j] != patch_data[i,j+1] & patch_data[i,j+1] != 0){ # east - is different patch and is not 0
+  #           p1<-which(patches==patch_data[i,j])   #index of patch i,j
+  #           p2<-which(patches==patch_data[i,j+1])  #index of patch i,j+1
+  #           # increment patch_borders
+  #           patch_borders[p1,p2]<-patch_borders[p1,p2]+1
+  #           patch_borders[p2,p1]<-patch_borders[p2,p1]+1
+  #           patch_borders[p1,p1]<-patch_borders[p1,p1]+1
+  #           patch_borders[p2,p2]<-patch_borders[p2,p2]+1
+  #         } # end east
+  #         if(patch_data[i,j] != patch_data[i+1,j+1] & patch_data[i+1,j+1] != 0){ # southeast - is different patch and is not 0
+  #           p1<-which(patches==patch_data[i,j])   #index of patch i,j
+  #           p2<-which(patches==patch_data[i+1,j+1])  #index of patch i+1,j+1
+  #           # increment patch_borders
+  #           patch_borders[p1,p2]<-patch_borders[p1,p2]+1
+  #           patch_borders[p2,p1]<-patch_borders[p2,p1]+1
+  #           patch_borders[p1,p1]<-patch_borders[p1,p1]+1
+  #           patch_borders[p2,p2]<-patch_borders[p2,p2]+1
+  #         } # end southeast
+  #         if(patch_data[i,j] != patch_data[i+1,j] & patch_data[i+1,j] != 0){ # south - is different patch and is not 0
+  #           p1<-which(patches==patch_data[i,j])   #index of patch i,j
+  #           p2<-which(patches==patch_data[i+1,j])  #index of patch i+1,j
+  #           # increment patch_borders
+  #           patch_borders[p1,p2]<-patch_borders[p1,p2]+1
+  #           patch_borders[p2,p1]<-patch_borders[p2,p1]+1
+  #           patch_borders[p1,p1]<-patch_borders[p1,p1]+1
+  #           patch_borders[p2,p2]<-patch_borders[p2,p2]+1
+  #         } # end south
+  #         if(patch_data[i,j] != patch_data[i+1,j-1] & patch_data[i+1,j-1] != 0){ # southwest - is different patch and is not 0
+  #           p1<-which(patches==patch_data[i,j])   #index of patch i,j
+  #           p2<-which(patches==patch_data[i+1,j-1])  #index of patch i+1,j
+  #           # increment patch_borders
+  #           patch_borders[p1,p2]<-patch_borders[p1,p2]+1
+  #           patch_borders[p2,p1]<-patch_borders[p2,p1]+1
+  #           patch_borders[p1,p1]<-patch_borders[p1,p1]+1
+  #           patch_borders[p2,p2]<-patch_borders[p2,p2]+1
+  #         } # end southwest
+  #       }# end all rows/cols except last
+  #       if(i == p_rows & j < p_cols){ # ----- if on last row, and less than last col --- only check east -----
+  #         if(patch_data[i,j] != patch_data[i,j+1] & patch_data[i,j+1] != 0){ # east - is different patch and is not 0
+  #           p1<-which(patches==patch_data[i,j])   #index of patch i,j
+  #           p2<-which(patches==patch_data[i,j+1])  #index of patch i,j+1
+  #           # increment patch_borders
+  #           patch_borders[p1,p2]<-patch_borders[p1,p2]+1
+  #           patch_borders[p2,p1]<-patch_borders[p2,p1]+1
+  #           patch_borders[p1,p1]<-patch_borders[p1,p1]+1
+  #           patch_borders[p2,p2]<-patch_borders[p2,p2]+1
+  #         } # end east
+  #       } # end last row & < last col
+  #       if(i < p_rows & j == p_cols){ # ----- if on last col, and less than last row --- check south and southwest -----
+  #         if(patch_data[i,j] != patch_data[i+1,j] & patch_data[i+1,j] != 0){ # south - is different patch and is not 0
+  #           p1<-which(patches==patch_data[i,j])   #index of patch i,j
+  #           p2<-which(patches==patch_data[i+1,j])  #index of patch i+1,j
+  #           # increment patch_borders
+  #           patch_borders[p1,p2]<-patch_borders[p1,p2]+1
+  #           patch_borders[p2,p1]<-patch_borders[p2,p1]+1
+  #           patch_borders[p1,p1]<-patch_borders[p1,p1]+1
+  #           patch_borders[p2,p2]<-patch_borders[p2,p2]+1
+  #         } # end south
+  #         if(patch_data[i,j] != patch_data[i+1,j-1] & patch_data[i+1,j-1] != 0){ # southwest - is different patch and is not 0
+  #           p1<-which(patches==patch_data[i,j])   #index of patch i,j
+  #           p2<-which(patches==patch_data[i+1,j-1])  #index of patch i+1,j
+  #           # increment patch_borders
+  #           patch_borders[p1,p2]<-patch_borders[p1,p2]+1
+  #           patch_borders[p2,p1]<-patch_borders[p2,p1]+1
+  #           patch_borders[p1,p1]<-patch_borders[p1,p1]+1
+  #           patch_borders[p2,p2]<-patch_borders[p2,p2]+1
+  #         } # end southwest
+  #       } # end last col and less than last row
+  #     } # end if not 0
+  #   } # end p_cols loop
+  # } # end p_rows loop
+
+
 
   # ----- smooth flag, staircase diagonal correction ----- (Im not really sure how this works, so i haven't messed with it,
   # it may have an edge row error which occurs with single cell patches like the normal find_border_row had =Will)

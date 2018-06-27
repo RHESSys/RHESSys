@@ -83,6 +83,7 @@ CreateFlownet = function(cfname,
   smooth_flag = FALSE
 
   road_data = replace(basin_data,basin_data==1,0)
+  road_width = 0
 
   # ------------------------------ Make flownet list ------------------------------
   CF1 = patch_data_analysis(
@@ -94,9 +95,9 @@ CreateFlownet = function(cfname,
     raw_slope_data = slope_data,
     raw_stream_data = stream_data,
     raw_road_data = road_data,
-    road_width = 0,
+    road_width = road_width,
     cell_length=celllength,
-    smooth_flag=TRUE)
+    smooth_flag=smooth_flag)
 
   # ------------------------------ Multiscale routing/aspatial patches ------------------------------
   if(!is.null(asp_list)){
