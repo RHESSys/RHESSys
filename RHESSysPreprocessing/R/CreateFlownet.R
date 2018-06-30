@@ -25,7 +25,8 @@ CreateFlownet = function(cfname,
                          impervious = NULL,
                          roofs = NULL,
                          wrapper = FALSE,
-                         parallel = FALSE) {
+                         parallel = FALSE,
+                         d4 = TRUE) {
 
   # ------------------------------ Read and check inputs ------------------------------
   if (wrapper==FALSE){
@@ -80,6 +81,8 @@ CreateFlownet = function(cfname,
   slope_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="slope",2]]
   stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="streams",2]]
   celllength = as.numeric(cfmaps[cfmaps[,1]=="cell_length",2])
+
+  # ----- WE SHOULD LOOK AT THIS -----
   smooth_flag = FALSE
 
   road_data = replace(basin_data,basin_data==1,0)
@@ -97,7 +100,8 @@ CreateFlownet = function(cfname,
     raw_road_data = road_data,
     road_width = road_width,
     cell_length=celllength,
-    smooth_flag=smooth_flag)
+    smooth_flag=smooth_flag,
+    d4 = d4)
 
   # ------------------------------ Multiscale routing/aspatial patches ------------------------------
   if(!is.null(asp_list)){
