@@ -43,7 +43,8 @@ RHESSysPreprocess = function(template,
                              header = FALSE,
                              meta = TRUE,
                              wrapper = TRUE,
-                             parallel = FALSE) {
+                             parallel = FALSE,
+                             d4 = TRUE) {
 
   # ---------- Check Inputs ----------
   if (!file.exists(template)) { # check if template exists
@@ -134,7 +135,8 @@ RHESSysPreprocess = function(template,
                 impervious = impervious,
                 roofs = roofs,
                 wrapper = wrapper,
-                parallel = parallel)
+                parallel = parallel,
+                d4 = d4)
 
   # ---------- Run build_meta ----------
   if(meta){
