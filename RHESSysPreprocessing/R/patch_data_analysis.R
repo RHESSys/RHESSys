@@ -197,7 +197,7 @@ patch_data_analysis <-
     p_rows<-nrow(patch_data)
     p_cols<-ncol(patch_data)
 
-    diag_border = 1/sqrt(2)
+    diag_border = 1/sqrt(2*cell_length)
 
     for (i in 1:p_rows) { # loop through all rows and cols of input patch data
       for (j in 1:p_cols){
@@ -315,6 +315,11 @@ patch_data_analysis <-
   }
 
   # -------------------- Pit filling --------------------
+
+  # add check - search neighbors, can it find a stream
+
+  # solution - route directly to stream
+
   lst = fix_all_pits(lst)
 
   # # ----- find all pits ----- make a list of pits (nodes whose gamma's sum to 0), list in ascending order
