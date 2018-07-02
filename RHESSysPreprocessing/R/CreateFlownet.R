@@ -101,7 +101,8 @@ CreateFlownet = function(cfname,
     road_width = road_width,
     cell_length=celllength,
     smooth_flag=smooth_flag,
-    d4 = d4)
+    d4 = d4,
+    parallel = parallel)
 
   # ------------------------------ Multiscale routing/aspatial patches ------------------------------
   if(!is.null(asp_list)){

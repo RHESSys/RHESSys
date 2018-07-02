@@ -3,8 +3,10 @@
 # has non zero gamma's other than the one I just made. If not, call "fill_pit" again on the new patch.
 # repeat until no non zero gamma's.
 
-#Inputs are, flw: a list of all patches and their data, n_s a starting
-# node, n_f: an ending node (initially, n_s=n_f means there is no starting node, a pit).
+#Inputs are,
+# flw: a list of all patches and their data,
+# n_s: a starting node
+# n_f: an ending node (initially, n_s=n_f means there is no starting node, a pit).
 
 fill_pit<-function(flw,n_s,n_f){
   #  print(c(n_s,n_f))

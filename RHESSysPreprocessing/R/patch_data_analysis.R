@@ -18,7 +18,8 @@ patch_data_analysis <-
            cell_length,
            road_width = NULL,
            smooth_flag = FALSE,
-           d4) {
+           d4,
+           parallel) {
 
 
   # -------------------- Error checking and NULL handling --------------------
@@ -196,6 +197,8 @@ patch_data_analysis <-
     p_rows<-nrow(patch_data)
     p_cols<-ncol(patch_data)
 
+    diag_border = 1/sqrt(2)
+
     for (i in 1:p_rows) { # loop through all rows and cols of input patch data
       for (j in 1:p_cols){
         if(patch_data[i,j]!=0){ # only look for neighbors if current cell is actually a patch
@@ -214,10 +217,10 @@ patch_data_analysis <-
             if(patch_data[i,j] != patch_data[i+1,j+1] & patch_data[i+1,j+1] != 0){ # southeast - is different patch and is not 0
               p1<-which(patches==patch_data[i,j])   #index of patch i,j
               p2<-which(patches==patch_data[i+1,j+1])  #index of patch i+1,j+1
-              patch_borders[p1,p2]<-patch_borders[p1,p2]+0.5
-              patch_borders[p2,p1]<-patch_borders[p2,p1]+0.5
-              patch_borders[p1,p1]<-patch_borders[p1,p1]+0.5
-              patch_borders[p2,p2]<-patch_borders[p2,p2]+0.5
+              patch_borders[p1,p2]<-patch_borders[p1,p2]+diag_border
+              patch_borders[p2,p1]<-patch_borders[p2,p1]+diag_border
+              patch_borders[p1,p1]<-patch_borders[p1,p1]+diag_border
+              patch_borders[p2,p2]<-patch_borders[p2,p2]+diag_border
             } # end southeast
           }
           if(i < p_rows){ # ----- all rows except last, all cols
@@ -234,10 +237,10 @@ patch_data_analysis <-
             if(patch_data[i,j] != patch_data[i+1,j-1] & patch_data[i+1,j-1] != 0){ # southwest - is different patch and is not 0
               p1<-which(patches==patch_data[i,j])   #index of patch i,j
               p2<-which(patches==patch_data[i+1,j-1])  #index of patch i+1,j
-              patch_borders[p1,p2]<-patch_borders[p1,p2]+0.5
-              patch_borders[p2,p1]<-patch_borders[p2,p1]+0.5
-              patch_borders[p1,p1]<-patch_borders[p1,p1]+0.5
-              patch_borders[p2,p2]<-patch_borders[p2,p2]+0.5
+              patch_borders[p1,p2]<-patch_borders[p1,p2]+diag_border
+              patch_borders[p2,p1]<-patch_borders[p2,p1]+diag_border
+              patch_borders[p1,p1]<-patch_borders[p1,p1]+diag_border
+              patch_borders[p2,p2]<-patch_borders[p2,p2]+diag_border
             } # end southwest
           }
 
@@ -261,17 +264,13 @@ patch_data_analysis <-
     neighbor_index<-which((patch_borders[i,]>0)) #find neighbors
     neighbor_index<-neighbor_index[-which(neighbor_index==i)] #remove self from neigbor list
 
-    # new d8 stuff
-    neighbor_index_card = which((patch_borders[i,]==1)) # find neighbors in cardinal dirs N/S/E/W
-    neighbor_index_diag = which((patch_borders[i,]==0.5)) # find neighbors on diagonals
-
-    # if(parallel){ # ********** hillslope parallelization **********
-    #   # remove neighbors that are in different hillslopes
-    #   neighbor_index = neighbor_index[flw_struct[i,]$Hill == flw_struct[neighbor_index,]$Hill]
-    # }
+    if(parallel){ # ********** hillslope parallelization **********
+      # remove neighbors that are in different hillslopes
+      neighbor_index = neighbor_index[flw_struct[i,]$Hill == flw_struct[neighbor_index,]$Hill]
+    }
 
     tp_perimeter<-cell_length*patch_borders[i,neighbor_index] # total perimeter in map units (meters,etc)
-    tp_neighbors<-flw_struct$Number[neighbor_index]  # this is probably redundant - vector of neighboring patches
+    tp_neighbors<-flw_struct$Number[neighbor_index]  # vector of neighboring patches
     tp_xi<-flw_struct$Centroidx[i]     #patch i x position
     tp_yi<-flw_struct$Centroidy[i]     #patch i y position
     tp_zi<-flw_struct$Centroidz[i]     #patch i y position
@@ -316,33 +315,36 @@ patch_data_analysis <-
   }
 
   # -------------------- Pit filling --------------------
-  # ----- find all pits ----- make a list of pits (nodes whose gamma's sum to 0), list in ascending order
-  num_patch<-length(lst)
-  x<-c()
-  hght<-c()
-  for (i in 1:num_patch){
-    if (sum(lst[[i]]$Gamma_i)==0){
-      x<-c(x,i) # vector of pit patch numbers
-      hght<-c(hght,lst[[i]]$Centroidz) # vector of pit heights
-    }
-  }
-  pits<-x[order(hght)] # pit patch numbers ordered by elevation
+  lst = fix_all_pits(lst)
 
-  if (length(pits)==1){
-    return(lst)        #no pits
-  }
-  pits<-pits[-1]   #throw out lowest pit - this is the outlet
-  num_pits<-length(pits)
-
-  for (j in 1:num_pits){
-    i<-pits[j]   #fill pits
-    if (sum(lst[[i]]$Gamma_i)==0){
-      lst<-fill_pit(lst,i,i)
-    }
-  }
+  # # ----- find all pits ----- make a list of pits (nodes whose gamma's sum to 0), list in ascending order
+  # num_patch<-length(lst)
+  # x<-c()
+  # hght<-c()
+  # for (i in 1:num_patch){
+  #   if (sum(lst[[i]]$Gamma_i)==0){
+  #     x<-c(x,i) # vector of pit patch numbers
+  #     hght<-c(hght,lst[[i]]$Centroidz) # vector of pit heights
+  #   }
+  # }
+  # pits<-x[order(hght)] # pit patch numbers ordered by elevation
+  #
+  # if (length(pits)==1){
+  #   return(lst)        #no pits
+  # }
+  # pits<-pits[-1]   #throw out lowest pit - this is the outlet
+  # num_pits<-length(pits)
+  #
+  # for (j in 1:num_pits){
+  #   i<-pits[j]   #fill pits
+  #   if (sum(lst[[i]]$Gamma_i)==0){
+  #     lst<-fill_pit(lst,i,i)
+  #   }
+  # }
 
   # -------------------- streams and roads --------------------
   lst<-find_stream(lst,road_width) # if there are roads, find the streams that are near
 
+  # ----- End function -----
   return(lst)
 }
