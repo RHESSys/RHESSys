@@ -98,7 +98,9 @@ void input_new_strata(
 	/*--------------------------------------------------------------*/
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 
-	canopy_strata[0].veg_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
+	 if (dtmp > 0)  canopy_strata[0].veg_parm_ID = dtmp;
+
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",canopy_strata[0].cover_fraction,1);	
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cover_fraction = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",canopy_strata[0].gap_fraction,1);

@@ -98,7 +98,9 @@ void input_new_strata_mult(
 	/*--------------------------------------------------------------*/
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 
-	canopy_strata[0].veg_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
+	 if (dtmp > 0)  canopy_strata[0].veg_parm_ID = dtmp;
+	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1,1);	
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cover_fraction = ltmp * canopy_strata[0].cover_fraction;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",1,1);
@@ -113,6 +115,7 @@ void input_new_strata_mult(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cpool = ltmp * canopy_strata[0].cs.cpool;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",1,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc = ltmp * canopy_strata[0].cs.leafc;
+
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",1,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.dead_leafc = ltmp * canopy_strata[0].cs.dead_leafc;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",1,1);
