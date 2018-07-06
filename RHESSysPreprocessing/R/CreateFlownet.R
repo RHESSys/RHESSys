@@ -22,6 +22,7 @@ CreateFlownet = function(cfname,
                          streams = NULL,
                          overwrite = FALSE,
                          roads = NULL,
+                         road_width = NULL,
                          impervious = NULL,
                          roofs = NULL,
                          wrapper = FALSE,
@@ -84,9 +85,15 @@ CreateFlownet = function(cfname,
 
   # ----- WE SHOULD LOOK AT THIS -----
   smooth_flag = FALSE
+  # -----
 
-  road_data = replace(basin_data,basin_data==1,0)
-  road_width = 0
+  if(is.null(roads)){
+    road_data = replace(basin_data,basin_data==1,0)
+  }
+
+  if(is.null(road_width)){
+    road_width = 0
+  }
 
   # ------------------------------ Make flownet list ------------------------------
   CF1 = patch_data_analysis(

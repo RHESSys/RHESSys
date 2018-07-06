@@ -86,7 +86,7 @@ patch_data_analysis <-
   patch_landtype<-as.vector(patch_landtype)
   patch_landtype[patch_landtype>0]<-1
 
-  patch_roadtype<-tapply(x,y,max)  #create vector of 1's if there is a road in the patch
+  patch_roadtype<-tapply(x1,y,max)  #create vector of 1's if there is a road in the patch
   patch_roadtype<-as.vector(patch_roadtype)
   patch_roadtype[patch_roadtype>0]<-1
 
@@ -130,8 +130,6 @@ patch_data_analysis <-
 
   if(d4){ # d4 neighbor find start -----
     patch_borders<-matrix(0,nrow=length(patches),ncol=length(patches))
-
-    #iterate through
     p_rows<-nrow(patch_data)
     p_cols<-ncol(patch_data)
 
@@ -159,7 +157,6 @@ patch_data_analysis <-
             }
           }
         } # end if not max row and col
-
         if (j == p_cols & i!=p_rows){ # final col exception
           if ((patch_data[i,j]*patch_data[i+1,j]!=0)){  # patch itself, and +1 in either directions aren't 0
             if (patch_data[i,j]!=patch_data[i+1,j]){  #lower boundary
@@ -172,7 +169,6 @@ patch_data_analysis <-
             }
           }
         }
-
         if (i==p_rows & j!=p_cols){ # final row exception
           if ((patch_data[i,j]*patch_data[i,j+1]!=0)){  # patch itself, and +1 in either directions aren't 0
             if (patch_data[i,j]!=patch_data[i,j+1]){  # rt. side boundary
@@ -185,7 +181,6 @@ patch_data_analysis <-
             }
           }
         }
-
       } # for j
     } # for i
   }
@@ -197,7 +192,7 @@ patch_data_analysis <-
     p_rows<-nrow(patch_data)
     p_cols<-ncol(patch_data)
 
-    diag_border = 1/sqrt(2*cell_length)
+    diag_border = 1/sqrt(2*cell_length) # <><><> this is the modifier for diagonal borders. scales inversely with cell size <><><>
 
     for (i in 1:p_rows) { # loop through all rows and cols of input patch data
       for (j in 1:p_cols){
@@ -251,13 +246,13 @@ patch_data_analysis <-
 
 
   # ----- smooth flag, staircase diagonal correction ----- (Im not really sure how this works, so i haven't messed with it,
-  # it may have an edge row error which occurs with single cell patches like the normal find_border_row had =Will)
+  # it may have an edge row error which occurs with single cell patches like the old find_border_row had -Will)
   if (smooth_flag==TRUE) {
     patch_borders<-find_border_correction(patch_data,patches,patch_borders) #correct for staircase diagonals
   }
 
   # -------------------- build list --------------------
-  # build list for output. Turn border count into probabilities and lists of neighbors
+  # Build list for output. Turn border count into probabilities and lists of neighbors
   num_rows<-length(flw_struct$Number)
   lst<-list()
   for (i in 1:num_rows){
@@ -317,35 +312,9 @@ patch_data_analysis <-
   # -------------------- Pit filling --------------------
 
   # add check - search neighbors, can it find a stream
-
   # solution - route directly to stream
 
   lst = fix_all_pits(lst)
-
-  # # ----- find all pits ----- make a list of pits (nodes whose gamma's sum to 0), list in ascending order
-  # num_patch<-length(lst)
-  # x<-c()
-  # hght<-c()
-  # for (i in 1:num_patch){
-  #   if (sum(lst[[i]]$Gamma_i)==0){
-  #     x<-c(x,i) # vector of pit patch numbers
-  #     hght<-c(hght,lst[[i]]$Centroidz) # vector of pit heights
-  #   }
-  # }
-  # pits<-x[order(hght)] # pit patch numbers ordered by elevation
-  #
-  # if (length(pits)==1){
-  #   return(lst)        #no pits
-  # }
-  # pits<-pits[-1]   #throw out lowest pit - this is the outlet
-  # num_pits<-length(pits)
-  #
-  # for (j in 1:num_pits){
-  #   i<-pits[j]   #fill pits
-  #   if (sum(lst[[i]]$Gamma_i)==0){
-  #     lst<-fill_pit(lst,i,i)
-  #   }
-  # }
 
   # -------------------- streams and roads --------------------
   lst<-find_stream(lst,road_width) # if there are roads, find the streams that are near
