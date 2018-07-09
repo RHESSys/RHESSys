@@ -288,7 +288,15 @@ patch_data_analysis <-
       tp_gamma<-tp_gamma/gamma_tot # normalize gamma by total (% or proportion)
       tp_TotalG<-(gamma_tot/perim_sum)*flw_struct$Area[i] # gamma_tot/perim_sum = sum of slopes * area = volume
     } else {
-      tp_TotalG<--max(slope_i)*flw_struct$Area[i]  #if all upslope, take slope from closest neighbor in height
+      # if there is only one patch slope_i will be null,
+      if (is.null(slope_i))
+        tp_TotalG <- flw_struct$Area[i]
+      else tp_TotalG<--max(slope_i)*flw_struct$Area[i]  #if all upslope, take slope from closest neighbor in height
+    }
+
+    if (list_length == 1) {
+        slope_i <- 0;
+        tp_TotalG <- flw_struct$Area[i]
     }
 
     lst[[i]]<-list(Number=flw_struct$Number[i],
