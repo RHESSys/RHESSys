@@ -395,7 +395,7 @@ struct basin_object *construct_basin(
                   }
               } else {
                   // No surface routing table specified, use sub-surface for surface
-                  hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true);
+                  hillslope->route_list = construct_routing_topology( routing_file, hillslope, command_line, true);
               }
           }
       
