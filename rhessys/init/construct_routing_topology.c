@@ -126,7 +126,6 @@ struct routing_list_object *construct_routing_topology(
 		/*	however it is need to be compatablability 		*/
 		/*--------------------------------------------------------------*/
 		d=0;
-
 		if ( surface ) {
 			patch->surface_innundation_list = (struct innundation_object *)alloc( 1 *
 								sizeof(struct innundation_object), "surface_innundation_list", "construct_routing_topology");
