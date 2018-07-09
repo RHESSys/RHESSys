@@ -54,13 +54,22 @@ make_flow_table<-function(flw,output_file,parallel){
     sink(output_file)    #write to "output_file"
     cat(list_length)
     cat("\n")
+
     for (i_count in 1:list_length){
+
+      if (list_length > 1) {
       i<-elev_order[i_count,2]    # write in descending order by elevation
       num_neighbors<-length(flw[[i]]$Neighbors)
+      }
+      else { i <- 1;
+      num_neighbors<- 0;
+      }
+
       out_string<-c(flw[[i]]$PatchID,flw[[i]]$ZoneID,flw[[i]]$HillID,flw[[i]]$Centroidx,flw[[i]]$Centroidy,
                     flw[[i]]$Centroidz,flw[[i]]$Area,flw[[i]]$Area,flw[[i]]$Landtype,flw[[i]]$TotalG,num_neighbors)
       cat(out_string)
       cat("\n")
+      if (list_length > 1) {
       for (j in 1:num_neighbors){
         cat("\t")
         n_j<-flw[[i]]$Neighbors[j]
@@ -68,12 +77,14 @@ make_flow_table<-function(flw,output_file,parallel){
         cat(out_string)
         cat("\n")
       }
+      }
       if (flw[[i]]$Landtype==2){
         cat("\t")
         cat(flw[[i]]$Roadtype)
         cat("\n")
       }
     }
+
     sink()
   }
 }
