@@ -59,9 +59,11 @@ void destroy_hillslope(
 
   if (command_line[0].routing_flag==1){
 	    free(hillslope[0].route_list[0].list);
-	    free(hillslope[0].route_list); 
-	    free(hillslope[0].surface_route_list[0].list);
-	    free(hillslope[0].surface_route_list);	    
+	    free(hillslope[0].route_list);
+        if (command_line[0].surface_routing_flag) { 
+	        free(hillslope[0].surface_route_list[0].list);
+	        free(hillslope[0].surface_route_list);
+      }	    
 	}
 	/*--------------------------------------------------------------*/
 	/*	Destroy the main hillslope object.							*/
