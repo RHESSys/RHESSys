@@ -420,7 +420,7 @@ struct basin_object *construct_basin(
       for (int i=0; i<num_hillslopes; i++){
         fscanf( routing_file, "%d", &hillslope_ID );
         hillslope = find_hillslope_in_basin( hillslope_ID, basin );
-        hillslope->route_list = construct_routing_topology( routing_file, hillslope, command_line, true );
+        hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true );
       }	
     }
   } else { // command_line[0].routing_flag != 1
