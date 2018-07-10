@@ -441,12 +441,13 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	/* determine which innundation depth to consider		*/
 	/*--------------------------------------------------------------*/
-	if (patch[0].num_innundation_depths > 0) {
-		innundation_depth = patch[0].detention_store + route_to_surface/patch[0].area; 
-		d=0;
-		while ((innundation_depth > patch[0].innundation_list[d].critical_depth) 
-			&& (d < patch[0].num_innundation_depths-1)) {
-			d++;}
+	if (command_line[0].surface_routing_flag) {
+    if (patch[0].num_innundation_depths > 0) {
+		  innundation_depth = patch[0].detention_store + route_to_surface/patch[0].area; 
+		  d=0;
+		  while ((innundation_depth > patch[0].innundation_list[d].critical_depth) 
+			  && (d < patch[0].num_innundation_depths-1)) {
+			  d++;}
 		}
 	else d=0;
 	for (j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {
@@ -564,6 +565,7 @@ void  update_drainage_land(
 		neigh[0].detention_store -= infiltration;
 
 	}
+  } // end if surface routing flag
 
 	} /* end if redistribution flag */
 
