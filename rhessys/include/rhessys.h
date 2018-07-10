@@ -210,8 +210,7 @@ int is_approximately(const double value,const double target,const double toleran
 #endif
 int read_record( FILE *, char *);
 #ifdef LIU_NETCDF_READER
-int get_netcdf_station_number(char *base_station_filename);                      /*160419LML*/
-/*160624LML moved here*/
+int get_netcdf_station_number(char *base_station_filename);              
 int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, int, float *);
 int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
 int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
@@ -616,14 +615,14 @@ typedef struct base_station_ncheader_object
         double  screen_height;                  /* meters       */
         #endif
         int             lastID;
-        //160517LML double  sdist;                                  /* search distance in native netcdf units */
-        double          resolution_dd;                                           /*(DD) 160517LML resolution in geocoordinate. Estimated from grid cell distribution*/
-        double          resolution_meter;                                        /*(meter) 160517LML resolution in projected coordinate. Estimated from grid cell distribution*/
+        //double  sdist;                                  /* search distance in native netcdf units */
+        double          resolution_dd;                                           /*(DD) resolution in geocoordinate. Estimated from grid cell distribution*/
+        double          resolution_meter;                                        /*(meter) resolution in projected coordinate. Estimated from grid cell distribution*/
         int             year_start;                             /* start year for netcdf time counter (NOT time series start date) */
         int             day_offset;                             /* day offset from January 1 for netcdf time counter */
         int             leap_year;                              /* 0 = no leap years, 1 = leap years in netcdf record */
         double  precip_mult;                    /* multiplier for precip if not in meters */
-        char    temperature_unit;               /* 160517LML K: Kelvin C: Celsius */
+        char    temperature_unit;               /* K: Kelvin C: Celsius */
         int             elevflag;                               /* set based on whether elev filename is given */
         char    netcdf_x_varname[MAXSTR];       /* variable name for x coordinate in nc file */
         char    netcdf_y_varname[MAXSTR];       /* variable name for y coordinate in nc file */
