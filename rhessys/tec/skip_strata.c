@@ -89,7 +89,7 @@ void skip_strata(
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.		*/
 	/*--------------------------------------------------------------*/
-	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_strata");
+	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 		/*--------------------------------------------------------------*/
 		/*	Read in the number of  strata base stations 					*/
 		/*--------------------------------------------------------------*/

@@ -57,7 +57,6 @@ void input_new_basin_mult(
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
 	int		i,dtmp;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
 	int		paramCnt=0;
@@ -75,7 +74,11 @@ void input_new_basin_mult(
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].y = ltmp * basin[0].y;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",1,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].z = ltmp * basin[0].z;
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",0,1); //default value = 0		
+
+
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",basin[0].basin_parm_ID,1);
+	 if (dtmp > 0)  basin[0].basin_parm_ID = dtmp;
+
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",1,1);	
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",1,1);	
 	
@@ -117,9 +120,9 @@ void input_new_basin_mult(
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this basin                             */
 	/*--------------------------------------------------------------*/
-	if (default_object_ID > 0) {
+	if (basin[0].basin_parm_ID > 0) {
 		i = 0;
-		while (defaults[0].basin[i].ID != default_object_ID) {
+		while (defaults[0].basin[i].ID != basin[0].basin_parm_ID) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*  Report an error if no match was found.  Otherwise assign    */
@@ -128,7 +131,7 @@ void input_new_basin_mult(
 			if ( i>= defaults[0].num_basin_default_files ){
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_basin,basin default ID %d not found.\n",
-					default_object_ID);
+					basin[0].basin_parm_ID);
 				exit(EXIT_FAILURE);
 			}
 		} /* end-while */

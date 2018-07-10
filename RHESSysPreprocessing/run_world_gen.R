@@ -7,13 +7,16 @@
 # Set the path below to that directory:
 setwd("~/Documents/examplefolder")
 
-# Next, choose your method of GIS. "GRASS" Will (attempt) to autodetect the version of GRASS.
-# Alternatively you can specify "GRASS6" for GRASS 6.x and "GRASS7" for GRASS 7.x
+# Next, choose your method of data input. "GRASS" Will (attempt) to autodetect the version of GRASS.
+# If the code cannot detect your version, you can specify "GRASS6" for GRASS 6.x and "GRASS7" for GRASS 7.x
 # If you are having trouble setting up/using GRASS 6.x, GRASS 7.x may be easier to install and runs faster.
 type = "GRASS"
 
-# Set your GRASS GIS environment using the variables listed below.
+# Alternatively, if you have spatial data that is already output into rasters (GeoTiff or equivalent) you can set type to "raster"
+# type = "raster"
+# This method will typically be faster, and may be more stable is you are encountering GRASS GIS-realated issues.
 
+# IF USING GRASS GIS DATA INPUT- Set your GRASS GIS environment using the variables listed below.
 # Your gisbase is the location of GRASS GIS on your system, typically:
 gisbase = "/Applications/GRASS-6.4.app/Contents/MacOS"
 # for windows sysstems this will be something like: "D:\\Program Files\\GRASS GIS 6.4.4"
@@ -32,6 +35,10 @@ mapset = "PERMANENT"
 
 # These GIS environment variables are combined into a vector.
 typepars = c(gisbase,home,gisdb,location,mapset)
+
+# IF USING RASTER DATA INPUT
+# Set typepars to a folder containing your raster spatial data.  Each raster should be named the same as it is referenced in the template file
+# typepars = "/input_rasters"
 
 # template is the path and name of your template file.
 template = "/templates/example.template"

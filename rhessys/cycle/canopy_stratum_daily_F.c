@@ -1152,6 +1152,12 @@ void	canopy_stratum_daily_F(
 				(day_proportion * potential_rainy_evaporation_rate_day);
 
 	}
+	 else {
+		potential_rainy_evaporation_rate_day = 0.0;
+		potential_rainy_evaporation_rate_night  = 0.0;
+		potential_evaporation_rate_day=0.0;
+		potential_evaporation_rate_night=0.0;	
+	}
 
 	if ( command_line[0].verbose_flag > 2  )
 		printf("\n%8d -444.12 ",julday(current_date)-2449000);

@@ -57,7 +57,6 @@ void input_new_basin(
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
 	int		i,dtmp;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
 	int		paramCnt=0;
@@ -70,19 +69,16 @@ void input_new_basin(
 	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",basin[0].x,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].x = ltmp;
-	/*fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);*/
+
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",basin[0].y,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].y = ltmp;
-	/*fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);*/
+
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",basin[0].z,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  basin[0].z = ltmp;
-         /*fscanf(world_file,"%d",&(default_object_ID));
-	read_record(world_file, record);*/
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",0,1);		
-         /*fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);*/
+
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",basin[0].basin_parm_ID,1);
+	 if (dtmp > 0)  basin[0].basin_parm_ID = dtmp;
+
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",basin[0].latitude,1);	
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",basin[0].num_base_stations,1);	
 	
@@ -125,9 +121,9 @@ void input_new_basin(
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this basin                             */
 	/*--------------------------------------------------------------*/
-	if (default_object_ID > 0) {
+	if (basin[0].basin_parm_ID > 0) {
 		i = 0;
-		while (defaults[0].basin[i].ID != default_object_ID) {
+		while (defaults[0].basin[i].ID != basin[0].basin_parm_ID) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*  Report an error if no match was found.  Otherwise assign    */
@@ -136,7 +132,7 @@ void input_new_basin(
 			if ( i>= defaults[0].num_basin_default_files ){
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_basin,basin default ID %d not found.\n",
-					default_object_ID);
+					basin[0].basin_parm_ID);
 				exit(EXIT_FAILURE);
 			}
 		} /* end-while */
