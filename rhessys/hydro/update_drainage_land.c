@@ -441,7 +441,6 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	/* determine which innundation depth to consider		*/
 	/*--------------------------------------------------------------*/
-	if (command_line[0].surface_routing_flag) {
     if (patch[0].num_innundation_depths > 0) {
 		  innundation_depth = patch[0].detention_store + route_to_surface/patch[0].area; 
 		  d=0;
@@ -565,7 +564,6 @@ void  update_drainage_land(
 		neigh[0].detention_store -= infiltration;
 
 	}
-  } // end if surface routing flag
 
 	} /* end if redistribution flag */
 
