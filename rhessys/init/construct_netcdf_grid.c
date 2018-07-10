@@ -25,13 +25,6 @@
 #include <math.h>
 #include "rhessys.h"
 
-/*160624LML moved to rhessys.h
-  int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, int, float *);
-  int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
-  int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
-  int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
-  */
-
 struct base_station_object *construct_netcdf_grid (
 #ifdef LIU_NETCDF_READER
                 struct base_station_object *base_station_in,
@@ -360,9 +353,9 @@ struct base_station_object *construct_netcdf_grid (
                 k = get_netcdf_var(
                                 base_station_ncheader[0].netcdf_elev_filename,
                                 base_station_ncheader[0].netcdf_elev_varname,
-                                lat_name, //160624LML "lat",
-                                lon_name, //160624LML "lon",
-                                /*160517LML base_station_ncheader[0].netcdf_y_varname,
+                                lat_name, //"lat",
+                                lon_name, // "lon",
+                                /*base_station_ncheader[0].netcdf_y_varname,
                                   base_station_ncheader[0].netcdf_x_varname,*/
                                 net_y,
                                 net_x,

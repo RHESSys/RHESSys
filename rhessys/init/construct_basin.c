@@ -90,15 +90,6 @@ struct basin_object *construct_basin(
 
   void	sort_by_elevation( struct basin_object *);
 
-  //	struct routing_list_object construct_ddn_routing_topology(
-  //		char *,
-  //		struct basin_object *);
-
-  //	struct routing_list_object construct_routing_topology(
-  //		char *,
-  //		struct basin_object *,
-  //		struct	command_line_object *);
-
   struct stream_list_object construct_stream_routing_topology(
       char *,
       struct basin_object *, 
@@ -364,19 +355,11 @@ struct basin_object *construct_basin(
       }   
     }
 
-    // steps:
-    // 1. get hillslope ID by reading from routing file
-    // 2. get pointer to hillslope using id from #1 and 
-    //    find_hillslope_in_basin()
-    // 3. call construct_routing_topology and pass in hillslope
-    //    from #2
-
-    // THIS IS WHERE OPENMP WILL PARALLELIZE STUFF
+    // THIS IS WHERE OPENMP WILL PARALLELIZE
     for (int i=0; i<num_hillslopes; i++){
       fscanf( routing_file, "%d", &hillslope_ID );
       hillslope = find_hillslope_in_basin( hillslope_ID, basin );
       if ( command_line[0].ddn_routing_flag == 1 ) {
-        // XXX neeeds to be different file for surface routing
         hillslope->route_list = construct_ddn_routing_topology( routing_file, hillslope);
       } else {
         hillslope->route_list = construct_routing_topology( routing_file, hillslope, command_line, false);
@@ -428,20 +411,6 @@ struct basin_object *construct_basin(
     // in the hillslope, in no particular order.
     hillslope->route_list = construct_topmodel_patchlist(hillslope);
   }
-  /* XXX how do we deal with alt file? Is there an alt file name in the command line?
-     if ( command_line[0].ddn_routing_flag == 1 ) {
-     if ( (routing_file = fopen(routing_filename,"r")) == NULL ){
-     fprintf(stderr,"FATAL ERROR:  Cannot open routing file %s\n",
-     routing_filename);
-     exit(0);
-     } 
-     fscanf(routing_file,"%d",&num_patches);
-     struct = (struct patch_object **)alloc(
-     num_patches * sizeof(struct patch_object *), "patch list",
-     "construct_routing_topography"); */
-
-  // XXXX
-
 
   /*--------------------------------------------------------------*/
   /*	Read in stream routing topology if needed	*/

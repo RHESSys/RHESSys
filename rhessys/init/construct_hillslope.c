@@ -310,39 +310,5 @@ struct hillslope_object *construct_hillslope(
 	if(paramPtr!=NULL)
 	  free(paramPtr);
 
-/*	if ( command_line[0].routing_flag == 1 ) {
-
-    // Moved from construct_basin.c in order to parallelize by hillslope XXXX
-	  if ( command_line[0].ddn_routing_flag == 1 ) {
-		  	hillslope->route_list = construct_ddn_routing_topology( command_line[0].routing_filename, hillslope);
-		  } else {
-			  hillslope->route_list = construct_routing_topology( command_line[0].routing_filename, hillslope,
-						command_line, false);
-			  if ( command_line->surface_routing_flag ) {
-				  printf("\tReading surface routing table\n");
-				  hillslope->surface_route_list =
-						construct_routing_topology( command_line->surface_routing_filename, hillslope,
-								command_line, true);
-				if ( hillslope->surface_route_list->num_patches != hillslope->route_list->num_patches ) {
-					fprintf(stderr,
-							"\nFATAL ERROR: in construct_hillslope, surface routing table has %d patches, but subsurface routing table has %d patches. The number of patches must be identical.\n",
-							hillslope->surface_route_list->num_patches, hillslope->route_list->num_patches);
-					exit(EXIT_FAILURE);
-				}
-			} else {
-				// No surface routing table specified, use sub-surface for surface
-				hillslope->surface_route_list =
-						construct_routing_topology( command_line->routing_filename, hillslope,
-								command_line, true);
-			}
-		}
-	} else { // command_line[0].routing_flag != 1
-		// For TOPMODEL mode, make a dummy route list consisting of all patches
-		// in the hillslope, in no particular order.
-		hillslope->route_list = construct_topmodel_patchlist(hillslope);
-	}*/
-
-
-
 	return(hillslope);
 } /*end construct_hillslope.c*/

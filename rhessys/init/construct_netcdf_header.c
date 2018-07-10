@@ -17,12 +17,12 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
-#include <float.h>                                                               //160625LML <limits.h>                                                              //160517LML
+#include <float.h>                                                               //<limits.h>                                   //160517
 #include "rhessys.h"
 
-double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); //160517LML
+double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); //160517
 #ifdef LIU_NETCDF_READER
-/*160419LML get the station numbers from station file                         */
+/*Get the station numbers from station file                         */
 int get_netcdf_station_number(char *base_station_filename)
 {
     FILE*	base_station_file;
@@ -57,7 +57,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 {
 	void	*alloc( 	size_t, char *, char *);
 	
-    //160419LML struct	base_station_object** base_stations;
+    //struct	base_station_object** base_stations;
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
@@ -116,7 +116,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	while (fgets(buffer, sizeof(buffer), base_station_file) != NULL) {
 		if (buffer != NULL) {
 			sscanf(buffer, "%s %s", first, second);
-            /*160517LML if(strcmp(second,"location_searching_distance") == 0){
+            /*if(strcmp(second,"location_searching_distance") == 0){
             base_station_ncheader[0].sdist = atof(first);
             } else */
             if (strcmp(second, "year_start_index") == 0){
@@ -180,9 +180,9 @@ struct base_station_ncheader_object *construct_netcdf_header (
             else if (strcmp(second, "base_station_id") == 0) {
                 baseid++;
                 world[0].base_stations[baseid][0].ID = atoi(first);
-            } else if (strcmp(second, "xc"/*160517LML "x_coordinate"*/) == 0) {
+            } else if (strcmp(second, "xc"/*"x_coordinate"*/) == 0) {
                 world[0].base_stations[baseid][0].proj_x = atof(first);
-            } else if (strcmp(second, "yc"/*160517LMLLML "y_coordinate"*/) == 0) {
+            } else if (strcmp(second, "yc"/*"y_coordinate"*/) == 0) {
                 world[0].base_stations[baseid][0].proj_y = atof(first);
             } else if (strcmp(second, "z_coordinate") == 0) {
                 world[0].base_stations[baseid][0].z = atof(first);
@@ -239,7 +239,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
            base_station_ncheader[0].resolution_dd,
            //base_station_ncheader[0].effective_lai,
            //base_station_ncheader[0].screen_height,
-           //160517LML base_station_ncheader[0].sdist,
+           //base_station_ncheader[0].sdist,
 		   base_station_ncheader[0].year_start,
 		   base_station_ncheader[0].day_offset,
 		   base_station_ncheader[0].leap_year,
@@ -247,12 +247,12 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	
 	return(base_station_ncheader);
 }
-//160517LML_____________________________________________________________________
+//_____________________________________________________________________
 typedef struct Location{
     double x;
     double y;
 } Location;
-//160517LML_____________________________________________________________________
+//_____________________________________________________________________
 double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers)
 {
     Location *sites  = (Location*)calloc(station_numbers, sizeof(Location));

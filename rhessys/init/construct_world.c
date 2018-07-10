@@ -875,16 +875,14 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	/*	Construct the basins. 										*/
 	/*--------------------------------------------------------------*/
-	printf("\n Before for loop\n");  //XXX
 	for (i=0; i<world[0].num_basin_files; i++ ){
-	  printf("\n creating basin%d\n", i);  //XXX
+	  printf("\n creating basin%d\n", i);
 		world[0].basins[i] = construct_basin(
 			command_line, world_file, &(world[0].num_base_stations),
 			world[0].base_stations,	world[0].defaults, 
             world[0].base_station_ncheader,
             world);
 	} /*end for*/
-	printf("\n After for loop\n");  //XXX
 
 	/*--------------------------------------------------------------*/
 	/*	If spinup flag is set construct the spinup thresholds object*/
