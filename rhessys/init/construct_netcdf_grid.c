@@ -323,7 +323,7 @@ struct base_station_object *construct_netcdf_grid (
                  + daily_clim->relative_humidity_min[j]) / 2.0;
         }
 #endif
-#ifdef CHECK_NCCLIM_DATA
+/*#ifdef CHECK_NCCLIM_DATA
            for (j = 0; j < (duration->day < 60 ? duration->day : 60); j++) {
 #ifndef LIU_EXTEND_CLIM_VAR
            fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n"
@@ -339,7 +339,7 @@ struct base_station_object *construct_netcdf_grid (
 
 #endif
            }
-#endif
+#endif */
 
 
         /* ------------------ ELEV ------------------ */
