@@ -129,19 +129,20 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
-	for (i = 0; i < hillslope->route_list->num_patches; i++) {
+ 
+  #pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
+  for (i = 0; i < hillslope->route_list->num_patches; i++) {
 		patch = hillslope->route_list->list[i];
 		patch[0].streamflow = 0.0;
 		patch[0].return_flow = 0.0;
 		patch[0].base_flow = 0.0;
 		patch[0].infiltration_excess = 0.0;
-		hillslope[0].preday_hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
-		hillslope[0].preday_hillslope_unsat_storage += patch[0].unsat_storage * patch[0].area;
-		hillslope[0].preday_hillslope_sat_deficit += patch[0].sat_deficit * patch[0].area;
-		hillslope[0].preday_hillslope_return_flow += patch[0].return_flow * patch[0].area;
-		hillslope[0].preday_hillslope_detention_store += patch[0].detention_store
-				* patch[0].area;
-		hillslope[0].hillslope_area += patch[0].area;
+		preday_hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
+		preday_hillslope_unsat_storage += patch[0].unsat_storage * patch[0].area;
+		preday_hillslope_sat_deficit += patch[0].sat_deficit * patch[0].area;
+		preday_hillslope_return_flow += patch[0].return_flow * patch[0].area;
+		preday_hillslope_detention_store += patch[0].detention_store * patch[0].area;
+		hillslope_area += patch[0].area;
 		patch[0].Qin_total = 0.0;
 		patch[0].Qout_total = 0.0;
 		patch[0].Qin = 0.0;
@@ -203,6 +204,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 		}
 	}
+  // For openmp assign local variables back to main	
+  hillslope[0].preday_hillslope_rz_storage = preday_hillslope_rz_storage;
+	hillslope[0].preday_hillslope_unsat_storage = preday_hillslope_unsat_storage;
+	hillslope[0].preday_hillslope_sat_deficit = preday_hillslope_sat_deficit ;
+	hillslope[0].preday_hillslope_return_flow = preday_hillslope_return_flow ;
+	hillslope[0].preday_hillslope_detention_store = preday_hillslope_detention_store;	
+  hillslope[0].hillslope_area = hillslope_area;
 
 	/*--------------------------------------------------------------*/
 	/*	calculate Qout for each patch and add appropriate	*/
@@ -217,7 +225,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				-1.0 * patch[0].sat_deficit);
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
 
-
+    #pragma omp parallel for
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
 			patch = hillslope->route_list->list[i];
 		      	patch[0].hourly_subsur2stream_flow = 0;
@@ -253,6 +261,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
+    #pragma omp parallel for
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
 			patch = hillslope->route_list->list[i];
 
