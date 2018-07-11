@@ -17,10 +17,10 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
-#include <float.h>                                                               //<limits.h>                                   //160517
+#include <float.h>
 #include "rhessys.h"
 
-double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); //160517
+double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); 
 #ifdef LIU_NETCDF_READER
 /*Get the station numbers from station file                         */
 int get_netcdf_station_number(char *base_station_filename)
