@@ -110,7 +110,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gr_perc = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gr_perc", "%lf", 0.2, 1);
 		default_object_list[i].lai_stomatal_fraction = 	getDoubleParam(&paramCnt, &paramPtr, "lai_stomatal_fraction", "%lf", 1.0, 1);
 
-/* values combined 0.85 / 2.6 from Biome BGC 4.1.1 */
+		/* values combined 0.85 / 2.6 from Biome BGC 4.1.1 */
 		/* if this is 9999 we will make this dynamics as 1/sla*10 from Evans and Poorter, 2001) */
 		default_object_list[i].epc.netpabs = 		getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs", "%lf", 0.7, 1);
 		default_object_list[i].epc.netpabs_sla_parm = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_sla_parm", "%lf", 1.0, 1);
