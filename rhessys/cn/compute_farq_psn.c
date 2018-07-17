@@ -282,9 +282,9 @@ Farquhar photosynthesis routine
 		out->J = J;
 		out->Av = Av;
 		out->Aj = Aj;
-
-		/* printf(" %lf %lf %lf %lf %lf %lf", A, out->Ci, out->Vmax, out->Jmax, out->dC13, out->Ca); 
-                 printf(" psnin: %lf %lf %lf %lf %lf %lf %lf %lf %d %lf ",
+/*
+		 printf("\n Ass A %lf ci %lf vmax %lf jmax %lf c13 %lf ca %lf", A, out->Ci, out->Vmax, out->Jmax, out->dC13, out->Ca); 
+                 printf(" psnin: pa %lf co2 %lf t %lf irad  %lf g %lf Rd %lf lnc %lf flnr %lf c3 %d netpabs %lf ",
                                 in->pa, in->co2, t, in->irad,
                                 g, in->Rd, in->lnc, in->flnr,
                                c3, netpabs);
@@ -292,7 +292,8 @@ Farquhar photosynthesis routine
                                 g, O2, Ca, Ca - A/g,
                                 out->gamma, Kc, Ko, act,
                                 Vmax, Jmax, J, Av,
-                                Aj, A);    */
+                                Aj, A);   
+*/
 	return (!ok);
 }	 /* end compute_farq_psn.c */
 

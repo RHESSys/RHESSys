@@ -294,6 +294,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.min_leaf_carbon = getDoubleParam(&paramCnt, &paramPtr, "epc.min_leaf_carbon", "%lf", 0.0005, 1);
 		default_object_list[i].epc.max_years_resprout = getIntParam(&paramCnt, &paramPtr, "epc.max_years_resprout", "%d", 100, 1);
 		default_object_list[i].epc.resprout_leaf_carbon = getDoubleParam(&paramCnt, &paramPtr, "epc.resprout_leaf_carbon", "%lf", 0.001, 1);
+		default_object_list[i].epc.resprout_cpool = getDoubleParam(&paramCnt, &paramPtr, "epc.resprout_cpool", "%lf", 0.01, 1);
 		default_object_list[i].epc.litter_gsurf_slope = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_gsurf_slope", "%lf", 0.0, 1);
 		default_object_list[i].epc.litter_gsurf_intercept = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_gsurf_intercept", "%lf", 100000000, 1);
 		default_object_list[i].epc.coef_CO2 = getDoubleParam(&paramCnt, &paramPtr, "epc.coef_CO2", "%lf", 1.0, 1);

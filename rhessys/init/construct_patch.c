@@ -684,6 +684,8 @@ struct patch_object *construct_patch(
 		0,
 		-1*patch[0].sat_deficit);
 	patch[0].preday_sat_deficit_z = patch[0].sat_deficit_z;
+
+	patch[0].water_transfer=0.0;
 	
 
 	if(paramPtr!=NULL)

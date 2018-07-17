@@ -1090,7 +1090,6 @@ void zone_daily_I(
 		}
 	}
 
-
 	if (excess_root_water_volume < ZERO) {
 	added_water_volume=0.0;
 	excess_root_water = -excess_root_water_volume/area_receiving;

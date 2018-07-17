@@ -2632,6 +2632,7 @@ struct epconst_struct
     int dynamic_alloc_prop_day_growth; /* (0-1) 1 proportional allocated daily can be dynamic 0 static */
     double  min_leaf_carbon; /* kgC minimum leaf carbon before death */
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
+    double  resprout_cpool; /* kgC cpool carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
     double root_max_depth; /*  (m) maximum root depth */
