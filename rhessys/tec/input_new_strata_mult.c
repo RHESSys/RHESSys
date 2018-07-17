@@ -365,7 +365,6 @@ void input_new_strata_mult(
 		/* assume this is 365 for now since we don't know when next      */
 		/* year's growing season will start                              */
 		/*---------------------------------------------------------------*/
-		canopy_strata[0].phen.nretdays = 365;
 	}
 	else {
 		fprintf(stderr,"\nFATAL ERROR - construct_canopy_stratum.c");

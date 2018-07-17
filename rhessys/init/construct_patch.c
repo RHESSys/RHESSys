@@ -45,6 +45,7 @@
 struct patch_object *construct_patch(
 									 struct	command_line_object	*command_line,
 									 FILE	*world_file,
+									 struct	zone_object *zone,
 									 int     num_world_base_stations,
 									 struct  base_station_object **world_base_stations,
 									 struct	default_object	*defaults)
@@ -59,6 +60,7 @@ struct patch_object *construct_patch(
 	struct 	canopy_strata_object *construct_canopy_strata( 
 		struct command_line_object *,
 		FILE	*,
+		struct	zone_object *,
 		struct	patch_object *,
 		int     num_world_base_stations,
 		struct  base_station_object **world_base_stations,
@@ -591,6 +593,7 @@ struct patch_object *construct_patch(
 		patch[0].canopy_strata[i] = construct_canopy_strata(  
 			command_line,
 			world_file,
+			zone,
 			patch,
 			num_world_base_stations,
 			world_base_stations,defaults);

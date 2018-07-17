@@ -153,7 +153,12 @@ void	output_canopy_strata_state(
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].epv.max_fparabs)        , "epv.max_fparabs");
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].epv.min_vwc)            , "epv.min_vwc");
-
+	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc_age)            , "cs.leafc_age");
+	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30d %s"       , (canopy_strata[0].cs.age)            , "cs.age");
+	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30d %s"       , (canopy_strata[0].cs.num_resprout)            , "cs.num_resprout");
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30d  %s"       , (canopy_strata[0].phen.gwseasonday)            , "phen.gwseasonday");
 	fprintf(outfile , "\n            ");

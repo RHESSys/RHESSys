@@ -79,6 +79,7 @@ struct zone_object *construct_zone(
 	struct patch_object *construct_patch(
 		struct command_line_object *,
 		FILE	*,
+		struct	zone_object *,
 		int		num_world_base_stations,
 		struct base_station_object **world_base_stations,
 		struct	default_object	*defaults);
@@ -351,6 +352,7 @@ struct zone_object *construct_zone(
 		zone[0].patches[i] = construct_patch(
 			command_line,
 			world_file,
+			zone,
 			*num_world_base_stations,
 			world_base_stations,
 			defaults);

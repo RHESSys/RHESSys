@@ -44,6 +44,7 @@
 struct canopy_strata_object *construct_canopy_strata(
 													 struct	command_line_object	*command_line,
 													 FILE	*world_file,
+													 struct	zone_object	*zone,
 													 struct	patch_object	*patch,
 													 int		num_world_base_stations,
 													 struct base_station_object **world_base_stations,
@@ -76,13 +77,40 @@ struct canopy_strata_object *construct_canopy_strata(
 		double,
 		double);
 
+
+	void    update_phenology(
+                struct zone_object *,
+                struct epvar_struct *,
+                struct epconst_struct,
+                struct phenology_struct *,
+                struct cstate_struct *,
+                struct cdayflux_struct *,
+                struct cdayflux_patch_struct *,
+                struct nstate_struct *,
+                struct ndayflux_struct *,
+                struct ndayflux_patch_struct *,
+                struct litter_c_object *,
+                struct litter_n_object *,
+                struct litter_object *,
+                struct soil_c_object *,
+                struct soil_n_object *,
+                struct rooting_zone_object *,
+                double soil_depth,
+                double,
+                double,
+                double,
+                struct date,
+                int);
+
 	void	*alloc(size_t, char *, char *);
+
+    	long    yearday( struct date);
 
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
-	int	i;
+	int	i, day;
 	double	sai, rootc;
 	int     spinup_default_object_ID; 
 	char	record[MAXSTR];
@@ -210,15 +238,18 @@ struct canopy_strata_object *construct_canopy_strata(
 	
 	canopy_strata[0].ns.retransn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",0.0,1);
 
-	/* initialize phenology variables to zero unliss provided
-	canopy_strata[0].phen.gwseasonday = getIntWorldfile(&paramCnt,&paramPtr,"phen.gwseasonday","%d",0,9999);
-	canopy_strata[0].phen.lfseasonday = getIntWorldfile(&paramCnt,&paramPtr,"phen.lfseasonday","%d",0,1);
-	canopy_strata[0].phen.leaflitfallc = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.leaflitfallc","%lf",0.0,1);
-	canopy_strata[0].phen.leaflitfalln = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.leaflitfalln","%lf",0.0,1);
-	canopy_strata[0].phen.frootlitfallc = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.frootlitfallc","%lf",0.0,1);
-	canopy_strata[0].phen.frootlitfalln = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.frootlitfalln","%lf",0.0,1);
+	/* initialize phenology variables to zero unliss provided */
+	canopy_strata[0].phen.gwseasonday = getIntWorldfile(&paramCnt,&paramPtr,"phen.gwseasonday","%d",0,-9999);
+	canopy_strata[0].phen.lfseasonday = getIntWorldfile(&paramCnt,&paramPtr,"phen.lfseasonday","%d",0,-1);
+	canopy_strata[0].phen.leaflitfallc = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.leaflitfallc","%lf",-9999.0,1);
+	canopy_strata[0].phen.leaflitfalln = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.leaflitfalln","%lf",-9999.0,1);
+	canopy_strata[0].phen.frootlitfallc = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.frootlitfallc","%lf",-9999.0,1);
+	canopy_strata[0].phen.frootlitfalln = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.frootlitfalln","%lf",-9999.0,1);
 	canopy_strata[0].phen.leafretransn = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.leafretransn","%lf",0.0,1);
 	
+	canopy_strata[0].cs.num_resprout = getIntWorldfile(&paramCnt,&paramPtr,"cs.num_resprout","%d",0,1);
+	canopy_strata[0].cs.age = getIntWorldfile(&paramCnt,&paramPtr,"cs.age","%d",0,1);
+	canopy_strata[0].cs.leafc_age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",0.0,1);
 
 
 	if (command_line[0].vegspinup_flag > 0){
@@ -229,16 +260,6 @@ struct canopy_strata_object *construct_canopy_strata(
      canopy_strata[0].target.met = 2;
      
    }
-	/*--------------------------------------------------------------*/
-	/*	intialized annual flux variables			*/
-	/*--------------------------------------------------------------*/
-	/*  fscanf(world_file,"%d",&(canopy_strata[0].epv.wstress_days));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].epv.max_fparabs));
-	read_record(world_file, record);
-	fscanf(world_file,"%lf",&(canopy_strata[0].epv.min_vwc));
-	read_record(world_file, record);*/
-	
 	canopy_strata[0].epv.wstress_days  = getIntWorldfile(&paramCnt,&paramPtr,"epv.wstress_days","%lf",0,1);
 
 	canopy_strata[0].epv.max_fparabs = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.max_fparabs","%lf",0.0,1);
@@ -411,53 +432,11 @@ struct canopy_strata_object *construct_canopy_strata(
 
  
 
-	if ( canopy_strata[0].cs.leafc <= 1.0/canopy_strata[0].epv.proj_sla_sunlit) {
-		canopy_strata[0].epv.proj_lai = canopy_strata[0].cs.leafc *
-				canopy_strata[0].epv.proj_sla_sunlit;
-		canopy_strata[0].epv.proj_lai_sunlit = canopy_strata[0].epv.proj_lai;
-		canopy_strata[0].epv.proj_lai_shade = 0.0;
-		}
-	else  {
-		canopy_strata[0].epv.proj_lai = 1.0 + ( canopy_strata[0].cs.leafc -
-				1.0/canopy_strata[0].epv.proj_sla_sunlit) *
-				canopy_strata[0].epv.proj_sla_shade;
-		canopy_strata[0].epv.proj_lai_sunlit = 1.0;
-		canopy_strata[0].epv.proj_lai_shade = canopy_strata[0].epv.proj_lai - 1.0;
-		}
-
-
-	canopy_strata[0].epv.all_lai = canopy_strata[0].epv.proj_lai *
-		canopy_strata[0].defaults[0][0].epc.lai_ratio;
-	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
-	
-	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
-		canopy_strata[0].epv.height =
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
-		* pow((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc),
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
-	else
-		canopy_strata[0].epv.height =
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
-		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
-
-	/*--------------------------------------------------------------*/
-	/*	calculate all sided  and project pai from max projected lai	*/
-	/*--------------------------------------------------------------*/
-
-	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
-		sai = 0.55*(1.0-exp(-0.175*(canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc)));
-		canopy_strata[0].epv.proj_pai = max(canopy_strata[0].epv.proj_lai + sai, 0.0);
-		canopy_strata[0].epv.all_pai = max(canopy_strata[0].epv.all_lai + sai, 0.0);
-	}
-	else {
-		canopy_strata[0].epv.proj_pai =  canopy_strata[0].epv.proj_lai;
-		canopy_strata[0].epv.all_pai =  canopy_strata[0].epv.all_lai;
-	}
-
 	/*--------------------------------------------------------------*/
 	/*	initializae turnovers and litterfall 			*/
+	/*     unless input from worldfile				*/
 	/*--------------------------------------------------------------*/
+	if (canopy_strata[0].phen.leaflitfallc <= -9999.0) {
 	if (compute_annual_turnover(canopy_strata[0].defaults[0][0].epc,
 		&(canopy_strata[0].epv),
 		&(canopy_strata[0].cs)) ){
@@ -470,6 +449,10 @@ struct canopy_strata_object *construct_canopy_strata(
 		&(canopy_strata[0].cs), command_line[0].grow_flag) ){
 		fprintf(stderr,"FATAL ERROR: in compute_annual_litfall() ... Exiting\n");
 		exit(EXIT_FAILURE);
+	}
+	}
+	else {
+		printf("\n Using input leaf and froot litfall\n");
 	}
 
 	/*--------------------------------------------------------------*/
@@ -526,12 +509,54 @@ struct canopy_strata_object *construct_canopy_strata(
 		if (canopy_strata[0].phen.litfall_stopday > 365)
 			canopy_strata[0].phen.litfall_stopday -= 365;
 		/*---------------------------------------------------------------*/
-		/* assume this is 365 for now since we don't know when next      */
+		/* figure out where we are in growing litfall season		*/
 		/* year's growing season will start                              */
+		/* might not work for winter growing season 			*/
 		/*---------------------------------------------------------------*/
-		canopy_strata[0].phen.nretdays = 365;
-		canopy_strata[0].phen.gwseasonday = -1;
+
+	    if (canopy_strata[0].phen.gwseasonday <= -9999) {
+		day = yearday(command_line[0].start_date);
+		if ((day >= canopy_strata[0].phen.expand_startday) && (day < canopy_strata[0].phen.litfall_startday)) {
+		canopy_strata[0].phen.gwseasonday = day-canopy_strata[0].phen.expand_startday;
 		canopy_strata[0].phen.lfseasonday = -1;
+		}
+		else {
+		if (day > canopy_strata[0].phen.expand_startday)
+			canopy_strata[0].phen.lfseasonday = day-canopy_strata[0].phen.expand_startday;
+		else
+			canopy_strata[0].phen.lfseasonday = 365-day+canopy_strata[0].phen.expand_startday;
+			canopy_strata[0].phen.gwseasonday = -1;
+		}
+		}
+	printf("\nUsing season days growing %d litfall %d to start \n", canopy_strata[0].phen.gwseasonday, canopy_strata[0].phen.lfseasonday);
+
+	/*--------------------------------------------------------------*/
+	/* first call to update phenology to set LAI, height etc	*/
+	/* we set theta_noon as 1.0 since we don't know what it is but it will be corrected */
+	/* and we are double counting this day - should fix that by starting the day before  */
+	/*--------------------------------------------------------------*/
+		 update_phenology( zone, &(canopy_strata[0].epv),
+                canopy_strata[0].defaults[0][0].epc,
+                &(canopy_strata[0].phen),
+                &(canopy_strata[0].cs),
+                &(canopy_strata[0].cdf),
+                &(patch[0].cdf),
+                &(canopy_strata[0].ns),
+                &(canopy_strata[0].ndf),
+                &(patch[0].ndf),
+                &(patch[0].litter_cs),
+                &(patch[0].litter_ns),
+                &(patch[0].litter),
+                &(patch[0].soil_cs),
+                &(patch[0].soil_ns),
+                &(canopy_strata[0].rootzone),
+                patch[0].soil_defaults[0][0].effective_soil_depth,
+                canopy_strata[0].cover_fraction,
+                canopy_strata[0].gap_fraction,
+                1.0,    
+		command_line[0].start_date,
+                command_line[0].grow_flag);
+		
 	/*--------------------------------------------------------------*/
 	/*	set critical soil moisture (at stomatal closure)	*/
 	/*      psi_close is converted to m water tension from MPa using     */
@@ -555,8 +580,6 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*	note that age really should be a state variable 	*/
 	/*	and initialized in the worldfile			*/
 	/*--------------------------------------------------------------*/
-	canopy_strata[0].cs.num_resprout = 0;
-	canopy_strata[0].cs.age = 0;
 	canopy_strata[0].epv.wstress_days = 0;
 	canopy_strata[0].epv.max_fparabs = 0.0;
 	canopy_strata[0].epv.min_vwc = 1.0;

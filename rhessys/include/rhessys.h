@@ -2151,13 +2151,12 @@ struct phenology_struct
         double frootlitfalln; /* (kgN/m2) current growth year leaflitter nitrogen */
         double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
         double gsi;             /* (0 to 1) growing season phenology index */
-                int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
+        int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
         int expand_startday;       /* (yday) yearday of first leaf growth */
         int litfall_startday;       /* (yday) yearday of litterfall growth */
         int expand_stopday;       /* (yday) yearday of last leaf growth */
         int litfall_stopday;       /* (yday) yearday of last litterfall growth */
         int ngrowthdays; /* (days) days between onday and next offday */
-        int nretdays;    /* (days) days between allocations */
                 int gwseasonday; /* (day) day within the growing season */
                 int lfseasonday; /* (day) day within litter fall period */
                 
@@ -2179,7 +2178,7 @@ struct cstate_struct
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
-    double leafc_age;           /* (years) age */
+    double 	 leafc_age;           /* (years) age */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */
