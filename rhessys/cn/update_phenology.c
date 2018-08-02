@@ -590,12 +590,14 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	/*	update height						*/
 	/*--------------------------------------------------------------*/
-	if (epc.veg_type == TREE)
+	if (epc.veg_type == TREE) {
+		if (cs->stem_density < ZERO) cs->stem_density = 1.0;
 		if ( (cs->live_stemc + cs->dead_stemc) > ZERO)
 			epv->height = epc.height_to_stem_coef
-				* pow ( (cs->live_stemc + cs->dead_stemc), epc.height_to_stem_exp);
+				* pow ( ((cs->live_stemc + cs->dead_stemc)/(cs->stem_density)), epc.height_to_stem_exp);
 		else
 			epv->height = 0.0;
+		}
 	else
 		if (epc.veg_type == NON_VEG) {
 			epv->height = 0.0;

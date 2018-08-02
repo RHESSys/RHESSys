@@ -1252,7 +1252,11 @@ void	canopy_stratum_daily_F(
 	transpiration_rate = transpiration_rate_sunlit +  transpiration_rate_shade;
 	potential_transpiration_rate = potential_transpiration_rate_sunlit +  potential_transpiration_rate_shade;
 		
+	stratum[0].cdf.transpiration_rate_sunlit = transpiration_rate_sunlit*1000;
+	stratum[0].cdf.transpiration_rate_shade = transpiration_rate_shade*1000;
 
+	if ((stratum[0].ID ==1) && (transpiration_rate_shade < 0))
+	printf("\n sun %lf %lf gs %lf shade %lf %lf gs %lf", transpiration_rate_sunlit*1000, rnet_trans_sunlit, stratum[0].gs_sunlit, transpiration_rate_shade*1000,rnet_trans_shade, stratum[0].gs_shade);
 	/*--------------------------------------------------------------*/
 	/*	Compute potential evaporation of stratum. 		*/
 	/*	Weighted by rain and non rain periods of the daytime	*/
@@ -1424,7 +1428,9 @@ void	canopy_stratum_daily_F(
 			potential_transpiration = 0.0;
 		}
 	}
-	transpiration = max(transpiration, 0.0); // MCK, test
+
+
+	transpiration = max(transpiration, 0.0); 
 	potential_transpiration = max(potential_transpiration, 0.0);
 
 	stratum[0].PET = potential_transpiration;
@@ -1790,6 +1796,10 @@ void	canopy_stratum_daily_F(
 				stratum[0].dC13 = (assim_sunlit * dC13_sunlit + assim_shade * dC13_shade)/(assim_sunlit+assim_shade);
 			else 
 				stratum[0].dC13 = 0.0;
+
+			stratum[0].cdf.assim_sunlit = assim_sunlit;
+			stratum[0].cdf.assim_shade = assim_shade;
+
 			/*--------------------------------------------------------------*/
 			/*--------------------------------------------------------------*/
 		} /* end if LAI > O  ** snow stored < 0*/
@@ -1804,6 +1814,8 @@ void	canopy_stratum_daily_F(
 	else {
 		stratum[0].cdf.psn_to_cpool = 0.0;
 		stratum[0].cdf.potential_psn_to_cpool = 0.0;
+		stratum[0].cdf.assim_sunlit = 0.0;
+		stratum[0].cdf.assim_shade = 0.0;
 	}
 
 	/*--------------------------------------------------------------*/

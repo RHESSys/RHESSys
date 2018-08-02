@@ -146,6 +146,8 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
 	}
 
+	canopy_strata[0].cs.stem_density = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",0.03,1);
+
 	canopy_strata[0].snow_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_stored","%lf",0.0,1);
 	
 	canopy_strata[0].rain_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"rain_stored","%lf",0.0,1);
@@ -161,6 +163,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.leafc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_transfer","%lf",0.0,1);
 	
 	canopy_strata[0].cs.live_stemc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",0.0,1);
+
 	
 	canopy_strata[0].cs.livestemc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_store","%lf",0.0,1);
 	
@@ -413,6 +416,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*	light use efficiency varies with SLA following Evans and Pooter */
 	/*    triggered by a 9999 value in netpabs   */
 	/*--------------------------------------------------------------*/
+	/*
 	if (canopy_strata[0].defaults[0][0].epc.netpabs > 1.0) {
 			canopy_strata[0].defaults[0][0].epc.netpabs_shade = max(0.0, min(1.0, 1.0/(canopy_strata[0].epv.proj_sla_shade*
 								canopy_strata[0].defaults[0][0].epc.netpabs_sla_parm)*10));
@@ -423,7 +427,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].defaults[0][0].epc.netpabs_shade = canopy_strata[0].defaults[0][0].epc.netpabs;
 		canopy_strata[0].defaults[0][0].epc.netpabs_sunlit = canopy_strata[0].defaults[0][0].epc.netpabs;
 		}
-	
+	*/	
 	printf("\n Using netpabs for sunlit %lf and shade %lf given sla of %lf and %lf",
 			canopy_strata[0].defaults[0][0].epc.netpabs_sunlit,
 			canopy_strata[0].defaults[0][0].epc.netpabs_shade,
@@ -474,6 +478,8 @@ struct canopy_strata_object *construct_canopy_strata(
 				exit(EXIT_FAILURE);
 				}
 		}
+
+
 	}
 
 	/*--------------------------------------------------------------*/
@@ -535,6 +541,11 @@ struct canopy_strata_object *construct_canopy_strata(
 	/* we set theta_noon as 1.0 since we don't know what it is but it will be corrected */
 	/* and we are double counting this day - should fix that by starting the day before  */
 	/*--------------------------------------------------------------*/
+
+		/* use a stem density as max stem density until we include a more complex model of self thinning */
+		canopy_strata[0].cs.stem_density = min(canopy_strata[0].defaults[0][0].epc.max_stem_density, 
+						canopy_strata[0].cs.stem_density);
+
 		 update_phenology( zone, &(canopy_strata[0].epv),
                 canopy_strata[0].defaults[0][0].epc,
                 &(canopy_strata[0].phen),

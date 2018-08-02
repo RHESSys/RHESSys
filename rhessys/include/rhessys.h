@@ -2179,6 +2179,7 @@ struct cstate_struct
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
     double 	 leafc_age;           /* (years) age */
+    double stem_density;    /* number per m2 */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */
@@ -2315,6 +2316,10 @@ struct epvar_struct
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
     double DOC_to_gw;   /* (kgC/m2/day) */
+    double assim_sunlit; 
+    double assim_shade; 
+    double transpiration_rate_sunlit; 
+    double transpiration_rate_shade; 
 
     /* daily phenology fluxes */
     double leafc_to_deadleafc;     /* (kgC/m2/d) standing dead grass accumulation */
@@ -2635,6 +2640,7 @@ struct epconst_struct
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
     double root_max_depth; /*  (m) maximum root depth */
+    double max_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
         double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
     int     max_years_resprout; /* num years of resprouting before death */
     double waring_pa; /* parameter for Waring allometric equation */

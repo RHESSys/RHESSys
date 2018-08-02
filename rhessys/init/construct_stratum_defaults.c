@@ -113,6 +113,8 @@ struct stratum_default *construct_stratum_defaults(
 		/* values combined 0.85 / 2.6 from Biome BGC 4.1.1 */
 		/* if this is 9999 we will make this dynamics as 1/sla*10 from Evans and Poorter, 2001) */
 		default_object_list[i].epc.netpabs = 		getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs", "%lf", 0.7, 1);
+		default_object_list[i].epc.netpabs_sunlit = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_sunlit", "%lf", 0.7, 1);
+		default_object_list[i].epc.netpabs_shade = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_shade", "%lf", 0.7, 1);
 		default_object_list[i].epc.netpabs_sla_parm = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_sla_parm", "%lf", 1.0, 1);
 
 
@@ -304,6 +306,9 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.crown_ratio = getDoubleParam(&paramCnt, &paramPtr, "epc.crown_ratio", "%lf", 0.6, 1);
 		if (epc->veg_type != TREE)
 			default_object_list[i].epc.crown_ratio = 1.0;
+		default_object_list[i].epc.max_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.max_stem_density", "%lf", 0.03, 1);
+
+
 		/*--------------------------------------------------------------*/
 		/*	Fire effect parameters					*/
 		/*--------------------------------------------------------------*/
@@ -388,6 +393,8 @@ struct stratum_default *construct_stratum_defaults(
 			default_object_list[i].epc.flnr_shade = default_object_list[i].epc.flnr;
 		if (default_object_list[i].epc.flnr_sunlit > 1.0)
 			default_object_list[i].epc.flnr_sunlit = default_object_list[i].epc.flnr;
+		printf("using %lf %lf for sunlit shade flnr", default_object_list[i].epc.flnr_sunlit,
+				default_object_list[i].epc.flnr_shade);
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
