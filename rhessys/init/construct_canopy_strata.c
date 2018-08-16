@@ -427,13 +427,13 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].defaults[0][0].epc.netpabs_shade = canopy_strata[0].defaults[0][0].epc.netpabs;
 		canopy_strata[0].defaults[0][0].epc.netpabs_sunlit = canopy_strata[0].defaults[0][0].epc.netpabs;
 		}
-	*/	
 	printf("\n Using netpabs for sunlit %lf and shade %lf given sla of %lf and %lf",
 			canopy_strata[0].defaults[0][0].epc.netpabs_sunlit,
 			canopy_strata[0].defaults[0][0].epc.netpabs_shade,
 			canopy_strata[0].epv.proj_sla_sunlit,
 			canopy_strata[0].epv.proj_sla_shade);
 
+	*/	
  
 
 	/*--------------------------------------------------------------*/
