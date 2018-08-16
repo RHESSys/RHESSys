@@ -131,6 +131,7 @@ struct patch_object *construct_patch(
 	patch[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
 	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",-9999,0);
 	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
+	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
 
 	if (command_line[0].firespread_flag == 1) {
 		fscanf(world_file,"%d",&(fire_default_object_ID));
