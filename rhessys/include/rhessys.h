@@ -1546,6 +1546,7 @@ struct patch_object
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
         int             target_status;
+	int		family_ID;
 	int		soil_parm_ID;
 	int		landuse_parm_ID;
 	double		mpar;
@@ -2316,8 +2317,8 @@ struct epvar_struct
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
     double DOC_to_gw;   /* (kgC/m2/day) */
-    double assim_sunlit; 
-    double assim_shade; 
+    double assim_sunlit; /* (umol/m2/s) */
+    double assim_shade;  /*  (umol/m2/s) */
     double transpiration_rate_sunlit; 
     double transpiration_rate_shade; 
 
