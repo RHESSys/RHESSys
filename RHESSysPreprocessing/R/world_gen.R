@@ -167,8 +167,25 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
     cat("\t",length(hillslopes),"\t\t\t","num_hillslopes\n",sep="")
 
     for (h in hillslopes) { #hillslopes
+
+      # progress tracker - number of hillslopes/total, print only on 25,50,75 %
       progress = progress + 1
-      #if (progress = )
+      if (progress == ceiling(.25*length(unique(levels[,3])))){
+        sink()
+        print(paste("25% complete"))
+        sink(worldfile,append = TRUE)
+      }
+      if (progress == ceiling(.50*length(unique(levels[,3])))){
+        sink()
+        print(paste("50% complete"))
+        sink(worldfile,append = TRUE)
+      }
+      if (progress == ceiling(.75*length(unique(levels[,3])))){
+        sink()
+        print(paste("75% complete"))
+        sink(worldfile,append = TRUE)
+      }
+      # end progress tracker
 
       cat("\t\t",h,"\t\t\t", "hillslope_ID\n",sep="")
       for (i in (level_index[3]+1):(level_index[4]-1)) {
