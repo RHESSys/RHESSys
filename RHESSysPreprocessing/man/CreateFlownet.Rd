@@ -6,8 +6,8 @@
 \usage{
 CreateFlownet(cfname, type = "raster", readin = "cf_maps",
   typepars = "load", asp_list = NULL, streams = NULL, overwrite = FALSE,
-  roads = NULL, impervious = NULL, roofs = NULL, wrapper = FALSE,
-  parallel = FALSE)
+  roads = NULL, road_width = NULL, impervious = NULL, roofs = NULL,
+  wrapper = FALSE, parallel = FALSE, d4 = TRUE)
 }
 \arguments{
 \item{cfname}{The name of the flow network file to be created.  Will be coerced to have ".flow" extension if not already present.}

@@ -141,6 +141,9 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
   # ---------- Build world file ----------
   stratum = 1:template_clean[[level_index[6]]][3] #make sure correct number of stratum
+
+  progress = 0
+
   # create/open file
   sink(worldfile)
 
@@ -164,6 +167,9 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
     cat("\t",length(hillslopes),"\t\t\t","num_hillslopes\n",sep="")
 
     for (h in hillslopes) { #hillslopes
+      progress = progress + 1
+      #if (progress = )
+
       cat("\t\t",h,"\t\t\t", "hillslope_ID\n",sep="")
       for (i in (level_index[3]+1):(level_index[4]-1)) {
         if (length(statevars[[i]][[1]]) >1) {
