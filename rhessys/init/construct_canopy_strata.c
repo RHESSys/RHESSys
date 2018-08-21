@@ -209,6 +209,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].ns.cwdn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.cwdn","%lf",0.0,1);
 	
 	canopy_strata[0].ns.retransn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",0.0,1);
+
+	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",0.0,1);
 	
 
 
@@ -529,7 +531,6 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*	and initialized in the worldfile			*/
 	/*--------------------------------------------------------------*/
 	canopy_strata[0].cs.num_resprout = 0;
-	canopy_strata[0].cs.age = 0;
 	canopy_strata[0].epv.wstress_days = 0;
 	canopy_strata[0].epv.max_fparabs = 0.0;
 	canopy_strata[0].epv.min_vwc = 1.0;
