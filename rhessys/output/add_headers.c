@@ -506,15 +506,14 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s\n",
+	fprintf(outfile,"%s %s %s %s %s %s %s\n",
 		"year",
 		"basinID",
 		"hillID",
 		"zoneID",
 		"patchID",
 		"stratumID",
-		"psn",
-		"lwp","root_depth");
+		"above_plantc");
 	}
 	/*--------------------------------------------------------------*/
 	/*	Stream routing file headers					*/
