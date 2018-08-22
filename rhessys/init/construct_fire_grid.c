@@ -52,7 +52,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	struct patch_object *patch;
 	int  b,h,p, z, i, j, k;
 //	double maxx, maxy, minx, miny, tmp,halfSideLength,curMinX,curMinY,curMaxX,curMaxY, cell_res;
-	double cell_res;
+	double cell_res,tmp;
 /*	maxx=-10000; // depends on the origin for the coordinates, this was set for HJA centered at 0,0
 	minx=-10000;
 	maxy=-10000;
