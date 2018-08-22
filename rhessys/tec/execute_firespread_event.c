@@ -132,12 +132,12 @@ void execute_firespread_event(
 		    world[0].fire_grid[i][j].understory_pet=0.0;
 		    world[0].fire_grid[i][j].ign_available=1;	/* then make this available for ignition */
 		}
-    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
-		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) {
+//    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
+		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) { // should just be 1 now...
 //printf("Patch p: %d\n",p);			
-patch = world[0].patch_fire_grid[i][j].patches[p];
-//printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c);
-			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	
+patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
+//printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c); 
+			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
 				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p];
 //printf("Patch p2: %d\n",p);
 		
@@ -148,6 +148,8 @@ patch = world[0].patch_fire_grid[i][j].patches[p];
 						patch_fire_grid[i][j].prop_patch_in_grid[p];
 */
 //printf("Patch p: %d\n",p);
+	
+	// this is the canopy fuels
 		
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
@@ -161,12 +163,12 @@ patch = world[0].patch_fire_grid[i][j].patches[p];
 //			printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
 			
 
-			world[0].fire_grid[i][j].soil_moist += patch[0].rootzone.S * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];	
+			world[0].fire_grid[i][j].soil_moist += patch[0].rootzone.S * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];	//soil moisture, divided by proportion of the patch in that grid cell;
 
 			world[0].fire_grid[i][j].wind += patch[0].zone[0].wind * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			world[0].fire_grid[i][j].wind_direction += patch[0].zone[0].wind_direction * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			world[0].fire_grid[i][j].relative_humidity += patch[0].zone[0].relative_humidity * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
-			world[0].fire_grid[i][j].z += patch[0].z*patch_fire_grid[i][j].prop_patch_in_grid[p];
+			world[0].fire_grid[i][j].z += patch[0].z*patch_fire_grid[i][j].prop_patch_in_grid[p]; // elevation
 			world[0].fire_grid[i][j].temp += patch[0].zone[0].metv.tavg*patch_fire_grid[i][j].prop_patch_in_grid[p];// temperature? mk
 			world[0].fire_grid[i][j].et += patch[0].fire.et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			world[0].fire_grid[i][j].pet += patch[0].fire.pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
@@ -183,8 +185,8 @@ patch = world[0].patch_fire_grid[i][j].patches[p];
 	//printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
 
 		}
-		if(world[0].patch_fire_grid[i][j].occupied_area>0&&world[0].defaults[0].fire[0].fire_in_buffer==1)
-		{
+		if(world[0].patch_fire_grid[i][j].occupied_area>0&&world[0].defaults[0].fire[0].fire_in_buffer==1) // if allowing fire into the buffer (on raster grid outside of watershed boundaries), then fill with mean field values within watershed boundary
+		{ // this loop fills sums to calculate the mean value across watershed
 			denom_for_mean+=1;
 			mean_fuel_veg+=world[0].fire_grid[i][j].fuel_veg; // this should work to initialize the grid, so if none of the patches overlap a grid point the fuel is zero and fire doesn't spread
 			mean_fuel_litter+=world[0].fire_grid[i][j].fuel_litter;
@@ -210,7 +212,7 @@ patch = world[0].patch_fire_grid[i][j].patches[p];
 	}
 	}
 //	printf("denom: %lf\t",denom_for_mean);
-	if(denom_for_mean>0&&world[0].defaults[0].fire[0].fire_in_buffer==1)
+	if(denom_for_mean>0&&world[0].defaults[0].fire[0].fire_in_buffer==1) // so here we calculate the mean value 
 	{
 //		printf("in denom if\n");
 		mean_fuel_veg=mean_fuel_veg/denom_for_mean;
@@ -231,7 +233,7 @@ patch = world[0].patch_fire_grid[i][j].patches[p];
 	//	printf("mean wind: %lf, mean direction %lf \n",mean_wind,mean_wind_direction);
 		for  (i=0; i< world[0].num_fire_grid_row; i++) {
 		  for (j=0; j < world[0].num_fire_grid_col; j++) {
-			  if(world[0].patch_fire_grid[i][j].occupied_area==0)
+			  if(world[0].patch_fire_grid[i][j].occupied_area==0) // and here we fill in the buffer
 			  {
 
 				world[0].fire_grid[i][j].fuel_veg = mean_fuel_veg; // this should work to initialize the grid, so if none of the patches overlap a grid point the fuel is zero and fire doesn't spread
