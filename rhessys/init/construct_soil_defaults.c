@@ -39,7 +39,7 @@
 struct soil_default *construct_soil_defaults(
 			int	num_default_files,
 			char	**default_files,
-			struct command_line_object *command_line) 
+			struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
@@ -47,10 +47,10 @@ struct soil_default *construct_soil_defaults(
 	void	*alloc(	size_t,
 		char	*,
 		char	*);
-	
+
 	double compute_delta_water(int, double, double,	double, double, double);
 	int	parse_albedo_flag( char *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
@@ -74,7 +74,7 @@ struct soil_default *construct_soil_defaults(
 	default_object_list = (struct soil_default *)
 		alloc(num_default_files * sizeof(struct soil_default),"default_object_list",
 		"construct_soil_defaults");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
@@ -98,7 +98,7 @@ struct soil_default *construct_soil_defaults(
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.	*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "patch_default_ID", "%d", 3, 1); 
+		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "patch_default_ID", "%d", 3, 1);
 		default_object_list[i].theta_psi_curve = 	getIntParam(&paramCnt, &paramPtr, "theta_psi_curve", "%d", 1.0, 1);
 		default_object_list[i].Ksat_0 = 		getDoubleParam(&paramCnt, &paramPtr, "Ksat_0", "%lf", 3.0, 1);
 		default_object_list[i].m = 			getDoubleParam(&paramCnt, &paramPtr, "m", "%lf", 0.12, 1);
@@ -127,17 +127,18 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].snow_water_capacity = 		getDoubleParam(&paramCnt, &paramPtr, "snow_water_capacity", "%lf", 0.0, 1);
 		default_object_list[i].snow_light_ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_light_ext_coef", "%lf", 10000.0, 1);
 		default_object_list[i].snow_melt_Tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_melt_Tcoef", "%lf", 0.05, 1);
+		 printf("snow melting coef: %lf\n",default_object_list[i].snow_melt_Tcoef);
 		default_object_list[i].snow_albedo_flag = 	parse_albedo_flag(getStrParam(&paramCnt, &paramPtr, "snow_albedo_flag", "%s", "age", 1));
 		default_object_list[i].bats_b = 		getDoubleParam(&paramCnt, &paramPtr, "bats_b", "%lf", 2.0, 1);
 		default_object_list[i].bats_r3 = 		getDoubleParam(&paramCnt, &paramPtr, "bats_r3", "%lf", 0.3, 1);
 /*
-			 default_object_list[i].snow_melt_Tcoef *= command_line[0].tmp_value; 
+			 default_object_list[i].snow_melt_Tcoef *= command_line[0].tmp_value;
 */
 		default_object_list[i].max_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "max_heat_capacity", "%lf", 0.0, 1);
 		default_object_list[i].min_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "min_heat_capacity", "%lf", 0.0, 1);
 		default_object_list[i].albedo = 		getDoubleParam(&paramCnt, &paramPtr, "albedo", "%lf", 0.28, 1);
-		default_object_list[i].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1); 
-		default_object_list[i].N_decay_rate = 		getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1); 
+		default_object_list[i].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1);
+		default_object_list[i].N_decay_rate = 		getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1);
 		/*
 		if (command_line[0].tmp_value > ZERO)
 			default_object_list[i].N_decay_rate *= command_line[0].tmp_value;
@@ -169,7 +170,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].fs_spill =	getDoubleParam(&paramCnt, &paramPtr, "fs_spill", "%lf", 1, 1);
 		default_object_list[i].fs_percolation =	getDoubleParam(&paramCnt, &paramPtr, "fs_percolation", "%lf", 1, 1);
 		default_object_list[i].fs_threshold = 	getDoubleParam(&paramCnt, &paramPtr, "fs_threshold", "%lf", 0.2, 1);
-		
+
 		/*--------------------------------------------------------------*/
 		/*	vertical soil m and K are initized using soil default	*/
 		/*	but sensitivity analysis -s is not applied to them	*/
@@ -244,13 +245,13 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].p4 *= command_line[0].vsen_alt[PO];
 			}
 		}
-	
+
 		/*--------------------------------------------------------------*/
 		/*      Fire effect parameters                          	*/
 		/*--------------------------------------------------------------*/
 		default_object_list[i].overstory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "overstory_height_thresh", "%lf", 6, 1);
 		default_object_list[i].understory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "understory_height_thresh", "%lf", 4, 1);
-	
+
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
@@ -261,14 +262,14 @@ struct soil_default *construct_soil_defaults(
                 char *y = NULL;
                 char *token = NULL;
                 char filename[256];
-    
+
                 // Store filename portion of path in 't'
                 while ((token = strtok(s, "/")) != NULL) {
                     // Save the latest component of the filename
                     strcpy(filename, token);
                     s = NULL;
-                } 
-    
+                }
+
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
@@ -278,11 +279,11 @@ struct soil_default *construct_soil_defaults(
                 if (token != NULL) {
                     strcpy(filename, token);
                 }
-        
-                memset(outFilename, '\0', filenameLen);
-            
 
-    
+                memset(outFilename, '\0', filenameLen);
+
+
+
             // Concatenate the output prefix with the filename of the input .def file
             // and "_soil.params"
             if (command_line[0].output_prefix != NULL) {
@@ -292,7 +293,7 @@ struct soil_default *construct_soil_defaults(
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_soil.params");
-            } 
+            }
             else {
                 if (filename != NULL) {
                     strcat(outFilename, "_");
@@ -300,7 +301,7 @@ struct soil_default *construct_soil_defaults(
                 }
                 strcat(outFilename, "soil.params");
             }
-    
+
         printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 

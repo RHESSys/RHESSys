@@ -30,6 +30,7 @@ objects/*.params
 objects/*hourly
 basin_input/
 clim/
+auxdata/
 rhessys/result/
 boost/
 rhessys/rhessys5

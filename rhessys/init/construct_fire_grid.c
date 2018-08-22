@@ -2,7 +2,7 @@
 /* 																*/
 /*					construct_fire_grid								*/
 /*																*/
-/*	construct_fire_grid.c - creates a raster grid of patches to be passed 
+/*	construct_fire_grid.c - creates a raster grid of patches to be passed
 /*	to WMFire 													*/
 /*																*/
 /*	NAME														*/
@@ -73,7 +73,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		    for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
 				patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p];
 		//	    fprintf(patchout,"%d\t%lf\t%lf\t%lf\n",patch[0].ID,patch[0].x,patch[0].y,patch[0].area);
-			    
+
 				halfSideLength=sqrt(patch[0].area)/2; // assuming a square patch, this is half the length of each side
 				curMinX=patch[0].x-halfSideLength; // the min x value for this patch is the center x value minus half the side length
 				curMaxX=patch[0].x+halfSideLength;// the max x value for this patch is the center x value plus half the side length
@@ -89,7 +89,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					if(curMaxX>maxx)
 						maxx=curMaxX;
 				}
-				else 
+				else
 					maxx=curMaxX;
 				if(miny>-10000){ // if the minimum y value has already been assigned
 					if(curMinY<miny) // compare the global min to the current min
@@ -102,7 +102,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 						maxy=curMaxY;
 				}
 				else // otherwise initialize the maximum with the current
-					maxy=curMaxY;	 
+					maxy=curMaxY;
 		} /* end patches */
 		}
 		}
@@ -117,9 +117,9 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		miny=miny-cell_res/100;
 		maxx=maxx+cell_res/100;
 		maxy=maxy+cell_res/100;
-		
-		
-		
+
+
+
 		grid_dimX=ceil((maxx-minx)/cell_res);
 		grid_dimY=ceil((maxy-miny)/cell_res);
 //		printf("grid dimensions: x %d  y %d minX %lf minY %lf maxX %lf maxY %lf\n",grid_dimX,grid_dimY,minx,miny,maxx,maxy);
@@ -131,13 +131,13 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		for(i=0;i<grid_dimY;i++) // for each row, allocate the columns
 			fire_grid[i]=(struct patch_fire_object *) malloc(grid_dimX*sizeof(struct patch_fire_object ));
 	//	printf("allocate the fire grid\n");
-			
-		// then initialize values: e.g., 0's 
+
+		// then initialize values: e.g., 0's
 		 for(i=0;i<grid_dimX;i++){
 			for(j=0;j<grid_dimY;j++){
 				fire_grid[j][i].occupied_area=0;
 				fire_grid[j][i].num_patches=0;
-				fire_grid[j][i].tmp_patch=0;	
+				fire_grid[j][i].tmp_patch=0;
 				fire_grid[j][i].elev=0;
 			}
 		}
@@ -178,13 +178,13 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		} /* end patches */
 		}
 		}
-		}	
+		}
 
 	//	printf("after tallying the number of patches per grid cell\n");
 		// allocate the arrays for each grid cell
 		for(i=0;i<grid_dimX;i++){
-			for(j=0;j<grid_dimY;j++){	
-	//printf("number of patches: col %d row %d num patches %d\n",i,j,fire_grid[j][i].num_patches); 			
+			for(j=0;j<grid_dimY;j++){
+	//printf("number of patches: col %d row %d num patches %d\n",i,j,fire_grid[j][i].num_patches);
 				fire_grid[j][i].patches=(struct patch_object **) malloc(fire_grid[j][i].num_patches*sizeof(struct patch_object *)); // looks like we're going to need to navigate the patch hierarchy three times.  the second time is simply to tally the number of patches in each grid
 				fire_grid[j][i].prop_patch_in_grid=(double *) malloc(fire_grid[j][i].num_patches*sizeof(double)); // looks like we're going to need to navigate the patch hierarchy three times.  the second time is simply to tally the number of patches in each grid
 				fire_grid[j][i].prop_grid_in_patch=(double *) malloc(fire_grid[j][i].num_patches*sizeof(double)); // looks like we're going to need to navigate the patch hierarchy three times.  the second time is simply to tally the number of patches in each grid
@@ -192,8 +192,8 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					fire_grid[j][i].prop_grid_in_patch[k]=0;
 					fire_grid[j][i].prop_patch_in_grid[k]=0;
 				}
-			}			
-		}			
+			}
+		}
 
 	//	printf("after allocating the arrays for each grid cell\n");
 		// now we can calculate areas with one final navigation
@@ -203,7 +203,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
 		    for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
 				patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p];
-			    
+
 				halfSideLength=sqrt(patch[0].area)/2; // assuming a square patch, this is half the length of each side
 				curMinX=patch[0].x-halfSideLength; // the min x value for this patch is the center x value minus half the side length
 				curMaxX=patch[0].x+halfSideLength;// the max x value for this patch is the center x value plus half the side length
@@ -213,7 +213,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	      // Now translate the x-coordinate to grid indices--
 				minXpix=floor((curMinX-minx)/cell_res); // the left-most column that overlaps the current pixel
 				maxXpix=ceil((curMaxX-minx)/cell_res); // the right-most column that overlaps the current pixel
-				maxYpix=grid_dimY-floor((curMinY-miny)/cell_res); // to orient the grid st 0,0 is the top left corner, this gives the bottom row 
+				maxYpix=grid_dimY-floor((curMinY-miny)/cell_res); // to orient the grid st 0,0 is the top left corner, this gives the bottom row
 				minYpix=grid_dimY-ceil((curMaxY-miny)/cell_res);// to orient the grid st 0,0 is the top left corner, this gives the top row
 	// check if the patch occupies just 1 grid cell
 				if(minXpix==maxXpix) // the width of the patch is within a single column of pixels
@@ -231,7 +231,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				for(i =minXpix; i<maxXpix; i++) {
 					for(j =minYpix; j<maxYpix; j++){
 						fire_grid[j][i].patches[fire_grid[j][i].tmp_patch]=patch; // this is the current patch in the loop
-						cellMinX=i*cell_res+minx; 
+						cellMinX=i*cell_res+minx;
 						cellMaxY=maxy-j*cell_res;
 						cellMaxX=(i+1)*cell_res+minx ;
 						cellMinY=maxy-(j+1)*cell_res;
@@ -240,16 +240,16 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	//						printf("error, areaPatchInGrid <0\n");
 						fire_grid[j][i].occupied_area=fire_grid[j][i].occupied_area+areaPatchInGrid;
 		// calculate the total area of the current patch that overlaps with the current grid cell
-						fire_grid[j][i].prop_grid_in_patch[fire_grid[j][i].tmp_patch]=areaPatchInGrid/patch[0].area; // the proportion of patch area occupied by this grid					
-						fire_grid[j][i].prop_patch_in_grid[fire_grid[j][i].tmp_patch]=areaPatchInGrid; // the grid area occupied by this patch, to be calculated as a proportion once 
+						fire_grid[j][i].prop_grid_in_patch[fire_grid[j][i].tmp_patch]=areaPatchInGrid/patch[0].area; // the proportion of patch area occupied by this grid
+						fire_grid[j][i].prop_patch_in_grid[fire_grid[j][i].tmp_patch]=areaPatchInGrid; // the grid area occupied by this patch, to be calculated as a proportion once
 																					//	the total occupied area of the grid is found
 						fire_grid[j][i].tmp_patch++;
-					}				
-				}	 
+					}
+				}
 		} /* end patches */
 		}
 		}
-		}	
+		}
 	//	printf("after calculating area of overlap between patches and grid cells\n");
 	/* finally, navigate the grid cells one more time to calculate the proportions of each patch in each
 		grid cell, given the total area occupied in each grid cell calculated above. */
@@ -262,33 +262,33 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 			}
 		}
 	}// end if there is no raster patch file
-	
+
 	else // then we just read in the raster structure
 	{
 		// allocate the fire grid
 		printf("reading patch raster structure\n");
-		
+
 		grid_dimX=def.n_cols;
 		grid_dimY=def.n_rows;
 
-		
+
 		fire_grid=(struct patch_fire_object **) malloc(grid_dimY*sizeof(struct patch_fire_object *)); // first allocate the rows
 		for(i=0;i<grid_dimY;i++) // for each row, allocate the columns
 			fire_grid[i]=(struct patch_fire_object *) malloc(grid_dimX*sizeof(struct patch_fire_object ));
 		printf("allocate the fire grid\n");
-			
-		// then initialize values: e.g., 0's 
+
+		// then initialize values: e.g., 0's
 		 for(i=0;i<grid_dimX;i++){
 			for(j=0;j<grid_dimY;j++){
 				fire_grid[j][i].occupied_area=0;
 				fire_grid[j][i].num_patches=0;
-				fire_grid[j][i].tmp_patch=0;					
+				fire_grid[j][i].tmp_patch=0;
 //				patch_grid[j][i]=-1;
 			}
 		}
 		world[0].num_fire_grid_row = grid_dimY;
 		world[0].num_fire_grid_col = grid_dimX;
-		
+
 		printf("Rows: %d Cols: %d\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col);
 
 		int tmpPatchID;
@@ -301,14 +301,14 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				fscanf(patchesIn,"%d\t",&tmpPatchID);
 		//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,i,j);
 				if(tmpPatchID>=0){ // then find the corresponding patch and allocate it--only one patch per grid cell!
-				//	printf("numPatches 0: %d\n",fire_grid[j][i].num_patches);	
+				//	printf("numPatches 0: %d\n",fire_grid[j][i].num_patches);
 			//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,j,i);
 					fire_grid[i][j].num_patches=1;
 					//printf("numPatches 1: %d\n",fire_grid[j][i].num_patches);
 					fire_grid[i][j].patches=(struct patch_object **) malloc(fire_grid[i][j].num_patches*sizeof(struct patch_object *));
-					fire_grid[i][j].prop_patch_in_grid=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double)); 
-					fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double)); 
-					printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files);
+					fire_grid[i][j].prop_patch_in_grid=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
+					fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
+					//printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files); NREN 20180821
 					for (b=0; b< world[0].num_basin_files; ++b) {
 						for (h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
 							for (z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
@@ -318,7 +318,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				//					printf("is my world ok? %d\n",&patch[0].ID);
 									if(patch[0].ID==tmpPatchID)
 									{
-										printf("now filling in array--found a match!\n");
+									//	printf("now filling in array--found a match!\n"); NREN 20180821
 										fire_grid[i][j].patches[0]=patch;
 										//printf("patch1\n");
 										fire_grid[i][j].occupied_area=cell_res*cell_res;
@@ -327,13 +327,13 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 										//printf("patch3\n");
 										fire_grid[i][j].prop_patch_in_grid[0]=1;// the whole cell is occupied this patch
 										//printf("array filled\n");
-									}										
-										
+									}
+
 								}
 							}
 						}
 					}
-				}					
+				}
 
 			}
 		}
@@ -343,7 +343,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		demIn=fopen("../auxdata/DemGrid.txt","r");
 		// for now do away with the header, so this file has no header
 		for(i=0; i<grid_dimY;i++){
-			for(j=0;j<grid_dimX;j++){				
+			for(j=0;j<grid_dimX;j++){
 				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
 			}
 		}
@@ -367,7 +367,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		for(j=0;j<grid_dimX;j++){
 			if(fire_grid[i][j].occupied_area>0){
 			for(k=0;k<fire_grid[i][j].num_patches;k++)
-			{	
+			{
 				patch = fire_grid[i][j].patches[k];
 				fprintf(gridout,"%d",patch[0].ID);
 			}
@@ -377,14 +377,14 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		fprintf(gridout,"\n");
 	}
 	fclose(gridout);
-	
+
 	gridout=fopen("FireGridCheckPatchesAndAreas.txt","w");
 	fprintf(gridout,"IDY\tIDX\tID\tPropPatchInGrid\tPropGridInPatch\tOccupiedArea\n");
 	for(i=0;i<grid_dimY;i++){
 		for(j=0;j<grid_dimX;j++){
 			if(fire_grid[i][j].occupied_area>0){
 			for(k=0;k<fire_grid[i][j].num_patches;k++)
-			{		    	
+			{
 				patch = fire_grid[i][j].patches[k];
 				fprintf(gridout,"%d\t%d\t%d\t%lf\t%lf\t%lf\n",i,j,patch[0].ID,fire_grid[i][j].prop_patch_in_grid[k],fire_grid[i][j].prop_grid_in_patch[k],fire_grid[i][j].occupied_area);
 			}
@@ -394,7 +394,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}
 	}
 	fclose(gridout);
-	
+
 	gridout=fopen("RhessyDEMOut.txt","w");
 	for(i=0;i<grid_dimY;i++){
 		for(j=0;j<grid_dimX;j++){
@@ -405,14 +405,14 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	fclose(gridout);
 
 	/* done allocating fire grid, return to RHESSys*/
-	return(fire_grid);	
+	return(fire_grid);
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------*/
 /* 																*/
 /*					calc_patch_area_in_grid							*/
 /*																*/
-/*	construct_fire_grid.c - creates a raster grid of patches to be passed 
+/*	construct_fire_grid.c - creates a raster grid of patches to be passed
 /*	to WMFire 													*/
 /*																*/
 /*	NAME														*/
@@ -437,10 +437,10 @@ double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,doub
 							double cellMaxY,double cellMinX,double cellMinY,double cell_res)
 {
 	double areaPatchInGrid;
-	/* what follows is an ugly set of if/else statements that determine the orientation of the 
+	/* what follows is an ugly set of if/else statements that determine the orientation of the
 	square patch to the grid cell so the area of overlap can be calculated*/
 	if(curMinX<=cellMinX&curMaxX>=cellMaxX&curMinY<=cellMinY&curMaxY>=cellMaxY) // then 100% of the grid is occupied by this patch, complete overlap
-		areaPatchInGrid=cell_res*cell_res; // then the area is simply the area of the pixel  
+		areaPatchInGrid=cell_res*cell_res; // then the area is simply the area of the pixel
 	else if(curMinX<=cellMinX&curMaxX>=cellMaxX) {// we span the entire horizonal length of the pixel, but not simultaneously the vertical length
 		if(curMinY<=cellMinY) // enter from the bottom
 			areaPatchInGrid=(curMaxY-cellMinY)*cell_res;
@@ -468,7 +468,7 @@ double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,doub
 			areaPatchInGrid=(cellMaxY-curMinY)*(cellMaxX-curMinX);
 		else // enter in the middel of the right side in the y-direction
 			areaPatchInGrid=(curMaxY-curMinY)*(cellMaxX-curMinX);
-	}      
+	}
 	else{ // the patch falls within the pixel borders in the x-direction
 		if(curMinY<=cellMinY&curMaxY>=cellMaxY) // spans the entire vertical length of the cell, probably not possible assuming square patches...
 			areaPatchInGrid=cell_res*(curMaxX-curMinX);
@@ -495,8 +495,8 @@ struct fire_object **construct_fire_grid(struct world_object *world)
 	fire_grid=(struct fire_object **) malloc(world[0].num_fire_grid_row*sizeof(struct fire_object *)); // first allocate the rows
 	for(i=0;i<world[0].num_fire_grid_row;i++) // for each row, allocate the columns
 		fire_grid[i]=(struct fire_object *) malloc(world[0].num_fire_grid_col*sizeof(struct fire_object ));
-		
-	// then initialize values: e.g., 0's 
+
+	// then initialize values: e.g., 0's
 	 for(i=0;i<world[0].num_fire_grid_row;i++){
 		for(j=0;j<world[0].num_fire_grid_col;j++){
 			fire_grid[i][j].burn=0;

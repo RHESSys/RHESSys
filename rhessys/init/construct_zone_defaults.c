@@ -37,7 +37,7 @@ struct zone_default *construct_zone_defaults(
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t, char *, char *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
@@ -53,14 +53,14 @@ struct zone_default *construct_zone_defaults(
 	double	ftmp;
         param *paramPtr = NULL;
         int paramCnt = 0;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.			*/
 	/*--------------------------------------------------------------*/
 	default_object_list = (struct zone_default *)
 		alloc(num_default_files * sizeof(struct zone_default),
 		"default_object_list","construct_zone_defaults");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
@@ -108,7 +108,9 @@ struct zone_default *construct_zone_defaults(
 			}
 		default_object_list[i].wind =			getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 1.0, 1);
 		default_object_list[i].max_snow_temp =		getDoubleParam(&paramCnt, &paramPtr, "max_snow_temp", "%lf", 1.0, 1);
+		 printf("max_snow_temperature: %lf\n",default_object_list[i].max_snow_temp);
 		default_object_list[i].min_rain_temp =		getDoubleParam(&paramCnt, &paramPtr, "min_rain_temp", "%lf", -1.0, 1);
+        printf("min_rain_temperature: %lf\n",default_object_list[i].min_rain_temp);
 		default_object_list[i].ndep_NO3 =		getDoubleParam(&paramCnt, &paramPtr, "n_deposition", "%lf", 0.001, 1) / 365.0; // variable name different than parameter name
 
 
@@ -158,14 +160,14 @@ struct zone_default *construct_zone_defaults(
                 char *y = NULL;
                 char *token = NULL;
                 char filename[256];
-    
+
                 // Store filename portion of path in 't'
                 while ((token = strtok(s, "/")) != NULL) {
                     // Save the latest component of the filename
                     strcpy(filename, token);
                     s = NULL;
-                } 
-    
+                }
+
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
@@ -175,9 +177,9 @@ struct zone_default *construct_zone_defaults(
                 if (token != NULL) {
                     strcpy(filename, token);
                 }
-        
+
                 memset(outFilename, '\0', filenameLen);
-    
+
             // Concatenate the output prefix with the filename of the input .def file
             // and "_zone.params"
             if (command_line[0].output_prefix != NULL) {
@@ -187,7 +189,7 @@ struct zone_default *construct_zone_defaults(
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_zone.params");
-            } 
+            }
             else {
                 if (filename != NULL) {
                     strcat(outFilename, "_");
@@ -195,12 +197,12 @@ struct zone_default *construct_zone_defaults(
                 }
                 strcat(outFilename, "zone.params");
             }
-    
+
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 
                 if (paramPtr != NULL)
                     free(paramPtr);
-		    
+
 	return(default_object_list);
 } /*end construct_zone_defaults*/
