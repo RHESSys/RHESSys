@@ -93,7 +93,8 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 
 		int tmpPatchID;
 		FILE *patchesIn;
-		patchesIn=fopen("../auxdata/patchGrid.txt","r");
+		patchesIn=fopen(command_line[0].firegrid_patch_filename,"r");
+		//patchesIn=fopen("../auxdata/patchGrid.txt","r");
 		// for now do away with the header
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){
@@ -138,9 +139,11 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 			}
 		}
 		fclose(patchesIn);
+		
 		printf("assigning dem to fire object\n");
 		FILE *demIn;
-		demIn=fopen("../auxdata/DemGrid.txt","r");
+		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
+//		demIn=fopen("../auxdata/DemGrid.txt","r");
 		// for now do away with the header, so this file has no header
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){				
