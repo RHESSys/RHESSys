@@ -66,7 +66,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	if(def.n_rows!=-1) // then we just read in the raster structure
 	{
 		// allocate the fire grid
-//printf("reading patch raster structure\n");
+printf("reading patch raster structure\n");
 		
 		grid_dimX=def.n_cols;
 		grid_dimY=def.n_rows;
