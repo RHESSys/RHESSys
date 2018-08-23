@@ -2026,6 +2026,8 @@ struct  command_line_object
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
+		char 	firegrid_patch_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
+		char 	firegrid_dem_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
         double  tmp_value;
         double  cpool_mort_fract;
         double  veg_sen1;

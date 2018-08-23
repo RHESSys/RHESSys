@@ -273,6 +273,11 @@ struct	command_line_object	*construct_command_line(
 					command_line[0].fire_grid_res = (double)atof(main_argv[i]);
 					i++;
 				}/*end if*/
+				strncpy(command_line[0].firegrid_patch_filename, main_argv[i], FILEPATH_LEN); // 
+				i++;
+				strncpy(command_line[0].firegrid_dem_filename, main_argv[i], FILEPATH_LEN); // 
+				i++;
+
 			}/* end if */
 
 			/*-------------------------------------------------*/
