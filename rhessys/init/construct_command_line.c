@@ -262,7 +262,7 @@ struct	command_line_object	*construct_command_line(
 			/*	fire spread option and coeffcients	  */
 			/*-------------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-firespread") == 0 ){
-				printf("\n Running with FIRE SPREAD turned on");
+				printf("\n Running with FIRE SPREAD turned on\n");
 				command_line[0].firespread_flag = 1;
 				i++;
 				command_line[0].fire_grid_res = 30;
