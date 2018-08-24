@@ -492,6 +492,18 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].monthly;
+	fprintf(outfile,"%s %s %s %s %s %s %s\n",
+		"year",
+		"basinID",
+		"hillID",
+		"zoneID",
+		"patchID",
+		"stratumID",
+		"above_plantc");
+	/*--------------------------------------------------------------*/
+	/*	Yearly							*/
+	/*--------------------------------------------------------------*/
+	outfile = world_output_files[0].canopy_stratum[0].yearly;
 	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s \n", 
 		"month",
 		"year",
@@ -503,19 +515,6 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"lai",
 		"psn",
 		"lwp");
-	/*--------------------------------------------------------------*/
-	/*	Yearly							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s\n",
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"stratumID",
-		"psn",
-		"lwp","root_depth");
 	}
 	/*--------------------------------------------------------------*/
 	/*	Stream routing file headers					*/

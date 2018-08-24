@@ -145,12 +145,18 @@ change_world(char* oldworld_name, FILE *oldworld, FILE *redefine,
 		if ((flow_table[i].worldlink != NULL)  && (flow_table[i].veglink != NULL) ) {
 			if ((flow_table[i].veglink[0].sla > 0.0001) && (flow_table[i].lai > -0.000)) {
 
+/*
 
 			if (flow_table[i].lai < 1.0) {
 				flow_table[i].worldlink[0].valuelist[7] = 1.0/flow_table[i].veglink[0].sla;
 			} else {
 				flow_table[i].worldlink[0].valuelist[7] = flow_table[i].lai/flow_table[i].veglink[0].sla;
 			}
+*/
+			if (flow_table[i].veglink[0].sla < 0.01 ) {
+				flow_table[i].worldlink[0].valuelist[7] = flow_table[i].lai/0.01;
+			} else {
+				flow_table[i].worldlink[0].valuelist[7] = flow_table[i].lai/flow_table[i].veglink[0].sla;
 					
 			flow_table[i].worldlink[0].valuelist[4] = 0.0;
 			flow_table[i].worldlink[0].valuelist[5] = 0.0;

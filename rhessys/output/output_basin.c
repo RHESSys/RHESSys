@@ -367,6 +367,7 @@ void	output_basin(			int routing_flag,
 	asnowmelt /= aarea;
 	acanopysubl /= aarea;
 	aheight /= aarea;
+  acsnow /= aarea;
 	
 	aevap_can /= aarea ;
 	aevap_lit /= aarea ;

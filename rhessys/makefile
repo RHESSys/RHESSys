@@ -1,4 +1,4 @@
-VERSION = 5.20.1
+VERSION = 6.0 
 PGM  = rhessys$(VERSION)
 CC = gcc 
 INCLUDES = -Iinclude
@@ -331,10 +331,10 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -L./lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -v -o $(PGM) 
 endif
 else
 ifdef wmfire
