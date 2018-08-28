@@ -140,6 +140,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
 
   # ---------- Build world file ----------
+  print("Writing worldfile",quote = FALSE)
   stratum = 1:template_clean[[level_index[6]]][3] #make sure correct number of stratum
 
   progress = 0
@@ -172,17 +173,17 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
       progress = progress + 1
       if (progress == ceiling(.25*length(unique(levels[,3])))){
         sink()
-        print(paste("25% complete"))
+        print(paste("25% complete"),quote=FALSE)
         sink(worldfile,append = TRUE)
       }
       if (progress == ceiling(.50*length(unique(levels[,3])))){
         sink()
-        print(paste("50% complete"))
+        print(paste("50% complete"),quote=FALSE)
         sink(worldfile,append = TRUE)
       }
       if (progress == ceiling(.75*length(unique(levels[,3])))){
         sink()
-        print(paste("75% complete"))
+        print(paste("75% complete"),quote=FALSE)
         sink(worldfile,append = TRUE)
       }
       # end progress tracker

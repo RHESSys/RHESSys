@@ -294,10 +294,13 @@ patch_data_analysis <-
       else tp_TotalG<--max(slope_i)*flw_struct$Area[i]  #if all upslope, take slope from closest neighbor in height
     }
 
-    if (list_length == 1) {
-        slope_i <- 0;
-        tp_TotalG <- flw_struct$Area[i]
-    }
+    # Naomi, I think you added this in for 1 patch worlds, but I don't know which list you meant to reference here,
+    # maybe you meant to put this after the loop through the lst, and check if lst has length=1, ie 1 patch?
+    # Commented out for now since list_length doesn't exist - Will
+    # if (list_length == 1) {
+    #     slope_i <- 0;
+    #     tp_TotalG <- flw_struct$Area[i]
+    # }
 
     lst[[i]]<-list(Number=flw_struct$Number[i],
                          Area=flw_struct$Area[i],
