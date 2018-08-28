@@ -76,6 +76,28 @@ struct canopy_strata_object *construct_canopy_strata(
 		double,
 		double);
 
+	double compute_delta_water(
+		int, 
+		double, 
+		double,	
+		double, 
+		double, 
+		double);
+
+	double	compute_lwp_predawn(
+		int,
+		int,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double);
+
 	void	*alloc(size_t, char *, char *);
 
 	/*--------------------------------------------------------------*/
@@ -209,6 +231,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].ns.cwdn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.cwdn","%lf",0.0,1);
 	
 	canopy_strata[0].ns.retransn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",0.0,1);
+
+	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",0.0,1);
 	
 
 
@@ -353,6 +377,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.deadcroot_gr_snk = 0.0;
 	canopy_strata[0].cs.froot_mr_snk = 0.0;
 	canopy_strata[0].cs.froot_gr_snk = 0.0;
+	canopy_strata[0].cs.nppcum = 0.0;
 	canopy_strata[0].NO3_stored = 0.0; // this is for the NO3 deposition on leaves
 	
 	/*--------------------------------------------------------------*/
@@ -505,6 +530,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].phen.nretdays = 365;
 		canopy_strata[0].phen.gwseasonday = -1;
 		canopy_strata[0].phen.lfseasonday = -1;
+		canopy_strata[0].phen.pheno_flag = 0;
 	/*--------------------------------------------------------------*/
 	/*	set critical soil moisture (at stomatal closure)	*/
 	/*      psi_close is converted to m water tension from MPa using     */
@@ -518,10 +544,35 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	
 	/*--------------------------------------------------------------*/
-	/* initialize runnning average of psi **** should actually  calc */
-	/* current day psi						*/
+	/* initialize runnning average of psi using current day psi     */
 	/*--------------------------------------------------------------*/
-	canopy_strata[0].epv.psi_ravg = canopy_strata[0].defaults[0][0].epc.psi_open;
+
+	if (canopy_strata[0].rootzone.depth > ZERO)
+		canopy_strata[0].rootzone.potential_sat = compute_delta_water(
+		command_line[0].verbose_flag,
+		patch[0].soil_defaults[0][0].porosity_0,
+		patch[0].soil_defaults[0][0].porosity_decay,
+		patch[0].soil_defaults[0][0].soil_depth,
+		canopy_strata[0].rootzone.depth, 
+		0.0);			
+
+	canopy_strata[0].rootzone.S = min(patch[0].rz_storage / canopy_strata[0].rootzone.potential_sat, 1.0);
+
+	canopy_strata[0].epv.psi =	compute_lwp_predawn(
+		command_line[0].verbose_flag,
+		patch[0].soil_defaults[0][0].theta_psi_curve,
+		patch[0].Tsoil,
+		canopy_strata[0].defaults[0][0].epc.psi_open,
+		canopy_strata[0].defaults[0][0].epc.psi_close,
+		patch[0].soil_defaults[0][0].psi_air_entry,
+		patch[0].soil_defaults[0][0].pore_size_index,
+		patch[0].soil_defaults[0][0].p3,
+		patch[0].soil_defaults[0][0].p4,
+		patch[0].soil_defaults[0][0].porosity_0,
+		patch[0].soil_defaults[0][0].porosity_decay,
+		canopy_strata[0].rootzone.S);
+
+	canopy_strata[0].epv.psi_ravg = canopy_strata[0].epv.psi;
 
 	/*--------------------------------------------------------------*/
 	/*	for now initialize these accumuling variables		*/
@@ -529,7 +580,6 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*	and initialized in the worldfile			*/
 	/*--------------------------------------------------------------*/
 	canopy_strata[0].cs.num_resprout = 0;
-	canopy_strata[0].cs.age = 0;
 	canopy_strata[0].epv.wstress_days = 0;
 	canopy_strata[0].epv.max_fparabs = 0.0;
 	canopy_strata[0].epv.min_vwc = 1.0;
