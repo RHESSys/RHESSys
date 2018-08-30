@@ -64,49 +64,47 @@ CreateFlownet = function(cfname,
   if(!is.null(impervious)){cfmaps[cfmaps[,1]=="impervious",2]=impervious}
   if(!is.null(roofs)){cfmaps[cfmaps[,1]=="roofs",2]=roofs}
 
-  mapsin = cfmaps[cfmaps[,2]!="none" & cfmaps[,1]!="cell_length",2]
-  maps_in = unique(mapsin)
+  maps_in = unique(cfmaps[cfmaps[,2]!="none" & cfmaps[,1]!="cell_length",2])
 
   # ------------------------------ Use GIS_read to get maps ------------------------------
   readmap = GIS_read(maps_in, type, typepars, map_info = cfmaps)
-  map_ar = as.array(readmap)
-  #map_ar_clean = map_ar[!apply(is.na(map_ar), 1, all), !apply(is.na(map_ar), 2, all), ] # PRETTRY SURE I FIXED THIS
-  map_ar_clean = map_ar
+  map_ar_clean = as.array(readmap)
   dimnames(map_ar_clean)[[3]] = colnames(readmap@data)
 
-  patch_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="patch",2]]
-  patch_elevation_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="z",2]]
-  hill_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="hillslope",2]]
-  basin_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="basin",2]]
-  zone_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="zone",2]]
-  slope_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="slope",2]]
-  stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="streams",2]]
-  celllength = as.numeric(cfmaps[cfmaps[,1]=="cell_length",2])
+  raw_patch_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="patch",2]]
+  raw_patch_elevation_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="z",2]]
+  raw_hill_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="hillslope",2]]
+  raw_basin_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="basin",2]]
+  raw_zone_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="zone",2]]
+  raw_slope_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="slope",2]]
+  raw_stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="streams",2]]
+  cell_length = as.numeric(cfmaps[cfmaps[,1]=="cell_length",2])
 
-  # ----- WE SHOULD LOOK AT THIS -----
+  raw_road_data = NULL
+  if(!is.null(roads)){raw_road_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="roads",2]]}
+
+  # Roofs and impervious is not yet implemented - placeholders for now -----
+  if(!is.null(roofs)|!is.null(impervious)){print("Roofs and impervious are not yet working",quote = FALSE)}
+  raw_roof_data = NULL
+  if(!is.null(roofs)){raw_roof_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="roofs",2]]}
+  raw_impervious_data = NULL
+  if(!is.null(impervious)){raw_impervious_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="impervious",2]]}
+
+  # ----- SMOOTH FLAG STILL NEEDS TO BE LOOKED AT AGAIN -----
   smooth_flag = FALSE
-  # -----
-
-  if(is.null(roads)){
-    road_data = replace(basin_data,basin_data==1,0)
-  }
-
-  if(is.null(road_width)){
-    road_width = 0
-  }
 
   # ------------------------------ Make flownet list ------------------------------
   CF1 = patch_data_analysis(
-    raw_patch_data = patch_data,
-    raw_patch_elevation_data = patch_elevation_data,
-    raw_basin_data = basin_data,
-    raw_hill_data = hill_data,
-    raw_zone_data = zone_data,
-    raw_slope_data = slope_data,
-    raw_stream_data = stream_data,
-    raw_road_data = road_data,
+    raw_patch_data = raw_patch_data,
+    raw_patch_elevation_data = raw_patch_elevation_data,
+    raw_basin_data = raw_basin_data,
+    raw_hill_data = raw_hill_data,
+    raw_zone_data = raw_zone_data,
+    raw_slope_data = raw_slope_data,
+    raw_stream_data = raw_stream_data,
+    raw_road_data = raw_road_data,
     road_width = road_width,
-    cell_length=celllength,
+    cell_length=cell_length,
     smooth_flag=smooth_flag,
     d4 = d4,
     parallel = parallel)
@@ -120,8 +118,8 @@ CreateFlownet = function(cfname,
     rulevars = asp_list[[1]] # subset rules by ID
     CF2 = list() # empty list for new flow list
 
-    for(p in patch_data[!is.na(patch_data)] ){ # iterate through physical patches
-      id = asp_map[which(patch_data==p)] # get rule ID for patch p
+    for(p in raw_patch_data[!is.na(raw_patch_data)] ){ # iterate through physical patches
+      id = asp_map[which(raw_patch_data==p)] # get rule ID for patch p
       id = unique(id)
       if(length(id)>1){stop(paste("multiple aspatial rules for patch",p))} # if multiple rules for a single patch
       asp_count = length(rulevars[[id]]) # get number of aspatial patches for current patch
@@ -149,7 +147,7 @@ CreateFlownet = function(cfname,
 
         for(nbr in old_nbrs){ # loop through old neighbors - neighbors are numbers not patches
           nbr_patch = patch_ID[numbers==nbr]
-          nbr_id = asp_map[which(patch_data==nbr_patch)]
+          nbr_id = asp_map[which(raw_patch_data==nbr_patch)]
           nbr_id = unique(nbr_id)
           if(length(nbr_id)>1){stop(paste("multiple aspatial rules for patch",nbr_patch))} # if multiple rules for a single patch
           nbr_asp_ct =length(rulevars[[nbr_id]])

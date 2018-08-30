@@ -121,8 +121,6 @@ patch_data_analysis <-
   colnames(flw_struct)<-c("Number","Centroidx","Centroidy","Area","Centroidz","Mean_Slope","Landtype","Roadtype")
   flw_struct<-cbind(flw_struct,id_data)
 
-
-
   # -------------------- find neighbors cell by cell (previously find border row) --------------------
   # patch_data is patch data with NA replaced by 0, patches is a vector of ordered patch numbers
   # patch_borders is an array, initailly 0 but will be filled with the number of times patch i
@@ -247,7 +245,7 @@ patch_data_analysis <-
 
   # ----- smooth flag, staircase diagonal correction ----- (Im not really sure how this works, so i haven't messed with it,
   # it may have an edge row error which occurs with single cell patches like the old find_border_row had -Will)
-  if (smooth_flag==TRUE) {
+  if (smooth_flag) {
     patch_borders<-find_border_correction(patch_data,patches,patch_borders) #correct for staircase diagonals
   }
 
