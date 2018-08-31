@@ -1539,6 +1539,7 @@ struct patch_object
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
         int             target_status;
+		//int				wuiID;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */

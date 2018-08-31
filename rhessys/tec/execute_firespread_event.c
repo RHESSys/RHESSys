@@ -51,6 +51,7 @@ void execute_firespread_event(
 	struct fire_object **fire_grid;
 	struct patch_fire_object **patch_fire_grid;
 	struct patch_object *patch;
+//	struct node_fire_wui_dist *tmp_node;
 	int i,j,p,c,layer; 
 	double pspread;
 	double mean_fuel_veg=0,mean_fuel_litter=0,mean_soil_moist=0,mean_fuel_moist=0,mean_relative_humidity=0,
@@ -73,6 +74,7 @@ void execute_firespread_event(
 	printf("In WMFire\n");
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
+		  world[0].fire_grid[i][j].fire_size=0; // reset grid to no fire
 		if(world[0].patch_fire_grid[i][j].occupied_area==0)
 		{
 			  if(world[0].defaults[0].fire[0].fire_in_buffer==0)
@@ -135,13 +137,13 @@ void execute_firespread_event(
 //    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) { // should just be 1 now...
 //printf("Patch p: %d\n",p);			
-patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
+			patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
 //printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c); 
 			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
 				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p];
 //printf("Patch p2: %d\n",p);
 		
-	if( patch[0].litter.rain_capacity!=0)	// then update the fuel moisture, otherwise don't change it
+			if( patch[0].litter.rain_capacity!=0)	// then update the fuel moisture, otherwise don't change it
 			    world[0].fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
 							patch_fire_grid[i][j].prop_patch_in_grid[p];
 /*			fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
@@ -151,15 +153,15 @@ patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now
 	
 	// this is the canopy fuels
 		
-	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
-//printf("Layers: %d\n",layer);
+			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+				for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
+		//printf("Layers: %d\n",layer);
 
-				world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-				* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc) *
-						patch_fire_grid[i][j].prop_patch_in_grid[p] ;
+					world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc) *
+							patch_fire_grid[i][j].prop_patch_in_grid[p] ;
+					}
 				}
-			}
 //			printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
 			
 
@@ -265,7 +267,7 @@ patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now
 	/* update biomass after fire					*/
 	/*--------------------------------------------------------------*/
 
-
+	// if(world[0].fire_grid[0][0].fire_size>0) // only do this if there was a fire
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   		for (j=0; j < world[0].num_fire_grid_col; j++) {
 			for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
@@ -273,8 +275,23 @@ patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now
 
 				patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-
+// so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
+				/* (if pspread>0&world[0].fire_grid[0][0].fire_size*command_line[0].fire_grid_res*command_line[0].fire_grid_res*0.0001>=400) // also need a flag with the fire size to trigger event, because fire > 400 ha
+				{
+					// linked list loop
+					for(w=0;w<3;w++) # for each level of salience, 1 = <= 3 km, 2 = <=5 km; 3=<=10 km
+					{
+						tmp_node=world[0].fire_grid[i][j].wuiList[w] // where wuiList[w] is the linked list of patches within w index of this pixel
+						while(tmp_node!=NULL)
+						{
+							if(tmp_node->patch.wuiFire==0||(i+1)<tmp_node.patch.wuiFire) // then this pixel is closer to the wui and should activate a more salient fire
+								tmp_node->patch.wuiFire=i+1; // then flag this wuiPatch with a salient fire event
+							tmp_node=tmp_node->next;
+						}
+					}
+				}
 	
+				*/
 				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
 				{
 					compute_fire_effects(

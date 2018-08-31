@@ -93,6 +93,8 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 	if(def.fire_verbose==1)
 		cout<<"\nafter landscape initialize current fire\n\n";
 	landscape.Burn(randomNG); // run the current fire
+	
+
 	if(def.fire_write>0)
 		landscape.writeFire(month,year,def);
 	if(def.fire_verbose==1)
@@ -199,7 +201,10 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 	for(int i=0;i<rows_;i++)	// this loop re-sets the landscape to completely un-burned
 	{
 		for(int j=0;j<cols_;j++)
+		{
 			fireGrid_[i][j].burn=0;
+			fireGrid_[i][j].fire_size=0; // make sure it returns a fire size of 0, unless a fire burns
+		}
 	}
 	if(def_.fire_verbose==1)
 		cout<<"in burn after setting burn=0--here\n\nHow many ignitions this month?  "<<n_cur_ign_<<"\n\n";
@@ -253,6 +258,7 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 			}
 		}
 	}
+	fireGrid_[0][0].fire_size=cur_fire_.update_size; // to return the fire size, when only the grid is returned; this is the number of pixels
 	return ;
 }
 
