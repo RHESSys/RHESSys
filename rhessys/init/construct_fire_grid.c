@@ -107,11 +107,11 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		int tmpPatchID;
 		FILE *patchesIn;
 		patchesIn=fopen(command_line[0].firegrid_patch_filename,"r");
-		if(def.include_wui==1) // then readin the wui LUT
+/*		if(def.include_wui==1) // then readin the wui LUT
 		{
 			FILE *wuiIn;
 			wuiIn=fopen(command_line[0].wui_lut_filename,"r");
-		}
+		}*/
 		//patchesIn=fopen("../auxdata/patchGrid.txt","r");
 		// for now do away with the header
 		for(i=0; i<grid_dimY;i++){
@@ -166,7 +166,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 										//printf("array filled\n");
 										
 										if(def.include_wui==0)
-											break(); //? or keep loop to help point to wui patches as well// break would speed this up a little bit
+											break; //? or keep loop to help point to wui patches as well// break would speed this up a little bit
 										
 										// if we have found the correct patch, stop looking
 									}										
@@ -244,9 +244,9 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 			}
 		}
 		fclose(patchesIn);
-		if(def.include_wui==1) // then readin the wui LUT
+/*		if(def.include_wui==1) // then readin the wui LUT
 			fclose(wuiIn);
-		
+*/		
 		printf("assigning dem to fire object\n");
 		FILE *demIn;
 		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
@@ -273,8 +273,8 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 			}
 			fclose(wuiIn);
 			printf("done assigning wui\n");
-		}
-	}*/
+		}*/
+	}
 	
 	else
 	{
