@@ -332,6 +332,7 @@ int allocate_daily_growth(int nlimit,
 	/*---------------------------------------------------------------------------	*/
 
 	excess_lai = (cs->leafc + cs->leafc_transfer + cs->leafc_store + cdf->cpool_to_leafc) * epc.proj_sla - epc.max_lai; 
+
 	if ( excess_lai > ZERO) 
 	{
 		excess_c = excess_lai / epc.proj_sla;

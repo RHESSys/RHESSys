@@ -55,7 +55,7 @@ void	output_growth_basin(
 	double asoilhr;
 	double acloss;
 	double asoilc, asminn, anitrate, asurfaceN;
-	double alitrn, asoiln, anfix, anuptake;
+	double alitrn, asoiln, asoiln_noslow,anfix, anuptake;
 	double aarea, hill_area, basin_area;
 	double acarbon_balance, anitrogen_balance;
 	double atotaln, adenitrif;
@@ -85,7 +85,7 @@ void	output_growth_basin(
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
-	alitrn = 0.0; asoiln = 0.0;
+	alitrn = 0.0; asoiln = 0.0; asoiln_noslow;
 	anitrate = 0.0;
 	asurfaceN = 0.0;
 	asoilc = 0.0; asminn=0.0;
@@ -141,6 +141,9 @@ void	output_growth_basin(
 					* patch[0].area;
 				asoiln += (patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n
 					+ patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n)
+					* patch[0].area;
+				asoiln_noslow += (patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n
+					+ patch[0].soil_ns.soil3n)
 					* patch[0].area;
 				alitrc += (patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c
 					+ patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c)
@@ -304,6 +307,7 @@ void	output_growth_basin(
 	asoilhr /= aarea;	
 	alitrn /= aarea;
 	asoiln /= aarea;
+	asoiln_noslow /= aarea;
 	asminn /= aarea;
 	atotaln /= aarea;
 	acarbon_balance /= aarea;
@@ -367,6 +371,7 @@ void	output_growth_basin(
 		alitrn,
 		asoilc,
 		asoiln,
+		asoiln_noslow,
 		hgwNO3,
 		hgwNH4,
 		hgwDON,

@@ -525,11 +525,6 @@ struct patch_object *construct_patch(
 				max(patch[0].landuse_defaults[0][0].detention_store_size,
 				patch[0].soil_defaults[0][0].detention_store_size);
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of  patch base stations 					*/
-	/*--------------------------------------------------------------*/
-	/*fscanf(world_file,"%d",&(patch[0].num_base_stations));
-	read_record(world_file, record);*/
-	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this patch.			*/
 	/*--------------------------------------------------------------*/
 	patch[0].base_stations = (struct base_station_object **)

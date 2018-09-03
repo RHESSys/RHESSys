@@ -94,8 +94,10 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].y = ltmp * patch[0].y;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp * patch[0].z;
-	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",patch[0].soil_parm_ID,1);
-	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].num_base_stations,1);	
+	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].soil_parm_ID = dtmp;
+	dtmp  = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
+	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].landuse_parm_ID = dtmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",1,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp * patch[0].area;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",1,1);
@@ -188,8 +190,7 @@
 		patch[0].soil_cs.soil4c = ltmp * patch[0].soil_cs.soil4c;
 		patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
 		}
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,0);	
-	
+		
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
 	/*--------------------------------------------------------------*/
@@ -282,13 +283,11 @@
 	patch[0].soil_defaults[0][0].detention_store_size = 
 				max(patch[0].landuse_defaults[0][0].detention_store_size,
 				patch[0].soil_defaults[0][0].detention_store_size);
-	/*--------------------------------------------------------------*/
-	/*	Read in the number of  patch base stations 					*/
-	/*--------------------------------------------------------------*/
- 	/*  fscanf(world_file,"%d",&(dtmp));
-	read_record(world_file, record);*/
+
+
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,1);	
 	if (dtmp > 0)  {
-		patch[0].num_base_stations = dtmp * patch[0].num_base_stations;
+		patch[0].num_base_stations = dtmp;
 		/*--------------------------------------------------------------*/
 		/*    Allocate a list of base stations for this patch.			*/
 		/*--------------------------------------------------------------*/
@@ -313,6 +312,7 @@
 				world_base_stations);
 		} /*end for*/
 	}
+		
 	
 	/*--------------------------------------------------------------*/
 	/*	compute actual depth to water tablke			*/

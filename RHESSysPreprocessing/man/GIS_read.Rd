@@ -4,10 +4,10 @@
 \alias{GIS_read}
 \title{GIS_read}
 \usage{
-GIS_read(read_in, type, typepars)
+GIS_read(maps_in, type, typepars, map_info)
 }
 \arguments{
-\item{read_in}{Character vector of maps to be read in by the chosen method.}
+\item{maps_in}{Character vector of maps to be read in by the chosen method.}
 
 \item{type}{GIS type to be used. Options are GRASS(will auto-detect GRASS6 or GRASS7) GRASS6, GRASS7, or raster.}
 

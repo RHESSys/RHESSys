@@ -1,8 +1,13 @@
 # Make a recursive function that "fills pits". If all gamma's for a patch are zero, find the lowest
 # neighbor and make the patch flow to that neighbor. Then, go to that neighbor, and make sure that it
 # has non zero gamma's other than the one I just made. If not, call "fill_pit" again on the new patch.
-# repeat until no non zero gamma's. Inputs are, flw: a list of all patches and their data, n_s a starting
-# node, n_f: an ending node (initially, n_s=n_f means there is no starting node, a pit).
+# repeat until no non zero gamma's.
+
+#Inputs are,
+# flw: a list of all patches and their data,
+# n_s: a starting node
+# n_f: an ending node (initially, n_s=n_f means there is no starting node, a pit).
+
 fill_pit<-function(flw,n_s,n_f){
   #  print(c(n_s,n_f))
   if (n_s!=n_f){     #remove starting node
@@ -13,7 +18,13 @@ fill_pit<-function(flw,n_s,n_f){
     gamma_clean<-flw[[n_f]]$Gamma_i
     neighbor_clean<-flw[[n_f]]$Neighbors
   }
-  elev_clean<-elev_list(flw,neighbor_clean)
+
+  # takes a list of nodes, returns their elevations
+  elev_clean<-c()
+  for (i in neighbor_clean) {
+    elev_clean<-c(elev_clean,flw[[i]]$Centroidz)
+  }
+
   if (sum(gamma_clean)!=0){
     return(flw)  #new patch has non zero gamma's and is not a pit.
   }
