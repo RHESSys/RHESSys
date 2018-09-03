@@ -28,13 +28,9 @@ void update_hillslope_accumulator(
 			struct command_line_object *command_line,
 			struct basin_object *basin){
 	/*--------------------------------------------------------------------------------------*/
-	/* Local variables definitin								*/
+	/* Local variables definition								*/
 	/*--------------------------------------------------------------------------------------*/
-    //160420LML double scale;
-    //160420LML int h,z,p;
-    //160420LML struct hillslope_object *hillslope;
-    //160420LML struct patch_object * patch;
-
+  // moved these into for loop below for openmp functionality
 	/*--------------------------------------------------------------------------------------*/
 	/* update hillslope accumulator								*/
 	/*--------------------------------------------------------------------------------------*/

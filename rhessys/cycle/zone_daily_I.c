@@ -310,7 +310,7 @@ void zone_daily_I(
 			zone[0].metv.tmax += command_line[0].tmax_add;
 			zone[0].metv.tmin += command_line[0].tmin_add;
 			}
-        i++;                                                                     /*160419LML*/
+        i++;                                                               
 	} /*end while*/
 	/*--------------------------------------------------------------*/
 	/*	Check if we filled in all of the critical parameters.		*/
@@ -382,7 +382,7 @@ void zone_daily_I(
 	zone[0].LAI_scalar = -999.0;
 	
 	/* Re-use z_delta */
-    /*160419LML seems there is an asumption that each zone has one station.*/
+    /*seems there is an asumption that each zone has one station.*/
     if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
 		z_delta = 0.0;
 	}
