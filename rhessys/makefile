@@ -12,10 +12,15 @@ OBJ = objects
 #wmfire ?=FALSE
 
 DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
+
+ifdef extend_clim
+  DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
+endif 
+
 CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES)
 
 ifdef openmp
-	CFLAGS += -fopenmp
+  CFLAGS += -fopenmp
 endif
 
 # Retro fitting from CF
