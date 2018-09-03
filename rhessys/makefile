@@ -11,7 +11,7 @@ OBJ = objects
 #wmfire ?=FALSE
 
 DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
-CFLAGS =-Wall -g -std=c99 -fopenmp -O2 $(DEFINES)
+override CFLAGS += -Wall -g -std=c99 -O2 $(DEFINES)
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
