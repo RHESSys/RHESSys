@@ -96,8 +96,13 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].y = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",patch[0].z,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp;
-	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",patch[0].soil_parm_ID,1);
-	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
+
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].num_base_stations,1);	
+	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].soil_parm_ID = dtmp;
+	dtmp  = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
+	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].landuse_parm_ID = dtmp;
+
+	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",patch[0].area,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",patch[0].slope,1);
@@ -196,7 +201,6 @@
 		patch[0].soil_cs.soil4c = ltmp;
 		patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
 		}
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,0);	
 	
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
@@ -294,8 +298,7 @@
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  patch base stations 					*/
 	/*--------------------------------------------------------------*/
- 	/*  fscanf(world_file,"%d",&(dtmp));
-	read_record(world_file, record);*/
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,0);	
 	if (dtmp > 0)  {
 		patch[0].num_base_stations = dtmp;
 		/*--------------------------------------------------------------*/

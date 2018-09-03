@@ -31,7 +31,7 @@ _world AREA_or_BASIN_MAP 1
 		_zone HILL_OR_PATCH_MAP 1 
 			x		  value 0.0
 			y		  value 0.0
-			z		  daver DEM_MAP
+			z		  aver DEM_MAP
 			zone_parm_ID  	  dvalue 1  
 			area		  area	
 			slope		  aver slope	

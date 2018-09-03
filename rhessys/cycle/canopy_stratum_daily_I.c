@@ -100,6 +100,7 @@ void	canopy_stratum_daily_I(
 		double,
 		double,
 		double,
+		int,
 		struct date,
 		int);
 
@@ -283,6 +284,7 @@ void	canopy_stratum_daily_I(
 		stratum[0].cover_fraction,
 		stratum[0].gap_fraction,
 		basin[0].theta_noon,
+		basin[0].defaults[0][0].wyday_start,
 		current_date,
 		command_line[0].grow_flag);
 

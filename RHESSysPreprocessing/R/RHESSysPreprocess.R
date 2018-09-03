@@ -18,15 +18,17 @@
 #' for more info on parameters.  If using raster type, typepars should be a string indicating the path to a folder
 #' containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
 #' for additional information and supported filetypes.
-#' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
 #' @param streams Streams map to be used in building the flowtable.
+#' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
 #' @param roads Roads map, an optional input for flowtable creation.
 #' @param impervious Impervious map, an optional input for flowtable creation.
 #' @param roofs Roofs map, an optional input for flowtable creation.
+#' @param header TRUE/FALSE flag for the creation of a header file. Will have same name (and location) as "name" argument, but with ".hdr" suffix.
 #' @param asprules The path and filename to the rules file.  Using this argument enables aspatial patches.
-#' @param meta TRUE/FALSE flag for the creation of a metadata file.
-#' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{Raster}}
+#' @param meta TRUE/FALSE flag for the creation of a metadata file. Still in dev.
+#' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
 #' @author Will Burke
+#' @export
 
 RHESSysPreprocess = function(template,
                              name,
@@ -40,7 +42,9 @@ RHESSysPreprocess = function(template,
                              asprules = NULL,
                              header = FALSE,
                              meta = TRUE,
-                             wrapper = TRUE) {
+                             wrapper = TRUE,
+                             parallel = FALSE,
+                             d4 = TRUE) {
 
   # ---------- Check Inputs ----------
   if (!file.exists(template)) { # check if template exists
@@ -104,9 +108,9 @@ RHESSysPreprocess = function(template,
                             asprules = asprules,
                             wrapper = wrapper)
 
-  world_typepars = world_gen_out[[3]]
-  world_cfmaps = world_gen_out[[2]]
-  world_asp_list = world_gen_out[[1]]
+  typepars = world_gen_out[[3]]
+  readin = world_gen_out[[2]]
+  asp_list = world_gen_out[[1]]
 
   # ---------- Run CreateFlownet ----------
   print("Begin CreateFlownet.R",quote=FALSE)
@@ -122,14 +126,17 @@ RHESSysPreprocess = function(template,
 
   CreateFlownet(cfname = cfname,
                 type = type,
-                readin = world_cfmaps,
-                typepars = world_typepars,
-                asp_list = world_asp_list,
+                readin = readin,
+                typepars = typepars,
+                asp_list = asp_list,
                 streams = streams,
+                overwrite = overwrite,
                 roads = roads,
                 impervious = impervious,
                 roofs = roofs,
-                wrapper = wrapper)
+                wrapper = wrapper,
+                parallel = parallel,
+                d4 = d4)
 
   # ---------- Run build_meta ----------
   if(meta){

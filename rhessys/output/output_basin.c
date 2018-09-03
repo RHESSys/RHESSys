@@ -59,7 +59,7 @@ void	output_basin(			int routing_flag,
 	double astreamflow;
 	double asublimation, acanopysubl;
 	double asat_area, adetention_store;
-	double apsn, alai, acrain, acsnow;
+	double apsn, anppcum, alai, acrain, acsnow;
 	double abase_flow, hbase_flow,  hstreamflow_NO3, hstreamflow_NH4;
 	double	aacctrans, var_acctrans, var_trans;
 	double aPET, adC13, amortality_fract, apcp, apcpassim;
@@ -105,6 +105,7 @@ void	output_basin(			int routing_flag,
 	astreamflow = 0.0;
 	arecharge = 0.0;
 	apsn = 0.0 ;
+	anppcum = 0.0;
 	aPET = 0.0;
 	aarea =  0.0 ;
 	abase_flow = 0.0;
@@ -244,6 +245,9 @@ void	output_basin(			int routing_flag,
 						apsn += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.net_psn
 							* patch[0].area;
+						anppcum += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.nppcum
+							* patch[0].area;
 						alai += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai
 							* patch[0].area;
@@ -347,6 +351,7 @@ void	output_basin(			int routing_flag,
 	atranspiration /= aarea  ;
 	astreamflow /= aarea;
 	apsn /= aarea ;
+	anppcum /= aarea ;
 	alai /= aarea;
 	abase_flow /= aarea;
 	asat_area /= aarea;
@@ -437,6 +442,7 @@ void	output_basin(			int routing_flag,
 		areturn_flow * 1000.0,
 		astreamflow * 1000.0,
 		apsn,
+		anppcum,
 		alai,
 		hgwQout *1000.0,
 		hgw *1000.0,

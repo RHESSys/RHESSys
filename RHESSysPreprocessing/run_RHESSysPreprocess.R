@@ -98,12 +98,17 @@ streams = "my_watershed_streams"
 # impervious = "impervious_map"
 # roofs = "roofs_map"
 
+# Header
+# ------
+# TRUE/FALSE to produce a header file. Header file will be have same name(and location) set by "name", with the ".hdr" suffix.
+header = FALSE
 
 # Finally, run the function.  Depending on size, it may take a minute or two.
 RHESSysPreprocess(
-  template,
-  name,
-  type,
-  typepars,
-  overwrite,
-  streams)
+  template = template,
+  name = name,
+  type = type,
+  typepars = typepars,
+  streams = streams,
+  overwrite = overwrite,
+  header = header)

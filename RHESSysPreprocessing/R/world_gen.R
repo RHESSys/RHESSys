@@ -18,8 +18,9 @@
 #' for additional information and supported filetypes.
 #' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
 #' @param asprules The path and filename to the rules file.  Using this argument enables aspatial patches.
-#' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{Raster}}
+#' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
 #' @author Will Burke
+#' @export
 
 # ---------- Function start ----------
 world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=FALSE, header = FALSE, asprules=NULL, wrapper = FALSE) {
@@ -64,7 +65,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
       stop("Missing asp_rule state variable in template")}}
 
   # ---------- spatial read in ----------
-  read_maps = GIS_read(maps_in,type,typepars)
+  read_maps = GIS_read(maps_in,type,typepars,map_info)
 
   # process map data  ----------
   map_df = as.data.frame(read_maps) #make data frame for ease of use
@@ -139,7 +140,11 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
 
   # ---------- Build world file ----------
+  print("Writing worldfile",quote = FALSE)
   stratum = 1:template_clean[[level_index[6]]][3] #make sure correct number of stratum
+
+  progress = 0
+
   # create/open file
   sink(worldfile)
 
@@ -163,6 +168,26 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
     cat("\t",length(hillslopes),"\t\t\t","num_hillslopes\n",sep="")
 
     for (h in hillslopes) { #hillslopes
+
+      # progress tracker - number of hillslopes/total, print only on 25,50,75 %
+      progress = progress + 1
+      if (progress == ceiling(.25*length(unique(levels[,3])))){
+        sink()
+        print(paste("25% complete"),quote=FALSE)
+        sink(worldfile,append = TRUE)
+      }
+      if (progress == ceiling(.50*length(unique(levels[,3])))){
+        sink()
+        print(paste("50% complete"),quote=FALSE)
+        sink(worldfile,append = TRUE)
+      }
+      if (progress == ceiling(.75*length(unique(levels[,3])))){
+        sink()
+        print(paste("75% complete"),quote=FALSE)
+        sink(worldfile,append = TRUE)
+      }
+      # end progress tracker
+
       cat("\t\t",h,"\t\t\t", "hillslope_ID\n",sep="")
       for (i in (level_index[3]+1):(level_index[4]-1)) {
         if (length(statevars[[i]][[1]]) >1) {
@@ -232,7 +257,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
               cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep="")
 
               for (s in stratum) { #stratum
-                cat("\t\t\t\t\t", s,"\t\t\t", "stratum_ID\n",sep="")
+                cat("\t\t\t\t\t", s,"\t\t\t", "canopy_strata_ID\n",sep="")
 
                 rvindex2 = which(! names(rulevars[[ruleid]][[asp]][rvsind]) %in% var_names[var_index])#include strata state vars from rulevars that aren't in template
                 for (i in rvindex2) {
@@ -267,7 +292,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
             cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep="")
 
             for (s in stratum) { #stratum
-              cat("\t\t\t\t\t", s,"\t\t\t", "stratum_ID\n",sep="")
+              cat("\t\t\t\t\t", s,"\t\t\t", "canopy_strata_ID\n",sep="")
               for (i in (level_index[6]+1):length(template_clean)) {
                 if (length(statevars[[i]][[s]]) >1) { # no need to specify stratum since spatially its the same as patch
                   var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b & statevars[[i]][[1]][3]==h & statevars[[i]][[1]][4]==z & statevars[[i]][[1]][5]==p ,"x"]
