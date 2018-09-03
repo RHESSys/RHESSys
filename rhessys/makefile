@@ -1,3 +1,4 @@
+
 VERSION = 6.0 
 PGM  = rhessys$(VERSION)
 CC = gcc
@@ -11,7 +12,11 @@ OBJ = objects
 #wmfire ?=FALSE
 
 DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
-override CFLAGS += -Wall -g -std=c99 -O2 $(DEFINES)
+CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES)
+
+ifdef openmp
+	CFLAGS += -fopenmp
+endif
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
