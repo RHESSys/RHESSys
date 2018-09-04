@@ -144,6 +144,8 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
   stratum = 1:template_clean[[level_index[6]]][3] #make sure correct number of stratum
 
   progress = 0
+  pb = txtProgressBar(min = 0, max = 1,initial = 0)
+  setTxtProgressBar(pb,0)
 
   # create/open file
   sink(worldfile)
@@ -171,21 +173,26 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
       # progress tracker - number of hillslopes/total, print only on 25,50,75 %
       progress = progress + 1
-      if (progress == ceiling(.25*length(unique(levels[,3])))){
-        sink()
-        print(paste("25% complete"),quote=FALSE)
-        sink(worldfile,append = TRUE)
-      }
-      if (progress == ceiling(.50*length(unique(levels[,3])))){
-        sink()
-        print(paste("50% complete"),quote=FALSE)
-        sink(worldfile,append = TRUE)
-      }
-      if (progress == ceiling(.75*length(unique(levels[,3])))){
-        sink()
-        print(paste("75% complete"),quote=FALSE)
-        sink(worldfile,append = TRUE)
-      }
+
+      sink()
+      setTxtProgressBar(pb,progress/length(unique(levels[,3])))
+      sink(worldfile)
+
+      # if (progress == ceiling(.25*length(unique(levels[,3])))){
+      #   sink()
+      #   print(paste("25% complete"),quote=FALSE)
+      #   sink(worldfile,append = TRUE)
+      # }
+      # if (progress == ceiling(.50*length(unique(levels[,3])))){
+      #   sink()
+      #   print(paste("50% complete"),quote=FALSE)
+      #   sink(worldfile,append = TRUE)
+      # }
+      # if (progress == ceiling(.75*length(unique(levels[,3])))){
+      #   sink()
+      #   print(paste("75% complete"),quote=FALSE)
+      #   sink(worldfile,append = TRUE)
+      # }
       # end progress tracker
 
       cat("\t\t",h,"\t\t\t", "hillslope_ID\n",sep="")
@@ -308,6 +315,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
     }
   }
 
+  close(pb)
   sink()
 
   print(paste("Created worldfile:",worldfile),quote=FALSE)

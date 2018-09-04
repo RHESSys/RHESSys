@@ -94,6 +94,7 @@ CreateFlownet = function(cfname,
   smooth_flag = FALSE
 
   # ------------------------------ Make flownet list ------------------------------
+  print("Building flowtable",quote=FALSE)
   CF1 = patch_data_analysis(
     raw_patch_data = raw_patch_data,
     raw_patch_elevation_data = raw_patch_elevation_data,
@@ -216,6 +217,7 @@ CreateFlownet = function(cfname,
   } # end parallel
 
   # ---------- Flownet list to flow table file ----------
+  print("Writing flowtable",quote=FALSE)
   make_flow_table(CF1, cfname, parallel)
 
   print(paste("Created flowtable:",cfname),quote=FALSE)

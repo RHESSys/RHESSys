@@ -93,7 +93,7 @@ GIS_read = function(maps_in,type,typepars,map_info) {
 
     # read in rasters
     # NATIVE DRIVERS -- may or may not actually help, future testing maybe
-    read_stack = try(raster::stack(file_paths,native=TRUE))
+    read_stack = try(raster::stack(file_paths))
 
     if(inherits(read_stack, "try-error")){ # automatic error handling, can be added to as errors are found -----
 
