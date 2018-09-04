@@ -71,6 +71,7 @@ struct basin_default *construct_basin_defaults(
                 paramPtr = readParamFile(&paramCnt, default_files[i]);
 
 		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "basin_default_ID", "%d", 1, 1);
+		default_object_list[i].wyday_start = getIntParam(&paramCnt, &paramPtr, "wyday_start", "%d", 274, 1);
 		/*--------------------------------------------------------------*/
 		/*	if grow flag allocate a grow default structure for the	*/
 		/*	ith object.						*/

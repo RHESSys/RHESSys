@@ -11,6 +11,7 @@
 #' vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 #' Example parameters are shown in the example script for world_gen. See initGRASS help for more info on parameters.
 #' @author Will Burke
+#' @export
 
 
 CreateFlownet = function(cfname,
@@ -19,12 +20,16 @@ CreateFlownet = function(cfname,
                          typepars = "load",
                          asp_list = NULL,
                          streams = NULL,
+                         overwrite = FALSE,
                          roads = NULL,
+                         road_width = NULL,
                          impervious = NULL,
                          roofs = NULL,
-                         wrapper = FALSE) {
+                         wrapper = FALSE,
+                         parallel = FALSE,
+                         d4 = TRUE) {
 
-  # ---------- Read and check inputs ----------
+  # ------------------------------ Read and check inputs ------------------------------
   if (wrapper==FALSE){
     if(typepars[1] =="load") {load("typepars")}
     cfmaps = as.matrix(read.table("cf_maps",header=TRUE))
@@ -59,66 +64,67 @@ CreateFlownet = function(cfname,
   if(!is.null(impervious)){cfmaps[cfmaps[,1]=="impervious",2]=impervious}
   if(!is.null(roofs)){cfmaps[cfmaps[,1]=="roofs",2]=roofs}
 
-  mapsin = cfmaps[cfmaps[,2]!="none" & cfmaps[,1]!="cell_length",2]
-  maps_in = unique(mapsin)
+  maps_in = unique(cfmaps[cfmaps[,2]!="none" & cfmaps[,1]!="cell_length",2])
 
-  # ---------- Use GIS_read to ingest maps and convert them to an array ----------
-  readmap = GIS_read(maps_in, type, typepars)
-  map_ar = as.array(readmap)
-  #map_ar_clean = map_ar[!apply(is.na(map_ar), 1, all), !apply(is.na(map_ar), 2, all), ] # PRETTRY SURE I FIXED THIS
-  map_ar_clean = map_ar
+  # ------------------------------ Use GIS_read to get maps ------------------------------
+  readmap = GIS_read(maps_in, type, typepars, map_info = cfmaps)
+  map_ar_clean = as.array(readmap)
   dimnames(map_ar_clean)[[3]] = colnames(readmap@data)
 
-  patch_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="patch",2]]
-  patch_elevation_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="z",2]]
-  hill_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="hillslope",2]]
-  basin_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="basin",2]]
-  zone_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="zone",2]]
-  slope_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="slope",2]]
-  stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="streams",2]]
-  celllength = as.numeric(cfmaps[cfmaps[,1]=="cell_length",2])
+  raw_patch_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="patch",2]]
+  raw_patch_elevation_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="z",2]]
+  raw_hill_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="hillslope",2]]
+  raw_basin_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="basin",2]]
+  raw_zone_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="zone",2]]
+  raw_slope_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="slope",2]]
+  raw_stream_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="streams",2]]
+  cell_length = as.numeric(cfmaps[cfmaps[,1]=="cell_length",2])
+
+  raw_road_data = NULL
+  if(!is.null(roads)){raw_road_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="roads",2]]}
+
+  # Roofs and impervious is not yet implemented - placeholders for now -----
+  if(!is.null(roofs)|!is.null(impervious)){print("Roofs and impervious are not yet working",quote = FALSE)}
+  raw_roof_data = NULL
+  if(!is.null(roofs)){raw_roof_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="roofs",2]]}
+  raw_impervious_data = NULL
+  if(!is.null(impervious)){raw_impervious_data = map_ar_clean[, ,cfmaps[cfmaps[,1]=="impervious",2]]}
+
+  # ----- SMOOTH FLAG STILL NEEDS TO BE LOOKED AT AGAIN -----
   smooth_flag = FALSE
 
-  road_data = replace(basin_data,basin_data==1,0)
-
-  #----------Run actual flownet calculations----------
+  # ------------------------------ Make flownet list ------------------------------
   CF1 = patch_data_analysis(
-    raw_patch_data = patch_data,
-    raw_patch_elevation_data = patch_elevation_data,
-    raw_basin_data = basin_data,
-    raw_hill_data = hill_data,
-    raw_zone_data = zone_data,
-    raw_slope_data = slope_data,
-    raw_stream_data = stream_data,
-    raw_road_data = road_data,
-    road_width = 0,
-    cell_length=celllength,
-    smooth_flag=TRUE
-  )
+    raw_patch_data = raw_patch_data,
+    raw_patch_elevation_data = raw_patch_elevation_data,
+    raw_basin_data = raw_basin_data,
+    raw_hill_data = raw_hill_data,
+    raw_zone_data = raw_zone_data,
+    raw_slope_data = raw_slope_data,
+    raw_stream_data = raw_stream_data,
+    raw_road_data = raw_road_data,
+    road_width = road_width,
+    cell_length=cell_length,
+    smooth_flag=smooth_flag,
+    d4 = d4,
+    parallel = parallel)
 
-  if(!is.null(asp_list)){ # start aspatial
-
-    # Start aspatial flownet ----------
-
+  # ------------------------------ Multiscale routing/aspatial patches ------------------------------
+  if(!is.null(asp_list)){
     # import: existing flownet, asp/rule map, rule list with proportionate areas
     asp_map = map_ar_clean[, ,cfmaps[cfmaps[,1]=="asp_rule",2]]
-
     patch_ID = unlist(lapply(CF1, "[[",9)) # patch IDs from cf1
     numbers = unlist(lapply(CF1, "[[",1)) # flow list numbers
-
     rulevars = asp_list[[1]] # subset rules by ID
-
     CF2 = list() # empty list for new flow list
 
-    for(p in patch_data[!is.na(patch_data)] ){ # iterate through physical patches
-
-      id = asp_map[which(patch_data==p)] # get rule ID for patch p
+    for(p in raw_patch_data[!is.na(raw_patch_data)] ){ # iterate through physical patches
+      id = asp_map[which(raw_patch_data==p)] # get rule ID for patch p
       id = unique(id)
       if(length(id)>1){stop(paste("multiple aspatial rules for patch",p))} # if multiple rules for a single patch
       asp_count = length(rulevars[[id]]) # get number of aspatial patches for current patch
 
       for(asp in 1:asp_count){ #iterate through aspatial patches
-
         # Add all aspatial patches
         CF2 = c(CF2,CF1[which(patch_ID==p)])
         CF2[[length(CF2)]]$PatchID = CF2[[length(CF2)]]$PatchID * 100 + asp # aspatial patch ID is old patch ID *100 + aspatial number
@@ -127,8 +133,6 @@ CreateFlownet = function(cfname,
         CF2[[length(CF2)]]$Area = CF2[[length(CF2)]]$Area * rulevars[[id]][[asp]]$pct_family_area[[1]] # change area
 
         #STILL NEED:
-        # BOARDER
-        # SLOPE
         # TOTAL GAMMA?
 
         # Changes for each neighbor
@@ -143,7 +147,7 @@ CreateFlownet = function(cfname,
 
         for(nbr in old_nbrs){ # loop through old neighbors - neighbors are numbers not patches
           nbr_patch = patch_ID[numbers==nbr]
-          nbr_id = asp_map[which(patch_data==nbr_patch)]
+          nbr_id = asp_map[which(raw_patch_data==nbr_patch)]
           nbr_id = unique(nbr_id)
           if(length(nbr_id)>1){stop(paste("multiple aspatial rules for patch",nbr_patch))} # if multiple rules for a single patch
           nbr_asp_ct =length(rulevars[[nbr_id]])
@@ -162,13 +166,57 @@ CreateFlownet = function(cfname,
         CF2[[length(CF2)]]$Slope = new_slope
         CF2[[length(CF2)]]$Boarder = new_boarder
 
-      } # end asp loop
+      } # end aspatial patch loop
     } # end spatial patch loop
-
     CF1 = CF2
-  } # end aspatial
+  } # end multiscale routing
 
-  make_flow_table(CF1, cfname)
+  # ------------------------------ Hillslope parallelization ------------------------------
+  if(parallel){
+      # check for flow across hillslopes
+      cross_hill = matrix(0,nrow = length(CF1),ncol = 3) # matrix for patchID, number of patches, and sum of gammas crossing hills
+      colnames(cross_hill) = c("Patch ID","Number of patches","Percent flow across hillslope")
+      for(i in 1:length(CF1)){
+        for(n in CF1[[i]]$Neighbors)
+          if(CF1[[i]]$HillID != CF1[[n]]$HillID & CF1[[i]]$Gamma_i[CF1[[i]]$Neighbors==n] != 0){
+            cross_hill[i,1] = CF1[[i]]$PatchID
+            cross_hill[i,2] = cross_hill[i,2] + 1
+            cross_hill[i,3] = cross_hill[i,3] + CF1[[i]]$Gamma_i[CF1[[i]]$Neighbors==n]
+          }
+      }
+      x_ind = cross_hill[,1]!= 0 & cross_hill[,2] != 0 & cross_hill[,3] != 0
+      cross_hill = cross_hill[x_ind,]
+      if(sum(cross_hill[,3] == 1)>0){stop("All flow of one or more patches crosses hillslopes.")}
+
+      # if (sum(cross_hill[,2])>0){
+      #   t=3
+      #   while(t==3){
+      #     t = menu(c("Force no flow across hillslopes", "Exit","View full table of patches with flow across hillslopes"),
+      #              title = noquote(paste(sum(cross_hill[,2]),"patches flow across hillslopes.")))
+      #
+      #     if(t==3){print(cross_hill)}}
+      #     if(t==2){stop("CreateFlownet.R exited without completing")}
+      #     if(t==1){ # change gammas to force no flow across hillslopes
+      #       for(i in x_ind){ # index of problem patches
+      #         for(n in CF1[[i]]$Neighbors){ #neighbors
+      #           if(CF1[[i]]$HillID != CF1[[n]]$HillID & CF1[[i]]$Gamma_i[CF1[[i]]$Neighbors==n] != 0){
+      #             # track that this neighbor is bad, reduce gamma, total gamma
+      #
+      #           }
+      #           # maybe do actual changes to gammas back in patch loop
+      #
+      #         }
+      #       }
+      #
+      #     } # end change gammas
+      #
+      # } # end if
+
+
+  } # end parallel
+
+  # ---------- Flownet list to flow table file ----------
+  make_flow_table(CF1, cfname, parallel)
 
   print(paste("Created flowtable:",cfname),quote=FALSE)
 

@@ -4,9 +4,10 @@
 \alias{RHESSysPreprocess}
 \title{RHESSysPreprocess}
 \usage{
-RHESSysPreprocess(template, name, type = "Raster", typepars,
-  overwrite = FALSE, streams = NULL, roads = NULL, impervious = NULL,
-  roofs = NULL, asprules = NULL, meta = TRUE, wrapper = TRUE)
+RHESSysPreprocess(template, name, type = "Raster", typepars, streams = NULL,
+  overwrite = FALSE, roads = NULL, impervious = NULL, roofs = NULL,
+  asprules = NULL, header = FALSE, meta = TRUE, wrapper = TRUE,
+  parallel = FALSE, d4 = TRUE)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
@@ -29,9 +30,9 @@ for more info on parameters.  If using raster type, typepars should be a string 
 containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
 for additional information and supported filetypes.}
 
-\item{overwrite}{Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.}
-
 \item{streams}{Streams map to be used in building the flowtable.}
+
+\item{overwrite}{Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.}
 
 \item{roads}{Roads map, an optional input for flowtable creation.}
 
@@ -41,14 +42,16 @@ for additional information and supported filetypes.}
 
 \item{asprules}{The path and filename to the rules file.  Using this argument enables aspatial patches.}
 
-\item{meta}{TRUE/FALSE flag for the creation of a metadata file.}
+\item{header}{TRUE/FALSE flag for the creation of a header file. Will have same name (and location) as "name" argument, but with ".hdr" suffix.}
+
+\item{meta}{TRUE/FALSE flag for the creation of a metadata file. Still in dev.}
 }
 \description{
 Preforms RHESSys Preprocessing, comprise of two main steps: generating a world file, and generating a flow table.
 World file is generated via world_gen.R, and flow table is generated via CreateFlownet.R.
 }
 \seealso{
-\code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{Raster}}
+\code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
 }
 \author{
 Will Burke

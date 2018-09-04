@@ -15,6 +15,8 @@ typedef struct {
 
 /* Function prototypes */
 param * readParamFile(int *paramCnt, char *filename);
+param *readtag_worldfile(int *, FILE *,char *);	
+
 char * getStrParam(int *paramCnt, param **paramPtr, char *paramName, char *readFormat, char *defaultVal, int useDefaultVal);
 int    getIntParam(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, int defaultVal, int useDefaultVal);
 float  getFloatParam(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, float defaultVal, int useDefaultVal);
@@ -27,6 +29,7 @@ char * getStrWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *r
 int    getIntWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, int defaultVal, int useDefaultVal);
 float  getFloatWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, float defaultVal, int useDefaultVal);
 double getDoubleWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, double defaultVal, int useDefaultVal);
+
 
 
 #endif

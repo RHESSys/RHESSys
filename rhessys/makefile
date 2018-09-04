@@ -1,4 +1,4 @@
-VERSION = 5.20.1
+VERSION = 6.0 
 PGM  = rhessys$(VERSION)
 CC = gcc 
 INCLUDES = -Iinclude
@@ -294,6 +294,7 @@ $(OBJ)/update_septic.o \
 $(OBJ)/update_shadow_strata.o \
 $(OBJ)/update_soil_moisture.o \
 $(OBJ)/valid_option.o \
+$(OBJ)/wateryearday.o \
 $(OBJ)/world_daily_F.o \
 $(OBJ)/world_daily_I.o \
 $(OBJ)/world_hourly.o \
@@ -575,6 +576,8 @@ $(OBJ)/find_zone_in_hillslope.o: util/find_zone_in_hillslope.c
 	$(CC) -c $(CFLAGS) -I include util/find_zone_in_hillslope.c -o $(OBJ)/find_zone_in_hillslope.o
 $(OBJ)/find_hillslope_in_basin.o: util/find_hillslope_in_basin.c
 	$(CC) -c $(CFLAGS) -I include util/find_hillslope_in_basin.c -o $(OBJ)/find_hillslope_in_basin.o
+$(OBJ)/wateryearday.o: util/wateryearday.c
+	$(CC) -c $(CFLAGS) -I include util/wateryearday.c -o $(OBJ)/wateryearday.o
 $(OBJ)/yearday.o: util/yearday.c
 	$(CC) -c $(CFLAGS) -I include util/yearday.c -o $(OBJ)/yearday.o
 $(OBJ)/julday.o: util/julday.c

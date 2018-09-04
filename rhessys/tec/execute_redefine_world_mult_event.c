@@ -144,7 +144,6 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 		exit(EXIT_FAILURE);
 	} /*end if*/
 
-	printf("\n Redefine using %s", world_input_filename);
 	/*--------------------------------------------------------------*/
 	/*	Read in the world ID.							*/
 	/*--------------------------------------------------------------*/

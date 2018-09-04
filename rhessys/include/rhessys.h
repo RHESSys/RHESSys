@@ -176,6 +176,7 @@
 #define DECID 1
 #define EVERGREEN 0
 #define STATIC 0
+#define DROUGHT 1
 #define DYNAMIC 2
 #define WARING 2
 #define CONSTANT 1
@@ -514,6 +515,7 @@ struct basin_object
         int             ID;                                                                     
         int             num_base_stations;
         int             num_hillslopes;
+	int		basin_parm_ID;
         double  area;                   /*  m2          */
 	      double  area_withsnow;			/*  m2 		*/
         double  x;                      /*  meters      */      
@@ -525,7 +527,7 @@ struct basin_object
         double  theta_noon;             /*      rads    */
         double  sin_latitude;           /*      DIM     */
         double  max_slope;              /*      degrees */
-        
+
         /*      used in subsurface computation          */
         double basin_outflow;
         double basin_rz_storage;
@@ -585,6 +587,7 @@ struct basin_default
         {
         int                     ID;
         int             n_routing_timesteps;    /* number per day */ 
+        int     	wyday_start;            /* Year day that designates the first day of wateryear (non-leap year) */
         struct          basin_grow_default      *grow_defaults;
         };
 
@@ -672,8 +675,8 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
         struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
-        struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */
-        struct clim_event_sequence  PH;                                 /* DIM  */
+	struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */ 
+	struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
         };
 
@@ -803,6 +806,7 @@ struct hillslope_object
         int             ID;
         int             num_base_stations;
         int             num_zones;
+	int		hill_parm_ID;
         double  x;                      /*      meters  */
         double  y;                      /*      meters  */
         double  z;                      /* meters       */
@@ -942,6 +946,7 @@ struct zone_object
         int             Kdown_direct_flag;                  /*  0 or 1  */
         int             num_base_stations;                              
         int             num_patches;
+	int		zone_parm_ID;
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
         double  z;                                      /* meters       */
@@ -1115,7 +1120,6 @@ struct	soil_default
 	double  theta_mean_std_p2;				/* DIM */
 	struct soil_class	soil_type;
 	};
-
 
 /*----------------------------------------------------------*/
 /*      Define an innundation depth object.                                                             */
@@ -1488,6 +1492,9 @@ struct patch_object
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
         int             target_status;
+	int		soil_parm_ID;
+	int		landuse_parm_ID;
+	double		mpar;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */
@@ -1614,8 +1621,8 @@ struct patch_object
         double  grazing_Closs;          /* kgC/m2       */
         double  grazing_mean_nc;        /* ratio N:Co   */
         double  fertilizer_NO3_in;         /* kg/m2        */
-        double  fertilizer_NH4_in;         /* kg/m2        */
-        double  fertilizer_NO3;         /* kg/m2        */
+	double  fertilizer_NH4_in;         /* kg/m2        */
+	double  fertilizer_NO3;         /* kg/m2        */
         double  fertilizer_NH4;         /* kg/m2        */
         double  surface_DOC_Qin_total;  /* kgC/m2 day   */
         double  surface_DOC_Qout_total; /* kgC/m2 day   */
@@ -1995,7 +2002,6 @@ struct  command_line_object
         };
 
 
-
 /*----------------------------------------------------------*/
 /*      Define a tec file object.                                                               */
 /*----------------------------------------------------------*/
@@ -2073,16 +2079,17 @@ struct phenology_struct
         double frootlitfalln; /* (kgN/m2) current growth year leaflitter nitrogen */
         double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
         double gsi;             /* (0 to 1) growing season phenology index */
-                int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
+        int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
         int expand_startday;       /* (yday) yearday of first leaf growth */
         int litfall_startday;       /* (yday) yearday of litterfall growth */
         int expand_stopday;       /* (yday) yearday of last leaf growth */
         int litfall_stopday;       /* (yday) yearday of last litterfall growth */
+	double litfall_nppstart;       /* (yday) yearday of litterfall for drought deciduous */
         int ngrowthdays; /* (days) days between onday and next offday */
         int nretdays;    /* (days) days between allocations */
-                int gwseasonday; /* (day) day within the growing season */
-                int lfseasonday; /* (day) day within litter fall period */
-                
+        int gwseasonday; /* (day) day within the growing season */
+        int lfseasonday; /* (day) day within litter fall period */
+        int pheno_flag; /* (0 or 1) flag to prevent green-up more than once per year in drought/dynamic mode */
                 
 };
 
@@ -2098,6 +2105,7 @@ struct cstate_struct
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
     double totalc;          /* (kgC/m2) previous days plant carbon total */
     double net_psn;         /* (kgC/m2)  net photosynthesis (psn-respiration) */
+    double nppcum;          /* (kgC/m2) cumulative daily npp (net_psn) */
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
@@ -2107,7 +2115,6 @@ struct cstate_struct
     double live_crootc;     /* (kgC/m2) live coarse root C */
     double dead_crootc;     /* (kgC/m2) dead coarse root C */
     double frootc;          /* (kgC/m2) fine root C */ 
-
     double leafc_transfer;      /* (kgC/m2) leaf C to be allocated from last season */
     double livestemc_transfer; /* (kgC/m2) live stemwood C to be allocated from last season */
     double deadstemc_transfer; /* (kgC/m2) dead stemwood C to be allocated from last season */
@@ -2487,6 +2494,10 @@ struct epconst_struct
         double gs_psi_max;         /* (mPa) upper soil moisture psi  threshold for leaf onset mPa */
         double gs_psi_range;       /* (mPa)  psi range for leaf onset */
         double gs_ravg_days;       /* (days)  length of averaging window for gs controls  */
+	double gsi_thresh;	/* (0 to 1) gsi threshold for initiating phenological change */
+        int gs_npp_on;          /* (1 or 2) determines whether dynamic drought senescence is turned on */
+        double gs_npp_slp;          /* slope of nppcum/litfall start curve */
+        double gs_npp_intercpt;	   /* intercept of nppcum/litfall start curve */
         double coef_CO2;        /* DIM 0-1  conductance sensitivity to CO2 */ 
         int day_leafon;        /* (DIM) yearday leaves on */
         int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */
@@ -2620,6 +2631,9 @@ struct  stratum_default
         double lai;
         double lwp;
         double minNSC;
+	double stemc;
+	double rootc;
+	double leafc;
         };
 
 
@@ -2630,7 +2644,8 @@ struct  canopy_strata_object
         {
         int             patch_ID;
         int             ID;
-        int             num_base_stations;                              
+        int             num_base_stations;     
+	int		veg_parm_ID;
         double  APAR_direct;                                    /* (umol photon/m2*day) */
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;
