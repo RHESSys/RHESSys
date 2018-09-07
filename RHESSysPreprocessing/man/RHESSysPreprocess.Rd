@@ -7,7 +7,7 @@
 RHESSysPreprocess(template, name, type = "Raster", typepars, streams = NULL,
   overwrite = FALSE, roads = NULL, impervious = NULL, roofs = NULL,
   asprules = NULL, header = FALSE, meta = TRUE, wrapper = TRUE,
-  parallel = FALSE, d4 = TRUE)
+  parallel = FALSE, d4 = FALSE)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
@@ -18,17 +18,16 @@ by your chosen method of data input(GRASS or raster), set using the "type" argue
 \item{name}{The base name (and potentially, path as well) to be used for your ouput files.
 This will create a world file called "<name>.world", and a flow table called "<name>.flow".}
 
-\item{type}{Input file type to be used.  Default is "GRASS" which will attempt to autodetect the
-version of GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".
-"Raster" type will use rasters in GeoTiff or equivalent format (see Raster package), with file names
-matching those indicated in the template.}
+\item{type}{Input file type to be used. Default is raster. "Raster" type will use rasters
+in GeoTiff or equivalent format (see Raster package), with file names  matching those indicated in the template.
+ASCII is supported, but 0's cannot be used as values for data. "GRASS" will attempt to autodetect the version of
+GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".}
 
-\item{typepars}{Parameters needed based on input data type used. For GRASS GIS type, typepars is a
-vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
+\item{typepars}{Parameters needed based on input data type used. If using raster type, typepars should be a string
+indicating the path to a folder containing the raster files that are referenced by the template.
+For GRASS GIS type, typepars is a vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 Example parameters are included in an example script included in this package. See initGRASS help
-for more info on parameters.  If using raster type, typepars should be a string indicating the path to a folder
-containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
-for additional information and supported filetypes.}
+for more info on parameters.}
 
 \item{streams}{Streams map to be used in building the flowtable.}
 

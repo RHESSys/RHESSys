@@ -7,15 +7,15 @@
 #' <levelname> <map> <count>. Whitespace and tabs are ignored.  Maps referred to must be supplied
 #' by your chosen method of data input(GRASS or raster), set using the "type" arguement.
 #' @param worldfile Name and path of worldfile to be created.
-#' @param type Input file type to be used. "GRASS" will attempt to autodetect the
-#' version of GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".
-#' "Raster" type will use rasters in GeoTiff or equivalent format, with file names matching those indicated in the template.
-#' @param typepars Parameters needed based on input data type used. For GRASS GIS type, typepars is a
-#' vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
+#' @param type Input file type to be used. Default is raster. "Raster" type will use rasters
+#' in GeoTiff or equivalent format (see Raster package), with file names  matching those indicated in the template.
+#' ASCII is supported, but 0's cannot be used as values for data. "GRASS" will attempt to autodetect the version of
+#' GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".
+#' @param typepars Parameters needed based on input data type used. If using raster type, typepars should be a string
+#' indicating the path to a folder containing the raster files that are referenced by the template.
+#' For GRASS GIS type, typepars is a vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 #' Example parameters are included in an example script included in this package. See initGRASS help
-#' for more info on parameters.  If using raster type, typepars should be a string indicating the path to a folder
-#' containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
-#' for additional information and supported filetypes.
+#' for more info on parameters.
 #' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
 #' @param asprules The path and filename to the rules file.  Using this argument enables aspatial patches.
 #' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
@@ -144,7 +144,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
   stratum = 1:template_clean[[level_index[6]]][3] #make sure correct number of stratum
 
   progress = 0
-  pb = txtProgressBar(min = 0, max = 1,initial = 0)
+  pb = txtProgressBar(min = 0, max = 1,style = 3)
   setTxtProgressBar(pb,0)
 
   # create/open file
@@ -176,7 +176,7 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
       sink()
       setTxtProgressBar(pb,progress/length(unique(levels[,3])))
-      sink(worldfile)
+      sink(worldfile,append = TRUE)
 
       # if (progress == ceiling(.25*length(unique(levels[,3])))){
       #   sink()
@@ -335,13 +335,16 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
   # map_info[map_info[,1] == "slope",],
   # map_info[map_info[,1] == "asp_rule",]
 
-  if (wrapper == FALSE) {
-    f = file.create(paste(fpath, "/cf_maps", sep = ""))
-    write.table(cfmaps, "cf_maps", sep = "\t\t", row.names = FALSE, quote = FALSE)
-    f = save(typepars, file = paste(fpath, "/typepars", sep = ""))
-  } else if (wrapper == TRUE) {
-    world_gen_out = list(lret, cfmaps, typepars)
-    return(world_gen_out)
-  }
+  # if (wrapper == FALSE) {
+  #   f = file.create(paste(fpath, "/cf_maps", sep = ""))
+  #   write.table(cfmaps, "cf_maps", sep = "\t\t", row.names = FALSE, quote = FALSE)
+  #   f = save(typepars, file = paste(fpath, "/typepars", sep = ""))
+  # } else if (wrapper == TRUE) {
+  #   world_gen_out = list(lret, cfmaps, typepars)
+  #   return(world_gen_out)
+  # }
+
+  world_gen_out = list(cfmaps,lret)
+  return(world_gen_out)
 
 } # end function
