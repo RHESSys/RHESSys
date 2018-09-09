@@ -8,16 +8,15 @@
 #' by your chosen method of data input(GRASS or raster), set using the "type" arguement.
 #' @param name The base name (and potentially, path as well) to be used for your ouput files.
 #' This will create a world file called "<name>.world", and a flow table called "<name>.flow".
-#' @param type Input file type to be used.  Default is "GRASS" which will attempt to autodetect the
-#' version of GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".
-#' "Raster" type will use rasters in GeoTiff or equivalent format (see Raster package), with file names
-#' matching those indicated in the template.
-#' @param typepars Parameters needed based on input data type used. For GRASS GIS type, typepars is a
-#' vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
+#' @param type Input file type to be used. Default is raster. "Raster" type will use rasters
+#' in GeoTiff or equivalent format (see Raster package), with file names  matching those indicated in the template.
+#' ASCII is supported, but 0's cannot be used as values for data. "GRASS" will attempt to autodetect the version of
+#' GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".
+#' @param typepars Parameters needed based on input data type used. If using raster type, typepars should be a string
+#' indicating the path to a folder containing the raster files that are referenced by the template.
+#' For GRASS GIS type, typepars is a vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 #' Example parameters are included in an example script included in this package. See initGRASS help
-#' for more info on parameters.  If using raster type, typepars should be a string indicating the path to a folder
-#' containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
-#' for additional information and supported filetypes.
+#' for more info on parameters.
 #' @param streams Streams map to be used in building the flowtable.
 #' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
 #' @param roads Roads map, an optional input for flowtable creation.
@@ -44,7 +43,7 @@ RHESSysPreprocess = function(template,
                              meta = TRUE,
                              wrapper = TRUE,
                              parallel = FALSE,
-                             d4 = TRUE) {
+                             d4 = FALSE) {
 
   # ---------- Check Inputs ----------
   if (!file.exists(template)) { # check if template exists
@@ -108,9 +107,8 @@ RHESSysPreprocess = function(template,
                             asprules = asprules,
                             wrapper = wrapper)
 
-  typepars = world_gen_out[[3]]
-  readin = world_gen_out[[2]]
-  asp_list = world_gen_out[[1]]
+  readin = world_gen_out[[1]]
+  asp_list = world_gen_out[[2]]
 
   # ---------- Run CreateFlownet ----------
   print("Begin CreateFlownet.R",quote=FALSE)
@@ -125,8 +123,8 @@ RHESSysPreprocess = function(template,
   }
 
   CreateFlownet(cfname = cfname,
-                type = type,
                 readin = readin,
+                type = type,
                 typepars = typepars,
                 asp_list = asp_list,
                 streams = streams,
