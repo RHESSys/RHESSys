@@ -45,11 +45,11 @@ CreateFlownet = function(cfname,
   if(!is.logical(overwrite)) {stop("overwrite must be logical")} # check overwrite inputs
   if(file.exists(cfname) & overwrite == FALSE) {stop(noquote(paste("Flowtable",cfname,"already exists.")))}
 
-  if(wrapper==FALSE & is.character(readin)){ #if run outside of rhessyspreprocess.R, and if readin is character. readin is the template (and path)
+  if(!wrapper & is.character(readin)){ #if run outside of rhessyspreprocess.R, and if readin is character. readin is the template (and path)
     template_list = template_read(template)
     map_info = template_list[[5]]
     cfmaps = rbind(map_info,c("cell_length","none"), c("streams","none"), c("roads","none"), c("impervious","none"),c("roofs","none"))
-  } else if(wrapper==TRUE & !is.character(readin)){ # map info is passsed directly from world gen
+  } else if(wrapper){ # map info is passsed directly from world gen
     cfmaps = readin
   }
 

@@ -107,6 +107,9 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
     } else{strata = 1}
     for (s in strata) {
       if(template_clean[[i]][2] == "value") { #use value
+        if(suppressWarnings(all(is.na(as.numeric(template_clean[[i]][2+s]))))){
+          stop(noquote(paste("\"",template_clean[[i]][2+s],"\" on template line ",i," is not a valid value.",sep = "")))
+          }
         statevars[[i]][[s]] = as.double(template_clean[[i]][2+s])
       } else if(template_clean[[i]][2] == "dvalue") { #integer value
         statevars[[i]][[s]] = as.integer(template_clean[[i]][2+s])
@@ -173,27 +176,9 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
 
       # progress tracker - number of hillslopes/total, print only on 25,50,75 %
       progress = progress + 1
-
       sink()
       setTxtProgressBar(pb,progress/length(unique(levels[,3])))
       sink(worldfile,append = TRUE)
-
-      # if (progress == ceiling(.25*length(unique(levels[,3])))){
-      #   sink()
-      #   print(paste("25% complete"),quote=FALSE)
-      #   sink(worldfile,append = TRUE)
-      # }
-      # if (progress == ceiling(.50*length(unique(levels[,3])))){
-      #   sink()
-      #   print(paste("50% complete"),quote=FALSE)
-      #   sink(worldfile,append = TRUE)
-      # }
-      # if (progress == ceiling(.75*length(unique(levels[,3])))){
-      #   sink()
-      #   print(paste("75% complete"),quote=FALSE)
-      #   sink(worldfile,append = TRUE)
-      # }
-      # end progress tracker
 
       cat("\t\t",h,"\t\t\t", "hillslope_ID\n",sep="")
       for (i in (level_index[3]+1):(level_index[4]-1)) {
@@ -284,9 +269,10 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
                 }
               }
             }
-          } # end aspatial patches ----------
+          } # end aspatial patches
 
-        } else { # start standard patches and stratum ----------
+          # ---------- start standard patches and stratum ----------
+        } else {
           for (p in patches) { #patches
             cat("\t\t\t\t",p,"\t\t\t", "patch_ID\n",sep="")
             for (i in (level_index[5]+1):(level_index[6]-1)) {
@@ -301,8 +287,8 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
             for (s in stratum) { #stratum
               cat("\t\t\t\t\t", s,"\t\t\t", "canopy_strata_ID\n",sep="")
               for (i in (level_index[6]+1):length(template_clean)) {
-                if (length(statevars[[i]][[s]]) >1) { # no need to specify stratum since spatially its the same as patch
-                  var = statevars[[i]][[1]][statevars[[i]][[1]][2]==b & statevars[[i]][[1]][3]==h & statevars[[i]][[1]][4]==z & statevars[[i]][[1]][5]==p ,"x"]
+                if (length(statevars[[i]][[s]]) >1) { # if is a map
+                  var = statevars[[i]][[s]][statevars[[i]][[s]][2]==b & statevars[[i]][[s]][3]==h & statevars[[i]][[s]][4]==z & statevars[[i]][[s]][5]==p ,"x"]
                 } else { var = statevars[[i]][[s]] }
                 varname = template_clean[[i]][1]
                 cat("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep="")
@@ -315,8 +301,9 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
     }
   }
 
-  close(pb)
+
   sink()
+  close(pb)
 
   print(paste("Created worldfile:",worldfile),quote=FALSE)
 
