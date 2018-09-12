@@ -249,9 +249,9 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].phen.frootlitfallc = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.frootlitfallc","%lf",-9999.0,1);
 	canopy_strata[0].phen.frootlitfalln = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.frootlitfalln","%lf",-9999.0,1);
 	canopy_strata[0].phen.leafretransn = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.leafretransn","%lf",0.0,1);
+	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",0.0,1);
 	
 	canopy_strata[0].cs.num_resprout = getIntWorldfile(&paramCnt,&paramPtr,"cs.num_resprout","%d",0,1);
-	canopy_strata[0].cs.age = getIntWorldfile(&paramCnt,&paramPtr,"cs.age","%d",0,1);
 	canopy_strata[0].cs.leafc_age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",0.0,1);
 
 
@@ -397,6 +397,9 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_year.minNSC = -999;
 	canopy_strata[0].acc_year.length = 0;
 	canopy_strata[0].acc_month.lai = 0.0;
+	canopy_strata[0].acc_month.leafc = 0.0;
+	canopy_strata[0].acc_month.rootc = 0.0;
+	canopy_strata[0].acc_month.stemc = 0.0;
 	canopy_strata[0].acc_month.psn = 0.0;
 	canopy_strata[0].acc_month.lwp = 0.0;
 	canopy_strata[0].acc_month.length = 0;
@@ -591,6 +594,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*	note that age really should be a state variable 	*/
 	/*	and initialized in the worldfile			*/
 	/*--------------------------------------------------------------*/
+	canopy_strata[0].cs.num_resprout = 0;
 	canopy_strata[0].epv.wstress_days = 0;
 	canopy_strata[0].epv.max_fparabs = 0.0;
 	canopy_strata[0].epv.min_vwc = 1.0;

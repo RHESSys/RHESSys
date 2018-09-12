@@ -32,11 +32,20 @@ template_read = function(template){
   maps_index = vector()
   for (i in var_index) {
     if ( suppressWarnings(all(is.na(as.numeric( template_clean[[i]][3]))))  & length(template_clean[[i]]) != 2) {
-      maps_all[i] = template_clean[[i]][3]
-      maps_index[i] = i }
-    if (length(template_clean[[i]]) == 5 ) {
-      maps_all[i] = template_clean[[i]][5]
-      maps_index[i] = i }}
+      #maps_all[i] = template_clean[[i]][3]
+      #maps_index[i] = i
+      maps_all = c(maps_all, template_clean[[i]][3])
+      maps_index = c(maps_index, i)}
+    if (i > level_index[6] & suppressWarnings(all(is.na(as.numeric( template_clean[[i]][4]))))  & length(template_clean[[i]]) != 2) {
+      #maps_all[i] = template_clean[[i]][4]
+      #maps_index[i] = i
+      maps_all = c(maps_all, template_clean[[i]][4])
+      maps_index = c(maps_index, i)}
+    if (length(template_clean[[i]]) == 5 ) { # this should just be for horizons
+      #maps_all[i] = template_clean[[i]][5]
+      #maps_index[i] = i
+      maps_all = c(maps_all, template_clean[[i]][5])
+      maps_index = c(maps_index, i)}}
 
   maps_index = maps_index[!is.na(maps_index)] # index of rows w/ maps
   map_names = sapply(template_clean[maps_index], function(x) x[1])

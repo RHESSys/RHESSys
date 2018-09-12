@@ -190,29 +190,29 @@ CreateFlownet = function(cfname,
       cross_hill = cross_hill[x_ind,]
       if(sum(cross_hill[,3] == 1)>0){stop("All flow of one or more patches crosses hillslopes.")}
 
-      if (sum(cross_hill[,2])>0){
-        t=3
-        while(t==3){
-          t = menu(c("Force no flow across hillslopes", "Exit","View full table of patches with flow across hillslopes"),
-                   title = noquote(paste(sum(cross_hill[,2]),"patches flow across hillslopes.")))
-
-          if(t==3){print(cross_hill)}}
-          if(t==2){stop("CreateFlownet.R exited without completing")}
-          if(t==1){ # change gammas to force no flow across hillslopes
-            for(i in x_ind){ # index of problem patches
-              for(n in CF1[[i]]$Neighbors){ #neighbors
-                if(CF1[[i]]$HillID != CF1[[n]]$HillID & CF1[[i]]$Gamma_i[CF1[[i]]$Neighbors==n] != 0){
-                  # track that this neighbor is bad, reduce gamma, total gamma
-
-                }
-                # maybe do actual changes to gammas back in patch loop
-
-              }
-            }
-
-          } # end change gammas
-
-      } # end if
+      # if (sum(cross_hill[,2])>0){
+      #   t=3
+      #   while(t==3){
+      #     t = menu(c("Force no flow across hillslopes", "Exit","View full table of patches with flow across hillslopes"),
+      #              title = noquote(paste(sum(cross_hill[,2]),"patches flow across hillslopes.")))
+      #
+      #     if(t==3){print(cross_hill)}}
+      #     if(t==2){stop("CreateFlownet.R exited without completing")}
+      #     if(t==1){ # change gammas to force no flow across hillslopes
+      #       for(i in x_ind){ # index of problem patches
+      #         for(n in CF1[[i]]$Neighbors){ #neighbors
+      #           if(CF1[[i]]$HillID != CF1[[n]]$HillID & CF1[[i]]$Gamma_i[CF1[[i]]$Neighbors==n] != 0){
+      #             # track that this neighbor is bad, reduce gamma, total gamma
+      #
+      #           }
+      #           # maybe do actual changes to gammas back in patch loop
+      #
+      #         }
+      #       }
+      #
+      #     } # end change gammas
+      #
+      # } # end if
 
 
   } # end parallel

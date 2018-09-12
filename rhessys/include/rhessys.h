@@ -2187,7 +2187,6 @@ struct cstate_struct
     double live_crootc;     /* (kgC/m2) live coarse root C */
     double dead_crootc;     /* (kgC/m2) dead coarse root C */
     double frootc;          /* (kgC/m2) fine root C */ 
-
     double leafc_transfer;      /* (kgC/m2) leaf C to be allocated from last season */
     double livestemc_transfer; /* (kgC/m2) live stemwood C to be allocated from last season */
     double deadstemc_transfer; /* (kgC/m2) dead stemwood C to be allocated from last season */
@@ -2736,6 +2735,9 @@ struct  stratum_default
         double lai;
         double lwp;
         double minNSC;
+	double stemc;
+	double rootc;
+	double leafc;
         };
 
 
