@@ -1,4 +1,4 @@
-VERSION = 5.20.1
+VERSION = 6.0 
 PGM  = rhessys$(VERSION)
 CC = gcc 
 INCLUDES = -Iinclude

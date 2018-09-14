@@ -42,7 +42,7 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 #define ONE 1.0
-
+#include "params.h"
 
  void  input_new_patch(
 									 struct	command_line_object	*command_line,
@@ -72,67 +72,61 @@
 		struct litter_object *);
 	
 	void	*alloc(	size_t, char *, char *);
-	
+	param	*readtag_worldfile(int *,
+				  FILE *,
+				  char *);	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
 	int		i, dtmp;
-	int		soil_default_object_ID;
-	int		landuse_default_object_ID;
 	char		record[MAXSTR];
-	double	mpar, ltmp;
-
+	double	        ltmp;
+	int		paramCnt=0;
+	param		*paramPtr=NULL;
 	
 	/*--------------------------------------------------------------*/
 	/*	Read in the next patch record for this hillslope.			*/
 	/*--------------------------------------------------------------*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
+
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",patch[0].x,1);		
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].x = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",patch[0].y,1);		
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].y = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",patch[0].z,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp;
 
-	fscanf(world_file,"%d",&(soil_default_object_ID));
-	read_record(world_file, record);
-	fscanf(world_file,"%d",&(landuse_default_object_ID));
-	read_record(world_file, record);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].num_base_stations,1);	
+	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].soil_parm_ID = dtmp;
+	dtmp  = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
+	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].landuse_parm_ID = dtmp;
 
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",patch[0].area,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",patch[0].slope,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].slope = ltmp * DtoR;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",patch[0].lna,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].lna = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",patch[0].Ksat_vertical,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].Ksat_vertical = ltmp;
- 	fscanf(world_file,"%lf",&(mpar));
-	read_record(world_file, record);
+	ltmp= getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",patch[0].mpar,1);
+      	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].mpar = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"std","%lf",patch[0].std,1);
 	if (command_line[0].stdev_flag == 1) {
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
 		if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].std = ltmp;
-		}
+	}
 		
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"rz_storage","%lf",patch[0].rz_storage,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].rz_storage = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"unsat_storage","%lf",patch[0].unsat_storage,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].unsat_storage = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"sat_deficit","%lf",patch[0].sat_deficit,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].sat_deficit = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_equivalent_depth","%lf",
+						    patch[0].snowpack.water_equivalent_depth,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		 if ((patch[0].snowpack.water_equivalent_depth < ZERO) && (ltmp > ZERO)) {
 			patch[0].snowpack.energy_deficit = basin[0].snowpack.energy_deficit;
@@ -143,90 +137,70 @@
 		patch[0].precip_with_assim += (ltmp - patch[0].snowpack.water_equivalent_depth);
 		patch[0].snowpack.water_equivalent_depth = ltmp;
 	}
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_depth","%lf",patch[0].snowpack.water_depth,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.water_depth = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.T","%lf",patch[0].snowpack.T,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.T = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.surface_age","%lf",patch[0].snowpack.surface_age,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.surface_age = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.energy_deficit","%lf",patch[0].snowpack.energy_deficit,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.energy_deficit = ltmp;
 
-
 	if (command_line[0].snow_scale_flag == 1) {
- 		fscanf(world_file,"%lf",&(ltmp));
-		read_record(world_file, record);
-              	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snow_redist_scale = ltmp;
+		ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_redist_scale","%lf",patch[0].snow_redist_scale,1);
+		if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snow_redist_scale = ltmp;
 		}
 
 
 
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter.cover_fraction","%lf",patch[0].litter.cover_fraction,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.cover_fraction = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",patch[0].litter.rain_stored,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.rain_stored = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",patch[0].litter_cs.litr1c,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_cs.litr1c = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",patch[0].litter_ns.litr1n,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_ns.litr1n = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",patch[0].litter_cs.litr2c,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].litter_cs.litr2c = ltmp;
 		patch[0].litter_ns.litr2n = patch[0].litter_cs.litr2c / CEL_CN;
 		}
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr3c","%lf",patch[0].litter_cs.litr3c,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].litter_cs.litr3c = ltmp;
 		patch[0].litter_ns.litr3n = patch[0].litter_cs.litr3c / CEL_CN;
 		}
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c","%lf",patch[0].litter_cs.litr4c,1);	
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].litter_cs.litr4c = ltmp;
 		patch[0].litter_ns.litr4n = patch[0].litter_cs.litr4c / LIG_CN;
 		}
 
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil1c","%lf",patch[0].soil_cs.soil1c,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil1c = ltmp;
 		patch[0].soil_ns.soil1n = patch[0].soil_cs.soil1c / SOIL1_CN;
 		}
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.sminn","%lf",patch[0].soil_ns.sminn,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].soil_ns.sminn = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.nitrate","%lf",patch[0].soil_ns.nitrate,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].soil_ns.nitrate = ltmp;
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil2c","%lf",patch[0].soil_cs.soil2c,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil2c = ltmp;
 		patch[0].soil_ns.soil2n = patch[0].soil_cs.soil2c / SOIL2_CN;
 		}
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil3c","%lf",patch[0].soil_cs.soil3c,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil3c = ltmp;
 		patch[0].soil_ns.soil3n = patch[0].soil_cs.soil3c / SOIL3_CN;
 		}
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",patch[0].soil_cs.soil4c,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil4c = ltmp;
 		patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
 		}
-	
 	
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
@@ -258,9 +232,9 @@
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this patch								*/
 	/*--------------------------------------------------------------*/
-	if (soil_default_object_ID > 0) {
+	if (patch[0].soil_parm_ID > 0) {
 		i = 0;
-		while (defaults[0].soil[i].ID != soil_default_object_ID) {
+		while (defaults[0].soil[i].ID != patch[0].soil_parm_ID) {
 			i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -269,7 +243,7 @@
 		if ( i>= defaults[0].num_soil_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in input_new_patch, soil default ID %d not found for patch %d\n" ,
-				soil_default_object_ID, patch[0].ID);
+				patch[0].soil_parm_ID, patch[0].ID);
 			exit(EXIT_FAILURE);
 			}
 		} /* end-while */
@@ -277,9 +251,9 @@
 	patch[0].soil_defaults[0] = &defaults[0].soil[i];
 	}
 
-	if (landuse_default_object_ID > 0) {
+	if (patch[0].landuse_parm_ID > 0) {
 		i = 0;
-		while (defaults[0].landuse[i].ID != landuse_default_object_ID) {
+		while (defaults[0].landuse[i].ID != patch[0].landuse_parm_ID) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*  Report an error if no match was found.  Otherwise assign    */
@@ -288,7 +262,7 @@
 			if ( i>= defaults[0].num_landuse_default_files ){
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_patch, landuse default ID %d not found for patch %d\n" ,
-					landuse_default_object_ID, patch[0].ID);
+					patch[0].landuse_parm_ID, patch[0].ID);
 				exit(EXIT_FAILURE);
 			}
 		} /* end-while */
@@ -297,10 +271,10 @@
 	/*--------------------------------------------------------------*/
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/
 	/*--------------------------------------------------------------*/
-	if (mpar > ZERO) {
-		patch[0].original_m = mpar;
-		patch[0].soil_defaults[0][0].m = mpar * command_line[0].sen[M];
-		patch[0].soil_defaults[0][0].m_z = mpar * command_line[0].sen[M] / 
+	if (patch[0].mpar > ZERO) {
+		patch[0].original_m = patch[0].mpar;
+		patch[0].soil_defaults[0][0].m = patch[0].mpar * command_line[0].sen[M];
+		patch[0].soil_defaults[0][0].m_z = patch[0].mpar * command_line[0].sen[M] / 
 				patch[0].soil_defaults[0][0].porosity_0;
 	}
 
@@ -324,8 +298,7 @@
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  patch base stations 					*/
 	/*--------------------------------------------------------------*/
- 	fscanf(world_file,"%d",&(dtmp));
-	read_record(world_file, record);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,0);	
 	if (dtmp > 0)  {
 		patch[0].num_base_stations = dtmp;
 		/*--------------------------------------------------------------*/
@@ -363,6 +336,10 @@
 		patch[0].soil_defaults[0][0].soil_depth,
 		0,
 		-1*patch[0].sat_deficit);
+
+	if(paramPtr!=NULL){
+	  free(paramPtr);
+	}	
 	return;
 } /*end input_new_patch.c*/
 

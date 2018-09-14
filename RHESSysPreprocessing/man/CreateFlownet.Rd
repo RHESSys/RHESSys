@@ -4,8 +4,10 @@
 \alias{CreateFlownet}
 \title{CreateFlownet}
 \usage{
-CreateFlownet(cfname, type = "GRASS", readin = "cf_maps",
-  typepars = "load")
+CreateFlownet(cfname, type = "raster", readin = "cf_maps",
+  typepars = "load", asp_list = NULL, streams = NULL, overwrite = FALSE,
+  roads = NULL, impervious = NULL, roofs = NULL, wrapper = FALSE,
+  parallel = FALSE)
 }
 \arguments{
 \item{cfname}{The name of the flow network file to be created.  Will be coerced to have ".flow" extension if not already present.}
@@ -23,4 +25,7 @@ Example parameters are shown in the example script for world_gen. See initGRASS 
 }
 \description{
 Creates the flow network used by RHESSys
+}
+\author{
+Will Burke
 }
