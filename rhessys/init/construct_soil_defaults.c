@@ -244,7 +244,13 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].p4 *= command_line[0].vsen_alt[PO];
 			}
 		}
-		
+	
+		/*--------------------------------------------------------------*/
+		/*      Fire effect parameters                          	*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].overstory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "overstory_height_thresh", "%lf", 6, 1);
+		default_object_list[i].understory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "understory_height_thresh", "%lf", 4, 1);
+	
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/

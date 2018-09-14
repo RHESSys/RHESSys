@@ -93,7 +93,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
 
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -113,6 +113,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"litrn",
 		"soilc",
 		"soiln",
+		"soiln_noslow",
 		"gwNO3",
 		"gwNH4",
 		"gwDON",
@@ -134,7 +135,15 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"nuptake",
 		"grazingC",
 		"StreamNO3_from_surface",
-		"StreamNO3_from_sub", "N_dep","fertilizer_store");
+		"StreamNO3_from_sub", "N_dep","fertilizer_store",
+		"understory_leafc",
+		"understory_stemc",
+		"understory_biomassc",
+		"understory_height",
+		"overstory_leafc",
+		"overstory_stemc",
+		"overstory_biomassc",
+		"overstory_height");
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/

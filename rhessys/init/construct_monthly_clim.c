@@ -46,7 +46,8 @@ struct	monthly_clim_object *construct_monthly_clim(
 													FILE	*base_station_file,
 													char	*file_prefix,
 													struct	date	start_date,
-													long	duration)
+													long	duration,
+													int  clim_repeat_flag)
 													
 {
 	/*--------------------------------------------------------------*/
@@ -55,7 +56,7 @@ struct	monthly_clim_object *construct_monthly_clim(
 	double	*construct_clim_sequence(
 		char	*,
 		struct date	,
-		long);
+		long, int);
 	
 	void	*alloc(	size_t,
 		char	*,
@@ -122,7 +123,7 @@ struct	monthly_clim_object *construct_monthly_clim(
 			monthly_clim[0].temp = construct_clim_sequence(
 				(char *)strcat(file_name,".temp"),
 				start_date,
-				duration);
+				duration, clim_repeat_flag);
 		}
 		else
 		{

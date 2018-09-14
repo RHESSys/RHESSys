@@ -157,7 +157,10 @@ struct stratum_default *construct_stratum_defaults(
 		}
 
 		default_object_list[i].epc.kfrag_base = 		getDoubleParam(&paramCnt, &paramPtr, "epc.kfrag_base", "%lf", 0.01, 1);
-		default_object_list[i].epc.daily_mortality_turnover = 	getFloatParam(&paramCnt, &paramPtr, "epc.daily_mortality_turnover", "%f", 0.005, 1) / 365;
+
+		default_object_list[i].epc.max_daily_mortality = getDoubleParam(&paramCnt, &paramPtr, "epc.max_daily_mortality", "%lf", 0.005, 1) / 365;
+		default_object_list[i].epc.min_daily_mortality = getDoubleParam(&paramCnt, &paramPtr, "epc.min_daily_mortality", "%lf", 0.005, 1) / 365;
+		default_object_list[i].epc.daily_mortality_threshold = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_mortality_threshold", "%lf",0.0,1);
 		default_object_list[i].epc.froot_cn = 			getDoubleParam(&paramCnt, &paramPtr, "epc.froot_cn", "%lf", 139.7, 1);
 		default_object_list[i].epc.livewood_cn = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_cn", "%lf", 200.0, 1);
 		default_object_list[i].epc.leaflitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flab", "%lf", 0.31, 1);
@@ -293,13 +296,10 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		/*	Fire effect parameters					*/
 		/*--------------------------------------------------------------*/
-
-		default_object_list[i].overstory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "overstory_height_thresh", "%lf", 5, 1);
-		default_object_list[i].understory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "understory_height_thresh", "%lf", 2, 1);
-		default_object_list[i].pspread_loss_rel = getDoubleParam(&paramCnt, &paramPtr, "pspread_loss_rel", "%lf", 1, 1);
- 		default_object_list[i].vapor_loss_rel = getDoubleParam(&paramCnt, &paramPtr, "vapor_loss_rel", "%lf", 1, 1);
-		default_object_list[i].biomass_loss_rel_k1 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k1", "%lf", -.02, 1);
-		default_object_list[i].biomass_loss_rel_k2 = getDoubleParam(&paramCnt, &paramPtr, "biomass_loss_rel_k2", "%lf", 200, 1);
+		default_object_list[i].understory_mort = getDoubleParam(&paramCnt, &paramPtr, "understory_mort", "%lf", 1, 1);
+ 		default_object_list[i].consumption = getDoubleParam(&paramCnt, &paramPtr, "consumption", "%lf", 1, 1);
+		default_object_list[i].overstory_mort_k1 = getDoubleParam(&paramCnt, &paramPtr, "overstory_mort_k1", "%lf", -10, 1);
+		default_object_list[i].overstory_mort_k2 = getDoubleParam(&paramCnt, &paramPtr, "overstory_mort_k2", "%lf", 1, 1);
 		
 		/*--------------------------------------------------------------*/
 		/* default values for phenology (leaf onset/offset) model parameters */
@@ -310,12 +310,15 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_tmax = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_tmax", "%lf", 5.0, 1);
 		default_object_list[i].epc.gs_vpd_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_vpd_min", "%lf", 900, 1);
 		default_object_list[i].epc.gs_vpd_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_vpd_max", "%lf", 4100, 1);
-
 	        default_object_list[i].epc.gs_dayl_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_dayl_min", "%lf", 36000, 1);
 		default_object_list[i].epc.gs_dayl_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_dayl_max", "%lf", 39600, 1);
 	        default_object_list[i].epc.gs_psi_min = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_psi_min", "%lf", -15.0, 1);
 		default_object_list[i].epc.gs_psi_max = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_psi_max", "%lf", -14.0, 1);
 		default_object_list[i].epc.gs_ravg_days = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_ravg_days", "%lf", 6, 1);
+		default_object_list[i].epc.gsi_thresh = 	getDoubleParam(&paramCnt, &paramPtr, "epc.gsi_thresh", "%lf", 0.5, 1);
+		default_object_list[i].epc.gs_npp_on = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_npp_on", "%lf", 1, 1);
+		default_object_list[i].epc.gs_npp_slp = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_npp_slp", "%lf", 187, 1);
+		default_object_list[i].epc.gs_npp_intercpt = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_npp_intercpt", "%lf", 197, 1);
 		default_object_list[i].epc.max_storage_percent = getDoubleParam(&paramCnt, &paramPtr, "epc.max_storage_percent", "%lf", 0.2, 1);
 		default_object_list[i].epc.min_percent_leafg = getDoubleParam(&paramCnt, &paramPtr, "epc.min_percent_leafg", "%lf", default_object_list[i].epc.leaf_turnover, 1);
 		default_object_list[i].epc.dickenson_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.dickenson_pa", "%lf", 0.25, 1);

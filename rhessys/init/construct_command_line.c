@@ -78,6 +78,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].surface_routing_flag = 0;
 	command_line[0].stream_routing_flag = 0;
 	command_line[0].reservoir_operation_flag = 0;
+	command_line[0].clim_repeat_flag = 0;
 	command_line[0].dclim_flag = 0;
 	command_line[0].ddn_routing_flag = 0;
 	command_line[0].tec_flag = 0;
@@ -124,6 +125,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].z = NULL;
 	command_line[0].p = NULL;
 	command_line[0].c = NULL;
+	command_line[0].f = NULL;
 	command_line[0].tmp_value = 1.0;
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
@@ -205,6 +207,13 @@ struct	command_line_object	*construct_command_line(
 			/*------------------------------------------*/
 			/*Check if the distributed climate flag is next.           */
 			/*------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-climrepeat") == 0 ){
+				command_line[0].clim_repeat_flag = 1;
+				i++;
+			}
+			/*------------------------------------------*/
+			/*Check if the distributed climate flag is next.           */
+			/*------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-dclim") == 0 ){
 				command_line[0].dclim_flag = 1;
 				i++;
@@ -253,7 +262,7 @@ struct	command_line_object	*construct_command_line(
 			/*	fire spread option and coeffcients	  */
 			/*-------------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-firespread") == 0 ){
-				printf("\n Running with FIRE SPREAD turned on");
+				printf("\n Running with FIRE SPREAD turned on\n");
 				command_line[0].firespread_flag = 1;
 				i++;
 				command_line[0].fire_grid_res = 30;
@@ -264,6 +273,11 @@ struct	command_line_object	*construct_command_line(
 					command_line[0].fire_grid_res = (double)atof(main_argv[i]);
 					i++;
 				}/*end if*/
+				strncpy(command_line[0].firegrid_patch_filename, main_argv[i], FILEPATH_LEN); // 
+				i++;
+				strncpy(command_line[0].firegrid_dem_filename, main_argv[i], FILEPATH_LEN); // 
+				i++;
+
 			}/* end if */
 
 			/*-------------------------------------------------*/
@@ -813,7 +827,7 @@ struct	command_line_object	*construct_command_line(
 					}/*end if*/
 				} /*end if*/
 			} /*end if*/
-			
+		
                         /*--------------------------------------------------------------*/
 			/*		Check if the basin output flag is next.    				*/
 			/*--------------------------------------------------------------*/
@@ -1055,6 +1069,84 @@ struct	command_line_object	*construct_command_line(
 													/*----------------------------------------*/
 													if ( valid_option(main_argv[i]) == 0 ){
 														command_line[0].c[0].stratumID =
+															(int)atoi(main_argv[i]);
+														i++;
+													}/*end if*/
+												} /*end if*/
+											}/*end if*/
+										} /*end if*/
+									} /*end if*/
+								} /*end if*/
+							} /*end if*/
+						   } /*end if*/
+						} /*end if*/
+					} /*end if*/
+				} /*end if*/
+			/*--------------------------------------------------------------*/
+			/*		Check if the fire output flag is next.		*/
+			/*--------------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-f") == 0 ){
+				/*--------------------------------------------------------------*/
+				/*			Allocate the patch output specifier.				*/
+				/*--------------------------------------------------------------*/
+				command_line[0].f = (struct f_option *)
+					alloc(sizeof(struct f_option),"f","construct_command_line" );
+				command_line[0].f[0].basinID 	= -999;
+				command_line[0].f[0].hillID 	= -999;
+				command_line[0].f[0].zoneID 	= -999;
+				command_line[0].f[0].patchID 	= -999;
+				command_line[0].f[0].stratumID 	= -999;
+				/*--------------------------------------------------------------*/
+				/*			Check that the next arguement exists.				*/
+				/*--------------------------------------------------------------*/
+				i++;
+				if (  i < main_argc ){
+					/*--------------------------------------------------------------*/
+					/*				Check that the next arguement is a basinID		*/
+					/*--------------------------------------------------------------*/
+					if ( valid_option(main_argv[i]) == 0 ){
+						command_line[0].f[0].basinID = (int)atoi(main_argv[i]);
+						i++;
+						/*--------------------------------------------------------------*/
+						/*					Check that the next arguement exists.		*/
+						/*--------------------------------------------------------------*/
+						if (  i < main_argc ){
+							/*----------------------------------------------------------*/
+							/*						Check that the next arguement is hillID	*/
+							/*----------------------------------------------------------*/
+							if ( valid_option(main_argv[i]) == 0){
+								command_line[0].f[0].hillID = (int)atoi(main_argv[i]);
+								i++;
+								/*-------------------------------------------------------*/
+								/*			Check that the next arguement exists.				*/
+								/*-------------------------------------------------------*/
+								if (  i < main_argc ){
+									/*----------------------------------------------------*/
+									/*					Check that next arg is a zoneID		*/
+									/*----------------------------------------------------*/
+									if ( valid_option(main_argv[i]) == 0  ){
+										command_line[0].f[0].zoneID =	(int)atoi(main_argv[i]);
+										i++;
+										/*-------------------------------------------------*/
+										/*				Check that next arguement exists.	*/
+										/*-------------------------------------------------*/
+										if (  i < main_argc ){
+											/*---------------------------------------------*/
+											/*				Check next arg is a patchID		*/
+											/*---------------------------------------------*/
+											if ( valid_option(main_argv[i]) == 0 ){
+												command_line[0].f[0].patchID =
+													(int)atoi(main_argv[i]);
+												i++;
+												/*------------------------------------------*/
+												/*		Check that next arguement exists.	*/
+												/*-----------------------------------------*/
+												if (  i < main_argc ){
+													/*----------------------------------------*/
+													/*	Check next arg is a stratumID	*/
+													/*----------------------------------------*/
+													if ( valid_option(main_argv[i]) == 0 ){
+														command_line[0].f[0].stratumID =
 															(int)atoi(main_argv[i]);
 														i++;
 													}/*end if*/

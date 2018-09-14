@@ -47,7 +47,7 @@ void	output_monthly_canopy_stratum( int basinID, int hillID,
 	/*--------------------------------------------------------------*/
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
-	fprintf(outfile,"%4d %4d %d %d %d %d %d %lf %lf %lf \n",
+	fprintf(outfile,"%4d %4d %d %d %d %d %d %lf \n",
 		current_date.month,
 		current_date.year,
 		basinID,
@@ -55,9 +55,7 @@ void	output_monthly_canopy_stratum( int basinID, int hillID,
 		zoneID,
 		patchID,
 		stratum[0].ID,
-		(stratum[0].acc_month.lai) / stratum[0].acc_month.length,
-		(stratum[0].acc_month.psn) / stratum[0].acc_month.length,
-		(stratum[0].acc_month.lwp) / stratum[0].acc_month.length);
+		(stratum[0].acc_month.leafc+stratum[0].acc_month.stemc) / stratum[0].acc_month.length);
 	/*--------------------------------------------------------------*/
 	/*	reset accumulator variables				*/
 	/*--------------------------------------------------------------*/
@@ -65,5 +63,8 @@ void	output_monthly_canopy_stratum( int basinID, int hillID,
 	stratum[0].acc_month.psn = 0.0;
 	stratum[0].acc_month.lwp = 0.0;
 	stratum[0].acc_month.length = 0;
+	stratum[0].acc_month.rootc = 0.0;
+	stratum[0].acc_month.stemc = 0.0;
+	stratum[0].acc_month.leafc = 0.0;
 	return;
 } /*end output_monthly_canopy_stratum*/

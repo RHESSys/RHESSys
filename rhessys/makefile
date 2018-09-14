@@ -1,4 +1,4 @@
-VERSION = 5.20.1
+VERSION = 6.0 
 PGM  = rhessys$(VERSION)
 CC = gcc 
 INCLUDES = -Iinclude
@@ -225,6 +225,7 @@ $(OBJ)/output_stream_routing.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
 $(OBJ)/output_canopy_stratum.o \
+$(OBJ)/output_fire.o \
 $(OBJ)/output_growth_basin.o \
 $(OBJ)/output_growth_canopy_stratum.o \
 $(OBJ)/output_growth_hillslope.o \
@@ -296,6 +297,7 @@ $(OBJ)/update_septic.o \
 $(OBJ)/update_shadow_strata.o \
 $(OBJ)/update_soil_moisture.o \
 $(OBJ)/valid_option.o \
+$(OBJ)/wateryearday.o \
 $(OBJ)/world_daily_F.o \
 $(OBJ)/world_daily_I.o \
 $(OBJ)/world_hourly.o \
@@ -332,10 +334,10 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -L./lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -lnetcdf -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -v -o $(PGM) 
 endif
 else
 ifdef wmfire
@@ -523,6 +525,8 @@ $(OBJ)/output_patch.o: output/output_patch.c
 	$(CC) -c $(CFLAGS) -I include output/output_patch.c -o $(OBJ)/output_patch.o
 $(OBJ)/output_canopy_stratum.o: output/output_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_canopy_stratum.c -o $(OBJ)/output_canopy_stratum.o
+$(OBJ)/output_fire.o: output/output_fire.c
+	$(CC) -c $(CFLAGS) -I include output/output_fire.c -o $(OBJ)/output_fire.o
 $(OBJ)/output_basin_state.o: output/output_basin_state.c
 	$(CC) -c $(CFLAGS) -I include output/output_basin_state.c -o $(OBJ)/output_basin_state.o
 $(OBJ)/output_hillslope_state.o: output/output_hillslope_state.c
@@ -577,6 +581,8 @@ $(OBJ)/find_zone_in_hillslope.o: util/find_zone_in_hillslope.c
 	$(CC) -c $(CFLAGS) -I include util/find_zone_in_hillslope.c -o $(OBJ)/find_zone_in_hillslope.o
 $(OBJ)/find_hillslope_in_basin.o: util/find_hillslope_in_basin.c
 	$(CC) -c $(CFLAGS) -I include util/find_hillslope_in_basin.c -o $(OBJ)/find_hillslope_in_basin.o
+$(OBJ)/wateryearday.o: util/wateryearday.c
+	$(CC) -c $(CFLAGS) -I include util/wateryearday.c -o $(OBJ)/wateryearday.o
 $(OBJ)/yearday.o: util/yearday.c
 	$(CC) -c $(CFLAGS) -I include util/yearday.c -o $(OBJ)/yearday.o
 $(OBJ)/julday.o: util/julday.c

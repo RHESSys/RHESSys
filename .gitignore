@@ -15,3 +15,11 @@ objects/
 # Editor leftovers
 *~
 
+# Fire-spread model files 
+*.dylib
+libwmfire.dylib
+libwmfire.so
+
+
+.Rproj.user
+

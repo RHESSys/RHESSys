@@ -124,6 +124,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"return",
 		"streamflow",
 		"psn",
+		"nppcum",
 		"lai",
 		"gw.Qout",
 		"gw.storage",
@@ -491,6 +492,18 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].monthly;
+	fprintf(outfile,"%s %s %s %s %s %s %s\n",
+		"year",
+		"basinID",
+		"hillID",
+		"zoneID",
+		"patchID",
+		"stratumID",
+		"above_plantc");
+	/*--------------------------------------------------------------*/
+	/*	Yearly							*/
+	/*--------------------------------------------------------------*/
+	outfile = world_output_files[0].canopy_stratum[0].yearly;
 	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s \n", 
 		"month",
 		"year",
@@ -502,20 +515,49 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"lai",
 		"psn",
 		"lwp");
+	}
+
+
 	/*--------------------------------------------------------------*/
-	/*	Yearly							*/
+	/*	Fire file headers					*/
 	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s\n",
+	if (command_line[0].f != NULL) {
+	/*--------------------------------------------------------------*/
+	/*	Daily 							*/
+	/*--------------------------------------------------------------*/
+	outfile = world_output_files[0].fire[0].daily;
+	fprintf(outfile,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"day",
+		"month",
 		"year",
 		"basinID",
 		"hillID",
 		"zoneID",
 		"patchID",
 		"stratumID",
-		"psn",
-		"lwp","root_depth");
+		"vegID",
+		"m_cwdc_to_atmos",
+		"m_cwdn_to_atmos",
+		"canopy_target_height",
+		"canopy_target_height_u_prop",
+		"canopy_target_prop_mort",
+		"canopy_target_prop_mort_consumed",
+		"canopy_target_prop_mort_u_component",
+		"canopy_target_prop_mort_o_component",
+		"canopy_target_prop_c_consumed",
+		"canopy_target_prop_c_remain",
+		"canopy_target_prop_c_remain_adjusted",
+		"canopy_target_prop_c_remain_adjusted_leafc",
+		"canopy_subtarget_height",
+		"canopy_subtarget_height_u_prop",
+		"canopy_subtarget_prop_mort",
+		"canopy_subtarget_prop_mort_consumed",
+		"canopy_subtarget_prop_c_consumed",
+		"canopy_subtarget_c",
+		"understory_c_consumed");
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	Stream routing file headers					*/
 	/*--------------------------------------------------------------*/
