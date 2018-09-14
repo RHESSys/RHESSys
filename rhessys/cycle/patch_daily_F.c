@@ -376,7 +376,12 @@ void		patch_daily_F(
 		int,
 		struct mortality_struct);
 	
-	
+
+	void	compute_fire_effects(
+		struct patch_object *,
+		double);
+
+
 
 	long julday( struct date);
 	/*--------------------------------------------------------------*/
@@ -386,6 +391,7 @@ void		patch_daily_F(
 	int stratum, ch, inx;
 	int	vegtype;
 	int dum;
+	double  pspread;
 	double  biomass_removal_percent;
 	double	cap_rise, tmp, wilting_point;
 	double	delta_unsat_zone_storage;
@@ -613,17 +619,17 @@ void		patch_daily_F(
 				clim_event = patch[0].base_stations[0][0].dated_input[0].biomass_removal_percent.seq[inx];
 				}
 			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
-					biomass_removal_percent = clim_event.value;
-					mort.mort_cpool=biomass_removal_percent;
-					mort.mort_leafc=biomass_removal_percent;
-					mort.mort_deadleafc=biomass_removal_percent;
-					mort.mort_deadstemc=biomass_removal_percent;
-					mort.mort_livestemc=biomass_removal_percent;
-					mort.mort_deadcrootc=biomass_removal_percent;
-					mort.mort_livecrootc=biomass_removal_percent;
-					mort.mort_frootc=biomass_removal_percent;
+				biomass_removal_percent = clim_event.value;
+				mort.mort_cpool=biomass_removal_percent;
+				mort.mort_leafc=biomass_removal_percent;
+				mort.mort_deadleafc=biomass_removal_percent;
+				mort.mort_deadstemc=biomass_removal_percent;
+				mort.mort_livestemc=biomass_removal_percent;
+				mort.mort_deadcrootc=biomass_removal_percent;
+				mort.mort_livecrootc=biomass_removal_percent;
+				mort.mort_frootc=biomass_removal_percent;
 					
-					for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					/*--------------------------------------------------------------*/
 					/*	Cycle through the canopy strata				*/
 					/*--------------------------------------------------------------*/
@@ -644,9 +650,34 @@ void		patch_daily_F(
 
 					}
 				}
+			}
+		} 
+	}
 
+
+	/*--------------------------------------------------------------*/
+	/* call fire effects on a particular date, based  		*/
+	/* on time series input						*/
+	/*--------------------------------------------------------------*/
+	if (patch[0].base_stations != NULL) {
+		inx = patch[0].base_stations[0][0].dated_input[0].pspread.inx;
+		if (inx > -999) {
+			clim_event = patch[0].base_stations[0][0].dated_input[0].pspread.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].pspread.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].pspread.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].pspread.seq[inx];
 				}
-			} 
+			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+				pspread = clim_event.value;
+
+				printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
+				compute_fire_effects(
+					patch,
+					pspread);
+
+			}
+		} 
 	}
 
 
@@ -750,6 +781,7 @@ void		patch_daily_F(
 						command_line,
 						event,
 						current_date );
+				
 				dum += 1;
 			}
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
@@ -2074,6 +2106,7 @@ void		patch_daily_F(
 		patch[0].fire.pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.pet    
 				+ patch[0].PET) / 
 		(patch[0].fire_defaults[0][0].ndays_average + 1);
+
 		}
 	
 
