@@ -1539,6 +1539,7 @@ struct patch_object
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
         int             target_status;
+		//int				wuiID;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */
@@ -2026,6 +2027,8 @@ struct  command_line_object
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
+		char 	firegrid_patch_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
+		char 	firegrid_dem_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
         double  tmp_value;
         double  cpool_mort_fract;
         double  veg_sen1;
@@ -2805,6 +2808,7 @@ struct patch_fire_object
 	double occupied_area; /*gives the total patch area in the current grid	*/
 	struct fire_default_object *defaults;
 	double elev; // elevation if read in from grid
+	int wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
 };	
 
 /*----------------------------------------------------------*/
