@@ -2169,7 +2169,7 @@ struct phenology_struct
 /* carbon state variables (including sums for sources and sinks) */
 struct cstate_struct
 {
-        int     age; /* (num years) */
+        double     age; /* (num years) */
         int     num_resprout; /* (num years) running index of years of resprouting */   
     
     double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
@@ -2179,7 +2179,7 @@ struct cstate_struct
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
-    double 	 leafc_age;           /* (years) age */
+    double leafc_age;           /* (years) age */
     double stem_density;    /* number per m2 */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
@@ -2281,6 +2281,8 @@ struct epvar_struct
     double all_pai;        /* (DIM) all-sided plant area index */
     double proj_pai;       /* (DIM) projected plant area index */
     double all_lai;        /* (DIM) live all-sided leaf area index */
+    double perc_sunlit_lai;    /* 0-1 proportion that is sunlit */
+    double perc_sunlit_leafc;    /* 0-1 proportion that is sunlit */
     double proj_lai;       /* (DIM) live projected leaf area index */
     double proj_sla_sunlit;       /* (DIM) live projected leaf area index */
     double proj_sla_shade;       /* (DIM) live projected leaf area index */
@@ -2545,8 +2547,10 @@ struct epconst_struct
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
 	double netpabs;		/* (mol/mol) fPAR effectively abosorbed */
 	double netpabs_sla_parm;		/* scale parameter for netpabs = 1/(SLA*parm) relationship 1 is default */
+	double netpabs_diff;		/* (mol/mol) fPAR effectively abosorbed */
 	double netpabs_shade;		/* (mol/mol) fPAR effectively abosorbed */
 	double netpabs_sunlit;		/* (mol/mol) fPAR effectively abosorbed */
+        double flnr_diff;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double flnr;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double flnr_shade;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double flnr_sunlit;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
@@ -2562,6 +2566,8 @@ struct epconst_struct
         double vpd_open;       /* (Pa) vpd at start of conductance reduction */
         double vpd_close;      /* (Pa) vpd at complete conductance reduction */
         double gl_smax;        /* (m/s) maximum leaf-scale stomatal conductance */
+        double gl_smax_sunlit;        /* (m/s) maximum leaf-scale stomatal conductance */
+        double gl_smax_shade;        /* (m/s) maximum leaf-scale stomatal conductance */
         double gl_c;           /* (m/s) leaf-scale cuticular conductance */
         double gl_bl;          /* (m/s) leaf-scale boundary layer conductance */
         double gs_tmin;            /* (deg C) lower temperature theshold for leaf onset */

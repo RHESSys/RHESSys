@@ -249,10 +249,10 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].phen.frootlitfallc = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.frootlitfallc","%lf",-9999.0,1);
 	canopy_strata[0].phen.frootlitfalln = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.frootlitfalln","%lf",-9999.0,1);
 	canopy_strata[0].phen.leafretransn = getDoubleWorldfile(&paramCnt,&paramPtr,"phen.leafretransn","%lf",0.0,1);
-	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",0.0,1);
+	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",1.0,1);
 	
 	canopy_strata[0].cs.num_resprout = getIntWorldfile(&paramCnt,&paramPtr,"cs.num_resprout","%d",0,1);
-	canopy_strata[0].cs.leafc_age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",0.0,1);
+	canopy_strata[0].cs.leafc_age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",1.0,1);
 
 
 	if (command_line[0].vegspinup_flag > 0){

@@ -327,12 +327,14 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	 
 	/* Leaf carbon transfer growth */
-	if (cs->leafc + cdf->leafc_transfer_to_leafc > ZERO && epv->proj_lai > 1) 
-	cs->leafc_age = (cs->leafc_age * cs->leafc/epv->proj_lai + cdf->leafc_transfer_to_leafc)/
-				(cs->leafc/epv->proj_lai + cdf->leafc_transfer_to_leafc);
-	else
-	cs->leafc_age = 0;
+	if (cs->leafc + cdf->leafc_transfer_to_leafc > ZERO )  {
 
+		if (cs->leafc > ZERO)
+			cs->leafc_age = (cs->leafc_age * cs->leafc + cdf->leafc_transfer_to_leafc)/
+				(cs->leafc + cdf->leafc_transfer_to_leafc);
+		else
+			cs->leafc_age = 1.0;
+	}
 
 	cs->leafc            += cdf->leafc_transfer_to_leafc;
 	cs->leafc_transfer   -= cdf->leafc_transfer_to_leafc;
@@ -566,14 +568,21 @@ void update_phenology(struct zone_object  *zone,
 	}
 
 
+
 	/*--------------------------------------------------------------*/
 	/* update lai based on sla			*/
 	/* use sunlit sla for lai up to 1 and shaded sla for lai above that */
 	/*--------------------------------------------------------------*/
-	if ((epv->proj_lai_sunlit + epv->proj_lai_shade) > ZERO)
-		perc_sunlit = (epv->proj_lai_sunlit) / (epv->proj_lai_sunlit + epv->proj_lai_shade);
-	else
-		perc_sunlit = 1.0;
+	if ((epv->proj_lai_sunlit + epv->proj_lai_shade) > ZERO) {
+		epv->perc_sunlit_lai = epv->proj_lai_sunlit / (epv->proj_lai_sunlit + epv->proj_lai_shade);
+		epv->perc_sunlit_leafc = (epv->proj_lai_sunlit/epv->proj_sla_sunlit)/cs->leafc;
+		}
+	else {
+		epv->perc_sunlit_lai = 1.0;
+		epv->perc_sunlit_leafc = 1.0;
+		}
+
+       
 
 	epv->all_lai = epv->proj_lai * epc.lai_ratio;
 

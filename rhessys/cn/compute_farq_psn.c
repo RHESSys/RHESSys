@@ -147,6 +147,7 @@ Farquhar photosynthesis routine
 	tk = t + 273.15;
 	/* convert conductance from m/s * 10**3 --> umol/m2/s/Pa */
 	g = in->g * 1e3 / (R * tk);
+
 	/* convert atmospheric CO2 from ppm --> Pa */
 	Ca = in->co2 * in->pa / 1e6;
 	/* smitch - Add adjustment of  parameters for C3/C4 psn */

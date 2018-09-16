@@ -130,6 +130,8 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.vpd_open = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_open", "%lf", 0.0, 1);
 		default_object_list[i].epc.vpd_close = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_close", "%lf", 3500.0, 1);
 		default_object_list[i].epc.gl_smax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax", "%lf", 0.006, 1);
+		default_object_list[i].epc.gl_smax_sunlit = 	getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax_sunlit", "%lf", 9999, 1);
+		default_object_list[i].epc.gl_smax_shade = 	getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax_shade", "%lf", 9999, 1);
 		default_object_list[i].epc.gl_c = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_c", "%lf", 0.00006, 1);
 		default_object_list[i].gsurf_slope = 		getDoubleParam(&paramCnt, &paramPtr, "gsurf_slope", "%lf", 0.0, 1);
 		default_object_list[i].gsurf_intercept = 	getDoubleParam(&paramCnt, &paramPtr, "gsurf_intercept", "%lf", 1000000.0, 1);
@@ -393,8 +395,20 @@ struct stratum_default *construct_stratum_defaults(
 			default_object_list[i].epc.flnr_shade = default_object_list[i].epc.flnr;
 		if (default_object_list[i].epc.flnr_sunlit > 1.0)
 			default_object_list[i].epc.flnr_sunlit = default_object_list[i].epc.flnr;
-		printf("using %lf %lf for sunlit shade flnr", default_object_list[i].epc.flnr_sunlit,
-				default_object_list[i].epc.flnr_shade);
+
+		default_object_list[0].epc.flnr_diff= (default_object_list[0].epc.flnr_sunlit-default_object_list[0].epc.flnr_shade)/2.0;
+		default_object_list[0].epc.netpabs_diff= (default_object_list[0].epc.netpabs_sunlit-default_object_list[0].epc.netpabs_shade)/2.0;
+
+		if (default_object_list[i].epc.gl_smax_sunlit > 9990)
+			default_object_list[i].epc.gl_smax_sunlit = default_object_list[i].epc.gl_smax;
+		if (default_object_list[i].epc.gl_smax_shade > 9990)
+			default_object_list[i].epc.gl_smax_shade = default_object_list[i].epc.gl_smax;
+
+		printf("using %lf %lf for sunlit shade flnr and %lf and %lf for sun and shade gl_max", 
+				default_object_list[i].epc.flnr_sunlit,
+				default_object_list[i].epc.flnr_shade,
+				default_object_list[i].epc.gl_smax_sunlit,
+				default_object_list[i].epc.gl_smax_shade);
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
