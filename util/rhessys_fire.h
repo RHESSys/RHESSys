@@ -38,7 +38,7 @@ struct fire_default {
 	double mean2_rvm;
 	double kappa1_rvm;
 	double kappa2_rvm;
-	double p_rvm;	// this gives the proportion of wind direction entries observed within each mode. See R code for techniques to estimate these values. 
+	double p_rvm;	// this gives the proportion of wind direction entries observed within each mode. See R code for techniques to estimate these values.
 	double ign_def_mod; // modifier for ignition moisture_k2, multiply the threshold deficit by this value
 	int veg_ign; // use vegetation for ignition? If so, use the parameters below. This is a temporary parameter used in development, not likely to be retained in final model
 	double veg_k1; // for ignition use veg fuel, this is a temporary parameter used in development, not likely to be retained in final model. not necessary for spread_calc_type=7 or =9
@@ -50,11 +50,12 @@ struct fire_default {
 	double load_ign_k1;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	double load_ign_k2;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
+	int seed_multiplier;
 //	char **patch_file_name;
 };
 
-// The object that is  
-struct fire_object 
+// The object that is
+struct fire_object
 {
 	double burn;			/* 0-1 , recrds the value of p_spread for those pixels that experienced fire*/
 	double fuel_veg;  		/* kgC/m2 ; mass of carbon in the vegetation layer, may not be used*/
@@ -66,12 +67,12 @@ struct fire_object
 	double wind_direction; 		/*degrees randomly drawn wind direction*/
 	double relative_humidity;	/* 0-1 */
 	double temp; /* temperature of the cell */
-	double et; // total evapotranspiration 
+	double et; // total evapotranspiration
 	double pet; // total potential evapotranspiration
 	int ign_available; /* 1 if available for ignition, 0 otherwise*/
 	double understory_et; //evapotranspiration of only the understory
 	double understory_pet; //potential evapotranspiration of only the understory
-};	
+};
 
 #ifdef __cplusplus
 }

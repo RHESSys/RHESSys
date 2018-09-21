@@ -37,7 +37,7 @@ struct fire_default *construct_fire_defaults(
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
 	void	*alloc( size_t, char *, char *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -53,7 +53,7 @@ struct fire_default *construct_fire_defaults(
 	char	record[MAXSTR];
 	struct	fire_default	*default_object_list;
         param *paramPtr = NULL;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.						*/
 	/*-------------------------------------------------------------*/
@@ -61,7 +61,7 @@ struct fire_default *construct_fire_defaults(
 		alloc(num_default_files *
 		sizeof(struct fire_default),"default_object_list",
 		"construct_fire_defaults");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Loop through the default files list.						*/
 	/*--------------------------------------------------------------*/
@@ -121,7 +121,7 @@ struct fire_default *construct_fire_defaults(
 		printf("fire_verbose: %d\n",default_object_list[i].fire_verbose);
 		default_object_list[i].fire_write=getIntParam(&paramCnt, &paramPtr, "fire_write", "%d", 0, 1);
 		printf("fire_write: %d\n",default_object_list[i].fire_write);
-		default_object_list[i].fire_in_buffer=getIntParam(&paramCnt, &paramPtr, "fire_in_buffer", "%d", 0, 1); 
+		default_object_list[i].fire_in_buffer=getIntParam(&paramCnt, &paramPtr, "fire_in_buffer", "%d", 0, 1);
 		printf("fire_in_buffer: %d\n",default_object_list[i].fire_in_buffer);
 		default_object_list[i].n_rows=getIntParam(&paramCnt, &paramPtr, "n_rows", "%d", -1, 1);
 		printf("n_rows: %d\n",default_object_list[i].n_rows);
@@ -157,8 +157,10 @@ struct fire_default *construct_fire_defaults(
 		printf("ran_seed: %d\n",default_object_list[i].ran_seed);
 		default_object_list[i].calc_fire_effects=getIntParam(&paramCnt, &paramPtr, "calc_fire_effects", "%d", 0, 1);
 		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
+        default_object_list[i].seed_multiplier=getIntParam(&paramCnt, &paramPtr, "seed_multiplier", "%d", 1, 1);
+		printf("the seed multiplier for controled stochastic: %d\n",default_object_list[i].seed_multiplier);
 
- 
+
 /*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
@@ -169,13 +171,13 @@ struct fire_default *construct_fire_defaults(
                 char *y = NULL;
                 char *token = NULL;
                 char filename[256];
-    
+
                 // Store filename portion of path in 't'
                 while ((token = strtok(s, "/")) != NULL) {
                     // Save the latest component of the filename
                     strcpy(filename, token);
                     s = NULL;
-                } 
+                }
 
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
@@ -188,7 +190,7 @@ struct fire_default *construct_fire_defaults(
                 }
 
                 memset(outFilename, '\0', filenameLen);
-    
+
                 // Concatenate the output prefix with the filename of the input .def file
                 // and "_stratum.params"
                 if (command_line[0].output_prefix != NULL) {
@@ -198,7 +200,7 @@ struct fire_default *construct_fire_defaults(
                         strcat(outFilename, filename);
                     }
                     strcat(outFilename, "_fire.params");
-                } 
+                }
                 else {
                     if (filename != NULL) {
                         strcat(outFilename, "_");
@@ -206,7 +208,7 @@ struct fire_default *construct_fire_defaults(
                     }
                     strcat(outFilename, "fire.params");
                 }
-        
+
             printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 	return(default_object_list);

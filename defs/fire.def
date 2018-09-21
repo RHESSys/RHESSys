@@ -1,23 +1,23 @@
 1 fire_default_ID
 0 veg_fuel_weighting
 30 ndays_average
-4.1 load_k1
-0.26 load_k2
-0.87 slope_k1
-2.1 slope_k2
-4.7 moisture_k1
-0.25 moisture_k2
-1.77 winddir_k1
-0.28 winddir_k2
+4.1 load_k1 # paper 3.9
+0.26 load_k2 # paper 0.07
+0.87 slope_k1 # paper 0.91
+2.1 slope_k2 # paper 1.0
+4.7 moisture_k1 # paper 3.8
+0.25 moisture_k2 # paper 0.27
+1.77 winddir_k1 #paper 0.87
+0.28 winddir_k2 #paper 0.48
 7 windmax
 -1 ignition_col
 -1 ignition_row
 10 ignition_tmin
-2 fire_verbose  # 1 prints a lot of information
+1 fire_verbose  # 1 prints a lot of information
 1 fire_write  # 1 give the least output files 3 is the most output files
 2 fire_in_buffer  # 1 fire starts outside watershed, 2 it starts in watershed
-336 n_rows   #change it yourself
-281 n_cols    # change it yourself
+17 n_rows   #change it yourself
+45 n_cols    # change it yourself
 7 spread_calc_type
 1.64 mean_log_wind
 0.55 sd_log_wind
@@ -27,6 +27,8 @@
 5.1 kappa2_rvm
 0.57 p_rvm
 1.2 ign_def_mod  # set the average number of ignitions per month
-2.0 mean_ign
-110 ran_seed 
+2 mean_ign
+1 ran_seed # 0 stochastic 1 controled stochastic >1 total controled even the ignition cell for each month
 1 calc_fire_effects
+10 seed_multiplier
+
