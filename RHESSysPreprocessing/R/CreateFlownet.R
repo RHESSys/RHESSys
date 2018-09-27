@@ -14,6 +14,17 @@
 #' For GRASS GIS type, typepars is a vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 #' Example parameters are included in an example script included in this package. See initGRASS help
 #' for more info on parameters.
+#' @param streams Streams map to be used in building the flowtable.
+#' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
+#' @param roads Roads map, an optional input for flowtable creation.
+#' @param impervious Impervious map, an optional input for flowtable creation.
+#' @param roofs Roofs map, an optional input for flowtable creation.
+#' @param parallel TRUE/FALSE flag to build a flowtable for use in the hilllslope parallelized version of RHESSys. Console may output warnings of
+#' automated actions taken to make hillslope parallelization possible, or errors indicating fatal problems in hillslope parallelization.
+#' @param d4 TRUE/FALSE flag to determine the logic used when finding neighbors in flow table creation. FALSE uses d8 routing, looking at all eight
+#' neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.
+#' @param make_stream The maximum distance (cell lengths) away from an existing stream that a patch can be automatically coerced to be a stream.
+#' This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.  Default is 4.
 #' @author Will Burke
 #' @export
 
@@ -31,6 +42,7 @@ CreateFlownet = function(cfname,
                          roofs = NULL,
                          wrapper = FALSE,
                          parallel = FALSE,
+                         make_stream = NULL,
                          d4 = FALSE){
 
   # ------------------------------ Read and check inputs ------------------------------
@@ -49,7 +61,7 @@ CreateFlownet = function(cfname,
     template_list = template_read(template)
     map_info = template_list[[5]]
     cfmaps = rbind(map_info,c("cell_length","none"), c("streams","none"), c("roads","none"), c("impervious","none"),c("roofs","none"))
-  } else if(wrapper){ # map info is passsed directly from world gen
+  } else if(wrapper | (!wrapper & is.matrix(readin))){ # map info is passsed directly from world gen - either in wrapper or outside of wrapper and readin is matrix
     cfmaps = readin
   }
 
@@ -62,7 +74,9 @@ CreateFlownet = function(cfname,
       streams = readline("Stream map:")
     }
   }
-  cfmaps[cfmaps[,1]=="streams",2] = streams
+  if((cfmaps[cfmaps[,1]=="streams",2]=="none"|is.na(cfmaps[cfmaps[,1]=="streams",2]))){ # only add stream map to cfmaps if it's not there already
+    cfmaps[cfmaps[,1]=="streams",2] = streams
+  }
 
   if(!is.null(roads)){cfmaps[cfmaps[,1]=="roads",2]=roads}
   if(!is.null(impervious)){cfmaps[cfmaps[,1]=="impervious",2]=impervious}
@@ -112,7 +126,8 @@ CreateFlownet = function(cfname,
     cell_length=cell_length,
     smooth_flag=smooth_flag,
     d4 = d4,
-    parallel = parallel)
+    parallel = parallel,
+    make_stream = make_stream)
 
   # ------------------------------ Multiscale routing/aspatial patches ------------------------------
   if(!is.null(asp_list)){
@@ -176,53 +191,9 @@ CreateFlownet = function(cfname,
     CF1 = CF2
   } # end multiscale routing
 
-  # ------------------------------ Hillslope parallelization ------------------------------
-  if(parallel){
-      # check for flow across hillslopes
-      cross_hill = matrix(0,nrow = length(CF1),ncol = 3) # matrix for patchID, number of patches, and sum of gammas crossing hills
-      colnames(cross_hill) = c("Patch ID","Number of patches","Percent flow across hillslope")
-      for(i in 1:length(CF1)){
-        for(n in CF1[[i]]$Neighbors)
-          if(CF1[[i]]$HillID != CF1[[n]]$HillID & CF1[[i]]$Gamma_i[CF1[[i]]$Neighbors==n] != 0){
-            cross_hill[i,1] = CF1[[i]]$PatchID
-            cross_hill[i,2] = cross_hill[i,2] + 1
-            cross_hill[i,3] = cross_hill[i,3] + CF1[[i]]$Gamma_i[CF1[[i]]$Neighbors==n]
-          }
-      }
-      x_ind = cross_hill[,1]!= 0 & cross_hill[,2] != 0 & cross_hill[,3] != 0
-      cross_hill = cross_hill[x_ind,]
-      if(sum(cross_hill[,3] == 1)>0){stop("All flow of one or more patches crosses hillslopes.")}
-
-      # if (sum(cross_hill[,2])>0){
-      #   t=3
-      #   while(t==3){
-      #     t = menu(c("Force no flow across hillslopes", "Exit","View full table of patches with flow across hillslopes"),
-      #              title = noquote(paste(sum(cross_hill[,2]),"patches flow across hillslopes.")))
-      #
-      #     if(t==3){print(cross_hill)}}
-      #     if(t==2){stop("CreateFlownet.R exited without completing")}
-      #     if(t==1){ # change gammas to force no flow across hillslopes
-      #       for(i in x_ind){ # index of problem patches
-      #         for(n in CF1[[i]]$Neighbors){ #neighbors
-      #           if(CF1[[i]]$HillID != CF1[[n]]$HillID & CF1[[i]]$Gamma_i[CF1[[i]]$Neighbors==n] != 0){
-      #             # track that this neighbor is bad, reduce gamma, total gamma
-      #
-      #           }
-      #           # maybe do actual changes to gammas back in patch loop
-      #
-      #         }
-      #       }
-      #
-      #     } # end change gammas
-      #
-      # } # end if
-
-
-  } # end parallel
-
   # ---------- Flownet list to flow table file ----------
   print("Writing flowtable",quote=FALSE)
-  make_flow_table(CF1, cfname, parallel)
+  make_flow_table(flw = CF1, output_file = cfname, parallel = parallel)
 
   print(paste("Created flowtable:",cfname),quote=FALSE)
 
