@@ -28,9 +28,15 @@ struct IgnitionCells // attributes of cells available for ignition, will draw ra
 	double colId; // y index for current cell available for ignition
 };
 
-struct LocalFireNodes
+struct LocalFireNodes // internal WMFire grid for processing
 {
-	int iter;
+	int iter; // in which iteration did the cell burn?
+	int failedIter; // 
+	double pSlope; // probability of spread associated with slope
+	double pLoad; // probability of spread associated with fuel load
+	double pDef; // probability of spread associated with moisture
+	double pWind; // probability of spread associated with wind
+	double pUnderDef; // probability of ignition associated with understory moisture condition
     LocalFireNodes() : iter(-1)
     {}
 };
@@ -60,7 +66,7 @@ typedef std::vector<fire_years> Fires;
 /* Information for the landscape, including the dimensions and cell	*/
 /* resolution.														*/
 /********************************************************************/
-typedef boost::multi_array<LocalFireNodes, 2> LocalFireGrid;
+typedef boost::multi_array<LocalFireNodes, 2> LocalFireGrid; // the 2-D grid
 class LandScape
 {
  // mk: so, this is the initializer for when a new LandScape object is created?
@@ -72,19 +78,22 @@ public:
 			borders_[i] = 0;
 		}
 	}
-	LandScape(double cell_res,struct fire_object **fire_grid,struct fire_default def, int nrow, int ncol);
-	int Rows() const { return rows_; }
-	int Cols() const { return cols_; }
-	int BufferValue() const { return buffer_; }
-	double CellResolution() const { return cell_res_; }
+	LandScape(double cell_res,struct fire_object **fire_grid,struct fire_default def, int nrow, int ncol); // function to initialize the landscape
+	int Rows() const { return rows_; } // number of rows
+	int Cols() const { return cols_; } // number of columns
+	int BufferValue() const { return buffer_; } 
+	double CellResolution() const { return cell_res_; } // cell resolution
 
-	void Reset();
- 	void Burn(GenerateRandom& rng);
-	void initializeCurrentFire(GenerateRandom& rng);
-	void writeFire(long month, long year,struct fire_default def);
-	struct fire_object** &FireGrids() { return fireGrid_; }
-	fire_default& FireDefault() {return def_;}
-	fire_years& FireYears() {return cur_fire_; }
+	void Reset(); // reset the landscape
+ 	void Burn(GenerateRandom& rng); // test for spread
+	void initializeCurrentFire(GenerateRandom& rng); // initialize fire
+	void chooseIgnPix(GenerateRandom& rng); // which pixels are chosen for ignition
+	void drawNumIgn(double lambda, GenerateRandom& rng); // to test whether the randomly chosen cell should ignite
+
+	void writeFire(long month, long year,struct fire_default def); // write fire results
+	struct fire_object** &FireGrids() { return fireGrid_; } // the fire grid
+	fire_default& FireDefault() {return def_;} // fire default values
+	fire_years& FireYears() {return cur_fire_; } 
 	LocalFireGrid& LocalFireGrids() { return localFireGrid_; }
 
 
@@ -94,19 +103,20 @@ private:
 	int buffer_;     // how many cells from edge will ignitions not be allowed?
 	double cell_res_; // the resolution of each pixel, so the area of a pixel is cell_res_^2
 	int n_ign_; // the number of cells available for ignition
-	int borders_[4];
-	std::vector<BurnedCells> firstBurned_;
-	std::vector<IgnitionCells> ignCells_;
+	int n_cur_ign_; // a random draw for the number of ignitions to test for this run
+	int borders_[4]; // indicates whether all borders have been reached
+	std::vector<BurnedCells> firstBurned_; // vector of cells burned the previous iteration available to be sources of spread for the next iteration
+	std::vector<IgnitionCells> ignCells_; // locations of all random ignitions
 	fire_object **fireGrid_;	// 2-D array of pixels for the current landscape, FireNodes above
-	fire_default def_;
-	fire_years cur_fire_;
+	fire_default def_; // fire default values
+	fire_years cur_fire_; // the fire currently burning.
     // private methods
-	double GetBurnProb(double probability, GenerateRandom& rng);
+	double GetBurnProb(double probability, GenerateRandom& rng); 
 	bool IsBurned(GenerateRandom& rng,double cur_pBurn);
-	int BurnCells(int iter,GenerateRandom& rng);
+	int BurnCells(int iter,GenerateRandom& rng); // runs through the vector of source cells for spread and tests neighbors
 	int testIgnition(int cur_row, int cur_col, GenerateRandom& rng); // to test whether the randomly chosen cell should ignite
-	double calc_pSpreadTest(int cur_row, int cur_col, int new_row, int new_col,double fire_dir);
-	void calc_FireEffects(int new_row,int new_col, int iter,double cur_pBurn);
+	double calc_pSpreadTest(int cur_row, int cur_col, int new_row, int new_col,double fire_dir); // calculate p_spread based on conditions of the pixel
+	void calc_FireEffects(int new_row,int new_col, int iter,double cur_pBurn); // updates the grid to return a measure of fire effects, in this case the p_spread value
 	int TestFireStop(int numBurnedThisIter,int test_once,int borders[4]); // test whether conditions are met for stopping the fire
 	LocalFireGrid localFireGrid_;	// 2-D array of pixels for the current landscape, FireNodes above
 };

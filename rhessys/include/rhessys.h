@@ -322,6 +322,7 @@ struct  world_output_file_object
         struct  output_files_object             *zone;
         struct  output_files_object             *patch;
         struct  output_files_object             *canopy_stratum;
+        struct  output_files_object             *fire;
         struct  output_files_object             *shadow_strata;
         struct  output_files_object             *stream_routing;
         };
@@ -675,8 +676,9 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
         struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
-	struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */ 
-	struct clim_event_sequence  PH;                                 /* DIM  */
+        struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */
+        struct clim_event_sequence  pspread;   	 	   	                    /* 0-1        */
+        struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
         };
 
@@ -1118,6 +1120,8 @@ struct	soil_default
 	double  gsurf_intercept;				/* m/s */
 	double  theta_mean_std_p1;				/* DIM */
 	double  theta_mean_std_p2;				/* DIM */
+	double  overstory_height_thresh;        /* Defines lower limit of overstory (m) */
+	double  understory_height_thresh;       /* Defines upper limit of understory (m) */
 	struct soil_class	soil_type;
 	};
 
@@ -1229,6 +1233,15 @@ struct  cdayflux_patch_struct
     double m_gresp_store_to_litr1c;      /* (kgC/m2/d) */
     double m_gresp_transfer_to_litr1c;     /* (kgC/m2/d) */
 
+    /* fire fluxes */
+    double m_litr1c_to_atmos;       /* (kgC/m2) labile to atmosphere */
+    double m_litr2c_to_atmos;       /* (kgC/m2) unshielded cellulose to atmosphere */
+    double m_litr3c_to_atmos;       /* (kgC/m2) shielded cellulose to atmosphere */
+    double m_litr4c_to_atmos;       /* (kgC/m2) lignin to atmosphere */
+    double m_soil1c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+    double m_soil2c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+    double m_soil3c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+    double m_soil4c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
 
         };
 
@@ -1338,6 +1351,17 @@ struct  ndayflux_patch_struct
     double ndep_to_sminn;    /* (kgN/m2/d) deposition to soil min N pool */
     double nfix_to_sminn;             /* (kgN/m2/d) biological n fixation */
     double N_to_gw;        /* (kgN/m2/day) loss due to leaching to gw */
+
+    /* fire fluxes */
+    double m_litr1n_to_atmos;       /* (kgN/m2) labile to atmosphere */
+    double m_litr2n_to_atmos;       /* (kgN/m2) unshielded cellulose to atmosphere */
+    double m_litr3n_to_atmos;       /* (kgN/m2) shielded cellulose to atmosphere */
+    double m_litr4n_to_atmos;       /* (kgN/m2) lignin to atmosphere */
+    double m_soil1n_to_atmos;       /* (kgN/m2) microbial recycling pool to atmosphere */
+    double m_soil2n_to_atmos;       /* (kgN/m2) microbial recycling pool to atmosphere */
+    double m_soil3n_to_atmos;       /* (kgN/m2) microbial recycling pool to atmosphere */
+    double m_soil4n_to_atmos;       /* (kgN/m2) microbial recycling pool to atmosphere */
+
         };
 /*----------------------------------------------------------*/
 /*      Define a litter objects                             */
@@ -1451,8 +1475,35 @@ struct patch_fire_water_object
 {
         double pet;                     /* mm */
         double et;                      /* mm */
+	double understory_et; /*mm; understory layer et*/
+	double understory_pet; /*mm; understory layer pet*/
 
 };
+
+
+/*----------------------------------------------------------*/
+/*      Define the fire litter soil loss structure.        */
+/*----------------------------------------------------------*/
+struct fire_litter_soil_loss_struct
+{
+        double loss_litr1c;
+        double loss_litr2c;
+        double loss_litr3c;
+        double loss_litr4c;
+	double loss_soil1c;
+	double loss_soil2c;
+	double loss_soil3c;
+	double loss_soil4c;
+        double loss_litr1n;
+        double loss_litr2n;
+        double loss_litr3n;
+        double loss_litr4n;
+	double loss_soil1n;
+	double loss_soil2n;
+	double loss_soil3n;
+	double loss_soil4n;
+};
+
 
 /*----------------------------------------------------------*/
 /*      Define the spinup structure.                        */
@@ -1495,6 +1546,7 @@ struct patch_object
 	int		soil_parm_ID;
 	int		landuse_parm_ID;
 	double		mpar;
+	//int				wuiID;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */
@@ -1905,6 +1957,18 @@ struct  c_option
         };
 
 /*----------------------------------------------------------*/
+/*      Define a f_option object.                                                               */
+/*----------------------------------------------------------*/
+struct  f_option
+        {
+        int             basinID;
+        int             hillID;
+        int             zoneID;
+        int             patchID;
+        int             stratumID;
+        };
+
+/*----------------------------------------------------------*/
 /*      Define output flags object.                                                             */
 /*----------------------------------------------------------*/
 struct  output_flag
@@ -1970,6 +2034,8 @@ struct  command_line_object
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
+		char 	firegrid_patch_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
+		char 	firegrid_dem_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
         double  tmp_value;
         double  cpool_mort_fract;
         double  veg_sen1;
@@ -1995,6 +2061,7 @@ struct  command_line_object
         struct  z_option        *z;
         struct  p_option        *p;
         struct  c_option        *c;
+	struct  f_option	*f;
         struct  stro_option     *stro;
         struct  date            output_yearly_date;
         struct  date            start_date;
@@ -2570,15 +2637,33 @@ struct epconst_struct
 } ;
 
 
+/*----------------------------------------------------------*/
+/*      Define a fire effects object.                                                */
+/*----------------------------------------------------------*/
+struct  fire_effects_object { 
+	double  m_cwdc_to_atmos;
+	double  m_cwdn_to_atmos;
 
+	double  canopy_target_height;
+	double  canopy_target_height_u_prop;
+	double  canopy_target_prop_mort;
+	double  canopy_target_prop_mort_consumed;
+	double  canopy_target_prop_mort_u_component;
+	double  canopy_target_prop_mort_o_component;
+	double  canopy_target_prop_c_consumed;
+	double  canopy_target_prop_c_remain;
+	double  canopy_target_prop_c_remain_adjusted;
+	double  canopy_target_prop_c_remain_adjusted_leafc;
 
+	double  canopy_subtarget_height;
+	double  canopy_subtarget_height_u_prop;
+	double  canopy_subtarget_prop_mort;
+	double  canopy_subtarget_prop_mort_consumed;
+	double  canopy_subtarget_prop_c_consumed;
+	double  canopy_subtarget_c;
+	double  understory_c_consumed;
+};
 
-        
-
-
-
-
-        
 
 /*----------------------------------------------------------*/
 /*      Define a stratum default object.                                                */
@@ -2608,7 +2693,11 @@ struct  stratum_default
         double  ustar_overu;                    /* DIM  */
         struct  epconst_struct  epc;
         struct  mrconst_struct  mrc;
-        };
+	double understory_mort; 		/* Relation between probability of spread and proportion understory mortality */
+	double consumption; 			/* Relation between proportion understory mortality and proportion consumed */
+	double overstory_mort_k1; 		/* Steepness of sigmoid function relating understory biomass consumed and overstory mortality */
+	double overstory_mort_k2; 		/* Centerpoint of sigmoid function relating understory biomass consumed and overstory mortality */
+};
 
 /*----------------------------------------------------------*/
 /*      Define target object                                */
@@ -2687,6 +2776,7 @@ struct  canopy_strata_object
         struct  nstate_struct   ns;
         struct  ndayflux_struct ndf;                            
         struct  phenology_struct phen;
+	struct  fire_effects_object fe;
         struct  base_station_object     **base_stations;
         struct  stratum_default **defaults;
         struct  spinup_default  **spinup_defaults;  
@@ -2735,6 +2825,7 @@ struct patch_fire_object
 	double occupied_area; /*gives the total patch area in the current grid	*/
 	struct fire_default_object *defaults;
 	double elev; // elevation if read in from grid
+	int wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
 };	
 
 /*----------------------------------------------------------*/

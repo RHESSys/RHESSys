@@ -83,6 +83,7 @@ struct	dated_input_object *construct_dated_input(
 	dated_input[0].irrigation.inx = -999;
 	dated_input[0].snow_melt_input.inx = -999;
 	dated_input[0].biomass_removal_percent.inx = -999;
+	dated_input[0].pspread.inx = -999;
 	dated_input[0].PH.inx = -999;
 	dated_input[0].grazing_Closs.inx = -999;
 	
@@ -135,6 +136,12 @@ struct	dated_input_object *construct_dated_input(
 			strcpy(file_name, file_prefix);
 			dated_input[0].biomass_removal_percent = construct_dated_clim_sequence(
 				(char *)strcat(file_name,".biomass_removal_percent"),
+				start_date);
+		}
+		else if ( strcmp(sequence_name,"pspread" ) == 0){
+			strcpy(file_name, file_prefix);
+			dated_input[0].pspread = construct_dated_clim_sequence(
+				(char *)strcat(file_name,".pspread"),
 				start_date);
 		}
 		else if ( strcmp(sequence_name,"PH" ) == 0) {
