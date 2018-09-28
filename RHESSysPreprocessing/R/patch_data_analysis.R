@@ -23,48 +23,65 @@ patch_data_analysis <- function(raw_patch_data,
 
 
   # -------------------- Error checking and NULL handling --------------------
-  if(cell_length<=0){stop("Cell length is <=0")}
+  if(cell_length <= 0){stop("Cell length is <=0")}
   if(is.null(raw_road_data)){raw_road_data = matrix(0,ncol = ncol(raw_patch_data),nrow = nrow(raw_patch_data))}
-  if(is.null(road_width)){road_width=0}
-  if(is.null(make_stream)){make_stream=4}
+  if(is.null(road_width)){road_width = 0}
+  if(is.null(make_stream)){make_stream = 4}
 
-  area_conv<-cell_length*cell_length   #meters^2 per patch (need actual number)
+  # area_conv = cell_length*cell_length   #meters^2 per patch (need actual number)
 
-  options(scipen=999) # IF DEBUGGING YOU WILL HAVE ERRORS ON LARGE BASINS WITHOUT THIS - coems from numeric to character conversion
+  options(scipen = 999) # IF DEBUGGING YOU WILL HAVE ERRORS ON LARGE BASINS WITHOUT THIS - comes from numeric to character conversion
 
   # -------------------- Build unique patch IDs --------------------
   # <<<<< New method >>>>> slightly faster, doesn't error on large datasets
   # faster than using apply, truly vectorized would be better but I cant figure it out -Will
 
-  id_data =unique(data.frame(as.vector(raw_basin_data[!is.na(raw_basin_data)]),
-                             as.vector(raw_hill_data[!is.na(raw_basin_data)]),
-                             as.vector(raw_zone_data[!is.na(raw_basin_data)]),
-                             as.vector(raw_patch_data[!is.na(raw_basin_data)])))
-  colnames(id_data)<-c("Basin","Hill","Zone","Patch")
+  # id_data =unique(data.frame("Basin" = as.vector(raw_basin_data[!is.na(raw_basin_data)]),
+  #                            "Hill" = as.vector(raw_hill_data[!is.na(raw_basin_data)]),
+  #                            "Zone" = as.vector(raw_zone_data[!is.na(raw_basin_data)]),
+  #                            "Patch" = as.vector(raw_patch_data[!is.na(raw_basin_data)])))
+  #
+  # unique_patch = raw_patch_data
+  # unique_id = 1:length(id_data$Patch)
+  #
+  # print("Generating unique IDs",quote=FALSE)
+  # pb = txtProgressBar(min=0,max=length(unique_id),style=3)
+  #
+  # for(i in unique_id){
+  #   unique_patch[!is.na(unique_patch) & unique_patch==id_data[i,4] & raw_hill_data==id_data[i,2] & raw_zone_data==id_data[i,3] ] = i
+  #   setTxtProgressBar(pb,i)
+  # }
+  # close(pb)
 
-  unique_patch = raw_patch_data
-  unique_id = 1:length(id_data$Patch)
 
-  print("Generating unique IDs",quote=FALSE)
-  pb = txtProgressBar(min=0,max=length(unique_id),style=3)
+  # <<<<< EVEN FASTER METHOD >>>>>
+  # If you get weird routing this might be the cause but it should be right
 
-  for(i in unique_id){
-    unique_patch[!is.na(unique_patch) & unique_patch==id_data[i,4] & raw_hill_data==id_data[i,2] & raw_zone_data==id_data[i,3] ] = i
-    setTxtProgressBar(pb,i)
-  }
-  close(pb)
+  print("Generating unique IDs",quote = FALSE)
 
+  id_data = data.frame("Basin" = as.vector(raw_basin_data[!is.na(raw_basin_data)]),
+                       "Hill" = as.vector(raw_hill_data[!is.na(raw_basin_data)]),
+                       "Zone" = as.vector(raw_zone_data[!is.na(raw_basin_data)]),
+                       "Patch" = as.vector(raw_patch_data[!is.na(raw_basin_data)]),
+                       "Row" = 1:length(as.vector(raw_basin_data[!is.na(raw_basin_data)])))
+
+  id_data_unique = unique(id_data[-5]) # unique except for row num
+  id_data_unique$Number = 1:length(id_data_unique$Basin) # unique ID number
+  id_merge = merge(id_data,id_data_unique,sort = FALSE ) # merge unique and original id data
+  id_merge = id_merge[ order(id_merge$Row),] # order by original row order
+  unique_patch = raw_basin_data
+  unique_patch[!is.na(unique_patch)] = id_merge$Number
 
   # ----- Conversion and formatting -----
-  patch_data<-unique_patch
+  patch_data = unique_patch # unique patch IDs
   patch_data[is.na(patch_data)] <- 0 #replace NAs w 0
-  patch_elevation_data<-raw_patch_elevation_data
-  patch_elevation_data[is.na(patch_elevation_data)]<-0   #Replace NA's with 0
-  patch_slope_data<-raw_slope_data
-  patch_slope_data[is.na(patch_slope_data)]<-0   #Replace NA's with 0
-  patch_stream_data<-raw_stream_data
-  patch_stream_data[is.na(patch_stream_data)]<-0   #Replace NA's with 0
-  patch_road_data<-raw_road_data
+  patch_elevation_data = raw_patch_elevation_data
+  patch_elevation_data[is.na(patch_elevation_data)] = 0   #Replace NA's with 0
+  patch_slope_data = raw_slope_data
+  patch_slope_data[is.na(patch_slope_data)] = 0   #Replace NA's with 0
+  patch_stream_data = raw_stream_data
+  patch_stream_data[is.na(patch_stream_data)] = 0   #Replace NA's with 0
+  patch_road_data = raw_road_data
   patch_road_data[is.na(patch_road_data)]<-0   #Replace NA's with 0
   y<-as.vector(patch_data)
   z<-as.vector(patch_elevation_data)
@@ -114,7 +131,7 @@ patch_data_analysis <- function(raw_patch_data,
 
   flw_struct<-data.frame(patches,xy_data,patch_mean_elev,patch_mean_slope,patch_landtype,patch_roadtype)
   colnames(flw_struct)<-c("Number","Centroidx","Centroidy","Area","Centroidz","Mean_Slope","Landtype","Roadtype")
-  flw_struct<-cbind(flw_struct,id_data)
+  flw_struct<-cbind(flw_struct,id_data_unique[-5])
 
   # -------------------- find neighbors cell by cell (previously find border row) --------------------
   # patch_data is patch data with NA replaced by 0, patches is a vector of ordered patch numbers
@@ -297,12 +314,14 @@ patch_data_analysis <- function(raw_patch_data,
   # }
 
   # ---------- Hillslope parallelization ----------
+  # ----- Find and fix hillslopes without stream outlets -----
+  # check if the most downslope is a stream - small but potentially important distinction since pit filling relies on this
   if (parallel) {
     no_stream_fix = NULL
     no_stream = NULL
+    print_dist_fix = NULL
+    print_dist = NULL
 
-    # ----- Find and fix hillslopes without stream outlets -----
-    # check if the most downslope is a stream - small but potentially important distinction since pit filling relies on this
     min_hill_patch = stats::aggregate(flw_struct$Centroidz,by = list(flw_struct$Hill),FUN=which.min) # sum streams(landuse) by hillslope
     hill_no_outlets = matrix(0, nrow = length(unique(flw_struct$Hill)), ncol = 2)
     hill_no_outlets[,1] = unique(flw_struct$Hill)
@@ -317,21 +336,31 @@ patch_data_analysis <- function(raw_patch_data,
         hill_patches = flw_struct[flw_struct$Hill==i,] # get patches from problem hillslope
         min_patch = hill_patches[which.min(hill_patches$Centroidz),]# find lowest elevation patch
         dist2stream = sqrt(abs(streams$Centroidx - min_patch$Centroidx)^2 + abs(streams$Centroidy - min_patch$Centroidy)^2) # distance to streams from min elev patch
-        if(min(dist2stream)<make_stream){ # if within make_stream var distance of stream, make min patch a stream
+        if(is.numeric(make_stream)){ # if make_stream is a number
+          if(min(dist2stream)<=make_stream){ # if within make_stream var distance of stream, make min patch a stream
+            flw_struct[min_patch$Number,"Landtype"] = 1
+            no_stream_fix = c(no_stream_fix,min_patch$Number)
+            print_dist_fix = c(print_dist_fix,min(dist2stream))
+          } else if(min(dist2stream)>make_stream){ # if outside of make_stream distance threshold
+            no_stream = c(no_stream,min_patch$Number)
+            print_dist = c(print_dist,min(dist2stream))
+          }
+        } else if(make_stream){ # if TRUE
           flw_struct[min_patch$Number,"Landtype"] = 1
           no_stream_fix = c(no_stream_fix,min_patch$Number)
-        } else if(min(dist2stream)>=make_stream){ # if outside of make_stream distance threshold
-          no_stream = c(no_stream,min_patch$Number)
+          print_dist_fix = c(print_dist_fix,min(dist2stream))
         }
+
       }
     }
     if(!is.null(no_stream_fix)){
-      print(paste(length(no_stream_fix),"hillslopes had their lowest elevation patches set to streams."),quote = FALSE)
+      print(paste(length(no_stream_fix),"hillslopes had their lowest elevation patches set to streams, at a max distance from existing streams of",
+                  max(print_dist_fix),"cell lengths."),quote = FALSE)
     }
     if(!is.null(no_stream)){ # output hillslopes that weren't corrected
-      print("The following hillslopes have no stream outlet and their respective lowest elevation patches are outside of the distance set by the 'make_stream' varibale.",quote = F)
-      print(flw_struct[no_stream,])
-      stop(noquote("The above hillslopes must have stream patch outlets, either increase the value of the 'make_stream' variable, or fix via GIS."))
+      print(paste("The following outlet patches were outside of the",make_stream,"cell length distance threshold set by the 'make_stream' argument."),quote = F)
+      print(cbind("Dist2Stream" = print_dist,flw_struct[no_stream,]))
+      stop(noquote("The above hillslopes must have stream patch outlets, either increase the value of the 'make_stream' argument, or fix via GIS."))
     }
   } # end parallel if
 
