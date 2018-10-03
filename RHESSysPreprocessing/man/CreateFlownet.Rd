@@ -42,7 +42,8 @@ for more info on parameters.}
 automated actions taken to make hillslope parallelization possible, or errors indicating fatal problems in hillslope parallelization.}
 
 \item{make_stream}{The maximum distance (cell lengths) away from an existing stream that a patch can be automatically coerced to be a stream.
-This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.  Default is 4.}
+Setting to TRUE will include patches at any distance. This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.
+ Default is 4.}
 
 \item{d4}{TRUE/FALSE flag to determine the logic used when finding neighbors in flow table creation. FALSE uses d8 routing, looking at all eight
 neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.}

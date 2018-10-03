@@ -30,7 +30,8 @@
 #' @param d4 TRUE/FALSE flag to determine the logic used when finding neighbors in flow table creation. FALSE uses d8 routing, looking at all eight
 #' neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.
 #' @param make_stream The maximum distance (cell lengths) away from an existing stream that a patch can be automatically coerced to be a stream.
-#' This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.  Default is 4.
+#' Setting to TRUE will include patches at any distance. This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.
+#' Default is 4.
 #' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
 #' @author Will Burke
 #' @export

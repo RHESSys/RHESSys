@@ -53,7 +53,8 @@ automated actions taken to make hillslope parallelization possible, or errors in
 neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.}
 
 \item{make_stream}{The maximum distance (cell lengths) away from an existing stream that a patch can be automatically coerced to be a stream.
-This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.  Default is 4.}
+Setting to TRUE will include patches at any distance. This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.
+Default is 4.}
 }
 \description{
 Preforms RHESSys Preprocessing, comprised of two main steps: generating a world file, and generating a flow table.
