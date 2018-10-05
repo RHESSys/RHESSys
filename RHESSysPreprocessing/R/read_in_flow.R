@@ -1,59 +1,79 @@
-#' read_in_flow
+#' read_in_flow2
 #'
-#' Read in flow table file and return a R list.
+#' Read in flow table file and return a R list. Should be faster than the other one.
 #' @param input_file Flow table to be read in.
-#' @author Daniel Nash
+#' @param df should a data frame also be output?
+#' @author William Burke
 #' @export
+#'
+read_in_flow<-function(input_file, df = FALSE){
+  print("Reading in flow table")
 
-# function to read in a flow table and return a list.
-read_in_flow<-function(input_file){
-  num_patches<-scan(file=input_file,nlines=1,quiet = TRUE)  #read in number of patches
-  patch_list<-matrix(0,num_patches,3)  #make list of unique patch ID's
-  flw<-list()
-  line_count<-1  #where are we in the file
-  for (p_i in 1:num_patches){       #p_i is which patch we are on
-    pct = round((p_i/num_patches)*100,digits = 2)
-    print(paste(pct,"%"))
-    y<-scan(file=input_file,nlines=1,skip=line_count,quiet = TRUE) #read in a line of patch data, 11th num is munber of neighbors
-    line_count<-line_count+1      #move to next line
+  parallel = length(scan(file=input_file,nlines=1,skip=1,quiet = TRUE)) == 2 # check if flow table is parallelized, if 2nd line is 2 elements long
 
-    neighbor_list<-list()
-    for (j in 1:y[11]) {      #read in neighbor data
-      n_y<-scan(file=input_file,nlines=1,skip=line_count,quiet = TRUE)  #read in neighbor data, patchID,zoneID,hillID, proportion of flow
-      line_count<-line_count+1      #move to next line
-      neighbor_list[[j]]<-c(0,n_y)    #add 0 as place holder for unique patch id
-    }
-
-    #build list
-    flw[[p_i]]<-list(patchID=y[1],
-                     zoneID=y[2],
-                     hillID=y[3],
-                     centroidx=y[4],
-                     centroidy=y[5],
-                     centroidz=y[6],
-                     accumulatedarea=y[7],
-                     area=y[8],
-                     landtype=y[9],
-                     totalG=y[10],
-                     numberofadjacentpatches=y[11],
-                     neighbors=neighbor_list)
-    #neighbors will contain:unique patch id, patchID,zoneID,hillID, proportion of flow
-
-    patch_list[p_i,]<-c(y[1],y[2],y[3])  #patchID,zoneID,hillID, for patch p_i
-
+  if(parallel) {
+    stop("This doesn't work yet")
   }
 
-  for (p_i in 1:num_patches){ #calculate unique patch ID for all neighbors
-    num_neighbors<-flw[[p_i]]$numberofadjacentpatches
-
-    for (j in 1:num_neighbors){
-      patch3_id<-flw[[p_i]]$neighbors[[j]][2:4]   #patch3_id contains patch, zone and hill info for each neighbor
-      n_id<-which(patch_list[,1]==patch3_id[1]&patch_list[,2]==patch3_id[2]
-                  &patch_list[,3]==patch3_id[3])   #find id of neighboring patch
-      flw[[p_i]]$neighbors[[j]][1]<-n_id   #add id to neighbor data
-    }
+  if(!parallel) {
+    num_patches<-scan(file=input_file,nlines=1,quiet = TRUE)  #read in number of patches
   }
 
-  return(flw)
+  #flow_raw = readLines(input_file,warn = FALSE) # read in flow table
+  flow_list = strsplit(trimws(readLines(input_file,warn = FALSE)),"\\s+") # split strings into list of char vectors
+  len = sapply(flow_list,length) # get lengths
+  p_ind = len==max(unique(len)) # patches
+
+  # convert to list
+  flw_df = data.frame(matrix(as.numeric(unlist(flow_list[p_ind])),ncol = 11,byrow = TRUE),stringsAsFactors = FALSE)
+  names(flw_df) = c("PatchID","ZoneID","HillID","Centroidx","Centroidy","Centroidz","Accumulated_Area","Area","Landtype","TotalG","NumAdjacentPatches")
+  flw_df = cbind("Number" = 1:length(flw_df[,1]), flw_df)
+
+  flw = split(flw_df, seq(nrow(flw_df)))
+  flw = lapply(flw,FUN = as.list)
+
+  # flw = lapply(flow_list[p_ind],FUN = function(X) { # create list of patches
+  #     list(PatchID = as.numeric(X[1]),
+  #          ZoneID = as.numeric(X[2]),
+  #          HillID = as.numeric(X[3]),
+  #          Centroidx = as.numeric(X[4]),
+  #          Centroidy = as.numeric(X[5]),
+  #          Centroidz = as.numeric(X[6]),
+  #          Accumulated_Area = as.numeric(X[7]),
+  #          Area = as.numeric(X[8]),
+  #          Landtype = as.numeric(X[9]),
+  #          TotalG = as.numeric(X[10]),
+  #          NumAdjacentPatches = as.numeric(X[11])
+  #     )
+  #   }
+  # )
+
+  #n_ind = sapply(flw,"[[",11) # neighbor counts
+
+  n_ind2 = rep(1:length(flw_df[,"NumAdjacentPatches"]),flw_df[,"NumAdjacentPatches"]) # factor for neighbors
+  n_ind3 = len == 4 # index of neighbors in flow_list
+
+  neighbors = data.frame(matrix(as.numeric(unlist(flow_list[n_ind3])), ncol = 4, byrow = TRUE)) # matrix of neighbor
+  names(neighbors) = c("PatchID","ZoneID","HillID","Gamma_i")
+  neighbors = cbind(neighbors,"row" = 1:length(neighbors[,1])) # row var for sorting
+  neighbors = merge(neighbors,flw_df[,c("Number","PatchID","ZoneID","HillID")],sort = FALSE) # merge to get IDs corrrect
+  neighbors = neighbors[order(neighbors$row),] # sort by row
+
+  nbr_p = split(neighbors$Number,f = n_ind2) # neighbor numbers (NOT PATCH NUMBERS)
+  nbr_g = split(neighbors$Gamma_i,f = n_ind2) # gammas
+
+  list_append = function(X, Y, Z) { # to append to the list, but keep the appended vector together, and not split those elements up
+    X[[Z]] = Y
+    return(X)
+  }
+
+  flw = mapply(FUN = list_append,flw,nbr_p,"Neighbors", SIMPLIFY = FALSE) #append neighbors
+  flw = mapply(FUN = list_append,flw,nbr_g,"Gamma_i", SIMPLIFY = FALSE) # append gammas
+
+  if(df){
+    return(list(flw,flw_df))
+  } else if(!df){
+    return(flw)
+  }
+
 }
-#

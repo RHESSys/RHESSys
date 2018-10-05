@@ -49,9 +49,9 @@ fix_all_pits <- function(flw, flw_struct, parallel) {
     setTxtProgressBar(pb, j) #add progress
     i <- pits[j]
 
-    if (sum(flw[[i]]$Gamma_i) == 0) { #if is redundant, but if the gammas are all 0, try to pit fill
-      filled <- fill_pit(flw = flw, n_s = i, n_f = i, parallel = parallel)
-    }
+    #if (sum(flw[[i]]$Gamma_i) == 0) { # if is redundant, but if the gammas are all 0, try to pit fill
+    filled <- fill_pit(flw = flw, n_s = i, n_f = i, parallel = parallel)
+    #}
 
     wh_ct = 0 # while loop counter
     history = NULL
@@ -87,7 +87,7 @@ fix_all_pits <- function(flw, flw_struct, parallel) {
 
       # if new neighbor is not a pit OR is a stream
       if (new_gamma_tot != 0 | flw[[new_neighbor]]$Landtype == 1) {
-        # flw[[new_neighbor]]$Gamma_i<-flw[[new_neighbor]]$Gamma_i/new_gamma_tot   # normalize new gamma's - this may be unecessary
+        flw[[new_neighbor]]$Gamma_i <- flw[[new_neighbor]]$Gamma_i/new_gamma_tot   # normalize new gamma's - this may be unecessary
         filled <- flw # to escape the while loop
       } else if (new_gamma_tot == 0 & flw[[new_neighbor]]$Landtype == 0) {
         # if new neighbor is a pit AND not a stream, loop through this again, starting with an attempt to normal pit fill
