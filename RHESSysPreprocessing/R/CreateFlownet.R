@@ -30,7 +30,7 @@ CreateFlownet = function(cfname,
                          impervious = NULL,
                          roofs = NULL,
                          wrapper = FALSE,
-                         parallel = FALSE,
+                         parallel = TRUE,
                          d4 = FALSE){
 
   # ------------------------------ Read and check inputs ------------------------------
