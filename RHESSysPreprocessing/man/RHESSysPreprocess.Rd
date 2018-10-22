@@ -4,10 +4,11 @@
 \alias{RHESSysPreprocess}
 \title{RHESSysPreprocess}
 \usage{
-RHESSysPreprocess(template, name, type = "Raster", typepars, streams = NULL,
-  overwrite = FALSE, roads = NULL, impervious = NULL, roofs = NULL,
-  asprules = NULL, header = FALSE, meta = TRUE, wrapper = TRUE,
-  parallel = FALSE, d4 = FALSE)
+RHESSysPreprocess(template, name, type = "Raster", typepars,
+  streams = NULL, overwrite = FALSE, roads = NULL,
+  impervious = NULL, roofs = NULL, asprules = NULL, header = FALSE,
+  meta = TRUE, wrapper = TRUE, parallel = FALSE, d4 = FALSE,
+  make_stream = NULL)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
@@ -44,9 +45,19 @@ for more info on parameters.}
 \item{header}{TRUE/FALSE flag for the creation of a header file. Will have same name (and location) as "name" argument, but with ".hdr" suffix.}
 
 \item{meta}{TRUE/FALSE flag for the creation of a metadata file. Still in dev.}
+
+\item{parallel}{TRUE/FALSE flag to build a flowtable for use in the hilllslope parallelized version of RHESSys. Console may output warnings of
+automated actions taken to make hillslope parallelization possible, or errors indicating fatal problems in hillslope parallelization.}
+
+\item{d4}{TRUE/FALSE flag to determine the logic used when finding neighbors in flow table creation. FALSE uses d8 routing, looking at all eight
+neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.}
+
+\item{make_stream}{The maximum distance (cell lengths) away from an existing stream that a patch can be automatically coerced to be a stream.
+Setting to TRUE will include patches at any distance. This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.
+Default is 4.}
 }
 \description{
-Preforms RHESSys Preprocessing, comprise of two main steps: generating a world file, and generating a flow table.
+Preforms RHESSys Preprocessing, comprised of two main steps: generating a world file, and generating a flow table.
 World file is generated via world_gen.R, and flow table is generated via CreateFlownet.R.
 }
 \seealso{

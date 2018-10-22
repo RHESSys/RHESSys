@@ -30,8 +30,17 @@ g2w/grass2world/g2w
 # Editor leftovers
 *~
 
+<<<<<<< HEAD
 # Libraries
 libwmfire.dylib
 libwmfire.so
+=======
+# Fire-spread model files 
+*.dylib
+libwmfire.dylib
+libwmfire.so
+
+
+>>>>>>> 8d6a093096f492eb19088a2bbee73dc3682f1165
 .Rproj.user
 
