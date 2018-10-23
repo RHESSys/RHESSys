@@ -74,7 +74,6 @@ void input_new_hillslope_mult(
 	/*--------------------------------------------------------------*/
 	int		i,j, dtmp;
 	int		base_stationID;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
 	int		paramCnt=0;
@@ -91,7 +90,7 @@ void input_new_hillslope_mult(
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].y = ltmp * hillslope[0].y;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",1,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].z = ltmp * hillslope[0].z;
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",0,1);	 	
+	hillslope[0].hill_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",hillslope[0].hill_parm_ID,1);	 	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",1,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.storage = ltmp * hillslope[0].gw.storage;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",1,1);	
@@ -102,9 +101,9 @@ void input_new_hillslope_mult(
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this hillslope                             */
 	/*--------------------------------------------------------------*/
-	if (default_object_ID > 0) {	
+	if (hillslope[0].hill_parm_ID > 0) {	
 		i = 0;
-		while (defaults[0].hillslope[i].ID != default_object_ID) {
+		while (defaults[0].hillslope[i].ID != hillslope[0].hill_parm_ID) {
 			i++;
 			/*--------------------------------------------------------------*/
 			/*  Report an error if no match was found.  Otherwise assign    */
@@ -113,7 +112,7 @@ void input_new_hillslope_mult(
 			if ( i>= defaults[0].num_hillslope_default_files ){
 				fprintf(stderr,
 					"\nFATAL ERROR: in input_new_hillslope,hillslope default ID %d not found.\n",
-					default_object_ID);
+					hillslope[0].hill_parm_ID);
 				exit(EXIT_FAILURE);
 			}
 		} /* end-while */

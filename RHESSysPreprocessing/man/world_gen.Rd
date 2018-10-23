@@ -4,30 +4,38 @@
 \alias{world_gen}
 \title{World Gen}
 \usage{
-world_gen(template, worldfile, type = "GRASS", typepars, overwrite = NULL)
+world_gen(template, worldfile, type = "Raster", typepars, overwrite = FALSE,
+  header = FALSE, asprules = NULL, wrapper = FALSE)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
 <state variable> <operator> <value/map>. Levels are difined by lines led by "_", structured
-<levelname> <map> <count>. Whitespace and tabs are ignored.}
+<levelname> <map> <count>. Whitespace and tabs are ignored.  Maps referred to must be supplied
+by your chosen method of data input(GRASS or raster), set using the "type" arguement.}
 
 \item{worldfile}{Name and path of worldfile to be created.}
 
-\item{type}{GIS type to be used. Currently only supports GRASS GIS.}
+\item{type}{Input file type to be used. "GRASS" will attempt to autodetect the
+version of GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".
+"Raster" type will use rasters in GeoTiff or equivalent format, with file names matching those indicated in the template.}
 
-\item{typepars}{Parameters needed based on GIS type used. For Grass GIS type, typepars is a
+\item{typepars}{Parameters needed based on input data type used. For GRASS GIS type, typepars is a
 vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 Example parameters are included in an example script included in this package. See initGRASS help
-for more info on parameters.}
+for more info on parameters.  If using raster type, typepars should be a string indicating the path to a folder
+containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
+for additional information and supported filetypes.}
 
-\item{overwrite}{Overwrite existing worldfile. Overwrites on any non-NULL arguement.}
+\item{overwrite}{Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.}
+
+\item{asprules}{The path and filename to the rules file.  Using this argument enables aspatial patches.}
 }
 \description{
 Generates world files for use in RHESSys based on input template and maps,
-currently includes functionality for GRASS GIS, and works on both unix and windows. 5/16/17.
+currently includes functionality for GRASS GIS and raster data, and works on both unix and windows. 1/23/18.
 }
 \seealso{
-\code{\link{initGRASS}}, \code{\link{readRAST}}
+\code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
 }
 \author{
 Will Burke

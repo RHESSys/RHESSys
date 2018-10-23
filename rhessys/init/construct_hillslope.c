@@ -82,7 +82,6 @@ struct hillslope_object *construct_hillslope(
 	/*--------------------------------------------------------------*/
 	int		i,j;
 	int		base_stationID;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	struct	hillslope_object *hillslope;
       	param		*paramPtr=NULL;
@@ -115,7 +114,7 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	hillslope[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
 	hillslope[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,0);
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",-9999,0);
+	hillslope[0].hill_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",-9999,0);
 	hillslope[0].gw.storage = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",0.0,1);
 	hillslope[0].gw.NO3 = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",0.0,1);
 	hillslope[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
@@ -129,7 +128,7 @@ struct hillslope_object *construct_hillslope(
 		"construct_hillslopes" );
 	
 	i = 0;
-	while (defaults[0].hillslope[i].ID != default_object_ID) {
+	while (defaults[0].hillslope[i].ID != hillslope[0].hill_parm_ID) {
 		i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -138,7 +137,7 @@ struct hillslope_object *construct_hillslope(
 		if ( i>= defaults[0].num_hillslope_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_hillslope,hillslope default ID %d not found.\n",
-				default_object_ID);
+				hillslope[0].hill_parm_ID);
 			exit(EXIT_FAILURE);
 		}
 	} /* end-while */

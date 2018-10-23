@@ -90,7 +90,6 @@ void input_new_strata_mult(
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
 	int	i, dtmp, num_lines;
-	int	default_object_ID;
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
 	int	paramCnt=0;
@@ -100,7 +99,7 @@ void input_new_strata_mult(
 	/*--------------------------------------------------------------*/
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",0,1);
+	canopy_strata[0].veg_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1,1);	
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cover_fraction = ltmp * canopy_strata[0].cover_fraction;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",1,1);
@@ -216,9 +215,9 @@ void input_new_strata_mult(
 		/*--------------------------------------------------------------*/
 		/*	Assign	defaults for this canopy_strata								*/
 		/*--------------------------------------------------------------*/
-		if (default_object_ID > 0) {
+		if (canopy_strata[0].veg_parm_ID > 0) {
 			i=0;
-			while (defaults[0].stratum[i].ID != default_object_ID) {
+			while (defaults[0].stratum[i].ID != canopy_strata[0].veg_parm_ID) {
 				i++;
 				/*--------------------------------------------------------------*/
 				/*  Report an error if no match was found.  Otherwise assign    */
@@ -227,7 +226,7 @@ void input_new_strata_mult(
 				if ( i>= defaults[0].num_stratum_default_files ){
 					fprintf(stderr,
 						"\nFATAL ERROR: in construct_canopy_strata, canopy_strata default ID %d not found.\n" ,
-						default_object_ID);
+						canopy_strata[0].veg_parm_ID);
 					exit(EXIT_FAILURE);
 				}
 			} /* end-while */

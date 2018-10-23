@@ -110,7 +110,6 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
 	int		i,j,z;
-	int		default_object_ID;
 	double		check_snow_scale;
 	double		n_routing_timesteps;
 	char		record[MAXSTR];
@@ -134,7 +133,7 @@ struct basin_object *construct_basin(
 	basin[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	basin[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
 	basin[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,0);
-	default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",-9999,0);	
+	basin[0].basin_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",-9999,0);	
 	basin[0].latitude = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",-9999,0);
 	basin[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 		
@@ -187,7 +186,7 @@ struct basin_object *construct_basin(
 	basin[0].defaults = (struct basin_default **)
 		alloc( sizeof(struct basin_default *),"defaults","construct_basin" );
 	i = 0;
-	while (defaults[0].basin[i].ID != default_object_ID) {
+	while (defaults[0].basin[i].ID != basin[0].basin_parm_ID) {
 		i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -196,7 +195,7 @@ struct basin_object *construct_basin(
 		if ( i>= defaults[0].num_basin_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_basin,basin default ID %d not found.\n",
-				default_object_ID);
+				basin[0].basin_parm_ID);
 			exit(EXIT_FAILURE);
 		}
 	} /* end-while */

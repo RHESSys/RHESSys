@@ -85,13 +85,12 @@ struct patch_object *construct_patch(
 	param * readtag_worldfile(int *, 
 				  FILE *, 
 				  char*);	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definitions				*/
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
 	int		i;
-	int		soil_default_object_ID;
-	int		landuse_default_object_ID;
 	int		fire_default_object_ID;
 	int		surface_energy_default_object_ID;
 	char		record[MAXSTR];
@@ -132,8 +131,8 @@ struct patch_object *construct_patch(
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
 	patch[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
-	soil_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",-9999,0);
-	landuse_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
+	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",-9999,0);
+	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
 
 	if (command_line[0].firespread_flag == 1) {
 		fscanf(world_file,"%d",&(fire_default_object_ID));
@@ -149,7 +148,7 @@ struct patch_object *construct_patch(
 	patch[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,0);
 	patch[0].lna  = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",7,1);
 	patch[0].Ksat_vertical = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",1.0,1);
-	mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",0,1);
+	patch[0].mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",0,1);
 
 
 	if (command_line[0].stdev_flag == 1) {
@@ -183,6 +182,9 @@ struct patch_object *construct_patch(
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.0,1);
 	patch[0].litter_ns.litr1n =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",0.0,1);
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.031,1);
+	patch[0].litter_ns.litr1n =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",0.00093,1);
 	patch[0].litter_cs.litr2c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",0.0,1);
 	patch[0].litter_cs.litr3c =
@@ -361,7 +363,7 @@ struct patch_object *construct_patch(
 		"construct_patch" );
 	
 	i = 0;
-	while (defaults[0].soil[i].ID != soil_default_object_ID) {
+	while (defaults[0].soil[i].ID != patch[0].soil_parm_ID) {
 		i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -370,7 +372,7 @@ struct patch_object *construct_patch(
 		if ( i>= defaults[0].num_soil_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_patch, soil default ID %d not found for patch %d\n" ,
-				soil_default_object_ID, patch[0].ID);
+				patch[0].soil_parm_ID, patch[0].ID);
 			exit(EXIT_FAILURE);
 		}
 	} /* end-while */
@@ -380,7 +382,7 @@ struct patch_object *construct_patch(
 		alloc( sizeof(struct landuse_default *),"defaults",
 		"construct_patch" );
 	i = 0;
-	while (defaults[0].landuse[i].ID != landuse_default_object_ID) {
+	while (defaults[0].landuse[i].ID != patch[0].landuse_parm_ID) {
 		i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -389,7 +391,7 @@ struct patch_object *construct_patch(
 		if ( i>= defaults[0].num_landuse_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_patch, landuse default ID %d not found for patch %d\n" ,
-				landuse_default_object_ID, patch[0].ID);
+				patch[0].landuse_parm_ID, patch[0].ID);
                         // fprintf(stderr, "\n %d ", defaults[0].landuse[i-1].ID);
 			exit(EXIT_FAILURE);
 		}
@@ -489,10 +491,10 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	/* FOR now substitute worldfile m (if > 0) in defaults			*/
 	/*--------------------------------------------------------------*/
-	patch[0].original_m = mpar;
-	if (mpar > ZERO) {
-		patch[0].m = mpar * command_line[0].sen[M];
-		patch[0].m_z = patch[0].soil_defaults[0][0].porosity_0 * mpar;
+	patch[0].original_m = patch[0].mpar;
+	if (patch[0].mpar > ZERO) {
+		patch[0].m = patch[0].mpar * command_line[0].sen[M];
+		patch[0].m_z = patch[0].soil_defaults[0][0].porosity_0 * patch[0].mpar;
 	}
 	else {
 		patch[0].m = patch[0].soil_defaults[0][0].m;
