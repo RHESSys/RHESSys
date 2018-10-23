@@ -327,15 +327,7 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	 
 	/* Leaf carbon transfer growth */
-	if (cs->leafc + cdf->leafc_transfer_to_leafc > ZERO )  {
-
-		if (cs->leafc > ZERO)
-			cs->leafc_age = (cs->leafc_age * cs->leafc + cdf->leafc_transfer_to_leafc)/
-				(cs->leafc + cdf->leafc_transfer_to_leafc);
-		else
-			cs->leafc_age = 1.0;
-	}
-
+	cs->leafc_age1            += cdf->leafc_transfer_to_leafc;
 	cs->leafc            += cdf->leafc_transfer_to_leafc;
 	cs->leafc_transfer   -= cdf->leafc_transfer_to_leafc;
 	/* update age */

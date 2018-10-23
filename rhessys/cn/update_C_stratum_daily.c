@@ -62,13 +62,8 @@ int update_C_stratum_daily(struct epconst_struct epc,
 	/* daily leaf allocation fluxes */
 
 
-	if (cs->leafc + cdf->cpool_to_leafc > ZERO) 
-	cs->leafc_age = (cs->leafc_age * cs->leafc + cdf->cpool_to_leafc)/
-				(cs->leafc + cdf->cpool_to_leafc);
-	else
-	cs->leafc_age = 0;
-
 	cs->leafc          += cdf->cpool_to_leafc;
+	cs->leafc_age1          += cdf->cpool_to_leafc;
 	cs->cpool          -= cdf->cpool_to_leafc;
 	cs->leafc_store  += cdf->cpool_to_leafc_store;
 	cs->cpool          -= cdf->cpool_to_leafc_store;

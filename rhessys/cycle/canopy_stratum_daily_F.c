@@ -390,21 +390,21 @@ void	canopy_stratum_daily_F(
 	/* age varyin parameters					*/
 	/*--------------------------------------------------------------*/
 
-	
-	if (stratum[0].cs.leafc_age > 1)
-		stratum[0].defaults[0][0].epc.flnr_sunlit = ((stratum[0].defaults[0][0].epc.flnr+stratum[0].defaults[0][0].epc.flnr_diff)+
-				(stratum[0].cs.leafc_age-1)* (stratum[0].defaults[0][0].epc.flnr-stratum[0].defaults[0][0].epc.flnr_diff))/
-					stratum[0].cs.leafc_age;
+	if (stratum[0].cs.leafc_age1 > 0)
+		stratum[0].defaults[0][0].epc.flnr_sunlit = (stratum[0].cs.leafc_age1 * (stratum[0].defaults[0][0].epc.flnr+stratum[0].defaults[0][0].epc.flnr_diff)+
+				stratum[0].cs.leafc_age2 * (stratum[0].defaults[0][0].epc.flnr-stratum[0].defaults[0][0].epc.flnr_diff))/
+					(stratum[0].cs.leafc_age1+stratum[0].cs.leafc_age2);
 	else
 		stratum[0].defaults[0][0].epc.flnr_sunlit = stratum[0].defaults[0][0].epc.flnr+stratum[0].defaults[0][0].epc.flnr_diff;
 
 	stratum[0].defaults[0][0].epc.flnr_shade = stratum[0].defaults[0][0].epc.flnr_sunlit;
 
 
-	if (stratum[0].cs.leafc_age > 1)
-		stratum[0].defaults[0][0].epc.netpabs_sunlit = ((stratum[0].defaults[0][0].epc.netpabs+stratum[0].defaults[0][0].epc.netpabs_diff)+
-				(stratum[0].cs.leafc_age-1)* (stratum[0].defaults[0][0].epc.netpabs-stratum[0].defaults[0][0].epc.netpabs_diff))/
-					stratum[0].cs.leafc_age;
+	if (stratum[0].cs.leafc_age1 > 0)
+		stratum[0].defaults[0][0].epc.netpabs_sunlit = (stratum[0].cs.leafc_age1 * 
+			(stratum[0].defaults[0][0].epc.netpabs+stratum[0].defaults[0][0].epc.netpabs_diff)+
+				stratum[0].cs.leafc_age2 * (stratum[0].defaults[0][0].epc.netpabs-stratum[0].defaults[0][0].epc.netpabs_diff))/
+					(stratum[0].cs.leafc_age1+stratum[0].cs.leafc_age2);
 	else
 		stratum[0].defaults[0][0].epc.netpabs_sunlit = stratum[0].defaults[0][0].epc.netpabs+stratum[0].defaults[0][0].epc.netpabs_diff;
 
@@ -1279,8 +1279,8 @@ void	canopy_stratum_daily_F(
 	transpiration_rate = transpiration_rate_sunlit +  transpiration_rate_shade;
 	potential_transpiration_rate = potential_transpiration_rate_sunlit +  potential_transpiration_rate_shade;
 		
-	stratum[0].cdf.transpiration_rate_sunlit = transpiration_rate_sunlit*1000;
-	stratum[0].cdf.transpiration_rate_shade = transpiration_rate_shade*1000;
+	stratum[0].cdf.transpiration_rate_sunlit = transpiration_rate_sunlit;
+	stratum[0].cdf.transpiration_rate_shade = transpiration_rate_shade;
 
 	if ((stratum[0].ID ==1) && (transpiration_rate_shade < 0))
 	printf("\n sun %lf %lf gs %lf shade %lf %lf gs %lf", transpiration_rate_sunlit*1000, rnet_trans_sunlit, stratum[0].gs_sunlit, transpiration_rate_shade*1000,rnet_trans_shade, stratum[0].gs_shade);

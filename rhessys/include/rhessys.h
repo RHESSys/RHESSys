@@ -2179,7 +2179,8 @@ struct cstate_struct
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
-    double leafc_age;           /* (years) age */
+    double leafc_age1;           /* (kgC/m2) leaf C in age 1 */
+    double leafc_age2;           /* (kgC/m2) leaf C in age 2 */
     double stem_density;    /* number per m2 */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
@@ -2320,8 +2321,8 @@ struct epvar_struct
     double DOC_to_gw;   /* (kgC/m2/day) */
     double assim_sunlit; /* (umol/m2/s) */
     double assim_shade;  /*  (umol/m2/s) */
-    double transpiration_rate_sunlit; 
-    double transpiration_rate_shade; 
+    double transpiration_rate_sunlit; /* (m/m2/s) */
+    double transpiration_rate_shade; /* (m/m2/s) */ 
 
     /* daily phenology fluxes */
     double leafc_to_deadleafc;     /* (kgC/m2/d) standing dead grass accumulation */

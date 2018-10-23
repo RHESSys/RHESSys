@@ -457,7 +457,8 @@ int allocate_annual_growth(				int id,
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
 		cs->leafc_transfer = 0.0;
 		cs->leafc = 0.0;
-		cs->leafc_age = 1.0;
+		cs->leafc_age1 = 0.0;
+		cs->leafc_age2 = 0.0;
 		cs->frootc = 0.0; 
 		cs->frootc_transfer = 0.0;
 		ns->leafn_transfer = 0.0;
@@ -518,7 +519,8 @@ int allocate_annual_growth(				int id,
 		 // cs->num_resprout = max(cs->num_resprout-1,0);	
 		
 		 cs->age += 1;
-		 cs->leafc_age += 1;
+		 cs->leafc_age2 = cs->leafc;
+		 cs->leafc_age1 = 0.0;
 		 }
 
 	/* update states variables */

@@ -252,7 +252,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",1.0,1);
 	
 	canopy_strata[0].cs.num_resprout = getIntWorldfile(&paramCnt,&paramPtr,"cs.num_resprout","%d",0,1);
-	canopy_strata[0].cs.leafc_age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",1.0,1);
+	canopy_strata[0].cs.leafc_age2 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",canopy_strata[0].cs.leafc/2.0,1);
+	canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age","%lf",canopy_strata[0].cs.leafc/2.0,1);
 
 
 	if (command_line[0].vegspinup_flag > 0){
