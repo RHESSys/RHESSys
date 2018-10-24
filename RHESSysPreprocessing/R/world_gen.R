@@ -99,48 +99,82 @@ world_gen = function(template, worldfile, type = 'Raster', typepars, overwrite=F
   if(wrapper==FALSE){f = save(lret, file = paste(fpath,"/lret",sep = ""))}
 
   # ---------- Build list containing values based on template and maps ----------
+
   statevars = vector("list",length(template_clean))
 
   for (i in var_index) {
-    level_agg = as.list(data.frame(levels[,1:sum(i > level_index)]))
-    if (i > level_index[6]) { strata = 1:template_clean[[level_index[6]]][3] # for stratum level of template
-    } else{strata = 1}
+
+    level_agg = as.list(data.frame(levels[, 1:sum(i > level_index)]))
+
+    if (i > level_index[6]) {
+      strata = 1:template_clean[[level_index[6]]][3] # for stratum level of template
+    } else{
+      strata = 1
+    }
+
     for (s in strata) {
-      if(template_clean[[i]][2] == "value") { #use value
-        if(suppressWarnings(all(is.na(as.numeric(template_clean[[i]][2+s]))))){
-          stop(noquote(paste("\"",template_clean[[i]][2+s],"\" on template line ",i," is not a valid value.",sep = "")))
-          }
-        statevars[[i]][[s]] = as.double(template_clean[[i]][2+s])
-      } else if(template_clean[[i]][2] == "dvalue") { #integer value
-        statevars[[i]][[s]] = as.integer(template_clean[[i]][2+s])
-      } else if(template_clean[[i]][2] == "aver") { #average
-        maptmp = as.vector(t(map_df[template_clean[[i]][2+s]]))
+      if (template_clean[[i]][2] == "value") { #use value
+        if (suppressWarnings(all(is.na(as.numeric(
+          template_clean[[i]][2 + s]
+        ))))) {
+          stop(noquote(
+            paste(
+              "\"",
+              template_clean[[i]][2 + s],
+              "\" on template line ",
+              i,
+              " is not a valid value.",
+              sep = ""
+            )
+          ))
+        }
+        statevars[[i]][[s]] = as.double(template_clean[[i]][2 + s])
+
+      } else if (template_clean[[i]][2] == "dvalue") { #integer value
+        statevars[[i]][[s]] = as.integer(template_clean[[i]][2 + s])
+
+      } else if (template_clean[[i]][2] == "aver") { #average
+        maptmp = as.vector(t(map_df[template_clean[[i]][2 + s]]))
         statevars[[i]][[s]] = aggregate(maptmp, by = level_agg, FUN = "mean")
-      } else if(template_clean[[i]][2] == "mode") { #median
-        maptmp = as.vector(t(map_df[template_clean[[i]][2+s]]))
-        statevars[[i]][[s]] = aggregate(maptmp, by = level_agg, FUN = "median")
-      } else if(template_clean[[i]][2] == "eqn") { # only for horizons old version -- use normal mean in future
+
+      } else if (template_clean[[i]][2] == "mode") { #mode
+        maptmp = as.vector(t(map_df[template_clean[[i]][2 + s]]))
+        statevars[[i]][[s]] = aggregate(
+          maptmp,
+          by = level_agg,
+          FUN = function(x) {
+            ux <- unique(x)
+            ux[which.max(tabulate(match(x, ux)))]
+          }
+        )
+
+      } else if (template_clean[[i]][2] == "eqn") { # only for horizons old version -- use normal mean in future
         maptmp = as.vector(t(map_df[template_clean[[i]][5]]))
         statevars[[i]][[s]] = aggregate(maptmp, by = level_agg, FUN = "mean")
-        statevars[[i]][[s]][,"x"] = statevars[[i]][[s]][,"x"] * as.numeric(template_clean[[i]][3])
-      } else if(template_clean[[i]][2] == "spavg") { #spherical average
+        statevars[[i]][[s]][, "x"] = statevars[[i]][[s]][, "x"] * as.numeric(template_clean[[i]][3])
+
+      } else if (template_clean[[i]][2] == "spavg") { #spherical average
         maptmp = as.vector(t(map_df[template_clean[[i]][3]]))
-        rad = (maptmp * pi)/(180) #convert to radians
+        rad = (maptmp * pi) / (180) #convert to radians
         sin_avg = aggregate(sin(rad), by = level_agg, FUN = "mean") #avg sin
         cos_avg = aggregate(cos(rad), by = level_agg, FUN = "mean") #avg cos
-        aspect_rad = atan2(sin_avg[,"x"],cos_avg[,"x"]) # sin and cos to tan
+        aspect_rad = atan2(sin_avg[, "x"], cos_avg[, "x"]) # sin and cos to tan
         aspect_deg = (aspect_rad * 180) / (pi) #rad to deg
-        for (a in 1:length(aspect_deg)){
-          if(aspect_deg[a]<0) { aspect_deg[a] = 360 + aspect_deg[a]}}
+        for (a in 1:length(aspect_deg)) {
+          if (aspect_deg[a] < 0) {
+            aspect_deg[a] = 360 + aspect_deg[a]
+          }
+        }
         statevars[[i]][[s]] = cos_avg
-        statevars[[i]][[s]][,"x"] = aspect_deg
-      } else if(template_clean[[i]][2] == "area") { #only for state var area
+        statevars[[i]][[s]][, "x"] = aspect_deg
+      } else if (template_clean[[i]][2] == "area") { #only for state var area
         statevars[[i]][[s]] = aggregate(cellarea, by = level_agg, FUN = "sum")
-      } else { print(paste("Unexpected 2nd element on line",i)) }
+
+      } else {
+        print(paste("Unexpected 2nd element on line", i))
+      }
     }
   }
-
-
 
   # ---------- Build world file ----------
   print("Writing worldfile",quote = FALSE)
