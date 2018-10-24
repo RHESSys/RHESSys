@@ -45,7 +45,7 @@ template_read = function(template){
   map_names = sapply(template_clean[maps_index], function(x) x[1])
   map_info = cbind(c("world","basin","hillslope","zone","patch","strata", map_names),c(unlist(level_maps),maps_all[!is.na(maps_all)]))
   colnames(map_info) = c("MapName","Map")
-  map_info = unique(map_info)
+  #map_info = unique(map_info)
 
   template_list = list(template_clean,var_names,level_index,var_index,map_info,head)
   return(template_list)
