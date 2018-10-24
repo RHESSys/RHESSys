@@ -7,8 +7,8 @@
 RHESSysPreprocess(template, name, type = "Raster", typepars,
   streams = NULL, overwrite = FALSE, roads = NULL,
   impervious = NULL, roofs = NULL, asprules = NULL, header = FALSE,
-  meta = TRUE, wrapper = TRUE, parallel = FALSE, d4 = FALSE,
-  make_stream = NULL)
+  meta = TRUE, wrapper = TRUE, parallel = TRUE, d4 = FALSE,
+  make_stream = 4)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
