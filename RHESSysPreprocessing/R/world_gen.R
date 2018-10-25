@@ -33,6 +33,8 @@ world_gen = function(template,
                      wrapper = FALSE) {
 
   # ---------- Check inputs ----------
+  options(scipen = 999) # no scientific notation
+
   if (!file.exists(template)) {
     print(paste("Template does not exist or is not located at specified path:",template),quote = FALSE) #check if template exists
   }
