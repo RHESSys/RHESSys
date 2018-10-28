@@ -36,6 +36,7 @@
 #' @author Will Burke
 #' @export
 
+# ---------- Function start ----------
 RHESSysPreprocess = function(template,
                              name,
                              type = 'Raster',
@@ -47,15 +48,15 @@ RHESSysPreprocess = function(template,
                              roofs = NULL,
                              asprules = NULL,
                              header = FALSE,
-                             meta = TRUE,
+                             meta = FALSE,
                              wrapper = TRUE,
-                             parallel = FALSE,
+                             parallel = TRUE,
                              d4 = FALSE,
-                             make_stream=NULL) {
+                             make_stream = 4) {
 
   # ---------- Check Inputs ----------
   if (!file.exists(template)) { # check if template exists
-    print(paste("Template does not exist or is not located at specified path:",template),quote=FALSE)
+    print(paste("Template does not exist or is not located at specified path:",template),quote = FALSE)
   }
 
   basename = basename(name) # check Name
@@ -95,7 +96,7 @@ RHESSysPreprocess = function(template,
   }
 
   # ---------- Run world_gen ----------
-  print("Begin world_gen.R",quote=FALSE)
+  print("Begin world_gen.R",quote = FALSE)
 
   if (file.exists(worldfile) & overwrite == FALSE) { # check for worldfile overwrite
     t = menu(c("Yes", "No [Exit]"), title = noquote(paste(
@@ -119,7 +120,7 @@ RHESSysPreprocess = function(template,
   asp_list = world_gen_out[[2]]
 
   # ---------- Run CreateFlownet ----------
-  print("Begin CreateFlownet.R",quote=FALSE)
+  print("Begin CreateFlownet.R",quote = FALSE)
 
   if (file.exists(cfname) & overwrite == FALSE) { # check for flownet overwrite
     t = menu(c("Yes", "No [Exit]"), title = noquote(paste(
@@ -130,7 +131,7 @@ RHESSysPreprocess = function(template,
     }
   }
 
-  CreateFlownet(cfname = cfname,
+  CreateFlownet(name = cfname,
                 readin = readin,
                 type = type,
                 typepars = typepars,
@@ -142,24 +143,25 @@ RHESSysPreprocess = function(template,
                 roofs = roofs,
                 wrapper = wrapper,
                 parallel = parallel,
+                make_stream = make_stream,
                 d4 = d4)
 
   # ---------- Run build_meta ----------
-  if(meta){
-    build_meta(
-      name = name_clean,
-      world = worldfile,
-      flow = cfname,
-      template = template,
-      type = type,
-      typepars = typepars,
-      cf_maps = world_cfmaps,
-      streams = streams,
-      roads = roads,
-      impervious = impervious,
-      roofs = roofs,
-      asp_rule = asprules
-    )
-  }
+  # if (meta) {
+  #   build_meta(
+  #     name = name_clean,
+  #     world = worldfile,
+  #     flow = cfname,
+  #     template = template,
+  #     type = type,
+  #     typepars = typepars,
+  #     cf_maps = readin,
+  #     streams = streams,
+  #     roads = roads,
+  #     impervious = impervious,
+  #     roofs = roofs,
+  #     asp_rule = asprules
+  #   )
+  # }
 
 } # end function
