@@ -148,13 +148,13 @@
 /*----------------------------------------------------------*/
 #define FILEPATH_LEN 1024
 #define TEC_CMD_LEN 256
-#define NULLVAL -9999   
+#define NULLVAL -9999
 #define TRUE    1
 #define FALSE   0
 #define N_OUTFIELDS     17
 //#define MAXSTR        100
 #define MAXSTR  1024
-#define DtoR      0.01745329    
+#define DtoR      0.01745329
 #define PI      3.14159265359
 #define SECONDS_PER_DAY 86400
 #define ess_snow        0.97
@@ -164,8 +164,8 @@
 #define PRE     "result"
 #define state_output_filename   "world_state"
 #define MAXNAME 60
-#define INTERVAL_SIZE 0.001 
-#define MAX_NUM_INTERVAL 5000 
+#define INTERVAL_SIZE 0.001
+#define MAX_NUM_INTERVAL 5000
 #define STREAM 1
 #define ROAD 2
 #define NON_VEG 20
@@ -237,7 +237,7 @@ struct date
         };
 
 /*----------------------------------------------------------*/
-/*      Define default object.                              */      
+/*      Define default object.                              */
 /*----------------------------------------------------------*/
 
 struct  default_object
@@ -268,17 +268,17 @@ struct  default_object
 /*----------------------------------------------------------*/
 /*      Define the world object.                            */
 /*----------------------------------------------------------*/
-struct world_object 
+struct world_object
         {
         int             num_base_stations;
         // Since using gridded data will only have a single base station file but
         // mutliple base stations, the new num_base_stations_files is necessary for
-        // proper output of a world file when using gridded climate data.                       
+        // proper output of a world file when using gridded climate data.
         int             num_base_station_files;
         int             num_basin_files;
-        int             simulation_cycles;      
+        int             simulation_cycles;
         int             year_day;
-        int             ID;    
+        int             ID;
         int             num_fire_grid_row;
         int             num_fire_grid_col;
         /* for beetle_grid */
@@ -302,7 +302,7 @@ struct world_object
 
         char    **surface_energy_default_files;
         char    **spinup_default_files;
-        char    **spinup_thresholds_files;  
+        char    **spinup_thresholds_files;
         double  declin;                 /*      rads    */
         double  cos_declin;             /*      DIM     */
         double  sin_declin;             /*      DIM     */
@@ -310,17 +310,21 @@ struct world_object
         struct  base_station_object     **base_stations;
         struct  base_station_ncheader_object    *base_station_ncheader;
         struct  basin_object            **basins;
-        struct  date                    start_date;                             
-        struct  date                    end_date;                               
-        struct  date                    duration;                               
+        struct  date                    start_date;
+        struct  date                    end_date;
+        struct  date                    duration;
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;
         struct  beetle_object           **beetle_grid; //NR
-	struct patch_fire_object **patch_fire_grid;  //mk
+	    struct patch_fire_object **patch_fire_grid;  //mk
 	    struct patch_beetle_object **patch_beetle_grid; //NR
-        struct  spinup_thresholds_list_object  *spinup_thresholds ;   
-	struct  date			**master_hourly_date;	
+        struct  spinup_thresholds_list_object  *spinup_thresholds ;
+	    struct  date			**master_hourly_date;
+	    // for input time series of beetle attack events
+	    int num_extra_stations; //NREN 2018711
+	    struct base_station_object  **extra_stations;
+
         };
 
 
@@ -410,7 +414,7 @@ struct accumulate_patch_object
 
 
 /*----------------------------------------------------------*/
-/*      rooting zone object for patch                       */      
+/*      rooting zone object for patch                       */
 /*----------------------------------------------------------*/
 struct rooting_zone_object
 {
@@ -427,7 +431,7 @@ struct rooting_zone_object
 /*----------------------------------------------------------*/
 /*      Define routing list object.                         */
 /*----------------------------------------------------------*/
-struct routing_list_object 
+struct routing_list_object
         {
         int num_patches;
         struct patch_object **list;
@@ -435,7 +439,7 @@ struct routing_list_object
 /*----------------------------------------------------------*/
 /*      Define spinup threshold list object.                */
 /*----------------------------------------------------------*/
-struct spinup_thresholds_list_object 
+struct spinup_thresholds_list_object
         {
         int num_stratum;
         struct stratum_object **list;
@@ -532,12 +536,12 @@ struct	snowpack_object
 /*----------------------------------------------------------*/
 struct basin_object
         {
-        int             ID;                                                                     
+        int             ID;
         int             num_base_stations;
         int             num_hillslopes;
         double  area;                   /*  m2          */
 	      double  area_withsnow;			/*  m2 		*/
-        double  x;                      /*  meters      */      
+        double  x;                      /*  meters      */
         double  y;                      /*  meters      */
         double  z;                      /*  meters      */
         double  cos_latitude;           /*      DIM     */
@@ -546,7 +550,7 @@ struct basin_object
         double  theta_noon;             /*      rads    */
         double  sin_latitude;           /*      DIM     */
         double  max_slope;              /*      degrees */
-        
+
         /*      used in subsurface computation          */
         double basin_outflow;
         double basin_rz_storage;
@@ -562,7 +566,7 @@ struct basin_object
         double preday_basin_return_flow;
         double preday_basin_detention_store;
         /*                                              */
-        
+
         struct  base_station_object     **base_stations;
         struct  basin_default           **defaults;
         struct  basin_hourly_object     *hourly;
@@ -584,10 +588,10 @@ struct  basin_hourly_object
         {
         double  cos_declin_cos_hourangle;       /*      DIM     */
         double  cos_declin_sin_hourangle;       /*      DIM     */
-        double  cos_hour_angle;                 /*      DIM     */      
+        double  cos_hour_angle;                 /*      DIM     */
         double  cos_sza;                        /*      DIM     */
-        double  hour_angle;                     /* rads         */      
-        double  sin_hour_angle;                 /*      DIM     */      
+        double  hour_angle;                     /* rads         */
+        double  sin_hour_angle;                 /*      DIM     */
         double  optical_air_mass;               /*      DIM     */
         };
 
@@ -600,12 +604,12 @@ struct  grow_basin_object
         };
 
 /*----------------------------------------------------------*/
-/*      Define basin default object.                                            */      
+/*      Define basin default object.                                            */
 /*----------------------------------------------------------*/
 struct basin_default
         {
         int                     ID;
-        int             n_routing_timesteps;    /* number per day */ 
+        int             n_routing_timesteps;    /* number per day */
         struct          basin_grow_default      *grow_defaults;
         };
 
@@ -689,6 +693,25 @@ struct  clim_event_sequence
         int inx;
         struct dated_sequence *seq;
         };
+/* build a beetle caused snag pool sequences based on clim_event_sequence N.REN 20180630*/
+
+struct dated_sequence2
+        {
+         struct date edate;
+         double Cvalue;
+         double Nvalue;
+        };
+
+struct snag_sequence_object
+        {
+         int inx; // the index of climate input
+         struct dated_sequence2 *seq;
+
+
+        };
+
+
+
 
 /*----------------------------------------------------------*/
 /*      Define base station annual climate record .                             */
@@ -717,8 +740,10 @@ struct  dated_input_object
         struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
         struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */
         struct clim_event_sequence  pspread;   	 	   	                    /* 0-1        */
+        struct clim_event_sequence  beetle_attack;  /*0-1*/
         struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
+        struct clim_event_sequence CO2; // CO2 concentration daily time serires ppm  Ning Ren 20181026
         };
 
 /*----------------------------------------------------------*/
@@ -749,8 +774,8 @@ struct  daily_clim_object
         double  *atm_trans;             /*      0 - 1           */
         double  *CO2;                   /* ppm */
         double  *base_station_effective_lai;    /*      m^2/m^2         */
-        double  *cloud_fraction;        /*      0 - 1           */              
-        double  *cloud_opacity;         /*      0 - 1           */              
+        double  *cloud_fraction;        /*      0 - 1           */
+        double  *cloud_opacity;         /*      0 - 1           */
         double  *dayl;                  /* seconds / day */
         double  *daytime_rain_duration;         /* hours/day    */
         double  *Delta_T;               /*      degrees C / day         */
@@ -769,7 +794,7 @@ struct  daily_clim_object
         double  *PAR_diffuse;                   /*      molm-2day-1             */
         double  *PAR_direct;                    /*      molm-2day-1             */
         double  *relative_humidity;             /*      0 - 1 ; input 0 - 100   */
-        double  *snow;                          /*      mm      */      
+        double  *snow;                          /*      mm      */
         double  *tdewpoint;                     /*   degrees C  */
         double  *tday;                          /*      degrees C       */
         double  *tnight;                        /*      degrees C       */
@@ -785,11 +810,11 @@ struct  daily_clim_object
         double  *surface_shortwave_rad;         /*      W m-2  daily average  */
         double  *specific_humidity;             /*      kg/kg  daily average  */
 #endif
-        };    
-        
+        };
+
 
 /*----------------------------------------------------------*/
-/*      Define hillslope default object.                                                */      
+/*      Define hillslope default object.                                                */
 /*----------------------------------------------------------*/
 struct hillslope_default
         {
@@ -801,7 +826,7 @@ struct hillslope_default
         };
 
 /*----------------------------------------------------------*/
-/*      Define hillslope object to aggregate patch .    */      
+/*      Define hillslope object to aggregate patch .    */
 /*      default soil characteristics                            */
 /*----------------------------------------------------------*/
 struct  aggdefs_object
@@ -845,7 +870,7 @@ struct  gw_object
 
         };
 /*----------------------------------------------------------*/
-/*      Define a hillslope object.                                                              */      
+/*      Define a hillslope object.                                                              */
 /*----------------------------------------------------------*/
 struct hillslope_object
         {
@@ -933,15 +958,15 @@ struct metvar_struct
 /*      Define a zone default           object.                                         */
 /*----------------------------------------------------------*/
 struct  zone_default
-        { 
+        {
         int             ID;
         double  atm_trans_lapse_rate;   /* 1/m  */
         double  dewpoint_lapse_rate;    /*      degrees C / m           */
-        double  lapse_rate;             /* Celcius degrees/m    */      
-        double  wet_lapse_rate;         /* Celcius degrees/m    */      
-        double  lapse_rate_precip_default;              /* k by m       */      
-        double  lapse_rate_tmin;                /* Celcius degrees/m    */      
-        double  lapse_rate_tmax;                /* Celcius degrees/m    */      
+        double  lapse_rate;             /* Celcius degrees/m    */
+        double  wet_lapse_rate;         /* Celcius degrees/m    */
+        double  lapse_rate_precip_default;              /* k by m       */
+        double  lapse_rate_tmin;                /* Celcius degrees/m    */
+        double  lapse_rate_tmax;                /* Celcius degrees/m    */
         double  max_effective_lai;      /* m^2/m^2      */
         double  pptmin;                 /*      m       */
         double  sea_level_clear_sky_trans;      /* 0-1  */
@@ -959,7 +984,7 @@ struct  zone_default
         double  max_snow_temp;                                          /* degrees C */
         double  min_rain_temp;                                          /* degrees C */
         double  ndep_NO3;               /* kgN/m2/day   */
-        double  atm_CO2;                /* ppm */ 
+        double  atm_CO2;                /* ppm */
         double  psen[7];
         double  ravg_days; /* (days) number of days for running average */
         struct  zone_grow_default       *grow_defaults;
@@ -990,7 +1015,7 @@ struct zone_object
         int             hourly_rain_flag;                   /*  0 or 1 */
         int             Kdown_diffuse_flag;                 /*  0 or 1  */
         int             Kdown_direct_flag;                  /*  0 or 1  */
-        int             num_base_stations;                              
+        int             num_base_stations;
         int             num_patches;
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
@@ -1009,7 +1034,7 @@ struct zone_object
         double  Delta_T;                                /* C degrees    */
         double  e_dewpoint;                             /* Pa           */
         double  e_horizon;      /* cos of angle to normal of flat       */
-        double  effective_lai;          /* area wt. average m^2/m^2     */      
+        double  effective_lai;          /* area wt. average m^2/m^2     */
         double  Kdown_diffuse;                          /* Kj/(m^2*day) */
         double  Kdown_diffuse_calc;                             /* Kj/(m^2*day) */
         double  Kdown_diffuse_adjustment;               /*  0-1 */
@@ -1095,7 +1120,7 @@ struct soil_class
 /*----------------------------------------------------------*/
 /*      Define a land use       default object.                                         */
 /*----------------------------------------------------------*/
-struct  landuse_default 
+struct  landuse_default
 {
         int ID;
         double  fertilizer_NO3;                                 /* kg/m2/day    */
@@ -1114,7 +1139,7 @@ struct  landuse_default
 /*----------------------------------------------------------*/
 struct	soil_default
 	{
-	int		ID;								
+	int		ID;
 	int	theta_psi_curve;				/* unitless */
 	double	albedo;						/* 0 to 1   */
 	double	interval_size;					/* m */
@@ -1145,7 +1170,7 @@ struct	soil_default
 	double  snow_melt_Tcoef;				/* unitless */
 	double	fs_spill;					/* multiplier*/
 	double	fs_percolation;					/* multiplier */
-	double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */	
+	double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */
 	int	snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
 	double  bats_b;				/* unitless */
 	double  bats_r3;				/* unitless */
@@ -1195,15 +1220,15 @@ struct  cdayflux_patch_struct
         {
 
     /* dissolved organic fluxes */
-    double do_litr1c_loss;      /* (kgC/m2/day) labile DOC loss */ 
-    double do_litr2c_loss;      /* (kgC/m2/day) cellulose DOC loss */ 
-    double do_litr3c_loss;      /* (kgC/m2/day) shielded cellulose DOC loss */ 
-    double do_litr4c_loss;      /* (kgC/m2/day) lignan DOC loss */ 
+    double do_litr1c_loss;      /* (kgC/m2/day) labile DOC loss */
+    double do_litr2c_loss;      /* (kgC/m2/day) cellulose DOC loss */
+    double do_litr3c_loss;      /* (kgC/m2/day) shielded cellulose DOC loss */
+    double do_litr4c_loss;      /* (kgC/m2/day) lignan DOC loss */
 
-    double do_soil1c_loss;      /* (kgC/m2/day) fast soil carbon DOC loss */ 
-    double do_soil2c_loss;      /* (kgC/m2/day) medium soil DOC loss */ 
-    double do_soil3c_loss;      /* (kgC/m2/day) slow DOC loss */ 
-    double do_soil4c_loss;      /* (kgC/m2/day) recalcitrant DOC loss */ 
+    double do_soil1c_loss;      /* (kgC/m2/day) fast soil carbon DOC loss */
+    double do_soil2c_loss;      /* (kgC/m2/day) medium soil DOC loss */
+    double do_soil3c_loss;      /* (kgC/m2/day) slow DOC loss */
+    double do_soil4c_loss;      /* (kgC/m2/day) recalcitrant DOC loss */
     double total_DOC_loss;      /* (kgC/m2/day) */
     double DOC_to_gw;           /* (kgC/m2/day) */
 
@@ -1217,7 +1242,7 @@ struct  cdayflux_patch_struct
     double psoil2c_loss;        /* (kgC/m2/d) slow microbial recycling */
     double psoil3c_loss;        /* (kgC/m2/d) release of shielded cellulose */
     double psoil4c_loss;        /* (kgC/m2/d) recalcitrant SOM formation */
-    double kl4;                 /* (1/day) rate constant for lignin litter decomp */    
+    double kl4;                 /* (1/day) rate constant for lignin litter decomp */
 
     /* daily turnover fluxes */
     double leafc_to_litr1c;  /* (kgC/m2/d) leaf litfall (labile) */
@@ -1296,15 +1321,15 @@ struct  ndayflux_patch_struct
         {
 
     /* dissolved organic fluxes */
-    double do_litr1n_loss;      /* (kgN/m2/day) labile DON loss */ 
-    double do_litr2n_loss;      /* (kgN/m2/day) cellulose DON loss */ 
-    double do_litr3n_loss;      /* (kgN/m2/day) shielded cellulose DON loss */ 
-    double do_litr4n_loss;      /* (kgN/m2/day) lignan DON loss */ 
+    double do_litr1n_loss;      /* (kgN/m2/day) labile DON loss */
+    double do_litr2n_loss;      /* (kgN/m2/day) cellulose DON loss */
+    double do_litr3n_loss;      /* (kgN/m2/day) shielded cellulose DON loss */
+    double do_litr4n_loss;      /* (kgN/m2/day) lignan DON loss */
 
-    double do_soil1n_loss;      /* (kgN/m2/day) fast soil DON loss */ 
-    double do_soil2n_loss;      /* (kgN/m2/day) medium soil DON loss */ 
-    double do_soil3n_loss;      /* (kgN/m2/day) slow DON loss */ 
-    double do_soil4n_loss;      /* (kgN/m2/day) recalcitrant DON loss */ 
+    double do_soil1n_loss;      /* (kgN/m2/day) fast soil DON loss */
+    double do_soil2n_loss;      /* (kgN/m2/day) medium soil DON loss */
+    double do_soil3n_loss;      /* (kgN/m2/day) slow DON loss */
+    double do_soil4n_loss;      /* (kgN/m2/day) recalcitrant DON loss */
 
     double total_DON_loss;      /* (kgN/m2/day) */
     double DON_to_gw;   /* (kgN/m2/day) */
@@ -1419,7 +1444,7 @@ struct  ndayflux_patch_struct
 
 struct  litter_object
         {
-        
+
         double cover_fraction;                  /* 0-1 */
         double depth;                   /* m */
         double density;                 /* m/kgC */
@@ -1435,7 +1460,7 @@ struct  litter_object
         double T;               /* degress C */
 
         };
-                
+
 struct  litter_c_object
         {
     double litr1c;         /* (kgC/m2) litter labile C */
@@ -1565,10 +1590,10 @@ struct spinup_default {
         double max_years;   /* years */
         };
 
-struct spinup_object 
+struct spinup_object
 {
         struct spinup_default_object *defaults;
-};      
+};
 
 struct stratum_spinup_object
 {
@@ -1578,18 +1603,18 @@ struct stratum_spinup_object
 };
 
 /*----------------------------------------------------------*/
-/*      Define an patch object                              */      
+/*      Define an patch object                              */
 /*----------------------------------------------------------*/
 struct patch_object
 
         {
         int             zone_ID;
         int             default_flag;
-        int             ID;     
-        int             num_base_stations;                              
+        int             ID;
+        int             num_base_stations;
         int             num_innundation_depths;
         int             num_canopy_strata;
-        int             num_shadow_strata; 
+        int             num_shadow_strata;
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
         int             target_status;
@@ -1608,12 +1633,12 @@ struct patch_object
         double  effective_lai;          /* avg of strata m^2/m^2        */
         double  evaporation;            /* m  water*/
         double  evaporation_surf;       /* m  water*/
-        double  ga;                     /* m/s */         
-        double  ga_final;               /* m/s */  
-        double  gasnow;                 /* m/s */         
-        double  gasnow_final;           /* m/s */         
+        double  ga;                     /* m/s */
+        double  ga_final;               /* m/s */
+        double  gasnow;                 /* m/s */
+        double  gasnow_final;           /* m/s */
         double  gw_drainage;            /* m/day */
-	double	gw_drainage_hourly;     /* m/day  */	
+	double	gw_drainage_hourly;     /* m/day  */
         double  hourly_rz_drainage;     /* m water  */
         double  hourly_unsat_drainage;  /* m water  */
         double  hourly_subsur2stream_flow;      /* m water */
@@ -1642,7 +1667,7 @@ struct patch_object
         double Kdown_direct_und;
         double Kup_direct_und;
         double Kdown_diffuse_und;
-        double Kup_diffuse_und;         
+        double Kup_diffuse_und;
         double Kdown_direct_bare;
         double Kup_direct_bare;
         double Kdown_diffuse_bare;
@@ -1697,19 +1722,19 @@ struct patch_object
         double  streamflow_NO3;         /* kg/m2/day    */
         double  streamflow_NH4;         /* kg/m2/day    */
         double  road_cut_depth;         /* m */
-        double  rain_throughfall;       /* m water      */      
-        double  recharge;       /* m water      */      
+        double  rain_throughfall;       /* m water      */
+        double  recharge;       /* m water      */
         double  return_flow;            /* m water      */
         double  snow_throughfall;       /* m water      */
-        double  rain_throughfall_24hours;       /* m water,used for 24 hours accumulated throughfall    */      
-        double  rain_throughfall_final; /* m water      */      
+        double  rain_throughfall_24hours;       /* m water,used for 24 hours accumulated throughfall    */
+        double  rain_throughfall_final; /* m water      */
         double  NO3_throughfall;        /* kg/m2 day  */
         double  NO3_throughfall_final;  /* kg/m2 day */
         double  rain_stored;            /* m water      */
         double  slope;                  /* degrees              */
         double  S;                      /* m/m          */
         double  sat_zone_storage;       /* m water      */
-        double  snow_redist_scale;      /* multiplier   */ 
+        double  snow_redist_scale;      /* multiplier   */
         double  std;                    /* m water      */
         double  theta_std;                      /* m water      */
         double  surface_NO3;            /* kg/m2        */
@@ -1740,7 +1765,7 @@ struct patch_object
         double  surface_DON;            /* kgN/m2       */
         double  surface_DOC;            /* kgC/m2       */
         double  infiltration_excess;    /* m water      */
-        double  snow_throughfall_final; /* m water      */      
+        double  snow_throughfall_final; /* m water      */
         double  snow_melt;              /* m water      */
         double  snow_stored;            /* m water      */
         double  surface_flow;           /* m water      */
@@ -1794,7 +1819,7 @@ struct patch_object
 /*----------------------------------------------------------*/
 /*      Surface Hydrology  stuff                        */
 /*----------------------------------------------------------*/
-        int     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */        
+        int     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */
         double  water_balance;                          /* meters water         */
         double  delta_snowpack;                         /* meters               */
         double  delta_canopy_storage;                   /* meters water         */
@@ -1855,6 +1880,8 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
+
+
  /*---------------------------------------------------------------------------------*/
 /*      beetle related climate stuff, mainly seasonal temperature and precipitation */
 /*----------------------------------------------------------------------------------*/
@@ -1908,7 +1935,7 @@ struct  grow_patch_object
         double  humic_N;
         double  avail_N;
         double  N_loss;
-        double  resp_autr;      
+        double  resp_autr;
         };
 
 
@@ -2036,7 +2063,7 @@ struct  command_line_object
         int             gridded_ascii_flag;
         int             gridded_netcdf_flag;
         int             grow_flag;
-        int             vegspinup_flag; 
+        int             vegspinup_flag;
         int             routing_flag;
         int             surface_routing_flag;
         int             stream_routing_flag;
@@ -2127,7 +2154,7 @@ struct  tec_object
 /*----------------------------------------------------------*/
 /*      Define a tec file entry object.                                                 */
 /*----------------------------------------------------------*/
-struct tec_entry 
+struct tec_entry
         {
         struct  date cal_date;
         char    command[TEC_CMD_LEN];
@@ -2158,11 +2185,11 @@ struct tec_entry
 /*      From C version of Rhessys.                                                              */
 /*----------------------------------------------------------*/
 /*define declination_array[47] = { 0.0, -23.0, -22.0, -21.0, -19.0,
-                        -17.0, -15.0, -12.0, -9.0, -6.0, -3.0, 0.0, 3.0, 
-                        6.0, 9.0, 12.0, 14.0, 17.0, 19.0, 21.0, 22.0, 
-                        23.0, 23.5, 23.0, 21.5, 20.0, 18.0, 16.0, 14.0,  
+                        -17.0, -15.0, -12.0, -9.0, -6.0, -3.0, 0.0, 3.0,
+                        6.0, 9.0, 12.0, 14.0, 17.0, 19.0, 21.0, 22.0,
+                        23.0, 23.5, 23.0, 21.5, 20.0, 18.0, 16.0, 14.0,
                         12.0, 9.0, 6.0, 3.0, 0.0, -3.0, -6.0, -9.0, -12.0,
-                        -15.0, -17.0, -19.0, -21.0, -22.0, -23.0, -23.5, 
+                        -15.0, -17.0, -19.0, -21.0, -22.0, -23.0, -23.5,
                         -23.5 }
 */
 
@@ -2172,7 +2199,7 @@ struct tec_entry
 /*define  air_mass_array[22]  =
          {0.0, 2.90,3.05,3.21,3.39, 3.69, 3.82, 4.07, 4.37, 4.72, 5.12,
          5.60,6.18,6.88,7.77,8.90,10.39,12.44,15.36,19.79,26.96,30.00}
-          
+
 */
 
 
@@ -2201,18 +2228,18 @@ struct phenology_struct
         int nretdays;    /* (days) days between allocations */
                 int gwseasonday; /* (day) day within the growing season */
                 int lfseasonday; /* (day) day within litter fall period */
-                
-                
+
+
 };
 
-        
+
 
 /* carbon state variables (including sums for sources and sinks) */
 struct cstate_struct
 {
         int     age; /* (num years) */
-        int     num_resprout; /* (num years) running index of years of resprouting */   
-    
+        int     num_resprout; /* (num years) running index of years of resprouting */
+
     double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
     double totalc;          /* (kgC/m2) previous days plant carbon total */
@@ -2225,26 +2252,28 @@ struct cstate_struct
     double dead_stemc;      /* (kgC/m2) dead stem C */
     double live_crootc;     /* (kgC/m2) live coarse root C */
     double dead_crootc;     /* (kgC/m2) dead coarse root C */
-    double frootc;          /* (kgC/m2) fine root C */ 
+    double frootc;          /* (kgC/m2) fine root C */
 
     double snagc; //beetle snag pool
     double redneedlec; // dead leaf after beetle attack
+    double delay_snagc; // delayed snag pool after beetle attack NREN 20180727
+    double delay_redneedlec; // delayed redneedle c pool after beetle attack NREN 20180727
     double leafc_transfer;      /* (kgC/m2) leaf C to be allocated from last season */
     double livestemc_transfer; /* (kgC/m2) live stemwood C to be allocated from last season */
     double deadstemc_transfer; /* (kgC/m2) dead stemwood C to be allocated from last season */
     double livecrootc_transfer;/* (kgC/m2) live coarse root C to be allocated from last season */
     double deadcrootc_transfer;/* (kgC/m2) dead coarse root C to be allocated from last season */
     double frootc_transfer;     /* (kgC/m2) leaf C to be allocated from last season */
-    double gresp_transfer;    /* (kgC/m2) growth respiration C to be allocated from last season*/ 
+    double gresp_transfer;    /* (kgC/m2) growth respiration C to be allocated from last season*/
 
     double leafc_store;     /* (kgC/m2) stored leaf C stored from year's growth */
     double livestemc_store; /* (kgC/m2) live stemwood C stored from this years growth */
     double deadstemc_store; /* (kgC/m2) dead stemwood C  stored from this years growth*/
     double livecrootc_store;/* (kgC/m2) live coarse root C  stored from this years growth*/
     double deadcrootc_store;/* (kgC/m2) dead coarse root C  stored from this years growth*/
-    double frootc_store;    /* (kgC/m2) fine root C  stored from this years growth */ 
+    double frootc_store;    /* (kgC/m2) fine root C  stored from this years growth */
 
-    double gresp_store;    /* (kgC/m2) growth respiration C stored from this years growth */ 
+    double gresp_store;    /* (kgC/m2) growth respiration C stored from this years growth */
     double cwdc;           /* (kgC/m2) coarse woody debris C*/
 
 /* sink for respiration and fire losses */
@@ -2260,7 +2289,7 @@ struct cstate_struct
     double livecroot_mr_snk; /* (kgC/m2) SUM of live coarse root maint resp */
     double livecroot_gr_snk; /* (kgC/m2) SUM of live coarse root growth resp */
     double deadcroot_gr_snk; /* (kgC/m2) SUM of dead coarse root growth resp */
- 
+
     double Tacc;     /* degrees C, temperature during growth/acclimation period */
 } ;
 
@@ -2320,9 +2349,12 @@ struct epvar_struct
 {
     double height;                                              /* meters       */
     double all_pai;        /* (DIM) all-sided plant area index */
+    double all_pai_when_red;      /* the all_pai for calculating the interception of snow and radiation*/
     double proj_pai;       /* (DIM) projected plant area index */
+    double proj_pai_when_red;     /* the pai for calculating the interception of snow and radiation when beetle attack. NREN 20180803 */
     double all_lai;        /* (DIM) live all-sided leaf area index */
     double proj_lai;       /* (DIM) live projected leaf area index */
+    double proj_lai_when_red;     /* the lai for calculating the interception of snow and radiation when beetle attack, the EVP stopped but the leaf on N.REN 20180727 */
     double proj_sla_sunlit;       /* (DIM) live projected leaf area index */
     double proj_sla_shade;       /* (DIM) live projected leaf area index */
     double proj_lai_sunlit;       /* (DIM) live projected leaf area index */
@@ -2352,7 +2384,7 @@ struct epvar_struct
         double fleaf; /* 0-1 */
         double froot; /* 0-1 */
         double fwood; /* 0-1 */
-        
+
         /* gross PSN input */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
@@ -2444,9 +2476,9 @@ struct epvar_struct
     double live_crootc_to_dead_crootc; /* (kgC/m2/yr) live croot turnover */
 };
 
-/* nitrogen state variables (including sums for sources and sinks) */ 
+/* nitrogen state variables (including sums for sources and sinks) */
  struct nstate_struct
-{       
+{
     int    nlimit;          /* (0-1) 0 is not limited on that day */
     double preday_totaln;   /* (kgN/m2) previous days plant nitrogen total */
     double totaln;          /* (kgN/m2) previous days plant nitrogen total */
@@ -2457,7 +2489,7 @@ struct epvar_struct
     double dead_stemn;      /* (kgN/m2) dead stem N */
     double live_crootn;     /* (kgN/m2) live coarse root N */
     double dead_crootn;     /* (kgN/m2) dead coarse root N */
-    double frootn;          /* (kgN/m2) fine root N */ 
+    double frootn;          /* (kgN/m2) fine root N */
     double retransn;        /* (kgN/m2) retranslocated N */
 
     double leafn_transfer;      /* (kgN/m2) leaf C to be allocated from last season */
@@ -2467,15 +2499,17 @@ struct epvar_struct
     double deadcrootn_transfer;/* (kgN/m2) dead coarse root C to be allocated from last season */
     double frootn_transfer;     /* (kgN/m2) leaf C to be allocated from last season */
 
-    double snagn; //beetle snag pool
+    double snagn; //beetle snag pool this is the ready to decay pool
     double redneedlen; // beetle caused red needle
+    double delay_snagn;
+    double delay_redneedlen; //add the delayed not decay pool NREN 20180727
 
     double leafn_store;     /* (kgN/m2) stored leaf N stored from year's growth */
     double livestemn_store; /* (kgN/m2) live stemwood C stored from this years growth */
     double deadstemn_store; /* (kgN/m2) dead stemwood C  stored from this years growth*/
     double livecrootn_store;/* (kgN/m2) live coarse root C  stored from this years growth*/
     double deadcrootn_store;/* (kgN/m2) dead coarse root C  stored from this years growth*/
-    double frootn_store;    /* (kgN/m2) fine root N  stored from this years growth */ 
+    double frootn_store;    /* (kgN/m2) fine root N  stored from this years growth */
 
     double cwdn;           /* (kgN/m2) coarse woody debris N*/
     double fire_snk;       /* (kgC/m2) SUM of nitrogen loss due to fire */
@@ -2491,7 +2525,7 @@ struct epvar_struct
         /* daily phenology fluxes */
     double leafn_to_deadleafn;     /* (kgN/m2/d) standing dead grass accumulation */
     double leafn_store_to_leafn;   /* (kgN/m2/d) leaf expansion N */
-    double frootn_store_to_frootn; /* (kgN/m2/d) fine root expansion N */ 
+    double frootn_store_to_frootn; /* (kgN/m2/d) fine root expansion N */
 
     /* phenology fluxes from transfer pool */
    double leafn_transfer_to_leafn;           /* (kgN/m2/d) */
@@ -2611,7 +2645,7 @@ struct epconst_struct
         double gs_psi_max;         /* (mPa) upper soil moisture psi  threshold for leaf onset mPa */
         double gs_psi_range;       /* (mPa)  psi range for leaf onset */
         double gs_ravg_days;       /* (days)  length of averaging window for gs controls  */
-        double coef_CO2;        /* DIM 0-1  conductance sensitivity to CO2 */ 
+        double coef_CO2;        /* DIM 0-1  conductance sensitivity to CO2 */
         int day_leafon;        /* (DIM) yearday leaves on */
         int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */
         int ndays_expand;      /* (DIM) number of transition days leaf on to/from off  */
@@ -2686,12 +2720,12 @@ struct epconst_struct
 
 
 
-        
 
 
 
 
-        
+
+
 
 /*----------------------------------------------------------*/
 /*      Define a stratum default object.                                                */
@@ -2702,7 +2736,7 @@ struct  stratum_default
         int     lai_end_day;                                            /*      days    */
         int     lai_start_day;                                          /*      days    */
         int     lai_seasonal_flag;                                      /* boolean      */
-        double  albedo;                         /* unitless     */                      
+        double  albedo;                         /* unitless     */
         double  APAR_coef;                      /*  (m/s*LAI) ( s /m2 / umol photon )   */
         double  gsurf_slope;                    /* DIM */
         double  gsurf_intercept;                        /* DIM */
@@ -2712,7 +2746,7 @@ struct  stratum_default
         double  lai_stomatal_fraction;          /* DIM  */
         double  min_heat_capacity;      /* J/m3/K */
         double  max_heat_capacity;      /* J/m3/K */
-        double  PAR_absorptance;                /* DIM */ 
+        double  PAR_absorptance;                /* DIM */
         double  PAR_reflectance;                /* DIM */
         double  PAR_transmittance;              /* DIM */
         double  specific_rain_capacity;                 /* m / LAI      */
@@ -2721,6 +2755,9 @@ struct  stratum_default
         double  ustar_overu;                    /* DIM  */
         struct  epconst_struct  epc;
         struct  mrconst_struct  mrc;
+
+
+
 	double pspread_loss_rel; 		/* Relation between probability of spread and percent carbon loss */
 	double vapor_loss_rel; 			/* Relation between percent carbon loss and percent carbon vaporized */
 	double biomass_loss_rel_k1; 		/* k1 for the biomass sigmoid function (steepness of curve) */
@@ -2730,7 +2767,7 @@ struct  stratum_default
 /*----------------------------------------------------------*/
 /*      Define target object                                */
 /*----------------------------------------------------------*/
-       struct target_object { 
+       struct target_object {
               double lai;
               double total_stemc;
               double height;
@@ -2758,7 +2795,7 @@ struct  canopy_strata_object
         {
         int             patch_ID;
         int             ID;
-        int             num_base_stations;                              
+        int             num_base_stations;
         double  APAR_direct;                                    /* (umol photon/m2*day) */
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;
@@ -2793,20 +2830,26 @@ struct  canopy_strata_object
         double  wind;                                           /* 1/meters     */
         double  canopy_drip;
         struct  rooting_zone_object     rootzone;
-        struct  cdayflux_struct cdf;                            
+        struct  cdayflux_struct cdf;
         struct  cstate_struct   cs;
         struct  target_object   target;
-        struct  epvar_struct epv;                               
+        struct  epvar_struct epv;
         struct  nstate_struct   ns;
-        struct  ndayflux_struct ndf;                            
+        struct  ndayflux_struct ndf;
         struct  phenology_struct phen;
         struct  base_station_object     **base_stations;
         struct  stratum_default **defaults;
-        struct  spinup_default  **spinup_defaults;  
+        struct  spinup_default  **spinup_defaults;
         struct  canopy_strata_hourly_object     *hourly;
         struct  accumulate_strata_object        acc_month;
         struct  accumulate_strata_object        acc_year;
         struct  mult_conduct_struct     mult_conductance;
+
+                /* add the snag from beetle attack events N.REN 20180715*/
+        struct snag_sequence_object snag_sequence; //not a structure or union error, not use pointer
+        struct snag_sequence_object  redneedle_sequence;
+
+
         };
 
 
@@ -2838,7 +2881,7 @@ struct mortality_struct
 /*******************************************/
 /* fire object specific to rhessys patch structure		*/
 /*******************************************/
-struct patch_fire_object 
+struct patch_fire_object
 {
 	int num_patches;
 	int tmp_patch; // which patch among the num_patches are we on?
@@ -2848,7 +2891,7 @@ struct patch_fire_object
 	double occupied_area; /*gives the total patch area in the current grid	*/
 	struct fire_default_object *defaults;
 	double elev; // elevation if read in from grid
-};	
+};
 
 /* this is for beetle grid */
 struct patch_beetle_object
@@ -2878,6 +2921,8 @@ struct beetle_default {
      int year_attack;
      int leaf_year_delay; //red needle delay uear
      int leaf_half_life;  // red needle half life
+     int calc_single_attack;
+     int min_abc; // the minmum above ground carbon that a patch have to make sure an attack happen kg/m2
 
 
 };
@@ -2918,13 +2963,13 @@ struct surface_energy_object {
 };
 
 
-        
+
 /*----------------------------------------------------------*/
 /* Define Surface Energy Default                        */
 /*----------------------------------------------------------*/
 struct surface_energy_default {
         int ID;
-        int N_thermal_nodes;  
+        int N_thermal_nodes;
         int exp_dist;           /* 0, 1 */
         double damping_depth; /* m */
         double iteration_threshold; /* degrees C */

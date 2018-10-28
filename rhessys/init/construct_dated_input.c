@@ -62,19 +62,19 @@ struct	dated_input_object *construct_dated_input(
 	char	sequence_name[256];
 	char	file_name[256];
 	struct dated_input_object	*dated_input;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate the hourly clim object.								*/
 	/*--------------------------------------------------------------*/
 	dated_input = (struct dated_input_object *)
 		alloc(1*sizeof(struct dated_input_object),
 		"dated_input","construct_dated_input" );
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Attempt to open the hourly clim sequence file for each		*/
 	/*	critical clim parameter and read them in.					*/
 	/*--------------------------------------------------------------*/
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Initialize non - critical sequences.			*/
 	/*--------------------------------------------------------------*/
@@ -84,9 +84,10 @@ struct	dated_input_object *construct_dated_input(
 	dated_input[0].snow_melt_input.inx = -999;
 	dated_input[0].biomass_removal_percent.inx = -999;
 	dated_input[0].pspread.inx = -999;
+	dated_input[0].beetle_attack.inx = -999;
 	dated_input[0].PH.inx = -999;
 	dated_input[0].grazing_Closs.inx = -999;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read the still open base station file for the number of		*/
 	/*	non-critical parameters.									*/
@@ -143,6 +144,21 @@ struct	dated_input_object *construct_dated_input(
 			dated_input[0].pspread = construct_dated_clim_sequence(
 				(char *)strcat(file_name,".pspread"),
 				start_date);
+		}
+		/* add the time series of beetle attack as a climate event N.Ren 2018629*/
+		else if (strcmp(sequence_name, "beetle_attack") == 0) {
+		    strcpy(file_name, file_prefix);
+		    dated_input[0].beetle_attack = construct_dated_clim_sequence(
+		    (char *)strcat(file_name, ".beetle_attack"),
+             start_date );
+		}
+		/* add the daily time series of CO2 as a input N. Ren 20181026 */
+		else if  (strcmp(sequence_name, "CO2") == 0) {
+		    strcpy(file_name, file_prefix);
+		    dated_input[0].CO2= construct_dated_clim_sequence(
+		    (char *)strcat(file_name, ".CO2"),
+             start_date );
+
 		}
 		else if ( strcmp(sequence_name,"PH" ) == 0) {
 			strcpy(file_name, file_prefix);
