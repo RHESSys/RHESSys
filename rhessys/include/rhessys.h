@@ -2548,10 +2548,10 @@ struct epconst_struct
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
 	double netpabs;		/* (mol/mol) fPAR effectively abosorbed */
 	double netpabs_sla_parm;		/* scale parameter for netpabs = 1/(SLA*parm) relationship 1 is default */
-	double netpabs_diff;		/* (mol/mol) fPAR effectively abosorbed */
+	double netpabs_age_mult;		/* (0-1) increase for age < 1 (percent) */
 	double netpabs_shade;		/* (mol/mol) fPAR effectively abosorbed */
 	double netpabs_sunlit;		/* (mol/mol) fPAR effectively abosorbed */
-        double flnr_diff;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
+	double flnr_age_mult;		/* (0-1) increase for age < 1 (percent) */
         double flnr;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double flnr_shade;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double flnr_sunlit;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
