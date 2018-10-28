@@ -223,7 +223,7 @@
 /*		version 3 - -e flag AND -g flag							*/
 /*																*/
 /*	The records below begin with version 1, listing fields 		*/
-/*	with the required data format and units.  The additional	*/ 
+/*	with the required data format and units.  The additional	*/
 /*	versions follow.  Is is up to the user to provide the 		*/
 /*	proper record format for the options used.					*/
 /*																*/
@@ -249,7 +249,7 @@
 /*																*/
 /*																*/
 /*	<start zone record>											*/
-/*	ID - zone ID												*/ 
+/*	ID - zone ID												*/
 /*	x - x-co-ordinate of zone (centroid?) 						*/
 /*	y - y-co-ordinate of zone (centroid?) 						*/
 /*	z - z-co-ordinate of zone (centroid?) 						*/
@@ -278,7 +278,7 @@
 /*	z - z-co-ordinate of patch 	 (centroid?) 					*/
 /*	default_object_ID - patch default file 						*/
 /*	area	- patch area 										*/
-/*	effective lai - total effective lai of patch				*/	
+/*	effective lai - total effective lai of patch				*/
 /*	ko - mean saturated hydraulic conductivity of the patch		*/
 /*	lna - mean wetness index of patch 							*/
 /*	unsat_storage												*/
@@ -322,7 +322,7 @@
 /*			base station assigned to the patch  .				*/
 /*	  ... for (num_base_stations) fields.						*/
 /*	<end stratum record>										*/
-/*																*/	
+/*																*/
 /*	Default Files												*/
 /*																*/
 /*	Default files should, for uniformity, read in exactly the	*/
@@ -360,11 +360,11 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
 	struct beetle_default *construct_beetle_defaults(int, char **, struct command_line_object *);
 	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
-	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *); 
+	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *);
 	struct base_station_object *construct_base_station(char *,
 		struct date, struct date, int);
-	struct basin_object *construct_basin(struct command_line_object *, FILE *, int *, 
-		struct base_station_object **, struct default_object *, 
+	struct basin_object *construct_basin(struct command_line_object *, FILE *, int *,
+		struct base_station_object **, struct default_object *,
         struct base_station_ncheader_object *,
         struct world_object *);
 	struct fire_patch_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default def);
@@ -377,7 +377,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
 	struct base_station_object *construct_netcdf_grid(struct base_station_object *, struct base_station_ncheader *, int *, float, float, float, struct date *, struct date *, struct command_line_object *);
-  void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
+  void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);
 	void *alloc(size_t, char *, char *);
 
 	void resemble_hourly_date(struct world_object *);
@@ -476,7 +476,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		fscanf( world_file , "%ld", &world[0].end_date.hour);
 		read_record(world_file, record);
 	}
-	
+
 	/*--------------------------------------------------------------
 	 * Always use command line start and end dates
 	 */
@@ -526,67 +526,67 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	world[0].defaults = (struct default_object *)
 		alloc( sizeof(struct default_object ),"defaults","construct_world");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of basin default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(header_file,"%d",&(world[0].defaults[0].num_basin_default_files));
 	read_record(header_file, record);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the basin default files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].basin_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_basin_default_files);
-	
+
 	/*-----------------------------------*/
 	/*	Read in the number of hillslope default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(header_file,"%d",&(world[0].defaults[0].num_hillslope_default_files));
 	read_record(header_file, record);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the hillslope default files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].hillslope_default_files = construct_filename_list(	header_file,
 		world[0].defaults[0].num_hillslope_default_files);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of zone default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(header_file,"%d",&(world[0].defaults[0].num_zone_default_files));
 	read_record(header_file, record);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the zone default files.				*/
 	/*--------------------------------------------------------------*/
 	world[0].zone_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_zone_default_files);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of soil default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(header_file,"%d",&(world[0].defaults[0].num_soil_default_files));
 	read_record(header_file, record);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the soil default files.				*/
 	/*--------------------------------------------------------------*/
 	world[0].soil_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_soil_default_files);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of land cover default files.		*/
 	/*--------------------------------------------------------------*/
 	fscanf(header_file,"%d",&(world[0].defaults[0].num_landuse_default_files));
 	read_record(header_file, record);
-        	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the land cover default files.			*/
 	/*--------------------------------------------------------------*/
 	world[0].landuse_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_landuse_default_files);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of veg default files.		*/
 	/*--------------------------------------------------------------*/
@@ -598,7 +598,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	world[0].stratum_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_stratum_default_files);
 
-	
+
 	/*--------------------------------------------------------------*/
 	/*	If fire option has been set                             */
 	/* Read in the number of fire default files.		*/
@@ -612,7 +612,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].fire_default_files= construct_filename_list( header_file,
 			world[0].defaults[0].num_fire_default_files);
 	}
-	
+
 
 		if (command_line[0].beetlespread_flag == 1) {
 		fscanf(header_file,"%d",&(world[0].defaults[0].num_beetle_default_files));
@@ -644,7 +644,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].surface_energy_default_files= construct_filename_list( header_file,
 			world[0].defaults[0].num_fire_default_files);
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	If spinup flag has been set                             */
 	/*      Read in the number of spinup default files              */
@@ -667,7 +667,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	fscanf(header_file,"%d",&(world[0].num_base_stations));
 	read_record(header_file, record);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	read in list of base_station files.			*/
 	/*--------------------------------------------------------------*/
@@ -682,7 +682,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		FILE* grid_base;
 		if ( (grid_base = fopen(world[0].base_station_files[0], "r")) == NULL ) {
 			fprintf(stderr,
-					"Unable to open climate grid file %s\n", 
+					"Unable to open climate grid file %s\n",
 					world[0].base_station_files[0]);
 			exit(EXIT_FAILURE);
 		}
@@ -707,35 +707,35 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	world[0].defaults[0].basin = construct_basin_defaults(
 		world[0].defaults[0].num_basin_default_files,
 		world[0].basin_default_files, command_line);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the hillslope_defaults objects.		*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].hillslope = construct_hillslope_defaults(
 		world[0].defaults[0].num_hillslope_default_files,
 		world[0].hillslope_default_files, command_line);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the zones_defaults objects.			*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].zone = construct_zone_defaults(
 		world[0].defaults[0].num_zone_default_files,
 		world[0].zone_default_files, command_line);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the soil_defaults objects.			*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].soil = construct_soil_defaults(
 		world[0].defaults[0].num_soil_default_files,
 		world[0].soil_default_files, command_line);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the land_defaults objects.			*/
 	/*--------------------------------------------------------------*/
 	world[0].defaults[0].landuse = construct_landuse_defaults(
 		world[0].defaults[0].num_landuse_default_files,
 		world[0].landuse_default_files, command_line);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the stratum_defaults objects.			*/
 	/*--------------------------------------------------------------*/
@@ -798,11 +798,25 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		if ( command_line[0].gridded_ascii_flag == 1) {
 			printf("\nConstructing base stations from ASCII GRID");
 			world[0].base_stations = construct_ascii_grid( world[0].base_station_files[0],
-												world[0].start_date, 
+												world[0].start_date,
 												world[0].duration);
 		}
 		else if(command_line[0].gridded_netcdf_flag == 1){
 			printf("\nConstructing base stations from NETCDF GRID");
+			// add condition to read the extra beetle attack time series 20180711
+			if (world[0].num_base_stations==2)
+			{
+			  printf("\nConstructing extra base stations for CO2/beetle attack under netcdf climate");
+			  world[0].num_extra_stations=1;
+			  world[0].extra_stations = (struct base_station_object **)
+			  alloc(2 *
+				  sizeof(struct base_station_object *),"base_stations","construct_world" );
+				world[0].extra_stations[0] = construct_base_station(
+								world[0].base_station_files[1], // here is 1 to read the second base station files
+								world[0].start_date, world[0].duration,
+								command_line[0].clim_repeat_flag);
+			} //end if for extra station input
+
             #ifdef LIU_NETCDF_READER
             world[0].num_base_stations = get_netcdf_station_number(world[0].base_station_files[0]);
             #endif
@@ -841,7 +855,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
                                                            &world[0].duration,
 							                                             command_line);
 
-                //printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID ); 
+                //printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID );
             }
             #endif
 			/*printf("\n  file=%s firstID=%d num=%d numfiles=%d lai=%lf screenht=%lf sdist=%lf startyr=%d dayoffset=%d leapyr=%d precipmult=%lf",
@@ -862,8 +876,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].base_stations = (struct base_station_object **)
 			alloc(world[0].num_base_stations *
 				  sizeof(struct base_station_object *),"base_stations","construct_world" );
-			
-			
+
+
 			for (i=0; i<world[0].num_base_stations; i++ ) {
 				world[0].base_stations[i] = construct_base_station(
 								world[0].base_station_files[i],
@@ -881,8 +895,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
 
 		}
 	} /*end if dclim_flag*/
-	
-        
+
+
 
 	/*--------------------------------------------------------------*/
 	/*	Read in the world ID.							*/
@@ -906,7 +920,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	world[0].basins = (struct basin_object **)
 		alloc(world[0].num_basin_files * sizeof(struct basin_object *),
 		"basins","construct_world");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the basins. 										*/
 	/*--------------------------------------------------------------*/
@@ -915,7 +929,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	  printf("\n creating basin%d\n", i);  //XXX
 		world[0].basins[i] = construct_basin(
 			command_line, world_file, &(world[0].num_base_stations),
-			world[0].base_stations,	world[0].defaults, 
+			world[0].base_stations,	world[0].defaults,
             world[0].base_station_ncheader,
             world);
 	} /*end for*/
@@ -939,7 +953,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].patch_fire_grid = construct_patch_fire_grid(world, command_line,*(world[0].defaults[0].fire));
 		world[0].fire_grid = construct_fire_grid(world);
 
-	}	
+	}
 	/* if the beetlespread flag is set */
 
     world[0].num_beetle_grid_row = 0; //using the fire grid
@@ -957,6 +971,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		fclose(header_file);
 	}
 
-	
+
 	return(world);
 } /*end construct_world.c*/
