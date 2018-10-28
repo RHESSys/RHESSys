@@ -6,6 +6,7 @@ rhessys/rhessys5.20.1
 
 # Build directories
 objects/
+build/
 build/Qt/gcc/bin/
 build/Qt/gcc/RHESSys/RHESSys.pro.user
 build/Qt/gcc/RHESSys/RHESSys.pro.user.2.7pre1
