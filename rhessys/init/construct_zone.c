@@ -302,7 +302,7 @@ struct zone_object *construct_zone(
 #ifdef LIU_NETCDF_READER
 
       if (notfound) {
-       fprintf(stderr,"can't locate station data in netcdf!!!\n");
+       fprintf(stderr,"can't locate station data for ID:%d in netcdf!!!\n", basestation_id);
        exit(0);
       }
 #else
