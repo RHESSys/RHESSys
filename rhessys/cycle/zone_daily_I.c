@@ -676,12 +676,13 @@ void zone_daily_I(
             clim_event = world[0].extra_stations[0][0].dated_input[0].CO2.seq[inx];
             }
        if ((clim_event.edate.year !=0) && (julday(clim_event.edate) == julday(current_date)))
-           temp = clim_event.value;
+           {temp = clim_event.value;
+           printf(" \n the read in value is %lf \n", clim_event.value); }
        else temp = zone[0].defaults[0][0].atm_CO2;
        }
 	   else temp = zone[0].defaults[0][0].atm_CO2;
 	  zone[0].CO2 = temp;
-	  //printf(" the CO2 is %lf and %lf \n", zone[0].CO2,temp );
+	  printf(" \n the CO2 is %lf and the temp is %lf, the defualt is %lf \n", zone[0].CO2,temp, zone[0].defaults[0][0].atm_CO2 );
 	}
 
 	/*--------------------------------------------------------------*/
