@@ -667,7 +667,7 @@ void zone_daily_I(
 	/* read in the CO2 data when netcdf is activated Ning Ren 20181026*/
 	if (world[0].num_extra_stations == 1) {
        inx = world[0].extra_stations[0][0].dated_input[0].CO2.inx;
-       if (inx > -999)
+       if (inx > -999 )
        {
            clim_event = world[0].extra_stations[0][0].dated_input[0].CO2.seq[inx];
         while (julday(clim_event.edate) < julday(current_date)) {
@@ -682,7 +682,8 @@ void zone_daily_I(
        }
 	   else temp = zone[0].defaults[0][0].atm_CO2;
 	  zone[0].CO2 = temp;
-	  printf(" \n the CO2 is %lf and the temp is %lf, the defualt is %lf \n", zone[0].CO2,temp, zone[0].defaults[0][0].atm_CO2 );
+	  	printf("\n the current zone is %d\n, the current date is %4d %4d %4d %4d \n ", zone[0].ID, current_date.year, current_date.month, current_date.day, current_date.hour);
+	    printf(" \n the 3 CO2 is %lf and the temp is %lf, the defualt is %lf \n", zone[0].CO2,temp, zone[0].defaults[0][0].atm_CO2 );
 	}
 
 	/*--------------------------------------------------------------*/

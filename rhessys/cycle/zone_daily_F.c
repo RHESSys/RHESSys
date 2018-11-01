@@ -632,6 +632,7 @@ void		zone_daily_F(
 	/*	Cycle through the patches for day end computations		    	*/
 	/*--------------------------------------------------------------*/
 	for ( patch=0 ; patch<zone[0].num_patches; patch++ ){
+	//printf("current patch is %d\n", zone[0].ID);
 		patch_daily_F(
 			world,
 			basin,

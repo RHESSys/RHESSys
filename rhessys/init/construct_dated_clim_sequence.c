@@ -2,10 +2,10 @@
 /* 																*/
 /*					construct_dated_clim_sequence	 					*/
 /*																*/
-/*	construct_dated_clim_sequence - reads in sequence of climate data	*/ 
+/*	construct_dated_clim_sequence - reads in sequence of climate data	*/
 /*																*/
 /*	NAME														*/
-/*	construct_dated_clim_sequence - reads in sequence of climate data	*/ 
+/*	construct_dated_clim_sequence - reads in sequence of climate data	*/
 /*																*/
 /*	SYNOPSIS													*/
 /*																*/
@@ -28,7 +28,7 @@
 /*	A clim sequence file has the following format:				*/
 /*																*/
 /*	<start of file>												*/
-/*	first_calendar_date											*/		
+/*	first_calendar_date											*/
 /*	value1														*/
 /*	value2												*/
 /*	value3												*/
@@ -77,7 +77,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	FILE	*sequence_file;
 	struct	date	cur_date;
 	struct	date	tmp_date;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Initialize							*/
 	/*--------------------------------------------------------------*/
@@ -89,7 +89,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	/*      date of world.						  */
 	/*--------------------------------------------------------------*/
 	start_date_julian = julday(start_date);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Try to open the file containing the clim sequence.			*/
 	/*--------------------------------------------------------------*/
@@ -99,7 +99,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 			file);
 		exit(EXIT_FAILURE);
 	} /*end if*/
-	
+
 	/*--------------------------------------------------------------*/
 	/*	First, calculate how many day it has in the record			*/
 	/*--------------------------------------------------------------*/
@@ -141,10 +141,10 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	/*	Second, seek back to the begin of the file and start read data			*/
 	/*--------------------------------------------------------------*/
 	fseek(sequence_file,0,SEEK_SET);
-	
+
 	fscanf(sequence_file,"%d",&num_records);
-	
-	printf("\nRead dated climate input file  %s\n", file);	
+
+	printf("\nRead dated climate input file  %s\n", file);
 	/*--------------------------------------------------------------*/
 	/*	Allocate the clim sequence.									*/
 	/*--------------------------------------------------------------*/
@@ -152,7 +152,8 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		sizeof(struct dated_sequence),
 		"sequence","construct_dated_clim_sequence");
 	events.inx = 0;
-	events.seq[0].edate.year = 1999;
+	events.seq[0].edate.year = 1999;  //NREN 20180703
+//    events.num_records = num_records;
 	/*--------------------------------------------------------------*/
 	/*	Read in the climate sequence data.							*/
 	/*--------------------------------------------------------------*/
@@ -176,7 +177,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		}
 		else{
 			if (julday(cur_date) >= start_date_julian){
-			  if(julday(cur_date)>julday(tmp_date)){ 
+			  if(julday(cur_date)>julday(tmp_date)){
 			    /* start a new day */
 			    /* make the value of the rest hours in the previous day to 0 */
 			    if (tmp_date.hour<=24 && start_flag != 0){ // not the first day after start_date
@@ -188,7 +189,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				  events.seq[inx].value = 0.0;
 				  inx += 1;
 				}
-				
+
 			    }
 			    /* make the value of the hours earlier than cur day to 0 */
 			    if (cur_date.hour>=1){
@@ -202,7 +203,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				}
 				start_flag=1;
 			    }
-				
+
 				events.seq[inx].edate.year = cur_date.year;
 				events.seq[inx].edate.month = cur_date.month;
 				events.seq[inx].edate.day = cur_date.day;
@@ -210,7 +211,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				events.seq[inx].value = value;
 				inx += 1;
 			    }
-			
+
 			else{/* if there are multiple records within one day*/
 			    if(start_flag==0){ //if it is the first record after start_date
 			      	for(j=1;j<cur_date.hour;j++){
@@ -251,7 +252,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				tmp_date.year = cur_date.year;
 				tmp_date.month= cur_date.month;
 				tmp_date.day  = cur_date.day;
-				tmp_date.hour = cur_date.hour;	
+				tmp_date.hour = cur_date.hour;
 			    if(i == num_records-1){
 				for(j=tmp_date.hour+1;j<=24;j++){
 				  events.seq[inx].edate.year = tmp_date.year;
@@ -261,11 +262,11 @@ struct clim_event_sequence construct_dated_clim_sequence(
 				  events.seq[inx].value = 0.0;
 				  inx += 1;
 				}
-				
+
 			    }
 
 		      }
-				
+
 		}
 	}
 	events.seq[inx].edate.year = 0;

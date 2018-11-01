@@ -85,6 +85,7 @@ struct	dated_input_object *construct_dated_input(
 	dated_input[0].biomass_removal_percent.inx = -999;
 	dated_input[0].pspread.inx = -999;
 	dated_input[0].beetle_attack.inx = -999;
+	dated_input[0].CO2.inx = -999; // Ning Ren 2018/10/30
 	dated_input[0].PH.inx = -999;
 	dated_input[0].grazing_Closs.inx = -999;
 
