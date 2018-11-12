@@ -206,7 +206,17 @@
 #define max(a,b)    ((a) > (b) ? (a) : (b))
 #define min(a,b)    ((a) < (b) ? (a) : (b))
 
+#ifdef LIU_NETCDF_READER
+int is_approximately(const double value,const double target,const double tolerance);
+#endif
 int read_record( FILE *, char *);
+#ifdef LIU_NETCDF_READER
+int get_netcdf_station_number(char *base_station_filename);              
+int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, int, float *);
+int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
+int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
+int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
+#endif
 
 /*----------------------------------------------------------*/
 /*      Define types                                        */
@@ -516,7 +526,7 @@ struct basin_object
         int             ID;                                                                     
         int             num_base_stations;
         int             num_hillslopes;
-	int		basin_parm_ID;
+	      int		  basin_parm_ID;
         double  area;                   /*  m2          */
 	      double  area_withsnow;			/*  m2 		*/
         double  x;                      /*  meters      */      
@@ -529,22 +539,6 @@ struct basin_object
         double  sin_latitude;           /*      DIM     */
         double  max_slope;              /*      degrees */
 
-        /*      used in subsurface computation          */
-        double basin_outflow;
-        double basin_rz_storage;
-        double basin_unsat_storage;
-        double basin_sat_deficit;
-        double basin_return_flow;
-        double basin_detention_store;
-        double basin_area;
-        double preday_basin_unsat_storage;
-        double preday_basin_rz_storage;
-        double preday_basin_sat_deficit;
-        double preday_sat_deficit;
-        double preday_basin_return_flow;
-        double preday_basin_detention_store;
-        /*                                              */
-        
         struct  base_station_object     **base_stations;
         struct  basin_default           **defaults;
         struct  basin_hourly_object     *hourly;
@@ -552,8 +546,6 @@ struct basin_object
         struct  hillslope_object        **hillslopes;
         struct  patch_object            *outside_region;
         struct  stream_list_object      stream_list;
-        struct  routing_list_object     *route_list;
-        struct  routing_list_object *surface_route_list;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  snowpack_object snowpack;
@@ -595,35 +587,44 @@ struct basin_default
 /*----------------------------------------------------------*/
 /*      Define a base station object.                                                   */
 /*----------------------------------------------------------*/
-struct base_station_object
+typedef struct base_station_object
         {
         int             ID;
         FILE    *base_station_file;
-        double  x;                              /*   meters     */
-        double  y;                              /*   meters     */
-        double  z;                              /*   meters     */
-        double  effective_lai;                  /* m^2/m^2      */
-        double  screen_height;                  /* meters       */
+        #ifdef LIU_NETCDF_READER
+        double lon;
+        double lat;
+        #endif
+        double  proj_x;                                                          /* (meters) x coordinate of projection     */
+        double  proj_y;                                                          /* (meters) y coordinate of projection     */
+        double  z;                                                               /*   meters     */
+        double  effective_lai;                                                   /* m^2/m^2      */
+        double  screen_height;                                                   /* meters       */
         struct  hourly_clim_object       *hourly_clim;
         struct  daily_clim_object        *daily_clim;
         struct  monthly_clim_object      *monthly_clim;
         struct  yearly_clim_object       *yearly_clim;
         struct  dated_input_object       *dated_input;
-        };
+        } base_station_object;
 /*----------------------------------------------------------*/
 /*      Define a netcdf base station header object.                                                     */
 /*----------------------------------------------------------*/
-struct base_station_ncheader_object
+typedef struct base_station_ncheader_object
 {
-        int             lastID;
+        #ifndef LIU_NETCDF_READER
         FILE    *base_station_file;
         double  effective_lai;                  /* m^2/m^2      */
         double  screen_height;                  /* meters       */
-        double  sdist;                                  /* search distance in native netcdf units */
+        #endif
+        int             lastID;
+        //double  sdist;                                  /* search distance in native netcdf units */
+        double          resolution_dd;                                           /*(DD) resolution in geocoordinate. Estimated from grid cell distribution*/
+        double          resolution_meter;                                        /*(meter) resolution in projected coordinate. Estimated from grid cell distribution*/
         int             year_start;                             /* start year for netcdf time counter (NOT time series start date) */
         int             day_offset;                             /* day offset from January 1 for netcdf time counter */
         int             leap_year;                              /* 0 = no leap years, 1 = leap years in netcdf record */
         double  precip_mult;                    /* multiplier for precip if not in meters */
+        char    temperature_unit;               /* K: Kelvin C: Celsius */
         int             elevflag;                               /* set based on whether elev filename is given */
         char    netcdf_x_varname[MAXSTR];       /* variable name for x coordinate in nc file */
         char    netcdf_y_varname[MAXSTR];       /* variable name for y coordinate in nc file */
@@ -635,7 +636,20 @@ struct base_station_ncheader_object
         char    netcdf_tmin_varname[MAXSTR];    /* variable name for tmin in nc file */
         char    netcdf_rain_varname[MAXSTR];    /* variable name for rain in nc file */
         char    netcdf_elev_varname[MAXSTR];    /* variable name for elev in nc file */
-};
+#ifdef LIU_EXTEND_CLIM_VAR
+        double  rhum_mult;                    /* multiplier for relative humidity to 0-1 */
+        char    netcdf_huss_filename[MAXSTR];   /* filename for specific humidity nc file */
+        char    netcdf_huss_varname[MAXSTR];    /* variable name for specific humidity in nc file */
+        char    netcdf_rmax_filename[MAXSTR];   /* filename for relative humidity max nc file */
+        char    netcdf_rmax_varname[MAXSTR];    /* variable name for relative humidity max in nc file */
+        char    netcdf_rmin_filename[MAXSTR];   /* filename for relative humidity min nc file */
+        char    netcdf_rmin_varname[MAXSTR];    /* variable name for relative humidity min in nc file */
+        char    netcdf_rsds_filename[MAXSTR];   /* filename for shortwave radiation nc file */
+        char    netcdf_rsds_varname[MAXSTR];    /* variable name for shortwave radiation in nc file */
+        char    netcdf_was_filename[MAXSTR];   /* filename for wind speed nc file */
+        char    netcdf_was_varname[MAXSTR];    /* variable name for wind speed in nc file */
+#endif
+} base_station_ncheader_object;
 /*----------------------------------------------------------*/
 /*      Define dated climate sequence                       */
 /*----------------------------------------------------------*/
@@ -702,7 +716,7 @@ struct  daily_clim_object
 /*----------------------------------------------------------*/
         double  *tmax;                  /*   degrees C  */
         double  *tmin;                  /*   degrees C  */
-        double  *rain;                  /* mm   water   */      
+        double  *rain;                  /*   m   water  */
 
 /*----------------------------------------------------------*/
 /*       Non - Critical data.                                                                   */
@@ -740,6 +754,12 @@ struct  daily_clim_object
         double  *vpd;                           /*      Pa              */
         double  *wind;                          /*      m/s             */
         double  *wind_direction;                /*      degrees         */
+#ifdef LIU_EXTEND_CLIM_VAR
+        double  *relative_humidity_max;         /*      0 - 1                 */
+        double  *relative_humidity_min;         /*      0 - 1                 */
+        double  *surface_shortwave_rad;         /*      W m-2  daily average  */
+        double  *specific_humidity;             /*      kg/kg  daily average  */
+#endif
         };    
         
 
@@ -835,6 +855,25 @@ struct hillslope_object
         struct  zone_object             **zones;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
+
+        struct  routing_list_object     *route_list;
+        struct  routing_list_object     *surface_route_list;
+
+/*      used in subsurface computation          */
+        double hillslope_outflow;
+        double hillslope_rz_storage;
+        double hillslope_unsat_storage;
+        double hillslope_sat_deficit;
+        double hillslope_return_flow;
+        double hillslope_detention_store;
+        double hillslope_area;
+        double preday_hillslope_unsat_storage;
+        double preday_hillslope_rz_storage;
+        double preday_hillslope_sat_deficit;
+        double preday_sat_deficit;
+        double preday_hillslope_return_flow;
+        double preday_hillslope_detention_store;
+
         };
 
 /*----------------------------------------------------------*/
@@ -1746,7 +1785,7 @@ struct patch_object
 /*----------------------------------------------------------*/
 /*      Surface Hydrology  stuff                        */
 /*----------------------------------------------------------*/
-        int     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */        
+        bool     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */  
         double  water_balance;                          /* meters water         */
         double  delta_snowpack;                         /* meters               */
         double  delta_canopy_storage;                   /* meters water         */
@@ -2705,7 +2744,7 @@ struct  stratum_default
        struct target_object { 
               double lai;
               double total_stemc;
-	      double height;
+              double height;
               double age;
               int    met;
        };

@@ -44,8 +44,16 @@ void	output_monthly_basin(
 	int check;
 	if (basin[0].acc_month.length == 0) basin[0].acc_month.length = 1;
 	
-	if (basin->route_list->num_patches > 0)
-		basin[0].acc_month.length /= (basin->route_list->num_patches);
+	//if (basin->route_list->num_patches > 0)
+	//	basin[0].acc_month.length /= (basin->route_list->num_patches);
+  int patchCount = 0;
+  for( int i = 0; i < basin[0].num_hillslopes; i++ ) {
+    struct hillslope_object *hillslope = basin[0].hillslopes[i];
+    patchCount += hillslope->route_list->num_patches;
+  }
+  if( patchCount == 0 ) patchCount = 1;
+  basin[0].acc_month.length /= patchCount;
+
 	check = fprintf(outfile,
 		"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.month,

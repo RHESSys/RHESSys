@@ -80,5 +80,6 @@ void	output_basin_state(
 	for (h=0; h < basin[0].num_hillslopes; ++ h ) {
 		output_hillslope_state(basin[0].hillslopes[h], current_date, command_line, outfile);
 	}
+    printf("\n Finishing basin output state\n");
 	return;
 } /*end output_basin_state*/

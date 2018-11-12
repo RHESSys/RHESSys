@@ -78,9 +78,11 @@ void	execute_state_output_event(
 	/*	output basins												*/
 	/*--------------------------------------------------------------*/
 	for (b=0; b < world[0].num_basin_files; ++ b ) {
-		printf("output basin state");
+        printf("output basin state ...\n");
 		output_basin_state(world[0].basins[b], current_date, command_line, outfile);
+        printf("output basin state finished\n");
 	}
 	fclose(outfile);
+    printf("output basin state file closed\n");
 	return;
 } /*end execute_state_output_event*/

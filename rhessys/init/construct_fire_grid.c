@@ -375,4 +375,3 @@ struct fire_object **construct_fire_grid(struct world_object *world)
 
 	return(fire_grid);
 }
-

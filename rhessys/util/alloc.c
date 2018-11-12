@@ -79,3 +79,8 @@ void	*alloc(size_t size, char *array_name, char *calling_function)
 		}
 	}
 } /*end alloc.c*/
+#ifdef LIU_NETCDF_READER
+int is_approximately(const double value,const double target,const double tolerance)
+{ return ((value) < ((target) +(tolerance))) && ((value) > ((target) - (tolerance)));}
+#endif
+
