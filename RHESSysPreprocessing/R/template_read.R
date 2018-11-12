@@ -13,13 +13,13 @@ template_read = function(template){
   options(scipen = 999) # no scientific notation
 
   # ---------- Read in template ----------
-  con = file(template, open ="r") # commect to file
+  con = file(template, open = "r") # commect to file
   read = readLines(con) # read file, default reads entire file, line by line
   close(con)
 
   trim = trimws(read)
-  trimlines = trim[trim!=""]
-  head = trimlines[1:(min(which(startsWith(trimlines, "_")))-1)]
+  trimlines = trim[trim != ""]
+  head = trimlines[1:(min(which(startsWith(trimlines, "_"))) - 1)]
   template_clean = strsplit(trimlines,"[ \t]+") # remove whitespaces, split strings by spaces or tabs
 
   var_names = unlist(lapply(template_clean,"[[",1)) #all names of state variables in template
@@ -27,19 +27,19 @@ template_read = function(template){
   level_index = which(startsWith(var_names, "_")) # find lines that start w/ "_", get row nums of levels
   level_maps = lapply(template_clean[level_index],"[",2)# level map names, for use in GRASS
   var_index = level_index[2]:length(template_clean)
-  var_index = var_index[! var_index %in% level_index] #make index for template, excluding def files and levels
+  var_index = var_index[!var_index %in% level_index] #make index for template, excluding def files and levels
 
   # Find all maps - in addiiion to level maps
   maps_all = vector()
   maps_index = vector()
   for (i in var_index) {
-    if (suppressWarnings(all(is.na(as.numeric(template_clean[[i]][3]))))  & length(template_clean[[i]]) != 2){
+    if (suppressWarnings(all(is.na(as.numeric(template_clean[[i]][3]))))  & length(template_clean[[i]]) != 2) {
       maps_all = c(maps_all, template_clean[[i]][3])
       maps_index = c(maps_index, i)}
-    if (i > level_index[6] & suppressWarnings(all(is.na(as.numeric( template_clean[[i]][4]))))  & length(template_clean[[i]]) == 4){
+    if (i > level_index[6] & suppressWarnings(all(is.na(as.numeric( template_clean[[i]][4]))))  & length(template_clean[[i]]) == 4) {
       maps_all = c(maps_all, template_clean[[i]][4])
       maps_index = c(maps_index, i)}
-    if (length(template_clean[[i]]) == 5 ){ # this should just be for horizons
+    if (length(template_clean[[i]]) == 5 ) { # this should just be for horizons
       maps_all = c(maps_all, template_clean[[i]][5])
       maps_index = c(maps_index, i)}}
 
