@@ -36,18 +36,10 @@ void execute_beetlespread_event(
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
 
-	void	update_beetle_attack_mortality(
-		struct epconst_struct,
-		struct cstate_struct *,
-		struct cdayflux_struct *,
-		struct cdayflux_patch_struct *,
-		struct nstate_struct *,
-		struct ndayflux_struct *,
-		struct ndayflux_patch_struct *,
-		struct litter_c_object *,
-		struct litter_n_object *,
-		int,
-		struct mortality_struct);
+	void	compute_fire_effects(  //N.REN 20180629
+		struct patch_object *,
+		double);
+
 	void *alloc(size_t, char *, char *);
 
 	/*--------------------------------------------------------------*/
@@ -61,7 +53,7 @@ void execute_beetlespread_event(
 	struct mortality_struct mort;
 	int i,j,p, c, layer;
 	int thin_type;
-	double loss;
+	double attack_mortality;
 	double mean_Tfall =0;
 	double mean_Tss =0;
 	double mean_Tmin =0;
@@ -134,7 +126,7 @@ void execute_beetlespread_event(
                                                   strata[0].cs.live_stemc + strata[0].cs.livestemc_store + strata[0].cs.livestemc_transfer +
                                                   strata[0].cs.dead_stemc + strata[0].cs.deadstemc_store + strata[0].cs.deadstemc_transfer)*patch_beetle_grid[i][j].prop_patch_in_grid[p] ;
 				// above is calculate the total biomass in the beetle grid for higher outbreak
-				   printf("the total biomass in current patch are %lf\n", world[0].beetle_grid[i][j].abc);
+				   printf("the total above ground biomass in current patch are %lf\n", world[0].beetle_grid[i][j].abc);
 
 				}
 			}
@@ -219,7 +211,7 @@ void execute_beetlespread_event(
 	/* update biomass after beetle					*/
 	/*--------------------------------------------------------------*/
 
-	thin_type =5;
+	//thin_type =5;
 	for  (i=0; i< world[0].num_beetle_grid_row; i++) {
   	  for (j=0; j < world[0].num_beetle_grid_col; j++) {
 	    for (p=0; p < patch_beetle_grid[i][j].num_patches; ++p) {
@@ -227,10 +219,15 @@ void execute_beetlespread_event(
 
 //			printf("in update mortality\n");
 			patch[0].mort = world[0].beetle_grid[i][j].mort * world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p];
-			loss = world[0].beetle_grid[i][j].mort * world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p];
+			attack_mortality = world[0].beetle_grid[i][j].mort * world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p];
 			/*printf("in update mortality, the mortality is %lf, and the prop_grid_in_patch is %lf\n",world[0].beetle_grid[i][j].mort, world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p]  );*///N.R 20180619
 
-			mort.mort_cpool = loss;
+            compute_beetle_effects(
+						patch,
+						attack_mortality);
+
+
+			/*mort.mort_cpool = loss;
 			mort.mort_leafc = loss;
 			mort.mort_frootc = loss;
 			mort.mort_deadstemc = loss;
@@ -253,7 +250,7 @@ void execute_beetlespread_event(
 						 thin_type,
 						 mort);
 				}
-			}
+			} */
 //			printf("in update mortality3\n");
 
 		}

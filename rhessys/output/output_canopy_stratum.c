@@ -37,13 +37,13 @@ void	output_canopy_stratum( int basinID, int hillID, int zoneID, int patchID,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	
+
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d \n",
+		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -53,6 +53,7 @@ void	output_canopy_stratum( int basinID, int hillID, int zoneID, int patchID,
 		patchID,
 		stratum[0].ID,
 		stratum[0].epv.proj_lai,
+		stratum[0].epv.proj_lai_when_red,
 		stratum[0].evaporation*1000,
 		stratum[0].Kstar_direct,
 		stratum[0].Kstar_diffuse,

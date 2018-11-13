@@ -35,7 +35,7 @@
 /*																*/
 /*	Original code, January 16, 1996.							*/
 /*																*/
-/*	 															*/ 
+/*	 															*/
 /* May 15, 1997		C.Tague					*/
 /*	- C assumes radians so slope and aspect must 		*/
 /*	be converted from degrees				*/
@@ -67,7 +67,7 @@ struct zone_object *construct_zone(
 		int ,
 		int ,
 		struct base_station_object **);
-	
+
 	struct	base_station_object *assign_base_station_xy(
 		float ,
 		float ,
@@ -82,14 +82,16 @@ struct zone_object *construct_zone(
         ,const int
         #endif
                 );
-	
+
 	struct patch_object *construct_patch(
 		struct command_line_object *,
 		FILE	*,
 		int		num_world_base_stations,
 		struct base_station_object **world_base_stations,
+		int     num_world_extra_base_stations,
+		struct base_station_object  **extra_base_stations,  //NREN 20180711
 		struct	default_object	*defaults);
-	
+
 	struct base_station_object *construct_netcdf_grid(
         #ifdef LIU_NETCDF_READER
         struct base_station_object *,
@@ -102,12 +104,12 @@ struct zone_object *construct_zone(
 		float,
         struct date*,
         struct date*);
-	
+
 	int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
-	
+
 	void	*alloc(size_t, char *, char *);
 	double	atm_pres( double );
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*	Local variable definition.									*/
@@ -117,15 +119,15 @@ struct zone_object *construct_zone(
 	int		default_object_ID;
 	int		notfound;
     int     basestation_id;
-	float   base_x, base_y;	
+	float   base_x, base_y;
 	char	record[MAXSTR];
 	struct	zone_object *zone;
-	
+
 	notfound = 0;
 	base_x = 0.0;
 	base_y = 0.0;
 	j = 0;
-	k = 0;	
+	k = 0;
 
 
 	/*--------------------------------------------------------------*/
@@ -209,11 +211,11 @@ struct zone_object *construct_zone(
 		}
 	} /* end-while */
 	zone[0].defaults[0] = &defaults[0].zone[i];
-	
+
 	if ( command_line[0].verbose_flag == -3 ){
 		printf("\nConstructing zone base stations %d", zone[0].ID);
-	}	
-	
+	}
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of base stations for this zone.          */
 	/*--------------------------------------------------------------*/
@@ -272,13 +274,13 @@ struct zone_object *construct_zone(
 
 #ifndef FIND_STATION_BASED_ON_ID
 			/* Identify centerpoint coords for closest netcdf cell to zone x, y */
-			k = get_netcdf_xy(base_station_ncheader[0].netcdf_tmax_filename, 
+			k = get_netcdf_xy(base_station_ncheader[0].netcdf_tmax_filename,
 							  base_station_ncheader[0].netcdf_y_varname,
 							  base_station_ncheader[0].netcdf_x_varname,
                               (float)zone[0].y,
                               (float)zone[0].x,
                               base_station_ncheader[0].resolution_meter,
-							  &(base_y), 
+							  &(base_y),
 							  &(base_x));
 			if ( command_line[0].verbose_flag == -3 ){
 				printf("\n   CLOSEST CELL: y=%lf x=%lf num=%d",base_y,base_x,*num_world_base_stations);
@@ -321,9 +323,9 @@ struct zone_object *construct_zone(
 						   *num_world_base_stations);
 				}
 				j = *num_world_base_stations;
-				world_base_stations[j] = construct_netcdf_grid( 
+				world_base_stations[j] = construct_netcdf_grid(
                                  command_line,
-															   base_station_ncheader,  
+															   base_station_ncheader,
 															   num_world_base_stations,
 															   base_x,
 															   base_y,
@@ -344,7 +346,7 @@ struct zone_object *construct_zone(
 				}
 				/* Now link the zone to the newly added base station */
 				zone[0].base_stations[0] = world_base_stations[j];
-				
+
 				if ( command_line[0].verbose_flag == -3 ){
 					printf("\n   Zone base station: lai=%lf tmin=%lf tmax=%lf rain=%lf",
 						   (*(zone[0].base_stations[0])).effective_lai,
@@ -356,11 +358,11 @@ struct zone_object *construct_zone(
             #endif
 		}
 	}
-	
+
 	if ( command_line[0].verbose_flag == -3 ){
 		printf("\n   Ending zone base station: num=%d worldnum=%d",*num_world_base_stations,world[0].num_base_stations);
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in number of patches in this zone.						*/
 	/*--------------------------------------------------------------*/
@@ -369,7 +371,7 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Allocate list of pointers to patch objects .				*/
   /*--------------------------------------------------------------*/
-  zone[0].patches = (struct patch_object ** ) 
+  zone[0].patches = (struct patch_object ** )
 		alloc( zone[0].num_patches * sizeof( struct patch_object *),
 		"patches","construct_zone");
 	/*--------------------------------------------------------------*/
@@ -387,17 +389,36 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Construct the intervals in this zone.						*/
 	/*--------------------------------------------------------------*/
+	if (command_line[0].gridded_netcdf_flag==1 && world[0].num_extra_stations==1)
+	{
+	 	for ( i=0 ; i<zone[0].num_patches ; i++ ){
+		zone[0].patches[i] = construct_patch(
+			command_line,
+			world_file,
+			*num_world_base_stations,
+			world_base_stations,
+			world[0].num_extra_stations,
+			(world[0].extra_stations),
+			defaults);
+    	 	zone[0].patches[i][0].zone = zone;
+            }
+	}
+
+	else
+	{
 	for ( i=0 ; i<zone[0].num_patches ; i++ ){
 		zone[0].patches[i] = construct_patch(
 			command_line,
 			world_file,
 			*num_world_base_stations,
 			world_base_stations,
+			0,
+			world_base_stations,
 			defaults);
 		zone[0].patches[i][0].zone = zone;
-	} /*end for*/
+            } /*end for*/
 
-	
+	} // end else
 	return(zone);
 } /*end construct_zone.c*/
 

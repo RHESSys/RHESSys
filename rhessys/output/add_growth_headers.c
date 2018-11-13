@@ -25,7 +25,7 @@
 #include "rhessys.h"
 
 
-void add_growth_headers(struct world_output_file_object *world_output_files, 
+void add_growth_headers(struct world_output_file_object *world_output_files,
 			struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
@@ -87,18 +87,21 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		//"nuptake",
 		//"grazingC",
 		"StreamNO3_from_surface",
-		"StreamNO3_from_sub");	  
+		"StreamNO3_from_sub");
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
 
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
 		"basinID",
 		"lai",
+		"lai_b",
+		"pai",
+		"pai_b",
 		"gpsn",
 		"plant_resp",
 		"soil_resp",
@@ -142,7 +145,11 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"overstory_leafc",
 		"overstory_stemc",
 		"overstory_biomassc",
-		"overstory_height");
+		"overstory_height",
+		"total_snagc",
+		"total_snagn",
+		"total_redneedlec",
+		"total_redneedlen");
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
@@ -156,7 +163,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"soilhr",
 		"strN",
 		"denitrif","root_depth","mortf");
-		
+
 	}
 
 	/*--------------------------------------------------------------*/
@@ -220,7 +227,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].zone[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n ", 
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n ",
 		"day",
 		"month",
 		"year",
@@ -326,7 +333,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].daily;
 	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -336,6 +343,13 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"patchID",
 		"stratumID",
 		"proj_lai",
+		"proj_lai_when_red", //Beetle effect
+		"proj_pai",
+		"proj_pai_when_red",
+		"toal_snag_c", //decaying pool + delaying pool
+        "toal_snag_n", //decaying pool +delaying pool
+        "total_redneedle_c",
+        "total_redneedle_n",  //end NREN
 		"leafc",
 		"leafn",
 		"cpool",
@@ -419,7 +433,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"stemn",
 		"cwdc",
 		"cwdn",
-		"psn","cpool", "mortfract", "snagc", "snagn", "redneedlec", "redneedlen");
+		"psn","cpool", "mortfract", "total_snagc", "total_snagn", "total_redneedlec", "total_redneedlen");
 	}
 
 

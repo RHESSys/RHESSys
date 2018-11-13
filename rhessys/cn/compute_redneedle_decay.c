@@ -30,7 +30,7 @@
 #include "phys_constants.h"
 #include <math.h>
 
-int	compute_redneedle_decay(
+void	compute_redneedle_decay(
 					  struct epconst_struct epc,
 					  //double cover_fraction,
 					  struct cstate_struct *cs,
@@ -39,7 +39,6 @@ int	compute_redneedle_decay(
 					  struct litter_n_object *ns_litr,
 					  struct cdayflux_patch_struct *cdf, //daily carbon flux
 					  struct ndayflux_patch_struct *ndf,  // daily nitrogen flux
-					  int year_attack,  // the year that start have beetle attack impact
 					  int year_delay,
 					  int half_life,
 					  struct date current_day) // current day that
@@ -53,15 +52,16 @@ int	compute_redneedle_decay(
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 
-	int ok=1;
+
 	double y_delay ; //snag pool delay time is 5 years, in the future the user can change this paramter from defs files
 	double y_half ;  // snag pool decay rate half life is 10 years
 	double time_diff;
 	double c_loss;
 	double n_loss;
 	struct date impact_day;
-    double current_redneedlec;
-    double current_redneedlen;
+	double ratio;
+  //  double current_redneedlec;
+    //double current_redneedlen;
 
     double redneedlec_to_litr1c;
 	double redneedlec_to_litr2c;
@@ -76,45 +76,34 @@ int	compute_redneedle_decay(
 
 
 	y_delay = year_delay;
-	y_half = half_life;
+	y_half = half_life*365.256; //convert the year to daily
 
 
 
-	/*--------------------------------------------------------------*/
-	/* calculate the flux from CWD to litter lignin and cellulose   */
-	/*						 compartments, due to physical fragmentation */
-	/*--------------------------------------------------------------*/
-	/*--------------------------------------------------------------*/
-	/*	for now use temperature and water scaleris calculated	*/
-	/*	the previous day for soil decomposition limitations	*/
-	/*--------------------------------------------------------------*/
 
 	/* build the decay function */
 	/* the precondition is that the days are larger than y_delay and the current larger than the impact_Day)*/
-	impact_day.year = year_attack;
+	/*impact_day.year = year_attack;
 	impact_day.month = 1;
-	impact_day.day =2;
+	impact_day.day =2; */
 
 
-
-	time_diff = julday(current_day)-julday(impact_day)-y_delay*365.256; // convert year to day then calculate the superscribe
-	if (time_diff<=0) {
-	ok =2; //ok =2 means the period that snag not happen or
-	return ok;
-	}
-	else {
-
-	current_redneedlec = cs->redneedlec;
+	/*current_redneedlec = cs->redneedlec;
 	current_redneedlen = ns->redneedlen;
 
 	cs->redneedlec =cs->redneedlec *pow(0.5, 1/(365.256*y_half)); // half life is 2 years, due to the cs-needle is updating each time step so actually
 	ns->redneedlen = ns->redneedlen * pow(0.5, 1/(365.256*y_half)); // should I here also consider the n decay the same or calculated based on the cn ratio?
+   */
+    ratio = (1-pow(0.5, (1/y_half)));
+
+	c_loss = max(0,cs->redneedlec *ratio);
+	n_loss =max(0, ns->redneedlen *ratio);
+
+   // 	printf("\n the decay ratio are %lf, the c_loss is %lf, the current dead leaf pool are %lf", ratio, c_loss, cs->redneedlec);
 
 
-	c_loss = current_redneedlec - cs->redneedlec;
-	n_loss = current_redneedlen - ns->redneedlen;
-
-	};
+    cs->redneedlec =cs->redneedlec - c_loss;
+	ns->redneedlen =ns->redneedlen - n_loss;
 
   /* the following use the red needle _loss to move the  carbon and nitrogen to the litter pool */
   /* carbon */
@@ -155,7 +144,8 @@ int	compute_redneedle_decay(
    ns_litr->litr4n += redneedlen_to_litr4n;
 
 
-	return(!ok);
+
+
 } /*end compute_cwd_decay*/
 
 

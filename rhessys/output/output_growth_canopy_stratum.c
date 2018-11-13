@@ -39,13 +39,13 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*------------------------------------------------------*/
 	/*	Local Function Declaratiocs.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf \n",
+		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -55,6 +55,13 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		patchID,
 		stratum[0].ID,
 		stratum[0].epv.proj_lai,
+		stratum[0].epv.proj_lai_when_red, //beetle
+		stratum[0].epv.proj_pai,
+		stratum[0].epv.proj_pai_when_red,
+		(stratum[0].cs.snagc + stratum[0].cs.delay_snagc)*1000,
+		(stratum[0].ns.snagn + stratum[0].ns.delay_snagn)*1000,
+		(stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec)*1000,
+		(stratum[0].ns.redneedlen + stratum[0].ns.delay_redneedlen)*1000, //end NREN 20180805
 		(stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer)* 1000.0,
 		(stratum[0].ns.leafn + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer)* 1000.0,
 		stratum[0].cs.cpool * 1000.0,

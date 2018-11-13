@@ -69,7 +69,8 @@ double	compute_hourly_rain_stored(
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
 	rain_storage = min( stratum[0].rain_stored + potential_interception,
-		stratum[0].epv.all_pai
+	//	stratum[0].epv.all_pai
+		stratum[0].epv.all_pai_when_red //NREN 20180805
 		* stratum[0].defaults[0][0].specific_rain_capacity );
 	if( verbose_flag > 2)
 		printf("%8.6f ",rain_storage);

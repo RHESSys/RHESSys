@@ -49,6 +49,9 @@ void update_beetle_attack_mortality(
 					  struct ndayflux_patch_struct *ndf_patch,
 					  struct litter_c_object *cs_litr,
 					  struct litter_n_object *ns_litr,
+					  struct snag_sequence_object *snag_sequence, //NREN 20180630
+					  struct snag_sequence_object *redneedle_sequence,
+					  int inx,
 					  int thintyp,
 					  struct mortality_struct mort)
 {
@@ -110,6 +113,7 @@ void update_beetle_attack_mortality(
 	double m_deadcrootn_to_cwdn;
 
 
+
 	/* beetle stem to snag pool */
     double m_livestemc_to_snagc;
 	double m_deadstemc_to_snagc;
@@ -141,15 +145,7 @@ void update_beetle_attack_mortality(
 
 
 
-   if (epc.veg_type==TREE && thintyp ==5) { // if it is the beetle attack and trees
-
-
-
-
-
-
-
-
+   if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type =="EVERGREEN") { // if it is the beetle attack and trees
 
 	/******************************************************************/
 	/* beetle attack mortality: stem go to snag pool then cwd pool and leaf go to dead doliage pool then litter pool */
@@ -322,7 +318,11 @@ void update_beetle_attack_mortality(
 		cs_litr->litr1c    += m_cpool;  // what does this mean, nsc storage go to litter, if noe harvest the abc
 		/*    Leaf mortality */
 
-		cs->redneedlec += m_leafc_to_redneedlec;
+		//cs->redneedlec += m_leafc_to_redneedlec;
+
+		redneedle_sequence->seq[inx].Cvalue +=m_leafc_to_redneedlec;  //NREN 20180630 the sequence [inx] is for tracking the removed C&N for each attack
+		cs->delay_redneedlec +=m_leafc_to_redneedlec; // NREN 20180727 here is delayed dead leaf, stay there, not decay
+
 		/*
 		cs_litr->litr1c    += m_leafc_to_litr1c;  // add the leaf to litter
 		cs_litr->litr2c    += m_leafc_to_litr2c;
@@ -343,8 +343,15 @@ void update_beetle_attack_mortality(
 			/* if it is beetle snag pool thintype=5 then should I update here or in the update patches to update daily*/
 
 
-			    cs->snagc += m_livestemc_to_snagc;
-                cs->snagc += m_deadstemc_to_snagc;
+			    /*cs->snagc += m_livestemc_to_snagc; // this should be the ready to decay pool
+                cs->snagc += m_deadstemc_to_snagc; */
+                snag_sequence->seq[inx].Cvalue += m_livestemc_to_snagc; //for tracking the attack c amount
+                snag_sequence->seq[inx].Cvalue += m_deadstemc_to_snagc;
+
+                cs->delay_snagc += m_livestemc_to_snagc; // NREN 20180727 for the snag staying on the tree not decay
+                cs->delay_snagc += m_deadstemc_to_snagc;
+
+
                 cs->cwdc       += m_livestemc_to_cwdc; // if here the snag not go to the cwd, means it is just stored in the snag pool for the next 5 years delay
 				cs->cwdc       += m_deadstemc_to_cwdc;
 
@@ -431,7 +438,7 @@ void update_beetle_attack_mortality(
 		cs->livecrootc_transfer -= m_livecrootc_transfer_to_litr1c;
 		cs_litr->litr1c         += m_deadcrootc_transfer_to_litr1c; // dead root transfer
 		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
-
+      /*  printf("updating beetle attack mortality, the index is %d", inx);*/
 
 	/* ---------------------------------------- */
 	/* NITROGEN mortality state variable update */
@@ -444,7 +451,10 @@ void update_beetle_attack_mortality(
 
 		ns_litr->litr1n         += m_npool;
 		/*    Leaf mortality */
-		ns->redneedlen     += m_leafn_to_redneedlen;
+		//ns->redneedlen     += m_leafn_to_redneedlen;
+		redneedle_sequence->seq[inx].Nvalue += m_leafn_to_redneedlen; // this is for tracking
+		ns->delay_redneedlen += m_leafn_to_redneedlen; // for delayed dead leaf pool stay on tree not falling NREN 20180727
+
 		ns_litr->litr1n    += m_leafn_to_litr1n;
 
 		/*
@@ -469,8 +479,19 @@ void update_beetle_attack_mortality(
               // beetle caused snag pool
 
 
-        ns->snagn       += m_livestemn_to_snagn; // the nitrogen stored in the snag pool not go the cwd pool
-        ns->snagn       += m_deadstemn_to_snagn;
+      /*  ns->snagn       += m_livestemn_to_snagn; // the nitrogen stored in the snag pool not go the cwd pool
+        ns->snagn       += m_deadstemn_to_snagn; */
+
+        snag_sequence->seq[inx].Nvalue += m_livestemn_to_snagn; // for tracking each attack
+        snag_sequence->seq[inx].Nvalue += m_deadstemn_to_snagn;
+
+
+        ns->delay_snagn += m_livestemn_to_snagn; // the nitrogen stored in the snag pool not go the cwd pool
+        ns->delay_snagn += m_deadstemn_to_snagn; // NREN 20180828
+
+
+
+
        // ns->dead_stemn       += m_livestemn_to_cwdn; // the nitrogen stored in the snag pool not go the cwd pool
        // ns->dead_stemn       += m_deadstemn_to_cwdn;
 
@@ -484,7 +505,8 @@ void update_beetle_attack_mortality(
         ns->npool -= m_npool;
 	/*    Leaf mortality */
 
-	    ns->leafn -= m_leafn_to_redneedlen;
+	   ns->leafn -= m_leafn_to_redneedlen;
+
 	    ns->leafn -= m_leafn_to_litr1n;
 	/*
         ns->leafn          -= m_leafn_to_litr1n;

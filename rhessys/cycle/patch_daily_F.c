@@ -75,8 +75,10 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 #include <math.h>
 #include "rhessys.h"
+
 
 void		patch_daily_F(
 						  struct	world_object	*world,
@@ -380,6 +382,11 @@ void		patch_daily_F(
 	void	compute_fire_effects(
 		struct patch_object *,
 		double);
+    void  compute_beetle_effects( //NREN 20180629
+        struct patch_object *,
+        int inx,
+        int min_abc,
+        double);
 
 
 
@@ -392,6 +399,7 @@ void		patch_daily_F(
 	int	vegtype;
 	int dum;
 	double  pspread;
+	double  attack_mortality;
 	double  biomass_removal_percent;
 	double	cap_rise, tmp, wilting_point;
 	double	delta_unsat_zone_storage;
@@ -427,6 +435,12 @@ void		patch_daily_F(
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
 	struct  mortality_struct mort;
+
+    /* int ok=0; //for beetle outbreak
+     double time_diff;
+     double leaf_time_diff;
+     double year_delay, leaf_year_delay;
+     struct date impact_date; */
 
 	/*--------------------------------------------------------------*/
 	/*	We assume the zone soil temp applies to the patch as well.	*/
@@ -678,6 +692,61 @@ void		patch_daily_F(
 
 			}
 		}
+	}
+
+    /*-----------------------------------------------------------------------------*/
+    /* call the beetle effects model based on the specific time input-N.Ren 2018629*/
+    /*-----------------------------------------------------------------------------*/
+        //int min_abc = world[0].defaults[0].beetle[0].min_abc;
+    	if (patch[0].base_stations != NULL) {       // this means in the world file you need to modify the patch num_basestations=1 and also specify another basestationID
+		inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
+
+               //
+		if (inx > -999) {
+
+			clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
+				}
+			if ((clim_event.edate.year != 0) && (clim_event.value > 0)&&( julday(clim_event.edate) == julday(current_date)) ) {
+				attack_mortality = clim_event.value;
+              //initialize the snage_sequences c and n
+             /*  if (inx ==0) {  // here 300 is hard coded, it is means most 300/24 12.5 events
+                //if (patch[0].snag_sequence.seq==NULL && patch[0].redneedle_sequence.seq==NULL){
+				patch[0].snag_sequence.seq = (struct dated_sequence2 *) alloc(300*sizeof(struct dated_sequence2), "snag_sequence", "patch_daily_F");
+                patch[0].redneedle_sequence.seq = (struct dated_sequence2 *) alloc(300*sizeof(struct dated_sequence2), "snag_sequence", "patch_daily_F");
+                        }; */
+				/* track the snag pool sequences NREN 20180630*/
+				for (layer =0; layer<patch[0].num_layers; layer++) {
+                    for (stratum=0; stratum<patch[0].layers[layer].count; stratum++){
+                        strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
+
+					strata[0].snag_sequence.inx = inx;
+					strata[0].snag_sequence.seq[inx].edate = clim_event.edate; // can not assign value this way???? malloc ()or other things??
+                    strata[0].snag_sequence.seq[inx].Cvalue = 0; // before updating the mortality initialize current snag pool to zero
+                    strata[0].snag_sequence.seq[inx].Nvalue = 0;
+
+                    				/* track the snag pool sequences */
+					strata[0].redneedle_sequence.inx = inx;
+					strata[0].redneedle_sequence.seq[inx].edate = clim_event.edate;
+                    strata[0].redneedle_sequence.seq[inx].Cvalue = 0; // before updating the mortality initialize current snag pool to zero
+                    strata[0].redneedle_sequence.seq[inx].Nvalue = 0;
+                        }
+                    }
+                int min_abc = world[0].defaults[0].beetle[0].min_abc;
+				printf("\n Implementing beetle attack effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
+				compute_beetle_effects(
+					patch,
+					inx, // to remember current index
+					min_abc, // the minimum above carbon needs for attack
+					attack_mortality);
+
+			}
+			//printf("\n the carbon in snag pool %lf and the in the red needle pool %lf, the inx is %d", patch[0].snag_sequence.seq[inx].Cvalue, patch[0].redneedle_sequence.seq[inx].Cvalue,inx);
+		}; //
+
 	}
 
 
@@ -1896,7 +1965,7 @@ void		patch_daily_F(
 			patch[0].totaln += strata->cover_fraction * strata->ns.totaln;
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
 			strata->acc_year.psn += strata->cs.net_psn;
-			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
+			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;//
 		}
 	}
 	/*-------------------------------------------------------------------------*/

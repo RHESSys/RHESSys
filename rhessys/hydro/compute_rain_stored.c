@@ -27,7 +27,7 @@
 /*	DESCRIPTION						*/
 /*								*/
 /*	Updates amount of rain stored after using supplied 	*/
-/*	daytime potential evaporation,  rainfall 			*/ 
+/*	daytime potential evaporation,  rainfall 			*/
 /*	to evaporate and input respectively to the storage.	*/
 /*	Evaporation from the storage is performed first.	*/
 /*								*/
@@ -41,7 +41,7 @@
 double	compute_rain_stored(
 							int	verbose_flag,
 							double	*rain,
-							struct	canopy_strata_object	*stratum) 
+							struct	canopy_strata_object	*stratum)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
@@ -83,7 +83,7 @@ double	compute_rain_stored(
 			   potential_interception,
 			   potential_evaporation);
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Add amount not potentially intercepted to throughfall.	*/
 	/*	m = m - m 						*/
@@ -136,7 +136,8 @@ double	compute_rain_stored(
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
 	rain_storage = min( stratum[0].rain_stored + potential_interception,
-		stratum[0].epv.all_pai
+	//	stratum[0].epv.all_pai
+		stratum[0].epv.all_pai_when_red //NREN 20180804 in update_phenology, if there is not beetle attack, the all_api_b == all_api
 		* stratum[0].defaults[0][0].specific_rain_capacity );
 	if( verbose_flag > 2)
 		printf("%8.6f ",rain_storage);
@@ -148,7 +149,7 @@ double	compute_rain_stored(
 		- (rain_storage - stratum[0].rain_stored),0);
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);
-	
+
 	if (verbose_flag == -5) {
 		printf("                    RAIN STORED END:rainstor=%lf throughfall=%lf oldrainstor=%lf evap=%lf potevap=%lf",
 			   rain_storage,
@@ -157,10 +158,10 @@ double	compute_rain_stored(
 			   stratum[0].evaporation,
 			   stratum[0].potential_evaporation);
 	}
-	
-	
+
+
 	*rain = throughfall;
-	
-	
+
+
 	return( rain_storage);
 } /*end compute_rain_stored*/

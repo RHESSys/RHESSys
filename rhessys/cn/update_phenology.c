@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------*/
-/*                                                              */ 
+/*                                                              */
 /*		update_phenology				*/
 /*                                                              */
 /*  NAME                                                        */
@@ -51,7 +51,7 @@
 void update_phenology(struct zone_object  *zone,
 					  struct epvar_struct	*epv ,
 					  struct epconst_struct	epc	,
-					  struct phenology_struct *phen,	
+					  struct phenology_struct *phen,
 					  struct cstate_struct *cs,
 					  struct cdayflux_struct	*cdf,
 					  struct cdayflux_patch_struct *cdf_patch,
@@ -81,7 +81,7 @@ void update_phenology(struct zone_object  *zone,
 		double,
 		double,
 		double);
-	void	update_litter_interception_capacity (double, 
+	void	update_litter_interception_capacity (double,
 		double,
 		struct litter_c_object *,
 		struct litter_object *);
@@ -133,13 +133,13 @@ void update_phenology(struct zone_object  *zone,
 		struct litter_n_object *,
 		struct cdayflux_patch_struct *,
 		struct ndayflux_patch_struct *);
-	
+
 	double compute_growingseason_index(
 		struct zone_object *,
 	 	struct epvar_struct	*epv ,
 		struct epconst_struct
 		);
-		
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -148,12 +148,13 @@ void update_phenology(struct zone_object  *zone,
 	long day;
 	double perc_sunlit, leaflitfallc, frootlitfallc;
 	double	rootc, sai, new_proj_lai_sunlit;
+	double proj_sla_sunlit, proj_sla_shade, proj_lai_sunlit, proj_lai_shade; //For calcuate beetle caused red needle NREN
 	double excess_n;
 	int remdays_transfer;
 	int expand_flag, litfall_flag;
 
 
-	expand_flag = 0; 
+	expand_flag = 0;
 	leaflitfallc = 0.0;
 	frootlitfallc = 0.0;
 	litfall_flag = 0;
@@ -161,90 +162,90 @@ void update_phenology(struct zone_object  *zone,
 
 
  /*--------------------------------------------------------------*/
- /* static phenology                      */  
+ /* static phenology                      */
  /*--------------------------------------------------------------*/
 
-	
+
   if (epc.phenology_flag == STATIC) {
 
 
-	if (day == phen->expand_startday){ 
+	if (day == phen->expand_startday){
 		expand_flag = 1;
 		phen->gwseasonday = 1;
 		phen->lfseasonday = -1;
 	}
 
-	else if (day == phen->litfall_startday){ 
+	else if (day == phen->litfall_startday){
 		litfall_flag = 1;
 		phen->lfseasonday = 1;
 		phen->gwseasonday = -1;
 	}
 
-	else if (phen->gwseasonday > -1 && phen->gwseasonday <= epc.ndays_expand){ 
+	else if (phen->gwseasonday > -1 && phen->gwseasonday <= epc.ndays_expand){
 		expand_flag = 1;
 	}
 
-	else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){ 
+	else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){
 		litfall_flag = 1;
 	}
 
   }
-	
+
  /*--------------------------------------------------------------*/
-  /* dynamic phenology                      */  
+  /* dynamic phenology                      */
   /*--------------------------------------------------------------*/
 
   else {
 
   phen->gsi = compute_growingseason_index(zone, epv, epc);
-  
-  
+
+
 
 
   /* first are we before last possible date for leaf onset */
     /* are we already in a leaf onset condition */
-      if (phen->gwseasonday > -1 ) { 
+      if (phen->gwseasonday > -1 ) {
           if  (phen->gwseasonday <= epc.ndays_expand)
               expand_flag=1;
-          }   
+          }
       else if (phen->gsi > 0.5) {
               phen->gwseasonday = 1;
-          phen->lfseasonday = -1; 
+          phen->lfseasonday = -1;
           expand_flag=1;
           phen->expand_startday = day;
           phen->expand_stopday = day + epc.ndays_expand;
-          }   
+          }
 
 /* now determine if we are before the last possible date of leaf drop */
-     
-      /* are we already in a leaf offset */
-      if (phen->lfseasonday > -1 ) { 
 
-          phen->gwseasonday = -1; 
-     
+      /* are we already in a leaf offset */
+      if (phen->lfseasonday > -1 ) {
+
+          phen->gwseasonday = -1;
+
           if  (phen->lfseasonday <= epc.ndays_litfall)
               litfall_flag=1;
           }
- 
+
 	else if ((phen->gsi < 0.5) && (phen->gwseasonday > epc.ndays_expand)){
                 phen->lfseasonday = 1;
-          phen->gwseasonday = -1; 
+          phen->gwseasonday = -1;
           litfall_flag=1;
           phen->litfall_startday = day;
           phen->litfall_stopday = day + epc.ndays_litfall;
-	  }   
+	  }
 
 
 
   } /* end dynamic phenology set up */
-    
 
-	
+
+
 	phen->daily_allocation = epc.alloc_prop_day_growth;
 	phen->annual_allocation = 0;
 	if (((cs->frootc + cs->frootc_transfer + cs->frootc_store) < ZERO) && (epc.phenology_flag != STATIC)) {
 		printf("\n calling annual allocation because fine roots are zero %lf %lf %lf", cs->frootc, cs->frootc_transfer, cs->frootc_store);
-		phen->annual_allocation=1;} 
+		phen->annual_allocation=1;}
 	/*--------------------------------------------------------------*/
 	/*	Leaf expansion - spring leaf out			*/
 	/*--------------------------------------------------------------*/
@@ -253,7 +254,7 @@ void update_phenology(struct zone_object  *zone,
 
 		remdays_transfer = max(1.0,(epc.ndays_expand + 1 - phen->gwseasonday));
 
-	
+
 		cdf->leafc_transfer_to_leafc = 2.0*cs->leafc_transfer / remdays_transfer;
 		ndf->leafn_transfer_to_leafn = 2.0*ns->leafn_transfer / remdays_transfer;
 		cdf->frootc_transfer_to_frootc=2.0*cs->frootc_transfer / remdays_transfer;
@@ -324,7 +325,7 @@ void update_phenology(struct zone_object  *zone,
 	/*	note all cdf and ndf variables are zero'd at the 	*/
 	/*	start of the day, so only values set above are used	*/
 	/*--------------------------------------------------------------*/
-	 
+
 	/* Leaf carbon transfer growth */
 	cs->leafc            += cdf->leafc_transfer_to_leafc;
 	cs->leafc_transfer   -= cdf->leafc_transfer_to_leafc;
@@ -381,7 +382,7 @@ void update_phenology(struct zone_object  *zone,
 
 	/*--------------------------------------------------------------*/
 	/*	add additional leaf litterfall if water stress conditions */
-	/*	occur							*/ 
+	/*	occur							*/
 	/*	only drop when accumulated litterfall due to water stress */
 	/*	is greater than usual litterfall			*/
 	/*--------------------------------------------------------------*/
@@ -392,7 +393,7 @@ void update_phenology(struct zone_object  *zone,
 				(epc.psi_close - epc.psi_open)) / 100.0;
 		leaflitfallc = (perc_leaflitfall * cs->leafc);
 		phen->leaflitfallc_wstress += leaflitfallc;
-		if ((phen->leaflitfallc_wstress > phen->leaflitfallc) && 
+		if ((phen->leaflitfallc_wstress > phen->leaflitfallc) &&
 			(phen->leaflitfallc_wstress < 1.5 * phen->leaflitfallc)) {
 			if (ok && compute_leaf_litfall(epc,
 				leaflitfallc,cover_fraction,
@@ -453,10 +454,10 @@ void update_phenology(struct zone_object  *zone,
 
 		if (cs->live_stemc > ZERO) {
 			cdf->livestemc_to_deadstemc = min(epv->day_livestem_turnover, cs->live_stemc);
-			
-			ndf->livestemn_to_deadstemn= min(cdf->livestemc_to_deadstemc 
+
+			ndf->livestemn_to_deadstemn= min(cdf->livestemc_to_deadstemc
 						/ epc.livewood_cn, ns->live_stemn);
-		
+
 			excess_n = max(0.0, ndf->livestemn_to_deadstemn -
 						(cdf->livestemc_to_deadstemc / epc.deadwood_cn ) );
 			ns->retransn += excess_n;
@@ -467,9 +468,9 @@ void update_phenology(struct zone_object  *zone,
 		}
 		if (cs->live_crootc > ZERO) {
 			cdf->livecrootc_to_deadcrootc = min(epv->day_livecroot_turnover, cs->live_crootc);
-			ndf->livecrootn_to_deadcrootn= min(cdf->livecrootc_to_deadcrootc 
+			ndf->livecrootn_to_deadcrootn= min(cdf->livecrootc_to_deadcrootc
 						/ epc.livewood_cn, ns->live_crootn);
-		
+
 			excess_n = max(0.0, ndf->livecrootn_to_deadcrootn -
 						(cdf->livecrootc_to_deadcrootc / epc.deadwood_cn ) );
 			ns->retransn += excess_n;
@@ -531,7 +532,7 @@ void update_phenology(struct zone_object  *zone,
 
 	perc_sunlit = 0.0;
 	if ((cs->leafc > ZERO) && (epc.veg_type != NON_VEG)) {
-		epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit + 
+		epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit +
 			epv->proj_sla_shade * (1-perc_sunlit))), 0.0);
 		new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
 				(1.0 - exp(-0.5*(1-gap_fraction)*
@@ -543,7 +544,7 @@ void update_phenology(struct zone_object  *zone,
 				perc_sunlit = (epv->proj_lai_sunlit) / (epv->proj_lai_sunlit + epv->proj_lai_shade);
 			else
 				perc_sunlit = 1.0;
-			epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit + 
+			epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit +
 				epv->proj_sla_shade * (1-perc_sunlit))), 0.0);
 			new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
 					(1.0 - exp(-0.5*(1-gap_fraction)*
@@ -555,6 +556,42 @@ void update_phenology(struct zone_object  *zone,
 		epv->proj_lai_sunlit = 0.0;
 		epv->proj_lai_shade = 0.0;
 	}
+    /*********************************************************************/
+    /* calculate the new proj_lai_when_red after beetle attack NREN 20180806*/
+    /********************************************************************/
+    epv->proj_lai_when_red = epv->proj_lai;
+    perc_sunlit=0;
+    proj_sla_sunlit =epv->proj_sla_sunlit;
+    proj_sla_shade = epv->proj_sla_shade;
+    proj_lai_sunlit = epv->proj_lai_sunlit;
+    proj_lai_shade = epv->proj_lai_shade;
+
+    if (epc.veg_type ==TREE && (cs->delay_redneedlec + cs->redneedlec)>=0) { // the second condition means outbreak happens
+
+    epv->proj_lai_when_red = max(((cs->leafc + cs->redneedlec*0.6 + cs->delay_redneedlec*0.6)* (proj_sla_sunlit * perc_sunlit + //0.6 is hard coded here to make sure the lai_when_red is not larger than real lai
+			proj_sla_shade * (1-perc_sunlit))), 0.0);
+		new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
+				(1.0 - exp(-0.5*(1-gap_fraction)*
+				epv->proj_lai_when_red / cos(theta_noon)));
+
+    		while (fabs(proj_lai_sunlit - new_proj_lai_sunlit) > 0.00001*new_proj_lai_sunlit )  {
+			proj_lai_sunlit = new_proj_lai_sunlit;
+			proj_lai_shade = epv->proj_lai_when_red - proj_lai_sunlit;
+			if ((proj_lai_sunlit + proj_lai_shade) > ZERO)
+				perc_sunlit = (proj_lai_sunlit) / (proj_lai_sunlit + proj_lai_shade);
+			else
+				perc_sunlit = 1.0;
+			epv->proj_lai_when_red = max(((cs->leafc + cs->redneedlec*0.6 + cs->delay_redneedlec*0.6) * (proj_sla_sunlit * perc_sunlit + //0.6is hard coded or average
+				proj_sla_shade * (1-perc_sunlit))), 0.0);
+			new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
+					(1.0 - exp(-0.5*(1-gap_fraction)*
+					epv->proj_lai_when_red / cos(theta_noon)));
+			}
+
+
+    }
+
+
 
 
 	/*--------------------------------------------------------------*/
@@ -577,6 +614,7 @@ void update_phenology(struct zone_object  *zone,
 		epv->proj_pai = epv->proj_lai;
 		epv->all_pai = epv->all_lai;
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	update height						*/
 	/*--------------------------------------------------------------*/
@@ -596,6 +634,27 @@ void update_phenology(struct zone_object  *zone,
 			else
 				epv->height = 0.0;
 			}
+
+	/*--------------------------------------------------------------*/
+	/*	calculate the the new pai for beetle attack considering the snag pool NREN 20180803	*/
+	/*--------------------------------------------------------------*/
+
+      epv->proj_pai_when_red = epv->proj_pai;
+      epv->all_pai_when_red = epv->all_pai;
+
+	  if (epc.veg_type ==TREE && (cs->delay_snagc + cs->snagc)>0) {
+	  sai = epc.proj_swa*(1.0 - exp(-0.175*(cs->live_stemc + cs->dead_stemc*0.8 +cs->snagc +cs->delay_snagc*0.8))); //0.8 is hard coded
+	  epv->proj_pai_when_red =max(epv->proj_lai_when_red +sai, 0.0);
+	  epv->all_pai_when_red =max(epv->proj_lai_when_red * epc.lai_ratio + sai, 0.0);
+	  //update the tree height
+	  if ( (cs->live_stemc + cs->dead_stemc) > ZERO)
+			epv->height = epc.height_to_stem_coef
+				* pow ( (cs->live_stemc + cs->dead_stemc + cs->snagc*0.8 + cs->delay_snagc*0.8), epc.height_to_stem_exp); //0.8 is hard coded Ning ren 2018/10/30
+
+    }
+
+
+
 	/*--------------------------------------------------------------*/
 	/*	keep a seasonal max_lai for outputing purposes		*/
 	/*--------------------------------------------------------------*/
@@ -612,7 +671,7 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	update_litter_interception_capacity(
 		litter->moist_coef,
-		litter->density,	
+		litter->density,
 		cs_litr,
 		litter);
 
@@ -623,7 +682,7 @@ void update_phenology(struct zone_object  *zone,
 	      phen->gwseasonday += 1;
 	  if (phen->lfseasonday > 0)
 	      phen->lfseasonday += 1;
-	
+
 
 	return;
 

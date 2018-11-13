@@ -46,6 +46,7 @@ struct canopy_strata_object *construct_canopy_strata(
 													 FILE	*world_file,
 													 struct	patch_object	*patch,
 													 int		num_world_base_stations,
+													 int        num_world_extra_base_stations,
 													 struct base_station_object **world_base_stations,
 													 struct	default_object	*defaults)
 {
@@ -56,8 +57,8 @@ struct canopy_strata_object *construct_canopy_strata(
 		int ,
 		int ,
 		struct base_station_object **);
-	
-	
+
+
 	int compute_annual_turnover(struct epconst_struct,
 		struct epvar_struct *,
 		struct cstate_struct *);
@@ -68,7 +69,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		struct phenology_struct *,
 		struct cstate_struct *,
 		int);
-	
+
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
 		double,
@@ -83,18 +84,18 @@ struct canopy_strata_object *construct_canopy_strata(
 	int	base_stationID;
 	int	i;
 	double	sai, rootc;
-	int	default_object_ID; 
-	int     spinup_default_object_ID; 
+	int	default_object_ID;
+	int     spinup_default_object_ID;
 	char	record[MAXSTR];
 	struct	canopy_strata_object	*canopy_strata;
-	
+
 	/*--------------------------------------------------------------*/
 	/*  Allocate a canopy_strata object.                                */
 	/*--------------------------------------------------------------*/
 	canopy_strata = (struct canopy_strata_object *) alloc( 1 *
 		sizeof( struct canopy_strata_object ),"canopy_strata",
 		"construct_canopy_strata" );
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.	*/
 	/*--------------------------------------------------------------*/
@@ -214,7 +215,7 @@ struct canopy_strata_object *construct_canopy_strata(
      canopy_strata[0].target.height = NULLVAL;
      canopy_strata[0].target.age = NULLVAL;
      canopy_strata[0].target.met = 2;
-     
+
    }
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
@@ -225,7 +226,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].epv.min_vwc));
 	read_record(world_file, record);
-	
+
 
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this canopy_strata								*/
@@ -272,6 +273,26 @@ struct canopy_strata_object *construct_canopy_strata(
 	} /* end-while */
 	canopy_strata[0].spinup_defaults[0] = &defaults[0].spinup[i];
 	}
+
+	/*---------------------------------------------------------------*/
+	/* initialize the snag pool and red needle pool time series in strata*/
+	/*---------------------------------------------------------------*/
+
+       // if (command_line[0].gridded_netcdf_flag==1 && num_world_extra_base_stations==1 && command_line[0].beetlespread_flag==1)
+       if (command_line[0].gridded_netcdf_flag==1 &&  command_line[0].beetlespread_flag==1)
+            {
+                canopy_strata[0].snag_sequence.seq = (struct dated_sequence2 *) alloc(300*sizeof(struct dated_sequence2), "snag_sequence", "construct_canopy_strata");
+                canopy_strata[0].redneedle_sequence.seq = (struct dated_sequence2 *) alloc(300*sizeof(struct dated_sequence2), "snag_sequence", "construct_canopy_strata");
+                canopy_strata[0].cs.delay_snagc =0.0;
+                canopy_strata[0].cs.delay_redneedlec=0.0;
+                canopy_strata[0].ns.delay_snagn = 0.0;
+                canopy_strata[0].ns.delay_redneedlen=0.0;
+                canopy_strata[0].cs.snagc =0.0;
+                canopy_strata[0].cs.redneedlec=0.0;
+                canopy_strata[0].ns.snagn = 0.0;
+                canopy_strata[0].ns.redneedlen=0.0;
+            }
+
 
 	/*--------------------------------------------------------------*/
 	/* zero all non tree stem and wood variables			*/
@@ -331,7 +352,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	zero all long term sinks				*/
 	/*--------------------------------------------------------------*/
-	
+
 	canopy_strata[0].cs.gpsn_src = 0.0;
 	canopy_strata[0].cs.leaf_mr_snk = 0.0;
 	canopy_strata[0].cs.leaf_gr_snk = 0.0;
@@ -344,7 +365,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.froot_mr_snk = 0.0;
 	canopy_strata[0].cs.froot_gr_snk = 0.0;
 	canopy_strata[0].NO3_stored = 0.0; // this is for the NO3 deposition on leaves
-	
+
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables                        */
 	/*--------------------------------------------------------------*/
@@ -358,7 +379,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_month.lwp = 0.0;
 	canopy_strata[0].acc_month.length = 0;
 
-        canopy_strata[0].cs.Tacc = 20.0;	
+        canopy_strata[0].cs.Tacc = 20.0;
 	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
 	/* 	we need to initialize the sunlit/shaded proportions of LAI here */
@@ -389,7 +410,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].epv.all_lai = canopy_strata[0].epv.proj_lai *
 		canopy_strata[0].defaults[0][0].epc.lai_ratio;
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
-	
+
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
@@ -441,9 +462,9 @@ struct canopy_strata_object *construct_canopy_strata(
 		rootc = canopy_strata[0].cs.frootc+canopy_strata[0].cs.live_crootc+canopy_strata[0].cs.dead_crootc;
 		if (rootc > ZERO){
 			if (update_rooting_depth(
-				&(canopy_strata[0].rootzone), 
-				rootc, 
-				canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
+				&(canopy_strata[0].rootzone),
+				rootc,
+				canopy_strata[0].defaults[0][0].epc.root_growth_direction,
 				canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
 				patch[0].soil_defaults[0][0].effective_soil_depth)){
 				fprintf(stderr,
@@ -456,7 +477,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	initialize leaf out for non-grow version		*/
 	/*--------------------------------------------------------------*/
-	if (( command_line[0].grow_flag == 0) && 
+	if (( command_line[0].grow_flag == 0) &&
 		(canopy_strata[0].defaults[0][0].epc.veg_type != NON_VEG) ){
 		/*
 		canopy_strata[0].cs.leafc_transfer = canopy_strata[0].phen.leaflitfallc;
@@ -503,7 +524,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		/ patch[0].soil_defaults[0][0].psi_air_entry),
 		patch[0].soil_defaults[0][0].pore_size_index );
 
-	
+
 	/*--------------------------------------------------------------*/
 	/* initialize runnning average of psi **** should actually  calc */
 	/* current day psi						*/

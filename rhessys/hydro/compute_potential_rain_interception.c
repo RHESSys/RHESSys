@@ -9,7 +9,7 @@
 /*								*/
 /*	SYNOPSIS						*/
 /*	compute_potential_rain_interception(   			*/
-/*			int	,				*/	
+/*			int	,				*/
 /*			double	,				*/
 /*			struct	canopy_strata_object	*);	*/
 /*								*/
@@ -39,7 +39,7 @@
 double	compute_potential_rain_interception(
 											int	verbose_flag,
 											double	rain,
-											struct	canopy_strata_object	*stratum) 
+											struct	canopy_strata_object	*stratum)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
@@ -56,15 +56,16 @@ double	compute_potential_rain_interception(
 	/*	limit incoming rain by gap_fraction			*/
 	/*--------------------------------------------------------------*/
 	interception_coef = 1-stratum[0].gap_fraction;
-	
-	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) 
+
+	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG)
 		potential_interception = min(interception_coef * rain,
-			stratum[0].epv.proj_pai
+		//	stratum[0].epv.proj_pai
+			stratum[0].epv.proj_pai_when_red //NREN 20180804 in update_phenology, if there is no beetle attack,the proj_pai_when_red = proj_pai
 			* stratum[0].defaults[0][0].specific_rain_capacity
 			- stratum[0].rain_stored);
-	else 
+	else
 		potential_interception = min(rain, (
-			stratum[0].defaults[0][0].specific_rain_capacity 
+			stratum[0].defaults[0][0].specific_rain_capacity
 			- stratum[0].rain_stored));
 
 	potential_interception = max(potential_interception, 0.0);

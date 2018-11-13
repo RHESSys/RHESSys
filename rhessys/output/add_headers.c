@@ -2,10 +2,10 @@
 /* 																*/
 /*					add_headers					*/
 /*																*/
-/*	add_headers - 
+/*	add_headers -
 															*/
 /*	NAME														*/
-/*	add_headers 
+/*	add_headers
 																*/
 /*	SYNOPSIS													*/
 /*	void add_headers(struct world output_file_object *,				*/
@@ -28,7 +28,7 @@
 #include "rhessys.h"
 
 
-void add_headers(struct world_output_file_object *world_output_files, 
+void add_headers(struct world_output_file_object *world_output_files,
 			struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
@@ -47,7 +47,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	outfile = world_output_files[0].basin[0].hourly;
 	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n",
 	// the unit is based on mm and day
-		"hour",		
+		"hour",
 		"day",
 		"month",
 		"year",
@@ -74,22 +74,22 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"detention_store",
 		"%sat_area",
 		"litter_store",
-		"canopy_store", 
+		"canopy_store",
 		//aperc_snow *100,
 		//asublimation * 1000.0,
 		//var_trans,
 		//aacctrans*1000,
 		//var_acctrans,
 		//aPET*1000,
-		//adC13, 
-		"precip", 
+		//adC13,
+		"precip",
 		//amortality_fract*100,
-	  	//atmax, 
-		//atmin, 
+	  	//atmax,
+		//atmin,
 		//asnow*1000.0 ,
 		"routedstreamflow");
-		
-	
+
+
 
 
 
@@ -169,7 +169,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].monthly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", 
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"month",
 		"year",
 		"basinID",
@@ -189,7 +189,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].yearly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", 
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"year",
 		"basinID",
 		"streamflow",
@@ -241,7 +241,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].hillslope[0].monthly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", 
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"month",
 		"year",
 		"basinID",
@@ -263,7 +263,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].hillslope[0].yearly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", 
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"year",
 		"basinID",
 		"hillslopeID",
@@ -397,20 +397,20 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"Kupdirpch","Kupdifpch","Luppch",
 						"Kdowndirsubcan","Kdowndifsubcan","Ldownsubcan",
 						"Kstarcan","Kstardirsno","Kstardiffsno",
-						"Lstarcanopy","Lstarsnow","Lstarsoil", 
+						"Lstarcanopy","Lstarsnow","Lstarsoil",
 						"wind","windsnow","windzone","ga","gasnow","trans_reduc_perc","pch_field_cap",
 						"overland_flow","height","ustar","snow_albedo",
 						"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
 						"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
 						"LEcanopy",
 						"SED","snow_age");
-		
+
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].monthly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n", 
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n",
 		"month",
 		"year",
 		"basinID",
@@ -444,7 +444,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 			"psn", "trans",
 			"et","lai","nitrif","mineralized",
 			"uptake","Theta","sd",
-			"pkswe", "pktrans", "pkpet", "streamflow", "Qin","Qout","rec.wyd","rec.pet.wyd", 
+			"pkswe", "pktrans", "pkpet", "streamflow", "Qin","Qout","rec.wyd","rec.pet.wyd",
 			"ndays_sat", "ndays_sat70", "midsm_wyd",
 			"area","pet","pcp","burn","snowin","pot_recharge","recharge","recharge.wyd","pot_recharge.wyd"
 			);
@@ -459,7 +459,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].daily;
 	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
 		"day",
 		"month",
 		"year",
@@ -469,6 +469,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"patchID",
 		"stratumID",
 		"lai",
+		"proj_lai_when_red",
 		"evap",
 		"APAR_direct",
 		"APAR_diffuse",
@@ -491,7 +492,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].monthly;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s \n", 
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s \n",
 		"month",
 		"year",
 		"basinID",
@@ -523,7 +524,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		/*--------------------------------------------------------------*/
 		/*	Daily 							*/
 		/*--------------------------------------------------------------*/
-		
+
         outfile = world_output_files[0].stream_routing[0].daily;
 		fprintf(outfile, "%s %s %s %s %s %s %s %s %s\n",
 				"day",
@@ -535,6 +536,6 @@ void add_headers(struct world_output_file_object *world_output_files,
 				"Qin",
 				"waterdepth",
 				"reservoir.store");
-	}	
+	}
 	return;
 } /*end add_headers*/

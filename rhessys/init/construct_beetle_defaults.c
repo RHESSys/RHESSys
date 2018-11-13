@@ -87,11 +87,11 @@ struct spinup_default *construct_beetle_defaults(
                 /*   optional parameter specification                           */
                 /*--------------------------------------------------------------*/
                 default_object_list[i].attack_mortality = getDoubleParam(&paramCnt, &paramPtr, "attack_mortality", "%lf", 0.95, 1); // the default mortality is 95%
-		printf("mortality: %d\n",default_object_list[i].attack_mortality);
+		        printf("mortality: %lf\n",default_object_list[i].attack_mortality);
                 default_object_list[i].year_delay = getDoubleParam(&paramCnt, &paramPtr, "year_delay", "%lf", 5, 1); // the default delay year is 5
-		printf("snag_year_delay: %d\n",default_object_list[i].year_delay);
+		        printf("snag_year_delay: %d\n",default_object_list[i].year_delay);
                 default_object_list[i].half_life = getDoubleParam(&paramCnt, &paramPtr, "half_life", "%lf", 10, 1); // the default delay year is 10
-		printf("snag_half_life: %d\n",default_object_list[i].half_life);
+		        printf("snag_half_life: %d\n",default_object_list[i].half_life);
                 default_object_list[i].n_rows=getIntParam(&paramCnt, &paramPtr, "n_rows", "%d", -1, 1);
                 printf("n_rows: %d\n",default_object_list[i].n_rows);
                 default_object_list[i].n_cols=getIntParam(&paramCnt, &paramPtr, "n_cols", "%d", -1, 1);
@@ -101,9 +101,13 @@ struct spinup_default *construct_beetle_defaults(
                 default_object_list[i].beetle_in_buffer =getIntParam(&paramCnt, &paramPtr, "beetle_in_buffer", "%d", 0, 1);
                 printf("beetle_in_buffer: %d\n",default_object_list[i].beetle_in_buffer);
                 default_object_list[i].leaf_year_delay = getDoubleParam(&paramCnt, &paramPtr, "leaf_year_delay", "%lf", 3, 1); // the default delay year is 3
-		printf("leaf_year_delay: %d\n",default_object_list[i].leaf_year_delay);
+		        printf("leaf_year_delay: %d\n",default_object_list[i].leaf_year_delay);
                 default_object_list[i].leaf_half_life = getDoubleParam(&paramCnt, &paramPtr, "leaf_half_life", "%lf", 2, 1); // the default delay year is 2
-		printf("leaf_half_life: %d\n",default_object_list[i].leaf_half_life);
+		        printf("leaf_half_life: %d\n",default_object_list[i].leaf_half_life);
+		        default_object_list[i].calc_single_attack= getDoubleParam(&paramCnt, &paramPtr, "calc_single_attack", "%lf", 0, 1); // the default delay year is 2
+		        printf("calculate single attack: %d\n",default_object_list[i].calc_single_attack);
+		        default_object_list[i].min_abc= getDoubleParam(&paramCnt, &paramPtr, "min_abc", "%lf", 1000, 1); // the min carbon kg/m2 each patch have that attack happens
+		        printf("the minimum carbon (kg/2) in the patch that an attack will happen : %d\n",default_object_list[i].min_abc);
 
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */

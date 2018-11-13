@@ -1,9 +1,11 @@
 1              beetle_default_ID
 0.95      	attack_mortality
 5  	     	year_delay
-10		half_life
+10		half_life       # normally it is 10 year for snag half life 20180827
 1991		year_attack
-3		leaf_year_delay
+3		leaf_year_delay  # normally it is 3 years 20180827
 2		leaf_half_life
+0		calc_single_attack
+100		min_abc
 
 

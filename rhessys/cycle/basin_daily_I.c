@@ -44,6 +44,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+#include <omp.h>
 #include "rhessys.h"
 #include "phys_constants.h"
 #define THREADS 8
@@ -67,7 +68,7 @@ void		basin_daily_I(
 		struct	command_line_object *,
 		struct	tec_entry *,
 		struct	date );
-	
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/

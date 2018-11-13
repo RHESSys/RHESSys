@@ -30,7 +30,7 @@
 #include "phys_constants.h"
 #include <math.h>
 
-int	compute_snag_decay(
+void	compute_snag_decay(
 					  //struct epconst_struct *epc,
 					  //double cover_fraction,
 					  struct cstate_struct *cs,
@@ -39,7 +39,6 @@ int	compute_snag_decay(
 					  //struct litter_n_object *ns_litr,
 					  struct cdayflux_patch_struct *cdf, //daily carbon flux
 					  struct ndayflux_patch_struct *ndf,  // daily nitrogen flux
-					  int year_attack,  // the year that start have beetle attack impact
 					  int year_delay,
 					  int half_life,
 					  struct date current_day) // current day that
@@ -53,7 +52,6 @@ int	compute_snag_decay(
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 
-	int ok=1;
 	double y_delay ; //snag pool delay time is 5 years, in the future the user can change this paramter from defs files
 	double y_half ;  // snag pool decay rate half life is 10 years
 	//double decay_rate1; // the decay rate previous time step
@@ -61,57 +59,45 @@ int	compute_snag_decay(
 	double time_diff;
 	double c_loss;
 	double n_loss;
-	struct date impact_day;
-    double current_snagc;
-    double current_snagn;
+	//struct date impact_day;
+   // double current_snagc;
+    // current_snagn;
+    double ratio;  // the flux/snag
 
 	y_delay = year_delay;
-	y_half = half_life;
+	y_half = half_life*365.256; //convert the year to daily
 
 
+    /* based on the calculation the snag decay have half life H*/
+    /* from calculation we know that the flux out of snag pool is*/
+    /* a fixed ratio=flux/snagpool, which is (1-0.5^(1/H)), so no
+    /* mater when the different snag come to this ready to decay pool
+    /* there is always a fixed decay ratio */
 
-	/*--------------------------------------------------------------*/
-	/* calculate the flux from CWD to litter lignin and cellulose   */
-	/*						 compartments, due to physical fragmentation */
-	/*--------------------------------------------------------------*/
-	/*--------------------------------------------------------------*/
-	/*	for now use temperature and water scaleris calculated	*/
-	/*	the previous day for soil decomposition limitations	*/
-	/*--------------------------------------------------------------*/
 
 	/* build the decay function */
 	/* the precondition is that the days are larger than y_delay and the current larger than the impact_Day)*/
-	impact_day.year = year_attack;
-	impact_day.month = 1;
-	impact_day.day =2;
+	//impact_day.year = year_attack;
+	//impact_day.month = 1;
+	//impact_day.day =2;
 
 
+	// calculate the the ratio
+	ratio = (1-pow(0.5, 1/y_half));
 
-	time_diff = julday(current_day)-julday(impact_day)-y_delay*365.256; // convert year to day then calculate the superscribe
-	if (time_diff<=0) {
-	ok =2; //ok =2 means the period that snag not happen or
-	return ok;
-	}
-	else {
+	c_loss =  max(0,cs->snagc *ratio);
+	n_loss = max(0,ns->snagn *ratio);
+	//printf("\n the decay ratio are %lf, the c_loss is %lf, the current snag pool are %lf", ratio, c_loss, cs->snagc);
 
-	current_snagc = cs->snagc;
-	current_snagn = ns->snagn;
+	//update the snag pool first
 
-	cs->snagc =cs->snagc *pow(0.5, 1/(365.256*y_half)); // half life is 10 years, due to the cs-snagc is updating each time step so actually
-	ns->snagn = ns->snagn * pow(0.5, 1/(365.256*y_half)); //live stem, use the cn ratio to from cs->snagc to calculate the snagn loss does here need to be this way
-
-
-
-
-	c_loss = current_snagc - cs->snagc;
-	n_loss = current_snagn - ns->snagn;
+	cs->snagc -=c_loss;
+	ns->snagn -=n_loss;
 
 		/*another opotion */
 	/*
 	n_loss_to_cwdn = c_loss/epc.deadwood_cn //
 	n_loss_to_litter = (n_loss - n_loss_to_cwdn) */
-
-	};
 
   /* the following use the snag_loss to move the snag carbon and nitrogen to the CWD pool */
 
@@ -130,7 +116,5 @@ int	compute_snag_decay(
 
    ns->cwdn += ndf->snagn_to_cwdn;
 
-
-	return(!ok);
 } /*end compute_cwd_decay*/
 
