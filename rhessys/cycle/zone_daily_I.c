@@ -521,8 +521,8 @@ void zone_daily_I(
 	/* but warn user of problem with their climate inputs		*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].Delta_T < -ZERO) {
-		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d", 
-			current_date.day, current_date.month, current_date.year); 
+		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d, for zone %d", 
+			current_date.day, current_date.month, current_date.year, zone[0].ID); 
 		zone[0].Delta_T = zone[0].Delta_T * -1.0;
 	}
 	/*--------------------------------------------------------------*/
