@@ -72,6 +72,7 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 
 	stratum[0].acc_year.psn = 0.0;
 	stratum[0].acc_year.minNSC = -999;
+	stratum[0].acc_year.length = 0;
 
 	return;
 } /*end output_yearly_growth_canopy_stratum*/

@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void	execute_yearly_output_event(
+void	execute_yearly_output_event( int reset_flag,
 									struct	world_object	*world,
 									struct	command_line_object *command_line,
 									struct	date	date,
@@ -64,7 +64,7 @@ void	execute_yearly_output_event(
 		FILE	*);
 	
 	void output_yearly_canopy_stratum(
-		int, int, int, int,
+		int, int, int, int, int, 
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
@@ -73,7 +73,7 @@ void	execute_yearly_output_event(
 	/*--------------------------------------------------------------*/
 	int	basinID, hillID, patchID, zoneID, stratumID;
 	int b,h,p,z,c;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	check to see if there are any print options					*/
 	/*--------------------------------------------------------------*/
@@ -216,6 +216,7 @@ void	execute_yearly_output_event(
 																world[0].basins[b][0].hillslopes[h][0].ID,
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
+																reset_flag,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date,
 																outfile->canopy_stratum->yearly);

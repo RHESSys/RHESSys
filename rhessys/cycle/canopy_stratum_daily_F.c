@@ -1917,7 +1917,7 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.length += 1;
 	}
 	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL)){
-		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
+		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr- stratum[0].cdf.total_gr;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
 		if (stratum[0].acc_year.minNSC == -999)
 			stratum[0].acc_year.minNSC = stratum[0].cs.cpool;

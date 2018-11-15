@@ -134,7 +134,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	
 	canopy_strata[0].gap_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",0.0,1);
 	
-	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",-9999,0);
+	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",0,0);
 
 	if (command_line[0].tmp_value > ZERO){
 		canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
