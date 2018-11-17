@@ -356,7 +356,7 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L../lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM) 
@@ -364,10 +364,10 @@ endif
 else
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -v -o $(PGM) 
 endif
 endif
 
