@@ -63,6 +63,7 @@ struct	dated_input_object *construct_dated_input(
 	char	file_name[256];
 	struct dated_input_object	*dated_input;
 
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate the hourly clim object.								*/
 	/*--------------------------------------------------------------*/
@@ -154,13 +155,14 @@ struct	dated_input_object *construct_dated_input(
              start_date );
 		}
 		/* add the daily time series of CO2 as a input N. Ren 20181026 */
-		else if  (strcmp(sequence_name, "CO2") == 0) {
+		/*else if  (strcmp(sequence_name, "CO2") == 0) {
 		    strcpy(file_name, file_prefix);
-		    dated_input[0].CO2= construct_dated_clim_sequence(
+		    daily_clim[0].CO2= construct_clim_sequence(
 		    (char *)strcat(file_name, ".CO2"),
-             start_date );
+             start_date,
+             duration, clim_repeat_flag); //NRen 20181115 to read CO2 data
 
-		}
+		}*/
 		else if ( strcmp(sequence_name,"PH" ) == 0) {
 			strcpy(file_name, file_prefix);
 			dated_input[0].PH = construct_dated_clim_sequence(

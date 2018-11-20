@@ -2087,6 +2087,7 @@ struct  command_line_object
         int             end_flag;
         int             firespread_flag;
         int             beetlespread_flag; // for bark beetle NR
+        int             CO2_flag; //to read in CO2 data when netcdf flag is on 20181115
         int             prev_flag;
         int             gw_flag;
         int             tchange_flag;

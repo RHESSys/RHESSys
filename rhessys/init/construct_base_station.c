@@ -121,7 +121,7 @@
 /*		.														*/
 /*		.														*/
 /*	name of hourly non critical sequnce file n					*/
-/*																*/	
+/*																*/
 /*	At the moment the code requires all of these entries for	*/
 /*	all time steps.  The data file may have to have dummy		*/
 /*	files for time steps for which there is no data.			*/
@@ -149,8 +149,10 @@
 struct	base_station_object *construct_base_station(
 													char	*base_station_filename,
 													struct	date start_date,
-													struct	date duration, 
-													int  clim_repeat_flag)
+													struct	date duration,
+													int  clim_repeat_flag,
+													int CO2_flag,
+													int beetlespread_flag)
 {
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
@@ -160,29 +162,30 @@ struct	base_station_object *construct_base_station(
 		char	*,
 		struct date,
 		long,int);
-	
+
 	struct	monthly_clim_object	*construct_monthly_clim(
 		FILE	*,
 		char	*,
 		struct date,
 		long,int);
-	
+
 	struct	daily_clim_object	*construct_daily_clim(
 		FILE	*,
 		char	*,
 		struct date,
 		long,int);
-	
+
 	struct	hourly_clim_object	*construct_hourly_clim(
 		FILE	*,
 		char	*,
 		struct date,
 		long);
-	
+
 	struct	dated_input_object	*construct_dated_input(
 		FILE	*,
 		char	*,
 		struct date);
+    double	*construct_clim_sequence( char *, struct date, long, int);
 
 	void	*alloc(	size_t, char *, char *);
 	/*--------------------------------------------------------------*/
@@ -191,14 +194,20 @@ struct	base_station_object *construct_base_station(
 	char	clim_object_file_prefix[256];
 	char  record[MAXSTR];
 	struct	base_station_object	*base_station;
-	
-	/*--------------------------------------------------------------*/	
+
+    int	num_non_critical_sequences; //NREN 20181115
+	char	sequence_name[256];
+
+	/*--------------------------------------------------------------*/
 	/*	Allocate a structure for the base station object.			*/
 	/*--------------------------------------------------------------*/
 	base_station = (struct base_station_object *)
 		alloc(1 * sizeof(struct base_station_object ),
 		"base_station","construct_base_station");
-	
+	base_station[0].daily_clim = (struct daily_clim_object *)
+		alloc(1*sizeof(struct daily_clim_object),"daily_clim",
+		"construct_daily_clim" );
+    base_station[0].daily_clim[0].CO2 = NULL;
 	/*--------------------------------------------------------------*/
 	/*	Try to open the base station file.							*/
 	/*--------------------------------------------------------------*/
@@ -209,7 +218,7 @@ struct	base_station_object *construct_base_station(
 			base_station_filename);
 		exit(EXIT_FAILURE);
 	} /*end if*/
-	
+
 	/*--------------------------------------------------------------*/
 	/*	read the header of this base station file.					*/
 	/*--------------------------------------------------------------*/
@@ -243,7 +252,7 @@ struct	base_station_object *construct_base_station(
 		start_date,
 		duration.year, clim_repeat_flag );
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	read in the name of the monthly clim object prefix.			*/
 	/*--------------------------------------------------------------*/
@@ -259,7 +268,7 @@ struct	base_station_object *construct_base_station(
 		start_date,
 		duration.month, clim_repeat_flag );
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	read in the name of the daily clim object prefix.			*/
 	/*--------------------------------------------------------------*/
@@ -297,13 +306,28 @@ struct	base_station_object *construct_base_station(
 	/*	now check to see if there are additional sequences to be read */
 	/*--------------------------------------------------------------*/
 	if (fscanf(base_station[0].base_station_file, "%s",clim_object_file_prefix) != EOF) {
-		printf("\n Now from %d %s   ", base_station[0].ID, clim_object_file_prefix);
+        //fscanf(base_station[0].base_station_file,"%d", &num_non_critical_sequences);
+        //fscanf(base_station[0].base_station_file,"%s",sequence_name);
+        // add read in the CO2 climate input NREN 20181115
+        if (CO2_flag == 1) {
+            printf("\n Now read CO2 from %d %s \n  ", base_station[0].ID, clim_object_file_prefix);
+            read_record(base_station[0].base_station_file, record);
+            base_station[0].daily_clim[0].CO2 = construct_clim_sequence(
+			(char *)strcat(clim_object_file_prefix, ".CO2"),
+			start_date,
+			duration.day, clim_repeat_flag);
+
+             }
+
+        if (beetlespread_flag ==1) {  //using if not else if to make parallel condition
+		printf("\n Now read beetle from %d %s   ", base_station[0].ID, clim_object_file_prefix);
 		read_record(base_station[0].base_station_file, record);
 		base_station[0].dated_input = construct_dated_input(
 			base_station[0].base_station_file,
 			clim_object_file_prefix,
 			start_date);
 			}
+        }
 
 	/*--------------------------------------------------------------*/
 	/*		close this base station file.							*/

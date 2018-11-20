@@ -145,7 +145,8 @@ void update_beetle_attack_mortality(
 
 
 
-   if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type =="EVERGREEN") { // if it is the beetle attack and trees
+   if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN)
+   { // if it is the beetle attack and trees
 
 	/******************************************************************/
 	/* beetle attack mortality: stem go to snag pool then cwd pool and leaf go to dead doliage pool then litter pool */

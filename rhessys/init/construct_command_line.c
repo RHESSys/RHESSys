@@ -49,26 +49,26 @@ struct	command_line_object	*construct_command_line(
 	int	valid_option( char * );
 	void	*alloc( size_t, char *, char * );
 	void	output_template_structure();
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	int		i;
 	struct	command_line_object	*command_line;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate a command line object.								*/
 	/*--------------------------------------------------------------*/
 	command_line = (struct command_line_object *)
 		alloc(1 * sizeof(struct command_line_object),
 		"command_line","construct_command_line");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Initialize the options as null				*/
 	/*--------------------------------------------------------------*/
 	command_line[0].gridded_ascii_flag = 0;
 	command_line[0].gridded_netcdf_flag = 0;
-	command_line[0].grow_flag = 0;	
+	command_line[0].grow_flag = 0;
 	command_line[0].std_scale = 0;
 	command_line[0].stdev_flag = 0;
 	command_line[0].road_flag = 1;
@@ -95,9 +95,9 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].surface_energy_flag = 0;
 	command_line[0].firespread_flag = 0;
 	command_line[0].beetlespread_flag =0;
-	command_line[0].vegspinup_flag = 0;		
+	command_line[0].vegspinup_flag = 0;
 	command_line[0].vgsen_flag = 0;
-	command_line[0].FillSpill_flag=0;	
+	command_line[0].FillSpill_flag=0;
 	command_line[0].evap_use_longwave_flag = 0;
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
@@ -130,7 +130,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
-	
+
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
 	/*-------------------------------------------------*/
@@ -227,7 +227,7 @@ struct	command_line_object	*construct_command_line(
 			}
 			/*-------------------------------------------------*/
 			/*Check tmp value option is next.				*/
-			/* Currently tmp is used for sensitivity analysis of rooting_depth  */ 
+			/* Currently tmp is used for sensitivity analysis of rooting_depth  */
 			/*-------------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-tmp") == 0 ){
 				i++;
@@ -291,6 +291,14 @@ struct	command_line_object	*construct_command_line(
 				}/*end if*/
 			}/* end if */
 
+            /*--------------------------------------------------*/
+            /* read in co2 data when netcdf flag is on 20181115   */
+            /*--------------------------------------------------*/
+             else if ( strcmp(main_argv[i],"-CO2") == 0 ){
+                i++;
+				//printf("\n Read in CO2 data when the climate data is netcdf file");
+				command_line[0].CO2_flag = 1;
+			}/* end if */
 
 
 			/*-------------------------------------------------*/
@@ -313,7 +321,7 @@ struct	command_line_object	*construct_command_line(
 				printf("\n Running with SPINUP turned on \n");
 				command_line[0].vegspinup_flag = 1;
 				i++;
-     
+
       	/*--------------------------------------------------------------*/
 				/*			Read in the vegspinup file name.						          	*/
 				/*--------------------------------------------------------------*/
@@ -370,7 +378,7 @@ struct	command_line_object	*construct_command_line(
 			/*-------------------------------------------------*/
 			/* 	soil moisture standard deviation	-std */
 			/*	if this flag is set there must be an extra variable in the worldfile */
-			/*	at the patch level which inputs a std for that patch 	*/	
+			/*	at the patch level which inputs a std for that patch 	*/
 			/*-------------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-stdev") == 0 ){
 				i++;
@@ -825,7 +833,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].stro = (struct stro_option *)
 					alloc(sizeof(struct stro_option), "stro","construct_command_line" );
 				command_line[0].stro[0].reachID 	= -999;
-				
+
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -840,7 +848,7 @@ struct	command_line_object	*construct_command_line(
 					}/*end if*/
 				} /*end if*/
 			} /*end if*/
-			
+
                         /*--------------------------------------------------------------*/
 			/*		Check if the basin output flag is next.    				*/
 			/*--------------------------------------------------------------*/
@@ -851,7 +859,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].b = (struct b_option *)
 					alloc(sizeof(struct b_option), "b","construct_command_line" );
 				command_line[0].b[0].basinID 	= -999;
-                               
+
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/

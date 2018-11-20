@@ -362,7 +362,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
 	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *);
 	struct base_station_object *construct_base_station(char *,
-		struct date, struct date, int);
+		struct date, struct date, int, int, int); //Add CO2 flag NREN 20181115 CO2 flag and beetle flag
 	struct basin_object *construct_basin(struct command_line_object *, FILE *, int *,
 		struct base_station_object **, struct default_object *,
         struct base_station_ncheader_object *,
@@ -813,8 +813,10 @@ struct world_object *construct_world(struct command_line_object *command_line){
 				  sizeof(struct base_station_object *),"base_stations","construct_world" );
 				world[0].extra_stations[0] = construct_base_station(
 								world[0].base_station_files[1], // here is 1 to read the second base station files
-								world[0].start_date, world[0].duration,
-								command_line[0].clim_repeat_flag);
+								world[0].start_date, world[0].duration, //add co2 20181118
+								command_line[0].clim_repeat_flag,
+								command_line[0].CO2_flag,
+								command_line[0].beetlespread_flag);
 			} //end if for extra station input
 
             #ifdef LIU_NETCDF_READER
@@ -882,7 +884,9 @@ struct world_object *construct_world(struct command_line_object *command_line){
 				world[0].base_stations[i] = construct_base_station(
 								world[0].base_station_files[i],
 								world[0].start_date, world[0].duration,
-								command_line[0].clim_repeat_flag);
+								command_line[0].clim_repeat_flag,
+								command_line[0].CO2_flag,
+								command_line[0].beetlespread_flag);
 			} /*end for*/
 
 			/*--------------------------------------------------------------*/

@@ -664,30 +664,17 @@ void zone_daily_I(
 		temp = zone[0].base_stations[0][0].daily_clim[0].CO2[day];
 		if ( temp != -999.0 ) zone[0].CO2 = temp;
 	}
-	/* read in the CO2 data when netcdf is activated Ning Ren 20181026*/
-	if (world[0].num_extra_stations == 1) {
-       inx = world[0].extra_stations[0][0].dated_input[0].CO2.inx;
-       if (inx > -999 )
-       {
-        clim_event = world[0].extra_stations[0][0].dated_input[0].CO2.seq[inx];
-        while (julday(clim_event.edate) < julday(current_date)) {
-           world[0].extra_stations[0][0].dated_input[0].CO2.inx +=1;
-           inx = world[0].extra_stations[0][0].dated_input[0].CO2.inx;
-            clim_event = world[0].extra_stations[0][0].dated_input[0].CO2.seq[inx];
-            }
-       if ((clim_event.edate.year !=0) && (julday(clim_event.edate) == julday(current_date)))
-           {temp = clim_event.value;
-        //   printf(" \n the read in value is %lf , the index is %d\n", clim_event.value, inx);
-         }
-       else temp = zone[0].defaults[0][0].atm_CO2;
-       }
-	   else temp = zone[0].defaults[0][0].atm_CO2;
 
-	        zone[0].CO2 = temp;
+	// NREN 20181115
+	if ( world[0].num_extra_stations==1 && world[0].extra_stations[0][0].daily_clim[0].CO2 !=NULL) {
+        temp = world[0].extra_stations[0][0].daily_clim[0].CO2[day];
+        if (temp != -999.0) zone[0].CO2 = temp;
+         //printf(" \n the read in value is %lf , the index is %d\n", temp, day);
+       //  printf("\n the current zone is %d\n, the current date is %4d %4d %4d %4d \n ", zone[0].ID, current_date.year, current_date.month, current_date.day, current_date.hour);
 
-	  //	printf("\n the current zone is %d\n, the current date is %4d %4d %4d %4d \n ", zone[0].ID, current_date.year, current_date.month, current_date.day, current_date.hour);
-	   // printf(" \n the 3 CO2 is %lf and the temp is %lf, the defualt is %lf \n", zone[0].CO2,temp, zone[0].defaults[0][0].atm_CO2 );
 	}
+
+
 
 	/*--------------------------------------------------------------*/
 	/*      vpd - Pa - daylight mean value.                         */

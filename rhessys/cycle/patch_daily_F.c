@@ -710,7 +710,7 @@ void		patch_daily_F(
 				inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
 				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
 				}
-			if ((clim_event.edate.year != 0) && (clim_event.value > 0)&&( julday(clim_event.edate) == julday(current_date)) ) {
+			if ((clim_event.edate.year != 0) && (clim_event.value > 1e-6)&&( julday(clim_event.edate) == julday(current_date)) ) {
 				attack_mortality = clim_event.value;
               //initialize the snage_sequences c and n
              /*  if (inx ==0) {  // here 300 is hard coded, it is means most 300/24 12.5 events
