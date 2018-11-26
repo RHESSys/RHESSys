@@ -298,7 +298,7 @@ void compute_fire_effects(
 				canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;	
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) and then account for target canopy height allocation */
-				canopy_target[0].fe.canopy_target_prop_mort_o_component = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2))))) * (1-canopy_target[0].fe.canopy_target_height_u_prop);
+				canopy_target[0].fe.canopy_target_prop_mort_o_component = (1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2)))))) * (1-canopy_target[0].fe.canopy_target_height_u_prop);
 
 
 				/* ------------------------------------------------------------------------ */
