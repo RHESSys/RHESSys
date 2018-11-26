@@ -13,6 +13,8 @@
 
 GIS_read = function(maps_in,type,typepars,map_info) {
 
+  options(scipen = 999) # no scientific notation
+
   # try to determine which version of GRASS is being used automatically
   if (type == "GRASS") {
     if (unlist(gregexpr("7.", typepars[1])) > unlist(gregexpr("6.", typepars[1]))) {
@@ -23,7 +25,7 @@ GIS_read = function(maps_in,type,typepars,map_info) {
   }
 
   # ---------- Read in spatial data ----------
-  print("Reading in maps",quote=FALSE)
+  print("Reading in maps",quote = FALSE)
   # GRASS 6.4.4 ----------
   if (type == "GRASS6") {
     spgrass6::initGRASS( # Initialize GRASS environment

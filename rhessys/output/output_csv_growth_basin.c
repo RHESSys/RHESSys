@@ -89,7 +89,9 @@ void	output_csv_growth_basin(
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
+        #ifndef NO_UPDATE_160419
 		astreamflow_N += hillslope[0].streamflow_N * hillslope[0].area;
+        #endif
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			for (p=0; p< zone[0].num_patches; p++){
@@ -109,7 +111,9 @@ void	output_csv_growth_basin(
 				asminn += (patch[0].soil_ns.sminn) * patch[0].area;
 				anitrate += (patch[0].soil_ns.nitrate) * patch[0].area;
 				atotaln += (patch[0].totaln) * patch[0].area;
+                #ifndef NO_UPDATE_160419
 				astreamflow_N += patch[0].streamflow_N * patch[0].area;
+                #endif
 				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
 				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
@@ -187,7 +191,9 @@ void	output_csv_growth_basin(
 				aarea +=  patch[0].area;
 				hill_area += patch[0].area;
 			}
+            #ifndef NO_UPDATE_160419
 			hstreamflow_N += hillslope[0].streamflow_N * hill_area;
+            #endif
 			basin_area += hill_area;
 		}
 	}

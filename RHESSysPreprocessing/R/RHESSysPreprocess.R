@@ -1,6 +1,6 @@
 #' RHESSysPreprocess
 #'
-#' Preforms RHESSys Preprocessing, comprise of two main steps: generating a world file, and generating a flow table.
+#' Preforms RHESSys Preprocessing, comprised of two main steps: generating a world file, and generating a flow table.
 #' World file is generated via world_gen.R, and flow table is generated via CreateFlownet.R.
 #' @param template Template file used to generate worldfile for RHESSys. Generic strucutre is:
 #' <state variable> <operator> <value/map>. Levels are difined by lines led by "_", structured
@@ -25,10 +25,18 @@
 #' @param header TRUE/FALSE flag for the creation of a header file. Will have same name (and location) as "name" argument, but with ".hdr" suffix.
 #' @param asprules The path and filename to the rules file.  Using this argument enables aspatial patches.
 #' @param meta TRUE/FALSE flag for the creation of a metadata file. Still in dev.
+#' @param parallel TRUE/FALSE flag to build a flowtable for use in the hilllslope parallelized version of RHESSys. Console may output warnings of
+#' automated actions taken to make hillslope parallelization possible, or errors indicating fatal problems in hillslope parallelization.
+#' @param d4 TRUE/FALSE flag to determine the logic used when finding neighbors in flow table creation. FALSE uses d8 routing, looking at all eight
+#' neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.
+#' @param make_stream The maximum distance (cell lengths) away from an existing stream that a patch can be automatically coerced to be a stream.
+#' Setting to TRUE will include patches at any distance. This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.
+#' Default is 4.
 #' @seealso \code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
 #' @author Will Burke
 #' @export
 
+# ---------- Function start ----------
 RHESSysPreprocess = function(template,
                              name,
                              type = 'Raster',
@@ -40,14 +48,15 @@ RHESSysPreprocess = function(template,
                              roofs = NULL,
                              asprules = NULL,
                              header = FALSE,
-                             meta = TRUE,
+                             meta = FALSE,
                              wrapper = TRUE,
-                             parallel = FALSE,
-                             d4 = FALSE) {
+                             parallel = TRUE,
+                             d4 = FALSE,
+                             make_stream = 4) {
 
   # ---------- Check Inputs ----------
   if (!file.exists(template)) { # check if template exists
-    print(paste("Template does not exist or is not located at specified path:",template),quote=FALSE)
+    print(paste("Template does not exist or is not located at specified path:",template),quote = FALSE)
   }
 
   basename = basename(name) # check Name
@@ -87,7 +96,7 @@ RHESSysPreprocess = function(template,
   }
 
   # ---------- Run world_gen ----------
-  print("Begin world_gen.R",quote=FALSE)
+  print("Begin world_gen.R",quote = FALSE)
 
   if (file.exists(worldfile) & overwrite == FALSE) { # check for worldfile overwrite
     t = menu(c("Yes", "No [Exit]"), title = noquote(paste(
@@ -111,7 +120,7 @@ RHESSysPreprocess = function(template,
   asp_list = world_gen_out[[2]]
 
   # ---------- Run CreateFlownet ----------
-  print("Begin CreateFlownet.R",quote=FALSE)
+  print("Begin CreateFlownet.R",quote = FALSE)
 
   if (file.exists(cfname) & overwrite == FALSE) { # check for flownet overwrite
     t = menu(c("Yes", "No [Exit]"), title = noquote(paste(
@@ -122,7 +131,7 @@ RHESSysPreprocess = function(template,
     }
   }
 
-  CreateFlownet(cfname = cfname,
+  CreateFlownet(name = cfname,
                 readin = readin,
                 type = type,
                 typepars = typepars,
@@ -134,24 +143,25 @@ RHESSysPreprocess = function(template,
                 roofs = roofs,
                 wrapper = wrapper,
                 parallel = parallel,
+                make_stream = make_stream,
                 d4 = d4)
 
   # ---------- Run build_meta ----------
-  if(meta){
-    build_meta(
-      name = name_clean,
-      world = worldfile,
-      flow = cfname,
-      template = template,
-      type = type,
-      typepars = typepars,
-      cf_maps = world_cfmaps,
-      streams = streams,
-      roads = roads,
-      impervious = impervious,
-      roofs = roofs,
-      asp_rule = asprules
-    )
-  }
+  # if (meta) {
+  #   build_meta(
+  #     name = name_clean,
+  #     world = worldfile,
+  #     flow = cfname,
+  #     template = template,
+  #     type = type,
+  #     typepars = typepars,
+  #     cf_maps = readin,
+  #     streams = streams,
+  #     roads = roads,
+  #     impervious = impervious,
+  #     roofs = roofs,
+  #     asp_rule = asprules
+  #   )
+  # }
 
 } # end function

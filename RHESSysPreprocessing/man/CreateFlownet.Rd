@@ -4,13 +4,13 @@
 \alias{CreateFlownet}
 \title{CreateFlownet}
 \usage{
-CreateFlownet(cfname, readin = NULL, type = "raster", typepars = NULL,
+CreateFlownet(name, readin = NULL, type = "raster", typepars = NULL,
   asp_list = NULL, streams = NULL, overwrite = FALSE, roads = NULL,
-  road_width = NULL, impervious = NULL, roofs = NULL, wrapper = FALSE,
-  parallel = FALSE, d4 = FALSE)
+  road_width = NULL, impervious = NULL, roofs = NULL,
+  wrapper = FALSE, parallel = TRUE, make_stream = 4, d4 = FALSE)
 }
 \arguments{
-\item{cfname}{The name of the flow network file to be created.  Will be coerced to have ".flow" extension if not already present.}
+\item{name}{The name of the flow network file to be created.  Will be coerced to have ".flow" extension if not already present.}
 
 \item{readin}{readin indicates which maps to be used. If CreateFlowmet.R is run it's own, this should point to the template. Otherwise,
 if run inside of RHESSysPreprocess, readin will use the map data from world_gen.R, Streams map, and other optional maps, still need to
@@ -26,6 +26,26 @@ indicating the path to a folder containing the raster files that are referenced 
 For GRASS GIS type, typepars is a vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 Example parameters are included in an example script included in this package. See initGRASS help
 for more info on parameters.}
+
+\item{streams}{Streams map to be used in building the flowtable.}
+
+\item{overwrite}{Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.}
+
+\item{roads}{Roads map, an optional input for flowtable creation.}
+
+\item{impervious}{Impervious map, an optional input for flowtable creation.}
+
+\item{roofs}{Roofs map, an optional input for flowtable creation.}
+
+\item{parallel}{TRUE/FALSE flag to build a flowtable for use in the hilllslope parallelized version of RHESSys. Console may output warnings of
+automated actions taken to make hillslope parallelization possible, or errors indicating fatal problems in hillslope parallelization.}
+
+\item{make_stream}{The maximum distance (cell lengths) away from an existing stream that a patch can be automatically coerced to be a stream.
+Setting to TRUE will include patches at any distance. This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.
+ Default is 4.}
+
+\item{d4}{TRUE/FALSE flag to determine the logic used when finding neighbors in flow table creation. FALSE uses d8 routing, looking at all eight
+neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.}
 }
 \description{
 Creates the flow network used by RHESSys

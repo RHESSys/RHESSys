@@ -137,4 +137,3 @@ struct routing_list_object construct_routing_topology(
 	}
 	return(rlist);
 } /*end construct_routing_topology.c*/
-

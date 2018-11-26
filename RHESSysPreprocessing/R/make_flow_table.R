@@ -39,12 +39,14 @@ make_flow_table<-function(flw,output_file,parallel){
                       flw[[i]]$Centroidz,flw[[i]]$Area,flw[[i]]$Area,flw[[i]]$Landtype,flw[[i]]$TotalG,num_neighbors)
         cat(out_string)
         cat("\n")
-        for (j in 1:num_neighbors){
-          cat("\t")
-          n_j<-flw[[i]]$Neighbors[j]
-          out_string<-c(flw[[n_j]]$PatchID,flw[[n_j]]$ZoneID,flw[[n_j]]$HillID,flw[[i]]$Gamma_i[j])
-          cat(out_string)
-          cat("\n")
+        if(num_neighbors>0){
+          for (j in 1:num_neighbors){
+            cat("\t")
+            n_j<-flw[[i]]$Neighbors[j]
+            out_string<-c(flw[[n_j]]$PatchID,flw[[n_j]]$ZoneID,flw[[n_j]]$HillID,flw[[i]]$Gamma_i[j])
+            cat(out_string)
+            cat("\n")
+          }
         }
         if (flw[[i]]$Landtype==2){
           cat("\t")

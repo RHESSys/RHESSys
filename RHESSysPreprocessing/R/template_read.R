@@ -10,6 +10,8 @@
 
 template_read = function(template){
 
+  options(scipen = 999) # no scientific notation
+
   # ---------- Read in template ----------
   con = file(template, open ="r") # commect to file
   read = readLines(con) # read file, default reads entire file, line by line
