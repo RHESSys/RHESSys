@@ -37,7 +37,7 @@ void	output_hillslope(				int basinID,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -57,7 +57,10 @@ void	output_hillslope(				int basinID,
 	double astreamflow;
 	double abase_flow;
 	double apsn, alai;
-	double u20, au20; 
+	double u20, au20;
+	/* add more output varibale by NREN 2018/121/7 */
+	double aprecip, aevap_surface, asoil_evap, arz_stor, arz_stor_flux, adetention_stor, adetention_stor_flux, acanopy_stor, acanopy_stor_flux, alitter_stor;
+    double asat_deficit_flux, aunsat_stor_flux, asnowpack_flux, aunsat_stor_preday;
 	double aarea;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
@@ -82,6 +85,29 @@ void	output_hillslope(				int basinID,
 	apsn = 0.0 ;
 	alai = 0.0;
 	aarea =  0.0 ;
+
+    /* add more output variables NREN 2018/12/7*/
+	aprecip =0.0;
+	aevap_surface =0.0;
+	asoil_evap =0.0;
+	arz_stor =0.0;
+	alitter_stor =0.0;
+
+	adetention_stor=0.0; // this detention_store, canopy_store
+	acanopy_stor=0.0;
+
+	adetention_stor_flux=0.0;
+	acanopy_stor_flux=0.0;
+
+	asat_deficit_flux =0.0;
+	aunsat_stor_flux =0.0;
+	asnowpack_flux =0.0;
+	arz_stor_flux =0.0;
+
+
+
+
+
 	for (z=0; z<hillslope[0].num_zones; z++){
 		zone = hillslope[0].zones[z];
 		for (p=0; p< zone[0].num_patches; p++){
@@ -91,12 +117,35 @@ void	output_hillslope(				int basinID,
 			asat_deficit_z += patch[0].sat_deficit_z * patch[0].area;
 			asat_deficit += patch[0].sat_deficit * patch[0].area;
 
+
+
+
+			/* add the other output to make the waterbuget works*/
+			/* by Ning Ren 2018/12/7*/
+			aprecip += (zone[0].rain+zone[0].snow) * patch[0].area;
+			aevap_surface += patch[0].evaporation_surf * patch[0].area;
+			asoil_evap += (patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone) * patch[0].area;//soil evap is a little different
+			arz_stor += patch[0].rz_storage * patch[0].area;
+
+			adetention_stor += patch[0].detention_store * patch[0].area ;
+			acanopy_stor += (patch[0].rain_stored + patch[0].snow_stored) * patch[0].area;
+
+			alitter_stor += (patch[0].litter.rain_stored)* patch[0].area;
+
+ 		//	adetention_stor_flux += (patch[0].detention_store - patch[0].preday_detention_store)* patch[0].area;
+		//	acanopy_stor_flux +=  (patch[0].delta_rain_stored + patch[0].delta_snow_stored) * patch[0].area;
+         //   arz_stor_flux += (patch[0].rz_storage -patch[0].preday_rz_storage ) * patch[0].area;
+		//	asat_deficit_flux += (patch[0].sat_deficit - patch[0].preday_sat_deficit)*patch[0].area;
+
+		//	asnowpack_flux += patch[0].delta_snowpack * patch[0].area; // why delta_snowpack = snowpack.water_depth - snowpack.water_equivalent_depth - preday_snowpack
+
+            //aunsat_stor_preday += patch[0].preday_unsat_storage * patch[0].area;
 			/* determine actual amount in upper 20cm */
 			if (patch[0].sat_deficit_z > 0.020)
 				u20 = patch[0].unsat_storage * 0.020/patch[0].sat_deficit_z;
 			else
 				u20 = patch[0].unsat_storage + (0.020 - patch[0].sat_deficit_z)*
-						patch[0].soil_defaults[0][0].porosity_0;         
+						patch[0].soil_defaults[0][0].porosity_0;
 			au20 += u20 * patch[0].area;
 			aunsat_storage += patch[0].unsat_storage * patch[0].area;
 			aunsat_drainage += patch[0].unsat_drainage * patch[0].area;
@@ -129,6 +178,7 @@ void	output_hillslope(				int basinID,
 	asat_deficit_z /= aarea ;
 	asat_deficit /= aarea ;
 	aunsat_storage /= aarea ;
+	aunsat_stor_preday /=aarea;
 	aunsat_drainage /= aarea ;
 	acap_rise /= aarea ;
 	areturn_flow /= aarea ;
@@ -144,7 +194,28 @@ void	output_hillslope(				int basinID,
 	abase_flow += hillslope[0].base_flow;
 
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		/* add new output by ning ning 2018/12/7*/
+	aprecip /=aarea;
+	aevap_surface /= aarea;
+	asoil_evap /=aarea;
+	arz_stor  /=aarea;
+
+	adetention_stor /=aarea;
+	acanopy_stor /=aarea;
+
+	alitter_stor /=aarea;
+
+	//adetention_stor_flux /=aarea;
+	//acanopy_stor_flux /=aarea;
+  //  arz_stor_flux /=aarea;
+//	asat_deficit_flux /=aarea;
+	//asnowpack_flux /=aarea;
+
+   // aunsat_stor_preday = aunsat_storage;
+  //  aunsat_stor_flux = aunsat_storage - aunsat_stor_preday;
+
+
+	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 		date.day,
 		date.month,
 		date.year,
@@ -167,6 +238,26 @@ void	output_hillslope(				int basinID,
 		alai,
 		hillslope[0].gw.Qout *1000.0,
 		hillslope[0].gw.storage *1000.0,
+
+		        /* NREN add more */
+		aprecip*1000.0,
+		aevap_surface *1000.0,
+		asoil_evap *1000.0,
+		arz_stor *1000.0,
+		//arz_stor_flux *1000.0,
+		adetention_stor*1000.0,
+		acanopy_stor *1000.0,
+		//adetention_stor_flux *1000.0,
+		//acanopy_stor_flux*1000.0,
+
+		alitter_stor *1000.0,
+
+        //asat_deficit_flux*1000.0,
+        //aunsat_stor_flux*1000.0,
+        //asnowpack_flux *1000.0,
+
+
+
 		hillslope[0].area
 		);
 	return;

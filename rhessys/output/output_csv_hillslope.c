@@ -37,7 +37,7 @@ void	output_csv_hillslope(				int basinID,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -57,7 +57,7 @@ void	output_csv_hillslope(				int basinID,
 	double astreamflow;
 	double abase_flow;
 	double apsn, alai;
-	double u20, au20; 
+	double u20, au20;
 	double aarea;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
@@ -81,6 +81,20 @@ void	output_csv_hillslope(				int basinID,
 	apsn = 0.0 ;
 	alai = 0.0;
 	aarea =  0.0 ;
+	/* add more output variables */
+	aprecip =0.0;
+	aevap_surface =0.0;
+	asoil_evap =0.0;
+	arz_stor =0.0;
+	arz_stor_flux =0.0;
+	adetention_stor=0.0; // this detention_store, canopy_store
+	arain_stor=0.0;
+	adetention_stor_flux=0.0;
+	arain_stor_flux=0.0;
+	alitter_stor =0.0;
+
+
+
 	for (z=0; z<hillslope[0].num_zones; z++){
 		zone = hillslope[0].zones[z];
 		for (p=0; p< zone[0].num_patches; p++){
@@ -90,12 +104,28 @@ void	output_csv_hillslope(				int basinID,
 			asat_deficit_z += patch[0].sat_deficit_z * patch[0].area;
 			asat_deficit += patch[0].sat_deficit * patch[0].area;
 
+			/* add the other output to make the waterbuget works*/
+			/* by Ning Ren 2018/12/7*/
+
+			aprecip += (zone[0].rain+zone[0].snow) * patch[0].area;
+			aevap_surface += patch[0].evaporation_surf * patch[0].area;
+			asoil_evap += (patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone) * patch[0].area;//soil evap is a little different
+			arz_stor += patch[0].rz_storage * patch[0].area;
+			arz_stor_flux += (patch[0].rz_storage -patch[0].preday_rz_storage ) * patch[0].area;
+			adetention_stor += patch[0].detention_store * patch[0].area ;
+			arain_stor += patch[0].rain_stored * patch[0].area;
+			adetention_stor_flux = (patch[0].detention_store - patch[0].preday_detention_store)* patch[0].area;
+			arain_stor_flux =  (patch[0].rain_stored - patch[0].preday_rain_stored) * patch[0].area;
+			alitter_stor += (patch[0].litter.rain_stored)* patch[0].area;
+
+
+
 			/* determine actual amount in upper 20cm */
 			if (patch[0].sat_deficit_z > 0.020)
 				u20 = patch[0].unsat_storage * 0.020/patch[0].sat_deficit_z;
 			else
 				u20 = patch[0].unsat_storage + (0.020 - patch[0].sat_deficit_z)*
-						patch[0].soil_defaults[0][0].porosity_0;         
+						patch[0].soil_defaults[0][0].porosity_0;
 			au20 += u20 * patch[0].area;
 			aunsat_storage += patch[0].unsat_storage * patch[0].area;
 			aunsat_drainage += patch[0].unsat_drainage * patch[0].area;
@@ -118,6 +148,7 @@ void	output_csv_hillslope(				int basinID,
 					alai += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai
 						* patch[0].area;
+
 				}
 			}
 		}
@@ -142,8 +173,23 @@ void	output_csv_hillslope(				int basinID,
 
 	abase_flow += hillslope[0].base_flow;
 
+	/* add new output by ning ning 2018/12/7*/
 
-	fprintf(outfile,"%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
+	aprecip /=aarea;
+	aevap_surface /= aarea;
+	asoil_evap /=aarea;
+	arz_stor  /=aarea;
+	arz_stor_flux /=aarea;
+	adetention_stor /=aarea;
+	arain_stor /=aarea;
+	adetention_stor_flux /=aarea;
+	arain_stor_flux /=aarea;
+
+	alitter_stor /=aarea;
+
+
+
+	fprintf(outfile,"%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
 		date.day,
 		date.month,
 		date.year,
@@ -172,6 +218,21 @@ void	output_csv_hillslope(				int basinID,
         #endif
 		hillslope[0].gw.storage *1000.0,
 		hillslope[0].gw.NO3 *1000.0,
+
+        /* NREN add more */
+		aprecip*1000.0,
+		aevap_surface *1000.0,
+		asoil_evap *1000.0,
+		arz_stor *1000.0,
+		arz_stor_flux *1000.0,
+		adetention_stor*1000.0,
+		arain_stor *1000.0,
+		adetention_stor_flux *1000.0,
+		arain_stor_flux*1000.0,
+
+		alitter_stor *1000.0,
+
+
 		hillslope[0].area
 		);
 	return;

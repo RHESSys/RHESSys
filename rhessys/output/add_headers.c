@@ -210,7 +210,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].hillslope[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
 		"day",
 		"month",
 		"year",
@@ -233,6 +233,19 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"lai",
 		"gw.Qout",
 		"gw.storage",
+		"precip", //NREN 2018/12/7
+		"evap_surface",
+		"soil_evap",
+		"rz_storage",
+		//"rz_stor_flux",
+		"detention_stor",
+		//"detention_stor_flux",
+		"rain_stor",
+		//"rain_stor_flux",
+		"litter_stor",
+		//"sat_deficit_flux",
+		//"aunsat_stor_flux",
+	//	"asnowpack_flux",
 		"area"
 		);
 
