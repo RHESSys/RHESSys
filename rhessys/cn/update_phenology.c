@@ -591,7 +591,8 @@ void update_phenology(struct zone_object  *zone,
 
     }
 
-
+  // Revert back to lai 20181121 simple model
+        epv->proj_lai_when_red = epv->proj_lai;
 
 
 	/*--------------------------------------------------------------*/
@@ -653,7 +654,8 @@ void update_phenology(struct zone_object  *zone,
 
     }
 
-
+    //NREN 20181121
+    epv->proj_pai_when_red = epv->proj_pai;
 
 	/*--------------------------------------------------------------*/
 	/*	keep a seasonal max_lai for outputing purposes		*/
