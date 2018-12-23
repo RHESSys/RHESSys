@@ -75,7 +75,6 @@ void input_new_strata(
 		double,
 		double,
 		double,
-		double,
 		double);
 
 	void	*alloc(	size_t,
@@ -200,6 +199,8 @@ void input_new_strata(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.cwdn = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",canopy_strata[0].ns.retransn,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",canopy_strata[0].cs.age,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
 
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
@@ -333,7 +334,6 @@ void input_new_strata(
 			rootc, 
 			canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
-			canopy_strata[0].defaults[0][0].epc.root_max_depth,
 			patch[0].soil_defaults[0][0].effective_soil_depth)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from construct_canopy_strata()\n");
@@ -365,7 +365,6 @@ void input_new_strata(
 		/* assume this is 365 for now since we don't know when next      */
 		/* year's growing season will start                              */
 		/*---------------------------------------------------------------*/
-		canopy_strata[0].phen.nretdays = 365;
 	}
 	else {
 		fprintf(stderr,"\nFATAL ERROR - construct_canopy_stratum.c");

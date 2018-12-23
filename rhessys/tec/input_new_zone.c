@@ -118,7 +118,11 @@
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].e_horizon = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",zone[0].w_horizon,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].w_horizon = ltmp;
+<<<<<<< HEAD
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",zone[0].num_base_stations,1);
+=======
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",zone[0].num_base_stations,0);
+>>>>>>> 91265abd0ed7bc66d675fa3675b79feab23f2918
 
 
 
@@ -173,6 +177,10 @@
 				world_base_stations);
 		} /*end for*/
 	}
+<<<<<<< HEAD
+=======
+/*
+>>>>>>> 91265abd0ed7bc66d675fa3675b79feab23f2918
 	else{
 	  dtmp = zone[0].num_base_stations;
 	  for(j=0;j<dtmp;j++){
@@ -180,6 +188,10 @@
 		read_record(world_file, record);
 	  }
 	}
+<<<<<<< HEAD
+=======
+*/
+>>>>>>> 91265abd0ed7bc66d675fa3675b79feab23f2918
 
 		/*--------------------------------------------------------------*/
 		/*	Initialize any variables that should be initialized at	*/

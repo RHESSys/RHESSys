@@ -800,6 +800,7 @@ void zone_daily_I(
 	/*	OR															*/
 	/*																*/
 	/*	if tday is not given we wait until it is computed	*/
+	/*      if we have to estimate maybe consider lower quantile */
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tnight != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tnight[day];
@@ -809,7 +810,7 @@ void zone_daily_I(
 			zone[0].metv.tnight = temp;
 		}
 		else if ( zone[0].metv.tday != -999.0 ){
-			zone[0].metv.tnight  = (zone[0].metv.tday + zone[0].metv.tmin)/2.0;
+			zone[0].metv.tnight  = zone[0].metv.tavg-(zone[0].metv.tavg-zone[0].metv.tmin)/2.0;
 		}
 		else{
 			zone[0].metv.tnight = -999.0;
@@ -1089,7 +1090,6 @@ void zone_daily_I(
 			area_receiving += patch[0].area;
 		}
 	}
-
 
 	if (excess_root_water_volume < ZERO) {
 	added_water_volume=0.0;

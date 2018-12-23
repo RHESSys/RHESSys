@@ -1546,6 +1546,7 @@ struct patch_object
         int             num_layers;
         int             num_soil_intervals;                             /* unitless */
         int             target_status;
+	int		family_ID;
 	int		soil_parm_ID;
 	int		landuse_parm_ID;
 	double		mpar;
@@ -2151,13 +2152,12 @@ struct phenology_struct
         double frootlitfalln; /* (kgN/m2) current growth year leaflitter nitrogen */
         double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
         double gsi;             /* (0 to 1) growing season phenology index */
-                int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
+        int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
         int expand_startday;       /* (yday) yearday of first leaf growth */
         int litfall_startday;       /* (yday) yearday of litterfall growth */
         int expand_stopday;       /* (yday) yearday of last leaf growth */
         int litfall_stopday;       /* (yday) yearday of last litterfall growth */
         int ngrowthdays; /* (days) days between onday and next offday */
-        int nretdays;    /* (days) days between allocations */
                 int gwseasonday; /* (day) day within the growing season */
                 int lfseasonday; /* (day) day within litter fall period */
                 
@@ -2169,7 +2169,7 @@ struct phenology_struct
 /* carbon state variables (including sums for sources and sinks) */
 struct cstate_struct
 {
-        int     age; /* (num years) */
+        double     age; /* (num years) */
         int     num_resprout; /* (num years) running index of years of resprouting */   
     
     double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
@@ -2180,13 +2180,13 @@ struct cstate_struct
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
     double leafc_age;           /* (years) age */
+    double stem_density;    /* number per m2 */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */
     double live_crootc;     /* (kgC/m2) live coarse root C */
     double dead_crootc;     /* (kgC/m2) dead coarse root C */
     double frootc;          /* (kgC/m2) fine root C */ 
-
     double leafc_transfer;      /* (kgC/m2) leaf C to be allocated from last season */
     double livestemc_transfer; /* (kgC/m2) live stemwood C to be allocated from last season */
     double deadstemc_transfer; /* (kgC/m2) dead stemwood C to be allocated from last season */
@@ -2281,6 +2281,8 @@ struct epvar_struct
     double all_pai;        /* (DIM) all-sided plant area index */
     double proj_pai;       /* (DIM) projected plant area index */
     double all_lai;        /* (DIM) live all-sided leaf area index */
+    double perc_sunlit_lai;    /* 0-1 proportion that is sunlit */
+    double perc_sunlit_leafc;    /* 0-1 proportion that is sunlit */
     double proj_lai;       /* (DIM) live projected leaf area index */
     double proj_sla_sunlit;       /* (DIM) live projected leaf area index */
     double proj_sla_shade;       /* (DIM) live projected leaf area index */
@@ -2316,6 +2318,10 @@ struct epvar_struct
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
     double DOC_to_gw;   /* (kgC/m2/day) */
+    double assim_sunlit; /* (umol/m2/s) */
+    double assim_shade;  /*  (umol/m2/s) */
+    double transpiration_rate_sunlit; 
+    double transpiration_rate_shade; 
 
     /* daily phenology fluxes */
     double leafc_to_deadleafc;     /* (kgC/m2/d) standing dead grass accumulation */
@@ -2541,8 +2547,10 @@ struct epconst_struct
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
 	double netpabs;		/* (mol/mol) fPAR effectively abosorbed */
 	double netpabs_sla_parm;		/* scale parameter for netpabs = 1/(SLA*parm) relationship 1 is default */
+	double netpabs_diff;		/* (mol/mol) fPAR effectively abosorbed */
 	double netpabs_shade;		/* (mol/mol) fPAR effectively abosorbed */
 	double netpabs_sunlit;		/* (mol/mol) fPAR effectively abosorbed */
+        double flnr_diff;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double flnr;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double flnr_shade;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double flnr_sunlit;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
@@ -2558,6 +2566,8 @@ struct epconst_struct
         double vpd_open;       /* (Pa) vpd at start of conductance reduction */
         double vpd_close;      /* (Pa) vpd at complete conductance reduction */
         double gl_smax;        /* (m/s) maximum leaf-scale stomatal conductance */
+        double gl_smax_sunlit;        /* (m/s) maximum leaf-scale stomatal conductance */
+        double gl_smax_shade;        /* (m/s) maximum leaf-scale stomatal conductance */
         double gl_c;           /* (m/s) leaf-scale cuticular conductance */
         double gl_bl;          /* (m/s) leaf-scale boundary layer conductance */
         double gs_tmin;            /* (deg C) lower temperature theshold for leaf onset */
@@ -2632,9 +2642,11 @@ struct epconst_struct
     int dynamic_alloc_prop_day_growth; /* (0-1) 1 proportional allocated daily can be dynamic 0 static */
     double  min_leaf_carbon; /* kgC minimum leaf carbon before death */
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
+    double  resprout_cpool; /* kgC cpool carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
     double root_max_depth; /*  (m) maximum root depth */
+    double max_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
         double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
     int     max_years_resprout; /* num years of resprouting before death */
     double waring_pa; /* parameter for Waring allometric equation */
@@ -2729,6 +2741,9 @@ struct  stratum_default
         double lai;
         double lwp;
         double minNSC;
+	double stemc;
+	double rootc;
+	double leafc;
         };
 
 

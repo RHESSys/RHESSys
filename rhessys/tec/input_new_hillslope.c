@@ -91,6 +91,8 @@ void input_new_hillslope(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",hillslope[0].z,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].z = ltmp;
 	hillslope[0].hill_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"hill_parm_ID","%d",hillslope[0].hill_parm_ID,1);	 	
+
+
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",hillslope[0].gw.storage,1);		
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.storage = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",hillslope[0].gw.NO3,1);	

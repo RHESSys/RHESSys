@@ -45,6 +45,7 @@
 struct patch_object *construct_patch(
 									 struct	command_line_object	*command_line,
 									 FILE	*world_file,
+									 struct	zone_object *zone,
 									 int     num_world_base_stations,
 									 struct  base_station_object **world_base_stations,
 									 struct	default_object	*defaults)
@@ -59,6 +60,7 @@ struct patch_object *construct_patch(
 	struct 	canopy_strata_object *construct_canopy_strata( 
 		struct command_line_object *,
 		FILE	*,
+		struct	zone_object *,
 		struct	patch_object *,
 		int     num_world_base_stations,
 		struct  base_station_object **world_base_stations,
@@ -133,6 +135,7 @@ struct patch_object *construct_patch(
 	patch[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
 	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",-9999,0);
 	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
+	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
 
 	if (command_line[0].firespread_flag == 1) {
 		fscanf(world_file,"%d",&(fire_default_object_ID));
@@ -182,9 +185,6 @@ struct patch_object *construct_patch(
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.0,1);
 	patch[0].litter_ns.litr1n =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",0.0,1);
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",0.031,1);
-	patch[0].litter_ns.litr1n =
-		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",0.00093,1);
 	patch[0].litter_cs.litr2c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",0.0,1);
 	patch[0].litter_cs.litr3c =
@@ -286,9 +286,6 @@ struct patch_object *construct_patch(
 	if (command_line[0].firespread_flag == 1) {
 		patch[0].fire.et = 0.0;
 		patch[0].fire.pet = 0.0;
-		patch[0].fire.understory_et = 0;
-		patch[0].fire.understory_pet = 0;
-		// here set fire.understory_et and fire.understory_pet = 0;
 		}	
 	/*--------------------------------------------------------------*/
 	/*	Variables for the dynamic version are included here     */
@@ -532,11 +529,6 @@ struct patch_object *construct_patch(
 				max(patch[0].landuse_defaults[0][0].detention_store_size,
 				patch[0].soil_defaults[0][0].detention_store_size);
 	/*--------------------------------------------------------------*/
-	/*	Read in the number of  patch base stations 					*/
-	/*--------------------------------------------------------------*/
-	/*fscanf(world_file,"%d",&(patch[0].num_base_stations));
-	read_record(world_file, record);*/
-	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this patch.			*/
 	/*--------------------------------------------------------------*/
 	patch[0].base_stations = (struct base_station_object **)
@@ -606,6 +598,7 @@ struct patch_object *construct_patch(
 		patch[0].canopy_strata[i] = construct_canopy_strata(  
 			command_line,
 			world_file,
+			zone,
 			patch,
 			num_world_base_stations,
 			world_base_stations,defaults);
@@ -699,6 +692,8 @@ struct patch_object *construct_patch(
 		0,
 		-1*patch[0].sat_deficit);
 	patch[0].preday_sat_deficit_z = patch[0].sat_deficit_z;
+
+	patch[0].water_transfer=0.0;
 	
 
 	if(paramPtr!=NULL)

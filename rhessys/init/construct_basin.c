@@ -72,7 +72,6 @@ struct basin_object *construct_basin(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	param *readtag_worldfile(int *, FILE *,char *);	
 	struct base_station_object *assign_base_station(
 								int,
 								int,
