@@ -171,11 +171,6 @@
 				world_base_stations);
 		} /*end for*/
 	}
-<<<<<<< HEAD
-=======
-
-/*
->>>>>>> 91265abd0ed7bc66d675fa3675b79feab23f2918
     	else{
 	  dtmp = zone[0].num_base_stations;
 	  for(j=0;j<dtmp;j++){
@@ -183,7 +178,6 @@
 		read_record(world_file, record);
 	  }
 	}
-*/
 
 
 		/*--------------------------------------------------------------*/
