@@ -92,10 +92,12 @@ void input_new_strata(
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
 	int	paramCnt=0;
+        int     change;
 	param	*paramPtr=NULL;
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.		*/
 	/*--------------------------------------------------------------*/
+	change = 0;
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
@@ -114,7 +116,9 @@ void input_new_strata(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",canopy_strata[0].cs.cpool,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cpool = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",canopy_strata[0].cs.leafc,1);
-	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc = ltmp;
+	 if (fabs(ltmp - canopy_strata[0].cs.leafc) > ZERO) {
+				change=1; }
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc = ltmp; 
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",canopy_strata[0].cs.dead_leafc,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.dead_leafc = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",canopy_strata[0].cs.leafc_store,1);
@@ -234,6 +238,15 @@ void input_new_strata(
 			} /* end-while */
 			canopy_strata[0].defaults[0] = &defaults[0].stratum[i];
 		}
+
+
+
+		/*--------------------------------------------------------------*/
+		/* if canopy has changed; recompute various variables (e.g turnovers, lai) */
+		/*--------------------------------------------------------------*/
+
+		if (change==1) {
+
 		/*--------------------------------------------------------------*/
 		/*	zero all long term sinks				*/
 		/*--------------------------------------------------------------*/
@@ -277,16 +290,20 @@ void input_new_strata(
 		canopy_strata[0].defaults[0][0].epc.lai_ratio;
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
 	
-	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
+	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
+		if (canopy_strata[0].cs.stem_density < ZERO) canopy_strata[0].cs.stem_density = 1.0;
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
-		* pow((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc),
+		* pow(((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc)/
+			canopy_strata[0].cs.stem_density),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
-	else
+		}
+	else {
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp); 
+	}
 	/*--------------------------------------------------------------*/
 	/*	calculate all sided  and project pai from max projected lai	*/
 	/*--------------------------------------------------------------*/
@@ -382,6 +399,8 @@ void input_new_strata(
 			canopy_strata[0].cs.age = 0;
 			canopy_strata[0].cs.num_resprout = 0;
 		}
+
+		} /* end if change */
 		/*--------------------------------------------------------------*/
 		/*	Read in the number of  strata base stations 					*/
 		/*--------------------------------------------------------------*/
