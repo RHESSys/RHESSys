@@ -149,7 +149,7 @@ void update_phenology(struct zone_object  *zone,
 	long day;
 	double perc_sunlit, leaflitfallc, frootlitfallc;
 	double	rootc, sai, new_proj_lai_sunlit;
-	double excess_n;
+	double excess_n, horiz;
 	int remdays_transfer;
 	int expand_flag, litfall_flag;
 
@@ -593,9 +593,10 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	if (epc.veg_type == TREE) {
 		if (cs->stem_density < ZERO) cs->stem_density = 1.0;
-		if ( (cs->live_stemc + cs->dead_stemc) > ZERO)
+		if ( (cs->live_stemc + cs->dead_stemc) > ZERO) {
 			epv->height = epc.height_to_stem_coef
 				* pow ( ((cs->live_stemc + cs->dead_stemc)/(cs->stem_density)), epc.height_to_stem_exp);
+		}
 		else
 			epv->height = 0.0;
 		}
@@ -609,6 +610,16 @@ void update_phenology(struct zone_object  *zone,
 			else
 				epv->height = 0.0;
 			}
+
+
+	/*--------------------------------------------------------------*/
+	/* temporary e-w horizon					*/
+	/*--------------------------------------------------------------*/
+
+	horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
+
+	zone[0].e_horizon=horiz;
+	zone[0].w_horizon=horiz;
 	/*--------------------------------------------------------------*/
 	/*	keep a seasonal max_lai for outputing purposes		*/
 	/*--------------------------------------------------------------*/
