@@ -319,10 +319,13 @@ void	canopy_stratum_daily_F(
 	double dum;
 	double max_snow_albedo_increase, wetfrac;
 	double deltaT;
+	double netpabs_sunlit, netpabs_shade, flnr_sunlit, flnr_shade;
 
 	struct	psnin_struct	psnin;
 	struct	psnout_struct	psnout;
 	struct mortality_struct mort;
+
+
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.1 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
@@ -335,6 +338,8 @@ void	canopy_stratum_daily_F(
   /*--------------------------------------------------------------*/
 	/*	Initialize stratum variables.				*/
 	/*--------------------------------------------------------------*/
+
+
 	stratum[0].Kstar_diffuse = 0.0;
 	stratum[0].APAR_diffuse = 0.0;
 	stratum[0].Kstar_direct = 0.0;
@@ -389,27 +394,29 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/* age varyin parameters					*/
 	/*--------------------------------------------------------------*/
+	if (((stratum[0].defaults[0][0].epc.flnr_age_mult > ZERO) || (stratum[0].defaults[0][0].epc.netpabs_age_mult > ZERO)) && (stratum[0].cs.leafc_age1+stratum[0].cs.leafc_age2 > ZERO)) {
+		flnr_sunlit = min(1.0,(stratum[0].cs.leafc_age1 * (stratum[0].defaults[0][0].epc.flnr_sunlit * (1 + stratum[0].defaults[0][0].epc.flnr_age_mult))+
+				stratum[0].cs.leafc_age2 * (stratum[0].defaults[0][0].epc.flnr_sunlit)) /
+					(stratum[0].cs.leafc_age1+stratum[0].cs.leafc_age2));
+		flnr_shade = min(1.0,(stratum[0].cs.leafc_age1 * (stratum[0].defaults[0][0].epc.flnr_shade * (1 + stratum[0].defaults[0][0].epc.flnr_age_mult))+
+				stratum[0].cs.leafc_age2 * (stratum[0].defaults[0][0].epc.flnr_shade)) /
+					(stratum[0].cs.leafc_age1+stratum[0].cs.leafc_age2));
+		netpabs_sunlit = min(1.0,(stratum[0].cs.leafc_age1 * (stratum[0].defaults[0][0].epc.netpabs_sunlit * (1 + stratum[0].defaults[0][0].epc.netpabs_age_mult))+
+				stratum[0].cs.leafc_age2 * (stratum[0].defaults[0][0].epc.netpabs_sunlit)) /
+					(stratum[0].cs.leafc_age1+stratum[0].cs.leafc_age2));
+		netpabs_shade = min(1.0, (stratum[0].cs.leafc_age1 * (stratum[0].defaults[0][0].epc.netpabs_shade * (1 + stratum[0].defaults[0][0].epc.netpabs_age_mult))+
+				stratum[0].cs.leafc_age2 * (stratum[0].defaults[0][0].epc.netpabs_shade)) /
+					(stratum[0].cs.leafc_age1+stratum[0].cs.leafc_age2));
+	}
 
-	
-	if (stratum[0].cs.leafc_age > 1)
-		stratum[0].defaults[0][0].epc.flnr_sunlit = ((stratum[0].defaults[0][0].epc.flnr+stratum[0].defaults[0][0].epc.flnr_diff)+
-				(stratum[0].cs.leafc_age-1)* (stratum[0].defaults[0][0].epc.flnr-stratum[0].defaults[0][0].epc.flnr_diff))/
-					stratum[0].cs.leafc_age;
-	else
-		stratum[0].defaults[0][0].epc.flnr_sunlit = stratum[0].defaults[0][0].epc.flnr+stratum[0].defaults[0][0].epc.flnr_diff;
+	else { 
+		flnr_sunlit = stratum[0].defaults[0][0].epc.flnr_sunlit;
+		flnr_shade = stratum[0].defaults[0][0].epc.flnr_shade;
+		netpabs_sunlit = stratum[0].defaults[0][0].epc.netpabs_sunlit;
+		netpabs_shade = stratum[0].defaults[0][0].epc.netpabs_shade;
+	}
+		
 
-	stratum[0].defaults[0][0].epc.flnr_shade = stratum[0].defaults[0][0].epc.flnr_sunlit;
-
-
-	if (stratum[0].cs.leafc_age > 1)
-		stratum[0].defaults[0][0].epc.netpabs_sunlit = ((stratum[0].defaults[0][0].epc.netpabs+stratum[0].defaults[0][0].epc.netpabs_diff)+
-				(stratum[0].cs.leafc_age-1)* (stratum[0].defaults[0][0].epc.netpabs-stratum[0].defaults[0][0].epc.netpabs_diff))/
-					stratum[0].cs.leafc_age;
-	else
-		stratum[0].defaults[0][0].epc.netpabs_sunlit = stratum[0].defaults[0][0].epc.netpabs+stratum[0].defaults[0][0].epc.netpabs_diff;
-
-	stratum[0].defaults[0][0].epc.netpabs_sunlit = max(min(1.0, stratum[0].defaults[0][0].epc.netpabs_sunlit),0.0);
-	stratum[0].defaults[0][0].epc.netpabs_shade = stratum[0].defaults[0][0].epc.netpabs_sunlit;
 
 
 
@@ -486,7 +493,8 @@ void	canopy_stratum_daily_F(
 
 	/*	NEW CHECK TO SEE IF STRATUM IS VEGETATED, OTHERWISE SKIP	*/
 	/*	TO END TO UPDATE RADIATION BY COVER FRACTION				*/
-	
+
+
 	if ((stratum[0].defaults[0][0].epc.veg_type != NON_VEG) && (stratum[0].epv.proj_pai > ZERO) && (stratum[0].cover_fraction > ZERO)) {
 		
 		if (stratum[0].snow_stored > ZERO) {
@@ -1279,8 +1287,8 @@ void	canopy_stratum_daily_F(
 	transpiration_rate = transpiration_rate_sunlit +  transpiration_rate_shade;
 	potential_transpiration_rate = potential_transpiration_rate_sunlit +  potential_transpiration_rate_shade;
 		
-	stratum[0].cdf.transpiration_rate_sunlit = transpiration_rate_sunlit*1000;
-	stratum[0].cdf.transpiration_rate_shade = transpiration_rate_shade*1000;
+	stratum[0].cdf.transpiration_rate_sunlit = transpiration_rate_sunlit;
+	stratum[0].cdf.transpiration_rate_shade = transpiration_rate_shade;
 
 	if ((stratum[0].ID ==1) && (transpiration_rate_shade < 0))
 	printf("\n sun %lf %lf gs %lf shade %lf %lf gs %lf", transpiration_rate_sunlit*1000, rnet_trans_sunlit, stratum[0].gs_sunlit, transpiration_rate_shade*1000,rnet_trans_shade, stratum[0].gs_shade);
@@ -1678,8 +1686,8 @@ void	canopy_stratum_daily_F(
 
 			psnin.pa = zone[0].metv.pa;
 			psnin.co2 = zone[0].CO2;
-			psnin.flnr = stratum[0].defaults[0][0].epc.flnr_sunlit;
-			psnin.netpabs = stratum[0].defaults[0][0].epc.netpabs_sunlit;
+			psnin.flnr = flnr_sunlit;
+			psnin.netpabs = netpabs_sunlit;
 			psnin.t = zone[0].metv.tday;
 			psnin.irad = stratum[0].ppfd_sunlit;
 			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_sla_sunlit > ZERO))
@@ -1721,8 +1729,8 @@ void	canopy_stratum_daily_F(
 				* zone[0].metv.dayl*12.011e-9);
 			else
 				psnin.Rd = 0.0;
-			psnin.flnr = stratum[0].defaults[0][0].epc.flnr_shade;
-			psnin.netpabs = stratum[0].defaults[0][0].epc.netpabs_shade;
+			psnin.flnr = flnr_shade;
+			psnin.netpabs = netpabs_shade;
 			psnin.irad = stratum[0].ppfd_shade;
 			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_sla_shade > ZERO))
 				psnin.lnc = stratum[0].ns.leafn * (1.0-stratum[0].epv.perc_sunlit_leafc)
@@ -1769,8 +1777,8 @@ void	canopy_stratum_daily_F(
 				psnin.g = stratum[0].gs_sunlit * 1000 / 1.6 / stratum[0].epv.proj_lai_sunlit;
 			else
 				psnin.g = 0.0;
-			psnin.flnr = stratum[0].defaults[0][0].epc.flnr_sunlit;
-			psnin.netpabs = stratum[0].defaults[0][0].epc.netpabs_sunlit;
+			psnin.flnr = flnr_sunlit;
+			psnin.netpabs = netpabs_sunlit;
 			psnin.irad = stratum[0].ppfd_sunlit;
 			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_lai_sunlit > ZERO))
 				psnin.lnc = stratum[0].ns.leafn * stratum[0].epv.perc_sunlit_leafc
@@ -1814,8 +1822,8 @@ void	canopy_stratum_daily_F(
 			else
 				psnin.g = 0.0;
 			psnin.irad = stratum[0].ppfd_shade;
-			psnin.flnr = stratum[0].defaults[0][0].epc.flnr_shade;
-			psnin.netpabs = stratum[0].defaults[0][0].epc.netpabs_shade;
+			psnin.flnr = flnr_shade;
+			psnin.netpabs = netpabs_shade;
 			if ((stratum[0].cs.leafc > ZERO) && (stratum[0].epv.proj_lai_shade > ZERO))
 				psnin.lnc = stratum[0].ns.leafn * (1.0-stratum[0].epv.perc_sunlit_leafc)
 					/ stratum[0].epv.proj_lai_shade;

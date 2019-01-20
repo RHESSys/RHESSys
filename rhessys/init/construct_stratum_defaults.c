@@ -113,11 +113,13 @@ struct stratum_default *construct_stratum_defaults(
 		/* values combined 0.85 / 2.6 from Biome BGC 4.1.1 */
 		/* if this is 9999 we will make this dynamics as 1/sla*10 from Evans and Poorter, 2001) */
 		default_object_list[i].epc.netpabs = 		getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs", "%lf", 0.7, 1);
-		default_object_list[i].epc.netpabs_sunlit = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_sunlit", "%lf", 0.7, 1);
-		default_object_list[i].epc.netpabs_shade = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_shade", "%lf", 0.7, 1);
+		default_object_list[i].epc.netpabs_age_mult = 		getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_age_mult", "%lf", 0.0, 1);
+		default_object_list[i].epc.netpabs_sunlit = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_sunlit", "%lf", 9999, 1);
+		default_object_list[i].epc.netpabs_shade = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_shade", "%lf", 9999, 1);
 		default_object_list[i].epc.netpabs_sla_parm = 	getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_sla_parm", "%lf", 1.0, 1);
 
 
+		default_object_list[i].epc.flnr_age_mult = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr_age_mult", "%lf", 0.0, 1);
 		default_object_list[i].epc.flnr = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr", "%lf", 0.1, 1);
 		default_object_list[i].epc.flnr_sunlit = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr_sunlit", "%lf", 9999, 1);
 		default_object_list[i].epc.flnr_shade = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr_shade", "%lf",9999 , 1);
@@ -396,8 +398,10 @@ struct stratum_default *construct_stratum_defaults(
 		if (default_object_list[i].epc.flnr_sunlit > 1.0)
 			default_object_list[i].epc.flnr_sunlit = default_object_list[i].epc.flnr;
 
-		default_object_list[0].epc.flnr_diff= (default_object_list[0].epc.flnr_sunlit-default_object_list[0].epc.flnr_shade)/2.0;
-		default_object_list[0].epc.netpabs_diff= (default_object_list[0].epc.netpabs_sunlit-default_object_list[0].epc.netpabs_shade)/2.0;
+		if (default_object_list[i].epc.netpabs_shade > 1.0)
+			default_object_list[i].epc.netpabs_shade = default_object_list[i].epc.netpabs;
+		if (default_object_list[i].epc.netpabs_sunlit > 1.0)
+			default_object_list[i].epc.netpabs_sunlit = default_object_list[i].epc.netpabs;
 
 		if (default_object_list[i].epc.gl_smax_sunlit > 9990)
 			default_object_list[i].epc.gl_smax_sunlit = default_object_list[i].epc.gl_smax;

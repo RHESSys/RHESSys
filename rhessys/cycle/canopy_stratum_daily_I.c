@@ -60,6 +60,7 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+
 	if (patch[0].sat_deficit < ZERO)
 		stratum[0].rootzone.S = 1.0;
 

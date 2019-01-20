@@ -433,7 +433,7 @@ void		patch_daily_F(
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
 	struct  mortality_struct mort;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	We assume the zone soil temp applies to the patch as well.	*/
 	/* 	unless we are using the surface energy iteration code 	in which */
