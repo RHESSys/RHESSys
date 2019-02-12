@@ -61,12 +61,12 @@ world_gen = function(template,
   # ---------- Read in template ----------
   template_list = template_read(template)
 
-  template_clean = template_list[[1]]
-  var_names = template_list[[2]]
-  level_index = template_list[[3]]
-  var_index = template_list[[4]]
-  map_info = template_list[[5]]
-  head = template_list[[6]]
+  template_clean = template_list[[1]] # template in list form
+  var_names = template_list[[2]] # names of template vars
+  level_index = template_list[[3]] # index of level separators in template_clean/var_names
+  var_index = template_list[[4]] # index of vars
+  map_info = template_list[[5]] # tables of maps and their inputs/names in the template
+  head = template_list[[6]] # header
   maps_in = unique(map_info[,2])
 
   if (asp_check) { # if using aspatial patches, get rules value or map
@@ -92,18 +92,24 @@ world_gen = function(template,
   levels = unname(data.matrix(map_df[c(w_map,b_map,h_map,z_map,p_map,s_map)], length(map_df[p_map]) ))
 
   # ----------- Aspatial Patch Processing --> NAS INTRODUCED BY COERCION HERE -----
-
   lret = NULL
   if (asp_check) {
-    asp_map = template_clean[[which(var_names == "asp_rule")]][3]
-    if (!is.numeric(asp_map)) {
+    asp_map = template_clean[[which(var_names == "asp_rule")]][3] # get rule map/value
+    if (!is.numeric(asp_map)) { # if it's a map
       asp_mapdata = map_df[asp_map]
-    } else if (is.numeric(asp_map)) {
+    } else if (is.numeric(asp_map)) { # if is a single number
       asp_mapdata = asp_map
     }
-    lret = aspatial_patches(asprules, asp_mapdata)
-    rulevars = lret[[1]]
-    strata_index = lret[[2]]
+    lret = aspatial_patches(asprules = asprules, asp_mapdata = asp_mapdata)
+    #rulevars = lret[[1]]
+    #strata_index = lret[[2]]
+    rulevars = lret
+
+    if (is.data.frame(asp_mapdata)) { # add ruleID to levels matrix
+      levels = cbind(levels,unname(as.matrix(asp_mapdata)))
+    } else if (is.numeric(asp_mapdata)) {
+      levels = cbind(levels, rep(asp_mapdata,length(levels[,1])) )
+    }
   }
   #if(wrapper == FALSE){f = save(lret, file = paste(fpath,"/lret",sep = ""))}
 
@@ -174,7 +180,7 @@ world_gen = function(template,
 
   # ---------- Build world file ----------
   print("Writing worldfile",quote = FALSE)
-  stratum = 1:template_clean[[level_index[6]]][3] #make sure correct number of stratum
+  stratum = 1:template_clean[[level_index[6]]][3] # count of stratum
 
   progress = 0
   pb = txtProgressBar(min = 0, max = 1,style = 3)
@@ -204,8 +210,7 @@ world_gen = function(template,
 
     for (h in hillslopes) { #hillslopes
 
-      # progress tracker - number of hillslopes/total, print only on 25,50,75 %
-      progress = progress + 1
+      progress = progress + 1 # progress bar
       sink()
       setTxtProgressBar(pb,progress/length(unique(levels[,3])))
       sink(worldfile,append = TRUE)
@@ -233,29 +238,32 @@ world_gen = function(template,
         patches = unique(levels[levels[,4] == z & levels[,3] == h & levels[,2] == b, 5])
         cat("\t\t\t",length(patches),"\t\t\t","num_patches\n",sep = "") #Should this be the number of spatial patches?????????~~~~~~~~~~
 
-        #---------- Start aspatial patches and stratum ----------
+        #---------- Start multiscale (aspatial) patches and stratum ----------
         if (asp_check) {
-          if (is.data.frame(asp_mapdata)){
-            levels = cbind(levels,unname(as.matrix(asp_mapdata)))
-          } else if (is.numeric(asp_mapdata)) {
-            levels = cbind(levels, rep(asp_mapdata,length(levels[,1])) )
-          }
+          # if (is.data.frame(asp_mapdata)) {
+          #   levels = cbind(levels,unname(as.matrix(asp_mapdata)))
+          # } else if (is.numeric(asp_mapdata)) {
+          #   levels = cbind(levels, rep(asp_mapdata,length(levels[,1])) )
+          # }
 
           for (p in patches) { #iterate through spatial patches
             ruleid = unique(levels[(levels[,5] == p & levels[,4] == z & levels[,3] == h & levels[,2] == b),7])
             if (length(ruleid) != 1) {stop("something's wrong with the ruleid")}
-            asp_index = 1:length(rulevars[[ruleid]])
+            asp_index = 1:(length(rulevars[[ruleid]]$patch_level_vars[1,]) - 1)
 
             for (asp in asp_index) { #iterate through aspatial patches, 1-n for each spatial patch
-              pnum = (p*100) + asp
+              pnum = (p*100) + asp # adjust patch numbers here - adds two 0's, ie: patch 1 becomes patches 101, 102, etc.
               cat("\t\t\t\t",pnum,"\t\t\t", "patch_ID\n",sep = "")
-              if (p > 1) {cat("\t\t\t\t",p,"\t\t\t", "patch_family\n",sep = "")}
+              # if (p > 1) {cat("\t\t\t\t",p,"\t\t\t", "patch_family\n",sep = "")}
+              cat("\t\t\t\t",p,"\t\t\t", "patch_family\n",sep = "")
 
-              rvpind = 1:(strata_index[[1]] - 1)
-              rvindex1 = which(!names(rulevars[[ruleid]][[asp]][rvpind]) %in% var_names[var_index])#include patch state vars from rulevars that aren't in template
-              for (i in rvindex1) {
-                var = rulevars[[ruleid]][[asp]][[i]][[1]]
-                varname = names(rulevars[[ruleid]][[asp]][i])
+              # rvpind = 1:(strata_index[[1]] - 1)
+              asp_p_vars = which(!rulevars[[ruleid]]$patch_level_vars[,1] %in% var_names[var_index]) # get vars from aspatial not included in template
+              #rvindex1 = which(!names(rulevars[[ruleid]][[asp]][rvpind]) %in% var_names[var_index]) # include patch state vars from rulevars that aren't in template
+              for (i in asp_p_vars) {
+                var = as.numeric(rulevars[[ruleid]]$patch_level_vars[i,asp + 1])
+                varname = rulevars[[ruleid]]$patch_level_vars[i,1]
+                if (is.na(var)) {stop(paste(varname,"cannot be NA since a default isn't specified in the template, please set explicitly in your rules file."))}
                 cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep = "")
               }
 
@@ -264,38 +272,63 @@ world_gen = function(template,
                   var = statevars[[i]][[1]][statevars[[i]][[1]][2] == b & statevars[[i]][[1]][3] == h & statevars[[i]][[1]][4] == z & statevars[[i]][[1]][5] == p ,"x"]
                 } else {var = statevars[[i]][[1]]}
                 varname = template_clean[[i]][1]
-                if (varname %in% names(rulevars[[ruleid]][[asp]])) {var = rulevars[[ruleid]][[asp]][[varname]][[1]] } # if variable is in rulevars, replace with rulevars version
-                if (template_clean[[i]][1] == "area") { var = var * rulevars[[ruleid]][[asp]][["pct_family_area"]][[1]] } # variable is area, adjust for pct_family_area
+                if (varname %in% rulevars[[ruleid]]$patch_level_vars[,1]) { # if variable is in rulevars, replace with rulevars version
+                  if (!is.na(rulevars[[ruleid]]$patch_level_vars[rulevars[[ruleid]]$patch_level_vars[,1] == varname, asp + 1])) {
+                    var = as.numeric(rulevars[[ruleid]]$patch_level_vars[rulevars[[ruleid]]$patch_level_vars[,1] == varname, asp + 1])
+                  }
+                }
+                if (varname == "area") { # variable is area, adjust for pct_family_area
+                  var = var * as.numeric(rulevars[[ruleid]]$patch_level_vars[rulevars[[ruleid]]$patch_level_vars[,1] == "pct_family_area",asp + 1])
+                  }
                 cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep = "")
               }
 
-              rvsind = strata_index[[1]]:length(rulevars[[ruleid]][[asp]])
-              rvslen = unlist(lapply(rulevars[[ruleid]][[asp]][rvsind],length))
+              # stratum = 1:template_clean[[level_index[6]]][3] # count of stratum - this is done earlier
+              stratum_ID = unique(levels[levels[,5] == p & levels[,4] == z & levels[,3] == h & levels[,2] == b, 6])
+              asp_strata_ct = length(rulevars[[ruleid]]$strata_level_vars[[asp]][1,]) - 1
+              #strata_ct = max(asp_strata_ct, stratum) # if template or aspatial rule have more strata, use the max
+              strata_ct = asp_strata_ct
 
+              # rvsind = strata_index[[1]]:length(rulevars[[ruleid]][[asp]])
+              # rvslen = unlist(lapply(rulevars[[ruleid]][[asp]][rvsind],length))
               #if(sum(ifelse(length(stratum) != rvslen,TRUE,FALSE)) > 0 ) {
                 #warning("Varying numbers of stratum in template and rules document. Values will be replicated to fill in missing strata.")
               #}
 
-              cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep = "")
+              cat("\t\t\t\t",strata_ct,"\t\t\t","num_stratum\n",sep = "")
 
-              for (s in stratum) { #stratum
-                cat("\t\t\t\t\t", s,"\t\t\t", "canopy_strata_ID\n",sep = "")
+              for (s in 1:strata_ct) { #stratum
+                cat("\t\t\t\t\t", stratum_ID,"\t\t\t", "canopy_strata_ID\n",sep = "")
 
-                rvindex2 = which(!names(rulevars[[ruleid]][[asp]][rvsind]) %in% var_names[var_index])#include strata state vars from rulevars that aren't in template
-                for (i in rvindex2) {
-                  var = rulevars[[ruleid]][[asp]][[i]][[s]]
-                  varname = names(rulevars[[ruleid]][[asp]][i])
+                if (length(stratum) == 1 & asp_strata_ct == 2 & s == 2) { # if template has 1 strata and rules have 2 - replicate existing values if missing
+                  s2 = 1
+                } else {
+                  s2 = s
+                }
+                # if template has 2 and asp rules only has 1 strata, missing values will use only the 1st strata of the template
+
+                asp_s_vars = which(!rulevars[[ruleid]]$strata_level_vars[[s]][,1] %in% var_names[var_index]) # get vars from aspatial not included in template
+                # rvindex2 = which(!names(rulevars[[ruleid]][[asp]][rvsind]) %in% var_names[var_index])#include strata state vars from rulevars that aren't in template
+                for (i in asp_s_vars) {
+                  var = as.numeric(rulevars[[ruleid]]$strata_level_vars[[asp]][i, s + 1])
+                  varname = rulevars[[ruleid]]$strata_level_vars[[asp]][i, 1]
+                  if (is.na(var)) {stop(paste(varname,"cannot be NA since a default isn't specified in the template, please set explicitly in your rules file."))}
                   cat("\t\t\t\t",var,"\t\t\t",varname,"\n",sep = "")
                 }
 
-                for (i in (level_index[6] + 1):length(template_clean)) {
-                  if (length(statevars[[i]][[s]]) > 1) {  ########## make sure this works @@@@/// is this needed???
-                    var = statevars[[i]][[1]][statevars[[i]][ncol(statevars[[i]]) - 1] == p ,"x"]
-                  } else {var = statevars[[i]][[s]]}
-                  varname = template_clean[[i]][1]
-                  if (varname %in% names(rulevars[[ruleid]][[asp]])) {var = rulevars[[ruleid]][[asp]][[varname]][[s]] } # if variable is in rulevars, replace with rulevars version
-                  cat("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep = "")
+                for (i in (level_index[6] + 1):length(template_clean)) { # go through srata vars normally
 
+                  if (length(statevars[[i]][[s2]]) > 1) { # its a map
+                    var = statevars[[i]][[s2]][statevars[[i]][[s2]][2] == b & statevars[[i]][[s2]][3] == h & statevars[[i]][[s2]][4] == z & statevars[[i]][[s2]][5] == p ,"x"]
+                  } else {var = statevars[[i]][[s2]]} # its a value
+                  varname = template_clean[[i]][1]
+
+                  if (varname %in% rulevars[[ruleid]]$strata_level_vars[[asp]][,1]) { # if variable is in rulevars, replace with rulevars version
+                    if (!is.na(rulevars[[ruleid]]$strata_level_vars[[asp]][rulevars[[ruleid]]$strata_level_vars[[asp]][,1] == varname, s + 1])) { # make sure not NA
+                      var = as.numeric(rulevars[[ruleid]]$strata_level_vars[[asp]][rulevars[[ruleid]]$strata_level_vars[[asp]][,1] == varname, s + 1])
+                    }
+                  }
+                  cat("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep = "")
                 }
               }
             }
@@ -314,8 +347,10 @@ world_gen = function(template,
             }
             cat("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep = "")
 
+            stratum_ID = unique(levels[levels[,5] == p & levels[,4] == z & levels[,3] == h & levels[,2] == b, 6])
+
             for (s in stratum) { #stratum
-              cat("\t\t\t\t\t", s,"\t\t\t", "canopy_strata_ID\n",sep = "")
+              cat("\t\t\t\t\t", stratum_ID,"\t\t\t", "canopy_strata_ID\n",sep = "")
               for (i in (level_index[6] + 1):length(template_clean)) {
                 if (length(statevars[[i]][[s]]) > 1) { # if is a map
                   var = statevars[[i]][[s]][statevars[[i]][[s]][2] == b & statevars[[i]][[s]][3] == h & statevars[[i]][[s]][4] == z & statevars[[i]][[s]][5] == p ,"x"]
@@ -324,7 +359,7 @@ world_gen = function(template,
                 cat("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep = "")
               }
             }
-          }# end non aspatial patch +stratum
+          }# end spatial patch + stratum
 
         }
       }

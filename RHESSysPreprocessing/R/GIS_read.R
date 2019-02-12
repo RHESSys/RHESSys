@@ -86,10 +86,18 @@ GIS_read = function(maps_in,type,typepars,map_info) {
     file_paths = vector(mode = "character")
     for (name in maps_in) {
       file = list.files(path = typepars, pattern = paste("^",name,"$",sep = ""),full.names = TRUE)
-      if (length(file) == 0) { # check for file (name listed in template + path in typepars) since list.files doesn't throw an error on no return
-        stop(paste("No file named:",name,"at path:",typepars))}
-      if (length(file) > 1) { # can only be one file for each name in maps_in
-        stop(paste("multiple files containing name:",name,"check directory:",typepars))}
+      if (length(file) == 0) { # if no files match name in template, try with exensions
+        file = list.files(path = typepars, pattern = paste("^",name,".",sep = ""),full.names = TRUE)
+      }
+      if (length(file) == 0) { # if there were no matches
+        stop(paste("No file named:",name,"at path:",typepars))
+      }
+      if (length(file) > 1) { # if multiple files, use tif preferentially
+        file = file[grep(".tif$",file)]
+      }
+      if (length(file) > 1) { # if STILL multiple files, can only be one file for each name in maps_in
+        stop(paste("multiple files containing name:",name,"check directory:",typepars))
+      }
       file_paths = c(file_paths,file)
     }
 
