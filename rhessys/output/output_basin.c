@@ -402,7 +402,7 @@ void	output_basin(			int routing_flag,
 	var_trans = 0; 
 	var_acctrans = 0;
 	if (var_flag == 1) {
-       // #pragma omp parallel for reduction(+ : var_acctrans,var_trans)   XXXXXXX test without this      
+       #pragma omp parallel for reduction(+ : var_acctrans,var_trans)      
         for (int h=0; h < basin[0].num_hillslopes; h++){
         struct hillslope_object *hillslope = basin[0].hillslopes[h];
         for (int z=0; z< hillslope[0].num_zones; z++){
