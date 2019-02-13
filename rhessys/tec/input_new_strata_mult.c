@@ -222,8 +222,8 @@ void input_new_strata_mult(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.cwdn = ltmp * canopy_strata[0].ns.cwdn;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",1,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp * canopy_strata[0].ns.retransn;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",1,1);
-	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp * canopy_strata[0].cs.age;
+//	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",1,1);
+//	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp * canopy_strata[0].cs.age;
 
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
@@ -440,7 +440,7 @@ void input_new_strata_mult(
 			canopy_strata[0].epv.wstress_days = 0;
 			canopy_strata[0].epv.max_fparabs = 0.0;
 			canopy_strata[0].epv.min_vwc = 1.0;
-			canopy_strata[0].cs.age = 0;
+		//	canopy_strata[0].cs.age = 0;
 			canopy_strata[0].cs.num_resprout = 0;
 		}
 		/*--------------------------------------------------------------*/

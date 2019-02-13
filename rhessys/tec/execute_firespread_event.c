@@ -159,7 +159,10 @@ void execute_firespread_event(
 
 					world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc) *
-							patch_fire_grid[i][j].prop_patch_in_grid[p] ;
+							patch_fire_grid[i][j].prop_patch_in_grid[p] ;       
+              world[0].fire_grid[i][j].fuel_litter +=(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+                * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_leafc) *
+                patch_fire_grid[i][j].prop_patch_in_grid[p] ;
 					}
 				}
 //			printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
@@ -261,6 +264,7 @@ void execute_firespread_event(
 	/* Call WMFire	 						*/
 	/*--------------------------------------------------------------*/
 	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);
+// needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
 	world[0].fire_grid=WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
  	printf("Finished calling WMFire\n");
 	/*--------------------------------------------------------------*/

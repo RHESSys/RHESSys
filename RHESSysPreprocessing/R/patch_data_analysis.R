@@ -328,7 +328,12 @@ patch_data_analysis <- function(raw_patch_data,
       hill_no_outlets[hill_no_outlets[,1] == h,2] = flw_struct[flw_struct$Hill == h,][min_hill_patch[min_hill_patch[,1] == h,2],"Landtype"]
     }
 
-    if (any(hill_no_outlets[,2] == 0)) { # if there are any hillslopes without streams
+    if (length(flw_struct[,1]) == 1 & hill_no_outlets[,2] == 0) {
+      flw_struct$Landtype = 1
+      hill_no_outlets[1,2] = 1
+    }
+
+    if (any(hill_no_outlets[,2] == 0) & length(flw_struct[,1]) != 1) { # if there are any hillslopes without streams
       print("Correcting for hillslopes missing stream outlets.",quote = FALSE)
       streams = flw_struct[flw_struct$Landtype == 1,] # make var of streams
       for (i in hill_no_outlets[hill_no_outlets[,2] == 0,1]) {
@@ -453,6 +458,10 @@ patch_data_analysis <- function(raw_patch_data,
   # }
 
   # -------------------- Pit filling --------------------
+  # if (length(flw_struct[,1]) != 1) {
+  #   lst = fix_all_pits(lst,flw_struct,parallel)
+  # }
+
   lst = fix_all_pits(lst,flw_struct,parallel)
 
   # -------------------- streams and roads --------------------
