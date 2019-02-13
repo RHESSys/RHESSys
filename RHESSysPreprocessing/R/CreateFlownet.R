@@ -137,65 +137,8 @@ CreateFlownet = function(name,
 
   # ------------------------------ Multiscale routing/aspatial patches ------------------------------
   if (!is.null(asp_list)) {
-    # import: existing flownet, asp/rule map, rule list with proportionate areas
-    asp_map = map_ar_clean[, ,cfmaps[cfmaps[,1] == "asp_rule",2]]
-    patch_ID = unlist(lapply(CF1, "[[",9)) # patch IDs from cf1
-    numbers = unlist(lapply(CF1, "[[",1)) # flow list numbers
-    rulevars = asp_list[[1]] # subset rules by ID
-    CF2 = list() # empty list for new flow list
-
-    for (p in raw_patch_data[!is.na(raw_patch_data)] ) { # iterate through physical patches
-      id = asp_map[which(raw_patch_data == p)] # get rule ID for patch p
-      id = unique(id)
-      if (length(id) > 1) {stop(paste("multiple aspatial rules for patch",p))} # if multiple rules for a single patch
-      asp_count = length(rulevars[[id]]) # get number of aspatial patches for current patch
-
-      for (asp in 1:asp_count) { #iterate through aspatial patches
-        # Add all aspatial patches
-        CF2 = c(CF2,CF1[which(patch_ID == p)])
-        CF2[[length(CF2)]]$PatchID = CF2[[length(CF2)]]$PatchID * 100 + asp # aspatial patch ID is old patch ID *100 + aspatial number
-        CF2[[length(CF2)]]$Number = CF2[[length(CF2)]]$Number * 100 + asp # same modification to number
-        CF2[[length(CF2)]]["PatchFamilyID"] = CF1[[which(patch_ID == p)]]$PatchID # retain old patch ID as patch family ID XXXXXXXXX IF CF2 DOESNT WORK REMOVE THIS
-        CF2[[length(CF2)]]$Area = CF2[[length(CF2)]]$Area * rulevars[[id]][[asp]]$pct_family_area[[1]] # change area
-
-        #STILL NEED:
-        # TOTAL GAMMA?
-
-        # Changes for each neighbor
-        old_nbrs = CF2[[length(CF2)]]$Neighbors
-        new_nbrs = vector(mode = "numeric")
-        old_gammas = CF2[[length(CF2)]]$Gamma_i
-        new_gammas = vector(mode = "numeric")
-        old_slope = CF2[[length(CF2)]]$Slope
-        new_slope = vector(mode = "numeric")
-        old_boarder = CF2[[length(CF2)]]$Boarder
-        new_boarder = vector(mode = "numeric")
-
-        for (nbr in old_nbrs) { # loop through old neighbors - neighbors are numbers not patches
-          nbr_patch = patch_ID[numbers == nbr]
-          nbr_id = asp_map[which(raw_patch_data == nbr_patch)]
-          nbr_id = unique(nbr_id)
-          if (length(nbr_id) > 1) {stop(paste("multiple aspatial rules for patch",nbr_patch))} # if multiple rules for a single patch
-          nbr_asp_ct = length(rulevars[[nbr_id]])
-          gamma = old_gammas[which(old_nbrs == nbr)]
-          new_slope = c(new_slope,rep(old_slope[old_nbrs[nbr]],nbr_asp_ct))
-          new_boarder = c(new_boarder,rep(old_boarder[old_nbrs[nbr]],nbr_asp_ct))
-
-          for (nbr_asp in 1:nbr_asp_ct) { # for each asp for each neighbor
-            new_nbrs = c(new_nbrs,nbr*100 + nbr_asp) # use same convention as above
-            new_gammas = c(new_gammas, gamma * rulevars[[nbr_id]][[nbr_asp]][["pct_family_area"]][[1]] )
-
-          }
-        }
-        CF2[[length(CF2)]]$Neighbors = new_nbrs
-        CF2[[length(CF2)]]$Gamma_i = new_gammas
-        CF2[[length(CF2)]]$Slope = new_slope
-        CF2[[length(CF2)]]$Boarder = new_boarder
-
-      } # end aspatial patch loop
-    } # end spatial patch loop
-    CF1 = CF2
-  } # end multiscale routing
+    CF1 = multiscale_flow(CF1 = CF1, map_ar_clean = map_ar_clean, cfmaps = cfmaps, asp_list = asp_list)
+  }
 
   # ---------- Flownet list to flow table file ----------
   print("Writing flowtable",quote = FALSE)

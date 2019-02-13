@@ -14,6 +14,9 @@ make_flow_table<-function(flw,output_file,parallel){
   # -----Output for hillslope parallelized flownet -----
   if(parallel){
     elev_order<-elev_order[order(elev_order[,3],elev_order[,1],decreasing = TRUE),]  #sort by hillslope, then elev
+    if (list_length == 1) {
+      elev_order = matrix(elev_order, nrow = 1)
+    }
     hill_unique = unique(elev_order[,3])
     hill_count = length(hill_unique)
 
