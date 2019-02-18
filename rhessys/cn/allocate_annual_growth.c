@@ -514,7 +514,7 @@ int allocate_annual_growth(				int id,
 	} /* end if less than min_leaf_carbon */
 	else  {
 		 // cs->num_resprout = max(cs->num_resprout-1,0);	
-		 cs->age += cs->age + 1.0;
+		 cs->age = cs->age + 1.0;
 		 if (cs->age > 10000000.0) { 
 			printf("\n\n Age has not been reset for %lf years Resetting to avoid numerical issues",
 						cs->age);
