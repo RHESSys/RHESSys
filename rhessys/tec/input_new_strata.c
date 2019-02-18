@@ -221,8 +221,8 @@ void input_new_strata(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.cwdn = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",canopy_strata[0].ns.retransn,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp;
-	//ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",canopy_strata[0].cs.age,1);
-	 // if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",canopy_strata[0].cs.age,1);
+	 if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
 
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
