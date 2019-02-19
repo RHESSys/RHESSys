@@ -233,7 +233,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].ns.retransn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",0.0,1);
 
 	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",0.0,1);
-	
+
 
 
 	if (command_line[0].vegspinup_flag > 0){
