@@ -126,7 +126,9 @@ int get_netcdf_var_timeserias(char *netcdf_filename, char *varname,
     char *nlat_name, char *nlon_name,
     float rlat, float rlon, float sd,
     int startday, int day_offset, int duration, int clim_repeat_flag, float *data ){
-  /***Read netcdf format metdata by using lat,lon as index
+  
+/****************************************************************
+Read netcdf format metdata by using lat,lon as index
 varname: variable name
 rlat,rlon: latitue and longitude of site location
 sd: the minimum distance for searching nearby grid in netcdf
@@ -251,7 +253,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
   float * allActualData;
 
   if( !clim_repeat_flag ) {
-    if ((retval = nc_get_vara_float(ncid,temp_varid,start,count,&data[0]))){ //here is the data
+    if ((retval = nc_get_vara_float(ncid,temp_varid,start,count,&data[0]))){
       free(days);
       free(lat);
       free(lont);
@@ -281,7 +283,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
  */
 
   if( clim_repeat_flag ) {
-    float * real_netcdf_data = allActualData; //here from line 263 the climate result
+    float * real_netcdf_data = allActualData;
     float * output_data = data;
     int total_days_in_netcdf_data = nday;
     struct date target_date;
@@ -297,7 +299,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
     // directly into the beginning of our output_data array.
     int amount_to_memcpy = total_days_in_netcdf_data - read_start_index;
 
-    /*fprintf( stderr, "start with copying %d days of %d total netcdf.\n", amount_to_memcpy, nday);*/ //N.R. 20180619
+    //fprintf( stderr, "start with copying %d days of %d total netcdf.\n", amount_to_memcpy, nday);
     memcpy( &output_data[ 0 ], &real_netcdf_data[ read_start_index ], amount_to_memcpy * sizeof(float) );
 
     // now we should have all the data from the start date to the end of the actual data copied over.
@@ -356,15 +358,15 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
         }
 
         output_data[ i ] = real_netcdf_data[ read_data_index++ ];
-
+     
         /*if( candidate_repeat_date.month != next_date_to_fill.month) {
             fprintf( stderr, "candidate month: %d, target month %d, target year %d\n", candidate_repeat_date.month, next_date_to_fill.month, next_date_to_fill.year );
         }*/
       } // end last else
     } // end for loop
 
-   /* fprintf( stderr, "read_start_index %d, startday %d, durationRequest %d, days in dataset %d\n", read_start_index, startday, duration, nday ); */ //N.R 20180619
-
+    //fprintf( stderr, "read_start_index %d, startday %d, durationRequest %d, days in dataset %d\n", read_start_index, startday, duration, nday );
+  
  } // end if clim_repeat_flag
 
   if ((retval = nc_close(ncid))){

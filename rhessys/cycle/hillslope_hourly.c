@@ -57,6 +57,14 @@ void		hillslope_hourly(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
+
+	void    compute_subsurface_routing_hourly(
+		struct command_line_object *command_line,
+    struct hillslope_object *hillslope,
+		int n_timesteps, 
+		struct date current_date);
+
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -105,6 +113,21 @@ void		hillslope_hourly(
 	/*	Destroy the hillslope hourloy object.						*/
 	/*--------------------------------------------------------------*/
 	free( hillslope[0].hourly );
+
+	/*--------------------------------------------------------------*/
+	/*	do subsurface routing					*/
+	/*--------------------------------------------------------------*/
+	/* this part is nearly the same as in the basin_daily_F		*/
+
+	if ( command_line[0].routing_flag == 1 && hillslope[0].zones[0][0].hourly_rain_flag==1) { 
+		compute_subsurface_routing_hourly(command_line,
+			hillslope,
+			basin[0].defaults[0][0].n_routing_timesteps,
+			current_date);
+	}
+
+//XXXXXXXX Should this come before groundwater losses?
+
 	/*----------------------------------------------------------------------*/
 	/*	compute groundwater losses					*/
 	/*	this part is transplanted from hillslope_daily_F.c	    	*/

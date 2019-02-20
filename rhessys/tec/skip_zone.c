@@ -49,6 +49,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rhessys.h"
+#include "params.h"
 
  void skip_zone(
 								   struct	command_line_object	*command_line,
@@ -69,7 +70,9 @@
 	
 	void	*alloc(size_t, char *, char *);
 	double	atm_pres( double );
-	
+	param	*readtag_worldfile(int *,
+				  FILE *,
+				  char *);	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -78,59 +81,18 @@
 	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
-	
+	int		paramCnt=0;
+	param		*paramPtr=NULL;	
 	/*--------------------------------------------------------------*/
 	/*	Read in the next zone record for this hillslope.			*/
 	/*--------------------------------------------------------------*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].x = ltmp;*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].y = ltmp;*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO)  {
-		zone[0].z = ltmp;
-		zone[0].metv.pa	= atm_pres( zone[0].z );
-		}*/
- 	fscanf(world_file,"%d",&(dtmp));
-	read_record(world_file, record);
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].area = ltmp;*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO) {
-		zone[0].slope = ltmp * DtoR;
-		zone[0].cos_slope = cos(zone[0].slope);
-		zone[0].sin_slope = sin(zone[0].slope);
-		}*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO) {
-		zone[0].aspect = ltmp * DtoR;
-		zone[0].cos_aspect = cos(zone[0].aspect);
-		zone[0].sin_aspect = sin(zone[0].aspect);
-		}*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].precip_lapse_rate = ltmp;*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].e_horizon = ltmp;*/
- 	fscanf(world_file,"%lf",&(ltmp));
-	read_record(world_file, record);
-	/*if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].w_horizon = ltmp;*/
-
-
-
+ 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Zone");
 
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of base stations for this zone.          */
 	/*--------------------------------------------------------------*/
- 	fscanf(world_file,"%d",&(dtmp));
-	read_record(world_file, record);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+
 	if (dtmp > 0) {
 		/*zone[0].num_base_stations = dtmp;*/
 		/*zone[0].base_stations = (struct base_station_object **)
@@ -163,5 +125,10 @@
 		/*	Initialize any variables that should be initialized at	*/
 		/*	the start of a simulation run for the zone.				*/
 		/*--------------------------------------------------------------*/
+
+	if(paramPtr!=NULL){
+	  free(paramPtr);
+	}
+	
 	return;
 } /*end input_new_zone.c*/

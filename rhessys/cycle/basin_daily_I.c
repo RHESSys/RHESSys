@@ -76,7 +76,6 @@ void		basin_daily_I(
 	double	sinegeom;
 	double	coshss;
 	double	hss;
-    //160420LML int	hillslope;
 	/*--------------------------------------------------------------*/
 	/*	Daylength (seconds)											*/
 	/*	Now using GBGC computation taken from Jones,		*/

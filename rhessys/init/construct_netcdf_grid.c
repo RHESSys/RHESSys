@@ -25,13 +25,6 @@
 #include <math.h>
 #include "rhessys.h"
 
-/*160624LML moved to rhessys.h
-  int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, int, float *);
-  int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
-  int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
-  int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
-  */
-
 struct base_station_object *construct_netcdf_grid (
 #ifdef LIU_NETCDF_READER
                 struct base_station_object *base_station_in,
@@ -330,23 +323,23 @@ struct base_station_object *construct_netcdf_grid (
                  + daily_clim->relative_humidity_min[j]) / 2.0;
         }
 #endif
-#ifdef CHECK_NCCLIM_DATA
+/*#ifdef CHECK_NCCLIM_DATA
            for (j = 0; j < (duration->day < 60 ? duration->day : 60); j++) {
 #ifndef LIU_EXTEND_CLIM_VAR
-          /* fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n"
+           fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\n"
            ,j,base_station[0].ID,base_station[0].proj_x,base_station[0].proj_y,base_station[0].lon, base_station[0].lat
-           ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]);*/
+           ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]);
 #else
-          /* fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\thuss:%lf\trmax:%lf\trmin:%lf\trsds:%lf\twas:%lf\n"
+           fprintf(stdout,"day:%d\tid:%d\tx:%lf\ty:%lf\tlon:%lf\tlat:%lf\ttmax:%lf\ttmin:%lf\tppt:%lf\thuss:%lf\trmax:%lf\trmin:%lf\trsds:%lf\twas:%lf\n"
                ,j,base_station[0].ID,base_station[0].proj_x,base_station[0].proj_y,base_station[0].lon, base_station[0].lat
                ,base_station[0].daily_clim[0].tmax[j],base_station[0].daily_clim[0].tmin[j],base_station[0].daily_clim[0].rain[j]
                ,base_station[0].daily_clim[0].specific_humidity[j],base_station[0].daily_clim[0].relative_humidity_max[j]
                ,base_station[0].daily_clim[0].relative_humidity_min[j],base_station[0].daily_clim[0].surface_shortwave_rad[j]
-               ,base_station[0].daily_clim[0].wind[j]); */
+               ,base_station[0].daily_clim[0].wind[j]);
 
 #endif
            }
-#endif
+#endif */
 
 
         /* ------------------ ELEV ------------------ */
@@ -360,13 +353,13 @@ struct base_station_object *construct_netcdf_grid (
                 k = get_netcdf_var(
                                 base_station_ncheader[0].netcdf_elev_filename,
                                 base_station_ncheader[0].netcdf_elev_varname,
-                                lat_name, //160624LML "lat",
-                                lon_name, //160624LML "lon",
-                                /*160517LML base_station_ncheader[0].netcdf_y_varname,
+                                lat_name, //"lat",
+                                lon_name, // "lon",
+                                /*base_station_ncheader[0].netcdf_y_varname,
                                   base_station_ncheader[0].netcdf_x_varname,*/
                                 net_y,
                                 net_x,
-                                (float)base_station_ncheader[0].resolution_dd/*160517LML sdist*/,
+                                (float)base_station_ncheader[0].resolution_dd/*sdist*/,
                                 elev_tempdata);
                 if (k == -1){
                         fprintf(stderr,"can't locate station data in netcdf for var elev\n");

@@ -62,17 +62,17 @@ void	basin_daily_F(
 		struct	world_object *,
 		struct 	basin_object *,
 		struct	hillslope_object *,
-		struct	command_line_object *, 
+		struct	command_line_object *,
 		struct	tec_entry *,
 		struct	date );
 	/*--------------------------------------------------------------*/
 	/* this part has been moved to basin_hourly			*/
 	/*--------------------------------------------------------------*/
-	void	compute_subsurface_routing(
+	/* void	compute_subsurface_routing(
 		struct command_line_object *,
 		struct basin_object *,
-		int, struct	date);
-	
+		int, struct	date); */
+
 	double	compute_stream_routing(
 		struct command_line_object *,
 		struct stream_network_object *,
@@ -89,12 +89,11 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-    //160420LML int	h,
     int z, p,inx;
 	double	scale;
 	struct	hillslope_object *hillslope;
 	struct	zone_object *zone;
-	struct	patch_object *patch; 
+	struct	patch_object *patch;
 	struct	dated_sequence	clim_event;
 
 	/*--------------------------------------------------------------*/
@@ -107,13 +106,13 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Simulate the hillslopes in this basin for the whole day		*/
 	/*--------------------------------------------------------------*/
-    #pragma omp parallel for num_threads(THREADS)                                                    //160627LML schedule(dynamic) num_threads(4)
+    #pragma omp parallel for num_threads(THREADS)                                                    // schedule(dynamic) num_threads(4)
     for (int h = 0 ; h < basin[0].num_hillslopes; h ++ ){
 		hillslope_daily_F(	day,
 			world,
 			basin,
 			basin[0].hillslopes[h],
-			command_line, 
+			command_line,
 			event,
 			current_date );
     }
@@ -129,13 +128,13 @@ void	basin_daily_F(
 	/*  For routing option - route water between patches within     */
 	/*      the basin:  this part has been moved to basin_hourly    */
 	/*--------------------------------------------------------------*/
-    if ( command_line[0].routing_flag == 1 && zone[0].hourly_rain_flag == 0) {
+  /*  if ( command_line[0].routing_flag == 1 && zone[0].hourly_rain_flag == 0) {
 		compute_subsurface_routing(command_line,
 			basin,
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
-    }
-	
+    }  */ //NREN 20190213
+
 	/*--------------------------------------------------------------*/
 	/*  For stream routing option - route water between patches within     */
 	/*      the basin                                               */

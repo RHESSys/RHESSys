@@ -310,7 +310,7 @@ void zone_daily_I(
 			zone[0].metv.tmax += command_line[0].tmax_add;
 			zone[0].metv.tmin += command_line[0].tmin_add;
 			}
-        i++;                                                                     /*160419LML*/
+        i++;                                          
 	} /*end while*/
 	/*--------------------------------------------------------------*/
 	/*	Check if we filled in all of the critical parameters.		*/
@@ -382,7 +382,7 @@ void zone_daily_I(
 	zone[0].LAI_scalar = -999.0;
 
 	/* Re-use z_delta */
-    /*160419LML seems there is an asumption that each zone has one station.*/
+    /* seems there is an asumption that each zone has one station.*/
     if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
 		z_delta = 0.0;
 	}
@@ -521,8 +521,8 @@ void zone_daily_I(
 	/* but warn user of problem with their climate inputs		*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].Delta_T < -ZERO) {
-		/*printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d",
-			current_date.day, current_date.month, current_date.year);*/
+		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d, for basestation %d", 
+			current_date.day, current_date.month, current_date.year, zone[0].base_stations[0][0].ID); 
 		zone[0].Delta_T = zone[0].Delta_T * -1.0;
 	}
 	/*--------------------------------------------------------------*/
@@ -665,7 +665,7 @@ void zone_daily_I(
 		if ( temp != -999.0 ) zone[0].CO2 = temp;
 	}
 
-	// NREN 20181115
+	// NREN 20181115 add extra stations to read in CO2 values
 	if ( world[0].num_extra_stations==1 && world[0].extra_stations[0][0].daily_clim[0].CO2 !=NULL) {
         temp = world[0].extra_stations[0][0].daily_clim[0].CO2[day];
         if (temp != -999.0) zone[0].CO2 = temp;

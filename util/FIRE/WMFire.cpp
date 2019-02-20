@@ -207,7 +207,10 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 	for(int i=0;i<rows_;i++)	// this loop re-sets the landscape to completely un-burned
 	{
 		for(int j=0;j<cols_;j++)
+		{
 			fireGrid_[i][j].burn=0;
+			fireGrid_[i][j].fire_size=0; // make sure it returns a fire size of 0, unless a fire burns
+		}
 	}
 	if(def_.fire_verbose==1)
 		cout<<"in burn after setting burn=0--here\n\nHow many ignitions this month?  "<<n_cur_ign_<<"\n\n";
@@ -262,6 +265,7 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 			}
 		}
 	}
+	fireGrid_[0][0].fire_size=cur_fire_.update_size; // to return the fire size, when only the grid is returned; this is the number of pixels
 	return ;
 }
 
@@ -602,7 +606,7 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		break;*/
 	default: // for now default to multiplicative
 		temp_pBurn=p_slope*p_winddir*p_moisture*p_load; // if including wind direction, the overall pSpread is the product of the individual pSpreads.
-		break;
+		//break;
 	}
 
 	localFireGrid_[new_row][new_col].pSlope=p_slope;
@@ -632,7 +636,50 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 	if(fireGrid_[cur_row][cur_col].temp>=def_.ignition_tmin)
 	{
 //		cout<<"In if\n";
-		if(def_.spread_calc_type<4)
+switch(def_.spread_calc_type)
+	{
+	case 1: // 1-3, just use the fuel moisture value with the usual spread curve
+	case 2:
+	case 3:
+		p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[cur_row][cur_col].fuel_moist-def_.moisture_k2))));
+		cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].fuel_moist;
+		break;
+	case 4: // 4-6 use absolute deficit with the usual spread curve 
+	case 5: 
+	case 6:
+		cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et;
+		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+		break;
+	case 7: // relative def with the usual spread curve
+		if(fireGrid_[cur_row][cur_col].pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+		break;
+	case 8: // understory def with the usual spread curve
+		if(fireGrid_[cur_row][cur_col].understory_pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+		break;
+	case 9: // understory def with its own ignition curve
+		if(fireGrid_[cur_row][cur_col].understory_pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
+		break;
+	default: // understory def with its own ignition curve by default
+		if(fireGrid_[cur_row][cur_col].understory_pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
+	}		
+	
+/*		if(def_.spread_calc_type<4)
 		{
 			p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[cur_row][cur_col].fuel_moist-def_.moisture_k2))));
 			cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].fuel_moist;
@@ -642,7 +689,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		{
 			if(def_.spread_calc_type<7)
 				cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et; // use absolute deficit for fm
-			else
+			else 
 			{
 				if(def_.spread_calc_type<8) // now 8 is for using understory deficit only for fire initiation
 				{
@@ -665,8 +712,8 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 				p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
 //			if(def_.fire_verbose==1)
 //				cout<<"using deficit for moisture: cur_moist: "<<cur_moist"\n";
-		}
-
+		}	
+*/
 		if(def_.fire_verbose==1)
 			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<"\n\n";
 		cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_veg;

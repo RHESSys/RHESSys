@@ -173,7 +173,7 @@ void		zone_daily_F(
 #ifdef LIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
             double rsds_obs = zone[0].base_stations[0][0].daily_clim[0].surface_shortwave_rad[day] * (double)SECONDS_PER_DAY;
 
-            if((zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat)>0) {  //N.Ren 20180629
+            if ((zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat) > 1e-6){
 
             double adj = rsds_obs * 0.001 / (zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat);
             zone[0].Kdown_direct        *= adj;
@@ -632,7 +632,6 @@ void		zone_daily_F(
 	/*	Cycle through the patches for day end computations		    	*/
 	/*--------------------------------------------------------------*/
 	for ( patch=0 ; patch<zone[0].num_patches; patch++ ){
-	//printf("current patch is %d\n", zone[0].ID);
 		patch_daily_F(
 			world,
 			basin,

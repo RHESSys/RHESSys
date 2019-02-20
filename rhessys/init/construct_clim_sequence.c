@@ -115,8 +115,8 @@ double *construct_clim_sequence(char *file, struct date start_date,
 	/* 	If the start date is before the first date error.			*/
 	/*--------------------------------------------------------------*/
 	if ( offset < 0 ){
-		fprintf(stderr,  // first date is the input date in the climate sequences file
-			"FATAL ERROR: start date before first date of a clim sequence.\n");// start date is the date in running command
+		fprintf(stderr,
+			"FATAL ERROR: start date before first date of a clim sequence.\n");
 		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/
@@ -131,23 +131,23 @@ double *construct_clim_sequence(char *file, struct date start_date,
 	/*--------------------------------------------------------------*/
 	/*	Read in the climate sequence data.							*/
 	/*--------------------------------------------------------------*/
-	for ( i=0 ; i<duration ; i++ ){ // duration is calculate from the command line start date and enddate
-		if ( fscanf(sequence_file,"%lf",&value) == EOF  ) { // if reach the end of the file
+	for ( i=0 ; i<duration ; i++ ){
+		if ( fscanf(sequence_file,"%lf",&value) == EOF  ) {
 			if (clim_repeat_flag == 0) {
 			fprintf(stderr,"FATAL ERROR: in construct_clim_sequence\n");
 			fprintf(stderr,"\n end date beyond end of clim sequence\n");
 			exit(EXIT_FAILURE);
 			}
 			else {
-			target_date_julian = first_date_julian + offset + i; // this is the end of climate sequences
+			target_date_julian = first_date_julian + offset + i;
 			target_date = caldat(target_date_julian);
 			target_fnd = 0;
 			j = 0;
-			while ((target_fnd == 0) && (j < i)) { // current j day is still smaller than the last day
+			while ((target_fnd == 0) && (j < i)) {	
 				curr_date = caldat(first_date_julian + offset + j);
 				if ((curr_date.month == target_date.month) 
-					&& (curr_date.day == target_date.day)) target_fnd=1; // here is only date month. so repeat the
-				j = j+1; // if not reach the target, the j keep growing,
+					&& (curr_date.day == target_date.day)) target_fnd=1;
+				j = j+1;
 			}
 			if (j < i) {
 				avail_length = i-j;

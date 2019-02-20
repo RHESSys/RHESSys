@@ -157,8 +157,11 @@ struct fire_default *construct_fire_defaults(
 		printf("ran_seed: %d\n",default_object_list[i].ran_seed);
 		default_object_list[i].calc_fire_effects=getIntParam(&paramCnt, &paramPtr, "calc_fire_effects", "%d", 0, 1);
 		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
-        default_object_list[i].seed_multiplier=getIntParam(&paramCnt, &paramPtr, "seed_multiplier", "%d", 1, 1);
+        default_object_list[i].seed_multiplier=getIntParam(&paramCnt, &paramPtr, "seed_multiplier", "%d", 1, 1); //NREN
 		printf("the seed multiplier for controled stochastic: %d\n",default_object_list[i].seed_multiplier);
+		default_object_list[i].include_wui=getIntParam(&paramCnt, &paramPtr, "include_wui", "%d", 0, 1);
+		printf("include_wui: %d\n",default_object_list[i].include_wui);
+
 
 
 /*--------------------------------------------------------------*/

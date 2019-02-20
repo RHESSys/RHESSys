@@ -152,8 +152,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 		sizeof(struct dated_sequence),
 		"sequence","construct_dated_clim_sequence");
 	events.inx = 0;
-	events.seq[0].edate.year = 1999;  //NREN 20180703
-//    events.num_records = num_records;
+	events.seq[0].edate.year = 1999;
 	/*--------------------------------------------------------------*/
 	/*	Read in the climate sequence data.							*/
 	/*--------------------------------------------------------------*/

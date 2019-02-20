@@ -50,11 +50,21 @@ struct fire_default {
 	double load_ign_k1;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	double load_ign_k2;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
-	int seed_multiplier;
+	int seed_multiplier; //controlled stochastic NREN 201808
+	int include_wui; //0 for no WUI grid, 1 for wui grid--0 by default
 //	char **patch_file_name;
 };
 
-// The object that is
+/*
+struct node_fire_wui_dist // I think , to be the linked list?
+{
+	double dist; // the distance to this patch WUI
+	struct patch_object **patches;
+	struct node_fire_wui_dist *next; 	//ptr to next in list;
+
+}
+*/
+// The object that is  passed between RHESSys and WMFire
 struct fire_object
 {
 	double burn;			/* 0-1 , recrds the value of p_spread for those pixels that experienced fire*/
@@ -72,6 +82,10 @@ struct fire_object
 	int ign_available; /* 1 if available for ignition, 0 otherwise*/
 	double understory_et; //evapotranspiration of only the understory
 	double understory_pet; //potential evapotranspiration of only the understory
+	double fire_size; // I think this would be the easiest way to transfer fire size to rhessys,and allow for an if fire_size>0 then calculate fire effects, otherwise don't bother; keep as 0 in general, and just fill in the first element in the grid as a placeholder
+						// returned as the number of pixels, should be converted to ha
+	//double *wui_dists;  this has to be a dynamically allocated array with nWUI from the fire default
+	//struct node_fire_wui_dist *patch_wui_dist[3] // intended to be an array of 3 patch WUI linked lists
 };
 
 #ifdef __cplusplus

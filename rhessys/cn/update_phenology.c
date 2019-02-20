@@ -68,6 +68,7 @@ void update_phenology(struct zone_object  *zone,
 					  double	cover_fraction,
 					  double	gap_fraction,
 					  double	theta_noon,
+					  int 		wyday_start,	
 					  struct date current_date,
 					  int	grow_flag)
 {
@@ -75,6 +76,9 @@ void update_phenology(struct zone_object  *zone,
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/
 	long	yearday( struct date);
+	long	wateryearday(
+		struct date,
+		int);
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
 		double,
@@ -145,7 +149,7 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 
 	int ok=1;
-	long day;
+	long day, wyday;
 	double perc_sunlit, leaflitfallc, frootlitfallc;
 	double	rootc, sai, new_proj_lai_sunlit;
 	double proj_sla_sunlit, proj_sla_shade, proj_lai_sunlit, proj_lai_shade; //For calcuate beetle caused red needle NREN
@@ -159,6 +163,7 @@ void update_phenology(struct zone_object  *zone,
 	frootlitfallc = 0.0;
 	litfall_flag = 0;
 	day = yearday(current_date);
+	wyday = wateryearday(current_date, wyday_start);
 
 
  /*--------------------------------------------------------------*/
@@ -192,10 +197,16 @@ void update_phenology(struct zone_object  *zone,
   }
 
  /*--------------------------------------------------------------*/
-  /* dynamic phenology                      */
+ /*--------------------------------------------------------------*/
+  /* drought-deciduous phenology                      */  
   /*--------------------------------------------------------------*/
 
-  else {
+  else if (epc.phenology_flag == DROUGHT) {
+	
+	/* Resets phenology flag at the beginning of each wateryear*/
+	if (wyday == 1){
+		phen->pheno_flag = 0;
+	}
 
   phen->gsi = compute_growingseason_index(zone, epv, epc);
 
@@ -208,18 +219,80 @@ void update_phenology(struct zone_object  *zone,
           if  (phen->gwseasonday <= epc.ndays_expand)
               expand_flag=1;
           }
-      else if (phen->gsi > 0.5) {
+      	else if (phen->gsi > epc.gsi_thresh && phen->pheno_flag == 0) {
               phen->gwseasonday = 1;
           phen->lfseasonday = -1;
           expand_flag=1;
+		phen->pheno_flag=1;
           phen->expand_startday = day;
           phen->expand_stopday = day + epc.ndays_expand;
           }
 
 /* now determine if we are before the last possible date of leaf drop */
-
+/* cumulative NPP / litfall start relation  */
       /* are we already in a leaf offset */
-      if (phen->lfseasonday > -1 ) {
+
+	if (epc.gs_npp_on == 1) {
+
+		phen->litfall_nppstart = epc.gs_npp_slp * cs->nppcum + epc.gs_npp_intercpt;	/* litfall_nppstart is wateryear day */
+
+		if (phen->lfseasonday > -1 ) {     
+          		if  (phen->lfseasonday <= epc.ndays_litfall){
+             			 litfall_flag=1;
+          		}
+		}
+
+		else if (wyday >= phen->litfall_nppstart && phen->gwseasonday > 0){
+			litfall_flag = 1;
+			phen->lfseasonday = 1;
+			phen->gwseasonday = -1;		
+		}
+	}
+
+	else {
+		if (day == phen->litfall_startday){ 
+			litfall_flag = 1;
+			phen->lfseasonday = 1;
+			phen->gwseasonday = -1;
+		}
+
+		else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){ 
+			litfall_flag = 1;
+		}
+	}
+  }
+	
+ /*--------------------------------------------------------------*/
+  /* dynamic phenology                      */  
+  /*--------------------------------------------------------------*/
+
+  else {
+	/* Resets phenology flag at the beginning of each wateryear*/
+	if (wyday == 1){
+		phen->pheno_flag = 0;
+	}
+
+  phen->gsi = compute_growingseason_index(zone, epv, epc);
+  
+  /* first are we before last possible date for leaf onset */
+    /* are we already in a leaf onset condition */
+      if (phen->gwseasonday > -1 ) { 
+          if  (phen->gwseasonday <= epc.ndays_expand)
+              expand_flag=1;
+          }   
+      else if (phen->gsi > epc.gsi_thresh && phen->pheno_flag == 0) {
+              phen->gwseasonday = 1;
+          phen->lfseasonday = -1; 
+          expand_flag=1;
+	  phen->pheno_flag=1;
+          phen->expand_startday = day;
+          phen->expand_stopday = day + epc.ndays_expand;
+          }   
+
+  /* now determine if we are before the last possible date of leaf drop */
+     
+      /* are we already in a leaf offset */
+      if (phen->lfseasonday > -1 ) { 
 
           phen->gwseasonday = -1;
 
@@ -227,7 +300,7 @@ void update_phenology(struct zone_object  *zone,
               litfall_flag=1;
           }
 
-	else if ((phen->gsi < 0.5) && (phen->gwseasonday > epc.ndays_expand)){
+	else if ((phen->gsi < epc.gsi_thresh) && (phen->gwseasonday > epc.ndays_expand)){
                 phen->lfseasonday = 1;
           phen->gwseasonday = -1;
           litfall_flag=1;

@@ -68,14 +68,6 @@ void destroy_world(struct command_line_object *command_line,
 		int,
 		int,
 		struct fire_default * );
-
-		/* if destroy the beetle spread model*/
-	void	destroy_beetle_defaults(
-		int,
-		int,
-		struct beetle_default * );
-
-
 	void	destroy_stratum_defaults(
 		int,
 		int,
@@ -134,8 +126,6 @@ void destroy_world(struct command_line_object *command_line,
 		world[0].defaults[0].num_beetle_default_files,
 		command_line[0].grow_flag,
 		world[0].defaults[0].beetle);
-
-
 	/*--------------------------------------------------------------*/
 	/*	Destroy the stratum_defaults objects.					*/
 	/*--------------------------------------------------------------*/

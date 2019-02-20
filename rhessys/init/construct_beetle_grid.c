@@ -510,11 +510,11 @@ struct beetle_object **construct_beetle_grid(struct world_object *world)
      #pragma omp parallel for                                                    //160628LML
      for(int i=0;i<world[0].num_beetle_grid_row;i++){
         for(int j=0;j<world[0].num_beetle_grid_col;j++){
-			beetle_grid[i][j].mort=0; // the mortality rate of bark beetle attack
-			beetle_grid[i][j].Tfall=0; // this are for future beetle outbreak model
-			beetle_grid[i][j].Tss=0;
-			beetle_grid[i][j].Tmin=0;
-			beetle_grid[i][j].Precip_wy=0;
+			beetle_grid[i][j].mort=0.0; // the mortality rate of bark beetle attack
+			beetle_grid[i][j].Tfall=0.0; // this are for future beetle outbreak model
+			beetle_grid[i][j].Tss=0.0;
+			beetle_grid[i][j].Tmin=0.0;
+			beetle_grid[i][j].Precip_wy=0.0;
 			beetle_grid[i][j].Yattack=0;
 			//beetle_grid[i][j].elev=0;
 		}

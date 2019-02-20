@@ -79,7 +79,6 @@
 #include <math.h>
 #include "rhessys.h"
 
-
 void		patch_daily_F(
 						  struct	world_object	*world,
 						  struct	basin_object	*basin,
@@ -1965,7 +1964,7 @@ void		patch_daily_F(
 			patch[0].totaln += strata->cover_fraction * strata->ns.totaln;
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
 			strata->acc_year.psn += strata->cs.net_psn;
-			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;//
+			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
 		}
 	}
 	/*-------------------------------------------------------------------------*/
@@ -2175,128 +2174,9 @@ void		patch_daily_F(
 		patch[0].fire.pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.pet
 				+ patch[0].PET) /
 		(patch[0].fire_defaults[0][0].ndays_average + 1);
+
 		}
-
-
-
-/**************************************************************************/
-/* accumulate the daily climate to monthly climate  for beetle model input*/
-/**************************************************************************/
-
-/*
-  double Yindex;
-  double Tfall[200] ={0.0}; // fall  average temperature sep oct november
-  double Tmin[200] = {0.0}; // winter minimum temperature january and febrary
-  double Tmin2[200] ={0.0}; // winter minimum temperature Decmeber
-
-  double Tss[200] ={0.0}; // spring summer average temperature Apirl May June July August
-  double aTfall=0.0;
-  double aTmin =0.0; // this is for current year january and Febrary
-  double aTmin2 =0.0; // this is for last year december
-  double aTss = 0.0;
-  int aTfall_length=0.0;
-  int aTss_length=0.0;
-
-  double Precip1[200]= {0.0}; // this is for calculating water year precip current 1-9
-  double aPrecip1 =0.0;
-  double Precip2[200]= {0.0}; // precip from oct to dem
-  double aPrecip2 =0.0;
-  int Wycount =0.0;// this is to count the water year days, at the beginning of the simulation there may be not full water year so will produce some false drought.
-
-  struct	date	next_date;
-
-
-    if (command_line[0].beetlespread_flag==1){
-    Yindex = current_date.year-1900;
-
-    if (current_date.month >=9 && current_date.month<=11) {
-       aTfall +=zone[0].metv.tavg;
-       aTfall_length += 1;
-
-    };
-
-    if (current_date.month >=4 && current_date.month<=8) {
-      aTss += zone[0].metv.tavg;
-      aTss_length +=1;
-
-    }
-
-    if (current_date.month >=1 && current_date.month <=2) {
-      aTmin= min(aTmin,zone[0].metv.tmin); // there maybe a bug, what if all the metv.min larger than 0;
-    }
-
-    if (current_date.month ==12) {
-      aTmin2= min(aTmin2, zone[0].metv.tmin);
-
-    }
-
-    if (current_date.month >=1 && current_date.month <=9) {
-     aPrecip1 += zone[0].rain + zone[0].snow; //suppose no irrigation
-    }
-
-    if (current_date.month >=10 && current_date.month<=12) {
-     aPrecip2 += zone[0].rain+ zone[0].snow; //
-    }
-
-    // to reduce the starting incomplete climate caused errors
-    // if the starting month is 1990-august, so for 1990 acutally there is no climate data, and the year 1991 have full period of climate data
-    // so we add a water year counting to make sure the first have full climate data, if not we use some value to make there is no beetle response
-
-    if (current_date.month==10 && current_date.day ==1){
-
-      Wycount +=1; //count the water year
-    }
-
-
-
-    /* at the end of year save these temperature variables and calcualte the average*/
-/*    next_date = caldat(julday(current_date)+1);
-
-    if (next_date.year != current_date.year) {
-    Tfall[Yindex] = aTfall/aTfall_length;
-    Tss[Yindex] = aTss/aTss_length;
-    Tmin[Yindex] = aTmin; //current year jan and feb
-    Tmin2[Yindex] = aTmin2;
-    Precip1[Yindex]=precip1;
-    Precip2[Yindex]=precip2;
-
-   if (Wycount >=2) {
-
-
-    patch[0].Tfall = Tfall[Yindex-1]; //last year fall affecting current year august outbreak
-    patch[0].Tss = Tss[Yindex];
-    patch[0].Tmin = min(Tmin[Yindex], Tmin2[Yindex-1]); // is the minimum of current jan and feb and last year dec
-    patch[0].Precip_wy = Precip1[Yindex]+Precip2[Yindex-1]; // current 1-9 plus last year 10-12 for water year precip
-    }
-    else if (Wycount <2) { // not enough water year circle so make there is no beetle response
-
-    patch[0].Tfall = NULL;
-    patch[0].Tss = NULL;
-    patch[0].Tmin= NULL;
-    patch[0].Precip_wy = NULL;
-
-    }
-
-    // reinitialization for the new year start from january-1st
-    // should I define a global variable to record the changing
-
-    aTfall =0;
-    aTss =0;
-    aTmin=0;
-    aTmin2 =0;
-
-    aTfall_length=0;
-    aTss_length=0;
-
-
-    }
-
-
-
-
-
-    }  */
-
+	
 
 
 	patch[0].soil_cs.totalc = ((patch[0].soil_cs.soil1c)

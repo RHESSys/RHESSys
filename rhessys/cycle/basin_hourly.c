@@ -53,14 +53,14 @@ void	basin_hourly(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
-	
+
 	void	*alloc(	size_t, char *, char *);
 
-	void    compute_subsurface_routing_hourly(
+	/* void    compute_subsurface_routing_hourly(
 		struct command_line_object *command_line,
                 struct basin_object *basin,
-		int n_timesteps, 
-		struct date current_date);
+		int n_timesteps,
+		struct date current_date); */ //NREN20190213
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -78,7 +78,7 @@ void	basin_hourly(
 	/*--------------------------------------------------------------*/
 	hillslope_p = basin[0].hillslopes[0];
 	zone_p = hillslope_p[0].zones[0];
-	
+
 	basin[0].hourly = (struct basin_hourly_object * ) alloc(
 		sizeof( struct basin_hourly_object),"hourly","basin_hourly");
 	/*--------------------------------------------------------------*/
@@ -117,7 +117,7 @@ void	basin_hourly(
 	basin[0].hourly[0].cos_sza = world[0].cos_declin
 		* basin[0].cos_latitude * basin[0].hourly[0].cos_hour_angle
 		+ world[0].sin_declin *	basin[0].sin_latitude;
-	
+
 	if ( command_line[0].verbose_flag > 5 )
 		printf("\n-111.1 cos_sza= %f cod_declin=%f cos_l= %f coshh=%f sindec=%f sinlat=%f",
 		basin[0].hourly[0].cos_sza,world[0].cos_declin,
@@ -172,10 +172,10 @@ void	basin_hourly(
 			event,
 			current_date);
 	}
-	
 
 
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*	Destroy the basin hourly parameter arrayu.					*/
 	/*--------------------------------------------------------------*/
@@ -186,12 +186,12 @@ void	basin_hourly(
 	/*--------------------------------------------------------------*/
 	/* this part is nearly the same as in the basin_daily_F		*/
 
-	if ( command_line[0].routing_flag == 1 && zone_p[0].hourly_rain_flag==1) { 
+  /*	if ( command_line[0].routing_flag == 1 && zone_p[0].hourly_rain_flag==1) {
 		compute_subsurface_routing_hourly(command_line,
 			basin,
 			basin[0].defaults[0][0].n_routing_timesteps,
 			current_date);
-	}
+	} */ //NREN 20190213
 
 
 	return;

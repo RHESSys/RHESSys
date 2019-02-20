@@ -1,6 +1,6 @@
-VERSION = 7
+VERSION = 5.713
 PGM  = rhessys$(VERSION)
-CC = gcc
+CC = icc
 #CXX = g++
 INCLUDES = -Iinclude
 
@@ -10,17 +10,8 @@ OBJ = objects
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
-DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID  
-
-ifdef extend_clim
-  DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
-endif 
-
-CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES)
-
-ifdef openmp
-  CFLAGS += -fopenmp
-endif
+DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID  -DLIU_EXTEND_CLIM_VAR -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
+CFLAGS =-Wall -g -std=c99 -qopenmp -O2 $(DEFINES)
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
@@ -58,7 +49,6 @@ $(OBJ)/allocate_daily_growth.o \
 $(OBJ)/assign_base_station.o \
 $(OBJ)/assign_base_station_xy.o \
 $(OBJ)/assign_neighbours.o \
-$(OBJ)/assign_neighbours_in_hillslope.o \
 $(OBJ)/basin_daily_F.o \
 $(OBJ)/basin_daily_I.o \
 $(OBJ)/basin_hourly.o \
@@ -215,7 +205,6 @@ $(OBJ)/execute_yearly_output_event.o \
 $(OBJ)/find_basin.o \
 $(OBJ)/find_hillslope_in_basin.o \
 $(OBJ)/find_patch.o \
-$(OBJ)/find_patch_in_hillslope.o \
 $(OBJ)/find_patch_in_zone.o \
 $(OBJ)/find_stratum.o \
 $(OBJ)/find_stratum_in_patch.o \
@@ -249,7 +238,6 @@ $(OBJ)/output_stream_routing.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
 $(OBJ)/output_canopy_stratum.o \
-$(OBJ)/output_fire.o \
 $(OBJ)/output_growth_basin.o \
 $(OBJ)/output_growth_canopy_stratum.o \
 $(OBJ)/output_growth_hillslope.o \
@@ -322,7 +310,6 @@ $(OBJ)/update_septic.o \
 $(OBJ)/update_shadow_strata.o \
 $(OBJ)/update_soil_moisture.o \
 $(OBJ)/valid_option.o \
-$(OBJ)/wateryearday.o \
 $(OBJ)/world_daily_F.o \
 $(OBJ)/world_daily_I.o \
 $(OBJ)/world_hourly.o \
@@ -363,10 +350,10 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -qopenmp -L./lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -qopenmp -v -o $(PGM)
 endif
 else
 ifdef wmfire
@@ -558,8 +545,6 @@ $(OBJ)/output_patch.o: output/output_patch.c
 	$(CC) -c $(CFLAGS) -I include output/output_patch.c -o $(OBJ)/output_patch.o
 $(OBJ)/output_canopy_stratum.o: output/output_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_canopy_stratum.c -o $(OBJ)/output_canopy_stratum.o
-$(OBJ)/output_fire.o: output/output_fire.c
-	$(CC) -c $(CFLAGS) -I include output/output_fire.c -o $(OBJ)/output_fire.o
 $(OBJ)/output_basin_state.o: output/output_basin_state.c
 	$(CC) -c $(CFLAGS) -I include output/output_basin_state.c -o $(OBJ)/output_basin_state.o
 $(OBJ)/output_hillslope_state.o: output/output_hillslope_state.c
@@ -608,16 +593,12 @@ $(OBJ)/find_stratum.o: util/find_stratum.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum.c -o $(OBJ)/find_stratum.o
 $(OBJ)/find_stratum_in_patch.o: util/find_stratum_in_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum_in_patch.c -o $(OBJ)/find_stratum_in_patch.o
-$(OBJ)/find_patch_in_hillslope.o: util/find_patch_in_hillslope.c
-	$(CC) -c $(CFLAGS) -I include util/find_patch_in_hillslope.c -o $(OBJ)/find_patch_in_hillslope.o
 $(OBJ)/find_patch_in_zone.o: util/find_patch_in_zone.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch_in_zone.c -o $(OBJ)/find_patch_in_zone.o
 $(OBJ)/find_zone_in_hillslope.o: util/find_zone_in_hillslope.c
 	$(CC) -c $(CFLAGS) -I include util/find_zone_in_hillslope.c -o $(OBJ)/find_zone_in_hillslope.o
 $(OBJ)/find_hillslope_in_basin.o: util/find_hillslope_in_basin.c
 	$(CC) -c $(CFLAGS) -I include util/find_hillslope_in_basin.c -o $(OBJ)/find_hillslope_in_basin.o
-$(OBJ)/wateryearday.o: util/wateryearday.c
-	$(CC) -c $(CFLAGS) -I include util/wateryearday.c -o $(OBJ)/wateryearday.o
 $(OBJ)/yearday.o: util/yearday.c
 	$(CC) -c $(CFLAGS) -I include util/yearday.c -o $(OBJ)/yearday.o
 $(OBJ)/julday.o: util/julday.c
@@ -660,8 +641,6 @@ $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
 	$(CC) -c $(CFLAGS) -I include init/construct_hillslope.c -o $(OBJ)/construct_hillslope.o
 $(OBJ)/assign_neighbours.o: init/assign_neighbours.c
 	$(CC) -c $(CFLAGS) -I include init/assign_neighbours.c -o $(OBJ)/assign_neighbours.o
-$(OBJ)/assign_neighbours_in_hillslope.o: init/assign_neighbours_in_hillslope.c
-	$(CC) -c $(CFLAGS) -I include init/assign_neighbours_in_hillslope.c -o $(OBJ)/assign_neighbours_in_hillslope.o
 $(OBJ)/assign_base_station.o: init/assign_base_station.c
 	$(CC) -c $(CFLAGS) -I include init/assign_base_station.c -o $(OBJ)/assign_base_station.o
 $(OBJ)/assign_base_station_xy.o: init/assign_base_station_xy.c

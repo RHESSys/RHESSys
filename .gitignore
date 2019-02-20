@@ -19,7 +19,7 @@ rhessys/tec/*.bak
 
 # Build directories
 objects/
-rhessys/output/
+
 build/Qt/gcc/bin/
 build/Qt/gcc/RHESSys/RHESSys.pro.user
 build/Qt/gcc/RHESSys/RHESSys.pro.user.2.7pre1
