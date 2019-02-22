@@ -17,6 +17,15 @@ rhessys/cn/*.bak
 rhessys/tec/*.bak
 *.swo
 
+ 
+auxdata/DemGrid.txt
+auxdata/patchGrid.txt
+defs/copy of fire.def
+lai.trai.2018.txt
+./rhessys/rhessys5.bf_PAI
+./rhessys/rhessys7
+./rhessys/rhe5time_def.txt
+
 # Build directories
 objects/
 
