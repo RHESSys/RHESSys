@@ -1,4 +1,4 @@
-VERSION = 5
+VERSION = 7
 PGM  = rhessys$(VERSION)
 CC = gcc
 #CXX = g++
@@ -10,8 +10,17 @@ OBJ = objects
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
-DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
-CFLAGS =-Wall -g -std=c99 -fopenmp -O2 $(DEFINES)
+DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID  
+
+ifdef extend_clim
+  DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
+endif 
+
+CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES)
+
+ifdef openmp
+  CFLAGS += -fopenmp
+endif
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
@@ -49,6 +58,7 @@ $(OBJ)/allocate_daily_growth.o \
 $(OBJ)/assign_base_station.o \
 $(OBJ)/assign_base_station_xy.o \
 $(OBJ)/assign_neighbours.o \
+$(OBJ)/assign_neighbours_in_hillslope.o \
 $(OBJ)/basin_daily_F.o \
 $(OBJ)/basin_daily_I.o \
 $(OBJ)/basin_hourly.o \
@@ -79,6 +89,7 @@ $(OBJ)/compute_direct_radiative_fluxes.o \
 $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
 $(OBJ)/compute_fire_effects.o \
+$(OBJ)/compute_beetle_effects.o \
 $(OBJ)/compute_growingseason_index.o \
 $(OBJ)/compute_layer_field_capacity.o \
 $(OBJ)/compute_froot_litfall.o \
@@ -204,6 +215,7 @@ $(OBJ)/execute_yearly_output_event.o \
 $(OBJ)/find_basin.o \
 $(OBJ)/find_hillslope_in_basin.o \
 $(OBJ)/find_patch.o \
+$(OBJ)/find_patch_in_hillslope.o \
 $(OBJ)/find_patch_in_zone.o \
 $(OBJ)/find_stratum.o \
 $(OBJ)/find_stratum_in_patch.o \
@@ -237,6 +249,7 @@ $(OBJ)/output_stream_routing.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
 $(OBJ)/output_canopy_stratum.o \
+$(OBJ)/output_fire.o \
 $(OBJ)/output_growth_basin.o \
 $(OBJ)/output_growth_canopy_stratum.o \
 $(OBJ)/output_growth_hillslope.o \
@@ -309,6 +322,7 @@ $(OBJ)/update_septic.o \
 $(OBJ)/update_shadow_strata.o \
 $(OBJ)/update_soil_moisture.o \
 $(OBJ)/valid_option.o \
+$(OBJ)/wateryearday.o \
 $(OBJ)/world_daily_F.o \
 $(OBJ)/world_daily_I.o \
 $(OBJ)/world_hourly.o \
@@ -349,18 +363,18 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM)
 endif
 else
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM)
 endif
 endif
 
@@ -371,8 +385,8 @@ OBJECTS_NO_MAIN := $(patsubst $(OBJ)/main.o,,$(OBJECTS))
 test: dir $(TESTS)
 	# Run each unit test
 	$(patsubst %,%;,$(TESTS_TO_RUN))
-	
-$(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS) 
+
+$(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
 else ifeq ($(OS), Linux)
@@ -383,7 +397,7 @@ endif
 	cp $@ $(TESTS_ROOTDIR)
 
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
-	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $< 
+	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $<
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
@@ -544,6 +558,8 @@ $(OBJ)/output_patch.o: output/output_patch.c
 	$(CC) -c $(CFLAGS) -I include output/output_patch.c -o $(OBJ)/output_patch.o
 $(OBJ)/output_canopy_stratum.o: output/output_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_canopy_stratum.c -o $(OBJ)/output_canopy_stratum.o
+$(OBJ)/output_fire.o: output/output_fire.c
+	$(CC) -c $(CFLAGS) -I include output/output_fire.c -o $(OBJ)/output_fire.o
 $(OBJ)/output_basin_state.o: output/output_basin_state.c
 	$(CC) -c $(CFLAGS) -I include output/output_basin_state.c -o $(OBJ)/output_basin_state.o
 $(OBJ)/output_hillslope_state.o: output/output_hillslope_state.c
@@ -583,7 +599,7 @@ $(OBJ)/execute_redefine_world_event.o: tec/execute_redefine_world_event.c
 $(OBJ)/execute_redefine_world_mult_event.o: tec/execute_redefine_world_mult_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_redefine_world_mult_event.c -o $(OBJ)/execute_redefine_world_mult_event.o
 $(OBJ)/execute_redefine_world_thin_event.o: tec/execute_redefine_world_thin_event.c
-	$(CC) -c $(CFLAGS) -I include tec/execute_redefine_world_thin_event.c -o $(OBJ)/execute_redefine_world_thin_event.o	
+	$(CC) -c $(CFLAGS) -I include tec/execute_redefine_world_thin_event.c -o $(OBJ)/execute_redefine_world_thin_event.o
 $(OBJ)/execute_road_construction_event.o: tec/execute_road_construction_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_road_construction_event.c -o $(OBJ)/execute_road_construction_event.o
 $(OBJ)/find_basin.o: util/find_basin.c
@@ -592,12 +608,16 @@ $(OBJ)/find_stratum.o: util/find_stratum.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum.c -o $(OBJ)/find_stratum.o
 $(OBJ)/find_stratum_in_patch.o: util/find_stratum_in_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum_in_patch.c -o $(OBJ)/find_stratum_in_patch.o
+$(OBJ)/find_patch_in_hillslope.o: util/find_patch_in_hillslope.c
+	$(CC) -c $(CFLAGS) -I include util/find_patch_in_hillslope.c -o $(OBJ)/find_patch_in_hillslope.o
 $(OBJ)/find_patch_in_zone.o: util/find_patch_in_zone.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch_in_zone.c -o $(OBJ)/find_patch_in_zone.o
 $(OBJ)/find_zone_in_hillslope.o: util/find_zone_in_hillslope.c
 	$(CC) -c $(CFLAGS) -I include util/find_zone_in_hillslope.c -o $(OBJ)/find_zone_in_hillslope.o
 $(OBJ)/find_hillslope_in_basin.o: util/find_hillslope_in_basin.c
 	$(CC) -c $(CFLAGS) -I include util/find_hillslope_in_basin.c -o $(OBJ)/find_hillslope_in_basin.o
+$(OBJ)/wateryearday.o: util/wateryearday.c
+	$(CC) -c $(CFLAGS) -I include util/wateryearday.c -o $(OBJ)/wateryearday.o
 $(OBJ)/yearday.o: util/yearday.c
 	$(CC) -c $(CFLAGS) -I include util/yearday.c -o $(OBJ)/yearday.o
 $(OBJ)/julday.o: util/julday.c
@@ -640,6 +660,8 @@ $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
 	$(CC) -c $(CFLAGS) -I include init/construct_hillslope.c -o $(OBJ)/construct_hillslope.o
 $(OBJ)/assign_neighbours.o: init/assign_neighbours.c
 	$(CC) -c $(CFLAGS) -I include init/assign_neighbours.c -o $(OBJ)/assign_neighbours.o
+$(OBJ)/assign_neighbours_in_hillslope.o: init/assign_neighbours_in_hillslope.c
+	$(CC) -c $(CFLAGS) -I include init/assign_neighbours_in_hillslope.c -o $(OBJ)/assign_neighbours_in_hillslope.o
 $(OBJ)/assign_base_station.o: init/assign_base_station.c
 	$(CC) -c $(CFLAGS) -I include init/assign_base_station.c -o $(OBJ)/assign_base_station.o
 $(OBJ)/assign_base_station_xy.o: init/assign_base_station_xy.c
@@ -768,6 +790,8 @@ $(OBJ)/compute_field_capacity.o: hydro/compute_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_field_capacity.c -o $(OBJ)/compute_field_capacity.o
 $(OBJ)/compute_fire_effects.o: cn/compute_fire_effects.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_fire_effects.c -o $(OBJ)/compute_fire_effects.o
+$(OBJ)/compute_beetle_effects.o: cn/compute_beetle_effects.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_beetle_effects.c -o $(OBJ)/compute_beetle_effects.o
 $(OBJ)/compute_transmissivity_curve.o: hydro/compute_transmissivity_curve.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_transmissivity_curve.c -o $(OBJ)/compute_transmissivity_curve.o
 $(OBJ)/compute_infiltration.o: hydro/compute_infiltration.c
@@ -794,35 +818,35 @@ $(OBJ)/sort_patch_layers.o: util/sort_patch_layers.c
 	$(CC) -c $(CFLAGS) -I include util/sort_patch_layers.c -o $(OBJ)/sort_patch_layers.o
 $(OBJ)/top_model.o: hydro/top_model.c
 	$(CC) -c $(CFLAGS) -I include hydro/top_model.c -o $(OBJ)/top_model.o
-$(OBJ)/compute_maint_resp.o: cn/compute_maint_resp.c 
+$(OBJ)/compute_maint_resp.o: cn/compute_maint_resp.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_maint_resp.c -o $(OBJ)/compute_maint_resp.o
-$(OBJ)/compute_farq_psn.o: cn/compute_farq_psn.c 
+$(OBJ)/compute_farq_psn.o: cn/compute_farq_psn.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_farq_psn.c -o $(OBJ)/compute_farq_psn.o
-$(OBJ)/zero_patch_daily_flux.o: hydro/zero_patch_daily_flux.c 
+$(OBJ)/zero_patch_daily_flux.o: hydro/zero_patch_daily_flux.c
 	$(CC) -c $(CFLAGS) -I include hydro/zero_patch_daily_flux.c -o $(OBJ)/zero_patch_daily_flux.o
-$(OBJ)/zero_stratum_daily_flux.o: cn/zero_stratum_daily_flux.c 
+$(OBJ)/zero_stratum_daily_flux.o: cn/zero_stratum_daily_flux.c
 	$(CC) -c $(CFLAGS) -I include cn/zero_stratum_daily_flux.c -o $(OBJ)/zero_stratum_daily_flux.o
-$(OBJ)/zero_stratum_annual_flux.o: cn/zero_stratum_annual_flux.c 
+$(OBJ)/zero_stratum_annual_flux.o: cn/zero_stratum_annual_flux.c
 	$(CC) -c $(CFLAGS) -I include cn/zero_stratum_annual_flux.c -o $(OBJ)/zero_stratum_annual_flux.o
-$(OBJ)/world_daily_F.o: cycle/world_daily_F.c 
+$(OBJ)/world_daily_F.o: cycle/world_daily_F.c
 	$(CC) -c $(CFLAGS) -I include cycle/world_daily_F.c -o $(OBJ)/world_daily_F.o
 $(OBJ)/basin_daily_F.o: cycle/basin_daily_F.c
 	$(CC) -c $(CFLAGS) -I include cycle/basin_daily_F.c -o $(OBJ)/basin_daily_F.o
-$(OBJ)/hillslope_daily_F.o: cycle/hillslope_daily_F.c 
+$(OBJ)/hillslope_daily_F.o: cycle/hillslope_daily_F.c
 	$(CC) -c $(CFLAGS) -I include cycle/hillslope_daily_F.c -o $(OBJ)/hillslope_daily_F.o
-$(OBJ)/zone_daily_F.o: cycle/zone_daily_F.c 
+$(OBJ)/zone_daily_F.o: cycle/zone_daily_F.c
 	$(CC) -c $(CFLAGS) -I include cycle/zone_daily_F.c -o $(OBJ)/zone_daily_F.o
-$(OBJ)/world_daily_I.o: cycle/world_daily_I.c 
+$(OBJ)/world_daily_I.o: cycle/world_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/world_daily_I.c -o $(OBJ)/world_daily_I.o
 $(OBJ)/basin_daily_I.o: cycle/basin_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/basin_daily_I.c -o $(OBJ)/basin_daily_I.o
-$(OBJ)/hillslope_daily_I.o: cycle/hillslope_daily_I.c 
+$(OBJ)/hillslope_daily_I.o: cycle/hillslope_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/hillslope_daily_I.c -o $(OBJ)/hillslope_daily_I.o
-$(OBJ)/zone_daily_I.o: cycle/zone_daily_I.c 
+$(OBJ)/zone_daily_I.o: cycle/zone_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/zone_daily_I.c -o $(OBJ)/zone_daily_I.o
-$(OBJ)/patch_daily_I.o: cycle/patch_daily_I.c  
+$(OBJ)/patch_daily_I.o: cycle/patch_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/patch_daily_I.c -o $(OBJ)/patch_daily_I.o
-$(OBJ)/patch_daily_F.o: cycle/patch_daily_F.c  
+$(OBJ)/patch_daily_F.o: cycle/patch_daily_F.c
 	$(CC) -c $(CFLAGS) -I include cycle/patch_daily_F.c -o $(OBJ)/patch_daily_F.o
 $(OBJ)/canopy_stratum_daily_I.o: cycle/canopy_stratum_daily_I.c
 	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_daily_I.c -o $(OBJ)/canopy_stratum_daily_I.o
@@ -830,27 +854,27 @@ $(OBJ)/canopy_stratum_daily_F.o: cycle/canopy_stratum_daily_F.c
 	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_daily_F.c -o $(OBJ)/canopy_stratum_daily_F.o
 $(OBJ)/world_hourly.o: cycle/world_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/world_hourly.c -o $(OBJ)/world_hourly.o
-$(OBJ)/basin_hourly.o: cycle/basin_hourly.c 
+$(OBJ)/basin_hourly.o: cycle/basin_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/basin_hourly.c -o $(OBJ)/basin_hourly.o
-$(OBJ)/hillslope_hourly.o: cycle/hillslope_hourly.c 
+$(OBJ)/hillslope_hourly.o: cycle/hillslope_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/hillslope_hourly.c -o $(OBJ)/hillslope_hourly.o
 $(OBJ)/patch_hourly.o: cycle/patch_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/patch_hourly.c -o $(OBJ)/patch_hourly.o
-$(OBJ)/zone_hourly.o: cycle/zone_hourly.c 
+$(OBJ)/zone_hourly.o: cycle/zone_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/zone_hourly.c -o $(OBJ)/zone_hourly.o
 $(OBJ)/canopy_stratum_hourly.o: cycle/canopy_stratum_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_hourly.c -o $(OBJ)/canopy_stratum_hourly.o
 $(OBJ)/update_basin_patch_accumulator.o: hydro/update_basin_patch_accumulator.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_basin_patch_accumulator.c -o $(OBJ)/update_basin_patch_accumulator.o
-$(OBJ)/update_drainage_stream.o: hydro/update_drainage_stream.c 
+$(OBJ)/update_drainage_stream.o: hydro/update_drainage_stream.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_stream.c -o $(OBJ)/update_drainage_stream.o
-$(OBJ)/update_drainage_road.o: hydro/update_drainage_road.c 
+$(OBJ)/update_drainage_road.o: hydro/update_drainage_road.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_road.c -o $(OBJ)/update_drainage_road.o
-$(OBJ)/update_drainage_land.o: hydro/update_drainage_land.c 
+$(OBJ)/update_drainage_land.o: hydro/update_drainage_land.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_drainage_land.c -o $(OBJ)/update_drainage_land.o
 $(OBJ)/update_hillslope_accumulator.o: hydro/update_hillslope_accumulator.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_hillslope_accumulator.c -o $(OBJ)/update_hillslope_accumulator.o
-$(OBJ)/update_soil_moisture.o: hydro/update_soil_moisture.c 
+$(OBJ)/update_soil_moisture.o: hydro/update_soil_moisture.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_soil_moisture.c -o $(OBJ)/update_soil_moisture.o
 $(OBJ)/skip_basin.o: tec/skip_basin.c
 	$(CC) -c $(CFLAGS) -I include tec/skip_basin.c -o $(OBJ)/skip_basin.o
@@ -865,101 +889,101 @@ $(OBJ)/skip_strata.o: tec/skip_strata.c
 
 
 # dynamic bgc routines
-$(OBJ)/allocate_annual_growth.o: cn/allocate_annual_growth.c 
+$(OBJ)/allocate_annual_growth.o: cn/allocate_annual_growth.c
 	$(CC) -c $(CFLAGS) -I include cn/allocate_annual_growth.c -o $(OBJ)/allocate_annual_growth.o
 $(OBJ)/canopy_stratum_growth.o: cycle/canopy_stratum_growth.c
 	$(CC) -c $(CFLAGS) -I include cycle/canopy_stratum_growth.c -o $(OBJ)/canopy_stratum_growth.o
 $(OBJ)/check_zero_stores.o: util/check_zero_stores.c
 	$(CC) -c $(CFLAGS) -I include util/check_zero_stores.c -o $(OBJ)/check_zero_stores.o
-$(OBJ)/compute_annual_turnover.o: cn/compute_annual_turnover.c 
+$(OBJ)/compute_annual_turnover.o: cn/compute_annual_turnover.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_annual_turnover.c -o $(OBJ)/compute_annual_turnover.o
-$(OBJ)/compute_annual_litfall.o: cn/compute_annual_litfall.c 
+$(OBJ)/compute_annual_litfall.o: cn/compute_annual_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_annual_litfall.c -o $(OBJ)/compute_annual_litfall.o
-$(OBJ)/compute_cwd_decay.o: cn/compute_cwd_decay.c 
+$(OBJ)/compute_cwd_decay.o: cn/compute_cwd_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_cwd_decay.c -o $(OBJ)/compute_cwd_decay.o
 $(OBJ)/compute_snag_decay.o: cn/compute_snag_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_snag_decay.c -o $(OBJ)/compute_snag_decay.o
 $(OBJ)/compute_redneedle_decay.o: cn/compute_redneedle_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_redneedle_decay.c -o $(OBJ)/compute_redneedle_decay.o
-$(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c 
+$(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_deadleaf_turnover.c -o $(OBJ)/compute_deadleaf_turnover.o
-$(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c 
+$(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_leaf_litfall.c -o $(OBJ)/compute_leaf_litfall.o
-$(OBJ)/compute_N_leached.o: cn/compute_N_leached.c 
+$(OBJ)/compute_N_leached.o: cn/compute_N_leached.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_N_leached.c -o $(OBJ)/compute_N_leached.o
-$(OBJ)/compute_N_absorbed.o: cn/compute_N_absorbed.c 
+$(OBJ)/compute_N_absorbed.o: cn/compute_N_absorbed.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_N_absorbed.c -o $(OBJ)/compute_N_absorbed.o
-$(OBJ)/compute_froot_litfall.o: cn/compute_froot_litfall.c 
+$(OBJ)/compute_froot_litfall.o: cn/compute_froot_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_froot_litfall.c -o $(OBJ)/compute_froot_litfall.o
-$(OBJ)/compute_growth_resp.o: cn/compute_growth_resp.c 
+$(OBJ)/compute_growth_resp.o: cn/compute_growth_resp.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_growth_resp.c -o $(OBJ)/compute_growth_resp.o
-$(OBJ)/compute_prop_alloc_daily.o: cn/compute_prop_alloc_daily.c 
+$(OBJ)/compute_prop_alloc_daily.o: cn/compute_prop_alloc_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_prop_alloc_daily.c -o $(OBJ)/compute_prop_alloc_daily.o
-$(OBJ)/compute_potential_decomp.o: cn/compute_potential_decomp.c 
+$(OBJ)/compute_potential_decomp.o: cn/compute_potential_decomp.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_decomp.c -o $(OBJ)/compute_potential_decomp.o
-$(OBJ)/compute_potential_N_uptake.o: cn/compute_potential_N_uptake.c 
+$(OBJ)/compute_potential_N_uptake.o: cn/compute_potential_N_uptake.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake.c -o $(OBJ)/compute_potential_N_uptake.o
-$(OBJ)/compute_potential_N_uptake_Waring.o: cn/compute_potential_N_uptake_Waring.c 
+$(OBJ)/compute_potential_N_uptake_Waring.o: cn/compute_potential_N_uptake_Waring.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake_Waring.c -o $(OBJ)/compute_potential_N_uptake_Waring.o
-$(OBJ)/compute_potential_N_uptake_Dickenson.o: cn/compute_potential_N_uptake_Dickenson.c 
+$(OBJ)/compute_potential_N_uptake_Dickenson.o: cn/compute_potential_N_uptake_Dickenson.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake_Dickenson.c -o $(OBJ)/compute_potential_N_uptake_Dickenson.o
-$(OBJ)/compute_potential_N_uptake_combined.o: cn/compute_potential_N_uptake_combined.c 
+$(OBJ)/compute_potential_N_uptake_combined.o: cn/compute_potential_N_uptake_combined.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake_combined.c -o $(OBJ)/compute_potential_N_uptake_combined.o
-$(OBJ)/compute_litter_rain_stored.o: hydro/compute_litter_rain_stored.c 
+$(OBJ)/compute_litter_rain_stored.o: hydro/compute_litter_rain_stored.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_litter_rain_stored.c -o $(OBJ)/compute_litter_rain_stored.o
 $(OBJ)/compute_hourly_litter_rain_stored.o: hydro/compute_hourly_litter_rain_stored.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_hourly_litter_rain_stored.c -o $(OBJ)/compute_hourly_litter_rain_stored.o
-$(OBJ)/surface_daily_F.o: cycle/surface_daily_F.c 
+$(OBJ)/surface_daily_F.o: cycle/surface_daily_F.c
 	$(CC) -c $(CFLAGS) -I include cycle/surface_daily_F.c -o $(OBJ)/surface_daily_F.o
 $(OBJ)/surface_hourly.o: cycle/surface_hourly.c
 	$(CC) -c $(CFLAGS) -I include cycle/surface_hourly.c -o $(OBJ)/surface_hourly.o
-$(OBJ)/parse_alloc_flag.o: init/parse_alloc_flag.c 
+$(OBJ)/parse_alloc_flag.o: init/parse_alloc_flag.c
 	$(CC) -c $(CFLAGS) -I include init/parse_alloc_flag.c -o $(OBJ)/parse_alloc_flag.o
-$(OBJ)/parse_dyn_flag.o: init/parse_dyn_flag.c 
+$(OBJ)/parse_dyn_flag.o: init/parse_dyn_flag.c
 	$(CC) -c $(CFLAGS) -I include init/parse_dyn_flag.c -o $(OBJ)/parse_dyn_flag.o
-$(OBJ)/parse_veg_type.o: init/parse_veg_type.c 
+$(OBJ)/parse_veg_type.o: init/parse_veg_type.c
 	$(CC) -c $(CFLAGS) -I include init/parse_veg_type.c -o $(OBJ)/parse_veg_type.o
-$(OBJ)/parse_phenology_type.o: init/parse_phenology_type.c 
+$(OBJ)/parse_phenology_type.o: init/parse_phenology_type.c
 	$(CC) -c $(CFLAGS) -I include init/parse_phenology_type.c -o $(OBJ)/parse_phenology_type.o
-$(OBJ)/parse_albedo_flag.o: init/parse_albedo_flag.c 
+$(OBJ)/parse_albedo_flag.o: init/parse_albedo_flag.c
 	$(CC) -c $(CFLAGS) -I include init/parse_albedo_flag.c -o $(OBJ)/parse_albedo_flag.o
-$(OBJ)/resolve_sminn_competition.o: cn/resolve_sminn_competition.c 
+$(OBJ)/resolve_sminn_competition.o: cn/resolve_sminn_competition.c
 	$(CC) -c $(CFLAGS) -I include cn/resolve_sminn_competition.c -o $(OBJ)/resolve_sminn_competition.o
-$(OBJ)/update_C_stratum_daily.o: cn/update_C_stratum_daily.c 
+$(OBJ)/update_C_stratum_daily.o: cn/update_C_stratum_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/update_C_stratum_daily.c -o $(OBJ)/update_C_stratum_daily.o
-$(OBJ)/update_N_stratum_daily.o: cn/update_N_stratum_daily.c 
+$(OBJ)/update_N_stratum_daily.o: cn/update_N_stratum_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/update_N_stratum_daily.c -o $(OBJ)/update_N_stratum_daily.o
-$(OBJ)/update_decomp.o: cn/update_decomp.c 
+$(OBJ)/update_decomp.o: cn/update_decomp.c
 	$(CC) -c $(CFLAGS) -I include cn/update_decomp.c -o $(OBJ)/update_decomp.o
 $(OBJ)/update_shadow_strata.o: cn/update_shadow_strata.c
 	$(CC) -c $(CFLAGS) -I include cn/update_shadow_strata.c -o $(OBJ)/update_shadow_strata.o
-$(OBJ)/update_septic.o: cn/update_septic.c 
+$(OBJ)/update_septic.o: cn/update_septic.c
 	$(CC) -c $(CFLAGS) -I include cn/update_septic.c -o $(OBJ)/update_septic.o
-$(OBJ)/update_gw_drainage.o: hydro/update_gw_drainage.c 
+$(OBJ)/update_gw_drainage.o: hydro/update_gw_drainage.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_gw_drainage.c -o $(OBJ)/update_gw_drainage.o
-$(OBJ)/update_denitrif.o: cn/update_denitrif.c 
+$(OBJ)/update_denitrif.o: cn/update_denitrif.c
 	$(CC) -c $(CFLAGS) -I include cn/update_denitrif.c -o $(OBJ)/update_denitrif.o
-$(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c 
+$(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
-$(OBJ)/update_mortality.o: cn/update_mortality.c 
+$(OBJ)/update_mortality.o: cn/update_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
 $(OBJ)/update_beetle_attack_mortality.o: cn/update_beetle_attack_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_beetle_attack_mortality.c -o $(OBJ)/update_beetle_attack_mortality.o
-$(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c 
+$(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_litter_soil_mortality.c -o $(OBJ)/update_litter_soil_mortality.o
-$(OBJ)/update_branch_mortality.o: cn/update_branch_mortality.c 
+$(OBJ)/update_branch_mortality.o: cn/update_branch_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_branch_mortality.c -o $(OBJ)/update_branch_mortality.o
-$(OBJ)/update_nitrif.o: cn/update_nitrif.c 
+$(OBJ)/update_nitrif.o: cn/update_nitrif.c
 	$(CC) -c $(CFLAGS) -I include cn/update_nitrif.c -o $(OBJ)/update_nitrif.o
-$(OBJ)/update_litter_interception_capacity.o: hydro/update_litter_interception_capacity.c 
+$(OBJ)/update_litter_interception_capacity.o: hydro/update_litter_interception_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/update_litter_interception_capacity.c -o $(OBJ)/update_litter_interception_capacity.o
-$(OBJ)/allocate_daily_growth.o: cn/allocate_daily_growth.c 
+$(OBJ)/allocate_daily_growth.o: cn/allocate_daily_growth.c
 	$(CC) -c $(CFLAGS) -I include cn/allocate_daily_growth.c -o $(OBJ)/allocate_daily_growth.o
-$(OBJ)/update_rooting_depth.o: cn/update_rooting_depth.c 
+$(OBJ)/update_rooting_depth.o: cn/update_rooting_depth.c
 	$(CC) -c $(CFLAGS) -I include cn/update_rooting_depth.c -o $(OBJ)/update_rooting_depth.o
-$(OBJ)/update_phenology.o: cn/update_phenology.c 
+$(OBJ)/update_phenology.o: cn/update_phenology.c
 	$(CC) -c $(CFLAGS) -I include cn/update_phenology.c -o $(OBJ)/update_phenology.o
-$(OBJ)/output_template_structure.o: output/output_template_structure.c 
+$(OBJ)/output_template_structure.o: output/output_template_structure.c
 	$(CC) -c $(CFLAGS) -I include output/output_template_structure.c -o $(OBJ)/output_template_structure.o
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
@@ -995,7 +1019,7 @@ $(OBJ)/main.o: main.c setversion
 
 setversion:
 ifeq ($(OS), Darwin)
-	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' -i '' ./main.c	
+	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' -i '' ./main.c
 else ifeq ($(OS), Linux)
 	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
 else
