@@ -471,6 +471,14 @@ void LandScape::chooseIgnPix(GenerateRandom& rng)
 		cur_fire_.ignCol=ignCells_[vecID].colId;
 	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
 	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
+	// Modified by NREN if the index is negative resample again 20190226
+	    if (cur_fire_.ignRow <0 || cur_fire_.ignCol <0)
+	    {
+	    cout<<"negative ignition row and column: , resample again"<<cur_fire_.ignRow<<"\t"<<cur_fire_.ignCol<<"\n";
+        vecID=int(floor(rng()*(n_ign_+1)));
+		cur_fire_.ignRow=ignCells_[vecID].rowId;
+		cur_fire_.ignCol=ignCells_[vecID].colId;
+	    }
 	}
 
 	if(def_.fire_verbose==1)
@@ -644,8 +652,8 @@ switch(def_.spread_calc_type)
 		p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[cur_row][cur_col].fuel_moist-def_.moisture_k2))));
 		cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].fuel_moist;
 		break;
-	case 4: // 4-6 use absolute deficit with the usual spread curve 
-	case 5: 
+	case 4: // 4-6 use absolute deficit with the usual spread curve
+	case 5:
 	case 6:
 		cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et;
 		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
@@ -677,8 +685,8 @@ switch(def_.spread_calc_type)
 		else
 			cur_moist=0;
 		p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
-	}		
-	
+	}
+
 /*		if(def_.spread_calc_type<4)
 		{
 			p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[cur_row][cur_col].fuel_moist-def_.moisture_k2))));
@@ -689,7 +697,7 @@ switch(def_.spread_calc_type)
 		{
 			if(def_.spread_calc_type<7)
 				cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et; // use absolute deficit for fm
-			else 
+			else
 			{
 				if(def_.spread_calc_type<8) // now 8 is for using understory deficit only for fire initiation
 				{
@@ -712,7 +720,7 @@ switch(def_.spread_calc_type)
 				p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
 //			if(def_.fire_verbose==1)
 //				cout<<"using deficit for moisture: cur_moist: "<<cur_moist"\n";
-		}	
+		}
 */
 		if(def_.fire_verbose==1)
 			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<"\n\n";
