@@ -494,7 +494,7 @@ double calc_beetle_patch_area_in_grid(double curMinX,double curMinY,double curMa
 
 /*-------------------------------------------------------------------------------------------------------*/
 /* construct beetle grid--constructs a second grid with only the		*/
-/* information necessary to be passed to WMFire				*/
+/* information necessary to be passed to    			*/
 /* contained in the beetle_object								*/
 /*------------------------------------------------------------------------------------------------------*/
 struct beetle_object **construct_beetle_grid(struct world_object *world)

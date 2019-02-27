@@ -92,7 +92,7 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
 	int		i, beetle_defaults_object_ID ; //NREN 20190218
-	int		fire_default_object_ID;
+	int		fire_parm_ID;
 	int  beetle_default_object_ID;
 	int		surface_energy_default_object_ID;
 	char		record[MAXSTR];
@@ -136,16 +136,16 @@ struct patch_object *construct_patch(
 	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
 
 	if (command_line[0].firespread_flag == 1) {
-		//fscanf(world_file,"%d",&(fire_default_object_ID));
+		//fscanf(world_file,"%d",&(fire_parm_ID));
 		//read_record(world_file, record);//NREn 20190224
-		fire_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_default_ID","%d",-9999,0);
+		fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",-9999,0);
 		}
 
 /* read the input from worldfile if the beetlespread_flag is set */
     if (command_line[0].beetlespread_flag == 1) {
 		//fscanf(world_file,"%d",&(beetle_default_object_ID));
 		//read_record(world_file, record); //NREN 2019218
-		beetle_defaults_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"beetle_default_ID","%d",-9999,0);
+		beetle_defaults_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"beetle_parm_ID","%d",-9999,0);
 		}
 
 
@@ -433,7 +433,7 @@ struct patch_object *construct_patch(
 		alloc( sizeof(struct fire_default *),"defaults",
 		"construct_patch" );
 	i = 0;
-	while (defaults[0].fire[i].ID != fire_default_object_ID) {
+	while (defaults[0].fire[i].ID != fire_parm_ID) {
 		i++;
 		/*--------------------------------------------------------------*/
 		/*  Report an error if no match was found.  Otherwise assign    */
@@ -442,7 +442,7 @@ struct patch_object *construct_patch(
 		if ( i>= defaults[0].num_fire_default_files ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_patch, fire default ID %d not found for patch %d\n" ,
-				fire_default_object_ID, patch[0].ID);
+				fire_parm_ID, patch[0].ID);
 			exit(EXIT_FAILURE);
 		}
 	} /* end-while */
