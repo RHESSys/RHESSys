@@ -90,6 +90,7 @@ int allocate_annual_growth(				int id,
 	double total_store, ratio, total_above_biomass,total_biomass, carbohydrate_transfer;
 	struct mortality_struct mort;
 
+	printf("\nVegetation age %lf", cs->age);
 
 	fcroot = epc.alloc_crootc_stemc;
 	flive = epc.alloc_livewoodc_woodc;
@@ -514,11 +515,12 @@ int allocate_annual_growth(				int id,
 	} /* end if less than min_leaf_carbon */
 	else  {
 		 // cs->num_resprout = max(cs->num_resprout-1,0);	
-		 cs->age += cs->age + 1.0;
-		 if (cs->age > 10000000.0) { printf("\n\n Age has not been reset for %lf years Resetting to avoid numerical issues",
+		 cs->age = cs->age + 1.0;
+		 if (cs->age > 10000000.0) { 
+			printf("\n\n Age has not been reset for %lf years Resetting to avoid numerical issues",
 						cs->age);
 				cs->age=1.0;
-			};
+			}
 		 }
 
 	/* update states variables */
