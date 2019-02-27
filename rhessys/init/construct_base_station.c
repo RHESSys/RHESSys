@@ -309,6 +309,16 @@ struct	base_station_object *construct_base_station(
         //fscanf(base_station[0].base_station_file,"%d", &num_non_critical_sequences);
         //fscanf(base_station[0].base_station_file,"%s",sequence_name);
         // add read in the CO2 climate input NREN 20181115
+
+         if (beetlespread_flag ==1) {  //using if not else if to make parallel condition
+		printf("\n Now read beetle from %d %s   ", base_station[0].ID, clim_object_file_prefix);
+		read_record(base_station[0].base_station_file, record);
+		base_station[0].dated_input = construct_dated_input(
+			base_station[0].base_station_file,
+			clim_object_file_prefix,
+			start_date);
+			}
+
         if (CO2_flag == 1) {
             printf("\n Now read CO2 from %d %s \n  ", base_station[0].ID, clim_object_file_prefix);
             read_record(base_station[0].base_station_file, record);
@@ -319,14 +329,7 @@ struct	base_station_object *construct_base_station(
 
              }
 
-        if (beetlespread_flag ==1) {  //using if not else if to make parallel condition
-		printf("\n Now read beetle from %d %s   ", base_station[0].ID, clim_object_file_prefix);
-		read_record(base_station[0].base_station_file, record);
-		base_station[0].dated_input = construct_dated_input(
-			base_station[0].base_station_file,
-			clim_object_file_prefix,
-			start_date);
-			}
+
         }
 
 	/*--------------------------------------------------------------*/
