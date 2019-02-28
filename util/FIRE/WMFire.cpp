@@ -38,6 +38,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
+#include <math.h> //NREN 20190227
 
 using std::cout;
 using std::stringstream;
@@ -222,7 +223,7 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 		{
 			chooseIgnPix(rng); // draw a random pixel for each test for successful ignition
 			if(def_.fire_verbose==1)
-            cout<<" Random 2 ignition row and column: "<<cur_fire_.ignRow<<"\t"<<cur_fire_.ignCol<<"\n";  //Ning ren 20180920
+            cout<<" Random 2-2ignition row and column: "<<cur_fire_.ignRow<<"\t"<<cur_fire_.ignCol<<"\n";  //Ning ren 20180920
 
 			int cur_row = int (cur_fire_.ignRow);
 			int cur_col = int (cur_fire_.ignCol);
@@ -466,23 +467,25 @@ void LandScape::chooseIgnPix(GenerateRandom& rng)
 	else
 	{
 		int vecID=0;
+		int temp_row =-1;
+		int temp_col = -1;
+		while (temp_row <0 || temp_col <0 || isnan(temp_row) || isnan(temp_col)) { //if not a zero or positive value resample NREN20190227
+        if(def_.fire_verbose==1)
+        cout<<" resampling ignition row and column: "<<temp_row<<"\t"<<temp_col<<"\n";
+
 		vecID=int(floor(rng()*(n_ign_+1))); // n_ign_ just counts how many pixels are available for ignition
-		cur_fire_.ignRow=ignCells_[vecID].rowId; // extract the row and column of this randomly drawn pixel
-		cur_fire_.ignCol=ignCells_[vecID].colId;
+		temp_row =ignCells_[vecID].rowId;
+		temp_col = ignCells_[vecID].colId;
+        }
 	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
 	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
 	// Modified by NREN if the index is negative resample again 20190226
-	    if (cur_fire_.ignRow <0 || cur_fire_.ignCol <0)
-	    {
-	    cout<<"negative ignition row and column: , resample again"<<cur_fire_.ignRow<<"\t"<<cur_fire_.ignCol<<"\n";
-        vecID=int(floor(rng()*(n_ign_+1)));
-		cur_fire_.ignRow=ignCells_[vecID].rowId;
-		cur_fire_.ignCol=ignCells_[vecID].colId;
-	    }
+        cur_fire_.ignRow=temp_row; // extract the row and column of this randomly drawn pixel
+		cur_fire_.ignCol=temp_col;
 	}
 
 	if(def_.fire_verbose==1)
-		cout<<"ignition row and column: "<<cur_fire_.ignRow<<"\t"<<cur_fire_.ignCol<<"\n";
+		cout<<"1 ignition row and column: "<<cur_fire_.ignRow<<"\t"<<cur_fire_.ignCol<<"\n";
 
 	return ;
 }
