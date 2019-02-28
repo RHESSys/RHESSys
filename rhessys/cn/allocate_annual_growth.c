@@ -90,7 +90,7 @@ int allocate_annual_growth(				int id,
 	double total_store, ratio, total_above_biomass,total_biomass, carbohydrate_transfer;
 	struct mortality_struct mort;
 
-	printf("\nVegetation age %lf", cs->age);
+	//printf("\nVegetation age %lf", cs->age); NREN20190227
 	fcroot = epc.alloc_crootc_stemc;
 	flive = epc.alloc_livewoodc_woodc;
 	fdead = (1-flive);
