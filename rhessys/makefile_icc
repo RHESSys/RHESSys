@@ -1,6 +1,6 @@
 VERSION = 7.1
 PGM  = rhessys$(VERSION)
-CC = gcc
+CC = icc
 #CXX = g++
 INCLUDES = -Iinclude
 
@@ -19,7 +19,7 @@ endif
 CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES)
 
 ifdef openmp
-  CFLAGS += -fopenmp
+  CFLAGS += -qopenmp
 endif
 
 # Retro fitting from CF
@@ -363,10 +363,10 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -qopenmp -L./lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -qopenmp -v -o $(PGM)
 endif
 else
 ifdef wmfire
