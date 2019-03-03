@@ -21,7 +21,7 @@ using std::ofstream;
 /*	Calls:	ran3(); ran2()												   */
 /***************************************************************************/
 double expdev(double ia, double lambda, GenerateRandom rng)
-// Returns gamma deviates for small integer alpha as the sum of exponential   
+// Returns gamma deviates for small integer alpha as the sum of exponential
 // deviates.  For alpha=1 simply an exponential deviate
 {
 	double gam;
@@ -45,9 +45,9 @@ double expdev(double ia, double lambda, GenerateRandom rng)
 /*	Calls:	ran3(); ran2()												   */
 /***************************************************************************/
 double poisdev(double xm, GenerateRandom rng)
-// returns as a floating point number an integer value that is a random 
-// deviate drawn from a Poisson distribution with 
-// lambda=xm, using ran3 as a source of uniform random deviates; 
+// returns as a floating point number an integer value that is a random
+// deviate drawn from a Poisson distribution with
+// lambda=xm, using ran3 as a source of uniform random deviates;
 // uses rejection method as outlined in book
 {
 	static double sq,alxm,g,oldm=(-1,0);
@@ -124,7 +124,7 @@ double gasdev(GenerateRandom rng)
 	if(iset==0)
 	{
 		do
-		{ 
+		{
 			v1=2.0*rng()-1.0;
 			v2=2.0*rng()-1.0;
 			rsq=v1*v1+v2*v2;
@@ -168,15 +168,15 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 		curMean=mean1;
 		curKappa=kappa1;
 	}
-	
-	cout<<"p: "<<p<<" mean: "<<curMean<<" kappa: "<<curKappa<<"\n";
+
+	//cout<<"p: "<<p<<" mean: "<<curMean<<" kappa: "<<curKappa<<"\n"; //NREN 2019/03/02
 	double rvm_val=1;
-	
+
 	int vm=1,flag=1;
 	double a=1+ pow(1+4*pow(curKappa,2),0.5);
 	double b=(a-pow(2*a,0.5))/(2*curKappa);
 	double r=(1+pow(b,2))/(2*b);
-	
+
 	double tmpVal=0,tmpMod;
 	while(flag==1)
 	{
@@ -192,9 +192,9 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 				tmpVal=-1;
 			else
 				tmpVal=1;
-			cout<<"rvm_val1: "<<rvm_val<<" acosf "<<acos(f)<<"\n";
+			//cout<<"rvm_val1: "<<rvm_val<<" acosf "<<acos(f)<<"\n"; /NREN20190302
 			rvm_val=tmpVal*acos(f)+curMean; // sign!
-			cout<<"rvm_val1: "<<rvm_val<<" acosf "<<acos(f)<<"\n";
+			//cout<<"rvm_val1: "<<rvm_val<<" acosf "<<acos(f)<<"\n"; /NREN20190302
 			if(rvm_val<0)
 			{
 				rvm_val=ceil(-rvm_val/(2*3.141593))*2*3.141593+rvm_val;
@@ -204,8 +204,8 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 				rvm_val=rvm_val-floor(rvm_val/(2*3.141593))*2*3.141593;
 			}
 		//	rvm_val=fmod((rvm_val),(2*3.141593)); // %%!
-			flag=0;
-			cout<<"testing rvmdev1: test0:"<<test0<<" test1 "<<test1<<" a "<<a<<" b "<<b<<" r "<<r<<" z "<<z<<" f  "<<f<<" test2 "<<test2<<" c "<<c<<" test3 "<<test3<<" tmpVal "<<tmpVal<<" rvm_val "<<rvm_val<<" mean "<<curMean<<" kappa "<<curKappa<<" \n";
+			flag=0; //NREN 20190302
+			//cout<<"testing rvmdev1: test0:"<<test0<<" test1 "<<test1<<" a "<<a<<" b "<<b<<" r "<<r<<" z "<<z<<" f  "<<f<<" test2 "<<test2<<" c "<<c<<" test3 "<<test3<<" tmpVal "<<tmpVal<<" rvm_val "<<rvm_val<<" mean "<<curMean<<" kappa "<<curKappa<<" \n";
 		}
 		else
 		{
@@ -216,9 +216,9 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 					tmpVal=-1;
 				else
 					tmpVal=1;
-				cout<<"rvm_val2: "<<" acosf "<<acos(f)<<rvm_val<<"\n";
+				//cout<<"rvm_val2: "<<" acosf "<<acos(f)<<rvm_val<<"\n";/NREN 20190302
 				rvm_val=tmpVal*acos(f)+curMean; // sign!
-				cout<<"rvm_val2: "<<" acosf "<<acos(f)<<rvm_val<<"\n";
+				//cout<<"rvm_val2: "<<" acosf "<<acos(f)<<rvm_val<<"\n"; /NREN20190302
 				if(rvm_val<0)
 				{
 					rvm_val=ceil(-rvm_val/(2*3.141593))*2*3.141593+rvm_val;
@@ -229,13 +229,13 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 				}
 		//	rvm_val=fmod((rvm_val),(2*3.141593)); // %%!
 			//rvm_val=fmod(rvm_val,(2*3.141593)); // %%! = modulus I think
-				flag=0;
-				cout<<"testing rvmdev2: test0:"<<test0<<" test1 "<<test1<<" a "<<a<<" b "<<b<<" r "<<r<<" z "<<z<<" f  "<<f<<" test2 "<<test2<<" c "<<c<<" test3 "<<test3<<" tmpVal "<<tmpVal<<" rvm_val "<<rvm_val<<" mean "<<curMean<<" kappa "<<curKappa<<" \n";
+				flag=0; //NREN 20190302
+				//cout<<"testing rvmdev2: test0:"<<test0<<" test1 "<<test1<<" a "<<a<<" b "<<b<<" r "<<r<<" z "<<z<<" f  "<<f<<" test2 "<<test2<<" c "<<c<<" test3 "<<test3<<" tmpVal "<<tmpVal<<" rvm_val "<<rvm_val<<" mean "<<curMean<<" kappa "<<curKappa<<" \n";
 			}
 		}
 	}
-	
-	
+
+
 	return rvm_val;
 
 } // end rvmdev
