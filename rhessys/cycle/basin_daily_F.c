@@ -45,7 +45,6 @@
 #include <omp.h>
 #include "rhessys.h"
 
-#define THREADS 8
 void	basin_daily_F(
 					  long	day,
 					  struct	world_object	*world,
@@ -106,7 +105,7 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Simulate the hillslopes in this basin for the whole day		*/
 	/*--------------------------------------------------------------*/
-    #pragma omp parallel for num_threads(THREADS)                                                    // schedule(dynamic) num_threads(4)
+    #pragma omp parallel for                                                    // schedule(dynamic) num_threads(4)
     for (int h = 0 ; h < basin[0].num_hillslopes; h ++ ){
 		hillslope_daily_F(	day,
 			world,

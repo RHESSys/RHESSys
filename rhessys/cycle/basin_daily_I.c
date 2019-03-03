@@ -47,7 +47,7 @@
 #include <omp.h>
 #include "rhessys.h"
 #include "phys_constants.h"
-#define THREADS 8
+
 
 void		basin_daily_I(
 						  long	day,
@@ -101,7 +101,7 @@ void		basin_daily_I(
 	/*--------------------------------------------------------------*/
 	/*	Simulate the hillslopes in this basin for the whole day		*/
 	/*--------------------------------------------------------------*/
-    #pragma omp parallel for num_threads(THREADS)
+    #pragma omp parallel for
     for (int hillslope = 0 ; hillslope < basin[0].num_hillslopes; hillslope ++ ){
 		hillslope_daily_I(
 			day,

@@ -25,7 +25,7 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 #include "functions.h"
-#define THREADS 8
+
 
 
 void	canopy_stratum_daily_F(
@@ -1202,7 +1202,7 @@ void	canopy_stratum_daily_F(
 		potential_rainy_evaporation_rate_day = 0.0;
 		potential_rainy_evaporation_rate_night  = 0.0;
 		potential_evaporation_rate_day=0.0;
-		potential_evaporation_rate_night=0.0;	
+		potential_evaporation_rate_night=0.0;
 	}
 
 	if ( command_line[0].verbose_flag > 2  )
@@ -1988,7 +1988,7 @@ void	canopy_stratum_daily_F(
            leaf_year_delay = world[0].defaults[0].beetle[0].leaf_year_delay;
            year_delay = world[0].defaults[0].beetle[0].year_delay;  // this is the snag delay time
             if (julday(clim_event.edate)+365*2.5 < julday(current_date)) {
-//#pragma omp parallel for num_threads(THREADS)
+
        for (inx=0; inx<300; inx=inx+24){ // here 300 is hard coded here, should figure outsome other method.
 
         clim_event2 = stratum[0].snag_sequence.seq[inx];
