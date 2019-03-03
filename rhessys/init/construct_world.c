@@ -343,7 +343,7 @@
 #include <errno.h>
 
 #include "rhessys.h"
-#define THREADS 8
+
 
 struct world_object *construct_world(struct command_line_object *command_line){
 	/*----------------------------------------------------*/
@@ -841,7 +841,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			world[0].base_station_ncheader = construct_netcdf_header(world,
                                                 world[0].base_station_files[0]);
             #ifdef LIU_NETCDF_READER
-            //#pragma omp parallel for num_threads(THREADS)
+            //#pragma omp parallel for
             for (int i = 0; i < world[0].num_base_stations; i++) {
                 //printf("station %d ID:%d\n",i,world[0].base_stations[i]->ID);
                 //fprintf(stderr,"\ni:%d\tstart_year:%d\tx:%lf\ty:%lf\tduration_days:%d\n",

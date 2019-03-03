@@ -24,7 +24,7 @@
 /*--------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
-#define THREADS 8
+
 void update_hillslope_accumulator(
 			struct command_line_object *command_line,
 			struct basin_object *basin){
@@ -35,7 +35,7 @@ void update_hillslope_accumulator(
 	/*--------------------------------------------------------------------------------------*/
 	/* update hillslope accumulator								*/
 	/*--------------------------------------------------------------------------------------*/
-    #pragma omp parallel for num_threads(THREADS)
+    #pragma omp parallel for
     for (int h = 0 ; h < basin[0].num_hillslopes; h++ ){
         struct hillslope_object *hillslope = basin[0].hillslopes[h];
 		hillslope[0].acc_month.length += 1;
@@ -49,7 +49,7 @@ void update_hillslope_accumulator(
 					hillslope[0].acc_month.snowpack += (patch[0].snowpack.water_equivalent_depth) * scale;
 					hillslope[0].acc_month.streamflow += (patch[0].streamflow) * scale;
 					hillslope[0].acc_month.et += (patch[0].transpiration_unsat_zone
-						+ patch[0].evaporation_surf + 
+						+ patch[0].evaporation_surf +
 						patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone +
 						patch[0].transpiration_sat_zone + patch[0].evaporation) * scale;
 					hillslope[0].acc_month.denitrif += patch[0].ndf.denitrif * scale;
@@ -74,8 +74,8 @@ void update_hillslope_accumulator(
 					hillslope[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
 					hillslope[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss * scale;
 					hillslope[0].acc_year.psn += patch[0].net_plant_psn * scale;
-					hillslope[0].acc_year.et += (patch[0].evaporation 
-						+ patch[0].evaporation_surf + 
+					hillslope[0].acc_year.et += (patch[0].evaporation
+						+ patch[0].evaporation_surf +
 						patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone +
 						patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone) * scale;
 					hillslope[0].acc_year.streamflow += (patch[0].streamflow) * scale;
@@ -83,6 +83,6 @@ void update_hillslope_accumulator(
 				}
 			} /* end of patch p  */
 		} /* end of zones z */
-	} /* end of hillslope  */	
+	} /* end of hillslope  */
 	return;
 } /* end of file update_hillslope_accumulator.c */
