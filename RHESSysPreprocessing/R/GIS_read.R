@@ -157,18 +157,18 @@ GIS_read = function(maps_in,type,typepars,map_info) {
       # print(paste("Background 0's converted to NA's"))
 
       # new fix - just set world map(usually basin) 0's to NA, less chance of confusion
-      raster::values(read_stack[[map_info[map_info[,1] == "world",2]]])[raster::values(read_stack[[map_info[map_info[,1] == "world",2]]]) == 0] = NA
+      raster::values(read_stack[[map_info[map_info[,1] == "world",2][[1]]]])[raster::values(read_stack[[map_info[map_info[,1] == "world",2]]]) == 0] = NA
     }
 
     # Mask all maps by world level map -----
     if (exists("map_info")) { # if being run inside RHESSysPreprocess.R will always have map_info - just makes funciton more versitile
-      read_stack = raster::mask(read_stack,read_stack[[map_info[map_info[,1] == "world",2]]])# mask by map used for world level
+      read_stack = raster::mask(read_stack,read_stack[[map_info[map_info[,1] == "world",2][[1]]]])# mask by map used for world level
     }
 
     read_stack = raster::trim(read_stack) #get rid of extra background
 
     # Check for missing data (within world map mask) - no fix, just an error since I think this will break things if left unchecked
-    if (exists("map_info") & sum(is.na(raster::values(read_stack)[!is.na(raster::values(read_stack[[map_info[map_info[,1] == "world",2]]])),
+    if (exists("map_info") & sum(is.na(raster::values(read_stack)[!is.na(raster::values(read_stack[[map_info[map_info[,1] == "world",2][[1]]]])),
                                                                  !colnames(raster::values(read_stack)) %in% map_info[map_info[,1] == "streams",2]])) > 0) {
       # Add in future? - which maps are missing data?
       stop("Missing data within bounds of world level map. Check you input maps.")

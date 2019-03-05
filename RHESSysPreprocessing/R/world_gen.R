@@ -79,7 +79,7 @@ world_gen = function(template,
   # process map data  ----------
   map_df = as.data.frame(read_maps) #make data frame for ease of use
   cellarea = read_maps@grid@cellsize[1] * read_maps@grid@cellsize[2] # get cell area - need for area operator
-  cellarea = rep(cellarea, length(map_df[,6]))
+  cellarea = rep(cellarea, length(map_df[,1]))
 
   # structure to iterate through levels ---- input object with unique ID's for each unit at each level, will iterate through
   w_map = map_info[map_info[,1] == "world",2]

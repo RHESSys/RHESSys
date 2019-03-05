@@ -19,7 +19,11 @@ template_read = function(template){
 
   trim = trimws(read)
   trimlines = trim[trim != ""]
-  head = trimlines[1:(min(which(startsWith(trimlines, "_"))) - 1)]
+  if (min(which(startsWith(trimlines, "_"))) > 1) {
+    head = trimlines[1:(min(which(startsWith(trimlines, "_"))) - 1)]
+  } else {
+    head = "No header"
+  }
   template_clean = strsplit(trimlines,"[ \t]+") # remove whitespaces, split strings by spaces or tabs
 
   var_names = unlist(lapply(template_clean,"[[",1)) #all names of state variables in template
@@ -45,6 +49,9 @@ template_read = function(template){
 
   maps_index = maps_index[!is.na(maps_index)] # index of rows w/ maps
   map_names = sapply(template_clean[maps_index], function(x) x[1])
+  if (is.list(map_names)) {
+    map_names = unlist(map_names)
+  }
   map_info = cbind(c("world","basin","hillslope","zone","patch","strata", map_names),c(unlist(level_maps),maps_all[!is.na(maps_all)]))
   colnames(map_info) = c("MapName","Map")
   #map_info = unique(map_info)
