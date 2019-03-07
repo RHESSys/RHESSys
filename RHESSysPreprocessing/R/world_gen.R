@@ -53,10 +53,10 @@ world_gen = function(template,
   if (!is.null(asprules)) {asp_check = TRUE} else {asp_check = FALSE} # check for aspatial patches
   if (asp_check) { if (!file.exists(asprules) ) {asp_check = FALSE}}
 
-  if (wrapper == FALSE) { # only run if function run alone
-  fpath = ".extra_files" # hidden folder to store files later if needed
-  dir.create(fpath,showWarnings = FALSE)
-  }
+  # if (wrapper == FALSE) { # only run if function run alone
+  # fpath = ".extra_files" # hidden folder to store files later if needed
+  # dir.create(fpath,showWarnings = FALSE)
+  # }
 
   # ---------- Read in template ----------
   template_list = template_read(template)
@@ -113,6 +113,20 @@ world_gen = function(template,
   }
   #if(wrapper == FALSE){f = save(lret, file = paste(fpath,"/lret",sep = ""))}
 
+  # Error checking for basestationID/number error
+  n_basestations_index = which(var_names == "n_basestations")
+  for (i in n_basestations_index) {
+    # if n_basestations is -9999 & if the next line is basestation ID
+    if (template_clean[[i]][3] == -9999 & grepl("base_station_ID", template_clean[[i + 1]][1])) {
+      # removes from list and names vector regardless of if ID is -9999 or not
+      template_clean = template_clean[-(i + 1)]
+      var_names = var_names[-(i + 1)]
+      # shift indices
+      level_index[level_index > (i + 1)] = level_index[level_index > (i + 1)] - 1
+      var_index[var_index > (i + 1)] = var_index[var_index > (i + 1)] - 1
+    }
+  }
+
   # ---------- Build list containing values based on template and maps ----------
   statevars = vector("list",length(template_clean))
 
@@ -126,6 +140,7 @@ world_gen = function(template,
     }
 
     for (s in strata) {
+      # evalueate based on operator at 2nd element
       if (template_clean[[i]][2] == "value") { #use value
         if (suppressWarnings(all(is.na(as.numeric(template_clean[[i]][2 + s]))))) {
           stop(noquote(paste("\"",template_clean[[i]][2 + s],"\" on template line ",i," is not a valid value.",sep = "")))
