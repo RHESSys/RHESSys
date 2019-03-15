@@ -439,7 +439,7 @@ patch_data_analysis <- function(raw_patch_data,
       Landtype = flw_struct$Landtype[i],
       Roadtype = flw_struct$Roadtype[i],
       Neighbors = tp_neighbors,
-      Border_permiter = tp_perimeter,
+      Border_perimeter = tp_perimeter,
       Slopes = tp_perimeter * slope_i,
       TotalG = tp_TotalG,
       Gamma_i = tp_gamma

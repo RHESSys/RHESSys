@@ -7,7 +7,7 @@
 RHESSysPreprocess(template, name, type = "Raster", typepars,
   streams = NULL, overwrite = FALSE, roads = NULL,
   impervious = NULL, roofs = NULL, asprules = NULL, header = FALSE,
-  meta = TRUE, wrapper = TRUE, parallel = TRUE, d4 = FALSE,
+  meta = FALSE, wrapper = TRUE, parallel = TRUE, d4 = FALSE,
   make_stream = 4)
 }
 \arguments{
