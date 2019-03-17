@@ -87,6 +87,7 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].dewpoint_lapse_rate =	getDoubleParam(&paramCnt, &paramPtr, "dewpoint_lapse_rate", "%lf", 0.0015, 1);
 		default_object_list[i].max_effective_lai =	getDoubleParam(&paramCnt, &paramPtr, "max_effective_lai", "%lf", 10.0, 1);
 		default_object_list[i].lapse_rate =		getDoubleParam(&paramCnt, &paramPtr, "lapse_rate", "%lf", 0.0064, 1);
+		printf("The lapse rate is : %lf\n",default_object_list[i].lapse_rate); //NRen calibrate lapse rate
 		default_object_list[i].pptmin =			getDoubleParam(&paramCnt, &paramPtr, "pptmin", "%lf", 0.0254, 1);
 		default_object_list[i].sea_level_clear_sky_trans = getDoubleParam(&paramCnt, &paramPtr, "sea_level_clear_sky_trans", "%lf", 0.75, 1);
 		default_object_list[i].temcf = 			getDoubleParam(&paramCnt, &paramPtr, "temcf", "%lf", 0.4, 1);
