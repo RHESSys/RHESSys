@@ -560,6 +560,8 @@ struct basin_object
         struct  hillslope_object        **hillslopes;
         struct  patch_object            *outside_region;
         struct  stream_list_object      stream_list;
+        struct routing_list_object      *route_list;  //Ning Ren 2019/03/31
+        struct  routing_list_object *surface_route_list; //Ning Ren 2019/03/31
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  snowpack_object snowpack;

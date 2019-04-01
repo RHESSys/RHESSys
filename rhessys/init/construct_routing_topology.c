@@ -38,23 +38,23 @@ struct routing_list_object *construct_routing_topology(
       struct hillslope_object *hillslope,
 		  struct command_line_object *command_line,
 		  bool surface)
-													  
+
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
 	//struct patch_object *find_patch(int, int, int, struct basin_object *);
 	struct patch_object *find_patch_in_hillslope(int, int, struct hillslope_object *);
-	
+
 	int assign_neighbours_in_hillslope (struct neighbour_object *,
 		int,
     struct hillslope_object *,
 		FILE *);
-	
+
 	void *alloc(size_t, char *, char *);
 
 	double * compute_transmissivity_curve( double, struct patch_object *, struct command_line_object *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -67,10 +67,10 @@ struct routing_list_object *construct_routing_topology(
 	struct	patch_object	*patch;
 	struct	patch_object	*stream;
 	struct	innundation_object *innundation_list;
-	
-	
+
+
 	rlist = (struct routing_list_object	*)alloc( sizeof(struct routing_list_object), "rlist", "construct_routing_topology");
-	
+
 	/*--------------------------------------------------------------*/
 	/*  Try to open the routing file in read mode.                    */
 	/*--------------------------------------------------------------*/
@@ -85,7 +85,7 @@ struct routing_list_object *construct_routing_topology(
 	rlist->list = (struct patch_object **)alloc(
 		num_patches * sizeof(struct patch_object *), "patch list",
 		"construct_routing_topography");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in  each patch record and find it		.				*/
 	/*	if it is a stream add it to the basin level routing list	*/
@@ -111,13 +111,13 @@ struct routing_list_object *construct_routing_topology(
     }
 		rlist->list[i] = patch;
 
-		if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))	
+		if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))
 			printf("\n WARNING lateral Ksat (%lf) are close to zero for patch %d",
 				patch[0].soil_defaults[0][0].Ksat_0, patch[0].ID);
-		
+
 		if (patch[0].soil_defaults[0][0].m < ZERO)
 		 	gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0;
-		else	
+		else
 		 	gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
 
 		/*--------------------------------------------------------------*/
@@ -150,9 +150,9 @@ struct routing_list_object *construct_routing_topology(
 			patch[0].drainage_type = drainage_type;
 			if ((patch[0].drainage_type != STREAM)
 					&& (patch[0].innundation_list[d].gamma < ZERO)) {
-				printf(
+				/*printf(
 						"\n non-stream patches with zero gamma %d switched to stream for now",
-						patch[0].ID);
+						patch[0].ID);*/
 				patch[0].drainage_type = STREAM;
 			}
 		}
@@ -164,7 +164,7 @@ struct routing_list_object *construct_routing_topology(
 				sizeof(struct neighbour_object), "neighbours", "construct_routing_topology");
 		num_neighbours = assign_neighbours_in_hillslope(innundation_list->neighbours, num_neighbours, hillslope, routing_file);
 		if ((num_neighbours == -9999) && (patch[0].drainage_type != STREAM)) {
-			printf("\n WARNING sum of patch %d neigh gamma is not equal to 1.0", patch[0].ID); 
+			printf("\n WARNING sum of patch %d neigh gamma is not equal to 1.0", patch[0].ID);
 		} else {
 			innundation_list->num_neighbours = num_neighbours;
 		}
@@ -179,7 +179,7 @@ struct routing_list_object *construct_routing_topology(
 			if ( !surface ) {
 				patch[0].stream_gamma = gamma;
 				patch[0].road_cut_depth = width * tan(patch[0].slope);
-				stream = find_patch_in_hillslope(patch_ID, zone_ID, hillslope); 
+				stream = find_patch_in_hillslope(patch_ID, zone_ID, hillslope);
 				patch[0].next_stream = stream;
 			}
 		}

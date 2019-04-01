@@ -92,7 +92,7 @@ struct basin_object *construct_basin(
 
   struct stream_list_object construct_stream_routing_topology(
       char *,
-      struct basin_object *, 
+      struct basin_object *,
       struct	command_line_object *);
 
 
@@ -133,7 +133,7 @@ struct basin_object *construct_basin(
   basin[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
   basin[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
   basin[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,0);
-  basin[0].basin_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",-9999,0);	
+  basin[0].basin_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",-9999,0);
   basin[0].latitude = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",-9999,0);
   basin[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 
@@ -236,15 +236,15 @@ struct basin_object *construct_basin(
       basin[0].max_slope = basin[0].hillslopes[i][0].slope;
     if (command_line[0].snow_scale_flag == 1) {
       for (z = 0; z < basin[0].hillslopes[i][0].num_zones; z++) {
-        for (j=0; j < basin[0].hillslopes[i][0].zones[z][0].num_patches; j++) { 
+        for (j=0; j < basin[0].hillslopes[i][0].zones[z][0].num_patches; j++) {
           check_snow_scale += basin[0].hillslopes[i][0].zones[z][0].patches[j][0].snow_redist_scale * basin[0].hillslopes[i][0].zones[z][0].patches[j][0].area;
         }
-      }	
+      }
     }
   };
   printf("hillslopes complete\n");
 
-  basin[0].defaults[0][0].n_routing_timesteps = 
+  basin[0].defaults[0][0].n_routing_timesteps =
     (int) (n_routing_timesteps / basin[0].area);
 
   if (basin[0].defaults[0][0].n_routing_timesteps < 1)
@@ -258,9 +258,9 @@ struct basin_object *construct_basin(
       printf("\n Snow rescaling will alter net precip input by this scale factor\n\n");
     }
     if (command_line[0].snow_scale_tol > ZERO) {
-      if ((check_snow_scale > command_line[0].snow_scale_tol) || 
+      if ((check_snow_scale > command_line[0].snow_scale_tol) ||
           (check_snow_scale < 1/command_line[0].snow_scale_tol)) {
-        printf("Basin-wide  average snow scale %lf is outside tolerance %lf", 
+        printf("Basin-wide  average snow scale %lf is outside tolerance %lf",
             check_snow_scale, command_line[0].snow_scale_tol);
         printf("\n Exiting\n");
         exit(EXIT_FAILURE);
@@ -334,12 +334,12 @@ struct basin_object *construct_basin(
           command_line[0].routing_filename
           );
       exit(EXIT_FAILURE);
-    } 
+    }
 
     int num_hillslopes;
     fscanf(routing_file,"%d",&num_hillslopes);
     struct hillslope_object **list = (struct hillslope_object **) alloc(
-        num_hillslopes * sizeof(struct hillslope_object *), 
+        num_hillslopes * sizeof(struct hillslope_object *),
         "hillslope list", //should still be patch list, but rlist needs to be attached to hillslope not the basin
         "construct_basin"
         );
@@ -352,7 +352,7 @@ struct basin_object *construct_basin(
             command_line[0].surface_routing_filename
             );
         exit(EXIT_FAILURE);
-      }   
+      }
     }
 
     // THIS IS WHERE OPENMP WILL PARALLELIZE
@@ -376,16 +376,16 @@ struct basin_object *construct_basin(
                 );
             exit(EXIT_FAILURE);
           }
-        } 
+        }
       }
-    }	
+    }
 
-    // XXX do we need to populate the surface routing objects if the ddn_routing_flag is set? 
+    // XXX do we need to populate the surface routing objects if the ddn_routing_flag is set?
     // right now we're are not populating.
     if( command_line[0].surface_routing_flag == 0 && command_line[0].ddn_routing_flag != 1 ) {
       // we neeed to re-read the regular routing file and use this to create
       // the surface route list
-      
+
       // close and re-open routing file to reset the read counter
       fclose(routing_file);
 
@@ -396,7 +396,7 @@ struct basin_object *construct_basin(
             command_line[0].routing_filename
         );
         exit(EXIT_FAILURE);
-      } 
+      }
 
       fscanf(routing_file,"%d",&num_hillslopes);
 
@@ -404,12 +404,13 @@ struct basin_object *construct_basin(
         fscanf( routing_file, "%d", &hillslope_ID );
         hillslope = find_hillslope_in_basin( hillslope_ID, basin );
         hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true );
-      }	
+      }
     }
   } else { // command_line[0].routing_flag != 1
     // For TOPMODEL mode, make a dummy route list consisting of all patches
     // in the hillslope, in no particular order.
-    hillslope->route_list = construct_topmodel_patchlist(hillslope);
+   // hillslope->route_list = construct_topmodel_patchlist(hillslope);
+   basin->route_list = construct_topmodel_patchlist(basin); //Ning Ren here may be an error..2019/03/31
   }
 
   /*--------------------------------------------------------------*/
@@ -417,13 +418,16 @@ struct basin_object *construct_basin(
   /*--------------------------------------------------------------*/
   if ( command_line[0].stream_routing_flag == 1) {
     basin[0].stream_list = construct_stream_routing_topology( command_line[0].stream_routing_filename, basin, command_line);
-  } else { 
+  } else {
     basin[0].stream_list.stream_network = NULL;
     basin[0].stream_list.streamflow = 0.0;
   }
   printf( "END CONSTRUCT BASIN\n");
 
-  fclose(routing_file);
+  if ( command_line[0].routing_flag == 1 ) {
+        fclose(routing_file); //N Ren 2019/03/31
+   }
+
   if( command_line->surface_routing_flag == 1 ) {
     fclose( surface_routing_file );
   }
