@@ -960,13 +960,13 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	}
 	/* if the beetlespread flag is set */
 
-    world[0].num_beetle_grid_row = 0; //using the fire grid
+    /*world[0].num_beetle_grid_row = 0; //using the fire grid
 	world[0].num_beetle_grid_col = 0;
 	if (command_line[0].beetlespread_flag == 1) {
 		world[0].patch_beetle_grid = construct_patch_beetle_grid(world, command_line,*(world[0].defaults[0].beetle));
 		world[0].beetle_grid = construct_beetle_grid(world);
 
-	}
+	} */ //Ning Ren 2019/04/05 to deactive the beetle grid
 	/*--------------------------------------------------------------*/
 	/*	Close the world_file and header (if necessary)	         	*/
 	/*--------------------------------------------------------------*/
