@@ -125,7 +125,7 @@ void compute_beetle_effects(
 					canopy_strata = patch[0].canopy_strata[patch[0].layers[0].strata[0]];
 					/* track the snag pool sequences NREN 20180630*/
 
-                    printf("\n updating the beetle mortality for inx %d \n", inx);
+                    printf("\n updating the beetle mortality for inx %d \n", inx);// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
 
 					update_beetle_attack_mortality(canopy_strata[0].defaults[0][0].epc,
 						 &(canopy_strata[0].cs),
