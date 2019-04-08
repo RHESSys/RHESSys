@@ -37,7 +37,7 @@ void	output_yearly_basin(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -49,7 +49,9 @@ void	output_yearly_basin(
   int patchCount = 0;
   for( int i = 0; i < basin[0].num_hillslopes; i++ ) {
     struct hillslope_object *hillslope = basin[0].hillslopes[i];
+    if (hillslope->route_list != NULL) { //N REN 2019/04/07 2019/03/31 solve no lateral flow segment default bug
     patchCount += hillslope->route_list->num_patches;
+    }
   }
   if( patchCount == 0 ) patchCount = 1;
   basin[0].acc_year.length /= patchCount;
