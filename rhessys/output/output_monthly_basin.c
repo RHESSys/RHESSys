@@ -37,19 +37,21 @@ void	output_monthly_basin(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	int check;
 	if (basin[0].acc_month.length == 0) basin[0].acc_month.length = 1;
-	
+
 	//if (basin->route_list->num_patches > 0)
 	//	basin[0].acc_month.length /= (basin->route_list->num_patches);
   int patchCount = 0;
   for( int i = 0; i < basin[0].num_hillslopes; i++ ) {
     struct hillslope_object *hillslope = basin[0].hillslopes[i];
+    if (hillslope->route_list != NULL) { //N REN 2019/04/07 2019/03/31 solve no lateral flow segment default bug
     patchCount += hillslope->route_list->num_patches;
+    }
   }
   if( patchCount == 0 ) patchCount = 1;
   basin[0].acc_month.length /= patchCount;
@@ -86,9 +88,9 @@ void	output_monthly_basin(
 	basin[0].acc_month.DOC_loss = 0.0;
 	basin[0].acc_month.DON_loss = 0.0;
 	basin[0].acc_month.denitrif= 0.0;
-	basin[0].acc_month.lai = 0.0; 
-	basin[0].acc_month.nitrif = 0.0; 
-	basin[0].acc_month.mineralized = 0.0; 
-	basin[0].acc_month.uptake = 0.0; 
+	basin[0].acc_month.lai = 0.0;
+	basin[0].acc_month.nitrif = 0.0;
+	basin[0].acc_month.mineralized = 0.0;
+	basin[0].acc_month.uptake = 0.0;
 	return;
 } /*end output_monthly_basin*/

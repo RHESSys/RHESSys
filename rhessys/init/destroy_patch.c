@@ -54,17 +54,17 @@ void destroy_patch(
 	/*--------------------------------------------------------------*/
 	if ( patch[0].num_base_stations > 0 )
 		free( patch[0].base_stations);
-	
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*	destroy the routing list							*/
 	/*--------------------------------------------------------------*/
-	free(patch[0].innundation_list[0].neighbours);
+	free(patch[0].innundation_list[0].neighbours); // there is core dump error too..NREN 2019/04/07
 	free(patch[0].innundation_list);
-	free(patch[0].surface_innundation_list[0].neighbours);	
-	free(patch[0].surface_innundation_list);	
+	free(patch[0].surface_innundation_list[0].neighbours);
+	free(patch[0].surface_innundation_list);
 	free(patch[0].transmissivity_profile);
-	
+
 	free(patch[0].hourly);
 	free(patch[0].layers);
 	/*--------------------------------------------------------------*/
