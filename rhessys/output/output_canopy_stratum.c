@@ -43,7 +43,7 @@ void	output_canopy_stratum( int basinID, int hillID, int zoneID, int patchID,
 	/*------------------------------------------------------*/
 
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d \n",
+		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -82,6 +82,7 @@ void	output_canopy_stratum( int basinID, int hillID, int zoneID, int patchID,
 			stratum[0].surface_heat_flux,
 			stratum[0].epv.height,
 			stratum[0].cover_fraction,
-			stratum[0].defaults[0][0].ID);
+			stratum[0].defaults[0][0].ID,
+			stratum[0].epv.wstress_days);
 	return;
 } /*end output_canopy_stratum*/
