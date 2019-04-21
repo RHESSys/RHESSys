@@ -1,8 +1,7 @@
 # Compiled object files
 *.o
 *.pyc
-rhessys/rhessys6.0
-
+rhessys/rhessys7.0
 
 # Build directories
 objects/
@@ -27,6 +26,10 @@ g2w/grass2world/g2w
 .project
 .cproject
 
+# vscode editor data
+.vscode
+rhessys/.vscode
+
 # OS X extended attribute stores
 .DS_Store
 
@@ -39,4 +42,3 @@ libwmfire.dylib
 libwmfire.so
 
 .Rproj.user
-
