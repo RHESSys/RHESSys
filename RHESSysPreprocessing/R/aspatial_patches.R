@@ -4,6 +4,18 @@
 
 aspatial_patches = function(asprules,asp_mapdata) {
 
+  # some functions
+  # splits a vector up at a specific character
+  splitAt <- function(x, pos) unname(split(x, cumsum(seq_along(x) %in% pos)))
+
+  # same as above but removes the character that it splits at and convets to numeric
+  splitAt2 <- function(x, pos) {
+    f = cumsum(seq_along(x) %in% pos)
+    f[pos] = NA
+    lapply(unname(split(x, f)),as.numeric)
+  }
+
+
   # ---------- Read rules file ----------
   con = file(asprules, open = "r") # commect to file
   readrules = readLines(con) # read file, default reads entire file, line by line
@@ -20,7 +32,7 @@ aspatial_patches = function(asprules,asp_mapdata) {
   patch_ind = c(which(startsWith(rules_in_trim,"_patch")), which(startsWith(rules_in_trim,"_Patch"))) # index patches
   strata_ind = c(which(startsWith(rules_in_trim,"_stratum")), which(startsWith(rules_in_trim,"_canopy_strata"))) # index strata
   rule_split = strsplit(rules_in_trim,"[ \t]+") # split strings at tabs and spaces
-  splitAt <- function(x, pos) unname(split(x, cumsum(seq_along(x) %in% pos)))
+
   id_split = splitAt(rule_split,c(id_ind,patch_ind,strata_ind)) # split rules by IDs, patches, and strata
   rule_list = splitAt(id_split,seq(1,length(id_split),3)) # split again by rule IDs -
   # list structure: top level list -id info (ID and subpatch count),patch,strata. second -statevars and values for each
@@ -80,25 +92,39 @@ aspatial_patches = function(asprules,asp_mapdata) {
           }
           patch_df[var,3:length(patch_df[var,])] = sapply(var_split[2:length(var_split)], "[[", 2)
         }
+
       }
     }
 
     # ----- Strata -----
     strata_var_list = rule_list[[id_tag]][[3]] # get strata vars
-    strata_ct = as.integer(strata_var_list[[1]][2]) # get strata count
+
+    # get strata count(s)
+    num_index = which(suppressWarnings(!is.na(as.numeric(strata_var_list[[1]])))) # positions of numbers
+    if (length(num_index) == subpatch_ct) {
+      strata_ct = as.integer(strata_var_list[[1]][num_index]) # strata counts for each subpatch
+    } else if (length(num_index) == 1) {
+      strata_ct = rep(as.integer(strata_var_list[[1]][2]),subpatch_ct) # one strata count, use for all subpatches
+    }
+
     if (length(strata_var_list) == 1) { # if no vars, just header
       strata_var_list = NULL
     } else {
       strata_var_list = strata_var_list[-which(sapply(strata_var_list, "[[", 1) == "_canopy_strata")]
     }
 
-    strata_df = as.data.frame(matrix(ncol = (strata_ct + 1), nrow = length(strata_var_list))) # data frame for strata
-    names(strata_df) = c("state_var", paste("canopy_strata_",c(1:strata_ct),sep = ""))
-    strata_df$state_var = sapply(strata_var_list, "[[", 1) # add state var names
-    strata_list = replicate(subpatch_ct,strata_df,simplify = FALSE) # num of df = strata
-    names(strata_list) =  paste("patch_",1:subpatch_ct,sep = "") # this has to be done again later since the names get lost in lapply
-
     if (!is.null(strata_var_list)) {
+
+      # make strata list
+      strata_list = replicate(subpatch_ct,data.frame(),simplify = FALSE) # num of df = subpatch count
+      names(strata_list) =  paste("patch_",1:subpatch_ct,sep = "") # this has to be done again later since the names get lost in lapply
+      for (i in 1:subpatch_ct) {
+        strata_df = as.data.frame(matrix(ncol = (strata_ct[i] + 1), nrow = length(strata_var_list))) # data frame for strata
+        names(strata_df) = c("state_var", paste("canopy_strata_",c(1:strata_ct[i]),sep = ""))
+        strata_df$state_var = sapply(strata_var_list, "[[", 1)
+        strata_list[[i]] = strata_df
+      }
+
       for (var in 1:length(strata_var_list)) { # go through strata state vars
 
         if (strata_var_list[[var]][[2]] == "value" | strata_var_list[[var]][[2]] == "dvalue") { # check if second element is equation/modifier
@@ -106,31 +132,47 @@ aspatial_patches = function(asprules,asp_mapdata) {
         } else {
           strata_vars = strata_var_list[[var]][2:length(strata_var_list[[var]])]
         }
+
+        # CHANGE THIS TO USE THE SPLITAT2 VALUES AND COUNT THOSE
         num_index = which(suppressWarnings(!is.na(as.numeric(strata_vars)))) # positions of numbers
-        if (length(num_index) > subpatch_ct * strata_ct) {
-          stop(paste(id_tag,"strata variable",var,"contains more values than (aspatial) patches"))
+
+        if (length(num_index) >  sum(strata_ct)) {
+          stop(paste(id_tag,"strata variable",var,"contains too many values"))
         }
 
-        if (length(num_index) == subpatch_ct * strata_ct) { # if it's the right number of values
-          strata_list = lapply(seq_along(strata_list), FUN = function(x,y) {y[[x]][var,2:length(y[[x]][var,])] = strata_vars[num_index][c(x * 2 - 1, x * 2)] ; return(y[[x]])}, y = strata_list)
-        } else if ((length(num_index) == strata_ct | length(num_index) == 1) & !any(strata_vars == "|")) { # if its the same number of values as strata or just 1 value
-          strata_list = lapply(seq_along(strata_list), FUN = function(x,y) {y[[x]][var,2:length(y[[x]][var,])] = strata_vars[num_index] ; return(y[[x]])}, y = strata_list)
-        } else if (length(num_index) < subpatch_ct * strata_ct) { # messier if using | to denote where to fill in w base template
-          var_split = splitAt(strata_vars, which(strata_vars == "|")) # split the values by |
+        if (length(num_index) == sum(strata_ct)) { # if it's the exact right number of values
+          var_split = splitAt2(strata_vars, which(strata_vars == "|"))
+          strata_list = lapply(seq_along(strata_list), FUN = function(x,y) {y[[x]][var,2:length(y[[x]][var,])] = var_split[[x]]; return(y[[x]])}, y = strata_list)
 
-          if (length(var_split) != subpatch_ct) {stop(paste(id_tag,"strata variable",var,"doesn't have correct number of values or | separators for subpatches"))}
-
-          var_split = lapply(var_split, function(x) {
-            if (x[1] == "|" & length(x) == 1) {x = rep(NA, strata_ct)
-            } else if (x[1] == "|" & length(x) == 2) {x = rep(x[2], strata_ct)
-            } else if (x[1] == "|" & length(x) == 3) {x = x[2:3]
-            }
-            return(x)
-          })
-
-          strata_list = lapply(seq_along(strata_list), FUN = function(x,y) {y[[x]][var,2:length(y[[x]][var,])] = as.numeric(var_split[[x]]) ; return(y[[x]])}, y = strata_list)
-
+        } else if (length(num_index) != sum(strata_ct)) { # if it's NOT the right number of values - repeat values as needed
+          var_split = splitAt2(strata_vars, which(strata_vars == "|"))
+          strata_list = lapply(seq_along(strata_list), FUN = function(x,y) {
+            if (length(var_split[[x]]) < strata_ct[x] & length(var_split[[x]]) == 1) {var_split[[x]] = rep(var_split[[x]],strata_ct[x])}
+            y[[x]][var,2:length(y[[x]][var,])] = var_split[[x]]
+            return(y[[x]])
+          }
+          , y = strata_list)
         }
+
+        # else if ((length(num_index) == strata_ct | length(num_index) == 1) & !any(strata_vars == "|")) { # if its the same number of values as strata or just 1 value
+        #   strata_list = lapply(seq_along(strata_list), FUN = function(x,y) {y[[x]][var,2:length(y[[x]][var,])] = strata_vars[num_index] ; return(y[[x]])}, y = strata_list)
+        #
+        # } else if (length(num_index) < subpatch_ct * strata_ct) { # messier if using | to denote where to fill in w base template
+        #   var_split = splitAt(strata_vars, which(strata_vars == "|")) # split the values by |
+        #
+        #   if (length(var_split) != subpatch_ct) {stop(paste(id_tag,"strata variable",var,"doesn't have correct number of values or | separators for subpatches"))}
+        #
+        #   var_split = lapply(var_split, function(x) {
+        #     if (x[1] == "|" & length(x) == 1) {x = rep(NA, strata_ct)
+        #     } else if (x[1] == "|" & length(x) == 2) {x = rep(x[2], strata_ct)
+        #     } else if (x[1] == "|" & length(x) == 3) {x = x[2:3]
+        #     }
+        #     return(x)
+        #   })
+        #
+        #   strata_list = lapply(seq_along(strata_list), FUN = function(x,y) {y[[x]][var,2:length(y[[x]][var,])] = as.numeric(var_split[[x]]) ; return(y[[x]])}, y = strata_list)
+        #
+        # }
 
         # for (s in 1:subpatch_ct) { # for each (sub)patch
         #   # ----- Parsing -----

@@ -4,13 +4,14 @@
 \alias{CreateFlownet}
 \title{CreateFlownet}
 \usage{
-CreateFlownet(name, readin = NULL, type = "raster", typepars = NULL,
-  asp_list = NULL, streams = NULL, overwrite = FALSE, roads = NULL,
-  road_width = NULL, impervious = NULL, roofs = NULL,
-  wrapper = FALSE, parallel = TRUE, make_stream = 4, d4 = FALSE)
+CreateFlownet(flownet_name, readin = NULL, type = "raster",
+  typepars = NULL, asp_list = NULL, streams = NULL,
+  overwrite = FALSE, roads = NULL, road_width = NULL,
+  impervious = NULL, roofs = NULL, wrapper = FALSE,
+  parallel = TRUE, make_stream = 4, d4 = FALSE)
 }
 \arguments{
-\item{name}{The name of the flow network file to be created.  Will be coerced to have ".flow" extension if not already present.}
+\item{flownet_name}{The name of the flow network file to be created.  Will be coerced to have ".flow" extension if not already present.}
 
 \item{readin}{readin indicates which maps to be used. If CreateFlowmet.R is run it's own, this should point to the template. Otherwise,
 if run inside of RHESSysPreprocess, readin will use the map data from world_gen.R, Streams map, and other optional maps, still need to
@@ -48,7 +49,7 @@ Setting to TRUE will include patches at any distance. This is needed for hillslo
 neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.}
 }
 \description{
-Creates the flow network used by RHESSys
+Creates the flow networkd table used by RHESSys
 }
 \author{
 Will Burke

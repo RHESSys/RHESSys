@@ -87,7 +87,7 @@ GIS_read = function(maps_in,type,typepars,map_info) {
     for (name in maps_in) {
       file = list.files(path = typepars, pattern = paste("^",name,"$",sep = ""),full.names = TRUE)
       if (length(file) == 0) { # if no files match name in template, try with exensions
-        file = list.files(path = typepars, pattern = paste("^",name,".",sep = ""),full.names = TRUE)
+        file = list.files(path = typepars, pattern = paste("^",name,"\\.",sep = ""),full.names = TRUE)
       }
       if (length(file) == 0) { # if there were no matches
         stop(paste("No file named:",name,"at path:",typepars))

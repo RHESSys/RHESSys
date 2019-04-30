@@ -1,6 +1,6 @@
 RHESSys Preprocessing
 Will Burke 2/15/18
-Updated 1/14/19
+Updated 4/20/19
 
 -----Compatibility-----
 Developed originally using R Version 3.4.0. May be incompatible with older R versions
@@ -41,16 +41,14 @@ Prerequisites:
 1) Method 1: All-in-one
 	- Open the set-up/example run script "run_RHESSysPreprocess.R"
 	- Follow the instructions included in the script
-	- Script will the RHESSysPreprocess.R, and produce a worldfile and flowtable.
+	- Script will run the RHESSysPreprocess.R function, and produce a worldfile and flowtable.
 2) Method 2: run separately
 	2a) Create worldfile
-		- Open the set-up/example script "run_world_gen.R"
-		- Follow the commented directions to run world_gen.R
-		- Script will produce a worldfile.  Additionally, a hidden folder ".extra_files" will be produced to store files needed for CreateFlownet.R
+		- Look at R help for the world_gen function (via:"help(world_gen)") and follow directions to run world_gen.R
+		- Function will produce a worldfile, as well as output a list (in R) for potential use in CreateFlownet.
 	2b) Create flowtable
-		- Open the set-up/example script "run_CreateFlownet.R" 
-		- Follow the commented instructions to rune CreateFlownet.R
-		- Script will produce a flowtable
+		- Look at R help for the CreateFlownet function (via:"help(CreateFlownet)") and follow directions to run CreateFlownet.R
+		- Function will produce a flowtable
 
 -----Parallelization-----
 To run the hillslope parallelized version of RHESSys (develop branch - Dec, 2018), you must have a hillslope parallelized flowtable.
@@ -73,4 +71,4 @@ Convert from existing:
 Additional information on each function can be found in the R documentation by using help(RHESSysPreprocess), help(world_gen), help(CreateFlownet) etc.
 Additional information can also be found on the RHESSys Github wiki page https://github.com/RHESSys/RHESSys/wiki
 
-If you encounter bugs, let me know wburke@bren.ucsb.edu
+If you encounter bugs, let me know wburke@bren.ucsb.edu, or add an issue on the develop branch of RHESSys on Github

@@ -5,8 +5,8 @@
 \title{World Gen}
 \usage{
 world_gen(template, worldfile, type = "Raster", typepars,
-  overwrite = FALSE, header = FALSE, asprules = NULL,
-  wrapper = FALSE)
+  overwrite = FALSE, header = FALSE, unique_strata_ID = TRUE,
+  asprules = NULL, wrapper = FALSE)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
@@ -36,7 +36,7 @@ Generates world files for use in RHESSys based on input template and maps,
 currently includes functionality for GRASS GIS and raster data, and works on both unix and windows. 1/23/18.
 }
 \seealso{
-\code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
+\code{\link{raster}}
 }
 \author{
 Will Burke

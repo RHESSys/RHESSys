@@ -133,7 +133,8 @@ struct patch_object *construct_patch(
 	if (command_line[0].firespread_flag == 1) {
 	//	fscanf(world_file,"%d",&(fire_default_object_ID));
 	//	read_record(world_file, record);
-	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_default_object_ID", "%d", -9999,0);
+//	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_default_object_ID", "%d", -9999,0);
+	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID", "%d", -9999,0);
 		}
 
 	if (command_line[0].surface_energy_flag == 1) {

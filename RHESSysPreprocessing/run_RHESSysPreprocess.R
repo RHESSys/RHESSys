@@ -1,5 +1,6 @@
 # run_RHESSysPreprocess
 # Will Burke 3/5/18
+# Last updated 4/20/19
 
 # Instructions
 # ------------
@@ -10,7 +11,8 @@
 # 4) The funciton will produce:
 #       - worldfile
 #       - flowtable
-#       - metadata (if not supressed)
+#       - optionally: header
+#       (metadata output is being worked on currently)
 
 # Load Package
 # ------------
@@ -26,11 +28,11 @@ setwd("~/Documents/MyProject")
 
 # Spatial Data
 # ------------
-# You will need to select your method of geospatial data input.  This is the means by which the spatial data referenced in your template
+# You will need to select your method of geospatial data input.  This is the means by which the spatial data referenced in your template.
 
-# Currently there are a two supported methods:
+# Currently there are a two methods:
 # 1) Raster - spatial data in any raster format supported by R GDAL will be read in from a folder.
-# 2) GRASS GIS - GRASS 6 or 7, spatial data will be imported from the specified GRASS location and mapset.
+# 2) < NO LONGER BEING ACTIVELY SUPPORTED> GRASS GIS > - GRASS 6 or 7, spatial data will be imported from the specified GRASS location and mapset.
 
 # NOTES:
 # - Due to a variety of factors, spatial data import via the raster method is both more robust and faster.
@@ -44,28 +46,6 @@ setwd("~/Documents/MyProject")
 type = "raster"
 # 2) Set typepars to the path of the folder containing your rasters
 typepars = "spatial_data"
-
-# GRASS GIS
-# ---------
-# To import sptial data using GRASS GIS:
-# 1) Set type to "GRASS". GRASS 6.x amd GRASS 7.x are supported. Setting type to "GRASS" will autodetect your version.
-# Alternatively, you can set it to "GRASS6" or "GRASS7" explicitly.
-# type = "GRASS"
-# 2) Set typepars to your GRASS GIS environment. The five environment variables are listed below:
-# -- gisbase is the location of GRASS GIS on your system, typically:
-# gisbase = "/Applications/GRASS-6.4.app/Contents/MacOS"
-# For windows sysstems this will be something like: "D:\\Program Files\\GRASS GIS 6.4.4"
-# -- Home is the directory where a gisrc file will be created. This can be any directory and shouldn't matter.
-# home = "~/Documents"
-# -- gisdb is the location of your GRASS GIS database - it ie the folder that contains your GRASS GIS projects
-# gisdb = "~/Documents/mygrassgisprojects"
-# -- Location is the name of your GRASS GIS location of interest. It will be inside of your gisdb folder.
-# location = "MyLocation"
-# Lastly, indicate your mapset in your GRASS GIS location.  By default this is "PERMANENT" but you may have made additional mapsets.
-# mapset = "PERMANENT"
-
-# These GIS environment variables are combined into a vector.
-# typepars = c(gisbase,home,gisdb,location,mapset)
 
 
 # Template
