@@ -118,6 +118,7 @@ double	compute_N_leached(int verbose_flag,
 		else {
 			navail = total_nitrate * (z2-z1)/z2_N;
 		}
+		if (navail > total_nitrate) navail=total_nitrate;
 		nabsorbed=compute_N_absorbed(verbose_flag,
 						z1,
 						z2,
@@ -170,6 +171,7 @@ double	compute_N_leached(int verbose_flag,
 				navail = total_nitrate * (z2-z1)/(z2_N -  septic_depth);
 		}
 	
+		if (navail > total_nitrate) navail=total_nitrate;
 				
 	/*------------------------------------------------------*/
 	/* N-leached is mass flux of soluble nitrate	*/
