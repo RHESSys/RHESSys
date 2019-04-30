@@ -127,6 +127,7 @@ struct	daily_clim_object *construct_daily_clim(
 	daily_clim[0].ndep_NH4 = NULL;
 	daily_clim[0].lapse_rate_tmax = NULL;
 	daily_clim[0].lapse_rate_tmin = NULL;
+	daily_clim[0].lapse_rate_tavg = NULL;
 	daily_clim[0].lapse_rate_precip = NULL;
 	
 	/*--------------------------------------------------------------*/
@@ -306,6 +307,13 @@ struct	daily_clim_object *construct_daily_clim(
 			strcpy(file_name, file_prefix);
 			daily_clim[0].lapse_rate_tmin = construct_clim_sequence(
 				(char *)strcat(file_name,".lapse_rate_tmin"),
+				start_date,
+				duration, clim_repeat_flag);
+		}
+		else if ( strcmp(sequence_name,"lapse_rate_tavg") == 0 ){
+			strcpy(file_name, file_prefix);
+			daily_clim[0].lapse_rate_tavg = construct_clim_sequence(
+				(char *)strcat(file_name,".lapse_rate_tavg"),
 				start_date,
 				duration, clim_repeat_flag);
 		}
