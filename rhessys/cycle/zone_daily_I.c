@@ -310,7 +310,7 @@ void zone_daily_I(
 			zone[0].metv.tmax += command_line[0].tmax_add;
 			zone[0].metv.tmin += command_line[0].tmin_add;
 			}
-        i++;                                          
+        i++;
 	} /*end while*/
 	/*--------------------------------------------------------------*/
 	/*	Check if we filled in all of the critical parameters.		*/
@@ -521,8 +521,8 @@ void zone_daily_I(
 	/* but warn user of problem with their climate inputs		*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].Delta_T < -ZERO) {
-		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d, for basestation %d", 
-			current_date.day, current_date.month, current_date.year, zone[0].base_stations[0][0].ID); 
+		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d, for basestation %d",
+			current_date.day, current_date.month, current_date.year, zone[0].base_stations[0][0].ID);
 		zone[0].Delta_T = zone[0].Delta_T * -1.0;
 	}
 	/*--------------------------------------------------------------*/
@@ -669,8 +669,8 @@ void zone_daily_I(
 	if ( world[0].num_extra_stations==1 && world[0].extra_stations[0][0].daily_clim[0].CO2 !=NULL) {
         temp = world[0].extra_stations[0][0].daily_clim[0].CO2[day];
         if (temp != -999.0) zone[0].CO2 = temp;
-         //printf(" \n the read in value is %lf , the index is %d\n", temp, day);
-       //  printf("\n the current zone is %d\n, the current date is %4d %4d %4d %4d \n ", zone[0].ID, current_date.year, current_date.month, current_date.day, current_date.hour);
+         printf(" \n the read in value is %lf , the index is %d\n", temp, day);
+       printf("\n the current zone is %d\n, the current date is %4d %4d %4d %4d \n ", zone[0].ID, current_date.year, current_date.month, current_date.day, current_date.hour);
 
 	}
 
