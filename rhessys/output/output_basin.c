@@ -186,6 +186,10 @@ void	output_basin(			int routing_flag,
 				apcpassim += patch[0].precip_with_assim * patch[0].area;
 				asat_deficit_z += patch[0].sat_deficit_z * patch[0].area;
 				asat_deficit += patch[0].sat_deficit * patch[0].area;
+				// debug if the sat_deficit is NaN
+				if (isnan(patch[0].sat_deficit)==1) {
+				printf("warning, the patchID %ld have NaN sat_deficit\n", patch[0].ID);
+				}
 				arecharge += patch[0].recharge * patch[0].area;
 				arz_storage += patch[0].rz_storage * patch[0].area;
 				aunsat_storage += patch[0].unsat_storage * patch[0].area;
@@ -231,6 +235,9 @@ void	output_basin(			int routing_flag,
 						astreamflow += patch[0].streamflow*patch[0].area;
 						areturn_flow += patch[0].return_flow * patch[0].area;
 						abase_flow += patch[0].base_flow * patch[0].area;
+                     if (isnan(patch[0].base_flow)==1) {
+				printf("warning, the patchID %ld have NaN baseflow\n", patch[0].ID);
+				 }
 				}
 				else {
 						/* for Topmodel version compute only return flow and later added to streamflow */
