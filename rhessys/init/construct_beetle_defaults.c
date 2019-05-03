@@ -104,10 +104,12 @@ struct spinup_default *construct_beetle_defaults(
 		        printf("leaf_year_delay: %d\n",default_object_list[i].leaf_year_delay);
                 default_object_list[i].leaf_half_life = getDoubleParam(&paramCnt, &paramPtr, "leaf_half_life", "%lf", 2, 1); // the default delay year is 2
 		        printf("leaf_half_life: %d\n",default_object_list[i].leaf_half_life);
-		        default_object_list[i].calc_single_attack= getDoubleParam(&paramCnt, &paramPtr, "calc_single_attack", "%lf", 0, 1); // the default delay year is 2
+		        default_object_list[i].calc_single_attack= getDoubleParam(&paramCnt, &paramPtr, "calc_single_attack", "%lf", 0, 1); // the default is not calculate single attack
 		        printf("calculate single attack: %d\n",default_object_list[i].calc_single_attack);
 		        default_object_list[i].min_abc= getDoubleParam(&paramCnt, &paramPtr, "min_abc", "%lf", 1000, 1); // the min carbon kg/m2 each patch have that attack happens
-		        printf("the minimum carbon (kg/2) in the patch that an attack will happen : %d\n",default_object_list[i].min_abc);
+		        printf("the minimum carbon (kg/2) in the patch that an attack will happen : %lf\n",default_object_list[i].min_abc);
+		        default_object_list[i].mortality_type = getIntParam(&paramCnt, &paramPtr, "mortality_type", "%d", 1, 1);
+		        printf("the mortality type is: %d\n", default_object_list[i].mortality_type);
 
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */

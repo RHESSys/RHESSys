@@ -735,12 +735,15 @@ void		patch_daily_F(
                         }
                     }
                 int min_abc = world[0].defaults[0].beetle[0].min_abc;
+
+                if (world[0].defaults[0].beetle[0].mortality_type ==1) {//type 1 is beetle type 2 is fire NR 2019/04/30
 				printf("\n Implementing beetle attack effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
 				compute_beetle_effects(
 					patch,
 					inx, // to remember current index
 					min_abc, // the minimum above carbon needs for attack
 					attack_mortality);
+					}
 
 			}
 			//printf("\n the carbon in snag pool %lf and the in the red needle pool %lf, the inx is %d", patch[0].snag_sequence.seq[inx].Cvalue, patch[0].redneedle_sequence.seq[inx].Cvalue,inx);
@@ -748,6 +751,20 @@ void		patch_daily_F(
 
 	}
 
+    /* --------------------------------------------------------------*/
+    /* calculate the single prescribed fire By NR 20190430*/
+    /*---------------------------------------------------------------*/
+    if (command_line[0].beetlespread_flag==1 && world[0].defaults[0].beetle[0].mortality_type==2 && current_date.year ==world[0].defaults[0].beetle[0].year_attack && current_date.month==8 && current_date.day==15){
+
+                printf("\n Implementing prescribed fire effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
+                attack_mortality = world[0].defaults[0].beetle[0].attack_mortality;
+                compute_fire_effects(
+                    patch,
+                    attack_mortality
+
+                );
+
+    }
 
 
 	/*--------------------------------------------------------------*/
@@ -2176,7 +2193,7 @@ void		patch_daily_F(
 		(patch[0].fire_defaults[0][0].ndays_average + 1);
 
 		}
-	
+
 
 
 	patch[0].soil_cs.totalc = ((patch[0].soil_cs.soil1c)
