@@ -732,7 +732,8 @@ struct  daily_clim_object
         double  *lapse_rate_precip;               /*      m / m           */
         double  *lapse_rate_tmin;               /*      degrees C / m           */
         double  *lapse_rate_tmax;               /*      degrees C / m           */
-        double  *dewpoint;                      /*      degrees C       */
+        double  *lapse_rate_tavg;               /*      degrees C / m           */
+	double  *dewpoint;                      /*      degrees C       */
         double  *Kdown_diffuse;                 /* kJ/(m2*day)  */
         double  *Kdown_direct;                  /* kJ/(m2*day) */
         double  *LAI_scalar;                    /* unitless     */
@@ -937,7 +938,8 @@ struct  zone_default
         double  lapse_rate_precip_default;              /* k by m       */      
         double  lapse_rate_tmin;                /* Celcius degrees/m    */      
         double  lapse_rate_tmax;                /* Celcius degrees/m    */      
-        double  max_effective_lai;      /* m^2/m^2      */
+        double  lapse_rate_tavg;                /* Celcius degrees/m    */      
+	double  max_effective_lai;      /* m^2/m^2      */
         double  pptmin;                 /*      m       */
         double  sea_level_clear_sky_trans;      /* 0-1  */
         double  temcf;                  /*      DIM     */
