@@ -22,7 +22,6 @@
 #' @author Will Burke
 #' @export
 
-# -------------------- Function Start --------------------
 world_gen = function(template,
                      worldfile,
                      type = 'Raster',
@@ -77,7 +76,12 @@ world_gen = function(template,
   read_maps = GIS_read(maps_in,type,typepars,map_info)
 
   # process map data
-  map_df = as.data.frame(read_maps) #make data frame for ease of use
+  if (length(read_maps@data[,1]) == 1){
+    map_df = as.data.frame(read_maps@data) # works for 1 patch world
+  } else {
+    map_df = as.data.frame(read_maps) #make data frame for ease of use
+  }
+
   cell_len = read_maps@grid@cellsize[1] # cell length for output
   cellarea = read_maps@grid@cellsize[1] * read_maps@grid@cellsize[2] # get cell area - need for area operator
   cellarea = rep(cellarea, length(map_df[,1]))
@@ -93,7 +97,6 @@ world_gen = function(template,
   levels = unname(data.matrix(map_df[c(w_map,b_map,h_map,z_map,p_map,s_map)], length(map_df[p_map]) ))
 
   # -------------------- Aspatial Patch Processing --------------------
-  # NAs itnroduced from old code, check in future
   rulevars = NULL
   if (asp_check) {
     asp_map = template_clean[[which(var_names == "asp_rule")]][3] # get rule map/value
@@ -166,7 +169,12 @@ world_gen = function(template,
   statevars = vector("list",length(template_clean))
 
   for (i in var_index) {
-    level_agg = as.list(data.frame(levels[, 1:sum(i > level_index)]))
+    #level_agg = as.list(data.frame(levels[, 1:sum(i > level_index)]))
+    if (nrow(levels) == 1) {
+      level_agg = unname(split(levels[,i > level_index],f = seq_along(levels[,i > level_index])))
+    } else {
+      level_agg = as.list(data.frame(levels[,i > level_index]))
+    }
 
     if (i > level_index[6]) {
       strata = 1:template_clean[[level_index[6]]][3] # for stratum level of template
@@ -335,7 +343,7 @@ world_gen = function(template,
                 }
                 if (varname == "area") { # variable is area, adjust for pct_family_area
                   var = var * as.numeric(rulevars[[ruleid]]$patch_level_vars[rulevars[[ruleid]]$patch_level_vars[,1] == "pct_family_area",asp + 1])
-                  }
+                }
                 writeChar(paste("\t\t\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
               }
 

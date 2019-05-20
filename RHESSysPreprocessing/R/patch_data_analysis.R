@@ -24,7 +24,11 @@ patch_data_analysis <- function(raw_patch_data,
 
   # -------------------- Error checking and NULL handling --------------------
   if (cell_length <= 0) {stop("Cell length is <=0")}
-  if (is.null(raw_road_data)) {raw_road_data = matrix(0,ncol = ncol(raw_patch_data),nrow = nrow(raw_patch_data))}
+  if (is.null(raw_road_data) & length(raw_patch_data) != 1) {
+    raw_road_data = matrix(0,ncol = ncol(raw_patch_data),nrow = nrow(raw_patch_data))
+  } else if (is.null(raw_road_data) & length(raw_patch_data) == 1) {
+    raw_road_data = 0
+  }
   if (is.null(road_width)) {road_width = 0}
 
   # area_conv = cell_length*cell_length   #meters^2 per patch (need actual number)
@@ -50,6 +54,7 @@ patch_data_analysis <- function(raw_patch_data,
   # ----- Conversion and formatting -----
   patch_data = unique_patch # unique patch IDs
   patch_data[is.na(patch_data)] <- 0 #replace NAs w 0
+  patch_data = as.matrix(patch_data)
   patch_elevation_data = raw_patch_elevation_data
   patch_elevation_data[is.na(patch_elevation_data)] = 0   #Replace NA's with 0
   patch_slope_data = raw_slope_data
@@ -389,15 +394,13 @@ patch_data_analysis <- function(raw_patch_data,
   }
   close(pb)
 
-
-  # ----- IF SOMEONE IS USING 1 PATCH WORLD PLEASE TEST/SORT THIS SECTION OUT -----
-  # Naomi, I think you added this in for 1 patch worlds, but I don't know which list you meant to reference here,
-  # maybe you meant to put this after the loop through the lst, and check if lst has length=1, ie 1 patch?
-  # Commented out for now since list_length doesn't exist - Will
-  # if (list_length == 1) {
-  #     slope_i <- 0;
-  #     tp_TotalG <- flw_struct$Area[i]
-  # }
+  # -------------------- Single Patch World --------------------
+  # If there's only 1 patch, build list manually and return
+  if (length(raw_patch_data) == 1) {
+    lst[[1]]$Slopes = 0
+    lst[[1]]$TotalG = flw_struct$Area
+    return(lst)
+  }
 
   # -------------------- Pit filling --------------------
   lst = fix_all_pits(lst,flw_struct,parallel)
