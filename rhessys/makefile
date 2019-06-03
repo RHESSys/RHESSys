@@ -1,4 +1,4 @@
-VERSION = 7.1
+VERSION = 7
 PGM  = rhessys$(VERSION)
 CC = gcc
 #CXX = g++
@@ -90,6 +90,7 @@ $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
 $(OBJ)/compute_fire_effects.o \
 $(OBJ)/compute_beetle_effects.o \
+$(OBJ)/climate_grid_interpolation.o \
 $(OBJ)/compute_growingseason_index.o \
 $(OBJ)/compute_layer_field_capacity.o \
 $(OBJ)/compute_froot_litfall.o \
@@ -321,6 +322,7 @@ $(OBJ)/update_rooting_depth.o \
 $(OBJ)/update_septic.o \
 $(OBJ)/update_shadow_strata.o \
 $(OBJ)/update_soil_moisture.o \
+$(OBJ)/UTM.o \
 $(OBJ)/valid_option.o \
 $(OBJ)/wateryearday.o \
 $(OBJ)/world_daily_F.o \
@@ -674,6 +676,10 @@ $(OBJ)/find_patch.o: util/find_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch.c -o $(OBJ)/find_patch.o
 $(OBJ)/key_compare.o: util/key_compare.c
 	$(CC) -c $(CFLAGS) -I include util/key_compare.c -o $(OBJ)/key_compare.o
+$(OBJ)/UTM.o: init/UTM.c
+	$(CC) -c $(CFLAGS) -I include init/UTM.c -o $(OBJ)/UTM.o
+$(OBJ)/climate_grid_interpolation.o: init/climate_grid_interpolation.c
+	$(CC) -c $(CFLAGS) -I include init/climate_grid_interpolation.c -o $(OBJ)/climate_grid_interpolation.o
 $(OBJ)/construct_canopy_strata.o: init/construct_canopy_strata.c
 	$(CC) -c $(CFLAGS) -I include init/construct_canopy_strata.c -o $(OBJ)/construct_canopy_strata.o
 $(OBJ)/destroy_world.o: init/destroy_world.c
