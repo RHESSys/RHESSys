@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rhessys.h"
+#include "UTM.h"  //NREN 2019.5.31
 
 struct base_station_object *construct_netcdf_grid (
 #ifdef LIU_NETCDF_READER
@@ -95,15 +96,26 @@ struct base_station_object *construct_netcdf_grid (
         struct	date first_date;
 
         char	first[MAXSTR];		//I use first & second for the while loop that reads the first base station file
-        char	second[MAXSTR];	
+        char	second[MAXSTR];
         double	eff_lai;
         double	screen_height;
         char	buffer[MAXSTR*100];
         char	buffertmax[MAXSTR*100];
         char	buffertmin[MAXSTR*100];
         char	bufferrain[MAXSTR*100];
-        char *lat_name = "lat";       
-        char *lon_name = "lon";    
+        char *lat_name = "lat";
+        char *lon_name = "lon";
+        //T.N Temporalily add threshold for tmax and tmin to check for errors in input data
+        //TO DO: put these into one of the def files or one extra input files
+        double max_tmax;
+        double min_tmin;  //N.R 2019/05/30
+
+        //For WA, the threshold are below
+        //http://www.ncdc.noaa.gov/extremes/scec/records
+        max_tmax = 50;
+        min_tmin = -50;
+
+
 
         FILE*	base_station_file;
 
@@ -145,7 +157,7 @@ struct base_station_object *construct_netcdf_grid (
 
         /*--------------------------------------------------------------*/
         /* Allocate daily clim structures and clim seqs					*/
-        /*--------------------------------------------------------------*/	
+        /*--------------------------------------------------------------*/
 
         /* For each daily clim structure allocate clim seqs for all required & optional clims */
         base_station[0].daily_clim = (struct daily_clim_object *)
@@ -182,7 +194,7 @@ struct base_station_object *construct_netcdf_grid (
         base_station[0].daily_clim[0].Ldown = NULL;
         base_station[0].daily_clim[0].PAR_diffuse = NULL;
         base_station[0].daily_clim[0].PAR_direct = NULL;
-        base_station[0].daily_clim[0].daytime_rain_duration = NULL; 
+        base_station[0].daily_clim[0].daytime_rain_duration = NULL;
         base_station[0].daily_clim[0].snow = NULL;
         base_station[0].daily_clim[0].tdewpoint = NULL;
         base_station[0].daily_clim[0].tday = NULL;
@@ -196,19 +208,40 @@ struct base_station_object *construct_netcdf_grid (
 
         /*Check if any flags are set in the optional clim sequence struct*/
         if ( daily_flags.daytime_rain_duration == 1 ) {
-                base_station[0].daily_clim[0].daytime_rain_duration = (double *) 
+                base_station[0].daily_clim[0].daytime_rain_duration = (double *)
                         alloc(duration->day * sizeof(double),"day_rain_dur", "construct_netcdf_grid");
 
         }
+
+        /*-------------------------------------------------------------*/
+        /* convert the WGS84 lon and lat to UTM           N.R.2019531  */
+        /*-------------------------------------------------------------*/
+        int utm_zone;
+        float x_utm;
+        float y_utm;
+        float lat;
+        float lon;
+        int return_value;
+
+        lat = base_station[0].lat;
+        lon = base_station[0].lon;
+        utm_zone = 12; //TODO: put this in zone_Def infiles for future
+
+         return_value= LatLonToUTMXY(lat, lon, utm_zone, &x_utm, &y_utm);
+         printf(" the x and y are %f, %f \n",x_utm, y_utm);
+         base_station[0].proj_x = (double)x_utm;
+         base_station[0].proj_y = (double)y_utm;
+
+
         /*--------------------------------------------------------------*/
         /*	Allocate the yearly clim object.								*/
         /*--------------------------------------------------------------*/
         base_station[0].yearly_clim = (struct yearly_clim_object *)
                 alloc(1*sizeof(struct yearly_clim_object), "yearly_clim", "construct_netcdf_grid" );
         /*	Initialize non-critical sequences							*/
-        base_station[0].yearly_clim[0].temp = NULL;		
+        base_station[0].yearly_clim[0].temp = NULL;
         /*--------------------------------------------------------------*/
-        /*	Allocate the monthly clim object.							*/	
+        /*	Allocate the monthly clim object.							*/
         /*--------------------------------------------------------------*/
         base_station[0].monthly_clim = (struct monthly_clim_object *)
                 alloc(1*sizeof(struct monthly_clim_object), "monthly_clim", "construct_netcdf_grid" );
@@ -229,7 +262,7 @@ struct base_station_object *construct_netcdf_grid (
                         base_station_ncheader[0].year_start,
                         base_station_ncheader[0].leap_year);
 
-        //if( command_line[0].clim_repeat_flag ) { 
+        //if( command_line[0].clim_repeat_flag ) {
                 tempdata = (float *) alloc(duration->day * sizeof(float),"tempdata","construct_netcdf_grid");
         //}
         /* printf("net_y:%f net_x:%f\n",base_station[0].net_y,base_station[0].net_x);
@@ -299,6 +332,13 @@ struct base_station_object *construct_netcdf_grid (
                         base_station[0].daily_clim[0].tmin[j] =  (double)tempdata[j];
                 } else if (var == CLM_RAIN) {
                     base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult;
+
+                    //T.N Jul 2017: warning for NA precip values
+                    //Adopted by N.R. 2019/05/30
+                    if ((base_station[0].daily_clim[0].rain[j] < 0.0))
+                    {
+                        printf("WARNING: day:%d precip:% <0 \n", j, base_station[0].daily_clim[0].rain[j]);
+                    }
                 }
 #ifdef LIU_EXTEND_CLIM_VAR
                 else if (var == CLM_HUSS) {
@@ -341,6 +381,72 @@ struct base_station_object *construct_netcdf_grid (
            }
 #endif */
 
+        /*T.N Jul 2017: Check for abnormal values in tmin tmax */
+        /*adopted from TN. by N.R. 2019/05/30             */
+        for (j=0; j<duration->day;j++){
+
+            if ((base_station[0].daily_clim[0].tmin[j] < min_tmin) || (base_station[0].daily_clim[0].tmin[j] > max_tmax))
+            {
+                printf("WARNING: day:%d tmin: %f smaller than tmin & bigger than tmax thresholds for ID %f\n", j, base_station[0].daily_clim[0].tmin[j],  min_tmin);
+                if ( j==0 || j==duration->day) // if first day or last day
+                {
+                    base_station[0].daily_clim[0].tmin[j] = min_tmin;
+                    printf("Tmin after fixing 1 (tmin) : %f \n", base_station[0].daily_clim[0].tmin[j]);
+
+                }
+                else  //do interpolation between the previous day and the next day
+                {
+                    if (base_station[0].daily_clim[0].tmin[j+1] > min_tmin) // if the next day doesn't have error
+                    {
+                        base_station[0].daily_clim[0].tmin[j] = 0.5* (base_station[0].daily_clim[0].tmin[j+1] + base_station[0].daily_clim[0].tmin[j-1]);
+                        printf("Tmin after fixing 2 (interpolation): %f \n", base_station[0].daily_clim[0].tmin[j]);
+
+                    }
+                    else
+                    {
+                        base_station[0].daily_clim[0].tmin[j] = base_station[0].daily_clim[0].tmin[j-1];
+                        printf("Tmin after fixing 3 (using previous non NA values): %f \n", base_station[0].daily_clim[0].tmin[j]);
+
+                    }
+
+
+                }
+
+            }
+
+            // check the abnormal values in tmax
+            if ((base_station[0].daily_clim[0].tmax[j] > max_tmax) || (base_station[0].daily_clim[0].tmax[j] < min_tmin))
+            {
+                printf("WARNING: day:%d tmax:%f bigger than tmax & smaller than tmin thresholds for WA %f\n", j, base_station[0].daily_clim[0].tmax[j], max_tmax);
+                if (j==0 || j==duration->day)  // if the first day or last day
+                {
+                    base_station[0].daily_clim[0].tmax[j] = max_tmax;
+                    printf(" Tmax after fixing 1 (tmax WA): %f \n", base_station[0].daily_clim[0].tmax[j]);
+                }
+                else  //do interpolation between the previous day & the next day
+
+                {
+                    if (base_station[0].daily_clim[0].tmax[j+1] < max_tmax)  // if the next day doesn't have error
+                    {
+                        base_station[0].daily_clim[0].tmax[j] = 0.5*(base_station[0].daily_clim[0].tmax[j+1] + base_station[0].daily_clim[0].tmax[j-1]);
+                        printf("Tmax after fixing 2 (interpolation): %f \n", base_station[0].daily_clim[0].tmax[j]);
+                    }
+                    else
+                    {
+                        base_station[0].daily_clim[0].tmax[j] = base_station[0].daily_clim[0].tmax[j-1];
+                        printf("Tmax after fixing 3 (previous non NA value): %f \n", base_station[0].daily_clim[0].tmax[j]);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+
 
         /* ------------------ ELEV ------------------ */
         if (base_station_ncheader[0].elevflag == 0) {
@@ -370,7 +476,7 @@ struct base_station_object *construct_netcdf_grid (
         }
 
 
-        //if( command_line[0].clim_repeat_flag ) { 
+        //if( command_line[0].clim_repeat_flag ) {
                 free(tempdata);
         //}
         /*printf("\n      Construct netcdf cell: END ID=%d x=%lf y=%lf lai=%lf i=%d",

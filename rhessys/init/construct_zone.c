@@ -35,7 +35,7 @@
 /*																*/
 /*	Original code, January 16, 1996.							*/
 /*																*/
-/*	 															*/ 
+/*	 															*/
 /* May 15, 1997		C.Tague					*/
 /*	- C assumes radians so slope and aspect must 		*/
 /*	be converted from degrees				*/
@@ -51,6 +51,8 @@
 #include <math.h>
 #include "rhessys.h"
 #include "params.h"
+#include <omp.h>
+#include "UTM.h"  //N.R 2019/05/31
 
 struct zone_object *construct_zone(
 								   struct	command_line_object	*command_line,
@@ -68,7 +70,7 @@ struct zone_object *construct_zone(
 		int ,
 		int ,
 		struct base_station_object **);
-	
+
 	struct	base_station_object *assign_base_station_xy(
 		float ,
 		float ,
@@ -83,7 +85,7 @@ struct zone_object *construct_zone(
         ,const int
         #endif
                 );
-	
+
 	struct patch_object *construct_patch(
 		struct command_line_object *,
 		FILE	*,
@@ -92,7 +94,7 @@ struct zone_object *construct_zone(
 		int     num_world_extra_base_stations,
 		struct base_station_object  **extra_base_stations,  //NREN 20180711
 		struct	default_object	*defaults);
-	
+
 	struct base_station_object *construct_netcdf_grid(
         #ifdef LIU_NETCDF_READER
         struct base_station_object *,
@@ -105,12 +107,15 @@ struct zone_object *construct_zone(
 		float,
         struct date*,
         struct date*);
-	
+
 	int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
-	
+
+    // convert lat lon to UTM, input are lat lon zone,&x &y, update x, y, and return zone
+	int LatLonToUTMXY(float, float, int, float *, float *); //LatlonToUTM NR 20190531
+
 	void	*alloc(size_t, char *, char *);
 	double	atm_pres( double );
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*	Local variable definition.									*/
@@ -119,17 +124,17 @@ struct zone_object *construct_zone(
 	int		i, k, j;
 	int		notfound;
     int     basestation_id;
-	float   base_x, base_y;	
+	float   base_x, base_y;
 	char	record[MAXSTR];
 	struct	zone_object *zone;
 	int paramCnt=0;
 	param *paramPtr=NULL;
-	
+
 	notfound = 0;
 	base_x = 0.0;
 	base_y = 0.0;
 	j = 0;
-	k = 0;	
+	k = 0;
 
 
 	/*--------------------------------------------------------------*/
@@ -141,7 +146,7 @@ struct zone_object *construct_zone(
 	/*	Read in the next zone record for this hillslope.			*/
 	/*--------------------------------------------------------------*/
 
-	paramPtr=readtag_worldfile(&paramCnt,world_file,"Zone");
+	paramPtr=readtag_worldfile(&paramCnt,world_file,"Zone"); //so paramCnt store all the worldfile information
 
 	zone[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"zone_ID","%d",-9999,0);
 	zone[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0,1);
@@ -154,7 +159,7 @@ struct zone_object *construct_zone(
 	zone[0].precip_lapse_rate = getDoubleWorldfile(&paramCnt,&paramPtr,"precip_lapse_rate","%lf",1.0,1);
 	zone[0].e_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",-9999,0);
 	zone[0].w_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",-9999,0);
-	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);	
+	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 	/*--------------------------------------------------------------*/
 	/*	convert from degrees to radians for slope and aspects 	*/
 	/*--------------------------------------------------------------*/
@@ -203,11 +208,11 @@ struct zone_object *construct_zone(
 		}
 	} /* end-while */
 	zone[0].defaults[0] = &defaults[0].zone[i];
-	
+
 	if ( command_line[0].verbose_flag == -3 ){
 		printf("\nConstructing zone base stations %d", zone[0].ID);
-	}	
-	
+	}
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of base stations for this zone.          */
 	/*--------------------------------------------------------------*/
@@ -266,13 +271,13 @@ struct zone_object *construct_zone(
 
 #ifndef FIND_STATION_BASED_ON_ID
 			/* Identify centerpoint coords for closest netcdf cell to zone x, y */
-			k = get_netcdf_xy(base_station_ncheader[0].netcdf_tmax_filename, 
+			k = get_netcdf_xy(base_station_ncheader[0].netcdf_tmax_filename,
 							  base_station_ncheader[0].netcdf_y_varname,
 							  base_station_ncheader[0].netcdf_x_varname,
                               (float)zone[0].y,
                               (float)zone[0].x,
                               base_station_ncheader[0].resolution_meter,
-							  &(base_y), 
+							  &(base_y),
 							  &(base_x));
 			if ( command_line[0].verbose_flag == -3 ){
 				printf("\n   CLOSEST CELL: y=%lf x=%lf num=%d",base_y,base_x,*num_world_base_stations);
@@ -315,9 +320,9 @@ struct zone_object *construct_zone(
 						   *num_world_base_stations);
 				}
 				j = *num_world_base_stations;
-				world_base_stations[j] = construct_netcdf_grid( 
+				world_base_stations[j] = construct_netcdf_grid(
                                  command_line,
-															   base_station_ncheader,  
+															   base_station_ncheader,
 															   num_world_base_stations,
 															   base_x,
 															   base_y,
@@ -338,7 +343,7 @@ struct zone_object *construct_zone(
 				}
 				/* Now link the zone to the newly added base station */
 				zone[0].base_stations[0] = world_base_stations[j];
-				
+
 				if ( command_line[0].verbose_flag == -3 ){
 					printf("\n   Zone base station: lai=%lf tmin=%lf tmax=%lf rain=%lf",
 						   (*(zone[0].base_stations[0])).effective_lai,
@@ -350,11 +355,11 @@ struct zone_object *construct_zone(
             #endif
 		}
 	}
-	
+
 	if ( command_line[0].verbose_flag == -3 ){
 		printf("\n   Ending zone base station: num=%d worldnum=%d",*num_world_base_stations,world[0].num_base_stations);
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in number of patches in this zone.						*/
 	/*--------------------------------------------------------------*/
@@ -363,7 +368,7 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Allocate list of pointers to patch objects .				*/
   /*--------------------------------------------------------------*/
-  zone[0].patches = (struct patch_object ** ) 
+  zone[0].patches = (struct patch_object ** )
 		alloc( zone[0].num_patches * sizeof( struct patch_object *),
 		"patches","construct_zone");
 	/*--------------------------------------------------------------*/
@@ -378,10 +383,13 @@ struct zone_object *construct_zone(
 	zone[0].metv.tmin_ravg = 3.0;
 	zone[0].metv.vpd_ravg = 900;
 	zone[0].metv.dayl_ravg = 38000;
+
+
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the intervals in this zone.						*/
 	/*--------------------------------------------------------------*/
-	if (command_line[0].gridded_netcdf_flag==1 && world[0].num_extra_stations==1)
+	if (command_line[0].gridded_netcdf_flag==1 && world[0].num_extra_stations==1) // add condition to read the extra beetle attack time series 20180711
 	{
 	for ( i=0 ; i<zone[0].num_patches ; i++ ){
 		zone[0].patches[i] = construct_patch(
@@ -411,9 +419,177 @@ struct zone_object *construct_zone(
 	} /*end for*/
 
 	} // end else
+
+    /*--------------------------------------------------------------*/
+	/* interpolate climate data by N.R 2019/05/30                   */
+	/* only conduct interpolation when it netcdf and zone def.grid_ */
+	/* interpolation is true                                        */
+	/*--------------------------------------------------------------*/
+    // first readin the zone new utm coordiate system
+    if (command_line[0].gridded_netcdf_flag==1 && zone[0].defaults[0][0].grid_interpolation ==1)
+    {
+
+    zone[0].x_utm = zone[0].patches[0][0].x;
+    zone[0].y_utm = zone[0].patches[0][0].y;
+    zone[0].z_utm = zone[0].patches[0][0].z;
+
+    //using another method to read the record of patch information
+    // using the UTM system to search closing grid center normally seach 8 neribours and using inverse distance method
+    // basestation_x_proj and y_proj is the utm coordinate system center for that basestation, all information is in world_base_stations[0][0]
+    // *num_world_base_stations
+    // first calcuate the resolution of the grid for both x direction and y direction
+    int search_x =0;
+    int search_y =0;
+
+    if (*num_world_base_stations <=1) {
+        printf("\n WARNING only one or no basestation, no need to interpolation \n");
+        search_x=0;
+        search_y=0;
+    }
+    else {
+        search_x = zone[0].defaults[0][0].search_x - zone[0].defaults[0][0].res_patch;
+        search_y = zone[0].defaults[0][0].search_y - zone[0].defaults[0][0].res_patch;
+
+    }
+
+    // now started search the neigbour grids x <= search_x y<= search_y
+
+    int count =0;
+    struct base_station_object *station_search; // this is single station
+    struct base_station_object	**station_found;
+    double distance[*num_world_base_stations];
+    double diff_elevation[*num_world_base_stations];
+    double weight[*num_world_base_stations];
+    double sum_weight =0; //weighting factor for inverse distance method
+
+    double rain_temp =0;
+    double tmax_temp =0;
+    double tmin_temp =0;
+    double Tlapse_adjustment1 = 0;
+    double Tlapse_adjustment2 = 0;
+    int length;
+    int day;
+
+    double max_tmax = 50;
+    double min_tmin = -50; //TODO, put into the zone.def sfiles for WA ID from http://www.ncdc.noaa.gov/extremes/scec/records
+
+    station_found = (struct base_station_object **) alloc( *num_world_base_stations *
+        sizeof(struct base_station_object), "base_station", "construct_zone");
+
+    for (i=0; i< *num_world_base_stations; i++) {
+
+    station_search = world_base_stations[i];
+    if ( abs(station_search[0].proj_x -zone[0].x_utm) <= search_x && abs(station_search[0].proj_y -zone[0].y_utm) <= search_y)
+        {
+            //find =1;
+            count = count +1;
+            station_found[count] = station_search;
+            // due to the inverse distance method going to use square of distance so here no need to do square root
+            distance[count] =  (zone[0].x_utm - station_search[0].proj_x) * (zone[0].x_utm - station_search[0].proj_x) + (zone[0].y_utm - station_search[0].proj_y) * (zone[0].y_utm - station_search[0].proj_y);
+            diff_elevation[count] = zone[0].z_utm - station_search[0].z;
+
+            if (command_line[0].verbose_flag == -3) {
+            printf("\n there are %d neibourge stations, ID is %d \n", count, station_found[count][0].ID);
+            }
+        }
+
+    }
+
+    // after find these stations, caluate the sum of weight and final weight for each stations
+
+    if (count >1) {
+        for (j=0; j < count; j++) {
+
+            if (distance[count] <= 0 ) {
+                zone[0].base_stations[0] = station_found[count];
+                sum_weight =0;
+            }
+            else {
+            weight[count] = 1/distance[count];
+            sum_weight = sum_weight + weight[count]; //simple inverse distance method, not considering the direction and slope effect
+
+                }
+        }
+
+        // now interpolation climate data only interploate the precipitation, m
+
+        length = world[0].duration.day;
+        // TODO put this as an equation, and using openmp
+
+       if (sum_weight>0) {
+           // printf("\n started interpolation climate data \n");
+            for (day = 0; day<length; day++)
+                {
+                    rain_temp=0;
+                    tmax_temp=0;
+                    tmin_temp=0;
+                    #pragma omp parallel for
+                    for (j =0; j< count; j++) {
+                    //precip, check crazy values too.
+                    rain_temp = rain_temp + station_found[count][0].daily_clim[0].rain[day] * weight[count]/sum_weight;
+
+                    if (command_line[0].verbose_flag == -3) {
+                    printf("\n the ratio for station %d is %lf \n", j, weight[count]/sum_weight);
+                    }
+                    //Tmax
+                    Tlapse_adjustment1 = diff_elevation[count]*zone[0].defaults[0][0].lapse_rate_tmax; // adjust the temperature based on elevation
+                    tmax_temp = tmax_temp + (station_found[count][0].daily_clim[0].tmax[day]) * weight[count]/sum_weight;
+
+                    //Tmin
+                    Tlapse_adjustment2 = diff_elevation[count]*zone[0].defaults[0][0].lapse_rate_tmin; // adjst the min temperature based on elevation
+                    tmin_temp = tmin_temp + (station_found[count][0].daily_clim[0].tmin[day]) * weight[count]/sum_weight;
+
+                    } // end for count
+
+                    //rain
+                    if (rain_temp <0.0)
+                    {
+                            printf("\n WARNING, the interpolated rain %lf is smaller than 0 for day :%d \n", rain_temp, day);
+                    }
+
+                    if (command_line[0].verbose_flag == -3) {
+                    printf("\n rain differences between interpolated value and original value is %lf \n", (rain_temp -zone[0].base_stations[0][0].daily_clim[0].rain[day]));
+                    }
+                    //assign value
+                    zone[0].base_stations[0][0].daily_clim[0].rain[day] = rain_temp;
+                    //tmax
+                    if (tmax_temp > max_tmax || tmax_temp < min_tmin)
+                    {
+                            printf("\n WARNING, the interpolated tmax %lf is out of range (-50, 50) for day :%d, lapse adjustment is %lf, elevation difference is %lf, \n", tmax_temp, day, Tlapse_adjustment1, diff_elevation[0] );
+
+                    }
+
+                    if (command_line[0].verbose_flag == -3) {
+                    printf("\n tmax differences between interpolated value and original value is %lf \n", (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
+                    }
+                    //assign value
+                    zone[0].base_stations[0][0].daily_clim[0].tmax[day] = tmax_temp;
+                    //tmin
+                     if (tmin_temp > max_tmax || tmin_temp < min_tmin)
+                    {
+                            printf("\n WARNING, the interpolated tmin %lf is out of range (-50, 50) for day :%d, lapse adjustment is %lf, elevation difference is %lf, \n", tmin_temp, day, Tlapse_adjustment2, diff_elevation[0] );
+                    }
+                    if (command_line[0].verbose_flag == -3) {
+                    printf("\n tmin differences between interpolated value and original value is %lf \n", (tmin_temp -zone[0].base_stations[0][0].daily_clim[0].tmin[day]));
+                    }
+                    //assign value
+                    zone[0].base_stations[0][0].daily_clim[0].tmin[day] = tmin_temp;
+
+
+                }
+        }
+    }
+    else {
+        printf("\n WARNING: no neigbour station found, using the climate grid data where the patch is located \n");
+    }
+
+    }// end of if do interpolation
+	if(paramPtr!=NULL)
 	  free(paramPtr);
 
-	
+
+
+
 	return(zone);
 } /*end construct_zone.c*/
 

@@ -995,6 +995,12 @@ struct  zone_default
         double  psen[7];
         double  ravg_days; /* (days) number of days for running average */
         struct  zone_grow_default       *grow_defaults;
+        //N.R 2019/06/01 add the searching distance for climate data interpolation
+        double search_x;                                /* meters */
+        double search_y;                                /* meters */
+        double res_patch;                               /* meters */
+        int    grid_interpolation                       /* 0/1    */ // 0 no interpolation of grid climate data
+
         };
 
 /*----------------------------------------------------------*/
@@ -1028,6 +1034,11 @@ struct zone_object
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
         double  z;                                      /* meters       */
+        //add utm x, y, z, N.R. 2019/06/01
+        double x_utm;                                   /*meters        */
+        double y_utm;                                   /*meters        */
+        double z_utm;                                   /*meters        */
+
         double  area;                                   /*      m2      */
         double  aspect;                                 /* degrees      */
         double  atm_trans;                                  /* 0 - 1    */

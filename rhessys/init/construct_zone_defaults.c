@@ -134,6 +134,15 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].psen[P2HIGH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p2high", "%lf", 0.0, 1);
 		default_object_list[i].ravg_days= 		getDoubleParam(&paramCnt, &paramPtr, "ravg_days", "%lf", 6.0, 1);
 
+        /*--------------------------------------------------------------*/
+        /* read in the searching distance and grid cell resolution      */
+        /* this is for interpolation of climate data N.R. 2019/06/01    */
+        /*--------------------------------------------------------------*/
+
+        default_object_list[i].search_x = getDoubleParam(&paramCnt, &paramPtr, "search_x", "%lf", 3376.0, 1); // the default value is for DayMet data which has grid around 4km by 4km
+        default_object_list[i].search_y = getDoubleParam(&paramCnt, &paramPtr, "search_y", "%lf", 4638.0, 1);
+        default_object_list[i].res_patch = getDoubleParam(&paramCnt, &paramPtr, "patch_res", "%lf", 100, 1);
+        default_object_list[i].grid_interpolation = getIntParam(&paramCnt, &paramPtr, "grid_interpolation", "%d", 1,1); //defualt is to do interpolation
 
 		/*--------------------------------------------------------------*/
 		/* read any optional (tagged) defaults here			*/
