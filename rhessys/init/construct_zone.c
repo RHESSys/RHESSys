@@ -465,6 +465,11 @@ struct zone_object *construct_zone(
     double rain_temp =0;
     double tmax_temp =0;
     double tmin_temp =0;
+    double rain_old = 0;
+    double tmax_old = 0;
+    double tmin_old = 0;
+
+
     double Tlapse_adjustment1 = 0;
     double Tlapse_adjustment2 = 0;
     int length;
@@ -563,6 +568,7 @@ struct zone_object *construct_zone(
                     printf("\n tmax differences between interpolated value and original value is %lf \n", (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
                     }
                     //assign value
+                    tmax_old = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
                     zone[0].base_stations[0][0].daily_clim[0].tmax[day] = tmax_temp;
                     //tmin
                      if (tmin_temp > max_tmax || tmin_temp < min_tmin)
@@ -573,8 +579,14 @@ struct zone_object *construct_zone(
                     printf("\n tmin differences between interpolated value and original value is %lf \n", (tmin_temp -zone[0].base_stations[0][0].daily_clim[0].tmin[day]));
                     }
                     //assign value
+                    tmin_old = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
                     zone[0].base_stations[0][0].daily_clim[0].tmin[day] = tmin_temp;
 
+                    if (tmax_temp < tmin_temp) {
+                    printf("\n WARNING: tmax is smaller than tmin after interpolation, tmax_inter %lf, tmin_inter is %lf, tmax_old %lf, tmin_old %lf, ID %d, num_neiboughors %d",
+                    tmax_temp, tmin_temp, tmax_old, tmin_old, zone[0].ID, count);
+
+                    }
 
                 }
         }
