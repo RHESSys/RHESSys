@@ -510,7 +510,7 @@ struct zone_object *construct_zone(
     sum_weight =0;
         for (j=1; j <= count; j++) {
 
-            if (distance[count] > zone[0].defaults[0][0].res_patch ) {
+            if (distance[j] > zone[0].defaults[0][0].res_patch ) {
 
 
             sum_weight = sum_weight + weight[j]; //simple inverse distance method, not considering the direction and slope effect
@@ -522,7 +522,7 @@ struct zone_object *construct_zone(
 
         for (j=1; j <= count; j++) {
 
-            if (distance[count] <= zone[0].defaults[0][0].res_patch ) {
+            if (distance[j] <= zone[0].defaults[0][0].res_patch ) {
 
 
             sum_weight = 0; //simple inverse distance method, not considering the direction and slope effect
@@ -537,6 +537,7 @@ struct zone_object *construct_zone(
 
        if (sum_weight>0) {
            // printf("\n started interpolation climate data \n");
+          // printf("\n the ratio for zone ID %d is %lf \n", zone[0].ID, weight[1]/sum_weight);
             for (day = 0; day<length; day++)
                 {
                     rain_temp=0;
@@ -545,18 +546,18 @@ struct zone_object *construct_zone(
 
                     for (j =1; j<=count; j++) {
                     //precip, check crazy values too.
-                    rain_temp = rain_temp + station_found[count][0].daily_clim[0].rain[day] * weight[j]/sum_weight;
+                    rain_temp = rain_temp + station_found[j][0].daily_clim[0].rain[day] * weight[j]/sum_weight;
 
                     if (command_line[0].verbose_flag == -3) {
                     printf("\n the ratio for station %d is %lf \n", j, weight[j]/sum_weight);
                     }
                     //Tmax
-                    Tlapse_adjustment1 = diff_elevation[count]*zone[0].defaults[0][0].lapse_rate_tmax; // adjust the temperature based on elevation
-                    tmax_temp = tmax_temp + (station_found[count][0].daily_clim[0].tmax[day]) * weight[j]/sum_weight;
+                    Tlapse_adjustment1 = diff_elevation[j]*zone[0].defaults[0][0].lapse_rate_tmax; // adjust the temperature based on elevation
+                    tmax_temp = tmax_temp + (station_found[j][0].daily_clim[0].tmax[day]) * weight[j]/sum_weight;
 
                     //Tmin
-                    Tlapse_adjustment2 = diff_elevation[count]*zone[0].defaults[0][0].lapse_rate_tmin; // adjst the min temperature based on elevation
-                    tmin_temp = tmin_temp + (station_found[count][0].daily_clim[0].tmin[day]) * weight[j]/sum_weight;
+                    Tlapse_adjustment2 = diff_elevation[j]*zone[0].defaults[0][0].lapse_rate_tmin; // adjst the min temperature based on elevation
+                    tmin_temp = tmin_temp + (station_found[j][0].daily_clim[0].tmin[day]) * weight[j]/sum_weight;
 
                     } // end for count
 
