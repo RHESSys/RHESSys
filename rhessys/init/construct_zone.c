@@ -456,7 +456,7 @@ struct zone_object *construct_zone(
     int count =0;
     struct base_station_object *station_search; // this is single station
     struct base_station_object	**station_found;
-    double distance[*num_world_base_stations];
+    double distance[*num_world_base_stations];;
     double diff_elevation[*num_world_base_stations];
     double weight[*num_world_base_stations];
     double sum_weight =0; //weighting factor for inverse distance method
@@ -483,18 +483,23 @@ struct zone_object *construct_zone(
     for (i=0; i< *num_world_base_stations; i++) {
 
     station_search = world_base_stations[i];
+
     if ( abs(station_search[0].proj_x -zone[0].x_utm) <= search_x && abs(station_search[0].proj_y -zone[0].y_utm) <= search_y)
         {
             //find =1;
-            count = count +1;
+              count++;
             station_found[count] = station_search;
             // due to the inverse distance method going to use square of distance so here no need to do square root
-            distance[count] =  (zone[0].x_utm - station_search[0].proj_x) * (zone[0].x_utm - station_search[0].proj_x) + (zone[0].y_utm - station_search[0].proj_y) * (zone[0].y_utm - station_search[0].proj_y);
+            distance[count]= ((zone[0].x_utm - station_search[0].proj_x) * (zone[0].x_utm - station_search[0].proj_x) + (zone[0].y_utm - station_search[0].proj_y) * (zone[0].y_utm - station_search[0].proj_y))/zone[0].defaults[0][0].res_patch/zone[0].defaults[0][0].res_patch;
+            if (distance[count] > 0) {
+            weight[count] = 1/distance[count];
+            }
             diff_elevation[count] = zone[0].z_utm - station_search[0].z;
 
             if (command_line[0].verbose_flag == -3) {
             printf("\n there are %d neibourge stations, ID is %d \n", count, station_found[count][0].ID);
             }
+
         }
 
     }
@@ -502,15 +507,25 @@ struct zone_object *construct_zone(
     // after find these stations, caluate the sum of weight and final weight for each stations
 
     if (count >1) {
-        for (j=0; j < count; j++) {
+    sum_weight =0;
+        for (j=1; j <= count; j++) {
 
-            if (distance[count] <= 0 ) {
-                zone[0].base_stations[0] = station_found[count];
-                sum_weight =0;
-            }
-            else {
-            weight[count] = 1/distance[count];
-            sum_weight = sum_weight + weight[count]; //simple inverse distance method, not considering the direction and slope effect
+            if (distance[count] > zone[0].defaults[0][0].res_patch ) {
+
+
+            sum_weight = sum_weight + weight[j]; //simple inverse distance method, not considering the direction and slope effect
+
+                }
+        }
+
+        // if one patch is very close the centre of basestation
+
+        for (j=1; j <= count; j++) {
+
+            if (distance[count] <= zone[0].defaults[0][0].res_patch ) {
+
+
+            sum_weight = 0; //simple inverse distance method, not considering the direction and slope effect
 
                 }
         }
@@ -528,20 +543,20 @@ struct zone_object *construct_zone(
                     tmax_temp=0;
                     tmin_temp=0;
 
-                    for (j =0; j< count; j++) {
+                    for (j =1; j<=count; j++) {
                     //precip, check crazy values too.
-                    rain_temp = rain_temp + station_found[count][0].daily_clim[0].rain[day] * weight[count]/sum_weight;
+                    rain_temp = rain_temp + station_found[count][0].daily_clim[0].rain[day] * weight[j]/sum_weight;
 
                     if (command_line[0].verbose_flag == -3) {
-                    printf("\n the ratio for station %d is %lf \n", j, weight[count]/sum_weight);
+                    printf("\n the ratio for station %d is %lf \n", j, weight[j]/sum_weight);
                     }
                     //Tmax
                     Tlapse_adjustment1 = diff_elevation[count]*zone[0].defaults[0][0].lapse_rate_tmax; // adjust the temperature based on elevation
-                    tmax_temp = tmax_temp + (station_found[count][0].daily_clim[0].tmax[day]) * weight[count]/sum_weight;
+                    tmax_temp = tmax_temp + (station_found[count][0].daily_clim[0].tmax[day]) * weight[j]/sum_weight;
 
                     //Tmin
                     Tlapse_adjustment2 = diff_elevation[count]*zone[0].defaults[0][0].lapse_rate_tmin; // adjst the min temperature based on elevation
-                    tmin_temp = tmin_temp + (station_found[count][0].daily_clim[0].tmin[day]) * weight[count]/sum_weight;
+                    tmin_temp = tmin_temp + (station_found[count][0].daily_clim[0].tmin[day]) * weight[j]/sum_weight;
 
                     } // end for count
 
