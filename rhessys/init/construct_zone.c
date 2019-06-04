@@ -51,7 +51,6 @@
 #include <math.h>
 #include "rhessys.h"
 #include "params.h"
-#include <omp.h>
 #include "UTM.h"  //N.R 2019/05/31
 
 struct zone_object *construct_zone(
@@ -528,7 +527,7 @@ struct zone_object *construct_zone(
                     rain_temp=0;
                     tmax_temp=0;
                     tmin_temp=0;
-                    #pragma omp parallel for
+
                     for (j =0; j< count; j++) {
                     //precip, check crazy values too.
                     rain_temp = rain_temp + station_found[count][0].daily_clim[0].rain[day] * weight[count]/sum_weight;
