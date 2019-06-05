@@ -16,7 +16,7 @@ rhessys/init/*.bak
 rhessys/cn/*.bak
 rhessys/tec/*.bak
 *.swo
-
+./defs/*.txt
  
 auxdata/DemGrid.txt
 auxdata/patchGrid.txt
