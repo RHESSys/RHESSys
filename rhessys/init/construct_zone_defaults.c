@@ -122,9 +122,13 @@ struct zone_default *construct_zone_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].wind_direction = getDoubleParam(&paramCnt, &paramPtr, "wind_direction", "%lf", 180.0, 1); // parameter name is "wind" in param file
 		default_object_list[i].lapse_rate_tmin = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmax", "%lf", default_object_list[i].lapse_rate, 1);
+		printf("The lapse rate tmin : %lf\n",default_object_list[i].lapse_rate_tmin);
 		default_object_list[i].lapse_rate_tmax = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmin", "%lf", default_object_list[i].lapse_rate, 1);
+		printf("The lapse rate tmax is : %lf\n",default_object_list[i].lapse_rate_tmax);
 		default_object_list[i].wet_lapse_rate = 	getDoubleParam(&paramCnt, &paramPtr, "wet_lapse_rate", "%lf", 0.0049, 1);
+		printf("The wet lapse rate is : %lf\n",default_object_list[i].wet_lapse_rate);
 		default_object_list[i].lapse_rate_precip_default = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_precip_default", "%lf", -999.0, 1);
+		printf("The lapse rate precipitation default is : %lf\n",default_object_list[i].lapse_rate_precip_default);
 		default_object_list[i].psen[PTHRESH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.pthresh", "%lf", 0.0, 1);
 		default_object_list[i].psen[PTYPELOW] = 	getDoubleParam(&paramCnt, &paramPtr, "psen.ptypelow", "%lf", 1.0, 1);
 		default_object_list[i].psen[P1LOW] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p1low", "%lf", 0.0, 1);
