@@ -454,12 +454,15 @@ struct zone_object *construct_zone(
     // now started search the neigbour grids x <= search_x y<= search_y
 
     int count =0;
-    struct base_station_object *station_search; // this is single station
-    struct base_station_object	**station_found;
+    //struct base_station_object *station_search; // this is single station
+    //struct base_station_object	**station_found;
     double distance[*num_world_base_stations];;
     double diff_elevation[*num_world_base_stations];
     double weight[*num_world_base_stations];
     double sum_weight =0; //weighting factor for inverse distance method
+
+    struct base_station_object *station_search; // this is single station
+    struct base_station_object	**station_found;
 
     double rain_temp =0;
     double tmax_temp =0;
@@ -498,7 +501,7 @@ struct zone_object *construct_zone(
             diff_elevation[count] = zone[0].z_utm - station_search[0].z;
 
             if (command_line[0].verbose_flag == -3) {
-            printf("\n there are %d neibourge stations, ID is %d \n", count, station_found[count][0].ID);
+            printf("\n there are %d neibourge stations, ID is %d, distance is %lf, weight is %lf\n", count, station_found[count][0].ID, distance[count], weight[count]);
             }
 
         }
@@ -508,9 +511,10 @@ struct zone_object *construct_zone(
     // after find these stations, caluate the sum of weight and final weight for each stations
 
     if (count >1) {
-    sum_weight =0;
+        sum_weight = 0;
+
         for (j=1; j <= count; j++) {
-            if (distance[j] > zone[0].defaults[0][0].res_patch ) {
+            if (distance[j] > 1.0 ) { // when calculate distance I using res to normalize the distance
             sum_weight = sum_weight + weight[j]; //simple inverse distance method, not considering the direction and slope effect
                 }
         }
@@ -518,7 +522,7 @@ struct zone_object *construct_zone(
         // if one patch is very close the centre of basestation
 
         for (j=1; j <= count; j++) {
-            if (distance[j] <= zone[0].defaults[0][0].res_patch ) {
+            if (distance[j] <= 1.0 ) {
             sum_weight = 0; //simple inverse distance method, not considering the direction and slope effect
                 }
         }
@@ -528,7 +532,7 @@ struct zone_object *construct_zone(
         length = world[0].duration.day;
         // TODO put this as an equation, and using openmp
 
-       if (sum_weight>0) {
+       if (sum_weight > 1e-6) {
            // printf("\n started interpolation climate data \n");
           // printf("\n the ratio for zone ID %d is %lf \n", zone[0].ID, weight[1]/sum_weight);
             for (day = 0; day<length; day++)
@@ -536,11 +540,15 @@ struct zone_object *construct_zone(
                     rain_temp=0;
                     tmax_temp=0;
                     tmin_temp=0;
+                    tmax_old = 0;
+                    tmin_old = 0;
 
                     for (j =1; j<=count; j++) {
                     //precip, check crazy values too.
                     //isohyet_adjustment = zone[0].defaults[0][0].lapse_rate_precip_default * diff_elevation[j] +1.0;
-                   // isohyet_adjustment = max(0, isohyet_adjustment);
+                   // isohyet_adjustment = max(0, isohyet_adjustment)
+
+
                     rain_temp = rain_temp + station_found[j][0].daily_clim[0].rain[day] * weight[j]/sum_weight;
 
                     if (command_line[0].verbose_flag == -3) {
@@ -551,14 +559,14 @@ struct zone_object *construct_zone(
                         Tlapse_adjustment1 = diff_elevation[j] * zone[0].defaults[0][0].wet_lapse_rate;
                     else
                         Tlapse_adjustment1 = diff_elevation[j]*zone[0].defaults[0][0].lapse_rate_tmax; // adjust the temperature based on elevation
-                    tmax_temp = tmax_temp + (station_found[j][0].daily_clim[0].tmax[day] - Tlapse_adjustment1) * weight[j]/sum_weight;
+                    tmax_temp = tmax_temp + (station_found[j][0].daily_clim[0].tmax[day]) * weight[j]/sum_weight;
 
                     //Tmin
                     if (rain_temp > ZERO)
                         Tlapse_adjustment2 = diff_elevation[j] * zone[0].defaults[0][0].wet_lapse_rate;
                     else
                         Tlapse_adjustment2 = diff_elevation[j] * zone[0].defaults[0][0].lapse_rate_tmin;    // adjst the min temperature based on elevation
-                    tmin_temp = tmin_temp + (station_found[j][0].daily_clim[0].tmin[day] - Tlapse_adjustment2) * weight[j]/sum_weight;
+                    tmin_temp = tmin_temp + (station_found[j][0].daily_clim[0].tmin[day]) * weight[j]/sum_weight;
 
                     } // end for count
 
@@ -569,7 +577,7 @@ struct zone_object *construct_zone(
                     }
 
                     if (command_line[0].verbose_flag == -3) {
-                    printf("\n rain differences between interpolated value and original value is %lf \n", (rain_temp -zone[0].base_stations[0][0].daily_clim[0].rain[day]));
+                    printf("\n Day: %d rain differences between interpolated value and original value is %lf \n", day, (rain_temp -zone[0].base_stations[0][0].daily_clim[0].rain[day]));
                     }
                     //assign value
                     zone[0].base_stations[0][0].daily_clim[0].rain[day] = rain_temp;
@@ -581,7 +589,7 @@ struct zone_object *construct_zone(
                     }
 
                     if (command_line[0].verbose_flag == -3) {
-                    printf("\n tmax differences between interpolated value and original value is %lf \n", (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
+                    printf("\n Day: %d tmax differences between interpolated value and original value is %lf \n", day, (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
                     }
                     //assign value
                     tmax_old = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
@@ -592,26 +600,35 @@ struct zone_object *construct_zone(
                             printf("\n WARNING, the interpolated tmin %lf is out of range (-50, 50) for day :%d, lapse adjustment is %lf, elevation difference is %lf, \n", tmin_temp, day, Tlapse_adjustment2, diff_elevation[0] );
                     }
                     if (command_line[0].verbose_flag == -3) {
-                    printf("\n tmin differences between interpolated value and original value is %lf \n", (tmin_temp -zone[0].base_stations[0][0].daily_clim[0].tmin[day]));
+                    printf("\n Day: %d tmin differences between interpolated value and original value is %lf \n", day, (tmin_temp -zone[0].base_stations[0][0].daily_clim[0].tmin[day]));
                     }
                     //assign value
                     tmin_old = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
                     zone[0].base_stations[0][0].daily_clim[0].tmin[day] = tmin_temp;
 
-                    if (tmax_temp < tmin_temp) {
-                    printf("\n WARNING: tmax is smaller than tmin after interpolation, tmax_inter %lf, tmin_inter is %lf, tmax_old %lf, tmin_old %lf, ID %d, num_neiboughors %d",
-                    tmax_temp, tmin_temp, tmax_old, tmin_old, zone[0].ID, count);
+                    if (tmax_temp < tmin_temp || tmax_old < tmin_old) {
+                    printf("\n WARNING: tmax is smaller than tmin after interpolation, tmax_inter %lf, tmin_inter is %lf, tmax_old %lf, tmin_old %lf, ID %d, num_neiboughors %d for day %d",
+                    tmax_temp, tmin_temp, tmax_old, tmin_old, zone[0].ID, count, day);
 
                     }
 
                 }
-        }
-    }
+        } //end sum_weight>0
+        else {
+            printf("\n WARNING: patch %d, is close the climate station, no need to interpoaltion \n", zone[0].ID);
+        } //end else
+    } //end count>1
     else {
-        printf("\n WARNING: no neigbour station found, using the climate grid data where the patch is located \n");
+        printf("\n WARNING: patch %d no neigbour station found, using the climate grid data where the patch is located \n", zone[0].ID);
     }
+   if(station_found!=NULL)
+       free(station_found);
+   // if(station_search!= NULL)  // if free station_search will cause some problems
+     //   free(station_search);
+
 
     }// end of if do interpolation
+
 	if(paramPtr!=NULL)
 	  free(paramPtr);
 

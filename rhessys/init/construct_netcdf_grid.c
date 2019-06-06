@@ -444,6 +444,11 @@ struct base_station_object *construct_netcdf_grid (
 
             }
 
+            // check tmax and tmin
+            if ((base_station[0].daily_clim[0].tmax[j])< base_station[0].daily_clim[0].tmin[j]) {
+                printf("\n WARNING: day: %d, tmax %f is smaller than tmin %f \n", j, base_station[0].daily_clim[0].tmax[j], base_station[0].daily_clim[0].tmin[j]);
+            }
+
         }
 
 
