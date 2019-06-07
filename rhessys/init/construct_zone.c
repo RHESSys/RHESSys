@@ -497,7 +497,7 @@ struct zone_object *construct_zone(
               count++;
             station_found[count] = station_search;
             // due to the inverse distance method going to use square of distance so here no need to do square root
-            res_square = zone[0].defaults[0][0].res_patch/zone[0].defaults[0][0].res_patch;
+            res_square = zone[0].defaults[0][0].res_patch * zone[0].defaults[0][0].res_patch;
             distance[count]= ((zone[0].x_utm - station_search[0].proj_x) * (zone[0].x_utm - station_search[0].proj_x)/res_square + (zone[0].y_utm - station_search[0].proj_y) * (zone[0].y_utm - station_search[0].proj_y)/res_square);
             if (distance[count] > 0) {
             weight[count] = 1/distance[count];
@@ -593,7 +593,7 @@ struct zone_object *construct_zone(
                     }
 
                     if (command_line[0].verbose_flag == -3) {
-                    printf("\n Day: %d tmax differences between interpolated value %lf and original value %f is %lf \n", day, zone[0].base_stations[0][0].daily_clim[0].tmax[day], tmax_temp, (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
+                    printf("\n Day: %d tmax differences between original value %lf and interpolated value %f is %lf \n", day, zone[0].base_stations[0][0].daily_clim[0].tmax[day], tmax_temp, (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
                     }
                     //assign value
                     tmax_old = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
@@ -629,7 +629,6 @@ struct zone_object *construct_zone(
        free(station_found);
    // if(station_search!= NULL)  // if free station_search will cause some problems
      //   free(station_search);
-
 
     }// end of if do interpolation
 
