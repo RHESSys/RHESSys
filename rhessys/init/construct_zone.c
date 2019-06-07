@@ -431,6 +431,9 @@ struct zone_object *construct_zone(
     zone[0].x_utm = zone[0].patches[0][0].x;
     zone[0].y_utm = zone[0].patches[0][0].y;
     zone[0].z_utm = zone[0].patches[0][0].z;
+    if (command_line[0].verbose_flag == -3) {
+        printf("\n Zone %d, x is %lf, y is %lf, z is  %lf \n", zone[0].ID, zone[0].x_utm, zone[0].y_utm, zone[0].z_utm);
+    }
 
     //using another method to read the record of patch information
     // using the UTM system to search closing grid center normally seach 8 neribours and using inverse distance method
@@ -470,7 +473,7 @@ struct zone_object *construct_zone(
     double rain_old = 0;
     double tmax_old = 0;
     double tmin_old = 0;
-
+    double res_square = 0;
 
     double Tlapse_adjustment1 = 0;
     double Tlapse_adjustment2 = 0;
@@ -494,7 +497,8 @@ struct zone_object *construct_zone(
               count++;
             station_found[count] = station_search;
             // due to the inverse distance method going to use square of distance so here no need to do square root
-            distance[count]= ((zone[0].x_utm - station_search[0].proj_x) * (zone[0].x_utm - station_search[0].proj_x) + (zone[0].y_utm - station_search[0].proj_y) * (zone[0].y_utm - station_search[0].proj_y))/zone[0].defaults[0][0].res_patch/zone[0].defaults[0][0].res_patch;
+            res_square = zone[0].defaults[0][0].res_patch/zone[0].defaults[0][0].res_patch;
+            distance[count]= ((zone[0].x_utm - station_search[0].proj_x) * (zone[0].x_utm - station_search[0].proj_x)/res_square + (zone[0].y_utm - station_search[0].proj_y) * (zone[0].y_utm - station_search[0].proj_y)/res_square);
             if (distance[count] > 0) {
             weight[count] = 1/distance[count];
             }
@@ -510,11 +514,11 @@ struct zone_object *construct_zone(
 
     // after find these stations, caluate the sum of weight and final weight for each stations
 
-    if (count >1) {
+    if (count > 1) {
         sum_weight = 0;
 
         for (j=1; j <= count; j++) {
-            if (distance[j] > 1.0 ) { // when calculate distance I using res to normalize the distance
+            if (distance[j] > 2.0 ) { // when calculate distance I using res to normalize the distance
             sum_weight = sum_weight + weight[j]; //simple inverse distance method, not considering the direction and slope effect
                 }
         }
@@ -522,7 +526,7 @@ struct zone_object *construct_zone(
         // if one patch is very close the centre of basestation
 
         for (j=1; j <= count; j++) {
-            if (distance[j] <= 1.0 ) {
+            if (distance[j] <= 2.0 ) {
             sum_weight = 0; //simple inverse distance method, not considering the direction and slope effect
                 }
         }
@@ -577,7 +581,7 @@ struct zone_object *construct_zone(
                     }
 
                     if (command_line[0].verbose_flag == -3) {
-                    printf("\n Day: %d rain differences between interpolated value and original value is %lf \n", day, (rain_temp -zone[0].base_stations[0][0].daily_clim[0].rain[day]));
+                    printf("\n Day: %d rain differences between interpolated value %lf and original value %lf is %lf \n", day, zone[0].base_stations[0][0].daily_clim[0].rain[day], rain_temp, (rain_temp -zone[0].base_stations[0][0].daily_clim[0].rain[day]));
                     }
                     //assign value
                     zone[0].base_stations[0][0].daily_clim[0].rain[day] = rain_temp;
@@ -589,7 +593,7 @@ struct zone_object *construct_zone(
                     }
 
                     if (command_line[0].verbose_flag == -3) {
-                    printf("\n Day: %d tmax differences between interpolated value and original value is %lf \n", day, (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
+                    printf("\n Day: %d tmax differences between interpolated value %lf and original value %f is %lf \n", day, zone[0].base_stations[0][0].daily_clim[0].tmax[day], tmax_temp, (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
                     }
                     //assign value
                     tmax_old = zone[0].base_stations[0][0].daily_clim[0].tmax[day];

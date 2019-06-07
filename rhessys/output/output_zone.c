@@ -42,7 +42,7 @@ void	output_zone(	int basinID, int hillID,
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	fprintf(outfile,
-		"%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
+		"%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
