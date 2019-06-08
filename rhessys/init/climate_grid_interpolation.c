@@ -237,12 +237,19 @@ void climate_interpolation(
 
         } //end sum_weight>0
         else {
+                zone[0].rain_interpolate = zone[0].base_stations[0][0].daily_clim[0].rain[day];
+                zone[0].tmax_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
+                zone[0].tmin_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
+
                 if (day == 1)
             printf("\n WARNING: patch %d, is close the climate station, no need to interpoaltion \n", zone[0].ID);
         } //end else
     }//end if count>1
 
     else {
+                zone[0].rain_interpolate = zone[0].base_stations[0][0].daily_clim[0].rain[day];
+                zone[0].tmax_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
+                zone[0].tmin_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
         if (day==1)
         printf("\n WARNING: patch %d no neigbour station found, using the climate grid data where the patch is located \n", zone[0].ID);
     }
