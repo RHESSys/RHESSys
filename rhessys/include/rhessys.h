@@ -1030,7 +1030,7 @@ struct zone_object
         int             Kdown_direct_flag;                  /*  0 or 1  */
         int             num_base_stations;
         int             num_patches;
-	int		zone_parm_ID;
+        int		zone_parm_ID;
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
         double  z;                                      /* meters       */
@@ -1038,6 +1038,9 @@ struct zone_object
         double x_utm;                                   /*meters        */
         double y_utm;                                   /*meters        */
         double z_utm;                                   /*meters        */
+        double rain_interpolate;                          //rain after interpolation
+        double tmax_interpolate;                        //tmax after interpolation
+        double tmin_interpolate;                        //tmin after interpolation
 
         double  area;                                   /*      m2      */
         double  aspect;                                 /* degrees      */

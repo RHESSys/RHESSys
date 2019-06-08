@@ -158,6 +158,14 @@ void zone_daily_I(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
+    void climate_interpolation(
+        struct	command_line_object	*command_line,
+        struct	world_object	*world,
+        int		num_world_base_stations,
+        struct	base_station_object **world_base_stations,
+        struct	zone_object 	*zone_temp,
+        long day);
+
 
 
 	double normdist(double, double);
@@ -176,13 +184,24 @@ void zone_daily_I(
 	double	Tlapse_adjustment;
 	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
 	int		season;
-	season = 0;
 
+    //NR 20190607
 	int	inx;
 	struct	dated_sequence	clim_event;
+    int num_world_base_stations;
+   // struct base_station_object	**world_base_stations;
+
+    season = 0;
+    num_world_base_stations = world[0].num_base_stations;
+  //  world_base_stations = (struct base_station_object **) alloc( *num_world_base_stations *
+     //   sizeof(struct base_station_object), "base_station", "construct_zone");
 
 	zone[0].rain_hourly_total = 0.0;
 	zone[0].snow_hourly_total = 0.0;
+
+    zone[0].rain_interpolate = 0.0;
+    zone[0].tmax_interpolate = 0.0;
+    zone[0].tmin_interpolate = 0.0;
 	/*--------------------------------------------------------------*/
 	/*	Determine the critical daily forcing parameters. 			*/
 	/*																*/
@@ -190,6 +209,18 @@ void zone_daily_I(
 	/*																*/
 	/*	Step through the list of basestations.						*/
 	/*--------------------------------------------------------------*/
+	if (command_line[0].gridded_netcdf_flag==1 && zone[0].defaults[0][0].grid_interpolation==1) {
+
+        climate_interpolation( command_line,
+                world,
+                num_world_base_stations,
+                world[0].base_stations,
+                &zone[0],
+                day);
+
+	}
+
+
 	i = 0;
 	flag = 0;
 	while ( (i < zone[0].num_base_stations) && (flag<3) ){
@@ -233,7 +264,12 @@ void zone_daily_I(
 		/*																*/
 		/*		we do not adjust for slope, cloudyness or lai as yet	*/
 		/*--------------------------------------------------------------*/
-		temp = zone[0].base_stations[i][0].daily_clim[0].rain[day];
+
+		 if (command_line[0].gridded_netcdf_flag==1 && zone[0].defaults[0][0].grid_interpolation==1){
+		 temp = zone[0].rain_interpolate; }
+		 else {//climate data interpolation N.R
+		 temp = zone[0].base_stations[i][0].daily_clim[0].rain[day]; }
+
 		/*--------------------------------------------------------------*/
 		/* 	allow for stocastic noise in precip scaling 		*/
 		/*--------------------------------------------------------------*/
@@ -269,7 +305,14 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 
 
-		temp = zone[0].base_stations[i][0].daily_clim[0].tmin[day];
+		//
+		if (command_line[0].gridded_netcdf_flag==1 && zone[0].defaults[0][0].grid_interpolation==1){
+            temp = zone[0].tmin_interpolate; // NR climate data interpolation
+		}
+		else {
+            temp = zone[0].base_stations[i][0].daily_clim[0].tmin[day];
+		}
+
 		if (temp != -999.0) {
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin == NULL) {
 			if (zone[0].rain > ZERO)
@@ -286,8 +329,12 @@ void zone_daily_I(
 			flag++;
 		}
 
+		if (command_line[0].gridded_netcdf_flag==1 && zone[0].defaults[0][0].grid_interpolation==1){
+            temp = zone[0].tmax_interpolate; }
+        else {
+            temp = zone[0].base_stations[i][0].daily_clim[0].tmax[day];
+            }
 
-		temp = zone[0].base_stations[i][0].daily_clim[0].tmax[day];
 
 		if (temp != -999.0) {
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax == NULL) {
