@@ -41,7 +41,13 @@ void climate_interpolation(
     double sum_weight =0; //weighting factor for inverse distance method
 
     struct base_station_object *station_search; // this is single station
-    struct base_station_object	**station_found;
+    //struct base_station_object	**station_found;
+    //using array instead of station stations to save the found data
+    double rain_found[num_world_base_stations];
+    double tmax_found[num_world_base_stations];
+    double tmin_found[num_world_base_stations];
+    double ID_found[num_world_base_stations];
+
 
     double rain_temp =0;
     double tmax_temp =0;
@@ -60,8 +66,8 @@ void climate_interpolation(
     double max_tmax = 50;
     double min_tmin = -50; //TODO, put into the zone.def sfiles for WA ID from http://www.ncdc.noaa.gov/extremes/scec/records
 
-    station_found = (struct base_station_object **) alloc( (num_world_base_stations+100) *
-        sizeof(struct base_station_object), "base_station", "construct_zone");
+    //station_found = (struct base_station_object **) alloc( (num_world_base_stations+100) *
+    //    sizeof(struct base_station_object), "base_station", "construct_zone");
 
 
 
@@ -102,7 +108,11 @@ void climate_interpolation(
         {
             //find =1;
 
-            station_found[count] = station_search;
+            rain_found[count] = station_search[0].daily_clim[0].rain[day];
+            tmax_found[count] = station_search[0].daily_clim[0].tmax[day];
+            tmin_found[count] = station_search[0].daily_clim[0].tmin[day];
+            ID_found[count] = station_search[0].ID;
+
             // due to the inverse distance method going to use square of distance so here no need to do square root
             res_square = zone[0].defaults[0][0].res_patch * zone[0].defaults[0][0].res_patch;
             distance[count]= ((zone[0].x_utm - station_search[0].proj_x) * (zone[0].x_utm - station_search[0].proj_x)/res_square + (zone[0].y_utm - station_search[0].proj_y) * (zone[0].y_utm - station_search[0].proj_y)/res_square);
@@ -112,7 +122,7 @@ void climate_interpolation(
             diff_elevation[count] = zone[0].z_utm - station_search[0].z;
 
             if (command_line[0].verbose_flag == -3) {
-            printf("\n there are %d neibourge stations, ID is %d, distance is %lf, weight is %lf\n", count, station_found[count][0].ID, distance[count], weight[count]);
+            printf("\n there are %d neibourge stations, ID is %d, distance is %lf, weight is %lf\n", count, ID_found[count], distance[count], weight[count]);
 
             }
             count++;
@@ -161,7 +171,7 @@ void climate_interpolation(
                    // isohyet_adjustment = max(0, isohyet_adjustment)
 
 
-                    rain_temp = rain_temp + station_found[j][0].daily_clim[0].rain[day] * weight[j]/sum_weight;
+                    rain_temp = rain_temp + rain_found[j] * weight[j]/sum_weight;
 
                     if (command_line[0].verbose_flag == -3) {
                     printf("\n the ratio for station %d is %lf \n", j, weight[j]/sum_weight);
@@ -171,14 +181,14 @@ void climate_interpolation(
                         Tlapse_adjustment1 = diff_elevation[j] * zone[0].defaults[0][0].wet_lapse_rate;
                     else
                         Tlapse_adjustment1 = diff_elevation[j]*zone[0].defaults[0][0].lapse_rate_tmax; // adjust the temperature based on elevation
-                    tmax_temp = tmax_temp + (station_found[j][0].daily_clim[0].tmax[day]) * weight[j]/sum_weight;
+                    tmax_temp = tmax_temp + tmax_found[j] * weight[j]/sum_weight;
 
                     //Tmin
                     if (rain_temp > ZERO)
                         Tlapse_adjustment2 = diff_elevation[j] * zone[0].defaults[0][0].wet_lapse_rate;
                     else
                         Tlapse_adjustment2 = diff_elevation[j] * zone[0].defaults[0][0].lapse_rate_tmin;    // adjst the min temperature based on elevation
-                    tmin_temp = tmin_temp + (station_found[j][0].daily_clim[0].tmin[day]) * weight[j]/sum_weight;
+                    tmin_temp = tmin_temp + tmin_found[j] * weight[j]/sum_weight;
 
                     } // end for count
 
@@ -227,19 +237,18 @@ void climate_interpolation(
 
         } //end sum_weight>0
         else {
+                if (day == 1)
             printf("\n WARNING: patch %d, is close the climate station, no need to interpoaltion \n", zone[0].ID);
         } //end else
     }//end if count>1
 
     else {
+        if (day==1)
         printf("\n WARNING: patch %d no neigbour station found, using the climate grid data where the patch is located \n", zone[0].ID);
     }
 
-
-   if(station_found!=NULL)
-       free(station_found);
-     // if(station_search!= NULL)  // if free station_search will cause some problems
-     //   free(station_search);
+    //free the memory
+    // no need to free station found still point to the same memory
 
 
 
