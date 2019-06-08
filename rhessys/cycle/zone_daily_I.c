@@ -215,7 +215,7 @@ void zone_daily_I(
                 world,
                 num_world_base_stations,
                 world[0].base_stations,
-                &zone[0],
+                &(zone[0]),
                 day);
 
 	}
