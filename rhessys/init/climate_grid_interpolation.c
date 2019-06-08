@@ -60,7 +60,7 @@ void climate_interpolation(
     double max_tmax = 50;
     double min_tmin = -50; //TODO, put into the zone.def sfiles for WA ID from http://www.ncdc.noaa.gov/extremes/scec/records
 
-    station_found = (struct base_station_object **) alloc( num_world_base_stations *
+    station_found = (struct base_station_object **) alloc( (num_world_base_stations+100) *
         sizeof(struct base_station_object), "base_station", "construct_zone");
 
 
@@ -101,7 +101,7 @@ void climate_interpolation(
     if ( abs(station_search[0].proj_x -zone[0].x_utm) <= search_x && abs(station_search[0].proj_y -zone[0].y_utm) <= search_y)
         {
             //find =1;
-              count++;
+
             station_found[count] = station_search;
             // due to the inverse distance method going to use square of distance so here no need to do square root
             res_square = zone[0].defaults[0][0].res_patch * zone[0].defaults[0][0].res_patch;
@@ -115,6 +115,7 @@ void climate_interpolation(
             printf("\n there are %d neibourge stations, ID is %d, distance is %lf, weight is %lf\n", count, station_found[count][0].ID, distance[count], weight[count]);
 
             }
+            count++;
 
         }
 
@@ -122,10 +123,10 @@ void climate_interpolation(
 
     // after find these stations, caluate the sum of weight and final weight for each stations
 
-    if (count > 1) {
+    if (count > 0) {
         sum_weight = 0;
 
-        for (j=1; j <= count; j++) {
+        for (j=0; j <  count; j++) {
             if (distance[j] > 2.0 ) { // when calculate distance I using res to normalize the distance
             sum_weight = sum_weight + weight[j]; //simple inverse distance method, not considering the direction and slope effect
                 }
@@ -133,7 +134,7 @@ void climate_interpolation(
 
         // if one patch is very close the centre of basestation
 
-        for (j=1; j <= count; j++) {
+        for (j=0; j < count; j++) {
             if (distance[j] <= 2.0 ) {
             sum_weight = 0; //simple inverse distance method, not considering the direction and slope effect
                 }
@@ -154,7 +155,7 @@ void climate_interpolation(
                     tmax_old = 0;
                     tmin_old = 0;
 
-                    for (j =1; j<=count; j++) {
+                    for (j =0; j< count; j++) {
                     //precip, check crazy values too.
                     //isohyet_adjustment = zone[0].defaults[0][0].lapse_rate_precip_default * diff_elevation[j] +1.0;
                    // isohyet_adjustment = max(0, isohyet_adjustment)
