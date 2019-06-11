@@ -2158,6 +2158,8 @@ struct  command_line_object
         double  tmin_add;
         double  fire_grid_res;
         double  beetle_grid_res; // for beetle grid
+        char    ncgridinterp_flag; //N.R: for nc grid climate data interpolation
+        int     utm_zone;           //N.R for nc grid climate data interpolation
         double  sat_to_gw_coeff_mult;
         double  gw_loss_coeff_mult;
         double  snow_scale_tol;

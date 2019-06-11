@@ -66,11 +66,6 @@ void climate_interpolation(
     double max_tmax = 50;
     double min_tmin = -50; //TODO, put into the zone.def sfiles for WA ID from http://www.ncdc.noaa.gov/extremes/scec/records
 
-    //station_found = (struct base_station_object **) alloc( (num_world_base_stations+100) *
-    //    sizeof(struct base_station_object), "base_station", "construct_zone");
-
-
-
 
     zone[0].x_utm = zone[0].patches[0][0].x;
     zone[0].y_utm = zone[0].patches[0][0].y;
@@ -106,7 +101,6 @@ void climate_interpolation(
 
     if ( abs(station_search[0].proj_x -zone[0].x_utm) <= search_x && abs(station_search[0].proj_y -zone[0].y_utm) <= search_y)
         {
-            //find =1;
 
             rain_found[count] = station_search[0].daily_clim[0].rain[day];
             tmax_found[count] = station_search[0].daily_clim[0].tmax[day];
@@ -151,9 +145,7 @@ void climate_interpolation(
         }
 
         // now interpolation climate data only interploate the precipitation, m
-
-
-        // TODO put this as an equation, and using openmp
+        // if the station not close to the center of basestation
 
        if (sum_weight > 1e-6) {
            // printf("\n started interpolation climate data \n");
@@ -187,7 +179,7 @@ void climate_interpolation(
                     if (rain_temp > ZERO)
                         Tlapse_adjustment2 = diff_elevation[j] * zone[0].defaults[0][0].wet_lapse_rate;
                     else
-                        Tlapse_adjustment2 = diff_elevation[j] * zone[0].defaults[0][0].lapse_rate_tmin;    // adjst the min temperature based on elevation
+                        Tlapse_adjustment2 = diff_elevation[j] * zone[0].defaults[0][0].lapse_rate_tmin;    // adjust the min temperature based on elevation
                     tmin_temp = tmin_temp + tmin_found[j] * weight[j]/sum_weight;
 
                     } // end for count

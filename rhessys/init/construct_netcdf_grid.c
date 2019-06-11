@@ -225,10 +225,17 @@ struct base_station_object *construct_netcdf_grid (
 
         lat = base_station[0].lat;
         lon = base_station[0].lon;
-        utm_zone = 12; //TODO: put this in zone_Def infiles for future
+        if (command_line[0].ncgridinterp_flag != NULL) {
+        utm_zone = command_line[0].utm_zone;
+        printf("\n Read in the UTM zone from command line for climate data interpolation, the zone is %d \n", utm_zone);
+        }
+        else {
+        utm_zone = 12;
+        printf("\n Not specify the UTM zone in command line, using default zone UTM 12, if you want to change the UTM zone using -ncgridinterp NUM \n");
+        }
 
          return_value= LatLonToUTMXY(lat, lon, utm_zone, &x_utm, &y_utm);
-         printf(" the x and y are %f, %f \n",x_utm, y_utm);
+         printf(" the utm x and utm y are %f, %f \n",x_utm, y_utm);
          base_station[0].proj_x = (double)x_utm;
          base_station[0].proj_y = (double)y_utm;
 
