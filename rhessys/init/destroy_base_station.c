@@ -64,6 +64,7 @@ void destroy_base_station( struct command_line_object *command_line,
 	if(base_station[0].daily_clim[0].ndep_NH4!=NULL) free( base_station[0].daily_clim[0].ndep_NH4);
 	if(base_station[0].daily_clim[0].lapse_rate_tmax!=NULL) free( base_station[0].daily_clim[0].lapse_rate_tmax);
 	if(base_station[0].daily_clim[0].lapse_rate_tmin!=NULL) free( base_station[0].daily_clim[0].lapse_rate_tmin);
+	if(base_station[0].daily_clim[0].lapse_rate_tavg!=NULL) free( base_station[0].daily_clim[0].lapse_rate_tavg);
 	if(base_station[0].daily_clim[0].daytime_rain_duration!=NULL) free( base_station[0].daily_clim[0].daytime_rain_duration);
 #ifdef LIU_EXTEND_CLIM_VAR
     if(base_station[0].daily_clim[0].relative_humidity_max!=NULL) free( base_station[0].daily_clim[0].relative_humidity_max);
