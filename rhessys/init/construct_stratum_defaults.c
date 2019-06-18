@@ -359,6 +359,19 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.psi_intercpt =	getDoubleParam(&paramCnt, &paramPtr, "epc.psi_intercpt", "%lf", 1.0, 1);
 
 		/*--------------------------------------------------------------*/
+		/* xylem conductance parms						*/
+		/*--------------------------------------------------------------*/
+
+		default_object_list[i].epc.gxylem_max =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_max", "%lf", 
+								default_object_list[i].epc.gl_smax, 1);
+		default_object_list[i].epc.LWP_gxylem_min =	getDoubleParam(&paramCnt, &paramPtr, "epc.LWP_gxylem_min", "%lf", -9999.0, 1);
+		default_object_list[i].epc.gxylem_recovery_rate = getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_recovery_rate", "%lf", 
+					default_object_list[i].epc.gxylem_max*0.1, 1);
+
+		default_object_list[i].epc.gxylem_csat =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_csat", "%lf", 4.08, 1);
+		default_object_list[i].epc.gxylem_bsat =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_bsat", "%lf", -3.47, 1);
+
+		/*--------------------------------------------------------------*/
 		/* set sunlit sla multiplier	this should be an input		*/
 		/*--------------------------------------------------------------*/
 		default_object_list[i].epc.shade_sla_mult = 1.0;

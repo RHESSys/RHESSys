@@ -2674,6 +2674,11 @@ struct epconst_struct
     double Tacclim_days;  /* num days for temperature acclimation */
     double Tacclim_slp;  /* slope for temperature acclimation adjutment to Q10 */
     double Tacclim_intercpt;  /* intercept for temperature acclimation for temperature acclimation adjustment to Q10 */
+    double gxylem_csat;        /* (DIM) exponent on lwp-xylem conductance curve */
+    double gxylem_bsat;        /* (MPa) parameter lwp-xylem conductance curve */
+    double gxylem_max;        /* (m/s) maximum xylem conductance */
+    double LWP_gxylem_min;        /* (MPa) water potential below which failure begins */
+    double gxylem_recovery_rate;        /* (m/s per day) increase in xylem conductance (post dameage) per day */
 } ;
 
 
@@ -2788,6 +2793,9 @@ struct  canopy_strata_object
         double  gs_sunlit;                                      /* m/s          */
         double  gs_shade;                                       /* m/s          */
         double  gsurf;                                          /* m/s          */
+        double  gxylem;                                          /* m/s          */
+        double  gplant_sunlit;                                          /* m/s          */
+        double  gplant_shade;                                          /* m/s          */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
         double  Lstar;                                          /* Kj/(m2*day)  */
