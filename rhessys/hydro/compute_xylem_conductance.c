@@ -43,8 +43,13 @@ void	compute_xylem_conductance(
 
 	double gxylem;
 
+	/*--------------------------------------------------------------*/
+	/* detemine if LWP is low enough to cause reduction in xylem conductance */
+	/* only do this if stomata are open (e.g greater than curticular conductance 				*/
+	/*--------------------------------------------------------------*/
 
-	if (LWP_predawn < epc.LWP_gxylem_min) {
+	if ((LWP_predawn < epc.LWP_gxylem_min) && (stratum[0].gs_sunlit >= epc.gxylem_min_gs) && 
+				(stratum[0].gs_shade >= epc.gxylem_min_gs)) {
 	stratum[0].gxylem = epc.gxylem_max * exp(pow( (-1.0*LWP_predawn/epc.gxylem_bsat),epc.gxylem_csat));
 	}
 

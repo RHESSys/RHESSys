@@ -2676,6 +2676,7 @@ struct epconst_struct
     double Tacclim_days;  /* num days for temperature acclimation */
     double Tacclim_slp;  /* slope for temperature acclimation adjutment to Q10 */
     double Tacclim_intercpt;  /* intercept for temperature acclimation for temperature acclimation adjustment to Q10 */
+    double gxylem_min_gs;        /* (m/s) stomatal conductance below which cavitiation does not occur */
     double gxylem_csat;        /* (DIM) exponent on lwp-xylem conductance curve */
     double gxylem_bsat;        /* (MPa) parameter lwp-xylem conductance curve */
     double gxylem_max;        /* (m/s) maximum xylem conductance */

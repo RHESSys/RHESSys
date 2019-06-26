@@ -362,6 +362,8 @@ struct stratum_default *construct_stratum_defaults(
 		/* xylem conductance parms						*/
 		/*--------------------------------------------------------------*/
 
+		default_object_list[i].epc.gxylem_min_gs =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_min_gs", "%lf", 
+								default_object_list[i].epc.gl_c*10, 1);
 		default_object_list[i].epc.gxylem_max =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_max", "%lf", 
 								default_object_list[i].epc.gl_smax, 1);
 		default_object_list[i].epc.LWP_gxylem_min =	getDoubleParam(&paramCnt, &paramPtr, "epc.LWP_gxylem_min", "%lf", -9999.0, 1);
