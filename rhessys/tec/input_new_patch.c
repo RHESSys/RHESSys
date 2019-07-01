@@ -97,7 +97,7 @@
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",patch[0].z,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp;
 
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].num_base_stations,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].soil_parm_ID,1);	
 	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].soil_parm_ID = dtmp;
 	dtmp  = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
 	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].landuse_parm_ID = dtmp;
