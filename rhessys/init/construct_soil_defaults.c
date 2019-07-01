@@ -101,6 +101,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "patch_default_ID", "%d", 3, 1); 
 		default_object_list[i].theta_psi_curve = 	getIntParam(&paramCnt, &paramPtr, "theta_psi_curve", "%d", 1.0, 1);
 		default_object_list[i].Ksat_0 = 		getDoubleParam(&paramCnt, &paramPtr, "Ksat_0", "%lf", 3.0, 1);
+		default_object_list[i].cap_rise_max = 		getDoubleParam(&paramCnt, &paramPtr, "cap_rise_max", "%lf", 0.8, 1);
 		default_object_list[i].m = 			getDoubleParam(&paramCnt, &paramPtr, "m", "%lf", 0.12, 1);
 		default_object_list[i].porosity_0 = 		getDoubleParam(&paramCnt, &paramPtr, "porosity_0", "%lf", 0.435, 1);
 		default_object_list[i].porosity_decay = 	getDoubleParam(&paramCnt, &paramPtr, "porosity_decay", "%lf", 4000.0, 1);

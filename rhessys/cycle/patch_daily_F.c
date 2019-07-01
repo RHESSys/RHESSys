@@ -393,7 +393,8 @@ void		patch_daily_F(
 	int dum;
 	double  pspread;
 	double  biomass_removal_percent;
-	double	cap_rise, tmp, wilting_point;
+	double	cap_rise, tmp, wilting_point, cap_rise_to_rz_storage, cap_rise_to_unsat;
+	double  rz_deficit, unsat_deficit;
 	double	delta_unsat_zone_storage;
 	double  infiltration, lhvap;
 	double	infiltration_ini;
@@ -1722,6 +1723,9 @@ void		patch_daily_F(
 
 	/*--------------------------------------------------------------*/
 	/*	fill the leftover demand with cap rise.			*/
+	/*	first fill unsat storage (if unsat below rooting zone exists */
+	/*     fill to field capacity with cap_rise */
+	/*     then allow water to move to rooting zone storage */
 	/*--------------------------------------------------------------*/
 	cap_rise = max(min(patch[0].potential_cap_rise, min(unsat_zone_patch_demand, water_below_field_cap)), 0.0);
 	cap_rise = min((compute_delta_water(
@@ -1731,12 +1735,35 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].soil_depth,
 			patch[0].soil_defaults[0][0].soil_depth,
 			patch[0].sat_deficit_z)), cap_rise);
-	
-	cap_rise = min(cap_rise, unsat_zone_patch_demand);
-	unsat_zone_patch_demand -= cap_rise;
-	patch[0].cap_rise += cap_rise;
-	patch[0].potential_cap_rise -= cap_rise;
-	patch[0].sat_deficit += cap_rise;				
+
+	cap_rise = max(cap_rise, 0.0);
+
+	/* are we in a place where unsat exists				*/
+ 	if (patch[0].sat_deficit_z >= patch[0].rootzone.depth ){
+  		unsat_deficit = patch[0].sat_deficit - patch[0].unsat_storage - patch[0].rootzone.potential_sat - patch[0].field_capacity;
+		unsat_deficit = max(0.0, unsat_deficit);
+        	if (patch[0].rootzone.potential_sat > patch[0].rz_storage) 
+			rz_deficit = patch[0].rootzone.potential_sat - patch[0].rz_storage;
+		else  rz_deficit=0;
+	}
+   	else {
+       		 unsat_deficit = 0.0;
+        	if (patch[0].sat_deficit > patch[0].rz_storage){
+			rz_deficit = patch[0].sat_deficit - patch[0].rz_storage;
+		}
+		else  {rz_deficit=0.0;}
+    	}
+
+	cap_rise_to_unsat = min(cap_rise, unsat_deficit);
+	patch[0].unsat_storage += cap_rise_to_unsat;
+	cap_rise_to_rz_storage = min(cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
+	cap_rise_to_rz_storage = min(rz_deficit, rz_deficit);
+	patch[0].rz_storage +- cap_rise_to_rz_storage;
+
+	patch[0].cap_rise = (cap_rise_to_unsat + cap_rise_to_unsat);
+	patch[0].potential_cap_rise -= patch[0].cap_rise;
+	patch[0].sat_deficit += patch[0].cap_rise;				
+
 	/*--------------------------------------------------------------*/
 	/*	Now supply the remaining demand with water left in	*/
 	/*	the unsat zone.  We are going below field cap now!!	*/
@@ -1759,7 +1786,16 @@ void		patch_daily_F(
 	unsat_zone_patch_demand -= delta_unsat_zone_storage;			
 
 	/*--------------------------------------------------------------*/
-	
+	/* move nitrogen with cap rise 					*/
+	/* we don't do this yet as we do not movve nitrate from unsat to sat stores */
+	/*--------------------------------------------------------------*/
+ 	available_sat_water = compute_delta_water(
+                command_line[0].verbose_flag,
+                patch[0].soil_defaults[0][0].porosity_0,
+                patch[0].soil_defaults[0][0].porosity_decay,
+                patch[0].soil_defaults[0][0].soil_depth,
+                patch[0].soil_defaults[0][0].soil_depth, patch[0].sat_deficit_z);	
+		
 	/*--------------------------------------------------------------*/
 	/* 	Resolve plant uptake and soil microbial N demands	*/
 	/*--------------------------------------------------------------*/

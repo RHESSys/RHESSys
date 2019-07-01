@@ -129,6 +129,7 @@ void		patch_daily_I(
 		double,
 		double,
 		double,
+		double,
 		double);
 	
 	double  compute_soil_water_potential(
@@ -308,7 +309,8 @@ void		patch_daily_I(
 		patch[0].soil_defaults[0][0].psi_air_entry,
 		patch[0].soil_defaults[0][0].pore_size_index,
 		patch[0].soil_defaults[0][0].mz_v,
-		patch[0].soil_defaults[0][0].Ksat_0_v );
+		patch[0].soil_defaults[0][0].Ksat_0_v, 
+		patch[0].soil_defaults[0][0].cap_rise_max );
 	if (patch[0].potential_cap_rise < ZERO)
 		patch[0].potential_cap_rise = 0.0;
 	patch[0].cap_rise=0.0;

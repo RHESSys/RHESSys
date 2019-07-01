@@ -69,7 +69,8 @@ double recompute_gamma( struct patch_object *patch,
 		adjustment = 1.0;
 
 	revised_total_gamma = adjustment * total_gamma;		
-				
+			
+		
 		
 	return(revised_total_gamma);
 } /*recompute_gamma*/

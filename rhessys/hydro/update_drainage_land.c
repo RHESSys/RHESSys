@@ -178,8 +178,6 @@ void  update_drainage_land(
 		patch[0].transmissivity_profile,
 		patch);
 
-
-
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 
 		route_to_patch *= (available_sat_water)/(route_to_patch);
