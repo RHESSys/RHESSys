@@ -732,7 +732,8 @@ struct  daily_clim_object
         double  *lapse_rate_precip;               /*      m / m           */
         double  *lapse_rate_tmin;               /*      degrees C / m           */
         double  *lapse_rate_tmax;               /*      degrees C / m           */
-        double  *dewpoint;                      /*      degrees C       */
+        double  *lapse_rate_tavg;               /*      degrees C / m           */
+	double  *dewpoint;                      /*      degrees C       */
         double  *Kdown_diffuse;                 /* kJ/(m2*day)  */
         double  *Kdown_direct;                  /* kJ/(m2*day) */
         double  *LAI_scalar;                    /* unitless     */
@@ -937,7 +938,8 @@ struct  zone_default
         double  lapse_rate_precip_default;              /* k by m       */      
         double  lapse_rate_tmin;                /* Celcius degrees/m    */      
         double  lapse_rate_tmax;                /* Celcius degrees/m    */      
-        double  max_effective_lai;      /* m^2/m^2      */
+        double  lapse_rate_tavg;                /* Celcius degrees/m    */      
+	double  max_effective_lai;      /* m^2/m^2      */
         double  pptmin;                 /*      m       */
         double  sea_level_clear_sky_trans;      /* 0-1  */
         double  temcf;                  /*      DIM     */
@@ -2674,6 +2676,12 @@ struct epconst_struct
     double Tacclim_days;  /* num days for temperature acclimation */
     double Tacclim_slp;  /* slope for temperature acclimation adjutment to Q10 */
     double Tacclim_intercpt;  /* intercept for temperature acclimation for temperature acclimation adjustment to Q10 */
+    double gxylem_min_gs;        /* (m/s) stomatal conductance below which cavitiation does not occur */
+    double gxylem_csat;        /* (DIM) exponent on lwp-xylem conductance curve */
+    double gxylem_bsat;        /* (MPa) parameter lwp-xylem conductance curve */
+    double gxylem_max;        /* (m/s) maximum xylem conductance */
+    double LWP_gxylem_min;        /* (MPa) water potential below which failure begins */
+    double gxylem_recovery_rate;        /* (m/s per day) increase in xylem conductance (post dameage) per day */
 } ;
 
 
@@ -2788,6 +2796,9 @@ struct  canopy_strata_object
         double  gs_sunlit;                                      /* m/s          */
         double  gs_shade;                                       /* m/s          */
         double  gsurf;                                          /* m/s          */
+        double  gxylem;                                          /* m/s          */
+        double  gplant_sunlit;                                          /* m/s          */
+        double  gplant_shade;                                          /* m/s          */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
         double  Lstar;                                          /* Kj/(m2*day)  */

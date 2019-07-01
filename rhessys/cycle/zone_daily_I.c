@@ -713,11 +713,20 @@ void zone_daily_I(
 	if ( zone[0].base_stations[0][0].daily_clim[0].tavg != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tavg[day];
 		if ( temp != -999.0 ){
-			zone[0].metv.tavg = temp-( z_delta )
-				* zone[0].defaults[0][0].lapse_rate;
+			if (zone[0].base_stations[0][0].daily_clim[0].lapse_rate_tavg == NULL) {
+				if (zone[0].rain > ZERO) 
+					Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
+				else
+					Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tavg;
+				zone[0].metv.tavg = temp - Tlapse_adjustment;
+			}
+			else {
+				Tlapse_adjustment = z_delta * zone[0].base_stations[0][0].daily_clim[0].lapse_rate_tavg[day];
+				zone[0].metv.tavg = temp - Tlapse_adjustment;
+			}
 
 			if (command_line[0].tchange_flag > 0)  {
-				zone[0].metv.tavg += (command_line[0].tmax_add +  command_line[0].tmin_add)/2.0;
+				zone[0].metv.tavg += (command_line[0].tmax_add + command_line[0].tmin_add)/2.0;
 			}
 		}
 		else{

@@ -28,6 +28,10 @@ g2w/grass2world/g2w
 .project
 .cproject
 
+# vscode editor data
+.vscode
+rhessys/.vscode
+
 # OS X extended attribute stores
 .DS_Store
 

@@ -118,8 +118,9 @@ struct zone_default *construct_zone_defaults(
 		/*	currently a concentration				*/
 		/*--------------------------------------------------------------*/
 		default_object_list[i].wind_direction = getDoubleParam(&paramCnt, &paramPtr, "wind_direction", "%lf", 180.0, 1); // parameter name is "wind" in param file
-		default_object_list[i].lapse_rate_tmin = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmax", "%lf", default_object_list[i].lapse_rate, 1);
-		default_object_list[i].lapse_rate_tmax = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmin", "%lf", default_object_list[i].lapse_rate, 1);
+		default_object_list[i].lapse_rate_tmin = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmin", "%lf", default_object_list[i].lapse_rate, 1);
+		default_object_list[i].lapse_rate_tmax = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmax", "%lf", default_object_list[i].lapse_rate, 1);
+		default_object_list[i].lapse_rate_tavg = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tavg", "%lf", default_object_list[i].lapse_rate, 1);
 		default_object_list[i].wet_lapse_rate = 	getDoubleParam(&paramCnt, &paramPtr, "wet_lapse_rate", "%lf", 0.0049, 1);
 		default_object_list[i].lapse_rate_precip_default = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_precip_default", "%lf", -999.0, 1);
 		default_object_list[i].psen[PTHRESH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.pthresh", "%lf", 0.0, 1);

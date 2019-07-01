@@ -24,7 +24,11 @@ patch_data_analysis <- function(raw_patch_data,
 
   # -------------------- Error checking and NULL handling --------------------
   if (cell_length <= 0) {stop("Cell length is <=0")}
-  if (is.null(raw_road_data)) {raw_road_data = matrix(0,ncol = ncol(raw_patch_data),nrow = nrow(raw_patch_data))}
+  if (is.null(raw_road_data) & length(raw_patch_data) != 1) {
+    raw_road_data = matrix(0,ncol = ncol(raw_patch_data),nrow = nrow(raw_patch_data))
+  } else if (is.null(raw_road_data) & length(raw_patch_data) == 1) {
+    raw_road_data = 0
+  }
   if (is.null(road_width)) {road_width = 0}
 
   # area_conv = cell_length*cell_length   #meters^2 per patch (need actual number)
@@ -32,30 +36,6 @@ patch_data_analysis <- function(raw_patch_data,
   options(scipen = 999) # IF DEBUGGING YOU WILL HAVE ERRORS ON LARGE BASINS WITHOUT THIS - comes from numeric to character conversion
 
   # -------------------- Build unique patch IDs --------------------
-  # <<<<< New method >>>>> slightly faster, doesn't error on large datasets
-  # faster than using apply, truly vectorized would be better but I cant figure it out -Will
-
-  # id_data =unique(data.frame("Basin" = as.vector(raw_basin_data[!is.na(raw_basin_data)]),
-  #                            "Hill" = as.vector(raw_hill_data[!is.na(raw_basin_data)]),
-  #                            "Zone" = as.vector(raw_zone_data[!is.na(raw_basin_data)]),
-  #                            "Patch" = as.vector(raw_patch_data[!is.na(raw_basin_data)])))
-  #
-  # unique_patch = raw_patch_data
-  # unique_id = 1:length(id_data$Patch)
-  #
-  # print("Generating unique IDs",quote=FALSE)
-  # pb = txtProgressBar(min=0,max=length(unique_id),style=3)
-  #
-  # for(i in unique_id){
-  #   unique_patch[!is.na(unique_patch) & unique_patch==id_data[i,4] & raw_hill_data==id_data[i,2] & raw_zone_data==id_data[i,3] ] = i
-  #   setTxtProgressBar(pb,i)
-  # }
-  # close(pb)
-
-
-  # <<<<< EVEN FASTER METHOD >>>>>
-  # If you get weird routing this might be the cause but it should be right
-
   print("Generating unique IDs",quote = FALSE)
 
   id_data = data.frame("Basin" = as.vector(raw_basin_data[!is.na(raw_basin_data)]),
@@ -74,6 +54,7 @@ patch_data_analysis <- function(raw_patch_data,
   # ----- Conversion and formatting -----
   patch_data = unique_patch # unique patch IDs
   patch_data[is.na(patch_data)] <- 0 #replace NAs w 0
+  patch_data = as.matrix(patch_data)
   patch_elevation_data = raw_patch_elevation_data
   patch_elevation_data[is.na(patch_elevation_data)] = 0   #Replace NA's with 0
   patch_slope_data = raw_slope_data
@@ -99,7 +80,6 @@ patch_data_analysis <- function(raw_patch_data,
   patch_roadtype <- tapply(x1,y,max)  #create vector of 1's if there is a road in the patch
   patch_roadtype <- as.vector(patch_roadtype)
   patch_roadtype[patch_roadtype > 0] <- 1
-
 
   # this might not be needed, i think a legacy from old unique ID gen - test eventually
   if (patches[1] == 0) {
@@ -139,7 +119,6 @@ patch_data_analysis <- function(raw_patch_data,
 
   if (d4) { # d4 neighbor find start -----
     patch_borders = list(list("Total" = 0))[rep(1,length(patches))]
-    #patch_borders<-matrix(0,nrow=length(patches),ncol=length(patches))
     p_rows <- nrow(patch_data)
     p_cols <- ncol(patch_data)
 
@@ -150,10 +129,6 @@ patch_data_analysis <- function(raw_patch_data,
             if (patch_data[i,j] != patch_data[i,j + 1]) {  # if +1 in x dir is different patch
               p1 <- which(patches == patch_data[i,j])   #index of patch i,j
               p2 <- which(patches == patch_data[i,j + 1])  #index of patch i,j+1
-              # patch_borders[patch_ij,patch_ij1]<-patch_borders[patch_ij,patch_ij1]+1
-              # patch_borders[patch_ij1,patch_ij]<-patch_borders[patch_ij1,patch_ij]+1
-              # patch_borders[patch_ij,patch_ij]<-patch_borders[patch_ij,patch_ij]+1
-              # patch_borders[patch_ij1,patch_ij1]<-patch_borders[patch_ij1,patch_ij1]+1
 
               patch_borders[[p1]]$Total = patch_borders[[p1]]$Total + 1
               patch_borders[[p1]][[as.character(p2)]] = sum(patch_borders[[p1]][[as.character(p2)]]) + 1
@@ -166,10 +141,6 @@ patch_data_analysis <- function(raw_patch_data,
             if (patch_data[i,j] != patch_data[i + 1,j]) {  # if +1 in y dir is different patch
               p1 <- which(patches == patch_data[i,j])   #index of patch i,j
               p2 <- which(patches == patch_data[i + 1,j])  #index of patch i+1,j
-              # patch_borders[patch_ij,patch_i1j]<-patch_borders[patch_ij,patch_i1j]+1
-              # patch_borders[patch_i1j,patch_ij]<-patch_borders[patch_i1j,patch_ij]+1
-              # patch_borders[patch_ij,patch_ij]<-patch_borders[patch_ij,patch_ij]+1
-              # patch_borders[patch_i1j,patch_i1j]<-patch_borders[patch_i1j,patch_i1j]+1
 
               patch_borders[[p1]]$Total = patch_borders[[p1]]$Total + 1
               patch_borders[[p1]][[as.character(p2)]] = sum(patch_borders[[p1]][[as.character(p2)]]) + 1
@@ -183,10 +154,6 @@ patch_data_analysis <- function(raw_patch_data,
             if (patch_data[i,j] != patch_data[i + 1,j]) {  #lower boundary
               p1 <- which(patches == patch_data[i,j])   #index of patch i,j
               p2 <- which(patches == patch_data[i + 1,j])  #index of patch i+1,j
-              # patch_borders[patch_ij,patch_i1j]<-patch_borders[patch_ij,patch_i1j]+1
-              # patch_borders[patch_i1j,patch_ij]<-patch_borders[patch_i1j,patch_ij]+1
-              # patch_borders[patch_ij,patch_ij]<-patch_borders[patch_ij,patch_ij]+1
-              # patch_borders[patch_i1j,patch_i1j]<-patch_borders[patch_i1j,patch_i1j]+1
 
               patch_borders[[p1]]$Total = patch_borders[[p1]]$Total + 1
               patch_borders[[p1]][[as.character(p2)]] = sum(patch_borders[[p1]][[as.character(p2)]]) + 1
@@ -200,10 +167,6 @@ patch_data_analysis <- function(raw_patch_data,
             if (patch_data[i,j] != patch_data[i,j + 1]) {  # rt. side boundary
               p1 <- which(patches == patch_data[i,j])   #index of patch i,j
               p2 <- which(patches == patch_data[i,j + 1])  #index of patch i,j+1
-              # patch_borders[patch_ij,patch_ij1]<-patch_borders[patch_ij,patch_ij1]+1
-              # patch_borders[patch_ij1,patch_ij]<-patch_borders[patch_ij1,patch_ij]+1
-              # patch_borders[patch_ij,patch_ij]<-patch_borders[patch_ij,patch_ij]+1
-              # patch_borders[patch_ij1,patch_ij1]<-patch_borders[patch_ij1,patch_ij1]+1
 
               patch_borders[[p1]]$Total = patch_borders[[p1]]$Total + 1
               patch_borders[[p1]][[as.character(p2)]] = sum(patch_borders[[p1]][[as.character(p2)]]) + 1
@@ -223,7 +186,6 @@ patch_data_analysis <- function(raw_patch_data,
 
     # new - list instead of matrix
     patch_borders = list(list("Total" = 0))[rep(1,length(patches))]
-    #patch_borders<-matrix(0,nrow=length(patches),ncol=length(patches))
     p_rows <- nrow(patch_data)
     p_cols <- ncol(patch_data)
 
@@ -241,10 +203,6 @@ patch_data_analysis <- function(raw_patch_data,
             if (patch_data[i,j] != patch_data[i,j + 1] & patch_data[i,j + 1] != 0) { # east - is different patch and is not 0
               p1 <- which(patches == patch_data[i,j])   #index of patch i,j
               p2 <- which(patches == patch_data[i,j + 1])  #index of patch i,j+1
-              # patch_borders[p1,p2]<-patch_borders[p1,p2]+1
-              # patch_borders[p2,p1]<-patch_borders[p2,p1]+1
-              # patch_borders[p1,p1]<-patch_borders[p1,p1]+1
-              # patch_borders[p2,p2]<-patch_borders[p2,p2]+1
 
               patch_borders[[p1]]$Total = patch_borders[[p1]]$Total + 1
               patch_borders[[p1]][[as.character(p2)]] = sum(patch_borders[[p1]][[as.character(p2)]]) + 1
@@ -257,10 +215,6 @@ patch_data_analysis <- function(raw_patch_data,
             if (patch_data[i,j] != patch_data[i + 1,j + 1] & patch_data[i + 1,j + 1] != 0) { # southeast - is different patch and is not 0
               p1 <- which(patches == patch_data[i,j])   #index of patch i,j
               p2 <- which(patches == patch_data[i + 1,j + 1])  #index of patch i+1,j+1
-              # patch_borders[p1,p2]<-patch_borders[p1,p2]+diag_border
-              # patch_borders[p2,p1]<-patch_borders[p2,p1]+diag_border
-              # patch_borders[p1,p1]<-patch_borders[p1,p1]+diag_border
-              # patch_borders[p2,p2]<-patch_borders[p2,p2]+diag_border
 
               patch_borders[[p1]]$Total = patch_borders[[p1]]$Total + diag_border
               patch_borders[[p1]][[as.character(p2)]] = sum(patch_borders[[p1]][[as.character(p2)]]) + diag_border
@@ -272,10 +226,6 @@ patch_data_analysis <- function(raw_patch_data,
             if (patch_data[i,j] != patch_data[i + 1,j] & patch_data[i + 1,j] != 0) { # south - is different patch and is not 0
               p1 <- which(patches == patch_data[i,j])   #index of patch i,j
               p2 <- which(patches == patch_data[i + 1,j])  #index of patch i+1,j
-              # patch_borders[p1,p2]<-patch_borders[p1,p2]+1
-              # patch_borders[p2,p1]<-patch_borders[p2,p1]+1
-              # patch_borders[p1,p1]<-patch_borders[p1,p1]+1
-              # patch_borders[p2,p2]<-patch_borders[p2,p2]+1
 
               patch_borders[[p1]]$Total = patch_borders[[p1]]$Total + 1
               patch_borders[[p1]][[as.character(p2)]] = sum(patch_borders[[p1]][[as.character(p2)]]) + 1
@@ -287,10 +237,6 @@ patch_data_analysis <- function(raw_patch_data,
             if (patch_data[i,j] != patch_data[i + 1,j - 1] & patch_data[i + 1,j - 1] != 0) { # southwest - is different patch and is not 0
               p1 <- which(patches == patch_data[i,j])   #index of patch i,j
               p2 <- which(patches == patch_data[i + 1,j - 1])  #index of patch i+1,j
-              # patch_borders[p1,p2]<-patch_borders[p1,p2]+diag_border
-              # patch_borders[p2,p1]<-patch_borders[p2,p1]+diag_border
-              # patch_borders[p1,p1]<-patch_borders[p1,p1]+diag_border
-              # patch_borders[p2,p2]<-patch_borders[p2,p2]+diag_border
 
               patch_borders[[p1]]$Total = patch_borders[[p1]]$Total + diag_border
               patch_borders[[p1]][[as.character(p2)]] = sum(patch_borders[[p1]][[as.character(p2)]]) + diag_border
@@ -321,14 +267,15 @@ patch_data_analysis <- function(raw_patch_data,
     print_dist_fix = NULL
     print_dist = NULL
 
-    min_hill_patch = stats::aggregate(flw_struct$Centroidz,by = list(flw_struct$Hill),FUN = which.min) # sum streams(landuse) by hillslope
+    # find hillslopes without outlet patches with streams
+    min_hill_patch = stats::aggregate(flw_struct$Centroidz,by = list(flw_struct$Hill),FUN = which.min) # min elev patch for each hillslope
     hill_no_outlets = matrix(0, nrow = length(unique(flw_struct$Hill)), ncol = 2)
     hill_no_outlets[,1] = unique(flw_struct$Hill)
     for (h in hill_no_outlets[,1]) {
       hill_no_outlets[hill_no_outlets[,1] == h,2] = flw_struct[flw_struct$Hill == h,][min_hill_patch[min_hill_patch[,1] == h,2],"Landtype"]
     }
 
-    if (length(flw_struct[,1]) == 1 & hill_no_outlets[,2] == 0) {
+    if (length(flw_struct[,1]) == 1 & all(hill_no_outlets[,2] == 0)) { # for single patch world without outlet
       flw_struct$Landtype = 1
       hill_no_outlets[1,2] = 1
     }
@@ -447,21 +394,15 @@ patch_data_analysis <- function(raw_patch_data,
   }
   close(pb)
 
-
-  # ----- IF SOMEONE IS USING 1 PATCH WORLD PLEASE TEST/SORT THIS SECTION OUT -----
-  # Naomi, I think you added this in for 1 patch worlds, but I don't know which list you meant to reference here,
-  # maybe you meant to put this after the loop through the lst, and check if lst has length=1, ie 1 patch?
-  # Commented out for now since list_length doesn't exist - Will
-  # if (list_length == 1) {
-  #     slope_i <- 0;
-  #     tp_TotalG <- flw_struct$Area[i]
-  # }
+  # -------------------- Single Patch World --------------------
+  # If there's only 1 patch, build list manually and return
+  if (length(raw_patch_data) == 1) {
+    lst[[1]]$Slopes = 0
+    lst[[1]]$TotalG = flw_struct$Area
+    return(lst)
+  }
 
   # -------------------- Pit filling --------------------
-  # if (length(flw_struct[,1]) != 1) {
-  #   lst = fix_all_pits(lst,flw_struct,parallel)
-  # }
-
   lst = fix_all_pits(lst,flw_struct,parallel)
 
   # -------------------- streams and roads --------------------

@@ -1,7 +1,7 @@
 #' CreateFlownet
 #'
-#' Creates the flow network used by RHESSys
-#' @param name The name of the flow network file to be created.  Will be coerced to have ".flow" extension if not already present.
+#' Creates the flow networkd table used by RHESSys
+#' @param flownet_name The name of the flow network file to be created.  Will be coerced to have ".flow" extension if not already present.
 #' @param readin readin indicates which maps to be used. If CreateFlowmet.R is run it's own, this should point to the template. Otherwise,
 #' if run inside of RHESSysPreprocess, readin will use the map data from world_gen.R, Streams map, and other optional maps, still need to
 #' be specified.
@@ -30,7 +30,7 @@
 #' @export
 
 
-CreateFlownet = function(name,
+CreateFlownet = function(flownet_name,
                          readin = NULL,
                          type = "raster",
                          typepars = NULL,
@@ -47,16 +47,16 @@ CreateFlownet = function(name,
                          d4 = FALSE){
 
   # ------------------------------ Read and check inputs ------------------------------
-  cfbasename = basename(name) # Coerce .flow extension
+  cfbasename = basename(flownet_name) # Coerce .flow extension
   if (startsWith(cfbasename,"Flow.") | startsWith(cfbasename,"flow.")) {
     cfbasename = paste(substr(cfbasename,6,nchar(cfbasename)),".flow",sep = "")
   } else if (!endsWith(cfbasename,".flow")) {
     cfbasename = paste(cfbasename,".flow",sep = "")
   }
-  name = file.path(dirname(name),cfbasename)
+  flownet_name = file.path(dirname(flownet_name),cfbasename)
 
   if (!is.logical(overwrite)) {stop("overwrite must be logical")} # check overwrite inputs
-  if (file.exists(name) & overwrite == FALSE) {stop(noquote(paste("Flowtable",name,"already exists.")))}
+  if (file.exists(flownet_name) & overwrite == FALSE) {stop(noquote(paste("Flowtable",flownet_name,"already exists.")))}
 
   if (!wrapper & is.character(readin)) { #if run outside of rhessyspreprocess.R, and if readin is character. readin is the template (and path)
     template_list = template_read(template)
@@ -107,6 +107,7 @@ CreateFlownet = function(name,
   # Roads
   raw_road_data = NULL
   if (!is.null(roads)) {raw_road_data = map_ar_clean[, ,cfmaps[cfmaps[,1] == "roads",2]]}
+
   # Roofs and impervious is not yet implemented - placeholders for now -----
   if (!is.null(roofs) | !is.null(impervious)) {print("Roofs and impervious are not yet working",quote = FALSE)}
   raw_roof_data = NULL
@@ -142,8 +143,8 @@ CreateFlownet = function(name,
 
   # ---------- Flownet list to flow table file ----------
   print("Writing flowtable",quote = FALSE)
-  make_flow_table(flw = CF1, output_file = name, parallel = parallel)
+  make_flow_table(flw = CF1, output_file = flownet_name, parallel = parallel)
 
-  print(paste("Created flowtable:",name),quote = FALSE)
+  print(paste("Created flowtable:",flownet_name),quote = FALSE)
 
 }
