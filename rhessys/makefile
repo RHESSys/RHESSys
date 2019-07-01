@@ -1,5 +1,5 @@
 
-VERSION = 7.0 
+VERSION = 7.2 
 PGM  = rhessys$(VERSION)
 CC = gcc
 #CXX = g++
@@ -17,7 +17,7 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif 
 
-CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES)
+CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES) -fno-stack-protector
 
 ifdef openmp
   CFLAGS += -fopenmp
@@ -154,6 +154,9 @@ $(OBJ)/construct_monthly_clim.o \
 $(OBJ)/construct_output_files.o \
 $(OBJ)/construct_output_fileset.o \
 $(OBJ)/construct_patch.o \
+
+# $(OBJ)/construct_patch_family.o \
+
 $(OBJ)/construct_fire_grid.o \
 $(OBJ)/construct_routing_topology.o \
 $(OBJ)/construct_stream_routing_topology.o \
@@ -655,6 +658,10 @@ $(OBJ)/assign_base_station_xy.o: init/assign_base_station_xy.c
 	$(CC) -c $(CFLAGS) -I include init/assign_base_station_xy.c -o $(OBJ)/assign_base_station_xy.o
 $(OBJ)/construct_zone.o: init/construct_zone.c
 	$(CC) -c $(CFLAGS) -I include init/construct_zone.c -o $(OBJ)/construct_zone.o
+
+#$(OBJ)/construct_patch_family.o: init/construct_patch_family.c
+#	$(CC) -c $(CFLAGS) -I include init/construct_patch_family.c -o $(OBJ)/construct_patch_family.o
+
 $(OBJ)/construct_patch.o: init/construct_patch.c
 	$(CC) -c $(CFLAGS) -I include init/construct_patch.c -o $(OBJ)/construct_patch.o
 $(OBJ)/find_patch.o: util/find_patch.c

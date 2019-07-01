@@ -1,8 +1,9 @@
 # Compiled object files
 *.o
 *.pyc
-rhessys/rhessys6.0
-
+rhessys/rhessys7.0
+rhessys/rhessys7.1
+rhessys/rhessys7.2
 
 # Build directories
 objects/
@@ -40,3 +41,5 @@ libwmfire.so
 
 .Rproj.user
 
+# vscode 
+rhessys/.vscode
