@@ -230,6 +230,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].DOC_adsorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DOC_adsorption_rate", "%lf", 0.000023, 1);
 		default_object_list[i].DON_adsorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DON_adsorption_rate", "%lf", 0.000001, 1);
 		default_object_list[i].interval_size = 		getDoubleParam(&paramCnt, &paramPtr, "interval_size", "%lf", INTERVAL_SIZE, 1);
+		default_object_list[i].recompute_gamma_flag = 	getIntParam(&paramCnt, &paramPtr, "recompute_gamma_flag", "%d", 1, 1);
 
 		/*--------------------------------------------------------------*/
 		/* sensitivity adjustment of vertical drainage  soil paramters	*/

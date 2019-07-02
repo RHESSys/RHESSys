@@ -1114,6 +1114,7 @@ struct	soil_default
 	{
 	int		ID;								
 	int	theta_psi_curve;				/* unitless */
+	int	recompute_gamma_flag;				/* unitless */
 	double	albedo;						/* 0 to 1   */
 	double	interval_size;					/* m */
 	double	cap_rise_max;						/* meters/day */
