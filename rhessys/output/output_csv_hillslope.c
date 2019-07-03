@@ -165,7 +165,11 @@ void	output_csv_hillslope(				int basinID,
 		apsn,
 		alai,
 		hillslope[0].gw.Qout *1000.0,
+        #ifndef NO_UPDATE_160419
 		hillslope[0].gw.Nout *1000.0,
+        #else
+        -9999,
+        #endif
 		hillslope[0].gw.storage *1000.0,
 		hillslope[0].gw.NO3 *1000.0,
 		hillslope[0].area

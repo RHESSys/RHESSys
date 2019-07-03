@@ -77,6 +77,28 @@ void input_new_strata(
 		double,
 		double);
 
+	double compute_delta_water(
+		int, 
+		double, 
+		double,	
+		double, 
+		double, 
+		double);
+
+	double	compute_lwp_predawn(
+		int,
+		int,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		double);
+
 	void	*alloc(	size_t,
 		char	*,
 		char	*);
@@ -263,6 +285,7 @@ void input_new_strata(
 		canopy_strata[0].cs.deadcroot_gr_snk = 0.0;
 		canopy_strata[0].cs.froot_mr_snk = 0.0;
 		canopy_strata[0].cs.froot_gr_snk = 0.0;
+		canopy_strata[0].cs.nppcum = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
@@ -385,12 +408,71 @@ void input_new_strata(
 		/* year's growing season will start                              */
 		/*---------------------------------------------------------------*/
 	}
+
+	else if (canopy_strata[0].defaults[0][0].epc.phenology_flag == DROUGHT ) {
+		canopy_strata[0].phen.expand_startday =
+			canopy_strata[0].defaults[0][0].epc.day_leafon;
+		canopy_strata[0].phen.expand_stopday =
+			canopy_strata[0].phen.expand_startday
+			+ canopy_strata[0].defaults[0][0].epc.ndays_expand;
+		canopy_strata[0].phen.litfall_startday =
+			canopy_strata[0].defaults[0][0].epc.day_leafoff;
+		canopy_strata[0].phen.litfall_stopday =
+			canopy_strata[0].phen.litfall_startday
+			+ canopy_strata[0].defaults[0][0].epc.ndays_litfall;
+		if (canopy_strata[0].phen.expand_stopday > 365)
+			canopy_strata[0].phen.expand_stopday -= 365;
+		if (canopy_strata[0].phen.litfall_stopday > 365)
+			canopy_strata[0].phen.litfall_stopday -= 365;
+		/*---------------------------------------------------------------*/
+		/* assume this is 365 for now since we don't know when next      */
+		/* year's growing season will start                              */
+		/*---------------------------------------------------------------*/
+		canopy_strata[0].phen.nretdays = 365;
+		canopy_strata[0].phen.gwseasonday = -1;
+		canopy_strata[0].phen.lfseasonday = -1;
+		canopy_strata[0].phen.pheno_flag = 0;
+	}
+
 	else {
+
 		fprintf(stderr,"\nFATAL ERROR - construct_canopy_stratum.c");
 		fprintf(stderr,"\n phenology flag must be set to 0 for STATIC");
 		fprintf(stderr,"\n since dynamic phenology timing not yet implemented");
 		exit(EXIT_FAILURE);
 	}
+		
+	/*--------------------------------------------------------------*/
+	/* initialize runnning average of psi using current day psi     */
+	/*--------------------------------------------------------------*/
+
+	if (canopy_strata[0].rootzone.depth > ZERO)
+		canopy_strata[0].rootzone.potential_sat = compute_delta_water(
+		command_line[0].verbose_flag,
+		patch[0].soil_defaults[0][0].porosity_0,
+		patch[0].soil_defaults[0][0].porosity_decay,
+		patch[0].soil_defaults[0][0].soil_depth,
+		canopy_strata[0].rootzone.depth, 
+		0.0);			
+
+	canopy_strata[0].rootzone.S = min(patch[0].rz_storage / canopy_strata[0].rootzone.potential_sat, 1.0);
+
+	canopy_strata[0].epv.psi =	compute_lwp_predawn(
+		command_line[0].verbose_flag,
+		patch[0].soil_defaults[0][0].theta_psi_curve,
+		patch[0].Tsoil,
+		canopy_strata[0].defaults[0][0].epc.psi_open,
+		canopy_strata[0].defaults[0][0].epc.psi_close,
+		patch[0].soil_defaults[0][0].psi_air_entry,
+		patch[0].soil_defaults[0][0].pore_size_index,
+		patch[0].soil_defaults[0][0].p3,
+		patch[0].soil_defaults[0][0].p4,
+		patch[0].soil_defaults[0][0].porosity_0,
+		patch[0].soil_defaults[0][0].porosity_decay,
+		canopy_strata[0].rootzone.S);
+
+	canopy_strata[0].epv.psi_ravg = canopy_strata[0].epv.psi;
+
 		/*--------------------------------------------------------------*/
 		/*	for now initialize these accumuling variables		*/
 		/*--------------------------------------------------------------*/
@@ -398,7 +480,7 @@ void input_new_strata(
 			canopy_strata[0].epv.wstress_days = 0;
 			canopy_strata[0].epv.max_fparabs = 0.0;
 			canopy_strata[0].epv.min_vwc = 1.0;
-			canopy_strata[0].cs.age = 0;
+		//	canopy_strata[0].cs.age = 0;
 			canopy_strata[0].cs.num_resprout = 0;
 		}
 

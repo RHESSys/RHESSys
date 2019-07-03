@@ -176,6 +176,7 @@
 #define DECID 1
 #define EVERGREEN 0
 #define STATIC 0
+#define DROUGHT 1
 #define DYNAMIC 2
 #define WARING 2
 #define CONSTANT 1
@@ -205,7 +206,17 @@
 #define max(a,b)    ((a) > (b) ? (a) : (b))
 #define min(a,b)    ((a) < (b) ? (a) : (b))
 
+#ifdef LIU_NETCDF_READER
+int is_approximately(const double value,const double target,const double tolerance);
+#endif
 int read_record( FILE *, char *);
+#ifdef LIU_NETCDF_READER
+int get_netcdf_station_number(char *base_station_filename);              
+int get_netcdf_var_timeserias(char *, char *, char *, char *, float, float, float, int, int, int, int, float *);
+int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *);
+int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
+int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
+#endif
 
 /*----------------------------------------------------------*/
 /*      Define types                                        */
@@ -516,7 +527,7 @@ struct basin_object
         int             ID;                                                                     
         int             num_base_stations;
         int             num_hillslopes;
-	int		basin_parm_ID;
+	      int		  basin_parm_ID;
         double  area;                   /*  m2          */
 	      double  area_withsnow;			/*  m2 		*/
         double  x;                      /*  meters      */      
@@ -528,23 +539,7 @@ struct basin_object
         double  theta_noon;             /*      rads    */
         double  sin_latitude;           /*      DIM     */
         double  max_slope;              /*      degrees */
-        
-        /*      used in subsurface computation          */
-        double basin_outflow;
-        double basin_rz_storage;
-        double basin_unsat_storage;
-        double basin_sat_deficit;
-        double basin_return_flow;
-        double basin_detention_store;
-        double basin_area;
-        double preday_basin_unsat_storage;
-        double preday_basin_rz_storage;
-        double preday_basin_sat_deficit;
-        double preday_sat_deficit;
-        double preday_basin_return_flow;
-        double preday_basin_detention_store;
-        /*                                              */
-        
+
         struct  base_station_object     **base_stations;
         struct  basin_default           **defaults;
         struct  basin_hourly_object     *hourly;
@@ -552,8 +547,6 @@ struct basin_object
         struct  hillslope_object        **hillslopes;
         struct  patch_object            *outside_region;
         struct  stream_list_object      stream_list;
-        struct  routing_list_object     *route_list;
-        struct  routing_list_object *surface_route_list;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  snowpack_object snowpack;
@@ -588,41 +581,51 @@ struct basin_default
         {
         int                     ID;
         int             n_routing_timesteps;    /* number per day */ 
+        int     	wyday_start;            /* Year day that designates the first day of wateryear (non-leap year) */
         struct          basin_grow_default      *grow_defaults;
         };
 
 /*----------------------------------------------------------*/
 /*      Define a base station object.                                                   */
 /*----------------------------------------------------------*/
-struct base_station_object
+typedef struct base_station_object
         {
         int             ID;
         FILE    *base_station_file;
-        double  x;                              /*   meters     */
-        double  y;                              /*   meters     */
-        double  z;                              /*   meters     */
-        double  effective_lai;                  /* m^2/m^2      */
-        double  screen_height;                  /* meters       */
+        #ifdef LIU_NETCDF_READER
+        double lon;
+        double lat;
+        #endif
+        double  proj_x;                                                          /* (meters) x coordinate of projection     */
+        double  proj_y;                                                          /* (meters) y coordinate of projection     */
+        double  z;                                                               /*   meters     */
+        double  effective_lai;                                                   /* m^2/m^2      */
+        double  screen_height;                                                   /* meters       */
         struct  hourly_clim_object       *hourly_clim;
         struct  daily_clim_object        *daily_clim;
         struct  monthly_clim_object      *monthly_clim;
         struct  yearly_clim_object       *yearly_clim;
         struct  dated_input_object       *dated_input;
-        };
+        } base_station_object;
 /*----------------------------------------------------------*/
 /*      Define a netcdf base station header object.                                                     */
 /*----------------------------------------------------------*/
-struct base_station_ncheader_object
+typedef struct base_station_ncheader_object
 {
-        int             lastID;
+        #ifndef LIU_NETCDF_READER
         FILE    *base_station_file;
         double  effective_lai;                  /* m^2/m^2      */
         double  screen_height;                  /* meters       */
-        double  sdist;                                  /* search distance in native netcdf units */
+        #endif
+        int             lastID;
+        //double  sdist;                                  /* search distance in native netcdf units */
+        double          resolution_dd;                                           /*(DD) resolution in geocoordinate. Estimated from grid cell distribution*/
+        double          resolution_meter;                                        /*(meter) resolution in projected coordinate. Estimated from grid cell distribution*/
         int             year_start;                             /* start year for netcdf time counter (NOT time series start date) */
         int             day_offset;                             /* day offset from January 1 for netcdf time counter */
         int             leap_year;                              /* 0 = no leap years, 1 = leap years in netcdf record */
         double  precip_mult;                    /* multiplier for precip if not in meters */
+        char    temperature_unit;               /* K: Kelvin C: Celsius */
         int             elevflag;                               /* set based on whether elev filename is given */
         char    netcdf_x_varname[MAXSTR];       /* variable name for x coordinate in nc file */
         char    netcdf_y_varname[MAXSTR];       /* variable name for y coordinate in nc file */
@@ -634,7 +637,20 @@ struct base_station_ncheader_object
         char    netcdf_tmin_varname[MAXSTR];    /* variable name for tmin in nc file */
         char    netcdf_rain_varname[MAXSTR];    /* variable name for rain in nc file */
         char    netcdf_elev_varname[MAXSTR];    /* variable name for elev in nc file */
-};
+#ifdef LIU_EXTEND_CLIM_VAR
+        double  rhum_mult;                    /* multiplier for relative humidity to 0-1 */
+        char    netcdf_huss_filename[MAXSTR];   /* filename for specific humidity nc file */
+        char    netcdf_huss_varname[MAXSTR];    /* variable name for specific humidity in nc file */
+        char    netcdf_rmax_filename[MAXSTR];   /* filename for relative humidity max nc file */
+        char    netcdf_rmax_varname[MAXSTR];    /* variable name for relative humidity max in nc file */
+        char    netcdf_rmin_filename[MAXSTR];   /* filename for relative humidity min nc file */
+        char    netcdf_rmin_varname[MAXSTR];    /* variable name for relative humidity min in nc file */
+        char    netcdf_rsds_filename[MAXSTR];   /* filename for shortwave radiation nc file */
+        char    netcdf_rsds_varname[MAXSTR];    /* variable name for shortwave radiation in nc file */
+        char    netcdf_was_filename[MAXSTR];   /* filename for wind speed nc file */
+        char    netcdf_was_varname[MAXSTR];    /* variable name for wind speed in nc file */
+#endif
+} base_station_ncheader_object;
 /*----------------------------------------------------------*/
 /*      Define dated climate sequence                       */
 /*----------------------------------------------------------*/
@@ -701,7 +717,7 @@ struct  daily_clim_object
 /*----------------------------------------------------------*/
         double  *tmax;                  /*   degrees C  */
         double  *tmin;                  /*   degrees C  */
-        double  *rain;                  /* mm   water   */      
+        double  *rain;                  /*   m   water  */
 
 /*----------------------------------------------------------*/
 /*       Non - Critical data.                                                                   */
@@ -717,7 +733,8 @@ struct  daily_clim_object
         double  *lapse_rate_precip;               /*      m / m           */
         double  *lapse_rate_tmin;               /*      degrees C / m           */
         double  *lapse_rate_tmax;               /*      degrees C / m           */
-        double  *dewpoint;                      /*      degrees C       */
+        double  *lapse_rate_tavg;               /*      degrees C / m           */
+	double  *dewpoint;                      /*      degrees C       */
         double  *Kdown_diffuse;                 /* kJ/(m2*day)  */
         double  *Kdown_direct;                  /* kJ/(m2*day) */
         double  *LAI_scalar;                    /* unitless     */
@@ -739,6 +756,12 @@ struct  daily_clim_object
         double  *vpd;                           /*      Pa              */
         double  *wind;                          /*      m/s             */
         double  *wind_direction;                /*      degrees         */
+#ifdef LIU_EXTEND_CLIM_VAR
+        double  *relative_humidity_max;         /*      0 - 1                 */
+        double  *relative_humidity_min;         /*      0 - 1                 */
+        double  *surface_shortwave_rad;         /*      W m-2  daily average  */
+        double  *specific_humidity;             /*      kg/kg  daily average  */
+#endif
         };    
         
 
@@ -834,6 +857,25 @@ struct hillslope_object
         struct  zone_object             **zones;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
+
+        struct  routing_list_object     *route_list;
+        struct  routing_list_object     *surface_route_list;
+
+/*      used in subsurface computation          */
+        double hillslope_outflow;
+        double hillslope_rz_storage;
+        double hillslope_unsat_storage;
+        double hillslope_sat_deficit;
+        double hillslope_return_flow;
+        double hillslope_detention_store;
+        double hillslope_area;
+        double preday_hillslope_unsat_storage;
+        double preday_hillslope_rz_storage;
+        double preday_hillslope_sat_deficit;
+        double preday_sat_deficit;
+        double preday_hillslope_return_flow;
+        double preday_hillslope_detention_store;
+
         };
 
 /*----------------------------------------------------------*/
@@ -897,7 +939,8 @@ struct  zone_default
         double  lapse_rate_precip_default;              /* k by m       */      
         double  lapse_rate_tmin;                /* Celcius degrees/m    */      
         double  lapse_rate_tmax;                /* Celcius degrees/m    */      
-        double  max_effective_lai;      /* m^2/m^2      */
+        double  lapse_rate_tavg;                /* Celcius degrees/m    */      
+	double  max_effective_lai;      /* m^2/m^2      */
         double  pptmin;                 /*      m       */
         double  sea_level_clear_sky_trans;      /* 0-1  */
         double  temcf;                  /*      DIM     */
@@ -1074,8 +1117,10 @@ struct	soil_default
 	{
 	int		ID;								
 	int	theta_psi_curve;				/* unitless */
+	int	recompute_gamma_flag;				/* unitless */
 	double	albedo;						/* 0 to 1   */
 	double	interval_size;					/* m */
+	double	cap_rise_max;						/* meters/day */
 	double	Ksat_0;						/* meters/day */
 	double	Ksat_0_v;					/* meters/day */
 	double	m;						/* m^-1	*/
@@ -1101,6 +1146,7 @@ struct	soil_default
 	double  snow_water_capacity;				/* m */
 	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
 	double  snow_melt_Tcoef;				/* unitless */
+	double  fixed_t_mult;					/* 0 to 1 and -999 to turn off */
 	double	fs_spill;					/* multiplier*/
 	double	fs_percolation;					/* multiplier */
 	double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */	
@@ -1125,7 +1171,6 @@ struct	soil_default
 	double  understory_height_thresh;       /* Defines upper limit of understory (m) */
 	struct soil_class	soil_type;
 	};
-
 
 /*----------------------------------------------------------*/
 /*      Define an innundation depth object.                                                             */
@@ -1550,6 +1595,7 @@ struct patch_object
 	int		soil_parm_ID;
 	int		landuse_parm_ID;
 	double		mpar;
+	//int				wuiID;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
         double  z;                                                                      /* meters       */
@@ -1751,7 +1797,7 @@ struct patch_object
 /*----------------------------------------------------------*/
 /*      Surface Hydrology  stuff                        */
 /*----------------------------------------------------------*/
-        int     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */        
+        bool     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */  
         double  water_balance;                          /* meters water         */
         double  delta_snowpack;                         /* meters               */
         double  delta_canopy_storage;                   /* meters water         */
@@ -2040,6 +2086,8 @@ struct  command_line_object
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
+		char 	firegrid_patch_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
+		char 	firegrid_dem_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
         double  tmp_value;
         double  cpool_mort_fract;
         double  veg_sen1;
@@ -2072,7 +2120,6 @@ struct  command_line_object
         struct  date            start_date;
         struct  date            end_date;
         };
-
 
 
 /*----------------------------------------------------------*/
@@ -2157,10 +2204,12 @@ struct phenology_struct
         int litfall_startday;       /* (yday) yearday of litterfall growth */
         int expand_stopday;       /* (yday) yearday of last leaf growth */
         int litfall_stopday;       /* (yday) yearday of last litterfall growth */
+	double litfall_nppstart;       /* (yday) yearday of litterfall for drought deciduous */
         int ngrowthdays; /* (days) days between onday and next offday */
-                int gwseasonday; /* (day) day within the growing season */
-                int lfseasonday; /* (day) day within litter fall period */
-                
+        int nretdays;    /* (days) days between allocations */
+        int gwseasonday; /* (day) day within the growing season */
+        int lfseasonday; /* (day) day within litter fall period */
+        int pheno_flag; /* (0 or 1) flag to prevent green-up more than once per year in drought/dynamic mode */
                 
 };
 
@@ -2172,10 +2221,12 @@ struct cstate_struct
         double     age; /* (num years) */
         int     num_resprout; /* (num years) running index of years of resprouting */   
     
+    double  age; /* (num years) */
     double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
     double totalc;          /* (kgC/m2) previous days plant carbon total */
     double net_psn;         /* (kgC/m2)  net photosynthesis (psn-respiration) */
+    double nppcum;          /* (kgC/m2) cumulative daily npp (net_psn) */
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
@@ -2584,6 +2635,10 @@ struct epconst_struct
         double gs_psi_max;         /* (mPa) upper soil moisture psi  threshold for leaf onset mPa */
         double gs_psi_range;       /* (mPa)  psi range for leaf onset */
         double gs_ravg_days;       /* (days)  length of averaging window for gs controls  */
+	double gsi_thresh;	/* (0 to 1) gsi threshold for initiating phenological change */
+        int gs_npp_on;          /* (1 or 2) determines whether dynamic drought senescence is turned on */
+        double gs_npp_slp;          /* slope of nppcum/litfall start curve */
+        double gs_npp_intercpt;	   /* intercept of nppcum/litfall start curve */
         double coef_CO2;        /* DIM 0-1  conductance sensitivity to CO2 */ 
         int day_leafon;        /* (DIM) yearday leaves on */
         int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */
@@ -2656,6 +2711,12 @@ struct epconst_struct
     double Tacclim_days;  /* num days for temperature acclimation */
     double Tacclim_slp;  /* slope for temperature acclimation adjutment to Q10 */
     double Tacclim_intercpt;  /* intercept for temperature acclimation for temperature acclimation adjustment to Q10 */
+    double gxylem_min_gs;        /* (m/s) stomatal conductance below which cavitiation does not occur */
+    double gxylem_csat;        /* (DIM) exponent on lwp-xylem conductance curve */
+    double gxylem_bsat;        /* (MPa) parameter lwp-xylem conductance curve */
+    double gxylem_max;        /* (m/s) maximum xylem conductance */
+    double LWP_gxylem_min;        /* (MPa) water potential below which failure begins */
+    double gxylem_recovery_rate;        /* (m/s per day) increase in xylem conductance (post dameage) per day */
 } ;
 
 
@@ -2727,7 +2788,7 @@ struct  stratum_default
        struct target_object { 
               double lai;
               double total_stemc;
-	      double height;
+              double height;
               double age;
               int    met;
        };
@@ -2770,6 +2831,9 @@ struct  canopy_strata_object
         double  gs_sunlit;                                      /* m/s          */
         double  gs_shade;                                       /* m/s          */
         double  gsurf;                                          /* m/s          */
+        double  gxylem;                                          /* m/s          */
+        double  gplant_sunlit;                                          /* m/s          */
+        double  gplant_shade;                                          /* m/s          */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
         double  Lstar;                                          /* Kj/(m2*day)  */
@@ -2848,6 +2912,7 @@ struct patch_fire_object
 	double occupied_area; /*gives the total patch area in the current grid	*/
 	struct fire_default_object *defaults;
 	double elev; // elevation if read in from grid
+	int wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
 };	
 
 /*----------------------------------------------------------*/

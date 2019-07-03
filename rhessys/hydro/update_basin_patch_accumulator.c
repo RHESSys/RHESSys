@@ -38,8 +38,8 @@ void update_basin_patch_accumulator(
 	/*-----------------------------------------------------------------------*/
 	double scale;
 	double tmp;
-	int i;
 	struct patch_object *patch;
+	int b,h,p,z,c,s;
 	/*----------------------------------------------------------------------*/
 	/* initializations		                                           */
 	/*----------------------------------------------------------------------*/	
@@ -47,8 +47,11 @@ void update_basin_patch_accumulator(
 	/*---------------------------------------------------------------------*/
 	/*update accumulator variables                                            */
 	/*-----------------------------------------------------------------------*/
-	for (i=0; i<basin->route_list->num_patches;i++) {
-		patch = basin->route_list->list[i];
+	for (h=0; h < basin->num_hillslopes; ++h) {
+		for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
+			for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
+
+		patch=basin->hillslopes[h]->zones[z]->patches[p];
 
 		patch[0].acc_year_trans += (patch[0].transpiration_unsat_zone
 						+ patch[0].transpiration_sat_zone);
@@ -164,7 +167,9 @@ void update_basin_patch_accumulator(
 							max(patch[0].acc_month.lai, patch[0].lai);
 					patch[0].acc_month.leach += (patch[0].soil_ns.leach
 							+ patch[0].surface_ns_leach);
+					patch[0].acc_month.burn += patch[0].burn;
 					patch[0].acc_month.length += 1;
+			
 
 				}
 				if ((command_line[0].output_flags.yearly == 1)
@@ -297,7 +302,9 @@ void update_basin_patch_accumulator(
 
 					patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
 		} /* end if */		
-	} /* end of i*/
+	} /* end of p*/
+	} /* end of z*/
+	} /* end of h*/
 
 
 	return;

@@ -79,7 +79,7 @@ struct fire_default *construct_fire_defaults(
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "fire_default_ID", "%d", 1, 1); // new param name
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "fire_parm_ID", "%d", 1, 1); 
 		printf("ID: %d\n",default_object_list[i].ID);
 		/*--------------------------------------------------------------*/
 		/*		assign parameters in  default and read the      */
@@ -157,6 +157,8 @@ struct fire_default *construct_fire_defaults(
 		printf("ran_seed: %d\n",default_object_list[i].ran_seed);
 		default_object_list[i].calc_fire_effects=getIntParam(&paramCnt, &paramPtr, "calc_fire_effects", "%d", 0, 1);
 		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
+		default_object_list[i].include_wui=getIntParam(&paramCnt, &paramPtr, "include_wui", "%d", 0, 1);
+		printf("include_wui: %d\n",default_object_list[i].include_wui);
 
  
 /*--------------------------------------------------------------*/

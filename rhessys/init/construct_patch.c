@@ -68,7 +68,7 @@ struct patch_object *construct_patch(
 	  struct 	canopy_strata_object *construct_empty_shadow_strata( 
 		struct command_line_object *,
 		struct	patch_object *,
-    struct  canopy_strata_object *stratum,
+		struct  canopy_strata_object *stratum,
 		struct	default_object	*defaults);
 	double	compute_z_final( 	int,
 		double,
@@ -138,8 +138,10 @@ struct patch_object *construct_patch(
 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
 
 	if (command_line[0].firespread_flag == 1) {
-		fscanf(world_file,"%d",&(fire_default_object_ID));
-		read_record(world_file, record);
+	//	fscanf(world_file,"%d",&(fire_default_object_ID));
+	//	read_record(world_file, record);
+//	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_default_object_ID", "%d", -9999,0);
+	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID", "%d", -9999,0);
 		}
 
 	if (command_line[0].surface_energy_flag == 1) {
@@ -229,6 +231,7 @@ struct patch_object *construct_patch(
 	/*      initialize accumulator variables for this patch         */
 	/*--------------------------------------------------------------*/
 
+	patch[0].acc_month.burn = 0.0;
 	patch[0].acc_month.et = 0.0;
 	patch[0].acc_month.snowpack = 0.0;
 	patch[0].acc_month.theta = 0.0;
@@ -649,8 +652,9 @@ struct patch_object *construct_patch(
 		patch[0].shadow_strata[i] = construct_empty_shadow_strata(
 			command_line,
 			patch,
-      patch[0].canopy_strata[i],
-      defaults);
+			patch[0].canopy_strata[i],
+      defaults);     
+ 
 		patch[0].shadow_strata[i][0].ID = patch[0].canopy_strata[i][0].ID;
 		patch[0].shadow_strata[i][0].defaults = patch[0].canopy_strata[i][0].defaults;
 		patch[0].shadow_strata[i][0].base_stations = patch[0].canopy_strata[i][0].base_stations;

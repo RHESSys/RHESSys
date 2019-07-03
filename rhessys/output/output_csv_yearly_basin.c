@@ -43,7 +43,7 @@ void	output_csv_yearly_basin(
 	/*------------------------------------------------------*/
 	int check;
 
-	basin[0].acc_year.length /= basin[0].route_list.num_patches;
+    basin[0].acc_year.length /= basin[0].route_list[0].num_patches;
 	if (basin[0].acc_year.length == 0) basin[0].acc_year.length = 1;
 
 	check = fprintf(outfile,

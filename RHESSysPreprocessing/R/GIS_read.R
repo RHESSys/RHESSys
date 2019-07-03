@@ -13,8 +13,10 @@
 
 GIS_read = function(maps_in,type,typepars,map_info) {
 
+  options(scipen = 999) # no scientific notation
+
+  # try to determine which version of GRASS is being used automatically
   if (type == "GRASS") {
-    # determine which version of GRASS is being used automatically
     if (unlist(gregexpr("7.", typepars[1])) > unlist(gregexpr("6.", typepars[1]))) {
       type = "GRASS7"
     } else if (unlist(gregexpr("7.", typepars[1])) < unlist(gregexpr("6.", typepars[1]))) {
@@ -22,7 +24,8 @@ GIS_read = function(maps_in,type,typepars,map_info) {
     } else{stop("Cannot determine GRASS version, set type explicitly to GRASS6 or GRASS7")}
   }
 
-  # ---------- spatial read in ----------
+  # ---------- Read in spatial data ----------
+  print("Reading in maps",quote = FALSE)
   # GRASS 6.4.4 ----------
   if (type == "GRASS6") {
     spgrass6::initGRASS( # Initialize GRASS environment
@@ -39,7 +42,7 @@ GIS_read = function(maps_in,type,typepars,map_info) {
       shell(region) #windows
     }
 
-    mask = paste("g.copy rast=",maps_in[1],",MASK",sep="") #set mask
+    mask = paste("g.copy rast=",maps_in[1],",MASK",sep = "") #set mask
     if (.Platform$OS.type == "unix") {
       system(mask) #mac
     } else {
@@ -66,7 +69,7 @@ GIS_read = function(maps_in,type,typepars,map_info) {
       shell(region) #windows
     }
 
-    mask = paste("g.copy rast=",maps_in[1],",MASK",sep="")#set mask
+    mask = paste("g.copy rast=",maps_in[1],",MASK",sep = "")#set mask
     if (.Platform$OS.type == "unix") {
       system(mask) #mac
     } else {
@@ -77,56 +80,102 @@ GIS_read = function(maps_in,type,typepars,map_info) {
   } #end GRASS 7 spatial data
 
   # Raster spatial data ----------
-  if (type == "raster" | type == "Raster" | type =="RASTER") {
-    # new method - import as raster stack to allow processing as rasterlayers
+  if (type == "raster" | type == "Raster" | type == "RASTER") {
+
+    # Get file paths and check files exist
     file_paths = vector(mode = "character")
-    for (name in maps_in){
-      file = list.files(path=typepars, pattern = paste("^",name,"$",sep =""),full.names = TRUE)
-      if (length(file) == 0){ # check for file (name listed in template + path in typepars) since list.files doesn't throw an error on no return
-        stop(paste("No file named:",name,"at path:",typepars))}
-      if(length(file) > 1){ # can only be one file for each name in maps_in
-        stop(paste("multiple files containing name:",name,"check directory:",typepars))}
+    for (name in maps_in) {
+      file = list.files(path = typepars, pattern = paste("^",name,"$",sep = ""),full.names = TRUE)
+      if (length(file) == 0) { # if no files match name in template, try with exensions
+        file = list.files(path = typepars, pattern = paste("^",name,"\\.",sep = ""),full.names = TRUE)
+      }
+      if (length(file) == 0) { # if there were no matches
+        stop(paste("No file named:",name,"at path:",typepars))
+      }
+      if (length(file) > 1) { # if multiple files, use tif preferentially
+        file = file[grep(".tif$",file)]
+      }
+      if (length(file) > 1) { # if STILL multiple files, can only be one file for each name in maps_in
+        stop(paste("multiple files containing name:",name,"check directory:",typepars))
+      }
       file_paths = c(file_paths,file)
     }
 
-    read_stack = raster::stack(file_paths) # read in rasters
-    names(read_stack) = maps_in
-    raster::values(read_stack)[apply(raster::values(read_stack)==0,FUN = all,MARGIN = 1)] = NA # get rid of 0's for background/NA - if a cell for all layers is 0, set to NA
-    read_stack = raster::trim(read_stack) #get rid of extra background
+    # read in rasters
+    # NATIVE DRIVERS -- may or may not actually help, future testing maybe
+    read_stack = try(raster::stack(file_paths))
 
-    if(exists("map_info")){
-      read_stack = raster::mask(read_stack,read_stack[[map_info[map_info[,1]=="world",2]]])# mask by map used for world level
+    if (inherits(read_stack, "try-error")) { # automatic error handling, can be added to as errors are found -----
+
+      if (attr(read_stack,"condition")$message == "different extent") { # check/compare extents
+        extents = list()
+        for (i in file_paths) { # get extents
+          extents[[which(file_paths == i)]] = raster::extent(raster::raster(i))
+        }
+        for (i in 1:length(unique(extents))) { # print maps and extents, should make outlier maps obvious
+          m = maps_in[sapply(extents,FUN = function(x) x == unique(extents)[[i]])]
+          print(paste("Maps:",paste(m,collapse = ", ")),quote = FALSE)
+          print(paste("Have extent: xmin =",unique(extents)[[i]]@xmin,"xmax =",unique(extents)[[i]]@xmax,
+                      "ymin =",unique(extents)[[i]]@ymin,"ymax =",unique(extents)[[i]]@ymax),quote = FALSE)
+        }
+      } # end if different extents
+
+      # other types of errors go here
+
+      stop("Something went wrong, see previous messages")
+    } # end try error handling
+
+    names(read_stack) = maps_in # names lose extensions by default, confused by "."s in names
+
+    # Check projections (read_stack will error if proj is different, but arguments might be different) -----
+    p = vector(mode = "character",length = length(read_stack[1]))
+    d = p
+    for (i in 1:length(read_stack[1])) {
+      p[i] = raster::projection(read_stack[[i]])
+      d[i] = attr(rgdal::GDALinfo(file_paths[i],silent = TRUE),which = "driver")
+    }
+    if (length(unique(p)) > 1 & exists("map_info")) { # if map_info is present, coerce world level projection, output text for overwritten projections
+      for (i in which(p != raster::projection(read_stack[[map_info[map_info[,1] == "world",2]]]))) {
+        raster::projection(read_stack[[i]]) = raster::projection(read_stack[[map_info[map_info[,1] == "world",2]]])
+        print(paste("Projection arguments for",names(read_stack[[i]]),"coerced to world level projection:",
+                    raster::projection(read_stack[[map_info[map_info[,1] == "world",2]]])),quote = FALSE)
+      }
+    }
+    if (length(unique(p)) > 1 & !exists("map_info")) {
+      print(paste("Differing projection arguments:",unique(p),"Potential conflicts."),quote = FALSE)
     }
 
-    readmap = as(read_stack,"SpatialGridDataFrame")
-
-    # OLD ----- read rasters 1 by 1 instead of as stack >_>
-
-    # import rasters - using spatialgriddataframe format for consistancy
-    # ct = 0
-    # for (name in maps_in){
-    #   ct = ct+1
-    #   file = list.files(path=typepars, pattern = paste("^",name,"$",sep =""),full.names = TRUE)
-    #
-    #   if (length(file) == 0){ # check for file (name listed in template + path in typepars) since list.files doesn't throw an error on no return
-    #     stop(paste("No file named:",name,"at path:",typepars))}
-    #   if(length(file) > 1){ # can only be one file for each name in maps_in
-    #     stop(paste("multiple files containing name:",name,"check directory:",typepars))}
-    #
-    #   read_raster = raster(file, native=TRUE)
-    #   if(sum(unique(getValues(read_raster))==0)>=1){values(read_raster)[values(read_raster)==0] = NA} # THIS IS ONLY NEEDED FOR ASCII
-    #   read = as(read_raster,"SpatialGridDataFrame") # read in map
-    #   names(read) = name # fix names, names with dots get treated as suffixes and removeed by default
-    #   if(!exists("readmap")){readmap = read} # initalize readmap if not already
-    #   #compareRaster(read,readmap,res = FALSE)
-    #   if(!identicalCRS(read,readmap)){stop(paste("Projection of",name,"doesn't match"))} # check projections match
-    #   if(sum(read@grid@cellcentre.offset) != sum(readmap@grid@cellcentre.offset) | # check cell centers match
-    #      sum(read@grid@cellsize) != sum(readmap@grid@cellsize) | # check sell sizes match
-    #      sum(read@grid@cells.dim) != sum(readmap@grid@cells.dim) ){ # check cell dimensions match
-    #     stop(paste("Grid topology (cell size, cell center offset, dimensions) of",name,"doesn't match"))}
-    #
-    #   readmap = cbind(readmap,read) # append current map to map dataframe
+    # if(is.na(raster::projection(read_stack))){
+    #   print("Rasters are missing projection information. Shouldn't effect RHESSysPreprocess functions.")
     # }
+
+    # Handling grass ascii 0's - get rid of 0's for background/NA -----
+    # Ideeally this should be handled when reading in files, but I can't find where the default for nodata is set,
+    # and strangely this is an ascii specific issue
+    if (any(d == "AAIGrid") | any(d == "GRASSASCIIGrid")) {
+      # raster::values(read_stack)[apply(raster::values(read_stack)==0,FUN = all,MARGIN = 1)] = NA
+      # print(paste("Background 0's converted to NA's"))
+
+      # new fix - just set world map(usually basin) 0's to NA, less chance of confusion
+      raster::values(read_stack[[map_info[map_info[,1] == "world",2][[1]]]])[raster::values(read_stack[[map_info[map_info[,1] == "world",2]]]) == 0] = NA
+    }
+
+    # Mask all maps by world level map -----
+    if (exists("map_info")) { # if being run inside RHESSysPreprocess.R will always have map_info - just makes funciton more versitile
+      read_stack = raster::mask(read_stack,read_stack[[map_info[map_info[,1] == "world",2][[1]]]])# mask by map used for world level
+    }
+
+    read_stack = raster::trim(read_stack) #get rid of extra background
+
+    # Check for missing data (within world map mask) - no fix, just an error since I think this will break things if left unchecked
+    if (exists("map_info") & sum(is.na(raster::values(read_stack)[!is.na(raster::values(read_stack[[map_info[map_info[,1] == "world",2][[1]]]])),
+                                                                 !colnames(raster::values(read_stack)) %in% map_info[map_info[,1] == "streams",2]])) > 0) {
+      # Add in future? - which maps are missing data?
+      stop("Missing data within bounds of world level map. Check you input maps.")
+    }
+
+    # Convert maps to SpatialGridDataFrame since world_gen.R expects that format
+    readmap = as(read_stack,"SpatialGridDataFrame")
 
   } # end raster spatial data
 

@@ -2,16 +2,18 @@
 % Please edit documentation in R/read_in_flow.R
 \name{read_in_flow}
 \alias{read_in_flow}
-\title{read_in_flow}
+\title{read_in_flow2}
 \usage{
-read_in_flow(input_file)
+read_in_flow(input_file, df = FALSE)
 }
 \arguments{
 \item{input_file}{Flow table to be read in.}
+
+\item{df}{should a data frame also be output?}
 }
 \description{
-Read in flow table file and return a R list.
+Read in flow table file and return a R list. Should be faster than the other one.
 }
 \author{
-Daniel Nash
+William Burke
 }

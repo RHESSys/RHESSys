@@ -59,7 +59,7 @@ void	output_basin(			int routing_flag,
 	double astreamflow;
 	double asublimation, acanopysubl;
 	double asat_area, adetention_store;
-	double apsn, alai, acrain, acsnow;
+	double apsn, anppcum, alai, acrain, acsnow;
 	double abase_flow, hbase_flow,  hstreamflow_NO3, hstreamflow_NH4;
 	double	aacctrans, var_acctrans, var_trans;
 	double aPET, aPETp, adC13, amortality_fract, apcp, apcpassim;
@@ -105,6 +105,7 @@ void	output_basin(			int routing_flag,
 	astreamflow = 0.0;
 	arecharge = 0.0;
 	apsn = 0.0 ;
+	anppcum = 0.0;
 	aPET = 0.0;
 	aPETp = 0.0;
 	aarea =  0.0 ;
@@ -246,6 +247,9 @@ void	output_basin(			int routing_flag,
 						apsn += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.net_psn
 							* patch[0].area;
+						anppcum += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.nppcum
+							* patch[0].area;
 						alai += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai
 							* patch[0].area;
@@ -350,6 +354,7 @@ void	output_basin(			int routing_flag,
 	atranspiration /= aarea  ;
 	astreamflow /= aarea;
 	apsn /= aarea ;
+	anppcum /= aarea ;
 	alai /= aarea;
 	abase_flow /= aarea;
 	asat_area /= aarea;
@@ -365,7 +370,7 @@ void	output_basin(			int routing_flag,
 	asnowmelt /= aarea;
 	acanopysubl /= aarea;
 	aheight /= aarea;
-  acsnow /= aarea;
+	acsnow /= aarea;
 	
 	aevap_can /= aarea ;
 	aevap_lit /= aarea ;
@@ -400,12 +405,13 @@ void	output_basin(			int routing_flag,
 	var_trans = 0; 
 	var_acctrans = 0;
 	if (var_flag == 1) {
-		for (h=0; h < basin[0].num_hillslopes; h++){
-		hillslope = basin[0].hillslopes[h];
-		for (z=0; z< hillslope[0].num_zones; z++){
-			zone = hillslope[0].zones[z];
-			for (p=0; p< zone[0].num_patches; p++){
-				patch = zone[0].patches[p];
+       #pragma omp parallel for reduction(+ : var_acctrans,var_trans)      
+        for (int h=0; h < basin[0].num_hillslopes; h++){
+        struct hillslope_object *hillslope = basin[0].hillslopes[h];
+        for (int z=0; z< hillslope[0].num_zones; z++){
+            struct zone_object *zone = hillslope[0].zones[z];
+            for (int p=0; p< zone[0].num_patches; p++){
+                struct patch_object *patch = zone[0].patches[p];
 				var_acctrans += pow( 1000*(patch[0].acc_year_trans - aacctrans), 2.0)  *  patch[0].area;
 				var_trans += pow( 1000*(patch[0].transpiration_sat_zone
 					+ patch[0].transpiration_unsat_zone - atranspiration), 2.0)  *  patch[0].area;
@@ -439,6 +445,7 @@ void	output_basin(			int routing_flag,
 		areturn_flow * 1000.0,
 		astreamflow * 1000.0,
 		apsn,
+		anppcum,
 		alai,
 		hgwQout *1000.0,
 		hgw *1000.0,

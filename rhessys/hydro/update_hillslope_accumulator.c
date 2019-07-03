@@ -28,25 +28,21 @@ void update_hillslope_accumulator(
 			struct command_line_object *command_line,
 			struct basin_object *basin){
 	/*--------------------------------------------------------------------------------------*/
-	/* Local variables definitin								*/
+	/* Local variables definition								*/
 	/*--------------------------------------------------------------------------------------*/
-	double scale;
-	int h,z,p;
-	struct hillslope_object *hillslope;
-	struct patch_object * patch;
-
+  // moved these into for loop below for openmp functionality
 	/*--------------------------------------------------------------------------------------*/
 	/* update hillslope accumulator								*/
 	/*--------------------------------------------------------------------------------------*/
-
-	for ( h = 0 ; h < basin[0].num_hillslopes; h++ ){
-		hillslope = basin[0].hillslopes[h];
+    #pragma omp parallel for
+    for (int h = 0 ; h < basin[0].num_hillslopes; h++ ){
+        struct hillslope_object *hillslope = basin[0].hillslopes[h];
 		hillslope[0].acc_month.length += 1;
-		for (z = 0; z < hillslope[0].num_zones; z++) {
-			for (p=0; p < hillslope[0].zones[z][0].num_patches; p++) {
-				patch = hillslope[0].zones[z][0].patches[p];
+        for (int z = 0; z < hillslope[0].num_zones; z++) {
+            for (int p=0; p < hillslope[0].zones[z][0].num_patches; p++) {
+                struct patch_object *patch = hillslope[0].zones[z][0].patches[p];
 
-				scale = patch[0].area / hillslope[0].area;
+                double scale = patch[0].area / hillslope[0].area;
 
 				if((command_line[0].output_flags.monthly == 1)&&(command_line[0].h != NULL)){
 					hillslope[0].acc_month.snowpack += (patch[0].snowpack.water_equivalent_depth) * scale;

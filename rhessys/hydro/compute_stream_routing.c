@@ -313,4 +313,3 @@ double nonlinear_kimetic_wave(double alfa,double Qin,double initial_flow,double 
 
 
 	 }
-

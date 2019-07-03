@@ -34,7 +34,8 @@ struct canopy_strata_object *construct_empty_shadow_strata(
                                                                                                          struct canopy_strata_object *stratum,
                                                                                                          struct default_object  *defaults)
 {
-        /*--------------------------------------------------------------*/
+  
+      /*--------------------------------------------------------------*/
         /*      Local function definition.                              */
         /*--------------------------------------------------------------*/
         struct base_station_object *assign_base_station(

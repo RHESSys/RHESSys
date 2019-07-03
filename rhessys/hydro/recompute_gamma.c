@@ -44,6 +44,8 @@ double recompute_gamma( struct patch_object *patch,
 	/*	is modelled separately and should not be taken into	*/
 	/*	account in modelling surface gradients			*/
 	/*--------------------------------------------------------------*/ 
+	
+	if (patch[0].soil_defaults[0][0].recompute_gamma_flag == 1)  {
 
 	adjustment = 0.0;
 	z1 = patch[0].z;  
@@ -67,9 +69,15 @@ double recompute_gamma( struct patch_object *patch,
 		}
 	else
 		adjustment = 1.0;
+	}
+	else {
+		adjustment = 1.0;
+	}
+
 
 	revised_total_gamma = adjustment * total_gamma;		
-				
+			
+		
 		
 	return(revised_total_gamma);
 } /*recompute_gamma*/

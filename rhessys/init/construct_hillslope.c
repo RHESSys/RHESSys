@@ -311,6 +311,5 @@ struct hillslope_object *construct_hillslope(
 	if(paramPtr!=NULL)
 	  free(paramPtr);
 
-
 	return(hillslope);
 } /*end construct_hillslope.c*/

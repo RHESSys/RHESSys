@@ -34,7 +34,7 @@ void	canopy_stratum_daily_F(
 							   struct	patch_object		      *patch,
 							   struct layer_object		      *layer,
 							   struct canopy_strata_object 	*stratum,
-                 struct canopy_strata_object  *shadow_strata,
+                 					   struct canopy_strata_object  *shadow_strata,
 							   struct command_line_object	  *command_line,
 							   struct	tec_entry		          *event,
 							   struct date 			            current_date)
@@ -43,6 +43,7 @@ void	canopy_stratum_daily_F(
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
 	long	julday(struct date calendar_date);
+
 	
 	double	compute_diffuse_radiative_fluxes(
 		int,
@@ -161,6 +162,12 @@ void	canopy_stratum_daily_F(
 		double	,
 		double	,
 		double	);
+
+	void   compute_xylem_conductance(
+		double,
+		struct epconst_struct,
+		struct canopy_strata_object *);
+
 	
 	double	compute_surface_heat_flux(
 		int	,
@@ -1052,7 +1059,6 @@ void	canopy_stratum_daily_F(
 	stratum[0].mult_conductance.LWP = (m_LWP_shade*stratum[0].epv.proj_lai_shade + 
 		m_LWP_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
-
 	stratum[0].mult_conductance.CO2 = (m_CO2_shade*stratum[0].epv.proj_lai_shade + 
 		m_CO2_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
@@ -1074,6 +1080,14 @@ void	canopy_stratum_daily_F(
 		stratum[0].potential_gs_shade = 0.0;
 		}
 
+	/*--------------------------------------------------------------*/
+	/*  modify conductance to include xylem limitations		*/
+	/*--------------------------------------------------------------*/
+	compute_xylem_conductance(stratum[0].epv.psi, 
+			stratum[0].defaults[0][0].epc,stratum);
+
+	stratum[0].gplant_sunlit =  min(stratum[0].gs_sunlit, stratum[0].gxylem);
+	stratum[0].gplant_shade =  min(stratum[0].gs_shade, stratum[0].gxylem);
 
 	stratum[0].gs = stratum[0].gs_sunlit + stratum[0].gs_shade;
 
@@ -1240,7 +1254,7 @@ void	canopy_stratum_daily_F(
 			zone[0].metv.pa,
 			zone[0].metv.vpd_day,
 			rnet_trans_sunlit,
-			1/stratum[0].gs_sunlit,
+			1/stratum[0].gplant_sunlit,
 			1/stratum[0].ga,
 			2) ;
 		potential_transpiration_rate_sunlit = penman_monteith(
@@ -1259,14 +1273,14 @@ void	canopy_stratum_daily_F(
 	}
 	if ( (rnet_trans_shade > ZERO ) &&
 		(stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO ) &&
-		(stratum[0].gs_shade > ZERO) && ( stratum[0].ga > ZERO) ){
+		(stratum[0].gplant_shade > ZERO) && ( stratum[0].ga > ZERO) ){
 		transpiration_rate_shade = penman_monteith(
 			command_line[0].verbose_flag,
 			zone[0].metv.tday,
 			zone[0].metv.pa,
 			zone[0].metv.vpd_day,
 			rnet_trans_shade,
-			1/stratum[0].gs_shade,
+			1/stratum[0].gplant_shade,
 			1/stratum[0].ga,
 			2) ;
 		potential_transpiration_rate_shade = penman_monteith(
@@ -1774,7 +1788,7 @@ void	canopy_stratum_daily_F(
 			/*	this is done for numerical precision			*/
 			/*--------------------------------------------------------------*/
 			if (stratum[0].epv.proj_lai_sunlit > ZERO)
-				psnin.g = stratum[0].gs_sunlit * 1000 / 1.6 / stratum[0].epv.proj_lai_sunlit;
+				psnin.g = stratum[0].gplant_sunlit * 1000 / 1.6 / stratum[0].epv.proj_lai_sunlit;
 			else
 				psnin.g = 0.0;
 			psnin.flnr = flnr_sunlit;
@@ -1818,7 +1832,7 @@ void	canopy_stratum_daily_F(
 			/*	this is done for numerical precision			*/
 			/*--------------------------------------------------------------*/
 			if (stratum[0].epv.proj_lai_shade > ZERO)
-				psnin.g = stratum[0].gs_shade *1000 / 1.6 / stratum[0].epv.proj_lai_shade;
+				psnin.g = stratum[0].gplant_shade *1000 / 1.6 / stratum[0].epv.proj_lai_shade;
 			else
 				psnin.g = 0.0;
 			psnin.irad = stratum[0].ppfd_shade;

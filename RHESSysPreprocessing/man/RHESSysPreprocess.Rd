@@ -4,10 +4,11 @@
 \alias{RHESSysPreprocess}
 \title{RHESSysPreprocess}
 \usage{
-RHESSysPreprocess(template, name, type = "Raster", typepars, streams = NULL,
-  overwrite = FALSE, roads = NULL, impervious = NULL, roofs = NULL,
-  asprules = NULL, header = FALSE, meta = TRUE, wrapper = TRUE,
-  parallel = FALSE, d4 = TRUE)
+RHESSysPreprocess(template, name, type = "Raster", typepars,
+  streams = NULL, overwrite = FALSE, roads = NULL,
+  impervious = NULL, roofs = NULL, asprules = NULL, header = FALSE,
+  meta = FALSE, unique_strata_ID = TRUE, parallel = TRUE,
+  d4 = FALSE, make_stream = 4, wrapper = TRUE)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
@@ -18,17 +19,16 @@ by your chosen method of data input(GRASS or raster), set using the "type" argue
 \item{name}{The base name (and potentially, path as well) to be used for your ouput files.
 This will create a world file called "<name>.world", and a flow table called "<name>.flow".}
 
-\item{type}{Input file type to be used.  Default is "GRASS" which will attempt to autodetect the
-version of GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".
-"Raster" type will use rasters in GeoTiff or equivalent format (see Raster package), with file names
-matching those indicated in the template.}
+\item{type}{Input file type to be used. Default is raster. "Raster" type will use rasters
+in GeoTiff or equivalent format (see Raster package), with file names  matching those indicated in the template.
+ASCII is supported, but 0's cannot be used as values for data. "GRASS" will attempt to autodetect the version of
+GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".}
 
-\item{typepars}{Parameters needed based on input data type used. For GRASS GIS type, typepars is a
-vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
+\item{typepars}{Parameters needed based on input data type used. If using raster type, typepars should be a string
+indicating the path to a folder containing the raster files that are referenced by the template.
+For GRASS GIS type, typepars is a vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 Example parameters are included in an example script included in this package. See initGRASS help
-for more info on parameters.  If using raster type, typepars should be a string indicating the path to a folder
-containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
-for additional information and supported filetypes.}
+for more info on parameters.}
 
 \item{streams}{Streams map to be used in building the flowtable.}
 
@@ -45,9 +45,19 @@ for additional information and supported filetypes.}
 \item{header}{TRUE/FALSE flag for the creation of a header file. Will have same name (and location) as "name" argument, but with ".hdr" suffix.}
 
 \item{meta}{TRUE/FALSE flag for the creation of a metadata file. Still in dev.}
+
+\item{parallel}{TRUE/FALSE flag to build a flowtable for use in the hilllslope parallelized version of RHESSys. Console may output warnings of
+automated actions taken to make hillslope parallelization possible, or errors indicating fatal problems in hillslope parallelization.}
+
+\item{d4}{TRUE/FALSE flag to determine the logic used when finding neighbors in flow table creation. FALSE uses d8 routing, looking at all eight
+neighboring cells. TRUE uses d4 routing, looking at only cardinal directions, not diagonals.}
+
+\item{make_stream}{The maximum distance (cell lengths) away from an existing stream that a patch can be automatically coerced to be a stream.
+Setting to TRUE will include patches at any distance. This is needed for hillslope parallelization, as all hillslopes must have an outlet stream patch.
+Default is 4.}
 }
 \description{
-Preforms RHESSys Preprocessing, comprise of two main steps: generating a world file, and generating a flow table.
+Preforms RHESSys Preprocessing, comprised of two main steps: generating a world file, and generating a flow table.
 World file is generated via world_gen.R, and flow table is generated via CreateFlownet.R.
 }
 \seealso{

@@ -178,8 +178,6 @@ void  update_drainage_land(
 		patch[0].transmissivity_profile,
 		patch);
 
-
-
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 
 		route_to_patch *= (available_sat_water)/(route_to_patch);
@@ -441,12 +439,12 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	/* determine which innundation depth to consider		*/
 	/*--------------------------------------------------------------*/
-	if (patch[0].num_innundation_depths > 0) {
-		innundation_depth = patch[0].detention_store + route_to_surface/patch[0].area; 
-		d=0;
-		while ((innundation_depth > patch[0].innundation_list[d].critical_depth) 
-			&& (d < patch[0].num_innundation_depths-1)) {
-			d++;}
+    if (patch[0].num_innundation_depths > 0) {
+		  innundation_depth = patch[0].detention_store + route_to_surface/patch[0].area; 
+		  d=0;
+		  while ((innundation_depth > patch[0].innundation_list[d].critical_depth) 
+			  && (d < patch[0].num_innundation_depths-1)) {
+			  d++;}
 		}
 	else d=0;
 	for (j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {

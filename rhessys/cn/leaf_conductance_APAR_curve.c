@@ -51,6 +51,6 @@ double	leaf_conductance_APAR_curve(	double	APAR,
 	if (APAR_coef > ZERO)
 		m_APAR = ( APAR * APAR_coef ) / ( 1.0 + APAR * APAR_coef );
 	else
-		m_APAR = 1;
+		m_APAR = 1.0;
 	return(m_APAR);
 } /*end leaf_conductance_APAR_curve*/

@@ -4,8 +4,9 @@
 \alias{world_gen}
 \title{World Gen}
 \usage{
-world_gen(template, worldfile, type = "Raster", typepars, overwrite = FALSE,
-  header = FALSE, asprules = NULL, wrapper = FALSE)
+world_gen(template, worldfile, type = "Raster", typepars,
+  overwrite = FALSE, header = FALSE, unique_strata_ID = TRUE,
+  asprules = NULL, wrapper = FALSE)
 }
 \arguments{
 \item{template}{Template file used to generate worldfile for RHESSys. Generic strucutre is:
@@ -15,16 +16,16 @@ by your chosen method of data input(GRASS or raster), set using the "type" argue
 
 \item{worldfile}{Name and path of worldfile to be created.}
 
-\item{type}{Input file type to be used. "GRASS" will attempt to autodetect the
-version of GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".
-"Raster" type will use rasters in GeoTiff or equivalent format, with file names matching those indicated in the template.}
+\item{type}{Input file type to be used. Default is raster. "Raster" type will use rasters
+in GeoTiff or equivalent format (see Raster package), with file names  matching those indicated in the template.
+ASCII is supported, but 0's cannot be used as values for data. "GRASS" will attempt to autodetect the version of
+GRASS GIS being used (6.x or 7.x).  GRASS GIS type can also be set explicitly to "GRASS6" or "GRASS7".}
 
-\item{typepars}{Parameters needed based on input data type used. For GRASS GIS type, typepars is a
-vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
+\item{typepars}{Parameters needed based on input data type used. If using raster type, typepars should be a string
+indicating the path to a folder containing the raster files that are referenced by the template.
+For GRASS GIS type, typepars is a vector of 5 character strings. GRASS GIS parameters: gisBase, home, gisDbase, location, mapset.
 Example parameters are included in an example script included in this package. See initGRASS help
-for more info on parameters.  If using raster type, typepars should be a string indicating the path to a folder
-containing the raster files that are referenced by the template. See help for the Raster function (in the Raster package)
-for additional information and supported filetypes.}
+for more info on parameters.}
 
 \item{overwrite}{Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.}
 
@@ -35,7 +36,7 @@ Generates world files for use in RHESSys based on input template and maps,
 currently includes functionality for GRASS GIS and raster data, and works on both unix and windows. 1/23/18.
 }
 \seealso{
-\code{\link{initGRASS}}, \code{\link{readRAST}}, \code{\link{raster}}
+\code{\link{raster}}
 }
 \author{
 Will Burke
