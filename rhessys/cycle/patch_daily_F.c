@@ -424,6 +424,7 @@ void		patch_daily_F(
 	double PAR_direct_covered, PAR_diffuse_covered, PAR_direct_exposed, PAR_diffuse_exposed;
 	double snow_melt_covered, snow_melt_exposed;
 	double 	rz_drainage,unsat_drainage;
+	double prop_detention_store_infiltrated;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
@@ -1409,7 +1410,10 @@ void		patch_daily_F(
 		/*--------------------------------------------------------------*/
 		/* now take infiltration out of detention store 	*/
 		/*--------------------------------------------------------------*/
-		
+
+		if (infiltration > ZERO)	
+			prop_detention_store_infiltrated = infiltration/patch[0].detention_store;	
+
 		patch[0].detention_store -= infiltration;
 			/*--------------------------------------------------------------*/
 			/*	Determine if the infifltration will fill up the unsat	*/
@@ -1439,21 +1443,21 @@ void		patch_daily_F(
 		/*--------------------------------------------------------------*/
 		if ((command_line[0].grow_flag > 0) && (infiltration > ZERO)) {
 			patch[0].soil_ns.DON += ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_DON);
+					/ prop_detention_store_infiltrated) * patch[0].surface_DON);
 			patch[0].soil_cs.DOC += ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_DOC);
+					/ prop_detention_store_infiltrated) * patch[0].surface_DOC);
 			patch[0].soil_ns.nitrate += ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_NO3);
+					/ prop_detention_store_infiltrated) * patch[0].surface_NO3);
 			patch[0].surface_NO3 -= ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_NO3);
+					/ prop_detention_store_infiltrated) * patch[0].surface_NO3);
 			patch[0].soil_ns.sminn += ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_NH4);
+					/ prop_detention_store_infiltrated) * patch[0].surface_NH4);
 			patch[0].surface_NH4 -= ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_NH4);
+					/ prop_detention_store_infiltrated) * patch[0].surface_NH4);
 			patch[0].surface_DOC -= ((infiltration
-							/ patch[0].detention_store) * patch[0].surface_DOC);
+							/ prop_detention_store_infiltrated) * patch[0].surface_DOC);
 			patch[0].surface_DON -= ((infiltration
-							/ patch[0].detention_store) * patch[0].surface_DON);
+							/ prop_detention_store_infiltrated) * patch[0].surface_DON);
 				}
 
 	} // end if hourly rain flag			
@@ -1766,7 +1770,7 @@ void		patch_daily_F(
 		else  {rz_deficit=0.0;}
     	}
 
-	cap_rise_to_unsat = min(potential[0].cap_rise, unsat_deficit);
+	cap_rise_to_unsat = min(patch[0].potential_cap_rise, unsat_deficit);
 	patch[0].unsat_storage += cap_rise_to_unsat;
 	cap_rise_to_rz_storage = min(cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
 	cap_rise_to_rz_storage = min(rz_deficit, rz_deficit);
