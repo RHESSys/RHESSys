@@ -1048,6 +1048,7 @@ struct zone_object
         struct  grow_zone_object        *grow;
         struct  metvar_struct           metv;
         struct  patch_object            **patches;
+        struct  patch_family_object     **patch_family;
         struct  zone_default            **defaults;
         struct  zone_hourly_object      *hourly;
         struct  accumulate_zone_object  acc_month;
@@ -1577,7 +1578,8 @@ struct patch_object
         {
         int             zone_ID;
         int             default_flag;
-        int             ID;     
+        int             ID;
+        int             family_ID;     
         int             num_base_stations;                              
         int             num_innundation_depths;
         int             num_canopy_strata;
@@ -2067,6 +2069,7 @@ struct  command_line_object
         int             version_flag;
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
+        int             multiscale_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];

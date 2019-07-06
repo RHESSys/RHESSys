@@ -389,10 +389,18 @@ struct zone_object *construct_zone(
 		zone[0].patches[i][0].zone = zone;
 	} /*end for*/
 
+	/*--------------------------------------------------------------*/
+	/*	Construct patch families here ??									*/
+	/*--------------------------------------------------------------*/
+
+	if ( command_line[0].multiscale_flag == 1 ){
+		zone[0].patch_family = construct_patch_family(
+			command_line,
+			world_file);
+	}
 
 	if(paramPtr!=NULL)
 	  free(paramPtr);
-
 	
 	return(zone);
 } /*end construct_zone.c*/

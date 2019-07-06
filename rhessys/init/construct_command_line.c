@@ -130,6 +130,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
+	command_line[0].multiscale_flag = 0;
 	
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -1176,6 +1177,16 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].evap_use_longwave_flag = 1;
 				i++;
 			}
+
+			/*--------------------------------------------------------------*/
+			/*		Check for multiscale routing flag next				    */
+			/*--------------------------------------------------------------*/
+
+			else if (strcmp(main_argv[i], "-msr") == 0) {
+				command_line[0].multiscale_flag = 1;
+				i++;
+			}
+
 			/*--------------------------------------------------------------*/
 			/*	NOTE:  ADD MORE OPTION PARSING HERE.						*/
 			/*--------------------------------------------------------------*/

@@ -1,5 +1,5 @@
 
-VERSION = 7.2 
+VERSION = 7.1
 PGM  = rhessys$(VERSION)
 CC = gcc
 #CXX = g++
@@ -101,6 +101,7 @@ $(OBJ)/compute_lwp_predawn.o \
 $(OBJ)/compute_maint_resp.o \
 $(OBJ)/compute_mean_hillslope_parameters.o \
 $(OBJ)/compute_nonvascular_stratum_conductance.o \
+$(OBJ)/compute_patch_family_routing.o \
 $(OBJ)/compute_potential_N_uptake.o \
 $(OBJ)/compute_potential_N_uptake_Dickenson.o \
 $(OBJ)/compute_potential_N_uptake_Waring.o \
@@ -155,9 +156,7 @@ $(OBJ)/construct_monthly_clim.o \
 $(OBJ)/construct_output_files.o \
 $(OBJ)/construct_output_fileset.o \
 $(OBJ)/construct_patch.o \
-
-# $(OBJ)/construct_patch_family.o \
-
+$(OBJ)/construct_patch_family.o \
 $(OBJ)/construct_fire_grid.o \
 $(OBJ)/construct_routing_topology.o \
 $(OBJ)/construct_stream_routing_topology.o \
@@ -659,12 +658,10 @@ $(OBJ)/assign_base_station_xy.o: init/assign_base_station_xy.c
 	$(CC) -c $(CFLAGS) -I include init/assign_base_station_xy.c -o $(OBJ)/assign_base_station_xy.o
 $(OBJ)/construct_zone.o: init/construct_zone.c
 	$(CC) -c $(CFLAGS) -I include init/construct_zone.c -o $(OBJ)/construct_zone.o
-
-#$(OBJ)/construct_patch_family.o: init/construct_patch_family.c
-#	$(CC) -c $(CFLAGS) -I include init/construct_patch_family.c -o $(OBJ)/construct_patch_family.o
-
 $(OBJ)/construct_patch.o: init/construct_patch.c
 	$(CC) -c $(CFLAGS) -I include init/construct_patch.c -o $(OBJ)/construct_patch.o
+$(OBJ)/construct_patch_family.o: init/construct_patch_family.c
+	$(CC) -c $(CFLAGS) -I include init/construct_patch_family.c -o $(OBJ)/construct_patch_family.o
 $(OBJ)/find_patch.o: util/find_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch.c -o $(OBJ)/find_patch.o
 $(OBJ)/key_compare.o: util/key_compare.c
@@ -803,6 +800,8 @@ $(OBJ)/compute_capillary_rise.o: hydro/compute_capillary_rise.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_capillary_rise.c -o $(OBJ)/compute_capillary_rise.o
 $(OBJ)/compute_unsat_zone_drainage.o: hydro/compute_unsat_zone_drainage.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_unsat_zone_drainage.c -o $(OBJ)/compute_unsat_zone_drainage.o
+$(OBJ)/compute_patch_family_routing.o: hydro/compute_patch_family_routing.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_patch_family_routing.c -o $(OBJ)/compute_patch_family_routing.o
 $(OBJ)/snowpack_daily_F.o: hydro/snowpack_daily_F.c
 	$(CC) -c $(CFLAGS) -I include hydro/snowpack_daily_F.c -o $(OBJ)/snowpack_daily_F.o
 $(OBJ)/sort_by_elevation.o: util/sort_by_elevation.c
