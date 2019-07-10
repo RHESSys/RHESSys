@@ -1772,7 +1772,7 @@ void		patch_daily_F(
 
 	cap_rise_to_unsat = min(patch[0].potential_cap_rise, unsat_deficit);
 	patch[0].unsat_storage += cap_rise_to_unsat;
-	cap_rise_to_rz_storage = min(cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
+	cap_rise_to_rz_storage = min(patch[0].potential_cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
 	cap_rise_to_rz_storage = min(rz_deficit, cap_rise_to_rz_storage);
 	patch[0].rz_storage +- cap_rise_to_rz_storage;
 
