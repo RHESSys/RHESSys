@@ -262,6 +262,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.mineralized = 0.0;
 	patch[0].acc_year.uptake = 0.0;
 	patch[0].acc_year.lai = 0.0;
+	patch[0].acc_year.peaklaiday = 0;
 	patch[0].acc_year.leach = 0.0;
 	patch[0].acc_year.DOC_loss = 0.0;
 	patch[0].acc_year.DON_loss = 0.0;

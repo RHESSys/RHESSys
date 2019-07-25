@@ -356,6 +356,7 @@ struct accumulate_patch_object
    double length;
    int meltday;
    int peaksweday;
+   int peaklaiday;
    int wyd;
    int rec_wyd;
    int rec_pet_wyd;

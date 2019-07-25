@@ -429,7 +429,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 			"year",
 			"basinID",
 			"hillID",
@@ -438,6 +438,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 			"num_threshold_sat_def",
 			"peaksweday",
 			"meltday",
+			"peaklaiday",
 			"leach",
 			"denitrif",
 			"DOC_loss",
