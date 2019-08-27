@@ -1182,7 +1182,8 @@ struct	command_line_object	*construct_command_line(
 			/*		Check for multiscale routing flag next				    */
 			/*--------------------------------------------------------------*/
 
-			else if (strcmp(main_argv[i], "-msr") == 0) {
+			else if (strcmp(main_argv[i],"-msr") == 0) {
+				//printf("-msr flag triggered\n");
 				command_line[0].multiscale_flag = 1;
 				i++;
 			}

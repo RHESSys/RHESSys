@@ -51,6 +51,10 @@ void	output_patch_state(
 	/*--------------------------------------------------------------*/
 	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30ld %s",patch[0].ID, "patch_ID");
+	if (command_line[0].multiscale_flag == 1) {
+		fprintf(outfile,"%-30ld %s",patch[0].family_ID, "family_ID");
+		fprintf(outfile,"\n          ");
+	}
 
 	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30.8f %s",patch[0].x, "x");

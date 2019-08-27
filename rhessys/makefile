@@ -17,7 +17,8 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif 
 
-CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES) -fno-stack-protector
+CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES) -fno-stack-protector -w 
+# -w added by Will to supress warnings, feel free to remove
 
 ifdef openmp
   CFLAGS += -fopenmp

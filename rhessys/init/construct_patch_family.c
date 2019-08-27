@@ -2,28 +2,25 @@
 /*						                                		*/
 /*		    construct_patch_family  		                   	*/
 /*							                                   	*/
-/*	construct_patch_family.c - creates a patch family 	    */
+/*	construct_patch_family.c - creates a patch family object    */
 /*							                                	*/
 /*	NAME					                            		*/
-/*	construct_patch_family.c - routes within patch family   	*/
+/*	construct_patch_family.c - creates a patch family object    */
 /*							                                	*/
 /*	SYNOPSIS					                            	*/
-/*	 construct_patch_family( ) 	*/
-/*                                                              */
-/*					                                            */
-/*				                                            	*/
-/*                                                              */
-/*										                       	*/
-/* 										                       	*/
+/*	struct patch_family_object construct_patch_family(          */
+/*                          struct zone_object *zone,           */
+/*                          int     patch_family_ID)            */
 /*										                       	*/
 /*	OPTIONS								                   		*/
 /*										                       	*/
 /*										                       	*/
 /*	DESCRIPTION								                   	*/
-/*	Create patch family data object  							*/
-/*										                       	*/
-/*										                       	*/
-/*										                       	*/
+/*	Create a patch_family_object structure which points to 		*/
+/*	the patch objects within it (defined by patch family IDs  	*/
+/*	set in preprocessing). Structure also includes the family  	*/
+/*	ID and number of patches in that family.                   	*/
+/*                                                              */
 /*	PROGRAMMER NOTES							               	*/
 /*										                       	*/
 /*	July, 2019 William Burke						           	*/
@@ -33,54 +30,70 @@
 
 // includes
 #include <stdio.h>
+#include "rhessys.h"
+//#include "params.h"
 
-struct patch_family *construct_patch_family(
-    struct	command_line_object	*command_line,
-	FILE	*world_file) 
+struct patch_family_object *construct_patch_family(
+    struct zone_object *zone,
+    int     patch_family_ID)
 {
-
 
 /*--------------------------------------------------------------*/
 /*	Local function definition.				                    */
 /*--------------------------------------------------------------*/
 
-// maybe nothing here?
+void	*alloc(size_t, char *, char *);
 
 /*--------------------------------------------------------------*/
 /*	Local variable definition.			                    	*/
 /*--------------------------------------------------------------*/
+int i, count;
 
-int num_patch_family;
-int patch_families;
 struct patch_family_object *patch_family;
 
+/*--------------------------------------------------------------*/
+/*  Allocate a patch family object(s)                           */
+/*--------------------------------------------------------------*/
+patch_family = (struct patch_family_object *) alloc( 1 * sizeof( struct patch_family_object ),"patch_family","construct_patch_family");
 
 /*--------------------------------------------------------------*/
-/*  Allocate a patch family object.                             */
+/*	Loop through patches           	                        	*/
 /*--------------------------------------------------------------*/
 
-// FIX FOR PATCH FAMILY NOT PATCH
-//patch_family = (struct patch_family_object *) alloc( 1 * sizeof( struct patch_family_object ),"patch","construct_patch");
+//set family ID for family obj, this could happen outside of function but whatever
+patch_family[0].family_ID = patch_family_ID;
+
+count = 0;
+for(i=0; i<zone[0].num_patches; i++)
+{
+    if(zone[0].patches[i][0].family_ID == patch_family_ID)
+    {
+        //patch_family[0].patches[count] = zone[0].patches[i];
+        count++;
+    }
+}
+patch_family[0].num_patches_in_fam = count;
+//printf("%d patches in patch family %d \n",patch_family[0].num_patches_in_fam, patch_family[0].family_ID);
 
 /*--------------------------------------------------------------*/
-/*	Loop thru patches            	                    	*/
+/*	Allocate pointers to patches   	                        	*/
 /*--------------------------------------------------------------*/
 
-// loop through patches
-// IF - family ID is in array, add pointer to patch ID to array in patch family struct
-// IF not in array, add ID to patch_family array as well as patch ID pointer
+patch_family[0].patches = (struct patch_object ** ) 
+		alloc( patch_family[0].num_patches_in_fam * sizeof( struct patch_object *),
+		"patches","construct_patch_family");
 
-//patch_family[0].family_ID = XXXXXXXXX ;
+// finally actually point to the correct patches
+count = 0;
+for(i=0; i<zone[0].num_patches; i++)
+{
+    if(zone[0].patches[i][0].family_ID == patch_family_ID)
+    {
+        patch_family[0].patches[count] = zone[0].patches[i];
+        count++;
+    }
+}
 
-/*--------------------------------------------------------------*/
-/*	Find patches in patch family        	*/
-/*--------------------------------------------------------------*/
-
-
-
-
-//patch_family[0].patches =  XXXXXXXXX ;
-
-
+return(patch_family);
 
 }

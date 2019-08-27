@@ -989,6 +989,7 @@ struct zone_object
         int             Kdown_direct_flag;                  /*  0 or 1  */
         int             num_base_stations;                              
         int             num_patches;
+        int             num_patch_families;
 	int		zone_parm_ID;
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
@@ -1048,7 +1049,7 @@ struct zone_object
         struct  grow_zone_object        *grow;
         struct  metvar_struct           metv;
         struct  patch_object            **patches;
-        struct  patch_family_object     **patch_family;
+        struct  patch_family_object     **patch_families;
         struct  zone_default            **defaults;
         struct  zone_hourly_object      *hourly;
         struct  accumulate_zone_object  acc_month;
@@ -1107,6 +1108,8 @@ struct  landuse_default
         double  lai_cut;                                /* m2/m2 */
         double  percent_impervious;                     /* 0-1 */
         double  grazing_Closs;                  /* kgC/m2/day */
+        double  sh_l;                                   /* 0 - 1 */
+        double  sh_g;                                   /* 0 - 1 */
 };
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/
@@ -1764,6 +1767,9 @@ struct patch_object
         double overland_flow; /* m/s */
         double  T_canopy;  /* deg C */
         double  T_canopy_final;  /* deg C */
+        double  rz_transfer;            /* m water      */
+        double  unsat_transfer;         /* m water      */
+        double  sat_transfer;           /* m water      */
         struct  base_station_object     **base_stations;
         struct  soil_default            **soil_defaults;
         struct  landuse_default         **landuse_defaults;
@@ -1851,6 +1857,17 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
+        };
+
+/*----------------------------------------------------------*/
+/*      Define a patch family object                        */
+/*----------------------------------------------------------*/
+
+struct patch_family_object
+        {
+        int family_ID;
+        int num_patches_in_fam;
+        struct  patch_object            **patches;
         };
 
 /*----------------------------------------------------------*/
@@ -2221,6 +2238,7 @@ struct cstate_struct
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
+    double stem_density;    /* number per m2 */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */
@@ -2671,6 +2689,7 @@ struct epconst_struct
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
+    double max_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
         double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
     int     max_years_resprout; /* num years of resprouting before death */
     double waring_pa; /* parameter for Waring allometric equation */

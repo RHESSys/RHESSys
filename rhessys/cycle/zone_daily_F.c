@@ -152,6 +152,8 @@ void		zone_daily_F(
 		struct tec_entry *,
 		struct date);
 	long julday(struct date);
+	void 	compute_patch_family_routing(
+  		struct 	zone_object 	*);
 	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -646,10 +648,15 @@ void		zone_daily_F(
 	}
 
 	/*--------------------------------------------------------------*/
-	/*	Compute patch family routing here???		    	*/
+	/*	Compute patch family routing				    			*/
 	/*--------------------------------------------------------------*/
-	
 
+	
+	if (command_line[0].multiscale_flag == 1) {
+		//printf("\n Computing patch family routing for zone %d on day %li\n", zone[0].ID, day);
+		compute_patch_family_routing(zone);
+	}
+	
 
 	/*--------------------------------------------------------------*/
 	/*      update accumulator variables                            */

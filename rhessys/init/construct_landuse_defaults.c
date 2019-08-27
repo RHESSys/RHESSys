@@ -102,6 +102,8 @@ struct landuse_default *construct_landuse_defaults(
 		default_object_list[i].PH = 			getDoubleParam(&paramCnt, &paramPtr, "PH", "%lf", 7.0, 1);
 		default_object_list[i].percent_impervious = 	getDoubleParam(&paramCnt, &paramPtr, "landuse.percent_impervious", "%lf", 0.0, 1);
 		default_object_list[i].grazing_Closs = 	getDoubleParam(&paramCnt, &paramPtr, "grazing_Closs", "%lf", 0.0, 1) / 365;
+        default_object_list[i].sh_g = getDoubleParam(&paramCnt, &paramPtr, "sh_g", "%lf", 0.0, 1);
+        default_object_list[i].sh_l = getDoubleParam(&paramCnt, &paramPtr, "sh_l", "%lf", 0.0, 1);
 
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
