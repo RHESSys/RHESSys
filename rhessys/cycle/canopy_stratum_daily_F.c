@@ -1989,7 +1989,7 @@ void	canopy_stratum_daily_F(
            year_delay = world[0].defaults[0].beetle[0].year_delay;  // this is the snag delay time
             if (julday(clim_event.edate)+365*2.5 < julday(current_date)) {
 
-       for (inx=0; inx<300; inx=inx+24){ // here 300 is hard coded here, should figure outsome other method.
+       for (inx=0; inx<3000; inx=inx+24){ // here 300 is hard coded here, should figure out some other method.
 
         clim_event2 = stratum[0].snag_sequence.seq[inx];
 
