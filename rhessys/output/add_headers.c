@@ -467,7 +467,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].daily;
 	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -495,7 +495,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"m_APAR","m_tavg","m_LWP","m_CO2","m_tmin","m_vpd","dC13",
 		"Kstar_dir","Kstar_dif",
 		"Lstar","surf_heat",
-		"height","covfrac","vegID", "wstress_days");
+		"height","covfrac","vegID", "wstress_days", "potential_psn_to_cpool");
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
