@@ -62,6 +62,12 @@ void	output_canopy_strata_state(
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.cpool)               , "cs.cpool");
 	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.stem_density)               , "cs.stem_density");
+	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc_age1)               , "cs.leafc_age1");
+	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc_age2)               , "cs.leafc_age2");
+	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc)               , "cs.leafc");
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.dead_leafc)          , "cs.dead_leafc");

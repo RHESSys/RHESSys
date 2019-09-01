@@ -133,8 +133,14 @@ void input_new_strata(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].snow_stored = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"rain_stored","%lf",canopy_strata[0].rain_stored,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].rain_stored = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",canopy_strata[0].cs.stem_density,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.stem_density = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",canopy_strata[0].cs.cpool,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cpool = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age2","%lf",canopy_strata[0].cs.leafc_age2,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc_age2 = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc_age1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc_age1 = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",canopy_strata[0].cs.leafc,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.leafc = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",canopy_strata[0].cs.dead_leafc,1);
@@ -300,11 +306,25 @@ void input_new_strata(
 		canopy_strata[0].defaults[0][0].epc.lai_ratio;
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
 	
-	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
+	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
+	/* use stem density if included otherwise default to simply stem carbon */
+		if (canopy_strata[0].cs.stem_density < ZERO) {
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
 		* pow((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+		}
+		else {
+		canopy_strata[0].cs.stem_density = min(canopy_strata[0].cs.stem_density,
+			canopy_strata[0].defaults[0][0].epc.max_stem_density);
+		canopy_strata[0].epv.height =
+                canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
+                * pow(((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc)/
+                        canopy_strata[0].cs.stem_density),
+                canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+		}
+	}
+	/* grass */
 	else
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef

@@ -45,7 +45,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*------------------------------------------------------*/
 
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf \n",
+		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -83,6 +83,15 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		stratum[0].phen.gsi,
 		stratum[0].ns.nlimit,
 		stratum[0].cdf.fleaf, stratum[0].cdf.froot, stratum[0].cdf.fwood, stratum[0].ndf.actual_N_uptake*1000.0,
-		stratum[0].ndf.sminn_to_npool*1000.0, stratum[0].ndf.retransn_to_npool*1000.0, stratum[0].cs.mortality_fract);
+		stratum[0].ndf.sminn_to_npool*1000.0, stratum[0].ndf.retransn_to_npool*1000.0, stratum[0].cs.mortality_fract,
+		stratum[0].cdf.assim_sunlit * 1000.0,
+		stratum[0].cdf.assim_shade * 1000.0,
+		stratum[0].cdf.trans_sunlit * 1000.0,
+		stratum[0].cdf.trans_shade * 1000.0,
+
+		stratum[0].cs.leafc_age1 * 1000.0,
+		stratum[0].cs.leafc_age2 * 1000.0,
+		stratum[0].epv.proj_lai_sunlit,
+		stratum[0].epv.proj_lai_shade);
 	return;
 } /*end output_growth_canopy_stratum*/

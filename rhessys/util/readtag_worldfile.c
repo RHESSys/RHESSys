@@ -39,23 +39,18 @@ param *readtag_worldfile(int *paramCnt, FILE *file,char *key){
      *  number of state variables in each hierachic level is specified in phys_constants.h
      *-----------------------------------------------------------------------------*/
     if (strcmp(key,"Basin")==0){
-      //it is reading the 7 state variables for basin, 
       num_variables = NUM_VAR_BASIN;
     }
     else if (strcmp(key,"Hillslope")==0){
-      //in this case, it is reading the 8 state variables for hillslope
       num_variables = NUM_VAR_HILLSLOPE;
     }
     else if(strcmp(key,"Zone")==0){
-      //it is reading the 12 state variables for zones
       num_variables = NUM_VAR_ZONE;
     }
     else if(strcmp(key,"Patch")==0){
-      //it is reading the 37 state variables for patch
       num_variables = NUM_VAR_PATCH;
     }
     else if(strcmp(key,"Canopy_Strata")==0){
-      // reading the 56 state variables for strata
       num_variables = NUM_VAR_STRATA;
     }
     
