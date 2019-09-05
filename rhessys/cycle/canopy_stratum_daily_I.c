@@ -119,7 +119,29 @@ void	canopy_stratum_daily_I(
 	
 	int	zero_stratum_daily_flux(struct cdayflux_struct *,
 		struct ndayflux_struct *);
-	
+
+
+	/*--------------------------------------------------------------*/
+	/*  Local variable definition.                                  */
+	/*--------------------------------------------------------------*/
+	struct cstate_struct *cs;
+	struct nstate_struct *ns;
+	double wilting_point;
+	struct mortality_struct mort;
+	double leafcloss_perc, daily_mortality;
+
+	/*--------------------------------------------------------------*/
+	/* no processing at present for non-veg types			*/
+	/*--------------------------------------------------------------*/
+	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) {
+		
+	/*--------------------------------------------------------------*/
+	/*  zero all of the carbon daily flux variables.		*/
+	/*--------------------------------------------------------------*/
+	if (zero_stratum_daily_flux(&(stratum[0].cdf), &(stratum[0].ndf) )){
+		fprintf(stderr,"fATAL ERROR: in zero_day_flux() ... Exiting\n");
+		exit(EXIT_FAILURE);
+	}	
 	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -183,12 +205,9 @@ void	canopy_stratum_daily_I(
 		stratum[0].cs.Tacc = zone[0].metv.tavg;
 
 
-<<<<<<< HEAD
-=======
 	if (command_line[0].grow_flag > 0)  {
 		cs = &(stratum[0].cs);
 		ns = &(stratum[0].ns);
-	
 	 	
 		stratum[0].cs.preday_totalc = (cs->cpool + cs->cwdc
 			+ cs->leafc + cs->leafc_store + cs->leafc_transfer

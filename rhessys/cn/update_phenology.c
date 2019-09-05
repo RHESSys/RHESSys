@@ -90,11 +90,13 @@ void update_phenology(struct zone_object  *zone,
 		double,
 		struct litter_c_object *,
 		struct litter_object *);
+
 	int	compute_annual_litfall(
 		struct epconst_struct,
 		struct phenology_struct *,
 		struct cstate_struct *,
 		int);
+
 	int     compute_cwd_decay(	struct epconst_struct *,
 		double,
 		struct cstate_struct *,
@@ -313,6 +315,7 @@ void update_phenology(struct zone_object  *zone,
 	
 	phen->daily_allocation = epc.alloc_prop_day_growth;
 	phen->annual_allocation = 0;
+
 	if (((cs->frootc + cs->frootc_transfer + cs->frootc_store) < ZERO) && (epc.phenology_flag != STATIC)) {
 		printf("\n calling annual allocation because fine roots are zero %lf %lf %lf", cs->frootc, cs->frootc_transfer, cs->frootc_store);
 		phen->annual_allocation=1;} 
@@ -387,6 +390,8 @@ void update_phenology(struct zone_object  *zone,
 		phen->annual_allocation = 1;
 	}
 
+	if (epc.veg_type == TREE)
+		printf("\n day %ld lf %d %d lc %ld af %d", day, phen->lfseasonday, phen->gwseasonday, phen->annual_allocation);
 
 	/*--------------------------------------------------------------*/
 	/*	update growth variables					*/

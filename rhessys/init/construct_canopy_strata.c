@@ -77,8 +77,6 @@ struct canopy_strata_object *construct_canopy_strata(
 		double,
 		double);
 
-<<<<<<< HEAD
-
 	void    update_phenology(
                 struct zone_object *,
                 struct epvar_struct *,
@@ -537,7 +535,6 @@ struct canopy_strata_object *construct_canopy_strata(
 		if ((day >= canopy_strata[0].phen.expand_startday) && (day < canopy_strata[0].phen.litfall_startday)) {
 		canopy_strata[0].phen.gwseasonday = day-canopy_strata[0].phen.expand_startday;
 		canopy_strata[0].phen.lfseasonday = -1;
-<<<<<<< HEAD
 		}
 		else {
 		if (day > canopy_strata[0].phen.expand_startday)
@@ -634,6 +631,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].epv.wstress_days = 0;
 	canopy_strata[0].epv.max_fparabs = 0.0;
 	canopy_strata[0].epv.min_vwc = 1.0;
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  strata base stations 					*/
 	/*--------------------------------------------------------------*/
