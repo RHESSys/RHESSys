@@ -74,6 +74,7 @@ void input_new_strata_thin(
 		double,
 		double,
 		double,
+		double,
 		double);
 
 	double compute_delta_water(
@@ -438,6 +439,7 @@ void input_new_strata_thin(
 			rootc, 
 			canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
+			canopy_strata[0].defaults[0][0].epc.max_root_depth,
 			patch[0].soil_defaults[0][0].effective_soil_depth)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from construct_canopy_strata()\n");
