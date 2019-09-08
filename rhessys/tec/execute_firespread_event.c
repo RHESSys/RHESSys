@@ -160,8 +160,8 @@ void execute_firespread_event(
 					world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc) *
 							patch_fire_grid[i][j].prop_patch_in_grid[p] ;
-        world[0].fire_grid[i][j].fuel_litter +=(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction // add the dead leaf to litter pool
-                * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_leafc) *
+                    world[0].fire_grid[i][j].fuel_litter +=(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction // add the dead leaf to litter pool
+                        * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_leafc) *
                 patch_fire_grid[i][j].prop_patch_in_grid[p] ;
 
 					}
