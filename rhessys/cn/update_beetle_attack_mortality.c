@@ -53,6 +53,8 @@ void update_beetle_attack_mortality(
 					  struct snag_sequence_object *redneedle_sequence,
 					  int inx,
 					  int thintyp,
+					  int root_alive,
+					  int harvest_dead_root,
 					  struct mortality_struct mort)
 {
 	/*------------------------------------------------------*/
@@ -413,35 +415,48 @@ void update_beetle_attack_mortality(
 	/* BELOWGROUND C POOLS */
 	/* Belowground dead c goes to litter and cwd in all cases. */
 	/*   Fine root mortality */
+	/* based on ryan fire effect model, if the root go to litter pool immedialty after outbreak, */
+	/*there will be an sudden increase of fire which is not realistic, to solve this problem, using defs to control the root*/
+	/*mainly there are three possiblities:1. after beetle attack, assume the root is still alive, so nothing happened to root*/
+	/*2. after attack, the root is dead, and go to litter pool, so this is the traditional mortality routine (but causing fire pulse problem*/
+	/*3. after attack, the root is dead and harvest, which means the carbon is removed from root pool, but not going to the litter pool*/
+	/*two parameters control it, root_alive, and harvest_dead_root, in beetles.def By ning ren 20190908 */
 	/***************************************************************/
+	if (root_alive == 0) { //if the root is dead after attack
+        if(harvest_dead_root == 0) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
 	cs_litr->litr1c    += m_frootc_to_litr1c;
-	cs->frootc         -= m_frootc_to_litr1c;
 	cs_litr->litr2c    += m_frootc_to_litr2c;
-	cs->frootc         -= m_frootc_to_litr2c;
 	cs_litr->litr3c    += m_frootc_to_litr3c;
-	cs->frootc         -= m_frootc_to_litr3c;
 	cs_litr->litr4c    += m_frootc_to_litr4c;
-	cs->frootc         -= m_frootc_to_litr4c;
 	cs_litr->litr1c    += m_frootc_store_to_litr1c;
-	cs->frootc_store   -= m_frootc_store_to_litr1c;
-	cs_litr->litr1c         += m_frootc_transfer_to_litr1c;
-	cs->frootc_transfer     -= m_frootc_transfer_to_litr1c;
-
+	cs_litr->litr1c    += m_frootc_transfer_to_litr1c;
 		/* Coarse root wood mortality */
 		cs->cwdc       += m_livecrootc_to_cwdc; //live coarse root
-		cs->live_crootc -= m_livecrootc_to_cwdc;
 		cs->cwdc       += m_deadcrootc_to_cwdc; // dead coarse root
-		cs->dead_crootc -= m_deadcrootc_to_cwdc;
 		cs_litr->litr1c       += m_livecrootc_store_to_litr1c; //root storage
-		cs->livecrootc_store  -= m_livecrootc_store_to_litr1c;
 		cs_litr->litr1c       += m_deadcrootc_store_to_litr1c; // dead root storage
-		cs->deadcrootc_store  -= m_deadcrootc_store_to_litr1c;
 		cs_litr->litr1c         += m_livecrootc_transfer_to_litr1c; //live root transfer
-		cs->livecrootc_transfer -= m_livecrootc_transfer_to_litr1c;
 		cs_litr->litr1c         += m_deadcrootc_transfer_to_litr1c; // dead root transfer
+        } // end if harvest_dead_root
+
+	cs->frootc         -= m_frootc_to_litr1c;
+	cs->frootc         -= m_frootc_to_litr2c;
+	cs->frootc         -= m_frootc_to_litr3c;
+	cs->frootc         -= m_frootc_to_litr4c;
+	cs->frootc_store   -= m_frootc_store_to_litr1c;
+	cs->frootc_transfer    -= m_frootc_transfer_to_litr1c;
+
+
+
+
+		cs->live_crootc -= m_livecrootc_to_cwdc;
+		cs->dead_crootc -= m_deadcrootc_to_cwdc;
+		cs->livecrootc_store  -= m_livecrootc_store_to_litr1c;
+		cs->deadcrootc_store  -= m_deadcrootc_store_to_litr1c;
+		cs->livecrootc_transfer -= m_livecrootc_transfer_to_litr1c;
 		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
       /*  printf("updating beetle attack mortality, the index is %d", inx);*/
-
+        } // end if (root_alive)
 	/* ---------------------------------------- */
 	/* NITROGEN mortality state variable update */
 	/* ---------------------------------------- */
@@ -545,35 +560,44 @@ void update_beetle_attack_mortality(
 /****************************************************************/
 	/* Belowground dead n goes to litter and cwd in all cases. */
 	/*   Fine root mortality */
+	if (root_alive == 0) {
+        if(harvest_dead_root ==0){
+
 	ns_litr->litr1n    += m_frootn_to_litr1n;
-	ns->frootn         -= m_frootn_to_litr1n;
 	ns_litr->litr2n    += m_frootn_to_litr2n;
-	ns->frootn         -= m_frootn_to_litr2n;
 	ns_litr->litr3n    += m_frootn_to_litr3n;
-	ns->frootn         -= m_frootn_to_litr3n;
 	ns_litr->litr4n    += m_frootn_to_litr4n;
-	ns->frootn         -= m_frootn_to_litr4n;
 	ns_litr->litr1n         += m_frootn_store_to_litr1n;
-	ns->frootn_store      -= m_frootn_store_to_litr1n;
 	ns_litr->litr1n         += m_frootn_transfer_to_litr1n;
-	ns->frootn_transfer     -= m_frootn_transfer_to_litr1n;
 
 		/* Coarse root mortality */
 		ns_litr->litr1n     += m_livecrootn_to_litr1n;
-		ns->live_crootn -= m_livecrootn_to_litr1n;
 		ns->cwdn       += m_livecrootn_to_cwdn;
-		ns->live_crootn -= m_livecrootn_to_cwdn;
 		ns->cwdn       += m_deadcrootn_to_cwdn;
-		ns->dead_crootn -= m_deadcrootn_to_cwdn;
 		ns_litr->litr1n         += m_livecrootn_store_to_litr1n;
-		ns->livecrootn_store  -= m_livecrootn_store_to_litr1n;
 		ns_litr->litr1n         += m_deadcrootn_store_to_litr1n;
-		ns->deadcrootn_store  -= m_deadcrootn_store_to_litr1n;
 		ns_litr->litr1n         += m_livecrootn_transfer_to_litr1n;
-		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
 		ns_litr->litr1n         += m_deadcrootn_transfer_to_litr1n;
+        } // end if harvest dead root
+
+
+	ns->frootn         -= m_frootn_to_litr1n;
+	ns->frootn         -= m_frootn_to_litr2n;
+	ns->frootn         -= m_frootn_to_litr3n;
+	ns->frootn         -= m_frootn_to_litr4n;
+	ns->frootn_store      -= m_frootn_store_to_litr1n;
+	ns->frootn_transfer     -= m_frootn_transfer_to_litr1n;
+
+
+		ns->live_crootn -= m_livecrootn_to_litr1n; //line 289
+		ns->live_crootn -= m_livecrootn_to_cwdn;
+		ns->dead_crootn -= m_deadcrootn_to_cwdn;
+		ns->livecrootn_store  -= m_livecrootn_store_to_litr1n;
+		ns->deadcrootn_store  -= m_deadcrootn_store_to_litr1n;
+		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
 		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;
-		} // end of the if
+            } // end of the if root_alive
+		} // end of the if at the beginning
 
 	return;
 
