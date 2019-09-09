@@ -236,7 +236,7 @@ void input_new_strata_mult(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",1,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.min_vwc = ltmp * canopy_strata[0].epv.min_vwc;
 	
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",canopy_strata[0].num_base_stations,0);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",canopy_strata[0].num_base_stations,0);	
 
 	
 		/*--------------------------------------------------------------*/
@@ -448,8 +448,6 @@ void input_new_strata_mult(
 		/*--------------------------------------------------------------*/
 		/*	Read in the number of  strata base stations 					*/
 		/*--------------------------------------------------------------*/
- 		/*  fscanf(world_file,"%d",&(dtmp));
-		read_record(world_file, record);*/
 		if (dtmp > 0) {
 			canopy_strata[0].num_base_stations = dtmp * canopy_strata[0].num_base_stations;
 			/*--------------------------------------------------------------*/

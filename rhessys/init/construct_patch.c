@@ -200,7 +200,7 @@ struct patch_object *construct_patch(
 	patch[0].soil_cs.soil4c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",0.0,1);
 	patch[0].num_base_stations = 
-		      getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
+		      getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",0,0);
 
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;

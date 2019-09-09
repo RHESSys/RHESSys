@@ -100,7 +100,7 @@ void input_new_hillslope(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",hillslope[0].gw.NO3,1);	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  hillslope[0].gw.NO3 = ltmp;
 
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);		
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"hillslope_n_basestations","%d",0,1);		
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this hillslope                             */
 	/*--------------------------------------------------------------*/

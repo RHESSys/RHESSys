@@ -121,7 +121,7 @@
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].e_horizon = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",zone[0].w_horizon,1);
 	if (fabs(ltmp - NULLVAL) >= ZERO)  zone[0].w_horizon = ltmp;
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",zone[0].num_base_stations,0);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"zone_n_basestations","%d",zone[0].num_base_stations,0);
 
 
 

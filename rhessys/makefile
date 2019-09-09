@@ -1,5 +1,4 @@
-
-VERSION = 7.0 
+VERSION = 7.1 
 PGM  = rhessys$(VERSION)
 CC = gcc
 #CXX = g++

@@ -80,7 +80,7 @@ void input_new_basin(
 	 if (dtmp > 0)  basin[0].basin_parm_ID = dtmp;
 
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",basin[0].latitude,1);	
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",basin[0].num_base_stations,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"basin_n_basestations","%d",basin[0].num_base_stations,1);	
 	
 	if (fabs(ltmp - NULLVAL) >= ZERO)  {
 		basin[0].latitude = ltmp;

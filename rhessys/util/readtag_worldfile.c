@@ -81,7 +81,11 @@ param *readtag_worldfile(int *paramCnt, FILE *file,char *key){
             strcpy(paramPtr[paramInd].name, strbuf2);
             paramPtr[paramInd].accessed = 0;
             paramPtr[paramInd].defaultValUsed = 0;
-	    if(strcmp(strbuf2,"n_basestations")==0){
+	    if ( (strcmp(strbuf2,"basin_n_basestations")==0) || (strcmp(strbuf2,"hillslope_n_basestations")==0) ||
+			(strcmp(strbuf2,"zone_n_basestations")==0) || 
+			(strcmp(strbuf2,"patch_n_basestations")==0) ||
+			(strcmp(strbuf2,"canopy_strata_n_basestations")==0) )
+{
 	      break;
 	    }
 	    

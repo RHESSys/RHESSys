@@ -268,7 +268,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	
 	canopy_strata[0].epv.min_vwc = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",0.0,1);
 
-	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
+	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",0,0);
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this canopy_strata								*/
 	/*--------------------------------------------------------------*/

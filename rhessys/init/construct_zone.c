@@ -152,7 +152,7 @@ struct zone_object *construct_zone(
 	zone[0].precip_lapse_rate = getDoubleWorldfile(&paramCnt,&paramPtr,"precip_lapse_rate","%lf",1.0,1);
 	zone[0].e_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",-9999,0);
 	zone[0].w_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",-9999,0);
-	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);	
+	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"zone_n_basestations","%d",0,0);	
 
 	/*--------------------------------------------------------------*/
 	/* if using stem density to change e and w horizons need to remember originals */
