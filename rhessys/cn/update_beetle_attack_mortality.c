@@ -71,13 +71,13 @@ void update_beetle_attack_mortality(
 	double m_deadleafc_to_litr3c, m_deadleafc_to_litr4c;
 	double m_frootc_to_litr1c, m_frootc_to_litr2c;
 	double m_frootc_to_litr3c, m_frootc_to_litr4c;
-	double m_leafc_store_to_litr1c;
+	double m_leafc_store_to_snagc;
 	double m_frootc_store_to_litr1c;
 	double m_livestemc_store_to_litr1c;
 	double m_deadstemc_store_to_litr1c;
 	double m_livecrootc_store_to_litr1c;
 	double m_deadcrootc_store_to_litr1c;
-	double m_leafc_transfer_to_litr1c;
+	double m_leafc_transfer_to_snagc;
 	double m_frootc_transfer_to_litr1c;
 	double m_livestemc_transfer_to_litr1c;
 	double m_deadstemc_transfer_to_litr1c;
@@ -92,13 +92,13 @@ void update_beetle_attack_mortality(
 	double m_frootn_to_litr1n, m_frootn_to_litr2n;
 	double m_frootn_to_litr3n, m_frootn_to_litr4n;
 	double m_livestemn_to_litr1n, m_livecrootn_to_litr1n;
-	double m_leafn_store_to_litr1n;
+	double m_leafn_store_to_snagn;
 	double m_frootn_store_to_litr1n;
 	double m_livestemn_store_to_litr1n;
 	double m_deadstemn_store_to_litr1n;
 	double m_livecrootn_store_to_litr1n;
 	double m_deadcrootn_store_to_litr1n;
-	double m_leafn_transfer_to_litr1n;
+	double m_leafn_transfer_to_snagn;
 	double m_frootn_transfer_to_litr1n;
 	double m_livestemn_transfer_to_litr1n;
 	double m_deadstemn_transfer_to_litr1n;
@@ -147,7 +147,7 @@ void update_beetle_attack_mortality(
 
 
 
-   if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN && epc.max_lai>=10 ) //make sure the evergreen tree is attacked
+   if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN && epc.max_lai>=10 ) //make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
   // if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN  )// this can isolate the understory but can not isolate the shrub due to shrub is evergreen and tree 20181126
    { // if it is the beetle attack and trees
 
@@ -183,9 +183,9 @@ void update_beetle_attack_mortality(
 	m_frootc_to_litr4c = mort.mort_frootc * cs->frootc * epc.frootlitr_flig;
 	/* mortality fluxes out of storage and transfer pools */
 	/* Assumes cpool mortality fraction applies to all non-structural stores and transfers */
-	m_leafc_store_to_litr1c  = mort.mort_cpool * cs->leafc_store; // what is differences between store and fluxes, and
+	m_leafc_store_to_snagc  = mort.mort_cpool * cs->leafc_store; // what is differences between store and fluxes, and
 	m_frootc_store_to_litr1c  = mort.mort_cpool * cs->frootc_store; // so the stores goes to the labile pool only? why
-	m_leafc_transfer_to_litr1c = mort.mort_cpool * cs->leafc_transfer;
+	m_leafc_transfer_to_snagc = mort.mort_cpool * cs->leafc_transfer;
 	m_frootc_transfer_to_litr1c = mort.mort_cpool * cs->frootc_transfer;
 	m_gresp_store_to_litr1c = mort.mort_cpool * cs->gresp_store;
 	m_gresp_transfer_to_litr1c = mort.mort_cpool * cs->gresp_transfer;
@@ -215,25 +215,7 @@ void update_beetle_attack_mortality(
 	/* daily nitrogen fluxes due to mortality */
 	/*  leaf and fine root pools */
 	/***************************************************************************/
-/*	if (epc.leaf_cn > ZERO) {  // leaf_cn 40 should i treat the redneedle as dead leaf
 
-	  m_leafn_to_redneedlen = m_leafc_to_redneedlec / epc.leaf_cn; // should i use leaf cn ratio, epc.leaflitr_cn or cel cn??
-	  //or m_leafn_to_redneedlen = mort.mort_leafc*ns->leafn ??
-	  m_leafn_to_litr1n = mort.mort_leafc * ns->leafn - m_leafn_to_redneedlen; // should it go to litter 1 or 2??
-	  m_leafn_to_litr1n = max(m_leafn_to_litr1n, 0.0);
-	/*
-		m_leafn_to_litr2n = m_leafc_to_litr2c / CEL_CN; //250
-		m_leafn_to_litr3n = m_leafc_to_litr3c / CEL_CN;
-		m_leafn_to_litr4n = m_leafc_to_litr4c / LIG_CN; //500
-		m_leafn_to_litr1n = mort.mort_leafc*ns->leafn - (m_leafn_to_litr2n+m_leafn_to_litr3n+m_leafn_to_litr4n);
-		m_leafn_to_litr1n = max(m_leafn_to_litr1n, 0.0); */
-/*		}
-	else {
-		m_leafn_to_litr1n = 0.0;
-		m_leafn_to_litr2n = 0.0;
-		m_leafn_to_litr3n = 0.0;
-		m_leafn_to_litr4n = 0.0;
-		} */
 	if (epc.leaflitr_cn > ZERO) {  // leaf litter leaflitr_cn 93
 
 	   /* treat the red needle pool as the dead leaf */
@@ -274,9 +256,9 @@ void update_beetle_attack_mortality(
 	/* mortality fluxes out of storage and transfer pools */
 	/* Assumes same mortality fractions as for c pools */
 	/* Assumes cpool mortality fraction applies to all non-structural stores and transfers */
-	m_leafn_store_to_litr1n  = mort.mort_cpool * ns->leafn_store; // leaf and fine root n store and transfer go into
+	m_leafn_store_to_snagn  = mort.mort_cpool * ns->leafn_store; // leaf and fine root n store and transfer go into
 	m_frootn_store_to_litr1n  = mort.mort_cpool * ns->frootn_store; // the litter
-	m_leafn_transfer_to_litr1n = mort.mort_cpool * ns->leafn_transfer;
+	m_leafn_transfer_to_snagn = mort.mort_cpool * ns->leafn_transfer;
 	m_frootn_transfer_to_litr1n = mort.mort_cpool * ns->frootn_transfer;
 	m_retransn_to_litr1n = mort.mort_cpool * ns->retransn; // the retranslocation flux
 
@@ -319,7 +301,7 @@ void update_beetle_attack_mortality(
 	/* add the stem c to the snag pool    */
 	/* is not 2 (harvest case). If thintyp is 2, harvest aboveground c.   */
     // not harvest means these wood still there
-		cs_litr->litr1c    += m_cpool;  // what does this mean, nsc storage go to litter, if noe harvest the abc
+	//	cs_litr->litr1c    += m_cpool;  // what does this mean, nsc storage go to litter, if noe harvest the abc, this should go to snag pool
 		/*    Leaf mortality */
 
 		//cs->redneedlec += m_leafc_to_redneedlec;
@@ -327,17 +309,13 @@ void update_beetle_attack_mortality(
 		redneedle_sequence->seq[inx].Cvalue +=m_leafc_to_redneedlec;  //NREN 20180630 the sequence [inx] is for tracking the removed C&N for each attack
 		cs->delay_redneedlec +=m_leafc_to_redneedlec; // NREN 20180727 here is delayed dead leaf, stay there, not decay
 
-		/*
-		cs_litr->litr1c    += m_leafc_to_litr1c;  // add the leaf to litter
-		cs_litr->litr2c    += m_leafc_to_litr2c;
-		cs_litr->litr3c    += m_leafc_to_litr3c;
-		cs_litr->litr4c    += m_leafc_to_litr4c; */
+
 		cs_litr->litr1c    += m_deadleafc_to_litr1c; // add the dead leaf to litter
 		cs_litr->litr2c    += m_deadleafc_to_litr2c;
 		cs_litr->litr3c    += m_deadleafc_to_litr3c;
 		cs_litr->litr4c    += m_deadleafc_to_litr4c;
-		cs_litr->litr1c    += m_leafc_store_to_litr1c; // add the storage to litter here still all the store and transfer go to the litter only, not go to 2,3,4
-		cs_litr->litr1c    += m_leafc_transfer_to_litr1c; // addt the leaf transfer flux to litter
+		/*cs_litr->litr1c    += m_leafc_store_to_litr1c; // add the storage to litter here still all the store and transfer go to the litter only, not go to 2,3,4
+		cs_litr->litr1c    += m_leafc_transfer_to_litr1c; // addt the leaf transfer flux to litter */ //NREN test 20190908
 
 
 			/*    Stem wood mortality */
@@ -351,13 +329,15 @@ void update_beetle_attack_mortality(
                 cs->snagc += m_deadstemc_to_snagc; */
                 snag_sequence->seq[inx].Cvalue += m_livestemc_to_snagc; //for tracking the attack c amount
                 snag_sequence->seq[inx].Cvalue += m_deadstemc_to_snagc;
+                snag_sequence->seq[inx].Cvalue += (m_leafc_store_to_snagc + m_leafc_transfer_to_snagc + m_cpool); //assume all these extra carbon is in snag NREN20190908
 
                 cs->delay_snagc += m_livestemc_to_snagc; // NREN 20180727 for the snag staying on the tree not decay
                 cs->delay_snagc += m_deadstemc_to_snagc;
+                cs->delay_snagc += (m_leafc_store_to_snagc + m_leafc_transfer_to_snagc + m_cpool); //NREN 20190908
 
 
-                cs->cwdc       += m_livestemc_to_cwdc; // if here the snag not go to the cwd, means it is just stored in the snag pool for the next 5 years delay
-				cs->cwdc       += m_deadstemc_to_cwdc;
+               /* cs->cwdc       += m_livestemc_to_cwdc; // if here the snag not go to the cwd, means it is just stored in the snag pool for the next 5 years delay
+				cs->cwdc       += m_deadstemc_to_cwdc; */ // NREN bug, here stemc should not go to cwd pool 20190908
 
 
 
@@ -375,17 +355,13 @@ void update_beetle_attack_mortality(
 	/*    Leaf mortality */
 
 	cs->leafc -= m_leafc_to_redneedlec;
-	/*
-	cs->leafc          -= m_leafc_to_litr1c;
-	cs->leafc          -= m_leafc_to_litr2c;
-	cs->leafc          -= m_leafc_to_litr3c;
-	cs->leafc          -= m_leafc_to_litr4c; */
+
 	cs->dead_leafc          -= m_deadleafc_to_litr1c;
 	cs->dead_leafc          -= m_deadleafc_to_litr2c;
 	cs->dead_leafc          -= m_deadleafc_to_litr3c;
 	cs->dead_leafc          -= m_deadleafc_to_litr4c;
-	cs->leafc_store       -= m_leafc_store_to_litr1c;
-	cs->leafc_transfer      -= m_leafc_transfer_to_litr1c;
+	cs->leafc_store       -= m_leafc_store_to_snagc;
+	cs->leafc_transfer      -= m_leafc_transfer_to_snagc;
 
 		/*    Stem wood mortality */
 
@@ -400,8 +376,8 @@ void update_beetle_attack_mortality(
 
 
 
-		cs->live_stemc  -= m_livestemc_to_cwdc;  //stem go to the dead stem and store and transfer go to litter
-		cs->dead_stemc  -= m_deadstemc_to_cwdc;
+	/*	cs->live_stemc  -= m_livestemc_to_cwdc;  //stem go to the dead stem and store and transfer go to litter
+		cs->dead_stemc  -= m_deadstemc_to_cwdc; */ //NREN here is the bug, livestem and dead stem carbon all go to snag pool
 		cs->livestemc_store   -= m_livestemc_store_to_litr1c;
 		cs->deadstemc_store   -= m_deadstemc_store_to_litr1c;
 		cs->livestemc_transfer  -= m_livestemc_transfer_to_litr1c;
@@ -466,13 +442,13 @@ void update_beetle_attack_mortality(
 	/* Only add dead leaf and stem n to litter and cwd pools if thintyp   */
 	/* is not 2 (harvest case). If thintyp is 2, harvest aboveground n.   */
 
-		ns_litr->litr1n         += m_npool;
+		//ns_litr->litr1n         += m_npool; //NREN test 20190908 here is the main reason causing the litter n pool have a spike npool and cpool should go to snag pool
 		/*    Leaf mortality */
 		//ns->redneedlen     += m_leafn_to_redneedlen;
 		redneedle_sequence->seq[inx].Nvalue += m_leafn_to_redneedlen; // this is for tracking
 		ns->delay_redneedlen += m_leafn_to_redneedlen; // for delayed dead leaf pool stay on tree not falling NREN 20180727
 
-		ns_litr->litr1n    += m_leafn_to_litr1n;
+        ns_litr->litr1n    += m_leafn_to_litr1n; //NREN debug 20190908 11:30pm extra leafn is another main reason litrn increase pulse
 
 		/*
 		ns_litr->litr2n    += m_leafn_to_litr2n;
@@ -481,17 +457,17 @@ void update_beetle_attack_mortality(
 		ns_litr->litr1n    += m_deadleafn_to_litr1n;
 		ns_litr->litr2n    += m_deadleafn_to_litr2n;
 		ns_litr->litr3n    += m_deadleafn_to_litr3n;
-		ns_litr->litr4n    += m_deadleafn_to_litr4n;
-		ns_litr->litr1n    += m_leafn_store_to_litr1n;
-		ns_litr->litr1n    += m_leafn_transfer_to_litr1n;
+		ns_litr->litr4n    += m_deadleafn_to_litr4n;  //NREN debug 20190908 11:29
+		/*ns_litr->litr1n    += m_leafn_store_to_litr1n;
+		ns_litr->litr1n    += m_leafn_transfer_to_litr1n; */ //NREN test 20190908 11:29
 		ns_litr->litr1n    += m_retransn_to_litr1n;
 
 		/*    Stem wood mortality */
-        ns_litr->litr1n     += m_livestemn_to_litr1n;
-			/*	  Transfer to CWD if normal thinning */
+      //  ns_litr->litr1n     += m_livestemn_to_litr1n; //Here is the bug...NREN 20190908
+			/*	  Transfer to CWD if there is leftwover after go to snagn */
 
         ns->cwdn       += m_livestemn_to_cwdn;
-        ns->cwdn       += m_deadstemn_to_cwdn;
+       /* ns->cwdn       += m_deadstemn_to_cwdn; //NREN here is the bug 20190908 all deadstemn go to snagn pool
 
               // beetle caused snag pool
 
@@ -501,10 +477,12 @@ void update_beetle_attack_mortality(
 
         snag_sequence->seq[inx].Nvalue += m_livestemn_to_snagn; // for tracking each attack
         snag_sequence->seq[inx].Nvalue += m_deadstemn_to_snagn;
+        snag_sequence->seq[inx].Nvalue += (m_leafn_store_to_snagn + m_leafn_transfer_to_snagn + m_npool); //assume extra nitrogen is in snag 20190908 NREN
 
 
         ns->delay_snagn += m_livestemn_to_snagn; // the nitrogen stored in the snag pool not go the cwd pool
         ns->delay_snagn += m_deadstemn_to_snagn; // NREN 20180828
+        ns->delay_snagn += (m_leafn_store_to_snagn + m_leafn_transfer_to_snagn + m_npool); //assume extra nitrogen is in snag 20190908 NREN
 
 
 
@@ -516,7 +494,7 @@ void update_beetle_attack_mortality(
         ns_litr->litr1n    += m_livestemn_store_to_litr1n;
         ns_litr->litr1n    += m_deadstemn_store_to_litr1n;
         ns_litr->litr1n    += m_livestemn_transfer_to_litr1n;
-        ns_litr->litr1n    += m_deadstemn_transfer_to_litr1n;
+        ns_litr->litr1n    += m_deadstemn_transfer_to_litr1n;//NREN debug 20190908 11:29
 
 	/* Remove aboveground dead n from n stores in all cases. */
         ns->npool -= m_npool;
@@ -525,17 +503,13 @@ void update_beetle_attack_mortality(
 	   ns->leafn -= m_leafn_to_redneedlen;
 
 	    ns->leafn -= m_leafn_to_litr1n;
-	/*
-        ns->leafn          -= m_leafn_to_litr1n;
-        ns->leafn          -= m_leafn_to_litr2n;
-        ns->leafn          -= m_leafn_to_litr3n;
-        ns->leafn          -= m_leafn_to_litr4n; */
+
         ns->dead_leafn          -= m_deadleafn_to_litr1n;
         ns->dead_leafn          -= m_deadleafn_to_litr2n;
         ns->dead_leafn          -= m_deadleafn_to_litr3n;
         ns->dead_leafn          -= m_deadleafn_to_litr4n;
-        ns->leafn_store       -= m_leafn_store_to_litr1n;
-        ns->leafn_transfer      -= m_leafn_transfer_to_litr1n;
+        ns->leafn_store       -= m_leafn_store_to_snagn;
+        ns->leafn_transfer      -= m_leafn_transfer_to_snagn;
         ns->retransn            -= m_retransn_to_litr1n;
 
 		/*    Stem wood mortality */
@@ -547,9 +521,9 @@ void update_beetle_attack_mortality(
 
 
 
-		ns->live_stemn  -= m_livestemn_to_litr1n;
+		//ns->live_stemn  -= m_livestemn_to_litr1n; here is the bug stemn leftover should go to cwd pool instead of litter pool
 		ns->live_stemn  -= m_livestemn_to_cwdn;
-		ns->dead_stemn  -= m_deadstemn_to_cwdn;
+		//ns->dead_stemn  -= m_deadstemn_to_cwdn; here is the bug all dead stemn go to snag pool
 		ns->livestemn_store   -= m_livestemn_store_to_litr1n;
 		ns->deadstemn_store   -= m_deadstemn_store_to_litr1n;
 		ns->livestemn_transfer  -= m_livestemn_transfer_to_litr1n;

@@ -30,6 +30,8 @@ void compute_beetle_effects(
 						struct patch_object *patch,
 						int inx,
 						int min_abc,
+						int root_alive,
+						int harvest_dead_root,
 						double attack_mortality)
 
 {
@@ -52,7 +54,9 @@ void compute_beetle_effects(
 		struct snag_sequence_object *,  // track the multiple snag pool caused by multiple attack NREN 20180630
 		struct snag_sequence_object *, // this is for leaf
 		int, //this is the index
-		int,
+		int, // this is thin type
+		int, //root_alive
+		int, //harvest_dead_root
 		struct mortality_struct);
 
     void *alloc(size_t, char *, char *);
@@ -140,6 +144,8 @@ void compute_beetle_effects(
 						 &(canopy_strata[0].redneedle_sequence),
 						 inx,
 						 thin_type,
+						 root_alive,
+						 harvest_dead_root,
 						 mort);
 				}
 			//}

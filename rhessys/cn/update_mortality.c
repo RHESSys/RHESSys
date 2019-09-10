@@ -148,7 +148,7 @@ printf("\n at the beginning of update mortality: litter 1=%lf, litter2 =%lf, lit
 	m_frootc_store_to_litr1c  = mort.mort_cpool * cs->frootc_store;
 	m_leafc_transfer_to_litr1c = mort.mort_cpool * cs->leafc_transfer;
 	m_frootc_transfer_to_litr1c = mort.mort_cpool * cs->frootc_transfer;
-	m_gresp_store_to_litr1c = mort.mort_cpool * cs->gresp_store;
+	m_gresp_store_to_litr1c = mort.mort_cpool * cs->gresp_store; //what is this gresp_store why no nitrogen part coressponding REN 20190908
 	m_gresp_transfer_to_litr1c = mort.mort_cpool * cs->gresp_transfer;
 	/* TREE-specific carbon fluxes */
 	if (epc.veg_type==TREE){

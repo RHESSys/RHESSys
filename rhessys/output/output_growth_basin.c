@@ -253,6 +253,9 @@ void	output_growth_basin(
 						acpool += strata->cover_fraction*strata->cs.cpool*patch[0].area;
 						anpool += strata->cover_fraction*strata->ns.npool*patch[0].area;
 
+                        //here is to mainly calculate the plants between two threshold holds, suppose over_th is 6 and under_th is 4
+                        //due to this is in the loop, try different numbers and plot the relationship will find out this is to make sure
+                        //below 4m the p_under is 1 and above 6 the p_under is zero, between 4 and 6, there is a linear decline of p_under REN 20190910
 						p_under = max(0.0,(patch->soil_defaults[0][0].overstory_height_thresh - strata->epv.height)) /
 						(patch->soil_defaults[0][0].overstory_height_thresh-patch->soil_defaults[0][0].understory_height_thresh);
 						p_under = min(1.0, p_under);

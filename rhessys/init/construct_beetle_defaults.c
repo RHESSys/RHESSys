@@ -110,6 +110,12 @@ struct spinup_default *construct_beetle_defaults(
 		        printf("the minimum carbon (g/m2) in the patch that an attack will happen : %d\n",default_object_list[i].min_abc);
 		        default_object_list[i].mortality_type = getIntParam(&paramCnt, &paramPtr, "mortality_type", "%d", 1, 1); //type 1 is beetle type 2 is prescribed fire NR 2019/04/30
 		        printf("the mortality type is: %d\n", default_object_list[i].mortality_type);
+		        // the root go to litter pool or not NREN 20190908
+		        default_object_list[i].root_alive= getIntParam(&paramCnt, &paramPtr, "root_alive", "%d", 1, 1); //1 is alive no touching of root after beetle attack 0 is root is dead
+		        printf("the root_alive after attack is: %d\n", default_object_list[i].root_alive);
+		        default_object_list[i].harvest_dead_root= getIntParam(&paramCnt, &paramPtr, "harvest_dead_root", "%d", 1, 1); //1 is the dead root is harvested not go to litter pool,0 is dead root go to litter pool
+		        printf("if harvest_dead_root is: %d\n", default_object_list[i].harvest_dead_root);
+
 
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */

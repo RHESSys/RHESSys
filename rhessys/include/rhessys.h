@@ -2994,6 +2994,8 @@ struct beetle_default {
      int calc_single_attack;
      int min_abc; // the minmum above ground carbon that a patch have to make sure an attack happen g/m2
      int mortality_type; //type 1 is beetle attack, type 2 is fire, type 3 is thinning/Ning Ren 2019/04/30
+     int root_alive; //1 is root is still alive after attack and 0 is root is dead after attack
+     int harvest_dead_root; //1 is dead root is harvest not go to litter pool and 0 is dead root go to litter pool
 
 
 };

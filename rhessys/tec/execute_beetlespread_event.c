@@ -221,9 +221,17 @@ void execute_beetlespread_event(
 			patch[0].mort = world[0].beetle_grid[i][j].mort * world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p];
 			attack_mortality = world[0].beetle_grid[i][j].mort * world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p];
 			/*printf("in update mortality, the mortality is %lf, and the prop_grid_in_patch is %lf\n",world[0].beetle_grid[i][j].mort, world[0].patch_beetle_grid[i][j].prop_grid_in_patch[p]  );*///N.R 20180619
+            int inx=0; //the index of beetle attack squencies, may need to change
+            int min_abc = world[0].defaults[0].beetle[0].min_abc;
+            int root_alive = world[0].defaults[0].beetle[0].root_alive;
+            int harvest_dead_root = world[0].defaults[0].beetle[0].harvest_dead_root;
 
             compute_beetle_effects(
 						patch,
+						inx,
+						min_abc,
+						root_alive,
+						harvest_dead_root,
 						attack_mortality);
 
 
