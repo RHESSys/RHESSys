@@ -2304,6 +2304,7 @@ struct cstate_struct
     double redneedlec; // dead leaf after beetle attack
     double delay_snagc; // delayed snag pool after beetle attack NREN 20180727
     double delay_redneedlec; // delayed redneedle c pool after beetle attack NREN 20180727
+    double dead_rootc_beetle; //NREN create new dead root pool to save the dead fine root after beetle attack
     double leafc_transfer;      /* (kgC/m2) leaf C to be allocated from last season */
     double livestemc_transfer; /* (kgC/m2) live stemwood C to be allocated from last season */
     double deadstemc_transfer; /* (kgC/m2) dead stemwood C to be allocated from last season */
@@ -2549,6 +2550,7 @@ struct epvar_struct
     double redneedlen; // beetle caused red needle
     double delay_snagn;
     double delay_redneedlen; //add the delayed not decay pool NREN 20180727
+    double dead_rootn_beetle; //save dead fine root after beetle attack NREN 20190910
 
     double leafn_store;     /* (kgN/m2) stored leaf N stored from year's growth */
     double livestemn_store; /* (kgN/m2) live stemwood C stored from this years growth */

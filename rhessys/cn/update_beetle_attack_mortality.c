@@ -147,7 +147,7 @@ void update_beetle_attack_mortality(
 
 
 
-   if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN && epc.max_lai>=10 ) //make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
+   if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type == EVERGREEN && epc.max_lai>=10 ) //make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
   // if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN  )// this can isolate the understory but can not isolate the shrub due to shrub is evergreen and tree 20181126
    { // if it is the beetle attack and trees
 
@@ -397,6 +397,7 @@ void update_beetle_attack_mortality(
 	/*2. after attack, the root is dead, and go to litter pool, so this is the traditional mortality routine (but causing fire pulse problem*/
 	/*3. after attack, the root is dead and harvest, which means the carbon is removed from root pool, but not going to the litter pool*/
 	/*two parameters control it, root_alive, and harvest_dead_root, in beetles.def By ning ren 20190908 */
+	/*root_alive =1 is alive =0 is root dead, root_alive ==3 is fine root is dead too, but move to dead_root_beetle pool and then slowly decay to litter pool*/
 	/***************************************************************/
 	if (root_alive == 0) { //if the root is dead after attack
         if(harvest_dead_root == 0) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
@@ -433,6 +434,38 @@ void update_beetle_attack_mortality(
 		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
       /*  printf("updating beetle attack mortality, the index is %d", inx);*/
         } // end if (root_alive)
+
+    else if (root_alive ==2 ) {//if root_alive option 2 means the root is dead but moved to a dead_root_beetle pool and slowly decay to the litter pool NREN 20190910
+
+    cs->dead_rootc_beetle += (m_frootc_to_litr1c + m_frootc_to_litr2c + m_frootc_to_litr3c + m_frootc_to_litr4c + m_frootc_store_to_litr1c + m_frootc_transfer_to_litr1c);
+		/* Coarse root wood mortality */
+		cs->cwdc       += m_livecrootc_to_cwdc; //live coarse root coarse root still go to the cwdc pool
+		cs->cwdc       += m_deadcrootc_to_cwdc; // dead coarse root
+
+		cs->dead_rootc_beetle       += m_livecrootc_store_to_litr1c; //root storage
+		cs->dead_rootc_beetle       += m_deadcrootc_store_to_litr1c; // dead root storage
+		cs->dead_rootc_beetle         += m_livecrootc_transfer_to_litr1c; //live root transfer
+		cs->dead_rootc_beetle         += m_deadcrootc_transfer_to_litr1c; // dead root transfer
+
+
+	cs->frootc         -= m_frootc_to_litr1c;
+	cs->frootc         -= m_frootc_to_litr2c;
+	cs->frootc         -= m_frootc_to_litr3c;
+	cs->frootc         -= m_frootc_to_litr4c;
+	cs->frootc_store   -= m_frootc_store_to_litr1c;
+	cs->frootc_transfer    -= m_frootc_transfer_to_litr1c;
+
+
+
+
+		cs->live_crootc -= m_livecrootc_to_cwdc;
+		cs->dead_crootc -= m_deadcrootc_to_cwdc;
+		cs->livecrootc_store  -= m_livecrootc_store_to_litr1c;
+		cs->deadcrootc_store  -= m_deadcrootc_store_to_litr1c;
+		cs->livecrootc_transfer -= m_livecrootc_transfer_to_litr1c;
+		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
+
+        } //end else if root_alive ==2
 	/* ---------------------------------------- */
 	/* NITROGEN mortality state variable update */
 	/* ---------------------------------------- */
@@ -571,7 +604,45 @@ void update_beetle_attack_mortality(
 		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
 		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;
             } // end of the if root_alive
-		} // end of the if at the beginning
+
+
+    else if(root_alive == 2) { // condition 2 fine root go to dead_rootn_beetle pool, then slowly decay to litter pool
+
+    ns->dead_rootn_beetle += (m_frootn_to_litr1n + m_frootn_to_litr2n + m_frootn_to_litr3n + m_frootn_to_litr4n + m_frootn_store_to_litr1n + m_frootn_transfer_to_litr1n);
+
+		/* Coarse root mortality */
+		ns->dead_rootn_beetle     += m_livecrootn_to_litr1n;
+		ns->cwdn       += m_livecrootn_to_cwdn;
+		ns->cwdn       += m_deadcrootn_to_cwdn;
+		ns ->dead_rootn_beetle         += m_livecrootn_store_to_litr1n;
+		ns ->dead_rootn_beetle         += m_deadcrootn_store_to_litr1n;
+		ns ->dead_rootn_beetle         += m_livecrootn_transfer_to_litr1n;
+		ns ->dead_rootn_beetle         += m_deadcrootn_transfer_to_litr1n;
+
+
+
+	ns->frootn         -= m_frootn_to_litr1n;
+	ns->frootn         -= m_frootn_to_litr2n;
+	ns->frootn         -= m_frootn_to_litr3n;
+	ns->frootn         -= m_frootn_to_litr4n;
+	ns->frootn_store      -= m_frootn_store_to_litr1n;
+	ns->frootn_transfer     -= m_frootn_transfer_to_litr1n;
+
+
+		ns->live_crootn -= m_livecrootn_to_litr1n; //line 289
+		ns->live_crootn -= m_livecrootn_to_cwdn;
+		ns->dead_crootn -= m_deadcrootn_to_cwdn;
+		ns->livecrootn_store  -= m_livecrootn_store_to_litr1n;
+		ns->deadcrootn_store  -= m_deadcrootn_store_to_litr1n;
+		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
+		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;
+
+
+
+
+    }
+
+    } // end of the if at the beginning
 
 	return;
 

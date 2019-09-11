@@ -325,6 +325,8 @@ struct canopy_strata_object *construct_canopy_strata(
                 canopy_strata[0].cs.redneedlec=0.0;
                 canopy_strata[0].ns.snagn = 0.0;
                 canopy_strata[0].ns.redneedlen=0.0;
+                canopy_strata[0].cs.dead_rootc_beetle=0.0;
+                canopy_strata[0].ns.dead_rootn_beetle=0.0; //NREN add dead root pool after beetle attack NREN 20190910
             }
 
 

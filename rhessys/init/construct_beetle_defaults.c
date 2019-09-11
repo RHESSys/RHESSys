@@ -106,7 +106,7 @@ struct spinup_default *construct_beetle_defaults(
 		        printf("leaf_half_life: %d\n",default_object_list[i].leaf_half_life);
 		        default_object_list[i].calc_single_attack= getDoubleParam(&paramCnt, &paramPtr, "calc_single_attack", "%lf", 0, 1); // the default is not calculate single attack
 		        printf("calculate single attack: %d\n",default_object_list[i].calc_single_attack);
-		        default_object_list[i].min_abc= getIntParam(&paramCnt, &paramPtr, "min_abc", "%d", 1000, 1); // the min carbon g/m2 each patch have that attack happens
+		        default_object_list[i].min_abc= getIntParam(&paramCnt, &paramPtr, "min_abc", "%d", 100, 1); // the min carbon g/m2 each patch have that attack happens before is 1000 change to 100 on 20190910
 		        printf("the minimum carbon (g/m2) in the patch that an attack will happen : %d\n",default_object_list[i].min_abc);
 		        default_object_list[i].mortality_type = getIntParam(&paramCnt, &paramPtr, "mortality_type", "%d", 1, 1); //type 1 is beetle type 2 is prescribed fire NR 2019/04/30
 		        printf("the mortality type is: %d\n", default_object_list[i].mortality_type);

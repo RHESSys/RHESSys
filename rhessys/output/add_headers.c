@@ -512,8 +512,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s \n",
-		"month",
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s\n",
 		"year",
 		"basinID",
 		"hillID",

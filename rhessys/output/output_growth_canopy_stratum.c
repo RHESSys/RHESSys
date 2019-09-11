@@ -45,7 +45,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*------------------------------------------------------*/
 
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf \n",
+		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %d %d %lf %d %lf %lf %lf %lf %lf %lf %lf \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -62,6 +62,8 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		(stratum[0].ns.snagn + stratum[0].ns.delay_snagn)*1000,
 		(stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec)*1000,
 		(stratum[0].ns.redneedlen + stratum[0].ns.delay_redneedlen)*1000, //end NREN 20180805
+		(stratum[0].cs.dead_rootc_beetle)*1000,
+		(stratum[0].ns.dead_rootn_beetle)*1000, //NREN 20190910
 		(stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer)* 1000.0,
 		(stratum[0].ns.leafn + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer)* 1000.0,
 		stratum[0].cs.cpool * 1000.0,

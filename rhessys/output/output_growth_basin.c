@@ -69,7 +69,7 @@ void	output_growth_basin(
 	double hgwNO3out, hgwDONout, hgwDOCout, hgwNH4out;
 	double aoverstory_height, aoverstory_stemc, aoverstory_leafc, aoverstory_biomassc;
 	double aunderstory_height, aunderstory_stemc, aunderstory_leafc, aunderstory_biomassc;
-	double asnagc, asnagn, aredneedlec, aredneedlen;
+	double asnagc, asnagn, aredneedlec, aredneedlen, adeadrootc_beetle, adeadrootn_beetle, aunderstory_gpsn, aunderstory_resp, aunderstory_rootdepth, aunderstory_npp; //NREN 20190910
 
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
@@ -132,6 +132,12 @@ void	output_growth_basin(
 	asnagn =0;
 	aredneedlec =0;
 	aredneedlen =0;
+	adeadrootc_beetle = 0;
+	adeadrootn_beetle = 0;
+	aunderstory_gpsn = 0;
+	aunderstory_resp = 0;
+	aunderstory_rootdepth = 0;
+	aunderstory_npp = 0;
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
@@ -277,11 +283,29 @@ void	output_growth_basin(
 							+ strata->cs.dead_stemc) * patch[0].area * p_under;
 						aunderstory_biomassc += (woodc + frootc + leafc) * p_under;
 
+
+
+
 						/* output the basin snag and red needle carbon NREN 2018715 */
 						asnagc += strata->cover_fraction * (strata->cs.snagc +strata->cs.delay_snagc)*patch[0].area;
 						aredneedlec += strata->cover_fraction * (strata->cs.redneedlec + strata->cs.delay_redneedlec)*patch[0].area;
 						asnagn += strata->cover_fraction * (strata->ns.snagn + strata->ns.delay_snagn)*patch[0].area;
 						aredneedlen += strata->cover_fraction * (strata->ns.redneedlen + strata->ns.delay_redneedlen)*patch[0].area;
+						/* add new dead root output NREN 20190910*/
+						adeadrootc_beetle += strata->cover_fraction * (strata->cs.dead_rootc_beetle)*patch[0].area;
+						adeadrootn_beetle += strata->cover_fraction * (strata->ns.dead_rootn_beetle)*patch[0].area;
+						/* add extra under story output NREN 20190910*/
+						aunderstory_gpsn += strata->cover_fraction * strata->cdf.psn_to_cpool * patch[0].area * p_under;
+						aunderstory_resp += strata->cover_fraction
+							* (strata->cdf.leaf_day_mr + strata->cdf.cpool_leaf_gr
+							+ strata->cdf.leaf_night_mr +	strata->cdf.livestem_mr
+							+ strata->cdf.cpool_livestem_gr + strata->cdf.livecroot_mr
+							+ strata->cdf.cpool_livecroot_gr
+							+ strata->cdf.cpool_deadcroot_gr
+							+ strata->cdf.froot_mr + strata->cdf.cpool_froot_gr
+							+ strata->cdf.cpool_to_gresp_store)	* patch[0].area * p_under;
+                        aunderstory_rootdepth += strata->cover_fraction * (strata->rootzone.depth)
+							* patch[0].area * p_under;
 
 				}
 				}
@@ -374,9 +398,15 @@ void	output_growth_basin(
 	asnagn /=aarea;
 	aredneedlec /=aarea;
 	aredneedlen /=aarea;
+	adeadrootc_beetle /=aarea;
+	adeadrootn_beetle /=aarea;
+	aunderstory_gpsn /=aarea;
+	aunderstory_resp /=aarea;
+	aunderstory_rootdepth /=aarea;
+	aunderstory_npp = aunderstory_gpsn - aunderstory_resp;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -435,7 +465,13 @@ void	output_growth_basin(
 		asnagc,
 		asnagn,
 		aredneedlec,
-		aredneedlen
+		aredneedlen,
+		adeadrootc_beetle,
+		adeadrootn_beetle,
+		aunderstory_gpsn,
+		aunderstory_resp,
+		aunderstory_rootdepth,
+		aunderstory_npp
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/

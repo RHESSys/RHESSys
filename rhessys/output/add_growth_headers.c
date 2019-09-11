@@ -93,7 +93,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
 
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -150,7 +150,10 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"total_snagc",
 		"total_snagn",
 		"total_redneedlec",
-		"total_redneedlen");
+		"total_redneedlen",
+		"deadrootc_beetle",
+		"deadrootn_beetle",
+		"understory_gpsn","understory_resp", "understory_rootdepth", "understory_npp");
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
@@ -351,6 +354,8 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
         "toal_snag_n", //decaying pool +delaying pool
         "total_redneedle_c",
         "total_redneedle_n",  //end NREN
+        "deadrootc_beetle",
+        "deadrootn_beetle", //NREN 20190910
 		"leafc",
 		"leafn",
 		"cpool",
@@ -418,7 +423,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", //add the beetle snag output
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", //add the beetle snag output
 		"year",
 		"basinID",
 		"hillID",
@@ -434,7 +439,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"stemn",
 		"cwdc",
 		"cwdn",
-		"psn","cpool", "mortfract", "total_snagc", "total_snagn", "total_redneedlec", "total_redneedlen");
+		"psn","cpool", "mortfract", "total_snagc", "total_snagn", "total_redneedlec", "total_redneedlen","deadrootc_beetle", "deadrootn_beetle");
 	}
 
 
