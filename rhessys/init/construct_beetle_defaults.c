@@ -115,7 +115,8 @@ struct spinup_default *construct_beetle_defaults(
 		        printf("the root_alive after attack is: %d\n", default_object_list[i].root_alive);
 		        default_object_list[i].harvest_dead_root= getIntParam(&paramCnt, &paramPtr, "harvest_dead_root", "%d", 1, 1); //1 is the dead root is harvested not go to litter pool,0 is dead root go to litter pool
 		        printf("if harvest_dead_root is: %d\n", default_object_list[i].harvest_dead_root);
-
+                default_object_list[i].deadroot_half_life = getDoubleParam(&paramCnt, &paramPtr, "deadroot_half_life", "%lf", 3, 1); // the default decay half life of deadroot is 3 years
+		        printf("deadroot_half_life: %d\n",default_object_list[i].deadroot_half_life); //NREN 20190911
 
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */

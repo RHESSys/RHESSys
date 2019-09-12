@@ -272,7 +272,15 @@ void	canopy_stratum_daily_F(
 					  int half_life,
 					  struct date current_day);
 
-
+    void update_deadroot_decay(
+					  struct epconst_struct epc,
+					  struct cstate_struct *cs,
+					  struct nstate_struct *ns,
+					  struct litter_c_object *cs_litr,
+					  struct litter_n_object *ns_litr,
+					  struct cdayflux_patch_struct *cdf, //daily carbon flux
+					  struct ndayflux_patch_struct *ndf,  // daily nitrogen flux
+					  int half_life);
 
 
 	/*--------------------------------------------------------------*/
@@ -2070,6 +2078,20 @@ void	canopy_stratum_daily_F(
                     world[0].defaults[0].beetle[0].leaf_year_delay,
                     world[0].defaults[0].beetle[0].leaf_half_life,
                     current_date );
+        }
+        //add the dead root decay casued by beetle attack NREN 20190911
+        if (stratum[0].cs.dead_rootc_beetle >0 && world[0].defaults[0].beetle[0].root_alive == 2){
+
+                    update_deadroot_decay(
+                    stratum[0].defaults[0][0].epc,
+                    &(stratum[0].cs),
+                    &(stratum[0].ns),
+                    &(patch[0].litter_cs),
+                    &(patch[0].litter_ns),
+                    &(patch[0].cdf),
+                    &(patch[0].ndf),
+                    world[0].defaults[0].beetle[0].deadroot_half_life);
+
         }
 
 

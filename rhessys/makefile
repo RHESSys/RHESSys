@@ -16,7 +16,7 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif 
 
-CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES)
+CFLAGS = -Wall -g -std=c99 -O3 $(DEFINES)
 
 ifdef openmp
   CFLAGS += -fopenmp
@@ -316,6 +316,7 @@ $(OBJ)/update_mortality.o \
 $(OBJ)/update_beetle_attack_mortality.o \
 $(OBJ)/update_litter_soil_mortality.o \
 $(OBJ)/update_branch_mortality.o \
+$(OBJ)/update_deadroot_decay.o \
 $(OBJ)/update_nitrif.o \
 $(OBJ)/update_phenology.o \
 $(OBJ)/update_rooting_depth.o \
@@ -911,6 +912,8 @@ $(OBJ)/compute_snag_decay.o: cn/compute_snag_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_snag_decay.c -o $(OBJ)/compute_snag_decay.o
 $(OBJ)/compute_redneedle_decay.o: cn/compute_redneedle_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_redneedle_decay.c -o $(OBJ)/compute_redneedle_decay.o
+$(OBJ)/update_deadroot_decay.o: cn/update_deadroot_decay.c
+	$(CC) -c $(CFLAGS) -I include cn/update_deadroot_decay.c -o $(OBJ)/update_deadroot_decay.o
 $(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_deadleaf_turnover.c -o $(OBJ)/compute_deadleaf_turnover.o
 $(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c
