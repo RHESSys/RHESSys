@@ -71,7 +71,8 @@ void execute_firespread_event(
 	/* update fire grid variables			*/
 	/* first reset the values				*/
 	/*--------------------------------------------------------------*/
-	printf("In WMFire\n");
+    if(world[0].defaults[0].fire[0].fire_verbose == 3) { //NREN 20190912
+	printf("In WMFire\n");}
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 		  world[0].fire_grid[i][j].fire_size=0; // reset grid to no fire
@@ -264,10 +265,12 @@ void execute_firespread_event(
 	/*--------------------------------------------------------------*/
 	/* Call WMFire	 						*/
 	/*--------------------------------------------------------------*/
-	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);
+	if(world[0].defaults[0].fire[0].fire_verbose == 3) { //NREN 20190912
+	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);}
 // needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
 	world[0].fire_grid=WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
- 	printf("Finished calling WMFire\n");
+ 	if(world[0].defaults[0].fire[0].fire_verbose == 3) {
+ 	printf("Finished calling WMFire\n"); }
 	/*--------------------------------------------------------------*/
 	/* update biomass after fire					*/
 	/*--------------------------------------------------------------*/
@@ -299,6 +302,7 @@ void execute_firespread_event(
 				*/
 				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
 				{
+                    patch[0].overstory_burn = 0; //Initialize the overstory_burn for beetle-caused snag burn NREN 20190912
 					compute_fire_effects(
 						patch,
 						pspread);
