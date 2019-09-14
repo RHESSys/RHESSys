@@ -302,7 +302,7 @@ void execute_firespread_event(
 				*/
 				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
 				{
-                    patch[0].overstory_burn = 0; //Initialize the overstory_burn for beetle-caused snag burn NREN 20190912
+
 					compute_fire_effects(
 						patch,
 						pspread);
