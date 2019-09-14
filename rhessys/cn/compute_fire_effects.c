@@ -98,9 +98,9 @@ void compute_fire_effects(
 	fire_loss.loss_soil4n = 0;
 
 	/* Calculate litter consumed for use later in canopy effects */
-	litter_c_consumed = patch[0].litter_cs.litr1c * fire_loss.loss_litr1c + 
-			patch[0].litter_cs.litr2c * fire_loss.loss_litr2c + 
-			patch[0].litter_cs.litr3c * fire_loss.loss_litr3c + 
+	litter_c_consumed = patch[0].litter_cs.litr1c * fire_loss.loss_litr1c +
+			patch[0].litter_cs.litr2c * fire_loss.loss_litr2c +
+			patch[0].litter_cs.litr3c * fire_loss.loss_litr3c +
 			patch[0].litter_cs.litr4c * fire_loss.loss_litr4c;
 
 	update_litter_soil_mortality(
@@ -116,22 +116,22 @@ void compute_fire_effects(
 	/*		Compute vegetation effects.			*/
 	/*--------------------------------------------------------------*/
 
-	/* For each patch that burns (pspread > 0), fire effects is computed 
-	for each canopy starting with the tallest and proceeding down 
-	though the canopies. The canopy being evaluated for fire effects for 
-	any given iteration is referred to as the target canopy. Fire effects 
-	in the target canopy depend on the height of the target canopy. For 
-	short target canopies (height < understory_height_thresh), mortality 
-	is a function of pspread. For tall target canopies (height > 
-	overstory_height_thresh), fire effects are a function of the litter 
-	and understory biomass consumed by the fire. In this situation, it 
-	is necessary to additionally compute mortality and consumption for 
-	canopies below the target canopy. While in theory the fire effects 
+	/* For each patch that burns (pspread > 0), fire effects is computed
+	for each canopy starting with the tallest and proceeding down
+	though the canopies. The canopy being evaluated for fire effects for
+	any given iteration is referred to as the target canopy. Fire effects
+	in the target canopy depend on the height of the target canopy. For
+	short target canopies (height < understory_height_thresh), mortality
+	is a function of pspread. For tall target canopies (height >
+	overstory_height_thresh), fire effects are a function of the litter
+	and understory biomass consumed by the fire. In this situation, it
+	is necessary to additionally compute mortality and consumption for
+	canopies below the target canopy. While in theory the fire effects
 	code should account for all understory canopies below target
-	canopy, the current code only computes mortality/consumption for next 
-	lowest canopy. Hence, code may need to be revised if working with more 
+	canopy, the current code only computes mortality/consumption for next
+	lowest canopy. Hence, code may need to be revised if working with more
 	than two canopies. */
-	
+
 
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
@@ -144,8 +144,8 @@ void compute_fire_effects(
 			if (patch[0].num_layers > (layer+1)){
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
 				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
-				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc + 
-						canopy_subtarget[0].cs.live_stemc + 
+				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
+						canopy_subtarget[0].cs.live_stemc +
 						canopy_subtarget[0].cs.dead_stemc;
 			} else {
 				canopy_target[0].fe.canopy_subtarget_height = 0;
@@ -213,7 +213,7 @@ void compute_fire_effects(
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;					
+					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
@@ -262,7 +262,7 @@ void compute_fire_effects(
 
 				/* ------- Determine mortality/consumption for overstory component of target canopy ------- */
 
-				/* This involves computing the consumption of the subtarget canopy, which is used to determine target 
+				/* This involves computing the consumption of the subtarget canopy, which is used to determine target
 				canopy mortality/consumption. */
 
 				/* Determine the proportion of carbon mortality in the subtarget canopy */
@@ -295,7 +295,7 @@ void compute_fire_effects(
 				canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 				/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-				canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;	
+				canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) and then account for target canopy height allocation */
 				canopy_target[0].fe.canopy_target_prop_mort_o_component = (1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2)))))) * (1-canopy_target[0].fe.canopy_target_height_u_prop);
@@ -314,7 +314,7 @@ void compute_fire_effects(
 				} else {
 					canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
-	
+
 
 			/*--------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is short			*/
@@ -348,6 +348,7 @@ void compute_fire_effects(
 			/* Determine the proportion of total target canopy carbon that is consumed by fire */
 			canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_prop_mort_consumed;
 
+
 			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_deadstemc = canopy_target[0].fe.canopy_target_prop_c_consumed;
@@ -356,6 +357,12 @@ void compute_fire_effects(
 			mort.mort_deadcrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+
+
+            if (canopy_target[0].defaults[0][0].epc.veg_type == TREE && canopy_target[0].defaults[0][0].epc.phenology_type == EVERGREEN) //To make sure only save the overstory consumption NREN 20190914
+                { patch[0].overstory_burn = canopy_target[0].fe.canopy_target_prop_c_consumed;
+                  printf("\n the fire consuption is %lf",mort.mort_cpool);
+                                                                    }
 
 			thin_type =2;	/* Harvest option */
 			update_mortality(

@@ -1664,7 +1664,7 @@ struct patch_object
         double  gasnow;                 /* m/s */
         double  gasnow_final;           /* m/s */
         double  gw_drainage;            /* m/day */
-	double	gw_drainage_hourly;     /* m/day  */
+	    double	gw_drainage_hourly;     /* m/day  */
         double  hourly_rz_drainage;     /* m water  */
         double  hourly_unsat_drainage;  /* m water  */
         double  hourly_subsur2stream_flow;      /* m water */
@@ -1885,6 +1885,7 @@ struct patch_object
 /*----------------------------------------------------------*/
 
         double  burn;                           /* 0-1 % burned */
+        double  overstory_burn;                 /* 0-1 % save the overstory burned for burn the beetle-caused snag burn NREN 20190914 */
         double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
         double  preday_totalc;                  /* kgC/m2 total carbon */
         double  totalc;                         /* kgC/m2 total carbon */

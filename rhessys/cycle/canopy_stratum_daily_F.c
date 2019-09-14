@@ -363,8 +363,10 @@ void	canopy_stratum_daily_F(
      double year_delay, leaf_year_delay;
      struct date impact_date;
      struct  dated_sequence	clim_event;
+     struct  dated_sequence2 clim_event1;
      struct  dated_sequence2 clim_event2;
      int inx;
+     double overstory_burn, redneedlec_burn, delay_redneedlec_burn, snagc_burn, delay_snagc_burn, redneedlen_burn, delay_redneedlen_burn, snagn_burn, delay_snagn_burn;
 //     int num_records;
 
 	struct	psnin_struct	psnin;
@@ -1988,6 +1990,38 @@ void	canopy_stratum_daily_F(
        // clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[0];
 
         if (inx >-999) {
+        /* update the snag pool from burning before you update it, only happens if firespread command line is on and there is snag pool*/
+            if (command_line[0].firespread_flag == 1 && stratum[0].cs.snagc > 0 && stratum[0].cs.redneedlec > 0 && patch[0].overstory_burn > 0){
+
+                //burn the carbon pool
+               // printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
+                overstory_burn = patch[0].overstory_burn;
+                redneedlec_burn = stratum[0].cs.redneedlec * overstory_burn;
+                delay_redneedlec_burn = stratum[0].cs.delay_redneedlec * overstory_burn;
+
+                snagc_burn = stratum[0].cs.snagc * overstory_burn;
+                delay_snagc_burn = stratum[0].cs.delay_snagc * overstory_burn;
+
+                stratum[0].cs.redneedlec = stratum[0].cs.redneedlec - redneedlec_burn;
+                stratum[0].cs.delay_redneedlec = stratum[0].cs.delay_redneedlec - redneedlec_burn;
+
+                stratum[0].cs.snagc = stratum[0].cs.snagc - snagc_burn;
+                stratum[0].cs.delay_snagc = stratum[0].cs.delay_snagc - delay_snagc_burn;
+                //burn the nitrogen pool
+                redneedlen_burn = stratum[0].ns.redneedlen * overstory_burn;
+                delay_redneedlen_burn = stratum[0].ns.redneedlen * overstory_burn;
+
+                snagn_burn = stratum[0].ns.snagn * overstory_burn;
+                delay_snagn_burn = stratum[0].ns.delay_snagn * overstory_burn;
+
+                stratum[0].ns.redneedlen = stratum[0].ns.redneedlen - redneedlen_burn;
+                stratum[0].ns.delay_redneedlen = stratum[0].ns.delay_redneedlen - redneedlen_burn;
+
+                stratum[0].ns.snagn = stratum[0].ns.snagn - snagn_burn;
+                stratum[0].ns.delay_snagn = stratum[0].ns.delay_snagn - snagn_burn;
+
+
+            }
 
         clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[0];
             /*****************************************************************/
@@ -1995,13 +2029,33 @@ void	canopy_stratum_daily_F(
             /****************************************************************/
            leaf_year_delay = world[0].defaults[0].beetle[0].leaf_year_delay;
            year_delay = world[0].defaults[0].beetle[0].year_delay;  // this is the snag delay time
-            if (julday(clim_event.edate)+365*2.5 < julday(current_date)) {
+
+        if (julday(clim_event.edate) + 365*2.5 < julday(current_date)) { // what does this mean? to make sure the attack happens 3 years before
 
        for (inx=0; inx<3000; inx=inx+24){ // here 300 is hard coded here, should figure out some other method.
 
+        clim_event1 = stratum[0].redneedle_sequence.seq[inx];
         clim_event2 = stratum[0].snag_sequence.seq[inx];
 
-        if ((clim_event2.edate.year !=0) &&(clim_event2.Cvalue >=0)&&(clim_event2.Cvalue<100) && (julday(clim_event2.edate) + (int)(leaf_year_delay*365.256) == julday(current_date)))
+        if (clim_event2.Cvalue >0 && clim_event2.Cvalue<100 && command_line[0].firespread_flag ==1 &&  patch[0].overstory_burn > 0)
+            {
+               // printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
+                overstory_burn = patch[0].overstory_burn;
+                redneedlec_burn = clim_event1.Cvalue * overstory_burn;
+                snagc_burn = clim_event2.Cvalue * overstory_burn;
+
+                redneedlen_burn = clim_event1.Nvalue * overstory_burn;
+                snagn_burn = clim_event2.Nvalue * overstory_burn;
+
+                stratum[0].redneedle_sequence.seq[inx].Cvalue -= redneedlec_burn;
+                stratum[0].redneedle_sequence.seq[inx].Nvalue -= redneedlen_burn;
+                stratum[0].snag_sequence.seq[inx].Cvalue -= snagc_burn;
+                stratum[0].snag_sequence.seq[inx].Nvalue -= snagn_burn;
+            }
+
+        // if Cvalue >=0 then will updating understory too (OR updating pools that is zero),but due to the understory is zero snag pool
+        // so it is not an issue
+        if ((clim_event2.edate.year !=0) &&(clim_event2.Cvalue > 0)&&(clim_event2.Cvalue<100) && (julday(clim_event2.edate) + (int)(leaf_year_delay*365.256) == julday(current_date)))
                   {
 
                    if (inx ==0) {
@@ -2014,18 +2068,17 @@ void	canopy_stratum_daily_F(
 
                     }
                     else if (inx >0) {
-                  //  printf(" updating the leaf pool 2, the inx is %d \n", inx);
+                    printf(" updating the leaf pool 2, the inx is %d \n", inx);
                     stratum[0].cs.redneedlec += stratum[0].redneedle_sequence.seq[inx].Cvalue;
                     stratum[0].ns.redneedlen += stratum[0].redneedle_sequence.seq[inx].Nvalue;
                     stratum[0].cs.delay_redneedlec -= stratum[0].redneedle_sequence.seq[inx].Cvalue; //move out the delayed snag pool to ready to decay pool (decaying pool )
                     stratum[0].ns.delay_redneedlen -= stratum[0].redneedle_sequence.seq[inx].Nvalue; //NREN 20180728 is it possible this value <0?
 
                     }
-
-
                         } // if leaf_year_delay
 
-        if ((clim_event2.edate.year !=0) && (clim_event2.Cvalue >=0)&&(clim_event2.Cvalue<100) &&(julday(clim_event2.edate) + (int)(year_delay*365.256) == julday(current_date)))
+        //how to make sure the model only update the overstory, not updating the understory since this snag is coresponding with stratum, if not over, the c&N is zero so still fine
+        if ((clim_event2.edate.year !=0) && (clim_event2.Cvalue > 0)&&(clim_event2.Cvalue<100) &&(julday(clim_event2.edate) + (int)(year_delay*365.256) == julday(current_date)))
                    {
 
               if (inx ==0) {

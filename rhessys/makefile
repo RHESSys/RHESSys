@@ -16,7 +16,7 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif 
 
-CFLAGS = -Wall -g -std=c99 -O3 $(DEFINES)
+CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES)
 
 ifdef openmp
   CFLAGS += -fopenmp
