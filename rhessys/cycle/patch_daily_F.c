@@ -741,7 +741,7 @@ void		patch_daily_F(
                 int harvest_dead_root = world[0].defaults[0].beetle[0].harvest_dead_root;
 
                 if (world[0].defaults[0].beetle[0].mortality_type ==1) {//type 1 is beetle type 2 is fire NR 2019/04/30
-				printf("\n Implementing beetle attack effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
+//				printf("\n Implementing beetle attack effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
 				compute_beetle_effects(
 					patch,
 					inx, // to remember current index

@@ -361,7 +361,7 @@ void compute_fire_effects(
 
             if (canopy_target[0].defaults[0][0].epc.veg_type == TREE && canopy_target[0].defaults[0][0].epc.phenology_type == EVERGREEN) //To make sure only save the overstory consumption NREN 20190914
                 { patch[0].overstory_burn = canopy_target[0].fe.canopy_target_prop_c_consumed;
-                  printf("\n the fire consuption is %lf",mort.mort_cpool);
+               //   printf("\n the fire consuption is %lf",mort.mort_cpool);
                                                                     }
 
 			thin_type =2;	/* Harvest option */

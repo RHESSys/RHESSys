@@ -2068,7 +2068,7 @@ void	canopy_stratum_daily_F(
 
                     }
                     else if (inx >0) {
-                    printf(" updating the leaf pool 2, the inx is %d \n", inx);
+                  //  printf(" updating the leaf pool 2, the inx is %d \n", inx);
                     stratum[0].cs.redneedlec += stratum[0].redneedle_sequence.seq[inx].Cvalue;
                     stratum[0].ns.redneedlen += stratum[0].redneedle_sequence.seq[inx].Nvalue;
                     stratum[0].cs.delay_redneedlec -= stratum[0].redneedle_sequence.seq[inx].Cvalue; //move out the delayed snag pool to ready to decay pool (decaying pool )
@@ -2082,7 +2082,7 @@ void	canopy_stratum_daily_F(
                    {
 
               if (inx ==0) {
-                    printf(" updating the snag pool the inx is %d\n", inx);
+                  //  printf(" updating the snag pool the inx is %d\n", inx);
                     stratum[0].cs.snagc = stratum[0].snag_sequence.seq[inx].Cvalue;// there is getting the wrong index of value or call stratum first they call the daily so no value?
                     stratum[0].ns.snagn = stratum[0].snag_sequence.seq[inx].Nvalue; // here need to change
                     stratum[0].cs.delay_snagc -= stratum[0].snag_sequence.seq[inx].Cvalue; //move the delayed(Wating ) snag pool to ready to decay (decaying pool)
@@ -2094,7 +2094,7 @@ void	canopy_stratum_daily_F(
                 stratum[0].ns.snagn += stratum[0].snag_sequence.seq[inx].Nvalue;
                 stratum[0].cs.delay_snagc -= stratum[0].snag_sequence.seq[inx].Cvalue; //move the delayed(Wating ) snag pool to ready to decay (decaying pool)
                 stratum[0].ns.delay_snagn -= stratum[0].snag_sequence.seq[inx].Nvalue;  //NREN 20180728
-                printf("updating the snag pool2 the inx is %d\n", inx); //why??
+              //  printf("updating the snag pool2 the inx is %d\n", inx); //why??
                              /*first move the snag _sequences to the dacay pool */
                 }
                 break;
