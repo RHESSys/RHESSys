@@ -35,7 +35,8 @@
 
 struct patch_family_object *construct_patch_family(
     struct zone_object *zone,
-    int     patch_family_ID)
+    int     patch_family_ID,
+    struct 	command_line_object *command_line)
 {
 
 /*--------------------------------------------------------------*/
@@ -63,17 +64,13 @@ patch_family = (struct patch_family_object *) alloc( 1 * sizeof( struct patch_fa
 //set family ID for family obj, this could happen outside of function but whatever
 patch_family[0].family_ID = patch_family_ID;
 
-count = 0;
-for(i=0; i<zone[0].num_patches; i++)
+patch_family[0].num_patches_in_fam = 0;
+for (i = 0; i < zone[0].num_patches; i++)
 {
-    if(zone[0].patches[i][0].family_ID == patch_family_ID)
-    {
-        //patch_family[0].patches[count] = zone[0].patches[i];
-        count++;
-    }
+    if(zone[0].patches[i][0].family_ID == patch_family_ID) patch_family[0].num_patches_in_fam++;
 }
-patch_family[0].num_patches_in_fam = count;
-//printf("%d patches in patch family %d \n",patch_family[0].num_patches_in_fam, patch_family[0].family_ID);
+
+if (command_line[0].verbose_flag == -6) printf("%d patches in patch family %d \n",patch_family[0].num_patches_in_fam, patch_family[0].family_ID);
 
 /*--------------------------------------------------------------*/
 /*	Allocate pointers to patches   	                        	*/
@@ -85,14 +82,16 @@ patch_family[0].patches = (struct patch_object ** )
 
 // finally actually point to the correct patches
 count = 0;
-for(i=0; i<zone[0].num_patches; i++)
+for (i = 0; i < zone[0].num_patches; i++)
 {
     if(zone[0].patches[i][0].family_ID == patch_family_ID)
     {
         patch_family[0].patches[count] = zone[0].patches[i];
+        if (command_line[0].verbose_flag == -6) printf("%d ", patch_family[0].patches[count][0].ID);
         count++;
     }
 }
+if (command_line[0].verbose_flag == -6) printf("\n");
 
 return(patch_family);
 
