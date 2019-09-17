@@ -356,6 +356,7 @@ struct accumulate_patch_object
    double length;
    int meltday;
    int peaksweday;
+   int peaklaiday;
    int wyd;
    int rec_wyd;
    int rec_pet_wyd;
@@ -1118,8 +1119,10 @@ struct	soil_default
 	{
 	int		ID;								
 	int	theta_psi_curve;				/* unitless */
+	int	recompute_gamma_flag;				/* unitless */
 	double	albedo;						/* 0 to 1   */
 	double	interval_size;					/* m */
+	double	cap_rise_max;						/* meters/day */
 	double	Ksat_0;						/* meters/day */
 	double	Ksat_0_v;					/* meters/day */
 	double	m;						/* m^-1	*/
