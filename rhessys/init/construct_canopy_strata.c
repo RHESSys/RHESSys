@@ -315,8 +315,9 @@ struct canopy_strata_object *construct_canopy_strata(
        // if (command_line[0].gridded_netcdf_flag==1 && num_world_extra_base_stations==1 && command_line[0].beetlespread_flag==1)
        if (command_line[0].gridded_netcdf_flag==1 &&  command_line[0].beetlespread_flag==1)
             {
-                canopy_strata[0].snag_sequence.seq = (struct dated_sequence2 *) alloc(3000*sizeof(struct dated_sequence2), "snag_sequence", "construct_canopy_strata");
-                canopy_strata[0].redneedle_sequence.seq = (struct dated_sequence2 *) alloc(3000*sizeof(struct dated_sequence2), "snag_sequence", "construct_canopy_strata");
+                int num = 3000; //hard coded here should the same af beetle[0].num_snag_sequnce NREN 20190914
+                canopy_strata[0].snag_sequence.seq = (struct dated_sequence2 *) alloc(num*sizeof(struct dated_sequence2), "snag_sequence", "construct_canopy_strata");
+                canopy_strata[0].redneedle_sequence.seq = (struct dated_sequence2 *) alloc(num*sizeof(struct dated_sequence2), "snag_sequence", "construct_canopy_strata");
                 canopy_strata[0].cs.delay_snagc =0.0;
                 canopy_strata[0].cs.delay_redneedlec=0.0;
                 canopy_strata[0].ns.delay_snagn = 0.0;

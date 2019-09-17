@@ -1859,6 +1859,7 @@ struct patch_object
         double  preday_snowpack;                        /* meters water         */
         double  preday_sat_deficit;                     /* meters water         */
         double  preday_sat_deficit_z;                   /* meters               */
+        double  preday_rootzone_depth;                  /* metters water for move water from rootzone due to beetle attack*/
         double  sat_deficit;                            /* meters water         */
         double  sat_deficit_z;                          /* meters               */
         double  *transmissivity_profile;                /* array (m/day) */
@@ -2999,7 +3000,9 @@ struct beetle_default {
      int mortality_type; //type 1 is beetle attack, type 2 is fire, type 3 is thinning/Ning Ren 2019/04/30
      int root_alive; //1 is root is still alive after attack and 0 is root is dead after attack
      int harvest_dead_root; //1 is dead root is harvest not go to litter pool and 0 is dead root go to litter pool
-     int deadroot_half_life;
+     int deadroot_half_life; // to calcuate the decay of dead root
+     int num_snag_sequence; //this is to allocate snag sequence memory NREN 20190914
+     int transfer_root_water; //this is for transfering root water if root depth is suddenly changed NREN 20190914
 
 };
 

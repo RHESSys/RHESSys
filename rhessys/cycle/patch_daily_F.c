@@ -436,6 +436,7 @@ void		patch_daily_F(
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
 	struct  mortality_struct mort;
+    double preday_rootzone_depth, rz_transfer;
 
     /* int ok=0; //for beetle outbreak
      double time_diff;
@@ -548,6 +549,7 @@ void		patch_daily_F(
 	/*	rain and snow coming down over the zone.					*/
 	/* check to see if there are base station inputs 		*/
 	/*--------------------------------------------------------------*/
+   // preday_rootzone_depth = patch[0].rootzone.depth; //NREN 20190914 for move root water
 
 	if (patch[0].base_stations != NULL) {
 		inx = patch[0].base_stations[0][0].dated_input[0].irrigation.inx;
@@ -2330,6 +2332,34 @@ void		patch_daily_F(
 if ( command_line[0].verbose_flag == -5 ){
 	printf("\n***END PATCH DAILY: exfil_unsat=%lf",patch[0].exfiltration_unsat_zone);
 }
+
+    /* if rooting depth cahgned we need to transfer water to /from rz_storage NREN 20190914 */
+
+    if(world[0].defaults[0].beetle[0].transfer_root_water ==1 && command_line[0].beetlespread_flag ==1 && (current_date.month == 8 || current_date.month ==9)) {
+
+        //printf("\n moving root zone water due to beetle attack \n");
+        if (((patch[0].rootzone.depth - patch[0].preday_rootzone_depth) < ZERO ) && (patch[0].preday_rootzone_depth > ZERO)) {
+
+
+            rz_transfer = (patch[0].rootzone.depth - patch[0].preday_rootzone_depth)/
+			patch[0].preday_rootzone_depth * patch[0].rz_storage;
+              printf("\n moving 1 root zone water due to beetle attack, the preday_root is %lf, the current day root depth is %lf and the rz_transfer is %lf \n", patch[0].preday_rootzone_depth, patch[0].rootzone.depth, rz_transfer);
+            patch[0].rz_storage += rz_transfer;
+                if (patch[0].unsat_storage > fabs(rz_transfer))
+                    patch[0].unsat_storage -= rz_transfer;
+                else
+                    patch[0].sat_deficit += rz_transfer;
+	}
+
+
+
+    }
+
+
+
+
+
+
 
 	return;
 } /*end patch_daily_F.c*/

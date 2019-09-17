@@ -2032,7 +2032,7 @@ void	canopy_stratum_daily_F(
 
         if (julday(clim_event.edate) + 365*2.5 < julday(current_date)) { // what does this mean? to make sure the attack happens 3 years before
 
-       for (inx=0; inx<3000; inx=inx+24){ // here 300 is hard coded here, should figure out some other method.
+       for (inx=0; inx < world[0].defaults[0].beetle[0].num_snag_sequence; inx=inx+24){ // here 300 is hard coded here, should figure out some other method.
 
         clim_event1 = stratum[0].redneedle_sequence.seq[inx];
         clim_event2 = stratum[0].snag_sequence.seq[inx];

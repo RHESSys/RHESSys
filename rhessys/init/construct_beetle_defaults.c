@@ -117,6 +117,10 @@ struct spinup_default *construct_beetle_defaults(
 		        printf("if harvest_dead_root is: %d\n", default_object_list[i].harvest_dead_root);
                 default_object_list[i].deadroot_half_life = getDoubleParam(&paramCnt, &paramPtr, "deadroot_half_life", "%lf", 3, 1); // the default decay half life of deadroot is 3 years
 		        printf("deadroot_half_life: %d\n",default_object_list[i].deadroot_half_life); //NREN 20190911
+		        default_object_list[i].num_snag_sequence = getIntParam(&paramCnt, &paramPtr, "num_snag_sequence", "%d", 300, 1); //NREN this for dynamic memory allocation 20190914
+		        printf("num_snag_sequence for memory allocation: %d\n",default_object_list[i].num_snag_sequence); //NREN 20190911
+		        default_object_list[i].transfer_root_water = getIntParam(&paramCnt, &paramPtr, "transfer_root_water", "%d", 0, 1); //NREN this is for transfer root water is the rootdepth is changed
+		        printf("need to transfer root water if the root depth is changed: %d\n",default_object_list[i].transfer_root_water); //NREN 20190914
 
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */
