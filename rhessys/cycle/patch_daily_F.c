@@ -2343,7 +2343,7 @@ if ( command_line[0].verbose_flag == -5 ){
 
             rz_transfer = (patch[0].rootzone.depth - patch[0].preday_rootzone_depth)/
 			patch[0].preday_rootzone_depth * patch[0].rz_storage;
-              printf("\n moving 1 root zone water due to beetle attack, the preday_root is %lf, the current day root depth is %lf and the rz_transfer is %lf \n", patch[0].preday_rootzone_depth, patch[0].rootzone.depth, rz_transfer);
+             // printf("\n moving 1 root zone water due to beetle attack, the preday_root is %lf, the current day root depth is %lf and the rz_transfer is %lf \n", patch[0].preday_rootzone_depth, patch[0].rootzone.depth, rz_transfer);
             patch[0].rz_storage += rz_transfer;
                 if (patch[0].unsat_storage > fabs(rz_transfer))
                     patch[0].unsat_storage -= rz_transfer;

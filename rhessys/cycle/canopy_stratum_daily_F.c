@@ -1991,7 +1991,11 @@ void	canopy_stratum_daily_F(
 
         if (inx >-999) {
         /* update the snag pool from burning before you update it, only happens if firespread command line is on and there is snag pool*/
-            if (command_line[0].firespread_flag == 1 && stratum[0].cs.snagc > 0 && stratum[0].cs.redneedlec > 0 && patch[0].overstory_burn > 0){
+        /* due to the snagc is not the total snag, when snagc =0 the delay_snag is >0, so the condition snagc>0, make the fire can not burn the delay_snag*/
+        /* so it is better to use the Snagc >= 0 condition for next step calculations, and just to make sure there is no negative values in flux out */
+        /* if you put snagc and delay_snag combine with redneedle and delay_redneedle together condition may cause not burn once redneedle is zero */
+        /* if this solution not working, maybe build two if conditions sepeartedly for snag and delay snag then using conditions and snag >=0 delay_snag>=0 */
+            if (command_line[0].firespread_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO && (stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec) >= ZERO && patch[0].overstory_burn > 0){
 
                 //burn the carbon pool
                // printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
@@ -2009,16 +2013,16 @@ void	canopy_stratum_daily_F(
                 stratum[0].cs.delay_snagc = stratum[0].cs.delay_snagc - delay_snagc_burn;
                 //burn the nitrogen pool
                 redneedlen_burn = stratum[0].ns.redneedlen * overstory_burn;
-                delay_redneedlen_burn = stratum[0].ns.redneedlen * overstory_burn;
+                delay_redneedlen_burn = stratum[0].ns.delay_redneedlen * overstory_burn;
 
                 snagn_burn = stratum[0].ns.snagn * overstory_burn;
                 delay_snagn_burn = stratum[0].ns.delay_snagn * overstory_burn;
 
                 stratum[0].ns.redneedlen = stratum[0].ns.redneedlen - redneedlen_burn;
-                stratum[0].ns.delay_redneedlen = stratum[0].ns.delay_redneedlen - redneedlen_burn;
+                stratum[0].ns.delay_redneedlen = stratum[0].ns.delay_redneedlen - delay_redneedlen_burn;
 
                 stratum[0].ns.snagn = stratum[0].ns.snagn - snagn_burn;
-                stratum[0].ns.delay_snagn = stratum[0].ns.delay_snagn - snagn_burn;
+                stratum[0].ns.delay_snagn = stratum[0].ns.delay_snagn - delay_snagn_burn;
 
 
             }
@@ -2037,7 +2041,7 @@ void	canopy_stratum_daily_F(
         clim_event1 = stratum[0].redneedle_sequence.seq[inx];
         clim_event2 = stratum[0].snag_sequence.seq[inx];
 
-        if (clim_event2.Cvalue >0 && clim_event2.Cvalue<100 && command_line[0].firespread_flag ==1 &&  patch[0].overstory_burn > 0)
+        if (clim_event2.Cvalue > 0 && clim_event2.Cvalue<100 && command_line[0].firespread_flag ==1 &&  patch[0].overstory_burn > 0)
             {
                // printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
                 overstory_burn = patch[0].overstory_burn;
