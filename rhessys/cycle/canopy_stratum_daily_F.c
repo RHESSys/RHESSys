@@ -1995,10 +1995,10 @@ void	canopy_stratum_daily_F(
         /* so it is better to use the Snagc >= 0 condition for next step calculations, and just to make sure there is no negative values in flux out */
         /* if you put snagc and delay_snag combine with redneedle and delay_redneedle together condition may cause not burn once redneedle is zero */
         /* if this solution not working, maybe build two if conditions sepeartedly for snag and delay snag then using conditions and snag >=0 delay_snag>=0 */
-            if (command_line[0].firespread_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO && (stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec) >= ZERO && patch[0].overstory_burn > 0){
+            if (command_line[0].firespread_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO && (stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec) >= ZERO && patch[0].overstory_burn > ZERO){
 
                 //burn the carbon pool
-               // printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
+               //printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
                 overstory_burn = patch[0].overstory_burn;
                 redneedlec_burn = stratum[0].cs.redneedlec * overstory_burn;
                 delay_redneedlec_burn = stratum[0].cs.delay_redneedlec * overstory_burn;
@@ -2041,9 +2041,9 @@ void	canopy_stratum_daily_F(
         clim_event1 = stratum[0].redneedle_sequence.seq[inx];
         clim_event2 = stratum[0].snag_sequence.seq[inx];
 
-        if (clim_event2.Cvalue > 0 && clim_event2.Cvalue<100 && command_line[0].firespread_flag ==1 &&  patch[0].overstory_burn > 0)
+        if (clim_event2.Cvalue > 0 && clim_event2.Cvalue<100 && command_line[0].firespread_flag ==1 &&  patch[0].overstory_burn > ZERO)
             {
-               // printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
+                //printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
                 overstory_burn = patch[0].overstory_burn;
                 redneedlec_burn = clim_event1.Cvalue * overstory_burn;
                 snagc_burn = clim_event2.Cvalue * overstory_burn;

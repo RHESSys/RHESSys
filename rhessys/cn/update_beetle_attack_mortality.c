@@ -147,7 +147,7 @@ void update_beetle_attack_mortality(
 
 
 
-   if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type == EVERGREEN && epc.max_lai>=10 ) //make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
+   if (epc.veg_type==TREE && thintyp ==5 && epc.max_lai>=10 && epc.phenology_type == EVERGREEN ) //make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
   // if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN  )// this can isolate the understory but can not isolate the shrub due to shrub is evergreen and tree 20181126
    { // if it is the beetle attack and trees
 
