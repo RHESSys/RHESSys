@@ -1,5 +1,5 @@
 
-VERSION = 7.1
+VERSION = 7.1.1
 PGM  = rhessys$(VERSION)
 CC = gcc
 #CXX = g++
@@ -17,8 +17,9 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif 
 
-CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES) -fno-stack-protector -w 
-# -w added by Will to supress warnings, feel free to remove
+CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -Og
+# -w to supress warnings, feel free to remove
+# - Og for debug
 
 ifdef openmp
   CFLAGS += -fopenmp

@@ -653,7 +653,7 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].multiscale_flag == 1) {
-		if (command_line[0].verbose_flag == -6) printf("\n Computing patch family routing for zone %d\n", zone[0].ID);
+		if (command_line[0].verbose_flag == -6) printf("\n Computing patch family routing for zone %d, day %d\n", zone[0].ID, day);
 		compute_patch_family_routing(
 			zone,
 			command_line);
