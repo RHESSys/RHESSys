@@ -2335,7 +2335,7 @@ if ( command_line[0].verbose_flag == -5 ){
 
     /* if rooting depth cahgned we need to transfer water to /from rz_storage NREN 20190914 */
 
-    if(world[0].defaults[0].beetle[0].transfer_root_water ==1 && command_line[0].beetlespread_flag ==1 && (current_date.month == 8 || current_date.month ==9)) {
+    if( command_line[0].beetlespread_flag ==1 && world[0].defaults[0].beetle[0].transfer_root_water ==1 &&  (current_date.month == 8 || current_date.month ==9)) {
 
         //printf("\n moving root zone water due to beetle attack \n");
         if (((patch[0].rootzone.depth - patch[0].preday_rootzone_depth) < ZERO ) && (patch[0].preday_rootzone_depth > ZERO)) {

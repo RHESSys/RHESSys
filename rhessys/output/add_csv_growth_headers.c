@@ -2,10 +2,10 @@
 /* 																*/
 /*					add_csv_growth_headers					*/
 /*																*/
-/*	add_csv_growth_headers - 
+/*	add_csv_growth_headers -
 /*																*/
 /*	NAME														*/
-/*	add_csv_growth_headers 
+/*	add_csv_growth_headers
 /*																*/
 /*	SYNOPSIS													*/
 /*	void add_csv_growth_headers(struct world output_file_object *,				*/
@@ -27,7 +27,7 @@
 #include "rhessys.h"
 
 
-void add_csv_growth_headers(struct world_output_file_object *world_output_files, 
+void add_csv_growth_headers(struct world_output_file_object *world_output_files,
 			struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
@@ -47,7 +47,7 @@ void add_csv_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
-	fprintf(outfile,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s \n" ,
+	fprintf(outfile,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" ,
 		"day",
 		"month",
 		"year",
@@ -81,7 +81,7 @@ void add_csv_growth_headers(struct world_output_file_object *world_output_files,
 		"soilhr",
 		"strN",
 		"denitrif","root_depth");
-		
+
 	}
 
 	/*--------------------------------------------------------------*/
@@ -124,7 +124,7 @@ void add_csv_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].zone[0].daily;
-	fprintf(outfile,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n ", 
+	fprintf(outfile,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n ",
 		"day",
 		"month",
 		"year",
