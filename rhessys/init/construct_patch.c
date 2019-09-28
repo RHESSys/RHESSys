@@ -355,6 +355,9 @@ struct patch_object *construct_patch(
 	patch[0].fertilizer_NH4 = 0.0;
 	patch[0].grazing_Closs = 0.0;
 
+	/* for calculating above ground litter proportion NREN 20190927 */
+	patch[0].prop_litrc_above_ground = 0.85; // this is hard coded at the beginning all these litter is from leaf
+
   /*--------------------------------------------------------------*/
   /*   Initialize shadow litter and soil objects for this  patch. */
   /*--------------------------------------------------------------*/

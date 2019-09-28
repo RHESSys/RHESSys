@@ -75,6 +75,7 @@ void	output_growth_basin(
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
 	struct  canopy_strata_object    *strata;
+	double apro_abc_litr;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -138,6 +139,7 @@ void	output_growth_basin(
 	aunderstory_resp = 0;
 	aunderstory_rootdepth = 0;
 	aunderstory_npp = 0;
+	apro_abc_litr =0;
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
@@ -147,6 +149,8 @@ void	output_growth_basin(
 				aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
+
+                apro_abc_litr += patch[0].prop_litrc_above_ground * patch[0].area;
 				alitrn += (patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n
 					+ patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n)
 					* patch[0].area;
@@ -404,9 +408,10 @@ void	output_growth_basin(
 	aunderstory_resp /=aarea;
 	aunderstory_rootdepth /=aarea;
 	aunderstory_npp = aunderstory_gpsn - aunderstory_resp;
+	apro_abc_litr /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -471,7 +476,8 @@ void	output_growth_basin(
 		aunderstory_gpsn,
 		aunderstory_resp,
 		aunderstory_rootdepth,
-		aunderstory_npp
+		aunderstory_npp,
+		apro_abc_litr
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/

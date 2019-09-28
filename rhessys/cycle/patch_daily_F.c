@@ -2353,7 +2353,74 @@ if ( command_line[0].verbose_flag == -5 ){
 
 
 
-    }
+    } //end if beetlespread flag and root water transfer
+
+    /*  calculate the above ground carbon litter ratio NREN 20190926*/
+    double ratio = 0.0; //the percentage of above ground carbon go to cwd pool stemc_to_cwdc / (stemc_to_cwdc + rootc_to_cwdc )
+    //double preday_prop_litrc_above_ground =0.0;
+    double preday_litrc_above_ground = 0.0;
+    double litterc = 0.0;
+    double prop = 0.0;
+    double budget = 0.0;
+
+
+            if ((patch->cdf.stemc_to_cwdc + patch->cdf.rootc_to_cwdc) > ZERO){
+            ratio = patch->cdf.stemc_to_cwdc/(patch->cdf.stemc_to_cwdc + patch->cdf.rootc_to_cwdc);
+                }
+            else {
+            ratio = 0;
+                }
+          //  printf("\n 1 for year %d, month %d debuging above ground carbon go to cwd pool proportion the ratio abc/all is %lf \n", current_date.year, current_date.month, ratio);
+
+            patch[0].abc_to_litrc =
+                    (patch->cdf.leafc_to_litr1c + patch->cdf.leafc_to_litr2c + patch->cdf.leafc_to_litr3c +
+                     patch->cdf.leafc_to_litr4c + patch->cdf.stemc_to_litr1c + patch->cdf.cwdc_to_litr2c*ratio +
+                     patch->cdf.cwdc_to_litr3c*ratio + patch->cdf.cwdc_to_litr4c*ratio);
+         /*   printf("\n 2 leafc_to_lit1c %lf, to_litr2c %lf, to_litr3c %lf, to_litr4c %lf, stem_lit2c %lf, cwd_to_litr2 %lf, to_litr3c %lf, to_litr4c %lf, ratio is %lf \n",
+                    patch->cdf.leafc_to_litr1c, patch->cdf.leafc_to_litr2c, patch->cdf.leafc_to_litr3c, patch->cdf.leafc_to_litr4c,
+                    patch->cdf.stemc_to_litr1c, patch->cdf.cwdc_to_litr2c, patch->cdf.cwdc_to_litr3c, patch->cdf.cwdc_to_litr4c, ratio);*/
+
+            patch[0].bgc_to_litrc =
+                    (patch->cdf.frootc_to_litr1c + patch->cdf.frootc_to_litr2c + patch->cdf.frootc_to_litr3c +
+                     patch->cdf.frootc_to_litr4c + patch->cdf.cwdc_to_litr2c*(1-ratio) + patch->cdf.cwdc_to_litr3c*(1-ratio) +
+                     patch->cdf.cwdc_to_litr4c*(1-ratio));
+
+            patch[0].flux_litterc_out =
+                    (patch->cdf.litterc_to_atmos + patch->cdf.litterc_to_soilc);
+
+
+        //preday_prop_litrc_above_ground = patch[0].prop_litrc_above_ground;
+
+        litterc = (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
+				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c);
+
+		budget = -litterc + patch[0].preday_litterc + patch[0].abc_to_litrc + patch[0].bgc_to_litrc - patch[0].flux_litterc_out;
+		double influx = (patch[0].abc_to_litrc + patch[0].bgc_to_litrc);
+
+		//printf("\n 2.5 the carbon budget is %lf, current litrc is %lf, the preday litrc is %lf, the influx is %lf, the outflux is %lf \n", budget, litterc, patch[0].preday_litterc, influx, patch[0].flux_litterc_out);
+
+        preday_litrc_above_ground = patch[0].preday_litterc * patch[0].prop_litrc_above_ground ;
+       // printf("\n 3 the preday_litterc is %lf, the flux_litter_out is %lf, the preday ratio is %lf \n", patch[0].preday_litterc, patch[0].flux_litterc_out, patch[0].prop_litrc_above_ground );
+
+        if (litterc > ZERO)
+        prop = (preday_litrc_above_ground  + patch[0].abc_to_litrc - (patch[0].flux_litterc_out)* patch[0].prop_litrc_above_ground)/litterc;
+        else
+        prop = 1.0;
+
+        if ( patch[0].preday_litterc < 0.0000000001) // this is for initial condition NREN 20190927
+        prop = 0.85;
+
+       /* printf("\n 4 the proportion of above ground litter carbon is %lf , preday abc litrc is %lf, come in abc litrc flux is %lf, out_abc is %lf, total litrc is %lf \n", prop, preday_litrc_above_ground, patch[0].abc_to_litrc,
+                            (patch[0].flux_litterc_out)*patch[0].prop_litrc_above_ground, litterc); */
+
+        patch[0].prop_litrc_above_ground = prop;
+
+        if (prop < 0.05 || prop >1) {
+        fprintf(stderr,
+				"\nFATAL ERROR: the prop %lf cannot be larger than 1 check the calculation.\n",
+				prop);
+				exit(EXIT_FAILURE);}
+
 
 
 

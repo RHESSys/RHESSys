@@ -60,26 +60,26 @@ void update_mortality(
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	double m_cpool, m_npool;
-	double m_leafc_to_litr1c, m_leafc_to_litr2c;
-	double m_leafc_to_litr3c, m_leafc_to_litr4c;
-	double m_deadleafc_to_litr1c, m_deadleafc_to_litr2c;
-	double m_deadleafc_to_litr3c, m_deadleafc_to_litr4c;
-	double m_frootc_to_litr1c, m_frootc_to_litr2c;
-	double m_frootc_to_litr3c, m_frootc_to_litr4c;
-	double m_leafc_store_to_litr1c;
-	double m_frootc_store_to_litr1c;
-	double m_livestemc_store_to_litr1c;
-	double m_deadstemc_store_to_litr1c;
-	double m_livecrootc_store_to_litr1c;
-	double m_deadcrootc_store_to_litr1c;
-	double m_leafc_transfer_to_litr1c;
-	double m_frootc_transfer_to_litr1c;
-	double m_livestemc_transfer_to_litr1c;
-	double m_deadstemc_transfer_to_litr1c;
-	double m_livecrootc_transfer_to_litr1c;
-	double m_deadcrootc_transfer_to_litr1c;
-	double m_gresp_store_to_litr1c;
-	double m_gresp_transfer_to_litr1c;
+	double m_leafc_to_litr1c = 0.0, m_leafc_to_litr2c = 0.0;
+	double m_leafc_to_litr3c = 0.0, m_leafc_to_litr4c = 0.0;
+	double m_deadleafc_to_litr1c = 0.0, m_deadleafc_to_litr2c = 0.0;
+	double m_deadleafc_to_litr3c = 0.0, m_deadleafc_to_litr4c = 0.0;
+	double m_frootc_to_litr1c = 0.0, m_frootc_to_litr2c =0;
+	double m_frootc_to_litr3c = 0.0, m_frootc_to_litr4c = 0.0;
+	double m_leafc_store_to_litr1c = 0.0;
+	double m_frootc_store_to_litr1c = 0.0;
+	double m_livestemc_store_to_litr1c = 0.0;
+	double m_deadstemc_store_to_litr1c = 0.0;
+	double m_livecrootc_store_to_litr1c = 0.0;
+	double m_deadcrootc_store_to_litr1c = 0.0;
+	double m_leafc_transfer_to_litr1c = 0.0;
+	double m_frootc_transfer_to_litr1c = 0.0;
+	double m_livestemc_transfer_to_litr1c = 0.0;
+	double m_deadstemc_transfer_to_litr1c = 0.0;
+	double m_livecrootc_transfer_to_litr1c = 0.0;
+	double m_deadcrootc_transfer_to_litr1c = 0.0;
+	double m_gresp_store_to_litr1c = 0.0;
+	double m_gresp_transfer_to_litr1c = 0.0;
 	double m_leafn_to_litr1n, m_leafn_to_litr2n;
 	double m_leafn_to_litr3n, m_leafn_to_litr4n;
 	double m_deadleafn_to_litr1n, m_deadleafn_to_litr2n;
@@ -100,10 +100,10 @@ void update_mortality(
 	double m_livecrootn_transfer_to_litr1n;
 	double m_deadcrootn_transfer_to_litr1n;
 	double m_retransn_to_litr1n;
-	double m_livestemc_to_cwdc;
-	double m_deadstemc_to_cwdc;
-	double m_livecrootc_to_cwdc;
-	double m_deadcrootc_to_cwdc;
+	double m_livestemc_to_cwdc = 0.0;
+	double m_deadstemc_to_cwdc = 0.0;
+	double m_livecrootc_to_cwdc = 0.0;
+	double m_deadcrootc_to_cwdc = 0.0;
 	double m_livestemn_to_cwdn;
 	double m_deadstemn_to_cwdn;
 	double m_livecrootn_to_cwdn;
@@ -483,6 +483,53 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 /*if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
 printf("\n at the end of update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
 } */
+
+
+    /* caculate the below ground litter proportion NREN 20190926 */
+    cdf_patch->leafc_to_litr1c += m_leafc_to_litr1c;
+    cdf_patch->leafc_to_litr1c += m_deadleafc_to_litr1c;
+    cdf_patch->leafc_to_litr1c += m_gresp_store_to_litr1c;
+    cdf_patch->leafc_to_litr1c += m_gresp_transfer_to_litr1c;
+
+    cdf_patch->leafc_to_litr2c += m_leafc_to_litr2c;
+    cdf_patch->leafc_to_litr2c += m_deadleafc_to_litr2c;
+
+    cdf_patch->leafc_to_litr3c += m_leafc_to_litr3c;
+    cdf_patch->leafc_to_litr3c += m_deadleafc_to_litr3c;
+
+    cdf_patch->leafc_to_litr4c += m_leafc_to_litr4c;
+    cdf_patch->leafc_to_litr4c += m_deadleafc_to_litr4c;
+
+     //stem
+    cdf_patch->stemc_to_litr1c += m_livestemc_store_to_litr1c;
+    cdf_patch->stemc_to_litr1c += m_livestemc_transfer_to_litr1c;
+    cdf_patch->stemc_to_litr1c += m_deadstemc_store_to_litr1c;
+    cdf_patch->stemc_to_litr1c += m_deadstemc_transfer_to_litr1c;
+
+
+    /* calculate the below ground litter proportion NREN 20190926 */
+
+    cdf_patch->frootc_to_litr1c += m_frootc_to_litr1c;
+    cdf_patch->frootc_to_litr1c += m_frootc_store_to_litr1c;
+    cdf_patch->frootc_to_litr1c += m_livecrootc_store_to_litr1c;
+    cdf_patch->frootc_to_litr1c += m_deadcrootc_store_to_litr1c;
+
+
+    cdf_patch->frootc_to_litr2c += m_frootc_to_litr2c;
+
+    cdf_patch->frootc_to_litr3c += m_frootc_to_litr3c;
+
+    cdf_patch->frootc_to_litr4c += m_frootc_to_litr4c;
+
+
+    /* calculate the stemc to cwdc pool */
+
+    cdf_patch->stemc_to_cwdc += m_livestemc_to_cwdc;
+    cdf_patch->stemc_to_cwdc += m_deadstemc_to_cwdc;
+
+        //root to cwdc pool
+    cdf_patch->rootc_to_cwdc += m_livecrootc_to_cwdc;
+    cdf_patch->rootc_to_cwdc += m_deadcrootc_to_cwdc;
 	return;
 }/*end update_mortality*/
 

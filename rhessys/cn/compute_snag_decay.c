@@ -116,5 +116,9 @@ void	compute_snag_decay(
 
    ns->cwdn += ndf->snagn_to_cwdn;
 
+   /* update the carbon daily flux go to cwd pool NREN 20190926 */
+
+   cdf->stemc_to_cwdc += cdf->snagc_to_cwdc;
+
 } /*end compute_cwd_decay*/
 

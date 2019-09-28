@@ -1285,6 +1285,10 @@ struct  cdayflux_patch_struct
     double cwdc_to_litr2c;   /* (kgC/m2/d) CWD to unshielded cellulose litter */
     double cwdc_to_litr3c;   /* (kgC/m2/d) CWD to shielded cellulose litter */
     double cwdc_to_litr4c;   /* (kgC/m2/d) CWD to lignin litter */
+    double stemc_to_litr1c;  /* (KgC/m2/d) stemc carbon to labile for calculate above ground litter proportion NREN 20190926*/
+    double stemc_to_cwdc;     /* (KgC/m2/d) NREN 20190927 above ground litter*/
+    double rootc_to_cwdc;      /*(KgC/m2/d) */
+
 
     /* beetle caused snag pool decay flux */
 
@@ -1336,6 +1340,10 @@ struct  cdayflux_patch_struct
     double m_soil2c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
     double m_soil3c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
     double m_soil4c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+
+    /* litter fluxes out for calculating the above ground litter proportion NREN 20190927 */
+    double litterc_to_atmos; /* (kgC/m2) */
+    double litterc_to_soilc; /* (kgC/m2) */
 
         };
 
@@ -1908,6 +1916,12 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
+
+        double preday_litterc; /* above ground litter calculation NREN 20190927 */
+        double abc_to_litrc ;  /* kgC/m2 above ground carbon to litter pool*/
+        double bgc_to_litrc;   /* kgC/m2 below ground carbon to litter pool*/
+        double flux_litterc_out; /*kgC/m2, daily fluxes out of litter pool */
+        double prop_litrc_above_ground; /* percentage of above ground litter */
 
 
  /*---------------------------------------------------------------------------------*/
@@ -2505,6 +2519,8 @@ struct epvar_struct
         double transfer_deadcroot_gr;        /* (kgC/m2/d) */
         double transfer_gr;        /* (kgC/m2/d) */
         double total_gr;        /* (kgC/m2/d) */
+
+
 };
 
 /* annual carbon flux variables */

@@ -65,26 +65,26 @@ void update_beetle_attack_mortality(
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	double m_cpool, m_npool;
-	double m_leafc_to_litr1c, m_leafc_to_litr2c;
-	double m_leafc_to_litr3c, m_leafc_to_litr4c;
-	double m_deadleafc_to_litr1c, m_deadleafc_to_litr2c;
-	double m_deadleafc_to_litr3c, m_deadleafc_to_litr4c;
-	double m_frootc_to_litr1c, m_frootc_to_litr2c;
-	double m_frootc_to_litr3c, m_frootc_to_litr4c;
-	double m_leafc_store_to_snagc;
-	double m_frootc_store_to_litr1c;
-	double m_livestemc_store_to_litr1c;
-	double m_deadstemc_store_to_litr1c;
-	double m_livecrootc_store_to_litr1c;
-	double m_deadcrootc_store_to_litr1c;
-	double m_leafc_transfer_to_snagc;
-	double m_frootc_transfer_to_litr1c;
-	double m_livestemc_transfer_to_litr1c;
-	double m_deadstemc_transfer_to_litr1c;
-	double m_livecrootc_transfer_to_litr1c;
-	double m_deadcrootc_transfer_to_litr1c;
-	double m_gresp_store_to_litr1c;
-	double m_gresp_transfer_to_litr1c;
+	double m_leafc_to_litr1c = 0.0 , m_leafc_to_litr2c = 0.0;
+	double m_leafc_to_litr3c = 0.0, m_leafc_to_litr4c = 0.0;
+	double m_deadleafc_to_litr1c = 0.0, m_deadleafc_to_litr2c = 0.0;
+	double m_deadleafc_to_litr3c = 0.0, m_deadleafc_to_litr4c =0.0;
+	double m_frootc_to_litr1c = 0.0, m_frootc_to_litr2c =0 ;
+	double m_frootc_to_litr3c = 0.0, m_frootc_to_litr4c = 0.0;
+	double m_leafc_store_to_snagc = 0.0;
+	double m_frootc_store_to_litr1c = 0.0;
+	double m_livestemc_store_to_litr1c = 0.0;
+	double m_deadstemc_store_to_litr1c = 0.0;
+	double m_livecrootc_store_to_litr1c = 0.0;
+	double m_deadcrootc_store_to_litr1c = 0.0;
+	double m_leafc_transfer_to_snagc = 0.0;
+	double m_frootc_transfer_to_litr1c = 0.0;
+	double m_livestemc_transfer_to_litr1c = 0.0;
+	double m_deadstemc_transfer_to_litr1c = 0.0;
+	double m_livecrootc_transfer_to_litr1c = 0.0;
+	double m_deadcrootc_transfer_to_litr1c = 0.0;
+	double m_gresp_store_to_litr1c = 0.0;
+	double m_gresp_transfer_to_litr1c = 0.0;
 	double m_leafn_to_litr1n, m_leafn_to_litr2n;
 	double m_leafn_to_litr3n, m_leafn_to_litr4n;
 	double m_deadleafn_to_litr1n, m_deadleafn_to_litr2n;
@@ -105,10 +105,10 @@ void update_beetle_attack_mortality(
 	double m_livecrootn_transfer_to_litr1n;
 	double m_deadcrootn_transfer_to_litr1n;
 	double m_retransn_to_litr1n;
-	double m_livestemc_to_cwdc;
-	double m_deadstemc_to_cwdc;
-	double m_livecrootc_to_cwdc;
-	double m_deadcrootc_to_cwdc;
+	double m_livestemc_to_cwdc = 0.0;
+	double m_deadstemc_to_cwdc = 0.0;
+	double m_livecrootc_to_cwdc = 0.0;
+	double m_deadcrootc_to_cwdc = 0.0;
 	double m_livestemn_to_cwdn;
 	double m_deadstemn_to_cwdn;
 	double m_livecrootn_to_cwdn;
@@ -117,10 +117,10 @@ void update_beetle_attack_mortality(
 
 
 	/* beetle stem to snag pool */
-    double m_livestemc_to_snagc;
-	double m_deadstemc_to_snagc;
-	double m_livestemn_to_snagn;
-	double m_deadstemn_to_snagn;
+    double m_livestemc_to_snagc = 0.0;
+	double m_deadstemc_to_snagc = 0.0;
+	double m_livestemn_to_snagn = 0.0;
+	double m_deadstemn_to_snagn = 0.0;
 
 	//double m_snagc_to_cwdc; // exponential decay
 	//double m_snagn_to_cwdn; // exponential decay
@@ -399,8 +399,8 @@ void update_beetle_attack_mortality(
 	/*two parameters control it, root_alive, and harvest_dead_root, in beetles.def By ning ren 20190908 */
 	/*root_alive =1 is alive =0 is root dead, root_alive ==3 is fine root is dead too, but move to dead_root_beetle pool and then slowly decay to litter pool*/
 	/***************************************************************/
-	if (root_alive == 0) { //if the root is dead after attack
-        if(harvest_dead_root == 0) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
+	if (root_alive == 0.0) { //if the root is dead after attack
+        if(harvest_dead_root == 0.0) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
 	cs_litr->litr1c    += m_frootc_to_litr1c;
 	cs_litr->litr2c    += m_frootc_to_litr2c;
 	cs_litr->litr3c    += m_frootc_to_litr3c;
@@ -567,7 +567,7 @@ void update_beetle_attack_mortality(
 /****************************************************************/
 	/* Belowground dead n goes to litter and cwd in all cases. */
 	/*   Fine root mortality */
-	if (root_alive == 0) {
+	if (root_alive == 0.0) {
         if(harvest_dead_root ==0){
 
 	ns_litr->litr1n    += m_frootn_to_litr1n;
@@ -642,8 +642,51 @@ void update_beetle_attack_mortality(
 
     }
 
-    } // end of the if at the beginning
 
+
+    /* calculate the above ground litter part NREN 20190926*/
+   cdf_patch->leafc_to_litr1c += m_leafc_to_litr1c;
+   cdf_patch->leafc_to_litr1c += m_deadleafc_to_litr1c;
+   cdf_patch->leafc_to_litr1c += m_gresp_store_to_litr1c;
+   cdf_patch->leafc_to_litr1c += m_gresp_transfer_to_litr1c;
+
+   cdf_patch->leafc_to_litr2c += m_leafc_to_litr2c;
+   cdf_patch->leafc_to_litr2c += m_deadleafc_to_litr2c;
+
+   cdf_patch->leafc_to_litr3c += m_leafc_to_litr3c;
+   cdf_patch->leafc_to_litr3c += m_deadleafc_to_litr3c;
+
+   cdf_patch->leafc_to_litr4c += m_leafc_to_litr4c;
+   cdf_patch->leafc_to_litr4c += m_deadleafc_to_litr4c;
+
+    //stem
+   cdf_patch->stemc_to_litr1c += m_livestemc_store_to_litr1c;
+   cdf_patch->stemc_to_litr1c += m_livestemc_transfer_to_litr1c;
+   cdf_patch->stemc_to_litr1c += m_deadstemc_store_to_litr1c;
+   cdf_patch->stemc_to_litr1c += m_deadstemc_transfer_to_litr1c;
+
+    /* calculate the below ground litter part NREN 20190926 */
+   cdf_patch->frootc_to_litr1c += m_frootc_to_litr1c;
+   cdf_patch->frootc_to_litr1c += m_frootc_store_to_litr1c;
+   cdf_patch->frootc_to_litr1c += m_livecrootc_store_to_litr1c;
+   cdf_patch->frootc_to_litr1c += m_deadcrootc_store_to_litr1c;
+
+   cdf_patch->frootc_to_litr2c += m_frootc_to_litr2c;
+
+   cdf_patch->frootc_to_litr3c += m_frootc_to_litr3c;
+
+   cdf_patch->frootc_to_litr4c += m_frootc_to_litr4c;
+
+    /* calculate the stemc to cwdc pool */
+
+   cdf_patch->stemc_to_cwdc += m_livestemc_to_cwdc;
+   cdf_patch->stemc_to_cwdc += m_deadstemc_to_cwdc;
+
+    //root to cwdc pool
+   cdf_patch->rootc_to_cwdc += m_livecrootc_to_cwdc;
+   cdf_patch->rootc_to_cwdc += m_deadcrootc_to_cwdc;
+
+      } // end of the if at the beginning
 	return;
 
 }/*end update_beetle_attack_mortality*/

@@ -198,6 +198,8 @@ void		patch_daily_I(
 	patch[0].precip_with_assim = 0.0;
 
     patch[0].preday_rootzone_depth = patch[0].rootzone.depth; //NREN 20190914 for move root water
+
+    patch[0].preday_litterc = patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c;
 	/*-----------------------------------------------------*/
 	/*  Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/

@@ -52,6 +52,7 @@ struct fire_default {
 	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
 	int seed_multiplier; //controlled stochastic NREN 201808
 	int include_wui; //0 for no WUI grid, 1 for wui grid--0 by default
+	int calc_above_ground_litter; //0 for no need to calculate the differences between above and below ground litter
 //	char **patch_file_name;
 };
 

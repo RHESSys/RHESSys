@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------*/
-/*                                                              */ 
+/*                                                              */
 /*		update_branch_mortality									*/
 /*                                                              */
 /*  NAME                                                        */
@@ -7,7 +7,7 @@
 /*                                                              */
 /*                                                              */
 /*  SYNOPSIS                                                    */
-/* 	void update_branch_mortality( 
+/* 	void update_branch_mortality(
 /*                      struct epconst_struct,			*/
 /*                      struct phenology_struct *,		*/
 /*                      struct cstate_struct *,			*/
@@ -54,7 +54,7 @@ void update_branch_mortality(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -130,6 +130,9 @@ void update_branch_mortality(
 		ns->live_crootn -= m_livecrootn_to_cwdn;
 		ns->cwdn       += m_deadcrootn_to_cwdn;
 		ns->dead_crootn -= m_deadcrootn_to_cwdn;
+
+		cdf_patch->stemc_to_cwdc += m_livestemc_to_cwdc;//update the daily flux for calculating the above ground litter ratio NREN 20190926
+		cdf_patch->stemc_to_cwdc += m_deadstemc_to_cwdc;
 
 	} /* end if TREE - if not tree this routine does nothing */
 

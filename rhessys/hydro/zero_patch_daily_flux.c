@@ -10,7 +10,7 @@
 /*	double	zero_patch_daily_flux(				*/
 /*			struct cdayflux_patch_struct *,		*/
 /*			struct ndayflux_patch_struct *,		*/
-/*				)				*/	
+/*				)				*/
 /*								*/
 /*	returns:						*/
 /*								*/
@@ -37,12 +37,12 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	int ok=1;
-	
+
 	/*--------------------------------------------------------------*/
 	/* daily hydro  & N fluxes					*/
 	/*--------------------------------------------------------------*/
@@ -56,6 +56,10 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	patch[0].evaporation_surf = 0.0;
 	patch[0].Kup_direct = 0.0;
 	patch[0].Kup_diffuse = 0.0;
+
+	patch[0].abc_to_litrc = 0.0;
+	patch[0].bgc_to_litrc = 0.0;  //NREN 20190927
+	patch[0].flux_litterc_out = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/* daily carbon fluxes */
@@ -95,6 +99,15 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	cdf->soil3c_hr = 0.0;
 	cdf->soil3c_to_soil4c = 0.0;
 	cdf->soil4c_hr = 0.0;
+	/* some daily flux for calculating the above ground litter proportion NREN 20190926 */
+	cdf->stemc_to_litr1c = 0.0;
+	cdf->cwdc_to_litr2c = 0.0;
+	cdf->cwdc_to_litr3c = 0.0;
+	cdf->cwdc_to_litr4c = 0.0;
+	cdf->stemc_to_cwdc = 0.0;
+	cdf->rootc_to_cwdc = 0.0;
+	cdf->litterc_to_atmos = 0.0;
+	cdf->litterc_to_soilc = 0.0;
 	/*--------------------------------------------------------------*/
 	/* daily nitrogen fluxes */
 	/*--------------------------------------------------------------*/
@@ -145,7 +158,7 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	ndf->nfix_to_sminn = 0.0;
 	ndf->DON_to_gw = 0.0;
 	ndf->N_to_gw = 0.0;
-	
+
 	/*-------------------------------
 	ndf->sminn_to_nvol_l1s1 = 0.0;
 		  ndf->sminn_to_nvol_l2s2 = 0.0;

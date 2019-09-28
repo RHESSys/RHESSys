@@ -143,7 +143,11 @@ void	compute_redneedle_decay(
    ns_litr->litr3n += redneedlen_to_litr3n;
    ns_litr->litr4n += redneedlen_to_litr4n;
 
-
+   /* track these daily fluxes NREN 20190926 */
+   cdf->leafc_to_litr1c += redneedlec_to_litr1c;
+   cdf->leafc_to_litr2c += redneedlec_to_litr2c;
+   cdf->leafc_to_litr3c += redneedlec_to_litr3c;
+   cdf->leafc_to_litr4c += redneedlec_to_litr4c;
 
 
 } /*end compute_cwd_decay*/

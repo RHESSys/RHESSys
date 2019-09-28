@@ -1,6 +1,6 @@
 
 /*--------------------------------------------------------------*/
-/*                                                              */ 
+/*                                                              */
 /*		update_litter_soil_mortality			*/
 /*                                                              */
 /*  NAME                                                        */
@@ -40,7 +40,7 @@ void update_litter_soil_mortality(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -104,7 +104,13 @@ void update_litter_soil_mortality(
 	ns_soil->soil2n -= m_soil2n_to_atmos;
 	ns_soil->soil3n -= m_soil3n_to_atmos;
 	ns_soil->soil4n -= m_soil4n_to_atmos;
-	
+
+	/* update the fluxes out of litter pool NREN 20190927 */
+    cdf_patch->litterc_to_atmos += m_litr1c_to_atmos;
+    cdf_patch->litterc_to_atmos += m_litr2c_to_atmos;
+    cdf_patch->litterc_to_atmos += m_litr3c_to_atmos;
+    cdf_patch->litterc_to_atmos += m_litr4c_to_atmos;
+
 	return;
 }/*end update_litter_soil_mortality*/
 

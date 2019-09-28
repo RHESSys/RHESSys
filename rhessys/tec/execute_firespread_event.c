@@ -140,9 +140,16 @@ void execute_firespread_event(
 //printf("Patch p: %d\n",p);
 			patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
 //printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c);
-			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
-				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p];
+
 //printf("Patch p2: %d\n",p);
+            if (world[0].defaults[0].fire[0].calc_above_ground_litter == 1) {
+            world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
+				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p] * patch[0].prop_litrc_above_ground;
+                }
+            else
+            world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
+				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p];
+
 
 			if( patch[0].litter.rain_capacity!=0)	// then update the fuel moisture, otherwise don't change it
 			    world[0].fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *

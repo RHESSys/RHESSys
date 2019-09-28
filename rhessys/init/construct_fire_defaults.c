@@ -161,6 +161,9 @@ struct fire_default *construct_fire_defaults(
 		printf("the seed multiplier for controled stochastic: %d\n",default_object_list[i].seed_multiplier);
 		default_object_list[i].include_wui=getIntParam(&paramCnt, &paramPtr, "include_wui", "%d", 0, 1);
 		printf("include_wui: %d\n",default_object_list[i].include_wui);
+        default_object_list[i].calc_above_ground_litter=getIntParam(&paramCnt, &paramPtr, "calc_above_ground_litter", "%d", 0, 1);
+		printf("should only consider the above ground litter: %d\n",default_object_list[i].calc_above_ground_litter);
+
 
 
 

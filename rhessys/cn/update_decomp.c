@@ -54,7 +54,7 @@ int update_decomp(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -65,7 +65,7 @@ int update_decomp(
 	double nlimit, fpi;
 	double total_N, total_preday_N, balance;
 	double nitrate_immob, N_uptake, remaining_uptake;
-	
+
 	total_preday_N = ns_litr->litr1n + ns_litr->litr2n +  ns_litr->litr3n
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n + ns_soil->soil3n
 		+ ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate;
@@ -141,7 +141,7 @@ int update_decomp(
 		ndf->sminn_to_soil2n_l3 = ndf->pmnf_l3l2;
 		daily_net_nmin -= ndf->pmnf_l3l2;
 	}
-	
+
 	/* lignin litter fluxes */
 	if (cs_litr->litr4c > ZERO){
 		if (nlimit && ndf->pmnf_l4s3 > 0.0){
@@ -156,7 +156,7 @@ int update_decomp(
 		ndf->sminn_to_soil3n_l4 = ndf->pmnf_l4s3;
 		daily_net_nmin -= ndf->pmnf_l4s3;
 	}
-	
+
 	/* fast microbial recycling pool */
 	if (cs_soil->soil1c > ZERO){
 		if (nlimit && ndf->pmnf_s1s2 > 0.0){
@@ -300,17 +300,17 @@ int update_decomp(
 	ns_soil->soil4n	      -= ndf->soil4n_to_sminn;
 	/* Fluxes into mineralized N pool */
 	/* Fluxes output of mineralized N pool for net microbial immobilization */
-	if (daily_net_nmin > ZERO) 
+	if (daily_net_nmin > ZERO)
 		ns_soil->sminn += daily_net_nmin;
 	else {
 		if (-1.0*daily_net_nmin > ns_soil->sminn + ns_soil->nitrate + ZERO) {
-		
-			/* this should not happen  but if it does warn user and but let sminn go negative*/	
+
+			/* this should not happen  but if it does warn user and but let sminn go negative*/
 			printf("In update decomp not enough for mineral N will reduce accordingly ");
 			balance = ns_soil->sminn + ns_soil->nitrate + daily_net_nmin;
 			printf("\n required %lf balance unmet %lf", -1.0*daily_net_nmin, balance);
 			daily_net_nmin = -1.0 * (ns_soil->sminn + ns_soil->nitrate);
-			
+
 		}
 		nitrate_immob = min(ns_soil->nitrate, -1.0*daily_net_nmin);
 		ns_soil->nitrate -= max(nitrate_immob,0.0);
@@ -340,14 +340,26 @@ int update_decomp(
 	patch[0].surface_NH4 -=  N_uptake;
 	remaining_uptake -= N_uptake;
 
-	if (remaining_uptake > ZERO) printf("N balance issue \n"); 
+	if (remaining_uptake > ZERO) printf("N balance issue \n");
 	ndf->net_mineralized = daily_net_nmin;
 	total_N = ns_litr->litr1n + ns_litr->litr2n +  ns_litr->litr3n
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n
 		+ ns_soil->soil3n + ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate;
 	balance = (total_preday_N)  - (total_N + ndf->sminn_to_npool);
-	if (abs(balance) > ZERO) 
+	if (abs(balance) > ZERO)
 		printf("\n Decomp N doesn't balance by %lf ", balance);
-	
+
+	/* calculate the fluxes out NREN 20190927 */
+    cdf->litterc_to_atmos += cdf->litr1c_hr;
+    cdf->litterc_to_atmos += cdf->litr2c_hr;
+    cdf->litterc_to_atmos += cdf->litr3c_hr;
+    cdf->litterc_to_atmos += cdf->litr4c_hr;
+
+    cdf->litterc_to_soilc += cdf->litr1c_to_soil1c;
+    cdf->litterc_to_soilc += cdf->litr2c_to_soil2c;
+    cdf->litterc_to_soilc += cdf->litr4c_to_soil3c;
+
+
+
 	return (!ok);
 } /* end update_decomp.c */
