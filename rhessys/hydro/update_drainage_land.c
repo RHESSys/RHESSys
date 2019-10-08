@@ -458,6 +458,8 @@ void  update_drainage_land(
 		if (command_line[0].grow_flag > 0) {
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NO3_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NO3 += Nin;
+			if (neigh[0].drainage_type == STREAM)
+				neigh[0].streamNO3_from_surface += Nin;
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NH4_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NH4 += Nin;
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DON_leached_to_surface) / neigh[0].area;

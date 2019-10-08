@@ -441,6 +441,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 										patch[0].transmissivity_profile);
 						patch[0].surface_NO3 += Nout;
 						patch[0].soil_ns.nitrate -= Nout;
+						if (patch[0].drainage_type == STREAM) {
+								patch[0].streamNO3_from_sub += Nout;
+								}
 					}
 
 					if (grow_flag > 0) {
@@ -484,13 +487,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							patch[0].streamflow_NO3 += (excess
 									/ patch[0].detention_store)
 									* patch[0].surface_NO3;
-							patch[0].streamNO3_from_surface +=(excess
-									/ patch[0].detention_store)
-									* patch[0].surface_NO3;
 							patch[0].hourly[0].streamflow_NO3 += (excess
-									/ patch[0].detention_store)
-									* patch[0].surface_NO3;
-							patch[0].hourly[0].streamflow_NO3_from_surface +=(excess
 									/ patch[0].detention_store)
 									* patch[0].surface_NO3;
 
