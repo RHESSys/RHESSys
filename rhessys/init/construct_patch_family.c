@@ -88,6 +88,9 @@ for (i = 0; i < zone[0].num_patches; i++)
     {
         patch_family[0].patches[count] = zone[0].patches[i];
         if (command_line[0].verbose_flag == -6) printf("%d ", patch_family[0].patches[count][0].ID);
+
+        patch_family[0].area += zone[0].patches[i][0].area;
+
         count++;
     }
 }

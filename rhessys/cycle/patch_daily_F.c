@@ -425,6 +425,11 @@ void		patch_daily_F(
 	double snow_melt_covered, snow_melt_exposed;
 	double 	rz_drainage,unsat_drainage;
 	double prop_detention_store_infiltrated;
+	double	dayl_rad;
+	double	hr_rad;
+	double	adj_rad;
+	double	adj_hr;
+	double	adj_pct;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
@@ -529,7 +534,42 @@ void		patch_daily_F(
 	if ( command_line[0].verbose_flag == -5 ){
 	printf("\nPATCH DAILY F:");
 	}
-	
+
+	/*--------------------------------------------------------------*/
+	/*	Adjust kdowns if multiscale routing is used					*/
+	/*--------------------------------------------------------------*/
+	// this could be a separate function
+	if (command_line[0].multiscale_flag == 1) {
+		
+		/* Compare horizons to patch family adjusted horizon */
+		if (patch[0].family_horizon > asin(zone[0].w_horizon) > 0 || patch[0].family_horizon > asin(zone[0].e_horizon) > 0) {
+			// 180 degrees = pi = 3.141593 rad
+			// day length/sky in radians - max() might not be needed
+			dayl_rad = M_PI - asin(zone[0].w_horizon) - asin(zone[0].e_horizon);
+			// 1 hr in radians
+			hr_rad = dayl_rad / (zone[0].metv.dayl / 3600);
+
+			if (command_line[0].verbose_flag == -6) printf("\n ----- Patch family shading ----- \n");
+			if (command_line[0].verbose_flag == -6) printf("| Day length hrs %f | E hor deg %f | W hor deg %f | day length radians %f | 1hr radians %f | \n", 
+				zone[0].metv.dayl / 3600, asin(zone[0].w_horizon) * (180 / M_PI), asin(zone[0].e_horizon) * (180 / M_PI), dayl_rad, hr_rad);
+
+			if ((patch[0].family_horizon - asin(zone[0].w_horizon)) + (patch[0].family_horizon - asin(zone[0].e_horizon)) > hr_rad) {
+				// day length/sky radians of patch family
+				adj_rad = M_PI - 2 * patch[0].family_horizon;
+				// patch family day length in hrs, rounded to nearest hr
+				adj_hr = round((zone[0].metv.dayl / 3600) * adj_rad/dayl_rad);
+				if (command_line[0].verbose_flag == -6) printf("| Horizon radians %f -> %f | Daylight hrs %f -> %f |\n", dayl_rad, adj_rad, zone[0].metv.dayl / 3600, adj_hr);
+				// pct to adjust kdowns by
+				adj_pct = pow(((zone[0].metv.dayl / 3600) - adj_hr) / (zone[0].metv.dayl / 3600), 1.5);
+
+				if (command_line[0].verbose_flag == -6) printf("| Pct reduction %f | Kdown direct %f -> %f | Kdown diffuse %f -> %f |\n", 
+					adj_pct, patch[0].Kdown_direct, patch[0].Kdown_direct * (1 - adj_pct), patch[0].Kdown_diffuse, patch[0].Kdown_diffuse * (1 - adj_pct));
+				patch[0].Kdown_direct *= (1 - adj_pct);
+				patch[0].Kdown_diffuse *= (1 - adj_pct);
+			}
+		}
+	} /* end MSR patch family shading */
+
 	/*--------------------------------------------------------------*/
 	/*	Set the patch rain and snow throughfall equivalent to the	*/
 	/*	rain and snow coming down over the zone.					*/

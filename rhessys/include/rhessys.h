@@ -1612,6 +1612,7 @@ struct patch_object
         double  effective_lai;          /* avg of strata m^2/m^2        */
         double  evaporation;            /* m  water*/
         double  evaporation_surf;       /* m  water*/
+        double  family_horizon;         /* cos of angle to normal of flat */
         double  ga;                     /* m/s */         
         double  ga_final;               /* m/s */  
         double  gasnow;                 /* m/s */         
@@ -1870,6 +1871,7 @@ struct patch_family_object
         {
         int family_ID;
         int num_patches_in_fam;
+        double area;
         struct  patch_object            **patches;
         };
 

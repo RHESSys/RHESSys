@@ -87,6 +87,7 @@ $(OBJ)/compute_diffuse_radiative_PAR_fluxes.o \
 $(OBJ)/compute_diffuse_radiative_fluxes.o \
 $(OBJ)/compute_direct_radiative_PAR_fluxes.o \
 $(OBJ)/compute_direct_radiative_fluxes.o \
+$(OBJ)/compute_family_shading.o\
 $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
 $(OBJ)/compute_fire_effects.o \
@@ -780,6 +781,8 @@ $(OBJ)/compute_layer_field_capacity.o: hydro/compute_layer_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_layer_field_capacity.c -o $(OBJ)/compute_layer_field_capacity.o
 $(OBJ)/compute_growingseason_index.o: cn/compute_growingseason_index.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_growingseason_index.c -o $(OBJ)/compute_growingseason_index.o
+$(OBJ)/compute_family_shading.o: hydro/compute_family_shading.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_family_shading.c -o $(OBJ)/compute_family_shading.o
 $(OBJ)/compute_field_capacity.o: hydro/compute_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_field_capacity.c -o $(OBJ)/compute_field_capacity.o
 $(OBJ)/compute_fire_effects.o: cn/compute_fire_effects.c
