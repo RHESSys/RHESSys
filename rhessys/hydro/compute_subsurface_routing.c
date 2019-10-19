@@ -32,6 +32,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
+#include <omp.h>
 
 void compute_subsurface_routing(struct command_line_object *command_line,
 		struct hillslope_object *hillslope, int n_timesteps, struct date current_date) {
@@ -125,11 +126,11 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	hillslope[0].preday_hillslope_unsat_storage = 0.0;
 	hillslope[0].preday_hillslope_sat_deficit = 0.0;
 	hillslope[0].preday_hillslope_return_flow = 0.0;
-	hillslope[0].preday_hillslope_detention_store = 0.0;	
-	
+	hillslope[0].preday_hillslope_detention_store = 0.0;
+
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
- 
+
   #pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
   for (i = 0; i < hillslope->route_list->num_patches; i++) {
 		patch = hillslope->route_list->list[i];
@@ -149,7 +150,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].Qout = 0.0;
 		patch[0].surface_Qin = 0.0;
 		patch[0].surface_Qout = 0.0;
-		
+
 		patch[0].overland_flow = 0.0;
 
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
@@ -197,19 +198,19 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].surface_DON_Qin = 0.0;
 			patch[0].surface_DOC_Qout = 0.0;
 			patch[0].surface_DOC_Qin = 0.0;
-			
+
 			patch[0].streamNO3_from_surface	= 0.0;
 			patch[0].streamNO3_from_sub = 0.0;
-			
+
 
 		}
 	}
-  // For openmp assign local variables back to main	
+  // For openmp assign local variables back to main
   hillslope[0].preday_hillslope_rz_storage = preday_hillslope_rz_storage;
 	hillslope[0].preday_hillslope_unsat_storage = preday_hillslope_unsat_storage;
 	hillslope[0].preday_hillslope_sat_deficit = preday_hillslope_sat_deficit ;
 	hillslope[0].preday_hillslope_return_flow = preday_hillslope_return_flow ;
-	hillslope[0].preday_hillslope_detention_store = preday_hillslope_detention_store;	
+	hillslope[0].preday_hillslope_detention_store = preday_hillslope_detention_store;
   hillslope[0].hillslope_area = hillslope_area;
 
 	/*--------------------------------------------------------------*/
@@ -233,7 +234,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].hourly_stream_flow = 0;
 			patch[0].hourly[0].streamflow_NO3 = 0;
 			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
-			patch[0].hourly[0].streamflow_NO3_from_surface = 0;			
+			patch[0].hourly[0].streamflow_NO3_from_surface = 0;
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
 			/*	is routed to downslope patches; saturated throughflow	*/
@@ -378,8 +379,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								+ patch[0].hourly_sur2stream_flow;
 
 			if (k == (n_timesteps -1))
-					{ 
-				      
+					{
+
 			      if ((patch[0].sat_deficit
 						- (patch[0].unsat_storage + patch[0].rz_storage))
 						< -1.0 * ZERO) {
@@ -390,7 +391,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					patch[0].sat_deficit = 0.0;
 					patch[0].unsat_storage = 0.0;
 					patch[0].rz_storage = 0.0;
-					
+
 					if (grow_flag > 0) {
 						Nout =
 								compute_N_leached(verbose_flag,
@@ -465,9 +466,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/*--------------------------------------------------------------*/
 				/*	final overland flow routing				*/
 				/*--------------------------------------------------------------*/
-				patch[0].overland_flow += patch[0].detention_store 
+				patch[0].overland_flow += patch[0].detention_store
 									- patch[0].soil_defaults[0][0].detention_store_size;
-				
+
 				if (((excess = patch[0].detention_store
 						- patch[0].soil_defaults[0][0].detention_store_size)
 						> ZERO) && (patch[0].detention_store > ZERO)) {
@@ -516,7 +517,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].detention_store -= excess;
 						patch[0].Qout_total += excess;
 						patch[0].hourly_sur2stream_flow += excess;
-						
+
 					} else {
 						/*--------------------------------------------------------------*/
 						/* determine which innundation depth to consider		*/
@@ -964,8 +965,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				/* ******************************** this is done by each hour*/
 				/* patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 							  + patch[0].hourly_sur2stream_flow;*/
-			
-				//hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;							  
+
+				//hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
                                 if (patch[0].drainage_type == STREAM) {
 					patch[0].streamflow += patch[0].return_flow
 						+ patch[0].base_flow;
@@ -982,7 +983,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				hillslope[0].hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
 				hillslope[0].hillslope_detention_store += patch[0].detention_store
 						* patch[0].area;
-				
+
 				/*---------------------------------------------------------------------*/
 				/*update accumulator variables                                            */
 				/*-----------------------------------------------------------------------*/
@@ -992,7 +993,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			}
 				/*---------------------------------------------------------------------*/
 				/*update daily output: the patch[0].base_flow and patch[0].return_flow
-				 * is the summation of 24 hours return_flow and base_flow from previous 
+				 * is the summation of 24 hours return_flow and base_flow from previous
 				 * calculation*/
 				/*-----------------------------------------------------------------------*/
 				/*if(k==n_timesteps-1){

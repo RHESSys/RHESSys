@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <omp.h>
 //______________________________________________________________________________
 void nrerror(const char* error_text)
 /* Numerical Recipes standard error handler */
@@ -36,7 +37,7 @@ void delete_1d_array(array_type *p)
 template <class array_type>
 void delete_2d_array(array_type **p,int rows)
 {
-    for (int i = 0; i < rows; i++) 
+    for (int i = 0; i < rows; i++)
         delete[] p[i];
     delete[] p;
 }
@@ -118,7 +119,7 @@ template <class array_type> void copy_1d_array(array_type *from,array_type *to,i
 {
     #pragma omp parallel for num_threads(NUMCORES_TO_USE)
     for (int i = 0; i < rows; i++) {
-            to[i] = from[i]; 
+            to[i] = from[i];
     }
 }
 //______________________________________________________________________________
