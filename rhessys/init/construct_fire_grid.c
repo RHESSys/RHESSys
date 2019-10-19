@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
+#include <omp.h>
 // local function definition:
 /*double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,double curMaxY,double cellMaxX,
 							double cellMaxY,double cellMinX,double cellMinY,double cell_res);*/
@@ -89,6 +90,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				tmp.dists[w]=0;
 		}*/
 		// then initialize values: e.g., 0's
+		#pragma omp parallel for
 		 for(i=0;i<grid_dimX;i++){
 			for(j=0;j<grid_dimY;j++){
 				fire_grid[j][i].occupied_area=0;
@@ -114,6 +116,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}*/
 		//patchesIn=fopen("../auxdata/patchGrid.txt","r");
 		// for now do away with the header
+		#pragma omp parallel for
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){
 				// first initialize the fire grid
@@ -252,6 +255,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
 //		demIn=fopen("../auxdata/DemGrid.txt","r");
 		// for now do away with the header, so this file has no header
+		#pragma omp parallel for
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){
 				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
@@ -356,6 +360,7 @@ struct fire_object **construct_fire_grid(struct world_object *world)
 		fire_grid[i]=(struct fire_object *) malloc(world[0].num_fire_grid_col*sizeof(struct fire_object ));
 
 	// then initialize values: e.g., 0's
+	#pragma omp parallel for
 	 for(i=0;i<world[0].num_fire_grid_row;i++){
 		for(j=0;j<world[0].num_fire_grid_col;j++){
 			fire_grid[i][j].burn=0; // if burned, WMFire will replace with the p_s value
