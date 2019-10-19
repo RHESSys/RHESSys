@@ -231,7 +231,7 @@ struct base_station_object *construct_netcdf_grid (
         }
         else {
         utm_zone = 12;
-        printf("\n Not specify the UTM zone in command line, using default zone UTM 12, if you want to change the UTM zone using -ncgridinterp NUM \n");
+       // printf("\n Not specify the UTM zone in command line, using default zone UTM 12, if you want to change the UTM zone using -ncgridinterp NUM \n");
         }
 
          return_value= LatLonToUTMXY(lat, lon, utm_zone, &x_utm, &y_utm);

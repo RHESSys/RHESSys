@@ -2008,11 +2008,11 @@ void	canopy_stratum_daily_F(
 
                 //burn the redneedle and snag carbon
 
-                stratum[0].cs.redneedlec = stratum[0].cs.redneedlec - redneedlec_burn;
-                stratum[0].cs.delay_redneedlec = stratum[0].cs.delay_redneedlec - delay_redneedlec_burn; //fix bug NREN 20190923
+                stratum[0].cs.redneedlec = max(0,(stratum[0].cs.redneedlec - redneedlec_burn));
+                stratum[0].cs.delay_redneedlec = max(0,(stratum[0].cs.delay_redneedlec - delay_redneedlec_burn)); //fix bug NREN 20190923
 
-                stratum[0].cs.snagc = stratum[0].cs.snagc - snagc_burn;
-                stratum[0].cs.delay_snagc = stratum[0].cs.delay_snagc - delay_snagc_burn;
+                stratum[0].cs.snagc = max(0, (stratum[0].cs.snagc - snagc_burn));
+                stratum[0].cs.delay_snagc = max(0, (stratum[0].cs.delay_snagc - delay_snagc_burn));
                 //burn the nitrogen pool
                 redneedlen_burn = stratum[0].ns.redneedlen * overstory_burn;
                 delay_redneedlen_burn = stratum[0].ns.delay_redneedlen * overstory_burn;
@@ -2022,11 +2022,11 @@ void	canopy_stratum_daily_F(
 
                 //burn the redneedle and snag nitrogen
 
-                stratum[0].ns.redneedlen = stratum[0].ns.redneedlen - redneedlen_burn;
-                stratum[0].ns.delay_redneedlen = stratum[0].ns.delay_redneedlen - delay_redneedlen_burn;
+                stratum[0].ns.redneedlen = max(0, (stratum[0].ns.redneedlen - redneedlen_burn));
+                stratum[0].ns.delay_redneedlen = max(0, (stratum[0].ns.delay_redneedlen - delay_redneedlen_burn));
 
-                stratum[0].ns.snagn = stratum[0].ns.snagn - snagn_burn;
-                stratum[0].ns.delay_snagn = stratum[0].ns.delay_snagn - delay_snagn_burn;
+                stratum[0].ns.snagn = max(0, (stratum[0].ns.snagn - snagn_burn));
+                stratum[0].ns.delay_snagn = max(0, (stratum[0].ns.delay_snagn - delay_snagn_burn));
 
 
             }

@@ -153,7 +153,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"total_redneedlen",
 		"deadrootc_beetle",
 		"deadrootn_beetle",
-		"understory_gpsn","understory_resp", "understory_rootdepth", "understory_npp", "raatio_abg_litter");
+		"understory_gpsn","understory_resp", "understory_rootdepth", "understory_npp", "ratio_abg_litter");
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/

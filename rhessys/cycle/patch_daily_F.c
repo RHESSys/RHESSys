@@ -2413,13 +2413,13 @@ if ( command_line[0].verbose_flag == -5 ){
        /* printf("\n 4 the proportion of above ground litter carbon is %lf , preday abc litrc is %lf, come in abc litrc flux is %lf, out_abc is %lf, total litrc is %lf \n", prop, preday_litrc_above_ground, patch[0].abc_to_litrc,
                             (patch[0].flux_litterc_out)*patch[0].prop_litrc_above_ground, litterc); */
 
-        patch[0].prop_litrc_above_ground = prop;
+        patch[0].prop_litrc_above_ground = max(0, min(prop, 1));
 
-        if (prop < 0.05 || prop >1) {
+       /* if (prop < 0.05 || prop > 1) {
         fprintf(stderr,
-				"\nFATAL ERROR: the prop %lf cannot be larger than 1 check the calculation.\n",
-				prop);
-				exit(EXIT_FAILURE);}
+				"\nFATAL ERROR: the prop %lf out of range check the calculation, year %d, month %d, day %d, patchID %d, preday abg_litrc is %lf, influx_abc is %lf, outflux_abc is %lf, total litrc is %lf.\n",
+				prop, current_date.year, current_date.month, current_date.day, patch[0].ID, preday_litrc_above_ground, patch[0].abc_to_litrc, (patch[0].flux_litterc_out)* patch[0].prop_litrc_above_ground, litterc); }
+				//exit(EXIT_FAILURE);} */
 
 
 
