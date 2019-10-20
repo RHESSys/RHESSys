@@ -52,6 +52,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	struct patch_fire_object **fire_grid;
 	struct patch_object *patch;
 	int  b,h,p, z, i, j, k;
+	int found; //NREN
 //	double maxx, maxy, minx, miny, tmp,halfSideLength,curMinX,curMinY,curMaxX,curMaxY, cell_res;
 	double cell_res,tmp;
 /*	maxx=-10000; // depends on the origin for the coordinates, this was set for HJA centered at 0,0
@@ -148,7 +149,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
 					//printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files);
 
-
+                    found = 0; //NREN jump out the loop once found
 					for (b=0; b< world[0].num_basin_files; ++b) {
 						for (h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
 							for (z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
@@ -170,7 +171,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 
 										if(def.include_wui==0)
 											break; //? or keep loop to help point to wui patches as well// break would speed this up a little bit
-
+                                            found=1; //REN
 										// if we have found the correct patch, stop looking
 									}
 									/*if(patch[0].wuiID>=0&&def.include_wui==1) // then see if this pixel is within salience distance of this wui patch, and if it is add this patch to the pixel linked list
@@ -239,8 +240,12 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 										}
 									}*/
 								}
-							}
-						}
+								if (found==1)
+                                    break;
+							}//z=0 loop
+							if (found==1)
+                                break;
+						}// h=0 hillslope
 					}
 				}
 
