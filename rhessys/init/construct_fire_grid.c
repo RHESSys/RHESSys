@@ -91,7 +91,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				tmp.dists[w]=0;
 		}*/
 		// then initialize values: e.g., 0's
-		#pragma omp parallel for
+		#pragma omp parallel for private(j) collapse(2)
 		 for(i=0;i<grid_dimX;i++){
 			for(j=0;j<grid_dimY;j++){
 				fire_grid[j][i].occupied_area=0;
@@ -117,7 +117,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}*/
 		//patchesIn=fopen("../auxdata/patchGrid.txt","r");
 		// for now do away with the header
-		#pragma omp parallel for
+
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){
 				// first initialize the fire grid
@@ -260,7 +260,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
 //		demIn=fopen("../auxdata/DemGrid.txt","r");
 		// for now do away with the header, so this file has no header
-		#pragma omp parallel for
+
 		for(i=0; i<grid_dimY;i++){
 			for(j=0;j<grid_dimX;j++){
 				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
