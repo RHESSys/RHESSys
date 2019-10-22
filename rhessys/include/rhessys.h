@@ -1656,7 +1656,6 @@ struct patch_object
         double  Kstar_soil;                     /* Kj/(m^2*day) */
         double  Kdown_direct_subcanopy;         /* Kj/(m^2*day) */
         double  Kdown_diffuse_subcanopy;                /* Kj/(m^2*day) */
-        double  Ksat_0;                 /* meteres/day  */
         double  Ksat_vertical;          /* meters/day   */
         double  lna;                    /* unitless     */
         double  lai;                    /* unitless     */
