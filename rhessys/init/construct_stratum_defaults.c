@@ -277,7 +277,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.dynamic_alloc_prop_day_growth = getIntParam(&paramCnt, &paramPtr, "epc.dyn_alloc_prop_day_growth", "%d", 0, 1);
 		default_object_list[i].epc.daily_fire_turnover 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_fire_turnover", "%lf", 0.0, 1);
 		default_object_list[i].epc.height_to_stem_exp 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_exp", "%lf", 0.57, 1);
-		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 11.39, 1);
+		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 4.5510415, 1);
 		/*--------------------------------------------------------------*/
 		/*	optionally read in parameters on re-sprouting		*/
 		/* 	and other newly implemented vegetation routines		*/

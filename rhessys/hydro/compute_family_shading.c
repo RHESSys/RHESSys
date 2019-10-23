@@ -106,7 +106,7 @@ void compute_family_shading(    struct zone_object *zone,
             zone[0].patch_families[pf][0].patches[i][0].family_horizon = atan(d_height/dist); // angle to family horizon in radians
 
             if (command_line[0].verbose_flag == -6) printf("height diff = %f | ", d_height);
-            if (command_line[0].verbose_flag == -6) printf("family horizon deg = %f\n", zone[0].patch_families[pf][0].patches[i][0].family_horizon * (180/M_PI));
+            if (command_line[0].verbose_flag == -6) printf("family horizon deg = %f\n", zone[0].patch_families[pf][0].patches[i][0].family_horizon * (180/PI));
             
         } // end patch loop
 

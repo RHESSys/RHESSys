@@ -545,17 +545,17 @@ void		patch_daily_F(
 		if (patch[0].family_horizon > asin(zone[0].w_horizon) > 0 || patch[0].family_horizon > asin(zone[0].e_horizon) > 0) {
 			// 180 degrees = pi = 3.141593 rad
 			// day length/sky in radians - max() might not be needed
-			dayl_rad = M_PI - asin(zone[0].w_horizon) - asin(zone[0].e_horizon);
+			dayl_rad = PI - asin(zone[0].w_horizon) - asin(zone[0].e_horizon);
 			// 1 hr in radians
 			hr_rad = dayl_rad / (zone[0].metv.dayl / 3600);
 
 			if (command_line[0].verbose_flag == -6) printf("\n ----- Patch family shading ----- \n");
 			if (command_line[0].verbose_flag == -6) printf("| Day length hrs %f | E hor deg %f | W hor deg %f | day length radians %f | 1hr radians %f | \n", 
-				zone[0].metv.dayl / 3600, asin(zone[0].w_horizon) * (180 / M_PI), asin(zone[0].e_horizon) * (180 / M_PI), dayl_rad, hr_rad);
+				zone[0].metv.dayl / 3600, asin(zone[0].w_horizon) * (180 / PI), asin(zone[0].e_horizon) * (180 / PI), dayl_rad, hr_rad);
 
 			if ((patch[0].family_horizon - asin(zone[0].w_horizon)) + (patch[0].family_horizon - asin(zone[0].e_horizon)) > hr_rad) {
 				// day length/sky radians of patch family
-				adj_rad = M_PI - 2 * patch[0].family_horizon;
+				adj_rad = PI - 2 * patch[0].family_horizon;
 				// patch family day length in hrs, rounded to nearest hr
 				adj_hr = round((zone[0].metv.dayl / 3600) * adj_rad/dayl_rad);
 				if (command_line[0].verbose_flag == -6) printf("| Horizon radians %f -> %f | Daylight hrs %f -> %f |\n", dayl_rad, adj_rad, zone[0].metv.dayl / 3600, adj_hr);

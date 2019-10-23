@@ -146,11 +146,11 @@ void  compute_patch_family_routing( struct zone_object *zone,
                     command_line[0].verbose_flag,
                     zone[0].patch_families[pf][0].patches[i][0].m,
                     zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z,
-                    zone[0].patch_families[pf][0].patches[i][0].Ksat_0);
+                    zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].Ksat_0);
                 if (command_line[0].verbose_flag == -6) printf("ksat %f |", ksat[i]);
                 if (command_line[0].verbose_flag == -6) printf("m %f | satdefz %f | ksat0 %f |", zone[0].patch_families[pf][0].patches[i][0].m,
                     zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z,
-                    zone[0].patch_families[pf][0].patches[i][0].Ksat_0);
+                    zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].Ksat_0);
 
                 // area sum (patch fam without skipped patches)
                 area_sum += zone[0].patch_families[pf][0].patches[i][0].area;
@@ -254,7 +254,7 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 if (command_line[0].verbose_flag == -6) printf("[unsat z]%f \n", zone[0].patch_families[pf][0].patches[i][0].unsat_transfer);
 
                 // wilting point mean (of gainers)
-                wp_mean += (zone[0].patch_families[pf][0].patches[i][0].wilting_point / 1000) * zone[0].patch_families[pf][0].patches[i][0].area;
+                wp_mean += (zone[0].patch_families[pf][0].patches[i][0].wilting_point) * zone[0].patch_families[pf][0].patches[i][0].area;
                 // incrament gainer count
                 area_sum_g += zone[0].patch_families[pf][0].patches[i][0].area;
             }

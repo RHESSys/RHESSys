@@ -301,6 +301,7 @@ void input_new_strata_mult(
 		canopy_strata[0].defaults[0][0].epc.lai_ratio;
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
 	
+	/* updated below
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
@@ -311,6 +312,28 @@ void input_new_strata_mult(
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+	*/
+
+	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
+		if (canopy_strata[0].cs.stem_density < ZERO) canopy_strata[0].cs.stem_density = 0.2;
+		if ( (canopy_strata[0].cs.live_stemc + canopy_strata[0].cs.dead_stemc) > ZERO)
+			canopy_strata[0].epv.height = canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
+				* pow ( ((canopy_strata[0].cs.live_stemc + canopy_strata[0].cs.dead_stemc)/
+				(canopy_strata[0].cs.stem_density)), canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+		else
+			canopy_strata[0].epv.height = 0.0;
+	}
+	else
+		if (canopy_strata[0].defaults[0][0].epc.veg_type == NON_VEG) {
+			canopy_strata[0].epv.height = 0.0;
+			}
+		else {	if (canopy_strata[0].cs.leafc > ZERO)
+				canopy_strata[0].epv.height = (canopy_strata[0].defaults[0][0].epc.height_to_stem_coef + 6.8389585)
+					* pow ( (canopy_strata[0].cs.leafc), canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+			else
+				canopy_strata[0].epv.height = 0.0;
+			}
+	
 	/*--------------------------------------------------------------*/
 	/*	calculate all sided  and project pai from max projected lai	*/
 	/*--------------------------------------------------------------*/
