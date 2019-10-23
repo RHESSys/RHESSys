@@ -64,6 +64,12 @@ void	output_canopy_strata_state(
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.cpool)               , "cs.cpool");
 	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.stem_density)               , "cs.stem_density");
+	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc_age1)               , "cs.leafc_age1");
+	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc_age2)               , "cs.leafc_age2");
+	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc)               , "cs.leafc");
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.dead_leafc)          , "cs.dead_leafc");
@@ -158,10 +164,10 @@ void	output_canopy_strata_state(
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].epv.min_vwc)            , "epv.min_vwc");
 	fprintf(outfile , "\n            ");
-	fprintf(outfile , "%-30ld %s"        , canopy_strata[0].num_base_stations        , "n_basestations");
+	fprintf(outfile , "%-30ld %s"        , canopy_strata[0].num_base_stations        , "canopy_strata_n_basestations");
 	for (i=0; i < canopy_strata[0].num_base_stations; i++){
 		fprintf(outfile,"\n            ");
-		fprintf(outfile,"%-30ld %s",canopy_strata[0].base_stations[i][0].ID,"base_station_ID");
+		fprintf(outfile,"%-30ld %s",canopy_strata[0].base_stations[i][0].ID,"canopy_strata_basestation_ID");
 	}
 	return;
 } /*end output_canopy_strata_state*/

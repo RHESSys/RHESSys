@@ -57,6 +57,7 @@ Farquhar photosynthesis routine
 	  smitch added:
 
   	  in->c3	flag for C3 photosynthesis (alternative = C4)
+          in->netpabs;  (mol/mol) photons absorbed by PSII per e- xported
 	  
 	   Of these, t and Rd are used multiple times, and so are copied into local
 	   variables.  The others are referenced by their struct names.
@@ -108,8 +109,9 @@ Farquhar photosynthesis routine
 	double Aj;     /* (umol/m2/s) RuBP regeneration limited assim rate */
 	double A;      /* (umol/m2/s) net assimilation rate */
 	double aa,bb,cc,det;
-	/* New vbl introduced in BGC 4.1.1 for Jmax calc - ppe - smitch 2001 */
-	double ppe;	/* (mol/mol) photons absorbed by PSII per e- xported */
+	/* New vbl introduced in BGC 4.1.1 for Jmax calc - netpabs - smitch 2001 */
+	double netpabs;	/* (mol/mol) photons absorbed by PSII per e- xported */
+
 	int c3;		/* c3 flag to match bgc */
 	/*------------------------------------------------------------------
 	the weight proportion of Rubisco to its nitrogen content, fnr, is
@@ -155,15 +157,14 @@ Farquhar photosynthesis routine
 	c3 = 0;
 	/* tague for Laura: FOR NOW WE WILL HARDCODE C3 */
 	in->c3 = 1;
+	netpabs = in->netpabs;
         
 	if (in->c3)
         {
-                ppe = 2.6;
 		c3 = 1;
         }
         else /* C4 */
         {
-                ppe = 3.5;
                 Ca *= 10.0;
         }
 
@@ -230,8 +231,8 @@ Farquhar photosynthesis routine
         Plant Cell and Env.
         */
         aa = 0.7;
-        bb = -Jmax - (in->irad*pabs/ppe);
-        cc = Jmax * in->irad*pabs/ppe;
+        bb = -Jmax - (in->irad*netpabs);
+        cc = Jmax * in->irad*netpabs;
         J = (-bb - sqrt(bb*bb - 4.0*aa*cc))/(2.0*aa);
 
 	/*---------------------------------------------------------------
@@ -294,7 +295,7 @@ Farquhar photosynthesis routine
                  printf("psnin: %lf %lf %lf %lf %lf %lf %lf %lf %d %lf\n",
                                 in->pa, in->co2, t, in->irad,
                                 g, in->Rd, in->lnc, in->flnr,
-                                c3, ppe);
+                                c3, netpabs);
                                 printf("psnout: %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
                                 g, O2, Ca, Ca - A/g,
                                 out->gamma, Kc, Ko, act,

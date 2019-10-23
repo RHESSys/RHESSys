@@ -75,6 +75,7 @@ void input_new_strata_mult(
 		double,
 		double,
 		double,
+		double,
 		double);
 
 	double compute_delta_water(
@@ -235,7 +236,7 @@ void input_new_strata_mult(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",1,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.min_vwc = ltmp * canopy_strata[0].epv.min_vwc;
 	
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",canopy_strata[0].num_base_stations,0);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",canopy_strata[0].num_base_stations,0);	
 
 	
 		/*--------------------------------------------------------------*/
@@ -381,6 +382,7 @@ void input_new_strata_mult(
 			rootc, 
 			canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
+			canopy_strata[0].defaults[0][0].epc.max_root_depth,
 			patch[0].soil_defaults[0][0].effective_soil_depth)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from construct_canopy_strata()\n");
@@ -469,8 +471,6 @@ void input_new_strata_mult(
 		/*--------------------------------------------------------------*/
 		/*	Read in the number of  strata base stations 					*/
 		/*--------------------------------------------------------------*/
- 		/*  fscanf(world_file,"%d",&(dtmp));
-		read_record(world_file, record);*/
 		if (dtmp > 0) {
 			canopy_strata[0].num_base_stations = dtmp * canopy_strata[0].num_base_stations;
 			/*--------------------------------------------------------------*/

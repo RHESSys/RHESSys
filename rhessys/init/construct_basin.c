@@ -135,7 +135,7 @@ struct basin_object *construct_basin(
   basin[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",-9999,0);
   basin[0].basin_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"basin_parm_ID","%d",-9999,0);	
   basin[0].latitude = getDoubleWorldfile(&paramCnt,&paramPtr,"latitude","%lf",-9999,0);
-  basin[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
+  basin[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"basin_n_basestations","%d",0,0);
 
   /*--------------------------------------------------------------*/
   /*	Create cosine of latitude to save future computations.		*/
@@ -208,6 +208,7 @@ struct basin_object *construct_basin(
   /*--------------------------------------------------------------*/
   fscanf(world_file,"%d",&(basin[0].num_hillslopes));
   read_record(world_file, record);
+
 
   /*--------------------------------------------------------------*/
   /*	Allocate a list of pointers to hillslope objects.			*/

@@ -109,7 +109,16 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].mrc.per_N = 		getDoubleParam(&paramCnt, &paramPtr, "mrc.per_N", "%lf", 0.21, 1);
 		default_object_list[i].epc.gr_perc = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gr_perc", "%lf", 0.2, 1);
 		default_object_list[i].lai_stomatal_fraction = 	getDoubleParam(&paramCnt, &paramPtr, "lai_stomatal_fraction", "%lf", 1.0, 1);
-		default_object_list[i].epc.flnr = 		getDoubleParam(&paramCnt, &paramPtr, "epc.flnr", "%lf", 0.1, 1);
+
+		default_object_list[i].epc.netpabs_age_mult =   getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_age_mult", "%lf", 0.0, 1);
+                default_object_list[i].epc.netpabs =     getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs", "%lf", 0.7, 1);
+                default_object_list[i].epc.netpabs_sunlit =     getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_sunlit", "%lf", 9999, 1);
+                default_object_list[i].epc.netpabs_shade =      getDoubleParam(&paramCnt, &paramPtr, "epc.netpabs_shade", "%lf", 9999, 1);
+                default_object_list[i].epc.flnr_age_mult =              getDoubleParam(&paramCnt, &paramPtr, "epc.flnr_age_mult", "%lf", 0.0, 1);
+                default_object_list[i].epc.flnr =                getDoubleParam(&paramCnt, &paramPtr, "epc.flnr", "%lf", 0.1, 1);
+                default_object_list[i].epc.flnr_sunlit =                getDoubleParam(&paramCnt, &paramPtr, "epc.flnr_sunlit", "%lf", 9999, 1);
+                default_object_list[i].epc.flnr_shade =                 getDoubleParam(&paramCnt, &paramPtr, "epc.flnr_shade", "%lf",9999, 1);
+
 		default_object_list[i].epc.ppfd_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ppfd_coef", "%lf", 0.03, 1);
 		default_object_list[i].epc.topt = 		getDoubleParam(&paramCnt, &paramPtr, "epc.topt", "%lf", 15.0, 1);
 		default_object_list[i].epc.tmax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.tmax", "%lf", 40.0, 1);
@@ -119,6 +128,9 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.vpd_open = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_open", "%lf", 0.0, 1);
 		default_object_list[i].epc.vpd_close = 		getDoubleParam(&paramCnt, &paramPtr, "epc.vpd_close", "%lf", 3500.0, 1);
 		default_object_list[i].epc.gl_smax = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax", "%lf", 0.006, 1);
+		default_object_list[i].epc.gl_smax_sunlit =     getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax_sunlit", "%lf", 9999, 1);
+                default_object_list[i].epc.gl_smax_shade =      getDoubleParam(&paramCnt, &paramPtr, "epc.gl_smax_shade", "%lf", 9999, 1);
+
 		default_object_list[i].epc.gl_c = 		getDoubleParam(&paramCnt, &paramPtr, "epc.gl_c", "%lf", 0.00006, 1);
 		default_object_list[i].gsurf_slope = 		getDoubleParam(&paramCnt, &paramPtr, "gsurf_slope", "%lf", 0.0, 1);
 		default_object_list[i].gsurf_intercept = 	getDoubleParam(&paramCnt, &paramPtr, "gsurf_intercept", "%lf", 1000000.0, 1);
@@ -290,10 +302,11 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.coef_CO2 = getDoubleParam(&paramCnt, &paramPtr, "epc.coef_CO2", "%lf", 1.0, 1);
 		default_object_list[i].epc.root_growth_direction = getDoubleParam(&paramCnt, &paramPtr, "epc.root_growth_direction", "%lf", 0.8, 1);
 		default_object_list[i].epc.root_distrib_parm = getDoubleParam(&paramCnt, &paramPtr, "epc.root_distrib_parm", "%lf", 8.0, 1);
+		default_object_list[i].epc.max_root_depth = getDoubleParam(&paramCnt, &paramPtr, "epc.max_root_depth", "%lf", 9999.0, 1);
 		default_object_list[i].epc.crown_ratio = getDoubleParam(&paramCnt, &paramPtr, "epc.crown_ratio", "%lf", 0.6, 1);
-		if (epc->veg_type != TREE)
-			default_object_list[i].epc.crown_ratio = 1.0;
-		default_object_list[i].epc.max_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.max_stem_density", "%lf", 0.03, 1);
+		if (epc->veg_type != TREE) 
+			default_object_list[i].epc.crown_ratio = 1.0; 
+		default_object_list[i].epc.max_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.max_stem_density", "%lf", 0.05, 1);
 		/*--------------------------------------------------------------*/
 		/*	Fire effect parameters					*/
 		/*--------------------------------------------------------------*/
@@ -378,6 +391,36 @@ struct stratum_default *construct_stratum_defaults(
 		/* set sunlit sla multiplier	this should be an input		*/
 		/*--------------------------------------------------------------*/
 		default_object_list[i].epc.shade_sla_mult = 1.0;
+
+
+
+	     /*--------------------------------------------------------------*/
+                /* set sunlit and shaded if not available    netpabs, gl_smax,  flnr            */
+                /* triffered by values > 1 */
+                /*--------------------------------------------------------------*/
+                if (default_object_list[i].epc.flnr_shade > 1.0)
+                        default_object_list[i].epc.flnr_shade = default_object_list[i].epc.flnr;
+                if (default_object_list[i].epc.flnr_sunlit > 1.0)
+                        default_object_list[i].epc.flnr_sunlit = default_object_list[i].epc.flnr;
+
+                if (default_object_list[i].epc.netpabs_shade > 1.0)
+                        default_object_list[i].epc.netpabs_shade = default_object_list[i].epc.netpabs;
+                if (default_object_list[i].epc.netpabs_sunlit > 1.0)
+                        default_object_list[i].epc.netpabs_sunlit = default_object_list[i].epc.netpabs;
+
+                if (default_object_list[i].epc.gl_smax_sunlit > 9990)
+                        default_object_list[i].epc.gl_smax_sunlit = default_object_list[i].epc.gl_smax;
+                if (default_object_list[i].epc.gl_smax_shade > 9990)
+                        default_object_list[i].epc.gl_smax_shade = default_object_list[i].epc.gl_smax;
+
+                printf("\nusing %lf %lf for sunlit shade flnr and %lf and %lf for sun and shade gl_max\n",
+                                default_object_list[i].epc.flnr_sunlit,
+                                default_object_list[i].epc.flnr_shade,
+                                default_object_list[i].epc.gl_smax_sunlit,
+                                default_object_list[i].epc.gl_smax_shade);
+
+
+
 
 		/*--------------------------------------------------------------*/
 		/*	Apply sensitivity analysis if appropriate		*/

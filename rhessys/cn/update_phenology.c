@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------*/
+/*--------------------------------------------------------------*
 /*                                                              */ 
 /*		update_phenology				*/
 /*                                                              */
@@ -81,6 +81,7 @@ void update_phenology(struct zone_object  *zone,
 		int);
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
+		double,
 		double,
 		double,
 		double,
@@ -397,6 +398,7 @@ void update_phenology(struct zone_object  *zone,
 	 
 	/* Leaf carbon transfer growth */
 	cs->leafc            += cdf->leafc_transfer_to_leafc;
+     	cs->leafc_age1            += cdf->leafc_transfer_to_leafc;
 	cs->leafc_transfer   -= cdf->leafc_transfer_to_leafc;
 	/* Leaf nitrogen transfer growth */
 	ns->leafn           += ndf->leafn_transfer_to_leafn;
@@ -583,6 +585,7 @@ void update_phenology(struct zone_object  *zone,
 	if ((grow_flag > 0) && (rootc > ZERO)){
 		if (ok && update_rooting_depth(
 			rootzone, rootc, epc.root_growth_direction, epc.root_distrib_parm,
+			epc.max_root_depth,
 			effective_soil_depth)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from update_phenology()\n");
@@ -650,14 +653,20 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	/*	update height						*/
 	/*--------------------------------------------------------------*/
-	if (epc.veg_type == TREE) {
-		if (cs->stem_density < ZERO) cs->stem_density = 0.2;
-		if ( (cs->live_stemc + cs->dead_stemc) > ZERO)
-			epv->height = epc.height_to_stem_coef
-				* pow ( ((cs->live_stemc + cs->dead_stemc)/(cs->stem_density)), epc.height_to_stem_exp);
-		else
+	if (epc.veg_type == TREE)
+		if ( (cs->live_stemc + cs->dead_stemc) > ZERO) {
+			if (cs->stem_density > ZERO) {	
+				epv->height = epc.height_to_stem_coef
+				* pow ( (cs->live_stemc + cs->dead_stemc)/(cs->stem_density), epc.height_to_stem_exp);
+				}
+			else {
+				epv->height = (epc.height_to_stem_coef + 6.8389585)
+				* pow ( (cs->live_stemc + cs->dead_stemc), epc.height_to_stem_exp);
+			}
+		}
+		else {
 			epv->height = 0.0;
-	}
+		}
 	else
 		if (epc.veg_type == NON_VEG) {
 			epv->height = 0.0;
@@ -668,15 +677,17 @@ void update_phenology(struct zone_object  *zone,
 			else
 				epv->height = 0.0;
 			}
-	
-	/*--------------------------------------------------------------*/
-	/* temporary e-w horizon					*/
-	/*--------------------------------------------------------------*/
 
-	horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
 
-	zone[0].e_horizon=horiz;
-	zone[0].w_horizon=horiz;
+        /*--------------------------------------------------------------*/
+        /* temporary e-w horizon                                        */
+        /*--------------------------------------------------------------*/
+
+	if (cs->stem_density > ZERO) {	
+        horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
+	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
+	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);
+	}
 
 	/*--------------------------------------------------------------*/
 	/*	keep a seasonal max_lai for outputing purposes		*/
