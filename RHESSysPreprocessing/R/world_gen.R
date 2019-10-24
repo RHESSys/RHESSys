@@ -118,17 +118,18 @@ world_gen = function(template,
   # Error checking for basestationID/number - it's a loop :/ but short so not a big deal
   # If n_basestations is 0 -> do NOT include base_station_ID
   # If n_basestations is > 0 -> must include base_station_ID, even if doing redefine w/ -9999
-  n_basestations_index = which(var_names == "n_basestations")
+  n_basestations_index = which(endsWith(var_names, "n_basestations"))
 
   # get n basestations , check that strata are the same
   n_base = sapply(template_clean[n_basestations_index],FUN = function(x) as.integer(unique(x[3:length(x)])))
   if (length(n_base[[5]]) > 1) {stop(noquote("Canopy Strata n_basestations are inconsistent"))}
   n_base_nl = template_clean[n_basestations_index + 1] # get next line
   id_bad = n_base == 0 & !sapply(n_base_nl,is.null) # t/t for if n_base is 0 and next line IS base_station_ID
-  id_bad[id_bad] = grepl("base_station_ID",unlist(lapply(n_base_nl[id_bad],"[[",1))) # get var names of next lines, update id_bad
+
+  id_bad[id_bad] = grepl("basestation_ID",unlist(lapply(n_base_nl[id_bad],"[[",1))) # get var names of next lines, update id_bad
 
   id_need = n_base > 0 & !sapply(n_base_nl,is.null) # t/f for if n_base is >0 and next line IS NOT base_station_ID
-  id_need[id_need] = !grepl("base_station_ID",unlist(lapply(n_base_nl[id_need],"[[",1))) # get var names of next lines, update id_bad
+  id_need[id_need] = !grepl("basestation_ID",unlist(lapply(n_base_nl[id_need],"[[",1))) # get var names of next lines, update id_bad
 
   if (any(id_need)) {
     i_need = n_basestations_index[id_need]
