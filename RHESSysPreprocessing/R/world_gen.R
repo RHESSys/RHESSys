@@ -17,6 +17,7 @@
 #' Example parameters are included in an example script included in this package. See initGRASS help
 #' for more info on parameters.
 #' @param overwrite Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.
+#' @param unique_strata_ID Takes input map or value for stratum and appends either a 1 or 2 dpending on which canopy it is. Defaults to TRUE.
 #' @param asprules The path and filename to the rules file.  Using this argument enables aspatial patches.
 #' @seealso \code{\link{raster}}
 #' @author Will Burke
@@ -112,6 +113,7 @@ world_gen = function(template,
     } else if (is.numeric(asp_mapdata)) {
       levels = cbind(levels, rep(asp_mapdata,length(levels[,1])) )
     }
+    level_index = c(level_index, length(template_clean)+2) # because rules got added to the levels matrix, this is to prevent them from being aggregated across
   }
 
   # -------------------- Additional Input Checking --------------------
@@ -150,20 +152,6 @@ world_gen = function(template,
     print(paste("n_basestations on template line(s)", paste(i_rm,collapse = ", "),
                 "is 0. The base_station_ID on the following line has been omitted from the worldfile."),quote = FALSE)
   }
-
-  # for (i in n_basestations_index) {
-  #   if n_basestations is -9999 & if the next line is basestation ID
-  #   if (template_clean[[i]][3] == -9999) {
-  #     if (grepl("base_station_ID", template_clean[[i + 1]][1])) {
-  #       # removes from list and names vector regardless of if ID is -9999 or not
-  #       template_clean = template_clean[-(i + 1)]
-  #       var_names = var_names[-(i + 1)]
-  #       # shift indices
-  #       level_index[level_index > (i + 1)] = level_index[level_index > (i + 1)] - 1
-  #       var_index[var_index > (i + 1)] = var_index[var_index > (i + 1)] - 1
-  #     }
-  #   }
-  # }
 
   # -------------------- Process Template + Maps --------------------
   # Build list based on operations called for by template
@@ -249,7 +237,7 @@ world_gen = function(template,
   setTxtProgressBar(pb,0)
 
   # create/open connection
-  wcon = file(worldfile,open = "wt", encoding = "ASCII")
+  wcon = file(worldfile,open = "wt")
 
   # ----- World -----
   # No state variables at world level
@@ -267,7 +255,7 @@ world_gen = function(template,
         var = statevars[[i]][[1]][statevars[[i]][[1]][2] == b ,"x"]
       } else {var = statevars[[i]][[1]]}
       varname = template_clean[[i]][1]
-      writeChar(paste("\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+      writeChar(paste("\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
     }
     hillslopes = unique(levels[levels[,2] == b, 3])
     writeChar(paste("\t",length(hillslopes),"\t\t\t","num_hillslopes\n",sep = ""),con = wcon,eos = NULL)
@@ -286,7 +274,7 @@ world_gen = function(template,
           var = statevars[[i]][[1]][statevars[[i]][[1]][2] == b & statevars[[i]][[1]][3] == h ,"x"]
         } else {var = statevars[[i]][[1]]}
         varname = template_clean[[i]][1]
-        writeChar(paste("\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+        writeChar(paste("\t\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
       }
       zones = unique(levels[levels[,3] == h & levels[,2] == b, 4])
       writeChar(paste("\t\t",length(zones),"\t\t\t","num_zones\n",sep = ""),con = wcon,eos = NULL)
@@ -300,7 +288,7 @@ world_gen = function(template,
             var = statevars[[i]][[1]][statevars[[i]][[1]][2] == b & statevars[[i]][[1]][3] == h & statevars[[i]][[1]][4] == z ,"x"]
           } else {var = statevars[[i]][[1]]}
           varname = template_clean[[i]][1]
-          writeChar(paste("\t\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+          writeChar(paste("\t\t\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
         }
 
         #---------- Start multiscale (aspatial) patches and stratum ----------
@@ -329,7 +317,7 @@ world_gen = function(template,
                 var = as.numeric(rulevars[[ruleid]]$patch_level_vars[i,asp + 1])
                 varname = rulevars[[ruleid]]$patch_level_vars[i,1]
                 if (is.na(var)) {stop(paste(varname,"cannot be NA since a default isn't specified in the template, please set explicitly in your rules file."))}
-                writeChar(paste("\t\t\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+                writeChar(paste("\t\t\t\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
               }
 
               for (i in (level_index[5] + 1):(level_index[6] - 1)) { #iterate through template-based state variables
@@ -345,7 +333,7 @@ world_gen = function(template,
                 if (varname == "area") { # variable is area, adjust for pct_family_area
                   var = var * as.numeric(rulevars[[ruleid]]$patch_level_vars[rulevars[[ruleid]]$patch_level_vars[,1] == "pct_family_area",asp + 1])
                 }
-                writeChar(paste("\t\t\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+                writeChar(paste("\t\t\t\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
               }
 
               asp_strata_ct = length(rulevars[[ruleid]]$strata_level_vars[[asp]][1,]) - 1
@@ -373,7 +361,7 @@ world_gen = function(template,
                   var = as.numeric(rulevars[[ruleid]]$strata_level_vars[[asp]][i, s + 1])
                   varname = rulevars[[ruleid]]$strata_level_vars[[asp]][i, 1]
                   if (is.na(var)) {stop(paste(varname,"cannot be NA since a default isn't specified in the template, please set explicitly in your rules file."))}
-                  writeChar(paste("\t\t\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+                  writeChar(paste("\t\t\t\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
                 }
 
                 for (i in (level_index[6] + 1):length(template_clean)) { # go through srata vars normally
@@ -387,7 +375,7 @@ world_gen = function(template,
                       var = as.numeric(rulevars[[ruleid]]$strata_level_vars[[asp]][rulevars[[ruleid]]$strata_level_vars[[asp]][,1] == varname, s + 1])
                     }
                   }
-                  writeChar(paste("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+                  writeChar(paste("\t\t\t\t\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
                 }
               }
             }
@@ -408,7 +396,7 @@ world_gen = function(template,
                 var = statevars[[i]][[1]][statevars[[i]][[1]][2] == b & statevars[[i]][[1]][3] == h & statevars[[i]][[1]][4] == z & statevars[[i]][[1]][5] == p ,"x"]
               } else {var = statevars[[i]][[1]]}
               varname = template_clean[[i]][1]
-              writeChar(paste("\t\t\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+              writeChar(paste("\t\t\t\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
             }
             writeChar(paste("\t\t\t\t",length(stratum),"\t\t\t","num_stratum\n",sep = ""),con = wcon,eos = NULL)
 
@@ -428,7 +416,7 @@ world_gen = function(template,
                   var = statevars[[i]][[s]][statevars[[i]][[s]][2] == b & statevars[[i]][[s]][3] == h & statevars[[i]][[s]][4] == z & statevars[[i]][[s]][5] == p ,"x"]
                 } else {var = statevars[[i]][[s]]}
                 varname = template_clean[[i]][1]
-                writeChar(paste("\t\t\t\t\t",var,"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
+                writeChar(paste("\t\t\t\t\t",format(var),"\t\t\t",varname,"\n",sep = ""),con = wcon,eos = NULL)
               }
 
             } # end spatial statum
