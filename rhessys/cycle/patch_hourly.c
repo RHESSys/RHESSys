@@ -340,6 +340,28 @@ void		patch_hourly(
 	/* aggregate the hourly recharge */ 
 	patch[0].recharge += infiltration;
 	
+		/*--------------------------------------------------------------*/
+		/* added an surface N flux to surface N pool	and		*/
+		/* allow infiltration of surface N				*/
+		/*--------------------------------------------------------------*/
+		if ((command_line[0].grow_flag > 0) && (infiltration > ZERO)) {
+			patch[0].soil_ns.DON += ((infiltration
+					/ patch[0].detention_store) * patch[0].surface_DON);
+			patch[0].soil_cs.DOC += ((infiltration
+					/ patch[0].detention_store) * patch[0].surface_DOC);
+			patch[0].soil_ns.nitrate += ((infiltration
+					/ patch[0].detention_store) * patch[0].surface_NO3);
+			patch[0].surface_NO3 -= ((infiltration
+					/ patch[0].detention_store) * patch[0].surface_NO3);
+			patch[0].soil_ns.sminn += ((infiltration
+					/ patch[0].detention_store) * patch[0].surface_NH4);
+			patch[0].surface_NH4 -= ((infiltration
+					/ patch[0].detention_store) * patch[0].surface_NH4);
+			patch[0].surface_DOC -= ((infiltration
+					/ patch[0].detention_store) * patch[0].surface_DOC);
+			patch[0].surface_DON -= ((infiltration
+					/ patch[0].detention_store) * patch[0].surface_DON);
+				}
 	} /* end if rain throughfall */
 	/*--------------------------------------------------------------*/
 	/*	Destroy the patch hourly object.							*/

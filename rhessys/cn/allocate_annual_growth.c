@@ -90,7 +90,7 @@ int allocate_annual_growth(				int id,
 	double total_store, ratio, total_above_biomass,total_biomass, carbohydrate_transfer;
 	struct mortality_struct mort;
 
-	//printf("\nVegetation age %lf", cs->age); NREN20190227
+
 	fcroot = epc.alloc_crootc_stemc;
 	flive = epc.alloc_livewoodc_woodc;
 	fdead = (1-flive);
@@ -443,7 +443,7 @@ int allocate_annual_growth(				int id,
 	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
-		//printf("\n Resprouting stratum %d", id);
+		printf("\n Resprouting stratum %d", id);
 		cs->num_resprout += 1;
 		cs->age = 0.0;
 		cs->cpool = 0.0;
@@ -458,6 +458,8 @@ int allocate_annual_growth(				int id,
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
 		cs->leafc_transfer = 0.0;
 		cs->leafc = 0.0;
+		cs->leafc_age1 = 0.0;
+		cs->leafc_age2 = 0.0;
 		cs->frootc_transfer = 0.0;
 		ns->leafn_transfer = 0.0;
 		ns->frootn_transfer = 0.0;
@@ -515,6 +517,8 @@ int allocate_annual_growth(				int id,
 	else  {
 		 // cs->num_resprout = max(cs->num_resprout-1,0);
 		 		 cs->age = cs->age + 1.0;
+		 cs->leafc_age2 = cs->leafc;
+		 cs->leafc_age1 = 0.0;
 		 if (cs->age > 10000000.0) {
 			printf("\n\n Age has not been reset for %lf years Resetting to avoid numerical issues",
 						cs->age);

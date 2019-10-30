@@ -1,11 +1,17 @@
 1              beetle_default_ID
 0.95      	attack_mortality
 5  	     	year_delay
-10		half_life       # normally it is 10 year for snag half life 20180827
+10000		half_life       # normally it is 10 year for snag half life 20180827
 1991		year_attack
 3		leaf_year_delay  # normally it is 3 years 20180827
-2		leaf_half_life
+2000		leaf_half_life
 0		calc_single_attack
-100		min_abc
+1		min_abc
+1		mortality_type
+2		root_alive # root alive 1, 0 means root is dead combine with harvest 1 means makes dead root disappear, and harvest 0 means make dead root immedately go to litter pool
+0		harvest_dead_root
+300 		num_snag_seqence
+1 		transfer_root_water 
+10000		deadroot_half_life # root_alive option 2 is move the dead root to slow decay pool (this is only fine root)
 
 

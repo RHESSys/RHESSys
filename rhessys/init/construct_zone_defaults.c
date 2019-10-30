@@ -125,6 +125,10 @@ struct zone_default *construct_zone_defaults(
 		printf("The lapse rate tmin : %lf\n",default_object_list[i].lapse_rate_tmin);
 		default_object_list[i].lapse_rate_tmax = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmin", "%lf", default_object_list[i].lapse_rate, 1);
 		printf("The lapse rate tmax is : %lf\n",default_object_list[i].lapse_rate_tmax);
+		default_object_list[i].lapse_rate_tavg = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tavg", "%lf", default_object_list[i].lapse_rate, 1);
+
+
+
 		default_object_list[i].wet_lapse_rate = 	getDoubleParam(&paramCnt, &paramPtr, "wet_lapse_rate", "%lf", 0.0049, 1);
 		printf("The wet lapse rate is : %lf\n",default_object_list[i].wet_lapse_rate);
 		default_object_list[i].lapse_rate_precip_default = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_precip_default", "%lf", -999.0, 1);

@@ -13,7 +13,7 @@
 -1 ignition_col
 -1 ignition_row
 10 ignition_tmin
-1 fire_verbose  # 1 prints a lot of information
+0 fire_verbose  # 1 prints a lot of information 0 print least, 3 print middle
 1 fire_write  # 1 give the least output files 3 is the most output files
 2 fire_in_buffer  # 1 fire starts outside watershed, 2 it starts in watershed
 17 n_rows   #change it yourself
@@ -29,6 +29,7 @@
 1.2 ign_def_mod  # set the average number of ignitions per month
 2 mean_ign
 1 ran_seed # 0 stochastic 1 controled stochastic >1 total controled even the ignition cell for each month
-1 calc_fire_effects
+0 calc_fire_effects
 10 seed_multiplier
+1 calc_above_ground_litter
 

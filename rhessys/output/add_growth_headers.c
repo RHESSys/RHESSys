@@ -93,7 +93,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
 
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -104,6 +104,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"pai_b",
 		"gpsn",
 		"plant_resp",
+                "leaf_resp",
 		"soil_resp",
 		"nitrate",
 		"sminn",
@@ -337,7 +338,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].daily;
 	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -377,7 +378,8 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"mresp",
 		"gresp",
 		"psn_to_cpool","age","root_depth","gwseasonday","lfseasonday","gsi", "nlimit",
-		"fleaf","froot","fwood","Nuptake","smin2pl","retrans2pl","mort_fract");
+		"fleaf","froot","fwood","Nuptake","smin2pl","retrans2pl","mort_fract",
+		"assim_sunlit", "assim_shade", "trans_sunlit", "trans_shade", "leafc_age1", "leafc_age2", "proj_lai_sunlit","proj_lai_shade");
 
   /*--------------------------------------------------------------*/
 	/* Shadow	Daily 			                                   				*/

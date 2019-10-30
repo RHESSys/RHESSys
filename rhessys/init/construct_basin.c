@@ -353,6 +353,7 @@ struct basin_object *construct_basin(
             );
         exit(EXIT_FAILURE);
       }
+    fscanf(surface_routing_file,"%d",&num_hillslopes);
     }
 
     // THIS IS WHERE OPENMP WILL PARALLELIZE
@@ -366,6 +367,8 @@ struct basin_object *construct_basin(
 
         if ( command_line->surface_routing_flag == 1 ) {
           printf("\tReading surface routing table\n");
+      	fscanf( surface_routing_file, "%d", &hillslope_ID );
+      	hillslope = find_hillslope_in_basin( hillslope_ID, basin );
           hillslope->surface_route_list = construct_routing_topology( surface_routing_file, hillslope, command_line, true);
 
           if ( hillslope->surface_route_list->num_patches != hillslope->route_list->num_patches ) {

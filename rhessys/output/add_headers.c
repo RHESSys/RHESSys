@@ -418,7 +418,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].monthly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n",
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"month",
 		"year",
 		"basinID",
@@ -431,12 +431,12 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"et",
 		"psn",
 		"DOC",
-		"DON","lai","nitrif","mineralized","uptake","theta","snow","area","nitrate","sminn");
+		"DON","lai","nitrif","mineralized","uptake","theta","snow","area","nitrate","sminn", "burn");
 	/*--------------------------------------------------------------*/
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 			"year",
 			"basinID",
 			"hillID",
@@ -445,6 +445,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 			"num_threshold_sat_def",
 			"peaksweday",
 			"meltday",
+			"peaklaiday",
 			"leach",
 			"denitrif",
 			"DOC_loss",

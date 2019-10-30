@@ -184,7 +184,7 @@ void zone_daily_I(
 	double	Tlapse_adjustment;
 	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
 	int		season;
-
+	season = 0;
     //NR 20190607
 	int	inx;
 	struct	dated_sequence	clim_event;
@@ -264,7 +264,7 @@ void zone_daily_I(
 		/*																*/
 		/*		we do not adjust for slope, cloudyness or lai as yet	*/
 		/*--------------------------------------------------------------*/
-
+		temp = zone[0].base_stations[i][0].daily_clim[0].rain[day];
 		 if (command_line[0].gridded_netcdf_flag==1 && zone[0].defaults[0][0].grid_interpolation==1){
 		 temp = zone[0].rain_interpolate; }
 		 else {//climate data interpolation N.R
@@ -776,8 +776,17 @@ void zone_daily_I(
 	if ( zone[0].base_stations[0][0].daily_clim[0].tavg != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tavg[day];
 		if ( temp != -999.0 ){
-			zone[0].metv.tavg = temp-( z_delta )
-				* zone[0].defaults[0][0].lapse_rate;
+			if (zone[0].base_stations[0][0].daily_clim[0].lapse_rate_tavg == NULL) {
+				if (zone[0].rain > ZERO) 
+					Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
+				else
+					Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tavg;
+				zone[0].metv.tavg = temp - Tlapse_adjustment;
+			}
+			else {
+				Tlapse_adjustment = z_delta * zone[0].base_stations[0][0].daily_clim[0].lapse_rate_tavg[day];
+				zone[0].metv.tavg = temp - Tlapse_adjustment;
+			}
 
 			if (command_line[0].tchange_flag > 0)  {
 				zone[0].metv.tavg += (command_line[0].tmax_add +  command_line[0].tmin_add)/2.0;

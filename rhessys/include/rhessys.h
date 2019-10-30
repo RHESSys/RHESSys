@@ -370,6 +370,7 @@ struct accumulate_patch_object
    double length;
    int meltday;
    int peaksweday;
+   int peaklaiday;
    int wyd;
    int rec_wyd;
    int rec_pet_wyd;
@@ -769,6 +770,7 @@ struct  daily_clim_object
         double  *lapse_rate_precip;               /*      m / m           */
         double  *lapse_rate_tmin;               /*      degrees C / m           */
         double  *lapse_rate_tmax;               /*      degrees C / m           */
+        double  *lapse_rate_tavg;               /*      degrees C / m           */
         double  *dewpoint;                      /*      degrees C       */
         double  *Kdown_diffuse;                 /* kJ/(m2*day)  */
         double  *Kdown_direct;                  /* kJ/(m2*day) */
@@ -1056,6 +1058,7 @@ struct zone_object
         double  Delta_T;                                /* C degrees    */
         double  e_dewpoint;                             /* Pa           */
         double  e_horizon;      /* cos of angle to normal of flat       */
+        double  e_horizon_topog;      /* cos of angle to normal of flat       */
         double  effective_lai;          /* area wt. average m^2/m^2     */
         double  Kdown_diffuse;                          /* Kj/(m^2*day) */
         double  Kdown_diffuse_calc;                             /* Kj/(m^2*day) */
@@ -1091,6 +1094,7 @@ struct zone_object
         double  tdewpoint;                              /* degrees C    */
         double  vpd_max;                                /* Pa           */
         double  w_horizon;      /* cos of angle to normal of flat       */
+        double  w_horizon_topog;      /* cos of angle to normal of flat       */
         double  wind;                                   /* m/s          */
         double  wind_direction;                                 /* degrees      */
         struct  base_station_object     **base_stations;
@@ -1163,8 +1167,10 @@ struct	soil_default
 	{
 	int		ID;
 	int	theta_psi_curve;				/* unitless */
+	int	recompute_gamma_flag;				/* unitless */
 	double	albedo;						/* 0 to 1   */
 	double	interval_size;					/* m */
+	double	cap_rise_max;						/* meters/day */
 	double	Ksat_0;						/* meters/day */
 	double	Ksat_0_v;					/* meters/day */
 	double	m;						/* m^-1	*/
@@ -1190,6 +1196,7 @@ struct	soil_default
 	double  snow_water_capacity;				/* m */
 	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
 	double  snow_melt_Tcoef;				/* unitless */
+	double  fixed_t_mult;					/* 0 to 1 and -999 to turn off */
 	double	fs_spill;					/* multiplier*/
 	double	fs_percolation;					/* multiplier */
 	double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */
@@ -2309,6 +2316,9 @@ struct cstate_struct
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
+    double leafc_age1;           /* (kgC/m2) leaf C in first year leaves */
+    double leafc_age2;           /* (kgC/m2) leaf C in older leaves */
+    double stem_density;     /* number per m2 */; 
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */
@@ -2380,6 +2390,7 @@ struct  psnin_struct
         double Rd;              /* (umol/m2/s) dark respiration rate */
         double lnc;             /* (kg Nleaf/m2) leaf nitrogen per unit area */
         double flnr;            /* (kg NRub/kg Nleaf) fract. of leaf N in Rubisco */
+   	double netpabs;         /* (mol/mol) fPAR effectively abosorbed */
 } ;
 
 struct  psnout_struct
@@ -2449,9 +2460,13 @@ struct epvar_struct
         double fwood; /* 0-1 */
 
         /* gross PSN input */
+    double assim_sunlit; /* (kgC/m2/s per leaf) */
+    double assim_shade; /* (kgC/m2/s per leaf) */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
     double DOC_to_gw;   /* (kgC/m2/day) */
+    double trans_sunlit; /* (m/m2/s  */
+    double trans_shade; /* (m/m2/s ) */
 
     /* daily phenology fluxes */
     double leafc_to_deadleafc;     /* (kgC/m2/d) standing dead grass accumulation */
@@ -2683,7 +2698,14 @@ struct epconst_struct
         double lai_ratio;      /* (DIM) all-sided LA / one-sided LA ratio */
         double int_coef;       /* (kg/m2/LAI/d) canopy precip interception coef */
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
+	double netpabs;         /* (mol/mol) fPAR effectively abosorbed */
+        double netpabs_age_mult;                /* (0-1) increase for age < 1 (percent) */
+        double netpabs_shade;           /* (mol/mol) fPAR effectively abosorbed */
+        double netpabs_sunlit;          /* (mol/mol) fPAR effectively abosorbed */
+        double flnr_age_mult;           /* (0-1) increase for age < 1 (percent) */
         double flnr;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
+        double flnr_shade;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
+        double flnr_sunlit;           /* (kg NRub/kg Nleaf) leaf N in Rubisco */
         double ppfd_coef;      /* (s/m2/umol) shape parameter for ppfd hyperbola */
         double topt;           /* (deg C) optimum air temperature for gs */
         double tmax;           /* (deg C) maximum air temperature for gs */
@@ -2696,6 +2718,9 @@ struct epconst_struct
         double vpd_open;       /* (Pa) vpd at start of conductance reduction */
         double vpd_close;      /* (Pa) vpd at complete conductance reduction */
         double gl_smax;        /* (m/s) maximum leaf-scale stomatal conductance */
+	 double gl_smax_sunlit;        /* (m/s) maximum sunlit leaf-scale stomatal conductance */
+        double gl_smax_shade;        /* (m/s) maximum shade leaf-scale stomatal conductance */
+
         double gl_c;           /* (m/s) leaf-scale cuticular conductance */
         double gl_bl;          /* (m/s) leaf-scale boundary layer conductance */
         double gs_tmin;            /* (deg C) lower temperature theshold for leaf onset */
@@ -2776,7 +2801,9 @@ struct epconst_struct
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
+    double max_root_depth; /*  (m) optionally used to constratin maximum rooting depth by species */
         double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
+  double max_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
     int     max_years_resprout; /* num years of resprouting before death */
     double waring_pa; /* parameter for Waring allometric equation */
     double waring_pb; /* parameter for Waring allometric equation */
@@ -2784,6 +2811,12 @@ struct epconst_struct
     double Tacclim_days;  /* num days for temperature acclimation */
     double Tacclim_slp;  /* slope for temperature acclimation adjutment to Q10 */
     double Tacclim_intercpt;  /* intercept for temperature acclimation for temperature acclimation adjustment to Q10 */
+   double gxylem_min_gs;        /* (m/s) stomatal conductance below which cavitiation does not occur */
+    double gxylem_csat;        /* (DIM) exponent on lwp-xylem conductance curve */
+    double gxylem_bsat;        /* (MPa) parameter lwp-xylem conductance curve */
+    double gxylem_max;        /* (m/s) maximum xylem conductance */
+    double LWP_gxylem_min;        /* (MPa) water potential below which failure begins */
+    double gxylem_recovery_rate;        /* (m/s per day) increase in xylem conductance (post dameage) per day */
 } ;
 
 
@@ -2898,6 +2931,9 @@ struct  canopy_strata_object
         double  gs_sunlit;                                      /* m/s          */
         double  gs_shade;                                       /* m/s          */
         double  gsurf;                                          /* m/s          */
+        double  gxylem;                                          /* m/s          */
+        double  gplant_sunlit;                                          /* m/s          */
+        double  gplant_shade;                                          /* m/s          */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
         double  Lstar;                                          /* Kj/(m2*day)  */

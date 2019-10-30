@@ -139,6 +139,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <rhessys.h>
 
 double	compute_capillary_rise(
 							   int	verbose_flag,
@@ -146,7 +147,8 @@ double	compute_capillary_rise(
 							   double	psi_1,
 							   double	pore_size_index,
 							   double	m_z,
-							   double	Ksat_0)
+							   double	Ksat_0,
+							   double       cap_rise_max)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -169,7 +171,9 @@ double	compute_capillary_rise(
 	/*--------------------------------------------------------------*/
 	if ( (Z-psi_1) > 0 ){
 		/*--------------------------------------------------------------*/
-		/*	Estimate K_1  (i.e. K_sat)				*/
+		/*	use the minimum of max_cap_rise and soil hydraulic conductivity				*/
+		/*     cap_rise_max limit is necessary because K includes macro pore effect */
+		/*     and thus will lead to over estimates of cap rise which occurs through matrix pores */
 		/*--------------------------------------------------------------*/
 		K_1 = Ksat_z_curve(
 			verbose_flag,
@@ -179,6 +183,7 @@ double	compute_capillary_rise(
 		mc = 2 + 3 * pore_size_index;
 		w = K_1 * ( 1 + 1.5 / (mc - 1))
 			* pow((psi_1/(Z-psi_1)),mc);
+		w = min(cap_rise_max, w);
 	}
 	else{
 		w = 0;

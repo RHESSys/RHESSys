@@ -79,7 +79,7 @@ struct fire_default *construct_fire_defaults(
 		/*--------------------------------------------------------------*/
 		/*		read the ith default file into the ith object.			*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "fire_default_ID", "%d", 1, 1); // new param name
+		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "fire_parm_ID", "%d", 1, 1); // new param name
 		printf("ID: %d\n",default_object_list[i].ID);
 		/*--------------------------------------------------------------*/
 		/*		assign parameters in  default and read the      */

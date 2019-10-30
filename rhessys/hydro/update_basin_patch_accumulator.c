@@ -167,6 +167,7 @@ void update_basin_patch_accumulator(
 							max(patch[0].acc_month.lai, patch[0].lai);
 					patch[0].acc_month.leach += (patch[0].soil_ns.leach
 							+ patch[0].surface_ns_leach);
+					patch[0].acc_month.burn += patch[0].burn;
 					patch[0].acc_month.length += 1;
 
 				}
@@ -270,6 +271,12 @@ void update_basin_patch_accumulator(
 							+ patch[0].evaporation_surf
 							+ +patch[0].transpiration_sat_zone
 							+ patch[0].evaporation);
+
+							
+					if (patch[0].lai > patch[0].acc_year.lai) {
+						patch[0].acc_year.peaklaiday = round(
+								patch[0].acc_year.length);
+					}
 
 					if ((patch[0].PET + patch[0].PE - tmp)
 							> patch[0].acc_year.sm_deficit)

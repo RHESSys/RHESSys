@@ -64,7 +64,7 @@ dickenson	  epc.allocation_flag
 1.600000	  epc.alloc_stemc_leafc        # changed from 2.2 in deciduous
 0.160000	  epc.alloc_livewoodc_woodc
 0.150000	  epc.maxlgf
-0.000100	  epc.alloc_prop_day_growth    # changed from 0.1
+0.0001	          epc.alloc_prop_day_growth    # changed from 0.1
 0.000000	  epc.daily_fire_turnover
 0.570000	  epc.height_to_stem_exp       # reduced from 0.57 in white paper
 4.000000	  epc.height_to_stem_coef

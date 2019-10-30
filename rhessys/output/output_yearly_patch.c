@@ -50,7 +50,7 @@ void	output_yearly_patch(
 
 
 
-	fprintf(outfile,"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 			current_date.year,
 			basinID,
 			hillID,
@@ -59,6 +59,7 @@ void	output_yearly_patch(
 			patch[0].acc_year.num_threshold,
 			patch[0].acc_year.peaksweday,
 			patch[0].acc_year.meltday,
+			patch[0].acc_year.peaklaiday,
 			patch[0].acc_year.leach * 1000.0,
 			patch[0].acc_year.denitrif * 1000.0,
 			patch[0].acc_year.DOC_loss * 1000.0,
@@ -94,6 +95,7 @@ void	output_yearly_patch(
 	patch[0].acc_year.num_threshold = 0;
 	patch[0].acc_year.peaksweday = 0;
 	patch[0].acc_year.meltday = 0;
+	patch[0].acc_year.peaklaiday = 0;
 	patch[0].acc_year.leach = 0.0;
 	patch[0].acc_year.denitrif = 0.0;
 	patch[0].acc_year.nitrif = 0.0;

@@ -122,6 +122,7 @@ double	compute_varbased_flow(
 		didx = (int) lround(s1/interval_size);
 		didthr = (int) lround(threshold/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
+		if (didthr > num_soil_intervals) didthr = num_soil_intervals;
 
 		/* default lateral flow (seepage) below the threshold is 1/3 of the original value, the multiplier is arbitary. Xiaoli */
 

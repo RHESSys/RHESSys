@@ -160,6 +160,11 @@ struct zone_object *construct_zone(
 	zone[0].w_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",-9999,0);
 	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 	/*--------------------------------------------------------------*/
+	/* if using stem density to change e and w horizons need to remember originals */
+	/*--------------------------------------------------------------*/
+	zone[0].e_horizon_topog = zone[0].e_horizon;
+	zone[0].w_horizon_topog = zone[0].w_horizon;
+	/*--------------------------------------------------------------*/
 	/*	convert from degrees to radians for slope and aspects 	*/
 	/*--------------------------------------------------------------*/
 	zone[0].aspect = zone[0].aspect * DtoR;

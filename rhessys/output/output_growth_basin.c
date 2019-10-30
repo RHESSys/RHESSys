@@ -83,7 +83,7 @@ void	output_growth_basin(
 	alai = 0.0; acpool=0.0; anpool = 0.0; alai_b =0.0; apai=0.0; apai_b=0.0;
 	aleafc = 0.0; afrootc=0.0; awoodc=0.0;
 	aleafn = 0.0; afrootn=0.0; awoodn=0.0;
-	agpsn = 0.0; aresp=0.0; anfix=0.0; anuptake=0.0;
+	agpsn = 0.0; aresp=0.0; anfix=0.0; anuptake=0.0; aresp_leaf = 0.0;
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
@@ -210,6 +210,9 @@ void	output_growth_basin(
 							* patch[0].area;
 						------------------------------*/
 						anpool += strata->cover_fraction * (strata->ns.npool);
+						aresp_leaf += strata->cover_fraction
+							* (strata->cdf.leaf_day_mr + + strata->cdf.leaf_night_mr )
+							* patch[0].area;
 						aresp += strata->cover_fraction
 							* (strata->cdf.leaf_day_mr + strata->cdf.cpool_leaf_gr
 							+ strata->cdf.leaf_night_mr +	strata->cdf.livestem_mr
@@ -336,6 +339,7 @@ void	output_growth_basin(
 	}
 	agpsn /= aarea ;
 	aresp /= aarea ;
+	aresp_leaf /= aarea ;
 	alai /= aarea ;
 	alai_b /=aarea; //beetle
 	apai /=aarea;
@@ -411,7 +415,7 @@ void	output_growth_basin(
 	apro_abc_litr /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -422,6 +426,7 @@ void	output_growth_basin(
 		apai_b,
 		agpsn * 1000,
 		aresp * 1000,
+		aresp_leaf * 1000,
 		asoilhr * 1000,
 		anitrate * 1000,
 		asminn * 1000,

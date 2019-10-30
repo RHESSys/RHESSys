@@ -93,6 +93,9 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 		tk = tsoil + 273.15;
 		t_scalar = exp(308.56*((1.0/71.02)-(1.0/(tk-227.13))));
 	}
+	if (fixed_t_mult > -999)
+		t_scalar = fixed_t_mult;
+
 	/* calculate the rate constant scalar for soil water content.
 	use same empirical function as control on nitrification from NGas model
 	but set parameters to reduce sensitivity to water stress
