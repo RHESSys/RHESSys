@@ -17,6 +17,17 @@ rhessys/cn/*.bak
 rhessys/tec/*.bak
 *.swo
 defs/*.def
+
+./Cedar_world_file/
+./GCM_climate/
+./climate_1900_2017
+./rhessys/cycle/*.org
+./rhessys/init/*.bk
+./rhessys/init/*.slow
+./rhessys/makefile_backup20190911
+./rhessys/rhessys5-ol
+./rhessys8*
+
  
 auxdata/DemGrid.txt
 auxdata/patchGrid.txt
