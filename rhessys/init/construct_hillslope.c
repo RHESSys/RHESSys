@@ -63,7 +63,7 @@ struct hillslope_object *construct_hillslope(
 		int	,
 		int	,
 		struct base_station_object **);
-	
+
 	struct zone_object *construct_zone(
 		struct command_line_object *,
 		FILE	*,
@@ -72,7 +72,7 @@ struct hillslope_object *construct_hillslope(
 		struct	default_object *,
 		struct base_station_ncheader_object *,
 	    struct world_object *);
-	
+
 	void	*alloc(	size_t,
 		char	*,
 		char	*);
@@ -91,7 +91,7 @@ struct hillslope_object *construct_hillslope(
 	hillslope = (struct hillslope_object *) alloc( 1 *
 		sizeof( struct hillslope_object ),"hillslope",
 		"construct_hillsope" );
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Create the grow extension to the hillslope object if 		*/
 	/*	needed.														*/
@@ -117,15 +117,15 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].gw.storage = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.storage","%lf",0.0,1);
 	hillslope[0].gw.NO3 = getDoubleWorldfile(&paramCnt,&paramPtr,"gw.NO3","%lf",0.0,1);
 	hillslope[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
-	hillslope[0].streamflow_NO3 = 0.0;	
-	hillslope[0].streamflow_NH4 = 0.0;	
+	hillslope[0].streamflow_NO3 = 0.0;
+	hillslope[0].streamflow_NH4 = 0.0;
 	/*--------------------------------------------------------------*/
 	/*  Assign  defaults for this hillslope                             */
 	/*--------------------------------------------------------------*/
 	hillslope[0].defaults = (struct hillslope_default **)
 		alloc( sizeof(struct hillslope_default *),"defaults",
 		"construct_hillslopes" );
-	
+
 	i = 0;
 	while (defaults[0].hillslope[i].ID != hillslope[0].hill_parm_ID) {
 		i++;
@@ -164,20 +164,20 @@ struct hillslope_object *construct_hillslope(
 			*num_world_base_stations,
 			world_base_stations);
 	} /*end for*/
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in number of zones in this hillslope.					*/
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(hillslope[0].num_zones));
 	read_record(world_file, record);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate list of pointers to zone objects .					*/
 	/*--------------------------------------------------------------*/
 	hillslope[0].zones = ( struct zone_object ** )
 		alloc( hillslope[0].num_zones * sizeof( struct zone_object *),
 		"zones","construct_hillslopes");
-	
+
 	hillslope[0].streamflow_NO3 = 0.0;
 	hillslope[0].streamflow_NH4 = 0.0;
 	hillslope[0].streamflow_DON = 0.0;
@@ -207,9 +207,9 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.NH4_adsorption_rate = 0.0;
 	hillslope[0].aggdefs.DON_adsorption_rate = 0.0;
 	hillslope[0].aggdefs.DOC_adsorption_rate = 0.0;
-	
+
 	for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
-		printf("\n Construction zone %d", i);
+		//printf("\n Construction zone %d", i); //NREN 20191031
 		hillslope[0].zones[i] = construct_zone( command_line,
 			world_file,
 			num_world_base_stations,
@@ -217,7 +217,7 @@ struct hillslope_object *construct_hillslope(
 			base_station_ncheader, world);
 		for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
 			hillslope[0].area += hillslope[0].zones[i][0].patches[j][0].area;
-			if (hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].ID == 42) 
+			if (hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].ID == 42)
 				hillslope[0].riparian_area += hillslope[0].zones[i][0].patches[j][0].area;
 			hillslope[0].slope += hillslope[0].zones[i][0].patches[j][0].slope *
 					hillslope[0].zones[i][0].patches[j][0].area;
@@ -307,7 +307,7 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].acc_year.stream_NO3 = 0.0;
 	hillslope[0].acc_year.stream_NH4 = 0.0;
 	hillslope[0].acc_year.psn = 0.0;
-	
+
 	if(paramPtr!=NULL)
 	  free(paramPtr);
 
