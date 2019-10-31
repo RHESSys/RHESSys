@@ -38,7 +38,7 @@ void	output_growth_patch(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -67,11 +67,11 @@ void	output_growth_patch(
 		for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 			strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 			apsn += strata->cover_fraction * strata->cs.net_psn;
-			
-			aleafc += strata->cover_fraction * (strata->cs.leafc 
+
+			aleafc += strata->cover_fraction * (strata->cs.leafc
 				+ strata->cs.leafc_store + strata->cs.leafc_transfer );
-			
-			aleafn += strata->cover_fraction * (strata->ns.leafn 
+
+			aleafn += strata->cover_fraction * (strata->ns.leafn
 				+ strata->ns.leafn_store + strata->ns.leafn_transfer );
 
 			afrootc += strata->cover_fraction
@@ -80,15 +80,15 @@ void	output_growth_patch(
 
 			afrootn += strata->cover_fraction
 				* (strata->ns.frootn + strata->ns.frootn_store
-				+ strata->ns.frootn_transfer);			
+				+ strata->ns.frootn_transfer);
 
 			asoilhr += (
-					patch[0].cdf.litr1c_hr + 
-					patch[0].cdf.litr2c_hr + 
-					patch[0].cdf.litr4c_hr + 
-					patch[0].cdf.soil1c_hr + 
-					patch[0].cdf.soil2c_hr + 
-					patch[0].cdf.soil3c_hr + 
+					patch[0].cdf.litr1c_hr +
+					patch[0].cdf.litr2c_hr +
+					patch[0].cdf.litr4c_hr +
+					patch[0].cdf.soil1c_hr +
+					patch[0].cdf.soil2c_hr +
+					patch[0].cdf.soil3c_hr +
 					patch[0].cdf.soil4c_hr);
 
 			aresp += strata->cover_fraction
@@ -108,7 +108,7 @@ void	output_growth_patch(
 				+ strata->cs.livestemc_transfer + strata->cs.deadcrootc_transfer
 				+ strata->cs.deadstemc_transfer
 				+ strata->cs.cwdc + strata->cs.cpool);
-			
+
 			awoodn += strata->cover_fraction * (strata->ns.live_crootn
 				+ strata->ns.live_stemn + strata->ns.dead_crootn
 				+ strata->ns.dead_stemn + strata->ns.livecrootn_store
@@ -116,7 +116,7 @@ void	output_growth_patch(
 				+ strata->ns.deadstemn_store + strata->ns.livecrootn_transfer
 				+ strata->ns.livestemn_transfer + strata->ns.deadcrootn_transfer
 				+ strata->ns.deadstemn_transfer
-				+ strata->ns.cwdn + strata->ns.npool + strata->ns.retransn);			
+				+ strata->ns.cwdn + strata->ns.npool + strata->ns.retransn);
 
 			apredaytN += strata->cover_fraction * (strata->ns.preday_totaln);
 			atotalN += strata->cover_fraction * (strata->ns.totaln);
@@ -126,7 +126,7 @@ void	output_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
-		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%ld %ld %ld %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,

@@ -38,7 +38,7 @@ void	output_monthly_patch(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -47,7 +47,7 @@ void	output_monthly_patch(
 
 	if (patch[0].acc_month.leach > 0.0)
 		patch[0].acc_month.leach = log(patch[0].acc_month.leach*1000.0*1000.0);
-		
+
 	check = fprintf(outfile,
 		"%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %8.3f %f %f %f %f %f %f %f \n",
 		current_date.month,
@@ -71,10 +71,8 @@ void	output_monthly_patch(
 		patch[0].acc_month.snowpack * 1000.0 ,
 		patch[0].area,
 		patch[0].soil_ns.nitrate+patch[0].surface_NO3,
-		patch[0].soil_ns.sminn
-		patch[0].acc_month.burn
-
-		);
+		patch[0].soil_ns.sminn,
+		patch[0].acc_month.burn);
 
 	if (check <= 0) {
 		fprintf(stdout,

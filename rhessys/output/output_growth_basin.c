@@ -44,7 +44,7 @@ void	output_growth_basin(
 	int h,z,p,c;
 	int  layer;
 	double p_over, p_under;
-	double agpsn, aresp;
+	double agpsn, aresp, aresp_leaf;
 	double alai, alai_b, apai, apai_b;
 	double leafc, frootc, woodc;
 	double aleafc, afrootc, awoodc;

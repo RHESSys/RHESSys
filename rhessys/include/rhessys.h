@@ -976,6 +976,7 @@ struct  zone_default
         double  lapse_rate_precip_default;              /* k by m       */
         double  lapse_rate_tmin;                /* Celcius degrees/m    */
         double  lapse_rate_tmax;                /* Celcius degrees/m    */
+        double  lapse_rate_tavg;                /* Celcius degrees/m    */
         double  max_effective_lai;      /* m^2/m^2      */
         double  pptmin;                 /*      m       */
         double  sea_level_clear_sky_trans;      /* 0-1  */
@@ -2318,7 +2319,7 @@ struct cstate_struct
     double leafc;           /* (kgC/m2) leaf C */
     double leafc_age1;           /* (kgC/m2) leaf C in first year leaves */
     double leafc_age2;           /* (kgC/m2) leaf C in older leaves */
-    double stem_density;     /* number per m2 */; 
+    double stem_density;     /* number per m2 */;
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */
@@ -2776,7 +2777,7 @@ struct epconst_struct
     double litter_gsurf_intercept;  /* m/2 - intercept of conductance vs litter theta */
     double litter_gsurf_slope;  /* (DIM) - slope of conductance vs litter theta */
     double litter_moist_coef;  /* m/kg  water holding capacity of litter in m/kg/m2 */
-        double litter_density;  /* kg/m  density of litter in kg/m/m2 */
+    double litter_density;  /* kg/m  density of litter in kg/m/m2 */
     double frootlitr_flab;   /* (DIM) froot litter labile fraction */
     double frootlitr_fucel;  /* (DIM) froot litter unshielded cellulose fract */
     double frootlitr_fscel;  /* (DIM) froot litter shielded cellulose fract */

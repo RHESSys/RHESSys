@@ -45,6 +45,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 							 double minpsi,
 							 double theta,
 							 double std,
+							 double fixed_t_mult,
 							 struct  soil_c_object   *cs_soil,
 							 struct  soil_n_object   *ns_soil,
 							 struct  litter_c_object *cs_litr,
@@ -55,7 +56,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -123,7 +124,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 			w_scalar = 0.000001;
 	}
 
-	
+
 	if (w_scalar > ZERO)
 		w_scalar = sqrt(w_scalar);
 	else
@@ -151,10 +152,10 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	rfs1s2 = 0.28;
 	rfs2s3 = 0.46;
 	rfs3s4 = 0.55;
-	
+
 	/* calculate the corrected rate constants from the rate scalar and their
 	base values. All rate constants are (1/day) */
-	
+
 	kl1_base = 0.7;      /* labile litter pool */
 	kl2_base = 0.07;     /* cellulose litter pool */
 	kl4_base = 0.014;     /* lignin litter pool */
@@ -162,7 +163,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	ks2_base = 0.014;    /* medium microbial recycling pool */
 	ks3_base = 0.0014;   /* slow microbial recycling pool */
 	ks4_base = 0.0001;   /* recalcitrant SOM (humus) pool */
-	
+
 	kl1 = kl1_base * rate_scalar;
 	kl2 = kl2_base * rate_scalar;
 	kl4 = kl4_base * rate_scalar;
@@ -170,14 +171,14 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	ks2 = ks2_base * rate_scalar;
 	ks3 = ks3_base * rate_scalar;
 	ks4 = ks4_base * rate_scalar;
-	
-	
+
+
 	/* initialize the potential loss and mineral N flux variables */
 	plitr1c_loss = plitr2c_loss = plitr3c_loss = plitr4c_loss = 0.0;
 	psoil1c_loss = psoil2c_loss = psoil3c_loss = psoil4c_loss = 0.0;
 	pmnf_l1s1 = pmnf_l2s2 = pmnf_l3l2 = pmnf_l4s3 = 0.0;
 	pmnf_s1s2 = pmnf_s2s3 = pmnf_s3s4 = pmnf_s4 = 0.0;
-	
+
 	/* calculate the non-nitrogen limited fluxes between litter and
 	soil compartments. These will be ammended for N limitation if it turns
 	out the potential gross immobilization is greater than potential gross
@@ -223,7 +224,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 		psoil4c_loss = ks4 * cs_soil->soil4c;
 		pmnf_s4 = -psoil4c_loss/cn_s4;
 	}
-	
+
 	/* determine if there is sufficient mineral N to support potential
 	immobilization. Immobilization fluxes are positive, mineralization fluxes
 	are negative */
@@ -232,26 +233,26 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	mineralized = 0.0;
 	if (pmnf_l1s1 > 0.0) potential_immob += pmnf_l1s1;
 	else mineralized += -pmnf_l1s1;
-	
+
 	if (pmnf_l2s2 > 0.0) potential_immob += pmnf_l2s2;
 	else mineralized += -pmnf_l2s2;
 
 	if (pmnf_l3l2 > 0.0) potential_immob += pmnf_l3l2;
 	else mineralized += -pmnf_l3l2;
-	
+
 	if (pmnf_l4s3 > 0.0) potential_immob += pmnf_l4s3;
 	else mineralized += -pmnf_l4s3;
-	
+
 	if (pmnf_s1s2 > 0.0) potential_immob += pmnf_s1s2;
 	else mineralized += -pmnf_s1s2;
-	
+
 	if (pmnf_s2s3 > 0.0) potential_immob += pmnf_s2s3;
 	else mineralized += -pmnf_s2s3;
-	
+
 	if (pmnf_s3s4 > 0.0) potential_immob += pmnf_s3s4;
 	else mineralized += -pmnf_s3s4;
 	mineralized += -pmnf_s4;
-	
+
 	/* save the potential fluxes until plant demand has been assessed,
 	to allow competition between immobilization fluxes and plant growth
 	demands */
