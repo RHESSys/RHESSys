@@ -111,7 +111,7 @@ struct spinup_default *construct_beetle_defaults(
 		        default_object_list[i].mortality_type = getIntParam(&paramCnt, &paramPtr, "mortality_type", "%d", 1, 1); //type 1 is beetle type 2 is prescribed fire NR 2019/04/30
 		        printf("the mortality type is: %d\n", default_object_list[i].mortality_type);
 		        // the root go to litter pool or not NREN 20190908
-		        default_object_list[i].root_alive= getIntParam(&paramCnt, &paramPtr, "root_alive", "%d", 1, 1); //1 is alive no touching of root after beetle attack 0 is root is dead
+		        default_object_list[i].root_alive= getIntParam(&paramCnt, &paramPtr, "root_alive", "%d", 1, 1); //1 is alive no touching of root after beetle attack 0 is root is dead, 2 is dead root go to decay pool combine with the half life below
 		        printf("the root_alive after attack is: %d\n", default_object_list[i].root_alive);
 		        default_object_list[i].harvest_dead_root= getIntParam(&paramCnt, &paramPtr, "harvest_dead_root", "%d", 1, 1); //1 is the dead root is harvested not go to litter pool,0 is dead root go to litter pool
 		        printf("if harvest_dead_root is: %d\n", default_object_list[i].harvest_dead_root);
@@ -121,6 +121,19 @@ struct spinup_default *construct_beetle_defaults(
 		        printf("num_snag_sequence for memory allocation: %d\n",default_object_list[i].num_snag_sequence); //NREN 20190911
 		        default_object_list[i].transfer_root_water = getIntParam(&paramCnt, &paramPtr, "transfer_root_water", "%d", 0, 1); //NREN this is for transfer root water is the rootdepth is changed
 		        printf("need to transfer root water if the root depth is changed: %d\n",default_object_list[i].transfer_root_water); //NREN 20190914
+		        // improve the beetle effect model to incoorperate with the harvest the dead stem and leaf
+		        // if harvest leafc and harvest stem is true, here only control the lai and pai; you also need to change the delay time of stem and leaf to 100000
+		        // at the same time, the harvest dead root should be true and root_alive is 0 too.
+		        // if not harvest the leafc and stem, it will use the leaf_when_red and stem_when_red to calculate the LAI and PAI, and rootalive =0, harvest dead root is 0
+		        default_object_list[i].lai_include_redneedle= getIntParam(&paramCnt, &paramPtr, "lai_include_redneedle", "%d", 0, 1); //1 is alive no touching of root after beetle attack 0 is root is dead
+		        printf("calculating lai considering the redneedle: %d\n", default_object_list[i].lai_include_redneedle);
+		        default_object_list[i].pai_include_snag = getIntParam(&paramCnt, &paramPtr, "pai_include_snag", "%d", 0, 1); //1 is alive no touching of root after beetle attack 0 is root is dead
+		        printf("calculating pai considering the snag: %d\n", default_object_list[i].pai_include_snag);
+		        default_object_list[i].height_include_snag = getIntParam(&paramCnt, &paramPtr, "height_include_snag", "%d", 1, 1); //1 is alive no touching of root after beetle attack 0 is root is dead
+		        printf("calculating height considering the snag: %d\n", default_object_list[i].height_include_snag);
+
+
+
 
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */

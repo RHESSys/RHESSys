@@ -137,7 +137,7 @@ double	compute_rain_stored(
 	/*--------------------------------------------------------------*/
 	rain_storage = min( stratum[0].rain_stored + potential_interception,
 	//	stratum[0].epv.all_pai
-		stratum[0].epv.all_pai_when_red //NREN 20180804 in update_phenology, if there is not beetle attack, the all_api_b == all_api
+		stratum[0].epv.all_pai_when_red //NREN 20180804 in update phenology, if there is not beetle attack, the all_api_b == all_api
 		* stratum[0].defaults[0][0].specific_rain_capacity );
 	if( verbose_flag > 2)
 		printf("%8.6f ",rain_storage);

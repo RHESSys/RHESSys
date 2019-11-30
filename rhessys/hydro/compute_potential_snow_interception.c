@@ -86,7 +86,7 @@ double	compute_potential_snow_interception(
 	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG)
 		potential_interception = min(interception_coef * snow,
 			//leaf_area_ratio * stratum[0].epv.all_pai
-			leaf_area_ratio * stratum[0].epv.all_pai_when_red //N.REN 20180804 in update_phenology, if no beetle attack, the epv.all_pai_when_red = epv.all_pai
+			leaf_area_ratio * stratum[0].epv.all_pai_when_red //N.REN 20180804 in update phenology, if no beetle attack, the epv.all_pai_when_red = epv.all_pai
 			* stratum[0].defaults[0][0].specific_snow_capacity
 			- stratum[0].snow_stored);
 	else

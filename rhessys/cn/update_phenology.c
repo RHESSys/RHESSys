@@ -70,7 +70,8 @@ void update_phenology(struct zone_object  *zone,
 					  double	theta_noon,
 					  int 		wyday_start,
 					  struct date current_date,
-					  int	grow_flag)
+					  int	grow_flag,
+					  struct beetle_default beetle)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
@@ -644,7 +645,7 @@ void update_phenology(struct zone_object  *zone,
 
     if (epc.veg_type ==TREE && (cs->delay_redneedlec + cs->redneedlec)>=0) { // the second condition means outbreak happens
 
-    epv->proj_lai_when_red = max(((cs->leafc + cs->redneedlec + cs->delay_redneedlec)* (proj_sla_sunlit * perc_sunlit + //0.6 is hard coded here to make sure the lai_when_red is not larger than real lai
+    epv->proj_lai_when_red = max(((cs->leafc + cs->redneedlec + cs->delay_redneedlec)* (proj_sla_sunlit * perc_sunlit + //can the lai_when_red is not larger than real lai
 			proj_sla_shade * (1-perc_sunlit))), 0.0);
 		new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
 				(1.0 - exp(-0.5*(1-gap_fraction)*
@@ -657,7 +658,7 @@ void update_phenology(struct zone_object  *zone,
 				perc_sunlit = (proj_lai_sunlit) / (proj_lai_sunlit + proj_lai_shade);
 			else
 				perc_sunlit = 1.0;
-			epv->proj_lai_when_red = max(((cs->leafc + cs->redneedlec + cs->delay_redneedlec) * (proj_sla_sunlit * perc_sunlit + //0.6is hard coded or average
+			epv->proj_lai_when_red = max(((cs->leafc + cs->redneedlec + cs->delay_redneedlec) * (proj_sla_sunlit * perc_sunlit + //
 				proj_sla_shade * (1-perc_sunlit))), 0.0);
 			new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
 					(1.0 - exp(-0.5*(1-gap_fraction)*
@@ -667,8 +668,9 @@ void update_phenology(struct zone_object  *zone,
 
     }
 
-  // Revert back to lai 20181121 simple model
-        epv->proj_lai_when_red = epv->proj_lai;
+      // Using beetle defs to control if we consider the red needle
+       if (beetle.lai_include_redneedle != 1)  {//if zero, not consider redneedle, so make the lai_when_red as lai
+        epv->proj_lai_when_red = epv->proj_lai; }
 
 
 	/*--------------------------------------------------------------*/
@@ -697,7 +699,7 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	if (epc.veg_type == TREE)
 		if ( (cs->live_stemc + cs->dead_stemc) > ZERO){
-			if (cs->stem_density > ZERO) {	
+			if (cs->stem_density > ZERO) {
 				epv->height = epc.height_to_stem_coef
 				* pow ( (cs->live_stemc + cs->dead_stemc)/(cs->stem_density), epc.height_to_stem_exp);
 				}
@@ -728,25 +730,27 @@ void update_phenology(struct zone_object  *zone,
       epv->all_pai_when_red = epv->all_pai;
 
 	  if (epc.veg_type ==TREE && (cs->delay_snagc + cs->snagc) > ZERO && (epc.phenology_type == EVERGREEN)) { //Ning Ren 20190919
-	  sai = epc.proj_swa*(1.0 - exp(-0.175*(cs->live_stemc + cs->dead_stemc +cs->snagc +cs->delay_snagc))); //0.8 is hard coded
+	  sai = epc.proj_swa*(1.0 - exp(-0.175*(cs->live_stemc + cs->dead_stemc +cs->snagc +cs->delay_snagc))); //
 	  epv->proj_pai_when_red =max(epv->proj_lai_when_red +sai, 0.0);
 	  epv->all_pai_when_red =max(epv->proj_lai_when_red * epc.lai_ratio + sai, 0.0);
 	  //update the tree height
-	  if ( (cs->live_stemc + cs->dead_stemc) > ZERO)
+
+	  if ( (cs->live_stemc + cs->dead_stemc) > ZERO && beetle.height_include_snag == 1) //if zero, means snag is harveste
 			epv->height = epc.height_to_stem_coef
-				* pow ( (cs->live_stemc + cs->dead_stemc + cs->snagc + cs->delay_snagc), epc.height_to_stem_exp); //0.8 is hard coded Ning ren 2018/10/30
+				* pow ( (cs->live_stemc + cs->dead_stemc + cs->snagc + cs->delay_snagc), epc.height_to_stem_exp); //
 
     }
 
     //NREN 20181121
-    epv->proj_pai_when_red = epv->proj_pai;
+    if (beetle.pai_include_snag != 1)  {//NREN 20191129
+    epv->proj_pai_when_red = epv->proj_pai; }
 
 
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/
 
-	if (cs->stem_density > ZERO) {	
+	if (cs->stem_density > ZERO) {
         horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
 	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
 	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);

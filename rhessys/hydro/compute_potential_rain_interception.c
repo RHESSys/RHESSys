@@ -60,7 +60,7 @@ double	compute_potential_rain_interception(
 	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG)
 		potential_interception = min(interception_coef * rain,
 		//	stratum[0].epv.proj_pai
-			stratum[0].epv.proj_pai_when_red //NREN 20180804 in update_phenology, if there is no beetle attack,the proj_pai_when_red = proj_pai
+			stratum[0].epv.proj_pai_when_red //NREN 20180804 in update phenology, if there is no beetle attack,the proj_pai_when_red = proj_pai
 			* stratum[0].defaults[0][0].specific_rain_capacity
 			- stratum[0].rain_stored);
 	else

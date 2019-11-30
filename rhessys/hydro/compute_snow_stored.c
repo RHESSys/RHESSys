@@ -249,7 +249,7 @@ if (Tair_mean_day > 0) {
 	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) {
 		snow_storage = min( stratum[0].snow_stored
 		//	+ potential_interception, stratum[0].epv.all_pai
-			+ potential_interception, stratum[0].epv.all_pai_when_red //NREN 20180804 in update_phenology, if there is no beetle attack all_pai_when_red=all_api
+			+ potential_interception, stratum[0].epv.all_pai_when_red //NREN 20180804 in update phenology, if there is no beetle attack all_pai_when_red=all_api
 			* stratum[0].defaults[0][0].specific_snow_capacity );
 		throughfall += max(potential_interception - (snow_storage - stratum[0].snow_stored),0.0);
 		*snow = throughfall + unload;

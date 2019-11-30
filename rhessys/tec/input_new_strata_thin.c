@@ -78,11 +78,11 @@ void input_new_strata_thin(
 		double);
 
 	double compute_delta_water(
-		int, 
-		double, 
-		double,	
-		double, 
-		double, 
+		int,
+		double,
+		double,
+		double,
+		double,
 		double);
 
 	double	compute_lwp_predawn(
@@ -124,7 +124,7 @@ void input_new_strata_thin(
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
 	struct mortality_struct mort;
-	
+
 	mort.mort_cpool = 0.0;
 	mort.mort_leafc = 0.0;
 	mort.mort_deadleafc = 0.0;
@@ -287,7 +287,7 @@ void input_new_strata_thin(
  		fscanf(world_file,"%lf",&(ltmp));
 		read_record(world_file, record);
 		/*if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp * canopy_strata[0].ns.retransn;*/
-		
+
 
 		/*--------------------------------------------------------------*/
 		/*	intialized annual flux variables			*/
@@ -322,7 +322,7 @@ void input_new_strata_thin(
 			} /* end-while */
 			canopy_strata[0].defaults[0] = &defaults[0].stratum[i];
 		}
-	
+
 	/*--------------------------------------------------------------*/
 	/* Add removed C and N to CWD and litter pools */
 	/*--------------------------------------------------------------*/
@@ -337,8 +337,8 @@ void input_new_strata_thin(
 						 &(patch[0].litter_ns),
 						 thintyp,
 						 mort);
-	
-	
+
+
 		/*--------------------------------------------------------------*/
 		/*	zero all long term sinks				*/
 		/*--------------------------------------------------------------*/
@@ -357,7 +357,7 @@ void input_new_strata_thin(
 	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
 	/* 	we need to initialize the sunlit/shaded proportions of LAI here */
-	/*	(these will later be updated in update_phenology	*/
+	/*	(these will later be updated in update phenology	*/
 	/*	using Chen;s method					*/
 	/*--------------------------------------------------------------*/
 	canopy_strata[0].epv.proj_sla_sunlit = canopy_strata[0].defaults[0][0].epc.proj_sla;
@@ -381,7 +381,7 @@ void input_new_strata_thin(
 	canopy_strata[0].epv.all_lai = canopy_strata[0].epv.proj_lai *
 		canopy_strata[0].defaults[0][0].epc.lai_ratio;
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
-	
+
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
@@ -435,9 +435,9 @@ void input_new_strata_thin(
 	rootc = canopy_strata[0].cs.frootc+canopy_strata[0].cs.live_crootc+canopy_strata[0].cs.dead_crootc;
 	if (rootc > ZERO){
 		if (update_rooting_depth(
-			&(canopy_strata[0].rootzone), 
-			rootc, 
-			canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
+			&(canopy_strata[0].rootzone),
+			rootc,
+			canopy_strata[0].defaults[0][0].epc.root_growth_direction,
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
 			canopy_strata[0].defaults[0][0].epc.max_root_depth,
 			patch[0].soil_defaults[0][0].effective_soil_depth)){
@@ -448,7 +448,7 @@ void input_new_strata_thin(
 	}
 	}
 	patch[0].rootzone.depth = max(patch[0].rootzone.depth, canopy_strata[0].rootzone.depth);
-	
+
 		/*--------------------------------------------------------------*/
 		/*	set phenology timing if static allocation		*/
 		/*--------------------------------------------------------------*/
@@ -494,8 +494,8 @@ void input_new_strata_thin(
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
-		canopy_strata[0].rootzone.depth, 
-		0.0);			
+		canopy_strata[0].rootzone.depth,
+		0.0);
 
 	canopy_strata[0].rootzone.S = min(patch[0].rz_storage / canopy_strata[0].rootzone.potential_sat, 1.0);
 
@@ -557,7 +557,7 @@ void input_new_strata_thin(
 					world_base_stations);
 			} /*end for*/
 		}
-			 
+
 	return;
 } /*end input_new_strata.c*/
 

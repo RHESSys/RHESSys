@@ -282,7 +282,7 @@ void input_new_strata(
 	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
 	/* 	we need to initialize the sunlit/shaded proportions of LAI here */
-	/*	(these will later be updated in update_phenology	*/
+	/*	(these will later be updated in update phenology	*/
 	/*	using Chen;s method					*/
 	/*--------------------------------------------------------------*/
 	canopy_strata[0].epv.proj_sla_sunlit = canopy_strata[0].defaults[0][0].epc.proj_sla;
