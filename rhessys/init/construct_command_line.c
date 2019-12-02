@@ -130,6 +130,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
+	command_line[0].cpool_mort_fract = 0;
 	
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
