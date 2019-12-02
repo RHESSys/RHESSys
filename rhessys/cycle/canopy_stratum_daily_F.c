@@ -675,7 +675,7 @@ void	canopy_stratum_daily_F(
 		&(dum),
 		-1*stratum[0].defaults[0][0].epc.ext_coef,
 		stratum[0].gap_fraction,
-		stratum[0].epv.proj_pai, //DNOT Change here 20181101
+		stratum[0].epv.proj_pai, //DNOT Change here 20181101 this is for psn
 		//stratum[0].epv.proj_pai_when_red, //NREN 20180804 20181030 Ning Ren
 		basin[0].theta_noon,
 		PAR_reflectance,

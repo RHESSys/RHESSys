@@ -64,7 +64,7 @@ void	output_hillslope(				int basinID,
 	double aarea;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
-	double aPET, asublimation, acanopysubl, aheight, awoodc;
+	double aPET, asublimation, acanopysubl, aheight, awoodc, alai_red;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -109,6 +109,7 @@ void	output_hillslope(				int basinID,
 	acanopysubl = 0.0;
 	aheight = 0.0;
 	awoodc = 0.0;
+	alai_red = 0.0;
 
 
 
@@ -167,6 +168,9 @@ void	output_hillslope(				int basinID,
 						* patch[0].area;
 					alai += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai
+						* patch[0].area;
+                    alai_red += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai_when_red
 						* patch[0].area;
                     acanopysubl += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
                         * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].sublimation //output snow sublmiation
@@ -227,10 +231,11 @@ void	output_hillslope(				int basinID,
     acanopysubl /=aarea;
     aheight /=aarea;
     awoodc /=aarea;
+    alai_red /=aarea;
 
 
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -268,10 +273,8 @@ void	output_hillslope(				int basinID,
 		asublimation*1000.0,
 		acanopysubl*1000.0,
 		aheight, //what is the unit
-		awoodc
-
-
-
+		awoodc,
+		alai_red
 		);
 	return;
 } /*end output_hillslope*/
