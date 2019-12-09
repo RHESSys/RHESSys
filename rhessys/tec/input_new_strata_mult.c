@@ -306,7 +306,7 @@ void input_new_strata_mult(
 	/* use stem density if included otherwise default to simply stem carbon */
 		if (canopy_strata[0].cs.stem_density < ZERO) {
 		canopy_strata[0].epv.height =
-		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef + 6.8389585)
+		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
 		* pow((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
 		}
@@ -323,7 +323,7 @@ void input_new_strata_mult(
 	/* grass */
 	else
 		canopy_strata[0].epv.height =
-		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef + 6.8389585)
+		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
 	
