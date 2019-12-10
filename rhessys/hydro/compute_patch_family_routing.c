@@ -122,8 +122,8 @@ void  compute_patch_family_routing( struct zone_object *zone,
             zone[0].patch_families[pf][0].patches[i][0].unsat_transfer = 0;
             zone[0].patch_families[pf][0].patches[i][0].sat_transfer = 0;
 
-            // if  either sh coefficients are not 0, include patch
-            if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g > 0 ||
+            // if both sh coefficients are not 0, include patch
+            if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g > 0 && 
             zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l > 0) 
             {        
                 // if sharing coefs > 0, include this patch in subsiquent analyses
