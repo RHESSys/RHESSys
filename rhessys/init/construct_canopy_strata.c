@@ -448,7 +448,7 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	else {
 		canopy_strata[0].epv.height =
-		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef + 6.8389585)
+		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
 		* pow((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
 
@@ -457,7 +457,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/* grass height */
 	else
 		canopy_strata[0].epv.height =
-		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef + 6.8389585)
+		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
 

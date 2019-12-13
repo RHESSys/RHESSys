@@ -29,6 +29,8 @@ for more info on parameters.}
 
 \item{overwrite}{Overwrite existing worldfile. FALSE is default and prompts a menu if worldfile already exists.}
 
+\item{unique_strata_ID}{Takes input map or value for stratum and appends either a 1 or 2 dpending on which canopy it is. Defaults to TRUE.}
+
 \item{asprules}{The path and filename to the rules file.  Using this argument enables aspatial patches.}
 }
 \description{

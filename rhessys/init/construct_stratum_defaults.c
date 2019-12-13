@@ -306,7 +306,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.crown_ratio = getDoubleParam(&paramCnt, &paramPtr, "epc.crown_ratio", "%lf", 0.6, 1);
 		if (epc->veg_type != TREE) 
 			default_object_list[i].epc.crown_ratio = 1.0; 
-		default_object_list[i].epc.max_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.max_stem_density", "%lf", 0.05, 1);
+		default_object_list[i].epc.max_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.max_stem_density", "%lf", 1.5, 1);
 		/*--------------------------------------------------------------*/
 		/*	Fire effect parameters					*/
 		/*--------------------------------------------------------------*/
