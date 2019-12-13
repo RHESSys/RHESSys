@@ -285,7 +285,7 @@
 				patch[0].soil_defaults[0][0].detention_store_size);
 
 
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",patch[0].num_base_stations,1);	
 	if (dtmp > 0)  {
 		patch[0].num_base_stations = dtmp;
 		/*--------------------------------------------------------------*/
