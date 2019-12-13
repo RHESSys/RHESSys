@@ -84,8 +84,8 @@ void  compute_patch_family_routing( struct zone_object *zone,
         /* Definitions */
         int skip[p_ct];             // 0 = skip, 1 = lose, 2 = gain
         double ksat[p_ct];          // saturated conductivity - from ksat_z_curve()
-        //double rz_z_pct[p_ct];      // root zone depth percentage (of total)
-        //double un_z_pct[p_ct];      // unsat zone depth percentage (of total)
+        double rz_z_pct[p_ct];      // root zone depth percentage (of total)
+        double un_z_pct[p_ct];      // unsat zone depth percentage (of total)
         double dL[p_ct];            // loses of water from rz+unsat from patch, vol water
         double dL_sat[p_ct];        // loses of water from sat from patch, vol water
         double dG[p_ct];            // gains of water from rz+unsat from patch, vol water
@@ -159,12 +159,11 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 p_ct_skip += 1;
 
                 // percent of depth that is root zone
-                //rz_z_pct[i] = zone[0].patch_families[pf][0].patches[i][0].rootzone.depth / zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z;
-                //rz_z_pct[i] = 1;
+                rz_z_pct[i] = max(1.0, zone[0].patch_families[pf][0].patches[i][0].rootzone.depth / zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z);
 
                 // unsat depth pct
-                //un_z_pct[i] = 1 - rz_z_pct[i];
-                //un_z_pct[i] = 0;
+                un_z_pct[i] = 1 - rz_z_pct[i];
+                un_z_pct[i] = 0;
                 //if (command_line[0].verbose_flag == -6) printf("RZ/UNSAT z pct %f/%f\n",  rz_z_pct[i], un_z_pct[i]);
             }
             else 
@@ -234,8 +233,8 @@ void  compute_patch_family_routing( struct zone_object *zone,
             if (skip[i] == 2 && (zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage) < wet_mean)
             {
                 dG[i] = (wet_mean - (zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage)) * 
-                    zone[0].patch_families[pf][0].patches[i][0].area * (dL_act / dL_pot) * zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g;
-                dG_act += dG[i];
+                    zone[0].patch_families[pf][0].patches[i][0].area * (dL_act / dL_pot) * zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g *
+			rz_z_pct[i];		
                 dG_pot += (wet_mean - (zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage)) * 
                     zone[0].patch_families[pf][0].patches[i][0].area;
                 if (command_line[0].verbose_flag == -6) printf("[rz+un v]%f ", dG[i]);
@@ -243,17 +242,22 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 // Division of gaining water (dG) between rz & unsat
                 // rz gain
                 zone[0].patch_families[pf][0].patches[i][0].rz_transfer = min((dG[i] / zone[0].patch_families[pf][0].patches[i][0].area),
-                    zone[0].patch_families[pf][0].patches[i][0].rootzone.field_capacity - zone[0].patch_families[pf][0].patches[i][0].rz_storage);
+                    (zone[0].patch_families[pf][0].patches[i][0].rootzone.field_capacity - zone[0].patch_families[pf][0].patches[i][0].rz_storage));
                 zone[0].patch_families[pf][0].patches[i][0].rz_storage += zone[0].patch_families[pf][0].patches[i][0].rz_transfer;
                 if (command_line[0].verbose_flag == -6) printf("[rz z]%f ", zone[0].patch_families[pf][0].patches[i][0].rz_transfer);
 
                 // unsat gain - dG * unsat depth pct + max of 0 and dG_rz - rz field capacity
-                zone[0].patch_families[pf][0].patches[i][0].unsat_transfer = max((dG[i] / zone[0].patch_families[pf][0].patches[i][0].area) - 
-                    zone[0].patch_families[pf][0].patches[i][0].rz_transfer, 0);
+                zone[0].patch_families[pf][0].patches[i][0].unsat_transfer = max(min((dG[i] / zone[0].patch_families[pf][0].patches[i][0].area) - 
+                    zone[0].patch_families[pf][0].patches[i][0].rz_transfer, 
+		    (zone[0].patch_families[pf][0].patches[i][0].field_capacity-zone[0].patch_families[pf][0].patches[i][0].unsat_storage)),
+		 0);
                 zone[0].patch_families[pf][0].patches[i][0].unsat_storage += zone[0].patch_families[pf][0].patches[i][0].unsat_transfer;
                 if (command_line[0].verbose_flag == -6) printf("[unsat z]%f \n", zone[0].patch_families[pf][0].patches[i][0].unsat_transfer);
 
-                // wilting point mean (of gainers)
+               dG_act += (zone[0].patch_families[pf][0].patches[i][0].unsat_transfer+zone[0].patch_families[pf][0].patches[i][0].rz_transfer)* 
+				 zone[0].patch_families[pf][0].patches[i][0].area;
+
+		// wilting point mean (of gainers)
                 wp_mean += (zone[0].patch_families[pf][0].patches[i][0].wilting_point) * zone[0].patch_families[pf][0].patches[i][0].area;
                 // incrament gainer count
                 area_sum_g += zone[0].patch_families[pf][0].patches[i][0].area;
