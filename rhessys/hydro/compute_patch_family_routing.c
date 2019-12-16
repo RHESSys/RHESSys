@@ -159,11 +159,14 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 p_ct_skip += 1;
 
                 // percent of depth that is root zone
+		if (zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z > ZERO)
                 rz_z_pct[i] = max(1.0, zone[0].patch_families[pf][0].patches[i][0].rootzone.depth / zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z);
+		else
+		rz_z_pct[i] = 1.0;
+
 
                 // unsat depth pct
                 un_z_pct[i] = 1 - rz_z_pct[i];
-                un_z_pct[i] = 0;
                 //if (command_line[0].verbose_flag == -6) printf("RZ/UNSAT z pct %f/%f\n",  rz_z_pct[i], un_z_pct[i]);
             }
             else 
@@ -208,11 +211,11 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 dL[i] = 0;
             }
             // sat losers
-            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat)
+            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit < wet_mean_sat)
             { 
-                dL_sat[i] = (zone[0].patch_families[pf][0].patches[i][0].sat_deficit - wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area * ksat[i];
+                dL_sat[i] = (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area * ksat[i];
                 dL_sat_act += dL_sat[i];
-                dL_sat_pot += (zone[0].patch_families[pf][0].patches[i][0].sat_deficit - wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area;
+                dL_sat_pot += (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area;
             }
             else
             {
@@ -229,7 +232,7 @@ void  compute_patch_family_routing( struct zone_object *zone,
         
         for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam ; i++)
         {
-            // rz + unsat > mean wetness (gainers)
+            // rz + unsat < mean wetness (gainers)
             if (skip[i] == 2 && (zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage) < wet_mean)
             {
                 dG[i] = (wet_mean - (zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage)) * 
@@ -268,16 +271,16 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 //if (command_line[0].verbose_flag == -6) printf("<skip> ");
             }
             // sat gainers
-            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit < wet_mean_sat)
+            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat)
             {
-                dG_sat[i] = (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area * 
+                dG_sat[i] = (zone[0].patch_families[pf][0].patches[i][0].sat_deficit-wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area * 
                     (dL_sat_act/dL_sat_pot) * ksat[i];
                 dG_sat_act += dG_sat[i];
-                dG_sat_pot += (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area;
+                dG_sat_pot += (zone[0].patch_families[pf][0].patches[i][0].sat_deficit-wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area;
             
                 // change in sat store ***** revisit this, make sure deficit is being updated correctly, should be in meters of water *****
                 zone[0].patch_families[pf][0].patches[i][0].sat_transfer = dG_sat[i] / zone[0].patch_families[pf][0].patches[i][0].area;
-                zone[0].patch_families[pf][0].patches[i][0].sat_deficit += zone[0].patch_families[pf][0].patches[i][0].sat_transfer;
+                zone[0].patch_families[pf][0].patches[i][0].sat_deficit -= zone[0].patch_families[pf][0].patches[i][0].sat_transfer;
             } 
             else
             {
@@ -300,13 +303,17 @@ void  compute_patch_family_routing( struct zone_object *zone,
             if (skip[i] == 1 && (zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage) > wet_mean)
             {
                 // update loss values for gains less than potential, should have no impact if L actual = G actual
-                dL_adj[i] = dL[i] - (dL_act - dG_act) * (dL[i]/dL_act);
+		if (dL_act > ZERO)
+                	dL_adj[i] = dL[i] - (dL_act - dG_act) * (dL[i]/dL_act);
+		else
+			dL_adj[i] = 0.0;
+
                 if (command_line[0].verbose_flag == -6) printf("[rz+un v]%f, ", dL_adj[i]);
                 
                 // distribute dL_adj between rz and unsat and update stores
                 // RZ - removes down to the mean wilting point of the gaining patches
                 zone[0].patch_families[pf][0].patches[i][0].rz_transfer = -1 * min(dL_adj[i] / zone[0].patch_families[pf][0].patches[i][0].area, 
-                    zone[0].patch_families[pf][0].patches[i][0].rz_storage - wp_mean );
+                    zone[0].patch_families[pf][0].patches[i][0].rz_storage - zone[0].patch_families[pf][0].patches[i][0].wilting_point );
                 zone[0].patch_families[pf][0].patches[i][0].rz_storage += zone[0].patch_families[pf][0].patches[i][0].rz_transfer;
                 if (command_line[0].verbose_flag == -6) printf("[rz z]%f ", zone[0].patch_families[pf][0].patches[i][0].rz_transfer);
 
