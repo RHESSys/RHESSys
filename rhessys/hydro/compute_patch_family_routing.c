@@ -152,6 +152,8 @@ void  compute_patch_family_routing( struct zone_object *zone,
                     zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z,
                     zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].Ksat_0);
 
+		/* temporarily turning this off as its super unsatable */
+		ksat[i]=0.0;
                 // area sum (patch fam without skipped patches)
                 area_sum += zone[0].patch_families[pf][0].patches[i][0].area;
 
@@ -177,8 +179,13 @@ void  compute_patch_family_routing( struct zone_object *zone,
         } // end loop 1
 
         // Get mean wetness - vol water/(total patch family) area - units are meters depth
+
+	if (area_sum > ZERO) {
         wet_mean /= area_sum;
         wet_mean_sat /= area_sum;
+	}
+	else {wet_mean = 0.0; wet_mean_sat=0.0;}
+
         if (command_line[0].verbose_flag == -6) printf("Mean wetness (z) = %f,\n", wet_mean);
 
         /*--------------------------------------------------------------*/
@@ -271,7 +278,7 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 //if (command_line[0].verbose_flag == -6) printf("<skip> ");
             }
             // sat gainers
-            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat)
+            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat && dL_sat_pot > ZERO)
             {
                 dG_sat[i] = (zone[0].patch_families[pf][0].patches[i][0].sat_deficit-wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area * 
                     (dL_sat_act/dL_sat_pot) * ksat[i];
@@ -323,7 +330,7 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 zone[0].patch_families[pf][0].patches[i][0].unsat_storage += zone[0].patch_families[pf][0].patches[i][0].unsat_transfer;
                 if (command_line[0].verbose_flag == -6) printf("[unsat z]%f \n", zone[0].patch_families[pf][0].patches[i][0].unsat_transfer);
             }
-            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat)
+            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat && dL_sat_act > ZERO)
             {
                 dL_sat_adj[i] = dL_sat[i] - (dL_sat_act - dG_sat_act) * (dL_sat[i]/dL_sat_act);
 
