@@ -91,7 +91,7 @@
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of base stations for this zone.          */
 	/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"zone_n_basestations","%d",0,1);
 
 	if (dtmp > 0) {
 		/*zone[0].num_base_stations = dtmp;*/

@@ -148,7 +148,7 @@
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of base stations for this zone.          */
 	/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",1,0);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"zone_n_basestations","%d",1,0);
 	if (dtmp > 0) {
 		zone[0].num_base_stations = dtmp ;
 		zone[0].base_stations = (struct base_station_object **)
