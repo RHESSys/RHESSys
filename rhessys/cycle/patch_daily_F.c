@@ -757,11 +757,14 @@ void		patch_daily_F(
 	/*	Calculate initial pond height		*/
 	pond_height = max(0.0,-1 * patch[0].sat_deficit_z + patch[0].detention_store);
 
+
 	/*--------------------------------------------------------------*/
 	/* Layers above snowpack and pond */
 	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		patch[0].snowpack.overstory_height = zone[0].base_stations[0][0].screen_height;
+
+
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) &&
 			(patch[0].layers[layer].height > pond_height) ){
 			if ( command_line[0].verbose_flag == -5 ){
@@ -786,6 +789,7 @@ void		patch_daily_F(
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
+			/*
 			if (dum == 0) {				
 				patch[0].ga_final = tmpga;
 				patch[0].gasnow_final = tmpgasnow;
@@ -796,21 +800,21 @@ void		patch_daily_F(
 					printf("\n     ***TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
 				}
 			}
-			else {				
-				patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
-				patch[0].gasnow_final = patch[0].layers[layer].null_cover * patch[0].gasnow;
-				patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
-				patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow;
-				patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;
+			*/
+			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
+			patch[0].gasnow_final = patch[0].layers[layer].null_cover * patch[0].gasnow;
+			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
+			patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow;
+			patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;
 				if ( command_line[0].verbose_flag == -5 ){
 					printf("\n     ***NOT TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
 				}
-			}
 
 			/*--------------------------------------------------------------*/
 			/*		Cycle through the canopy strata in this layer	*/
 			/*--------------------------------------------------------------*/
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+
 					canopy_stratum_daily_F(
 						world,
 						basin,
@@ -1140,6 +1144,7 @@ void		patch_daily_F(
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
+
 					canopy_stratum_daily_F(
 						world,
 						basin,
@@ -1187,6 +1192,8 @@ void		patch_daily_F(
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+
+
 					canopy_stratum_daily_F(
 						world,
 						basin,
@@ -1814,7 +1821,7 @@ void		patch_daily_F(
 	patch[0].unsat_storage += cap_rise_to_unsat;
 	cap_rise_to_rz_storage = min(patch[0].potential_cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
 	cap_rise_to_rz_storage = min(rz_deficit, cap_rise_to_rz_storage);
-	patch[0].rz_storage +- cap_rise_to_rz_storage;
+	patch[0].rz_storage += cap_rise_to_rz_storage;
 
 	patch[0].cap_rise = (cap_rise_to_unsat + cap_rise_to_rz_storage);
 	patch[0].potential_cap_rise -= patch[0].cap_rise;
