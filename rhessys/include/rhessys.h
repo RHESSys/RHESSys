@@ -1614,7 +1614,7 @@ struct patch_object
         double  effective_lai;          /* avg of strata m^2/m^2        */
         double  evaporation;            /* m  water*/
         double  evaporation_surf;       /* m  water*/
-        double  family_horizon;         /* cos of angle to normal of flat */
+        double  family_horizon;         /* angle (theta) from flat to family horizon in radians */
         double  ga;                     /* m/s */         
         double  ga_final;               /* m/s */  
         double  gasnow;                 /* m/s */         
