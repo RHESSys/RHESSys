@@ -315,6 +315,12 @@ void		patch_daily_I(
 		patch[0].potential_cap_rise = 0.0;
 	patch[0].cap_rise=0.0;
 
+	/*--------------------------------------------------------------*/
+	/* this should also be limited by "soil depth"	
+	/*--------------------------------------------------------------*/
+	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO) 
+		patch[0].potential_cap_rise = 0.0;
+		
 
 
 	/*--------------------------------------------------------------*/

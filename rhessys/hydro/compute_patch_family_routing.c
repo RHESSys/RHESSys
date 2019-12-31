@@ -147,6 +147,11 @@ void  compute_patch_family_routing( struct zone_object *zone,
                     zone[0].patch_families[pf][0].patches[i][0].m,
                     zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z,
                     zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].Ksat_0);
+
+		/* don't share sat if water table at soil depth */
+		if ((zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].soil_depth - zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z) < ZERO)
+		ksat[i] = 0.0;
+
                 if (command_line[0].verbose_flag == -6) printf("ksat %f |", ksat[i]);
                 if (command_line[0].verbose_flag == -6) printf("m %f | satdefz %f | ksat0 %f |", zone[0].patch_families[pf][0].patches[i][0].m,
                     zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z,

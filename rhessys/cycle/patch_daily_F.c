@@ -1667,7 +1667,6 @@ void		patch_daily_F(
 		0.0,
 		-1.0 * patch[0].sat_deficit);
 
-	temp = patch[0].sat_deficit_z;
 	
 	available_sat_water = min((compute_delta_water(
 			0, 
@@ -1679,19 +1678,24 @@ void		patch_daily_F(
 
 	available_sat_water = max(available_sat_water, 0.0);
 
-	/* to prevent instability if available sat water is really small don't allow its use */
-	if (available_sat_water < ZERO) available_sat_water=0.0;
-	
-	patch[0].sat_deficit += available_sat_water;
-	sat_zone_patch_demand -= available_sat_water;        
-
+	temp = patch[0].sat_deficit_z;
 	patch[0].sat_deficit_z = compute_z_final(
 		command_line[0].verbose_flag,
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
-		-1.0 * patch[0].sat_deficit);
+		-1.0 * (patch[0].sat_deficit+available_sat_water));
+
+	/* to prevent instability if available sat water is close to soil depth  don't allow its use */
+	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO) {
+			patch[0].sat_deficit_z = temp;
+			available_sat_water = 0.0;
+	}			
+
+	
+	patch[0].sat_deficit += available_sat_water;
+	sat_zone_patch_demand -= available_sat_water;        
 
 
 		/*--------------------------------------------------------------*/
