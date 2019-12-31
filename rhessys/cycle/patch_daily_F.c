@@ -1666,6 +1666,7 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
 		-1.0 * patch[0].sat_deficit);
+
 	temp = patch[0].sat_deficit_z;
 	
 	available_sat_water = min((compute_delta_water(
@@ -1678,6 +1679,9 @@ void		patch_daily_F(
 
 	available_sat_water = max(available_sat_water, 0.0);
 
+	/* to prevent instability if available sat water is really small don't allow its use */
+	if (available_sat_water < ZERO) available_sat_water=0.0;
+	
 	patch[0].sat_deficit += available_sat_water;
 	sat_zone_patch_demand -= available_sat_water;        
 
@@ -2130,7 +2134,6 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
 		-1.0 * patch[0].sat_deficit);
-
 
 	theta = patch[0].rootzone.S;
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
