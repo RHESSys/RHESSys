@@ -140,6 +140,8 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 // incrament mean wetness based on storage (rz+unsat or sat) * area
                 wet_mean += (zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage) * zone[0].patch_families[pf][0].patches[i][0].area;
                 wet_mean_sat += zone[0].patch_families[pf][0].patches[i][0].sat_deficit * zone[0].patch_families[pf][0].patches[i][0].area;
+
+		if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].msr_sat_transfer_flag> 0) {
                 
                 // get ksat -- using sat_deficit_z since that (or rootzone.depth) is what's used as input to compute_unsat_zone_drainage elsewhere
                 ksat[i] = Ksat_z_curve(
@@ -149,16 +151,15 @@ void  compute_patch_family_routing( struct zone_object *zone,
                     zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].Ksat_0);
 
 		/* don't share sat if water table at soil depth */
-		if ((zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].soil_depth - zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z) < ZERO)
-		ksat[i] = 0.0;
-
+		if ((zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].soil_depth 
+			- zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z) < ZERO)
+		 		ksat[i]=0.0;
                 if (command_line[0].verbose_flag == -6) printf("ksat %f |", ksat[i]);
                 if (command_line[0].verbose_flag == -6) printf("m %f | satdefz %f | ksat0 %f |", zone[0].patch_families[pf][0].patches[i][0].m,
                     zone[0].patch_families[pf][0].patches[i][0].sat_deficit_z,
                     zone[0].patch_families[pf][0].patches[i][0].soil_defaults[0][0].Ksat_0);
 
-		/* temporarily turning this off as its super unsatable */
-		ksat[i]=0.0;
+		} /* end msr_sat_transfer_flag */
                 // area sum (patch fam without skipped patches)
                 area_sum += zone[0].patch_families[pf][0].patches[i][0].area;
 
@@ -223,16 +224,16 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 dL[i] = 0;
             }
             // sat losers
-            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit < wet_mean_sat)
-            { 
-                dL_sat[i] = (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area * ksat[i];
-                dL_sat_act += dL_sat[i];
-                dL_sat_pot += (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area;
-            }
-            else
-            {
-                dL_sat[i] = 0;
-            }
+            dL_sat[i] = 0;
+            if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].msr_sat_transfer_flag> 0) {
+           	 if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit < wet_mean_sat)
+            	{ 
+                	dL_sat[i] = (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area * ksat[i];
+                	dL_sat_act += dL_sat[i];
+                	dL_sat_pot += (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area;
+            	}
+	}
+		
         } // end loop 2
         if (command_line[0].verbose_flag == -6) printf("[act]%f [pot]%f ", dL_act, dL_pot);
 
@@ -283,21 +284,20 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 //if (command_line[0].verbose_flag == -6) printf("<skip> ");
             }
             // sat gainers
-            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat && dL_sat_pot > ZERO)
-            {
-                dG_sat[i] = (zone[0].patch_families[pf][0].patches[i][0].sat_deficit-wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area * 
-                    (dL_sat_act/dL_sat_pot) * ksat[i];
-                dG_sat_act += dG_sat[i];
-                dG_sat_pot += (zone[0].patch_families[pf][0].patches[i][0].sat_deficit-wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area;
+            dG_sat[i] = 0; // idk if this is needed, since the actual patch object value is updated above
+            if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].msr_sat_transfer_flag> 0) {
+            	if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat && dL_sat_pot > ZERO)
+            	{
+                	dG_sat[i] = (zone[0].patch_families[pf][0].patches[i][0].sat_deficit-wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area * 
+                    	(dL_sat_act/dL_sat_pot) * ksat[i];
+                	dG_sat_act += dG_sat[i];
+                	dG_sat_pot += (zone[0].patch_families[pf][0].patches[i][0].sat_deficit-wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area;
             
-                // change in sat store ***** revisit this, make sure deficit is being updated correctly, should be in meters of water *****
-                zone[0].patch_families[pf][0].patches[i][0].sat_transfer = dG_sat[i] / zone[0].patch_families[pf][0].patches[i][0].area;
-                zone[0].patch_families[pf][0].patches[i][0].sat_deficit -= zone[0].patch_families[pf][0].patches[i][0].sat_transfer;
-            } 
-            else
-            {
-                dG_sat[i] = 0; // idk if this is needed, since the actual patch object value is updated above
-            }
+                	// change in sat store ***** revisit this, make sure deficit is being updated correctly, should be in meters of water *****
+                	zone[0].patch_families[pf][0].patches[i][0].sat_transfer = dG_sat[i] / zone[0].patch_families[pf][0].patches[i][0].area;
+                	zone[0].patch_families[pf][0].patches[i][0].sat_deficit -= zone[0].patch_families[pf][0].patches[i][0].sat_transfer;
+            	} 
+	   } /* end msr_sat_transfer_flag */
         } // end loop 3
 
         // Get (area) mean wilting point of gainers
@@ -335,13 +335,15 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 zone[0].patch_families[pf][0].patches[i][0].unsat_storage += zone[0].patch_families[pf][0].patches[i][0].unsat_transfer;
                 if (command_line[0].verbose_flag == -6) printf("[unsat z]%f \n", zone[0].patch_families[pf][0].patches[i][0].unsat_transfer);
             }
-            if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat && dL_sat_act > ZERO)
-            {
-                dL_sat_adj[i] = dL_sat[i] - (dL_sat_act - dG_sat_act) * (dL_sat[i]/dL_sat_act);
+            if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].msr_sat_transfer_flag> 0) {
+            	if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat && dL_sat_act > ZERO)
+            	{
+                	dL_sat_adj[i] = dL_sat[i] - (dL_sat_act - dG_sat_act) * (dL_sat[i]/dL_sat_act);
 
-                zone[0].patch_families[pf][0].patches[i][0].sat_transfer = - dL_sat_adj[i] / zone[0].patch_families[pf][0].patches[i][0].area;
-                zone[0].patch_families[pf][0].patches[i][0].sat_deficit += zone[0].patch_families[pf][0].patches[i][0].sat_transfer;
-            }
+                	zone[0].patch_families[pf][0].patches[i][0].sat_transfer = - dL_sat_adj[i] / zone[0].patch_families[pf][0].patches[i][0].area;
+                	zone[0].patch_families[pf][0].patches[i][0].sat_deficit += zone[0].patch_families[pf][0].patches[i][0].sat_transfer;
+            	}
+	} /* end if msr_sat_transfer_flag */
         } // end loop 4
         //if (command_line[0].verbose_flag == -6) printf("\n");
         
