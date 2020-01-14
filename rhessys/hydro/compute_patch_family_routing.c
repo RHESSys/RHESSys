@@ -343,7 +343,7 @@ void  compute_patch_family_routing( struct zone_object *zone,
                 	zone[0].patch_families[pf][0].patches[i][0].sat_transfer = - dL_sat_adj[i] / zone[0].patch_families[pf][0].patches[i][0].area;
                 	zone[0].patch_families[pf][0].patches[i][0].sat_deficit += zone[0].patch_families[pf][0].patches[i][0].sat_transfer;
             	}
-	} /* end if msr_sat_transfer_flag */
+	        } /* end if msr_sat_transfer_flag */
         } // end loop 4
         //if (command_line[0].verbose_flag == -6) printf("\n");
         
