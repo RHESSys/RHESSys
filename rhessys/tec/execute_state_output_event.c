@@ -71,7 +71,7 @@ void	execute_state_output_event(
 	}
 
 	fprintf(outfile, "\n%-30ld %s", world[0].ID,
-		"world_id");
+		"world_ID");
 	fprintf(outfile, "\n%-30ld %s", world[0].num_basin_files,
 		"num_basins");
 	/*--------------------------------------------------------------*/

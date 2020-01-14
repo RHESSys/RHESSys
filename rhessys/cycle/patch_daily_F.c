@@ -580,8 +580,8 @@ void		patch_daily_F(
 					}
 				}
 
-				if (command_line[0].verbose_flag == -6) printf("| Pct reduction %f | Kdown direct %f -> %f | Kdown diffuse %f -> %f |\n", 
-					adj_pct, patch[0].Kdown_direct, patch[0].Kdown_direct * (1 - adj_pct), patch[0].Kdown_diffuse, patch[0].Kdown_diffuse * (1 - adj_pct));
+				if (command_line[0].verbose_flag == -6) printf("| Pct reduction %f | Kdown direct %f -> %f |\n", 
+					adj_pct, patch[0].Kdown_direct, patch[0].Kdown_direct * (1 - adj_pct));
 				patch[0].Kdown_direct *= (1 - adj_pct);
 			}
 		}
