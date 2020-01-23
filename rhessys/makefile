@@ -121,6 +121,7 @@ $(OBJ)/compute_radiative_fluxes.o \
 $(OBJ)/compute_rain_stored.o \
 $(OBJ)/compute_return_flow.o \
 $(OBJ)/compute_saturation_vapor_pressure.o \
+$(OBJ)/compute_shaded_kdown.o \
 $(OBJ)/compute_varbased_returnflow.o \
 $(OBJ)/compute_varbased_flow.o \
 $(OBJ)/compute_snow_stored.o \
@@ -799,6 +800,8 @@ $(OBJ)/compute_return_flow.o: hydro/compute_return_flow.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_return_flow.c -o $(OBJ)/compute_return_flow.o
 $(OBJ)/compute_saturation_vapor_pressure.o: hydro/compute_saturation_vapor_pressure.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_saturation_vapor_pressure.c -o $(OBJ)/compute_saturation_vapor_pressure.o
+$(OBJ)/compute_shaded_kdown.o: rad/compute_shaded_kdown.c
+	$(CC) -c $(CFLAGS) -I include rad/compute_shaded_kdown.c -o $(OBJ)/compute_shaded_kdown.o
 $(OBJ)/compute_snow_sublimation.o: hydro/compute_snow_sublimation.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_snow_sublimation.c -o $(OBJ)/compute_snow_sublimation.o
 $(OBJ)/compute_capillary_rise.o: hydro/compute_capillary_rise.c
