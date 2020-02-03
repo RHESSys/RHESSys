@@ -65,6 +65,7 @@ void	output_hillslope(				int basinID,
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	double aPET, asublimation, acanopysubl, aheight, awoodc, alai_red;
+	double agsurf, apotential_exfil, arootzoneS, ags, aga; //NREN 20200202
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -111,6 +112,12 @@ void	output_hillslope(				int basinID,
 	awoodc = 0.0;
 	alai_red = 0.0;
 
+	agsurf = 0.0;
+	apotential_exfil = 0.0;
+	arootzoneS = 0.0;
+	ags = 0.0;
+	aga =0.0;
+
 
 
 
@@ -138,6 +145,13 @@ void	output_hillslope(				int basinID,
 			acanopy_stor += (patch[0].rain_stored + patch[0].snow_stored) * patch[0].area;
 
 			alitter_stor += (patch[0].litter.rain_stored)* patch[0].area;
+
+			/* add more gs ga gsurf rootzone.S potential exfiltration NREN 20200202 */
+
+			agsurf += patch[0].gsurf*patch[0].area;
+			apotential_exfil += patch[0].potential_exfiltration*patch[0].area;
+			arootzoneS += patch[0].rootzone.S*patch[0].area;
+
 
 			/* determine actual amount in upper 20cm */
 			if (patch[0].sat_deficit_z > 0.020)
@@ -189,6 +203,12 @@ void	output_hillslope(				int basinID,
 						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_transfer
 						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cpool)
 							* patch[0].area; //output plant carbon
+                    ags += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].gs
+							* patch[0].area; //output gs NREN 20200202
+                    aga += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].ga
+							* patch[0].area; //output ga 20200202
 				}
 			}
 		}
@@ -233,9 +253,16 @@ void	output_hillslope(				int basinID,
     awoodc /=aarea;
     alai_red /=aarea;
 
+    //new NREN 20200202
+    agsurf /= aarea;
+    apotential_exfil /= aarea;
+    arootzoneS /= aarea;
+    ags /= aarea;
+    aga /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+
+	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -261,7 +288,7 @@ void	output_hillslope(				int basinID,
 
 		        /* NREN add more */
 		aprecip*1000.0,
-		aevap_surface *1000.0,
+		aevap_surface *1000.0, //evap including canopy sublimation
 		asoil_evap *1000.0,
 		arz_stor *1000.0,
 		adetention_stor*1000.0,
@@ -270,11 +297,17 @@ void	output_hillslope(				int basinID,
 		hillslope[0].area,
 		// add more output
 		aPET*1000.0,
-		asublimation*1000.0,
-		acanopysubl*1000.0,
+		asublimation*1000.0, // this snowpack ground sublimitation
+		acanopysubl*1000.0, // this is canopy snow sublimation
 		aheight, //what is the unit
 		awoodc,
-		alai_red
-		);
+		alai_red,
+
+		//more 2020
+		agsurf,
+		apotential_exfil,
+		arootzoneS,
+		ags,
+		aga);
 	return;
 } /*end output_hillslope*/

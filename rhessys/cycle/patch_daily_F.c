@@ -766,7 +766,7 @@ void		patch_daily_F(
     /*---------------------------------------------------------------*/
     if (command_line[0].beetlespread_flag==1 && world[0].defaults[0].beetle[0].mortality_type==2 && current_date.year ==world[0].defaults[0].beetle[0].year_attack && current_date.month==8 && current_date.day==15){
 
-                printf("\n Implementing prescribed fire effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
+                printf("\n Implementing prescribed beetle effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
                 attack_mortality = world[0].defaults[0].beetle[0].attack_mortality;
                 compute_fire_effects(
                     patch,
@@ -1504,8 +1504,8 @@ void		patch_daily_F(
 		/* now take infiltration out of detention store 	*/
 		/*--------------------------------------------------------------*/
 
-		if (infiltration > ZERO)	
-			prop_detention_store_infiltrated = infiltration/patch[0].detention_store;	
+		if (infiltration > ZERO)
+			prop_detention_store_infiltrated = infiltration/patch[0].detention_store;
 
 		patch[0].detention_store -= infiltration;
 			/*--------------------------------------------------------------*/
@@ -1851,7 +1851,7 @@ void		patch_daily_F(
  	if (patch[0].sat_deficit_z >= patch[0].rootzone.depth ){
   		unsat_deficit = patch[0].field_capacity-patch[0].unsat_storage;
 		unsat_deficit = max(0.0, unsat_deficit);
-        	if (patch[0].rootzone.potential_sat > patch[0].rz_storage) 
+        	if (patch[0].rootzone.potential_sat > patch[0].rz_storage)
 			rz_deficit = patch[0].rootzone.potential_sat - patch[0].rz_storage;
 		else  rz_deficit=0;
 	}
@@ -1871,7 +1871,7 @@ void		patch_daily_F(
 
 	patch[0].cap_rise = (cap_rise_to_unsat + cap_rise_to_rz_storage);
 	patch[0].potential_cap_rise -= patch[0].cap_rise;
-	patch[0].sat_deficit += patch[0].cap_rise;	
+	patch[0].sat_deficit += patch[0].cap_rise;
 	/*--------------------------------------------------------------*/
 	/*	Now supply the remaining demand with water left in	*/
 	/*	the unsat zone.  We are going below field cap now!!	*/
@@ -1902,7 +1902,7 @@ void		patch_daily_F(
                 patch[0].soil_defaults[0][0].porosity_0,
                 patch[0].soil_defaults[0][0].porosity_decay,
                 patch[0].soil_defaults[0][0].soil_depth,
-                patch[0].soil_defaults[0][0].soil_depth, patch[0].sat_deficit_z);	
+                patch[0].soil_defaults[0][0].soil_depth, patch[0].sat_deficit_z);
 
 	/*--------------------------------------------------------------*/
 	/* 	Resolve plant uptake and soil microbial N demands	*/
