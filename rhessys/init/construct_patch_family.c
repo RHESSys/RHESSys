@@ -96,6 +96,12 @@ for (i = 0; i < zone[0].num_patches; i++)
 }
 if (command_line[0].verbose_flag == -6) printf("\n");
 
+// loop to add the family_pct_cover to patch object - assumes patch family area is not 0
+for (i = 0; i < patch_family[0].num_patches_in_fam ; i++)
+{
+    patch_family[0].patches[i][0].family_pct_cover = patch_family[0].patches[i][0].area / patch_family[0].area;
+}
+
 return(patch_family);
 
 }
