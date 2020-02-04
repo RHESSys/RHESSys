@@ -1752,6 +1752,7 @@ struct patch_object
         double  potential_cap_rise;     /* m water/ day */
         double  potential_exfiltration; /* m water/ day */
         double  potential_evaporation;  /* m water/ day */
+        double soil_potential_evaporation; /*m water/day */
         double  psi;                    /* MPa          */
         double  psi_max_veg; /* MPa */
         double  Qin_total;                      /* m /day       */

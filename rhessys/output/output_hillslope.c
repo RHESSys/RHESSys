@@ -65,7 +65,7 @@ void	output_hillslope(				int basinID,
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	double aPET, asublimation, acanopysubl, aheight, awoodc, alai_red;
-	double agsurf, apotential_exfil, arootzoneS, ags, aga; //NREN 20200202
+	double agsurf, apotential_exfil, arootzoneS, ags, aga, asoil_potential_evaporation; //NREN 20200202
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -116,7 +116,8 @@ void	output_hillslope(				int basinID,
 	apotential_exfil = 0.0;
 	arootzoneS = 0.0;
 	ags = 0.0;
-	aga =0.0;
+	aga = 0.0;
+	asoil_potential_evaporation = 0.0;
 
 
 
@@ -151,6 +152,7 @@ void	output_hillslope(				int basinID,
 			agsurf += patch[0].gsurf*patch[0].area;
 			apotential_exfil += patch[0].potential_exfiltration*patch[0].area;
 			arootzoneS += patch[0].rootzone.S*patch[0].area;
+			asoil_potential_evaporation += patch[0].soil_potential_evaporation * patch[0].area;
 
 
 			/* determine actual amount in upper 20cm */
@@ -259,10 +261,11 @@ void	output_hillslope(				int basinID,
     arootzoneS /= aarea;
     ags /= aarea;
     aga /= aarea;
+    asoil_potential_evaporation /=aarea;
 
 
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -305,7 +308,8 @@ void	output_hillslope(				int basinID,
 
 		//more 2020
 		agsurf,
-		apotential_exfil,
+		apotential_exfil*1000,
+		asoil_potential_evaporation*1000,
 		arootzoneS,
 		ags,
 		aga);

@@ -356,6 +356,7 @@ struct patch_object *construct_patch(
 	patch[0].fertilizer_NO3 = 0.0;
 	patch[0].fertilizer_NH4 = 0.0;
 	patch[0].grazing_Closs = 0.0;
+	patch[0].soil_potential_evaporation = 0.0; //NREN 2020
 
 	/* for calculating above ground litter proportion NREN 20190927 */
 	patch[0].prop_litrc_above_ground = 0.85; // this is hard coded at the beginning all these litter is from leaf

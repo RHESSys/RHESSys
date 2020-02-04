@@ -30,7 +30,7 @@
 void		surface_daily_F(
 							struct	world_object		*world,
 							struct	basin_object		*basin,
-							struct	hillslope_object	*hillslope, 
+							struct	hillslope_object	*hillslope,
 							struct	zone_object		*zone,
 							struct	patch_object		*patch,
 							struct 	command_line_object	*command_line,
@@ -40,7 +40,7 @@ void		surface_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
-	
+
 	double	compute_diffuse_radiative_fluxes(
 		int,
 		double *,
@@ -53,7 +53,7 @@ void		surface_daily_F(
 		double);
 
 
-	
+
 	double	compute_direct_radiative_fluxes(
 		int,
 		double *,
@@ -64,8 +64,8 @@ void		surface_daily_F(
 		double,
 		double,
 		double);
-	
-	
+
+
 	double	compute_direct_radiative_PAR_fluxes(
 		int,
 		double *,
@@ -78,7 +78,7 @@ void		surface_daily_F(
 		double,
 		double);
 
-	
+
 	double	compute_nonvascular_stratum_conductance(
 		int	,
 		double	,
@@ -90,7 +90,7 @@ void		surface_daily_F(
 	double	compute_litter_rain_stored(
 		int,
 		struct	patch_object *);
-	
+
 	double	penman_monteith(
 		int,
 		double,
@@ -108,7 +108,7 @@ void		surface_daily_F(
 		double,
 		double,
 		double *);
-	
+
 	double  compute_stability_correction(
 										 int ,
 										 double,
@@ -117,8 +117,8 @@ void		surface_daily_F(
 										 double,
 										 double,
 										 double);
-	
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -187,18 +187,18 @@ void		surface_daily_F(
 	rainy_evaporation = 0;
 	dry_evaporation = 0;
 	rnet = 0.0;
-	
+
 	rnet_evap_pond = 0.0;
 	rnet_evap_litter = 0.0;
 	rnet_evap_soil = 0.0;
-	
+
 	Kup_direct_soil = 0.0;
 	Kup_diffuse_soil = 0.0;
 	Kup_direct_lit = 0.0;
 	Kup_diffuse_lit = 0.0;
-	
+
 	patch[0].Kstar_soil = 0.0;
-	
+
 	dum = 0.0;
 	litter_NO3 = 0;
 	surface_NO3 = 0;
@@ -206,7 +206,7 @@ void		surface_daily_F(
 	/* hv = 2.495 * 1e3;	// latent heat of vaporization for water (KJ/kg) */
 	hv = (2.5023e6 - 2430.54 * zone[0].metv.tday) / 1000; /* changed to match hv used in penman monteith */
 	water_density = 1000;	/* density of water in kg/m^3 */
-	
+
 	double daylength = zone[0].metv.dayl;
 	double nightlength = SECONDS_PER_DAY - daylength;
 	double day_proportion = daylength / SECONDS_PER_DAY;
@@ -230,7 +230,7 @@ void		surface_daily_F(
 					 2.0,
 					 zone[0].metv.tavg,
 					 patch[0].wind);*/
-	
+
 
 	/*--------------------------------------------------------------*/
 	/*	DETENTION STORE EVAPORATION:								*/
@@ -239,33 +239,33 @@ void		surface_daily_F(
 	/*	first.														*/
 	/* but only do this if there is actually a detention_store capacity to hold water */
 	/*--------------------------------------------------------------*/
-	
+
 	if ( command_line[0].verbose_flag == -5 ){
-		printf("\n     SURFACE DAILY START: stab=%lf detstore=%lf litraincap=%lf litrainstor=%lf Kupdir=%lf Kupdif=%lf Lstarpond=%lf Lstarsoil=%lf surfheatflux=%lf evapsurf=%lf", 
+		printf("\n     SURFACE DAILY START: stab=%lf detstore=%lf litraincap=%lf litrainstor=%lf Kupdir=%lf Kupdif=%lf Lstarpond=%lf Lstarsoil=%lf surfheatflux=%lf evapsurf=%lf",
 			   patch[0].stability_correction,
-			   patch[0].detention_store, 
-			   litter[0].rain_capacity, 
-			   litter[0].rain_stored, 
-			   patch[0].Kup_direct/86.4, 
+			   patch[0].detention_store,
+			   litter[0].rain_capacity,
+			   litter[0].rain_stored,
+			   patch[0].Kup_direct/86.4,
 			   patch[0].Kup_diffuse/86.4,
 			   patch[0].Lstar_pond/86.4,
 			   patch[0].Lstar_soil/86.4,
 			   patch[0].surface_heat_flux,
 			   patch[0].evaporation_surf);
 	}
-	
+
 	/* Case where detention store sits on top of litter */
 	if ( (patch[0].detention_store > (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0)))
 			&& (patch[0].soil_defaults[0][0].detention_store_size >= 0.0) ) {
-		
+
 		/* assume if det store over litter then litter is saturated */
 		patch[0].detention_store -= (litter[0].rain_capacity - litter[0].rain_stored);
 		litter[0].rain_stored = litter[0].rain_capacity;
 		litter_NO3 = litter[0].NO3_stored;
 		surface_NO3 = patch[0].surface_NO3;
-		litter[0].NO3_stored = litter[0].rain_stored / (patch[0].detention_store + litter[0].rain_stored) * 
+		litter[0].NO3_stored = litter[0].rain_stored / (patch[0].detention_store + litter[0].rain_stored) *
 					( surface_NO3 + litter_NO3);
-		patch[0].surface_NO3 = patch[0].detention_store / (patch[0].detention_store + litter[0].rain_stored) * 
+		patch[0].surface_NO3 = patch[0].detention_store / (patch[0].detention_store + litter[0].rain_stored) *
 					( surface_NO3 + litter_NO3);
 
 		/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
@@ -347,47 +347,47 @@ void		surface_daily_F(
 
 		patch[0].detention_store -= detention_store_evaporation;
 
-		patch[0].Kup_direct += (1 - patch[0].overstory_fraction) 
+		patch[0].Kup_direct += (1 - patch[0].overstory_fraction)
 							* WATER_ALBEDO * patch[0].Kdown_direct;
 		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction)
 							* WATER_ALBEDO * patch[0].Kdown_diffuse;
 	} else {
 		detention_store_evaporation = 0.0;
 	}
-	
-	
+
+
 	/*** If snowpack is over detention store, then add evaporated water to snowpack. ***/
-	
+
 	if (patch[0].snowpack.water_equivalent_depth > ZERO) {
 		patch[0].snowpack.water_equivalent_depth += detention_store_evaporation;
 		detention_store_evaporation = 0.0;
 	}
-	
+
 	patch[0].evaporation_surf += detention_store_evaporation;
-	
-	
+
+
 	/*** Update patch radiation to remove any radiation used to evaporate pond. ***/
 	/*** Assume same proportions as original 4 energy sources. ***/
-	
+
 	K_used =  detention_store_evaporation * hv * water_density;
-	K_initial = (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse) 
+	K_initial = (1-WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse)
 					+ patch[0].Lstar_pond
 					/* - patch[0].Lstar_soil */
 					+ patch[0].surface_heat_flux;
 
 	if ( command_line[0].verbose_flag == -5 ){
-		printf("\n     SURFACE DAILY DET STORE: dayl=%lf raindur=%lf Kused=%lf Kini=%lf Kdowndir=%lf Kdowndif=%lf Lstarsoil=%lf surfheat=%lf evapsurf=%lf", 
-			   zone[0].metv.dayl, 
+		printf("\n     SURFACE DAILY DET STORE: dayl=%lf raindur=%lf Kused=%lf Kini=%lf Kdowndir=%lf Kdowndif=%lf Lstarsoil=%lf surfheat=%lf evapsurf=%lf",
+			   zone[0].metv.dayl,
 			   zone[0].rain_duration,
-			   K_used/86.4, 
-			   K_initial/86.4, 
-			   patch[0].Kdown_direct/86.4, 
-			   patch[0].Kdown_diffuse/86.4, 
-			   patch[0].Lstar_soil/86.4, 
+			   K_used/86.4,
+			   K_initial/86.4,
+			   patch[0].Kdown_direct/86.4,
+			   patch[0].Kdown_diffuse/86.4,
+			   patch[0].Lstar_soil/86.4,
 			   patch[0].surface_heat_flux,
 			   patch[0].evaporation_surf);
 	}
-	
+
 	if ( K_used > 0 ){
 		if ( K_initial > 0 ){
 			fraction_direct_K = (1-WATER_ALBEDO) * patch[0].Kdown_direct / K_initial;
@@ -418,32 +418,32 @@ void		surface_daily_F(
 		surface_heat_flux_night = surface_heat_flux_night - (fraction_surface_heat_flux_night * K_used);
 		surface_heat_flux_day = surface_heat_flux_day - (fraction_surface_heat_flux_day * K_used);
 	}
-	
+
 	if ( command_line[0].verbose_flag == -5 ){
-	printf("\n          SURFACE DAILY POST DET EVAP: Kdowndir=%lf Kdowndif=%lf Kupdir=%lf Kupdif=%lf Lstarsoil=%lf surfheat=%lf detstore=%lf raincap=%lf rainstor=%lf", 
-		   patch[0].Kdown_direct/86.4, 
+	printf("\n          SURFACE DAILY POST DET EVAP: Kdowndir=%lf Kdowndif=%lf Kupdir=%lf Kupdif=%lf Lstarsoil=%lf surfheat=%lf detstore=%lf raincap=%lf rainstor=%lf",
+		   patch[0].Kdown_direct/86.4,
 		   patch[0].Kdown_diffuse/86.4,
 		   patch[0].Kup_direct/86.4,
 		   patch[0].Kup_diffuse/86.4,
-		   patch[0].Lstar_pond/86.4, 
-		   patch[0].surface_heat_flux, 
-		   patch[0].detention_store, 
-		   litter[0].rain_capacity, 
+		   patch[0].Lstar_pond/86.4,
+		   patch[0].surface_heat_flux,
+		   patch[0].detention_store,
+		   litter[0].rain_capacity,
 		   litter[0].rain_stored);
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	LITTER STORE EVAPORATION:									*/
 	/*	Now move to litter and then bare soil evaporation if the 	*/
 	/*	remaining surface water can be held by the litter.			*/
 	/*--------------------------------------------------------------*/
-	
+
 	if ( patch[0].detention_store <= (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))){
 			//| (patch[0].soil_defaults[0][0].detention_store_size == 0.0)) {
-		
+
 		litter[0].NO3_stored = patch[0].surface_NO3;
 		patch[0].surface_NO3 = 0;
-		
+
 		/*--------------------------------------------------------------*/
 		/*	calculate surface albedo as a function of amount of	*/
 		/*		litter vs soil					*/
@@ -470,11 +470,11 @@ void		surface_daily_F(
 		/*      since we figured that climate above the zone was well   */
 		/*      mixed.                                                  */
 		/*--------------------------------------------------------------*/
-		
+
 		/* Keep track of incoming radiation to surface (before litter) */
 		Kdown_diffuse_in = patch[0].Kdown_diffuse;
 		PAR_diffuse_in = patch[0].PAR_diffuse;
-		
+
 		Kstar_diffuse_lit = compute_diffuse_radiative_fluxes(
 			command_line[0].verbose_flag,
 			&(patch[0].Kdown_diffuse),
@@ -485,7 +485,7 @@ void		surface_daily_F(
 			1.0,
 			basin[0].theta_noon,
 			LITTER_ALBEDO);
-	
+
 		APAR_diffuse_lit = compute_diffuse_radiative_fluxes(
 			command_line[0].verbose_flag,
 			&(patch[0].PAR_diffuse),
@@ -496,13 +496,13 @@ void		surface_daily_F(
 			1.0,
 			basin[0].theta_noon,
 			LITTER_ALBEDO);
-		
+
 		/* Absorbed soil fluxes. */
 		Kstar_diffuse_soil = (1-patch[0].soil_defaults[0][0].albedo) * Kdown_diffuse_in;
 		Kup_diffuse_soil = patch[0].soil_defaults[0][0].albedo * Kdown_diffuse_in;
 		APAR_diffuse_soil = (1-patch[0].soil_defaults[0][0].albedo) * PAR_diffuse_in;
-		
-		
+
+
 		/*--------------------------------------------------------------*/
 		/*  Intercept direct radiation.                                 */
 		/*      hard to measure for each strata.  We could use top      */
@@ -527,8 +527,8 @@ void		surface_daily_F(
 
 		/* Keep track of incoming radiation to surface (before litter) */
 		Kdown_direct_in = patch[0].Kdown_direct;
-		PAR_direct_in = patch[0].PAR_direct;		
-		
+		PAR_direct_in = patch[0].PAR_direct;
+
 		Kstar_direct_lit = compute_direct_radiative_fluxes(
 			command_line[0].verbose_flag,
 			&(patch[0].Kdown_direct),
@@ -539,7 +539,7 @@ void		surface_daily_F(
 			basin[0].theta_noon,
 			LITTER_ALBEDO,
 			patch[0].soil_defaults[0][0].albedo);
-		
+
 		APAR_direct_lit = compute_direct_radiative_fluxes(
 			command_line[0].verbose_flag,
 			&(patch[0].PAR_direct),
@@ -550,18 +550,18 @@ void		surface_daily_F(
 			basin[0].theta_noon,
 			LITTER_ALBEDO,
 			patch[0].soil_defaults[0][0].albedo);
-		
+
 		/* Absorbed soil fluxes. */
 		Kstar_direct_soil = (1-patch[0].soil_defaults[0][0].albedo) * Kdown_direct_in;
 		Kup_direct_soil = patch[0].soil_defaults[0][0].albedo * Kdown_direct_in;
 		APAR_direct_soil = (1-patch[0].soil_defaults[0][0].albedo) * PAR_direct_in;
 
-		
+
 		if ( command_line[0].verbose_flag == -5 ){
-		printf("\n          SURFACE DAILY POST LITTER INT: Kdowndir=%lf Kdowndif=%lf Lstarsoil=%lf surfheat=%lf lit_pai=%lf\n          Kdifflit=%lf Kdirlit=%lf Kdiffsoil=%lf Kdirsoil=%lf\n          Kupdir=%lf Kupdirlit=%lf Kupdirsoil=%lf Kupdiff=%lf Kupdifflit=%lf Kupdiffsoil=%lf", 
-			   patch[0].Kdown_direct/86.4, 
-			   patch[0].Kdown_diffuse/86.4, 
-			   patch[0].Lstar_soil/86.4, 
+		printf("\n          SURFACE DAILY POST LITTER INT: Kdowndir=%lf Kdowndif=%lf Lstarsoil=%lf surfheat=%lf lit_pai=%lf\n          Kdifflit=%lf Kdirlit=%lf Kdiffsoil=%lf Kdirsoil=%lf\n          Kupdir=%lf Kupdirlit=%lf Kupdirsoil=%lf Kupdiff=%lf Kupdifflit=%lf Kupdiffsoil=%lf",
+			   patch[0].Kdown_direct/86.4,
+			   patch[0].Kdown_diffuse/86.4,
+			   patch[0].Lstar_soil/86.4,
 			   patch[0].surface_heat_flux,
 			   litter->proj_pai,
 			   Kstar_diffuse_lit/86.4,
@@ -575,7 +575,7 @@ void		surface_daily_F(
 			   Kup_diffuse_lit/86.4,
 			   Kup_diffuse_soil/86.4);
 		}
-									
+
 		/*--------------------------------------------------------------*/
 		/*	Determine non-vascular condductance to evaporation.		*/
 		/*	This conductance represnets the inverse of an additional 	*/
@@ -593,21 +593,21 @@ void		surface_daily_F(
 				command_line[0].verbose_flag,
 				max(litter[0].rain_stored + patch[0].detention_store, litter[0].rain_capacity),
 				litter[0].rain_capacity,
-				litter[0].gl_c,	
+				litter[0].gl_c,
 				litter[0].gsurf_slope,
 				litter[0].gsurf_intercept);
-		
+
 		/* Litter surface resistance model from NCAR CLM4 (Lawrence et al 2011 J. Adv. Model. Earth Syst). */
 		/* The 1 in the exp is the fraction of litter not covered by snow, assumed 1 here since we only */
 		/* evaporate from litter when no snowpack. */
 		litter[0].gsurf = 1/(1/(0.004*patch[0].wind)*(1-exp(-1)));
-		
+
 		if (patch[0].rootzone.depth > ZERO) {
 			patch[0].gsurf = compute_nonvascular_stratum_conductance(
 				command_line[0].verbose_flag,
 				max(patch[0].rz_storage + patch[0].detention_store, patch[0].sat_deficit),
 				patch[0].sat_deficit,
-				patch[0].soil_defaults[0][0].gl_c,	
+				patch[0].soil_defaults[0][0].gl_c,
 				patch[0].soil_defaults[0][0].gsurf_slope,
 				patch[0].soil_defaults[0][0].gsurf_intercept);
 		}
@@ -617,7 +617,7 @@ void		surface_daily_F(
 				command_line[0].verbose_flag,
 				max(patch[0].unsat_storage + patch[0].detention_store, patch[0].sat_deficit),
 				patch[0].sat_deficit,
-				patch[0].soil_defaults[0][0].gl_c,	
+				patch[0].soil_defaults[0][0].gl_c,
 				patch[0].soil_defaults[0][0].gsurf_slope,
 				patch[0].soil_defaults[0][0].gsurf_intercept);
 		}
@@ -628,22 +628,22 @@ void		surface_daily_F(
 		/*	Note if surface heat flux makes evap negative we	*/
 		/*	have condensation.  					*/
 		/*--------------------------------------------------------------*/
-		
+
 		/* Set patch variable for tracking & output. */
 		/* Note that this is total surface Kstar not just soil Kstar. */
-		patch[0].Kstar_soil = (1 - litter[0].cover_fraction) 
-									* (Kstar_direct_soil + Kstar_diffuse_soil) 
+		patch[0].Kstar_soil = (1 - litter[0].cover_fraction)
+									* (Kstar_direct_soil + Kstar_diffuse_soil)
 								+ litter[0].cover_fraction
 									* (Kstar_direct_lit + Kstar_diffuse_lit);
 		/* Update patch Kup with reflected fluxes from surface. */
 		/* Assumes Kup from surface gets reabsorbed by canopy so only track open surfaces. */
 		patch[0].Kup_direct += (1 - patch[0].overstory_fraction)
-									* ((1 - litter[0].cover_fraction) * Kup_direct_soil 
+									* ((1 - litter[0].cover_fraction) * Kup_direct_soil
 									+ litter[0].cover_fraction * Kup_direct_lit);
-		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction) 
-									* ((1 - litter[0].cover_fraction) * Kup_diffuse_soil 
+		patch[0].Kup_diffuse += (1 - patch[0].overstory_fraction)
+									* ((1 - litter[0].cover_fraction) * Kup_diffuse_soil
 									+ litter[0].cover_fraction * Kup_diffuse_lit);
-		
+
 		/* Assuming net LW for litter is same as soil layer, which is	*/
 		/* a reasonable approximation if litter and soil are same 	*/
 		/* temperature and have same emissivity. */
@@ -674,20 +674,20 @@ void		surface_daily_F(
 		if (rnet_evap_soil <= ZERO) rnet_evap_soil = 0.0;
 		if (rnet_evap_soil_night <= ZERO) rnet_evap_soil_night = 0.0;
 		if (rnet_evap_soil_day <= ZERO) rnet_evap_soil_day = 0.0;
-		
+
 
 		if ( command_line[0].verbose_flag == -5 ){
-			printf("\n          SURFACE DAILY EVAP: rnet_lit=%lf rnet_soil=%lf gsurf_lit=%lf gsurf_soil=%lf lit.gl_c=%lf lit.gsurf_slope=%lf lit.gsurf_int=%lf", 
-				   rnet_evap_litter/86.4, 
-				   rnet_evap_soil/86.4, 
-				   litter[0].gsurf, 
+			printf("\n          SURFACE DAILY EVAP: rnet_lit=%lf rnet_soil=%lf gsurf_lit=%lf gsurf_soil=%lf lit.gl_c=%lf lit.gsurf_slope=%lf lit.gsurf_int=%lf",
+				   rnet_evap_litter/86.4,
+				   rnet_evap_soil/86.4,
+				   litter[0].gsurf,
 				   patch[0].gsurf,
 				   litter[0].gl_c,
 				   litter[0].gsurf_slope,
 				   litter[0].gsurf_intercept);
 		}
-		
-		
+
+
 		/*--------------------------------------------------------------*/
 		/*	Make sure ga and gsurf are non-zero.			*/
 		/*--------------------------------------------------------------*/
@@ -767,7 +767,7 @@ void		surface_daily_F(
 			0.0,
 			1/(patch[0].ga),
 			2) ;
-		
+
 		PE_rainy_rate_night = max(0.0, PE_rainy_rate_night);
 		PE_rainy_rate_day = max(0.0, PE_rainy_rate_day);
 		PE_rate_night = max(0.0, PE_rate_night);
@@ -871,6 +871,7 @@ void		surface_daily_F(
 				+ (soil_potential_rainy_evaporation_rate_day
 				* rain_duration_day);
 		soil_potential_evaporation = soil_potential_evaporation_night + soil_potential_evaporation_day;
+		patch[0].soil_potential_evaporation = soil_potential_evaporation;
 
 		/*--------------------------------------------------------------*/
 		/*	BARE SOIL EVAPORATION:									*/
@@ -879,8 +880,8 @@ void		surface_daily_F(
 		/*--------------------------------------------------------------*/
 		exfiltration =	min(soil_potential_evaporation,
 			patch[0].potential_exfiltration);
-		
-			
+
+
 		if ( patch[0].sat_deficit_z > 0 ){
 			patch[0].exfiltration_unsat_zone = exfiltration;
 			patch[0].exfiltration_sat_zone = 0;
@@ -889,7 +890,7 @@ void		surface_daily_F(
 			patch[0].exfiltration_unsat_zone = 0;
 			patch[0].exfiltration_sat_zone = exfiltration;
 		}
-		
+
 		if ( command_line[0].verbose_flag == -5 ){
 			printf(" soil_PE=%lf soil_PExfil=%lf exfil_unsat=%lf exfil_sat=%lf rnet_soil=%lf rsurf=%lf ra=%lf",
 				   soil_potential_evaporation,
@@ -900,10 +901,10 @@ void		surface_daily_F(
 				   1.0/patch[0].gsurf,
 				   1.0/patch[0].ga);
 		}
-		
-		
+
+
 	}
-	
+
 
 	/*--------------------------------------------------------------*/
 	/* if we want to solve surface temperature profile, determine 	*/
@@ -913,29 +914,29 @@ void		surface_daily_F(
 	/* note that depth for layer 3 is always the soil depth so 	*/
 	/* this is set only once in construct_patch			*/
 	/*--------------------------------------------------------------*/
-	
+
 	if (command_line[0].surface_energy_flag == 1) {
 		patch[0].surface_energy_profile[0].depth = patch[0].litter.depth;
 		patch[0].surface_energy_profile[0].moisture = patch[0].litter.rain_stored;
 
 	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat) {
-		patch[0].surface_energy_profile[1].depth = 
+		patch[0].surface_energy_profile[1].depth =
 			patch[0].surface_energy_profile[0].depth + patch[0].rootzone.depth;
 		patch[0].surface_energy_profile[1].moisture = patch[0].rz_storage;
-		patch[0].surface_energy_profile[2].depth = 
+		patch[0].surface_energy_profile[2].depth =
 			patch[0].surface_energy_profile[0].depth + patch[0].sat_deficit_z;
 		patch[0].surface_energy_profile[2].moisture = patch[0].unsat_storage;
-		patch[0].surface_energy_profile[3].moisture = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;	
+		patch[0].surface_energy_profile[3].moisture = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;
 		}
 	else {
-		patch[0].surface_energy_profile[1].depth = 
+		patch[0].surface_energy_profile[1].depth =
 			patch[0].surface_energy_profile[0].depth + patch[0].sat_deficit_z;
 		patch[0].surface_energy_profile[1].moisture = patch[0].rz_storage;
-		
-		patch[0].surface_energy_profile[2].depth = 
+
+		patch[0].surface_energy_profile[2].depth =
 			patch[0].surface_energy_profile[0].depth + patch[0].rootzone.depth;
 		patch[0].surface_energy_profile[2].moisture = patch[0].rootzone.potential_sat - patch[0].sat_deficit;
-		patch[0].surface_energy_profile[3].moisture = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].rootzone.potential_sat;	
+		patch[0].surface_energy_profile[3].moisture = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].rootzone.potential_sat;
 		}
 
 	compute_subsurface_temperature_profile(
@@ -951,22 +952,22 @@ void		surface_daily_F(
 	/*--------------------------------------------------------------*/
 
 	patch[0].litter.T = patch[0].surface_energy_profile[0].T;
-	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat) 
+	if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
 		patch[0].rootzone.T = patch[0].surface_energy_profile[1].T;
 	else
-		patch[0].rootzone.T = (patch[0].surface_energy_profile[1].T * (patch[0].sat_deficit) + 
-					patch[0].surface_energy_profile[2].T * (patch[0].rootzone.potential_sat - patch[0].sat_deficit)) 
+		patch[0].rootzone.T = (patch[0].surface_energy_profile[1].T * (patch[0].sat_deficit) +
+					patch[0].surface_energy_profile[2].T * (patch[0].rootzone.potential_sat - patch[0].sat_deficit))
 					/ (patch[0].rootzone.potential_sat);
 
-	patch[0].Tsoil = (patch[0].surface_energy_profile[1].T * 
+	patch[0].Tsoil = (patch[0].surface_energy_profile[1].T *
 			(patch[0].surface_energy_profile[1].depth - patch[0].surface_energy_profile[0].depth) +
 			patch[0].surface_energy_profile[2].T *
 			(patch[0].surface_energy_profile[2].depth - patch[0].surface_energy_profile[1].depth) +
 			patch[0].surface_energy_profile[3].T *
 			(patch[0].surface_energy_profile[3].depth - patch[0].surface_energy_profile[2].depth)) /
 			patch[0].surface_energy_profile[3].depth;
-		
+
 	}
-	
+
 	return;
 }/*end surface_daily_F.c*/
