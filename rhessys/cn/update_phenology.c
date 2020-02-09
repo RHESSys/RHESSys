@@ -71,7 +71,7 @@ void update_phenology(struct zone_object  *zone,
 					  int 		wyday_start,
 					  struct date current_date,
 					  int	grow_flag,
-					  struct beetle_default beetle)
+					  struct world_object *world)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
@@ -158,6 +158,7 @@ void update_phenology(struct zone_object  *zone,
 	double excess_n, horiz;
 	int remdays_transfer;
 	int expand_flag, litfall_flag;
+	//struct beetle_default beetle;
 
 
 	expand_flag = 0;
@@ -669,7 +670,7 @@ void update_phenology(struct zone_object  *zone,
     }
 
       // Using beetle defs to control if we consider the red needle
-       if (beetle.lai_include_redneedle != 1)  {//if zero, not consider redneedle, so make the lai_when_red as lai
+       if (world[0].defaults[0].beetle != NULL && world[0].defaults[0].beetle[0].lai_include_redneedle != 1)  {//if zero, not consider redneedle, so make the lai_when_red as lai
         epv->proj_lai_when_red = epv->proj_lai; }
 
 
@@ -735,14 +736,14 @@ void update_phenology(struct zone_object  *zone,
 	  epv->all_pai_when_red =max(epv->proj_lai_when_red * epc.lai_ratio + sai, 0.0);
 	  //update the tree height
 
-	  if ( (cs->live_stemc + cs->dead_stemc) > ZERO && beetle.height_include_snag == 1) //if zero, means snag is harveste
+	  if ( (cs->live_stemc + cs->dead_stemc) > ZERO && world[0].defaults[0].beetle != NULL && world[0].defaults[0].beetle[0].height_include_snag == 1) //if zero, means snag is harveste
 			epv->height = epc.height_to_stem_coef
 				* pow ( (cs->live_stemc + cs->dead_stemc + cs->snagc + cs->delay_snagc), epc.height_to_stem_exp); //
 
     }
 
     //NREN 20181121
-    if (beetle.pai_include_snag != 1)  {//NREN 20191129
+    if (world[0].defaults[0].beetle != NULL && world[0].defaults[0].beetle[0].pai_include_snag != 1)  {//NREN 20191129
     epv->proj_pai_when_red = epv->proj_pai; }
 
 

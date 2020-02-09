@@ -37,16 +37,16 @@ void	output_monthly_zone(	int basinID, int hillID,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	
+
 	/*--------------------------------------------------------------*/
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].acc_month.length == 0) zone[0].acc_month.length = 1;
-	fprintf(outfile,"%4d %4d %3d %3d %3d %8.5f %8.5f %8.5f %8.3f %8.3f \n ",
+	fprintf(outfile,"%4d %4d %3d %3d %3d %8.5f %8.5f %8.5f %8.3f %8.3f\n ",
 		current_date.month,
 		current_date.year,
 		basinID,

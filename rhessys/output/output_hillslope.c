@@ -66,6 +66,7 @@ void	output_hillslope(				int basinID,
 	struct	zone_object	*zone;
 	double aPET, asublimation, acanopysubl, aheight, awoodc, alai_red;
 	double agsurf, apotential_exfil, arootzoneS, ags, aga, asoil_potential_evaporation; //NREN 20200202
+	double asoil_exfiltration_sat_zone, asoil_exfiltration_unsat_zone;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -118,6 +119,8 @@ void	output_hillslope(				int basinID,
 	ags = 0.0;
 	aga = 0.0;
 	asoil_potential_evaporation = 0.0;
+	asoil_exfiltration_sat_zone = 0.0;
+	asoil_exfiltration_unsat_zone = 0.0;
 
 
 
@@ -140,6 +143,9 @@ void	output_hillslope(				int basinID,
 			aprecip += (zone[0].rain+zone[0].snow) * patch[0].area;
 			aevap_surface += patch[0].evaporation_surf * patch[0].area;
 			asoil_evap += (patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone) * patch[0].area;//soil evap is a little different
+			asoil_exfiltration_sat_zone += patch[0].exfiltration_sat_zone * patch[0].area;
+			asoil_exfiltration_unsat_zone += patch[0].exfiltration_unsat_zone * patch[0].area;
+
 			arz_stor += patch[0].rz_storage * patch[0].area;
 
 			adetention_stor += patch[0].detention_store * patch[0].area ;
@@ -262,10 +268,12 @@ void	output_hillslope(				int basinID,
     ags /= aarea;
     aga /= aarea;
     asoil_potential_evaporation /=aarea;
+    asoil_exfiltration_sat_zone /= aarea;
+    asoil_exfiltration_unsat_zone /= aarea;
 
 
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -312,6 +320,8 @@ void	output_hillslope(				int basinID,
 		asoil_potential_evaporation*1000,
 		arootzoneS,
 		ags,
-		aga);
+		aga,
+		asoil_exfiltration_sat_zone*1000,
+		asoil_exfiltration_unsat_zone*1000);
 	return;
 } /*end output_hillslope*/

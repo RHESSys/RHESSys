@@ -871,8 +871,12 @@ void		surface_daily_F(
 				+ (soil_potential_rainy_evaporation_rate_day
 				* rain_duration_day);
 		soil_potential_evaporation = soil_potential_evaporation_night + soil_potential_evaporation_day;
+
+		if(soil_potential_evaporation >=0) {
+
 		patch[0].soil_potential_evaporation = soil_potential_evaporation;
 
+        }
 		/*--------------------------------------------------------------*/
 		/*	BARE SOIL EVAPORATION:									*/
 		/*	base soil evapotration/ exfiltration will only occur 	*/

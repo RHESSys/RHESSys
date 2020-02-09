@@ -103,7 +103,7 @@ void	canopy_stratum_daily_I(
 		int,
 		struct date,
 		int,
-		struct beetle_default);
+		struct world_object *);
 
 	void	update_mortality(
 		struct epconst_struct,
@@ -268,7 +268,7 @@ void	canopy_stratum_daily_I(
 	/*  perform seasonal leaf sens. and budding						*/
 	/*--------------------------------------------------------------*/
 
-	update_phenology( zone, &(stratum[0].epv),
+	update_phenology(zone, &(stratum[0].epv),
 		stratum[0].defaults[0][0].epc,
 		&(stratum[0].phen),
 		&(stratum[0].cs),
@@ -290,7 +290,7 @@ void	canopy_stratum_daily_I(
 		basin[0].defaults[0][0].wyday_start,
 		current_date,
 		command_line[0].grow_flag,
-		world[0].defaults[0].beetle[0]);
+		world);
 
 	/*--------------------------------------------------------------*/
 	/* if it is the last day of litterfall, perform carbon/nitrogen */
