@@ -1,9 +1,7 @@
 # Compiled object files
 *.o
 *.pyc
-rhessys/rhessys7.0
-rhessys/rhessys7.1
-rhessys/rhessys7.2
+rhessys/rhessys7.*
 
 # Build directories
 objects/
@@ -47,3 +45,6 @@ libwmfire.so
 
 # vscode 
 rhessys/.vscode
+
+# made by R func compile_rhessys (should be deleted typically)
+.makefile_tmp

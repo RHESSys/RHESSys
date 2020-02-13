@@ -147,17 +147,18 @@ void input_new_strata_thin(
 	/*--------------------------------------------------------------*/
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
 
+	// Variables changable by replacement
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
 	 if (dtmp > 0)  canopy_strata[0].veg_parm_ID = dtmp;
-
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",canopy_strata[0].cover_fraction,1);	
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cover_fraction = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",canopy_strata[0].gap_fraction,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].gap_fraction = ltmp;
-	
-	// leave and treat lke cover/gap - replace existing value, so density can be changed with a thinning
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",canopy_strata[0].cs.stem_density,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.stem_density = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",canopy_strata[0].cs.age,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
+
 	// thinning vars
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",canopy_strata[0].cs.cpool,1);
 	  	if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_cpool = ltmp;
@@ -175,9 +176,6 @@ void input_new_strata_thin(
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_deadcrootc = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc","%lf",canopy_strata[0].cs.frootc,1);
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_frootc = ltmp;
-	// Should age be used (?) - leave changable by replacement for now
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",canopy_strata[0].cs.age,1);
-	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
 
 	// For use later when looking at (or changing) basestations
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",canopy_strata[0].num_base_stations,0);
