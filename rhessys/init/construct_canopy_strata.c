@@ -128,10 +128,7 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	canopy_strata[0].veg_parm_ID = getIntWorldfile(&paramCnt, &paramPtr, "veg_parm_ID","%d",-9999,0);
 
-	if (command_line[0].vegspinup_flag > 0)
-	{
-		spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,0);
-    }
+	spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,0);
 
 	canopy_strata[0].cover_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1.0,1);
 	
@@ -296,6 +293,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/* if spinup module is called assign spinup defaults            */
 	/*--------------------------------------------------------------*/
+	canopy_strata[0].spinup_defaults[0] = NULL;
+
 	if (command_line[0].vegspinup_flag > 0) {
 	canopy_strata[0].spinup_defaults = (struct spinup_default **)
 		alloc( sizeof(struct spinup_default *),"defaults",

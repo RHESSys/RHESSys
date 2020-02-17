@@ -124,7 +124,6 @@ struct landuse_default *construct_landuse_defaults(
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
-                free(s);
                 s = strbuf;
                 token = strtok(s, ".");
                 if (token != NULL) {
