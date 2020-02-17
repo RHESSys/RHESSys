@@ -190,6 +190,9 @@ struct stream_list_object construct_stream_routing_topology(
 		}
 	}
 	
+	// see if this fixes resource leak
+	fclose(stream_file);
+
 	/*--------------------------------------------------------------*/
 	/*   code to search the outlet reach*/
 	/*--------------------------------------------------------------*/
@@ -252,6 +255,9 @@ struct stream_list_object construct_stream_routing_topology(
 		  	} /* end monthly storage assignment */
 		}/*end reach search*/
 	} /* end reservoir */
+	// close goes here i think
+	fclose(reservoir_file);
+
 	} /* end reservoir flag */
 
         /*--------------------------------------------------------------*/

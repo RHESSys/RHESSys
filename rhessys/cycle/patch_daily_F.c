@@ -746,7 +746,7 @@ void		patch_daily_F(
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
-			if (dum == 0) {				
+/* 			if (dum == 0) {				
 				patch[0].ga_final = tmpga;
 				patch[0].gasnow_final = tmpgasnow;
 				patch[0].wind_final = patch[0].layers[layer].null_cover * tmpwind;
@@ -755,17 +755,17 @@ void		patch_daily_F(
 				if ( command_line[0].verbose_flag == -5 ){
 					printf("\n     ***TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
 				}
+			} */
+			//else {				
+			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
+			patch[0].gasnow_final = patch[0].layers[layer].null_cover * patch[0].gasnow;
+			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
+			patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow;
+			patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;
+			if ( command_line[0].verbose_flag == -5 ){
+				printf("\n     ***NOT TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
 			}
-			else {				
-				patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
-				patch[0].gasnow_final = patch[0].layers[layer].null_cover * patch[0].gasnow;
-				patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
-				patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow;
-				patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;
-				if ( command_line[0].verbose_flag == -5 ){
-					printf("\n     ***NOT TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
-				}
-			}
+			//}
 
 			/*--------------------------------------------------------------*/
 			/*		Cycle through the canopy strata in this layer	*/

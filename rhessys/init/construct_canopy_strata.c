@@ -128,22 +128,23 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	canopy_strata[0].veg_parm_ID = getIntWorldfile(&paramCnt, &paramPtr, "veg_parm_ID","%d",-9999,0);
 
-	if (command_line[0].vegspinup_flag > 0){
-	    spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,0);
-        }
+	if (command_line[0].vegspinup_flag > 0)
+	{
+		spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,0);
+    }
+
 	canopy_strata[0].cover_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1.0,1);
 	
 	canopy_strata[0].gap_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",0.0,1);
 	
 	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",-9999,0);
 
-	if (command_line[0].tmp_value > ZERO){
+	if (command_line[0].tmp_value > ZERO)
+	{
 		canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
 	}
 
-
-        canopy_strata[0].cs.stem_density = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",-9999,1);
-
+    canopy_strata[0].cs.stem_density = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",-9999,1);
 
 	canopy_strata[0].snow_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_stored","%lf",0.0,1);
 	
@@ -153,8 +154,9 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	canopy_strata[0].cs.leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",0.0,1);
 
-	 canopy_strata[0].cs.leafc_age2 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age2","%lf",canopy_strata[0].cs.leafc/2.0,1);
-         canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc/2.0,1);
+	canopy_strata[0].cs.leafc_age2 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age2","%lf",canopy_strata[0].cs.leafc/2.0,1);
+    
+	canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc/2.0,1);
 	
 	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
 	
