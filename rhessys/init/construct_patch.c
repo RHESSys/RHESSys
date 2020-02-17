@@ -137,10 +137,7 @@ struct patch_object *construct_patch(
 	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID", "%d", -9999,0);
 		}
 
-	if (command_line[0].surface_energy_flag == 1) {
-		fscanf(world_file,"%d",&(surface_energy_default_object_ID));
-		read_record(world_file, record);
-		}
+	surface_energy_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID", "%d", -9999,0);
 
 	patch[0].area = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",-9999,0);
 	patch[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,0);
