@@ -54,7 +54,7 @@ void execute_road_construction_event(
 	int		i, b;
 	char		routing_filename[MAXSTR];
   char    redefine_routing_filename[ MAXSTR ];
-	char		ext[11];
+	char		ext[14];
 
 	struct	basin_object	*basin;
   struct  hillslope_object *hillslope;

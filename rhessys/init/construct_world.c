@@ -665,6 +665,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
 
 		fscanf(grid_base, "%d", &world[0].num_base_stations);
 
+		fclose(grid_base);
+
 		// Set the world.num_base_station_files to 1 for reference
 		// when printing out the world
 		world[0].num_base_station_files = 1;

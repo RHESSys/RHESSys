@@ -66,7 +66,7 @@ double compute_potential_N_uptake_combined(
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
 	double cnmax;       /* RATIO   max of root and leaf C:N      */
-	double c_allometry, n_allometry, mean_cn, transfer;
+	double mean_cn, transfer;
 	double plant_calloc, plant_ndemand;
 	double k2, c; /* working variables */
 	double dickenson_k; /* working variable for LAI exponential decay constant */
@@ -153,7 +153,7 @@ double compute_potential_N_uptake_combined(
 	}
 	else mean_cn = 1.0;
 
-	if (c_allometry > ZERO)
+	if (mean_cn > ZERO)
 		plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
 	else
 		plant_ndemand = 0.0;

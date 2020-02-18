@@ -410,10 +410,15 @@ struct basin_object *construct_basin(
         hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true );
       }	
     }
+
+    fclose(routing_file);
+
   } else { // command_line[0].routing_flag != 1
     // For TOPMODEL mode, make a dummy route list consisting of all patches
     // in the hillslope, in no particular order.
-    hillslope->route_list = construct_topmodel_patchlist(hillslope);
+    int h;
+    for (h=0; h < basin[0].num_hillslopes; h++) 
+   		 basin[0].hillslopes[h]->route_list = construct_topmodel_patchlist(basin[0].hillslopes[h]);
   }
 
   /*--------------------------------------------------------------*/
@@ -427,7 +432,7 @@ struct basin_object *construct_basin(
   }
   printf( "\nEND CONSTRUCT BASIN\n");
 
-  fclose(routing_file);
+
   if( command_line->surface_routing_flag == 1 ) {
     fclose( surface_routing_file );
   }

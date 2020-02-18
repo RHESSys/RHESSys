@@ -314,6 +314,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	else
 	{
 		fprintf(stderr,"******\nNo patch grid file! Create a 30 m raster grid with patch ids\n********");
+		fire_grid = NULL;
 		exit(EXIT_FAILURE);
 	}
 	// for debugging, write out the fire grid and patches

@@ -87,7 +87,8 @@ double	compute_N_leached(int verbose_flag,
 
 	nleached = 0.0;
 	Qtotal = 0.0;
-	nabsorbed=0.0;
+	nabsorbed = 0.0;
+	navail = 0.0;
 
 	/*------------------------------------------------------*/
 	/* nitrate export only occurs when Qout > 0.0		*/ 
