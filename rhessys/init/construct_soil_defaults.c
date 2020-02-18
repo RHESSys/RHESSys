@@ -101,6 +101,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "patch_default_ID", "%d", 3, 1); 
 		default_object_list[i].theta_psi_curve = 	getIntParam(&paramCnt, &paramPtr, "theta_psi_curve", "%d", 1.0, 1);
 		default_object_list[i].Ksat_0 = 		getDoubleParam(&paramCnt, &paramPtr, "Ksat_0", "%lf", 3.0, 1);
+		default_object_list[i].cap_rise_max = 		getDoubleParam(&paramCnt, &paramPtr, "cap_rise_max", "%lf", 0.8, 1);
 		default_object_list[i].m = 			getDoubleParam(&paramCnt, &paramPtr, "m", "%lf", 0.12, 1);
 		default_object_list[i].porosity_0 = 		getDoubleParam(&paramCnt, &paramPtr, "porosity_0", "%lf", 0.435, 1);
 		default_object_list[i].porosity_decay = 	getDoubleParam(&paramCnt, &paramPtr, "porosity_decay", "%lf", 4000.0, 1);
@@ -138,6 +139,11 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].albedo = 		getDoubleParam(&paramCnt, &paramPtr, "albedo", "%lf", 0.28, 1);
 		default_object_list[i].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1); 
 		default_object_list[i].N_decay_rate = 		getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1); 
+		default_object_list[i].fixed_t_mult = 		getDoubleParam(&paramCnt, &paramPtr, "fixed_t_mult", "%lf", -999, 1); 
+
+		if (default_object_list[i].fixed_t_mult > -999) 
+				printf("\n Warming using a fixed values for temperature control on soil/liter decomp %lf", 
+				default_object_list[i].fixed_t_mult);
 		/*
 		if (command_line[0].tmp_value > ZERO)
 			default_object_list[i].N_decay_rate *= command_line[0].tmp_value;
@@ -224,6 +230,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].DOC_adsorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DOC_adsorption_rate", "%lf", 0.000023, 1);
 		default_object_list[i].DON_adsorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DON_adsorption_rate", "%lf", 0.000001, 1);
 		default_object_list[i].interval_size = 		getDoubleParam(&paramCnt, &paramPtr, "interval_size", "%lf", INTERVAL_SIZE, 1);
+		default_object_list[i].recompute_gamma_flag = 	getIntParam(&paramCnt, &paramPtr, "recompute_gamma_flag", "%d", 1, 1);
 
 		/*--------------------------------------------------------------*/
 		/* sensitivity adjustment of vertical drainage  soil paramters	*/
@@ -244,7 +251,13 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].p4 *= command_line[0].vsen_alt[PO];
 			}
 		}
-		
+	
+		/*--------------------------------------------------------------*/
+		/*      Fire effect parameters                          	*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].overstory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "overstory_height_thresh", "%lf", 6, 1);
+		default_object_list[i].understory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "understory_height_thresh", "%lf", 4, 1);
+	
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
@@ -266,7 +279,6 @@ struct soil_default *construct_soil_defaults(
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
-                free(s);
                 s = strbuf;
                 token = strtok(s, ".");
                 if (token != NULL) {

@@ -74,11 +74,19 @@ void	execute_daily_output_event(
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
+
+	void output_fire(
+		int, int, int, int,
+		struct	canopy_strata_object *,
+		struct	date,
+		FILE	*);
+
 	void output_shadow_strata(
 		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
+
         void output_stream_routing(
 		struct	stream_network_object *,
 		struct	date,
@@ -86,7 +94,7 @@ void	execute_daily_output_event(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int	basinID, hillID, patchID, zoneID, stratumID,reachID;
+	int	basinID, hillID, patchID, zoneID, stratumID, reachID;
 	int b,h,p,z,c,s;
 	/*--------------------------------------------------------------*/
 	/*	check to see if there are any print options					*/
@@ -259,6 +267,43 @@ void	execute_daily_output_event(
 															}
 										} /* end stratum (c) for loop */
 									} /* end if options */
+
+									/*------------------------------------------------*/
+									/*	Construct the fire output files		  */
+									/*------------------------------------------------*/
+									if ( command_line[0].f != NULL ){
+										/*----------------------------------------------*/
+										/*	output fire 								*/
+										/*----------------------------------------------*/
+										for(c=0;
+										c < world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].num_canopy_strata;
+										++c){
+											basinID = command_line[0].c->basinID;
+											hillID = command_line[0].c->hillID;
+											zoneID = command_line[0].c->zoneID;
+											patchID = command_line[0].c->patchID;
+											stratumID = command_line[0].c->stratumID;
+											if (( world[0].basins[b][0].ID == basinID)
+												|| (basinID == -999))
+												if (( world[0].basins[b][0].hillslopes[h][0].ID == hillID)
+													|| (hillID == -999))
+													if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID == zoneID)
+														|| (zoneID == -999))
+														if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID == patchID)
+															||	(patchID == -999))
+															if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].canopy_strata[c][0].ID == stratumID)
+																|| (stratumID == -999)) {
+																output_fire(
+																world[0].basins[b][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
+																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
+																date, outfile->fire->daily);
+															}
+										} /* end fire (f) for loop */
+									} /* end if options */
+
 								} /* end patch (p) for loop */
 							} /* end if options */
 						} /* end zone (z) for  loop*/

@@ -97,7 +97,7 @@
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",patch[0].z,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp;
 
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].num_base_stations,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].soil_parm_ID,1);	
 	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].soil_parm_ID = dtmp;
 	dtmp  = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
 	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].landuse_parm_ID = dtmp;
@@ -298,7 +298,7 @@
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  patch base stations 					*/
 	/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",patch[0].num_base_stations,0);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",patch[0].num_base_stations,0);	
 	if (dtmp > 0)  {
 		patch[0].num_base_stations = dtmp;
 		/*--------------------------------------------------------------*/

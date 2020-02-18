@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void	execute_yearly_output_event( int reset_flag,
+void	execute_yearly_output_event( int reset_flag, 
 									struct	world_object	*world,
 									struct	command_line_object *command_line,
 									struct	date	date,
@@ -64,7 +64,7 @@ void	execute_yearly_output_event( int reset_flag,
 		FILE	*);
 	
 	void output_yearly_canopy_stratum(
-		int, int, int, int, int, 
+		int, int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);

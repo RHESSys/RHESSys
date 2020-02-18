@@ -283,6 +283,7 @@ void  update_drainage_stream(
 			patch[0].transmissivity_profile);
 		patch[0].surface_NO3 += Nout;
 		patch[0].soil_ns.NO3_Qout += Nout;
+		patch[0].streamNO3_from_sub += Nout;
 
 		Nout = compute_N_leached(
 			verbose_flag,
@@ -352,8 +353,6 @@ void  update_drainage_stream(
 		patch[0].surface_NO3  -= Nout;
 		patch[0].streamflow_NO3 += Nout;
 		patch[0].hourly[0].streamflow_NO3 += Nout;
-		patch[0].streamNO3_from_surface +=Nout;
-		patch[0].hourly[0].streamflow_NO3_from_surface +=Nout;
 
 		patch[0].surface_ns_leach += Nout;
 		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_DOC;

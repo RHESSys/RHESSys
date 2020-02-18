@@ -105,7 +105,7 @@ struct canopy_strata_object *find_stratum(
 	// fprintf("Zone ID: %d\n",zone_ID); // ejh remove this
 	if (fnd == 0) {
 		fprintf(stderr,
-			"FATAL ERROR: Could not find zone %d in find_stratum\n",zone_ID);
+			"FATAL ERROR: Could not find zone %d in find_stratum, stratum = %d \n",zone_ID, stratum_ID);
 		exit(EXIT_FAILURE);
 	}
 	/*--------------------------------------------------------------*/

@@ -52,17 +52,27 @@ using boost::shared_ptr;
 //					world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year
 struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, long month, struct fire_object** fire_grid,struct fire_default def)
 {
-	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: "<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
-	cout<<"Defaults: moisture k1 and k2, load k1"<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"\n";
+	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: \n"<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
+	if(def.fire_verbose==1)
+		cout<<"Defaults: moisture k1 and k2, load k1, ranseed  "<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"   "<<def.ran_seed<<"\n";
 	timeval t1;
-	#if defined(_WIN32) || defined(__WIN32__)
-		long seed=1; 
-	#else
-		gettimeofday(&t1, NULL); 
-		long seed=-t1.tv_usec;
-	// seed the rng using a high resolution clock#include <sys/time.h>
-	#endif
-	
+	long seed;
+	if(def.ran_seed!=0)
+	{
+		if(def.fire_verbose==1)
+			cout<<"Should be set seed = "<<def.ran_seed<<"\n";
+		seed=def.ran_seed;
+	}	
+	else
+	{
+		#if defined(_WIN32) || defined(__WIN32__)
+			seed=1; 
+		#else
+			gettimeofday(&t1, NULL); 
+			seed=-t1.tv_usec;
+		// seed the rng using a high resolution clock#include <sys/time.h>
+		#endif
+	}
 //	srand(t1.tv_usec * t1.tv_sec);
             // this is the source for random numbers for the entire application
 	boost::mt19937 rngEngine;
@@ -77,10 +87,14 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 	landscape.Reset(); 
 	if(def.fire_verbose==1)
 		cout<<"\nafter landscape reset\n\n";
+	landscape.drawNumIgn(def.mean_ign,randomNG);
+
 	landscape.initializeCurrentFire(randomNG);// reset the information for the current fire, if successful this will be added to the analysis
 	if(def.fire_verbose==1)
 		cout<<"\nafter landscape initialize current fire\n\n";
 	landscape.Burn(randomNG); // run the current fire
+	
+
 	if(def.fire_write>0)
 		landscape.writeFire(month,year,def);
 	if(def.fire_verbose==1)
@@ -99,6 +113,7 @@ LandScape::LandScape(double cell_res,struct fire_object **fire_grid,struct fire_
 	cols_=ncol;
 	buffer_=0;
 	n_ign_=0;
+	n_cur_ign_=0;
 	localFireGrid_.resize(boost::extents[rows_][cols_]); // local fire information
 	ignCells_.clear();
 	for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
@@ -109,7 +124,7 @@ LandScape::LandScape(double cell_res,struct fire_object **fire_grid,struct fire_
 			{
 				IgnitionCells ic = {i, j}; // the cell indices give the current row and column for this pixel available for ignition
 				ignCells_.push_back(ic);		// 0 indicates that the pixel has not been burned
-				n_ign_++;
+				n_ign_++; // this indexes the number of cells available for ignition
 			}
 		}
 	}
@@ -130,6 +145,13 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 		{
 			fireGrid_[i][j].burn=0;		// 0 indicates that the pixel has not been burned
 			localFireGrid_[i][j].iter=-1;
+			localFireGrid_[i][j].failedIter=-1;
+			localFireGrid_[i][j].pSlope=-1;
+			localFireGrid_[i][j].pDef=-1;
+			localFireGrid_[i][j].pLoad=-1;
+			localFireGrid_[i][j].pWind=-1;
+			localFireGrid_[i][j].pUnderDef=-1;
+			
 //			cout<<fireGrid_[i][j].burn<<"\t";
 			fireGrid_[i][j].wind_direction=fireGrid_[i][j].wind_direction*3.141593/180; // transform wind direction to radians, for RHESSys
 			// for debugging:
@@ -139,6 +161,16 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 	return ;
 }
 
+/***********************drawRanIgn*********************************************/
+/* draw a random number of pixels that will be tested for successful ignition	*/
+/********************************************************************************/
+void LandScape::drawNumIgn(double lambda,GenerateRandom& rng)	// to be called in main, to replace RandomScar mk: ? RandomScar?
+{
+	double tmpN;
+	tmpN=poisdev(lambda,rng);
+	n_cur_ign_=round(tmpN);
+	return ;
+}
 
 
 
@@ -169,50 +201,64 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 	for(int i=0;i<rows_;i++)	// this loop re-sets the landscape to completely un-burned
 	{
 		for(int j=0;j<cols_;j++)
-			fireGrid_[i][j].burn=0;
-	}
-	if(def_.fire_verbose==1)
-		cout<<"in burn after setting burn=0--here\n\n";
-	// hold all of the information for the burning fire in the cur_fire_ object, and retain it only if the fire reaches the appropriate size
-	int cur_row = int (cur_fire_.ignRow);		
-	int cur_col = int (cur_fire_.ignCol);
-
-	if(def_.fire_verbose==1)
-		cout<<"in burn before testIgnition: \n\n";
-	int ign;
-	ign=testIgnition(cur_row,cur_col,rng); // test whether the fire successfully ignites based on the fuel moisture and fuel load
-	if(def_.fire_verbose==1)
-		cout<<"in burn after testIgnition: "<<ign<<"\n\n";
-	int stop = 0;
-	int iter = 0;	
-	if(ign==1)
-	{
-//		fireGrid_[cur_row][cur_col].burn=1; // 1 indicates that this cell has been burned.
-//		calc_FireEffects(cur_row, cur_col,iter);
-		firstBurned_.clear(); // reset the firstBurned_ vector
-		for(int i = 0; i < 4; ++i)
-			borders_[i] = 0;
-
-		BurnedCells bc = {cur_row, cur_col};
-		firstBurned_.push_back(bc);
-		// continue to propagate the fire until one of the stopping conditions is met.
-		//  where an iteration is a set of burned cells, beginning with one burned cell
-		//  and its neighbors.  the next iteration will be the set of new burned cells and
-		//  these are tested.  the next iteration will be the set of cells burned from the previous iteration
-
-		while(stop==0)	 
 		{
-			iter++;
-			stop = BurnCells(iter, rng);	// this function will navigate the vector of burned cells and test spread for each, as well as update the area burned for the current year. it will also test for stopping
+			fireGrid_[i][j].burn=0;
+			fireGrid_[i][j].fire_size=0; // make sure it returns a fire size of 0, unless a fire burns
 		}
-/*		int temp_borders=0;
-		for(int i=0; i<4; i++)
-			temp_borders = temp_borders + borders_[i];
-		if(temp_borders==4)
-			stop=5;
-allow fire to continue burning even if all borders are reached, so the only way to stop is to have no successful tests of spread*/ 	
-		cur_fire_.stop=stop;
 	}
+	if(def_.fire_verbose==1)
+		cout<<"in burn after setting burn=0--here\n\nHow many ignitions this month?  "<<n_cur_ign_<<"\n\n";
+
+	// hold all of the information for the burning fire in the cur_fire_ object, and retain it only if the fire reaches the appropriate size
+	if(n_cur_ign_>0)
+	{
+		for(int k=0;k<n_cur_ign_;k++)
+		{
+			chooseIgnPix(rng); // draw a random pixel for each test for successful ignition
+
+			
+			int cur_row = int (cur_fire_.ignRow);		
+			int cur_col = int (cur_fire_.ignCol);
+
+			if(def_.fire_verbose==1)
+				cout<<"in burn before testIgnition: \n\n";
+			int ign;
+			ign=testIgnition(cur_row,cur_col,rng); // test whether the fire successfully ignites based on the fuel moisture and fuel load
+			if(def_.fire_verbose==1)
+				cout<<"in burn after testIgnition: "<<ign<<"\n\n";
+			int stop = 0;
+			int iter = 0;	
+			if(ign==1)
+			{
+		//		fireGrid_[cur_row][cur_col].burn=1; // 1 indicates that this cell has been burned.
+		//		calc_FireEffects(cur_row, cur_col,iter);
+				firstBurned_.clear(); // reset the firstBurned_ vector
+				for(int i = 0; i < 4; ++i)
+					borders_[i] = 0;
+
+				BurnedCells bc = {cur_row, cur_col};
+				firstBurned_.push_back(bc);
+				// continue to propagate the fire until one of the stopping conditions is met.
+				//  where an iteration is a set of burned cells, beginning with one burned cell
+				//  and its neighbors.  the next iteration will be the set of new burned cells and
+				//  these are tested.  the next iteration will be the set of cells burned from the previous iteration
+
+				while(stop==0)	 
+				{
+					iter++;
+					stop = BurnCells(iter, rng);	// this function will navigate the vector of burned cells and test spread for each, as well as update the area burned for the current year. it will also test for stopping
+				}
+		/*		int temp_borders=0;
+				for(int i=0; i<4; i++)
+					temp_borders = temp_borders + borders_[i];
+				if(temp_borders==4)
+					stop=5;
+		allow fire to continue burning even if all borders are reached, so the only way to stop is to have no successful tests of spread*/ 	
+				cur_fire_.stop=stop;
+			}
+		}
+	}
+	fireGrid_[0][0].fire_size=cur_fire_.update_size; // to return the fire size, when only the grid is returned; this is the number of pixels
 	return ;
 }
 
@@ -296,6 +342,9 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 					BurnedCells bc = {new_row, new_col};
 					burnedThisTime.push_back(bc);
 				}
+				else
+					localFireGrid_[new_row][new_col].failedIter=iter; // record pixels that failed to spread, and which iteration
+
 			}
 	
 		}
@@ -348,8 +397,10 @@ int LandScape::TestFireStop(int numBurnedThisIter,int test_once,int borders[4])
 void LandScape::initializeCurrentFire(GenerateRandom& rng)
 {
 	fire_years fire;
+	fire.ignRow=-1;
+	fire.ignCol=-1;
 // allow for expanding the code to allow for set ignitions, but requires modifying the default file.
-	if(def_.ignition_col>=0&&def_.ignition_col<cols_&&def_.ignition_row>=0&&def_.ignition_row<rows_)
+/*	if(def_.ignition_col>=0&&def_.ignition_col<cols_&&def_.ignition_row>=0&&def_.ignition_row<rows_)
 	{
 		fire.ignRow=def_.ignition_row;
 		fire.ignCol=def_.ignition_col;
@@ -366,7 +417,7 @@ void LandScape::initializeCurrentFire(GenerateRandom& rng)
 	
 	if(def_.fire_verbose==1)
 		cout<<"ignition row and column: "<<fire.ignRow<<"\t"<<fire.ignCol<<"\n";
-//	cur_fire_.year=0;	//which year is this
+*///	cur_fire_.year=0;	//which year is this
 	fire.update_size=0;	// what is the size of the fire that is being burned, to be updated each iteration and be tested against size
 	fire.stop=0; // record the stopping rule for this fire
 	
@@ -393,6 +444,32 @@ void LandScape::initializeCurrentFire(GenerateRandom& rng)
 	return ;
 }
  
+/***********************chooseIgnPix*********************************/
+/* finds random pixels to be tested for each ignition			*/
+/**********************************************************************/
+void LandScape::chooseIgnPix(GenerateRandom& rng)
+{
+	if(def_.ignition_col>=0&&def_.ignition_col<cols_&&def_.ignition_row>=0&&def_.ignition_row<rows_)
+	{
+		cur_fire_.ignRow=def_.ignition_row;
+		cur_fire_.ignCol=def_.ignition_col;
+	}
+	else
+	{
+		int vecID=0;
+		vecID=int(floor(rng()*(n_ign_+1))); // n_ign_ just counts how many pixels are available for ignition
+		cur_fire_.ignRow=ignCells_[vecID].rowId; // extract the row and column of this randomly drawn pixel
+		cur_fire_.ignCol=ignCells_[vecID].colId;
+	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
+	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
+	}
+	
+	if(def_.fire_verbose==1)
+		cout<<"ignition row and column: "<<cur_fire_.ignRow<<"\t"<<cur_fire_.ignCol<<"\n";
+
+	return ;	
+}
+
 /**************************calc_pSpreadTest*******************************/
 /* implements the fire spread strategy by updating pSpread each year,	*/
 /* depending on spread strategy indicated in the configuration file		*/
@@ -409,7 +486,6 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	double cur_load,cur_moist;
 	slope=(fireGrid_[new_row][new_col].z-fireGrid_[cur_row][cur_col].z)/cell_res_; // for now, just the orthogonal
 								//neighbors, so the slope is just the difference in elevation divided by the distance 
-	//	cout<<"winddir: "<<winddir<<"\t";
 	if(slope<=0)
 		ind=-1;
 	p_slope=def_.slope_k1*exp(ind*def_.slope_k2*pow(slope,2)); // pSpread due to the slope
@@ -417,6 +493,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		p_slope=1;
 	if(p_slope<0)
 		p_slope=0;
+//	if(def_.fire_verbose==1)
+//		cout<<"new elevation, old elevation, slope, p_slope: "<<fireGrid_[new_row][new_col].z<<"   "<<fireGrid_[cur_row][cur_col].z<<"   "<<slope<<"    "<<p_slope<<"\n";
 	
 	if(cur_fire_.winddir>=0)
 	{
@@ -435,7 +513,6 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		else
 			windspeed=1;
 	}
-//	cout<<"Windspeed and winddirection: "<<windspeed<<"   "<<winddir<<"\t";
 	k1wind=def_.winddir_k1*windspeed;
 //	p_winddir=def_.winddir_k2+def_.winddir_k1*(1+cos(fire_dir-winddir)); // pSpread due to the orientation of the cells relative to the wind direction
 	p_winddir=def_.winddir_k2+k1wind *(1+cos(fire_dir-winddir)); // pSpread due to the orientation of the cells relative to the wind direction
@@ -444,6 +521,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		p_winddir=1;
 	if(p_winddir<0)
 		p_winddir=0;
+//	if(def_.fire_verbose==1)
+//		cout<<"Windspeed and winddirection, pwind: "<<windspeed<<"   "<<winddir<<"   "<<p_winddir<<"\t";
 	if(def_.spread_calc_type<4)
 		p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[new_row][new_col].fuel_moist-def_.moisture_k2))));
 	else // use deficit
@@ -502,7 +581,7 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	case 7: // multiplicative with relative def
 		temp_pBurn=p_slope*p_winddir*p_moisture*p_load; 
 		break;
-	case 8: // minimum with relative def
+/*	case 8: // minimum with relative def--but now 
 		temp_pBurn=1;
 		if(p_slope<temp_pBurn)
 			temp_pBurn=p_slope;
@@ -515,13 +594,19 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		break;
 	case 9: // mean with realtive def
 		temp_pBurn=(p_slope+p_winddir+p_moisture+p_load)/4; // 
-		break;
+		break;*/
 	default: // for now default to multiplicative
 		temp_pBurn=p_slope*p_winddir*p_moisture*p_load; // if including wind direction, the overall pSpread is the product of the individual pSpreads.
 	}		
 	
+	localFireGrid_[new_row][new_col].pSlope=p_slope;
+	localFireGrid_[new_row][new_col].pDef=p_moisture;
+	localFireGrid_[new_row][new_col].pWind=p_winddir;
+	localFireGrid_[new_row][new_col].pLoad=p_load;
+
 	// Here we would put other pSpread calculations, depending on the parent node and the node being tested for spread
-//	cout<<"burn test, slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
+	if(def_.fire_verbose==1)
+		cout<<"burn test, pburn: "<<temp_pBurn<<" slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
 	return temp_pBurn;
 }
 
@@ -534,14 +619,57 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 	double pIgn=0;
 	double p_moisture,p_load,cur_load,cur_moist,p_veg;
 
-	double ign_moisture_k2=def_.moisture_k2*def_.ign_def_mod;
+	double ign_moisture_k2=def_.moisture_k2; //apply the modifier to the probability rather than the location parameter*def_.ign_def_mod;
 	if(ign_moisture_k2>1)
 		ign_moisture_k2=1;
 	// for WMFire, do we make this based on load and moisture (probably)
 	if(fireGrid_[cur_row][cur_col].temp>=def_.ignition_tmin)
 	{
 //		cout<<"In if\n";
-		if(def_.spread_calc_type<4)
+	switch(def_.spread_calc_type)
+	{
+	case 1: // 1-3, just use the fuel moisture value with the usual spread curve
+	case 2:
+	case 3:
+		p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[cur_row][cur_col].fuel_moist-def_.moisture_k2))));
+		cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].fuel_moist;
+		break;
+	case 4: // 4-6 use absolute deficit with the usual spread curve 
+	case 5: 
+	case 6:
+		cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et;
+		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+		break;
+	case 7: // relative def with the usual spread curve
+		if(fireGrid_[cur_row][cur_col].pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+		break;
+	case 8: // understory def with the usual spread curve
+		if(fireGrid_[cur_row][cur_col].understory_pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+		break;
+	case 9: // understory def with its own ignition curve
+		if(fireGrid_[cur_row][cur_col].understory_pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
+		break;
+	default: // understory def with its own ignition curve by default
+		if(fireGrid_[cur_row][cur_col].understory_pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
+	}		
+	
+/*		if(def_.spread_calc_type<4)
 		{
 			p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[cur_row][cur_col].fuel_moist-def_.moisture_k2))));
 			cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].fuel_moist;
@@ -551,31 +679,50 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		{
 			if(def_.spread_calc_type<7)
 				cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et; // use absolute deficit for fm
-			else
+			else 
 			{
-				if(fireGrid_[cur_row][cur_col].pet>0)
-					cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+				if(def_.spread_calc_type<8) // now 8 is for using understory deficit only for fire initiation
+				{
+					if(fireGrid_[cur_row][cur_col].pet>0)
+						cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+					else
+						cur_moist=0;
+				}
 				else
-					cur_moist=0;
+				{
+					if(fireGrid_[cur_row][cur_col].pet>0)
+						cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+					else
+						cur_moist=0;
+				}
 			}
-			p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
-			if(def_.fire_verbose==1)
-				cout<<"using deficit for moisture: cur_moist, et, pet: "<<cur_moist<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"\n";
+			if(def_.spread_calc_type<9) // use 9 for completely separate curve for ignition moisture, rather than a simple multiplier
+				p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+			else
+				p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
+//			if(def_.fire_verbose==1)
+//				cout<<"using deficit for moisture: cur_moist: "<<cur_moist"\n";
 		}	
-
+*/
 		if(def_.fire_verbose==1)
-			cout<<"in test ignition p_moisture: "<<p_moisture<<"moisture: "<<cur_moist<<"\n\n";
+			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<"\n\n";
 		cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_veg;
 		p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 		if(def_.fire_verbose==1)
-			cout<<"in test ignition p_load "<<p_load<<"load: "<<cur_load<<"\n\n";
-		if(def_.veg_ign==1)
+			cout<<"in test ignition p_load "<<p_load<<" load: "<<cur_load<<"SpreadType: "<<def_.spread_calc_type<<"\n\n";
+		if(def_.spread_calc_type<9)
+			p_moisture=p_moisture*def_.ign_def_mod; // a multiplier to modify the ignition probability relative to the spread probability
+		pIgn=p_moisture*p_load;		
+		if(def_.veg_ign==1)// *** check!*********
 		{
 			p_veg=1-1/(1+exp(-(def_.veg_k1*(fireGrid_[cur_row][cur_col].fuel_veg-def_.veg_k2))));
-			pIgn=p_moisture*p_load*p_veg;
+			pIgn=pIgn*p_veg;
+			if(def_.fire_verbose==1)
+			{
+				cout<<"In test ignition, downgrading ignition prob by p_veg: "<<p_veg<<"\n";
+			}
 		}
-		else
-			pIgn=p_moisture*p_load;
+			
 
 
 		double test=rng();
@@ -586,7 +733,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		}
 	}
 	if(def_.fire_verbose==1)
-		cout<<"in test ignition pIgn: "<<pIgn<<"ign: "<<ign<<"temperature: "<<fireGrid_[cur_row][cur_col].temp<<"\n\n";
+		cout<<"in test ignition pIgn: "<<pIgn<<"ign: "<<ign<<"temperature: "<<fireGrid_[cur_row][cur_col].temp<<" et, pet, underET, underPET"<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"  "<<fireGrid_[cur_row][cur_col].understory_et<<"   "<<fireGrid_[cur_row][cur_col].understory_pet<<"\n\n";
 	return ign;
 }
 
@@ -612,6 +759,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 //	char const* outFile;
 	std::string curFile;
 	std::string curPropFile;
+	std::string curFailedIterFile;
 	
 	std::string curMonth;
 	std::stringstream out;
@@ -629,6 +777,13 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	curFile.append(curMonth);
 	curFile.append(".txt");
 
+	curFailedIterFile.assign("FireFailedIterGridYear");
+	curFailedIterFile.append(curYear);
+	curFailedIterFile.append("Month");
+	curFailedIterFile.append(curMonth);
+	curFailedIterFile.append(".txt");
+
+
 	curPropFile.assign("FireSpreadPropGridYear");
 	curPropFile.append(curYear);
 	curPropFile.append("Month");
@@ -639,6 +794,9 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	{
 		ofstream fireOut;
 		fireOut.open(curFile.c_str());
+		ofstream fireFailedIterOut;
+		fireFailedIterOut.open(curFailedIterFile.c_str());
+
 		
 		ofstream firePropOut;
 		firePropOut.open(curPropFile.c_str());
@@ -649,13 +807,16 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 			for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
 			{
 				fireOut<<localFireGrid_[i][j].iter<<"\t";
+				fireFailedIterOut<<localFireGrid_[i][j].failedIter<<"\t";
 				firePropOut<<fireGrid_[i][j].burn<<"\t";
 			}
 			fireOut<<"\n";
 			firePropOut<<"\n";
+			fireFailedIterOut<<"\n";
 		}
 		fireOut.close();
 		firePropOut.close();
+		fireFailedIterOut.close();
 	}
 
 	cout<<"Year: "<<year<<" Month: "<<month<<"\n\n";
@@ -683,7 +844,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		fireOut.close();
 
-	curFile.assign("SoilMoistGridYear");
+		curFile.assign("SoilMoistGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -791,9 +952,119 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 			fireOut<<"\n";
 		}
 		fireOut.close();	
+		
+		curFile.assign("UnderPETGridYear");
+		curFile.append(curYear);
+		curFile.append("Month");
+		curFile.append(curMonth);
+		curFile.append(".txt");
+
+	//	ofstream fireOut;
+		fireOut.open(curFile.c_str());
+		for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+		{
+			for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+			{
+				fireOut<<fireGrid_[i][j].understory_pet<<"\t";
+			}
+			fireOut<<"\n";
+		}
+		fireOut.close();
+
+		curFile.assign("UnderETGridYear");
+		curFile.append(curYear);
+		curFile.append("Month");
+		curFile.append(curMonth);
+		curFile.append(".txt");
+
+	//	ofstream fireOut;
+		fireOut.open(curFile.c_str());
+		for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+		{
+			for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+			{
+				fireOut<<fireGrid_[i][j].understory_et<<"\t";
+			}
+			fireOut<<"\n";
+		}
+		fireOut.close();	
+		if(def_.fire_write>3)
+		{
+			curFile.assign("PSlopeGridYear");
+			curFile.append(curYear);
+			curFile.append("Month");
+			curFile.append(curMonth);
+			curFile.append(".txt");
+
+		//	ofstream fireOut;
+			fireOut.open(curFile.c_str());
+			for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+			{
+				for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+				{
+					fireOut<<localFireGrid_[i][j].pSlope<<"\t";
+					}
+				fireOut<<"\n";
+			}
+			fireOut.close();	
+
+			curFile.assign("PDefGridYear");
+			curFile.append(curYear);
+			curFile.append("Month");
+			curFile.append(curMonth);
+			curFile.append(".txt");
+
+		//	ofstream fireOut;
+			fireOut.open(curFile.c_str());
+			for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+			{
+				for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+				{
+					fireOut<<localFireGrid_[i][j].pDef<<"\t";
+					}
+				fireOut<<"\n";
+			}
+			fireOut.close();	
+			
+			curFile.assign("PLoadGridYear");
+			curFile.append(curYear);
+			curFile.append("Month");
+			curFile.append(curMonth);
+			curFile.append(".txt");
+
+		//	ofstream fireOut;
+			fireOut.open(curFile.c_str());
+			for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+			{
+				for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+				{
+					fireOut<<localFireGrid_[i][j].pLoad<<"\t";
+					}
+				fireOut<<"\n";
+			}
+			fireOut.close();	
+			
+			curFile.assign("PWindGridYear");
+			curFile.append(curYear);
+			curFile.append("Month");
+			curFile.append(curMonth);
+			curFile.append(".txt");
+
+		//	ofstream fireOut;
+			fireOut.open(curFile.c_str());
+			for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+			{
+				for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+				{
+					fireOut<<localFireGrid_[i][j].pWind<<"\t";
+					}
+				fireOut<<"\n";
+			}
+			fireOut.close();	
+		}
 	}
 
-	ofstream demOut;
+/*	ofstream demOut;
 	demOut.open("RhessysDemInWMFire.txt");
 	for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
 	{
@@ -803,13 +1074,15 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		demOut<<"\n";
 	}
-	demOut.close();
+	demOut.close();*/
 	if(def_.fire_write>0)
 	{
 		ofstream sizeOut;
 		sizeOut.open("FireSizes.txt", ofstream::app);
-		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\n";
+		//sizeOut.open("FireSizes.txt", ofstream::out | ofstream::app);
+		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\t"<<n_cur_ign_<<"\n";
 		sizeOut.close();
+
 	}	
 	
 	return ;

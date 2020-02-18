@@ -120,9 +120,17 @@ void	output_csv_growth_patch(
 		patch[0].soil_cs.soil3c,
 		patch[0].soil_cs.soil4c,
 		patch[0].ndf.denitrif*1000.0,
+        #ifndef NO_UPDATE_160419
 		(patch[0].soil_ns.Qin - patch[0].soil_ns.Qout)*1000.0,
+        #else
+        -9999,
+        #endif
 		patch[0].soil_ns.nitrate*1000.0,
+        #ifndef NO_UPDATE_160419
 		patch[0].streamflow_N,
+        #else
+        -9999,
+        #endif
 		patch[0].surface_NO3,
 		aheight,
 		patch[0].ndf.sminn_to_npool*1000.0,

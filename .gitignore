@@ -1,13 +1,34 @@
 # Compiled object files
 *.o
 *.pyc
+rhessys/rhessys7.0
 
 # Build directories
 objects/
+build/
+build/Qt/gcc/bin/
+build/Qt/gcc/RHESSys/RHESSys.pro.user
+build/Qt/gcc/RHESSys/RHESSys.pro.user.2.7pre1
+
+RHESSys/util/netcdf_data_processes
+
+#Qt git structure
+.directory
+rhessys/init/.directory
+util/GRASS/cxy/.directory
+
+#other unitility
+util/GRASS/cxy/cxy
+g2w/grass2world/g2w
+
 
 # Eclipse metadata
 .project
 .cproject
+
+# vscode editor data
+.vscode
+rhessys/.vscode
 
 # OS X extended attribute stores
 .DS_Store
@@ -15,8 +36,9 @@ objects/
 # Editor leftovers
 *~
 
-
 # Fire-spread model files 
 *.dylib
-.Rproj.user
+libwmfire.dylib
+libwmfire.so
 
+.Rproj.user

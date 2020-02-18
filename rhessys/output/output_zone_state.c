@@ -77,11 +77,11 @@ void	output_zone_state(
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30.8f %s",zone[0].w_horizon, "w_horizon");
 	fprintf(outfile,"\n       ");
-	fprintf(outfile,"%-30ld %s",zone[0].num_base_stations, "n_basestations");
+	fprintf(outfile,"%-30ld %s",zone[0].num_base_stations, "zone_n_basestations");
 	for (i=0; i < zone[0].num_base_stations; i++){
 		fprintf(outfile,"\n       ");
 		fprintf(outfile,"%-30ld %s",zone[0].base_stations[i][0].ID,
-			"zone_base_station_ID");
+			"zone_basestation_ID");
 	}
 	fprintf(outfile,"\n       ");
 	fprintf(outfile,"%-30ld %s",zone[0].num_patches, "num_patches");

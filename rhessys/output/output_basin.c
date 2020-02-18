@@ -367,7 +367,7 @@ void	output_basin(			int routing_flag,
 	asnowmelt /= aarea;
 	acanopysubl /= aarea;
 	aheight /= aarea;
-  acsnow /= aarea;
+	acsnow /= aarea;
 	
 	aevap_can /= aarea ;
 	aevap_lit /= aarea ;
@@ -402,12 +402,13 @@ void	output_basin(			int routing_flag,
 	var_trans = 0; 
 	var_acctrans = 0;
 	if (var_flag == 1) {
-		for (h=0; h < basin[0].num_hillslopes; h++){
-		hillslope = basin[0].hillslopes[h];
-		for (z=0; z< hillslope[0].num_zones; z++){
-			zone = hillslope[0].zones[z];
-			for (p=0; p< zone[0].num_patches; p++){
-				patch = zone[0].patches[p];
+       #pragma omp parallel for reduction(+ : var_acctrans,var_trans)      
+        for (int h=0; h < basin[0].num_hillslopes; h++){
+        struct hillslope_object *hillslope = basin[0].hillslopes[h];
+        for (int z=0; z< hillslope[0].num_zones; z++){
+            struct zone_object *zone = hillslope[0].zones[z];
+            for (int p=0; p< zone[0].num_patches; p++){
+                struct patch_object *patch = zone[0].patches[p];
 				var_acctrans += pow( 1000*(patch[0].acc_year_trans - aacctrans), 2.0)  *  patch[0].area;
 				var_trans += pow( 1000*(patch[0].transpiration_sat_zone
 					+ patch[0].transpiration_unsat_zone - atranspiration), 2.0)  *  patch[0].area;

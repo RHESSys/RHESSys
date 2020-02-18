@@ -66,7 +66,7 @@ struct patch_object *construct_patch(
 	  struct 	canopy_strata_object *construct_empty_shadow_strata( 
 		struct command_line_object *,
 		struct	patch_object *,
-    struct  canopy_strata_object *stratum,
+		struct  canopy_strata_object *stratum,
 		struct	default_object	*defaults);
 	double	compute_z_final( 	int,
 		double,
@@ -130,16 +130,8 @@ struct patch_object *construct_patch(
 	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",-9999,0);
 	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
 
-	if (command_line[0].firespread_flag == 1) {
-		fscanf(world_file,"%d",&(fire_default_object_ID));
-		read_record(world_file, record);
-		}
-
-	if (command_line[0].surface_energy_flag == 1) {
-		fscanf(world_file,"%d",&(surface_energy_default_object_ID));
-		read_record(world_file, record);
-		}
-
+	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_default_object_ID", "%d", -9999,1);
+	surface_energy_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"surface_energy_default_object_ID", "%d", -9999,1);
 	patch[0].area = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",-9999,0);
 	patch[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,0);
 	patch[0].lna  = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",7,1);
@@ -198,7 +190,7 @@ struct patch_object *construct_patch(
 	patch[0].soil_cs.soil4c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",0.0,1);
 	patch[0].num_base_stations = 
-		      getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
+		      getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",0,0);
 
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;
@@ -222,6 +214,7 @@ struct patch_object *construct_patch(
 	/*      initialize accumulator variables for this patch         */
 	/*--------------------------------------------------------------*/
 
+	patch[0].acc_month.burn = 0.0;
 	patch[0].acc_month.et = 0.0;
 	patch[0].acc_month.snowpack = 0.0;
 	patch[0].acc_month.theta = 0.0;
@@ -259,6 +252,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.mineralized = 0.0;
 	patch[0].acc_year.uptake = 0.0;
 	patch[0].acc_year.lai = 0.0;
+	patch[0].acc_year.peaklaiday = 0;
 	patch[0].acc_year.leach = 0.0;
 	patch[0].acc_year.DOC_loss = 0.0;
 	patch[0].acc_year.DON_loss = 0.0;
@@ -279,6 +273,9 @@ struct patch_object *construct_patch(
 	if (command_line[0].firespread_flag == 1) {
 		patch[0].fire.et = 0.0;
 		patch[0].fire.pet = 0.0;
+		patch[0].fire.understory_et = 0;
+		patch[0].fire.understory_pet = 0;
+		// here set fire.understory_et and fire.understory_pet = 0;
 		}	
 	/*--------------------------------------------------------------*/
 	/*	Variables for the dynamic version are included here     */
@@ -641,8 +638,9 @@ struct patch_object *construct_patch(
 		patch[0].shadow_strata[i] = construct_empty_shadow_strata(
 			command_line,
 			patch,
-      patch[0].canopy_strata[i],
-      defaults);
+			patch[0].canopy_strata[i],
+      defaults);     
+ 
 		patch[0].shadow_strata[i][0].ID = patch[0].canopy_strata[i][0].ID;
 		patch[0].shadow_strata[i][0].defaults = patch[0].canopy_strata[i][0].defaults;
 		patch[0].shadow_strata[i][0].base_stations = patch[0].canopy_strata[i][0].base_stations;

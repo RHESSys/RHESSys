@@ -1,11 +1,26 @@
-VERSION = 6.0 
+VERSION = 7.1 
 PGM  = rhessys$(VERSION)
-CC = gcc 
+CC = gcc
+#CXX = g++
 INCLUDES = -Iinclude
-#CFLAGS = -O -std=c99
-CFLAGS =-Wall -g -std=c99
+
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
+
+#netcdf ?=FALSE
+#wmfire ?=FALSE
+
+DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
+
+ifdef extend_clim
+  DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
+endif 
+
+CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES) -fno-stack-protector
+
+ifdef openmp
+  CFLAGS += -fopenmp
+endif
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
@@ -32,8 +47,8 @@ TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
 
 OS := $(shell uname)
 
+
 OBJECTS = \
-$(OBJ)/read_netcdf.o \
 $(OBJ)/Ksat_z_curve.o \
 $(OBJ)/add_growth_headers.o \
 $(OBJ)/add_headers.o \
@@ -43,6 +58,7 @@ $(OBJ)/allocate_daily_growth.o \
 $(OBJ)/assign_base_station.o \
 $(OBJ)/assign_base_station_xy.o \
 $(OBJ)/assign_neighbours.o \
+$(OBJ)/assign_neighbours_in_hillslope.o \
 $(OBJ)/basin_daily_F.o \
 $(OBJ)/basin_daily_I.o \
 $(OBJ)/basin_hourly.o \
@@ -70,6 +86,7 @@ $(OBJ)/compute_direct_radiative_PAR_fluxes.o \
 $(OBJ)/compute_direct_radiative_fluxes.o \
 $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
+$(OBJ)/compute_fire_effects.o \
 $(OBJ)/compute_growingseason_index.o \
 $(OBJ)/compute_layer_field_capacity.o \
 $(OBJ)/compute_froot_litfall.o \
@@ -116,6 +133,7 @@ $(OBJ)/compute_unsat_zone_drainage.o \
 $(OBJ)/compute_vapor_pressure_deficit.o \
 $(OBJ)/compute_vapour_conductance.o \
 $(OBJ)/compute_vascular_stratum_conductance.o \
+$(OBJ)/compute_xylem_conductance.o \
 $(OBJ)/compute_year_day.o \
 $(OBJ)/compute_z_final.o \
 $(OBJ)/construct_base_station.o \
@@ -191,6 +209,7 @@ $(OBJ)/execute_yearly_output_event.o \
 $(OBJ)/find_basin.o \
 $(OBJ)/find_hillslope_in_basin.o \
 $(OBJ)/find_patch.o \
+$(OBJ)/find_patch_in_hillslope.o \
 $(OBJ)/find_patch_in_zone.o \
 $(OBJ)/find_stratum.o \
 $(OBJ)/find_stratum_in_patch.o \
@@ -224,6 +243,7 @@ $(OBJ)/output_stream_routing.o \
 $(OBJ)/output_basin_state.o \
 $(OBJ)/output_canopy_strata_state.o \
 $(OBJ)/output_canopy_stratum.o \
+$(OBJ)/output_fire.o \
 $(OBJ)/output_growth_basin.o \
 $(OBJ)/output_growth_canopy_stratum.o \
 $(OBJ)/output_growth_hillslope.o \
@@ -286,6 +306,7 @@ $(OBJ)/update_gw_drainage.o \
 $(OBJ)/update_hillslope_accumulator.o \
 $(OBJ)/update_litter_interception_capacity.o \
 $(OBJ)/update_mortality.o \
+$(OBJ)/update_litter_soil_mortality.o \
 $(OBJ)/update_branch_mortality.o \
 $(OBJ)/update_nitrif.o \
 $(OBJ)/update_phenology.o \
@@ -322,6 +343,10 @@ $(OBJ)/get_num_daywhourly.o \
 $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
 
+ifdef netcdf
+OBJECTS += $(OBJ)/read_netcdf.o
+endif
+
 all:	dir rhessys
 
 dir:
@@ -331,18 +356,18 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L../lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM) 
 endif
 else
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -lwmfire -v -o $(PGM) 
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM) 
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -v -o $(PGM) 
 endif
 endif
 
@@ -522,6 +547,8 @@ $(OBJ)/output_patch.o: output/output_patch.c
 	$(CC) -c $(CFLAGS) -I include output/output_patch.c -o $(OBJ)/output_patch.o
 $(OBJ)/output_canopy_stratum.o: output/output_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_canopy_stratum.c -o $(OBJ)/output_canopy_stratum.o
+$(OBJ)/output_fire.o: output/output_fire.c
+	$(CC) -c $(CFLAGS) -I include output/output_fire.c -o $(OBJ)/output_fire.o
 $(OBJ)/output_basin_state.o: output/output_basin_state.c
 	$(CC) -c $(CFLAGS) -I include output/output_basin_state.c -o $(OBJ)/output_basin_state.o
 $(OBJ)/output_hillslope_state.o: output/output_hillslope_state.c
@@ -570,6 +597,8 @@ $(OBJ)/find_stratum.o: util/find_stratum.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum.c -o $(OBJ)/find_stratum.o
 $(OBJ)/find_stratum_in_patch.o: util/find_stratum_in_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum_in_patch.c -o $(OBJ)/find_stratum_in_patch.o
+$(OBJ)/find_patch_in_hillslope.o: util/find_patch_in_hillslope.c
+	$(CC) -c $(CFLAGS) -I include util/find_patch_in_hillslope.c -o $(OBJ)/find_patch_in_hillslope.o
 $(OBJ)/find_patch_in_zone.o: util/find_patch_in_zone.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch_in_zone.c -o $(OBJ)/find_patch_in_zone.o
 $(OBJ)/find_zone_in_hillslope.o: util/find_zone_in_hillslope.c
@@ -618,6 +647,8 @@ $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
 	$(CC) -c $(CFLAGS) -I include init/construct_hillslope.c -o $(OBJ)/construct_hillslope.o
 $(OBJ)/assign_neighbours.o: init/assign_neighbours.c
 	$(CC) -c $(CFLAGS) -I include init/assign_neighbours.c -o $(OBJ)/assign_neighbours.o
+$(OBJ)/assign_neighbours_in_hillslope.o: init/assign_neighbours_in_hillslope.c
+	$(CC) -c $(CFLAGS) -I include init/assign_neighbours_in_hillslope.c -o $(OBJ)/assign_neighbours_in_hillslope.o
 $(OBJ)/assign_base_station.o: init/assign_base_station.c
 	$(CC) -c $(CFLAGS) -I include init/assign_base_station.c -o $(OBJ)/assign_base_station.o
 $(OBJ)/assign_base_station_xy.o: init/assign_base_station_xy.c
@@ -710,6 +741,8 @@ $(OBJ)/compute_surface_heat_flux.o: rad/compute_surface_heat_flux.c
 	$(CC) -c $(CFLAGS) -I include rad/compute_surface_heat_flux.c -o $(OBJ)/compute_surface_heat_flux.o
 $(OBJ)/compute_nonvascular_stratum_conductance.o: hydro/compute_nonvascular_stratum_conductance.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_nonvascular_stratum_conductance.c -o $(OBJ)/compute_nonvascular_stratum_conductance.o
+$(OBJ)/compute_xylem_conductance.o: hydro/compute_xylem_conductance.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_xylem_conductance.c -o $(OBJ)/compute_xylem_conductance.o
 $(OBJ)/compute_vascular_stratum_conductance.o: hydro/compute_vascular_stratum_conductance.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_vascular_stratum_conductance.c -o $(OBJ)/compute_vascular_stratum_conductance.o
 $(OBJ)/compute_vapor_pressure_deficit.o: hydro/compute_vapor_pressure_deficit.c
@@ -742,6 +775,8 @@ $(OBJ)/compute_growingseason_index.o: cn/compute_growingseason_index.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_growingseason_index.c -o $(OBJ)/compute_growingseason_index.o
 $(OBJ)/compute_field_capacity.o: hydro/compute_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_field_capacity.c -o $(OBJ)/compute_field_capacity.o
+$(OBJ)/compute_fire_effects.o: cn/compute_fire_effects.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_fire_effects.c -o $(OBJ)/compute_fire_effects.o
 $(OBJ)/compute_transmissivity_curve.o: hydro/compute_transmissivity_curve.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_transmissivity_curve.c -o $(OBJ)/compute_transmissivity_curve.o
 $(OBJ)/compute_infiltration.o: hydro/compute_infiltration.c
@@ -913,6 +948,8 @@ $(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
+$(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c 
+	$(CC) -c $(CFLAGS) -I include cn/update_litter_soil_mortality.c -o $(OBJ)/update_litter_soil_mortality.o
 $(OBJ)/update_branch_mortality.o: cn/update_branch_mortality.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_branch_mortality.c -o $(OBJ)/update_branch_mortality.o
 $(OBJ)/update_nitrif.o: cn/update_nitrif.c 
@@ -931,15 +968,13 @@ $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
 
 ifdef netcdf
-$(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
-	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid.c -o $(OBJ)/construct_netcdf_grid.o
 $(OBJ)/read_netcdf.o: init/read_netcdf.c
 	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o $(OBJ)/read_netcdf.o
+$(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
+	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid.c -o $(OBJ)/construct_netcdf_grid.o
 else
 $(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid_dummy.c
 	$(CC) -c $(CFLAGS) -I include init/construct_netcdf_grid_dummy.c -o $(OBJ)/construct_netcdf_grid.o
-$(OBJ)/read_netcdf.o: init/read_netcdf_dummy.c
-	$(CC) -c $(CFLAGS) -I include init/read_netcdf_dummy.c -o $(OBJ)/read_netcdf.o
 endif
 
 $(OBJ)/construct_netcdf_header.o: init/construct_netcdf_header.c

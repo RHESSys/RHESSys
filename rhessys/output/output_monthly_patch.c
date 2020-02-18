@@ -49,7 +49,7 @@ void	output_monthly_patch(
 		patch[0].acc_month.leach = log(patch[0].acc_month.leach*1000.0*1000.0);
 		
 	check = fprintf(outfile,
-		"%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %8.3f %f %f %f %f %f %f \n",
+		"%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %8.3f %f %f %f %f %f %f %f \n",
 		current_date.month,
 		current_date.year,
 		basinID,
@@ -71,7 +71,8 @@ void	output_monthly_patch(
 		patch[0].acc_month.snowpack * 1000.0 ,
 		patch[0].area,
 		patch[0].soil_ns.nitrate+patch[0].surface_NO3,
-		patch[0].soil_ns.sminn
+		patch[0].soil_ns.sminn,
+		patch[0].acc_month.burn
 
 		);
 
@@ -82,6 +83,7 @@ void	output_monthly_patch(
 	/*--------------------------------------------------------------*/
 	/*	reset accumulator variables				*/
 	/*--------------------------------------------------------------*/
+	patch[0].acc_month.burn = 0.0;
 	patch[0].acc_month.sm_deficit = 0.0;
 	patch[0].acc_month.et = 0.0;
 	patch[0].acc_month.psn = 0.0;

@@ -74,6 +74,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		double,
 		double,
 		double,
+		double,
 		double);
 
 	double compute_delta_water(
@@ -127,26 +128,32 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	canopy_strata[0].veg_parm_ID = getIntWorldfile(&paramCnt, &paramPtr, "veg_parm_ID","%d",-9999,0);
 
-	if (command_line[0].vegspinup_flag > 0){
-	    spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,0);
-        }
+	spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,1);
+
 	canopy_strata[0].cover_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1.0,1);
 	
 	canopy_strata[0].gap_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",0.0,1);
 	
 	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",0,0);
 
-	if (command_line[0].tmp_value > ZERO){
+	if (command_line[0].tmp_value > ZERO)
+	{
 		canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
 	}
+
+    canopy_strata[0].cs.stem_density = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",-9999,1);
 
 	canopy_strata[0].snow_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_stored","%lf",0.0,1);
 	
 	canopy_strata[0].rain_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"rain_stored","%lf",0.0,1);
 	
 	canopy_strata[0].cs.cpool = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",0.0,1);
+
+	canopy_strata[0].cs.leafc_age2 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age2","%lf",canopy_strata[0].cs.leafc/2.0,1);
+    
+	canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc/2.0,1);
 	
 	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
 	
@@ -233,7 +240,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].ns.retransn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",0.0,1);
 
 	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",0.0,1);
-	
+
 
 
 	if (command_line[0].vegspinup_flag > 0){
@@ -260,7 +267,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	
 	canopy_strata[0].epv.min_vwc = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",0.0,1);
 
-	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
+	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",0,0);
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this canopy_strata								*/
 	/*--------------------------------------------------------------*/
@@ -427,12 +434,28 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].epv.all_lai = canopy_strata[0].epv.proj_lai *
 		canopy_strata[0].defaults[0][0].epc.lai_ratio;
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
+	canopy_strata[0].cs.stem_density = min(canopy_strata[0].cs.stem_density,
+			canopy_strata[0].defaults[0][0].epc.max_stem_density);
 	
-	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
+	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
+
+	/* tree - use stem density if available */
+	if (canopy_strata[0].cs.stem_density > ZERO) {
+		canopy_strata[0].epv.height =
+		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
+		* pow(((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc)/(canopy_strata[0].cs.stem_density)),
+		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+		}
+
+	else {
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
 		* pow((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+
+		}
+	}
+/* grass height */
 	else
 		canopy_strata[0].epv.height =
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
@@ -483,6 +506,7 @@ struct canopy_strata_object *construct_canopy_strata(
 				rootc, 
 				canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
 				canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
+				canopy_strata[0].defaults[0][0].epc.max_root_depth,
 				patch[0].soil_defaults[0][0].effective_soil_depth)){
 				fprintf(stderr,
 					"FATAL ERROR: in compute_rooting_depth() from construct_canopy_strata()\n");
@@ -490,6 +514,7 @@ struct canopy_strata_object *construct_canopy_strata(
 				}
 		}
 	}
+
 
 	/*--------------------------------------------------------------*/
 	/*	initialize leaf out for non-grow version		*/
@@ -505,6 +530,31 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].ns.leafn_store = 0.0;
 		*/
 	}
+	
+	/*--------------------------------------------------------------*/
+	/*	initialize fire effects variables			*/
+	/*--------------------------------------------------------------*/
+	canopy_strata[0].fe.m_cwdc_to_atmos = 0.0;
+	canopy_strata[0].fe.m_cwdn_to_atmos = 0.0;
+	canopy_strata[0].fe.canopy_target_height = 0.0;
+	canopy_strata[0].fe.canopy_target_height_u_prop = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_mort = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_mort_consumed = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_mort_u_component = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_mort_o_component = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_c_consumed = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_c_remain = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_c_remain_adjusted = 0.0;
+	canopy_strata[0].fe.canopy_target_prop_c_remain_adjusted_leafc = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_height = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_height_u_prop = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_prop_mort = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_prop_mort_consumed = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_prop_c_consumed = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_c = 0.0;
+	canopy_strata[0].fe.understory_c_consumed = 0.0;
+
+
 	/*--------------------------------------------------------------*/
 	/*	set phenology timing if static allocation		*/
 	/*  and initialize for dynamic runs				*/
@@ -579,6 +629,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*	note that age really should be a state variable 	*/
 	/*	and initialized in the worldfile			*/
 	/*--------------------------------------------------------------*/
+
+
 	canopy_strata[0].cs.num_resprout = 0;
 	canopy_strata[0].epv.wstress_days = 0;
 	canopy_strata[0].epv.max_fparabs = 0.0;

@@ -364,11 +364,13 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		struct date, struct date, int);
 	struct basin_object *construct_basin(struct command_line_object *, FILE *, int *, 
 		struct base_station_object **, struct default_object *, 
-		struct base_station_ncheader_object *, struct world_object *);
+        struct base_station_ncheader_object *,
+        struct world_object *);
 	struct fire_patch_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default def);
 	struct fire_object **construct_fire_grid(struct world_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
+	struct base_station_object *construct_netcdf_grid(struct base_station_object *, struct base_station_ncheader *, int *, float, float, float, struct date *, struct date *, struct command_line_object *);
   void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
 
@@ -663,11 +665,15 @@ struct world_object *construct_world(struct command_line_object *command_line){
 
 		fscanf(grid_base, "%d", &world[0].num_base_stations);
 
+		fclose(grid_base);
+
 		// Set the world.num_base_station_files to 1 for reference
 		// when printing out the world
 		world[0].num_base_station_files = 1;
 	} else if (command_line[0].gridded_netcdf_flag == 1) {
+        #ifndef LIU_NETCDF_READER
 		world[0].num_base_station_files = world[0].num_base_stations;
+        #endif
 	} else {
 		// Non-gridded climate, num_base_station_files = num_base_stations
 		world[0].num_base_station_files = world[0].num_base_stations;
@@ -764,12 +770,47 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		}
 		else if(command_line[0].gridded_netcdf_flag == 1){
 			printf("\nConstructing base stations from NETCDF GRID");
+            #ifdef LIU_NETCDF_READER
+            world[0].num_base_stations = get_netcdf_station_number(world[0].base_station_files[0]);
+            #endif
 			world[0].base_stations = (struct base_station_object **)
-			alloc(1000 * sizeof(struct base_station_object *),"base_stations","construct_world" );
-			world[0].base_station_ncheader = (struct base_station_ncheader_object *)	
-			alloc(sizeof(struct base_station_ncheader_object),"base_station_ncheader","construct_world");
+            alloc(
+                        #ifdef LIU_NETCDF_READER
+                        world[0].num_base_stations
+                        #else
+                        1000
+                        #endif
+                        * sizeof(struct base_station_object *),"base_stations","construct_world" );
+            #ifdef LIU_NETCDF_READER
+            for (int i = 0; i < world[0].num_base_stations; i++) {
+                world[0].base_stations[i] = (struct base_station_object *)
+                        alloc(sizeof(struct base_station_object),"base_station","construct_world");
+            }
+            #endif
+            //world[0].base_station_ncheader = (struct base_station_ncheader_object *)
+            //alloc(sizeof(struct base_station_ncheader_object),"base_station_ncheader","construct_world");
 			world[0].base_station_ncheader = construct_netcdf_header(world,
-												world[0].base_station_files[0]);
+                                                world[0].base_station_files[0]);
+            #ifdef LIU_NETCDF_READER
+            //#pragma omp parallel for
+            for (int i = 0; i < world[0].num_base_stations; i++) {
+                //printf("station %d ID:%d\n",i,world[0].base_stations[i]->ID);
+                //fprintf(stderr,"\ni:%d\tstart_year:%d\tx:%lf\ty:%lf\tduration_days:%d\n",
+                //        i,world[0].start_date.year,world[0].base_stations[i][0].x,world[0].base_stations[i][0].y,world[0].duration.day);
+                world[0].base_stations[i] = construct_netcdf_grid(
+                                                           world[0].base_stations[i],
+                                                           world[0].base_station_ncheader,
+                                                           &world[0].num_base_stations,
+                                                           world[0].base_stations[i][0].proj_x,
+                                                           world[0].base_stations[i][0].proj_y,
+                                                           world[0].base_stations[i][0].z,
+                                                           &world[0].start_date,
+                                                           &world[0].duration,
+							                                             command_line);
+
+                //printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID ); 
+            }
+            #endif
 			/*printf("\n  file=%s firstID=%d num=%d numfiles=%d lai=%lf screenht=%lf sdist=%lf startyr=%d dayoffset=%d leapyr=%d precipmult=%lf",
 				   world[0].base_station_ncheader[0].netcdf_tmax_filename,
 				   world[0].ID,
@@ -837,10 +878,12 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*	Construct the basins. 										*/
 	/*--------------------------------------------------------------*/
 	for (i=0; i<world[0].num_basin_files; i++ ){
+	  printf("\n creating basin %d\n", i);
 		world[0].basins[i] = construct_basin(
 			command_line, world_file, &(world[0].num_base_stations),
 			world[0].base_stations,	world[0].defaults, 
-			world[0].base_station_ncheader, world);
+            world[0].base_station_ncheader,
+            world);
 	} /*end for*/
 
 	/*--------------------------------------------------------------*/

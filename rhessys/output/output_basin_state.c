@@ -66,11 +66,11 @@ void	output_basin_state(
 	fprintf(outfile,"\n   ");
 	fprintf(outfile,"%-30.8f %s",basin[0].latitude, "latitude");
 	fprintf(outfile,"\n   ");
-	fprintf(outfile,"%-30ld %s",basin[0].num_base_stations, "n_basestations");
+	fprintf(outfile,"%-30ld %s",basin[0].num_base_stations, "basin_n_basestations");
 	for (i=0; i < basin[0].num_base_stations; i++){
 		fprintf(outfile,"\n   ");
 		fprintf(outfile,"%-30ld %s",basin[0].base_stations[i][0].ID,
-			"p_base_station_ID");
+			"basin_basestation_ID");
 	}
 	fprintf(outfile,"\n   ");
 	fprintf(outfile,"%-30ld %s",basin[0].num_hillslopes, "num_hillslopes");
@@ -80,5 +80,6 @@ void	output_basin_state(
 	for (h=0; h < basin[0].num_hillslopes; ++ h ) {
 		output_hillslope_state(basin[0].hillslopes[h], current_date, command_line, outfile);
 	}
+    printf("\n Finishing basin output state\n");
 	return;
 } /*end output_basin_state*/
