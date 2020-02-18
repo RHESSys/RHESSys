@@ -76,7 +76,7 @@ struct stream_list_object construct_stream_routing_topology(
 	
 	struct stream_list_object stream_list;
 	struct stream_network_object *stream_network;
-    struct stream_network_object *stream_network_ini;
+    	struct stream_network_object *stream_network_ini;
 	struct hillslope_object *hillslope;
 	
 	
@@ -101,11 +101,11 @@ struct stream_list_object construct_stream_routing_topology(
 	/*--------------------------------------------------------------*/
 	
 	stream_network_ini = (struct stream_network_object *)alloc(
-															   num_reaches * sizeof(struct stream_network_object), " streamlist",
-															   "construct_stream_routing_topography");
+							   num_reaches * sizeof(struct stream_network_object), " streamlist",
+							   "construct_stream_routing_topography");
 	stream_network = (struct stream_network_object *)alloc(
-														   num_reaches * sizeof(struct stream_network_object), " streamlist",
-														   "construct_stream_routing_topography");
+							  num_reaches * sizeof(struct stream_network_object), " streamlist",
+							  "construct_stream_routing_topography");
 	
 	
 	/*--------------------------------------------------------------*/

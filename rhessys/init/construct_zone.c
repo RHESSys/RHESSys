@@ -365,6 +365,7 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	fscanf(world_file,"%d",&(zone[0].num_patches));
 	read_record(world_file, record);
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate list of pointers to patch objects .				*/
   /*--------------------------------------------------------------*/

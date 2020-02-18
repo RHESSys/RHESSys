@@ -418,7 +418,7 @@ struct basin_object *construct_basin(
     // in the hillslope, in no particular order.
     int h;
     for (h=0; h < basin[0].num_hillslopes; h++) 
-   		basin[0].hillslopes[h]->route_list = construct_topmodel_patchlist(basin[0].hillslopes[h]);
+   		 basin[0].hillslopes[h]->route_list = construct_topmodel_patchlist(basin[0].hillslopes[h]);
   }
 
   /*--------------------------------------------------------------*/
