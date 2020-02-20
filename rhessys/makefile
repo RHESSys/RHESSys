@@ -1,4 +1,3 @@
-
 VERSION = 7.1.1
 PGM  = rhessys$(VERSION)
 CC = gcc
@@ -149,6 +148,7 @@ $(OBJ)/construct_basin_defaults.o \
 $(OBJ)/construct_canopy_strata.o \
 $(OBJ)/construct_clim_sequence.o \
 $(OBJ)/construct_command_line.o \
+$(OBJ)/construct_WUI_list.o \
 $(OBJ)/construct_daily_clim.o \
 $(OBJ)/construct_dated_clim_sequence.o \
 $(OBJ)/construct_dated_input.o \
@@ -649,6 +649,8 @@ $(OBJ)/construct_routing_topology.o: init/construct_routing_topology.c
 	$(CC) -c $(CFLAGS) -I include init/construct_routing_topology.c -o $(OBJ)/construct_routing_topology.o
 $(OBJ)/construct_topmodel_patchlist.o: init/construct_topmodel_patchlist.c
 	$(CC) -c $(CFLAGS) -I include init/construct_topmodel_patchlist.c -o $(OBJ)/construct_topmodel_patchlist.o
+$(OBJ)/construct_WUI_list.o: init/construct_WUI_list.c
+	$(CC) -c $(CFLAGS) -I include init/construct_WUI_list.c -o $(OBJ)/construct_WUI_list.o
 $(OBJ)/construct_fire_grid.o: init/construct_fire_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_grid.c -o $(OBJ)/construct_fire_grid.o
 $(OBJ)/construct_hillslope.o: init/construct_hillslope.c

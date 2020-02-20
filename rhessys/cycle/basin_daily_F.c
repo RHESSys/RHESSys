@@ -117,6 +117,12 @@ void	basin_daily_F(
 	basin[0].snowpack.T /=  basin[0].area_withsnow;
 	basin[0].snowpack.energy_deficit /=  basin[0].area_withsnow;
 
+	/*--------------------------------------------------------------*/
+	/* update salience 						*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].salience_flag == 1) {
+		update_salience(basin[0].WUI_list);	
+	}
 
 	/*--------------------------------------------------------------*/
 	/*  For stream routing option - route water between patches within     */

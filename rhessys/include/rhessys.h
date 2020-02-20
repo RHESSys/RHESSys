@@ -198,6 +198,9 @@
 #define PTYPEHIGH 4
 #define P1HIGH 5
 #define P2HIGH 6
+#define D2KM 0 
+#define D5KM 1 
+#define D10KM 2 
 
 
 /*----------------------------------------------------------*/
@@ -520,6 +523,22 @@ struct	snowpack_object
 
 
 /*----------------------------------------------------------*/
+/*  WUI (wildland urban interface) object 			*/
+/*----------------------------------------------------------*/
+struct patch_object_list {
+	struct patch_object *patch;
+	struct patch_object_list *next;
+	};
+
+struct WUI_object {
+	int ID;
+	struct  patch_object_list *patches_dist2km;
+	struct  patch_object_list *patches_dist5km;
+	struct  patch_object_list *patches_dist10km;
+	int  fire_occurance[3];
+	struct WUI_object *next;
+	};
+/*----------------------------------------------------------*/
 /*      Define basin object.                                */
 /*----------------------------------------------------------*/
 struct basin_object
@@ -550,6 +569,8 @@ struct basin_object
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  snowpack_object snowpack;
+	struct  WUI_object	*WUI_list;
+	struct  WUI_object	*WUI_ptr;
         };
 
 /*----------------------------------------------------------*/
@@ -1581,6 +1602,28 @@ struct stratum_spinup_object
 };
 
 /*----------------------------------------------------------*/
+/* Define an object to hold fuel treatment information     */
+/*----------------------------------------------------------*/
+
+struct fuel_treatment_intensity_object {
+	double overstory;  /* 0-1 */
+	double understory; /* 0-1 */
+	double litter; /* 0-1 */
+	double stem_density; /* 0-1 */
+	};
+
+struct fuel_treatment_object  {
+
+	double max_salience_prob;  /* 0-1 */
+	double salience_prob[3][3]; /* 0-1 */
+	double fuel_treatment_fixed_effect;  /* 0-1 */
+	double external_fuel_treatment_prob; /* 0-1 or could be larger if used to modify salience probs */
+	double effective_fuel_treatment_prob; /* 0-1 */
+	struct fuel_treatment_intensity_object fuel_treatment_intensity;
+};
+
+
+/*----------------------------------------------------------*/
 /*      Define an patch object                              */      
 /*----------------------------------------------------------*/
 struct patch_object
@@ -1795,6 +1838,7 @@ struct patch_object
         struct  patch_object            *next_stream;
         struct  surface_energy_object   *surface_energy_profile;
         struct  patch_fire_water_object       fire;
+	struct  fuel_treatment_object   *fuel_treatment;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  rooting_zone_object     rootzone;
@@ -2090,6 +2134,7 @@ struct  command_line_object
         int             surface_energy_flag;
         int             precip_scale_flag;
         int             snow_scale_flag;
+        int             salience_flag;
         int             noredist_flag;
         int             vmort_flag;
         int             version_flag;
@@ -2097,6 +2142,7 @@ struct  command_line_object
         int		evap_use_longwave_flag;
         int             multiscale_flag;
         char    *output_prefix;
+        char    WUI_filename[FILEPATH_LEN]; 
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
         char    stream_routing_filename[FILEPATH_LEN];
