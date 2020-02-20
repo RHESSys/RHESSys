@@ -375,6 +375,9 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	void *alloc(size_t, char *, char *);
 
 	void resemble_hourly_date(struct world_object *);
+
+	
+  	struct WUI_object *construct_WUI_list( char *, struct world_object *, struct	command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -605,6 +608,15 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		/*--------------------------------------------------------------*/
 		world[0].fire_default_files= construct_filename_list( header_file,
 			world[0].defaults[0].num_fire_default_files);
+
+
+  		/*--------------------------------------------------------------*/
+  		/* read in WUI file and create WUI structure if salience flag is set */
+  		/*--------------------------------------------------------------*/
+  		if ( command_line[0].salience_flag == 1) {
+			world[0].WUI_list = construct_WUI_list(command_line[0].WUI_filename, world, command_line);
+  		}
+
 	}
 	
 	/*--------------------------------------------------------------*/
@@ -905,6 +917,8 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].fire_grid = construct_fire_grid(world);
 
 	}	
+
+	
 	/*--------------------------------------------------------------*/
 	/*	Close the world_file and header (if necessary)	         	*/
 	/*--------------------------------------------------------------*/

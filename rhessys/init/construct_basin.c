@@ -100,10 +100,6 @@ struct basin_object *construct_basin(
       int hillslope_ID,
       struct basin_object *basin);
 
-  struct WUI_object *construct_WUI_list(
-      			char *,
-      			struct basin_object *, 
-      			struct	command_line_object *);
 
   /*--------------------------------------------------------------*/
   /*	Local variable definition.									*/
@@ -426,14 +422,6 @@ struct basin_object *construct_basin(
    		 basin[0].hillslopes[h]->route_list = construct_topmodel_patchlist(basin[0].hillslopes[h]);
   }
 
-  /*--------------------------------------------------------------*/
-  /* read in WUI file and create WUI structure if salience flag is set */
-  /*--------------------------------------------------------------*/
-  if ( command_line[0].salience_flag == 1) {
-	basin[0].WUI_list = construct_WUI_list(command_line[0].WUI_filename, basin, command_line);
-  }
-
-  
   /*--------------------------------------------------------------*/
   /*	Read in stream routing topology if needed	*/
   /*--------------------------------------------------------------*/

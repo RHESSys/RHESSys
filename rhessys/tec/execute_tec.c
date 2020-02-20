@@ -177,6 +177,9 @@ void	execute_tec(
 		struct	world_object	*,
 		struct	command_line_object	*,
 		struct	date);
+
+	void    update_fire_in_WUI_list(
+		struct WUI_object *);
 	
 	void	execute_state_output_event(
 		struct world_object *,
@@ -407,6 +410,10 @@ void	execute_tec(
 						world,
 						command_line,
 						current_date);
+
+				if (command_line[0].salience_flag == 1) {
+					update_fire_in_WUI_list(
+						WUI_list}
 				}	
 				
 				/*--------------------------------------------------------------*/

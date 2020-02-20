@@ -314,6 +314,7 @@ struct world_object
 	struct patch_fire_object **patch_fire_grid;  //mk
         struct  spinup_thresholds_list_object  *spinup_thresholds ;   
 	struct  date			**master_hourly_date;	
+	struct  WUI_object	*WUI_ptr;
         };
 
 
@@ -569,8 +570,6 @@ struct basin_object
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  snowpack_object snowpack;
-	struct  WUI_object	*WUI_list;
-	struct  WUI_object	*WUI_ptr;
         };
 
 /*----------------------------------------------------------*/

@@ -10,7 +10,7 @@
 /*	SYNOPSIS													*/
 /*	struct routing_list_object construct_WUI_list( 		*/
 /*				char * WUI_filename, */
-/*							struct basin_object *basin)			*/
+/*							struct world_object *world)			*/
 /*																*/
 /* 																*/
 /*																*/
@@ -18,10 +18,7 @@
 /*																*/
 /*	DESCRIPTION													*/
 /*																*/
-/*  reads routing topology from input file						*/
-/*	creates neighbourhood structure for each patch in the basin */
-/*	returns a list giving order for patch-level routing			*/
-/*																*/
+/* 	Creates a list of patches associated with WUI (and distance from WUI) */
 /*																*/
 /*																*/
 /*	PROGRAMMER NOTES											*/
@@ -35,7 +32,7 @@
 
 struct WUI_object *construct_WUI_list(
       char *WUI_filename,
-      struct basin_object *basin,
+      struct world_object *world,
       struct command_line_object  *command_line)
 													  
 {
@@ -48,12 +45,13 @@ struct WUI_object *construct_WUI_list(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int		i, h,z,pf,p;
+	int		i, h,z,pf,p,b;
 	int fnd, n_WUI;
 	int		line_n;
 	int		patch_ID, WUI_ID, wui_dist;
 	double dist;
 
+        struct basin_object *basin;
         struct zone_object *zone;
         struct hillslope_object *hillslope;
         struct patch_object *patch;
@@ -134,14 +132,16 @@ struct WUI_object *construct_WUI_list(
 	
 		
 
-	h=0; z=0; pf=0; p=0;
+	h=0; z=0; pf=0; p=0; b=0;
 	fnd = 0;
 	/* find the patch that this WUI is refering too */
 
-         while ( (fnd == 0) && (h >= 0) && (h < basin[0].num_hillslopes)) { 
+         while ( (fnd == 0) && (b >= 0) && (b < world[0].num_basin_files)) { 
+		basin = world[0].basins[b];		
 
-
+         	while ( (fnd == 0) && (h >= 0) && (h < basin[0].num_hillslopes)) { 
                 hillslope =  basin[0].hillslopes[h];
+
                 while ( (fnd == 0) && (z >= 0) && (z <= hillslope[0].num_zones)) {
                 zone = hillslope[0].zones[z];
                 
@@ -166,6 +166,8 @@ struct WUI_object *construct_WUI_list(
         }
 		h += 1;
         }
+		b += 1;
+	}
 
 
 	/* now add this to the appropriate patch list for the current WUI */
