@@ -103,7 +103,6 @@ void	execute_tec(
 	/*	Local Function Declarations.								*/
 	/*--------------------------------------------------------------*/
 	int		cal_date_lt(struct date, struct date );
-	int reset_flag;	
 	long	julday( struct date );
 	
 	struct	date	caldat( long );
@@ -188,7 +187,7 @@ void	execute_tec(
 	/*	Local Variable Definition. 									*/
 	/*--------------------------------------------------------------*/
 	int check;
-        int reset_flag;
+	int 	reset_flag;	
 	long	day;
 	long	hour;
 	long	month;
