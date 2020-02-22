@@ -687,6 +687,7 @@ void		patch_daily_F(
 				compute_fire_effects(
 					patch,
 					pspread);
+				/* could put a call to update_fire_in_WUI.c here */
 
 			}
 		} 

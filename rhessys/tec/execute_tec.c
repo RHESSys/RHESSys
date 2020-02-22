@@ -178,7 +178,7 @@ void	execute_tec(
 		struct	command_line_object	*,
 		struct	date);
 
-	void    update_fire_in_WUI_list(
+	void    update_fire_in_WUI(
 		struct WUI_object *);
 	
 	void	execute_state_output_event(
@@ -412,9 +412,13 @@ void	execute_tec(
 						current_date);
 
 				if (command_line[0].salience_flag == 1) {
-					update_fire_in_WUI_list(
-						WUI_list}
+					/* first determine if fire in 2, 5, 10km buffer of each WUI */
+					update_fire_in_WUI(
+						world[0].WUI_list);
+					/* update patch scale salience treatment probablities */
+					update_salience(world[0].WUI_list);
 				}	
+				}
 				
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested monthly output				*/

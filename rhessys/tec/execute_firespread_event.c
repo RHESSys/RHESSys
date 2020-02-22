@@ -280,22 +280,6 @@ void execute_firespread_event(
 				patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 // so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
-				/* (if pspread>0&world[0].fire_grid[0][0].fire_size*command_line[0].fire_grid_res*command_line[0].fire_grid_res*0.0001>=400) // also need a flag with the fire size to trigger event, because fire > 400 ha
-				{
-					// linked list loop
-					for(w=0;w<3;w++) # for each level of salience, 1 = <= 3 km, 2 = <=5 km; 3=<=10 km
-					{
-						tmp_node=world[0].fire_grid[i][j].wuiList[w] // where wuiList[w] is the linked list of patches within w index of this pixel
-						while(tmp_node!=NULL)
-						{
-							if(tmp_node->patch.wuiFire==0||(i+1)<tmp_node.patch.wuiFire) // then this pixel is closer to the wui and should activate a more salient fire
-								tmp_node->patch.wuiFire=i+1; // then flag this wuiPatch with a salient fire event
-							tmp_node=tmp_node->next;
-						}
-					}
-				}
-	
-				*/
 				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
 				{
 					compute_fire_effects(

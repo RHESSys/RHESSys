@@ -301,6 +301,8 @@ $(OBJ)/sort_patch_layers.o \
 $(OBJ)/surface_daily_F.o \
 $(OBJ)/surface_hourly.o \
 $(OBJ)/top_model.o \
+$(OBJ)/update_fire_in_WUI.o \
+$(OBJ)/update_salience.o \
 $(OBJ)/update_C_stratum_daily.o \
 $(OBJ)/update_N_stratum_daily.o \
 $(OBJ)/update_basin_patch_accumulator.o \
@@ -964,6 +966,10 @@ $(OBJ)/update_denitrif.o: cn/update_denitrif.c
 	$(CC) -c $(CFLAGS) -I include cn/update_denitrif.c -o $(OBJ)/update_denitrif.o
 $(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
+$(OBJ)/update_salience.o: tec/update_salience.c 
+	$(CC) -c $(CFLAGS) -I include tec/update_salience.c -o $(OBJ)/update_salience.o
+$(OBJ)/update_fire_in_WUI.o: tec/update_fire_in_WUI.c 
+	$(CC) -c $(CFLAGS) -I include tec/update_fire_in_WUI.c -o $(OBJ)/update_fire_in_WUI.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
 $(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c 

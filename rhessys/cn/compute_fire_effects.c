@@ -417,7 +417,27 @@ void compute_fire_effects(
 
 			}
 		}
+	/*--------------------------------------------------------------*/
+	/* compute fire severity class					*/
+	/* for now just look at overstory to decide			*/
+	/* and just look at first overstory (if two or more of same height) */
+	/*--------------------------------------------------------------*/
+	layer=0;
+	c=0;
+	canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+	if (canopy_target[0].fe.canopy_target_prop_mort < patch[0].landuse_defaults[0][0].mid_fire_severity_p)
+		patch[0].fire.severity = LOW_FIRE;
+	else if (canopy_target[0].fe.canopy_target_prop_mort < patch[0].landuse_defaults[0][0].high_fire_severity_p)
+		patch[0].fire.severity = MID_FIRE;
+		else 
+		patch[0].fire.severity = HIGH_FIRE;
+
+
 	} /* end if(pspread > 0 ) */
+
+	else {
+		patch[0].fire.severity = NO_FIRE;
+		}
 
 	return;
 } /*end compute_fire_effects.c*/
