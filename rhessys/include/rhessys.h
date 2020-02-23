@@ -1663,6 +1663,7 @@ struct patch_object
         int             target_status;
 	int		soil_parm_ID;
 	int		landuse_parm_ID;
+        char            family_role;    /* TREATED/UNTREATED/GAP could change to int ID?  */
 	double		mpar;
 	//int				wuiID;
         double  x;                                                                      /* meters       */
@@ -1682,6 +1683,7 @@ struct patch_object
         double  evaporation_surf;       /* m  water*/
         double  family_horizon;         /* angle (theta) from flat to family horizon in radians */
         double  family_pct_cover;       /* 0 - 1, pct of patch family covered by patch */
+        double  fixed_effect;           /* 0 - 1 */
         double  ga;                     /* m/s */         
         double  ga_final;               /* m/s */  
         double  gasnow;                 /* m/s */         
