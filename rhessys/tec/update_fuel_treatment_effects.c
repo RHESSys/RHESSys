@@ -60,14 +60,19 @@ void update_fuel_treatment_effects(struct zone_object *zone,
     int trt, notrt;
     int gain, lose;
     int thintyp; 
+    double comb_area; // combined treated and untreated areas
+    double gain_area_add;
+    double gain_area_old;
+    double lose_pct_chg;
     double max_trt_prob;
+    double new_trt_area;
+    double new_notrt_area;
+    double notrt_area;
     double r; // random 0-1
     double thr; // treatment threshold
+    double tmp;
     double trt_int; // 0-1 treatment intensity
     double trt_area;
-    double notrt_area;
-    double comb_area; // combined treated and untreated areas
-    double lose_pct_chg;
     bool stoch;
 
     struct	canopy_strata_object	*stratum;
@@ -154,29 +159,41 @@ void update_fuel_treatment_effects(struct zone_object *zone,
 
                 // check if areas need to be changed - change and update stores if so
                 if (trt_area/comb_area != trt_int) {
-                    trt_area = trt_int * comb_area;
-                    notrt_area = comb_area - trt_area;
+                    new_trt_area = trt_int * comb_area;
+                    new_notrt_area = comb_area - trt_area;
 
                     // change could be in either direction
-                    if (trt_area > zone[0].patch_families[pf][0].patches[trt][0].area) {
+                    if (new_trt_area > trt_area) {
+                        // treated area is growing
                         gain = trt;
                         lose = notrt;
-                        lose_pct_chg = (zone[0].patch_families[pf][0].patches[notrt][0].area - notrt_area) / zone[0].patch_families[pf][0].patches[notrt][0].area;
+                        gain_area_old = zone[0].patch_families[pf][0].patches[gain][0].area;
+                        gain_area_add = new_trt_area - gain_area_old;
+                        // if there's any vol stores to adjust, would need to change loser stores too
+                        //lose_pct_chg = (notrt_area - new_notrt_area) / notrt_area;
                     } else {
+                        // untreated area is growing
                         gain  = notrt;
                         lose = trt;
-                        lose_pct_chg = (zone[0].patch_families[pf][0].patches[trt][0].area - trt_area) / zone[0].patch_families[pf][0].patches[trt][0].area;
+                        gain_area_old = zone[0].patch_families[pf][0].patches[gain][0].area;
+                        gain_area_add = new_notrt_area - gain_area_old;
+                        //lose_pct_chg = (trt_area - new_trt_area) / trt_area;
                     }
-                    
+
                     // stores to change
+
+                    // example - assuming it's a store with depth or length units
+                    // loser has no change
+                    // gainer gets a weighted mean: old area * old store + additional area * store of the loser / new area
+                    zone[0].patch_families[pf][0].patches[gain][0].rz_storage = (zone[0].patch_families[pf][0].patches[gain][0].rz_storage * gain_area_old) + 
+                        (zone[0].patch_families[pf][0].patches[lose][0].rz_storage * gain_area_add);
+
+                    // actually change areas
+                    zone[0].patch_families[pf][0].patches[trt][0].area = new_trt_area;
+                    zone[0].patch_families[pf][0].patches[notrt][0].area = new_notrt_area;
                     
-                    // multiply by lose_pct_chg to get new value
-                    // add the reduced amount to the gaining patch
-                    
 
-
-
-                }
+                } // end area change
 
 
                 // call update mortality - reduce c completely on appropriate patch
