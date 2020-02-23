@@ -32,6 +32,7 @@ rhessys/.vscode
 
 # OS X extended attribute stores
 .DS_Store
+**/.DS_Store*
 
 # Editor leftovers
 *~

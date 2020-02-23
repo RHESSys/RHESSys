@@ -652,7 +652,7 @@ void		zone_daily_F(
 	}
 
 	/*--------------------------------------------------------------*/
-	/*	Compute patch family routing				    			*/
+	/*	Compute patch family routing and shading	    			*/
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].multiscale_flag == 1) {
@@ -668,6 +668,21 @@ void		zone_daily_F(
 		);
 		
 	}
+
+	/*--------------------------------------------------------------*/
+	/*	Update fuels treatments						    			*/
+	/*--------------------------------------------------------------*/
+	// this should be called monthly or annually - add an accumulator var to track
+
+	// for now keeping behind salience flag - in future treatments should probably be allowed outside of salience(?)
+	if (command_line[0].salience_flag == 1) {
+		update_fuel_treatment_effects(
+			zone,
+			command_line
+		);
+	}
+
+
 
 	/*--------------------------------------------------------------*/
 	/*      update accumulator variables                            */

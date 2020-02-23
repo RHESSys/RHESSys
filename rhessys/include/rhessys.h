@@ -1683,7 +1683,6 @@ struct patch_object
         double  evaporation_surf;       /* m  water*/
         double  family_horizon;         /* angle (theta) from flat to family horizon in radians */
         double  family_pct_cover;       /* 0 - 1, pct of patch family covered by patch */
-        double  fixed_effect;           /* 0 - 1 */
         double  ga;                     /* m/s */         
         double  ga_final;               /* m/s */  
         double  gasnow;                 /* m/s */         

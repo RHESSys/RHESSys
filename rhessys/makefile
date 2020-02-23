@@ -312,6 +312,7 @@ $(OBJ)/update_dissolved_organic_losses.o \
 $(OBJ)/update_drainage_land.o \
 $(OBJ)/update_drainage_road.o \
 $(OBJ)/update_drainage_stream.o \
+$(OBJ)/update_fuel_treatment_effects.o \
 $(OBJ)/update_gw_drainage.o \
 $(OBJ)/update_hillslope_accumulator.o \
 $(OBJ)/update_litter_interception_capacity.o \
@@ -970,6 +971,8 @@ $(OBJ)/update_salience.o: tec/update_salience.c
 	$(CC) -c $(CFLAGS) -I include tec/update_salience.c -o $(OBJ)/update_salience.o
 $(OBJ)/update_fire_in_WUI.o: tec/update_fire_in_WUI.c 
 	$(CC) -c $(CFLAGS) -I include tec/update_fire_in_WUI.c -o $(OBJ)/update_fire_in_WUI.o
+$(OBJ)/update_fuel_treatment_effects.o: tec/update_fuel_treatment_effects.c 
+	$(CC) -c $(CFLAGS) -I include tec/update_fuel_treatment_effects.c -o $(OBJ)/update_fuel_treatment_effects.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c 
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
 $(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c 
