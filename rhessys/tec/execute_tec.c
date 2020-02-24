@@ -421,8 +421,6 @@ void	execute_tec(
 					/* first determine if fire in 2, 5, 10km buffer of each WUI */
 					update_fire_in_WUI(
 						world[0].WUI_list);
-					/* update patch scale salience treatment probablities */
-					//update_salience(world[0].WUI_list); MK move to yearly
 				}	
 				}
 				
@@ -435,6 +433,15 @@ void	execute_tec(
 						command_line,
 						current_date,
 						outfile);
+				/*--------------------------------------------------------------*/
+				/* following output if fire spread is called reset patch scale burn severity	*/
+				/*--------------------------------------------------------------*/
+				/*
+				if (command_line[0].firespread_flag == 1) {
+						reset_patch_burn_severity(world, command_line);
+					}
+				*/
+
 				/*--------------------------------------------------------------*/
 				/*				increment month 								*/
 				/*--------------------------------------------------------------*/
