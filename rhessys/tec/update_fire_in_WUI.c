@@ -67,31 +67,31 @@ void update_fire_in_WUI(struct WUI_object *WUI_list)
 	while( (patches_dist2km_ptr != NULL) ) {
 		patch = patches_dist2km_ptr->patch;
 		if (patch[0].fire.severity >= patch[0].landuse_defaults[0][0].salience_fire_level)
-			fire_area_occur += patch[0].area;
+			WUI_ptr->fire_occurence[D2KM] += patch[0].area;
 		patches_dist2km_ptr = patches_dist2km_ptr->next;
 		}
-	WUI_ptr->fire_occurence[D2KM] = fire_area_occur;
+	//WUI_ptr->fire_occurence[D2KM] = fire_area_occur;
 
 	/* 5km list */
 	patches_dist5km_ptr = WUI_ptr->patches_dist5km;
-	fire_area_occur=0;
+	//fire_area_occur=0; //MK: make it cumulative
 	while( (patches_dist5km_ptr != NULL) ) {
 		patch = patches_dist5km_ptr->patch;
 		if (patch[0].fire.severity >= patch[0].landuse_defaults[0][0].salience_fire_level)
-			fire_area_occur += patch[0].area;
+			WUI_ptr->fire_occurence[D5KM] += patch[0].area;
 		patches_dist5km_ptr = patches_dist5km_ptr->next;
 		}
-	WUI_ptr->fire_occurence[D5KM] = fire_area_occur;
+//	WUI_ptr->fire_occurence[D5KM] = fire_area_occur;
 
 	/* 10km list */
 	patches_dist10km_ptr = WUI_ptr->patches_dist10km;
 	while( (patches_dist10km_ptr != NULL) ) {
 		patch = patches_dist10km_ptr->patch;
 		if (patch[0].fire.severity >= patch[0].landuse_defaults[0][0].salience_fire_level)
-			fire_area_occur += patch[0].area;
+			WUI_ptr->fire_occurence[D10KM] += patch[0].area;
 		patches_dist10km_ptr = patches_dist10km_ptr->next;
 		}
-	WUI_ptr->fire_occurence[D10KM] = fire_area_occur;
+//	WUI_ptr->fire_occurence[D10KM] = fire_area_occur;
 
 
 	WUI_ptr = WUI_ptr->next;
