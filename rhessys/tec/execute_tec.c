@@ -180,7 +180,10 @@ void	execute_tec(
 
 	void    update_fire_in_WUI(
 		struct WUI_object *);
-	
+
+		void    update_salience(
+		struct WUI_object *);
+
 	void	execute_state_output_event(
 		struct world_object *,
 		struct date,
