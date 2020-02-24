@@ -972,6 +972,8 @@ $(OBJ)/update_salience.o: tec/update_salience.c
 	$(CC) -c $(CFLAGS) -I include tec/update_salience.c -o $(OBJ)/update_salience.o
 $(OBJ)/update_fire_in_WUI.o: tec/update_fire_in_WUI.c 
 	$(CC) -c $(CFLAGS) -I include tec/update_fire_in_WUI.c -o $(OBJ)/update_fire_in_WUI.o
+$(OBJ)/reset_fire_in_WUI.o: tec/reset_fire_in_WUI.c 
+	$(CC) -c $(CFLAGS) -I include tec/reset_fire_in_WUI.c -o $(OBJ)/reset_fire_in_WUI.o
 $(OBJ)/update_fuel_treatment_effects.o: tec/update_fuel_treatment_effects.c 
 	$(CC) -c $(CFLAGS) -I include tec/update_fuel_treatment_effects.c -o $(OBJ)/update_fuel_treatment_effects.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c 
