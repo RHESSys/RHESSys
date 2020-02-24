@@ -303,6 +303,7 @@ $(OBJ)/surface_hourly.o \
 $(OBJ)/top_model.o \
 $(OBJ)/update_fire_in_WUI.o \
 $(OBJ)/update_salience.o \
+$(OBJ)/reset_fire_in_WUI.o \
 $(OBJ)/update_C_stratum_daily.o \
 $(OBJ)/update_N_stratum_daily.o \
 $(OBJ)/update_basin_patch_accumulator.o \
