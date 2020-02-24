@@ -184,7 +184,7 @@ void	execute_tec(
 		void    update_salience(
 		struct WUI_object *);
 		
-		void(update_fire_in_WUI(
+		void reset_fire_in_WUI(
 		struct WUI_object *);
 
 	void	execute_state_output_event(
@@ -452,6 +452,7 @@ void	execute_tec(
 					/* update patch scale salience treatment probablities
 					after this year's fire has accumulated*/
 					update_salience(world[0].WUI_list); //MK move to yearly
+					reset_fire_in_WUI(world[0].WUI_list);//after salience is updated reset WUI fire areas
 				}	
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
