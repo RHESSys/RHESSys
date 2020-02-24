@@ -416,7 +416,7 @@ void	execute_tec(
 					update_fire_in_WUI(
 						world[0].WUI_list);
 					/* update patch scale salience treatment probablities */
-					update_salience(world[0].WUI_list);
+					//update_salience(world[0].WUI_list); MK move to yearly
 				}	
 				}
 				
@@ -442,7 +442,11 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				Do yearly stuff.								*/
 				/*--------------------------------------------------------------*/
-				
+				if (command_line[0].salience_flag == 1) {
+					/* update patch scale salience treatment probablities
+					after this year's fire has accumulated*/
+					update_salience(world[0].WUI_list); //MK move to yearly
+				}	
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/
