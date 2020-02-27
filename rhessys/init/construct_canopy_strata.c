@@ -405,6 +405,19 @@ struct canopy_strata_object *construct_canopy_strata(
 
         canopy_strata[0].cs.Tacc = 20.0;	
 	/*--------------------------------------------------------------*/
+	/* zero out negative stores */
+	/*--------------------------------------------------------------*/
+
+	canopy_strata[0].cs.leafc = max(canopy_strata[0].cs.leafc, 0.0);
+	canopy_strata[0].ns.leafn = max(canopy_strata[0].ns.leafn, 0.0);
+	canopy_strata[0].cs.live_stemc = max(canopy_strata[0].cs.live_stemc, 0.0);
+	canopy_strata[0].ns.live_stemn = max(canopy_strata[0].ns.live_stemn, 0.0);
+	canopy_strata[0].cs.dead_stemc = max(canopy_strata[0].cs.dead_stemc, 0.0);
+       	canopy_strata[0].ns.dead_stemn = max(canopy_strata[0].ns.dead_stemn, 0.0);
+	canopy_strata[0].cs.dead_leafc = max(canopy_strata[0].cs.dead_leafc, 0.0);
+       	canopy_strata[0].ns.dead_leafn = max(canopy_strata[0].ns.dead_leafn, 0.0);
+	/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
 	/* 	we need to initialize the sunlit/shaded proportions of LAI here */
 	/*	(these will later be updated in update_phenology	*/
@@ -456,12 +469,12 @@ struct canopy_strata_object *construct_canopy_strata(
 		}
 	}
 	/* grass height */
-	else
+	else {
 		canopy_strata[0].epv.height =
 		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
-
+		}
 
 	/*--------------------------------------------------------------*/
 	/*	calculate all sided  and project pai from max projected lai	*/
