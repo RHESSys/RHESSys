@@ -95,7 +95,7 @@ void update_fuel_treatment_effects(struct zone_object *zone,
 	mort.mort_frootc = 0.0;
 
     // these should be pars
-    stoch = TRUE;
+    stoch = FALSE;
     thr =  0.5;
     thintyp = 1;
 
@@ -152,6 +152,9 @@ void update_fuel_treatment_effects(struct zone_object *zone,
                 // with this method the intesity for over and understory has to be the same - using overstory
                 trt_int = zone[0].patch_families[pf][0].patches[trt][0].fuel_treatment.fuel_treatment_intensity.overstory;
 
+                zone[0].patch_families[pf][0].patches[trt][0].fuel_treatment.salience_prob;
+                // IF salience prob 1-9 > som threshold area, -> some static probability
+
                 // ignoring the gap area since it's not really treatable
                 trt_area = zone[0].patch_families[pf][0].patches[trt][0].area;
                 notrt_area = zone[0].patch_families[pf][0].patches[notrt][0].area;
@@ -179,6 +182,8 @@ void update_fuel_treatment_effects(struct zone_object *zone,
                         gain_area_add = new_notrt_area - gain_area_old;
                         //lose_pct_chg = (trt_area - new_trt_area) / trt_area;
                     }
+
+                    // gamma change?
 
                     // stores to change
 
