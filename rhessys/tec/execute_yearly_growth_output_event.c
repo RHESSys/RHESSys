@@ -211,7 +211,7 @@ void	execute_yearly_growth_output_event(
 													outfile->canopy_stratum->yearly);
 							} /* end if options */
 									/*------------------------------------------------*/
-									/*	Construct the fire yearly growth output files	 NR  */
+									/*	Construct the fire yearly growth output files */
 									/*------------------------------------------------*/
 									if ( command_line[0].f != NULL ){  // we suppose the f is at the same level as canopy that is why it is not nested in C
 										/*----------------------------------------------*/

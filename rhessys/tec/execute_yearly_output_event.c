@@ -230,7 +230,7 @@ void	execute_yearly_output_event( int reset_flag,
 									} /* end if options */
 
 									/*------------------------------------------------*/
-									/*	Construct the fire yearly output files	 NR  */
+									/*	Construct the fire yearly output files	       */
 									/*------------------------------------------------*/
 									if ( command_line[0].f != NULL ){  // we suppose the f is at the same level as canopy that is why it is not nested in C
 										/*----------------------------------------------*/

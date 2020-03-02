@@ -22,7 +22,7 @@
 /*	output_growths spatial structure according to commandline	*/
 /*	specifications to specific files							*/
 /*																*/
-/*	PROGRAMMER NOTES (NR 20190106)								*/
+/*	PROGRAMMER NOTES 								*/
 /*																*/
 /*	We only permit one fileset per spatial modelling level.     */
 /*	Each fileset has one file for each timestep.  				*/
