@@ -126,7 +126,7 @@ double	compute_diffuse_radiative_PAR_fluxes(	int	verbose_flag,
 	flux_transmitted = *flux_down_ptr -  flux_reflected - flux_absorbed ;
 	*flux_down_ptr = flux_transmitted;
 	if( verbose_flag > 2)
-		printf("%8.1f %8.1f %8.1f %10.8f ",
+		printf("%8.1f %8.1f %8.1f ",
 		flux_reflected,flux_absorbed,flux_transmitted);
 	return( flux_absorbed );
 } /*end compute_diffuse_radiative_PAR_fluxes*/

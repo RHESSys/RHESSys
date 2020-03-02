@@ -50,7 +50,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	/*--------------------------------------------------------------*/
 	struct patch_fire_object **fire_grid;
 	struct patch_object *patch;
-	int  b,h,p, z, i, j, k;
+	int  b, h, p, z, i, j, k, pf;
 //	double maxx, maxy, minx, miny, tmp,halfSideLength,curMinX,curMinY,curMaxX,curMaxY, cell_res;
 	double cell_res,tmp;
 /*	maxx=-10000; // depends on the origin for the coordinates, this was set for HJA centered at 0,0
@@ -150,6 +150,41 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 						for (h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
 							for (z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
 								tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
+/* 																
+								// if multistcale
+								if (command_line[0].multiscale_flag == 1) {
+									// loop through zone[z][0].patch_families
+									for (pf = 0; pf < world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patch_families; ++pf) {
+										// loop through patches pointed to by family
+										
+										for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].patch_families[pf][0].patches; ++p) {
+											patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patch_families[pf][0].patches[p];
+
+											if(patch[0].ID==tmpPatchID)
+											{
+												//printf("now filling in array--found a match!\n");
+												fire_grid[i][j].patches[0]=patch; // assign the current patch to this grid cell
+												//printf("patch1\n");
+												fire_grid[i][j].occupied_area=cell_res*cell_res; // this grid cell is 100% occupied
+												//printf("patch2: area, cell res %lf, %lf\n",patch[0].area,cell_res);
+												fire_grid[i][j].prop_grid_in_patch[0]=(cell_res*cell_res)/patch[0].area; // the proportion of this patch in this cell
+												//printf("patch3\n");
+												fire_grid[i][j].prop_patch_in_grid[0]= patch[0].family_pct_cover;// the whole cell is occupied this patch
+												//printf("array filled\n");
+												
+												if(def.include_wui==0)
+													break; //? or keep loop to help point to wui patches as well// break would speed this up a little bit
+												
+												// if we have found the correct patch, stop looking
+											}
+										} // end patch loop (patches in patch family)
+									} // end patch family loop
+									// end multiscale IF
+								} else {
+									// normal code goes here
+
+								} // end non multiscale */
+
 								for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
 									patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p]; //zone object has linked list to point to patch families to point to patches
 				//					printf("is my world ok? %d\n",&patch[0].ID);
@@ -279,6 +314,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	else
 	{
 		fprintf(stderr,"******\nNo patch grid file! Create a 30 m raster grid with patch ids\n********");
+		fire_grid = NULL;
 		exit(EXIT_FAILURE);
 	}
 	// for debugging, write out the fire grid and patches

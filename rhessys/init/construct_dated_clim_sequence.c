@@ -270,8 +270,7 @@ struct clim_event_sequence construct_dated_clim_sequence(
 	}
 	events.seq[inx].edate.year = 0;
 
-
-
+	fclose(sequence_file);
 
 	return(events);
 } /*end construct_dated_clim_sequence*/

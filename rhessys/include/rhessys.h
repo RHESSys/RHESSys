@@ -990,6 +990,7 @@ struct zone_object
         int             Kdown_direct_flag;                  /*  0 or 1  */
         int             num_base_stations;
         int             num_patches;
+        int             num_patch_families;
 	int		zone_parm_ID;
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
@@ -1051,6 +1052,7 @@ struct zone_object
         struct  grow_zone_object        *grow;
         struct  metvar_struct           metv;
         struct  patch_object            **patches;
+        struct  patch_family_object     **patch_families;
         struct  zone_default            **defaults;
         struct  zone_hourly_object      *hourly;
         struct  accumulate_zone_object  acc_month;
@@ -1099,6 +1101,8 @@ struct soil_class
 struct  landuse_default
 {
         int ID;
+        int msr_sat_transfer_flag; 			/* 0 OFF 1 ON */
+        int msr_shading_flag; 			        /* 0 OFF 1 ON */
         double  fertilizer_NO3;                                 /* kg/m2/day    */
         double  fertilizer_NH4;                                 /* kg/m2/day    */
         double  irrigation;                                     /* m/day        */
@@ -1109,6 +1113,8 @@ struct  landuse_default
         double  lai_cut;                                /* m2/m2 */
         double  percent_impervious;                     /* 0-1 */
         double  grazing_Closs;                  /* kgC/m2/day */
+        double  sh_l;                                   /* 0 - 1 */
+        double  sh_g;                                   /* 0 - 1 */
 };
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/
@@ -1583,6 +1589,7 @@ struct patch_object
         int             zone_ID;
         int             default_flag;
         int             ID;
+        int             family_ID;     
         int             num_base_stations;
         int             num_innundation_depths;
         int             num_canopy_strata;
@@ -1609,6 +1616,8 @@ struct patch_object
         double  effective_lai;          /* avg of strata m^2/m^2        */
         double  evaporation;            /* m  water*/
         double  evaporation_surf;       /* m  water*/
+        double  family_horizon;         /* angle (theta) from flat to family horizon in radians */
+        double  family_pct_cover;       /* 0 - 1, pct of patch family covered by patch */
         double  ga;                     /* m/s */
         double  ga_final;               /* m/s */
         double  gasnow;                 /* m/s */
@@ -1766,6 +1775,9 @@ struct patch_object
         double overland_flow; /* m/s */
         double  T_canopy;  /* deg C */
         double  T_canopy_final;  /* deg C */
+        double  rz_transfer;            /* m water      */
+        double  unsat_transfer;         /* m water      */
+        double  sat_transfer;           /* m water      */
         struct  base_station_object     **base_stations;
         struct  soil_default            **soil_defaults;
         struct  landuse_default         **landuse_defaults;
@@ -1856,7 +1868,19 @@ struct patch_object
         };
 
 /*----------------------------------------------------------*/
-/*      Define the l;ayer object structure.                     */
+/*      Define a patch family object                        */
+/*----------------------------------------------------------*/
+
+struct patch_family_object
+        {
+        int family_ID;
+        int num_patches_in_fam;
+        double area;
+        struct  patch_object            **patches;
+        };
+
+/*----------------------------------------------------------*/
+/*      Define the layer object structure.                  */
 /*----------------------------------------------------------*/
 struct  layer_object
         {
@@ -2071,6 +2095,7 @@ struct  command_line_object
         int             version_flag;
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
+        int             multiscale_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
@@ -2694,9 +2719,9 @@ struct epconst_struct
     double  resprout_leaf_carbon; /* kgC leaf carbon to assign for resprouting */
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
+    double max_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
     double max_root_depth; /*  (m) optionally used to constratin maximum rooting depth by species */
         double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
-  double max_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
     int     max_years_resprout; /* num years of resprouting before death */
     double waring_pa; /* parameter for Waring allometric equation */
     double waring_pb; /* parameter for Waring allometric equation */
@@ -2831,10 +2856,6 @@ struct  stratum_default
         double rootc;
         double leafc;
         };
-
-
-
-
 
 
 /*----------------------------------------------------------*/

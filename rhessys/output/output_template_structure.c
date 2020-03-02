@@ -72,7 +72,7 @@ void	output_template_structure()
 	fprintf(outfile, "\n %s", "num_base_stations");
 	fprintf(outfile, "\n %s", "base_stations_file");
 	fprintf(outfile,"\n");
-	fprintf(outfile, "\n %s", "world_id");
+	fprintf(outfile, "\n %s", "world_ID");
 	fprintf(outfile, "\n %s", "num_basins");
 	fprintf(outfile,"\n");
 	/*--------------------------------------------------------------*/

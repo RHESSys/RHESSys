@@ -2,9 +2,8 @@
 *.o
 *.pyc
 rhessys/rhessys7.0
-rhessys/rhessys7
-rhessys/result
-rhessys/FireSizes.txt
+rhessys/rhessys7.*
+
 
 # Build directories
 objects/
@@ -45,3 +44,9 @@ libwmfire.dylib
 libwmfire.so
 
 .Rproj.user
+
+# vscode 
+rhessys/.vscode
+
+# made by R func compile_rhessys (should be deleted typically)
+.makefile_tmp

@@ -331,6 +331,7 @@ void	canopy_stratum_daily_F(
 	struct	psnin_struct	psnin;
 	struct	psnout_struct	psnout;
 	struct mortality_struct mort;
+
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.1 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
@@ -348,6 +349,8 @@ void	canopy_stratum_daily_F(
 	stratum[0].Kstar_direct = 0.0;
 	stratum[0].APAR_direct = 0.0;
 	stratum[0].potential_evaporation = 0.0;
+	stratum[0].transpiration_unsat_zone = 0.0;
+	stratum[0].transpiration_sat_zone = 0.0;
 	 m_APAR_sunlit=0.0;
 	 m_tavg_sunlit=0.0;
 	 m_LWP_sunlit=0.0;
@@ -1136,7 +1139,6 @@ void	canopy_stratum_daily_F(
 			   stratum[0].surface_heat_flux/86.4);
 		}
 
-
 	/*--------------------------------------------------------------*/
 	/*	Estimate potential evap rates.				*/
 	/*--------------------------------------------------------------*/
@@ -1210,7 +1212,8 @@ void	canopy_stratum_daily_F(
 	/*	Reduce rnet for transpiration by ratio of lai to pai	*/
 	/*--------------------------------------------------------------*/
 
-	if (zone[0].metv.dayl > ZERO) {
+
+	if ((zone[0].metv.dayl > ZERO) && (stratum[0].epv.proj_pai > ZERO)) {
 		rnet_trans_sunlit = 1000 * ((stratum[0].Kstar_direct + (perc_sunlit)*stratum[0].Kstar_diffuse)
 				+ perc_sunlit * (stratum[0].Lstar_day + surface_heat_flux_day) ) / daylength
 						* ( stratum[0].epv.proj_lai / stratum[0].epv.proj_pai );
@@ -1456,7 +1459,7 @@ void	canopy_stratum_daily_F(
 	/*								*/
 	/*	All of this is only done for vascular strata.		*/
 	/*--------------------------------------------------------------*/
-	if  (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO){
+	if  ((stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO) && (stratum[0].epv.proj_lai > ZERO)){
 		if ( stratum[0].potential_evaporation > ZERO ){
 			transpiration  = transpiration_rate *
 				(zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
@@ -1486,6 +1489,8 @@ void	canopy_stratum_daily_F(
 	/*	potential control on gs or the soil moisture control on */
 	/*	gsurf (for bryophytes) is not well calibrated.		*/
 	/*--------------------------------------------------------------*/
+
+
 	if ( stratum[0].rootzone.depth > ZERO ){
 		stratum[0].transpiration_sat_zone = transpiration
 			* max(0, 1 - ( patch[0].sat_deficit_z

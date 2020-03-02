@@ -77,7 +77,8 @@ void	output_basin(			int routing_flag,
 	double aLE_can, aLE_soil, aLE_snow;
 	double acLstar;
 	double acdrip;
-	double acga;	
+	double acga;
+	double alitter_cap;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -206,6 +207,7 @@ void	output_basin(			int routing_flag,
 				asnowmelt += patch[0].snow_melt*patch[0].area;
 				aPET += (patch[0].PET) * patch[0].area;
 				alitter_store += patch[0].litter.rain_stored * patch[0].area;
+				alitter_cap += patch[0].litter.rain_capacity * patch[0].area;
 				adetention_store += patch[0].detention_store*patch[0].area;
 				aacctrans += patch[0].acc_year_trans * patch[0].area; 
 				atranspiration += (patch[0].transpiration_sat_zone
@@ -348,6 +350,7 @@ void	output_basin(			int routing_flag,
 	asublimation /= aarea  ;
 	aperc_snow /= aarea  ;
 	alitter_store /= aarea;
+	alitter_cap /= aarea;
 	atranspiration /= aarea  ;
 	astreamflow /= aarea;
 	apsn /= aarea ;
@@ -421,7 +424,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 				
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -449,6 +452,7 @@ void	output_basin(			int routing_flag,
 		adetention_store * 1000,
 		asat_area * 100,
 		alitter_store * 1000,
+		alitter_cap * 1000,
 		acrain * 1000.0, 
 		aperc_snow *100,
 		asublimation * 1000.0,

@@ -136,6 +136,7 @@ char * getStrParam(int *paramCnt, param **paramPtr, char *paramName, char *readF
 	return outStr;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+	exit(EXIT_FAILURE);
     }
 }
 
@@ -186,6 +187,7 @@ int getIntParam(int *paramCnt, param **paramPtr , char *paramName, char *readFor
         return defaultVal;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+	exit(EXIT_FAILURE);
     }
 }
 
@@ -286,6 +288,7 @@ double getDoubleParam(int *paramCnt, param **paramPtr, char *paramName, char *re
         return defaultVal;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+	exit(EXIT_FAILURE);
     }
 }
 
@@ -367,6 +370,7 @@ char * getStrWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *r
         return defaultVal;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+	exit(EXIT_FAILURE);
     }
 }
 
@@ -427,6 +431,7 @@ float getFloatWorldfile(int *paramCnt, param **paramPtr , char *paramName, char 
         return defaultVal;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+	exit(EXIT_FAILURE);
     }
 }
 

@@ -660,7 +660,7 @@ void update_phenology(struct zone_object  *zone,
 				* pow ( (cs->live_stemc + cs->dead_stemc)/(cs->stem_density), epc.height_to_stem_exp);
 				}
 			else {
-				epv->height = epc.height_to_stem_coef
+				epv->height = (epc.height_to_stem_coef)
 				* pow ( (cs->live_stemc + cs->dead_stemc), epc.height_to_stem_exp);
 			}
 		}
@@ -672,13 +672,20 @@ void update_phenology(struct zone_object  *zone,
 			epv->height = 0.0;
 			}
 		else {	if (cs->leafc > ZERO)
-				epv->height = epc.height_to_stem_coef
+				epv->height = (epc.height_to_stem_coef)
 					* pow ( (cs->leafc), epc.height_to_stem_exp);
 			else
 				epv->height = 0.0;
 			}
 
+        /*--------------------------------------------------------------*/
+	/* if tree but no stem as yet allow a minimum height 		*/
+        /*--------------------------------------------------------------*/
 
+	if ((epc.veg_type==TREE) && ((cs->live_stemc + cs->dead_stemc) < ZERO) && (cs->leafc > ZERO)) {
+		epv->height = 0.01;
+	}
+	
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/

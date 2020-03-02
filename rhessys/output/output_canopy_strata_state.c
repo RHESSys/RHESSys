@@ -58,6 +58,8 @@ void	output_canopy_strata_state(
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].snow_stored)            , "snow_stored");
 	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.stem_density)            , "cs.stem_density");
+	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].rain_stored)            , "rain_stored");
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.cpool)               , "cs.cpool");

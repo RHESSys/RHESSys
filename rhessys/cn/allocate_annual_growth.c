@@ -446,8 +446,8 @@ int allocate_annual_growth(				int id,
 		printf("\n Resprouting stratum %d", id);
 		cs->num_resprout += 1;
 		cs->age = 0.0;
-		cs->cpool = 0.0;
-		ns->npool = 0.0;
+		cs->cpool = epc.resprout_leaf_carbon*2;
+		ns->npool = cs->cpool/epc.leaf_cn;
 		cs->leafc_store = epc.resprout_leaf_carbon;
 		cs->frootc_store = cs->leafc_store * epc.alloc_frootc_leafc;
 		cdf->leafc_store_to_leafc_transfer = cs->leafc_store;
