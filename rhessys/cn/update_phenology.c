@@ -680,7 +680,14 @@ void update_phenology(struct zone_object  *zone,
 				epv->height = 0.0;
 			}
 
+        /*--------------------------------------------------------------*/
+	/* if tree but no stem as yet allow a minimum height 		*/
+        /*--------------------------------------------------------------*/
 
+	if ((epc.veg_type==TREE) && ((cs->live_stemc + cs->dead_stemc) < ZERO) && (cs->leafc > ZERO)) {
+		epv->height = 0.01;
+	}
+	
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/
