@@ -25,7 +25,7 @@
 #include "rhessys.h"
 
 
-void add_growth_headers(struct world_output_file_object *world_output_files, 
+void add_growth_headers(struct world_output_file_object *world_output_files,
 			struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
@@ -87,7 +87,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		//"nuptake",
 		//"grazingC",
 		"StreamNO3_from_surface",
-		"StreamNO3_from_sub");	  
+		"StreamNO3_from_sub");
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
@@ -158,7 +158,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"soilhr",
 		"strN",
 		"denitrif","root_depth","mortf");
-		
+
 	}
 
 	/*--------------------------------------------------------------*/
@@ -222,7 +222,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].zone[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n ", 
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n ",
 		"day",
 		"month",
 		"year",
@@ -406,7 +406,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"year",
 		"basinID",
 		"hillID",
@@ -422,8 +422,35 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"stemn",
 		"cwdc",
 		"cwdn",
-		"psn","cpool", "mortfract");
+		"psn","cpool", "mortfract","height","rootdepth");
 	}
+
+
+    if (command_line[0].f !=NULL) {
+	/*--------------------------------------------------------------*/
+	/*	Yearly 							*/
+	/*--------------------------------------------------------------*/
+	outfile = world_output_files[0].fire[0].yearly;
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+		"year",
+		"basinID",
+		"hillID",
+		"zoneID",
+		"patchID",
+		"stratumID",
+		"proj_lai",
+		"leafc",
+		"leafn",
+		"frootc",
+		"frootn",
+		"stemc",
+		"stemn",
+		"cwdc",
+		"cwdn",
+		"psn","cpool", "mortfract","height","rootdepth");
+	}
+
+
 
 
 	return;

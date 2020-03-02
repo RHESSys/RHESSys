@@ -1,17 +1,17 @@
 /*--------------------------------------------------------------*/
 /* 																*/
-/*					output_yearly_growth_canopy_stratum						*/
+/*					output_yearly_growth_fire					*/
 /*																*/
-/*	output_yearly_growth_canopy_stratum - creates output_growth files objects.		*/
-/*																*/
+/* output_yearly_growth_fire -                                  */
+/*	creates output_growth files objects	for fire effect model   */
 /*	NAME														*/
-/*	output_yearly_growth_canopy_stratum - output_growths  */
-/*			current contents of a canopy_stratum.			*/
+/*	output_yearly_growth_fire - output_growths                  */
+/*			current contents of a fire effect model.			*/
 /*																*/
 /*	SYNOPSIS													*/
-/*	void	output_yearly_growth_canopy_stratum(int basinID,	*/
+/*	void	output_yearly_growth_fire(int basinID,          	*/
 /*					int hillID, int zoneID,int patchID,         */
-/*					struct	canopy_stratum_object	*canopy_stratum,				*/
+/*	struct	canopy_stratum_object	*canopy_stratum,			*/
 /*					struct	date	date,  						*/
 /*					FILE 	*outfile)							*/
 /*																*/
@@ -19,23 +19,22 @@
 /*																*/
 /*	DESCRIPTION													*/
 /*																*/
-/*	output_growths spatial structure according to commandline			*/
+/*	output_growths spatial structure according to commandline	*/
 /*	specifications to specific files							*/
 /*																*/
-/*	PROGRAMMER NOTES											*/
+/*	PROGRAMMER NOTES (NR 20190106)								*/
 /*																*/
 /*	We only permit one fileset per spatial modelling level.     */
 /*	Each fileset has one file for each timestep.  				*/
-/*																*/
+/*	This is for output spatial data from fire effect model		*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
 
-void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
+void	output_yearly_growth_fire( int basinID, int hillID, int zoneID,
 			int patchID,
 			struct	canopy_strata_object	*stratum,
 			struct	date	current_date,
-			struct	command_line_object *command_line,
 			FILE *outfile)
 {
 	/*--------------------------------------------------------------*/
@@ -73,11 +72,9 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
             stratum[0].epv.height, // the reason here height is different with fire.yearly, is fire.yearly is before burning but, stratum.yearly; if turn off the fire effect they should be the same
             stratum[0].rootzone.depth*1000.0);
 
-            if (command_line[0].f == NULL) { //If there is fire yearly growth output, set up set in the fire yearly growth output
-
-            stratum[0].acc_year.psn = 0.0;
-            stratum[0].acc_year.minNSC = -999;
-            }
+	stratum[0].acc_year.psn = 0.0;
+	stratum[0].acc_year.minNSC = -999;
 
 	return;
-} /*end output_yearly_growth_canopy_stratum*/
+} /*end output_yearly_growth_fire*/
+

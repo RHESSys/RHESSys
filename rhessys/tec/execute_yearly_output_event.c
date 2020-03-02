@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void	execute_yearly_output_event( int reset_flag, 
+void	execute_yearly_output_event( int reset_flag,
 									struct	world_object	*world,
 									struct	command_line_object *command_line,
 									struct	date	date,
@@ -47,24 +47,29 @@ void	execute_yearly_output_event( int reset_flag,
 		struct	basin_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_yearly_hillslope( int,
 		struct	hillslope_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_yearly_zone( 	int, int,
 		struct	zone_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_yearly_patch(	int, int, int,
 		struct	patch_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_yearly_canopy_stratum(
-		int, int, int, int, int,
+		int, int, int, int,int,
+		struct	canopy_strata_object *,
+		struct	date,
+		FILE	*);
+    void output_yearly_fire(
+		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
@@ -73,13 +78,13 @@ void	execute_yearly_output_event( int reset_flag,
 	/*--------------------------------------------------------------*/
 	int	basinID, hillID, patchID, zoneID, stratumID;
 	int b,h,p,z,c;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	check to see if there are any print options					*/
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].b != NULL) || (command_line[0].h != NULL) ||
 		(command_line[0].z != NULL) || (command_line[0].p != NULL) ||
-		(command_line[0].c != NULL)){
+		(command_line[0].c != NULL) || (command_line[0].f != NULL)){
 		/*--------------------------------------------------------------*/
 		/*	output basins												*/
 		/*--------------------------------------------------------------*/
@@ -99,7 +104,8 @@ void	execute_yearly_output_event( int reset_flag,
 			/*	check to see if there are any lower print options			*/
 			/*---------------------------------------------------------*/
 			if ((command_line[0].h != NULL) || (command_line[0].z != NULL) ||
-				(command_line[0].p != NULL) || (command_line[0].c != NULL)){
+				(command_line[0].p != NULL) || (command_line[0].c != NULL) ||
+				(command_line[0].f !=NULL)){
 				/*------------------------------------------------------------*/
 				/*	output hillslopes 											*/
 				/*-----------------------------------------------------------*/
@@ -123,8 +129,8 @@ void	execute_yearly_output_event( int reset_flag,
 					/*--------------------------------------------------*/
 					/*check to see if there are any lower print options */
 					/*---------------------------------------------------*/
-					if ((command_line[0].z != NULL) || (command_line[0].p != NULL)
-						|| (command_line[0].c != NULL)){
+					if ((command_line[0].z != NULL) || (command_line[0].p != NULL) ||
+						(command_line[0].c != NULL) || (command_line[0].f != NULL)){
 						/*-----------------------------------------------*/
 						/*	output zones		  									*/
 						/*---------------------------------------------*/
@@ -155,7 +161,7 @@ void	execute_yearly_output_event( int reset_flag,
 							/*check to see if there are any	lower print options*/
 							/*-------------------------------------*/
 							if ((command_line[0].p != NULL)
-								|| (command_line[0].c != NULL)){
+								|| (command_line[0].c != NULL) || (command_line[0].f != NULL)){
 								/*---------------------------------------------*/
 								/*	output patches 										*/
 								/*---------------------------------------------*/
@@ -222,6 +228,42 @@ void	execute_yearly_output_event( int reset_flag,
 																outfile->canopy_stratum->yearly);
 										} /* end stratum (c) for loop */
 									} /* end if options */
+
+									/*------------------------------------------------*/
+									/*	Construct the fire yearly output files	 NR  */
+									/*------------------------------------------------*/
+									if ( command_line[0].f != NULL ){  // we suppose the f is at the same level as canopy that is why it is not nested in C
+										/*----------------------------------------------*/
+										/*	output fire 								*/
+										/*----------------------------------------------*/
+										for(c=0;
+										c < world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].num_canopy_strata;
+										++c){
+											basinID = command_line[0].f->basinID;
+											hillID = command_line[0].f->hillID;
+											zoneID = command_line[0].f->zoneID;
+											patchID = command_line[0].f->patchID;
+											stratumID = command_line[0].f->stratumID;
+											if (( world[0].basins[b][0].ID == basinID)
+												|| (basinID == -999))
+												if (( world[0].basins[b][0].hillslopes[h][0].ID == hillID)
+													|| (hillID == -999))
+													if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID == zoneID)
+														|| (zoneID == -999))
+														if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID == patchID)
+															||	(patchID == -999))
+															if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].canopy_strata[c][0].ID == stratumID)
+																|| (stratumID == -999)) {
+																output_yearly_fire(
+																world[0].basins[b][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
+																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
+																date, outfile->fire->yearly);
+															}
+										} /* end fire (f) for loop */
+									} /* end if command.f options */
 								} /* end patch (p) for loop */
 							} /* end if options */
 						} /* end zone (z) for  loop*/
