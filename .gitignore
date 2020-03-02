@@ -2,6 +2,9 @@
 *.o
 *.pyc
 rhessys/rhessys7.0
+rhessys/rhessys7
+rhessys/result
+rhessys/FireSizes.txt
 
 # Build directories
 objects/
