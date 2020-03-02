@@ -70,7 +70,9 @@ void update_phenology(struct zone_object  *zone,
 					  double	theta_noon,
 					  int 		wyday_start,	
 					  struct date current_date,
-					  int	grow_flag)
+					  int	grow_flag,
+					  int   multiscale_flag,
+					  int	shading_flag)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
@@ -689,8 +691,7 @@ void update_phenology(struct zone_object  *zone,
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/
-
-	if (cs->stem_density > ZERO) {	
+	if ((cs->stem_density > ZERO) && (multiscale_flag == 0) && (shading_flag == 0)) {	
         horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
 	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
 	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);

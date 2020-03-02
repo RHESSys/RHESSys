@@ -1102,7 +1102,7 @@ struct  landuse_default
 {
         int ID;
         int msr_sat_transfer_flag; 			/* 0 OFF 1 ON */
-        int msr_shading_flag; 			        /* 0 OFF 1 ON */
+        int shading_flag; 			        /* 0 OFF 1 ON */
         double  fertilizer_NO3;                                 /* kg/m2/day    */
         double  fertilizer_NH4;                                 /* kg/m2/day    */
         double  irrigation;                                     /* m/day        */
