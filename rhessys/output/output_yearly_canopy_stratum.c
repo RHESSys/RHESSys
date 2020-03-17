@@ -41,17 +41,17 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	
+
 	if (stratum[0].acc_year.length == 0)
 		stratum[0].acc_year.length = 1;
 	/*--------------------------------------------------------------*/
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
-	fprintf(outfile,"%4d %d %d %d %d %d %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %d %d %lf %lf %lf \n",
 		current_date.year,
 		basinID,
 		hillID,
@@ -70,5 +70,5 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 	stratum[0].acc_year.length = 0;
 	}
 	return;
-	
+
 } /*end output_yearly_canopy_stratum*/

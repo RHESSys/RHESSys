@@ -1,7 +1,9 @@
 # Compiled object files
 *.o
 *.pyc
+rhessys/rhessys7.0
 rhessys/rhessys7.*
+
 
 # Build directories
 objects/
