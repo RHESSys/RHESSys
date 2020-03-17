@@ -183,6 +183,7 @@ void		patch_daily_I(
 	double	cnt, count, theta;
 	
 	double  edible_leafc, grazing_mean_nc, grazing_Closs;
+	double root_growth, water_transfer;
 	struct  canopy_strata_object *strata;
 	struct  dated_sequence	clim_event;
 
@@ -197,6 +198,7 @@ void		patch_daily_I(
 
 
 	patch[0].precip_with_assim = 0.0;
+	patch[0].rootzone.preday_depth = patch[0].rootzone.depth;
 
 	
 	/*-----------------------------------------------------*/
@@ -493,6 +495,7 @@ void		patch_daily_I(
 			 patch[0].canopy_strata[stratum][0].rootzone.depth);
 	}
 	patch[0].effective_lai = patch[0].effective_lai / patch[0].num_canopy_strata;
+	
 	/*--------------------------------------------------------------*/
 	/*	re-sort patch layers to account for any changes in 	*/
 	/*	height							*/

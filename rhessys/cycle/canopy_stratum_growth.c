@@ -83,12 +83,20 @@ void	canopy_stratum_growth(
 		struct	epconst_struct,
 		struct	command_line_object *);
 
+	 int     update_rooting_depth(
+                struct rooting_zone_object *,
+                double,
+                double,
+                double,
+                double,
+                double);
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
-	double pnow;
+	double pnow, rootc;
 	/*--------------------------------------------------------------*/
 	/*	perform daily carbon and nitrogen allocations		*/
 	/*--------------------------------------------------------------*/
@@ -164,6 +172,25 @@ void	canopy_stratum_growth(
 	}
 
 	}
+	/*--------------------------------------------------------------*/
+	/*	update root depth*/
+	/*--------------------------------------------------------------*/
+
+	rootc = stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
+        if ((command_line[0].grow_flag > 0) && (rootc > ZERO)){
+                if ( update_rooting_depth(
+                        &(stratum[0].rootzone), 
+			rootc, 
+			stratum[0].defaults[0][0].epc.root_growth_direction, stratum[0].defaults[0][0].epc.root_distrib_parm,
+                        stratum[0].defaults[0][0].epc.max_root_depth,
+                        patch[0].soil_defaults[0][0].effective_soil_depth) != 0){
+                        fprintf(stderr,
+                                "FATAL ERROR: in compute_rooting_depth() from canopy_stratum_growth()\n");
+                        exit(EXIT_FAILURE);
+                }
+        }
+
+
 	/*--------------------------------------------------------------*/
 	/*	update carbon state variables 				*/
 	/*--------------------------------------------------------------*/

@@ -423,6 +423,10 @@ struct stratum_default *construct_stratum_defaults(
 
 
 		/*--------------------------------------------------------------*/
+		/* have root/leaf turnover stop for new plants 			*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].epc.zero_turnover_sprouts =	getIntParam(&paramCnt, &paramPtr, "epc.zero_turnover_sprouts", "%d", 0, 1);
+		/*--------------------------------------------------------------*/
 		/*	Apply sensitivity analysis if appropriate		*/
 		/*--------------------------------------------------------------*/
 		

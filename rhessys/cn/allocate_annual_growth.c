@@ -446,7 +446,7 @@ int allocate_annual_growth(				int id,
 		printf("\n Resprouting stratum %d", id);
 		cs->num_resprout += 1;
 		cs->age = 0.0;
-		cs->cpool = epc.resprout_leaf_carbon*2;
+		cs->cpool = epc.resprout_leaf_carbon;
 		ns->npool = cs->cpool/epc.leaf_cn;
 		cs->leafc_store = epc.resprout_leaf_carbon;
 		cs->frootc_store = cs->leafc_store * epc.alloc_frootc_leafc;
@@ -478,6 +478,16 @@ int allocate_annual_growth(				int id,
 			cdf->livestemc_store_to_livestemc_transfer = cs->livestemc_store;
 			ndf->livestemn_store_to_livestemn_transfer = ns->livestemn_store;
 
+			cs->deadcrootc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			ns->deadcrootn_store = cs->deadcrootc_store / epc.deadwood_cn;
+			cdf->deadcrootc_store_to_deadcrootc_transfer = cs->deadcrootc_store;
+			ndf->deadcrootn_store_to_deadcrootn_transfer = ns->deadcrootn_store;
+
+			cs->deadstemc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			ns->deadstemn_store = cs->deadstemc_store / epc.deadwood_cn;
+			cdf->deadstemc_store_to_deadstemc_transfer = cs->deadstemc_store;
+			ndf->deadstemn_store_to_deadstemn_transfer = ns->deadstemn_store;
+
 			cs->live_stemc = 0.0;
 			cs->dead_stemc = 0.0;
 			cs->live_crootc = 0.0;
@@ -486,11 +496,6 @@ int allocate_annual_growth(				int id,
 			ns->dead_stemn = 0.0;
 			ns->live_crootn = 0.0;
 			ns->dead_crootn = 0.0;
-
-			cs->deadstemc_store =  0.0;
-			cs->deadcrootc_store =  0.0;
-			ns->deadstemn_store =  0.0;
-			ns->deadcrootn_store =  0.0;
 
 			cs->livestemc_transfer =  0.0;
 			cs->deadstemc_transfer =  0.0;

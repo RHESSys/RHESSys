@@ -162,6 +162,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.leafc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_transfer","%lf",0.0,1);
 	
 	canopy_strata[0].cs.live_stemc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",0.0,1);
+
 	
 	canopy_strata[0].cs.livestemc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_store","%lf",0.0,1);
 	

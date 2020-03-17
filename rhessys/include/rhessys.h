@@ -411,6 +411,7 @@ struct rooting_zone_object
         double sat;
         double unsat;
         double depth;
+        double preday_depth;
         double S;
         double T;               /* degrees C */
 
@@ -2671,6 +2672,7 @@ struct epconst_struct
         int psi_curve;          /* (DIM) set to 0 for biome-bgc psi-conductance curve, other values give type of model 1=linear, 2=squared etc */
         int edible;             /* (DIM) set to 1 for edible plants */
         int  Tacclim;           /* (DIM) set to 1  for temperature acclimation of respiration Q10  */
+	int zero_turnover_sprouts; /* (DIM) set to 1 to turn this feature on - turnover 0 for young plants */
     double gr_perc;        /* (DIM 0-1) percent of growth allocated to respiration */
     double leaf_turnover;     /* (1/yr) annual leaf turnover fraction */
     double livewood_turnover; /* (1/yr) annual live wood turnover fraction */
