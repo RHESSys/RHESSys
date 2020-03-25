@@ -141,7 +141,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].rootzone.depth *= command_line[0].tmp_value;
 	}
 
-	canopy_strata[0].cs.stem_density = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",0.2,1);
+	canopy_strata[0].cs.stem_density = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",0.02,1);
 	
 	canopy_strata[0].snow_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_stored","%lf",0.0,1);
 	
