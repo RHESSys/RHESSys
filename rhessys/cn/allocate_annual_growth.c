@@ -39,7 +39,6 @@ int allocate_annual_growth(				int id,
 							int default_ID,
 							int vmort_flag,
 							double cover_fraction,
-							double cpool_mort_fract,
 						   struct epvar_struct *epv,
 						   struct cdayflux_struct *cdf,
 						   struct cstate_struct *cs,
@@ -111,7 +110,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	/*	check to make sure LAI is not greater than user specified */
 	/*	max lai (note LAI here does NOT take into account sunlit */
-	/*	shaded compenent - so LAI output by RHESSys may sometime */
+	
 	/*	get to be slightly higher than specified max LAI */
 	/*	carbon in excess of that required for max LAI */
 	/*	is re-allocated to stemwood; for grasses it is allocated to roots */
@@ -185,13 +184,18 @@ int allocate_annual_growth(				int id,
 
 	total_store =  cs->cpool;
 	
-	/* Changed to just be live C */
-	/*total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->dead_stemc +
-			cs->live_crootc + cs->dead_crootc);*/
-	if (cs->cpool > ZERO) 
-	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool);
-	else
-	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc);
+	if (cs->cpool > ZERO) {
+		if (epc.veg_type == TREE){
+			total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool + cs->dead_stemc + cs->dead_crootc);}
+		else {
+			total_biomass =  (cs->leafc + cs->frootc + cs->cpool );}
+		}
+	else {
+		if (epc.veg_type == TREE){
+			total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->dead_stemc + cs->dead_crootc);}
+		else {
+			total_biomass =  (cs->leafc + cs->frootc  );}
+		}
 
 	/* Changed to just be live C */
 	/*total_above_biomass =  cs->leafc+cs->dead_stemc+cs->live_stemc;*/
@@ -218,9 +222,9 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 
 	cs->mortality_fract = 0.0;
-	if ((total_store < cpool_mort_fract*total_biomass) && (total_biomass > ZERO) && (cs->age > 1) && (vmort_flag == 1)) {
+	if ((total_store < epc.cpool_mort_fract*total_biomass) && (total_biomass > ZERO) && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
-		excess_carbon = 1.0 - total_store/(cpool_mort_fract*total_biomass);
+		excess_carbon = 1.0 - total_store/(epc.cpool_mort_fract*total_biomass);
 		excess_carbon = max(excess_carbon,0);
 		excess_carbon = min(1.0,excess_carbon);
 		cs->mortality_fract = excess_carbon;
