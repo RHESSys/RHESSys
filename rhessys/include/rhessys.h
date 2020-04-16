@@ -2384,8 +2384,8 @@ struct epvar_struct
         double fwood; /* 0-1 */
 
         /* gross PSN input */
-    double assim_sunlit; /* (kgC/m2/s per leaf) */
-    double assim_shade; /* (kgC/m2/s per leaf) */
+    double assim_sunlit; /* (umol/m2/s per leaf) */
+    double assim_shade; /* (umol/m2/s  per leaf) */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
     double DOC_to_gw;   /* (kgC/m2/day) */
