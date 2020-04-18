@@ -5,7 +5,7 @@ Boost install/setup instructions for use with WMFire
 Instructions to build the Boost.Build tool, and build the WMFire shared library needed to run RHESSys-Fire
 
 Will Burke 9/25/17
-Updated 4/13/20
+Updated 4/17/20
 
 1)	Download C++ Boost library: http://www.boost.org/
 	Directions were done using version 1.65.1 (1_65_1), replace file/folder names as necessary
@@ -43,9 +43,10 @@ Updated 4/13/20
 	build/darwin-X/release/threading_multi/ (or gcc-X instead of darwin)
 	
 9)	Make the libwmfire library available when compiling/running RHESSys.
-	Copy libwmfire.dylib (or .so) to <your RHESSys version>/rhessys/lib
+	Copy libwmfire.dylib (or .so) to <your RHESSys version>/lib
 		* If still in the /RHESSys/util/FIRE folder you can run:
-		cp build/darwin-4.2.1/release/threading-multi/libwmfire.dylib ../../rhessys/lib/
+		cp build/darwin-4.2.1/release/threading-multi/libwmfire.dylib ../../lib/
+		* Note: Previously the lib location was located at <your RHESSys version>/rhessys/lib
 
 	Also copy libwmfire.dylib to the directory you run RHESSys from (often a scripts folder)
 	OR add it to you PATH in your .bash_profile, eg:
