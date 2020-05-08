@@ -126,7 +126,7 @@ void	output_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
-		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%ld %ld %ld %ld %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -134,6 +134,7 @@ void	output_growth_patch(
 		hillID,
 		zoneID,
 		patch[0].ID,
+		patch[0].family_ID,
 		alai,
 		aleafc+afrootc+awoodc,
 		aleafn+afrootn+awoodn,
@@ -148,6 +149,7 @@ void	output_growth_patch(
 		patch[0].litter_ns.litr2n,
 		patch[0].litter_ns.litr3n,
 		patch[0].litter_ns.litr4n,
+		(patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c),
 		patch[0].litter.rain_capacity*1000.0,
 		patch[0].soil_cs.soil1c,
 		patch[0].soil_cs.soil2c,

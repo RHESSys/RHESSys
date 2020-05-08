@@ -72,7 +72,7 @@ void skip_basin(
 	/*--------------------------------------------------------------*/
 	/*    Allocate a list of base stations for this basin.			*/
 	/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"basin_n_basestations","%d",0,1);
 
 	if (dtmp > 0) {
 		/*basin[0].num_base_stations = dtmp;*/

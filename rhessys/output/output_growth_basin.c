@@ -221,7 +221,7 @@ void	output_growth_basin(
 							+ strata->ns.livestemn_transfer
 							+ strata->ns.deadcrootn_transfer
 							+ strata->ns.deadstemn_transfer
-							+ strata->ns.cwdn + strata->ns.retransn + strata->ns.npool ) * patch[0].area;
+							+ strata->ns.cwdn + strata->ns.retransn  ) * patch[0].area;
 						leafc = strata->cover_fraction	* (strata->cs.leafc
 							+ strata->cs.leafc_store + strata->cs.leafc_transfer )
 							* patch[0].area;
@@ -239,7 +239,7 @@ void	output_growth_basin(
 							+ strata->cs.livestemc_transfer
 							+ strata->cs.deadcrootc_transfer
 							+ strata->cs.deadstemc_transfer
-							+ strata->cs.cwdc + strata->cs.cpool)* patch[0].area;
+							+ strata->cs.cwdc )* patch[0].area;
 						awoodc += woodc;
 						arootdepth += strata->cover_fraction * (strata->rootzone.depth)
 							* patch[0].area;

@@ -29,7 +29,7 @@
 void	canopy_stratum_daily_F(
 							   struct	world_object		      *world,
 							   struct	basin_object		      *basin,
-							   struct	hillslope_object	    *hillslope, 
+							   struct	hillslope_object	    *hillslope,
 							   struct	zone_object		        *zone,
 							   struct	patch_object		      *patch,
 							   struct layer_object		      *layer,
@@ -44,7 +44,7 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	long	julday(struct date calendar_date);
 
-	
+
 	double	compute_diffuse_radiative_fluxes(
 		int,
 		double *,
@@ -55,7 +55,7 @@ void	canopy_stratum_daily_F(
 		double,
 		double,
 		double);
-	
+
 	double	compute_diffuse_radiative_PAR_fluxes(
 		int	,
 		double	*,
@@ -65,7 +65,7 @@ void	canopy_stratum_daily_F(
 		double	,
 		double	,
 		double	);
-	
+
 	double	compute_direct_radiative_fluxes(
 		int	,
 		double	*,
@@ -76,8 +76,8 @@ void	canopy_stratum_daily_F(
 		double	,
 		double	,
 		double	);
-	
-	
+
+
 	int	compute_maint_resp(	double,
 		double,
 		struct  cstate_struct *,
@@ -85,7 +85,7 @@ void	canopy_stratum_daily_F(
 		struct epconst_struct *,
 		struct  metvar_struct *,
 		struct cdayflux_struct *);
-	
+
 	double	 compute_snow_stored(
 		int	,
 		double	,
@@ -96,12 +96,12 @@ void	canopy_stratum_daily_F(
 		double	*,
 		double	*,
 		struct	canopy_strata_object *);
-	
+
 	double	 compute_rain_stored(
 		int	,
 		double	*,
 		struct	canopy_strata_object *);
-	
+
 	double  compute_ra_overstory(
 		int     ,
 		double  ,
@@ -110,7 +110,7 @@ void	canopy_stratum_daily_F(
 		double  ,
 		double	,
 		double *);
-	
+
 	double  compute_ra_understory(
 		int     ,
 		double  ,
@@ -118,7 +118,7 @@ void	canopy_stratum_daily_F(
 		double  ,
 		double  ,
 		double  *);
-	
+
 	double  compute_ra_surface(
 		int     ,
 		double  ,
@@ -126,7 +126,7 @@ void	canopy_stratum_daily_F(
 		double  ,
 		double  ,
 		double  *);
-	
+
 	double	compute_vascular_stratum_conductance(
 		int	,
 		int	,
@@ -154,7 +154,7 @@ void	canopy_stratum_daily_F(
 		double, int,
 		struct canopy_strata_object *,
 		struct patch_object *);
-	
+
 	double	compute_nonvascular_stratum_conductance(
 		int	,
 		double	,
@@ -168,7 +168,7 @@ void	canopy_stratum_daily_F(
 		struct epconst_struct,
 		struct canopy_strata_object *);
 
-	
+
 	double	compute_surface_heat_flux(
 		int	,
 		double	,
@@ -180,7 +180,7 @@ void	canopy_stratum_daily_F(
 		double	,
 		double	,
 		double	);
-	
+
 	double	penman_monteith(
 		int	,
 		double	,
@@ -190,12 +190,12 @@ void	canopy_stratum_daily_F(
 		double	,
 		double	,
 		int	);
-	
+
 	int	compute_farq_psn(
 		struct psnin_struct * ,
 		struct psnout_struct * ,
 		int);
-	
+
 	double	compute_potential_N_uptake_Dickenson(
 		struct	epconst_struct,
 		struct	epvar_struct *,
@@ -209,7 +209,7 @@ void	canopy_stratum_daily_F(
 		struct cstate_struct *cs,
 		struct nstate_struct *ns,
 		struct cdayflux_struct *);
-		
+
 	double	compute_potential_N_uptake_combined(
 		struct	epconst_struct,
 		struct	epvar_struct *,
@@ -236,8 +236,8 @@ void	canopy_stratum_daily_F(
 		struct litter_n_object *,
 		int,
 		struct mortality_struct);
-	
-	struct 	canopy_strata_object *construct_empty_shadow_strata( 
+
+	struct 	canopy_strata_object *construct_empty_shadow_strata(
 		struct command_line_object *,
 		FILE	*,
 		struct	patch_object *,
@@ -246,12 +246,12 @@ void	canopy_stratum_daily_F(
 		struct	default_object	*defaults);
 
 
-  void	update_shadow_strata(  
+  void	update_shadow_strata(
 	  struct	world_object		      *world,
 	  struct canopy_strata_object 	*stratum,
     struct canopy_strata_object   *shadow_strata,
 	  struct command_line_object	  *command_line,
-	  struct date 			            current_date); 
+	  struct date 			            current_date);
 
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -322,7 +322,7 @@ void	canopy_stratum_daily_F(
 	double	Rnet_used, Rnet_canopy;
 	double	APAR_used;
 	double K_reflectance, PAR_reflectance;
-	
+
 	double dum;
 	double max_snow_albedo_increase, wetfrac;
 	double deltaT;
@@ -331,6 +331,7 @@ void	canopy_stratum_daily_F(
 	struct	psnin_struct	psnin;
 	struct	psnout_struct	psnout;
 	struct mortality_struct mort;
+
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -444.1 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
@@ -348,6 +349,8 @@ void	canopy_stratum_daily_F(
 	stratum[0].Kstar_direct = 0.0;
 	stratum[0].APAR_direct = 0.0;
 	stratum[0].potential_evaporation = 0.0;
+	stratum[0].transpiration_unsat_zone = 0.0;
+	stratum[0].transpiration_sat_zone = 0.0;
 	 m_APAR_sunlit=0.0;
 	 m_tavg_sunlit=0.0;
 	 m_LWP_sunlit=0.0;
@@ -371,9 +374,9 @@ void	canopy_stratum_daily_F(
 	rnet_evap = 0.0;
 	rnet_evap_night = 0.0;
 	rnet_evap_day = 0.0;
-	
+
 	stratum[0].canopy_drip = 0.0;
-	
+
 	K_reflectance = 0.0;
 	PAR_reflectance = 0.0;
 	fraction_direct_K_used = 0.0;
@@ -385,11 +388,11 @@ void	canopy_stratum_daily_F(
 	Rnet_used = 0.0;
 	Rnet_canopy = 0.0;
 	APAR_used = 0.0;
-	
+
 	max_snow_albedo_increase = 0.2;
-	
+
 	stratum[0].evaporation = 0.0;
-	
+
 	deltaT = 0.0;
 	NO3_stored=0;
 	NO3_throughfall=0;
@@ -420,8 +423,8 @@ void	canopy_stratum_daily_F(
 	NO3_throughfall=0;
 
 	ustar = patch[0].ustar;
-	
-	lhvap = (2.5023e6 - 2430.54 * zone[0].metv.tday)/1000.0; /* KJ/kg H2O */	
+
+	lhvap = (2.5023e6 - 2430.54 * zone[0].metv.tday)/1000.0; /* KJ/kg H2O */
 
 	double daylength = zone[0].metv.dayl;
 	double nightlength = SECONDS_PER_DAY - daylength;
@@ -463,7 +466,7 @@ void	canopy_stratum_daily_F(
 
 
 
-	
+
 	/*--------------------------------------------------------------*/
 	/*	perform plant grazing losses				*/
 	/*	(if grow flag is on)					*/
@@ -491,14 +494,14 @@ void	canopy_stratum_daily_F(
 				2,
 				mort);
 			printf("\n completed %lf from %lf", leafcloss_perc, stratum[0].cs.leafc);
-		
+
 	}
 
 	/*	NEW CHECK TO SEE IF STRATUM IS VEGETATED, OTHERWISE SKIP	*/
 	/*	TO END TO UPDATE RADIATION BY COVER FRACTION				*/
-	
+
 	if ((stratum[0].defaults[0][0].epc.veg_type != NON_VEG) && (stratum[0].epv.proj_pai > ZERO) && (stratum[0].cover_fraction > ZERO)) {
-		
+
 		if (stratum[0].snow_stored > ZERO) {
 			/* REFLECT TOO HIGH WITH SNOW IN CANOPY SO REDUCING BY WET FRACTION */
 			/* Wet fraction from Deardorff 1978) */
@@ -521,18 +524,18 @@ void	canopy_stratum_daily_F(
 		else {
 			K_reflectance = stratum[0].defaults[0][0].K_reflectance;
 			PAR_reflectance = stratum[0].defaults[0][0].PAR_reflectance;
-		}	
-		
+		}
+
 		if ( command_line[0].verbose_flag == -5 ){
 			printf("\n     STRATUM DAILY ALBEDO: K_refl=%lf PAR_refl=%lf snow_stor=%lf wetfrac=%lf snowcap=%lf",
-				   K_reflectance, 
+				   K_reflectance,
 				   PAR_reflectance,
 				   stratum[0].snow_stored,
 				   wetfrac,
 				   (stratum[0].epv.all_pai * stratum[0].defaults[0][0].specific_snow_capacity));
 		}
-		
-			
+
+
 	/*--------------------------------------------------------------*/
 	/*  Intercept diffuse radiation.                                */
 	/*  We assume that the zone slope == patch slope.               */
@@ -632,7 +635,7 @@ void	canopy_stratum_daily_F(
 		PAR_reflectance,
 		PAR_reflectance);
 
-		
+
 	/*--------------------------------------------------------------*/
 	/*  Calculate net longwave.										*/
 	/*--------------------------------------------------------------*/
@@ -647,20 +650,20 @@ void	canopy_stratum_daily_F(
 
 
 	if ( stratum[0].Kstar_direct < -1 ) {
-			printf("CANOPY_START ID=%d: pai=%lf snowstor=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n", 
+			printf("CANOPY_START ID=%d: pai=%lf snowstor=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n",
 				   stratum[0].ID,
 				   stratum[0].epv.proj_pai,
 				   stratum[0].snow_stored,
-				   APAR_used, 
+				   APAR_used,
 				   stratum[0].APAR_direct,
 				   (stratum[0].APAR_direct+stratum[0].APAR_diffuse)/86.4,
-				   Rnet_used/86.4, 
+				   Rnet_used/86.4,
 				   stratum[0].Kstar_direct/86.4,
 				   (stratum[0].Kstar_direct+stratum[0].Kstar_diffuse)/86.4,
 				   stratum[0].Lstar/86.4);
 		}
-		
-		
+
+
 	/*--------------------------------------------------------------*/
 	/*	record fraction of PAR absorption 			*/
 	/*	and seasonal low water content				*/
@@ -685,17 +688,17 @@ void	canopy_stratum_daily_F(
 			if ( command_line[0].verbose_flag == -5 ){
 				printf("\n     STRATUM DAILY F: PAI0=%lf tmin=%lf tmax=%lf tavg=%lf RH=%lf edewpt=%lf vpd=%lf Kdir=%lf Kdif=%lf Lstar=%lf Lstarpch=%lf\n          K_refl=%lf PAR_refl=%lf snow_stor=%lf wetfrac=%lf snowcap=%lf",
 				    stratum[0].epv.proj_pai,
-					zone[0].metv.tmin, 
-					zone[0].metv.tmax, 
-					zone[0].metv.tavg, 
-					zone[0].relative_humidity, 
-					zone[0].e_dewpoint, 
-					zone[0].metv.vpd, 
-					stratum[0].Kstar_direct/86.4, 
-					stratum[0].Kstar_diffuse/86.4, 
-					stratum[0].Lstar/86.4, 
+					zone[0].metv.tmin,
+					zone[0].metv.tmax,
+					zone[0].metv.tavg,
+					zone[0].relative_humidity,
+					zone[0].e_dewpoint,
+					zone[0].metv.vpd,
+					stratum[0].Kstar_direct/86.4,
+					stratum[0].Kstar_diffuse/86.4,
+					stratum[0].Lstar/86.4,
 					patch[0].Lstar_canopy/86.4,
-					K_reflectance, 
+					K_reflectance,
 					PAR_reflectance,
 					   stratum[0].snow_stored,
 					   wetfrac,
@@ -829,7 +832,7 @@ void	canopy_stratum_daily_F(
 	/*	energy used for stomatal conductance etc. however we	*/
 	/*	suggest that when it snows it is likely ET is small.	*/
 	/*--------------------------------------------------------------*/
-		
+
 	/* Lundberg 1994 reduce conductance for snow vs. rain by factor of 10 */
 	stratum[0].snow_stored = compute_snow_stored(
 		command_line[0].verbose_flag,
@@ -841,7 +844,7 @@ void	canopy_stratum_daily_F(
 		&(snow_throughfall),
 		&(rain_throughfall),
 		stratum);
-	
+
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8.4f %f ",stratum[0].snow_stored, stratum[0].sublimation);
 	if ( command_line[0].verbose_flag > 1 )
@@ -858,13 +861,13 @@ void	canopy_stratum_daily_F(
 		perc_sunlit = 1.0;
 
 	if (stratum[0].epv.proj_lai_shade > ZERO && zone[0].metv.dayl > ZERO)
-		stratum[0].ppfd_shade = (stratum[0].APAR_diffuse * (1-perc_sunlit)) / 
+		stratum[0].ppfd_shade = (stratum[0].APAR_diffuse * (1-perc_sunlit)) /
 					zone[0].metv.dayl /stratum[0].epv.proj_lai_shade;
 	else
 		stratum[0].ppfd_shade = 0.0;
 
 	if (stratum[0].epv.proj_lai_sunlit > ZERO && zone[0].metv.dayl > ZERO)
-		stratum[0].ppfd_sunlit = (stratum[0].APAR_direct + stratum[0].APAR_diffuse * perc_sunlit) / 
+		stratum[0].ppfd_sunlit = (stratum[0].APAR_direct + stratum[0].APAR_diffuse * perc_sunlit) /
 					zone[0].metv.dayl /stratum[0].epv.proj_lai_sunlit;
 	else
 		stratum[0].ppfd_sunlit = 0.0;
@@ -965,7 +968,7 @@ void	canopy_stratum_daily_F(
 	*/
 
 	/* subsituting a simpler max conductance value */
-	stratum[0].potential_gs_sunlit = stratum[0].defaults[0][0].epc.gl_smax_sunlit * 
+	stratum[0].potential_gs_sunlit = stratum[0].defaults[0][0].epc.gl_smax_sunlit *
 			stratum[0].defaults[0][0].lai_stomatal_fraction * stratum[0].epv.proj_lai_sunlit;
 
 
@@ -1035,32 +1038,32 @@ void	canopy_stratum_daily_F(
 	*/
 
 	/* subsituting a simpler max conductance value */
-	stratum[0].potential_gs_shade = stratum[0].defaults[0][0].epc.gl_smax_shade * 
+	stratum[0].potential_gs_shade = stratum[0].defaults[0][0].epc.gl_smax_shade *
 			stratum[0].defaults[0][0].lai_stomatal_fraction * stratum[0].epv.proj_lai_shade;
 
 
 
 	/* keep track of conductance multipliers actually used an indication of stress */
-	stratum[0].mult_conductance.APAR = (m_APAR_shade*stratum[0].epv.proj_lai_shade + 
+	stratum[0].mult_conductance.APAR = (m_APAR_shade*stratum[0].epv.proj_lai_shade +
 		m_APAR_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.tavg = (m_tavg_shade*stratum[0].epv.proj_lai_shade + 
+	stratum[0].mult_conductance.tavg = (m_tavg_shade*stratum[0].epv.proj_lai_shade +
 		m_tavg_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.LWP = (m_LWP_shade*stratum[0].epv.proj_lai_shade + 
+	stratum[0].mult_conductance.LWP = (m_LWP_shade*stratum[0].epv.proj_lai_shade +
 		m_LWP_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
-	stratum[0].mult_conductance.CO2 = (m_CO2_shade*stratum[0].epv.proj_lai_shade + 
+	stratum[0].mult_conductance.CO2 = (m_CO2_shade*stratum[0].epv.proj_lai_shade +
 		m_CO2_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.tmin = (m_tmin_shade*stratum[0].epv.proj_lai_shade + 
+	stratum[0].mult_conductance.tmin = (m_tmin_shade*stratum[0].epv.proj_lai_shade +
 		m_tmin_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.vpd = (m_vpd_shade*stratum[0].epv.proj_lai_shade + 
+	stratum[0].mult_conductance.vpd = (m_vpd_shade*stratum[0].epv.proj_lai_shade +
 		m_vpd_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
@@ -1076,7 +1079,7 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  modify conductance to include xylem limitations		*/
 	/*--------------------------------------------------------------*/
-	compute_xylem_conductance(stratum[0].epv.psi, 
+	compute_xylem_conductance(stratum[0].epv.psi,
 			stratum[0].defaults[0][0].epc,stratum);
 
 	stratum[0].gplant_sunlit =  min(stratum[0].gs_sunlit, stratum[0].gxylem);
@@ -1105,7 +1108,7 @@ void	canopy_stratum_daily_F(
 			patch[0].soil_defaults[0][0].deltaz,
 			stratum[0].defaults[0][0].min_heat_capacity,
 			stratum[0].defaults[0][0].max_heat_capacity);
-		
+
 	}
 
 	double surface_heat_flux_day = day_proportion * patch[0].surface_heat_flux;
@@ -1135,7 +1138,6 @@ void	canopy_stratum_daily_F(
 			   stratum[0].Lstar/86.4,
 			   stratum[0].surface_heat_flux/86.4);
 		}
-		
 
 	/*--------------------------------------------------------------*/
 	/*	Estimate potential evap rates.				*/
@@ -1198,7 +1200,7 @@ void	canopy_stratum_daily_F(
 		potential_rainy_evaporation_rate_day = 0.0;
 		potential_rainy_evaporation_rate_night  = 0.0;
 		potential_evaporation_rate_day=0.0;
-		potential_evaporation_rate_night=0.0;	
+		potential_evaporation_rate_night=0.0;
 	}
 
 	if ( command_line[0].verbose_flag > 2  )
@@ -1210,7 +1212,8 @@ void	canopy_stratum_daily_F(
 	/*	Reduce rnet for transpiration by ratio of lai to pai	*/
 	/*--------------------------------------------------------------*/
 
-	if (zone[0].metv.dayl > ZERO) {
+
+	if ((zone[0].metv.dayl > ZERO) && (stratum[0].epv.proj_pai > ZERO)) {
 		rnet_trans_sunlit = 1000 * ((stratum[0].Kstar_direct + (perc_sunlit)*stratum[0].Kstar_diffuse)
 				+ perc_sunlit * (stratum[0].Lstar_day + surface_heat_flux_day) ) / daylength
 						* ( stratum[0].epv.proj_lai / stratum[0].epv.proj_pai );
@@ -1226,7 +1229,7 @@ void	canopy_stratum_daily_F(
 
 	rnet_trans_shade = max(rnet_trans_shade, 0.0);
 	rnet_trans_sunlit = max(rnet_trans_sunlit, 0.0);
-		
+
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n          BEFORE TRANS: rnet_trans_sun=%lf rnet_trans_shade=%lf p_sunlit=%lf Kstar=%lf Lstar=%lf surfheat=%lf",
 			   rnet_trans_sunlit,
@@ -1236,7 +1239,7 @@ void	canopy_stratum_daily_F(
 			   stratum[0].Lstar/86.4,
 			   stratum[0].surface_heat_flux/86.4);
 	}
-		
+
 
 	if ( (rnet_trans_sunlit > ZERO ) &&
 		(stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO ) &&
@@ -1259,7 +1262,7 @@ void	canopy_stratum_daily_F(
 			1/stratum[0].potential_gs_sunlit,
 			1/stratum[0].ga,
 			2) ;
-		}	
+		}
 	else{
 		transpiration_rate_sunlit = 0.0;
 		potential_transpiration_rate_sunlit = 0.0;
@@ -1294,10 +1297,10 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].cdf.trans_sunlit = transpiration_rate_sunlit;
 	stratum[0].cdf.trans_shade = transpiration_rate_shade;
-	
+
 	transpiration_rate = transpiration_rate_sunlit +  transpiration_rate_shade;
 	potential_transpiration_rate = potential_transpiration_rate_sunlit +  potential_transpiration_rate_shade;
-		
+
 
 	/*--------------------------------------------------------------*/
 	/*	Compute potential evaporation of stratum. 		*/
@@ -1324,7 +1327,7 @@ void	canopy_stratum_daily_F(
 	/*	used to determine how much is based on the 		*/
 	/*	estimated cap rise  during the day.		*/
 	/*--------------------------------------------------------------*/
-	if  ( (stratum[0].epv.height == 0 ) && ( stratum[0].rootzone.depth > 0 ) 
+	if  ( (stratum[0].epv.height == 0 ) && ( stratum[0].rootzone.depth > 0 )
 		&& (stratum[0].epv.proj_lai > ZERO) ){
 		if ( stratum[0].potential_evaporation > ZERO ){
 			transpiration = min(stratum[0].potential_evaporation,
@@ -1350,7 +1353,7 @@ void	canopy_stratum_daily_F(
 	/*	Update rain storage ( this also updates the patch level	*/
 	/*	rain_throughfall and stratum[0].potential_evaporation	*/
 	/*--------------------------------------------------------------*/
-		
+
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n          BEFORE RAINSTORED: evap=%lf trans=%lf potevaprate=%lf potrainevaprate=%lf potevap=%lf DAYL?=%lf DRD?=%lf MULT1?=%lf MULT2?=%lf",
 				   stratum[0].evaporation,
@@ -1363,8 +1366,8 @@ void	canopy_stratum_daily_F(
 			   (zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) ),
 			   (zone[0].rain_duration * zone[0].metv.dayl/86400)  );
 		}
-				   
-		
+
+
 	stratum[0].rain_stored  = compute_rain_stored(
 		command_line[0].verbose_flag,
 		&(rain_throughfall),
@@ -1372,24 +1375,24 @@ void	canopy_stratum_daily_F(
 
 
 	if (stratum[0].rain_stored > 0){
-	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
-	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored)
+	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
 	    NO3_throughfall = (rain_throughfall + snow_throughfall)
-		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
-	   
+
 	}
 	else{
 	    if (rain_throughfall > 0){
-		NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored) 
-	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
+		NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored)
+	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
 
 		NO3_throughfall =  (rain_throughfall + snow_throughfall)
-		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall) 
-		* (stratum[0].NO3_stored + patch[0].NO3_throughfall); 
-		
+		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)
+		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
+
 	    }
 	    else{
                 NO3_stored = stratum[0].NO3_stored + patch[0].NO3_throughfall;
@@ -1456,7 +1459,7 @@ void	canopy_stratum_daily_F(
 	/*								*/
 	/*	All of this is only done for vascular strata.		*/
 	/*--------------------------------------------------------------*/
-	if  (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO){
+	if  ((stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO) && (stratum[0].epv.proj_lai > ZERO)){
 		if ( stratum[0].potential_evaporation > ZERO ){
 			transpiration  = transpiration_rate *
 				(zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
@@ -1486,6 +1489,8 @@ void	canopy_stratum_daily_F(
 	/*	potential control on gs or the soil moisture control on */
 	/*	gsurf (for bryophytes) is not well calibrated.		*/
 	/*--------------------------------------------------------------*/
+
+
 	if ( stratum[0].rootzone.depth > ZERO ){
 		stratum[0].transpiration_sat_zone = transpiration
 			* max(0, 1 - ( patch[0].sat_deficit_z
@@ -1507,19 +1512,19 @@ void	canopy_stratum_daily_F(
 		/*--------------------------------------------------------------*/
 		/* Remove energy used for ET from Kstar and APAR */
 		/*--------------------------------------------------------------*/
-		
-		Rnet_used = (stratum[0].evaporation + stratum[0].transpiration_unsat_zone 
+
+		Rnet_used = (stratum[0].evaporation + stratum[0].transpiration_unsat_zone
 						+ stratum[0].transpiration_sat_zone) * lhvap * 1000;
-		Rnet_canopy = (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse 
+		Rnet_canopy = (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse
 					    + stratum[0].Lstar + stratum[0].surface_heat_flux)
 						- Rnet_used;
-		
+
 		/* Remove energy for tracking purposes, although not accurate since we are */
 		/* transferring this energy into sensible heat. */
 		/* ASSUMES ONLY NEGATIVE FLUX CAN BE LSTAR... SURFACE HEAT?? */
 		if (Rnet_used > 0.0) {
 			if ( (stratum[0].Lstar > 0) && (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux > 0) ){
-				fraction_L_used = stratum[0].Lstar 
+				fraction_L_used = stratum[0].Lstar
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
 				if (stratum[0].Lstar_night > 0.0) {
 					fraction_L_used_night = stratum[0].Lstar_night
@@ -1529,19 +1534,19 @@ void	canopy_stratum_daily_F(
 					fraction_L_used_day = stratum[0].Lstar_day
 							/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
 				}
-				fraction_direct_K_used = stratum[0].Kstar_direct 
+				fraction_direct_K_used = stratum[0].Kstar_direct
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
-				fraction_diffuse_K_used = stratum[0].Kstar_diffuse 
+				fraction_diffuse_K_used = stratum[0].Kstar_diffuse
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
-				fraction_surfheat_used = stratum[0].surface_heat_flux 
+				fraction_surfheat_used = stratum[0].surface_heat_flux
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux);
 			}
 			else if ( stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].surface_heat_flux > 0.0 ) {
-				fraction_direct_K_used = stratum[0].Kstar_direct 
+				fraction_direct_K_used = stratum[0].Kstar_direct
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].surface_heat_flux);
-				fraction_diffuse_K_used = stratum[0].Kstar_diffuse 
+				fraction_diffuse_K_used = stratum[0].Kstar_diffuse
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].surface_heat_flux);
-				fraction_surfheat_used = stratum[0].surface_heat_flux 
+				fraction_surfheat_used = stratum[0].surface_heat_flux
 					/ (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].surface_heat_flux);
 			}
 			if ( stratum[0].APAR_direct > 0 ){
@@ -1556,7 +1561,7 @@ void	canopy_stratum_daily_F(
 			}
 			else
 				fraction_diffuse_APAR_used = 0.0;
-			
+
 			APAR_used = ( ( (fraction_direct_K_used * Rnet_used) + (fraction_diffuse_K_used * Rnet_used) )
 						 / ( stratum[0].Kstar_direct + stratum[0].Kstar_diffuse ) )
 						* (stratum[0].APAR_direct + stratum[0].APAR_diffuse);
@@ -1568,25 +1573,25 @@ void	canopy_stratum_daily_F(
 			stratum[0].surface_heat_flux -= Rnet_used * fraction_surfheat_used;
 			stratum[0].APAR_direct -= APAR_used * fraction_direct_APAR_used;
 			stratum[0].APAR_diffuse -= APAR_used * fraction_diffuse_APAR_used;
-			
+
 			/* Zero out negative APARs. K and Lstars ok since we are converting to temp change in canopy daily F */
 			stratum[0].APAR_direct = max(stratum[0].APAR_direct,0.0);
-			stratum[0].APAR_diffuse = max(stratum[0].APAR_diffuse,0.0);			
-			
+			stratum[0].APAR_diffuse = max(stratum[0].APAR_diffuse,0.0);
+
 		} /* end if Rnet_used > 0 */
-		
+
 		if ( stratum[0].APAR_direct < -1 ) {
-			printf("CANOPY: APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n", 
-				   APAR_used, 
+			printf("CANOPY: APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n",
+				   APAR_used,
 				   stratum[0].APAR_direct,
 				   (stratum[0].APAR_direct+stratum[0].APAR_diffuse)/86.4,
-				   Rnet_used/86.4, 
+				   Rnet_used/86.4,
 				   stratum[0].Kstar_direct/86.4,
 				   (stratum[0].Kstar_direct+stratum[0].Kstar_diffuse)/86.4,
 				   stratum[0].Lstar/86.4);
 		}
-		
-			
+
+
 		/* Now assume remaining energy is balanced by sensible heat exchange. */
 		/* Reverse calculate Tcanopy. */
 		/* This should only affect canopy longwave for snow and surface fluxes. */
@@ -1594,7 +1599,7 @@ void	canopy_stratum_daily_F(
 					/ (1.292 - ( 0.00428 * zone[0].metv.tavg ))   /* density of air in kg/m3 */
 					/ CP    /* heat capacity of air in J/kg/C */
 					* (1/stratum[0].ga);   /* aerodynamic resistance in s/m */
-		
+
 		/* Empirical reduction in deltaT to account for feedbacks from changes in other */
 		/* components of the energy balance (mostly longwave). Tested with a variety of */
 		/* daily climate values and solving iteratively for steady-state canopy temp    */
@@ -1602,7 +1607,7 @@ void	canopy_stratum_daily_F(
 		deltaT *= 0.85;
 		/*deltaT = 0.0;*/
 
-		
+
 		if ( command_line[0].verbose_flag == -5 ){
 		printf("\n          ENERGY REDUCTION: evap=%lf trans=%lf potevaprate=%lf potrainevaprate=%lf potevap=%lf totalrad=%lf Rnet=%lf Rnet_used=%lf tavg=%lf\n          Kdir=%lf Kdif=%lf Lstar=%lf surfheat=%lf\n          Lstarpch=%lf K_refl=%lf PAR_refl=%lf snowstor1000=%lf rainstor1000=%lf wetfrac=%lf snowcap=%lf raindur=%lf rnet_post=%lf deltaT=%lf",
 			   stratum[0].evaporation,
@@ -1614,13 +1619,13 @@ void	canopy_stratum_daily_F(
 					+ stratum[0].Lstar + stratum[0].surface_heat_flux)/86.4,
 			   rnet_evap,
 			   Rnet_used/86.4,
-			   zone[0].metv.tavg, 
-			   stratum[0].Kstar_direct/86.4, 
-			   stratum[0].Kstar_diffuse/86.4, 
-			   stratum[0].Lstar/86.4, 
+			   zone[0].metv.tavg,
+			   stratum[0].Kstar_direct/86.4,
+			   stratum[0].Kstar_diffuse/86.4,
+			   stratum[0].Lstar/86.4,
 			   stratum[0].surface_heat_flux/86.4,
 			   patch[0].Lstar_canopy/86.4,
-			   K_reflectance, 
+			   K_reflectance,
 			   PAR_reflectance,
 			   stratum[0].snow_stored*1000,
 			   stratum[0].rain_stored*1000,
@@ -1631,9 +1636,9 @@ void	canopy_stratum_daily_F(
 			   deltaT);
 		}
 
-		
 
-		
+
+
 		/*--------------------------------------------------------------*/
 
 	if ( command_line[0].verbose_flag > 1 )
@@ -1680,11 +1685,11 @@ void	canopy_stratum_daily_F(
 			/*--------------------------------------------------------------*/
 			if (stratum[0].defaults[0][0].epc.veg_type == C4GRASS)
 				psnin.c3 = 0;
-			else 
+			else
 				psnin.c3 = 1;
 			if (zone[0].metv.dayl > ZERO)
 				psnin.Rd = stratum[0].cdf.leaf_day_mr /
-				(stratum[0].epv.proj_lai 
+				(stratum[0].epv.proj_lai
 				* zone[0].metv.dayl*12.011e-9);
 			else
 				psnin.Rd = 0.0;
@@ -1718,7 +1723,7 @@ void	canopy_stratum_daily_F(
 			/*--------------------------------------------------------------*/
 			if (zone[0].metv.dayl > ZERO)
 				psnin.Rd = stratum[0].cdf.leaf_day_mr  /
-				(stratum[0].epv.proj_lai 
+				(stratum[0].epv.proj_lai
 				* zone[0].metv.dayl*12.011e-9);
 			else
 				psnin.Rd = 0.0;
@@ -1748,9 +1753,9 @@ void	canopy_stratum_daily_F(
 			/*	total mr.						*/
 			/*--------------------------------------------------------------*/
 			stratum[0].cdf.potential_psn_to_cpool = (assim_sunlit*stratum[0].epv.proj_lai_sunlit
-					+ assim_shade * stratum[0].epv.proj_lai_shade)	
+					+ assim_shade * stratum[0].epv.proj_lai_shade)
 					*zone[0].metv.dayl*12.011e-9 + stratum[0].cdf.leaf_day_mr;
-			
+
 			/*--------------------------------------------------------------*/
 			/* actual sunlit psn						*/
 			/*--------------------------------------------------------------*/
@@ -1759,7 +1764,7 @@ void	canopy_stratum_daily_F(
 			/*--------------------------------------------------------------*/
 			if (zone[0].metv.dayl > ZERO)
 				psnin.Rd = stratum[0].cdf.leaf_day_mr /
-				(stratum[0].epv.proj_lai 
+				(stratum[0].epv.proj_lai
 				* zone[0].metv.dayl*12.011e-9);
 			else
 				psnin.Rd = 0.0;
@@ -1799,7 +1804,7 @@ void	canopy_stratum_daily_F(
 			/*--------------------------------------------------------------*/
 			if (zone[0].metv.dayl > ZERO)
 			psnin.Rd = stratum[0].cdf.leaf_day_mr  /
-				(stratum[0].epv.proj_lai 
+				(stratum[0].epv.proj_lai
 				* zone[0].metv.dayl*12.011e-9);
 			else
 				psnin.Rd = 0.0;
@@ -1834,11 +1839,11 @@ void	canopy_stratum_daily_F(
 			/* total actual psn						*/
 			/*--------------------------------------------------------------*/
 			stratum[0].cdf.psn_to_cpool = (assim_sunlit*stratum[0].epv.proj_lai_sunlit
-					+ assim_shade * stratum[0].epv.proj_lai_shade)	
+					+ assim_shade * stratum[0].epv.proj_lai_shade)
 					*zone[0].metv.dayl*12.011e-9 + stratum[0].cdf.leaf_day_mr;
 			if ((assim_sunlit + assim_shade) > ZERO)
 				stratum[0].dC13 = (assim_sunlit * dC13_sunlit + assim_shade * dC13_shade)/(assim_sunlit+assim_shade);
-			else 
+			else
 				stratum[0].dC13 = 0.0;
 
 			stratum[0].cdf.assim_sunlit = assim_sunlit;
@@ -1846,13 +1851,13 @@ void	canopy_stratum_daily_F(
 			/*--------------------------------------------------------------*/
 			/*--------------------------------------------------------------*/
 		} /* end if LAI > O  ** snow stored < 0*/
-		
+
 		else {
 			stratum[0].cdf.psn_to_cpool = 0.0;
 			stratum[0].cdf.potential_psn_to_cpool = 0.0;
 		}
-		
-		
+
+
 	} /* end if stomatal_fraction > 0 */
 	else {
 		stratum[0].cdf.psn_to_cpool = 0.0;
@@ -1905,7 +1910,7 @@ void	canopy_stratum_daily_F(
 			break;
 		} /* end switch */
 	}
-	
+
 	}
 	/*--------------------------------------------------------------*/
 	/*	Increment the transmitted fluxes from this patch layer	*/
@@ -1926,7 +1931,7 @@ void	canopy_stratum_daily_F(
 		* stratum[0].cover_fraction;
 	patch[0].snow_throughfall_final += snow_throughfall
 		* stratum[0].cover_fraction;
-	patch[0].NO3_throughfall_final += NO3_throughfall 
+	patch[0].NO3_throughfall_final += NO3_throughfall
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
 
@@ -1943,30 +1948,30 @@ void	canopy_stratum_daily_F(
 	if (command_line[0].firespread_flag == 1) {
 //		printf("***********\n###########\nCurrent stratum height %lf\n***************\n#################\n",stratum[0].epv.height);
 		if(stratum[0].epv.height<=patch[0].soil_defaults[0][0].understory_height_thresh)
-		{	
+		{
 //			printf("Found an understory stratum!\n");
-			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +  
-			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone))/(patch[0].fire_defaults[0][0].ndays_average + 1); 
+			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +
+			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone))/(patch[0].fire_defaults[0][0].ndays_average + 1);
 		//	+ stratum[0].evaporation))/ // MCK: look at et without the evaporation part
-			
 
-			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +  
+
+			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +
 			(stratum[0].PET))/
-			(patch[0].fire_defaults[0][0].ndays_average + 1); 
+			(patch[0].fire_defaults[0][0].ndays_average + 1);
 //		printf("Debugging understory et and pet,stratum PET, stratum transpiration sat and unsat, stratum evaporation: %lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",patch[0].fire.understory_et,patch[0].fire.understory_pet, stratum[0].PET,stratum[0].transpiration_sat_zone, stratum[0].transpiration_unsat_zone,stratum[0].evaporation);
-			
+
 		}
 	}
-	
+
 	if ( command_line[0].verbose_flag == -5 ){
 	printf("\n          STRATUM DAILY END Kdir=%lf Kdif=%lf Kupdir=%lf Kupdif=%lf Lstar=%lf Lstarpch=%lf Rnet_used=%lf Kstar_can=%lf rnetevap=%lf dayl=%lf Tcan=%lf \n          ??? topt=%lf tcoef=%lf tmax=%lf",
-		   Kdown_direct/86.4, 
-		   Kdown_diffuse/86.4, 
-		   patch[0].Kup_direct_final/86.4, 
-		   patch[0].Kup_diffuse_final/86.4, 
-		   stratum[0].Lstar/86.4, 
-		   patch[0].Lstar_canopy/86.4, 
-		   Rnet_used/86.4, 
+		   Kdown_direct/86.4,
+		   Kdown_diffuse/86.4,
+		   patch[0].Kup_direct_final/86.4,
+		   patch[0].Kup_diffuse_final/86.4,
+		   stratum[0].Lstar/86.4,
+		   patch[0].Lstar_canopy/86.4,
+		   Rnet_used/86.4,
 		   patch[0].Kstar_canopy_final/86.4,
 		   rnet_evap,
 		   zone[0].metv.dayl,
@@ -1975,7 +1980,7 @@ void	canopy_stratum_daily_F(
 		   stratum[0].defaults[0][0].epc.tcoef,
 		   stratum[0].defaults[0][0].epc.tmax);
 	}
-  
+
 	/*------------------------------------------------------------------------*/
 	/*	If spinup option is set, update the shadow stratum until the targets  */
 	/*	have been met                                                       	*/
@@ -1983,7 +1988,7 @@ void	canopy_stratum_daily_F(
 	if(command_line[0].vegspinup_flag > 0){
     update_shadow_strata(world, stratum, shadow_strata, command_line, current_date);
   }
-  
+
 	/*--------------------------------------------------------------*/
 	/*      update accumlator variables                             */
 	/*--------------------------------------------------------------*/
@@ -1995,7 +2000,7 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
 		stratum[0].acc_month.length += 1;
 	}
-	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL)){
+	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL || command_line[0].f != NULL)){
 		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
 		if (stratum[0].acc_year.minNSC == -999)

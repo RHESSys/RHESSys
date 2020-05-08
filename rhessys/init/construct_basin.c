@@ -225,7 +225,7 @@ struct basin_object *construct_basin(
   /*	Construct the hillslopes for this basin.					*/
   /*--------------------------------------------------------------*/
   for (int i=0; i<basin[0].num_hillslopes; i++){
-    printf("reading hillslope %d\n", i);
+    printf("\n Reading hillslope %d\n", i);
     basin[0].hillslopes[i] = construct_hillslope(
         command_line, world_file, num_world_base_stations,
         world_base_stations, defaults, base_station_ncheader, world
@@ -243,7 +243,7 @@ struct basin_object *construct_basin(
       }	
     }
   };
-  printf("hillslopes complete\n");
+  printf("\n Hillslopes complete\n");
 
   basin[0].defaults[0][0].n_routing_timesteps = 
     (int) (n_routing_timesteps / basin[0].area);
@@ -410,10 +410,15 @@ struct basin_object *construct_basin(
         hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true );
       }	
     }
+
+    fclose(routing_file);
+
   } else { // command_line[0].routing_flag != 1
     // For TOPMODEL mode, make a dummy route list consisting of all patches
     // in the hillslope, in no particular order.
-    hillslope->route_list = construct_topmodel_patchlist(hillslope);
+    int h;
+    for (h=0; h < basin[0].num_hillslopes; h++) 
+   		 basin[0].hillslopes[h]->route_list = construct_topmodel_patchlist(basin[0].hillslopes[h]);
   }
 
   /*--------------------------------------------------------------*/
@@ -425,9 +430,9 @@ struct basin_object *construct_basin(
     basin[0].stream_list.stream_network = NULL;
     basin[0].stream_list.streamflow = 0.0;
   }
-  printf( "END CONSTRUCT BASIN\n");
+  printf( "\nEND CONSTRUCT BASIN\n");
 
-  fclose(routing_file);
+
   if( command_line->surface_routing_flag == 1 ) {
     fclose( surface_routing_file );
   }

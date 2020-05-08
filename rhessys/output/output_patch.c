@@ -45,11 +45,15 @@ void	output_patch(
 	/*------------------------------------------------------*/
 	int check, c, layer;
 	double alai, asub, apsn, litterS, aheight;
+	double fire_et;
 
 	if (patch[0].litter.rain_capacity > ZERO)
 		litterS = patch[0].litter.rain_stored / patch[0].litter.rain_capacity;
 	else
 		litterS = 1.0;
+
+	fire_et = patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone + patch[0].evaporation + 
+	patch[0].evaporation_surf + patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone;
 
 	apsn = 0.0;
 	asub = 0.0;
@@ -65,12 +69,19 @@ void	output_patch(
 				* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai;
 			aheight += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 				* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height;
-
+			
+			// take this out before push to develop
+/* 			if(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height<=patch[0].soil_defaults[0][0].understory_height_thresh)
+			{	
+				fire_understory_et = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].transpiration_sat_zone + 
+					patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].transpiration_unsat_zone;
+				fire_understory_pet = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].PET;			
+			} */
 
 		}
 	}
 
-	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	check = fprintf(outfile,"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 					current_date.day,
 					current_date.month,
 					current_date.year,
@@ -78,6 +89,7 @@ void	output_patch(
 					hillID,
 					zoneID,
 					patch[0].ID,
+					patch[0].family_ID,
 					patch[0].rain_throughfall*1000.0,
 					patch[0].detention_store*1000.0,
 					patch[0].sat_deficit_z*1000,
@@ -89,6 +101,9 @@ void	output_patch(
 					patch[0].unsat_storage*1000,
 					patch[0].rz_drainage*1000,
 					patch[0].unsat_drainage*1000,
+					patch[0].rz_transfer*1000,
+					patch[0].unsat_transfer*1000,
+					patch[0].sat_transfer*1000,
 					(patch[0].snowpack.sublimation + asub)*1000,
 					patch[0].return_flow*1000.0,
 					patch[0].evaporation*1000.0,
@@ -131,7 +146,8 @@ void	output_patch(
 					patch[0].snowpack.Q_melt/86.4,
 					patch[0].LE_canopy,
 					patch[0].snowpack.energy_deficit,
-					patch[0].snowpack.surface_age);
+					patch[0].snowpack.surface_age,
+					fire_et);
 	
 
 	if (check <= 0) {

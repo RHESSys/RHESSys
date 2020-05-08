@@ -87,7 +87,7 @@ void skip_hillslope(
 	/*--------------------------------------------------------------*/
 	/*	Allocate a list of base stations for this hillslope.		*/
 	/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"hillslope_n_basestations","%d",0,1);
 
 	if (dtmp > 0) {
 		/*hillslope[0].num_base_stations = dtmp;*/

@@ -101,7 +101,7 @@ void skip_strata(
 		/*--------------------------------------------------------------*/
 		/*	Read in the number of  strata base stations 					*/
 		/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",0,1);
 	
 		if (dtmp > 0) {
 			/*canopy_strata[0].num_base_stations = dtmp;*/

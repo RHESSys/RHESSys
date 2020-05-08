@@ -47,28 +47,35 @@ void	execute_yearly_growth_output_event(
 		struct	basin_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_yearly_growth_hillslope( int,
 		struct	hillslope_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_yearly_growth_zone( 	int, int,
 		struct	zone_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_yearly_growth_patch(	int, int, int,
 		struct	patch_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_yearly_growth_canopy_stratum(
 		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
+		struct  command_line_object *,
 		FILE	*);
-	
+    void output_yearly_growth_fire(
+        int, int, int, int,
+		struct	canopy_strata_object *,
+		struct	date,
+		FILE	*
+    );
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -80,7 +87,7 @@ void	execute_yearly_growth_output_event(
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].b != NULL) || (command_line[0].h != NULL) ||
 		(command_line[0].z != NULL) || (command_line[0].p != NULL) ||
-		(command_line[0].c != NULL)){
+		(command_line[0].c != NULL) || (command_line[0].f !=NULL)){
 		/*--------------------------------------------------------------*/
 		/*	output_growth basins												*/
 		/*--------------------------------------------------------------*/
@@ -200,8 +207,40 @@ void	execute_yearly_growth_output_event(
 													world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 													world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 													date,
+													command_line,
 													outfile->canopy_stratum->yearly);
 							} /* end if options */
+									/*------------------------------------------------*/
+									/*	Construct the fire yearly growth output files */
+									/*------------------------------------------------*/
+									if ( command_line[0].f != NULL ){  // we suppose the f is at the same level as canopy that is why it is not nested in C
+										/*----------------------------------------------*/
+										/*	output fire 								*/
+										/*----------------------------------------------*/
+											basinID = command_line[0].f->basinID;
+											hillID = command_line[0].f->hillID;
+											zoneID = command_line[0].f->zoneID;
+											patchID = command_line[0].f->patchID;
+											stratumID = command_line[0].f->stratumID;
+											if (( world[0].basins[b][0].ID == basinID)
+												|| (basinID == -999))
+												if (( world[0].basins[b][0].hillslopes[h][0].ID == hillID)
+													|| (hillID == -999))
+													if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID == zoneID)
+														|| (zoneID == -999))
+														if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID == patchID)
+															||	(patchID == -999))
+															if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].canopy_strata[c][0].ID == stratumID)
+																|| (stratumID == -999)) {
+																output_yearly_growth_fire(
+																world[0].basins[b][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
+																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
+																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
+																date, outfile->fire->yearly);
+															}
+                            } /* end if command.f options */
 							/*------------------------------------------------------*/
 							/* reset accumulated variables                          */
 							/*------------------------------------------------------*/

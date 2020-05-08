@@ -124,24 +124,20 @@ struct patch_object *construct_patch(
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
 	
 	patch[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"patch_ID","%d",-9999,0);
+	if (command_line[0].multiscale_flag == 1) {
+		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
+	} else {
+		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
+	}
+	
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
 	patch[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
 	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",-9999,0);
 	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
 
-	if (command_line[0].firespread_flag == 1) {
-	//	fscanf(world_file,"%d",&(fire_default_object_ID));
-	//	read_record(world_file, record);
-//	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_default_object_ID", "%d", -9999,0);
-	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID", "%d", -9999,0);
-		}
-
-	if (command_line[0].surface_energy_flag == 1) {
-		fscanf(world_file,"%d",&(surface_energy_default_object_ID));
-		read_record(world_file, record);
-		}
-
+	fire_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID", "%d", -9999,1);
+	surface_energy_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"surface_energy_default_object_ID", "%d", -9999,1);
 	patch[0].area = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",-9999,0);
 	patch[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,0);
 	patch[0].lna  = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",7,1);

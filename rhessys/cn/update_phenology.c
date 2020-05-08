@@ -70,7 +70,9 @@ void update_phenology(struct zone_object  *zone,
 					  double	theta_noon,
 					  int 		wyday_start,	
 					  struct date current_date,
-					  int	grow_flag)
+					  int	grow_flag,
+					  int   multiscale_flag,
+					  int	shading_flag)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
@@ -660,7 +662,7 @@ void update_phenology(struct zone_object  *zone,
 				* pow ( (cs->live_stemc + cs->dead_stemc)/(cs->stem_density), epc.height_to_stem_exp);
 				}
 			else {
-				epv->height = epc.height_to_stem_coef
+				epv->height = (epc.height_to_stem_coef)
 				* pow ( (cs->live_stemc + cs->dead_stemc), epc.height_to_stem_exp);
 			}
 		}
@@ -672,18 +674,24 @@ void update_phenology(struct zone_object  *zone,
 			epv->height = 0.0;
 			}
 		else {	if (cs->leafc > ZERO)
-				epv->height = epc.height_to_stem_coef
+				epv->height = (epc.height_to_stem_coef)
 					* pow ( (cs->leafc), epc.height_to_stem_exp);
 			else
 				epv->height = 0.0;
 			}
 
+        /*--------------------------------------------------------------*/
+	/* if tree but no stem as yet allow a minimum height 		*/
+        /*--------------------------------------------------------------*/
 
+	if ((epc.veg_type==TREE) && ((cs->live_stemc + cs->dead_stemc) < ZERO) && (cs->leafc > ZERO)) {
+		epv->height = 0.01;
+	}
+	
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/
-
-	if (cs->stem_density > ZERO) {	
+	if ((cs->stem_density > ZERO) && (multiscale_flag == 0) && (shading_flag == 0)) {	
         horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
 	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
 	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);

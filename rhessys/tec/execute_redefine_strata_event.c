@@ -71,7 +71,7 @@ void	execute_redefine_strata_event(struct world_object *world,
 	int	num_basin, num_hill, num_zone, num_patch, num_stratum;
 	char	stratum_filename[MAXSTR];
 	char	record[MAXSTR];
-	char	ext[11];
+	char	ext[14];
 	struct	canopy_strata_object	*stratum;
 	struct	patch_object	*patch;
 	/*--------------------------------------------------------------*/
