@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include "rhessys.h"
 // local function definition:
 /*double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,double curMaxY,double cellMaxX,
@@ -48,6 +49,11 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	
+	//MCK: time process
+	clock_t start, end;
+	double time_used;
+	start=clock();
 	struct patch_fire_object **fire_grid;
 	struct patch_object *patch;
 	int  b,h,p, z, i, j, k;
@@ -73,6 +79,10 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		
 		grid_dimX=def.n_cols;
 		grid_dimY=def.n_rows;
+		
+                world[0].num_fire_grid_row = grid_dimY;
+                world[0].num_fire_grid_col = grid_dimX;
+
 
 		
 		fire_grid=(struct patch_fire_object **) malloc(grid_dimY*sizeof(struct patch_fire_object *)); // first allocate the rows
@@ -88,25 +98,35 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 			for(w=0;w<def.nWUI;w++)
 				tmp.dists[w]=0;	
 		}*/	
+
+                double tmpPatchID;
+                FILE *patchesIn;
+                patchesIn=fopen(command_line[0].firegrid_patch_filename,"r");
+		FILE *demIn;
+		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
+
 		// then initialize values: e.g., 0's 
-		 for(i=0;i<grid_dimX;i++){
-			for(j=0;j<grid_dimY;j++){
-				fire_grid[j][i].occupied_area=0;
+		// readin patch structure
+		// find matching patches
+		// readin dem
+		 for(i=0;i<grid_dimY;i++){
+			for(j=0;j<grid_dimX;j++){
+				fire_grid[i][j].occupied_area=0;
 		//		fire_grid[j][i].num_patches=0;
-				fire_grid[j][i].tmp_patch=0;
+				fire_grid[i][j].tmp_patch=0;
 				//if(def.include_wui==1)
 			//		fire_grid[j][i].wui_dists=tmp.dists; intended to be distance to wuis
 //				patch_grid[j][i]=-1;
-			}
-		}
-		world[0].num_fire_grid_row = grid_dimY;
-		world[0].num_fire_grid_col = grid_dimX;
+//			}
+//		}
+//		world[0].num_fire_grid_row = grid_dimY;
+//		world[0].num_fire_grid_col = grid_dimX;
 		
 //		printf("Rows: %d Cols: %d\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col);
 
-		int tmpPatchID;
-		FILE *patchesIn;
-		patchesIn=fopen(command_line[0].firegrid_patch_filename,"r");
+//		int tmpPatchID;
+//		FILE *patchesIn;
+//		patchesIn=fopen(command_line[0].firegrid_patch_filename,"r");
 /*		if(def.include_wui==1) // then readin the wui LUT
 		{
 			FILE *wuiIn;
@@ -114,15 +134,20 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		}*/
 		//patchesIn=fopen("../auxdata/patchGrid.txt","r");
 		// for now do away with the header
-		for(i=0; i<grid_dimY;i++){
-			for(j=0;j<grid_dimX;j++){
+//		for(i=0; i<grid_dimY;i++){
+//			for(j=0;j<grid_dimX;j++){
 				// first initialize the fire grid
 			//	fire_grid[j][i].occupied_area=0;
 		//		fire_grid[j][i].num_patches=0;
 			//	fire_grid[j][i].tmp_patch=0;					
 				// now point to the corresponding patch
 				tmpPatchID=-9999;
-				fscanf(patchesIn,"%d\t",&tmpPatchID);
+				fscanf(patchesIn,"%lf\t",&tmpPatchID);
+//printf("read patch\n")
+			//	if(i==203&j==48)
+			//		printf("Successfully read this patchID %ld at %d, %d\n",tmpPatchID,i,j);
+	                        fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);				
+//		printf("read dem \n");	
 				// here read in the wuiLUT, 
 				/*if(def.include_wui==1)
 				{
@@ -143,10 +168,21 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					fire_grid[i][j].patches=(struct patch_object **) malloc(fire_grid[i][j].num_patches*sizeof(struct patch_object *));
 					fire_grid[i][j].prop_patch_in_grid=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double)); 
 					fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double)); 
-					//printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files);
+//					printf("allocated patch array");
 					
-					
-					for (b=0; b< world[0].num_basin_files; ++b) {
+//				}
+//			}
+//		}			
+  //              fclose(patchesIn);
+	
+//1	#pragma omp parallel for 	
+  //             for(i=0; i<grid_dimY;i++){
+//		 #pragma omp parallel for
+    //                 for(j=0;j<grid_dimX;j++){
+//			if(fire_grid[i][j].num_patches==1)
+//			{
+  
+				for (b=0; b< world[0].num_basin_files; ++b) {
 						for (h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
 							for (z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
 								tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
@@ -155,7 +191,9 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				//					printf("is my world ok? %d\n",&patch[0].ID);
 									if(patch[0].ID==tmpPatchID)
 									{
-				//						printf("now filling in array--found a match!\n");
+			//							if(i==203&j==48)
+			//								printf("Found patch ID %d matching %lf at %d, %d in world\n",patch[0].ID,tmpPatchID,i,j);
+//								printf("now filling in array--found a match!\n");
 										fire_grid[i][j].patches[0]=patch; // assign the current patch to this grid cell
 										//printf("patch1\n");
 										fire_grid[i][j].occupied_area=cell_res*cell_res; // this grid cell is 100% occupied
@@ -163,7 +201,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 										fire_grid[i][j].prop_grid_in_patch[0]=(cell_res*cell_res)/patch[0].area; // the proportion of this patch in this cell
 										//printf("patch3\n");
 										fire_grid[i][j].prop_patch_in_grid[0]=1;// the whole cell is occupied this patch
-										//printf("array filled\n");
+//										printf("array filled\n");
 										
 										if(def.include_wui==0)
 											break; //? or keep loop to help point to wui patches as well// break would speed this up a little bit
@@ -229,6 +267,8 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 														cur_node=cur_node.next;
 													}
 													cur_node->next=tmp_node;
+se(patchesIn);
+/
 												}	
 											
 												// then update linked list arr index 2; this patch is within third salience distance
@@ -241,22 +281,24 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					}
 				}
 
-			}
-		}
-		fclose(patchesIn);
+//			}
+//		}
 /*		if(def.include_wui==1) // then readin the wui LUT
 			fclose(wuiIn);
 */		
-		printf("assigning dem to fire object\n");
-		FILE *demIn;
-		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
+//		FILE *demIn;
+//		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
 //		demIn=fopen("../auxdata/DemGrid.txt","r");
 		// for now do away with the header, so this file has no header
-		for(i=0; i<grid_dimY;i++){
-			for(j=0;j<grid_dimX;j++){				
-				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
+//		for(i=0; i<grid_dimY;i++){
+//for(j=0;j<grid_dimX;j++){				
+//				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
 			}
+//printf("Which column? %d \n",i);
 		}
+//printf("Before closing files\n");
+		fclose(patchesIn);
+//printf("patchesInClosed\n");
 		fclose(demIn);
 		printf("done assigning dem\n");
 		//printf("assigning dem\n");
@@ -326,18 +368,20 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 			fprintf(gridout,"%d\t%d\t-1\t-1\t-1\t-1\n",i,j);
 		}
 	}
-	fclose(gridout);
-	
-	gridout=fopen("RhessyDEMOut.txt","w");
+	fclose(gridout);*/
+/*	gridout=fopen("RhessyDEMOut.txt","w");
 	for(i=0;i<grid_dimY;i++){
 		for(j=0;j<grid_dimX;j++){
 				fprintf(gridout,"%lf\t",fire_grid[i][j].elev);
 		}
 		fprintf(gridout,"\n");
 	}
-	fclose(gridout);*/
-
+	fclose(gridout);
+*/
 	/* done allocating fire grid, return to RHESSys*/
+	end=clock();
+	time_used=((double) (end-start))/CLOCKS_PER_SEC;
+	printf("****Done allocating fire grid\nTime: %f  ******\n",time_used);
 	return(fire_grid);	
 }
 

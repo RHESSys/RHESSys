@@ -424,7 +424,7 @@ void LandScape::initializeCurrentFire(GenerateRandom& rng)
 	if(def_.mean_log_wind>=0)
 	{
 		fire.windspeed=exp(def_.mean_log_wind+gasdev(rng)*def_.sd_log_wind);
-		fire.winddir=rvmdev(rng,def_.mean1_rvm,def_.mean2_rvm,def_.kappa1_rvm,def_.kappa2_rvm,def_.p_rvm);
+		fire.winddir=rvmdev(rng,def_.mean1_rvm,def_.mean2_rvm,def_.kappa1_rvm,def_.kappa2_rvm,def_.p_rvm,def_.wind_shift);
 	}
 	else 
 	{
@@ -539,7 +539,9 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	//	cout<<"deficit calculated, et, pet: "<<cur_moist<<"   "<<fireGrid_[new_row][new_col].et<<"   "<<fireGrid_[new_row][new_col].pet<<"\t";
 		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use deficit for moisture status
 	}	
-	cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[new_row][new_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[new_row][new_col].fuel_veg; // modify this to always include all of the litter fuels and some proportion up to 1 of the veg fuels
+//	cur_load=(1-def_._eg_fuel_weighting)*fireGrid_[new_row][new_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[new_row][new_col].fuel_veg; // modify this to always include all of the litter fuels and some proportion up to 1 of the veg fuels
+	cur_load=fireGrid_[new_row][new_col].fuel_litter;//only the fuel_litter
+
 	p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 
 	switch(def_.spread_calc_type)
@@ -706,7 +708,8 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 */
 		if(def_.fire_verbose==1)
 			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<"\n\n";
-		cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_veg;
+//		cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[cur_row][cur_col].fuel_veg;
+		cur_load=fireGrid_[cur_row][cur_col].fuel_litter;
 		p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 		if(def_.fire_verbose==1)
 			cout<<"in test ignition p_load "<<p_load<<" load: "<<cur_load<<"SpreadType: "<<def_.spread_calc_type<<"\n\n";
@@ -1076,10 +1079,10 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	}
 	demOut.close();*/
 	if(def_.fire_write>0)
-	{
+	{		
 		ofstream sizeOut;
-		sizeOut.open("FireSizes.txt", ofstream::app);
-		//sizeOut.open("FireSizes.txt", ofstream::out | ofstream::app);
+		sizeOut.open(def_.fire_size_name);//customize this output in the default file
+		//sizeOut.open("FireSizes.txt", ofstream::app);
 		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\t"<<n_cur_ign_<<"\n";
 		sizeOut.close();
 

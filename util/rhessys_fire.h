@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAXSTR 200
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -51,6 +53,8 @@ struct fire_default {
 	double load_ign_k2;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
 	int include_wui; //0 for no WUI grid, 1 for wui grid--0 by default
+	int fire_size_name; // value to append to FireSizes.txt filename. This file is appended to every time WMFire is called. defaults to 1
+	double wind_shift; // shifts the wind direction distribution so the center is pi (splits the modes)
 //	char **patch_file_name;
 };
 
