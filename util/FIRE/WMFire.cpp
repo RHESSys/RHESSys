@@ -1067,9 +1067,10 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	demOut.close();*/
 	if(def_.fire_write>0)
 	{
+		long append_name=def_.fire_size_name;
 	        std::string curFireName;
         	std::stringstream out;
-        	out<<def_.fire_size_name;
+        	out<<append_name;
         	curFireName=out.str();
 
 	
