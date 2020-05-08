@@ -128,10 +128,8 @@ LandScape::LandScape(double cell_res,struct fire_object **fire_grid,struct fire_
 			}
 		}
 	}
-//	cout<<"def vals:"<<def.slope_k1<<"  "<<def.slope_k2<<"  "<<def.windmax<<"\n";
-//	cout<<"default values"<<landscape.def_.veg_fuel_weighting<<" "<<landscape.def_.ndays_average<<" "<<landscape.def_.load_k1<<" "<<landscape.def_.spread_calc_type<<" "<<landscape.def_.mean_log_wind<<" "<<landscape.def_.sd_log_wind<<" "<<landscape.def_.mean1_rvm<<" "<<landscape.def_.mean2_rvm<<" "<<landscape.def_.kappa1_rvm<<" "<<landscape.def_.kappa2_rvm<<" "<<landscape.def_.p_rvm<<"\n";
 	if(def.fire_verbose==1)
-		cout<<"default values"<<def_.veg_fuel_weighting<<" "<<def_.ndays_average<<" "<<def_.load_k1<<" "<<def_.spread_calc_type<<" "<<def_.mean_log_wind<<" "<<def_.sd_log_wind<<" "<<def_.mean1_rvm<<" "<<def_.mean2_rvm<<" "<<def_.kappa1_rvm<<" "<<def_.kappa2_rvm<<" "<<def_.p_rvm<<"\n";
+	cout<<def_.ndays_average<<" "<<def_.load_k1<<" "<<def_.spread_calc_type<<" "<<def_.mean_log_wind<<" "<<def_.sd_log_wind<<" "<<def_.mean1_rvm<<" "<<def_.mean2_rvm<<" "<<def_.kappa1_rvm<<" "<<def_.kappa2_rvm<<" "<<def_.p_rvm<<"\n";
 
  }
 /*****************************Reset**************************************/
@@ -619,7 +617,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 //	cout<<"in test ignition row: "<<cur_row<<"col: "<<cur_col<<"  temp: "<<fireGrid_[cur_row][cur_col].temp<<"  minTemp"<<def_.ignition_tmin<<"\n\n";
 	int ign=0;
 	double pIgn=0;
-	double p_moisture,p_load,cur_load,cur_moist,p_veg;
+	double p_moisture,p_load,cur_load,cur_moist;
 
 	double ign_moisture_k2=def_.moisture_k2; //apply the modifier to the probability rather than the location parameter*def_.ign_def_mod;
 	if(ign_moisture_k2>1)
@@ -716,17 +714,6 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 		if(def_.spread_calc_type<9)
 			p_moisture=p_moisture*def_.ign_def_mod; // a multiplier to modify the ignition probability relative to the spread probability
 		pIgn=p_moisture*p_load;		
-		if(def_.veg_ign==1)// *** check!*********
-		{
-			p_veg=1-1/(1+exp(-(def_.veg_k1*(fireGrid_[cur_row][cur_col].fuel_veg-def_.veg_k2))));
-			pIgn=pIgn*p_veg;
-			if(def_.fire_verbose==1)
-			{
-				cout<<"In test ignition, downgrading ignition prob by p_veg: "<<p_veg<<"\n";
-			}
-		}
-			
-
 
 		double test=rng();
 		if(test<=pIgn)
@@ -1079,9 +1066,18 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	}
 	demOut.close();*/
 	if(def_.fire_write>0)
-	{		
+	{
+	        std::string curFireName;
+        	std::stringstream out;
+        	out<<def_.fire_size_name;
+        	curFireName=out.str();
+
+	
+		curFile.assign("FireSizes");
+		curFile.append(curFireName);
+		curFile.append(".txt");		
 		ofstream sizeOut;
-		sizeOut.open(def_.fire_size_name);//customize this output in the default file
+		sizeOut.open(curFile.c_str(),ofstream::app);//customize this output in the default file
 		//sizeOut.open("FireSizes.txt", ofstream::app);
 		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\t"<<n_cur_ign_<<"\n";
 		sizeOut.close();
