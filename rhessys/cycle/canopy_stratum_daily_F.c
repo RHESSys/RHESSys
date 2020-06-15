@@ -745,7 +745,7 @@ void	canopy_stratum_daily_F(
 				}
 				windcan = wind;
 				stratum[0].ga = 1.0 /
-					compute_ra_surface(
+					compute_ra_understory(
 					command_line[0].verbose_flag,
 					stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
 					&(wind),
@@ -767,6 +767,8 @@ void	canopy_stratum_daily_F(
 		stratum[0].ga = 0.0;
 	}
 
+
+	
 	/*--------------------------------------------------------------*/
 	/*	Factor in stability correction.				*/
 	/*--------------------------------------------------------------*/
@@ -1522,6 +1524,10 @@ void	canopy_stratum_daily_F(
 		/* Remove energy for tracking purposes, although not accurate since we are */
 		/* transferring this energy into sensible heat. */
 		/* ASSUMES ONLY NEGATIVE FLUX CAN BE LSTAR... SURFACE HEAT?? */
+
+		/* save the radiation that is absorbed by leaf (sensible and latent) */
+		stratum[0].Kstar_potential_both = stratum[0].Kstar_direct+stratum[0].Kstar_diffuse;
+
 		if (Rnet_used > 0.0) {
 			if ( (stratum[0].Lstar > 0) && (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux > 0) ){
 				fraction_L_used = stratum[0].Lstar

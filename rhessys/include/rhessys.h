@@ -1489,7 +1489,7 @@ struct  soil_c_object
 
 struct  soil_n_object
         {
-    int nlimit;                         /* DIM (0 or 1) */
+    double nlimit;                         /* DIM (0 or 1) */
     double  fract_potential_immob;                              /* DIM (0-1) */
     double fract_potential_uptake;                              /* DIM (0-1) */
     double totaln;         /* (kgN/m2) total soil  N    */
@@ -2481,7 +2481,7 @@ struct epvar_struct
 /* nitrogen state variables (including sums for sources and sinks) */
  struct nstate_struct
 {
-    int    nlimit;          /* (0-1) 0 is not limited on that day */
+    double    nlimit;          /* (0-1) 0 is not limited on that day */
     double preday_totaln;   /* (kgN/m2) previous days plant nitrogen total */
     double totaln;          /* (kgN/m2) previous days plant nitrogen total */
     double npool;           /* (kgN/m2) temporary plant N pool */
@@ -2886,6 +2886,7 @@ struct  canopy_strata_object
         double  gxylem;                                          /* m/s          */
         double  gplant_sunlit;                                          /* m/s          */
         double  gplant_shade;                                          /* m/s          */
+        double  Kstar_potential_both;                                   /* Kj/(m2*day)  */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
         double  Lstar;                                          /* Kj/(m2*day)  */

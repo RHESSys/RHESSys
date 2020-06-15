@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------*
+/*--------------------------------------------------------------*/
 /*                                                              */ 
 /*		update_phenology				*/
 /*                                                              */
@@ -691,11 +691,12 @@ void update_phenology(struct zone_object  *zone,
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/
-	if ((cs->stem_density > ZERO) && (multiscale_flag == 0) && (shading_flag == 0)) {	
+	if (cs->stem_density > ZERO) {
+	if ((multiscale_flag == 0) || (shading_flag == 0)) {	
         horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
 	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
 	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);
-	}
+	}}
 
 	/*--------------------------------------------------------------*/
 	/*	keep a seasonal max_lai for outputing purposes		*/
