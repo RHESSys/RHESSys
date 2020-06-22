@@ -1,0 +1,36 @@
+# Specify extensions of files to delete when cleaning
+CLEANEXTS	= o so
+# # Specify the source files, the target files, 
+# # and the install directory 
+SOURCES	= RanNums.cpp WMFire.cpp 
+# # But this is specific to Linux, give it a try
+OUTPUTFILE	= libwmfire.so
+INSTALLDIR	= ../rhessys/lib
+.PHONY: all
+all: $(OUTPUTFILE)
+# # path to boost libraries, must be modified for system
+BOOST_ROOT = /usr/local/boost/boost_1_59_0/
+BOOST_INC = ${BOOST_ROOT}/include
+#
+EXTRA_INCLUDE_DIR	=-I $BOOST_ROOT
+# # Build libwmfire.so ; subst is the search-and-replace 
+# # function demonstrated in Recipe 1.16
+CPPFLAGS= -fPIC -g
+LDFLAGS= -shared
+
+$(OUTPUTFILE): $(subst .cpp,.o,$(SOURCES))
+	$(CXX) -shared $(LDFLAGS) -o $@ $^
+.PHONY: install
+install:
+	mkdir -p $(INSTALLDIR)
+	cp -p $(OUTPUTFILE) $(INSTALLDIR)
+.PHONY: clean 
+clean:
+	for file in $(CLEANEXTS); do rm -f *.$$file; done
+# Generate dependencies of .ccp files on .hpp files
+include $(subst .cpp,.d,$(SOURCES))
+
+%.d: %.cpp
+	$(CC) -M $(CPPFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;
+	\rm -f $@.$$$$
