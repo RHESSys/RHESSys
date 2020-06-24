@@ -649,6 +649,13 @@ void	canopy_stratum_daily_F(
 	}
 
 
+	
+		/* save the radiation that is absorbed by leaf (sensible and latent) */
+  	stratum[0].Kstar_potential_both = stratum[0].Kstar_direct+stratum[0].Kstar_diffuse;
+
+		
+
+
 	if ( stratum[0].Kstar_direct < -1 ) {
 			printf("CANOPY_START ID=%d: pai=%lf snowstor=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n",
 				   stratum[0].ID,
