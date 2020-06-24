@@ -15,4 +15,4 @@ double expdev(double ia, double lambda, GenerateRandom rng);
 double gammln(double xx);
 double gasdev(GenerateRandom rng);
 double paretodev(GenerateRandom rng,double alpha,double xmin);
-double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, double kappa2, double p);
+double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, double kappa2, double p,double shift);

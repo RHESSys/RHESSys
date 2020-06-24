@@ -159,7 +159,7 @@ double paretodev(GenerateRandom rng, double alpha, double xmin)
 /* cribbed from the rvm function in CircStats package in R		*/
 /* p is the proportion of draws expected from mean1			*/
 /**********************************************************************/
-double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, double kappa2, double p)
+double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, double kappa2, double p,double shift)
 {
 	double test0, test1,test2,test3,curMean=mean2,curKappa=kappa2;
 	test0=rng();
@@ -235,7 +235,12 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 		}
 	}
 	
-	
+	if(shift!=0)
+	{
+		rvm_val=rvm_val-shift;
+		if(rvm_val<0)
+			rvm_val=rvm_val+2*PI;
+	}
 	return rvm_val;
 
 } // end rvmdev
