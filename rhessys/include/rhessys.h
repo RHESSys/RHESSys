@@ -2675,6 +2675,7 @@ struct epconst_struct
         int edible;             /* (DIM) set to 1 for edible plants */
         int  Tacclim;           /* (DIM) set to 1  for temperature acclimation of respiration Q10  */
 	int zero_turnover_sprouts; /* (DIM) set to 1 to turn this feature on - turnover 0 for young plants */
+	int alternative_ra_surface; /* (DIM) set to 1 to turn this use of compute_ra_surface for low stature understory */
     double gr_perc;        /* (DIM 0-1) percent of growth allocated to respiration */
     double leaf_turnover;     /* (1/yr) annual leaf turnover fraction */
     double livewood_turnover; /* (1/yr) annual live wood turnover fraction */

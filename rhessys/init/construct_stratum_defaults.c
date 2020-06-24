@@ -394,6 +394,10 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.shade_sla_mult = 1.0;
 
 
+		/*--------------------------------------------------------------*/
+		/* some low statured understory may do better with an alternative ra/ga conductance model */
+		/*--------------------------------------------------------------*/
+		default_object_list[i].epc.alternative_ra_surface = getIntParam(&paramCnt, &paramPtr, "epc.alternative_ra_surface", "%d", 0, 1);
 
 	     /*--------------------------------------------------------------*/
                 /* set sunlit and shaded if not available    netpabs, gl_smax,  flnr            */

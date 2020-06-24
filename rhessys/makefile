@@ -1,4 +1,3 @@
-
 VERSION = 7.2
 PGM  = rhessys$(VERSION)
 CC = gcc

@@ -751,6 +751,23 @@ void	canopy_stratum_daily_F(
 					printf("\nCASE3");
 				}
 				windcan = wind;
+			/*--------------------------------------------------------------*/
+			/* for mosses and other low stature veg an alternative ra model can be used */
+			/*--------------------------------------------------------------*/
+
+				if (stratum[0].defaults[0][0].epc.alternative_ra_surface == 1) {
+				stratum[0].ga = 1.0 /
+					compute_ra_surface(
+					command_line[0].verbose_flag,
+					stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
+					&(wind),
+					stratum[0].epv.height,
+					layer[0].base,
+					&(ga));
+				}
+
+				else {
+
 				stratum[0].ga = 1.0 /
 					compute_ra_understory(
 					command_line[0].verbose_flag,
@@ -759,6 +776,8 @@ void	canopy_stratum_daily_F(
 					stratum[0].epv.height,
 					layer[0].base,
 					&(ga));
+				}
+
 				windsnow = wind;
 				gasnow = ga;
 			}
