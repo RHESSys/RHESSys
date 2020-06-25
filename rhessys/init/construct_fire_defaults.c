@@ -85,8 +85,6 @@ struct fire_default *construct_fire_defaults(
 		/*		assign parameters in  default and read the      */
                 /*   optional parameter specification                           */
 		/*--------------------------------------------------------------*/
-		default_object_list[i].veg_fuel_weighting = getDoubleParam(&paramCnt, &paramPtr, "veg_fuel_weighting", "%lf", 0.2, 1);
-		printf("veg_fuel_weighting: %lf\n",default_object_list[i].veg_fuel_weighting);
 		default_object_list[i].ndays_average = getDoubleParam(&paramCnt, &paramPtr, "ndays_average", "%lf", 30, 1);
 		printf("ndays_average: %lf\n",default_object_list[i].ndays_average);
 		default_object_list[i].load_k1=getDoubleParam(&paramCnt, &paramPtr, "load_k1", "%lf", 0.8, 1);
@@ -146,8 +144,6 @@ struct fire_default *construct_fire_defaults(
 		default_object_list[i].ign_def_mod=getDoubleParam(&paramCnt, &paramPtr, "ign_def_mod", "%lf", 1 , 1);
 		printf("ign_def_mod: %lf\n",default_object_list[i].ign_def_mod);
 		default_object_list[i].veg_k1=getDoubleParam(&paramCnt, &paramPtr, "veg_k1", "%lf", 0.8, 1);
- 		default_object_list[i].veg_ign=getIntParam(&paramCnt, &paramPtr, "veg_ign", "%d", 0, 1);
-		printf("veg_ign: %d\n",default_object_list[i].veg_ign);
   		printf("veg_k1: %lf\n",default_object_list[i].veg_k1);
 		default_object_list[i].veg_k2=getDoubleParam(&paramCnt, &paramPtr, "veg_k2", "%lf", 10, 1);
 		printf("veg_k2: %lf\n",default_object_list[i].veg_k2);
@@ -159,6 +155,12 @@ struct fire_default *construct_fire_defaults(
 		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
 		default_object_list[i].include_wui=getIntParam(&paramCnt, &paramPtr, "include_wui", "%d", 0, 1);
 		printf("include_wui: %d\n",default_object_list[i].include_wui);
+    		default_object_list[i].fire_size_name=getIntParam(&paramCnt, &paramPtr, "fire_size_name", "%d", 0, 1);
+                printf("fire_size_name: %d\n",default_object_list[i].fire_size_name);
+		default_object_list[i].wind_shift = getDoubleParam(&paramCnt, &paramPtr, "wind_shift", "%lf", 0, 1);
+                printf("wind_shift: %lf\n",default_object_list[i].wind_shift);
+
+
 
  
 /*--------------------------------------------------------------*/

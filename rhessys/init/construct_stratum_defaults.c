@@ -158,7 +158,8 @@ struct stratum_default *construct_stratum_defaults(
 			fprintf(stderr, "\nWARNING construct_stratum_defaults");
 			fprintf(stderr, "\n  leaf litter C:N < leaf C:N");
 		}
-		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 1.0, 1);
+		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 0.7, 1);
+		default_object_list[i].epc.cpool_mort_fract = getDoubleParam(&paramCnt, &paramPtr, "epc.cpool_mort_fract", "%lf", 0.001, 1);
 		default_object_list[i].epc.froot_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.froot_turnover", "%lf", 0.27, 1);
 
 		if  ((default_object_list[i].epc.veg_type == GRASS) || (default_object_list[i].epc.veg_type == C4GRASS)) {
@@ -393,6 +394,10 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.shade_sla_mult = 1.0;
 
 
+		/*--------------------------------------------------------------*/
+		/* some low statured understory may do better with an alternative ra/ga conductance model */
+		/*--------------------------------------------------------------*/
+		default_object_list[i].epc.alternative_ra_surface = getIntParam(&paramCnt, &paramPtr, "epc.alternative_ra_surface", "%d", 0, 1);
 
 	     /*--------------------------------------------------------------*/
                 /* set sunlit and shaded if not available    netpabs, gl_smax,  flnr            */

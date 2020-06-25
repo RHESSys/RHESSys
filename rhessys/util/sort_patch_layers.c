@@ -35,7 +35,7 @@ void sort_patch_layers( struct patch_object *patch)
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int i, j,k;
+	int s, i, j,k;
 	int list_bottom;
 	double cover_fraction;
 	/*--------------------------------------------------------------*/
@@ -140,11 +140,18 @@ void sort_patch_layers( struct patch_object *patch)
 		/*		Report a fatal error if the cover fraction for	*/
 		/*		this layer does not add to 1.0			*/
 		/*--------------------------------------------------------------*/
-		if ( cover_fraction > 1.0 ){
-			/*printf( "\nFATAL ERROR: in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
+		if (( cover_fraction > 1.0 ) && ( patch[0].layers[i].height > ZERO)){
+			printf( "\n in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
 				patch[0].layers[i].height);
-			printf("\n for patch %d, cover fraction %lf\n", patch[0].ID, cover_fraction);
-			patch[0].layers[i].null_cover = 0.0;*/
+			printf("\n for patch %d, cover fraction %lf adjusting by reducing cover fractions for %d strata", patch[0].ID, cover_fraction,
+					patch[0].layers[i].count);
+		
+			for ( s = 0; s < patch[0].layers[i].count; s++) {
+				patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].cover_fraction = 1.0/patch[0].layers[i].count;
+				printf(" \n Cover fraction for patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].ID is now %lf", 
+					patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].cover_fraction);
+				}
+			patch[0].layers[i].null_cover = 0.0;
 		}
 		else {
 			patch[0].layers[i].null_cover = 1.0 - cover_fraction;

@@ -34,6 +34,7 @@ rhessys/.vscode
 
 # OS X extended attribute stores
 .DS_Store
+.DS_Store*
 
 # Editor leftovers
 *~
@@ -43,7 +44,9 @@ rhessys/.vscode
 libwmfire.dylib
 libwmfire.so
 
+# R
 .Rproj.user
+.Rhistory
 
 # vscode 
 rhessys/.vscode

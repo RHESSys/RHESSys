@@ -142,7 +142,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../util/WMFireInterface.h" /* required for fire spread*/
+//#include "../../util/WMFireInterface.h" /* required for fire spread*/
+#include "WMFireInterface.h" /* required for fire spread*/
 /*----------------------------------------------------------*/
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
@@ -1489,7 +1490,7 @@ struct  soil_c_object
 
 struct  soil_n_object
         {
-    int nlimit;                         /* DIM (0 or 1) */
+    double nlimit;                         /* DIM (0 or 1) */
     double  fract_potential_immob;                              /* DIM (0-1) */
     double fract_potential_uptake;                              /* DIM (0-1) */
     double totaln;         /* (kgN/m2) total soil  N    */
@@ -2384,8 +2385,8 @@ struct epvar_struct
         double fwood; /* 0-1 */
 
         /* gross PSN input */
-    double assim_sunlit; /* (kgC/m2/s per leaf) */
-    double assim_shade; /* (kgC/m2/s per leaf) */
+    double assim_sunlit; /* (umol/m2/s per leaf) */
+    double assim_shade; /* (umol/m2/s  per leaf) */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
     double potential_psn_to_cpool;    /* (kgC/m2/d) potential gross photosynthesis */
     double DOC_to_gw;   /* (kgC/m2/day) */
@@ -2481,7 +2482,7 @@ struct epvar_struct
 /* nitrogen state variables (including sums for sources and sinks) */
  struct nstate_struct
 {
-    int    nlimit;          /* (0-1) 0 is not limited on that day */
+    double    nlimit;          /* (0-1) 0 is not limited on that day */
     double preday_totaln;   /* (kgN/m2) previous days plant nitrogen total */
     double totaln;          /* (kgN/m2) previous days plant nitrogen total */
     double npool;           /* (kgN/m2) temporary plant N pool */
@@ -2656,6 +2657,7 @@ struct epconst_struct
         double gs_psi_range;       /* (mPa)  psi range for leaf onset */
         double gs_ravg_days;       /* (days)  length of averaging window for gs controls  */
 	double gsi_thresh;	/* (0 to 1) gsi threshold for initiating phenological change */
+	double cpool_mort_fract;  /* (0 to 1) net carbohydrate store proportion of total biomass below which mortality occurs */
         int gs_npp_on;          /* (1 or 2) determines whether dynamic drought senescence is turned on */
         double gs_npp_slp;          /* slope of nppcum/litfall start curve */
         double gs_npp_intercpt;	   /* intercept of nppcum/litfall start curve */
@@ -2673,6 +2675,7 @@ struct epconst_struct
         int edible;             /* (DIM) set to 1 for edible plants */
         int  Tacclim;           /* (DIM) set to 1  for temperature acclimation of respiration Q10  */
 	int zero_turnover_sprouts; /* (DIM) set to 1 to turn this feature on - turnover 0 for young plants */
+	int alternative_ra_surface; /* (DIM) set to 1 to turn this use of compute_ra_surface for low stature understory */
     double gr_perc;        /* (DIM 0-1) percent of growth allocated to respiration */
     double leaf_turnover;     /* (1/yr) annual leaf turnover fraction */
     double livewood_turnover; /* (1/yr) annual live wood turnover fraction */
@@ -2885,6 +2888,7 @@ struct  canopy_strata_object
         double  gxylem;                                          /* m/s          */
         double  gplant_sunlit;                                          /* m/s          */
         double  gplant_shade;                                          /* m/s          */
+        double  Kstar_potential_both;                                   /* Kj/(m2*day)  */
         double  Kstar_direct;                                   /* Kj/(m2*day)  */
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
         double  Lstar;                                          /* Kj/(m2*day)  */
