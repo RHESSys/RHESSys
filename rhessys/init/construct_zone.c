@@ -158,6 +158,13 @@ struct zone_object *construct_zone(
 	zone[0].e_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",-9999,0);
 	zone[0].w_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",-9999,0);
 	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"zone_n_basestations","%d",0,0);	
+	/*--------------------------------------------------------------*/
+	/* check for negative horizons - these may occur if using a GIS function that is computing topographic rather than */
+	/* sun horizons - for us, those will be zero			*/
+	/*--------------------------------------------------------------*/
+
+	if (zone[0].e_horizon < ZERO) zone[0].e_horizon = 0.0;
+	if (zone[0].w_horizon < ZERO) zone[0].w_horizon = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/* if using stem density to change e and w horizons need to remember originals */
