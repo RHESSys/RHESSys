@@ -87,7 +87,9 @@ void    compute_shaded_kdown(   struct  patch_object    *patch,
 
             if (command_line[0].verbose_flag == -6) printf("| Pct reduction %f | Kdown direct %f -> %f |\n", 
                 adj_pct, patch[0].Kdown_direct, patch[0].Kdown_direct * (1 - adj_pct));
+
             patch[0].Kdown_direct *= (1 - adj_pct);
+            patch[0].PAR_direct *= (1 - adj_pct);
         }
     }
 

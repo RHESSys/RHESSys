@@ -421,7 +421,7 @@ struct zone_object *construct_zone(
 
 		for (i = 0; i < zone[0].num_patches; i++) // iterate through patches
 		{
-			count = 0; // count duplicates
+			count = 1; // count duplicates
 			for (j = i + 1; j < zone[0].num_patches; j++) // iterate through all patches after patch i
 			{
 				if (zone[0].patches[i][0].family_ID == zone[0].patches[j][0].family_ID) // if theres a duplicate
