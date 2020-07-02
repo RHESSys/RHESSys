@@ -158,21 +158,20 @@ void zone_daily_I(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
-
-    void climate_interpolation(
-        struct	command_line_object	*command_line,
-        struct	world_object	*world,
-        int	    num_world_base_stations,
-        struct	base_station_object **world_base_stations,
-        struct	zone_object 	*zone_temp,
-        long    day);
+       void climate_interpolation(
+                struct	command_line_object	*command_line,
+                struct	world_object	*world,
+                int	num_world_base_stations,
+                struct	base_station_object **world_base_stations,
+                struct	zone_object 	*zone_temp,
+                long day);
 
 
 	double normdist(double, double);
 
 	double unifdist(double, double);
 
-	long  julday(struct date);
+	long  julday(struct date);	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -185,14 +184,11 @@ void zone_daily_I(
 	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
 	int		season;
 	season = 0;
-
+	
 	int	inx;
 	struct	dated_sequence	clim_event;
-	int num_world_base_stations;
 
 
-
-    num_world_base_stations = world[0].num_base_stations;
 	zone[0].rain_hourly_total = 0.0;
 	zone[0].snow_hourly_total = 0.0;
         zone[0].rain_interpolate = 0.0;
@@ -240,7 +236,7 @@ void zone_daily_I(
 
 		}
 		else {
-			isohyet_adjustment =
+			isohyet_adjustment = 
 			zone[0].base_stations[i][0].daily_clim[0].lapse_rate_precip[day]*z_delta + 1.0;
 			}
 
@@ -270,21 +266,21 @@ void zone_daily_I(
 		if ((command_line[0].precip_scale_flag > 0) && (temp > 0.0)) {
 
 			if (temp < zone[0].defaults[0][0].psen[PTHRESH])   {
-				if (zone[0].defaults[0][0].psen[PTYPELOW] > 0)
+				if (zone[0].defaults[0][0].psen[PTYPELOW] > 0) 
 					isohyet_adjustment = exp(normdist(zone[0].defaults[0][0].psen[P1LOW], zone[0].defaults[0][0].psen[P2LOW]))*z_delta + 1.0;
 				else
 					isohyet_adjustment = z_delta * unifdist(zone[0].defaults[0][0].psen[P1LOW], zone[0].defaults[0][0].psen[P2LOW]) + 1;
 			}
 			else {
-				if (zone[0].defaults[0][0].psen[PTYPEHIGH] > 0)
-
+				if (zone[0].defaults[0][0].psen[PTYPEHIGH] > 0) 
+				
 					isohyet_adjustment = exp(normdist(zone[0].defaults[0][0].psen[P1HIGH], zone[0].defaults[0][0].psen[P2HIGH]))*z_delta + 1.0;
-
+						
 				else
 					isohyet_adjustment = z_delta * unifdist(zone[0].defaults[0][0].psen[P1HIGH], zone[0].defaults[0][0].psen[P2HIGH]) + 1;
 			}
 
-			if (isohyet_adjustment < ZERO)
+			if (isohyet_adjustment < ZERO) 
 				isohyet_adjustment = 0.0;
 		} /* end stocastic noise addition */
 
@@ -298,35 +294,35 @@ void zone_daily_I(
 		/* 	temperature lapse rates with elevation can be daily values or constant (zone defaults) 		*/
 		/*--------------------------------------------------------------*/
 
-
+		
                  //
 		if (command_line[0].gridded_netcdf_flag==1 && zone[0].defaults[0][0].grid_interpolation==1){
-           temp = zone[0].tmin_interpolate; // climate data interpolation
+                         temp = zone[0].tmin_interpolate; // climate data interpolation
 		}
 		else {
-             temp = zone[0].base_stations[i][0].daily_clim[0].tmin[day];
+                        temp = zone[0].base_stations[i][0].daily_clim[0].tmin[day];
 		}
 		if (temp != -999.0) {
-		   if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin == NULL) {
-			  if (zone[0].rain > ZERO)
-                 Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
-			  else
-				 Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tmin;
-			     zone[0].metv.tmin = temp - Tlapse_adjustment;
-		    }
-		else {
-			 Tlapse_adjustment = z_delta *
-             zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin[day];
-			 zone[0].metv.tmin = temp - Tlapse_adjustment;
-		 }
-			 flag++;
+		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin == NULL) {
+			if (zone[0].rain > ZERO)
+				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
+			else
+				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tmin;
+			zone[0].metv.tmin = temp - Tlapse_adjustment;
 		}
-
+		else {
+			Tlapse_adjustment = z_delta * 
+				zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin[day];
+			zone[0].metv.tmin = temp - Tlapse_adjustment;
+		}
+			flag++;
+		}
+			
 		if (command_line[0].gridded_netcdf_flag==1 && zone[0].defaults[0][0].grid_interpolation==1){
-            temp = zone[0].tmax_interpolate; }
-        else {
-            temp = zone[0].base_stations[i][0].daily_clim[0].tmax[day];
-        }
+                         temp = zone[0].tmax_interpolate; }
+                else {
+                         temp = zone[0].base_stations[i][0].daily_clim[0].tmax[day];
+                }
 
 		if (temp != -999.0) {
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax == NULL) {
@@ -338,7 +334,7 @@ void zone_daily_I(
 			flag++;
 		}
 		else {
-			Tlapse_adjustment = z_delta *
+			Tlapse_adjustment = z_delta * 
 				zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax[day];
 			zone[0].metv.tmax = temp - Tlapse_adjustment;
 			flag++;
@@ -349,7 +345,7 @@ void zone_daily_I(
 			zone[0].metv.tmax += command_line[0].tmax_add;
 			zone[0].metv.tmin += command_line[0].tmin_add;
 			}
-        i++;
+        i++;                                                               
 	} /*end while*/
 	/*--------------------------------------------------------------*/
 	/*	Check if we filled in all of the critical parameters.		*/
@@ -419,14 +415,14 @@ void zone_daily_I(
 	zone[0].wind = -999.0;
 	zone[0].wind_direction = -999.0;
 	zone[0].LAI_scalar = -999.0;
-
+	
 	/* Re-use z_delta */
     /*seems there is an asumption that each zone has one station.*/
     if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
 		z_delta = 0.0;
 	}
-	else z_delta = zone[0].z - zone[0].base_stations[0][0].z;
-
+	else z_delta = zone[0].z - zone[0].base_stations[0][0].z;	
+	
 	/*--------------------------------------------------------------*/
 	/*	Check if the first base station has the sequence.			*/
 	/*--------------------------------------------------------------*/
@@ -436,8 +432,8 @@ void zone_daily_I(
 	/*	If snow is not available we estimate it at the end of the 	*/
 	/*	day based on end of day temperatures						*/
 	/*--------------------------------------------------------------*/
-
-
+	
+	
 	if ( zone[0].base_stations[0][0].daily_clim[0].snow != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].snow[day];
 		if ( temp != -999.0 ){
@@ -512,7 +508,7 @@ void zone_daily_I(
 	}
 	else{
 		zone[0].cloud_opacity = 0.8;
-	}
+	}	
 	/*--------------------------------------------------------------*/
 	/*	Delta_T														*/
 	/*																*/
@@ -541,8 +537,8 @@ void zone_daily_I(
 				zone[0].Delta_T =	zone[0].Delta_T * 0.75;
 			}
 		} /*end if else*/
-
-
+		
+				
 	}
 	else{
 		zone[0].Delta_T = zone[0].metv.tmax - zone[0].metv.tmin;
@@ -560,8 +556,8 @@ void zone_daily_I(
 	/* but warn user of problem with their climate inputs		*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].Delta_T < -ZERO) {
-		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d, for basestation %d",
-			current_date.day, current_date.month, current_date.year, zone[0].base_stations[0][0].ID);
+		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d, for basestation %d", 
+			current_date.day, current_date.month, current_date.year, zone[0].base_stations[0][0].ID); 
 		printf("\n WARNING: differences are %lf, tmax is %lf, tmin is %lf, ID is %d",
 			zone[0].Delta_T, zone[0].metv.tmax, zone[0].metv.tmin, zone[0].ID);
 		zone[0].Delta_T = zone[0].Delta_T * -1.0;
@@ -755,7 +751,7 @@ void zone_daily_I(
 		temp = zone[0].base_stations[0][0].daily_clim[0].tavg[day];
 		if ( temp != -999.0 ){
 			if (zone[0].base_stations[0][0].daily_clim[0].lapse_rate_tavg == NULL) {
-				if (zone[0].rain > ZERO)
+				if (zone[0].rain > ZERO) 
 					Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
 				else
 					Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tavg;
@@ -912,7 +908,7 @@ void zone_daily_I(
 			zone[0].atm_trans =
 				zone[0].defaults[0][0].sea_level_clear_sky_trans
 				+ zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate;
-
+				
 			/*--------------------------------------------------------------*/
 			/*			convert clear sky transmissivity to bulk transmissivity	*/
 			/*																*/
@@ -929,7 +925,7 @@ void zone_daily_I(
 			/*			it as a default variable for each zone.  We might be 	*/
 			/*			able to change the value by a tec event.  				*/
 			/*--------------------------------------------------------------*/
-
+						
 			if ( zone[0].cloud_fraction == -999.0 ){
 
 		/*----------------------------------------------------------------------*/
@@ -937,7 +933,7 @@ void zone_daily_I(
 		/*  if provided. Override trans_coeff1 if -999.0 and make it a			*/
 		/*	function of delta T.												*/
 		/*----------------------------------------------------------------------*/
-
+				
 				/* Determine what season we are in: summer (1) or winter (2) or non-seasonal (0).				*/
 				/* Flexibility to deal with northern or southern hemisphere seasons.		*/
 				if (zone[0].defaults[0][0].trans_startmonth_sum < zone[0].defaults[0][0].trans_startmonth_win) {
@@ -954,7 +950,7 @@ void zone_daily_I(
 						else season = 1; /* summer */
 					} /* else summer start month and winter start month are same so we default back to non-seasonal 0 */
 				}
-
+				
 				/* If it is summer and summer params provided, use them. */
 				if ( (season == 1) && (zone[0].defaults[0][0].trans_coeff1_sum != -999.0) && (zone[0].defaults[0][0].trans_coeff2_sum != -999.0) ) {
 						trans_coeff1 = zone[0].defaults[0][0].trans_coeff1_sum;
@@ -970,23 +966,23 @@ void zone_daily_I(
 					else {
 						if ( zone[0].defaults[0][0].trans_coeff1 == -999.0 )
 							trans_coeff1 = 0.036 * exp(-0.154 * zone[0].Delta_T);
-						else
+						else 
 							trans_coeff1 = zone[0].defaults[0][0].trans_coeff1;
 						trans_coeff2 = zone[0].defaults[0][0].trans_coeff2;
 					}
 				}
-
+				
 				/* Bristow & Campbell Eqn */
 				zone[0].atm_trans = zone[0].atm_trans
 								* ( 1.0 - exp( -1 * trans_coeff1
 								* pow(zone[0].Delta_T,trans_coeff2)));
-
+								
 				/*----------------------------------------------------------------------*/
 				/* Other Parameterizations for Bristow & Campbell */
 				/*trans_coeff1 = 2269.3 * exp(-1.54 * zone[0].Delta_T);  parameterized for Niwot Ridge */
 				/*trans_coeff1 = 403.3 * exp(-1.33 * zone[0].Delta_T);  parameterized for Niwot Ridge */
 				/*trans_coeff1 = zone[0].defaults[0][0].trans_coeff1;  using def file param */
-
+				
 				/* Bristow & Campbell PARAMS NIW 8M */
 				/*if (current_date.month>=6 && current_date.month<=10) {
 					trans_coeff1 = 0.075;
@@ -996,7 +992,7 @@ void zone_daily_I(
 					trans_coeff1 = 0.50;
 					trans_coeff2 = 0.49;
 					}
-
+				 
 				  Bristow & Campbell SEAS PARAMS NIW 21m w/ 1mm precip adjustment */
 				/*if (current_date.month>=6 && current_date.month<=10) {
 					trans_coeff1 = 0.152;
@@ -1010,7 +1006,7 @@ void zone_daily_I(
 				/* Bristow & Campbell ANNUAL PARAMS NIW 21m w/ 1mm precip adjustment */
 				/*trans_coeff1 = 0.317;
 				trans_coeff2 = 0.731;*/
-
+				
 				/*----------------------------------------------------------------------*/
 				/* ALTERNATIVE FORMULATION: Donatelli & Campbell Eqn */
 				/*trans_coeff1 = 0.70;
@@ -1020,8 +1016,8 @@ void zone_daily_I(
 				 * ( 1.0 - exp( -1 * trans_coeff1 * fn_tavg
 				 * pow(zone[0].Delta_T,2) * exp(zone[0].metv.tmin/trans_coeff2)));*/
 				/*----------------------------------------------------------------------*/
-
-
+				
+				
 				zone[0].Kdown_direct_adjustment = 1.0;
 				zone[0].Kdown_diffuse_adjustment = 1.0;
 				zone[0].cloud_fraction = 1.0 - zone[0].atm_trans
@@ -1049,7 +1045,7 @@ void zone_daily_I(
 				zone[0].atm_trans = (1.0 - zone[0].cloud_fraction)
 										* (zone[0].defaults[0][0].sea_level_clear_sky_trans
 										   + zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate);
-			} /*end if*/
+			} /*end if*/			
 		} /*end if*/
 		else {
 			/* Case where transmissivity is given so use it to calculate cloud fraction */
@@ -1062,9 +1058,9 @@ void zone_daily_I(
 			zone[0].cloud_fraction = min(zone[0].cloud_fraction,1.0);
 			zone[0].cloud = zone[0].cloud_opacity * zone[0].cloud_fraction * 12.0;
 		}
-
+		
 	} /*end if*/
-
+	
 	/* CASE WHERE KDOWNS ARE GIVEN:													*/
 	/* If Kdowns are given, set transmissivity to 1 to calculate "no atmosphere"	*/
 	/* Kdowns. Then use ratio between observed and "no atmosphere" to calculate		*/
@@ -1076,20 +1072,20 @@ void zone_daily_I(
 	}
 
 
-
+	
 	if (command_line[0].verbose_flag == -5) {
 		printf("\n%ld %ld %ld -335.1 ",
 			   current_date.year, current_date.month, current_date.day);
-		printf("\nZONE_I: precip=%lf cloudfrac=%lf Kdir_adj=%lf Kdif_adj=%lf trans=%lf tcoeff1=%lf tcoeff2=%lf",
-			   zone[0].snow + zone[0].rain,
-			   zone[0].cloud_fraction,
+		printf("\nZONE_I: precip=%lf cloudfrac=%lf Kdir_adj=%lf Kdif_adj=%lf trans=%lf tcoeff1=%lf tcoeff2=%lf", 
+			   zone[0].snow + zone[0].rain, 
+			   zone[0].cloud_fraction, 
 			   zone[0].Kdown_direct_adjustment/86.4,
-			   zone[0].Kdown_diffuse_adjustment/86.4,
+			   zone[0].Kdown_diffuse_adjustment/86.4, 
 			   zone[0].atm_trans,
 			   trans_coeff1,
 			   trans_coeff2);
 	}
-
+	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches 									*/
 	/*--------------------------------------------------------------*/

@@ -37,7 +37,7 @@ struct zone_default *construct_zone_defaults(
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t, char *, char *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
@@ -53,14 +53,14 @@ struct zone_default *construct_zone_defaults(
 	double	ftmp;
         param *paramPtr = NULL;
         int paramCnt = 0;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.			*/
 	/*--------------------------------------------------------------*/
 	default_object_list = (struct zone_default *)
 		alloc(num_default_files * sizeof(struct zone_default),
 		"default_object_list","construct_zone_defaults");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
@@ -132,6 +132,17 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].psen[P2HIGH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p2high", "%lf", 0.0, 1);
 		default_object_list[i].ravg_days= 		getDoubleParam(&paramCnt, &paramPtr, "ravg_days", "%lf", 6.0, 1);
 
+        /*--------------------------------------------------------------*/
+        /* read in the searching distance and grid cell resolution      */
+        /* this is for interpolation of climate data                    */
+        /*--------------------------------------------------------------*/
+
+        default_object_list[i].search_x = getDoubleParam(&paramCnt, &paramPtr, "search_x", "%lf", 3376.0, 1); // the default value is for DayMet data which has grid around 4km by 4km
+        default_object_list[i].search_y = getDoubleParam(&paramCnt, &paramPtr, "search_y", "%lf", 4638.0, 1);
+        default_object_list[i].res_patch = getDoubleParam(&paramCnt, &paramPtr, "res_patch", "%lf", 100, 1);
+            printf("\n the searching distance x %lf, searching distance y %lf, patch_res %lf \n", default_object_list[i].search_x, default_object_list[i].search_y, default_object_list[i].res_patch);
+        default_object_list[i].grid_interpolation = getIntParam(&paramCnt, &paramPtr, "grid_interpolation", "%d", 0,1); //change the default to not do interpolation NREN 2019/1019
+            printf("\n the netcdf grid data interploation is %d \n", default_object_list[i].grid_interpolation);
 
 		/*--------------------------------------------------------------*/
 		/* read any optional (tagged) defaults here			*/
@@ -159,14 +170,14 @@ struct zone_default *construct_zone_defaults(
                 char *y = NULL;
                 char *token = NULL;
                 char filename[256];
-    
+
                 // Store filename portion of path in 't'
                 while ((token = strtok(s, "/")) != NULL) {
                     // Save the latest component of the filename
                     strcpy(filename, token);
                     s = NULL;
-                } 
-    
+                }
+
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
@@ -175,9 +186,9 @@ struct zone_default *construct_zone_defaults(
                 if (token != NULL) {
                     strcpy(filename, token);
                 }
-        
+
                 memset(outFilename, '\0', filenameLen);
-    
+
             // Concatenate the output prefix with the filename of the input .def file
             // and "_zone.params"
             if (command_line[0].output_prefix != NULL) {
@@ -187,7 +198,7 @@ struct zone_default *construct_zone_defaults(
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_zone.params");
-            } 
+            }
             else {
                 if (filename != NULL) {
                     strcat(outFilename, "_");
@@ -195,12 +206,12 @@ struct zone_default *construct_zone_defaults(
                 }
                 strcat(outFilename, "zone.params");
             }
-    
+
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 
                 if (paramPtr != NULL)
                     free(paramPtr);
-		    
+
 	return(default_object_list);
 } /*end construct_zone_defaults*/

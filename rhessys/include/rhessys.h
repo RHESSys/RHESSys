@@ -963,6 +963,12 @@ struct  zone_default
         double  psen[7];
         double  ravg_days; /* (days) number of days for running average */
         struct  zone_grow_default       *grow_defaults;
+   //add the searching distance for climate data interpolation
+        double search_x;                                /* meters */
+        double search_y;                                /* meters */
+        double res_patch;                               /* meters */
+        int    grid_interpolation                       /* 0/1    */ // 0 no interpolation of grid climate data
+
         };
 
 /*----------------------------------------------------------*/
@@ -997,6 +1003,14 @@ struct zone_object
         double  x;                                      /* meters       */
         double  y;                                      /* meters       */
         double  z;                                      /* meters       */
+      //add utm x, y, z,
+        double x_utm;                                   /*meters        */
+        double y_utm;                                   /*meters        */
+        double z_utm;                                   /*meters        */
+        double rain_interpolate;                          //rain after interpolation
+        double tmax_interpolate;                        //tmax after interpolation
+        double tmin_interpolate;                        //tmin after interpolation
+
         double  area;                                   /*      m2      */
         double  aspect;                                 /* degrees      */
         double  atm_trans;                                  /* 0 - 1    */
@@ -1591,7 +1605,7 @@ struct patch_object
         int             zone_ID;
         int             default_flag;
         int             ID;
-        int             family_ID;     
+        int             family_ID;
         int             num_base_stations;
         int             num_innundation_depths;
         int             num_canopy_strata;
@@ -2107,6 +2121,8 @@ struct  command_line_object
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
+        char    ncgridinterp_flag; //for nc grid climate data interpolation
+        int     utm_zone;           //for nc grid climate data interpolation
 		char 	firegrid_patch_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
 		char 	firegrid_dem_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
         double  tmp_value;
