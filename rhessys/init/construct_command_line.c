@@ -102,7 +102,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
-	command_line[0].vmort_flag = 0;
+	command_line[0].vmort_flag = 1;
 	command_line[0].version_flag = 0;
 	command_line[0].vsen[M] = 1.0;
 	command_line[0].vsen[K] = 1.0;
@@ -194,17 +194,8 @@ struct	command_line_object	*construct_command_line(
 			/*------------------------------------------*/
 			/*Check if the variable mortality flag is next.           */
 			/*------------------------------------------*/
-			else if ( strcmp(main_argv[i],"-vmort") == 0 ){
-				command_line[0].vmort_flag = 1;
-				i++;
-				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
-					fprintf(stderr,"FATAL ERROR: Value for vmort flag not specified\n");
-					exit(EXIT_FAILURE);
-				} /*end if*/
-				/*-------------------------------*/
-				/*Read in the tmp value		*/
-				/*-------------------------------*/
-				command_line[0].cpool_mort_fract = (double)atof(main_argv[i]);
+			else if ( strcmp(main_argv[i],"-vmort_off") == 0 ){
+				command_line[0].vmort_flag = 0;
 				i++;
 			}
 			/*------------------------------------------*/
@@ -1212,6 +1203,23 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].multiscale_flag = 1;
 				i++;
 			}
+
+			/*----------------------------------------------------------*/
+			/* climate interpolation UTM zone options  N.R 20190610     */
+			/*----------------------------------------------------------*/
+			else if (strcmp(main_argv[i], "-ncgridinterp") ==0 ) {
+                 printf("\n Netcdf grid climate data interpolation utm zone should combine with necdfgrid command line \n");
+                 command_line[0].ncgridinterp_flag =1;
+                 i++;
+                 command_line[0].utm_zone = 12; // default is utm n 12 zone
+			// read in the utm parameters
+			if ((i != main_argc) && (valid_option(main_argv[i])==0) ){
+			     command_line[0].utm_zone = (double)atof(main_argv[i]);
+			     i++;
+				}/*end if*/
+				 printf("\n The UTM Zone specified by user is UTM N%d \n", command_line[0].utm_zone);
+			}/* end if */
+
 
 			/*--------------------------------------------------------------*/
 			/*	NOTE:  ADD MORE OPTION PARSING HERE.						*/

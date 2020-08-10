@@ -649,6 +649,13 @@ void	canopy_stratum_daily_F(
 	}
 
 
+	
+		/* save the radiation that is absorbed by leaf (sensible and latent) */
+  	stratum[0].Kstar_potential_both = stratum[0].Kstar_direct+stratum[0].Kstar_diffuse;
+
+		
+
+
 	if ( stratum[0].Kstar_direct < -1 ) {
 			printf("CANOPY_START ID=%d: pai=%lf snowstor=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n",
 				   stratum[0].ID,
@@ -744,6 +751,11 @@ void	canopy_stratum_daily_F(
 					printf("\nCASE3");
 				}
 				windcan = wind;
+			/*--------------------------------------------------------------*/
+			/* for mosses and other low stature veg an alternative ra model can be used */
+			/*--------------------------------------------------------------*/
+
+				if (stratum[0].defaults[0][0].epc.alternative_ra_surface == 1) {
 				stratum[0].ga = 1.0 /
 					compute_ra_surface(
 					command_line[0].verbose_flag,
@@ -752,6 +764,20 @@ void	canopy_stratum_daily_F(
 					stratum[0].epv.height,
 					layer[0].base,
 					&(ga));
+				}
+
+				else {
+
+				stratum[0].ga = 1.0 /
+					compute_ra_understory(
+					command_line[0].verbose_flag,
+					stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
+					&(wind),
+					stratum[0].epv.height,
+					layer[0].base,
+					&(ga));
+				}
+
 				windsnow = wind;
 				gasnow = ga;
 			}
@@ -767,6 +793,8 @@ void	canopy_stratum_daily_F(
 		stratum[0].ga = 0.0;
 	}
 
+
+	
 	/*--------------------------------------------------------------*/
 	/*	Factor in stability correction.				*/
 	/*--------------------------------------------------------------*/
@@ -1522,6 +1550,10 @@ void	canopy_stratum_daily_F(
 		/* Remove energy for tracking purposes, although not accurate since we are */
 		/* transferring this energy into sensible heat. */
 		/* ASSUMES ONLY NEGATIVE FLUX CAN BE LSTAR... SURFACE HEAT?? */
+
+		/* save the radiation that is absorbed by leaf (sensible and latent) */
+		stratum[0].Kstar_potential_both = stratum[0].Kstar_direct+stratum[0].Kstar_diffuse;
+
 		if (Rnet_used > 0.0) {
 			if ( (stratum[0].Lstar > 0) && (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux > 0) ){
 				fraction_L_used = stratum[0].Lstar

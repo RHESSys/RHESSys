@@ -44,17 +44,45 @@ int compute_annual_litfall(
 	/*------------------------------------------------------*/
 	
 	int ok=1;
+	double leaf_turnover, froot_turnover;
+	/*------------------------------------------------------*/
+	/* include an option for resprouts to have no turn over */
+	/*------------------------------------------------------*/
+
+
+	leaf_turnover = epc.leaf_turnover;	
+	if ((epc.leaf_turnover > ZERO) && (epc.zero_turnover_sprouts==1)) { 
+		if (cs->age <= 1/epc.leaf_turnover)
+			leaf_turnover = 0.0;
+		else
+			leaf_turnover = epc.leaf_turnover;
+
+	}
+
+	froot_turnover = epc.froot_turnover;	
+	if ((epc.froot_turnover > ZERO) && (epc.zero_turnover_sprouts==1)) { 
+		if (cs->age <= 1/epc.froot_turnover)
+			froot_turnover = 0.0;
+		else
+			froot_turnover = epc.froot_turnover;
+
+	}
+
+
+	
 	/* leaf and fine root litfall */
 	if (epc.phenology_type == EVERGREEN) {
-		phen->leaflitfallc = (cs->leafc) * epc.leaf_turnover;
+		phen->leaflitfallc = (cs->leafc) * leaf_turnover;
 		if (grow_flag > 0)
-			phen->frootlitfallc = (cs->frootc) * epc.froot_turnover;
+			phen->frootlitfallc = (cs->frootc) * froot_turnover;
 	}
 	else{
 		phen->leaflitfallc = (cs->leafc);
 		if (grow_flag > 0)
-			phen->frootlitfallc = (cs->frootc) * epc.froot_turnover;
+			phen->frootlitfallc = (cs->frootc) * froot_turnover;
 	}
+
+		
 	phen->leaflitfallc_wstress = 0.0;
 	return (!ok);
 } /* end compute_annual_litfall */

@@ -428,6 +428,7 @@ void		patch_daily_F(
 	double snow_melt_covered, snow_melt_exposed;
 	double 	rz_drainage,unsat_drainage;
 	double prop_detention_store_infiltrated;
+	double water_transfer, root_growth;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
@@ -1908,6 +1909,8 @@ void		patch_daily_F(
 	/* in order to restrict denitri/nitrific on non-veg patches type */
 	/* 	tag vegtype							*/	
 	/*--------------------------------------------------------------*/
+        patch[0].rootzone.depth = 0.0;
+
 	vegtype = 0;
   patch[0].target_status = 1;
 
@@ -1975,8 +1978,39 @@ void		patch_daily_F(
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
 			strata->acc_year.psn += strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
+			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
 		}
 	}
+
+
+
+	/*--------------------------------------------------------------*/
+	/* move water associated with root growth 			*/
+	/* if roots go into sat zone the transfer happens automatically */
+	/* when water sources for transpiration are computed 		*/
+	/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
+	/* if roots grow move water from unsat to rz storage		*/
+	/*--------------------------------------------------------------*/
+	root_growth = patch[0].rootzone.depth - patch[0].rootzone.preday_depth;
+	if ((root_growth > ZERO) && (patch[0].sat_deficit_z > patch[0].rootzone.preday_depth) && (patch[0].sat_deficit_z > ZERO)) {
+			water_transfer = patch[0].unsat_storage * root_growth / patch[0].sat_deficit_z;
+			patch[0].rz_storage += water_transfer;
+			patch[0].unsat_storage -= water_transfer; 
+			}
+
+	/*--------------------------------------------------------------*/
+	/* if roots grow (grow is negative ) move water from  rz storage to unsat		*/
+	/*--------------------------------------------------------------*/
+	if ((root_growth < -ZERO) && (patch[0].sat_deficit_z > patch[0].rootzone.preday_depth) && (patch[0].sat_deficit_z > ZERO)) {
+			water_transfer = patch[0].rz_storage * root_growth / patch[0].sat_deficit_z;
+			patch[0].rz_storage += water_transfer;
+			patch[0].unsat_storage -= water_transfer; 
+			}
+
+	/* printf("\n ID %d, growth from %lf to %lf  water_transfer %lf, rz %lf", patch[0].ID, patch[0].rootzone.preday_depth, patch[0].rootzone.depth, 
+		water_transfer, patch[0].rz_storage); */
+
 	/*-------------------------------------------------------------------------*/
 	/*	Compute current actual depth to water table				*/
 	/*------------------------------------------------------------------------*/

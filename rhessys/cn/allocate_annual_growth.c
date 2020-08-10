@@ -39,7 +39,6 @@ int allocate_annual_growth(				int id,
 							int default_ID,
 							int vmort_flag,
 							double cover_fraction,
-							double cpool_mort_fract,
 						   struct epvar_struct *epv,
 						   struct cdayflux_struct *cdf,
 						   struct cstate_struct *cs,
@@ -111,7 +110,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	/*	check to make sure LAI is not greater than user specified */
 	/*	max lai (note LAI here does NOT take into account sunlit */
-	/*	shaded compenent - so LAI output by RHESSys may sometime */
+	
 	/*	get to be slightly higher than specified max LAI */
 	/*	carbon in excess of that required for max LAI */
 	/*	is re-allocated to stemwood; for grasses it is allocated to roots */
@@ -184,14 +183,10 @@ int allocate_annual_growth(				int id,
          }
 
 	total_store =  cs->cpool;
-	
-	/* Changed to just be live C */
-	/*total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->dead_stemc +
-			cs->live_crootc + cs->dead_crootc);*/
-	if (cs->cpool > ZERO) 
-	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool);
-	else
-	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc);
+	if (epc.veg_type == TREE){
+			total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool + cs->dead_stemc + cs->dead_crootc);}
+		else {
+			total_biomass =  (cs->leafc + cs->frootc + cs->cpool );}
 
 	/* Changed to just be live C */
 	/*total_above_biomass =  cs->leafc+cs->dead_stemc+cs->live_stemc;*/
@@ -218,9 +213,15 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 
 	cs->mortality_fract = 0.0;
-	if ((total_store < cpool_mort_fract*total_biomass) && (total_biomass > ZERO) && (cs->age > 1) && (vmort_flag == 1)) {
+
+
+	if (((total_store < epc.cpool_mort_fract*total_biomass) || (cs->cpool < ZERO))  && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
-		excess_carbon = 1.0 - total_store/(cpool_mort_fract*total_biomass);
+
+		if (cs->cpool > ZERO)
+			excess_carbon = 1.0 - total_store/(epc.cpool_mort_fract*total_biomass);
+		else
+			excess_carbon = 1.0;
 		excess_carbon = max(excess_carbon,0);
 		excess_carbon = min(1.0,excess_carbon);
 		cs->mortality_fract = excess_carbon;
@@ -446,7 +447,7 @@ int allocate_annual_growth(				int id,
 		printf("\n Resprouting stratum %d", id);
 		cs->num_resprout += 1;
 		cs->age = 0.0;
-		cs->cpool = epc.resprout_leaf_carbon*2;
+		cs->cpool = epc.resprout_leaf_carbon;
 		ns->npool = cs->cpool/epc.leaf_cn;
 		cs->leafc_store = epc.resprout_leaf_carbon;
 		cs->frootc_store = cs->leafc_store * epc.alloc_frootc_leafc;
@@ -458,12 +459,14 @@ int allocate_annual_growth(				int id,
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
 		cs->leafc_transfer = 0.0;
 		cs->leafc = 0.0;
+		cs->frootc_transfer = 0.0;
+		cs->frootc = 0.0;
 		cs->leafc_age1 = 0.0;
 		cs->leafc_age2 = 0.0;
-		cs->frootc_transfer = 0.0;
 		ns->leafn_transfer = 0.0;
 		ns->frootn_transfer = 0.0;
 		ns->leafn = 0.0;
+		ns->frootn = 0.0;
 		cdf->gresp_store_to_gresp_transfer = 0.0;
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 
@@ -478,6 +481,16 @@ int allocate_annual_growth(				int id,
 			cdf->livestemc_store_to_livestemc_transfer = cs->livestemc_store;
 			ndf->livestemn_store_to_livestemn_transfer = ns->livestemn_store;
 
+			cs->deadcrootc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			ns->deadcrootn_store = cs->deadcrootc_store / epc.deadwood_cn;
+			cdf->deadcrootc_store_to_deadcrootc_transfer = cs->deadcrootc_store;
+			ndf->deadcrootn_store_to_deadcrootn_transfer = ns->deadcrootn_store;
+
+			cs->deadstemc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			ns->deadstemn_store = cs->deadstemc_store / epc.deadwood_cn;
+			cdf->deadstemc_store_to_deadstemc_transfer = cs->deadstemc_store;
+			ndf->deadstemn_store_to_deadstemn_transfer = ns->deadstemn_store;
+
 			cs->live_stemc = 0.0;
 			cs->dead_stemc = 0.0;
 			cs->live_crootc = 0.0;
@@ -486,11 +499,6 @@ int allocate_annual_growth(				int id,
 			ns->dead_stemn = 0.0;
 			ns->live_crootn = 0.0;
 			ns->dead_crootn = 0.0;
-
-			cs->deadstemc_store =  0.0;
-			cs->deadcrootc_store =  0.0;
-			ns->deadstemn_store =  0.0;
-			ns->deadcrootn_store =  0.0;
 
 			cs->livestemc_transfer =  0.0;
 			cs->deadstemc_transfer =  0.0;

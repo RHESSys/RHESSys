@@ -38,6 +38,7 @@ rhessys/.vscode
 # OS X extended attribute stores
 .DS_Store*
 **/.DS_Store*
+.DS_Store
 
 # Editor leftovers
 *~
@@ -47,7 +48,9 @@ rhessys/.vscode
 libwmfire.dylib
 libwmfire.so
 
+# R
 .Rproj.user
+.Rhistory
 
 # made by R func compile_rhessys (should be deleted typically)
 .makefile_tmp

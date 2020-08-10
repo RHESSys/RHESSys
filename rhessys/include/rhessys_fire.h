@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAXSTR 200
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -11,8 +13,6 @@ extern "C" {
 /*******************************************************/
 struct fire_default {
 	int ID;
-	double veg_fuel_weighting;	// A preliminary idea from model development. Never fully implemented, and likely to go away. Intention was to weight vegetation carbon in fuel loading for fire spread
-
 	double ndays_average; // how many days to include in the averaging of patch moisture and load status? Probably not worth tweakings
 	double load_k1; // k1 for the fuel load sigmoid function
 	double moisture_k1; //k1 for the fuel moisture sigmoid function
@@ -40,7 +40,6 @@ struct fire_default {
 	double kappa2_rvm;
 	double p_rvm;	// this gives the proportion of wind direction entries observed within each mode. See R code for techniques to estimate these values. 
 	double ign_def_mod; // modifier for ignition moisture_k2, multiply the threshold deficit by this value
-	int veg_ign; // use vegetation for ignition? If so, use the parameters below. This is a temporary parameter used in development, not likely to be retained in final model
 	double veg_k1; // for ignition use veg fuel, this is a temporary parameter used in development, not likely to be retained in final model. not necessary for spread_calc_type=7 or =9
 	double veg_k2; // for ignition use veg fuel, this is a temporary parameter used in development, not likely to be retained in final model. not necessary for spread_calc_type=7 or =9
 	double mean_ign; // mean number of ignitions per month, for a monthly poisson draw. mandatory parameter value
@@ -51,6 +50,8 @@ struct fire_default {
 	double load_ign_k2;// alternative model for ignition probability under development. Currently not implemented pending evaluation of moisture ignition model
 	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
 	int include_wui; //0 for no WUI grid, 1 for wui grid--0 by default
+	int fire_size_name; // value to append to FireSizes.txt filename. This file is appended to every time WMFire is called. defaults to 1
+	double wind_shift; // shifts the wind direction distribution so the center is pi (splits the modes)
 //	char **patch_file_name;
 };
 

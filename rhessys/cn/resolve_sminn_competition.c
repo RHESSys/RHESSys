@@ -67,6 +67,7 @@ int resolve_sminn_competition(
 	if (rooting_depth > ZERO)
 		perc_inroot = max(0.1, perc_inroot);
 
+
 	sum_avail = perc_inroot * sum_avail;
 
 	if (sum_ndemand <= sum_avail){
