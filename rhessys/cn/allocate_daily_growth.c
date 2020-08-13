@@ -109,6 +109,9 @@ int allocate_daily_growth(int nlimit,
 	fleaf = cdf->fleaf;
 	froot = cdf->froot;
 	fwood = cdf->fwood;
+
+	if (cdf->fcroot > ZERO);
+		fcroot = cdf->fcroot;
 	
 	if ((fleaf + froot) > ZERO) {	
 
