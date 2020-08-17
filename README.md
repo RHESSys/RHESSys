@@ -1,3 +1,11 @@
+```diff
+- SEE NEW CHANGES.
+- NEW CODE MAY NOT BE BACKWARD COMPATIBLE WITH YOUR CURRENT FILES.
+- PLEASE REVIEW INFORMATION ABOUT CHANGES ON THE WHAT'S NEW WIKI PAGE
+```
+https://github.com/RHESSys/RHESSys/wiki/What's-New
+
+
 RHESSys - The Regional Hydro-Ecologic Simulation System
 =======================================================
 
