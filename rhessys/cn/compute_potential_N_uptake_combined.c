@@ -121,10 +121,12 @@ double compute_potential_N_uptake_combined(
 		original dickenson allocation was fleaf=exp(-1*k*lai) use  
 		froot = (1-leaf) for simplicity  
 			--------------------------------------------------------------- */
-		dickenson_k = (epc.waring_pa / (1.0 - epc.waring_pb * (cdf->psn_to_cpool) / c));
-		fleaf = exp(-1.0*dickenson_k * epv->proj_lai);
+
+		fleaf = exp(-1.0*epc.waring_pa * epv->proj_lai);
 		fbroot = fleaf * epc.alloc_frootc_leafc *  (1+epc.waring_pb )/ (1.0 + epc.waring_pb * (cdf->psn_to_cpool)/c);
 		ratio = fbroot/fleaf;
+
+		if ((epc.veg_type == TREE)) {
 		if (fbroot+fleaf > 0.95) {
 			fleaf = 0.95/(1+ratio);
 			fbroot = fleaf*ratio;
@@ -135,6 +137,11 @@ double compute_potential_N_uptake_combined(
 
 		fstem = 1.0-(froot+fcroot+fleaf);
 		fwood = fstem+fcroot;
+		}
+		else {
+			fleaf = 1.0-fbroot;
+			froot = fbroot;
+		}
 
 	}
 	else {
@@ -182,7 +189,7 @@ double compute_potential_N_uptake_combined(
 		printf("\n lai %lf  fleaf %lf froot %lf fcroot %lf fstem %lf stress %lf", epv->proj_lai, fleaf, froot, fcroot, fstem, (cdf->psn_to_cpool)/c);
 	else
 		printf("\n lai %lf  fleaf %lf froot %lf fcroot %lf fstem %lf nopsn", epv->proj_lai, fleaf, froot, fcroot, fstem );
-
 */
+
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake_Waring */
