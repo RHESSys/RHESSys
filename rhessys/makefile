@@ -16,7 +16,14 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
+# added override directive, can now add CFLAGS via commandline, see https://www.gnu.org/software/make/manual/make.html#Override-Directive
+# for example, to run with warnings suppressed: 
+# make CFLAGS=-w
+override CFLAGS += -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
+
+# old w/o override
+# CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
+
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
