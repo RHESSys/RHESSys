@@ -1,3 +1,4 @@
+OS := $(shell uname)
 VERSION = 7.2
 PGM  = rhessys$(VERSION)
 CC = gcc
@@ -17,12 +18,20 @@ ifdef extend_clim
 endif
 
 CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
+CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
 
 ifdef openmp
   CFLAGS += -fopenmp
+endif
+
+# Linker flag for flex scanner generator
+ifeq ($(uname_S), Darwin)
+	LINK_FLEX = -ll
+else
+	LINK_FLEX = -lfl
 endif
 
 # Retro fitting from CF
@@ -36,7 +45,7 @@ endif
 
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
 
-SRCS := $(shell find clim cn cycle hydro init rad tec util -name '*.c')
+SRCS := $(shell find clim cn cycle hydro init rad tec util output_filter -name '*.c')
 OBJDIR := OBJ
 
 TESTS_ROOTDIR = test
@@ -47,8 +56,6 @@ OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
 OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
 TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
 TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
-
-OS := $(shell uname)
 
 
 OBJECTS = \
@@ -353,10 +360,19 @@ $(OBJ)/union_date_combine.o \
 $(OBJ)/get_num_daywhourly.o \
 $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
+$(OBJ)/string_list.o \
+$(OBJ)/dictionary.o \
+$(OBJ)/index_struct_fields.o \
+$(OBJ)/output_filter.o
 
 ifdef netcdf
 OBJECTS += $(OBJ)/read_netcdf.o
 endif
+
+# Objects for generated source files related to output filtering
+OBJECTS += $(OBJ)/output_filter_parser.tab.o \
+$(OBJ)/lex.yy.o \
+$(OBJ)/index_struct_fields.o
 
 all:	dir rhessys
 
@@ -367,18 +383,18 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L../lib -lwmfire -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp $(LINK_FLEX) -v -o $(PGM)
 endif
 else
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -lwmfire -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib $(LINK_FLEX) -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib $(LINK_FLEX) -v -o $(PGM)
 endif
 endif
 
@@ -392,11 +408,11 @@ test: dir $(TESTS)
 
 $(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o lex.yy.o output_filter_parser.tab.o output_filter.o string_list.o dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
 else ifeq ($(OS), Linux)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -lbsd -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o lex.yy.o output_filter_parser.tab.o output_filter.o string_list.o dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -lbsd -o $@
 else
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o lex.yy.o output_filter_parser.tab.o output_filter.o string_list.o dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
 endif
 	cp $@ $(TESTS_ROOTDIR)
 
@@ -1020,6 +1036,25 @@ $(OBJ)/date_oper_union.o: util/date_oper_union.c
 	$(CC) -c $(CFLAGS) -I include util/date_oper_union.c -o $(OBJ)/date_oper_union.o
 $(OBJ)/reconstruct_hourly_clim.o: init/reconstruct_hourly_clim.c
 	$(CC) -c $(CFLAGS) -I include init/reconstruct_hourly_clim.c -o $(OBJ)/reconstruct_hourly_clim.o
+
+# Output filtering
+$(OBJ)/string_list.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o string_list.o
+$(OBJ)/dictionary.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/dictionary.c -o dictionary.o
+$(OBJ)/output_filter.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter.c -o output_filter.o
+$(OBJ)/output_filter_parser.tab.o:
+	cd output_filter/parser
+	bison --report=none -d output_filter_parser.y
+	flex output_filter_parser.l
+	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter_parser.tab.c -o $(OBJ)/output_filter_parser.tab.o
+	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c lex.yy.c -o lex.yy.o
+	cd -
+$(OBJ)/index_struct_fields.o:
+	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h --include_structs patch_object accumulate_patch_object --output util/index_struct_fields.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/index_struct_fields.c -o $(OBJ)/index_struct_fields.o
+
 $(OBJ)/main.o: main.c setversion
 	$(CC) -c $(CFLAGS) -I include main.c -o $(OBJ)/main.o
 
@@ -1039,6 +1074,8 @@ clean:
 	rm -f $(OBJECTS)
 	rm -f $(OBJDIR_TESTS)/*
 	rm -f $(TESTS_TO_RUN)
+	# Remove generated code
+	rm output_filter/parser/lex.yy.c output_filter/parser/output_filter_parser.tab.c output_filter/parser/output_filter_parser.tab.h util/index_struct_fields.c
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)

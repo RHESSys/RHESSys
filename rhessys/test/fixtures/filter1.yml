@@ -1,0 +1,9 @@
+filter:
+	output:
+		timestep: hourly
+		format: csv
+		path: output/fire-project-1
+		filename: scenario-abc1
+	patch:
+		ids: 1:2:3:4, 2
+		variables: water_balance, Qout, Qin

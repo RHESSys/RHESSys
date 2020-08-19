@@ -1,0 +1,29 @@
+filter:
+	output:
+		timestep: daily
+		format: csv
+		path: output/fire-project-1
+		filename: scenario-abc1
+	patch:
+		ids: 1:2:3:4, 2
+		variables: water_balance, Qout, Qin
+
+filter:
+	output:
+		timestep: monthly
+		format: netcdf
+		path: output/fire-project-1
+		filename: scenario-abc2
+	patch:
+		ids: *
+		variables: foo, bar
+
+filter:
+	output:
+		timestep: yearly
+		format: csv
+		path: output/fire-project-1
+		filename: scenario-abc3
+	patch:
+		ids: 4:3:4
+		variables: *
