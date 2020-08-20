@@ -1,4 +1,4 @@
-OS := $(shell uname)
+OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 VERSION = 7.2
 PGM  = rhessys$(VERSION)
 CC = gcc
@@ -27,20 +27,19 @@ ifdef openmp
   CFLAGS += -fopenmp
 endif
 
-# Linker flag for flex scanner generator
-ifeq ($(uname_S), Darwin)
-	LINK_FLEX = -ll
-else
-	LINK_FLEX = -lfl
-endif
-
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
 	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -Wmacro-redefined -std=c99
+	# Linker flag for flex and bison
+	LINK_FLEX = -ll
 else ifeq ($(OS), Linux)
 	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+	# Linker flag for flex and bison
+	LINK_FLEX = -lfl
 else
 	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+	# Linker flag for flex and bison
+	LINK_FLEX = -lfl
 endif
 
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
@@ -362,7 +361,6 @@ $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
 $(OBJ)/string_list.o \
 $(OBJ)/dictionary.o \
-$(OBJ)/index_struct_fields.o \
 $(OBJ)/output_filter.o
 
 ifdef netcdf
@@ -406,13 +404,14 @@ test: dir $(TESTS)
 	# Run each unit test
 	$(patsubst %,%;,$(TESTS_TO_RUN))
 
+# $(OBJ)/lex.yy.o $(OBJ)/output_filter_parser.tab.o $(OBJ)/output_filter.o $(OBJ)/string_list.o $(OBJ)/dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS)
 $(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o lex.yy.o output_filter_parser.tab.o output_filter.o string_list.o dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_FLEX) -o $@
 else ifeq ($(OS), Linux)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o lex.yy.o output_filter_parser.tab.o output_filter.o string_list.o dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -lbsd -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_FLEX) -lbsd -o $@
 else
-	$(CC) $(OBJECTS_NO_MAIN) $@.o lex.yy.o output_filter_parser.tab.o output_filter.o string_list.o dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_FLEX) -o $@
 endif
 	cp $@ $(TESTS_ROOTDIR)
 
@@ -1038,21 +1037,23 @@ $(OBJ)/reconstruct_hourly_clim.o: init/reconstruct_hourly_clim.c
 	$(CC) -c $(CFLAGS) -I include init/reconstruct_hourly_clim.c -o $(OBJ)/reconstruct_hourly_clim.o
 
 # Output filtering
-$(OBJ)/string_list.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o string_list.o
-$(OBJ)/dictionary.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c util/dictionary.c -o dictionary.o
-$(OBJ)/output_filter.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter.c -o output_filter.o
-$(OBJ)/output_filter_parser.tab.o:
-	cd output_filter/parser
-	bison --report=none -d output_filter_parser.y
+# Generate code
+output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_filter_parser.y output_filter/parser/output_filter_parser.l
+	cd output_filter/parser && \
+	bison --report=none -d output_filter_parser.y && \
 	flex output_filter_parser.l
-	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter_parser.tab.c -o $(OBJ)/output_filter_parser.tab.o
-	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c lex.yy.c -o lex.yy.o
-	cd -
-$(OBJ)/index_struct_fields.o:
+util/index_struct_fields.c: include/rhessys.h
 	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h --include_structs patch_object accumulate_patch_object --output util/index_struct_fields.c
+$(OBJ)/string_list.o: util/string_list.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o $(OBJ)/string_list.o
+$(OBJ)/dictionary.o: util/dictionary.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/dictionary.c -o $(OBJ)/dictionary.o
+$(OBJ)/output_filter.o: output_filter/output_filter.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter.c -o $(OBJ)/output_filter.o
+$(OBJ)/output_filter_parser.tab.o: output_filter/parser/output_filter_parser.tab.c
+	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/output_filter_parser.tab.c -o $(OBJ)/output_filter_parser.tab.o
+	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/lex.yy.c -o $(OBJ)/lex.yy.o
+$(OBJ)/index_struct_fields.o: util/index_struct_fields.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/index_struct_fields.c -o $(OBJ)/index_struct_fields.o
 
 $(OBJ)/main.o: main.c setversion
