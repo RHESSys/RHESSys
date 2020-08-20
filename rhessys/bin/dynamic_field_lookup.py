@@ -4,12 +4,13 @@ import re
 import fileinput
 import argparse
 
+COMMENT_PATT = re.compile('^\s*//.*')
 START_STRUCT_PATT = re.compile('^\s*struct\s+(\S+)\s*{\s*$')
 STRUCT_KW_PATT = re.compile('^\s*struct\s+(\S+)\s*$')
 OPEN_BRACE_PATT = re.compile('^\s*{\s*$')
 END_STRUCT_PATT = re.compile('^\s*};\s*$')
-STRUCT_MEM_PATT = re.compile('^\s*\S+\s+(\S+)\s*;\s*.*$')
-STRUCT_MEM_STRUCT_PATT = re.compile('^\s*struct\s+(\S+)\s+(\S+)\s*;\s*.*$')
+STRUCT_MEM_PATT = re.compile('^\s*\S+\s+\**(\S+)\s*;\s*.*$')
+STRUCT_MEM_STRUCT_PATT = re.compile('^\s*struct\s+(\S+)\s+\**(\S+)\s*;\s*.*$')
 
 parser = argparse.ArgumentParser(description='Create C source for indexing structs in header files for dynamic lookup')
 parser.add_argument('--headers', nargs='+', type=str, help='Header files to read structs from')
@@ -67,7 +68,10 @@ with fileinput.input(files=args.headers) as f:
 	for line in f:
 		l = line.strip()
 # 		print(l)
-		if not in_struct:
+		if COMMENT_PATT.match(l):
+			# Comment, ingore line
+			continue
+		elif not in_struct:
 			if curr_struct:
 				# Struct keyword has been seen, but an open brace hasn't yet, check for open brace
 				m = OPEN_BRACE_PATT.match(l)
