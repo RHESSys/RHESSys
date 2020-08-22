@@ -143,7 +143,7 @@
 #include <string.h>
 
 #include "types.h"
-
+#include "output_filter.h"
 //#include "../../util/WMFireInterface.h" /* required for fire spread*/
 #include "WMFireInterface.h" /* required for fire spread*/
 
@@ -2141,6 +2141,12 @@ struct  command_line_object
 	double	fs_percolation;
 	double	fs_threshold;
         struct  output_flag     output_flags;
+
+        bool					output_filter_flag;
+        char                    *output_filter_filename;
+        struct  output_filter   *output_filter;
+
+        bool    legacy_output_flag; // Remove when legacy output is removed.
         struct  b_option        *b;
         struct  h_option        *h;
         struct  z_option        *z;

@@ -369,7 +369,13 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	command_line = construct_command_line(main_argc, main_argv);
 
-
+	// Make sure that both new output filtering and the legacy output method
+	// were not specified at the same time (which is not allowed).
+	// Note: This should be removed once old output methods are removed.
+	if (command_line[0].output_filter_flag && command_line[0].legacy_output_flag) {
+		fprintf(stderr, "FATAL ERROR: Both legacy and output filter output were specified. Only one is allowed.\n");
+		exit(EXIT_FAILURE);
+	}
 	/*--------------------------------------------------------------*/
 	/* Check if print version flag was set. If so, just print out   */
 	/* the version and return.                                      */
@@ -392,28 +398,36 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	/*	Construct the output file objects.							*/
 	/*--------------------------------------------------------------*/
-	/*--------------------------------------------------------------*/
-	/*      Make up the prefix for the output files.                */
-	/*--------------------------------------------------------------*/
-	prefix = (char *)calloc(256, sizeof(char));
-	if ( command_line[0].output_prefix != NULL ){
-		strcpy(prefix,command_line[0].output_prefix);
-	}
-	else{
-		strcpy(prefix,PRE);
-	}
-	output = construct_output_files( prefix, command_line );
-	if (command_line[0].grow_flag > 0) {
-		strcat(prefix,"_grow");
-		growth_output = construct_output_files(prefix, command_line );
-	}
-	else growth_output = NULL;
 
-	add_headers(output, command_line);
-		if (command_line[0].grow_flag > 0)
-			add_growth_headers(growth_output, command_line);
+	if (command_line[0].output_filter_flag) {
+		if(command_line->verbose_flag) {
+			fprintf(stderr,"Using output filter filename: %s\n", command_line->output_filter_filename);
+		}
+	} else if (command_line[0].legacy_output_flag) {
+		/*--------------------------------------------------------------*/
+		/*      Make up the prefix for the output files.                */
+		/*--------------------------------------------------------------*/
+		prefix = (char *)calloc(256, sizeof(char));
+		if ( command_line[0].output_prefix != NULL ){
+			strcpy(prefix,command_line[0].output_prefix);
+		}
+		else{
+			strcpy(prefix,PRE);
+		}
+		output = construct_output_files( prefix, command_line );
+		if (command_line[0].grow_flag > 0) {
+			strcat(prefix,"_grow");
+			growth_output = construct_output_files(prefix, command_line );
+		}
+		else growth_output = NULL;
 
-
+		add_headers(output, command_line);
+			if (command_line[0].grow_flag > 0)
+				add_growth_headers(growth_output, command_line);
+	} else {
+		fprintf(stderr, "FATAL ERROR: Neither legacy nor output filter output specified.\n");
+		exit(EXIT_FAILURE);
+	}
 
 	if(command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED CON OUTPUT\n");
@@ -446,10 +460,14 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	/*	Destroy output file objects (close them)					*/
 	/*--------------------------------------------------------------*/
-	destroy_output_files( command_line, output );
-	
-	if (command_line[0].grow_flag > 0)
-		destroy_output_files( command_line, growth_output );
+	if (command_line[0].output_filter_flag) {
+		// TODO: Close output filter output files
+	} else if (command_line[0].legacy_output_flag) {
+		destroy_output_files( command_line, output );
+
+		if (command_line[0].grow_flag > 0)
+			destroy_output_files( command_line, growth_output );
+	}
 	
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED DES OUTPUT FILES\n");
