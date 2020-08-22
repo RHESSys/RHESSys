@@ -1076,7 +1076,7 @@ clean:
 	rm -f $(OBJDIR_TESTS)/*
 	rm -f $(TESTS_TO_RUN)
 	# Remove generated code
-	rm output_filter/parser/lex.yy.c output_filter/parser/output_filter_parser.tab.c output_filter/parser/output_filter_parser.tab.h util/index_struct_fields.c
+	rm -f output_filter/parser/lex.yy.c output_filter/parser/output_filter_parser.tab.c output_filter/parser/output_filter_parser.tab.h util/index_struct_fields.c
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)
