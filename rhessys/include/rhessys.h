@@ -142,8 +142,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "types.h"
+
 //#include "../../util/WMFireInterface.h" /* required for fire spread*/
 #include "WMFireInterface.h" /* required for fire spread*/
+
 /*----------------------------------------------------------*/
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
@@ -218,13 +221,6 @@ int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *)
 int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
 #endif
-
-/*----------------------------------------------------------*/
-/*      Define types                                        */
-/*----------------------------------------------------------*/
-typedef short bool;
-static const short true = 1;
-static const short false = 0;
 
 /*----------------------------------------------------------*/
 /*      Define a calendar date object.                      */

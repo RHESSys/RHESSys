@@ -1,7 +1,7 @@
 #ifndef _OUTPUT_FILTER_H_
 #define _OUTPUT_FILTER_H_
 
-#include "rhessys.h"
+#include "types.h"
 
 #define OUTPUT_TIMESTEP_HOURLY "hourly"
 #define OUTPUT_TIMESTEP_DAILY "daily"
