@@ -42,6 +42,7 @@ StructIndex_t *newStructIndex() {
 	assert(i);
 	i->patch_object = NULL;
 	i->accumulate_patch_object = NULL;
+	i->patch_hourly_object = NULL;
 	return i;
 }
 
@@ -53,13 +54,17 @@ void freeStructIndex(StructIndex_t *i) {
 	if (i->accumulate_patch_object != NULL) {
 		freeDictionary(i->accumulate_patch_object);
 	}
+	if (i->patch_hourly_object != NULL) {
+		freeDictionary(i->patch_hourly_object);
+	}
 	free(i);
 }
 
 StructIndex_t *index_struct_fields() {
 	StructIndex_t *i = newStructIndex();
 	i->patch_object = newDictionary(DICTIONARY_DEFAULT_SIZE);
-	i->accumulate_patch_object = newDictionary(DICTIONARY_DEFAULT_SIZE);
+	i->accumulate_patch_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
+	i->patch_hourly_object = newDictionary(DICTIONARY_SIZE_SMALL);
 ''')
 
 in_struct = False
