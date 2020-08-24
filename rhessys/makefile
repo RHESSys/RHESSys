@@ -361,7 +361,8 @@ $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
 $(OBJ)/string_list.o \
 $(OBJ)/dictionary.o \
-$(OBJ)/output_filter.o
+$(OBJ)/output_filter.o \
+$(OBJ)/construct_output_filter.o
 
 ifdef netcdf
 OBJECTS += $(OBJ)/read_netcdf.o
@@ -1043,7 +1044,7 @@ output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_fil
 	bison --report=none -d output_filter_parser.y && \
 	flex output_filter_parser.l
 util/index_struct_fields.c: include/rhessys.h
-	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h --include_structs patch_object accumulate_patch_object --output util/index_struct_fields.c
+	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h --include_structs patch_object accumulate_patch_object patch_hourly_object --output util/index_struct_fields.c
 $(OBJ)/string_list.o: util/string_list.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o $(OBJ)/string_list.o
 $(OBJ)/dictionary.o: util/dictionary.c
@@ -1055,6 +1056,8 @@ $(OBJ)/output_filter_parser.tab.o: output_filter/parser/output_filter_parser.tab
 	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/lex.yy.c -o $(OBJ)/lex.yy.o
 $(OBJ)/index_struct_fields.o: util/index_struct_fields.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/index_struct_fields.c -o $(OBJ)/index_struct_fields.o
+$(OBJ)/construct_output_filter.o: output_filter/construct_output_filter.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/construct_output_filter.c -o $(OBJ)/construct_output_filter.o
 
 $(OBJ)/main.o: main.c setversion
 	$(CC) -c $(CFLAGS) -I include main.c -o $(OBJ)/main.o

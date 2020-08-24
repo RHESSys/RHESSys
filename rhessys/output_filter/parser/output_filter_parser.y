@@ -163,6 +163,15 @@ filename: FILENAME FILENAME_SPEC {
 			printf("\t\tOUTPUT FILENAME IS: %s\n", $2);
 		}
 	}
+	| FILENAME IDENTIFIER {
+    if (!in_output) {
+      syntax_error = true;
+      yyerror("filename definition must be nested within output definition");
+    } else {
+      curr_filter->output->filename = strdup($2);
+      printf("\t\tOUTPUT FILENAME IS: %s\n", $2);
+    }
+  }
 	;
 
 patch: PATCH_TOK {
