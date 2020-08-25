@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -221,12 +222,14 @@ OutputFilterOutput *create_new_output_filter_output() {
 	OutputFilterOutput *output = (OutputFilterOutput *) malloc(sizeof(OutputFilter));
 	output->filename = NULL;
 	output->path = NULL;
+	output->fp = NULL;
 	return output;
 }
 
 void free_output_filter_output(OutputFilterOutput *output) {
 	free(output->path);
 	free(output->filename);
+	fclose(output->fp);
 	free(output);
 }
 

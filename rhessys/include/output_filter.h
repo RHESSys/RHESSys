@@ -1,6 +1,8 @@
 #ifndef _OUTPUT_FILTER_H_
 #define _OUTPUT_FILTER_H_
 
+#include <stdio.h>
+
 #include "types.h"
 
 #define OUTPUT_TIMESTEP_HOURLY "hourly"
@@ -20,8 +22,8 @@ typedef enum {
 } OutputFormatTimestep;
 
 typedef enum {
-	CSV,
-	NETCDF
+	OUTPUT_TYPE_CSV,
+	OUTPUT_TYPE_NETCDF
 } OutputFormat;
 
 typedef enum {
@@ -42,6 +44,7 @@ typedef struct of_output_output {
 	OutputFormat format;
 	char *path;
 	char *filename;
+	FILE *fp;
 } OutputFilterOutput;
 
 typedef struct of_var {

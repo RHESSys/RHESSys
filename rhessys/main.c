@@ -472,6 +472,7 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	if (command_line[0].output_filter_flag) {
 		// TODO: Close output filter output files
+		//destroy_output_filter(command_line);
 	} else if (command_line[0].legacy_output_flag) {
 		destroy_output_files( command_line, output );
 

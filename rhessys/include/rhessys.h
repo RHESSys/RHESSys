@@ -151,6 +151,8 @@
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
 #define FILEPATH_LEN 1024
+#define PATH_SEP '/'
+#define FILE_EXT_SEP '.'
 #define TEC_CMD_LEN 256
 #define NULLVAL -9999
 #define TRUE    1

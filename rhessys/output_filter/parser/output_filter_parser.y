@@ -130,10 +130,10 @@ format: FORMAT IDENTIFIER {
 			yyerror("format definition must be nested within output definition");
 		} else {
 			if (strcmp($2, OUTPUT_FORMAT_CSV) == 0) {
-				curr_filter->output->format = CSV;
+				curr_filter->output->format = OUTPUT_TYPE_CSV;
 				printf("\t\tOUTPUT FORMAT IS: %s\n", $2);
 			} else if (strcmp($2, OUTPUT_FORMAT_NETCDF) == 0) {
-				curr_filter->output->format = NETCDF;
+				curr_filter->output->format = OUTPUT_TYPE_NETCDF;
 				printf("\t\tOUTPUT FORMAT IS: %s\n", $2);
 			} else {
 				syntax_error = true;
