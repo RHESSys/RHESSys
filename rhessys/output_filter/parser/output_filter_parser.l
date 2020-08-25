@@ -55,7 +55,7 @@ void end_scanner(void) {
 int set_input_file(char * const file_path) {
 	if (!(yyin = fopen(file_path, "r"))) {
 		char *error_mesg = (char *) malloc(sizeof(char) * ERR_MESG_LEN);
-		snprintf(error_mesg, ERR_MESG_LEN, "Unable to open filter file %s\n", file_path);
+		snprintf(error_mesg, ERR_MESG_LEN, "Unable to open filter file %s", file_path);
 		perror(error_mesg);
 		free(error_mesg);
 		return 0;

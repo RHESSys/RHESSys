@@ -21,6 +21,9 @@ bool construct_output_filter(char * const error, size_t error_len,
 
 	// Parse output filter
 	OutputFilter *filters = parse(cmd->output_filter_filename);
+	if (filters == NULL) {
+		return returnWithError(error, error_len, "unable to parse output filter.");
+	}
 	if (filters->parse_error) {
 		return returnWithError(error, error_len, "output_filter_parser returned with an error.");
 	}

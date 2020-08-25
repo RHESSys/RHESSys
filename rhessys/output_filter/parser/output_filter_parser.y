@@ -305,8 +305,6 @@ variable_spec: IDENTIFIER {
 OutputFilter *parse(char * const input) {
 	int status = set_input_file(input);
 	if (!status) {
-		// TODO: Handle error properly
-		printf("Error Unable to open parser input, bailing ...\n");
 		return NULL;
 	} else {
 		// Don't look at the return value from yyparse becuase a non-zero value will be 
