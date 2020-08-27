@@ -293,6 +293,7 @@
 
 #include "rhessys.h"
 #include "output_filter/construct_output_filter.h"
+#include "output_filter/destroy_output_filter.h"
 
 // The $$RHESSYS_VERSION$$ string will be replaced by the make
 // script to reflect the current RHESSys version.
@@ -471,8 +472,13 @@ int	main( int main_argc, char **main_argv)
 	/*	Destroy output file objects (close them)					*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].output_filter_flag) {
-		// TODO: Close output filter output files
-		//destroy_output_filter(command_line);
+		// Close output filter output files
+		char *of_error = (char *)calloc(MAXSTR, sizeof(char));
+		bool of_result = destroy_output_filter(of_error, MAXSTR, command_line);
+		if (!of_result) {
+			fprintf(stderr, "destroy_output_filter failed with error: %s\n", of_error);
+			exit(EXIT_FAILURE);
+		}
 	} else if (command_line[0].legacy_output_flag) {
 		destroy_output_files( command_line, output );
 

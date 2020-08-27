@@ -17,8 +17,8 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2
+CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2 -g
+CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2 -g
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
@@ -363,6 +363,7 @@ $(OBJ)/string_list.o \
 $(OBJ)/dictionary.o \
 $(OBJ)/output_filter.o \
 $(OBJ)/construct_output_filter.o \
+$(OBJ)/destroy_output_filter.o \
 $(OBJ)/output_format_csv.o
 
 ifdef netcdf
@@ -1059,6 +1060,8 @@ $(OBJ)/index_struct_fields.o: util/index_struct_fields.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/index_struct_fields.c -o $(OBJ)/index_struct_fields.o
 $(OBJ)/construct_output_filter.o: output_filter/construct_output_filter.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/construct_output_filter.c -o $(OBJ)/construct_output_filter.o
+$(OBJ)/destroy_output_filter.o: output_filter/destroy_output_filter.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/destroy_output_filter.c -o $(OBJ)/destroy_output_filter.o
 $(OBJ)/output_format_csv.o: output_filter/format/output_format_csv.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/format/output_format_csv.c -o $(OBJ)/output_format_csv.o
 
