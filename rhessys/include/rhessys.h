@@ -2146,7 +2146,7 @@ struct  command_line_object
 
         bool					output_filter_flag;
         char                    *output_filter_filename;
-        struct  output_filter   *output_filter;
+        OutputFilter            *output_filter;
 
         bool    legacy_output_flag; // Remove when legacy output is removed.
         struct  b_option        *b;

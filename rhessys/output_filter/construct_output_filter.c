@@ -18,7 +18,19 @@ static bool init_output(OutputFilter *f) {
 		return output_format_csv_init(f);
 	case OUTPUT_TYPE_NETCDF:
 	default:
-		fprintf(stderr, "output format type %d is unknown or not yet implemented.", f->output->format);
+		fprintf(stderr, "init_output: output format type %d is unknown or not yet implemented.", f->output->format);
+		return false;
+	}
+	return true;
+}
+
+static bool write_headers(OutputFilter *f) {
+	switch(f->output->format) {
+	case OUTPUT_TYPE_CSV:
+		return output_format_csv_write_headers(f);
+	case OUTPUT_TYPE_NETCDF:
+	default:
+		fprintf(stderr, "write_headers: output format type %d is unknown or not yet implemented.", f->output->format);
 		return false;
 	}
 	return true;
@@ -40,13 +52,15 @@ bool construct_output_filter(char * const error, size_t error_len,
 		return returnWithError(error, error_len, "output_filter_parser returned with an error.");
 	}
 
-	// TODO: Search for patches/zones/hillslopes/basins
-
-	// TODO: Validate variables and write offsets to filter
 	StructIndex_t *idx = index_struct_fields();
 
-	// Initialize output for filters
+	bool status;
 	for (OutputFilter *f = filters; f != NULL; f = f->next) {
+		// TODO: Search for patches/zones/hillslopes/basins
+
+		// TODO: Validate variables and write offsets to filter
+
+		// Initialize output for filters
 		if (f->output == NULL) {
 			return returnWithError(error, error_len,
 					"Output filter did not specify an output section.");
@@ -59,16 +73,23 @@ bool construct_output_filter(char * const error, size_t error_len,
 			return returnWithError(error, error_len,
 					"Output filter did not specify output filename.");
 		}
-		bool status = init_output(f);
+		status = init_output(f);
 		if (!status) {
 			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(init_error, MAXSTR, "unable to initialize output %s/%s for output filter.",
 					f->output->path, f->output->filename);
 			return returnWithError(error, error_len, init_error);
 		}
-	}
 
-	// TODO: Write header information for each output file
+		// Write header information for each output file
+		status = write_headers(f);
+		if (!status) {
+			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
+			snprintf(init_error, MAXSTR, "unable to write headers for output %s/%s.",
+					f->output->path, f->output->filename);
+			return returnWithError(error, error_len, init_error);
+		}
+	}
 
 	cmd->output_filter = filters;
 	return true;
