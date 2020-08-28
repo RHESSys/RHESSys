@@ -13,7 +13,7 @@ void test_output_filter3() {
 	// Verify output section of filter
 	g_assert(filter->output != NULL);
 	g_assert(filter->output->timestep == TIMESTEP_DAILY);
-	g_assert(filter->output->format == CSV);
+	g_assert(filter->output->format == OUTPUT_TYPE_CSV);
 	int cmp = strcmp(filter->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);
 	cmp = strcmp(filter->output->filename, "scenario-abc1");

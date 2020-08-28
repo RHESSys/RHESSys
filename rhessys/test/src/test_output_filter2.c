@@ -15,7 +15,7 @@ void test_output_filter2() {
 	// Verify output section of filter
 	g_assert(filter->output != NULL);
 	g_assert(filter->output->timestep == TIMESTEP_DAILY);
-	g_assert(filter->output->format == CSV);
+	g_assert(filter->output->format == OUTPUT_TYPE_CSV);
 	int cmp = strcmp(filter->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);
 	cmp = strcmp(filter->output->filename, "scenario-abc1");
@@ -51,7 +51,7 @@ void test_output_filter2() {
 	// Verify output section of filter
 	g_assert(filter2->output != NULL);
 	g_assert(filter2->output->timestep == TIMESTEP_MONTHLY);
-	g_assert(filter2->output->format == NETCDF);
+	g_assert(filter2->output->format == OUTPUT_TYPE_NETCDF);
 	cmp = strcmp(filter2->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);
 	cmp = strcmp(filter2->output->filename, "scenario-abc2");
@@ -76,7 +76,7 @@ void test_output_filter2() {
 	// Verify output section of filter
 	g_assert(filter3->output != NULL);
 	g_assert(filter3->output->timestep == TIMESTEP_YEARLY);
-	g_assert(filter3->output->format == CSV);
+	g_assert(filter3->output->format == OUTPUT_TYPE_CSV);
 	cmp = strcmp(filter3->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);
 	cmp = strcmp(filter3->output->filename, "scenario-abc3");
