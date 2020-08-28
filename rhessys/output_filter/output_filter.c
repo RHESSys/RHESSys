@@ -164,6 +164,7 @@ OutputFilterVariable *create_new_output_filter_variable(char *name) {
 	OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
 	new_var->next = NULL;
 	new_var->variable_type = NAMED;
+	new_var->data_type = DATA_TYPE_UNDEFINED;
 	new_var->name = strdup(name);
 	new_var->offset = SIZE_MAX;
 	return new_var;
@@ -173,6 +174,7 @@ OutputFilterVariable *create_new_output_filter_variable_any() {
 	OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
 	new_var->next = NULL;
 	new_var->variable_type = ANY_VAR;
+	new_var->data_type = DATA_TYPE_UNDEFINED;
 	new_var->name = NULL;
 	new_var->offset = SIZE_MAX;
 	return new_var;

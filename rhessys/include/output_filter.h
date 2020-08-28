@@ -51,6 +51,7 @@ typedef struct of_var {
 	VariableType variable_type;
 	struct of_var *next;
 
+	DataType data_type;
 	char *name;
 	size_t offset;
 } OutputFilterVariable;

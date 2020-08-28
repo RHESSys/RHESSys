@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 
+#include "types.h"
 #include "string_list.h"
 
 #define DICTIONARY_DEFAULT_SIZE 521
@@ -21,11 +22,14 @@
 #define DICTIONARY_VALUE_EMPTY SIZE_MAX
 
 typedef size_t DictionaryTableKey_t;
-typedef size_t DictionaryValue_t;
+typedef struct dict_value_s {
+	DataType data_type;
+	size_t offset;
+} DictionaryValue_t;
 
 typedef struct dict_entry_s {
 	char *key;
-	DictionaryValue_t value;
+	DictionaryValue_t *value;
 	struct dict_entry_s *next;
 } DictionaryEntry_t;
 
@@ -39,8 +43,9 @@ typedef struct dict_s {
 Dictionary_t *newDictionary(size_t tableSize);
 void freeDictionary(Dictionary_t *table);
 
+bool dictionaryValueEquals(DictionaryValue_t first, DictionaryValue_t second);
 void dictionaryInsert(Dictionary_t *table, char *key, DictionaryValue_t value);
-DictionaryValue_t dictionaryGet(Dictionary_t *table, char *key);
+DictionaryValue_t *dictionaryGet(Dictionary_t *table, char *key);
 
 void printDictionary(Dictionary_t *table);
 

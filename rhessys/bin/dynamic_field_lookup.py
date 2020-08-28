@@ -4,13 +4,25 @@ import re
 import fileinput
 import argparse
 
+TYPES = {
+	'bool': 'DATA_TYPE_BOOL',
+	'char *': 'DATA_TYPE_CHAR_ARRAY',
+	'int': 'DATA_TYPE_INT',
+	'long': 'DATA_TYPE_LONG',
+	'long *': 'DATA_TYPE_LONG_ARRAY',
+	'float': 'DATA_TYPE_FLOAT',
+	'double': 'DATA_TYPE_DOUBLE',
+	'double *': 'DATA_TYPE_DOUBLE_ARRAY',
+	'FILE *': 'DATA_TYPE_FILE_PTR'
+}
+
 COMMENT_PATT = re.compile('^\s*//.*')
 START_STRUCT_PATT = re.compile('^\s*struct\s+(\S+)\s*{\s*$')
 STRUCT_KW_PATT = re.compile('^\s*struct\s+(\S+)\s*$')
 OPEN_BRACE_PATT = re.compile('^\s*{\s*$')
 END_STRUCT_PATT = re.compile('^\s*};\s*$')
-STRUCT_MEM_PATT = re.compile('^\s*\S+\s+\**(\S+)\s*;\s*.*$')
-STRUCT_MEM_STRUCT_PATT = re.compile('^\s*struct\s+(\S+)\s+\**(\S+)\s*;\s*.*$')
+STRUCT_MEM_PATT = re.compile('^\s*(\S+\s+\**)(\S+)\s*;\s*.*$')
+STRUCT_MEM_STRUCT_PATT = re.compile('^\s*(struct\s+\S+\s+\**)(\S+)\s*;\s*.*$')
 
 parser = argparse.ArgumentParser(description='Create C source for indexing structs in header files for dynamic lookup')
 parser.add_argument('--headers', nargs='+', type=str, help='Header files to read structs from')
@@ -33,6 +45,7 @@ output.write('''#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
+#include "types.h"
 #include "rhessys.h"
 #include "dictionary.h"
 #include "index_struct_fields.h"
@@ -114,19 +127,36 @@ with fileinput.input(files=args.headers) as f:
 			# member name
 			m = STRUCT_MEM_PATT.match(l)
 			if m:
-				member = m.group(1)
-				print(f"\t\tMember {member} encountered.")
+				data_type_all = m.group(1)
+				data_type_components = data_type_all.split()
+				data_type_str = ' '.join(data_type_components)
+				data_type = 'DATA_TYPE_UNDEFINED'
+				try:
+					data_type = TYPES[data_type_str]
+				except KeyError:
+					pass
+				member = m.group(2)
+				print(f"\t\tMember {member} of type {data_type} encountered.")
 				output.write(f'''
-	dictionaryInsert(i->{curr_struct}, "{member}", offsetof(struct {curr_struct}, {member}));''')
+	dictionaryInsert(i->{curr_struct}, "{member}", (DictionaryValue_t) {{{data_type}, offsetof(struct {curr_struct}, {member})}});''')
 			else:
 				# Check for struct members that are structs
 				m = STRUCT_MEM_STRUCT_PATT.match(l)
 				if m:
-					struct_name = m.group(1)
+					data_type_all = m.group(1)
+					data_type_components = data_type_all.split()
+					struct_name = data_type_components[1]
+					# Determine data type
+					data_type = 'DATA_TYPE_STRUCT'
+					if data_type_components[-1] == '*':
+						data_type = 'DATA_TYPE_STRUCT_ARRAY'
+					elif data_type_components[-1] == '**':
+						data_type = 'DATA_TYPE_STRUCT_PTR_ARRAY'
+			
 					member = m.group(2)
-					print(f"\t\tMember struct {struct_name} {member} encountered.")
+					print(f"\t\tMember struct {struct_name} {member} of type {data_type} encountered.")
 					output.write(f'''
-	dictionaryInsert(i->{curr_struct}, "{member}", offsetof(struct {curr_struct}, {member}));''')
+	dictionaryInsert(i->{curr_struct}, "{member}", (DictionaryValue_t) {{{data_type}, offsetof(struct {curr_struct}, {member})}});''')
 output.write('''
 	
 	return i;

@@ -36,6 +36,13 @@ static StringList_t *addToKeyList(Dictionary_t *table, char *key) {
 	return elem;
 }
 
+static DictionaryValue_t *copyValue(DictionaryValue_t v) {
+	DictionaryValue_t *new_val = (DictionaryValue_t *) malloc(sizeof(DictionaryValue_t));
+	new_val->data_type = v.data_type;
+	new_val->offset = v.offset;
+	return new_val;
+}
+
 Dictionary_t *newDictionary(size_t tableSize) {
 	Dictionary_t *t = (Dictionary_t *) malloc(sizeof(Dictionary_t));
 	assert(t);
@@ -68,11 +75,18 @@ void freeDictionary(Dictionary_t *table) {
 		while (tmpEntry != NULL) {
 			entry = tmpEntry;
 			tmpEntry = entry->next;
+			if (entry->value) free(entry->value);
 			free(entry);
 		}
 	}
 	free(table->entries);
 	free(table);
+}
+
+bool dictionaryValueEquals(DictionaryValue_t first, DictionaryValue_t second) {
+	if (first.data_type != second.data_type) return false;
+	if (first.offset != second.offset) return false;
+	return true;
 }
 
 void dictionaryInsert(Dictionary_t *table, char *key, DictionaryValue_t value) {
@@ -85,7 +99,7 @@ void dictionaryInsert(Dictionary_t *table, char *key, DictionaryValue_t value) {
 		StringList_t *keyCopy = addToKeyList(table, key);
 		// Assign pointer to our copy of the key as the entry key
 		e->key = keyCopy->str;
-		e->value = value;
+		e->value = copyValue(value);
 		e->next = NULL;
 		table->numEntries++;
 	} else {
@@ -93,7 +107,8 @@ void dictionaryInsert(Dictionary_t *table, char *key, DictionaryValue_t value) {
 		while (e) {
 			if (keysAreEqual(e->key, key)) {
 				// Key is already present, overwrite
-				e->value = value;
+				free(e->value);
+				e->value = copyValue(value);
 				break;
 			} else if (NULL == e->next) {
 				// We've reached the end of the list, add a new value for this table entry
@@ -103,7 +118,7 @@ void dictionaryInsert(Dictionary_t *table, char *key, DictionaryValue_t value) {
 				StringList_t *keyCopy = addToKeyList(table, key);
 				// Assign a pointer to our copy of the key as the entry key
 				e->next->key = keyCopy->str;
-				e->next->value = value;
+				e->next->value = copyValue(value);
 				e->next->next = NULL;
 				table->numEntries++;
 				break;
@@ -113,7 +128,7 @@ void dictionaryInsert(Dictionary_t *table, char *key, DictionaryValue_t value) {
 	}
 }
 
-DictionaryValue_t dictionaryGet(Dictionary_t *table, char *key) {
+DictionaryValue_t *dictionaryGet(Dictionary_t *table, char *key) {
 	assert(table != NULL);
 	DictionaryTableKey_t hash = _hash(key, table->size);
 	DictionaryEntry_t *e = table->entries + hash;
@@ -134,11 +149,13 @@ void printDictionary(Dictionary_t *table) {
 	for (size_t i = 0; i < table->size; i++) {
 		entry = table->entries + i;
 		if (entry->key != DICTIONARY_KEY_EMPTY) {
-			fprintf(stderr, "\t'%s': %zu\n", entry->key, entry->value);
+			fprintf(stderr, "\t'%s': {data_type: %d, offset: %zu},\n",
+					entry->key, entry->value->data_type, entry->value->offset);
 			tmpEntry = entry->next;
 			while (tmpEntry != NULL) {
 				entry = tmpEntry;
-				fprintf(stderr, "\t'%s': %zu\n", entry->key, entry->value);
+				fprintf(stderr, "\t'%s': {data_type: %d, offset: %zu},\n",
+						entry->key, entry->value->data_type, entry->value->offset);
 				tmpEntry = entry->next;
 			}
 		}
