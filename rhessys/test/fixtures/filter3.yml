@@ -1,6 +1,6 @@
 filter:
+	timestep: daily
 	output:
-		timestep: daily
 		format: csv
 		path: output/fire-project-1
 		filename: scenario-abc1

@@ -10,8 +10,8 @@
 %%
 
 ^"filter:" { return FILTER; }
+^[ ]{2}+|[\t]+"timestep:" { return TIMESTEP; }
 ^[ ]{2}+|[\t]+"output:" { return OUTPUT; }
-^[ ]{4}+|[\t]{2}+"timestep:" { return TIMESTEP; }
 ^[ ]{4}+|[\t]{2}+"format:" { return FORMAT; }
 ^[ ]{4}+|[\t]{2}+"path:" { return PATH; }
 ^[ ]{4}+|[\t]{2}+"filename:" { return FILENAME; }

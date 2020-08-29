@@ -100,22 +100,22 @@ output: OUTPUT {
 	;
 
 timestep: TIMESTEP IDENTIFIER {
-		if (!in_output) {
+		if (!in_filter) {
 			syntax_error = true;
-			yyerror("timestep definition must be nested within output definition");
+			yyerror("timestep definition must be nested within filter definition");
 		} else {
 			if (strcmp($2, OUTPUT_TIMESTEP_HOURLY) == 0) {
-				curr_filter->output->timestep = TIMESTEP_HOURLY;
-				printf("\t\tOUTPUT TIMESTEP IS: %s\n", $2);
+				curr_filter->timestep = TIMESTEP_HOURLY;
+				printf("\tTIMESTEP IS: %s\n", $2);
 			} else if (strcmp($2, OUTPUT_TIMESTEP_DAILY) == 0) {
-				curr_filter->output->timestep = TIMESTEP_DAILY;
-				printf("\t\tOUTPUT TIMESTEP IS: %s\n", $2);
+				curr_filter->timestep = TIMESTEP_DAILY;
+				printf("\tTIMESTEP IS: %s\n", $2);
 			} else if (strcmp($2, OUTPUT_TIMESTEP_MONTHLY) == 0) {
-				curr_filter->output->timestep = TIMESTEP_MONTHLY;
-				printf("\t\tOUTPUT TIMESTEP IS: %s\n", $2);
+				curr_filter->timestep = TIMESTEP_MONTHLY;
+				printf("\tTIMESTEP IS: %s\n", $2);
 			} else if (strcmp($2, OUTPUT_TIMESTEP_YEARLY) == 0) {
-				curr_filter->output->timestep = TIMESTEP_YEARLY;
-				printf("\t\tOUTPUT TIMESTEP IS: %s\n", $2);
+				curr_filter->timestep = TIMESTEP_YEARLY;
+				printf("\tTIMESTEP IS: %s\n", $2);
 			} else {
 				syntax_error = true;
 				yyerror("unkown timestamp definition");

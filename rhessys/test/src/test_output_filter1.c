@@ -10,11 +10,12 @@ void test_output_filter1() {
 	OutputFilter *filter = parse("test/fixtures/filter1.yml");
 
 	g_assert(filter->next == NULL);
+	// Verify timestep
+	g_assert(filter->timestep == TIMESTEP_DAILY);
 	// Verify output filter type
 	g_assert(filter->type == OUTPUT_FILTER_PATCH);
 	// Verify output section of filter
 	g_assert(filter->output != NULL);
-	g_assert(filter->output->timestep == TIMESTEP_HOURLY);
 	g_assert(filter->output->format == OUTPUT_TYPE_CSV);
 	int cmp = strcmp(filter->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);

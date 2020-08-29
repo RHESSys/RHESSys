@@ -1,6 +1,6 @@
 filter:
+	timestep: daily
 	output:
-		timestep: daily
 		format: csv
 		path: output/fire-project-1
 		filename: scenario-abc1
@@ -9,8 +9,8 @@ filter:
 		variables: water_balance, Qout, Qin
 
 filter:
+	timestep: monthly
 	output:
-		timestep: monthly
 		format: netcdf
 		path: output/fire-project-1
 		filename: scenario-abc2
@@ -19,8 +19,8 @@ filter:
 		variables: foo, bar
 
 filter:
+	timestep: yearly
 	output:
-		timestep: yearly
 		format: csv
 		path: output/fire-project-1
 		filename: scenario-abc3

@@ -15,11 +15,12 @@
 
 
 typedef enum {
+	TIMESTEP_UNDEFINED,
 	TIMESTEP_HOURLY,
 	TIMESTEP_DAILY,
 	TIMESTEP_MONTHLY,
 	TIMESTEP_YEARLY
-} OutputFormatTimestep;
+} OutputFilterTimestep;
 
 typedef enum {
 	OUTPUT_TYPE_CSV,
@@ -40,7 +41,6 @@ typedef enum {
 } OutputPatchType;
 
 typedef struct of_output_output {
-	OutputFormatTimestep timestep;
 	OutputFormat format;
 	char *path;
 	char *filename;
@@ -82,6 +82,7 @@ typedef enum {
 
 typedef struct of_filter {
 	OutputFilterType type;
+	OutputFilterTimestep timestep;
 	struct of_filter *next;
 	OutputFilterOutput *output;
 	OutputFilterPatch *patches;

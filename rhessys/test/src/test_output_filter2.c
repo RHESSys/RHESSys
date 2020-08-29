@@ -11,12 +11,13 @@ void test_output_filter2() {
 	OutputFilter *filter = parse("test/fixtures/filter2.yml");
 
 	// First filter
+	// Verify timestep
+	g_assert(filter->timestep == TIMESTEP_DAILY);
 	// Verify output filter type
 	g_assert(filter->type == OUTPUT_FILTER_PATCH);
 	g_assert(filter->next != NULL);
 	// Verify output section of filter
 	g_assert(filter->output != NULL);
-	g_assert(filter->output->timestep == TIMESTEP_DAILY);
 	g_assert(filter->output->format == OUTPUT_TYPE_CSV);
 	int cmp = strcmp(filter->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);
@@ -49,12 +50,13 @@ void test_output_filter2() {
 
 	// Second filter
 	OutputFilter *filter2 = filter->next;
+	// Verify timestep
+	g_assert(filter2->timestep == TIMESTEP_MONTHLY);
 	// Verify output filter type
 	g_assert(filter2->type == OUTPUT_FILTER_PATCH);
 	g_assert(filter2->next != NULL);
 	// Verify output section of filter
 	g_assert(filter2->output != NULL);
-	g_assert(filter2->output->timestep == TIMESTEP_MONTHLY);
 	g_assert(filter2->output->format == OUTPUT_TYPE_NETCDF);
 	cmp = strcmp(filter2->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);
@@ -76,12 +78,13 @@ void test_output_filter2() {
 
 	// Third filter
 	OutputFilter *filter3 = filter2->next;
+	// Verify timestep
+	g_assert(filter3->timestep == TIMESTEP_YEARLY);
 	// Verify output filter type
 	g_assert(filter3->type == OUTPUT_FILTER_PATCH);
 	g_assert(filter3->next == NULL);
 	// Verify output section of filter
 	g_assert(filter3->output != NULL);
-	g_assert(filter3->output->timestep == TIMESTEP_YEARLY);
 	g_assert(filter3->output->format == OUTPUT_TYPE_CSV);
 	cmp = strcmp(filter3->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);
