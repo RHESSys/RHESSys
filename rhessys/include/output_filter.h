@@ -74,7 +74,14 @@ typedef struct of_patch {
 	struct patch_object *patch;
 } OutputFilterPatch;
 
+typedef enum {
+	OUTPUT_FILTER_UNDEFINED,
+	OUTPUT_FILTER_PATCH,
+	OUTPUT_FILTER_CANOPY_STRATA
+} OutputFilterType;
+
 typedef struct of_filter {
+	OutputFilterType type;
 	struct of_filter *next;
 	OutputFilterOutput *output;
 	OutputFilterPatch *patches;

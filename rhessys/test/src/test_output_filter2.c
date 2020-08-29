@@ -11,6 +11,8 @@ void test_output_filter2() {
 	OutputFilter *filter = parse("test/fixtures/filter2.yml");
 
 	// First filter
+	// Verify output filter type
+	g_assert(filter->type == OUTPUT_FILTER_PATCH);
 	g_assert(filter->next != NULL);
 	// Verify output section of filter
 	g_assert(filter->output != NULL);
@@ -47,6 +49,8 @@ void test_output_filter2() {
 
 	// Second filter
 	OutputFilter *filter2 = filter->next;
+	// Verify output filter type
+	g_assert(filter2->type == OUTPUT_FILTER_PATCH);
 	g_assert(filter2->next != NULL);
 	// Verify output section of filter
 	g_assert(filter2->output != NULL);
@@ -72,6 +76,8 @@ void test_output_filter2() {
 
 	// Third filter
 	OutputFilter *filter3 = filter2->next;
+	// Verify output filter type
+	g_assert(filter3->type == OUTPUT_FILTER_PATCH);
 	g_assert(filter3->next == NULL);
 	// Verify output section of filter
 	g_assert(filter3->output != NULL);

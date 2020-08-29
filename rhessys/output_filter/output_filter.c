@@ -237,6 +237,7 @@ void free_output_filter_output(OutputFilterOutput *output) {
 
 OutputFilter *create_new_output_filter() {
 	OutputFilter *new_filter = (OutputFilter *) malloc(sizeof(OutputFilter));
+	new_filter->type = OUTPUT_FILTER_UNDEFINED;
 	new_filter->next = NULL;
 	new_filter->output = NULL;
 	new_filter->patches = NULL;

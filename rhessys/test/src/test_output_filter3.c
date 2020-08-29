@@ -10,6 +10,8 @@ void test_output_filter3() {
 	OutputFilter *filter = parse("test/fixtures/filter3.yml");
 
 	g_assert(filter->next == NULL);
+	// Verify output filter type
+	g_assert(filter->type == OUTPUT_FILTER_PATCH);
 	// Verify output section of filter
 	g_assert(filter->output != NULL);
 	g_assert(filter->output->timestep == TIMESTEP_DAILY);

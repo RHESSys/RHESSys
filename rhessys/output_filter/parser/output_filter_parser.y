@@ -181,9 +181,13 @@ patch: PATCH_TOK {
 		} else if (curr_filter->patches != NULL) {
 			syntax_error = true;
 			yyerror("only one patch definition is allowed in a filter, but more than one was encountered.");
+		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
+		  syntax_error = true;
+		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to patch.");
 		} else {
 			in_patch = true;
 			in_output = false;
+			curr_filter->type = OUTPUT_FILTER_PATCH;
 			printf("\tBEGIN PATCH\n");
 		}
 	}
