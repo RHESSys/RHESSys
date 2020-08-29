@@ -5,11 +5,127 @@
 #include "index_struct_fields.h"
 #include "output_filter/output_format_csv.h"
 
+
 OutputFilter *parse(const char* input);
+struct basin_object *find_basin(int basin_ID, struct world_object *world);
+struct hillslope_object *find_hillslope_in_basin(int hillslope_ID, struct basin_object *basin);
+struct zone_object *find_zone_in_hillslope(int zone_ID, struct hillslope_object *hillslope);
+struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct basin_object *basin);
+
 
 static bool returnWithError(char * const error, size_t error_len, char *error_mesg) {
 	strncpy(error, error_mesg, error_len);
 	return false;
+}
+
+static bool init_spatial_hierarchy_patch(OutputFilter *f,
+		struct world_object * const w,
+		bool verbose) {
+
+	struct basin_object *b;
+
+	if (f->patches == NULL) {
+		fprintf(stderr, "init_spatial_hierarchy_patch: no patches defined but patch type was specified.");
+		return false;
+	}
+
+	if (verbose) fprintf(stderr, "BEGIN init_spatial_hierarchy_patch\n");
+
+	OutputFilterPatch *p = f->patches;
+	while (p != NULL) {
+		switch(p->output_patch_type) {
+		case BASIN:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d\n", p->basinID);
+			}
+			p->basin = find_basin(p->basinID, w);
+			if (p->basin == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_patch: no basin with ID %d could be found.",
+						p->basinID);
+				return false;
+			}
+			break;
+		case HILLSLOPE:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d\n",
+						p->basinID, p->hillslopeID);
+			}
+			b = find_basin(p->basinID, w);
+			if (b == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate hillslope %d.",
+						p->basinID, p->hillslopeID);
+				return false;
+			}
+			p->hill = find_hillslope_in_basin(p->hillslopeID, b);
+			if (p->hill == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_patch: hillslope %d could not be found in basin %d.",
+						p->hillslopeID, p->basinID);
+				return false;
+			}
+			break;
+		case ZONE:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d, zoneID: %d\n",
+						p->basinID, p->hillslopeID, p->zoneID);
+			}
+			b = find_basin(p->basinID, w);
+			if (b == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate zone %d in hillslope %d.",
+						p->basinID, p->zoneID, p->hillslopeID);
+				return false;
+			}
+			struct hillslope_object *h = find_hillslope_in_basin(p->hillslopeID, b);
+			if (h == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_patch: hillslope %d could not be found in basin %d, so could not locate zone %d.",
+						p->hillslopeID, p->basinID, p->zoneID);
+				return false;
+			}
+			p->zone = find_zone_in_hillslope(p->zoneID, h);
+			if (p->zone == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_patch: zone %d could not be found in hillslope %d, basin %d.",
+						p->zoneID, p->hillslopeID, p->basinID);
+				return false;
+			}
+			break;
+		case PATCH:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d, zoneID: %d, patchID: %d\n",
+						p->basinID, p->hillslopeID, p->zoneID, p->patchID);
+			}
+			b = find_basin(p->basinID, w);
+			if (b == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate patch %d in hillslope %d, patch %d.",
+						p->basinID, p->patchID, p->hillslopeID, p->zoneID);
+				return false;
+			}
+			p->patch = find_patch(p->patchID, p->zoneID, p->hillslopeID, b);
+			if (p->patch == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_patch: patch %d could not be found in zone %d, hillslope %d, basin %d.",
+						p->patchID, p->zoneID, p->hillslopeID, p->basinID);
+				return false;
+			}
+			break;
+		}
+		p = p->next;
+	}
+
+	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_patch\n");
+
+	return true;
+}
+
+static bool init_spatial_hierarchy(OutputFilter *f,
+		struct world_object * const w,
+		bool verbose) {
+	switch(f->type) {
+	case OUTPUT_FILTER_PATCH:
+		return init_spatial_hierarchy_patch(f, w, verbose);
+	case OUTPUT_FILTER_CANOPY_STRATA:
+	default:
+		fprintf(stderr, "init_spatial_hierarchy: output type %d is unknown or not yet implemented.", f->type);
+		return false;
+	}
+	return true;
 }
 
 static bool init_output(OutputFilter *f) {
@@ -56,7 +172,14 @@ bool construct_output_filter(char * const error, size_t error_len,
 
 	bool status;
 	for (OutputFilter *f = filters; f != NULL; f = f->next) {
-		// TODO: Search for patches/zones/hillslopes/basins
+		// Initialize spatial hierarchy objects referenced in filter
+		status = init_spatial_hierarchy(f, world, cmd->verbose_flag);
+		if (!status) {
+			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
+			snprintf(init_error, MAXSTR, "unable to initialize output filter with path %s and filename %s.",
+					f->output->path, f->output->filename);
+			return returnWithError(error, error_len, init_error);
+		}
 
 		// TODO: Validate variables and write offsets to filter
 
