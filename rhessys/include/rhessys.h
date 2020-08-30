@@ -2396,6 +2396,7 @@ struct epvar_struct
 {
 
 
+        double fcroot; /* 0-1 */
         double fleaf; /* 0-1 */
         double froot; /* 0-1 */
         double fwood; /* 0-1 */
@@ -2724,6 +2725,7 @@ struct epconst_struct
     double deadwood_fscel;   /* (DIM) dead wood shielded cellulose fraction */
     double deadwood_flig;    /* (DIM) dead wood lignin fraction */
     double deadwood_cn;      /* (kgC/kgN) dead wood C:N (calc. internally) */
+    double alloc_frootc_crootc; /* (ratio) new fine root C to new coarse root C */
     double alloc_frootc_leafc; /* (ratio) new fine root C to new leaf C */
     double alloc_crootc_stemc; /* (ratio) new live croot C to new live stem C */
     double alloc_stemc_leafc; /* (ratio) new live stem C to new leaf C */
@@ -2741,6 +2743,7 @@ struct epconst_struct
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
     double max_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
+    double resprout_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
     double max_root_depth; /*  (m) optionally used to constratin maximum rooting depth by species */
         double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
     int     max_years_resprout; /* num years of resprouting before death */
@@ -2892,6 +2895,7 @@ struct  canopy_strata_object
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;
         double  dC13;           /* % discrimination of C13 */
+        double  T_canopy;  /* deg C */
         double  evaporation;                                    /* meters/day   */
         double  ga;                                             /* m/s          */
         double  gap_fraction;                                   /* unitless     */

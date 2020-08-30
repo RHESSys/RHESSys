@@ -126,7 +126,6 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
-	double wilting_point;
 	struct mortality_struct mort;
 	double leafcloss_perc, daily_mortality;
 

@@ -1974,7 +1974,10 @@ void	canopy_stratum_daily_F(
 	patch[0].wind_final += wind * stratum[0].cover_fraction;
 	patch[0].windsnow_final += windsnow * stratum[0].cover_fraction;
 	patch[0].ustar_final += ustar * stratum[0].cover_fraction;
+
+	/* these are very approximate but will acount for latent effect on energy partitioning  */
 	patch[0].T_canopy_final += (zone[0].metv.tavg + deltaT) * stratum[0].cover_fraction;
+	stratum[0].T_canopy = (zone[0].metv.tavg + deltaT); 
 
 	/* track variables for fire spread */
 	if (command_line[0].firespread_flag == 1) {

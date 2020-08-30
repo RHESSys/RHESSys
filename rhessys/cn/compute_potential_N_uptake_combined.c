@@ -56,7 +56,7 @@ double compute_potential_N_uptake_combined(
 	/*------------------------------------------------------*/
 	double day_gpp;     /* daily gross production */
 	double day_mresp;   /* daily total maintenance respiration */
-	double froot, fleaf, fwood;          /* RATIO   new fine root C : new leaf C     */
+	double fbroot, fcroot, fstem, froot, fleaf, fwood;          /* RATIO   new fine root C : new leaf C     */
 	double f2;          /* RATIO   fraction to leaf and fraction to root*/
 	double f4;          /* RATIO   new live wood C : new wood C     */
 	double f3;          /* RATIO   new leaf C : new wood C     */
@@ -66,7 +66,7 @@ double compute_potential_N_uptake_combined(
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
 	double cnmax;       /* RATIO   max of root and leaf C:N      */
-	double mean_cn, transfer;
+	double mean_cn, transfer, ratio;
 	double plant_calloc, plant_ndemand;
 	double k2, c; /* working variables */
 	double dickenson_k; /* working variable for LAI exponential decay constant */
@@ -120,27 +120,57 @@ double compute_potential_N_uptake_combined(
 		in the dickenson allocation (i.e. old dickenson_pa) 
 		original dickenson allocation was fleaf=exp(-1*k*lai) use  
 		froot = (1-leaf) for simplicity  
-			--------------------------------------------------------------- */
-		dickenson_k = (epc.waring_pa / (1.0 + epc.waring_pb * (cdf->psn_to_cpool) / c));
+		/* --------------------------------------------------------------- */
 
-		froot = (1-exp(-1.0*dickenson_k * epv->proj_lai));
+			/* --------------------------------------------------------------- */
+			/* uses approach published in Reyes et al., (2017) Assessing the Impact of...JAMES  */
+			/* adapted for trees here (unpublished) */
+			/* --------------------------------------------------------------- */
+
+		if (epc.veg_type == TREE) {
+
+
+		fleaf = exp(-1.0*epc.waring_pa * epv->proj_lai);
+		fbroot = fleaf * epc.alloc_frootc_leafc *  (1+epc.waring_pb )/ (1.0 + epc.waring_pb * (cdf->psn_to_cpool)/c);
+		ratio = fbroot/fleaf;
+
+		if ((epc.veg_type == TREE)) {
+		if (fbroot+fleaf > 0.95) {
+			fleaf = 0.95/(1+ratio);
+			fbroot = fleaf*ratio;
+			}
 		
-		if (epc.veg_type == TREE)
-			fleaf = (1.0 - froot) / (1 + (1+f2)*f3);
-		else
-			fleaf = 1.0 - froot;
+		fcroot = fbroot/(1+epc.alloc_frootc_crootc);
+		froot = fbroot-fcroot;
+
+		fstem = 1.0-(froot+fcroot+fleaf);
+		fwood = fstem+fcroot;
+		}
+		else {
+			fleaf = 1.0-fbroot;
+			froot = fbroot;
+		}
+		}
+
+		else {
+		dickenson_k = (epc.waring_pa / (1.0 + epc.waring_pb * (cdf->psn_to_cpool) / c));
+		froot = (1-exp(-1.0*dickenson_k * epv->proj_lai));
+		fleaf = 1.0-froot;
+		fcroot=0.0;
+		fwood=0.0;
+		}
+
 	}
 	else {
 		froot = 0.0;
 		fleaf = 0.0;
+		fstem=0.0;
+		fcroot=0.0;
+		fwood=0.0;
+		f3 = 0.0;
 	}
 
-	if (fleaf > ZERO)
-		f3 = (1.0-fleaf-froot)/ (fleaf*(1.0+f2));
-	else
-		f3 = 0.0;
 
-	fwood = fleaf*f3*(1.0+f2);
 
 
 	if ((fleaf + froot) > ZERO) {	
@@ -169,6 +199,14 @@ double compute_potential_N_uptake_combined(
 	cdf->fleaf = fleaf;
 	cdf->fwood = fwood;
 	cdf->froot = froot;
+	cdf->fcroot = fcroot;
+
+/*
+	if (c > ZERO)
+		printf("\n lai %lf  fleaf %lf froot %lf fcroot %lf fstem %lf stress %lf", epv->proj_lai, fleaf, froot, fcroot, fstem, (cdf->psn_to_cpool)/c);
+	else
+		printf("\n lai %lf  fleaf %lf froot %lf fcroot %lf fstem %lf nopsn", epv->proj_lai, fleaf, froot, fcroot, fstem );
+*/
 
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake_Waring */

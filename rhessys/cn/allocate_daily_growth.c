@@ -109,8 +109,12 @@ int allocate_daily_growth(int nlimit,
 	fleaf = cdf->fleaf;
 	froot = cdf->froot;
 	fwood = cdf->fwood;
+
+	if (cdf->fcroot > ZERO);
+		fcroot = cdf->fcroot;
 	
 	if ((fleaf + froot) > ZERO) {	
+
 
 	if (epc.veg_type == TREE){
 		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);

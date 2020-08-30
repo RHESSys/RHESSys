@@ -140,9 +140,7 @@ struct zone_default *construct_zone_defaults(
         default_object_list[i].search_x = getDoubleParam(&paramCnt, &paramPtr, "search_x", "%lf", 3376.0, 1); // the default value is for DayMet data which has grid around 4km by 4km
         default_object_list[i].search_y = getDoubleParam(&paramCnt, &paramPtr, "search_y", "%lf", 4638.0, 1);
         default_object_list[i].res_patch = getDoubleParam(&paramCnt, &paramPtr, "res_patch", "%lf", 100, 1);
-            printf("\n the searching distance x %lf, searching distance y %lf, patch_res %lf \n", default_object_list[i].search_x, default_object_list[i].search_y, default_object_list[i].res_patch);
         default_object_list[i].grid_interpolation = getIntParam(&paramCnt, &paramPtr, "grid_interpolation", "%d", 0,1); //change the default to not do interpolation NREN 2019/1019
-            printf("\n the netcdf grid data interploation is %d \n", default_object_list[i].grid_interpolation);
 
 		/*--------------------------------------------------------------*/
 		/* read any optional (tagged) defaults here			*/

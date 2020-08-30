@@ -197,9 +197,7 @@ int allocate_annual_growth(				int id,
 	else
 		ratio = 1.0;
 
-        /* if (epc.max_storage_percent > ZERO)
-	              storage_transfer_prop = 1.0 - (1.0  - epc.storage_transfer_prop) * (epc.max_storage_percent - ratio)/ epc.max_storage_percent;
-	*/
+
          if ((epc.max_storage_percent > ZERO) && (ratio < epc.max_storage_percent))
 		storage_transfer_prop = epc.storage_transfer_prop;
         else
@@ -218,7 +216,7 @@ int allocate_annual_growth(				int id,
 	if (((total_store < epc.cpool_mort_fract*total_biomass) || (cs->cpool < ZERO))  && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
 
-		if (cs->cpool > ZERO)
+		if (epc.cpool_mort_fract*total_biomass > ZERO)
 			excess_carbon = 1.0 - total_store/(epc.cpool_mort_fract*total_biomass);
 		else
 			excess_carbon = 1.0;
@@ -238,6 +236,9 @@ int allocate_annual_growth(				int id,
 						 ns, ndf, ndf_patch, 
 						 cs_litr, ns_litr, 1,
 						 mort);	
+
+		cs->stem_density = (cs->stem_density - cs->stem_density*excess_carbon);
+		cs->stem_density = max(cs->stem_density, 0.01); 
 	}
 		
 	
@@ -360,7 +361,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	
 	if (total_above_biomass > ZERO)
-		 excess_carbon = (cdf->leafc_store_to_leafc_transfer+cs->leafc) - epc.min_percent_leafg*total_biomass;  
+		 excess_carbon = (cdf->leafc_store_to_leafc_transfer) - epc.min_percent_leafg*total_biomass;  
 	else
 		excess_carbon = 0.0;
 
@@ -441,10 +442,13 @@ int allocate_annual_growth(				int id,
 	/*	we allow only a certain amount of resprouting based on 	*/
 	/*	a stratum default file parameterization 		*/
 	/*--------------------------------------------------------------*/
-	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) {
+
+	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) <= epc.min_leaf_carbon) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
 		printf("\n Resprouting stratum %d", id);
+
+		cs->stem_density = epc.resprout_stem_density;
 		cs->num_resprout += 1;
 		cs->age = 0.0;
 		cs->cpool = epc.resprout_leaf_carbon;

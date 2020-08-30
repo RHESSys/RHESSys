@@ -88,6 +88,7 @@ void	canopy_stratum_growth(
                 double,
                 double,
                 double,
+                double,
                 double);
 
 	/*--------------------------------------------------------------*/
@@ -181,7 +182,8 @@ void	canopy_stratum_growth(
 			rootc, 
 			stratum[0].defaults[0][0].epc.root_growth_direction, stratum[0].defaults[0][0].epc.root_distrib_parm,
                         stratum[0].defaults[0][0].epc.max_root_depth,
-                        patch[0].soil_defaults[0][0].effective_soil_depth) != 0){
+                        patch[0].soil_defaults[0][0].effective_soil_depth,
+			stratum[0].cs.stem_density) != 0){
                         fprintf(stderr,
                                 "FATAL ERROR: in compute_rooting_depth() from canopy_stratum_growth()\n");
                         exit(EXIT_FAILURE);

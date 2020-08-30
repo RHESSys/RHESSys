@@ -76,6 +76,7 @@ void input_new_strata_mult(
 		double,
 		double,
 		double,
+		double,
 		double);
 
 	double compute_delta_water(
@@ -238,7 +239,7 @@ void input_new_strata_mult(
 	
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",canopy_strata[0].num_base_stations,0);	
 
-	
+
 		/*--------------------------------------------------------------*/
 		/*	Assign	defaults for this canopy_strata								*/
 		/*--------------------------------------------------------------*/
@@ -375,7 +376,8 @@ void input_new_strata_mult(
 			canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
 			canopy_strata[0].defaults[0][0].epc.max_root_depth,
-			patch[0].soil_defaults[0][0].effective_soil_depth)){
+			patch[0].soil_defaults[0][0].effective_soil_depth,
+			canopy_strata[0].cs.stem_density)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from construct_canopy_strata()\n");
 			exit(EXIT_FAILURE);
@@ -383,7 +385,7 @@ void input_new_strata_mult(
 	}
 	}
 	patch[0].rootzone.depth = max(patch[0].rootzone.depth, canopy_strata[0].rootzone.depth);
-	
+
 		/*--------------------------------------------------------------*/
 		/*	set phenology timing if static allocation		*/
 		/*--------------------------------------------------------------*/
@@ -411,13 +413,10 @@ void input_new_strata_mult(
 		canopy_strata[0].phen.lfseasonday = -1;
 		canopy_strata[0].phen.pheno_flag = 0;
 	}
-	else {
-		fprintf(stderr,"\nFATAL ERROR - construct_canopy_stratum.c");
-		fprintf(stderr,"\n phenology flag must be set to 0 for STATIC");
-		fprintf(stderr,"\n since dynamic phenology timing not yet implemented");
-		exit(EXIT_FAILURE);
+	else { 
+		printf("\n note - input_new_strata_mult.c");
+		printf("\n phenology flag dyanmics may be unstable for first year of regrowth");
 	}
-
 	/*--------------------------------------------------------------*/
 	/* initialize runnning average of psi using current day psi     */
 	/*--------------------------------------------------------------*/
