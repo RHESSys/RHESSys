@@ -1002,7 +1002,7 @@ struct  zone_default
         double search_x;                                /* meters */
         double search_y;                                /* meters */
         double res_patch;                               /* meters */
-        int    grid_interpolation                       /* 0/1    */ // 0 no interpolation of grid climate data
+        int    grid_interpolation;                       /* 0/1    */ // 0 no interpolation of grid climate data
 
         };
 
