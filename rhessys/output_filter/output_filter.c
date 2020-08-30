@@ -273,3 +273,185 @@ void free_output_filter(OutputFilter *head) {
 	free_output_filter_output(head->output);
 	free(head);
 }
+
+void print_output_filter_output(OutputFilterOutput *o, char *prefix) {
+	if (prefix == NULL) {
+		prefix = "";
+	}
+	fprintf(stderr, "%sOutputFilterOutput@%p {\n", prefix, (void *)o);
+	if (o != NULL) {
+		switch (o->format) {
+		case OUTPUT_TYPE_CSV:
+			fprintf(stderr, "%s\tformat: csv,\n", prefix);
+			break;
+		case OUTPUT_TYPE_NETCDF:
+			fprintf(stderr, "%s\tformat: netcdf,\n", prefix);
+			break;
+		}
+		fprintf(stderr, "%s\tpath: %s,\n", prefix, o->path);
+		fprintf(stderr, "%s\tfilename: %s,\n", prefix, o->filename);
+	}
+	fprintf(stderr, "%s}", prefix);
+}
+
+void print_output_filter_patch(OutputFilterPatch *p, char *prefix) {
+	if (prefix == NULL) {
+		prefix = "";
+	}
+	fprintf(stderr, "%sOutputFilterPatch@%p {\n", prefix, (void *)p);
+	if (p != NULL) {
+		fprintf(stderr, "%s\tnext: %p,\n", prefix, (void *)p->next);
+		switch (p->output_patch_type) {
+		case ALL_PATCHES:
+			fprintf(stderr, "%s\toutput_patch_type: all,\n", prefix);
+			break;
+		case BASIN:
+			fprintf(stderr, "%s\toutput_patch_type: basin,\n", prefix);
+			break;
+		case HILLSLOPE:
+			fprintf(stderr, "%s\toutput_patch_type: hillslope,\n", prefix);
+			break;
+		case ZONE:
+			fprintf(stderr, "%s\toutput_patch_type: zone,\n", prefix);
+			break;
+		case PATCH:
+			fprintf(stderr, "%s\toutput_patch_type: patch,\n", prefix);
+			break;
+		}
+
+		fprintf(stderr, "%s\tbasinID: %d,\n", prefix, p->basinID);
+		fprintf(stderr, "%s\tbasin: %p,\n", prefix, p->basin);
+
+		fprintf(stderr, "%s\thillslopeID: %d,\n", prefix, p->hillslopeID);
+		fprintf(stderr, "%s\thillslope: %p,\n", prefix, p->hill);
+
+		fprintf(stderr, "%s\tzoneID: %d,\n", prefix, p->zoneID);
+		fprintf(stderr, "%s\tzone: %p,\n", prefix, p->zone);
+
+		fprintf(stderr, "%s\tpatchID: %d,\n", prefix, p->patchID);
+		fprintf(stderr, "%s\tpatch: %p,\n", prefix, p->patch);
+	}
+	fprintf(stderr, "%s}", prefix);
+}
+
+void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
+	if (prefix == NULL) {
+		prefix = "";
+	}
+	fprintf(stderr, "%sOutputFilterVariable@%p {\n", prefix, (void *)v);
+	if (v != NULL) {
+		fprintf(stderr, "%s\tnext: %p,\n", prefix, (void *)v->next);
+		switch (v->variable_type) {
+		case ANY_VAR:
+			fprintf(stderr, "%s\tvariable_type: any,\n", prefix);
+			break;
+		case NAMED:
+			fprintf(stderr, "%s\tvariable_type: named,\n", prefix);
+			break;
+		}
+
+		switch (v->data_type) {
+		case DATA_TYPE_UNDEFINED:
+			fprintf(stderr, "%s\tvariable_type: undefined,\n", prefix);
+			break;
+		case DATA_TYPE_BOOL:
+			fprintf(stderr, "%s\tvariable_type: bool,\n", prefix);
+			break;
+		case DATA_TYPE_CHAR_ARRAY:
+			fprintf(stderr, "%s\tvariable_type: string,\n", prefix);
+			break;
+		case DATA_TYPE_INT:
+			fprintf(stderr, "%s\tvariable_type: int,\n", prefix);
+			break;
+		case DATA_TYPE_LONG:
+			fprintf(stderr, "%s\tvariable_type: long,\n", prefix);
+			break;
+		case DATA_TYPE_LONG_ARRAY:
+			fprintf(stderr, "%s\tvariable_type: long[],\n", prefix);
+			break;
+		case DATA_TYPE_FLOAT:
+			fprintf(stderr, "%s\tvariable_type: float,\n", prefix);
+			break;
+		case DATA_TYPE_DOUBLE:
+			fprintf(stderr, "%s\tvariable_type: double,\n", prefix);
+			break;
+		case DATA_TYPE_DOUBLE_ARRAY:
+			fprintf(stderr, "%s\tvariable_type: double[],\n", prefix);
+			break;
+		case DATA_TYPE_FILE_PTR:
+			fprintf(stderr, "%s\tvariable_type: FILE *,\n", prefix);
+			break;
+		case DATA_TYPE_STRUCT:
+			fprintf(stderr, "%s\tvariable_type: struct,\n", prefix);
+			break;
+		case DATA_TYPE_STRUCT_ARRAY:
+			fprintf(stderr, "%s\tvariable_type: struct[],\n", prefix);
+			break;
+		case DATA_TYPE_STRUCT_PTR_ARRAY:
+			fprintf(stderr, "%s\tvariable_type: struct *[],\n", prefix);
+			break;
+		}
+
+		fprintf(stderr, "%s\tname: %s,\n", prefix, v->name);
+		fprintf(stderr, "%s\toffset: %d,\n", prefix, v->offset);
+	}
+	fprintf(stderr, "%s}", prefix);
+}
+
+void print_output_filter(OutputFilter *f) {
+	fprintf(stderr, "OutputFilter@%p {\n", (void *)f);
+	if (f != NULL) {
+		fprintf(stderr, "\tnext: %p,\n", (void *)f->next);
+
+		switch (f->type) {
+		case OUTPUT_FILTER_UNDEFINED:
+			fprintf(stderr, "\ttype: undefined,\n");
+			break;
+		case OUTPUT_FILTER_PATCH:
+			fprintf(stderr, "\ttype: patch,\n");
+			break;
+		case OUTPUT_FILTER_CANOPY_STRATA:
+			fprintf(stderr, "\ttype: canopy strata,\n");
+			break;
+		}
+
+		switch (f->timestep) {
+		case TIMESTEP_UNDEFINED:
+			fprintf(stderr, "\timestep: undefined,\n");
+			break;
+		case TIMESTEP_HOURLY:
+			fprintf(stderr, "\timestep: hourly,\n");
+			break;
+		case TIMESTEP_DAILY:
+			fprintf(stderr, "\timestep: daily,\n");
+			break;
+		case TIMESTEP_MONTHLY:
+			fprintf(stderr, "\timestep: monthly,\n");
+			break;
+		case TIMESTEP_YEARLY:
+			fprintf(stderr, "\timestep: yearly,\n");
+			break;
+		}
+
+		fprintf(stderr, "\toutput: ");
+		print_output_filter_output(f->output, "\t");
+		fprintf(stderr, ",\n");
+
+		fprintf(stderr, "\tpatches: [\n");
+		for (OutputFilterPatch *p = f->patches; p != NULL; p = p->next) {
+			print_output_filter_patch(p, "\t\t");
+			fprintf(stderr, ",\n");
+		}
+		fprintf(stderr, "\t],\n");
+
+		fprintf(stderr, "\tvariables: [\n");
+		for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
+			print_output_filter_variable(v, "\t\t");
+			fprintf(stderr, ",\n");
+		}
+		fprintf(stderr, "\t],\n");
+	}
+
+	fprintf(stderr, "}\n");
+}
+

@@ -109,5 +109,10 @@ OutputFilter *add_to_output_filter_list(OutputFilter * const head,
 		OutputFilter * const new_filter);
 void free_output_filter(OutputFilter *filter);
 
+void print_output_filter_output(OutputFilterOutput *output, char *prefix);
+void print_output_filter_patch(OutputFilterPatch *patch, char *prefix);
+void print_output_filter_variale(OutputFilterVariable *variable, char *prefix);
+void print_output_filter(OutputFilter *filter);
+
 #endif
 

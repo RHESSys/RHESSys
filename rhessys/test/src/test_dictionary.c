@@ -9,6 +9,10 @@ void test_empty_dictionary() {
 	Dictionary_t *d = newDictionary(7);
 	printDictionary(d);
 
+	// Test retrieval
+	DictionaryValue_t *v = dictionaryGet(d, "not there");
+	g_assert(v == DICTIONARY_VALUE_EMPTY);
+
 	// Test iteration
 	StringList_t *key = d->keys;
 	size_t i = 0;

@@ -9,6 +9,8 @@ OutputFilter *parse(const char* input);
 void test_output_filter1() {
 	OutputFilter *filter = parse("test/fixtures/filter1.yml");
 
+	print_output_filter(filter);
+
 	g_assert(filter->next == NULL);
 	// Verify timestep
 	g_assert(filter->timestep == TIMESTEP_DAILY);

@@ -19,7 +19,7 @@
 #define DICTIONARY_SIZE_MEDIUM 101
 #define DICTIONARY_SIZE_SMALL 23
 #define DICTIONARY_KEY_EMPTY NULL
-#define DICTIONARY_VALUE_EMPTY SIZE_MAX
+#define DICTIONARY_VALUE_EMPTY NULL
 
 typedef size_t DictionaryTableKey_t;
 typedef struct dict_value_s {

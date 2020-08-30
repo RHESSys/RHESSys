@@ -11,6 +11,7 @@ void test_output_filter2() {
 	OutputFilter *filter = parse("test/fixtures/filter2.yml");
 
 	// First filter
+	print_output_filter(filter);
 	// Verify timestep
 	g_assert(filter->timestep == TIMESTEP_DAILY);
 	// Verify output filter type
@@ -50,6 +51,7 @@ void test_output_filter2() {
 
 	// Second filter
 	OutputFilter *filter2 = filter->next;
+	print_output_filter(filter2);
 	// Verify timestep
 	g_assert(filter2->timestep == TIMESTEP_MONTHLY);
 	// Verify output filter type
@@ -78,6 +80,7 @@ void test_output_filter2() {
 
 	// Third filter
 	OutputFilter *filter3 = filter2->next;
+	print_output_filter(filter3);
 	// Verify timestep
 	g_assert(filter3->timestep == TIMESTEP_YEARLY);
 	// Verify output filter type

@@ -383,18 +383,18 @@ dir:
 
 ifdef netcdf
 ifdef wmfire
-rhessys: $(OBJECTS)
+rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
 else
-rhessys: $(OBJECTS)
+rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp $(LINK_FLEX) -v -o $(PGM)
 endif
 else
 ifdef wmfire
-rhessys: $(OBJECTS)
+rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib $(LINK_FLEX) -lwmfire -v -o $(PGM)
 else
-rhessys: $(OBJECTS)
+rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib $(LINK_FLEX) -v -o $(PGM)
 endif
 endif

@@ -18,6 +18,70 @@ static bool returnWithError(char * const error, size_t error_len, char *error_me
 	return false;
 }
 
+static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
+	if (f->variables == NULL) {
+		fprintf(stderr, "init_variables_hourly_daily: no variables defined.");
+				return false;
+	}
+
+	OutputFilterVariable *v = f->variables;
+	while (v != NULL) {
+		if (v->variable_type == NAMED) {
+			DictionaryValue_t *var_idx_entry = dictionaryGet(i->patch_object, v->name);
+			if (var_idx_entry == NULL) {
+				fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of struct patch_object.", v->name);
+				return false;
+			}
+			v->offset = var_idx_entry->offset;
+			v->data_type = var_idx_entry->data_type;
+		}
+		v = v->next;
+	}
+
+	return true;
+}
+
+static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, bool verbose) {
+	if (f->variables == NULL) {
+		fprintf(stderr, "init_variables_monthly_yearly: no variables defined.");
+				return false;
+	}
+
+	OutputFilterVariable *v = f->variables;
+	while (v != NULL) {
+		if (v->variable_type == NAMED) {
+			DictionaryValue_t *var_idx_entry = dictionaryGet(i->accumulate_patch_object, v->name);
+			if (var_idx_entry == NULL) {
+				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct accumulate_patch_object.", v->name);
+				return false;
+			}
+			v->offset = var_idx_entry->offset;
+			v->data_type = var_idx_entry->data_type;
+		}
+		v = v->next;
+	}
+
+	return true;
+}
+
+static bool init_variables(OutputFilter *f, StructIndex_t *i, bool verbose) {
+	switch (f->timestep) {
+	case TIMESTEP_HOURLY:
+	case TIMESTEP_DAILY:
+		return init_variables_hourly_daily(f, i, verbose);
+	case TIMESTEP_MONTHLY:
+	case TIMESTEP_YEARLY:
+		return init_variables_monthly_yearly(f, i, verbose);
+	case TIMESTEP_UNDEFINED:
+		break;
+	default:
+		fprintf(stderr, "init_variable: timestep %d is unknown or not yet implemented.", f->timestep);
+		return false;
+	}
+
+	return true;
+}
+
 static bool init_spatial_hierarchy_patch(OutputFilter *f,
 		struct world_object * const w,
 		bool verbose) {
@@ -33,7 +97,7 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 
 	OutputFilterPatch *p = f->patches;
 	while (p != NULL) {
-		switch(p->output_patch_type) {
+		switch (p->output_patch_type) {
 		case BASIN:
 			if (verbose) {
 				fprintf(stderr, "\tbasinID: %d\n", p->basinID);
@@ -117,7 +181,7 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 static bool init_spatial_hierarchy(OutputFilter *f,
 		struct world_object * const w,
 		bool verbose) {
-	switch(f->type) {
+	switch (f->type) {
 	case OUTPUT_FILTER_PATCH:
 		return init_spatial_hierarchy_patch(f, w, verbose);
 	case OUTPUT_FILTER_CANOPY_STRATA:
@@ -129,7 +193,7 @@ static bool init_spatial_hierarchy(OutputFilter *f,
 }
 
 static bool init_output(OutputFilter *f) {
-	switch(f->output->format) {
+	switch (f->output->format) {
 	case OUTPUT_TYPE_CSV:
 		return output_format_csv_init(f);
 	case OUTPUT_TYPE_NETCDF:
@@ -141,7 +205,7 @@ static bool init_output(OutputFilter *f) {
 }
 
 static bool write_headers(OutputFilter *f) {
-	switch(f->output->format) {
+	switch (f->output->format) {
 	case OUTPUT_TYPE_CSV:
 		return output_format_csv_write_headers(f);
 	case OUTPUT_TYPE_NETCDF:
@@ -171,19 +235,27 @@ bool construct_output_filter(char * const error, size_t error_len,
 	StructIndex_t *idx = index_struct_fields();
 
 	bool status;
+	// Iterate over all filters and initialize them...
 	for (OutputFilter *f = filters; f != NULL; f = f->next) {
 		// Initialize spatial hierarchy objects referenced in filter
 		status = init_spatial_hierarchy(f, world, cmd->verbose_flag);
 		if (!status) {
 			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
-			snprintf(init_error, MAXSTR, "unable to initialize output filter with path %s and filename %s.",
+			snprintf(init_error, MAXSTR, "unable to initialize spatial hierarchy for output filter with path %s and filename %s.",
 					f->output->path, f->output->filename);
 			return returnWithError(error, error_len, init_error);
 		}
 
-		// TODO: Validate variables and write offsets to filter
+		// Validate variables and write offsets and data types to filter
+		status = init_variables(f, idx, cmd->verbose_flag);
+		if (!status) {
+			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
+			snprintf(init_error, MAXSTR, "unable to initialize variables for output filter with path %s and filename %s.",
+					f->output->path, f->output->filename);
+			return returnWithError(error, error_len, init_error);
+		}
 
-		// Initialize output for filters
+		// Initialize output for filter
 		if (f->output == NULL) {
 			return returnWithError(error, error_len,
 					"Output filter did not specify an output section.");
@@ -212,8 +284,11 @@ bool construct_output_filter(char * const error, size_t error_len,
 					f->output->path, f->output->filename);
 			return returnWithError(error, error_len, init_error);
 		}
+
+		if (cmd->verbose_flag) print_output_filter(f);
 	}
 
+	freeStructIndex(idx);
 	cmd->output_filter = filters;
 	return true;
 }
