@@ -364,6 +364,7 @@ $(OBJ)/dictionary.o \
 $(OBJ)/output_filter.o \
 $(OBJ)/construct_output_filter.o \
 $(OBJ)/destroy_output_filter.o \
+$(OBJ)/output_filter_output.o \
 $(OBJ)/output_format_csv.o
 
 ifdef netcdf
@@ -1062,6 +1063,8 @@ $(OBJ)/construct_output_filter.o: output_filter/construct_output_filter.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/construct_output_filter.c -o $(OBJ)/construct_output_filter.o
 $(OBJ)/destroy_output_filter.o: output_filter/destroy_output_filter.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/destroy_output_filter.c -o $(OBJ)/destroy_output_filter.o
+$(OBJ)/output_filter_output.o: output_filter/output_filter_output.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter_output.c -o $(OBJ)/output_filter_output.o
 $(OBJ)/output_format_csv.o: output_filter/format/output_format_csv.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/format/output_format_csv.c -o $(OBJ)/output_format_csv.o
 
