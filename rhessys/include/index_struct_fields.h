@@ -3,8 +3,8 @@
 
 #include "struct_index.h"
 
-StructIndex_t *newStructIndex();
-void freeStructIndex(StructIndex_t *i);
+StructIndex_t *new_struct_index();
+void free_struct_index(StructIndex_t *i);
 StructIndex_t *index_struct_fields();
 
 #endif

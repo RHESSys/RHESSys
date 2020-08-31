@@ -288,7 +288,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 		if (cmd->verbose_flag) print_output_filter(f);
 	}
 
-	freeStructIndex(idx);
+	free_struct_index(idx);
 	cmd->output_filter = filters;
 	return true;
 }

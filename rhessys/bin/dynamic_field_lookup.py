@@ -50,7 +50,7 @@ output.write('''#include <stdio.h>
 #include "dictionary.h"
 #include "index_struct_fields.h"
 
-StructIndex_t *newStructIndex() {
+StructIndex_t *new_struct_index() {
 	StructIndex_t *i = (StructIndex_t *) malloc(sizeof(StructIndex_t));
 	assert(i);
 	i->patch_object = NULL;
@@ -59,7 +59,7 @@ StructIndex_t *newStructIndex() {
 	return i;
 }
 
-void freeStructIndex(StructIndex_t *i) {
+void free_struct_index(StructIndex_t *i) {
 	if (i == NULL) return;
 	if (i->patch_object != NULL) {
 		freeDictionary(i->patch_object);
@@ -74,7 +74,7 @@ void freeStructIndex(StructIndex_t *i) {
 }
 
 StructIndex_t *index_struct_fields() {
-	StructIndex_t *i = newStructIndex();
+	StructIndex_t *i = new_struct_index();
 	i->patch_object = newDictionary(DICTIONARY_DEFAULT_SIZE);
 	i->accumulate_patch_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
 	i->patch_hourly_object = newDictionary(DICTIONARY_SIZE_SMALL);
