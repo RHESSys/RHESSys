@@ -403,7 +403,7 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].output_filter_flag) {
-		if(command_line->verbose_flag) {
+		if (command_line->verbose_flag) {
 			bool of_result = true;
 			fprintf(stderr, "Using output filter filename: %s\n", command_line->output_filter_filename);
 			char *of_error = (char *)calloc(MAXSTR, sizeof(char));
