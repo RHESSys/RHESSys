@@ -455,3 +455,7 @@ void print_output_filter(OutputFilter *f) {
 	fprintf(stderr, "}\n");
 }
 
+bool return_with_error(char * const error, size_t error_len, char *error_mesg) {
+	strncpy(error, error_mesg, error_len);
+	return false;
+}

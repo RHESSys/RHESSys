@@ -78,7 +78,13 @@ void execute_daily_output_event(struct world_object *world,
 		/*----------------------------------------------------------------------*/
 		/*  Handle output filter output.                                        */
 		/*----------------------------------------------------------------------*/
-		output_filter_output_daily(command_line->output_filter);
+		bool of_result = true;
+		char *of_error = (char *)calloc(MAXSTR, sizeof(char));
+		of_result = output_filter_output_daily(of_error, MAXSTR, command_line->output_filter);
+		if (!of_result) {
+			fprintf(stderr, "output_filter_output_daily failed with error: %s\n", of_error);
+			exit(EXIT_FAILURE);
+		}
 	} else if (command_line[0].legacy_output_flag) {
 		/*----------------------------------------------------------------------*/
 		/*  Handle legacy output: Make up the prefix for the output files.      */

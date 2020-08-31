@@ -114,5 +114,7 @@ void print_output_filter_patch(OutputFilterPatch *patch, char *prefix);
 void print_output_filter_variale(OutputFilterVariable *variable, char *prefix);
 void print_output_filter(OutputFilter *filter);
 
+bool return_with_error(char * const error, size_t error_len, char *error_mesg);
+
 #endif
 

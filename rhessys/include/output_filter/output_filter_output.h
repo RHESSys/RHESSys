@@ -10,7 +10,6 @@
 
 #include "output_filter.h"
 
-void output_filter_output_daily(OutputFilter *filters);
-void output_filter_output_patch_daily(OutputFilter *filters);
+bool output_filter_output_daily(char * const error, size_t error_len, OutputFilter * const filter);
 
 #endif /* INCLUDE_OUTPUT_FILTER_OUTPUT_FILTER_OUTPUT_H_ */

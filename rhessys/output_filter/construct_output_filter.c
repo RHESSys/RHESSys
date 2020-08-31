@@ -13,11 +13,6 @@ struct zone_object *find_zone_in_hillslope(int zone_ID, struct hillslope_object 
 struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct basin_object *basin);
 
 
-static bool returnWithError(char * const error, size_t error_len, char *error_mesg) {
-	strncpy(error, error_mesg, error_len);
-	return false;
-}
-
 static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_hourly_daily: no variables defined.");
@@ -220,16 +215,16 @@ bool construct_output_filter(char * const error, size_t error_len,
 		struct command_line_object * const cmd,
 		struct world_object * const world) {
 	if (!cmd->output_filter_flag) {
-		return returnWithError(error, error_len, "output_filter_flag is fall, not constructing output filter.");
+		return return_with_error(error, error_len, "output_filter_flag is fall, not constructing output filter.");
 	}
 
 	// Parse output filter
 	OutputFilter *filters = parse(cmd->output_filter_filename);
 	if (filters == NULL) {
-		return returnWithError(error, error_len, "unable to parse output filter.");
+		return return_with_error(error, error_len, "unable to parse output filter.");
 	}
 	if (filters->parse_error) {
-		return returnWithError(error, error_len, "output_filter_parser returned with an error.");
+		return return_with_error(error, error_len, "output_filter_parser returned with an error.");
 	}
 
 	StructIndex_t *idx = index_struct_fields();
@@ -243,7 +238,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(init_error, MAXSTR, "unable to initialize spatial hierarchy for output filter with path %s and filename %s.",
 					f->output->path, f->output->filename);
-			return returnWithError(error, error_len, init_error);
+			return return_with_error(error, error_len, init_error);
 		}
 
 		// Validate variables and write offsets and data types to filter
@@ -252,20 +247,20 @@ bool construct_output_filter(char * const error, size_t error_len,
 			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(init_error, MAXSTR, "unable to initialize variables for output filter with path %s and filename %s.",
 					f->output->path, f->output->filename);
-			return returnWithError(error, error_len, init_error);
+			return return_with_error(error, error_len, init_error);
 		}
 
 		// Initialize output for filter
 		if (f->output == NULL) {
-			return returnWithError(error, error_len,
+			return return_with_error(error, error_len,
 					"Output filter did not specify an output section.");
 		}
 		if (f->output->path == NULL) {
-			return returnWithError(error, error_len,
+			return return_with_error(error, error_len,
 					"Output filter did not specify output path.");
 		}
 		if (f->output->filename == NULL) {
-			return returnWithError(error, error_len,
+			return return_with_error(error, error_len,
 					"Output filter did not specify output filename.");
 		}
 		status = init_output(f);
@@ -273,7 +268,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(init_error, MAXSTR, "unable to initialize output %s/%s for output filter.",
 					f->output->path, f->output->filename);
-			return returnWithError(error, error_len, init_error);
+			return return_with_error(error, error_len, init_error);
 		}
 
 		// Write header information for each output file
@@ -282,7 +277,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(init_error, MAXSTR, "unable to write headers for output %s/%s.",
 					f->output->path, f->output->filename);
-			return returnWithError(error, error_len, init_error);
+			return return_with_error(error, error_len, init_error);
 		}
 
 		if (cmd->verbose_flag) print_output_filter(f);
