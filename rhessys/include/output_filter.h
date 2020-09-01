@@ -40,6 +40,8 @@ typedef enum {
 	PATCH = 1
 } OutputPatchType;
 
+typedef unsigned short num_elements_t;
+
 typedef struct of_output_output {
 	OutputFormat format;
 	char *path;
@@ -87,6 +89,7 @@ typedef struct of_filter {
 	OutputFilterOutput *output;
 	OutputFilterPatch *patches;
 	OutputFilterVariable *variables;
+	num_elements_t num_named_variables;
 	bool parse_error;
 } OutputFilter;
 

@@ -29,6 +29,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 			}
 			v->offset = var_idx_entry->offset;
 			v->data_type = var_idx_entry->data_type;
+			f->num_named_variables += 1;
 		}
 		v = v->next;
 	}
@@ -52,6 +53,7 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 			}
 			v->offset = var_idx_entry->offset;
 			v->data_type = var_idx_entry->data_type;
+			f->num_named_variables += 1;
 		}
 		v = v->next;
 	}

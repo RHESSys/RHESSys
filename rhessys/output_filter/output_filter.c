@@ -243,6 +243,7 @@ OutputFilter *create_new_output_filter() {
 	new_filter->output = NULL;
 	new_filter->patches = NULL;
 	new_filter->variables = NULL;
+	new_filter->num_named_variables = 0;
 	new_filter->parse_error = false;
 	return new_filter;
 }
@@ -443,6 +444,8 @@ void print_output_filter(OutputFilter *f) {
 			fprintf(stderr, ",\n");
 		}
 		fprintf(stderr, "\t],\n");
+
+		fprintf(stderr, "\tnum_named_variables: %hu,\n", f->num_named_variables);
 
 		fprintf(stderr, "\tvariables: [\n");
 		for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
