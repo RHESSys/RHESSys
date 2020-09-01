@@ -4,15 +4,17 @@
 
 static bool output_patch_daily_variables(char * const error, size_t error_len,
 		OutputFilterPatch * const p, OutputFilterVariable * const variables,
-		OutputFilterOutput * const output) {
-	fprintf(stderr, "\t\toutput_patch_daily_variables()...\n");
+		num_elements_t num_named_variables, OutputFilterOutput * const output) {
+	fprintf(stderr, "\t\toutput_patch_daily_variables(num_named_variables: %hu)...\n", num_named_variables);
 
 	char *local_error;
+
+	// TODO: Allocate array for num_named_variables materialized variables
 
 	for (OutputFilterVariable *v = variables; v != NULL; v = v->next) {
 		switch (v->variable_type) {
 		case NAMED:
-			// TODO: Add to list of variables to output...
+			// TODO: Add to array of materialized variables
 			fprintf(stderr, "\t\t\tNAMED variable encountered...\n");
 			break;
 		case ANY_VAR:
@@ -23,6 +25,8 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 			return_with_error(error, error_len, local_error);
 		}
 	}
+
+	// TODO: Output materialized variables array using appropriate driver
 
 	return true;
 }
@@ -37,7 +41,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 		switch (p->output_patch_type) {
 		case PATCH:
 			return output_patch_daily_variables(error, error_len, p,
-					filter->variables, filter->output);
+					filter->variables, filter->num_named_variables, filter->output);
 		case ZONE:
 		case HILLSLOPE:
 		case BASIN:
