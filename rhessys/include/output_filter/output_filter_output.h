@@ -14,7 +14,8 @@ typedef struct materialized_variable {
 	DataType data_type;
 	union {
 		bool bool_val;
-		char *str_val;
+		char char_val;
+		char *char_array;
 		int int_val;
 		long long_val;
 		long *long_array;
@@ -23,6 +24,8 @@ typedef struct materialized_variable {
 		double *double_array;
 	} u;
 } MaterializedVariable;
+
+MaterializedVariable *alloc_materialized_variable_array(size_t num_elements);
 
 bool output_filter_output_daily(char * const error, size_t error_len, OutputFilter * const filter);
 

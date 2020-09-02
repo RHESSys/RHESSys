@@ -1,21 +1,97 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "rhessys.h"
 #include "output_filter/output_filter_output.h"
 
 
+MaterializedVariable *alloc_materialized_variable_array(size_t num_elements) {
+	return calloc(num_elements, sizeof(MaterializedVariable));
+}
+
+inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const p) {
+	MaterializedVariable mat_var;
+	switch (v->data_type) {
+	case DATA_TYPE_BOOL:
+		mat_var.data_type = v->data_type;
+		mat_var.u.bool_val = *((bool *)(p + v->offset));
+		fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
+		break;
+	case DATA_TYPE_CHAR:
+		mat_var.data_type = v->data_type;
+		mat_var.u.char_val = *((char *)(p + v->offset));
+		fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
+		break;
+	case DATA_TYPE_CHAR_ARRAY:
+		mat_var.data_type = v->data_type;
+		mat_var.u.char_array = (char *)(p + v->offset);
+		fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
+		break;
+	case DATA_TYPE_INT:
+		mat_var.data_type = v->data_type;
+		mat_var.u.int_val = *((int *)(p + v->offset));
+		fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
+		break;
+	case DATA_TYPE_LONG:
+		mat_var.data_type = v->data_type;
+		mat_var.u.long_val = *((long *)(p + v->offset));
+		fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
+		break;
+	case DATA_TYPE_LONG_ARRAY:
+		mat_var.data_type = v->data_type;
+		mat_var.u.long_array = (long *)(p + v->offset);
+		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
+		break;
+	case DATA_TYPE_FLOAT:
+		mat_var.data_type = v->data_type;
+		mat_var.u.float_val = *((float *)(p + v->offset));
+		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
+		break;
+	case DATA_TYPE_DOUBLE:
+		mat_var.data_type = v->data_type;
+		mat_var.u.double_val = *((double *)(p + v->offset));
+		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
+		break;
+	case DATA_TYPE_DOUBLE_ARRAY:
+		mat_var.data_type = v->data_type;
+		mat_var.u.double_array = (double *)(p + v->offset);
+		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
+		break;
+	default:
+		mat_var.data_type = DATA_TYPE_UNDEFINED;
+	}
+	return mat_var;
+}
+
 static bool output_patch_daily_variables(char * const error, size_t error_len,
-		OutputFilterPatch * const p, OutputFilterVariable * const variables,
+		struct patch_object * const patch, OutputFilterVariable * const variables,
 		num_elements_t num_named_variables, OutputFilterOutput * const output) {
 	fprintf(stderr, "\t\toutput_patch_daily_variables(num_named_variables: %hu)...\n", num_named_variables);
 
 	char *local_error;
+	MaterializedVariable mat_var;
 
-	// TODO: Allocate array for num_named_variables materialized variables
+	// Allocate array for num_named_variables materialized variables
+	MaterializedVariable *mat_vars = alloc_materialized_variable_array(num_named_variables);
+	if (mat_vars == NULL) {
+		perror("output_patch_daily_variables: Unable to allocate materialize variable array");
+		return false;
+	}
 
+	void *p = (void *) patch;
+	num_elements_t curr_var = 0;
 	for (OutputFilterVariable *v = variables; v != NULL; v = v->next) {
 		switch (v->variable_type) {
 		case NAMED:
-			// TODO: Add to array of materialized variables
-			fprintf(stderr, "\t\t\tNAMED variable encountered...\n");
+			// Materialize variable and add it to array
+			mat_var = materialize_variable(v, p);
+			if (mat_var.data_type == DATA_TYPE_UNDEFINED) {
+				local_error = (char *)calloc(MAXSTR, sizeof(char));
+				snprintf(local_error, MAXSTR, "output_patch_daily_variables:  data type %d of variable %s is unknown or not yet implemented.",
+						 v->data_type, v->name);
+				return_with_error(error, error_len, local_error);
+			}
+			mat_vars[curr_var++] = mat_var;
 			break;
 		case ANY_VAR:
 		default:
@@ -27,6 +103,9 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 	}
 
 	// TODO: Output materialized variables array using appropriate driver
+
+	// Free materialize variable array
+	free(mat_vars);
 
 	return true;
 }
@@ -40,7 +119,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 	for (OutputFilterPatch *p = filter->patches; p != NULL; p = p->next) {
 		switch (p->output_patch_type) {
 		case PATCH:
-			return output_patch_daily_variables(error, error_len, p,
+			return output_patch_daily_variables(error, error_len, p->patch,
 					filter->variables, filter->num_named_variables, filter->output);
 		case ZONE:
 		case HILLSLOPE:

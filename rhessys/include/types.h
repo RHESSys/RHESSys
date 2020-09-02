@@ -11,6 +11,7 @@ static const short false = 0;
 typedef enum {
 	DATA_TYPE_UNDEFINED,
 	DATA_TYPE_BOOL,
+	DATA_TYPE_CHAR,
 	DATA_TYPE_CHAR_ARRAY,
 	DATA_TYPE_INT,
 	DATA_TYPE_LONG,
