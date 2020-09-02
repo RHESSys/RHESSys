@@ -370,7 +370,10 @@ int allocate_annual_growth(				int id,
 		carbohydrate_transfer = -1.0*excess_carbon; 
 
 
-		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
+		if (epc.allocation_flag == COMBINED)
+			fleaf = exp(-1.0*epc.waring_pa * epv->proj_lai);
+		else
+			fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
 
 		if (epc.veg_type==TREE) {
