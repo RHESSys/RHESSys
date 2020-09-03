@@ -69,6 +69,7 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 	fprintf(stderr, "\t\toutput_patch_daily_variables(num_named_variables: %hu)...\n", num_named_variables);
 
 	char *local_error;
+	bool status;
 	MaterializedVariable mat_var;
 
 	// Allocate array for num_named_variables materialized variables
@@ -102,7 +103,18 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 		}
 	}
 
-	// TODO: Output materialized variables array using appropriate driver
+	// Output materialized variables array using appropriate driver
+	switch (output->format) {
+	case OUTPUT_TYPE_CSV:
+		status = output_format_csv_write_data(error, error_len,
+				output->fp, true, mat_vars, num_named_variables);
+		break;
+	case OUTPUT_TYPE_NETCDF:
+	default:
+		fprintf(stderr, "output_patch_daily_variables: output format type %d is unknown or not yet implemented.",
+				output->format);
+		return false;
+	}
 
 	// Free materialize variable array
 	free(mat_vars);

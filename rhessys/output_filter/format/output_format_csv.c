@@ -5,6 +5,21 @@
 
 #define BUFFER_SIZE 4096
 
+#define FMT_STR_BOOL "%s%h"
+#define FMT_STR_CHAR "%s%c"
+#define FMT_STR_CHAR_ARRAY "%s%s"
+#define FMT_STR_INT "%s%d"
+#define FMT_STR_LONG "%s%l"
+#define FMT_STR_LONG_ARRAY "%s%p"
+#define FMT_STR_FLOAT "%s%f"
+#define FMT_STR_DOUBLE "%s%f"
+#define FMT_STR_DOUBLE_ARRAY "%s%p"
+#define FMT_STR_UNDEFINED NULL
+
+#define CSV_DELIM_NONE ""
+#define CSV_DELIM_DEFAULT ","
+#define CSV_EOL "\n"
+
 bool output_format_csv_init(OutputFilter * const f) {
 	if (f->output->format != OUTPUT_TYPE_CSV) {
 		fprintf(stderr, "Cannot initialize CSV output for non CSV filter.\n");
@@ -55,4 +70,90 @@ bool output_format_csv_write_headers(OutputFilter * const f) {
 	}
 	fprintf(fp, "\n");
 	return !fflush(fp);
+}
+
+static bool output_variable_to_stream(char * const error, size_t error_len,
+		FILE *fp, MaterializedVariable v, char *delim) {
+	char *local_error;
+	int rv;
+	switch (v.data_type) {
+	case DATA_TYPE_BOOL:
+		rv = fprintf(fp, FMT_STR_BOOL, delim, v.u.bool_val);
+		break;
+	case DATA_TYPE_CHAR:
+		rv = fprintf(fp, FMT_STR_CHAR, delim, v.u.char_val);
+		break;
+	case DATA_TYPE_CHAR_ARRAY:
+		rv = fprintf(fp, FMT_STR_CHAR_ARRAY, delim, v.u.char_array);
+		break;
+	case DATA_TYPE_INT:
+		rv = fprintf(fp, FMT_STR_INT, delim, v.u.int_val);
+		break;
+	case DATA_TYPE_LONG:
+		rv = fprintf(fp, FMT_STR_LONG, delim, v.u.long_val);
+		break;
+	case DATA_TYPE_LONG_ARRAY:
+		rv = fprintf(fp, FMT_STR_LONG_ARRAY, delim, v.u.long_array);
+		break;
+	case DATA_TYPE_FLOAT:
+		rv = fprintf(fp, FMT_STR_FLOAT, delim, v.u.float_val);
+		break;
+	case DATA_TYPE_DOUBLE:
+		rv = fprintf(fp, FMT_STR_DOUBLE, delim, v.u.double_val);
+		break;
+	case DATA_TYPE_DOUBLE_ARRAY:
+		rv = fprintf(fp, FMT_STR_DOUBLE_ARRAY, delim, v.u.double_array);
+		break;
+	default:
+		local_error = (char *)calloc(MAXSTR, sizeof(char));
+		snprintf(local_error, MAXSTR, "output_format_csv_write_data: unknown variable type %d.",
+				 v.data_type);
+		return return_with_error(error, error_len, local_error);
+	}
+
+	if (rv < 1) {
+		perror("output_format_csv::output_variable_to_stream: error writing output");
+		return false;
+	}
+	return true;
+}
+
+bool output_format_csv_write_data(char * const error, size_t error_len,
+		FILE *fp, bool flush, MaterializedVariable *vars, num_elements_t nvars) {
+	if (nvars < 1) return true;
+
+	bool status;
+	int curr_var = 0;
+	// Output first value
+	MaterializedVariable v = vars[curr_var++];
+	status = output_variable_to_stream(error, error_len, fp, v, CSV_DELIM_NONE);
+	if (!status) {
+		return false;
+	}
+	// Output remaining values
+	while (curr_var < nvars) {
+		MaterializedVariable v = vars[curr_var++];
+		status = output_variable_to_stream(error, error_len, fp, v, CSV_DELIM_DEFAULT);
+		if (!status) {
+			return false;
+		}
+	}
+
+	// Write end of line
+	int rv = fprintf(fp, CSV_EOL);
+	if (rv < 1) {
+		perror("output_format_csv_write_data: failed to write end of line");
+		return false;
+	}
+	// Flush stream (if requested)
+	if (flush) {
+		rv = fflush(fp);
+		if (rv != 0) {
+			perror("output_format_csv_write_data: error flushing stream");
+			return false;
+		}
+	}
+
+
+	return true;
 }

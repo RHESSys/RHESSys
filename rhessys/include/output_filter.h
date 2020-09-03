@@ -95,6 +95,21 @@ typedef struct of_filter {
 	bool parse_error;
 } OutputFilter;
 
+typedef struct materialized_variable {
+	DataType data_type;
+	union {
+		bool bool_val;
+		char char_val;
+		char *char_array;
+		int int_val;
+		long long_val;
+		long *long_array;
+		float float_val;
+		double double_val;
+		double *double_array;
+	} u;
+} MaterializedVariable;
+
 OutputFilterPatch *create_new_output_filter_patch();
 OutputFilterPatch *add_to_output_filter_patch_list(OutputFilterPatch * const head,
 		OutputFilterPatch * const new_patch);

@@ -18,7 +18,8 @@
 bool output_format_csv_init(OutputFilter * const filter);
 bool output_format_csv_destroy(OutputFilter * const filter);
 bool output_format_csv_write_headers(OutputFilter * const filter);
-void output_format_csv_write_data(FILE *fp, ...);
+bool output_format_csv_write_data(char * const error, size_t error_len,
+		FILE *fp, bool flush, MaterializedVariable *vars, num_elements_t nvars);
 
 
 #endif /* INCLUDE_OUTPUT_FILTER_OUTPUT_FORMAT_CSV_H_ */
