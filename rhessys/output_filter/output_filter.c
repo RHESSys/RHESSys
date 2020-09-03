@@ -167,6 +167,7 @@ OutputFilterVariable *create_new_output_filter_variable(char *name) {
 	new_var->data_type = DATA_TYPE_UNDEFINED;
 	new_var->name = strdup(name);
 	new_var->offset = SIZE_MAX;
+	new_var->meta = NULL;
 	return new_var;
 }
 
@@ -224,6 +225,7 @@ OutputFilterOutput *create_new_output_filter_output() {
 	OutputFilterOutput *output = (OutputFilterOutput *) malloc(sizeof(OutputFilter));
 	output->filename = NULL;
 	output->path = NULL;
+	output->meta = NULL;
 	output->fp = NULL;
 	return output;
 }

@@ -46,6 +46,7 @@ typedef struct of_output_output {
 	OutputFormat format;
 	char *path;
 	char *filename;
+	void *meta;
 	FILE *fp;
 } OutputFilterOutput;
 
@@ -56,6 +57,7 @@ typedef struct of_var {
 	DataType data_type;
 	char *name;
 	size_t offset;
+	void *meta;
 } OutputFilterVariable;
 
 // output_filter_patch_list
