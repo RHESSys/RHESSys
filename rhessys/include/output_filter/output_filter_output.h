@@ -12,6 +12,7 @@
 
 MaterializedVariable *alloc_materialized_variable_array(size_t num_elements);
 
-bool output_filter_output_daily(char * const error, size_t error_len, OutputFilter * const filter);
+bool output_filter_output_daily(char * const error, size_t error_len,
+		struct date date, OutputFilter * const filters);
 
 #endif /* INCLUDE_OUTPUT_FILTER_OUTPUT_FILTER_OUTPUT_H_ */

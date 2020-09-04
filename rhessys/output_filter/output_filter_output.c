@@ -64,16 +64,15 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 }
 
 static bool output_patch_daily_variables(char * const error, size_t error_len,
-		struct patch_object * const patch, OutputFilterVariable * const variables,
-		num_elements_t num_named_variables, OutputFilterOutput * const output) {
-	fprintf(stderr, "\t\toutput_patch_daily_variables(num_named_variables: %hu)...\n", num_named_variables);
+		struct date date, struct patch_object * const patch, OutputFilter * const f) {
+	fprintf(stderr, "\t\toutput_patch_daily_variables(num_named_variables: %hu)...\n", f->num_named_variables);
 
 	char *local_error;
 	bool status;
 	MaterializedVariable mat_var;
 
 	// Allocate array for num_named_variables materialized variables
-	MaterializedVariable *mat_vars = alloc_materialized_variable_array(num_named_variables);
+	MaterializedVariable *mat_vars = alloc_materialized_variable_array(f->num_named_variables);
 	if (mat_vars == NULL) {
 		perror("output_patch_daily_variables: Unable to allocate materialize variable array");
 		return false;
@@ -81,7 +80,7 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 
 	void *p = (void *) patch;
 	num_elements_t curr_var = 0;
-	for (OutputFilterVariable *v = variables; v != NULL; v = v->next) {
+	for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
 		switch (v->variable_type) {
 		case NAMED:
 			// Materialize variable and add it to array
@@ -104,15 +103,16 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 	}
 
 	// Output materialized variables array using appropriate driver
-	switch (output->format) {
+	switch (f->output->format) {
 	case OUTPUT_TYPE_CSV:
+		// TODO: Output timestamp
 		status = output_format_csv_write_data(error, error_len,
-				output->fp, true, mat_vars, num_named_variables);
+				date, f, mat_vars, true);
 		break;
 	case OUTPUT_TYPE_NETCDF:
 	default:
 		fprintf(stderr, "output_patch_daily_variables: output format type %d is unknown or not yet implemented.",
-				output->format);
+				f->output->format);
 		return false;
 	}
 
@@ -123,7 +123,7 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 }
 
 static bool output_patch_daily(char * const error, size_t error_len,
-		OutputFilter * const filter) {
+		struct date date, OutputFilter * const filter) {
 	fprintf(stderr, "\toutput_patch_daily()...\n");
 
 	char *local_error;
@@ -131,8 +131,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 	for (OutputFilterPatch *p = filter->patches; p != NULL; p = p->next) {
 		switch (p->output_patch_type) {
 		case PATCH:
-			return output_patch_daily_variables(error, error_len, p->patch,
-					filter->variables, filter->num_named_variables, filter->output);
+			return output_patch_daily_variables(error, error_len, date, p->patch, filter);
 		case ZONE:
 		case HILLSLOPE:
 		case BASIN:
@@ -149,7 +148,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 }
 
 bool output_filter_output_daily(char * const error, size_t error_len,
-		OutputFilter * const filters) {
+		struct date date, OutputFilter * const filters) {
 	fprintf(stderr, "output_filter_output_daily(): Where filtered output will happen...\n");
 
 	char *local_error;
@@ -158,7 +157,7 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
-				return output_patch_daily(error, error_len, f);
+				return output_patch_daily(error, error_len, date, f);
 			case OUTPUT_FILTER_CANOPY_STRATA:
 			default:
 				local_error = (char *)calloc(MAXSTR, sizeof(char));

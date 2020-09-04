@@ -5,6 +5,8 @@
 
 #define BUFFER_SIZE 4096
 
+#define FMT_STR_TIMESTAMP_FIELD "%ld%s"
+
 #define FMT_STR_BOOL "%s%h"
 #define FMT_STR_CHAR "%s%c"
 #define FMT_STR_CHAR_ARRAY "%s%s"
@@ -15,6 +17,7 @@
 #define FMT_STR_DOUBLE "%s%f"
 #define FMT_STR_DOUBLE_ARRAY "%s%p"
 #define FMT_STR_UNDEFINED NULL
+
 
 bool output_format_csv_init(OutputFilter * const f) {
 	if (f->output->format != OUTPUT_TYPE_CSV) {
@@ -130,11 +133,35 @@ static bool output_variable_to_stream(char * const error, size_t error_len,
 }
 
 bool output_format_csv_write_data(char * const error, size_t error_len,
-		FILE *fp, bool flush, MaterializedVariable *vars, num_elements_t nvars) {
-	if (nvars < 1) return true;
+		struct date date, OutputFilter * const f,
+		MaterializedVariable *vars, bool flush) {
+	if (f->num_named_variables < 1) return true;
 
 	bool status;
 	int curr_var = 0;
+
+	if (f->output == NULL || f->output->fp == NULL) {
+		fprintf(stderr, "Unable to write CSV headers for filter without initialized output.\n");
+		return false;
+	}
+	FILE *fp = f->output->fp;
+
+	// Output time step
+	switch (f->timestep) {
+	case TIMESTEP_HOURLY:
+		fprintf(fp, FMT_STR_TIMESTAMP_FIELD, date.hour, CSV_DELIM_DEFAULT);
+	case TIMESTEP_DAILY:
+		fprintf(fp, FMT_STR_TIMESTAMP_FIELD, date.day, CSV_DELIM_DEFAULT);
+	case TIMESTEP_MONTHLY:
+		fprintf(fp, FMT_STR_TIMESTAMP_FIELD, date.month, CSV_DELIM_DEFAULT);
+	case TIMESTEP_YEARLY:
+		fprintf(fp, FMT_STR_TIMESTAMP_FIELD, date.year, CSV_DELIM_DEFAULT);
+		break;
+	default:
+		// Do not print time step for unknown time steps
+		break;
+	}
+
 	// Output first value
 	MaterializedVariable v = vars[curr_var++];
 	status = output_variable_to_stream(error, error_len, fp, v, CSV_DELIM_NONE);
@@ -142,7 +169,7 @@ bool output_format_csv_write_data(char * const error, size_t error_len,
 		return false;
 	}
 	// Output remaining values
-	while (curr_var < nvars) {
+	while (curr_var < f->num_named_variables) {
 		MaterializedVariable v = vars[curr_var++];
 		status = output_variable_to_stream(error, error_len, fp, v, CSV_DELIM_DEFAULT);
 		if (!status) {
@@ -164,7 +191,6 @@ bool output_format_csv_write_data(char * const error, size_t error_len,
 			return false;
 		}
 	}
-
 
 	return true;
 }
