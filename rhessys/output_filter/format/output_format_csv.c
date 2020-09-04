@@ -16,10 +16,6 @@
 #define FMT_STR_DOUBLE_ARRAY "%s%p"
 #define FMT_STR_UNDEFINED NULL
 
-#define CSV_DELIM_NONE ""
-#define CSV_DELIM_DEFAULT ","
-#define CSV_EOL "\n"
-
 bool output_format_csv_init(OutputFilter * const f) {
 	if (f->output->format != OUTPUT_TYPE_CSV) {
 		fprintf(stderr, "Cannot initialize CSV output for non CSV filter.\n");
@@ -62,13 +58,28 @@ bool output_format_csv_write_headers(OutputFilter * const f) {
 		return false;
 	}
 	FILE *fp = f->output->fp;
+	// Output timestep headers
+	switch (f->timestep) {
+	case TIMESTEP_HOURLY:
+		fprintf(fp, FMT_STR_CHAR_ARRAY, CSV_HEADER_HOUR, CSV_DELIM_DEFAULT);
+	case TIMESTEP_DAILY:
+		fprintf(fp, FMT_STR_CHAR_ARRAY, CSV_HEADER_DAY, CSV_DELIM_DEFAULT);
+	case TIMESTEP_MONTHLY:
+		fprintf(fp, FMT_STR_CHAR_ARRAY, CSV_HEADER_MONTH, CSV_DELIM_DEFAULT);
+	case TIMESTEP_YEARLY:
+		fprintf(fp, FMT_STR_CHAR_ARRAY, CSV_HEADER_YEAR, CSV_DELIM_DEFAULT);
+		break;
+	default:
+		// Do not print headers for unknown time steps
+		break;
+	}
 	fprintf(fp, "%s", f->variables->name);
 	OutputFilterVariable *v = f->variables->next;
 	while (v != NULL) {
-		fprintf(fp, ",%s", v->name);
+		fprintf(fp, FMT_STR_CHAR_ARRAY, CSV_DELIM_DEFAULT, v->name);
 		v = v->next;
 	}
-	fprintf(fp, "\n");
+	fprintf(fp, CSV_EOL);
 	return !fflush(fp);
 }
 

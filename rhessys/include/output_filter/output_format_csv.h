@@ -15,6 +15,16 @@
 
 #define OUTPUT_FORMAT_EXT_CSV "csv"
 
+#define CSV_DELIM_NONE ""
+#define CSV_DELIM_DEFAULT ","
+#define CSV_EOL "\n"
+
+#define CSV_HEADER_YEAR "year"
+#define CSV_HEADER_MONTH "month"
+#define CSV_HEADER_DAY "day"
+#define CSV_HEADER_HOUR "hour"
+
+
 bool output_format_csv_init(OutputFilter * const filter);
 bool output_format_csv_destroy(OutputFilter * const filter);
 bool output_format_csv_write_headers(OutputFilter * const filter);
