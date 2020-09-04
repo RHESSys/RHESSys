@@ -10,8 +10,6 @@
 
 #include "output_filter.h"
 
-MaterializedVariable *alloc_materialized_variable_array(size_t num_elements);
-
 bool output_filter_output_daily(char * const error, size_t error_len,
 		struct date date, OutputFilter * const filters);
 

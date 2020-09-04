@@ -5,9 +5,9 @@
 #include "output_filter/output_filter_output.h"
 
 
-MaterializedVariable *alloc_materialized_variable_array(size_t num_elements) {
-	return calloc(num_elements, sizeof(MaterializedVariable));
-}
+//MaterializedVariable *alloc_materialized_variable_array(size_t num_elements) {
+//	return calloc(num_elements, sizeof(MaterializedVariable));
+//}
 
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const p) {
 	MaterializedVariable mat_var;
@@ -70,16 +70,10 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 	char *local_error;
 	bool status;
 	MaterializedVariable mat_var;
-
-	// Allocate array for num_named_variables materialized variables
-	MaterializedVariable *mat_vars = alloc_materialized_variable_array(f->num_named_variables);
-	if (mat_vars == NULL) {
-		perror("output_patch_daily_variables: Unable to allocate materialize variable array");
-		return false;
-	}
-
+	MaterializedVariable *mat_vars = f->output->materialized_variables;
 	void *p = (void *) patch;
 	num_elements_t curr_var = 0;
+
 	for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
 		switch (v->variable_type) {
 		case NAMED:
@@ -115,9 +109,6 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 				f->output->format);
 		return false;
 	}
-
-	// Free materialize variable array
-	free(mat_vars);
 
 	return true;
 }

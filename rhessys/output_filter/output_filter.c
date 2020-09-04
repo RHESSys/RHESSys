@@ -226,6 +226,7 @@ OutputFilterOutput *create_new_output_filter_output() {
 	output->filename = NULL;
 	output->path = NULL;
 	output->meta = NULL;
+	output->materialized_variables = NULL;
 	output->fp = NULL;
 	return output;
 }
@@ -233,6 +234,7 @@ OutputFilterOutput *create_new_output_filter_output() {
 void free_output_filter_output(OutputFilterOutput *output) {
 	free(output->path);
 	free(output->filename);
+	if (output->materialized_variables != NULL) free(output->materialized_variables);
 	fclose(output->fp);
 	free(output);
 }

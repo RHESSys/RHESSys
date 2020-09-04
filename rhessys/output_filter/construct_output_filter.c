@@ -273,6 +273,15 @@ bool construct_output_filter(char * const error, size_t error_len,
 			return return_with_error(error, error_len, init_error);
 		}
 
+		// Allocate array for num_named_variables materialized variables.
+		// This will be used to temporarily store materialized variables before they are
+		// output each timestep.
+		f->output->materialized_variables = calloc(f->num_named_variables, sizeof(MaterializedVariable));
+		if (f->output->materialized_variables == NULL) {
+			perror("construct_output_filter: Unable to allocate materialized variable array");
+			return false;
+		}
+
 		// Write header information for each output file
 		status = write_headers(f);
 		if (!status) {
