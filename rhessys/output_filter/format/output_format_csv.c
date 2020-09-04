@@ -6,6 +6,7 @@
 #define BUFFER_SIZE 4096
 
 #define FMT_STR_TIMESTAMP_FIELD "%ld%s"
+#define FMT_STR_ID_FIELD "%d%s"
 
 #define FMT_STR_BOOL "%s%h"
 #define FMT_STR_CHAR "%s%c"
@@ -17,6 +18,9 @@
 #define FMT_STR_DOUBLE "%s%f"
 #define FMT_STR_DOUBLE_ARRAY "%s%p"
 #define FMT_STR_UNDEFINED NULL
+
+#define HEADER_ID_PATCH "basinID,hillID,zoneID,patchID,"
+#define HEADER_ID_CANOPY_STRATA "basinID,hillID,zoneID,patchID,stratumID,"
 
 
 bool output_format_csv_init(OutputFilter * const f) {
@@ -76,8 +80,24 @@ bool output_format_csv_write_headers(OutputFilter * const f) {
 		// Do not print headers for unknown time steps
 		break;
 	}
+
+	// Output ID headers
+	switch (f->type) {
+	case OUTPUT_FILTER_PATCH:
+		fprintf(fp, HEADER_ID_PATCH);
+		break;
+	case OUTPUT_FILTER_CANOPY_STRATA:
+		fprintf(fp, HEADER_ID_CANOPY_STRATA);
+		break;
+	default:
+		// Do not print ID headers for unknown output filter types
+		break;
+	}
+
+	// Output header for first field
 	fprintf(fp, "%s", f->variables->name);
 	OutputFilterVariable *v = f->variables->next;
+	// Output headers for remaining fields
 	while (v != NULL) {
 		fprintf(fp, FMT_STR_CHAR_ARRAY, CSV_DELIM_DEFAULT, v->name);
 		v = v->next;
@@ -134,7 +154,7 @@ static bool output_variable_to_stream(char * const error, size_t error_len,
 
 bool output_format_csv_write_data(char * const error, size_t error_len,
 		struct date date, OutputFilter * const f,
-		MaterializedVariable *vars, bool flush) {
+		EntityID id, MaterializedVariable *vars, bool flush) {
 	if (f->num_named_variables < 1) return true;
 
 	bool status;
@@ -160,6 +180,23 @@ bool output_format_csv_write_data(char * const error, size_t error_len,
 	default:
 		// Do not print time step for unknown time steps
 		break;
+	}
+
+	// Output entity ID fields
+	if (id.basin_ID != OUTPUT_FILTER_ID_EMPTY) {
+		fprintf(fp, FMT_STR_ID_FIELD, id.basin_ID, CSV_DELIM_DEFAULT);
+	}
+	if (id.hillslope_ID != OUTPUT_FILTER_ID_EMPTY) {
+		fprintf(fp, FMT_STR_ID_FIELD, id.hillslope_ID, CSV_DELIM_DEFAULT);
+	}
+	if (id.zone_ID != OUTPUT_FILTER_ID_EMPTY) {
+		fprintf(fp, FMT_STR_ID_FIELD, id.zone_ID, CSV_DELIM_DEFAULT);
+	}
+	if (id.patch_ID != OUTPUT_FILTER_ID_EMPTY) {
+		fprintf(fp, FMT_STR_ID_FIELD, id.patch_ID, CSV_DELIM_DEFAULT);
+	}
+	if (id.canopy_strata_ID != OUTPUT_FILTER_ID_EMPTY) {
+		fprintf(fp, FMT_STR_ID_FIELD, id.canopy_strata_ID, CSV_DELIM_DEFAULT);
 	}
 
 	// Output first value

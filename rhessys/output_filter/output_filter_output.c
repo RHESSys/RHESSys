@@ -64,7 +64,7 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 }
 
 static bool output_patch_daily_variables(char * const error, size_t error_len,
-		struct date date, struct patch_object * const patch, OutputFilter * const f) {
+		struct date date, struct patch_object * const patch, EntityID id, OutputFilter * const f) {
 	fprintf(stderr, "\t\toutput_patch_daily_variables(num_named_variables: %hu)...\n", f->num_named_variables);
 
 	char *local_error;
@@ -99,9 +99,8 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 	// Output materialized variables array using appropriate driver
 	switch (f->output->format) {
 	case OUTPUT_TYPE_CSV:
-		// TODO: Output timestamp
 		status = output_format_csv_write_data(error, error_len,
-				date, f, mat_vars, true);
+				date, f, id, mat_vars, true);
 		break;
 	case OUTPUT_TYPE_NETCDF:
 	default:
@@ -120,9 +119,15 @@ static bool output_patch_daily(char * const error, size_t error_len,
 	char *local_error;
 
 	for (OutputFilterPatch *p = filter->patches; p != NULL; p = p->next) {
+		EntityID id;
 		switch (p->output_patch_type) {
 		case PATCH:
-			return output_patch_daily_variables(error, error_len, date, p->patch, filter);
+			id.basin_ID = p->basinID;
+			id.hillslope_ID = p->hillslopeID;
+			id.zone_ID = p->zoneID;
+			id.patch_ID = p->patchID;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			return output_patch_daily_variables(error, error_len, date, p->patch, id, filter);
 		case ZONE:
 		case HILLSLOPE:
 		case BASIN:

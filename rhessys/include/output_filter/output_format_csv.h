@@ -12,6 +12,7 @@
 #include <stdarg.h>
 
 #include "output_filter.h"
+#include "output_filter/output_filter_output.h"
 
 #define OUTPUT_FORMAT_EXT_CSV "csv"
 
@@ -30,7 +31,7 @@ bool output_format_csv_destroy(OutputFilter * const filter);
 bool output_format_csv_write_headers(OutputFilter * const filter);
 bool output_format_csv_write_data(char * const error, size_t error_len,
 		struct date date, OutputFilter * const filter,
-		MaterializedVariable *vars, bool flush);
+		EntityID id, MaterializedVariable *vars, bool flush);
 
 
 #endif /* INCLUDE_OUTPUT_FILTER_OUTPUT_FORMAT_CSV_H_ */
