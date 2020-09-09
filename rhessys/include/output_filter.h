@@ -33,7 +33,6 @@ typedef enum {
 } VariableType;
 
 typedef enum {
-	ALL_PATCHES = 5,
 	BASIN = 4,
 	HILLSLOPE = 3,
 	ZONE = 2,

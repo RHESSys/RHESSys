@@ -5,10 +5,6 @@
 #include "output_filter/output_filter_output.h"
 
 
-//MaterializedVariable *alloc_materialized_variable_array(size_t num_elements) {
-//	return calloc(num_elements, sizeof(MaterializedVariable));
-//}
-
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const p) {
 	MaterializedVariable mat_var;
 	switch (v->data_type) {
@@ -131,7 +127,6 @@ static bool output_patch_daily(char * const error, size_t error_len,
 		case ZONE:
 		case HILLSLOPE:
 		case BASIN:
-		case ALL_PATCHES:
 		default:
 			local_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(local_error, MAXSTR, "output_patch_daily: patch type %d is unknown or not yet implemented.",

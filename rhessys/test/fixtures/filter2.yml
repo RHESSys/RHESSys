@@ -15,7 +15,7 @@ filter:
 		path: output/fire-project-1
 		filename: scenario-abc2
 	patch:
-		ids: *
+		ids: 1
 		variables: foo, bar
 
 filter:

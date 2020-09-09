@@ -10,9 +10,6 @@
  */
 static bool patch_supersedes(const OutputFilterPatch *existing, const OutputFilterPatch *new_patch) {
 	switch(new_patch->output_patch_type) {
-	case ALL_PATCHES:
-		// * supersedes all.
-		return true;
 	case BASIN:
 		if (existing->output_patch_type < BASIN &&
 				new_patch->basinID == existing->basinID) {
@@ -62,9 +59,6 @@ static bool new_var_supersedes(const OutputFilterVariable *existing, const Outpu
  */
 static bool patch_is_parent_or_duplicate(const OutputFilterPatch *existing, const OutputFilterPatch *new_patch) {
 	switch(existing->output_patch_type) {
-	case ALL_PATCHES:
-		// * is parent to all.
-		return true;
 	case BASIN:
 		if (existing->basinID == new_patch->basinID) {
 			return true;
@@ -307,9 +301,6 @@ void print_output_filter_patch(OutputFilterPatch *p, char *prefix) {
 	if (p != NULL) {
 		fprintf(stderr, "%s\tnext: %p,\n", prefix, (void *)p->next);
 		switch (p->output_patch_type) {
-		case ALL_PATCHES:
-			fprintf(stderr, "%s\toutput_patch_type: all,\n", prefix);
-			break;
 		case BASIN:
 			fprintf(stderr, "%s\toutput_patch_type: basin,\n", prefix);
 			break;

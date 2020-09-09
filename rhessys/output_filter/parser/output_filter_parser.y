@@ -199,13 +199,6 @@ ids: IDS patch_id_spec {
 			yyerror("patch IDs definition must be nested within patch definition");
 		} 
 	}
-	| IDS KLEENE {
-		printf("\t\tIDS: All patches\n");
-		// * overrides all patch identifiers, remove existing patches and start over
-		free_output_filter_patch_list(curr_filter->patches);
-		curr_filter->patches = create_new_output_filter_patch();
-		curr_filter->patches->output_patch_type = ALL_PATCHES;
-	}
 	;
 
 patch_id_spec: NUMBER {

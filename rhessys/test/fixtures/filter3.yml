@@ -5,5 +5,5 @@ filter:
     path: output/fire-project-1
     filename: scenario-abc1
   patch:
-    ids: *
+    ids: 1
     variables: water_balance, Qout, Qin
