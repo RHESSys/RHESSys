@@ -10,14 +10,14 @@
 %%
 
 ^"filter:" { return FILTER; }
-^[ ]{2}+|[\t]+"timestep:" { return TIMESTEP; }
-^[ ]{2}+|[\t]+"output:" { return OUTPUT; }
-^[ ]{4}+|[\t]{2}+"format:" { return FORMAT; }
-^[ ]{4}+|[\t]{2}+"path:" { return PATH; }
-^[ ]{4}+|[\t]{2}+"filename:" { return FILENAME; }
-^[ ]{2}+|[\t]+"patch:" { return PATCH_TOK; }
-^[ ]{4}+|[\t]{2}+"ids:" { return IDS; }
-^[ ]{4}+|[\t]{2}+"variables:" { return VARS; }
+^([ ]{2}+|[\t]+)"timestep:" { return TIMESTEP; }
+^([ ]{2}+|[\t]+)"output:" { return OUTPUT; }
+^([ ]{4}+|[\t]{2}+)"format:" { return FORMAT; }
+^([ ]{4}+|[\t]{2}+)"path:" { return PATH; }
+^([ ]{4}+|[\t]{2}+)"filename:" { return FILENAME; }
+^([ ]{2}+|[\t]+)"patch:" { return PATCH_TOK; }
+^([ ]{4}+|[\t]{2}+)"ids:" { return IDS; }
+^([ ]{4}+|[\t]{2}+)"variables:" { return VARS; }
 
 [0-9]+ { yylval.integer = atoi(yytext); return NUMBER; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.string = strdup(yytext); return IDENTIFIER; }
