@@ -21,6 +21,6 @@ typedef struct entity_id_s {
 } EntityID;
 
 bool output_filter_output_daily(char * const error, size_t error_len,
-		struct date date, OutputFilter * const filters);
+		struct date date, OutputFilter const * const filters);
 
 #endif /* INCLUDE_OUTPUT_FILTER_OUTPUT_FILTER_OUTPUT_H_ */

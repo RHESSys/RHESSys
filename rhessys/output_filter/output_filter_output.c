@@ -59,8 +59,21 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 	return mat_var;
 }
 
+static bool apply_to_patches_in_zone(char * const error, size_t error_len,
+		struct date date,
+		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
+		bool (*output_fn)(char * const, size_t, struct date date, struct patch_object const * const, EntityID, OutputFilter const * const)) {
+	for (size_t i = 0; i < p->zone->num_patches; i++) {
+		struct patch_object *patch = p->zone->patches[i];
+		id.patch_ID = patch->ID;
+		bool status = (*output_fn)(error, error_len, date, patch, id, filter);
+		if (!status) return false;
+	}
+	return true;
+}
+
 static bool output_patch_daily_variables(char * const error, size_t error_len,
-		struct date date, struct patch_object * const patch, EntityID id, OutputFilter * const f) {
+		struct date date, struct patch_object const * const patch, EntityID id, OutputFilter const * const f) {
 	fprintf(stderr, "\t\toutput_patch_daily_variables(num_named_variables: %hu)...\n", f->num_named_variables);
 
 	char *local_error;
@@ -109,12 +122,14 @@ static bool output_patch_daily_variables(char * const error, size_t error_len,
 }
 
 static bool output_patch_daily(char * const error, size_t error_len,
-		struct date date, OutputFilter * const filter) {
+		struct date date, OutputFilter const * const filter) {
 	fprintf(stderr, "\toutput_patch_daily()...\n");
 
 	char *local_error;
+	bool status;
 
 	for (OutputFilterPatch *p = filter->patches; p != NULL; p = p->next) {
+		status = true;
 		EntityID id;
 		switch (p->output_patch_type) {
 		case PATCH:
@@ -123,8 +138,17 @@ static bool output_patch_daily(char * const error, size_t error_len,
 			id.zone_ID = p->zoneID;
 			id.patch_ID = p->patchID;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			return output_patch_daily_variables(error, error_len, date, p->patch, id, filter);
+			status = output_patch_daily_variables(error, error_len, date, p->patch, id, filter);
+			break;
 		case ZONE:
+			id.basin_ID = p->basinID;
+			id.hillslope_ID = p->hillslopeID;
+			id.zone_ID = p->zoneID;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			status = apply_to_patches_in_zone(error, error_len, date, filter, p, id,
+					*output_patch_daily_variables);
+			break;
 		case HILLSLOPE:
 		case BASIN:
 		default:
@@ -133,18 +157,19 @@ static bool output_patch_daily(char * const error, size_t error_len,
 					p->output_patch_type);
 			return_with_error(error, error_len, local_error);
 		}
+		if (!status) return false;
 	}
 
-	return false;
+	return true;
 }
 
 bool output_filter_output_daily(char * const error, size_t error_len,
-		struct date date, OutputFilter * const filters) {
+		struct date date, OutputFilter const * const filters) {
 	fprintf(stderr, "output_filter_output_daily(): Where filtered output will happen...\n");
 
 	char *local_error;
 
-	for (OutputFilter *f = filters; f != NULL; f = f->next) {
+	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
@@ -158,6 +183,6 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 		}
 	}
 
-	return false;
+	return true;
 }
 
