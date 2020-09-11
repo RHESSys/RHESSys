@@ -72,6 +72,44 @@ static bool apply_to_patches_in_zone(char * const error, size_t error_len,
 	return true;
 }
 
+static bool apply_to_patches_in_hillslope(char * const error, size_t error_len,
+		struct date date,
+		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
+		bool (*output_fn)(char * const, size_t, struct date date, struct patch_object const * const, EntityID, OutputFilter const * const)) {
+	for (size_t i = 0; i < p->hill->num_zones; i++) {
+		struct zone_object *z = p->hill->zones[i];
+		id.zone_ID = z->ID;
+		for (size_t j = 0; j < z->num_patches; j++) {
+			struct patch_object *patch = z->patches[j];
+			id.patch_ID = patch->ID;
+			bool status = (*output_fn)(error, error_len, date, patch, id, filter);
+			if (!status) return false;
+		}
+	}
+	return true;
+}
+
+static bool apply_to_patches_in_basin(char * const error, size_t error_len,
+		struct date date,
+		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
+		bool (*output_fn)(char * const, size_t, struct date date, struct patch_object const * const, EntityID, OutputFilter const * const)) {
+	for (size_t i = 0; i < p->basin->num_hillslopes; i++) {
+		struct hillslope_object *h = p->basin->hillslopes[i];
+		id.hillslope_ID = h->ID;
+		for (size_t j = 0; j < h->num_zones; j++) {
+			struct zone_object *z = h->zones[j];
+			id.zone_ID = z->ID;
+			for (size_t k = 0; k < z->num_patches; k++) {
+				struct patch_object *patch = z->patches[k];
+				id.patch_ID = patch->ID;
+				bool status = (*output_fn)(error, error_len, date, patch, id, filter);
+				if (!status) return false;
+			}
+		}
+	}
+	return true;
+}
+
 static bool output_patch_daily_variables(char * const error, size_t error_len,
 		struct date date, struct patch_object const * const patch, EntityID id, OutputFilter const * const f) {
 	fprintf(stderr, "\t\toutput_patch_daily_variables(num_named_variables: %hu)...\n", f->num_named_variables);
@@ -150,7 +188,23 @@ static bool output_patch_daily(char * const error, size_t error_len,
 					*output_patch_daily_variables);
 			break;
 		case HILLSLOPE:
+			id.basin_ID = p->basinID;
+			id.hillslope_ID = p->hillslopeID;
+			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			status = apply_to_patches_in_hillslope(error, error_len, date, filter, p, id,
+					*output_patch_daily_variables);
+			break;
 		case BASIN:
+			id.basin_ID = p->basinID;
+			id.hillslope_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			status = apply_to_patches_in_basin(error, error_len, date, filter, p, id,
+					*output_patch_daily_variables);
+			break;
 		default:
 			local_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(local_error, MAXSTR, "output_patch_daily: patch type %d is unknown or not yet implemented.",
