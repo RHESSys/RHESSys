@@ -10,23 +10,23 @@
  */
 static bool patch_supersedes(const OutputFilterPatch *existing, const OutputFilterPatch *new_patch) {
 	switch(new_patch->output_patch_type) {
-	case BASIN:
-		if (existing->output_patch_type < BASIN &&
+	case PATCH_TYPE_BASIN:
+		if (existing->output_patch_type < PATCH_TYPE_BASIN &&
 				new_patch->basinID == existing->basinID) {
 			return true;
 		} else {
 			return false;
 		}
-	case HILLSLOPE:
-		if (existing->output_patch_type < HILLSLOPE &&
+	case PATCH_TYPE_HILLSLOPE:
+		if (existing->output_patch_type < PATCH_TYPE_HILLSLOPE &&
 				new_patch->basinID == existing->basinID &&
 				new_patch->hillslopeID == existing->hillslopeID) {
 			return true;
 		} else {
 			return false;
 		}
-	case ZONE:
-		if (existing->output_patch_type < ZONE &&
+	case PATCH_TYPE_ZONE:
+		if (existing->output_patch_type < PATCH_TYPE_ZONE &&
 				new_patch->basinID == existing->basinID &&
 				new_patch->hillslopeID == existing->hillslopeID &&
 				new_patch->zoneID == existing->zoneID) {
@@ -34,7 +34,52 @@ static bool patch_supersedes(const OutputFilterPatch *existing, const OutputFilt
 		} else {
 			return false;
 		}
-	case PATCH:
+	case PATCH_TYPE_PATCH:
+	default:
+		return false;
+	}
+}
+
+/**
+ * Returns true of new_stratum supersedes existing.
+ */
+static bool stratum_supersedes(const OutputFilterStratum *existing, const OutputFilterStratum *new_stratum) {
+	switch(new_stratum->output_stratum_type) {
+	case STRATUM_TYPE_BASIN:
+		if (existing->output_stratum_type < STRATUM_TYPE_BASIN &&
+				new_stratum->basinID == existing->basinID) {
+			return true;
+		} else {
+			return false;
+		}
+	case STRATUM_TYPE_HILLSLOPE:
+		if (existing->output_stratum_type < STRATUM_TYPE_HILLSLOPE &&
+				new_stratum->basinID == existing->basinID &&
+				new_stratum->hillslopeID == existing->hillslopeID) {
+			return true;
+		} else {
+			return false;
+		}
+	case STRATUM_TYPE_ZONE:
+		if (existing->output_stratum_type < STRATUM_TYPE_ZONE &&
+				new_stratum->basinID == existing->basinID &&
+				new_stratum->hillslopeID == existing->hillslopeID &&
+				new_stratum->zoneID == existing->zoneID) {
+			return true;
+		} else {
+			return false;
+		}
+	case STRATUM_TYPE_PATCH:
+		if (existing->output_stratum_type < STRATUM_TYPE_ZONE &&
+				new_stratum->basinID == existing->basinID &&
+				new_stratum->hillslopeID == existing->hillslopeID &&
+				new_stratum->zoneID == existing->zoneID &&
+				new_stratum->patchID == existing->patchID) {
+			return true;
+		} else {
+			return false;
+		}
+	case STRATUM_TYPE_STRATUM:
 	default:
 		return false;
 	}
@@ -59,20 +104,20 @@ static bool new_var_supersedes(const OutputFilterVariable *existing, const Outpu
  */
 static bool patch_is_parent_or_duplicate(const OutputFilterPatch *existing, const OutputFilterPatch *new_patch) {
 	switch(existing->output_patch_type) {
-	case BASIN:
+	case PATCH_TYPE_BASIN:
 		if (existing->basinID == new_patch->basinID) {
 			return true;
 		} else {
 			return false;
 		}
-	case HILLSLOPE:
+	case PATCH_TYPE_HILLSLOPE:
 		if (existing->basinID == new_patch->basinID &&
 			existing->hillslopeID == new_patch->hillslopeID) {
 			return true;
 		} else {
 			return false;
 		}
-	case ZONE:
+	case PATCH_TYPE_ZONE:
 		if (existing->basinID == new_patch->basinID &&
 			existing->hillslopeID == new_patch->hillslopeID &&
 			existing->zoneID == new_patch->zoneID) {
@@ -80,12 +125,61 @@ static bool patch_is_parent_or_duplicate(const OutputFilterPatch *existing, cons
 		} else {
 			return false;
 		}
-	case PATCH:
+	case PATCH_TYPE_PATCH:
 	default:
 		if (existing->basinID == new_patch->basinID &&
 			existing->hillslopeID == new_patch->hillslopeID &&
 			existing->zoneID == new_patch->zoneID &&
 			existing->patchID == new_patch->patchID) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+/**
+ * Returns true if existing is a parent to or duplicates new_stratum.
+ */
+static bool stratum_is_parent_or_duplicate(const OutputFilterStratum *existing, const OutputFilterStratum *new_stratum) {
+	switch(existing->output_stratum_type) {
+	case STRATUM_TYPE_BASIN:
+		if (existing->basinID == new_stratum->basinID) {
+			return true;
+		} else {
+			return false;
+		}
+	case STRATUM_TYPE_HILLSLOPE:
+		if (existing->basinID == new_stratum->basinID &&
+			existing->hillslopeID == new_stratum->hillslopeID) {
+			return true;
+		} else {
+			return false;
+		}
+	case STRATUM_TYPE_ZONE:
+		if (existing->basinID == new_stratum->basinID &&
+			existing->hillslopeID == new_stratum->hillslopeID &&
+			existing->zoneID == new_stratum->zoneID) {
+			return true;
+		} else {
+			return false;
+		}
+	case STRATUM_TYPE_PATCH:
+		if (existing->basinID == new_stratum->basinID &&
+			existing->hillslopeID == new_stratum->hillslopeID &&
+			existing->zoneID == new_stratum->zoneID &&
+			existing->patchID == new_stratum->patchID) {
+			return true;
+		} else {
+			return false;
+		}
+	case STRATUM_TYPE_STRATUM:
+	default:
+		if (existing->basinID == new_stratum->basinID &&
+			existing->hillslopeID == new_stratum->hillslopeID &&
+			existing->zoneID == new_stratum->zoneID &&
+			existing->patchID == new_stratum->patchID &&
+			existing->stratumID == new_stratum->stratumID) {
 			return true;
 		} else {
 			return false;
@@ -107,6 +201,7 @@ static bool var_supersedes_or_duplicates(const OutputFilterVariable *existing, c
 	}
 }
 
+// output_filter_patch_list
 OutputFilterPatch *create_new_output_filter_patch() {
 	OutputFilterPatch *new_patch = (OutputFilterPatch *) malloc(sizeof(OutputFilterPatch));
 	new_patch->next = NULL;
@@ -154,6 +249,56 @@ void free_output_filter_patch_list(OutputFilterPatch *head) {
 	free(head);
 }
 
+// output_filter_canopy_strata_list
+OutputFilterStratum *create_new_output_filter_stratum() {
+	OutputFilterStratum *new_stratum = (OutputFilterStratum *) malloc(sizeof(OutputFilterStratum));
+	new_stratum->next = NULL;
+	return new_stratum;
+}
+
+OutputFilterStratum *add_to_output_filter_stratum_list(OutputFilterStratum * const head,
+		OutputFilterStratum * const new_stratum) {
+	if (head == NULL) return new_stratum;
+	// Iterate over stratum list, checking to see if new_stratum is duplicative, superseded by an existing
+	// stratum, or supersedes and existing patch...
+	OutputFilterStratum *tmp = head;
+	while (tmp != NULL) {
+		if (stratum_is_parent_or_duplicate(tmp, new_stratum)) {
+			// new_stratum duplicates or is superseded by tmp, don't add to list
+			return NULL;
+		} else if (stratum_supersedes(tmp, new_stratum)) {
+			// new_stratum supersedes tmp, make new_stratum replace tmp
+			tmp->output_stratum_type = new_stratum->output_stratum_type;
+			tmp->basinID = new_stratum->basinID;
+			tmp->hillslopeID = new_stratum->hillslopeID;
+			tmp->zoneID = new_stratum->zoneID;
+			tmp->patchID = new_stratum->patchID;
+			tmp->stratumID = new_stratum->stratumID;
+			free(new_stratum);
+			return tmp;
+		}
+		if (tmp->next == NULL) {
+			// Don't run off the end of the list (i.e. preserve tmp so that we can
+			// assign the new entry to the tmp->next).
+			break;
+		}
+		tmp = tmp->next;
+	}
+	// new_stratum is not a duplicate of, nor superseded by any current entries in the
+	// list, add it to the end of the list.
+	tmp->next = new_stratum;
+	return tmp->next;
+}
+
+void free_output_filter_stratum_list(OutputFilterStratum *head) {
+	if (head == NULL) { return; }
+	if (head->next != NULL) {
+		free_output_filter_stratum_list(head->next);
+	}
+	free(head);
+}
+
+// output_filter_variable_list
 OutputFilterVariable *create_new_output_filter_variable(char *name) {
 	OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
 	new_var->next = NULL;
@@ -240,6 +385,7 @@ OutputFilter *create_new_output_filter() {
 	new_filter->next = NULL;
 	new_filter->output = NULL;
 	new_filter->patches = NULL;
+	new_filter->strata = NULL;
 	new_filter->variables = NULL;
 	new_filter->num_named_variables = 0;
 	new_filter->parse_error = false;
@@ -301,16 +447,16 @@ void print_output_filter_patch(OutputFilterPatch *p, char *prefix) {
 	if (p != NULL) {
 		fprintf(stderr, "%s\tnext: %p,\n", prefix, (void *)p->next);
 		switch (p->output_patch_type) {
-		case BASIN:
+		case PATCH_TYPE_BASIN:
 			fprintf(stderr, "%s\toutput_patch_type: basin,\n", prefix);
 			break;
-		case HILLSLOPE:
+		case PATCH_TYPE_HILLSLOPE:
 			fprintf(stderr, "%s\toutput_patch_type: hillslope,\n", prefix);
 			break;
-		case ZONE:
+		case PATCH_TYPE_ZONE:
 			fprintf(stderr, "%s\toutput_patch_type: zone,\n", prefix);
 			break;
-		case PATCH:
+		case PATCH_TYPE_PATCH:
 			fprintf(stderr, "%s\toutput_patch_type: patch,\n", prefix);
 			break;
 		}
@@ -326,6 +472,49 @@ void print_output_filter_patch(OutputFilterPatch *p, char *prefix) {
 
 		fprintf(stderr, "%s\tpatchID: %d,\n", prefix, p->patchID);
 		fprintf(stderr, "%s\tpatch: %p,\n", prefix, p->patch);
+	}
+	fprintf(stderr, "%s}", prefix);
+}
+
+void print_output_filter_stratum(OutputFilterStratum *s, char *prefix) {
+	if (prefix == NULL) {
+		prefix = "";
+	}
+	fprintf(stderr, "%sOutputFilterStratum@%p {\n", prefix, (void *)s);
+	if (s != NULL) {
+		fprintf(stderr, "%s\tnext: %p,\n", prefix, (void *)s->next);
+		switch (s->output_stratum_type) {
+		case STRATUM_TYPE_BASIN:
+			fprintf(stderr, "%s\toutput_stratum_type: basin,\n", prefix);
+			break;
+		case STRATUM_TYPE_HILLSLOPE:
+			fprintf(stderr, "%s\toutput_stratum_type: hillslope,\n", prefix);
+			break;
+		case STRATUM_TYPE_ZONE:
+			fprintf(stderr, "%s\toutput_stratum_type: zone,\n", prefix);
+			break;
+		case STRATUM_TYPE_PATCH:
+			fprintf(stderr, "%s\toutput_stratum_type: patch,\n", prefix);
+			break;
+		case STRATUM_TYPE_STRATUM:
+			fprintf(stderr, "%s\toutput_stratum_type: stratum,\n", prefix);
+			break;
+		}
+
+		fprintf(stderr, "%s\tbasinID: %d,\n", prefix, s->basinID);
+		fprintf(stderr, "%s\tbasin: %p,\n", prefix, s->basin);
+
+		fprintf(stderr, "%s\thillslopeID: %d,\n", prefix, s->hillslopeID);
+		fprintf(stderr, "%s\thillslope: %p,\n", prefix, s->hill);
+
+		fprintf(stderr, "%s\tzoneID: %d,\n", prefix, s->zoneID);
+		fprintf(stderr, "%s\tzone: %p,\n", prefix, s->zone);
+
+		fprintf(stderr, "%s\tpatchID: %d,\n", prefix, s->patchID);
+		fprintf(stderr, "%s\tpatch: %p,\n", prefix, s->patch);
+
+		fprintf(stderr, "%s\tstratumID: %d,\n", prefix, s->stratumID);
+		fprintf(stderr, "%s\tstratum: %p,\n", prefix, s->stratum);
 	}
 	fprintf(stderr, "%s}", prefix);
 }
@@ -386,10 +575,12 @@ void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
 		case DATA_TYPE_STRUCT_PTR_ARRAY:
 			fprintf(stderr, "%s\tvariable_type: struct *[],\n", prefix);
 			break;
+		default:
+			break;
 		}
 
 		fprintf(stderr, "%s\tname: %s,\n", prefix, v->name);
-		fprintf(stderr, "%s\toffset: %d,\n", prefix, v->offset);
+		fprintf(stderr, "%s\toffset: %zu,\n", prefix, v->offset);
 	}
 	fprintf(stderr, "%s}", prefix);
 }
@@ -406,7 +597,7 @@ void print_output_filter(OutputFilter *f) {
 		case OUTPUT_FILTER_PATCH:
 			fprintf(stderr, "\ttype: patch,\n");
 			break;
-		case OUTPUT_FILTER_CANOPY_STRATA:
+		case OUTPUT_FILTER_CANOPY_STRATUM:
 			fprintf(stderr, "\ttype: canopy strata,\n");
 			break;
 		}
@@ -433,12 +624,28 @@ void print_output_filter(OutputFilter *f) {
 		print_output_filter_output(f->output, "\t");
 		fprintf(stderr, ",\n");
 
-		fprintf(stderr, "\tpatches: [\n");
-		for (OutputFilterPatch *p = f->patches; p != NULL; p = p->next) {
-			print_output_filter_patch(p, "\t\t");
-			fprintf(stderr, ",\n");
+		switch(f->type) {
+		case OUTPUT_FILTER_PATCH:
+			fprintf(stderr, "\tpatches: [\n");
+			for (OutputFilterPatch *p = f->patches; p != NULL; p = p->next) {
+				print_output_filter_patch(p, "\t\t");
+				fprintf(stderr, ",\n");
+			}
+			fprintf(stderr, "\t],\n");
+			break;
+		case OUTPUT_FILTER_CANOPY_STRATUM:
+			fprintf(stderr, "\tstrata: [\n");
+			for (OutputFilterStratum *s = f->strata; s != NULL; s = s->next) {
+				print_output_filter_stratum(s, "\t\t");
+				fprintf(stderr, ",\n");
+			}
+			fprintf(stderr, "\t],\n");
+			break;
+		case OUTPUT_FILTER_UNDEFINED:
+		default:
+			break;
 		}
-		fprintf(stderr, "\t],\n");
+
 
 		fprintf(stderr, "\tnum_named_variables: %hu,\n", f->num_named_variables);
 

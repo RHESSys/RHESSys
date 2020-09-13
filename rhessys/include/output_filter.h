@@ -33,11 +33,19 @@ typedef enum {
 } VariableType;
 
 typedef enum {
-	BASIN = 4,
-	HILLSLOPE = 3,
-	ZONE = 2,
-	PATCH = 1
+	PATCH_TYPE_BASIN = 4,
+	PATCH_TYPE_HILLSLOPE = 3,
+	PATCH_TYPE_ZONE = 2,
+	PATCH_TYPE_PATCH = 1
 } OutputPatchType;
+
+typedef enum {
+	STRATUM_TYPE_BASIN = 5,
+	STRATUM_TYPE_HILLSLOPE = 4,
+	STRATUM_TYPE_ZONE = 3,
+	STRATUM_TYPE_PATCH = 2,
+	STRATUM_TYPE_STRATUM = 1
+} OutputStratumType;
 
 typedef unsigned short num_elements_t;
 
@@ -65,6 +73,7 @@ typedef struct of_output_output {
 	FILE *fp;
 } OutputFilterOutput;
 
+// output_filter_variable_list
 typedef struct of_var {
 	VariableType variable_type;
 	struct of_var *next;
@@ -72,6 +81,8 @@ typedef struct of_var {
 	DataType data_type;
 	char *name;
 	size_t offset;
+	// TODO: Add: Second optional offset to variable in struct within a struct.
+	//size_t sub_struct_var_offset;
 	void *meta;
 } OutputFilterVariable;
 
@@ -93,10 +104,31 @@ typedef struct of_patch {
 	struct patch_object *patch;
 } OutputFilterPatch;
 
+// output_filter_canopy_strata_list
+typedef struct of_stratum {
+	OutputStratumType output_stratum_type;
+	struct of_stratum *next;
+
+	int basinID;
+	struct basin_object *basin;
+
+	int hillslopeID;
+	struct hillslope_object *hill;
+
+	int zoneID;
+	struct zone_object *zone;
+
+	int patchID;
+	struct patch_object *patch;
+
+	int stratumID;
+	struct canopy_strata_object *stratum;
+} OutputFilterStratum;
+
 typedef enum {
 	OUTPUT_FILTER_UNDEFINED,
 	OUTPUT_FILTER_PATCH,
-	OUTPUT_FILTER_CANOPY_STRATA
+	OUTPUT_FILTER_CANOPY_STRATUM
 } OutputFilterType;
 
 typedef struct of_filter {
@@ -105,6 +137,7 @@ typedef struct of_filter {
 	struct of_filter *next;
 	OutputFilterOutput *output;
 	OutputFilterPatch *patches;
+	OutputFilterStratum *strata;
 	OutputFilterVariable *variables;
 	num_elements_t num_named_variables;
 	bool parse_error;
@@ -114,6 +147,11 @@ OutputFilterPatch *create_new_output_filter_patch();
 OutputFilterPatch *add_to_output_filter_patch_list(OutputFilterPatch * const head,
 		OutputFilterPatch * const new_patch);
 void free_output_filter_patch_list(OutputFilterPatch *head);
+
+OutputFilterStratum *create_new_output_filter_stratum();
+OutputFilterStratum *add_to_output_filter_stratum_list(OutputFilterStratum * const head,
+		OutputFilterStratum * const new_stratum);
+void free_output_filter_stratum_list(OutputFilterStratum *head);
 
 OutputFilterVariable *create_new_output_filter_variable(char *name);
 OutputFilterVariable *create_new_output_filter_variable_any();
@@ -131,6 +169,7 @@ void free_output_filter(OutputFilter *filter);
 
 void print_output_filter_output(OutputFilterOutput *output, char *prefix);
 void print_output_filter_patch(OutputFilterPatch *patch, char *prefix);
+void print_output_filter_stratum(OutputFilterStratum *stratum, char *prefix);
 void print_output_filter_variale(OutputFilterVariable *variable, char *prefix);
 void print_output_filter(OutputFilter *filter);
 

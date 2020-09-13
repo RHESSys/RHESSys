@@ -25,7 +25,7 @@ void test_output_filter3() {
 	// Verify patch section of filter
 	// IDs
 	OutputFilterPatch *p1 = filter->patches;
-	g_assert(p1->output_patch_type == BASIN);
+	g_assert(p1->output_patch_type == PATCH_TYPE_BASIN);
 	g_assert(p1->basinID == 1);
 	g_assert(p1->next == NULL);
 	// Variables

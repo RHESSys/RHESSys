@@ -205,7 +205,7 @@ patch_id_spec: NUMBER {
 		printf("\t\tIDS: basinID: %d\n", $1);
 		
 		OutputFilterPatch *new_patch = create_new_output_filter_patch();
-		new_patch->output_patch_type = BASIN;
+		new_patch->output_patch_type = PATCH_TYPE_BASIN;
 		new_patch->basinID = $1;
 		
 		if (curr_filter->patches == NULL) {
@@ -218,7 +218,7 @@ patch_id_spec: NUMBER {
 		printf("\t\tIDS: basinID: %d, hillID: %d\n", $1, $3); 
 	
 		OutputFilterPatch *new_patch = create_new_output_filter_patch();
-		new_patch->output_patch_type = HILLSLOPE;
+		new_patch->output_patch_type = PATCH_TYPE_HILLSLOPE;
 		new_patch->basinID = $1;
 		new_patch->hillslopeID = $3;
 		
@@ -232,7 +232,7 @@ patch_id_spec: NUMBER {
 		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d\n", $1, $3, $5);
 		
 		OutputFilterPatch *new_patch = create_new_output_filter_patch();
-		new_patch->output_patch_type = ZONE;
+		new_patch->output_patch_type = PATCH_TYPE_ZONE;
 		new_patch->basinID = $1;
 		new_patch->hillslopeID = $3;
 		new_patch->zoneID = $5;
@@ -247,7 +247,7 @@ patch_id_spec: NUMBER {
 		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d\n", $1, $3, $5, $7); 
 	
 		OutputFilterPatch *new_patch = create_new_output_filter_patch();
-		new_patch->output_patch_type = PATCH;
+		new_patch->output_patch_type = PATCH_TYPE_PATCH;
 		new_patch->basinID = $1;
 		new_patch->hillslopeID = $3;
 		new_patch->zoneID = $5;

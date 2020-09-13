@@ -13,6 +13,8 @@ struct zone_object *find_zone_in_hillslope(int zone_ID, struct hillslope_object 
 struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct basin_object *basin);
 
 
+// TODO: Split into versions that handle patch vs. canopy_strata variables, also:
+// add support for v->sub_struct_var_offset for fields of type DATA_TYPE_STRUCT
 static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_hourly_daily: no variables defined.");
@@ -95,7 +97,7 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 	OutputFilterPatch *p = f->patches;
 	while (p != NULL) {
 		switch (p->output_patch_type) {
-		case BASIN:
+		case PATCH_TYPE_BASIN:
 			if (verbose) {
 				fprintf(stderr, "\tbasinID: %d\n", p->basinID);
 			}
@@ -106,7 +108,7 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 				return false;
 			}
 			break;
-		case HILLSLOPE:
+		case PATCH_TYPE_HILLSLOPE:
 			if (verbose) {
 				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d\n",
 						p->basinID, p->hillslopeID);
@@ -124,7 +126,7 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 				return false;
 			}
 			break;
-		case ZONE:
+		case PATCH_TYPE_ZONE:
 			if (verbose) {
 				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d, zoneID: %d\n",
 						p->basinID, p->hillslopeID, p->zoneID);
@@ -148,7 +150,7 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 				return false;
 			}
 			break;
-		case PATCH:
+		case PATCH_TYPE_PATCH:
 			if (verbose) {
 				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d, zoneID: %d, patchID: %d\n",
 						p->basinID, p->hillslopeID, p->zoneID, p->patchID);
@@ -181,7 +183,7 @@ static bool init_spatial_hierarchy(OutputFilter *f,
 	switch (f->type) {
 	case OUTPUT_FILTER_PATCH:
 		return init_spatial_hierarchy_patch(f, w, verbose);
-	case OUTPUT_FILTER_CANOPY_STRATA:
+	case OUTPUT_FILTER_CANOPY_STRATUM:
 	default:
 		fprintf(stderr, "init_spatial_hierarchy: output type %d is unknown or not yet implemented.", f->type);
 		return false;

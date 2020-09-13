@@ -5,8 +5,11 @@
 #include "output_filter/output_filter_output.h"
 
 
+// TODO: Update to + v->sub_struct_var_offset to each address calculation
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const p) {
 	MaterializedVariable mat_var;
+	// TODO:
+	//void * p_offset = p + v->offset + v->sub_struct_var_offset
 	switch (v->data_type) {
 	case DATA_TYPE_BOOL:
 		mat_var.data_type = v->data_type;
@@ -170,7 +173,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 		status = true;
 		EntityID id;
 		switch (p->output_patch_type) {
-		case PATCH:
+		case PATCH_TYPE_PATCH:
 			id.basin_ID = p->basinID;
 			id.hillslope_ID = p->hillslopeID;
 			id.zone_ID = p->zoneID;
@@ -178,7 +181,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
 			status = output_patch_daily_variables(error, error_len, date, p->patch, id, filter);
 			break;
-		case ZONE:
+		case PATCH_TYPE_ZONE:
 			id.basin_ID = p->basinID;
 			id.hillslope_ID = p->hillslopeID;
 			id.zone_ID = p->zoneID;
@@ -187,7 +190,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 			status = apply_to_patches_in_zone(error, error_len, date, filter, p, id,
 					*output_patch_daily_variables);
 			break;
-		case HILLSLOPE:
+		case PATCH_TYPE_HILLSLOPE:
 			id.basin_ID = p->basinID;
 			id.hillslope_ID = p->hillslopeID;
 			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
@@ -196,7 +199,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 			status = apply_to_patches_in_hillslope(error, error_len, date, filter, p, id,
 					*output_patch_daily_variables);
 			break;
-		case BASIN:
+		case PATCH_TYPE_BASIN:
 			id.basin_ID = p->basinID;
 			id.hillslope_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
@@ -228,7 +231,7 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
 				return output_patch_daily(error, error_len, date, f);
-			case OUTPUT_FILTER_CANOPY_STRATA:
+			case OUTPUT_FILTER_CANOPY_STRATUM:
 			default:
 				local_error = (char *)calloc(MAXSTR, sizeof(char));
 				snprintf(local_error, MAXSTR, "output_filter_output_daily: output filter type %d is unknown or not yet implemented.", f->type);

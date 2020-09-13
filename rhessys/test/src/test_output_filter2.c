@@ -27,7 +27,7 @@ void test_output_filter2() {
 	// Verify patch section of filter
 	// IDs
 	OutputFilterPatch *p1 = filter->patches;
-	g_assert(p1->output_patch_type == PATCH);
+	g_assert(p1->output_patch_type == PATCH_TYPE_PATCH);
 	g_assert(p1->basinID == 1);
 	g_assert(p1->hillslopeID == 2);
 	g_assert(p1->zoneID == 3);
@@ -67,7 +67,7 @@ void test_output_filter2() {
 	// Verify patch section of filter
 	// IDs
 	p1 = filter2->patches;
-	g_assert(p1->output_patch_type == BASIN);
+	g_assert(p1->output_patch_type == PATCH_TYPE_BASIN);
 	g_assert(p1->basinID == 1);
 	g_assert(p1->next == NULL);
 	// Variables
@@ -97,7 +97,7 @@ void test_output_filter2() {
 	// Verify patch section of filter
 	// IDs
 	p1 = filter3->patches;
-	g_assert(p1->output_patch_type == ZONE);
+	g_assert(p1->output_patch_type == PATCH_TYPE_ZONE);
 	g_assert(p1->basinID == 4);
 	g_assert(p1->hillslopeID == 3);
 	g_assert(p1->zoneID == 4);

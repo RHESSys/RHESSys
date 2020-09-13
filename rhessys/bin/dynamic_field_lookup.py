@@ -56,6 +56,9 @@ StructIndex_t *new_struct_index() {
 	i->patch_object = NULL;
 	i->accumulate_patch_object = NULL;
 	i->patch_hourly_object = NULL;
+	i->canopy_strata_object = NULL;
+	i->cstate_struct = NULL;
+	i->accumulate_strata_object = NULL;
 	return i;
 }
 
@@ -70,6 +73,15 @@ void free_struct_index(StructIndex_t *i) {
 	if (i->patch_hourly_object != NULL) {
 		freeDictionary(i->patch_hourly_object);
 	}
+	if (i->canopy_strata_object != NULL) {
+		freeDictionary(i->canopy_strata_object);
+	}
+	if (i->cstate_struct != NULL) {
+		freeDictionary(i->cstate_struct);
+	}
+	if (i->accumulate_strata_object != NULL) {
+		freeDictionary(i->accumulate_strata_object);
+	}
 	free(i);
 }
 
@@ -78,6 +90,9 @@ StructIndex_t *index_struct_fields() {
 	i->patch_object = newDictionary(DICTIONARY_DEFAULT_SIZE);
 	i->accumulate_patch_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
 	i->patch_hourly_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->canopy_strata_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
+	i->cstate_struct = newDictionary(DICTIONARY_SIZE_MEDIUM);
+	i->accumulate_strata_object = newDictionary(DICTIONARY_SIZE_SMALL);
 ''')
 
 in_struct = False
