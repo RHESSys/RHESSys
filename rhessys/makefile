@@ -1047,7 +1047,9 @@ output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_fil
 	bison --report=none -d output_filter_parser.y && \
 	flex output_filter_parser.l
 util/index_struct_fields.c: include/rhessys.h
-	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h --include_structs patch_object accumulate_patch_object patch_hourly_object --output util/index_struct_fields.c
+	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h \
+	--include_structs patch_object accumulate_patch_object patch_hourly_object canopy_strata_object cstate_struct accumulate_strata_object \
+	--output util/index_struct_fields.c
 $(OBJ)/string_list.o: util/string_list.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o $(OBJ)/string_list.o
 $(OBJ)/dictionary.o: util/dictionary.c

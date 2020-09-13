@@ -20,7 +20,7 @@ COMMENT_PATT = re.compile('^\s*//.*')
 START_STRUCT_PATT = re.compile('^\s*struct\s+(\S+)\s*{\s*$')
 STRUCT_KW_PATT = re.compile('^\s*struct\s+(\S+)\s*$')
 OPEN_BRACE_PATT = re.compile('^\s*{\s*$')
-END_STRUCT_PATT = re.compile('^\s*};\s*$')
+END_STRUCT_PATT = re.compile('^\s*}\s*;\s*$')
 STRUCT_MEM_PATT = re.compile('^\s*(\S+\s+\**)(\S+)\s*;\s*.*$')
 STRUCT_MEM_STRUCT_PATT = re.compile('^\s*(struct\s+\S+\s+\**)(\S+)\s*;\s*.*$')
 
