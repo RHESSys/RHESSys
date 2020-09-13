@@ -16,6 +16,7 @@
 ^([ ]{4}+|[\t]{2}+)"path:" { return PATH; }
 ^([ ]{4}+|[\t]{2}+)"filename:" { return FILENAME; }
 ^([ ]{2}+|[\t]+)"patch:" { return PATCH_TOK; }
+^([ ]{2}+|[\t]+)"stratum:" { return STRATUM_TOK; }
 ^([ ]{4}+|[\t]{2}+)"ids:" { return IDS; }
 ^([ ]{4}+|[\t]{2}+)"variables:" { return VARS; }
 

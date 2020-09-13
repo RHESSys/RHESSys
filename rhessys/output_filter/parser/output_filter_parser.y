@@ -13,6 +13,7 @@ int set_input_file(char * const file_path);
 bool in_filter = false;
 bool in_output = false;
 bool in_patch = false;
+bool in_stratum = false;
 bool syntax_error = false;
 
 // Setup data structures for capturing state
@@ -37,6 +38,7 @@ OutputFilter *curr_filter = NULL;
 %token PATH
 %token FILENAME
 %token PATCH_TOK
+%token STRATUM_TOK
 %token IDS
 %token VARS
 /* output format components */
@@ -64,6 +66,7 @@ filter_list:
 	| filter_list path EOL {}
 	| filter_list filename EOL {}
 	| filter_list patch EOL {}
+	| filter_list stratum EOL {}
 	| filter_list ids EOL {}
 	| filter_list variables EOL {}
 	| filter_list EOL {}
@@ -178,6 +181,9 @@ patch: PATCH_TOK {
 		if (!in_filter) {
 			syntax_error = true;
 			yyerror("patch definition must be nested within filter definition");
+		} else if (curr_filter->strata != NULL) {
+			syntax_error = true;
+			yyerror("only a stratum definition or a patch definition is allowed in a filter, but both were encountered.");
 		} else if (curr_filter->patches != NULL) {
 			syntax_error = true;
 			yyerror("only one patch definition is allowed in a filter, but more than one was encountered.");
@@ -186,6 +192,7 @@ patch: PATCH_TOK {
 		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to patch.");
 		} else {
 			in_patch = true;
+			in_stratum = false;
 			in_output = false;
 			curr_filter->type = OUTPUT_FILTER_PATCH;
 			printf("\tBEGIN PATCH\n");
@@ -193,7 +200,30 @@ patch: PATCH_TOK {
 	}
 	;
 
-ids: IDS patch_id_spec { 
+stratum: STRATUM_TOK {
+		if (!in_filter) {
+			syntax_error = true;
+			yyerror("stratum definition must be nested within filter definition");
+		} else if (curr_filter->patches != NULL) {
+			syntax_error = true;
+			yyerror("only a patch definition or a stratum definition is allowed in a filter, but both were encountered.");
+		} else if (curr_filter->strata != NULL) {
+			syntax_error = true;
+			yyerror("only one stratum definition is allowed in a filter, but more than one was encountered.");
+		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
+		  syntax_error = true;
+		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to stratum.");
+		} else {
+			in_stratum = true;
+			in_patch = false;
+			in_output = false;
+			curr_filter->type = OUTPUT_FILTER_CANOPY_STRATUM;
+			printf("\tBEGIN STRATUM\n");
+		}
+	}
+ 	;
+
+ids: IDS patch_stratum_id_spec { 
 		if (!in_patch) {
 			syntax_error = true;
 			yyerror("patch IDs definition must be nested within patch definition");
@@ -201,65 +231,106 @@ ids: IDS patch_id_spec {
 	}
 	;
 
-patch_id_spec: NUMBER {
+patch_stratum_id_spec: NUMBER {
 		printf("\t\tIDS: basinID: %d\n", $1);
 		
-		OutputFilterPatch *new_patch = create_new_output_filter_patch();
-		new_patch->output_patch_type = PATCH_TYPE_BASIN;
-		new_patch->basinID = $1;
+		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+			OutputFilterPatch *new_patch = create_new_output_filter_patch();
+			new_patch->output_patch_type = PATCH_TYPE_BASIN;
+			new_patch->basinID = $1;
+			
+			if (curr_filter->patches == NULL) {
+				curr_filter->patches = new_patch;
+			} else {
+				add_to_output_filter_patch_list(curr_filter->patches, new_patch);
+			}
+		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
 		
-		if (curr_filter->patches == NULL) {
-			curr_filter->patches = new_patch;
 		} else {
-			add_to_output_filter_patch_list(curr_filter->patches, new_patch);
+			syntax_error = true;
+			yyerror("Filter type unkown but should not be.");
 		}
 	}
 	| NUMBER DELIM NUMBER { 
 		printf("\t\tIDS: basinID: %d, hillID: %d\n", $1, $3); 
 	
-		OutputFilterPatch *new_patch = create_new_output_filter_patch();
-		new_patch->output_patch_type = PATCH_TYPE_HILLSLOPE;
-		new_patch->basinID = $1;
-		new_patch->hillslopeID = $3;
+		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+			OutputFilterPatch *new_patch = create_new_output_filter_patch();
+			new_patch->output_patch_type = PATCH_TYPE_HILLSLOPE;
+			new_patch->basinID = $1;
+			new_patch->hillslopeID = $3;
+			
+			if (curr_filter->patches == NULL) {
+				curr_filter->patches = new_patch;
+			} else {
+				add_to_output_filter_patch_list(curr_filter->patches, new_patch);
+			}
+		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
 		
-		if (curr_filter->patches == NULL) {
-			curr_filter->patches = new_patch;
 		} else {
-			add_to_output_filter_patch_list(curr_filter->patches, new_patch);
+			syntax_error = true;
+			yyerror("Filter type unkown but should not be.");
 		}
 	}
 	| NUMBER DELIM NUMBER DELIM NUMBER { 
 		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d\n", $1, $3, $5);
 		
-		OutputFilterPatch *new_patch = create_new_output_filter_patch();
-		new_patch->output_patch_type = PATCH_TYPE_ZONE;
-		new_patch->basinID = $1;
-		new_patch->hillslopeID = $3;
-		new_patch->zoneID = $5;
+		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+			OutputFilterPatch *new_patch = create_new_output_filter_patch();
+			new_patch->output_patch_type = PATCH_TYPE_ZONE;
+			new_patch->basinID = $1;
+			new_patch->hillslopeID = $3;
+			new_patch->zoneID = $5;
+			
+			if (curr_filter->patches == NULL) {
+				curr_filter->patches = new_patch;
+			} else {
+				add_to_output_filter_patch_list(curr_filter->patches, new_patch);
+			}
+		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
 		
-		if (curr_filter->patches == NULL) {
-			curr_filter->patches = new_patch;
 		} else {
-			add_to_output_filter_patch_list(curr_filter->patches, new_patch);
+			syntax_error = true;
+			yyerror("Filter type unkown but should not be.");
 		}
 	}
 	| NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER { 
 		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d\n", $1, $3, $5, $7); 
 	
-		OutputFilterPatch *new_patch = create_new_output_filter_patch();
-		new_patch->output_patch_type = PATCH_TYPE_PATCH;
-		new_patch->basinID = $1;
-		new_patch->hillslopeID = $3;
-		new_patch->zoneID = $5;
-		new_patch->patchID = $7;
+		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+			OutputFilterPatch *new_patch = create_new_output_filter_patch();
+			new_patch->output_patch_type = PATCH_TYPE_PATCH;
+			new_patch->basinID = $1;
+			new_patch->hillslopeID = $3;
+			new_patch->zoneID = $5;
+			new_patch->patchID = $7;
+			
+			if (curr_filter->patches == NULL) {
+				curr_filter->patches = new_patch;
+			} else {
+				add_to_output_filter_patch_list(curr_filter->patches, new_patch);
+			}
+		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
 		
-		if (curr_filter->patches == NULL) {
-			curr_filter->patches = new_patch;
 		} else {
-			add_to_output_filter_patch_list(curr_filter->patches, new_patch);
+			syntax_error = true;
+			yyerror("Filter type unkown but should not be.");
 		}
 	}
-	| patch_id_spec COMMA patch_id_spec { /* do nothing, allow individual patch_id_spec to be evaluated by above rules */ }
+	| NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER { 
+		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d, stratumID: %d\n", $1, $3, $5, $7, $9); 
+	
+		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+			syntax_error = true;
+			yyerror("Stratum ID specified by filter type is patch.");
+		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
+			OutputFilterStratum *new_stratum;
+		} else {
+			syntax_error = true;
+			yyerror("Filter type unkown but should not be.");
+		}
+	}
+	| patch_stratum_id_spec COMMA patch_stratum_id_spec { /* do nothing, allow individual patch_id_spec to be evaluated by above rules */ }
 	;
 
 variables: VARS variable_spec {
