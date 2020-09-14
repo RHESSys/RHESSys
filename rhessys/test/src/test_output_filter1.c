@@ -32,6 +32,7 @@ void test_output_filter1() {
 	g_assert(p1->zoneID == 3);
 	g_assert(p1->patchID == 4);
 	OutputFilterPatch *p2 = p1->next;
+	g_assert(p2->output_patch_type == PATCH_TYPE_BASIN);
 	g_assert(p2->basinID == 2);
 	g_assert(p2->next == NULL);
 	// Variables
@@ -40,8 +41,8 @@ void test_output_filter1() {
 	cmp = strcmp(v1->name, "water_balance");
 	g_assert(cmp == 0);
 	OutputFilterVariable *v2 = v1->next;
-	g_assert(v1->variable_type == NAMED);
-	cmp = strcmp(v1->name, "Qout");
+	g_assert(v2->variable_type == NAMED);
+	cmp = strcmp(v2->name, "Qout");
 	OutputFilterVariable *v3 = v2->next;
 	g_assert(v3->variable_type == NAMED);
 	cmp = strcmp(v3->name, "Qin");

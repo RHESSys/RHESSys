@@ -42,8 +42,8 @@ void test_output_filter2() {
 	cmp = strcmp(v1->name, "water_balance");
 	g_assert(cmp == 0);
 	OutputFilterVariable *v2 = v1->next;
-	g_assert(v1->variable_type == NAMED);
-	cmp = strcmp(v1->name, "Qout");
+	g_assert(v2->variable_type == NAMED);
+	cmp = strcmp(v2->name, "Qout");
 	OutputFilterVariable *v3 = v2->next;
 	g_assert(v3->variable_type == NAMED);
 	cmp = strcmp(v3->name, "Qin");
@@ -76,8 +76,8 @@ void test_output_filter2() {
 	cmp = strcmp(v1->name, "foo");
 	g_assert(cmp == 0);
 	v2 = v1->next;
-	g_assert(v1->variable_type == NAMED);
-	cmp = strcmp(v1->name, "bar");
+	g_assert(v2->variable_type == NAMED);
+	cmp = strcmp(v2->name, "bar");
 
 	// Third filter
 	OutputFilter *filter3 = filter2->next;
