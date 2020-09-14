@@ -134,7 +134,7 @@ DictionaryValue_t *dictionaryGet(Dictionary_t *table, char *key) {
 	DictionaryEntry_t *e = table->entries + hash;
 	// Search for key in bucket
 	while (e) {
-		if (keysAreEqual(e->key, key)) {
+		if (e->key != NULL && keysAreEqual(e->key, key)) {
 			return e->value;
 		}
 		e = e->next;
