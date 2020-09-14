@@ -224,9 +224,9 @@ stratum: STRATUM_TOK {
  	;
 
 ids: IDS patch_stratum_id_spec { 
-		if (!in_patch) {
+		if (!in_patch && !in_stratum) {
 			syntax_error = true;
-			yyerror("patch IDs definition must be nested within patch definition");
+			yyerror("ids definition must be nested within patch or stratum definition");
 		} 
 	}
 	;
@@ -245,7 +245,15 @@ patch_stratum_id_spec: NUMBER {
 				add_to_output_filter_patch_list(curr_filter->patches, new_patch);
 			}
 		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
-		
+			OutputFilterStratum *new_stratum = create_new_output_filter_stratum();
+			new_stratum->output_stratum_type = STRATUM_TYPE_BASIN;
+			new_stratum->basinID = $1;
+			
+			if (curr_filter->strata == NULL) {
+				curr_filter->strata = new_stratum;
+			} else {
+				add_to_output_filter_stratum_list(curr_filter->strata, new_stratum);
+			}
 		} else {
 			syntax_error = true;
 			yyerror("Filter type unkown but should not be.");
@@ -266,7 +274,16 @@ patch_stratum_id_spec: NUMBER {
 				add_to_output_filter_patch_list(curr_filter->patches, new_patch);
 			}
 		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
-		
+			OutputFilterStratum *new_stratum = create_new_output_filter_stratum();
+			new_stratum->output_stratum_type = STRATUM_TYPE_HILLSLOPE;
+			new_stratum->basinID = $1;
+			new_stratum->hillslopeID = $3;
+			
+			if (curr_filter->strata == NULL) {
+				curr_filter->strata = new_stratum;
+			} else {
+				add_to_output_filter_stratum_list(curr_filter->strata, new_stratum);
+			}
 		} else {
 			syntax_error = true;
 			yyerror("Filter type unkown but should not be.");
@@ -288,7 +305,17 @@ patch_stratum_id_spec: NUMBER {
 				add_to_output_filter_patch_list(curr_filter->patches, new_patch);
 			}
 		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
-		
+			OutputFilterStratum *new_stratum = create_new_output_filter_stratum();
+			new_stratum->output_stratum_type = STRATUM_TYPE_ZONE;
+			new_stratum->basinID = $1;
+			new_stratum->hillslopeID = $3;
+			new_stratum->zoneID = $5;
+			
+			if (curr_filter->strata == NULL) {
+				curr_filter->strata = new_stratum;
+			} else {
+				add_to_output_filter_stratum_list(curr_filter->strata, new_stratum);
+			}
 		} else {
 			syntax_error = true;
 			yyerror("Filter type unkown but should not be.");
@@ -311,7 +338,18 @@ patch_stratum_id_spec: NUMBER {
 				add_to_output_filter_patch_list(curr_filter->patches, new_patch);
 			}
 		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
-		
+			OutputFilterStratum *new_stratum = create_new_output_filter_stratum();
+			new_stratum->output_stratum_type = STRATUM_TYPE_PATCH;
+			new_stratum->basinID = $1;
+			new_stratum->hillslopeID = $3;
+			new_stratum->zoneID = $5;
+			new_stratum->patchID = $7;
+			
+			if (curr_filter->strata == NULL) {
+				curr_filter->strata = new_stratum;
+			} else {
+				add_to_output_filter_stratum_list(curr_filter->strata, new_stratum);
+			}
 		} else {
 			syntax_error = true;
 			yyerror("Filter type unkown but should not be.");
@@ -324,7 +362,19 @@ patch_stratum_id_spec: NUMBER {
 			syntax_error = true;
 			yyerror("Stratum ID specified by filter type is patch.");
 		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
-			OutputFilterStratum *new_stratum;
+			OutputFilterStratum *new_stratum = create_new_output_filter_stratum();
+			new_stratum->output_stratum_type = STRATUM_TYPE_PATCH;
+			new_stratum->basinID = $1;
+			new_stratum->hillslopeID = $3;
+			new_stratum->zoneID = $5;
+			new_stratum->patchID = $7;
+			new_stratum->stratumID = $9;
+			
+			if (curr_filter->strata == NULL) {
+				curr_filter->strata = new_stratum;
+			} else {
+				add_to_output_filter_stratum_list(curr_filter->strata, new_stratum);
+			}
 		} else {
 			syntax_error = true;
 			yyerror("Filter type unkown but should not be.");
@@ -334,9 +384,9 @@ patch_stratum_id_spec: NUMBER {
 	;
 
 variables: VARS variable_spec {
-		if (!in_patch) {
+		if (!in_patch && !in_stratum) {
 			syntax_error = true;
-			yyerror("variables definition must be nested within patch definition");
+			yyerror("variables definition must be nested within patch or stratum definition");
 		} 
 	}
 	| VARS KLEENE {
