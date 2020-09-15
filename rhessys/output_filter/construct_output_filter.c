@@ -11,6 +11,7 @@ struct basin_object *find_basin(int basin_ID, struct world_object *world);
 struct hillslope_object *find_hillslope_in_basin(int hillslope_ID, struct basin_object *basin);
 struct zone_object *find_zone_in_hillslope(int zone_ID, struct hillslope_object *hillslope);
 struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct basin_object *basin);
+struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone_ID, int hill_ID, int basin_ID, struct world_object *world);
 
 
 // TODO: Split into versions that handle patch vs. canopy_strata variables, also:
@@ -177,6 +178,114 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 	return true;
 }
 
+static bool init_spatial_hierarchy_stratum(OutputFilter *f,
+		struct world_object * const w,
+		bool verbose) {
+
+	struct basin_object *b;
+
+	if (f->strata == NULL) {
+		fprintf(stderr, "init_spatial_hierarchy_stratum: no strata defined but stratum type was specified.");
+		return false;
+	}
+
+	if (verbose) fprintf(stderr, "BEGIN init_spatial_hierarchy_strata\n");
+
+	OutputFilterStratum *s = f->strata;
+	while (s != NULL) {
+		switch (s->output_stratum_type) {
+		case STRATUM_TYPE_BASIN:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d\n", s->basinID);
+			}
+			s->basin = find_basin(s->basinID, w);
+			if (s->basin == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: no basin with ID %d could be found.",
+						s->basinID);
+				return false;
+			}
+			break;
+		case STRATUM_TYPE_HILLSLOPE:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d\n",
+						s->basinID, s->hillslopeID);
+			}
+			b = find_basin(s->basinID, w);
+			if (b == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate hillslope %d.",
+						s->basinID, s->hillslopeID);
+				return false;
+			}
+			s->hill = find_hillslope_in_basin(s->hillslopeID, b);
+			if (s->hill == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: hillslope %d could not be found in basin %d.",
+						s->hillslopeID, s->basinID);
+				return false;
+			}
+			break;
+		case STRATUM_TYPE_ZONE:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d, zoneID: %d\n",
+						s->basinID, s->hillslopeID, s->zoneID);
+			}
+			b = find_basin(s->basinID, w);
+			if (b == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate zone %d in hillslope %d.",
+						s->basinID, s->zoneID, s->hillslopeID);
+				return false;
+			}
+			struct hillslope_object *h = find_hillslope_in_basin(s->hillslopeID, b);
+			if (h == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: hillslope %d could not be found in basin %d, so could not locate zone %d.",
+						s->hillslopeID, s->basinID, s->zoneID);
+				return false;
+			}
+			s->zone = find_zone_in_hillslope(s->zoneID, h);
+			if (s->zone == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: zone %d could not be found in hillslope %d, basin %d.",
+						s->zoneID, s->hillslopeID, s->basinID);
+				return false;
+			}
+			break;
+		case STRATUM_TYPE_PATCH:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d, zoneID: %d, patchID: %d\n",
+						s->basinID, s->hillslopeID, s->zoneID, s->patchID);
+			}
+			b = find_basin(s->basinID, w);
+			if (b == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate patch %d in hillslope %d, patch %d.",
+						s->basinID, s->patchID, s->hillslopeID, s->zoneID);
+				return false;
+			}
+			s->patch = find_patch(s->patchID, s->zoneID, s->hillslopeID, b);
+			if (s->patch == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: patch %d could not be found in zone %d, hillslope %d, basin %d.",
+						s->patchID, s->zoneID, s->hillslopeID, s->basinID);
+				return false;
+			}
+			break;
+		case STRATUM_TYPE_STRATUM:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d, zoneID: %d, patchID: %d, stratumID: %d\n",
+						s->basinID, s->hillslopeID, s->zoneID, s->patchID, s->stratumID);
+			}
+			s->stratum = find_stratum(s->stratumID, s->patchID, s->zoneID, s->hillslopeID, s->basinID, w);
+			if (s->stratum == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_stratum: stratum %d could not be found in patch %d, zone %d, hillslope %d, basin %d.",
+						s->stratumID, s->patchID, s->zoneID, s->hillslopeID, s->basinID);
+				return false;
+			}
+			break;
+		}
+		s = s->next;
+	}
+
+	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_stratum\n");
+
+	return true;
+}
+
 static bool init_spatial_hierarchy(OutputFilter *f,
 		struct world_object * const w,
 		bool verbose) {
@@ -184,6 +293,7 @@ static bool init_spatial_hierarchy(OutputFilter *f,
 	case OUTPUT_FILTER_PATCH:
 		return init_spatial_hierarchy_patch(f, w, verbose);
 	case OUTPUT_FILTER_CANOPY_STRATUM:
+		return init_spatial_hierarchy_stratum(f, w, verbose);
 	default:
 		fprintf(stderr, "init_spatial_hierarchy: output type %d is unknown or not yet implemented.", f->type);
 		return false;
