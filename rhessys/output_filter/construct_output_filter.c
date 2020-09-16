@@ -5,6 +5,11 @@
 #include "index_struct_fields.h"
 #include "output_filter/output_format_csv.h"
 
+#define STRUCT_NAME_PATCH "patch_object"
+#define STRUCT_NAME_ACCUM_PATCH "accumulate_patch_object"
+#define STRUCT_NAME_STRATUM "canopy_strata_object"
+#define STRUCT_NAME_ACCUM_STRATUM "accumulate_strata_object"
+
 
 OutputFilter *parse(const char* input);
 struct basin_object *find_basin(int basin_ID, struct world_object *world);
@@ -14,24 +19,43 @@ struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct b
 struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone_ID, int hill_ID, int basin_ID, struct world_object *world);
 
 
-// TODO: Split into versions that handle patch vs. canopy_strata variables, also:
-// add support for v->sub_struct_var_offset for fields of type DATA_TYPE_STRUCT
+// TODO: add support for v->sub_struct_var_offset for fields of type DATA_TYPE_STRUCT
 static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_hourly_daily: no variables defined.");
 				return false;
 	}
 
+	Dictionary_t *struct_index = NULL;
+	char *struct_name = NULL;
+	switch (f->type) {
+	case OUTPUT_FILTER_PATCH:
+		struct_index = i->patch_object;
+		struct_name = STRUCT_NAME_PATCH;
+		break;
+	case OUTPUT_FILTER_CANOPY_STRATUM:
+		struct_index = i->canopy_strata_object;
+		struct_name = STRUCT_NAME_STRATUM;
+		break;
+	default:
+		fprintf(stderr, "init_variables_hourly_daily: output filter type %d is unknown or not yet implemented.", f->type);
+		return false;
+	}
+
 	OutputFilterVariable *v = f->variables;
 	while (v != NULL) {
 		if (v->variable_type == NAMED) {
-			DictionaryValue_t *var_idx_entry = dictionaryGet(i->patch_object, v->name);
+			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
-				fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of struct patch_object.", v->name);
+				fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of struct %s.",
+						v->name, struct_name);
 				return false;
 			}
 			v->offset = var_idx_entry->offset;
 			v->data_type = var_idx_entry->data_type;
+			// TODO: Check for data_type == DATA_TYPE_STRUCT
+			// if so, lookup sub_struct by name and get value of sub_struct_var_offset
+
 			f->num_named_variables += 1;
 		}
 		v = v->next;
@@ -46,12 +70,29 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 				return false;
 	}
 
+	Dictionary_t *struct_index = NULL;
+	char *struct_name = NULL;
+	switch (f->type) {
+	case OUTPUT_FILTER_PATCH:
+		struct_index = i->accumulate_patch_object;
+		struct_name = STRUCT_NAME_ACCUM_PATCH;
+		break;
+	case OUTPUT_FILTER_CANOPY_STRATUM:
+		struct_index = i->accumulate_strata_object;
+		struct_name = STRUCT_NAME_ACCUM_STRATUM;
+		break;
+	default:
+		fprintf(stderr, "init_variables_monthly_yearly: output filter type %d is unknown or not yet implemented.", f->type);
+		return false;
+	}
+
 	OutputFilterVariable *v = f->variables;
 	while (v != NULL) {
 		if (v->variable_type == NAMED) {
-			DictionaryValue_t *var_idx_entry = dictionaryGet(i->accumulate_patch_object, v->name);
+			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
-				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct accumulate_patch_object.", v->name);
+				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct %s.",
+						v->name, struct_name);
 				return false;
 			}
 			v->offset = var_idx_entry->offset;
@@ -73,7 +114,6 @@ static bool init_variables(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	case TIMESTEP_YEARLY:
 		return init_variables_monthly_yearly(f, i, verbose);
 	case TIMESTEP_UNDEFINED:
-		break;
 	default:
 		fprintf(stderr, "init_variable: timestep %d is unknown or not yet implemented.", f->timestep);
 		return false;
@@ -295,7 +335,7 @@ static bool init_spatial_hierarchy(OutputFilter *f,
 	case OUTPUT_FILTER_CANOPY_STRATUM:
 		return init_spatial_hierarchy_stratum(f, w, verbose);
 	default:
-		fprintf(stderr, "init_spatial_hierarchy: output type %d is unknown or not yet implemented.", f->type);
+		fprintf(stderr, "init_spatial_hierarchy: output filter type %d is unknown or not yet implemented.", f->type);
 		return false;
 	}
 	return true;
