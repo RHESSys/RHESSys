@@ -13,6 +13,7 @@
 #define OUTPUT_FORMAT_CSV "csv"
 #define OUTPUT_FORMAT_NETCDF "netcdf"
 
+#define FILENAME_LEN 255
 
 typedef enum {
 	TIMESTEP_UNDEFINED,
@@ -79,10 +80,10 @@ typedef struct of_var {
 	struct of_var *next;
 
 	DataType data_type;
+	char *sub_struct_name;
 	char *name;
 	size_t offset;
-	// TODO: Add: Second optional offset to variable in struct within a struct.
-	//size_t sub_struct_var_offset;
+	size_t sub_struct_var_offset;
 	void *meta;
 } OutputFilterVariable;
 
@@ -154,6 +155,7 @@ OutputFilterStratum *add_to_output_filter_stratum_list(OutputFilterStratum * con
 void free_output_filter_stratum_list(OutputFilterStratum *head);
 
 OutputFilterVariable *create_new_output_filter_variable(char *name);
+OutputFilterVariable *create_new_output_filter_sub_struct_variable(char *sub_struct_name, char *name);
 OutputFilterVariable *create_new_output_filter_variable_any();
 OutputFilterVariable *add_to_output_filter_variable_list(OutputFilterVariable * const head,
 		OutputFilterVariable * const new_var);

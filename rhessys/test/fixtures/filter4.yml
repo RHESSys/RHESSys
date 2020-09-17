@@ -3,7 +3,7 @@ filter:
 	output:
 		format: csv
 		path: output/fire-project-1
-		filename: scenario-abc4
+		filename: scenario-abc4.foo
 	stratum:
 		ids: 1:2:3:4:5, 2
-		variables: PET, gs
+		variables: PET, gs, cs.leafc

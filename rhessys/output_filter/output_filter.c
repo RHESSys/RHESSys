@@ -304,8 +304,23 @@ OutputFilterVariable *create_new_output_filter_variable(char *name) {
 	new_var->next = NULL;
 	new_var->variable_type = NAMED;
 	new_var->data_type = DATA_TYPE_UNDEFINED;
+	new_var->sub_struct_name = NULL;
 	new_var->name = strdup(name);
 	new_var->offset = SIZE_MAX;
+	new_var->sub_struct_var_offset = SIZE_MAX;
+	new_var->meta = NULL;
+	return new_var;
+}
+
+OutputFilterVariable *create_new_output_filter_sub_struct_variable(char *sub_struct_name, char *name) {
+	OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
+	new_var->next = NULL;
+	new_var->variable_type = NAMED;
+	new_var->data_type = DATA_TYPE_UNDEFINED;
+	new_var->sub_struct_name = strdup(sub_struct_name);
+	new_var->name = strdup(name);
+	new_var->offset = SIZE_MAX;
+	new_var->sub_struct_var_offset = SIZE_MAX;
 	new_var->meta = NULL;
 	return new_var;
 }
@@ -315,8 +330,10 @@ OutputFilterVariable *create_new_output_filter_variable_any() {
 	new_var->next = NULL;
 	new_var->variable_type = ANY_VAR;
 	new_var->data_type = DATA_TYPE_UNDEFINED;
+	new_var->sub_struct_name = NULL;
 	new_var->name = NULL;
 	new_var->offset = SIZE_MAX;
+	new_var->sub_struct_var_offset = SIZE_MAX;
 	return new_var;
 }
 
@@ -334,6 +351,11 @@ OutputFilterVariable *add_to_output_filter_variable_list(OutputFilterVariable * 
 			// new_var supersedes tmp, make new_var replace tmp
 			tmp->variable_type = new_var->variable_type;
 			free(tmp->name);
+			if (new_var->sub_struct_name == NULL) {
+				tmp->sub_struct_name = NULL;
+			} else {
+				tmp->sub_struct_name = strdup(new_var->sub_struct_name);
+			}
 			tmp->name = strdup(new_var->name);
 			free(new_var);
 			return tmp;
@@ -579,8 +601,10 @@ void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
 			break;
 		}
 
+		fprintf(stderr, "%s\tsub_struct_name: %s,\n", prefix, v->sub_struct_name);
 		fprintf(stderr, "%s\tname: %s,\n", prefix, v->name);
 		fprintf(stderr, "%s\toffset: %zu,\n", prefix, v->offset);
+		fprintf(stderr, "%s\tsub_struct_var_offset: %zu,\n", prefix, v->sub_struct_var_offset);
 	}
 	fprintf(stderr, "%s}", prefix);
 }

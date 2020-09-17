@@ -21,7 +21,7 @@ void test_output_filter4() {
 	g_assert(filter->output->format == OUTPUT_TYPE_CSV);
 	int cmp = strcmp(filter->output->path, "output/fire-project-1");
 	g_assert(cmp == 0);
-	cmp = strcmp(filter->output->filename, "scenario-abc4");
+	cmp = strcmp(filter->output->filename, "scenario-abc4.foo");
 	g_assert(cmp == 0);
 	// Verify patch section of filter
 	// IDs
@@ -44,7 +44,14 @@ void test_output_filter4() {
 	OutputFilterVariable *v2 = v1->next;
 	g_assert(v2->variable_type == NAMED);
 	cmp = strcmp(v2->name, "gs");
-	g_assert(v2->next == NULL);
+	g_assert(cmp == 0);
+	OutputFilterVariable *v3 = v2->next;
+	g_assert(v3->variable_type == NAMED);
+	cmp = strcmp(v3->sub_struct_name, "cs");
+	g_assert(cmp == 0);
+	cmp = strcmp(v3->name, "leafc");
+	g_assert(cmp == 0);
+	g_assert(v3->next == NULL);
 
 	free(filter);
 }

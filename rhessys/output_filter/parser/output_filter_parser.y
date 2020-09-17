@@ -50,6 +50,7 @@ OutputFilter *curr_filter = NULL;
 %token <integer> NUMBER
 %token DELIM
 %token COMMA
+%token DOT
 /* whitespace */
 %token INDENT
 %token EOL
@@ -173,6 +174,21 @@ filename: FILENAME FILENAME_SPEC {
     } else {
       curr_filter->output->filename = strdup($2);
       printf("\t\tOUTPUT FILENAME IS: %s\n", $2);
+    }
+  }
+  | FILENAME FILENAME_SPEC DOT IDENTIFIER {
+  	if (!in_output) {
+      syntax_error = true;
+      yyerror("filename definition must be nested within output definition");
+    } else {
+      curr_filter->output->filename = (char *) malloc(FILENAME_LEN * sizeof(char *));
+      if (curr_filter->output->filename == NULL) {
+      	syntax_error = true;
+      	yyerror("unable to allocate memory for filename");
+      }
+      snprintf(curr_filter->output->filename, FILENAME_LEN,
+      	"%s.%s", $2, $4);
+      printf("\t\tOUTPUT FILENAME IS: %s\n", curr_filter->output->filename);
     }
   }
 	;
@@ -408,8 +424,18 @@ variable_spec: IDENTIFIER {
 			add_to_output_filter_variable_list(curr_filter->variables, new_var);
 		}
 	}
-	|
-	variable_spec COMMA variable_spec { /* do nothing, allow individual variable_spec to be evaluated by above rules */ }
+	| IDENTIFIER DOT IDENTIFIER {
+		printf("\t\tVARIABLE: %s.%s\n", $1, $3);
+		
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable($1, $3);
+		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| variable_spec COMMA variable_spec { /* do nothing, allow individual variable_spec to be evaluated by above rules */ }
 	;
 	
 
