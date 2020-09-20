@@ -17,6 +17,7 @@
 #define FMT_STR_FLOAT "%s%f"
 #define FMT_STR_DOUBLE "%s%f"
 #define FMT_STR_DOUBLE_ARRAY "%s%p"
+#define FMT_STR_SUB_STRUCT_VAR ".%s"
 #define FMT_STR_UNDEFINED NULL
 
 #define HEADER_ID_PATCH "basinID,hillID,zoneID,patchID,"
@@ -96,10 +97,16 @@ bool output_format_csv_write_headers(OutputFilter * const f) {
 
 	// Output header for first field
 	fprintf(fp, "%s", f->variables->name);
+	if (f->variables->sub_struct_varname != NULL) {
+		fprintf(fp, FMT_STR_SUB_STRUCT_VAR, f->variables->sub_struct_varname);
+	}
 	OutputFilterVariable *v = f->variables->next;
 	// Output headers for remaining fields
 	while (v != NULL) {
 		fprintf(fp, FMT_STR_CHAR_ARRAY, CSV_DELIM_DEFAULT, v->name);
+		if (v->sub_struct_varname != NULL) {
+			fprintf(fp, FMT_STR_SUB_STRUCT_VAR, v->sub_struct_varname);
+		}
 		v = v->next;
 	}
 	fprintf(fp, CSV_EOL);

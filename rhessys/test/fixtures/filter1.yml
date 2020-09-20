@@ -6,4 +6,4 @@ filter:
 		filename: scenario-abc1
 	patch:
 		ids: 1:2:3:4, 2
-		variables: water_balance, Qout, Qin
+		variables: Qout, Qin, evaporation

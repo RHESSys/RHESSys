@@ -16,6 +16,33 @@ TYPES = {
 	'FILE *': 'DATA_TYPE_FILE_PTR'
 }
 
+STRUCT_NAMES = [
+	'patch_object',
+	'accumulate_patch_object',
+	'patch_hourly_object',
+	'patch_fire_water_object',
+	'rooting_zone_object',
+	'soil_c_object',
+	'soil_n_object',
+	'litter_object',
+	'litter_c_object',
+	'litter_n_object',
+	'cdayflux_patch_struct',
+	'ndayflux_patch_struct',
+	'canopy_strata_object',
+	'cstate_struct',
+	'accumulate_strata_object',
+	'cdayflux_struct',
+	'cstate_struct',
+	'target_object',
+	'epvar_struct',
+	'nstate_struct',
+	'ndayflux_struct',
+	'phenology_struct',
+	'fire_effects_object',
+	'mult_conduct_struct',
+]
+
 COMMENT_PATT = re.compile('^\s*//.*')
 START_STRUCT_PATT = re.compile('^\s*struct\s+(\S+)\s*{\s*$')
 STRUCT_KW_PATT = re.compile('^\s*struct\s+(\S+)\s*$')
@@ -56,32 +83,106 @@ StructIndex_t *new_struct_index() {
 	i->patch_object = NULL;
 	i->accumulate_patch_object = NULL;
 	i->patch_hourly_object = NULL;
+	i->patch_fire_water_object = NULL;
+	i->rooting_zone_object = NULL;
+	i->soil_c_object = NULL;
+	i->soil_n_object = NULL;
+	i->litter_object = NULL;
+	i->litter_c_object = NULL;
+	i->litter_n_object = NULL;
+	i->cdayflux_patch_struct = NULL;
+	i->ndayflux_patch_struct = NULL;
 	i->canopy_strata_object = NULL;
-	i->cstate_struct = NULL;
 	i->accumulate_strata_object = NULL;
+	i->cdayflux_struct = NULL;
+	i->cstate_struct = NULL;
+	i->target_object = NULL;
+	i->epvar_struct = NULL;
+	i->nstate_struct = NULL;
+	i->ndayflux_struct = NULL;
+	i->phenology_struct = NULL;
+	i->fire_effects_object = NULL;
+	i->mult_conduct_struct = NULL;
+	
 	return i;
 }
 
 void free_struct_index(StructIndex_t *i) {
 	if (i == NULL) return;
-	if (i->patch_object != NULL) {
+	if (i->patch_object) {
 		freeDictionary(i->patch_object);
 	}
-	if (i->accumulate_patch_object != NULL) {
+	
+	if (i->accumulate_patch_object) {
 		freeDictionary(i->accumulate_patch_object);
 	}
-	if (i->patch_hourly_object != NULL) {
+	if (i->patch_hourly_object) {
 		freeDictionary(i->patch_hourly_object);
 	}
-	if (i->canopy_strata_object != NULL) {
+	if (i->patch_fire_water_object) {
+		freeDictionary(i->patch_fire_water_object);
+	}
+	if (i->rooting_zone_object) {
+		freeDictionary(i->rooting_zone_object);
+	}
+	if (i->soil_c_object) {
+		freeDictionary(i->soil_c_object);
+	}
+	if (i->soil_n_object) {
+		freeDictionary(i->soil_n_object);
+	}
+	if (i->litter_object) {
+		freeDictionary(i->litter_object);
+	}
+	if (i->litter_c_object) {
+		freeDictionary(i->litter_c_object);
+	}
+	if (i->litter_n_object) {
+		freeDictionary(i->litter_n_object);
+	}
+	if (i->cdayflux_patch_struct) {
+		freeDictionary(i->cdayflux_patch_struct);
+	}
+	if (i->ndayflux_patch_struct) {
+		freeDictionary(i->ndayflux_patch_struct);
+	}
+	
+	
+	if (i->canopy_strata_object) {
 		freeDictionary(i->canopy_strata_object);
 	}
-	if (i->cstate_struct != NULL) {
-		freeDictionary(i->cstate_struct);
-	}
-	if (i->accumulate_strata_object != NULL) {
+	
+	if (i->accumulate_strata_object) {
 		freeDictionary(i->accumulate_strata_object);
 	}
+	if (i->cdayflux_struct) {
+		freeDictionary(i->cdayflux_struct);
+	}
+	if (i->cstate_struct) {
+		freeDictionary(i->cstate_struct);
+	}
+	if (i->target_object) {
+		freeDictionary(i->target_object);
+	}
+	if (i->epvar_struct) {
+		freeDictionary(i->epvar_struct);
+	}
+	if (i->nstate_struct) {
+		freeDictionary(i->nstate_struct);
+	}
+	if (i->ndayflux_struct) {
+		freeDictionary(i->ndayflux_struct);
+	}
+	if (i->phenology_struct) {
+		freeDictionary(i->phenology_struct);
+	}
+	if (i->fire_effects_object) {
+		freeDictionary(i->fire_effects_object);
+	}
+	if (i->mult_conduct_struct) {
+		freeDictionary(i->mult_conduct_struct);
+	}
+	
 	free(i);
 }
 
@@ -90,9 +191,29 @@ StructIndex_t *index_struct_fields() {
 	i->patch_object = newDictionary(DICTIONARY_DEFAULT_SIZE);
 	i->accumulate_patch_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
 	i->patch_hourly_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	
+	i->patch_fire_water_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->rooting_zone_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->soil_c_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->soil_n_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
+	i->litter_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->litter_c_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->litter_n_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->cdayflux_patch_struct = newDictionary(DICTIONARY_SIZE_LARGE);
+	i->ndayflux_patch_struct = newDictionary(DICTIONARY_SIZE_LARGE);
+	
 	i->canopy_strata_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
-	i->cstate_struct = newDictionary(DICTIONARY_SIZE_MEDIUM);
+	
 	i->accumulate_strata_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->cdayflux_struct = newDictionary(DICTIONARY_SIZE_LARGE);
+	i->cstate_struct = newDictionary(DICTIONARY_SIZE_MEDIUM);
+	i->target_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->epvar_struct = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->nstate_struct = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->ndayflux_struct = newDictionary(DICTIONARY_SIZE_MEDIUM);
+	i->phenology_struct = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->fire_effects_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->mult_conduct_struct = newDictionary(DICTIONARY_SIZE_SMALL);
 ''')
 
 in_struct = False
@@ -153,7 +274,7 @@ with fileinput.input(files=args.headers) as f:
 				member = m.group(2)
 				print(f"\t\tMember {member} of type {data_type} encountered.")
 				output.write(f'''
-	dictionaryInsert(i->{curr_struct}, "{member}", (DictionaryValue_t) {{{data_type}, offsetof(struct {curr_struct}, {member})}});''')
+	dictionaryInsert(i->{curr_struct}, "{member}", (DictionaryValue_t) {{{data_type}, offsetof(struct {curr_struct}, {member}), NULL}});''')
 			else:
 				# Check for struct members that are structs
 				m = STRUCT_MEM_STRUCT_PATT.match(l)
@@ -170,8 +291,11 @@ with fileinput.input(files=args.headers) as f:
 			
 					member = m.group(2)
 					print(f"\t\tMember struct {struct_name} {member} of type {data_type} encountered.")
+					sub_struct_index = 'NULL'
+					if struct_name in STRUCT_NAMES:
+						sub_struct_index = f"i->{struct_name}"
 					output.write(f'''
-	dictionaryInsert(i->{curr_struct}, "{member}", (DictionaryValue_t) {{{data_type}, offsetof(struct {curr_struct}, {member})}});''')
+	dictionaryInsert(i->{curr_struct}, "{member}", (DictionaryValue_t) {{{data_type}, offsetof(struct {curr_struct}, {member}), {sub_struct_index}}});''')
 output.write('''
 	
 	return i;

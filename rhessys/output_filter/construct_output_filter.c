@@ -19,10 +19,9 @@ struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct b
 struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone_ID, int hill_ID, int basin_ID, struct world_object *world);
 
 
-// TODO: add support for v->sub_struct_var_offset for fields of type DATA_TYPE_STRUCT
 static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	if (f->variables == NULL) {
-		fprintf(stderr, "init_variables_hourly_daily: no variables defined.");
+		fprintf(stderr, "init_variables_hourly_daily: no variables defined.\n");
 				return false;
 	}
 
@@ -38,7 +37,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 		struct_name = STRUCT_NAME_STRATUM;
 		break;
 	default:
-		fprintf(stderr, "init_variables_hourly_daily: output filter type %d is unknown or not yet implemented.", f->type);
+		fprintf(stderr, "init_variables_hourly_daily: output filter type %d is unknown or not yet implemented.\n", f->type);
 		return false;
 	}
 
@@ -47,14 +46,33 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 		if (v->variable_type == NAMED) {
 			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
-				fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of struct %s.",
+				fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of struct %s.\n",
 						v->name, struct_name);
 				return false;
 			}
 			v->offset = var_idx_entry->offset;
-			v->data_type = var_idx_entry->data_type;
-			// TODO: Check for data_type == DATA_TYPE_STRUCT
-			// if so, lookup sub_struct by name and get value of sub_struct_var_offset
+			if (var_idx_entry->data_type ==  DATA_TYPE_STRUCT) {
+				if (var_idx_entry->sub_struct_index == NULL) {
+					fprintf(stderr, "init_variables_hourly_daily: variable %s.%s is a sub-struct variable, but does not have a sub-struct index.\n",
+							v->name, v->sub_struct_varname);
+					return false;
+				}
+				// This is a sub-struct variable, look it up in the index so that we can set
+				// sub_struct_var_offset and data type
+				DictionaryValue_t *sub_var_idx_entry = dictionaryGet(var_idx_entry->sub_struct_index,
+						v->sub_struct_varname);
+				if (sub_var_idx_entry == NULL) {
+					fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of sub-struct named %s in struct %s.\n",
+							v->sub_struct_varname, v->name, struct_name);
+					return false;
+				}
+				v->sub_struct_var_offset = sub_var_idx_entry->offset;
+				v->data_type = sub_var_idx_entry->data_type;
+			} else {
+				// This is a direct variable within the entity struct, use the data type from
+				// the index for this entity.
+				v->data_type = var_idx_entry->data_type;
+			}
 
 			f->num_named_variables += 1;
 		}
@@ -66,7 +84,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 
 static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	if (f->variables == NULL) {
-		fprintf(stderr, "init_variables_monthly_yearly: no variables defined.");
+		fprintf(stderr, "init_variables_monthly_yearly: no variables defined.\n");
 				return false;
 	}
 
@@ -82,7 +100,7 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 		struct_name = STRUCT_NAME_ACCUM_STRATUM;
 		break;
 	default:
-		fprintf(stderr, "init_variables_monthly_yearly: output filter type %d is unknown or not yet implemented.", f->type);
+		fprintf(stderr, "init_variables_monthly_yearly: output filter type %d is unknown or not yet implemented.\b", f->type);
 		return false;
 	}
 
@@ -91,7 +109,7 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 		if (v->variable_type == NAMED) {
 			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
-				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct %s.",
+				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct %s.\b",
 						v->name, struct_name);
 				return false;
 			}
@@ -115,7 +133,7 @@ static bool init_variables(OutputFilter *f, StructIndex_t *i, bool verbose) {
 		return init_variables_monthly_yearly(f, i, verbose);
 	case TIMESTEP_UNDEFINED:
 	default:
-		fprintf(stderr, "init_variable: timestep %d is unknown or not yet implemented.", f->timestep);
+		fprintf(stderr, "init_variable: timestep %d is unknown or not yet implemented.\n", f->timestep);
 		return false;
 	}
 
@@ -129,7 +147,7 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 	struct basin_object *b;
 
 	if (f->patches == NULL) {
-		fprintf(stderr, "init_spatial_hierarchy_patch: no patches defined but patch type was specified.");
+		fprintf(stderr, "init_spatial_hierarchy_patch: no patches defined but patch type was specified.\n");
 		return false;
 	}
 
@@ -144,7 +162,7 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 			}
 			p->basin = find_basin(p->basinID, w);
 			if (p->basin == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_patch: no basin with ID %d could be found.",
+				fprintf(stderr, "init_spatial_hierarchy_patch: no basin with ID %d could be found.\n",
 						p->basinID);
 				return false;
 			}
@@ -156,13 +174,13 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 			}
 			b = find_basin(p->basinID, w);
 			if (b == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate hillslope %d.",
+				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate hillslope %d.\n",
 						p->basinID, p->hillslopeID);
 				return false;
 			}
 			p->hill = find_hillslope_in_basin(p->hillslopeID, b);
 			if (p->hill == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_patch: hillslope %d could not be found in basin %d.",
+				fprintf(stderr, "init_spatial_hierarchy_patch: hillslope %d could not be found in basin %d.\n",
 						p->hillslopeID, p->basinID);
 				return false;
 			}
@@ -174,19 +192,19 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 			}
 			b = find_basin(p->basinID, w);
 			if (b == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate zone %d in hillslope %d.",
+				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate zone %d in hillslope %d.\n",
 						p->basinID, p->zoneID, p->hillslopeID);
 				return false;
 			}
 			struct hillslope_object *h = find_hillslope_in_basin(p->hillslopeID, b);
 			if (h == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_patch: hillslope %d could not be found in basin %d, so could not locate zone %d.",
+				fprintf(stderr, "init_spatial_hierarchy_patch: hillslope %d could not be found in basin %d, so could not locate zone %d.\n",
 						p->hillslopeID, p->basinID, p->zoneID);
 				return false;
 			}
 			p->zone = find_zone_in_hillslope(p->zoneID, h);
 			if (p->zone == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_patch: zone %d could not be found in hillslope %d, basin %d.",
+				fprintf(stderr, "init_spatial_hierarchy_patch: zone %d could not be found in hillslope %d, basin %d.\n",
 						p->zoneID, p->hillslopeID, p->basinID);
 				return false;
 			}
@@ -198,13 +216,13 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 			}
 			b = find_basin(p->basinID, w);
 			if (b == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate patch %d in hillslope %d, patch %d.",
+				fprintf(stderr, "init_spatial_hierarchy_patch: basin %d could not be found, so could not locate patch %d in hillslope %d, patch %d.\n",
 						p->basinID, p->patchID, p->hillslopeID, p->zoneID);
 				return false;
 			}
 			p->patch = find_patch(p->patchID, p->zoneID, p->hillslopeID, b);
 			if (p->patch == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_patch: patch %d could not be found in zone %d, hillslope %d, basin %d.",
+				fprintf(stderr, "init_spatial_hierarchy_patch: patch %d could not be found in zone %d, hillslope %d, basin %d.\n",
 						p->patchID, p->zoneID, p->hillslopeID, p->basinID);
 				return false;
 			}
@@ -225,7 +243,7 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 	struct basin_object *b;
 
 	if (f->strata == NULL) {
-		fprintf(stderr, "init_spatial_hierarchy_stratum: no strata defined but stratum type was specified.");
+		fprintf(stderr, "init_spatial_hierarchy_stratum: no strata defined but stratum type was specified.\n");
 		return false;
 	}
 
@@ -240,7 +258,7 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 			}
 			s->basin = find_basin(s->basinID, w);
 			if (s->basin == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: no basin with ID %d could be found.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: no basin with ID %d could be found.\n",
 						s->basinID);
 				return false;
 			}
@@ -252,13 +270,13 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 			}
 			b = find_basin(s->basinID, w);
 			if (b == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate hillslope %d.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate hillslope %d.\n",
 						s->basinID, s->hillslopeID);
 				return false;
 			}
 			s->hill = find_hillslope_in_basin(s->hillslopeID, b);
 			if (s->hill == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: hillslope %d could not be found in basin %d.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: hillslope %d could not be found in basin %d.\n",
 						s->hillslopeID, s->basinID);
 				return false;
 			}
@@ -270,19 +288,19 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 			}
 			b = find_basin(s->basinID, w);
 			if (b == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate zone %d in hillslope %d.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate zone %d in hillslope %d.\n",
 						s->basinID, s->zoneID, s->hillslopeID);
 				return false;
 			}
 			struct hillslope_object *h = find_hillslope_in_basin(s->hillslopeID, b);
 			if (h == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: hillslope %d could not be found in basin %d, so could not locate zone %d.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: hillslope %d could not be found in basin %d, so could not locate zone %d.\n",
 						s->hillslopeID, s->basinID, s->zoneID);
 				return false;
 			}
 			s->zone = find_zone_in_hillslope(s->zoneID, h);
 			if (s->zone == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: zone %d could not be found in hillslope %d, basin %d.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: zone %d could not be found in hillslope %d, basin %d.\n",
 						s->zoneID, s->hillslopeID, s->basinID);
 				return false;
 			}
@@ -294,13 +312,13 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 			}
 			b = find_basin(s->basinID, w);
 			if (b == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate patch %d in hillslope %d, patch %d.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: basin %d could not be found, so could not locate patch %d in hillslope %d, patch %d.\n",
 						s->basinID, s->patchID, s->hillslopeID, s->zoneID);
 				return false;
 			}
 			s->patch = find_patch(s->patchID, s->zoneID, s->hillslopeID, b);
 			if (s->patch == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: patch %d could not be found in zone %d, hillslope %d, basin %d.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: patch %d could not be found in zone %d, hillslope %d, basin %d.\n",
 						s->patchID, s->zoneID, s->hillslopeID, s->basinID);
 				return false;
 			}
@@ -312,7 +330,7 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 			}
 			s->stratum = find_stratum(s->stratumID, s->patchID, s->zoneID, s->hillslopeID, s->basinID, w);
 			if (s->stratum == NULL) {
-				fprintf(stderr, "init_spatial_hierarchy_stratum: stratum %d could not be found in patch %d, zone %d, hillslope %d, basin %d.",
+				fprintf(stderr, "init_spatial_hierarchy_stratum: stratum %d could not be found in patch %d, zone %d, hillslope %d, basin %d.\n",
 						s->stratumID, s->patchID, s->zoneID, s->hillslopeID, s->basinID);
 				return false;
 			}
@@ -335,7 +353,7 @@ static bool init_spatial_hierarchy(OutputFilter *f,
 	case OUTPUT_FILTER_CANOPY_STRATUM:
 		return init_spatial_hierarchy_stratum(f, w, verbose);
 	default:
-		fprintf(stderr, "init_spatial_hierarchy: output filter type %d is unknown or not yet implemented.", f->type);
+		fprintf(stderr, "init_spatial_hierarchy: output filter type %d is unknown or not yet implemented.\n", f->type);
 		return false;
 	}
 	return true;
@@ -347,7 +365,7 @@ static bool init_output(OutputFilter *f) {
 		return output_format_csv_init(f);
 	case OUTPUT_TYPE_NETCDF:
 	default:
-		fprintf(stderr, "init_output: output format type %d is unknown or not yet implemented.", f->output->format);
+		fprintf(stderr, "init_output: output format type %d is unknown or not yet implemented.\n", f->output->format);
 		return false;
 	}
 	return true;
@@ -359,7 +377,7 @@ static bool write_headers(OutputFilter *f) {
 		return output_format_csv_write_headers(f);
 	case OUTPUT_TYPE_NETCDF:
 	default:
-		fprintf(stderr, "write_headers: output format type %d is unknown or not yet implemented.", f->output->format);
+		fprintf(stderr, "write_headers: output format type %d is unknown or not yet implemented.\n", f->output->format);
 		return false;
 	}
 	return true;
@@ -369,7 +387,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 		struct command_line_object * const cmd,
 		struct world_object * const world) {
 	if (!cmd->output_filter_flag) {
-		return return_with_error(error, error_len, "output_filter_flag is fall, not constructing output filter.");
+		return return_with_error(error, error_len, "output_filter_flag is false, not constructing output filter.");
 	}
 
 	// Parse output filter

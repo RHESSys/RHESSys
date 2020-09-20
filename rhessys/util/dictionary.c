@@ -40,6 +40,7 @@ static DictionaryValue_t *copyValue(DictionaryValue_t v) {
 	DictionaryValue_t *new_val = (DictionaryValue_t *) malloc(sizeof(DictionaryValue_t));
 	new_val->data_type = v.data_type;
 	new_val->offset = v.offset;
+	new_val->sub_struct_index = v.sub_struct_index;
 	return new_val;
 }
 

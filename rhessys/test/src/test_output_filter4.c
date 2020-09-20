@@ -47,9 +47,9 @@ void test_output_filter4() {
 	g_assert(cmp == 0);
 	OutputFilterVariable *v3 = v2->next;
 	g_assert(v3->variable_type == NAMED);
-	cmp = strcmp(v3->sub_struct_name, "cs");
+	cmp = strcmp(v3->name, "cs");
 	g_assert(cmp == 0);
-	cmp = strcmp(v3->name, "leafc");
+	cmp = strcmp(v3->sub_struct_varname, "leafc");
 	g_assert(cmp == 0);
 	g_assert(v3->next == NULL);
 

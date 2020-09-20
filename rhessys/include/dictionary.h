@@ -16,8 +16,9 @@
 #include "string_list.h"
 
 #define DICTIONARY_DEFAULT_SIZE 521
+#define DICTIONARY_SIZE_LARGE 251
 #define DICTIONARY_SIZE_MEDIUM 101
-#define DICTIONARY_SIZE_SMALL 23
+#define DICTIONARY_SIZE_SMALL 53
 #define DICTIONARY_KEY_EMPTY NULL
 #define DICTIONARY_VALUE_EMPTY NULL
 
@@ -25,6 +26,7 @@ typedef size_t DictionaryTableKey_t;
 typedef struct dict_value_s {
 	DataType data_type;
 	size_t offset;
+	struct dict_s *sub_struct_index;
 } DictionaryValue_t;
 
 typedef struct dict_entry_s {

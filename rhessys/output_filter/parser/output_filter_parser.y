@@ -379,7 +379,7 @@ patch_stratum_id_spec: NUMBER {
 			yyerror("Stratum ID specified by filter type is patch.");
 		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
 			OutputFilterStratum *new_stratum = create_new_output_filter_stratum();
-			new_stratum->output_stratum_type = STRATUM_TYPE_PATCH;
+			new_stratum->output_stratum_type = STRATUM_TYPE_STRATUM;
 			new_stratum->basinID = $1;
 			new_stratum->hillslopeID = $3;
 			new_stratum->zoneID = $5;

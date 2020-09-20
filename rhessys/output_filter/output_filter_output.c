@@ -8,52 +8,56 @@
 // TODO: Update to + v->sub_struct_var_offset to each address calculation
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
-	// TODO:
-	//void * entity_offset = entity + v->offset + v->sub_struct_var_offset
+	size_t offset = v->offset;
+	if (v->sub_struct_var_offset != SIZE_MAX) {
+		// If sub_struct_var_offset has been set for this variable
+		// (which means this must be a sub-struct variable) apply it to the offset
+		offset += v->sub_struct_var_offset;
+	}
 	switch (v->data_type) {
 	case DATA_TYPE_BOOL:
 		mat_var.data_type = v->data_type;
-		mat_var.u.bool_val = *((bool *)(entity + v->offset));
+		mat_var.u.bool_val = *((bool *)(entity + offset));
 		fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
 		break;
 	case DATA_TYPE_CHAR:
 		mat_var.data_type = v->data_type;
-		mat_var.u.char_val = *((char *)(entity + v->offset));
+		mat_var.u.char_val = *((char *)(entity + offset));
 		fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
 		break;
 	case DATA_TYPE_CHAR_ARRAY:
 		mat_var.data_type = v->data_type;
-		mat_var.u.char_array = (char *)(entity + v->offset);
+		mat_var.u.char_array = (char *)(entity + offset);
 		fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
 		break;
 	case DATA_TYPE_INT:
 		mat_var.data_type = v->data_type;
-		mat_var.u.int_val = *((int *)(entity + v->offset));
+		mat_var.u.int_val = *((int *)(entity + offset));
 		fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
 		break;
 	case DATA_TYPE_LONG:
 		mat_var.data_type = v->data_type;
-		mat_var.u.long_val = *((long *)(entity + v->offset));
+		mat_var.u.long_val = *((long *)(entity + offset));
 		fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
 		break;
 	case DATA_TYPE_LONG_ARRAY:
 		mat_var.data_type = v->data_type;
-		mat_var.u.long_array = (long *)(entity + v->offset);
+		mat_var.u.long_array = (long *)(entity + offset);
 		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
 		break;
 	case DATA_TYPE_FLOAT:
 		mat_var.data_type = v->data_type;
-		mat_var.u.float_val = *((float *)(entity + v->offset));
+		mat_var.u.float_val = *((float *)(entity + offset));
 		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
 		break;
 	case DATA_TYPE_DOUBLE:
 		mat_var.data_type = v->data_type;
-		mat_var.u.double_val = *((double *)(entity + v->offset));
+		mat_var.u.double_val = *((double *)(entity + offset));
 		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
 		break;
 	case DATA_TYPE_DOUBLE_ARRAY:
 		mat_var.data_type = v->data_type;
-		mat_var.u.double_array = (double *)(entity + v->offset);
+		mat_var.u.double_array = (double *)(entity + offset);
 		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
 		break;
 	default:
