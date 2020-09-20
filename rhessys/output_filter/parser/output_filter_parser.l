@@ -23,7 +23,7 @@
 [0-9]+ { yylval.integer = atoi(yytext); return NUMBER; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.string = strdup(yytext); return IDENTIFIER; }
 [a-zA-Z0-9_\-\(\)\[\]]+ { yylval.string = strdup(yytext); return FILENAME_SPEC; }
-(\.\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+ { yylval.string = strdup(yytext); return PATH_SPEC; }
+(\.{1,2}\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+ { yylval.string = strdup(yytext); return PATH_SPEC; }
 
 "*" { return KLEENE; }
 ":" { return DELIM; }

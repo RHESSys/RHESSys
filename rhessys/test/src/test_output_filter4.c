@@ -19,7 +19,7 @@ void test_output_filter4() {
 	// Verify output section of filter
 	g_assert(filter->output != NULL);
 	g_assert(filter->output->format == OUTPUT_TYPE_CSV);
-	int cmp = strcmp(filter->output->path, "output/fire-project-1");
+	int cmp = strcmp(filter->output->path, "../output/fire-project-1");
 	g_assert(cmp == 0);
 	cmp = strcmp(filter->output->filename, "scenario-abc4.foo");
 	g_assert(cmp == 0);
