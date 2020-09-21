@@ -5,7 +5,6 @@
 #include "output_filter/output_filter_output.h"
 
 
-// TODO: Update to + v->sub_struct_var_offset to each address calculation
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
 	size_t offset = v->offset;
@@ -66,6 +65,45 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 	return mat_var;
 }
 
+inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
+		struct canopy_strata_object *stratum) {
+	void *entity = NULL;
+	switch (timestep) {
+	case TIMESTEP_MONTHLY:
+		entity = (void *)(&(stratum->acc_month));
+		break;
+	case TIMESTEP_YEARLY:
+		entity = (void *)(&(stratum->acc_year));
+		break;
+	case TIMESTEP_HOURLY:
+	case TIMESTEP_DAILY:
+	default:
+		entity = (void *)stratum;
+		break;
+	}
+	return entity;
+}
+
+inline static void *determine_patch_entity(OutputFilterTimestep timestep,
+		struct patch_object *patch) {
+	void *entity = NULL;
+	switch (timestep) {
+	case TIMESTEP_MONTHLY:
+		entity = (void *)(&(patch->acc_month));
+		break;
+	case TIMESTEP_YEARLY:
+		entity = (void *)(&(patch->acc_year));
+		break;
+	case TIMESTEP_HOURLY:
+	case TIMESTEP_DAILY:
+	default:
+		// Not sure this is quite right for hourly but going with it for now
+		entity = (void *)patch;
+		break;
+	}
+	return entity;
+}
+
 static bool apply_to_strata_in_patch(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
@@ -73,7 +111,8 @@ static bool apply_to_strata_in_patch(char * const error, size_t error_len,
 	for (size_t i = 0; i < s->patch->num_canopy_strata; i++) {
 		struct canopy_strata_object *stratum = s->patch->canopy_strata[i];
 		id.canopy_strata_ID = stratum->ID;
-		bool status = (*output_fn)(error, error_len, date, (void *)stratum, id, filter);
+		void *entity = determine_stratum_entity(filter->timestep, stratum);
+		bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 		if (!status) return false;
 	}
 	return true;
@@ -86,7 +125,8 @@ static bool apply_to_patches_in_zone(char * const error, size_t error_len,
 	for (size_t i = 0; i < p->zone->num_patches; i++) {
 		struct patch_object *patch = p->zone->patches[i];
 		id.patch_ID = patch->ID;
-		bool status = (*output_fn)(error, error_len, date, (void *)patch, id, filter);
+		void *entity = determine_patch_entity(filter->timestep, patch);
+		bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 		if (!status) return false;
 	}
 	return true;
@@ -102,7 +142,8 @@ static bool apply_to_strata_in_zone(char * const error, size_t error_len,
 		for (size_t j = 0; j < patch->num_canopy_strata; j++) {
 			struct canopy_strata_object *stratum = patch->canopy_strata[j];
 			id.canopy_strata_ID = stratum->ID;
-			bool status = (*output_fn)(error, error_len, date, (void *)stratum, id, filter);
+			void *entity = determine_stratum_entity(filter->timestep, stratum);
+			bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 			if (!status) return false;
 		}
 	}
@@ -119,7 +160,8 @@ static bool apply_to_patches_in_hillslope(char * const error, size_t error_len,
 		for (size_t j = 0; j < z->num_patches; j++) {
 			struct patch_object *patch = z->patches[j];
 			id.patch_ID = patch->ID;
-			bool status = (*output_fn)(error, error_len, date, (void *)patch, id, filter);
+			void *entity = determine_patch_entity(filter->timestep, patch);
+			bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 			if (!status) return false;
 		}
 	}
@@ -139,7 +181,8 @@ static bool apply_to_strata_in_hillslope(char * const error, size_t error_len,
 			for (size_t k = 0; k < patch->num_canopy_strata; k++) {
 				struct canopy_strata_object *stratum = patch->canopy_strata[k];
 				id.canopy_strata_ID = stratum->ID;
-				bool status = (*output_fn)(error, error_len, date, (void *)stratum, id, filter);
+				void *entity = determine_stratum_entity(filter->timestep, stratum);
+				bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 				if (!status) return false;
 			}
 		}
@@ -160,7 +203,8 @@ static bool apply_to_patches_in_basin(char * const error, size_t error_len,
 			for (size_t k = 0; k < z->num_patches; k++) {
 				struct patch_object *patch = z->patches[k];
 				id.patch_ID = patch->ID;
-				bool status = (*output_fn)(error, error_len, date, (void *)patch, id, filter);
+				void *entity = determine_patch_entity(filter->timestep, patch);
+				bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 				if (!status) return false;
 			}
 		}
@@ -184,7 +228,8 @@ static bool apply_to_strata_in_basin(char * const error, size_t error_len,
 				for (size_t l = 0; l < patch->num_canopy_strata; l++) {
 					struct canopy_strata_object *stratum = patch->canopy_strata[l];
 					id.canopy_strata_ID = stratum->ID;
-					bool status = (*output_fn)(error, error_len, date, (void *)stratum, id, filter);
+					void *entity = determine_stratum_entity(filter->timestep, stratum);
+					bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 					if (!status) return false;
 				}
 			}
@@ -193,9 +238,9 @@ static bool apply_to_strata_in_basin(char * const error, size_t error_len,
 	return true;
 }
 
-static bool output_daily_variables(char * const error, size_t error_len,
+static bool output_variables(char * const error, size_t error_len,
 		struct date date, void * const entity, EntityID id, OutputFilter const * const f) {
-	fprintf(stderr, "\t\toutput_daily_variables(num_named_variables: %hu)...\n", f->num_named_variables);
+	fprintf(stderr, "\t\toutput_variables(num_named_variables: %hu)...\n", f->num_named_variables);
 
 	char *local_error;
 	bool status;
@@ -210,7 +255,7 @@ static bool output_daily_variables(char * const error, size_t error_len,
 			mat_var = materialize_variable(v, entity);
 			if (mat_var.data_type == DATA_TYPE_UNDEFINED) {
 				local_error = (char *)calloc(MAXSTR, sizeof(char));
-				snprintf(local_error, MAXSTR, "output_daily_variables:  data type %d of variable %s is unknown or not yet implemented.",
+				snprintf(local_error, MAXSTR, "output_variables:  data type %d of variable %s is unknown or not yet implemented.",
 						 v->data_type, v->name);
 				return_with_error(error, error_len, local_error);
 			}
@@ -219,7 +264,7 @@ static bool output_daily_variables(char * const error, size_t error_len,
 		case ANY_VAR:
 		default:
 			local_error = (char *)calloc(MAXSTR, sizeof(char));
-			snprintf(local_error, MAXSTR, "output_daily_variables: variable type %d is unknown or not yet implemented.",
+			snprintf(local_error, MAXSTR, "output_variables: variable type %d is unknown or not yet implemented.",
 					v->variable_type);
 			return_with_error(error, error_len, local_error);
 		}
@@ -233,7 +278,7 @@ static bool output_daily_variables(char * const error, size_t error_len,
 		break;
 	case OUTPUT_TYPE_NETCDF:
 	default:
-		fprintf(stderr, "output_daily_variables: output format type %d is unknown or not yet implemented.",
+		fprintf(stderr, "output_variables: output format type %d is unknown or not yet implemented.",
 				f->output->format);
 		return false;
 	}
@@ -241,9 +286,9 @@ static bool output_daily_variables(char * const error, size_t error_len,
 	return true;
 }
 
-static bool output_patch_daily(char * const error, size_t error_len,
+static bool output_patch(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const filter) {
-	fprintf(stderr, "\toutput_patch_daily()...\n");
+	fprintf(stderr, "\toutput_patch()...\n");
 
 	char *local_error;
 	bool status;
@@ -258,7 +303,8 @@ static bool output_patch_daily(char * const error, size_t error_len,
 			id.zone_ID = p->zoneID;
 			id.patch_ID = p->patchID;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			status = output_daily_variables(error, error_len, date, (void *)p->patch, id, filter);
+			void *entity = determine_patch_entity(filter->timestep, p->patch);
+			status = output_variables(error, error_len, date, entity, id, filter);
 			break;
 		case PATCH_TYPE_ZONE:
 			id.basin_ID = p->basinID;
@@ -267,7 +313,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
 			status = apply_to_patches_in_zone(error, error_len, date, filter, p, id,
-					*output_daily_variables);
+					*output_variables);
 			break;
 		case PATCH_TYPE_HILLSLOPE:
 			id.basin_ID = p->basinID;
@@ -276,7 +322,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
 			status = apply_to_patches_in_hillslope(error, error_len, date, filter, p, id,
-					*output_daily_variables);
+					*output_variables);
 			break;
 		case PATCH_TYPE_BASIN:
 			id.basin_ID = p->basinID;
@@ -285,7 +331,7 @@ static bool output_patch_daily(char * const error, size_t error_len,
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
 			status = apply_to_patches_in_basin(error, error_len, date, filter, p, id,
-					*output_daily_variables);
+					*output_variables);
 			break;
 		default:
 			local_error = (char *)calloc(MAXSTR, sizeof(char));
@@ -299,9 +345,9 @@ static bool output_patch_daily(char * const error, size_t error_len,
 	return true;
 }
 
-static bool output_stratum_daily(char * const error, size_t error_len,
+static bool output_stratum(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const filter) {
-	fprintf(stderr, "\toutput_stratum_daily()...\n");
+	fprintf(stderr, "\toutput_stratum()...\n");
 
 	char *local_error;
 	bool status;
@@ -316,7 +362,8 @@ static bool output_stratum_daily(char * const error, size_t error_len,
 			id.zone_ID = s->zoneID;
 			id.patch_ID = s->patchID;
 			id.canopy_strata_ID = s->stratumID;
-			status = output_daily_variables(error, error_len, date, (void *)s->stratum, id, filter);
+			void *entity = determine_stratum_entity(filter->timestep, s->stratum);
+			status = output_variables(error, error_len, date, entity, id, filter);
 			break;
 		case STRATUM_TYPE_PATCH:
 			id.basin_ID = s->basinID;
@@ -325,7 +372,7 @@ static bool output_stratum_daily(char * const error, size_t error_len,
 			id.patch_ID = s->patchID;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
 			status = apply_to_strata_in_patch(error, error_len, date, filter, s, id,
-					*output_daily_variables);
+					*output_variables);
 			break;
 		case STRATUM_TYPE_ZONE:
 			id.basin_ID = s->basinID;
@@ -334,7 +381,7 @@ static bool output_stratum_daily(char * const error, size_t error_len,
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
 			status = apply_to_strata_in_zone(error, error_len, date, filter, s, id,
-					*output_daily_variables);
+					*output_variables);
 			break;
 		case STRATUM_TYPE_HILLSLOPE:
 			id.basin_ID = s->basinID;
@@ -343,7 +390,7 @@ static bool output_stratum_daily(char * const error, size_t error_len,
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
 			status = apply_to_strata_in_hillslope(error, error_len, date, filter, s, id,
-					*output_daily_variables);
+					*output_variables);
 			break;
 		case STRATUM_TYPE_BASIN:
 			id.basin_ID = s->basinID;
@@ -352,11 +399,11 @@ static bool output_stratum_daily(char * const error, size_t error_len,
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
 			status = apply_to_strata_in_basin(error, error_len, date, filter, s, id,
-					*output_daily_variables);
+					*output_variables);
 			break;
 		default:
 			local_error = (char *)calloc(MAXSTR, sizeof(char));
-			snprintf(local_error, MAXSTR, "output_stratum_daily: stratum type %d is unknown or not yet implemented.",
+			snprintf(local_error, MAXSTR, "output_stratum: stratum type %d is unknown or not yet implemented.",
 					s->output_stratum_type);
 			return_with_error(error, error_len, local_error);
 		}
@@ -376,9 +423,9 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
-				return output_patch_daily(error, error_len, date, f);
+				return output_patch(error, error_len, date, f);
 			case OUTPUT_FILTER_CANOPY_STRATUM:
-				return output_stratum_daily(error, error_len, date, f);
+				return output_stratum(error, error_len, date, f);
 			default:
 				local_error = (char *)calloc(MAXSTR, sizeof(char));
 				snprintf(local_error, MAXSTR, "output_filter_output_daily: output filter type %d is unknown or not yet implemented.", f->type);
@@ -390,3 +437,27 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 	return true;
 }
 
+// TODO: Figure out a clean way to reset accumulators
+bool output_filter_output_monthly(char * const error, size_t error_len,
+		struct date date, OutputFilter const * const filters) {
+	fprintf(stderr, "output_filter_output_monthly(): Where filtered output will happen...\n");
+
+	char *local_error;
+
+	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
+		if (f->timestep == TIMESTEP_MONTHLY) {
+			switch (f->type) {
+			case OUTPUT_FILTER_PATCH:
+				return output_patch(error, error_len, date, f);
+			case OUTPUT_FILTER_CANOPY_STRATUM:
+				return output_stratum(error, error_len, date, f);
+			default:
+				local_error = (char *)calloc(MAXSTR, sizeof(char));
+				snprintf(local_error, MAXSTR, "output_filter_output_monthly: output filter type %d is unknown or not yet implemented.", f->type);
+				return_with_error(error, error_len, local_error);
+			}
+		}
+	}
+
+	return true;
+}
