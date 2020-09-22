@@ -18,6 +18,13 @@ inline static void reset_accum_obj(PointerList_t *list, size_t len) {
 	}
 }
 
+inline static void add_to_accum_reset_list(PointerList_t **list_ptr, void *entity) {
+	if (*list_ptr == NULL) {
+		*list_ptr = newPointerList(entity);
+	} else {
+		pointerListAppend(*list_ptr, entity);
+	}
+}
 
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
@@ -85,11 +92,11 @@ inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
 		entity = (void *)(&(stratum->acc_month));
-		pointerListAppend(accum_strata_obj_to_reset, entity);
+		add_to_accum_reset_list(&accum_strata_obj_to_reset, entity);
 		break;
 	case TIMESTEP_YEARLY:
 		entity = (void *)(&(stratum->acc_year));
-		pointerListAppend(accum_strata_obj_to_reset, entity);
+		add_to_accum_reset_list(&accum_strata_obj_to_reset, entity);
 		break;
 	case TIMESTEP_HOURLY:
 	case TIMESTEP_DAILY:
@@ -106,11 +113,11 @@ inline static void *determine_patch_entity(OutputFilterTimestep timestep,
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
 		entity = (void *)(&(patch->acc_month));
-		pointerListAppend(accum_patch_obj_to_reset, entity);
+		add_to_accum_reset_list(&accum_patch_obj_to_reset, entity);
 		break;
 	case TIMESTEP_YEARLY:
 		entity = (void *)(&(patch->acc_year));
-		pointerListAppend(accum_patch_obj_to_reset, entity);
+		add_to_accum_reset_list(&accum_patch_obj_to_reset, entity);
 		break;
 	case TIMESTEP_HOURLY:
 	case TIMESTEP_DAILY:

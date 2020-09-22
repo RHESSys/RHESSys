@@ -2024,7 +2024,8 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*      update accumlator variables                             */
 	/*--------------------------------------------------------------*/
-	if((command_line[0].output_flags.monthly == 1)&&(command_line[0].c != NULL)){
+	if ((command_line[0].output_flags.monthly == 1) &&
+			(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
 		stratum[0].acc_month.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
 		stratum[0].acc_month.lwp += stratum[0].epv.psi;
 		stratum[0].acc_month.leafc += stratum[0].cs.leafc;

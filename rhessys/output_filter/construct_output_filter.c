@@ -142,8 +142,9 @@ static bool init_variables(OutputFilter *f, StructIndex_t *i, bool verbose) {
 
 static bool init_spatial_hierarchy_patch(OutputFilter *f,
 		struct world_object * const w,
-		bool verbose) {
+		struct command_line_object * const cmd) {
 
+	bool verbose = cmd->verbose_flag;
 	struct basin_object *b;
 
 	if (f->patches == NULL) {
@@ -231,6 +232,11 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 		p = p->next;
 	}
 
+	// Turn on monthly accumulation for patches
+	if (f->timestep == TIMESTEP_MONTHLY) {
+		cmd->output_filter_patch_accum_monthly = true;
+	}
+
 	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_patch\n");
 
 	return true;
@@ -238,8 +244,9 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 
 static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 		struct world_object * const w,
-		bool verbose) {
+		struct command_line_object * const cmd) {
 
+	bool verbose = cmd->verbose_flag;
 	struct basin_object *b;
 
 	if (f->strata == NULL) {
@@ -339,6 +346,11 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 		s = s->next;
 	}
 
+	// Turn on monthly accumulation for strata
+	if (f->timestep == TIMESTEP_MONTHLY) {
+		cmd->output_filter_strata_accum_monthly = true;
+	}
+
 	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_stratum\n");
 
 	return true;
@@ -346,12 +358,12 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 
 static bool init_spatial_hierarchy(OutputFilter *f,
 		struct world_object * const w,
-		bool verbose) {
+		struct command_line_object * const cmd) {
 	switch (f->type) {
 	case OUTPUT_FILTER_PATCH:
-		return init_spatial_hierarchy_patch(f, w, verbose);
+		return init_spatial_hierarchy_patch(f, w, cmd);
 	case OUTPUT_FILTER_CANOPY_STRATUM:
-		return init_spatial_hierarchy_stratum(f, w, verbose);
+		return init_spatial_hierarchy_stratum(f, w, cmd);
 	default:
 		fprintf(stderr, "init_spatial_hierarchy: output filter type %d is unknown or not yet implemented.\n", f->type);
 		return false;
@@ -405,7 +417,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 	// Iterate over all filters and initialize them...
 	for (OutputFilter *f = filters; f != NULL; f = f->next) {
 		// Initialize spatial hierarchy objects referenced in filter
-		status = init_spatial_hierarchy(f, world, cmd->verbose_flag);
+		status = init_spatial_hierarchy(f, world, cmd);
 		if (!status) {
 			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(init_error, MAXSTR, "unable to initialize spatial hierarchy for output filter with path %s and filename %s.",

@@ -26,7 +26,7 @@ void test_output_filter4() {
 	// Verify patch section of filter
 	// IDs
 	OutputFilterStratum *s1 = filter->strata;
-	g_assert(s1->output_stratum_type == STRATUM_TYPE_PATCH);
+	g_assert(s1->output_stratum_type == STRATUM_TYPE_STRATUM);
 	g_assert(s1->basinID == 1);
 	g_assert(s1->hillslopeID == 2);
 	g_assert(s1->zoneID == 3);

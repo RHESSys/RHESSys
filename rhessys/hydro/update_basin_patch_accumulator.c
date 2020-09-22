@@ -138,7 +138,8 @@ void update_basin_patch_accumulator(
 				}
 
 				if ((command_line[0].output_flags.monthly == 1)
-						&& (command_line[0].p != NULL )) {
+						&& (command_line[0].output_filter_patch_accum_monthly ||
+								command_line[0].p != NULL)) {
 					patch[0].acc_month.theta += patch[0].rootzone.S;
 					patch[0].acc_month.sm_deficit +=
 							max(0.0,

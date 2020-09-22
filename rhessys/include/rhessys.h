@@ -2147,6 +2147,10 @@ struct  command_line_object
         bool					output_filter_flag;
         char                    *output_filter_filename;
         OutputFilter            *output_filter;
+        bool					output_filter_patch_accum_monthly;
+        bool					output_filter_patch_accum_yearly;
+        bool					output_filter_strata_accum_monthly;
+        bool					output_filter_strata_accum_yearly;
 
         bool    legacy_output_flag; // Remove when legacy output is removed.
         struct  b_option        *b;
