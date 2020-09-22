@@ -109,7 +109,7 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 		if (v->variable_type == NAMED) {
 			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
-				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct %s.\b",
+				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct %s.\n",
 						v->name, struct_name);
 				return false;
 			}

@@ -3,6 +3,20 @@
 
 #include "rhessys.h"
 #include "output_filter/output_filter_output.h"
+#include "pointer_list.h"
+
+
+static PointerList_t *accum_patch_obj_to_reset = NULL;
+static PointerList_t *accum_strata_obj_to_reset = NULL;
+
+
+inline static void reset_accum_obj(PointerList_t *list, size_t len) {
+	if (list == NULL) return;
+	memset(list->ptr, 0, len);
+	if (list->next) {
+		reset_accum_obj(list->next, len);
+	}
+}
 
 
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
@@ -71,9 +85,11 @@ inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
 		entity = (void *)(&(stratum->acc_month));
+		pointerListAppend(accum_strata_obj_to_reset, entity);
 		break;
 	case TIMESTEP_YEARLY:
 		entity = (void *)(&(stratum->acc_year));
+		pointerListAppend(accum_strata_obj_to_reset, entity);
 		break;
 	case TIMESTEP_HOURLY:
 	case TIMESTEP_DAILY:
@@ -90,9 +106,11 @@ inline static void *determine_patch_entity(OutputFilterTimestep timestep,
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
 		entity = (void *)(&(patch->acc_month));
+		pointerListAppend(accum_patch_obj_to_reset, entity);
 		break;
 	case TIMESTEP_YEARLY:
 		entity = (void *)(&(patch->acc_year));
+		pointerListAppend(accum_patch_obj_to_reset, entity);
 		break;
 	case TIMESTEP_HOURLY:
 	case TIMESTEP_DAILY:
@@ -418,14 +436,19 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 	fprintf(stderr, "output_filter_output_daily(): Where filtered output will happen...\n");
 
 	char *local_error;
+	bool status = true;
 
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
-				return output_patch(error, error_len, date, f);
+				status = output_patch(error, error_len, date, f);
+				if (!status) return false;
+				break;
 			case OUTPUT_FILTER_CANOPY_STRATUM:
-				return output_stratum(error, error_len, date, f);
+				status = output_stratum(error, error_len, date, f);
+				if (!status) return false;
+				break;
 			default:
 				local_error = (char *)calloc(MAXSTR, sizeof(char));
 				snprintf(local_error, MAXSTR, "output_filter_output_daily: output filter type %d is unknown or not yet implemented.", f->type);
@@ -434,23 +457,27 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 		}
 	}
 
-	return true;
+	return status;
 }
 
-// TODO: Figure out a clean way to reset accumulators
 bool output_filter_output_monthly(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const filters) {
 	fprintf(stderr, "output_filter_output_monthly(): Where filtered output will happen...\n");
 
 	char *local_error;
+	bool status = true;
 
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_MONTHLY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
-				return output_patch(error, error_len, date, f);
+				status = output_patch(error, error_len, date, f);
+				if (!status) return false;
+				break;
 			case OUTPUT_FILTER_CANOPY_STRATUM:
-				return output_stratum(error, error_len, date, f);
+				status = output_stratum(error, error_len, date, f);
+				if (!status) return false;
+				break;
 			default:
 				local_error = (char *)calloc(MAXSTR, sizeof(char));
 				snprintf(local_error, MAXSTR, "output_filter_output_monthly: output filter type %d is unknown or not yet implemented.", f->type);
@@ -459,5 +486,17 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 		}
 	}
 
-	return true;
+	if (accum_patch_obj_to_reset) {
+		reset_accum_obj(accum_patch_obj_to_reset, sizeof(struct accumulate_patch_object));
+		freePointerList(accum_patch_obj_to_reset);
+		accum_patch_obj_to_reset = NULL;
+	}
+
+	if (accum_strata_obj_to_reset) {
+		reset_accum_obj(accum_strata_obj_to_reset, sizeof(struct accumulate_strata_object));
+		freePointerList(accum_strata_obj_to_reset);
+		accum_strata_obj_to_reset = NULL;
+	}
+
+	return status;
 }

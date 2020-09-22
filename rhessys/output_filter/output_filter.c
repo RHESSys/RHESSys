@@ -631,19 +631,19 @@ void print_output_filter(OutputFilter *f) {
 
 		switch (f->timestep) {
 		case TIMESTEP_UNDEFINED:
-			fprintf(stderr, "\timestep: undefined,\n");
+			fprintf(stderr, "\ttimestep: undefined,\n");
 			break;
 		case TIMESTEP_HOURLY:
-			fprintf(stderr, "\timestep: hourly,\n");
+			fprintf(stderr, "\ttimestep: hourly,\n");
 			break;
 		case TIMESTEP_DAILY:
-			fprintf(stderr, "\timestep: daily,\n");
+			fprintf(stderr, "\ttimestep: daily,\n");
 			break;
 		case TIMESTEP_MONTHLY:
-			fprintf(stderr, "\timestep: monthly,\n");
+			fprintf(stderr, "\ttimestep: monthly,\n");
 			break;
 		case TIMESTEP_YEARLY:
-			fprintf(stderr, "\timestep: yearly,\n");
+			fprintf(stderr, "\ttimestep: yearly,\n");
 			break;
 		}
 
