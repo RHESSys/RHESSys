@@ -232,9 +232,12 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 		p = p->next;
 	}
 
-	// Turn on monthly accumulation for patches
 	if (f->timestep == TIMESTEP_MONTHLY) {
+		// Turn on monthly accumulation for patches
 		cmd->output_filter_patch_accum_monthly = true;
+	} else if (f->timestep == TIMESTEP_YEARLY) {
+		// Turn on yearly accumulation for patches
+		cmd->output_filter_patch_accum_yearly = true;
 	}
 
 	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_patch\n");
@@ -346,9 +349,12 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 		s = s->next;
 	}
 
-	// Turn on monthly accumulation for strata
 	if (f->timestep == TIMESTEP_MONTHLY) {
+		// Turn on monthly accumulation for strata
 		cmd->output_filter_strata_accum_monthly = true;
+	} else if (f->timestep == TIMESTEP_YEARLY) {
+		// Turn on yearly accumulation for strata
+		cmd->output_filter_strata_accum_yearly = true;
 	}
 
 	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_stratum\n");

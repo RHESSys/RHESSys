@@ -507,3 +507,44 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 
 	return status;
 }
+
+bool output_filter_output_yearly(char * const error, size_t error_len,
+		struct date date, OutputFilter const * const filters) {
+	fprintf(stderr, "output_filter_output_yearly(): Where filtered output will happen...\n");
+
+	char *local_error;
+	bool status = true;
+
+	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
+		if (f->timestep == TIMESTEP_YEARLY) {
+			switch (f->type) {
+			case OUTPUT_FILTER_PATCH:
+				status = output_patch(error, error_len, date, f);
+				if (!status) return false;
+				break;
+			case OUTPUT_FILTER_CANOPY_STRATUM:
+				status = output_stratum(error, error_len, date, f);
+				if (!status) return false;
+				break;
+			default:
+				local_error = (char *)calloc(MAXSTR, sizeof(char));
+				snprintf(local_error, MAXSTR, "output_filter_output_yearly: output filter type %d is unknown or not yet implemented.", f->type);
+				return_with_error(error, error_len, local_error);
+			}
+		}
+	}
+
+	if (accum_patch_obj_to_reset) {
+		reset_accum_obj(accum_patch_obj_to_reset, sizeof(struct accumulate_patch_object));
+		freePointerList(accum_patch_obj_to_reset);
+		accum_patch_obj_to_reset = NULL;
+	}
+
+	if (accum_strata_obj_to_reset) {
+		reset_accum_obj(accum_strata_obj_to_reset, sizeof(struct accumulate_strata_object));
+		freePointerList(accum_strata_obj_to_reset);
+		accum_strata_obj_to_reset = NULL;
+	}
+
+	return status;
+}
