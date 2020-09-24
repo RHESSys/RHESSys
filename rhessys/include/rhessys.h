@@ -1149,6 +1149,7 @@ struct	soil_default
 	double	m_v;						/* m^-1	*/
 	double	m_z;						/* m^-1	*/
 	double	mz_v;						/* m^-1	*/
+	double	nitrif_parm_smax;						/* 0-1	*/
 	double	porosity_0;						/* unitless */
 	double	porosity_decay;						/* m^-1 */
 	double	p3;						/* unitless */

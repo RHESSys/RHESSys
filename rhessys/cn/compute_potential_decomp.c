@@ -47,6 +47,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 							 double std,
 							 double  fixed_t_mult,
 							 double  fixed_w_mult,
+							 double  nitrif_parm_smax,
 							 struct  soil_c_object   *cs_soil,
 							 struct  soil_n_object   *ns_soil,
 							 struct  litter_c_object *cs_litr,
@@ -103,8 +104,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	use same empirical function as control on nitrification from NGas model
 	but set parameters to reduce sensitivity to water stress
 	(Parton et al, 1996 Global Biogeochemical cycles, 10:3, 401-412 ) */
-
-	a=0.68; b=2.5; c=0.0012; d=2.84;
+	a = nitrif_parm_smax;
+	b=2.5; c=0.0012; d=2.84;
 	w_scalar = 0.0;
 	if (std > ZERO) {
 		for (i=0; i<NUM_NORMAL; i++) {
