@@ -140,9 +140,13 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1); 
 		default_object_list[i].N_decay_rate = 		getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1); 
 		default_object_list[i].fixed_t_mult = 		getDoubleParam(&paramCnt, &paramPtr, "fixed_t_mult", "%lf", -999, 1); 
+		default_object_list[i].fixed_w_mult = 		getDoubleParam(&paramCnt, &paramPtr, "fixed_w_mult", "%lf", -999, 1); 
 
 		if (default_object_list[i].fixed_t_mult > -999) 
 				printf("\n Warming using a fixed values for temperature control on soil/liter decomp %lf", 
+				default_object_list[i].fixed_t_mult);
+		if (default_object_list[i].fixed_w_mult > -999) 
+				printf("\n Warming using a fixed values for water control on soil/liter decomp %lf", 
 				default_object_list[i].fixed_t_mult);
 		/*
 		if (command_line[0].tmp_value > ZERO)

@@ -46,6 +46,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 							 double theta,
 							 double std,
 							 double  fixed_t_mult,
+							 double  fixed_w_mult,
 							 struct  soil_c_object   *cs_soil,
 							 struct  soil_n_object   *ns_soil,
 							 struct  litter_c_object *cs_litr,
@@ -130,6 +131,9 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 		w_scalar = sqrt(w_scalar);
 	else
 		w_scalar = ZERO;
+
+	if (fixed_w_mult > -999)
+		w_scalar = fixed_w_mult;
 
 	rate_scalar = w_scalar * t_scalar;
 	/* assign output variables */
@@ -276,6 +280,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	cdf->psoil4c_loss = psoil4c_loss;
 	ndf->pmnf_s4 = pmnf_s4;
 	cdf->kl4 = kl4;
+	cdf->decomp_w_scalar = w_scalar;
+	cdf->decomp_t_scalar = t_scalar;
 
 	return(ok);
 } /* end compute_potential_decomp.c */

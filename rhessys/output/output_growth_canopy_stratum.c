@@ -45,7 +45,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*------------------------------------------------------*/
 
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -59,6 +59,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		(stratum[0].ns.leafn + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer)* 1000.0,
 		stratum[0].cs.cpool * 1000.0,
 		stratum[0].ns.npool * 1000.0,
+		stratum[0].ns.retransn * 1000.0,
 		stratum[0].cs.dead_leafc * 1000.0,
 		(stratum[0].cs.frootc + stratum[0].cs.frootc_store + stratum[0].cs.frootc_transfer)* 1000.0,
 		(stratum[0].ns.frootn + stratum[0].ns.frootn_store + stratum[0].ns.frootn_transfer)* 1000.0,
@@ -93,6 +94,11 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		stratum[0].cs.leafc_age1 * 1000.0,
 		stratum[0].cs.leafc_age2 * 1000.0,
 		stratum[0].epv.proj_lai_sunlit,
-		stratum[0].epv.proj_lai_shade);
+		stratum[0].epv.proj_lai_shade,
+		stratum[0].cdf.actual_C_growth*1000.0,
+		stratum[0].ndf.actual_N_uptake*1000.0,
+		stratum[0].cdf.storage_transfer_prop,
+		stratum[0].cdf.carbohydrate_transfer*1000.0,
+		stratum[0].ndf.carbohydrate_transfer*1000.0);
 	return;
 } /*end output_growth_canopy_stratum*/
