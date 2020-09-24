@@ -50,6 +50,8 @@ void compute_family_shading(    struct zone_object *zone,
     /*--------------------------------------------------------------*/
     /*	Loop through patch families and patches                     */
     /*--------------------------------------------------------------*/
+    if (command_line[0].verbose_flag == -6) printf("\n --- Patch family horizons ---\n");
+
     for (pf = 0; pf < zone[0].num_patch_families; pf++) 
     {
         if (command_line[0].verbose_flag == -6) printf("Patch family %d\n", zone[0].patch_families[pf][0].family_ID);
