@@ -17,8 +17,8 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -g
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -g
+CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2 -g
+CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2 -g
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
@@ -29,7 +29,7 @@ endif
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
-	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -Wmacro-redefined -std=c99
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
 	# Linker flag for flex and bison
 	LINK_FLEX = -ll
 else ifeq ($(OS), Linux)
@@ -42,6 +42,7 @@ else
 	LINK_FLEX = -lfl
 endif
 
+LINK_NETCDF = `pkg-config --libs netcdf`
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
 
 SRCS := $(shell find clim cn cycle hydro init rad tec util output_filter -name '*.c')
@@ -386,10 +387,10 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) -fopenmp $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp $(LINK_FLEX) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) -fopenmp $(LINK_FLEX) -v -o $(PGM)
 endif
 else
 ifdef wmfire
@@ -412,11 +413,11 @@ test: dir $(TESTS)
 # $(OBJ)/lex.yy.o $(OBJ)/output_filter_parser.tab.o $(OBJ)/output_filter.o $(OBJ)/string_list.o $(OBJ)/dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS)
 $(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_FLEX) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 else ifeq ($(OS), Linux)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_FLEX) -lbsd -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
 else
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_FLEX) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 endif
 	cp $@ $(TESTS_ROOTDIR)
 
