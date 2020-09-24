@@ -82,7 +82,7 @@ int allocate_annual_growth(				int id,
 	double cnl, cnlw, cndw, cnfr, mean_cn;
 	double fcroot, flive, fdead, fleaf, froot, fwood;
 	double total_wood_c, total_wood_n, wood_cn;
-	double rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
+	double retransn, rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
 	double unmetn, carbohydrate_transfer_n;
 	double plantc, excess_lai, excess_leaf_carbon, stemc, leafc;
 	double delta_leaf, leaf_growth_deficit;
@@ -297,6 +297,7 @@ int allocate_annual_growth(				int id,
 	/*  we include a delay on storage output so that the
 		veg does not die in a bad year -esp. for Grasses	*/
 	/*--------------------------------------------------------------*/
+	cdf->storage_transfer_prop = storage_transfer_prop;
 	cdf->leafc_store_to_leafc_transfer = cs->leafc_store * storage_transfer_prop;
 	cs->cpool += cs->leafc_store * (1.0-storage_transfer_prop);
 	cs->leafc_store = 0.0;
@@ -410,10 +411,11 @@ int allocate_annual_growth(				int id,
 		}
 		else unmetn=0.0;
 
-		ns->retransn = max(ns->retransn, 0.0);
-		if (unmetn > ns->retransn)   {
-			ndf->retransn_to_npool += ns->retransn;
-			carbohydrate_transfer = (ns->npool+ns->retransn)*mean_cn;
+		retransn = max(ns->retransn, 0.0);
+		retransn = 0.0;
+		if ((unmetn > retransn) && (unmetn > 0))   {
+			ndf->retransn_to_npool += retransn;
+			carbohydrate_transfer = (ns->npool+retransn)*mean_cn;
 			}
 			else {
 			ndf->retransn_to_npool += unmetn;
@@ -439,6 +441,9 @@ int allocate_annual_growth(				int id,
 		cs->cpool -= carbohydrate_transfer;
 		if (mean_cn > ZERO)
 			ns->npool -= carbohydrate_transfer/mean_cn;
+
+		cdf->carbohydrate_transfer = carbohydrate_transfer;
+		ndf->carbohydrate_transfer = carbohydrate_transfer/(mean_cn);
 	}
 	/*--------------------------------------------------------------*/
 	/* finally if there is really nothing restart with small amount of growth   */
