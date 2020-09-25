@@ -302,6 +302,8 @@ static bool output_variables(char * const error, size_t error_len,
 				date, f, id, mat_vars, true);
 		break;
 	case OUTPUT_TYPE_NETCDF:
+		// NOOP to allow testing of creation and destruction calls
+		break;
 	default:
 		fprintf(stderr, "output_variables: output format type %d is unknown or not yet implemented.",
 				f->output->format);

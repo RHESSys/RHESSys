@@ -44,13 +44,14 @@ bool output_format_csv_init(OutputFilter * const f) {
 		return false;
 	}
 	f->output->fp = fp;
+	free(abs_path);
 
 	return true;
 }
 
 bool output_format_csv_destroy(OutputFilter * const f) {
 	if (f->output->format != OUTPUT_TYPE_CSV) {
-		fprintf(stderr, "Cannot destroy CSV output for non CSV filter.");
+		fprintf(stderr, "Cannot destroy CSV output for non CSV filter.\n");
 		return false;
 	}
 	return !fclose(f->output->fp);

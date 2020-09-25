@@ -4,6 +4,7 @@
 #include "output_filter.h"
 #include "index_struct_fields.h"
 #include "output_filter/output_format_csv.h"
+#include "output_filter/output_format_netcdf.h"
 
 #define STRUCT_NAME_PATCH "patch_object"
 #define STRUCT_NAME_ACCUM_PATCH "accumulate_patch_object"
@@ -382,6 +383,7 @@ static bool init_output(OutputFilter *f) {
 	case OUTPUT_TYPE_CSV:
 		return output_format_csv_init(f);
 	case OUTPUT_TYPE_NETCDF:
+		return output_format_netcdf_init(f);
 	default:
 		fprintf(stderr, "init_output: output format type %d is unknown or not yet implemented.\n", f->output->format);
 		return false;
@@ -394,6 +396,8 @@ static bool write_headers(OutputFilter *f) {
 	case OUTPUT_TYPE_CSV:
 		return output_format_csv_write_headers(f);
 	case OUTPUT_TYPE_NETCDF:
+		// NOOP to allow for testing of creation and destruction
+		break;
 	default:
 		fprintf(stderr, "write_headers: output format type %d is unknown or not yet implemented.\n", f->output->format);
 		return false;

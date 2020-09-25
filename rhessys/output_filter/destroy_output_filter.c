@@ -3,6 +3,8 @@
 #include "rhessys.h"
 #include "output_filter.h"
 #include "output_filter/output_format_csv.h"
+#include "output_filter/output_format_netcdf.h"
+
 
 static bool returnWithError(char * const error, size_t error_len, char *error_mesg) {
 	strncpy(error, error_mesg, error_len);
@@ -15,6 +17,7 @@ static bool destroy_output(OutputFilter *f) {
 	case OUTPUT_TYPE_CSV:
 		return output_format_csv_destroy(f);
 	case OUTPUT_TYPE_NETCDF:
+		return output_format_netcdf_destroy(f);
 	default:
 		fprintf(stderr, "output format type %d is unknown or not yet implemented.", f->output->format);
 		return false;

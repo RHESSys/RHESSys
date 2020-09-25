@@ -15,6 +15,12 @@
 #define NC_HEADER_HOUR "hour"
 
 
+typedef struct of_fmt_netcdf_meta {
+	char *abs_path;
+	int ncid;
+} OutputFormatNetCDFMetadata;
+
+
 bool output_format_netcdf_init(OutputFilter * const filter);
 bool output_format_netcdf_destroy(OutputFilter * const filter);
 bool output_format_netcdf_write_headers(OutputFilter * const filter);
