@@ -367,7 +367,8 @@ $(OBJ)/output_filter.o \
 $(OBJ)/construct_output_filter.o \
 $(OBJ)/destroy_output_filter.o \
 $(OBJ)/output_filter_output.o \
-$(OBJ)/output_format_csv.o
+$(OBJ)/output_format_csv.o \
+$(OBJ)/output_format_netcdf.o
 
 ifdef netcdf
 OBJECTS += $(OBJ)/read_netcdf.o
@@ -1073,6 +1074,8 @@ $(OBJ)/output_filter_output.o: output_filter/output_filter_output.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter_output.c -o $(OBJ)/output_filter_output.o
 $(OBJ)/output_format_csv.o: output_filter/format/output_format_csv.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/format/output_format_csv.c -o $(OBJ)/output_format_csv.o
+$(OBJ)/output_format_netcdf.o: output_filter/format/output_format_netcdf.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/format/output_format_netcdf.c -o $(OBJ)/output_format_netcdf.o
 
 $(OBJ)/main.o: main.c setversion
 	$(CC) -c $(CFLAGS) -I include main.c -o $(OBJ)/main.o
