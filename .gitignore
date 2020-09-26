@@ -3,7 +3,10 @@
 *.pyc
 rhessys/rhessys7.0
 rhessys/rhessys7.*
-
+rhessys/rhessys7*
+.gitignore.save
+rhessys_bk_20200925
+result/
 
 # Build directories
 objects/
