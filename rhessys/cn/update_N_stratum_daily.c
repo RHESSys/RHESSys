@@ -35,23 +35,23 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	int ok=1;
 
-	
+
 	if (epc.veg_type == TREE){
 		ns->preday_totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
 		ns->live_stemn + ns->livestemn_transfer + ns->livestemn_store +
 		ns->dead_stemn + ns->deadstemn_transfer + ns->deadstemn_store +
 		ns->live_crootn + ns->livecrootn_transfer + ns->livecrootn_store +
-		ns->dead_crootn + ns->deadcrootn_transfer + ns->deadcrootn_store + ns->cwdn + ns->retransn);
+		ns->dead_crootn + ns->deadcrootn_transfer + ns->deadcrootn_store + ns->cwdn + ns->retransn + ns->cwdn_bg);
 	}
 	else {
 		ns->preday_totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
-		ns->cwdn + ns->retransn);
+		ns->cwdn + ns->retransn + ns->cwdn_bg);
 	}
 
 	/* Plant allocation flux, from N retrans pool and soil mineral N pool */
@@ -101,14 +101,14 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 		ns->live_stemn + ns->livestemn_transfer + ns->livestemn_store +
 		ns->dead_stemn + ns->deadstemn_transfer + ns->deadstemn_store +
 		ns->live_crootn + ns->livecrootn_transfer + ns->livecrootn_store +
-		ns->dead_crootn + ns->deadcrootn_transfer + ns->deadcrootn_store + ns->cwdn + ns->retransn);
+		ns->dead_crootn + ns->deadcrootn_transfer + ns->deadcrootn_store + ns->cwdn + ns->retransn + ns->cwdn_bg);
 	}
 	else {
 		ns->totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
-		ns->cwdn + ns->retransn);
+		ns->cwdn + ns->retransn + ns->cwdn_bg);
 	}
 
 
 	return (!ok);
-}/*end update_N_stratum_daily.c*/		
+}/*end update_N_stratum_daily.c*/
 

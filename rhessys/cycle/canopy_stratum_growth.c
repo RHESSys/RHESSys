@@ -28,7 +28,7 @@
 void	canopy_stratum_growth(
 							  struct	world_object		*world,
 							  struct	basin_object		*basin,
-							  struct	hillslope_object	*hillslope, 
+							  struct	hillslope_object	*hillslope,
 							  struct	zone_object		*zone,
 							  struct	patch_object		*patch,
 							  struct 	canopy_strata_object 	*stratum,
@@ -101,11 +101,11 @@ void	canopy_stratum_growth(
 	/*	perform daily carbon and nitrogen allocations		*/
 	/*--------------------------------------------------------------*/
 
-	
+
 
 	if (command_line[0].grow_flag > 0) {
 
-		if (stratum[0].defaults[0][0].epc.dynamic_alloc_prop_day_growth == 1) 
+		if (stratum[0].defaults[0][0].epc.dynamic_alloc_prop_day_growth == 1)
 			pnow = compute_prop_alloc_daily(
 				stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop,
 				&(stratum[0].cs),
@@ -178,8 +178,8 @@ void	canopy_stratum_growth(
 	rootc = stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
         if ((command_line[0].grow_flag > 0) && (rootc > ZERO)){
                 if ( update_rooting_depth(
-                        &(stratum[0].rootzone), 
-			rootc, 
+                        &(stratum[0].rootzone),
+			rootc,
 			stratum[0].defaults[0][0].epc.root_growth_direction, stratum[0].defaults[0][0].epc.root_distrib_parm,
                         stratum[0].defaults[0][0].epc.max_root_depth,
                         patch[0].soil_defaults[0][0].effective_soil_depth,
@@ -217,7 +217,7 @@ void	canopy_stratum_growth(
 	}
 	else  {
 		stratum[0].cs.net_psn = stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr - stratum[0].cdf.total_gr;
-		
+
 		if ( stratum[0].phen.annual_allocation == 1){
 		stratum[0].cdf.leafc_store_to_leafc_transfer = stratum[0].cs.leafc_store;
 		stratum[0].cs.leafc_transfer += stratum[0].cdf.leafc_store_to_leafc_transfer;
@@ -230,7 +230,7 @@ void	canopy_stratum_growth(
 
 
 	cs = &(stratum[0].cs);
-	stratum[0].cs.totalc = (cs->cpool + cs->cwdc + cs->dead_leafc
+	stratum[0].cs.totalc = (cs->cpool + cs->cwdc + cs->dead_leafc + cs->cwdc_bg
 		+ cs->leafc + cs->leafc_store +  cs->leafc_transfer
 		+ cs->gresp_transfer + cs->gresp_store
 		+ cs->frootc + cs->frootc_store +  cs->frootc_transfer
@@ -239,7 +239,7 @@ void	canopy_stratum_growth(
 		+ cs->live_crootc + cs->livecrootc_store +  cs->livecrootc_transfer
 		+ cs->dead_crootc + cs->deadcrootc_store +  cs->deadcrootc_transfer);
 	ns = &(stratum[0].ns);
-	stratum[0].ns.totaln = (ns->npool + ns->cwdn + ns->retransn + ns->dead_leafn
+	stratum[0].ns.totaln = (ns->npool + ns->cwdn + ns->retransn + ns->dead_leafn + ns->cwdn_bg
 		+ ns->leafn + ns->leafn_store +  ns->leafn_transfer
 		+ ns->frootn + ns->frootn_store +  ns->frootn_transfer
 		+ ns->live_stemn + ns->livestemn_store +  ns->livestemn_transfer

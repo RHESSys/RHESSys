@@ -41,7 +41,7 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 
-int compute_potential_decomp(double tsoil, double maxpsi,
+int compute_potential_decomp_bg(double tsoil, double maxpsi,
 							 double minpsi,
 							 double theta,
 							 double std,
@@ -133,14 +133,14 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 
 	rate_scalar = w_scalar * t_scalar;
 	/* assign output variables */
-	cs_litr->t_scalar = t_scalar;
-	cs_litr->w_scalar = w_scalar;
+	cs_litr->t_scalar_bg = t_scalar;
+	cs_litr->w_scalar_bg = w_scalar;
 	/* calculate compartment C:N ratios */
-	if ((cs_litr->litr1c > ZERO) && (ns_litr->litr1n > ZERO ))	cn_l1 = cs_litr->litr1c/ns_litr->litr1n;
+	if ((cs_litr->litr1c_bg > ZERO) && (ns_litr->litr1n_bg > ZERO ))	cn_l1 = cs_litr->litr1c_bg/ns_litr->litr1n_bg;
 		else cn_l1 = LIVELAB_CN;
-	if ((cs_litr->litr2c > ZERO) && (ns_litr->litr2n > ZERO))	cn_l2 = cs_litr->litr2c/ns_litr->litr2n;
+	if ((cs_litr->litr2c_bg > ZERO) && (ns_litr->litr2n_bg > ZERO))	cn_l2 = cs_litr->litr2c_bg/ns_litr->litr2n_bg;
 		else cn_l2 = CEL_CN;
-	if ((cs_litr->litr4c > ZERO) && (ns_litr->litr4n > ZERO))	cn_l4 = cs_litr->litr4c/ns_litr->litr4n;
+	if ((cs_litr->litr4c_bg > ZERO) && (ns_litr->litr4n_bg > ZERO))	cn_l4 = cs_litr->litr4c_bg/ns_litr->litr4n_bg;
 		else cn_l4 = LIG_CN;
 	cn_s1 = SOIL1_CN;
 	cn_s2 = SOIL2_CN;
@@ -185,43 +185,44 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	out the potential gross immobilization is greater than potential gross
 	mineralization. */
 	/* 1. labile litter to fast microbial recycling pool */
-	if ((cs_litr->litr1c > ZERO) && (ns_litr->litr1n > ZERO)) {
-		plitr1c_loss = kl1 * cs_litr->litr1c;
+	if ((cs_litr->litr1c_bg > ZERO) && (ns_litr->litr1n_bg > ZERO)) {
+		plitr1c_loss = kl1 * cs_litr->litr1c_bg;
 		pmnf_l1s1 = (plitr1c_loss * (1.0 - rfl1s1 - (cn_s1/cn_l1)))/cn_s1;
 	}
 	/* 2. cellulose litter to medium microbial recycling pool */
-	if ((ns_litr->litr2n > ZERO) && (cs_litr->litr2c > ZERO)) {
-		plitr2c_loss = kl2 * cs_litr->litr2c;
+	if ((ns_litr->litr2n_bg > ZERO) && (cs_litr->litr2c_bg > ZERO)) {
+		plitr2c_loss = kl2 * cs_litr->litr2c_bg;
 		pmnf_l2s2 = (plitr2c_loss * (1.0 - rfl2s2 - (cn_s2/cn_l2)))/cn_s2;
 	}
 	/* 2b. shield cellulose litter to goes to cellulose litter pool */
 	/* respiration fractions not available to assume the same as for lignan (the "shield") */
-	if ((ns_litr->litr3n > ZERO) && (cs_litr->litr3c > ZERO)) {
-		plitr3c_loss = kl4 * cs_litr->litr3c;
+	if ((ns_litr->litr3n_bg > ZERO) && (cs_litr->litr3c_bg > ZERO)) {
+		plitr3c_loss = kl4 * cs_litr->litr3c_bg;
 		pmnf_l3l2 = (plitr3c_loss * (1.0 - rfl4s3 - (cn_l2/cn_l2)))/cn_l2;
 	}
 	/* 3. lignin litter to slow microbial recycling pool */
-	if ((ns_litr->litr4n > ZERO) && (cs_litr->litr4c > ZERO)) {
-		plitr4c_loss = kl4 * cs_litr->litr4c;
+	if ((ns_litr->litr4n_bg > ZERO) && (cs_litr->litr4c_bg > ZERO)) {
+		plitr4c_loss = kl4 * cs_litr->litr4c_bg;
 		pmnf_l4s3 = (plitr4c_loss * (1.0 - rfl4s3 - (cn_s3/cn_l4)))/cn_s3;
 	}
 	/* 4. fast microbial recycling pool to medium microbial recycling pool */
-	if ((ns_soil->soil1n > ZERO) && (cs_soil->soil1c > ZERO)) {
+	/* no need below calculation of soil potential mineralization rate */
+	/*if ((ns_soil->soil1n > ZERO) && (cs_soil->soil1c > ZERO)) {
 		psoil1c_loss = ks1 * cs_soil->soil1c;
 		pmnf_s1s2 = (psoil1c_loss * (1.0 - rfs1s2 - (cn_s2/cn_s1)))/cn_s2;
 	}
 	/* 5. medium microbial recycling pool to slow microbial recycling pool */
-	if ((ns_soil->soil2n > ZERO) && (cs_soil->soil2c > ZERO)) {
+	/*if ((ns_soil->soil2n > ZERO) && (cs_soil->soil2c > ZERO)) {
 		psoil2c_loss = ks2 * cs_soil->soil2c;
 		pmnf_s2s3 = (psoil2c_loss * (1.0 - rfs2s3 - (cn_s3/cn_s2)))/cn_s3;
 	}
 	/* 6. slow microbial recycling pool to recalcitrant SOM pool */
-	if ((ns_soil->soil3n > ZERO) && (cs_soil->soil3c > ZERO)) {
+	/*if ((ns_soil->soil3n > ZERO) && (cs_soil->soil3c > ZERO)) {
 		psoil3c_loss = ks3 * cs_soil->soil3c;
 		pmnf_s3s4 = (psoil3c_loss * (1.0 - rfs3s4 - (cn_s4/cn_s3)))/cn_s4;
 	}
 	/* 7. mineralization of recalcitrant SOM */
-	if ((ns_soil->soil4n > ZERO) && (cs_soil->soil4c > ZERO)) {
+	/*if ((ns_soil->soil4n > ZERO) && (cs_soil->soil4c > ZERO)) {
 		psoil4c_loss = ks4 * cs_soil->soil4c;
 		pmnf_s4 = -psoil4c_loss/cn_s4;
 	}
@@ -244,7 +245,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	if (pmnf_l4s3 > 0.0) potential_immob += pmnf_l4s3;
 	else mineralized += -pmnf_l4s3;
 
-	if (pmnf_s1s2 > 0.0) potential_immob += pmnf_s1s2;
+	/*if (pmnf_s1s2 > 0.0) potential_immob += pmnf_s1s2;
 	else mineralized += -pmnf_s1s2;
 
 	if (pmnf_s2s3 > 0.0) potential_immob += pmnf_s2s3;
@@ -257,17 +258,17 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	/* save the potential fluxes until plant demand has been assessed,
 	to allow competition between immobilization fluxes and plant growth
 	demands */
-	ndf->mineralized = mineralized + ndf->mineralized_bg; //change here to consider the below ground mineralization
-	ndf->potential_immob = potential_immob + ndf->potential_immob_bg; //consider the below ground mineralization
-	cdf->plitr1c_loss = plitr1c_loss;
-	ndf->pmnf_l1s1 = pmnf_l1s1;
-	cdf->plitr2c_loss = plitr2c_loss;
-	ndf->pmnf_l2s2 = pmnf_l2s2;
-	cdf->plitr3c_loss = plitr3c_loss;
-	ndf->pmnf_l3l2 = pmnf_l3l2;
-	cdf->plitr4c_loss = plitr4c_loss;
-	ndf->pmnf_l4s3 = pmnf_l4s3;
-	cdf->psoil1c_loss = psoil1c_loss;
+	ndf->mineralized_bg = mineralized;
+	ndf->potential_immob_bg = potential_immob;
+	cdf->plitr1c_loss_bg = plitr1c_loss;
+	ndf->pmnf_l1s1_bg = pmnf_l1s1;
+	cdf->plitr2c_loss_bg = plitr2c_loss;
+	ndf->pmnf_l2s2_bg = pmnf_l2s2;
+	cdf->plitr3c_loss_bg = plitr3c_loss;
+	ndf->pmnf_l3l2_bg = pmnf_l3l2;
+	cdf->plitr4c_loss_bg = plitr4c_loss;
+	ndf->pmnf_l4s3_bg = pmnf_l4s3;
+	/*cdf->psoil1c_loss = psoil1c_loss;
 	ndf->pmnf_s1s2 = pmnf_s1s2;
 	cdf->psoil2c_loss = psoil2c_loss;
 	ndf->pmnf_s2s3 = pmnf_s2s3;
@@ -275,7 +276,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	ndf->pmnf_s3s4 = pmnf_s3s4;
 	cdf->psoil4c_loss = psoil4c_loss;
 	ndf->pmnf_s4 = pmnf_s4;
-	cdf->kl4 = kl4;
+	cdf->kl4 = kl4;*/
 
 	return(ok);
 } /* end compute_potential_decomp.c */

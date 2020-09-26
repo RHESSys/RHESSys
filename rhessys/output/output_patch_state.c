@@ -94,7 +94,7 @@ void	output_patch_state(
 		fprintf(outfile,"\n          ");
 	}
 	fprintf(outfile,"%-30.8f %s",patch[0].rz_storage, "rz_storage");
-	fprintf(outfile,"\n          ");	
+	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30.8f %s",patch[0].unsat_storage, "unsat_storage");
 	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30.8f %s",patch[0].sat_deficit, "sat_deficit");
@@ -138,9 +138,19 @@ void	output_patch_state(
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_cs->litr3c, "litter_cs.litr3c");
 	  fprintf(outfile,"\n          ");
-	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_cs->litr4c, "litter_cs.litr4c");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_cs->litr4c, "litter_cs.litr4c");//above ground litter
 	  fprintf(outfile,"\n          ");
-	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_soil_cs->soil1c, "soil_cs.soil1c");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_cs->litr1c_bg, "litter_cs.litr1c_bg");//below ground litter
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_ns->litr1n_bg, "litter_ns.litr1n_bg");
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_cs->litr2c_bg, "litter_cs.litr2c_bg");
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_cs->litr3c_bg, "litter_cs.litr3c_bg");
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_litter_cs->litr4c_bg, "litter_cs.litr4c_bg");
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_soil_cs->soil1c, "soil_cs.soil1c"); //soil
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_soil_ns->sminn, "soil_ns.sminn");
 	  fprintf(outfile,"\n          ");
@@ -154,7 +164,7 @@ void	output_patch_state(
 	  fprintf(outfile,"\n          ");
   }
   else{
-    fprintf(outfile,"%-30.8f %s",patch[0].litter_cs.litr1c, "litter_cs.litr1c");
+      fprintf(outfile,"%-30.8f %s",patch[0].litter_cs.litr1c, "litter_cs.litr1c");
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].litter_ns.litr1n, "litter_ns.litr1n");
 	  fprintf(outfile,"\n          ");
@@ -164,7 +174,17 @@ void	output_patch_state(
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].litter_cs.litr4c, "litter_cs.litr4c");
 	  fprintf(outfile,"\n          ");
-	  fprintf(outfile,"%-30.8f %s",patch[0].soil_cs.soil1c, "soil_cs.soil1c");
+      fprintf(outfile,"%-30.8f %s",patch[0].litter_cs.litr1c_bg, "litter_cs.litr1c_bg"); //below ground litter
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].litter_ns.litr1n_bg, "litter_ns.litr1n_bg");
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].litter_cs.litr2c_bg, "litter_cs.litr2c_bg");
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].litter_cs.litr3c_bg, "litter_cs.litr3c_bg");
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].litter_cs.litr4c_bg, "litter_cs.litr4c_bg");
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].soil_cs.soil1c, "soil_cs.soil1c"); //soil
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].soil_ns.sminn, "soil_ns.sminn");
 	  fprintf(outfile,"\n          ");
@@ -193,7 +213,7 @@ void	output_patch_state(
     if (command_line[0].vegspinup_flag > 0){
 		  output_canopy_strata_state(patch[0].shadow_strata[p],
 			current_date, command_line, outfile);
-    } 
+    }
     else {
 		output_canopy_strata_state(patch[0].canopy_strata[p],
 			current_date, command_line, outfile);

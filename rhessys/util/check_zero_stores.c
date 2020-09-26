@@ -12,7 +12,7 @@
   /*                      struct  soil_n_object   *               */
   /*                      struct  litter_c_object *               */
   /*                      struct  litter_n_object *               */
-/*				)				*/	
+/*				)				*/
 /*								*/
 /*	returns:						*/
 /*								*/
@@ -42,7 +42,7 @@ int check_zero_stores(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -57,6 +57,12 @@ int check_zero_stores(
 	if (ns_litr->litr2n < ZERO) ns_litr->litr2n = ZERO;
 	if (ns_litr->litr3n < ZERO) ns_litr->litr3n = ZERO;
 	if (ns_litr->litr4n < ZERO) ns_litr->litr4n = ZERO;
+
+	//below ground litter carbon
+	if (ns_litr->litr1n_bg < ZERO) ns_litr->litr1n_bg = ZERO;
+	if (ns_litr->litr2n_bg < ZERO) ns_litr->litr2n_bg = ZERO;
+	if (ns_litr->litr3n_bg < ZERO) ns_litr->litr3n_bg = ZERO;
+	if (ns_litr->litr4n_bg < ZERO) ns_litr->litr4n_bg = ZERO;
 
 	if (cs_soil->soil1c < ZERO) cs_soil->soil1c = ZERO;
 	if (cs_soil->soil2c < ZERO) cs_soil->soil2c = ZERO;

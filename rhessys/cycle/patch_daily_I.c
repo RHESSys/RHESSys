@@ -5,7 +5,7 @@
 /*	NAME							*/
 /*	patch_daily_I 						*/
 /*		 - performs cycling of patch state vars		*/
-/*			at the START OF THE DAY			*/ 
+/*			at the START OF THE DAY			*/
 /*								*/
 /*	SYNOPSIS 						*/
 /*	void patch_daily_I(					*/
@@ -51,7 +51,7 @@
 /*	return flow calculated - in previous version this	*/
 /*	step was missing which  results in a 			*/
 /*	serious over-estimation of sat_deficit after		*/
-/*	return flow events					*/	
+/*	return flow events					*/
 /*								*/
 /*	Feb 2 1998 RAF						*/
 /*	Included potential exfiltration module.			*/
@@ -87,7 +87,7 @@ void		patch_daily_I(
 		struct command_line_object *,
 		struct tec_entry *,
 		struct date);
-	
+
 	double	compute_layer_field_capacity(
 		int,
 		int,
@@ -100,8 +100,8 @@ void		patch_daily_I(
 		double,
 		double,
 		double);
-	
-	
+
+
 	double	compute_delta_water(
 		int,
 		double,
@@ -122,7 +122,7 @@ void		patch_daily_I(
 		struct patch_object	*,
 		struct	rooting_zone_object	*,
 		struct command_line_object *);
-	
+
 	double	compute_capillary_rise(
 		int,
 		double,
@@ -131,7 +131,7 @@ void		patch_daily_I(
 		double,
 		double,
 		double);
-	
+
 	double  compute_soil_water_potential(
 		int,
 		int,
@@ -145,7 +145,24 @@ void		patch_daily_I(
 		double,
 		double,
 		double);
-	
+
+    /* add below ground litter carbon decomposition */
+
+    int  compute_potential_decomp_bg(
+		double,
+		double,
+		double,
+		double,
+		double,
+		double,
+		struct  soil_c_object   *,
+		struct  soil_n_object   *,
+		struct  litter_c_object *,
+		struct  litter_n_object *,
+		struct  cdayflux_patch_struct *,
+		struct  ndayflux_patch_struct *);
+
+
 	int  compute_potential_decomp(
 		double,
 		double,
@@ -159,11 +176,11 @@ void		patch_daily_I(
 		struct  litter_n_object *,
 		struct  cdayflux_patch_struct *,
 		struct  ndayflux_patch_struct *);
-	
+
 	void    sort_patch_layers(struct patch_object *);
 
-		
-	void	update_litter_interception_capacity (double, 
+
+	void	update_litter_interception_capacity (double,
 		double,
 		struct litter_c_object *,
 		struct litter_object *);
@@ -172,8 +189,8 @@ void		patch_daily_I(
 		struct	patch_object *,
 		struct  cdayflux_patch_struct *,
 		struct  ndayflux_patch_struct *);
-	
-	
+
+
 	long julday( struct date);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -181,7 +198,7 @@ void		patch_daily_I(
 	int	layer, inx;
 	int	stratum;
 	double	cnt, count, theta;
-	
+
 	double  edible_leafc, grazing_mean_nc, grazing_Closs;
 	double root_growth, water_transfer;
 	struct  canopy_strata_object *strata;
@@ -200,19 +217,19 @@ void		patch_daily_I(
 	patch[0].precip_with_assim = 0.0;
 	patch[0].rootzone.preday_depth = patch[0].rootzone.depth;
 
-	
+
 	/*-----------------------------------------------------*/
 	/*  Compute potential saturation for rootzone layer   */
-	/*-----------------------------------------------------*/			
+	/*-----------------------------------------------------*/
 	if (patch[0].rootzone.depth > ZERO)  {
 	patch[0].rootzone.potential_sat = compute_delta_water(
 		command_line[0].verbose_flag,
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
-		patch[0].rootzone.depth, 0.0);			
+		patch[0].rootzone.depth, 0.0);
 	 if (patch[0].rootzone.potential_sat > ZERO)
-		if (patch[0].sat_deficit_z > patch[0].rootzone.depth)	
+		if (patch[0].sat_deficit_z > patch[0].rootzone.depth)
 		patch[0].rootzone.S = patch[0].rz_storage/patch[0].rootzone.potential_sat;
 		else
 		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)/patch[0].rootzone.potential_sat,1.0);
@@ -224,17 +241,17 @@ void		patch_daily_I(
 		patch[0].rootzone.S = 0.0;
 		}
 
-	if (patch[0].sat_deficit < ZERO) 
+	if (patch[0].sat_deficit < ZERO)
 		patch[0].S = 1.0;
 	else
 		patch[0].S = (patch[0].rz_storage+patch[0].unsat_storage)/patch[0].sat_deficit;
-	
+
 	/*--------------------------------------------------------------*/
 	/*  compute standard deviation of theta based on soil parameters */
 	/* assume no decay of porosity here 				*/
 	/*--------------------------------------------------------------*/
 	theta = patch[0].S * patch[0].soil_defaults[0][0].porosity_0;
-	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
+	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta +
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
 
 	/*--------------------------------------------------------------*/
@@ -252,8 +269,8 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit_z,
-			patch[0].rootzone.depth, 0.0);				
-			
+			patch[0].rootzone.depth, 0.0);
+
 		patch[0].field_capacity = 0.0;
 		if ( command_line[0].verbose_flag == -5 ){
 			printf("\n***PCHDAILYI CASE1: satdefz=%lf rzdepth=%lf rzFC=%lf FC=%lf",
@@ -262,7 +279,7 @@ void		patch_daily_I(
 				   patch[0].rootzone.field_capacity,
 				   patch[0].field_capacity);
 		}
-		
+
 	}
 	else  {
 		patch[0].rootzone.field_capacity = compute_layer_field_capacity(
@@ -275,7 +292,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit_z,
-			patch[0].rootzone.depth, 0.0);	
+			patch[0].rootzone.depth, 0.0);
 
 		patch[0].field_capacity = compute_layer_field_capacity(
 			command_line[0].verbose_flag,
@@ -288,7 +305,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].porosity_decay,
 			patch[0].sat_deficit_z,
 			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.field_capacity;
-		
+
 		if ( command_line[0].verbose_flag == -5 ){
 			printf("\n***PCHDAILYI CASE2: satdefz=%lf rzdepth=%lf rzFC=%lf FC=%lf",
 				   patch[0].sat_deficit_z,
@@ -296,7 +313,7 @@ void		patch_daily_I(
 				   patch[0].rootzone.field_capacity,
 				   patch[0].field_capacity);
 		}
-		
+
 	}
 
 
@@ -311,18 +328,18 @@ void		patch_daily_I(
 		patch[0].soil_defaults[0][0].psi_air_entry,
 		patch[0].soil_defaults[0][0].pore_size_index,
 		patch[0].soil_defaults[0][0].mz_v,
-		patch[0].soil_defaults[0][0].Ksat_0_v, 
+		patch[0].soil_defaults[0][0].Ksat_0_v,
 		patch[0].soil_defaults[0][0].cap_rise_max );
 	if (patch[0].potential_cap_rise < ZERO)
 		patch[0].potential_cap_rise = 0.0;
 	patch[0].cap_rise=0.0;
 
 	/*--------------------------------------------------------------*/
-	/* this should also be limited by "soil depth"	
+	/* this should also be limited by "soil depth"
 	/*--------------------------------------------------------------*/
-	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO) 
+	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO)
 		patch[0].potential_cap_rise = 0.0;
-		
+
 
 
 	/*--------------------------------------------------------------*/
@@ -422,7 +439,7 @@ void		patch_daily_I(
 				grazing_Closs = clim_event.value;
 				}
 			else grazing_Closs = 0.0;
-			} 
+			}
 		else grazing_Closs = patch[0].landuse_defaults[0][0].grazing_Closs;
 		}
 	else grazing_Closs = patch[0].landuse_defaults[0][0].grazing_Closs;
@@ -488,14 +505,14 @@ void		patch_daily_I(
 			patch[0].preday_totaln
 				+= patch[0].canopy_strata[stratum][0].cover_fraction
 				* patch[0].canopy_strata[stratum][0].ns.preday_totaln;
-				
-				
+
+
 		}
-		patch[0].rootzone.depth = max(patch[0].rootzone.depth, 
+		patch[0].rootzone.depth = max(patch[0].rootzone.depth,
 			 patch[0].canopy_strata[stratum][0].rootzone.depth);
 	}
 	patch[0].effective_lai = patch[0].effective_lai / patch[0].num_canopy_strata;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	re-sort patch layers to account for any changes in 	*/
 	/*	height							*/
@@ -533,7 +550,27 @@ void		patch_daily_I(
 			&(patch[0].litter_cs),
 			&(patch[0].litter));
 
-	
+        /* add compute potential decomp for below ground litter carbon */
+ 		if (compute_potential_decomp_bg(
+			patch[0].Tsoil,
+			patch[0].soil_defaults[0][0].psi_max,
+			patch[0].soil_defaults[0][0].psi_air_entry,
+			patch[0].rootzone.S,
+			patch[0].theta_std,
+			patch[0].soil_defaults[0][0].fixed_t_mult,
+			&(patch[0].soil_cs),
+			&(patch[0].soil_ns),
+			&(patch[0].litter_cs),
+			&(patch[0].litter_ns),
+			&(patch[0].cdf),
+			&(patch[0].ndf)
+			) != 0){
+			fprintf(stderr,"fATAL ERROR: in compute_potential_decomp() ... Exiting\n");
+			exit(EXIT_FAILURE);
+		}
+
+
+
 		if (compute_potential_decomp(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].psi_max,

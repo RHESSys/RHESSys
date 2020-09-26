@@ -82,6 +82,7 @@ $(OBJ)/compute_annual_turnover.o \
 $(OBJ)/compute_atm_pres.o \
 $(OBJ)/compute_capillary_rise.o \
 $(OBJ)/compute_cwd_decay.o \
+$(OBJ)/compute_cwd_decay_below_ground.o \
 $(OBJ)/compute_deadleaf_turnover.o \
 $(OBJ)/compute_delta_water.o \
 $(OBJ)/compute_diffuse_radiative_PAR_fluxes.o \
@@ -111,6 +112,7 @@ $(OBJ)/compute_potential_N_uptake_Dickenson.o \
 $(OBJ)/compute_potential_N_uptake_Waring.o \
 $(OBJ)/compute_potential_N_uptake_combined.o \
 $(OBJ)/compute_potential_decomp.o \
+$(OBJ)/compute_potential_decomp_below_ground.o \
 $(OBJ)/compute_potential_exfiltration.o \
 $(OBJ)/compute_potential_rain_interception.o \
 $(OBJ)/compute_potential_snow_interception.o \
@@ -307,8 +309,10 @@ $(OBJ)/update_C_stratum_daily.o \
 $(OBJ)/update_N_stratum_daily.o \
 $(OBJ)/update_basin_patch_accumulator.o \
 $(OBJ)/update_decomp.o \
+$(OBJ)/update_decomp_below_ground.o \
 $(OBJ)/update_denitrif.o \
 $(OBJ)/update_dissolved_organic_losses.o \
+$(OBJ)/update_dissolved_organic_losses_below_ground.o \
 $(OBJ)/update_drainage_land.o \
 $(OBJ)/update_drainage_road.o \
 $(OBJ)/update_drainage_stream.o \
@@ -913,6 +917,8 @@ $(OBJ)/compute_annual_litfall.o: cn/compute_annual_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_annual_litfall.c -o $(OBJ)/compute_annual_litfall.o
 $(OBJ)/compute_cwd_decay.o: cn/compute_cwd_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_cwd_decay.c -o $(OBJ)/compute_cwd_decay.o
+$(OBJ)/compute_cwd_decay_below_ground.o: cn/compute_cwd_decay_below_ground.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_cwd_decay_below_ground.c -o $(OBJ)/compute_cwd_decay_below_ground.o
 $(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_deadleaf_turnover.c -o $(OBJ)/compute_deadleaf_turnover.o
 $(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c
@@ -929,6 +935,8 @@ $(OBJ)/compute_prop_alloc_daily.o: cn/compute_prop_alloc_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_prop_alloc_daily.c -o $(OBJ)/compute_prop_alloc_daily.o
 $(OBJ)/compute_potential_decomp.o: cn/compute_potential_decomp.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_decomp.c -o $(OBJ)/compute_potential_decomp.o
+$(OBJ)/compute_potential_decomp_below_ground.o: cn/compute_potential_decomp_below_ground.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_potential_decomp_below_ground.c -o $(OBJ)/compute_potential_decomp_below_ground.o
 $(OBJ)/compute_potential_N_uptake.o: cn/compute_potential_N_uptake.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake.c -o $(OBJ)/compute_potential_N_uptake.o
 $(OBJ)/compute_potential_N_uptake_Waring.o: cn/compute_potential_N_uptake_Waring.c
@@ -963,6 +971,8 @@ $(OBJ)/update_N_stratum_daily.o: cn/update_N_stratum_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/update_N_stratum_daily.c -o $(OBJ)/update_N_stratum_daily.o
 $(OBJ)/update_decomp.o: cn/update_decomp.c
 	$(CC) -c $(CFLAGS) -I include cn/update_decomp.c -o $(OBJ)/update_decomp.o
+$(OBJ)/update_decomp_below_ground.o: cn/update_decomp_below_ground.c
+	$(CC) -c $(CFLAGS) -I include cn/update_decomp_below_ground.c -o $(OBJ)/update_decomp_below_ground.o
 $(OBJ)/update_shadow_strata.o: cn/update_shadow_strata.c
 	$(CC) -c $(CFLAGS) -I include cn/update_shadow_strata.c -o $(OBJ)/update_shadow_strata.o
 $(OBJ)/update_septic.o: cn/update_septic.c
@@ -973,6 +983,8 @@ $(OBJ)/update_denitrif.o: cn/update_denitrif.c
 	$(CC) -c $(CFLAGS) -I include cn/update_denitrif.c -o $(OBJ)/update_denitrif.o
 $(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
+$(OBJ)/update_dissolved_organic_losses_below_ground.o: cn/update_dissolved_organic_losses_below_ground.c
+	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses_below_ground.c -o $(OBJ)/update_dissolved_organic_losses_below_ground.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
 $(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c
