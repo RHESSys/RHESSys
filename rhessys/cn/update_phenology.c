@@ -554,7 +554,7 @@ void update_phenology(struct zone_object  *zone,
 
 			excess_n = max(0.0, ndf->livestemn_to_deadstemn -
 						(cdf->livestemc_to_deadstemc / epc.deadwood_cn ) );
-			ns->retransn += excess_n;
+			ns->npool += excess_n;
 			cs->live_stemc -= cdf->livestemc_to_deadstemc;
 			cs->dead_stemc += cdf->livestemc_to_deadstemc;
 			ns->live_stemn -= ndf->livestemn_to_deadstemn;
@@ -567,7 +567,7 @@ void update_phenology(struct zone_object  *zone,
 
 			excess_n = max(0.0, ndf->livecrootn_to_deadcrootn -
 						(cdf->livecrootc_to_deadcrootc / epc.deadwood_cn ) );
-			ns->retransn += excess_n;
+			ns->npool += excess_n;
 			cs->live_crootc -= cdf->livecrootc_to_deadcrootc;
 			cs->dead_crootc += cdf->livecrootc_to_deadcrootc;
 			ns->live_crootn -= ndf->livecrootn_to_deadcrootn;

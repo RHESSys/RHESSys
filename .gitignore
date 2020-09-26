@@ -34,6 +34,7 @@ g2w/grass2world/g2w
 # vscode editor data
 .vscode
 rhessys/.vscode
+*.code-workspace
 
 # OS X extended attribute stores
 .DS_Store

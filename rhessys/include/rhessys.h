@@ -1149,6 +1149,7 @@ struct	soil_default
 	double	m_v;						/* m^-1	*/
 	double	m_z;						/* m^-1	*/
 	double	mz_v;						/* m^-1	*/
+	double	nitrif_parm_smax;						/* 0-1	*/
 	double	porosity_0;						/* unitless */
 	double	porosity_decay;						/* m^-1 */
 	double	p3;						/* unitless */
@@ -1169,6 +1170,7 @@ struct	soil_default
 	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
 	double  snow_melt_Tcoef;				/* unitless */
 	double  fixed_t_mult;					/* 0 to 1 and -999 to turn off */
+	double  fixed_w_mult;					/* 0 to 1 and -999 to turn off */
 	double	fs_spill;					/* multiplier*/
 	double	fs_percolation;					/* multiplier */
 	double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */
@@ -1257,6 +1259,8 @@ struct  cdayflux_patch_struct
     double psoil3c_loss;        /* (kgC/m2/d) release of shielded cellulose */
     double psoil4c_loss;        /* (kgC/m2/d) recalcitrant SOM formation */
     double kl4;                 /* (1/day) rate constant for lignin litter decomp */
+    double decomp_w_scalar;		/* (0-1) soil moisture scalar on decomp */
+    double decomp_t_scalar;		/* (0-1) temperature scalar on decomp */
 
     /* daily turnover fluxes */
     double leafc_to_litr1c;  /* (kgC/m2/d) leaf litfall (labile) */
@@ -2560,6 +2564,7 @@ struct epvar_struct
         double cpool_to_deadcrootc;          /* (kgC/m2/d) */
         double cpool_to_deadcrootc_store;  /* (kgC/m2/d) */
         double cpool_to_gresp_store;       /* (kgC/m2/d) */
+   	double actual_C_growth;   /* (kgC/m2) total C used for growth */
 
         /* annual turnover of storage to transfer pools */
         double leafc_store_to_leafc_transfer;           /* (kgC/m2/d) */
@@ -2569,6 +2574,8 @@ struct epvar_struct
         double livecrootc_store_to_livecrootc_transfer; /* (kgC/m2/d) */
         double deadcrootc_store_to_deadcrootc_transfer; /* (kgC/m2/d) */
         double gresp_store_to_gresp_transfer;           /* (kgC/m2/d) */
+	double carbohydrate_transfer;			/* (kg/m2/day) */
+	double storage_transfer_prop;			/* 0-1 */ 
 
         /* turnover of live wood to dead wood */
         double livestemc_to_deadstemc;        /* (kgC/m2/d) */
@@ -2699,6 +2706,7 @@ struct epvar_struct
         double deadstemn_store_to_deadstemn_transfer;   /* (kgN/m2/d) */
         double livecrootn_store_to_livecrootn_transfer; /* (kgN/m2/d) */
         double deadcrootn_store_to_deadcrootn_transfer; /* (kgN/m2/d) */
+	double carbohydrate_transfer;			/* (kgN/m2/day) */
 
         /* turnover of live wood to dead wood, with retranslocation */
         double livestemn_to_deadstemn;        /* (kgN/m2/d) */

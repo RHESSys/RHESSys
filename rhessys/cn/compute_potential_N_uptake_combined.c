@@ -173,15 +173,17 @@ double compute_potential_N_uptake_combined(
 
 
 
-	if ((fleaf + froot) > ZERO) {	
 	if (epc.veg_type == TREE){
-		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
-		}
-        else{
-           mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
-        }
+		if ((fleaf + froot + fwood) > ZERO) 
+			mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
+		else mean_cn = 1.0;
 	}
-	else mean_cn = 1.0;
+        else{
+	if ((fleaf + froot) > ZERO) 	
+           mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
+	else
+		mean_cn=1.0;
+        }
 
 	if (mean_cn > ZERO)
 		plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
