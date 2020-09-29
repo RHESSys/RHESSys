@@ -396,8 +396,7 @@ static bool write_headers(OutputFilter *f) {
 	case OUTPUT_TYPE_CSV:
 		return output_format_csv_write_headers(f);
 	case OUTPUT_TYPE_NETCDF:
-		// NOOP to allow for testing of creation and destruction
-		break;
+		return output_format_netcdf_write_headers(f);
 	default:
 		fprintf(stderr, "write_headers: output format type %d is unknown or not yet implemented.\n", f->output->format);
 		return false;
