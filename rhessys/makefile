@@ -244,6 +244,7 @@ $(OBJ)/input_new_strata_mult.o \
 $(OBJ)/input_new_strata_thin.o \
 $(OBJ)/input_new_zone.o \
 $(OBJ)/input_new_zone_mult.o \
+$(OBJ)/isodate.o \
 $(OBJ)/julday.o \
 $(OBJ)/key_compare.o \
 $(OBJ)/leaf_conductance_APAR_curve.o \
@@ -650,6 +651,8 @@ $(OBJ)/julday.o: util/julday.c
 	$(CC) -c $(CFLAGS) -I include util/julday.c -o $(OBJ)/julday.o
 $(OBJ)/create_random_distrb.o: util/create_random_distrb.c
 	$(CC) -c $(CFLAGS) -I include util/create_random_distrb.c -o $(OBJ)/create_random_distrb.o
+$(OBJ)/isodate.o: util/isodate.c
+	$(CC) -c $(CFLAGS) -I include util/isodate.c -o $(OBJ)/isodate.o
 $(OBJ)/compute_mean_hillslope_parameters.o: init/compute_mean_hillslope_parameters.c
 	$(CC) -c $(CFLAGS) -I include init/compute_mean_hillslope_parameters.c -o $(OBJ)/compute_mean_hillslope_parameters.o
 $(OBJ)/compute_radiative_fluxes.o: rad/compute_radiative_fluxes.c
