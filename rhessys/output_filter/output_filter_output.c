@@ -83,6 +83,8 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 	default:
 		mat_var.data_type = DATA_TYPE_UNDEFINED;
 	}
+	// Copy pointer to any metadata for this variable
+	mat_var.meta = v->meta;
 	return mat_var;
 }
 
@@ -302,7 +304,8 @@ static bool output_variables(char * const error, size_t error_len,
 				date, f, id, mat_vars, true);
 		break;
 	case OUTPUT_TYPE_NETCDF:
-		// NOOP to allow testing of creation and destruction calls
+		status = output_format_netcdf_write_data(error, error_len,
+				date, f, id, mat_vars, true);
 		break;
 	default:
 		fprintf(stderr, "output_variables: output format type %d is unknown or not yet implemented.",
@@ -310,7 +313,7 @@ static bool output_variables(char * const error, size_t error_len,
 		return false;
 	}
 
-	return true;
+	return status;
 }
 
 static bool output_patch(char * const error, size_t error_len,

@@ -1,6 +1,7 @@
 #include <netcdf.h>
 
 #include "rhessys.h"
+#include "isodate.h"
 #include "output_filter/output_format_netcdf.h"
 
 
@@ -148,6 +149,8 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	int ncid = meta->ncid;
 	int *dimid_ptr = &(meta->dim_time_id);
 
+	// TODO: Create variables for ID fields
+
 	// Create variable for first field
 	bool status = create_variable(f->variables, ncid, dimid_ptr);
 	if (!status) {
@@ -186,8 +189,98 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	return true;
 }
 
+static bool output_variable_to_netcdf(char * const error, size_t error_len,
+		int ncid, int dimids[], MaterializedVariable v) {
+	char *local_error;
+	int rv;
+
+	OutputFormatNetCDFVariableMetadata *var_meta = (OutputFormatNetCDFVariableMetadata *)v.meta;
+	int varid = var_meta->varid;
+
+	switch (v.data_type) {
+	case DATA_TYPE_BOOL:
+		rv = nc_put_var1_short(ncid, varid, &dimids, &v.u.bool_val);
+		break;
+	case DATA_TYPE_CHAR:
+		rv = nc_put_var1_schar(ncid, varid, &dimids, &v.u.char_val);
+		break;
+	case DATA_TYPE_CHAR_ARRAY:
+		rv = nc_put_var1_string(ncid, varid, &dimids, &v.u.char_array);
+		break;
+	case DATA_TYPE_INT:
+		rv = nc_put_var1_int(ncid, varid, &dimids, &v.u.int_val);
+		break;
+	case DATA_TYPE_LONG:
+		rv = nc_put_var1_long(ncid, varid, &dimids, &v.u.long_val);
+		break;
+	case DATA_TYPE_FLOAT:
+		rv = nc_put_var1_float(ncid, varid, &dimids, &v.u.float_val);
+		break;
+	case DATA_TYPE_DOUBLE:
+		rv = nc_put_var1_double(ncid, varid, &dimids, &v.u.double_val);
+		break;
+	case DATA_TYPE_LONG_ARRAY:
+	case DATA_TYPE_DOUBLE_ARRAY:
+	default:
+		local_error = (char *)calloc(MAXSTR, sizeof(char));
+		snprintf(local_error, MAXSTR, "output_format_netcdf_write_data: unknown/unsupported variable type %d.",
+				 v.data_type);
+		return return_with_error(error, error_len, local_error);
+	}
+
+	if (rv != NC_NOERR) {
+		local_error = (char *)calloc(MAXSTR, sizeof(char));
+		snprintf(local_error, MAXSTR,
+				"output_format_netcdf::output_variable_to_netcdf: error writing output, NetCDF driver returned: %d.",
+				rv);
+		return return_with_error(error, error_len, local_error);
+	}
+	return true;
+}
+
 bool output_format_netcdf_write_data(char * const error, size_t error_len,
 		struct date date, OutputFilter * const f,
 		EntityID id, MaterializedVariable * const vars, bool flush) {
-	return false;
+	OutputFormatNetCDFMetadata *meta = (OutputFormatNetCDFMetadata *)f->output->meta;
+	int ncid = meta->ncid;
+	int dimids[1];
+	dimids[0] = meta->dim_time_id;
+
+	// First, write date to time variable
+	char *isodate = get_iso_date(&date);
+	int retval = nc_put_var1_string(ncid, meta->var_time_id, &dimids, &isodate);
+	if (retval != NC_NOERR) {
+		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		snprintf(error_mesg, MAXSTR, "NetCDF driver error %d encountered when writing time variable value %s to netCDF file %s.\n",
+				retval, isodate, meta->abs_path);
+		fprintf(stderr, error_mesg);
+		free(error_mesg);
+		return false;
+	}
+	free(isodate);
+
+	// TODO: Output entity ID fields
+
+	// Output variables
+	for (int i = 0; i < f->num_named_variables; i++) {
+		MaterializedVariable v = vars[i];
+		bool status = output_variable_to_netcdf(error, error_len, ncid, dimids, v);
+		if (!status) {
+			return false;
+		}
+	}
+
+	if (flush) {
+		retval = nc_sync(ncid);
+		if (retval != NC_NOERR) {
+			char *error_mesg = malloc(MAXSTR * sizeof(char *));
+			snprintf(error_mesg, MAXSTR, "NetCDF driver error %d encountered when calling nc_sync() on netCDF file %s.\n",
+					retval, meta->abs_path);
+			fprintf(stderr, error_mesg);
+			free(error_mesg);
+			return false;
+		}
+	}
+
+	return true;
 }

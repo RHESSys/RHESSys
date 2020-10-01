@@ -63,6 +63,7 @@ typedef struct materialized_variable {
 		double double_val;
 		double *double_array;
 	} u;
+	void *meta;
 } MaterializedVariable;
 
 typedef struct of_output_output {

@@ -1,7 +1,7 @@
 /*
  * Convert RHESSys date struct into an ISO-8601-like datetime string, e.g.
  * 2020-10-10T10:00. Note, this code does not check for valid ranges of date
- * fields.
+ * fields, except for date.hour > 24, in which case 24 will be used.
  */
 
 #ifndef INCLUDE_ISODATE_H_
