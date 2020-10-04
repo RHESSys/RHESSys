@@ -13,7 +13,7 @@ static void free_metadata(OutputFormatNetCDFMetadata *meta) {
 	free(meta);
 }
 
-static inline bool create_variable(OutputFilterVariable *v, int ncid, int *dimid_ptr) {
+static inline bool create_variable(OutputFilterVariable *v, int ncid, int dimids[]) {
 	int nc_type = get_netcdf_data_type(v->data_type);
 	if (nc_type == INVALID_TYPE) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
@@ -24,7 +24,7 @@ static inline bool create_variable(OutputFilterVariable *v, int ncid, int *dimid
 		return false;
 	}
 	int varid;
-	int status = nc_def_var(ncid, v->name, nc_type, 1, dimid_ptr,
+	int status = nc_def_var(ncid, v->name, nc_type, 1, dimids,
 			&varid);
 	if (status != NC_NOERR) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
@@ -87,21 +87,23 @@ bool output_format_netcdf_init(OutputFilter * const f) {
 	meta->abs_path = abs_path;
 
 	// Define time dimension
-	status = nc_def_dim(meta->ncid, NC_DIMENSION_TIME, NC_UNLIMITED, &(meta->dim_time_id));
+	status = nc_def_dim(meta->ncid, OF_DIMENSION_TIME, NC_UNLIMITED, &(meta->dim_time_id));
 	if (status != NC_NOERR) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
 		snprintf(error_mesg, MAXSTR, "Unable to create dimension %s in output file %s, netCDF driver returned error: %s.\n",
-				NC_DIMENSION_TIME, abs_path, nc_strerror(status));
+				OF_DIMENSION_TIME, abs_path, nc_strerror(status));
 		perror(error_mesg);
 		free(error_mesg);
 		return false;
 	}
-	status = nc_def_var(meta->ncid, NC_DIMENSION_TIME, NC_STRING, 1, &(meta->dim_time_id),
+	int dimids[1];
+	dimids[0] = meta->dim_time_id;
+	status = nc_def_var(meta->ncid, OF_DIMENSION_TIME, NC_STRING, 1, dimids,
 			&(meta->var_time_id));
 	if (status != NC_NOERR) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
 		snprintf(error_mesg, MAXSTR, "Unable to create variable %s for dimension %s in output file %s, netCDF driver returned error: %s.\n",
-				NC_DIMENSION_TIME, NC_DIMENSION_TIME, abs_path, nc_strerror(status));
+				OF_DIMENSION_TIME, OF_DIMENSION_TIME, abs_path, nc_strerror(status));
 		perror(error_mesg);
 		free(error_mesg);
 		return false;
@@ -149,12 +151,13 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	}
 	OutputFormatNetCDFMetadata *meta = (OutputFormatNetCDFMetadata *)f->output->meta;
 	int ncid = meta->ncid;
-	int *dimid_ptr = &(meta->dim_time_id);
+	int dimids[1];
+	dimids[0] = meta->dim_time_id;
 
 	// TODO: Create variables for ID fields
 
 	// Create variable for first field
-	bool status = create_variable(f->variables, ncid, dimid_ptr);
+	bool status = create_variable(f->variables, ncid, dimids);
 	if (!status) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
 		snprintf(error_mesg, MAXSTR, "Failed variable creation was in netCDF file %s.\n",
@@ -166,7 +169,7 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	OutputFilterVariable *v = f->variables->next;
 	// Create variables for remaining fields
 	while (v != NULL) {
-		status = create_variable(v, ncid, dimid_ptr);
+		status = create_variable(v, ncid, dimids);
 		if (!status) {
 			char *error_mesg = malloc(MAXSTR * sizeof(char *));
 			snprintf(error_mesg, MAXSTR, "Failed variable creation was in netCDF file %s.\n",

@@ -10,7 +10,7 @@
 
 #define OUTPUT_FORMAT_EXT_NETCDF "nc"
 #define INVALID_TYPE -1
-#define NC_DIMENSION_TIME "time"
+#define OF_DIMENSION_TIME "time"
 
 
 typedef struct of_fmt_netcdf_meta {
