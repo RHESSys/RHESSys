@@ -594,11 +594,11 @@ void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
 		case DATA_TYPE_STRUCT:
 			fprintf(stderr, "%s\tvariable_type: struct,\n", prefix);
 			break;
-		case DATA_TYPE_STRUCT_ARRAY:
-			fprintf(stderr, "%s\tvariable_type: struct[],\n", prefix);
+		case DATA_TYPE_STRUCT_PTR:
+			fprintf(stderr, "%s\tvariable_type: struct *,\n", prefix);
 			break;
 		case DATA_TYPE_STRUCT_PTR_ARRAY:
-			fprintf(stderr, "%s\tvariable_type: struct *[],\n", prefix);
+			fprintf(stderr, "%s\tvariable_type: struct **,\n", prefix);
 			break;
 		default:
 			break;

@@ -285,7 +285,7 @@ with fileinput.input(files=args.headers) as f:
 					# Determine data type
 					data_type = 'DATA_TYPE_STRUCT'
 					if data_type_components[-1] == '*':
-						data_type = 'DATA_TYPE_STRUCT_ARRAY'
+						data_type = 'DATA_TYPE_STRUCT_PTR'
 					elif data_type_components[-1] == '**':
 						data_type = 'DATA_TYPE_STRUCT_PTR_ARRAY'
 			
