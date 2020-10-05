@@ -498,17 +498,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 		}
 	}
 
-	if (accum_patch_obj_to_reset) {
-		reset_accum_obj(accum_patch_obj_to_reset, sizeof(struct accumulate_patch_object));
-		freePointerList(accum_patch_obj_to_reset);
-		accum_patch_obj_to_reset = NULL;
-	}
-
-	if (accum_strata_obj_to_reset) {
-		reset_accum_obj(accum_strata_obj_to_reset, sizeof(struct accumulate_strata_object));
-		freePointerList(accum_strata_obj_to_reset);
-		accum_strata_obj_to_reset = NULL;
-	}
+	reset_accumulators();
 
 	return status;
 }
@@ -539,6 +529,12 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 		}
 	}
 
+	reset_accumulators();
+
+	return status;
+}
+
+void reset_accumulators() {
 	if (accum_patch_obj_to_reset) {
 		reset_accum_obj(accum_patch_obj_to_reset, sizeof(struct accumulate_patch_object));
 		freePointerList(accum_patch_obj_to_reset);
@@ -550,6 +546,4 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 		freePointerList(accum_strata_obj_to_reset);
 		accum_strata_obj_to_reset = NULL;
 	}
-
-	return status;
 }
