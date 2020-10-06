@@ -54,7 +54,7 @@ int update_decomp(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -65,25 +65,29 @@ int update_decomp(
 	double nlimit, fpi;
 	double total_N, total_preday_N, balance;
 	double nitrate_immob, N_uptake, remaining_uptake;
-	
+
 	total_preday_N = ns_litr->litr1n + ns_litr->litr2n +  ns_litr->litr3n
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n + ns_soil->soil3n
 		+ ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate;
 	nlimit = ns_soil->nlimit;
 	fpi = ns_soil->fract_potential_immob;
+
+  // check the range
+	if(fpi>1.0){fpi=1.0;}
+	if(fpi<0.0){fpi=0.0;}
 	/* now use the N limitation information fpi to assess the final decomposition
 	fluxes. Mineralizing fluxes (pmnf* < 0.0) occur at the potential rate
 	regardless of the competing N demands between microbial processes and
 	plant uptake, but immobilizing fluxes are reduced when soil mineral
 	N is limiting */
 	/* calculate litter and soil compartment C:N ratios */
-	if (ns_litr->litr1n > ZERO) cn_l1 = cs_litr->litr1c/ns_litr->litr1n;
+	if ((cs_litr->litr1c > 0.0) && (ns_litr->litr1n > 0.0)) cn_l1 = cs_litr->litr1c/ns_litr->litr1n;
 		else cn_l1 = LIVELAB_CN;
-	if (ns_litr->litr2n > ZERO) cn_l2 = cs_litr->litr2c/ns_litr->litr2n;
+	if ((cs_litr->litr2c > 0.0) && (ns_litr->litr2n > 0.0)) cn_l2 = cs_litr->litr2c/ns_litr->litr2n;
 		else cn_l2 = CEL_CN;
-	if (ns_litr->litr3n > ZERO) cn_l3 = cs_litr->litr3c/ns_litr->litr3n;
+		if ((cs_litr->litr3c > 0.0) && (ns_litr->litr3n > 0.0))  cn_l3 = cs_litr->litr3c/ns_litr->litr3n;
 		else cn_l3 = LIG_CN;
-	if (ns_litr->litr4n > ZERO) cn_l4 = cs_litr->litr4c/ns_litr->litr4n;
+		if ((cs_litr->litr4c > 0.0) && (ns_litr->litr4n > 0.0)) cn_l4 = cs_litr->litr4c/ns_litr->litr4n;
 		else cn_l4 = LIG_CN;
 	cn_s1 = SOIL1_CN;
 	cn_s2 = SOIL2_CN;
@@ -98,7 +102,7 @@ int update_decomp(
 	rfs3s4 = 0.55;
 	daily_net_nmin = 0.0;
 	/* labile litter fluxes */
-	if (cs_litr->litr1c > ZERO) {
+	if ((cs_litr->litr1c > ZERO) && (ns_litr->litr1n > ZERO)) {
 		if (nlimit && ndf->pmnf_l1s1 > 0.0){
 			cdf->plitr1c_loss *= fpi;
 			ndf->pmnf_l1s1 *= fpi;
@@ -110,9 +114,18 @@ int update_decomp(
 		else ndf->litr1n_to_soil1n = 0.0;
 		ndf->sminn_to_soil1n_l1 = ndf->pmnf_l1s1;
 		daily_net_nmin -= ndf->pmnf_l1s1;
+	} else{ // check which patch has negative litr1c
+	  //        cs_litr->litr1c = 0.0;
+	  //        ns_litr->litr1n = 0.0;
+	  if ((cs_litr->litr1c < 0.0) || (ns_litr->litr1n < 0.0)) printf("lc1=%e, ln1=%e\n",cs_litr->litr1c, ns_litr->litr1n);
+	  cdf->litr1c_hr = 0.0;
+	  cdf->litr1c_to_soil1c = 0.0;
+	  ndf->litr1n_to_soil1n = 0.0;
+	  ndf->sminn_to_soil1n_l1 = 0.0;
 	}
+
 	/* cellulose litter fluxes */
-	if (cs_litr->litr2c > ZERO){
+	if ((cs_litr->litr2c > ZERO) && (ns_litr->litr2n > ZERO)){
 		if (nlimit && ndf->pmnf_l2s2 > 0.0){
 			cdf->plitr2c_loss *= fpi;
 			ndf->pmnf_l2s2 *= fpi;
@@ -124,11 +137,20 @@ int update_decomp(
 		else ndf->litr2n_to_soil2n = 0.0;
 		ndf->sminn_to_soil2n_l2 = ndf->pmnf_l2s2;
 		daily_net_nmin -= ndf->pmnf_l2s2;
+	} else{
+	  //        cs_litr->litr2c = 0.0;
+	  //        ns_litr->litr2n = 0.0;
+	  if ((cs_litr->litr2c < 0.0) || (ns_litr->litr2n < 0.0)) printf("lc2=%e, ln2=%e\n",cs_litr->litr2c, ns_litr->litr2n);
+	  cdf->litr2c_hr = 0.0;
+	  cdf->litr2c_to_soil2c = 0.0;
+	  ndf->litr2n_to_soil2n = 0.0;
+	  ndf->sminn_to_soil2n_l2 = 0.0;
 	}
+
 	/* release of shielded cellulose litter, tied to the decay rate of
 	lignin litter */
 	/* actually going to litr 2 rather than soil but will use soil2 as repository for mineralized N */
-	if (cs_litr->litr3c > ZERO){
+	if ((cs_litr->litr3c > ZERO) && (ns_litr->litr3n > ZERO)){
 		if (nlimit && ndf->pmnf_l3l2 > 0.0){
 			cdf->plitr3c_loss *= fpi;
 			ndf->pmnf_l3l2 *= fpi;
@@ -140,10 +162,18 @@ int update_decomp(
 		else ndf->litr3n_to_litr2n = 0.0;
 		ndf->sminn_to_soil2n_l3 = ndf->pmnf_l3l2;
 		daily_net_nmin -= ndf->pmnf_l3l2;
+	} else{
+	  //        cs_litr->litr3c = 0.0;
+	  //        ns_litr->litr3n = 0.0;
+	  if ((cs_litr->litr3c < 0.0) || (ns_litr->litr3n < 0.0)) printf("lc3=%e, ln3=%e\n",cs_litr->litr3c, ns_litr->litr3n);
+	  cdf->litr3c_hr = 0.0;
+	  cdf->litr3c_to_litr2c = 0.0;
+	  ndf->litr3n_to_litr2n = 0.0;
+	  ndf->sminn_to_soil2n_l3 = 0.0;
 	}
-	
+
 	/* lignin litter fluxes */
-	if (cs_litr->litr4c > ZERO){
+	if ((cs_litr->litr4c > ZERO) && (ns_litr->litr4n > ZERO)){
 		if (nlimit && ndf->pmnf_l4s3 > 0.0){
 			cdf->plitr4c_loss *= fpi;
 			ndf->pmnf_l4s3 *= fpi;
@@ -155,10 +185,18 @@ int update_decomp(
 		else ndf->litr4n_to_soil3n = 0.0;
 		ndf->sminn_to_soil3n_l4 = ndf->pmnf_l4s3;
 		daily_net_nmin -= ndf->pmnf_l4s3;
+	} else{
+	  //        cs_litr->litr4c = 0.0;
+	  //        ns_litr->litr4n = 0.0;
+	  if ((cs_litr->litr4c < 0.0) || (ns_litr->litr4n < 0.0)) printf("lc4=%e, ln4=%e\n",cs_litr->litr4c, ns_litr->litr4n);
+	  cdf->litr4c_hr = 0.0;
+	  cdf->litr4c_to_soil3c = 0.0;
+	  ndf->litr4n_to_soil3n = 0.0;
+	  ndf->sminn_to_soil3n_l4 = 0.0;
 	}
-	
+
 	/* fast microbial recycling pool */
-	if (cs_soil->soil1c > ZERO){
+	if (cs_soil->soil1c > ZERO && ns_soil->soil1n > ZERO){
 		if (nlimit && ndf->pmnf_s1s2 > 0.0){
 			cdf->psoil1c_loss *= fpi;
 			ndf->pmnf_s1s2 *= fpi;
@@ -168,9 +206,17 @@ int update_decomp(
 		ndf->soil1n_to_soil2n = cdf->psoil1c_loss / cn_s1;
 		ndf->sminn_to_soil2n_s1 = ndf->pmnf_s1s2;
 		daily_net_nmin -= ndf->pmnf_s1s2;
+	} else{
+	  //        cs_soil->soil1c = 0.0;
+	  //        ns_soil->soil1n = 0.0;
+	  cdf->soil1c_hr = 0.0;
+	  cdf->soil1c_to_soil2c = 0.0;
+	  ndf->soil1n_to_soil2n = 0.0;
+	  ndf->sminn_to_soil2n_s1 = 0.0;
 	}
+
 	/* medium microbial recycling pool */
-	if (cs_soil->soil2c > ZERO){
+	if (cs_soil->soil2c > ZERO && ns_soil->soil2n > ZERO){
 		if (nlimit && ndf->pmnf_s2s3 > 0.0){
 			cdf->psoil2c_loss *= fpi;
 			ndf->pmnf_s2s3 *= fpi;
@@ -180,9 +226,17 @@ int update_decomp(
 		ndf->soil2n_to_soil3n = cdf->psoil2c_loss / cn_s2;
 		ndf->sminn_to_soil3n_s2 = ndf->pmnf_s2s3;
 		daily_net_nmin -= ndf->pmnf_s2s3;
+	} else{
+	  //        cs_soil->soil2c = 0.0;
+	  //        ns_soil->soil2n = 0.0;
+	  cdf->soil2c_hr = 0.0;
+	  cdf->soil2c_to_soil3c = 0.0;
+	  ndf->soil2n_to_soil3n = 0.0;
+	  ndf->sminn_to_soil3n_s2 = 0.0;
 	}
+
 	/* slow microbial recycling pool */
-	if (cs_soil->soil3c > ZERO){
+	if (cs_soil->soil3c > ZERO && ns_soil->soil3n > ZERO){
 		if (nlimit && ndf->pmnf_s3s4 > 0.0){
 			cdf->psoil3c_loss *= fpi;
 			ndf->pmnf_s3s4 *= fpi;
@@ -192,13 +246,27 @@ int update_decomp(
 		ndf->soil3n_to_soil4n = cdf->psoil3c_loss / cn_s3;
 		ndf->sminn_to_soil4n_s3 = ndf->pmnf_s3s4;
 		daily_net_nmin -= ndf->pmnf_s3s4;
+	} else{
+	  //        cs_soil->soil3c = 0.0;
+	  //        ns_soil->soil3n = 0.0;
+	  cdf->soil3c_hr = 0.0;
+	  cdf->soil3c_to_soil4c = 0.0;
+	  ndf->soil3n_to_soil4n = 0.0;//<<-------
+	  ndf->sminn_to_soil4n_s3 = 0.0;
 	}
+
 	/* recalcitrant SOM pool (rf = 1.0, always mineralizing) */
-	if (cs_soil->soil4c > ZERO){
+	if (cs_soil->soil4c > ZERO && ns_soil->soil4n > ZERO){
 		cdf->soil4c_hr = cdf->psoil4c_loss;
 		ndf->soil4n_to_sminn = cdf->psoil4c_loss / cn_s4;
 		daily_net_nmin += ndf->soil4n_to_sminn;
+	} else{
+	  //        cs_soil->soil4c = 0.0;
+	  //        ns_soil->soil4n = 0.0;
+	  cdf->soil4c_hr = 0.0;
+	  ndf->soil4n_to_sminn = 0.0;
 	}
+
 	/* update soild and litter stores */
 	/* Fluxes out of labile litter pool */
 	cs_litr->litr1c_hr_snk += cdf->litr1c_hr;
@@ -300,17 +368,17 @@ int update_decomp(
 	ns_soil->soil4n	      -= ndf->soil4n_to_sminn;
 	/* Fluxes into mineralized N pool */
 	/* Fluxes output of mineralized N pool for net microbial immobilization */
-	if (daily_net_nmin > ZERO) 
+	if (daily_net_nmin > ZERO)
 		ns_soil->sminn += daily_net_nmin;
 	else {
 		if (-1.0*daily_net_nmin > ns_soil->sminn + ns_soil->nitrate + ZERO) {
-		
-			/* this should not happen  but if it does warn user and but let sminn go negative*/	
+
+			/* this should not happen  but if it does warn user and but let sminn go negative*/
 			printf("In update decomp not enough for mineral N will reduce accordingly ");
 			balance = ns_soil->sminn + ns_soil->nitrate + daily_net_nmin;
 			printf("\n required %lf balance unmet %lf", -1.0*daily_net_nmin, balance);
 			daily_net_nmin = -1.0 * (ns_soil->sminn + ns_soil->nitrate);
-			
+
 		}
 		nitrate_immob = min(ns_soil->nitrate, -1.0*daily_net_nmin);
 		ns_soil->nitrate -= max(nitrate_immob,0.0);
@@ -340,14 +408,14 @@ int update_decomp(
 	patch[0].surface_NH4 -=  N_uptake;
 	remaining_uptake -= N_uptake;
 
-	if (remaining_uptake > ZERO) printf("N balance issue \n"); 
+	if (remaining_uptake > ZERO) printf("N balance issue \n");
 	ndf->net_mineralized = daily_net_nmin;
 	total_N = ns_litr->litr1n + ns_litr->litr2n +  ns_litr->litr3n
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n
 		+ ns_soil->soil3n + ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate;
 	balance = (total_preday_N)  - (total_N + ndf->sminn_to_npool);
-	if (abs(balance) > ZERO) 
+	if (abs(balance) > ZERO)
 		printf("\n Decomp N doesn't balance by %lf ", balance);
-	
+
 	return (!ok);
 } /* end update_decomp.c */
