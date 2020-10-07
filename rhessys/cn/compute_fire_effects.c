@@ -27,7 +27,8 @@
 void compute_fire_effects(
 
 						struct patch_object *patch,
-						double pspread)
+						double pspread,
+						struct command_line_object *command_line)
 
 {
 
@@ -348,7 +349,6 @@ void compute_fire_effects(
 			/* Determine the proportion of total target canopy carbon that is consumed by fire */
 			canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_prop_mort_consumed;
 
-
 			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_deadstemc = canopy_target[0].fe.canopy_target_prop_c_consumed;
@@ -357,12 +357,6 @@ void compute_fire_effects(
 			mort.mort_deadcrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
-
-
-            if (canopy_target[0].defaults[0][0].epc.veg_type == TREE && canopy_target[0].defaults[0][0].epc.phenology_type == EVERGREEN) //To make sure only save the overstory consumption NREN 20190914
-                { patch[0].overstory_burn = canopy_target[0].fe.canopy_target_prop_c_consumed;
-               //   printf("\n the fire consuption is %lf",mort.mort_cpool);
-                                                                    }
 
 			thin_type =2;	/* Harvest option */
 			update_mortality(
@@ -422,10 +416,65 @@ void compute_fire_effects(
 				thin_type,
 				mort);
 
-			}
+            /*----------------------------------------------------------------------------------------*/
+            /* accumulate the monthly fire effects output to yearly by for yearly fire output         */
+            /*----------------------------------------------------------------------------------------*/
+
+            if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
+                canopy_target[0].fe.acc_year.m_cwdc_to_atmos += canopy_target[0].fe.m_cwdc_to_atmos;
+                canopy_target[0].fe.acc_year.m_cwdn_to_atmos += canopy_target[0].fe.m_cwdn_to_atmos;
+                //canopy_target.fe.acc_year.canopy_target_height +=
+                canopy_target[0].fe.acc_year.canopy_target_height_u_prop += canopy_target[0].fe.canopy_target_height_u_prop;
+                canopy_target[0].fe.acc_year.canopy_target_prop_mort += canopy_target[0].fe.canopy_target_prop_mort;
+                canopy_target[0].fe.acc_year.canopy_target_prop_mort_consumed += canopy_target[0].fe.canopy_target_prop_mort_consumed;
+                canopy_target[0].fe.acc_year.canopy_target_prop_mort_u_component += canopy_target[0].fe.canopy_target_prop_mort_u_component;
+                canopy_target[0].fe.acc_year.canopy_target_prop_mort_o_component += canopy_target[0].fe.canopy_target_prop_mort_o_component;
+                canopy_target[0].fe.acc_year.canopy_target_prop_c_consumed += canopy_target[0].fe.canopy_target_prop_c_consumed;
+                canopy_target[0].fe.acc_year.canopy_target_prop_c_remain += canopy_target[0].fe.canopy_target_prop_c_remain;
+                canopy_target[0].fe.acc_year.canopy_target_prop_c_remain_adjusted += canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+                canopy_target[0].fe.acc_year.canopy_target_prop_c_remain_adjusted_leafc += canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
+                //canopy_target.fe.acc_year.canopy_subtarget_height +=
+                canopy_target[0].fe.acc_year.canopy_subtarget_height_u_prop += canopy_target[0].fe.canopy_subtarget_height_u_prop;
+                canopy_target[0].fe.acc_year.canopy_subtarget_prop_mort += canopy_target[0].fe.canopy_subtarget_prop_mort;
+                canopy_target[0].fe.acc_year.canopy_subtarget_prop_mort_consumed += canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
+                canopy_target[0].fe.acc_year.canopy_subtarget_prop_c_consumed += canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+                //canopy_target.fe.acc_year.canopy_subtarget_c +=
+                canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;
+
+                canopy_target[0].fe.acc_year.length +=1;
+
+
+            }
+
+
+
+			} // end for at line 137 c
 		}
 	} /* end if(pspread > 0 ) */
+    else {
+            for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+            for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 
+			/* Calculates metrics for targer canopy */
+			canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
+
+			/* Calculates metrics for next lowest canopy (subtarget canopy) */
+			if (patch[0].num_layers > (layer+1)){
+				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
+				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
+				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
+						canopy_subtarget[0].cs.live_stemc +
+						canopy_subtarget[0].cs.dead_stemc;
+                } else {
+				canopy_target[0].fe.canopy_subtarget_height = 0;
+				canopy_target[0].fe.canopy_subtarget_c = 0;
+			}
+
+           } // end for c=0
+        } //end for layer =0
+
+    }
 	return;
 } /*end compute_fire_effects.c*/
 

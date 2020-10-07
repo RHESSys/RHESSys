@@ -547,7 +547,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].fire[0].daily;
+/*	outfile = world_output_files[0].fire[0].daily;
 	fprintf(outfile,
 		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
@@ -577,8 +577,45 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"canopy_subtarget_prop_mort_consumed",
 		"canopy_subtarget_prop_c_consumed",
 		"canopy_subtarget_c",
-		"understory_c_consumed");
+		"understory_c_consumed"); */
+	
+	
+	/*--------------------------------------------------------------*/
+	/*	yearly 							*/
+	/*--------------------------------------------------------------*/
+	outfile = world_output_files[0].fire[0].yearly;
+	fprintf(outfile,
+         "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+         "year",
+         "basinID",
+         "hillID",
+         "zoneID",
+         "patchID",
+         "stratumID",
+         "vegID",
+         "m_cwdc_to_atmos",
+         "m_cwdn_to_atmos",
+         "canopy_target_height",
+         "canopy_target_height_u_prop",
+         "canopy_target_prop_mort",
+         "canopy_target_prop_mort_consumed",
+         "canopy_target_prop_mort_u_component",
+         "canopy_target_prop_mort_o_component",
+         "canopy_target_prop_c_consumed",
+         "canopy_target_prop_c_remain",
+         "canopy_target_prop_c_remain_adjusted",
+         "canopy_target_prop_c_remain_adjusted_leafc",
+         "canopy_subtarget_height",
+         "canopy_subtarget_height_u_prop",
+         "canopy_subtarget_prop_mort",
+         "canopy_subtarget_prop_mort_consumed",
+         "canopy_subtarget_prop_c_consumed",
+         "canopy_subtarget_c",
+         "understory_c_consumed", "acc_length");
+	
 	}
+	
+	
 	/*--------------------------------------------------------------*/
 	/*	Stream routing file headers					*/
 	/*--------------------------------------------------------------*/

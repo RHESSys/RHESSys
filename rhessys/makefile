@@ -269,6 +269,8 @@ $(OBJ)/output_patch_state.o \
 $(OBJ)/output_template_structure.o \
 $(OBJ)/output_yearly_basin.o \
 $(OBJ)/output_yearly_canopy_stratum.o \
+$(OBJ)/output_yearly_fire.o \
+$(OBJ)/output_yearly_growth_fire.o \
 $(OBJ)/output_yearly_growth_basin.o \
 $(OBJ)/output_yearly_growth_canopy_stratum.o \
 $(OBJ)/output_yearly_growth_hillslope.o \
@@ -564,6 +566,10 @@ $(OBJ)/output_canopy_stratum.o: output/output_canopy_stratum.c
 	$(CC) -c $(CFLAGS) -I include output/output_canopy_stratum.c -o $(OBJ)/output_canopy_stratum.o
 $(OBJ)/output_fire.o: output/output_fire.c
 	$(CC) -c $(CFLAGS) -I include output/output_fire.c -o $(OBJ)/output_fire.o
+$(OBJ)/output_yearly_fire.o: output/output_yearly_fire.c
+	$(CC) -c $(CFLAGS) -I include output/output_yearly_fire.c -o $(OBJ)/output_yearly_fire.o
+$(OBJ)/output_yearly_growth_fire.o: output/output_yearly_growth_fire.c
+	$(CC) -c $(CFLAGS) -I include output/output_yearly_growth_fire.c -o $(OBJ)/output_yearly_growth_fire.o
 $(OBJ)/output_basin_state.o: output/output_basin_state.c
 	$(CC) -c $(CFLAGS) -I include output/output_basin_state.c -o $(OBJ)/output_basin_state.o
 $(OBJ)/output_hillslope_state.o: output/output_hillslope_state.c

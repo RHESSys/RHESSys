@@ -425,24 +425,51 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", //add the beetle snag output
-		"year",
-		"basinID",
-		"hillID",
-		"zoneID",
-		"patchID",
-		"stratumID",
-		"proj_lai",
-		"leafc",
-		"leafn",
-		"frootc",
-		"frootn",
-		"stemc",
-		"stemn",
-		"cwdc",
-		"cwdn",
-		"psn","cpool", "mortfract", "total_snagc", "total_snagn", "total_redneedlec", "total_redneedlen","deadrootc_beetle", "deadrootn_beetle");
+	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+         "year",
+         "basinID",
+         "hillID",
+         "zoneID",
+         "patchID",
+         "stratumID",
+         "proj_lai",
+         "leafc",
+         "leafn",
+         "frootc",
+         "frootn",
+         "stemc",
+         "stemn",
+         "cwdc",
+         "cwdn",
+         "psn","cpool", "mortfract","height","rootdepth");
 	}
+	
+	
+	if (command_line[0].f !=NULL) {
+	  /*--------------------------------------------------------------*/
+	  /*	Yearly 							*/
+	  /*--------------------------------------------------------------*/
+	  outfile = world_output_files[0].fire[0].yearly;
+	  fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+           "year",
+           "basinID",
+           "hillID",
+           "zoneID",
+           "patchID",
+           "stratumID",
+           "proj_lai",
+           "leafc",
+           "leafn",
+           "frootc",
+           "frootn",
+           "stemc",
+           "stemn",
+           "cwdc",
+           "cwdn",
+           "psn","cpool", "mortfract","height","rootdepth");
+	}
+	
+	
 
 
 	return;

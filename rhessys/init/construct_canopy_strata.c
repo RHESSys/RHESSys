@@ -425,6 +425,22 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_month.length = 0;
 
         canopy_strata[0].cs.Tacc = 20.0;
+        
+        /*--------------------------------------------------------------*/
+        /* zero out negative stores */
+        /*--------------------------------------------------------------*/
+        
+        canopy_strata[0].cs.leafc = max(canopy_strata[0].cs.leafc, 0.0);
+        canopy_strata[0].ns.leafn = max(canopy_strata[0].ns.leafn, 0.0);
+        canopy_strata[0].cs.live_stemc = max(canopy_strata[0].cs.live_stemc, 0.0);
+        canopy_strata[0].ns.live_stemn = max(canopy_strata[0].ns.live_stemn, 0.0);
+        canopy_strata[0].cs.dead_stemc = max(canopy_strata[0].cs.dead_stemc, 0.0);
+        canopy_strata[0].ns.dead_stemn = max(canopy_strata[0].ns.dead_stemn, 0.0);
+        canopy_strata[0].cs.dead_leafc = max(canopy_strata[0].cs.dead_leafc, 0.0);
+        canopy_strata[0].ns.dead_leafn = max(canopy_strata[0].ns.dead_leafn, 0.0);
+        /*--------------------------------------------------------------*/
+        
+  
 	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
 	/* 	we need to initialize the sunlit/shaded proportions of LAI here */
@@ -590,7 +606,32 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].fe.canopy_subtarget_c = 0.0;
 	canopy_strata[0].fe.understory_c_consumed = 0.0;
 
-
+	/*------------------------------------------------------------------------------*/
+	/*	initialize fire effects accumulative yearly variables for output			*/
+	/*------------------------------------------------------------------------------*/
+	canopy_strata[0].fe.acc_year.m_cwdc_to_atmos = 0.0;
+	canopy_strata[0].fe.acc_year.m_cwdn_to_atmos = 0.0;
+	//canopy_strata[0].fe.acc_year.canopy_target_height = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_height_u_prop = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_prop_mort = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_prop_mort_consumed = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_prop_mort_u_component = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_prop_mort_o_component = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_prop_c_consumed = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_prop_c_remain = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_prop_c_remain_adjusted = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_target_prop_c_remain_adjusted_leafc = 0.0;
+	//canopy_strata[0].fe.acc_year.canopy_subtarget_height = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_subtarget_height_u_prop = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_subtarget_prop_mort = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_subtarget_prop_mort_consumed = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_subtarget_prop_c_consumed = 0.0;
+	//canopy_strata[0].fe.acc_year.canopy_subtarget_c = 0.0;
+	canopy_strata[0].fe.acc_year.understory_c_consumed = 0.0;
+	
+	
+	
+	
 	/*--------------------------------------------------------------*/
 	/*	set phenology timing if static allocation		*/
 	/*  and initialize for dynamic runs				*/

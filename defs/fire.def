@@ -26,10 +26,10 @@
 6.43 kappa1_rvm
 5.1 kappa2_rvm
 0.57 p_rvm
-1.2 ign_def_mod  # set the average number of ignitions per month
-2 mean_ign
-1 ran_seed # 0 stochastic 1 controled stochastic >1 total controled even the ignition cell for each month
-0 calc_fire_effects
+1.2 ign_def_mod  
+2 mean_ign # set the average number of ignitions per month
+0 ran_seed # 0 stochastic 1 controled stochastic >1 total controled even the ignition cell for each month
+1 calc_fire_effects
 10 seed_multiplier
 1 calc_above_ground_litter
 

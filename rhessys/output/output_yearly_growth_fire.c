@@ -1,17 +1,17 @@
 /*--------------------------------------------------------------*/
 /* 																*/
-/*					output_yearly_growth_canopy_stratum						*/
+/*					output_yearly_growth_fire					*/
 /*																*/
-/*	output_yearly_growth_canopy_stratum - creates output_growth files objects.		*/
-/*																*/
+/* output_yearly_growth_fire -                                  */
+/*	creates output_growth files objects	for fire effect model   */
 /*	NAME														*/
-/*	output_yearly_growth_canopy_stratum - output_growths  */
-/*			current contents of a canopy_stratum.			*/
+/*	output_yearly_growth_fire - output_growths                  */
+/*			current contents of a fire effect model.			*/
 /*																*/
 /*	SYNOPSIS													*/
-/*	void	output_yearly_growth_canopy_stratum(int basinID,	*/
+/*	void	output_yearly_growth_fire(int basinID,          	*/
 /*					int hillID, int zoneID,int patchID,         */
-/*					struct	canopy_stratum_object	*canopy_stratum,				*/
+/*	struct	canopy_stratum_object	*canopy_stratum,			*/
 /*					struct	date	date,  						*/
 /*					FILE 	*outfile)							*/
 /*																*/
@@ -19,19 +19,19 @@
 /*																*/
 /*	DESCRIPTION													*/
 /*																*/
-/*	output_growths spatial structure according to commandline			*/
+/*	output_growths spatial structure according to commandline	*/
 /*	specifications to specific files							*/
 /*																*/
-/*	PROGRAMMER NOTES											*/
+/*	PROGRAMMER NOTES 								*/
 /*																*/
 /*	We only permit one fileset per spatial modelling level.     */
 /*	Each fileset has one file for each timestep.  				*/
-/*																*/
+/*	This is for output spatial data from fire effect model		*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
 
-void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
+void	output_yearly_growth_fire( int basinID, int hillID, int zoneID,
 			int patchID,
 			struct	canopy_strata_object	*stratum,
 			struct	date	current_date,
@@ -42,7 +42,7 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*--------------------------------------------------------------*/
 
   	fprintf(outfile,
-           "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+       		 "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 
         	current_date.year,
         	basinID,
@@ -66,24 +66,15 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
         	stratum[0].ns.dead_stemn + stratum[0].ns.deadstemn_store + stratum[0].ns.deadstemn_transfer) ,
         	stratum[0].cs.cwdc,
         	stratum[0].ns.cwdn,
-		stratum[0].acc_year.psn,
-		stratum[0].acc_year.minNSC,
-		stratum[0].cs.mortality_fract,
-		stratum[0].cs.snagc + stratum[0].cs.delay_snagc, // output the snag pool for beetle attack both carbon and nitrogen
-		stratum[0].ns.snagn + stratum[0].ns.delay_snagn,
-		stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec,
-		stratum[0].ns.redneedlen + stratum[0].ns.delay_redneedlen,
-		stratum[0].cs.dead_rootc_beetle,
-		stratum[0].ns.dead_rootn_beetle
+            stratum[0].acc_year.psn,
+            stratum[0].acc_year.minNSC,
+            stratum[0].cs.mortality_fract,
+            stratum[0].epv.height, // the reason here height is different with fire.yearly, is fire.yearly is before burning but, stratum.yearly; if turn off the fire effect they should be the same
+            stratum[0].rootzone.depth*1000.0);
 
-    stratum[0].epv.height, // the reason here height is different with fire.yearly, is fire.yearly is before burning but, stratum.yearly; if turn off the fire effect they should be the same
-    stratum[0].rootzone.depth*1000.0);
-  
-  if (command_line[0].f == NULL) { //If there is fire yearly growth output, set up set in the fire yearly growth output
-    
-    stratum[0].acc_year.psn = 0.0;
-    stratum[0].acc_year.minNSC = -999;
-  }
-  
+	stratum[0].acc_year.psn = 0.0;
+	stratum[0].acc_year.minNSC = -999;
+
 	return;
-} /*end output_yearly_growth_canopy_stratum*/
+} /*end output_yearly_growth_fire*/
+

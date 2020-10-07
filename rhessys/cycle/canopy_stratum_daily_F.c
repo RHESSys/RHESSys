@@ -1509,7 +1509,7 @@ void	canopy_stratum_daily_F(
 	/*								*/
 	/*	All of this is only done for vascular strata.		*/
 	/*--------------------------------------------------------------*/
-	if  (stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO){
+	if  ((stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO) && (stratum[0].epv.proj_lai > ZERO)){
 		if ( stratum[0].potential_evaporation > ZERO ){
 			transpiration  = transpiration_rate *
 				(zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
@@ -2233,7 +2233,8 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
 		stratum[0].acc_month.length += 1;
 	}
-	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL)){
+	/* output fire effect */
+	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL || command_line[0].f != NULL)){
 		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
 		if (stratum[0].acc_year.minNSC == -999)
