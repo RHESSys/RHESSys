@@ -104,6 +104,8 @@ void compute_fire_effects(
 			patch[0].litter_cs.litr3c * fire_loss.loss_litr3c +
 			patch[0].litter_cs.litr4c * fire_loss.loss_litr4c;
 
+    patch[0].litterc_burned = litter_c_consumed;//new NREN
+
 	update_litter_soil_mortality(
 		 &(patch[0].cdf),
 		 &(patch[0].ndf),
@@ -145,12 +147,32 @@ void compute_fire_effects(
 			if (patch[0].num_layers > (layer+1)){
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
 				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
-				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
-						canopy_subtarget[0].cs.live_stemc +
-						canopy_subtarget[0].cs.dead_stemc;
+
+				canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc +
+						canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc +
+						canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc +
+						canopy_subtarget[0].cs.frootc + canopy_subtarget[0].cs.cpool;
+
+                canopy_target[0].fe.canopy_subtarget_leafc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc;
+                canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
+                canopy_target[0].fe.canopy_subtarget_rootc = canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc + canopy_subtarget[0].cs.frootc;
+
 			} else {
 				canopy_target[0].fe.canopy_subtarget_height = 0;
-				canopy_target[0].fe.canopy_subtarget_c = 0;
+				canopy_target[0].fe.canopy_subtarget_biomassc = 0;
+
+            // add the over story NREN
+                canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
+                    canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
+                    canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc +
+                    canopy_target[0].cs.frootc + canopy_target[0].cs.cpool;
+
+
+                canopy_target[0].fe.canopy_target_leafc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc;
+                canopy_target[0].fe.canopy_target_stemc = canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc;
+                canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
+
+
 			}
 
 
@@ -179,7 +201,7 @@ void compute_fire_effects(
 				/* Is subtarget canopy tall? */
 				if (canopy_target[0].fe.canopy_subtarget_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
 
-					canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = litter_c_consumed; // If every canopy > overstory_height_thresh means on understory or understory is litter
 
 				/* Is subtarget canopy of intermediate or short height? Then calculate mortality/consumption of understory */
 				} else if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh){
@@ -214,7 +236,29 @@ void compute_fire_effects(
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed); // + litter_c_consumed;
+
+					//new outputs
+					canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+					canopy_target[0].fe.understory_stemc_consumed = canopy_target[0].fe.canopy_subtarget_stemc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+					canopy_target[0].fe.understory_rootc_consumed = canopy_target[0].fe.canopy_subtarget_rootc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+
+					// accumulate understory here?
+					if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
+
+                        canopy_target[0].fe.acc_year.m_cwdc_to_atmos += canopy_target[0].fe.m_cwdc_to_atmos;
+                        canopy_target[0].fe.acc_year.m_cwdn_to_atmos += canopy_target[0].fe.m_cwdn_to_atmos;
+
+                    // litter
+                        canopy_target[0].fe.acc_year.litter_c_consumed += litter_c_consumed; //should be here so not double counts
+                    // understory
+                        canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;// including litter
+                        canopy_target[0].fe.acc_year.understory_leafc_consumed += canopy_target[0].fe.understory_leafc_consumed;
+                        canopy_target[0].fe.acc_year.understory_stemc_consumed += canopy_target[0].fe.understory_stemc_consumed;
+                        canopy_target[0].fe.acc_year.understory_rootc_consumed += canopy_target[0].fe.understory_rootc_consumed;
+                        canopy_target[0].fe.acc_year.length_understory +=1;
+
+					}
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
@@ -296,8 +340,32 @@ void compute_fire_effects(
 				canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 				/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-				canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+				//canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
+                /* Determine the amount of carbon consumed in the understory subtarget canopy */
+					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed); // + litter_c_consumed;
+
+					//new outputs
+					canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+					canopy_target[0].fe.understory_stemc_consumed = canopy_target[0].fe.canopy_subtarget_stemc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+					canopy_target[0].fe.understory_rootc_consumed = canopy_target[0].fe.canopy_subtarget_rootc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+
+					// accumulate understory here?
+					if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
+
+                        canopy_target[0].fe.acc_year.m_cwdc_to_atmos += canopy_target[0].fe.m_cwdc_to_atmos;
+                        canopy_target[0].fe.acc_year.m_cwdn_to_atmos += canopy_target[0].fe.m_cwdn_to_atmos;
+
+                    // litter
+                        canopy_target[0].fe.acc_year.litter_c_consumed += litter_c_consumed; //should be here so not double counts
+                    // understory
+                        canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;// including litter
+                        canopy_target[0].fe.acc_year.understory_leafc_consumed += canopy_target[0].fe.understory_leafc_consumed;
+                        canopy_target[0].fe.acc_year.understory_stemc_consumed += canopy_target[0].fe.understory_stemc_consumed;
+                        canopy_target[0].fe.acc_year.understory_rootc_consumed += canopy_target[0].fe.understory_rootc_consumed;
+                        canopy_target[0].fe.acc_year.length_understory +=1;
+
+					}
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) and then account for target canopy height allocation */
 				canopy_target[0].fe.canopy_target_prop_mort_o_component = (1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2)))))) * (1-canopy_target[0].fe.canopy_target_height_u_prop);
 
@@ -321,7 +389,7 @@ void compute_fire_effects(
 			/* Calculate fire effects when target canopy is short			*/
 			/*--------------------------------------------------------------*/
 
-			} else if (canopy_target[0].fe.canopy_target_height < patch[0].soil_defaults[0][0].understory_height_thresh) {
+			} else if (canopy_target[0].fe.canopy_target_height < patch[0].soil_defaults[0][0].understory_height_thresh) { //line 282
 
 				/* Determine the proportion of carbon mortality in the target canopy */
 				if (canopy_target[0].defaults[0][0].understory_mort <= 0){
@@ -357,6 +425,8 @@ void compute_fire_effects(
 			mort.mort_deadcrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
+
+
 
 			thin_type =2;	/* Harvest option */
 			update_mortality(
@@ -402,6 +472,39 @@ void compute_fire_effects(
 			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
 			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
 
+			// track the overstory c consumed
+            if (canopy_target[0].fe.canopy_target_height > patch[0].soil_defaults[0][0].overstory_height_thresh && patch[0].soil_defaults[0][0].overstory_height_thresh >0){
+            canopy_target[0].fe.overstory_c_consumed = canopy_target[0].fe.canopy_target_biomassc * canopy_target[0].fe.canopy_target_prop_c_consumed;
+            canopy_target[0].fe.overstory_leafc_consumed = canopy_target[0].fe.canopy_target_leafc * canopy_target[0].fe.canopy_target_prop_c_consumed;
+            canopy_target[0].fe.overstory_stemc_consumed = canopy_target[0].fe.canopy_target_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed;
+            canopy_target[0].fe.overstory_rootc_consumed = canopy_target[0].fe.canopy_target_rootc * canopy_target[0].fe.canopy_target_prop_c_consumed;
+
+			// track overstory c mortality
+
+            //new outputs
+            canopy_target[0].fe.overstory_leafc_mortality = canopy_target[0].fe.canopy_target_leafc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
+            canopy_target[0].fe.overstory_stemc_mortality = canopy_target[0].fe.canopy_target_stemc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+            canopy_target[0].fe.overstory_rootc_mortality = canopy_target[0].fe.canopy_target_rootc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+
+            canopy_target[0].fe.overstory_c_mortality = canopy_target[0].fe.overstory_leafc_mortality + canopy_target[0].fe.overstory_stemc_mortality + canopy_target[0].fe.overstory_rootc_mortality;
+
+                 if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
+
+                    //overstory
+                    canopy_target[0].fe.acc_year.overstory_c_consumed +=  canopy_target[0].fe.overstory_c_consumed;
+                    canopy_target[0].fe.acc_year.overstory_leafc_consumed += canopy_target[0].fe.overstory_leafc_consumed;
+                    canopy_target[0].fe.acc_year.overstory_stemc_consumed += canopy_target[0].fe.overstory_stemc_consumed;
+                    canopy_target[0].fe.acc_year.overstory_rootc_consumed += canopy_target[0].fe.overstory_rootc_consumed;
+
+                    canopy_target[0].fe.acc_year.overstory_c_mortality+=  canopy_target[0].fe.overstory_c_mortality;
+                    canopy_target[0].fe.acc_year.overstory_leafc_mortality += canopy_target[0].fe.overstory_leafc_mortality;
+                    canopy_target[0].fe.acc_year.overstory_stemc_mortality += canopy_target[0].fe.overstory_stemc_mortality;
+                    canopy_target[0].fe.acc_year.overstory_rootc_mortality += canopy_target[0].fe.overstory_rootc_mortality;
+
+                    canopy_target[0].fe.acc_year.length_overstory +=1;
+                 }
+            }
+
 			thin_type =1;
 			update_mortality(
 				canopy_target[0].defaults[0][0].epc,
@@ -416,13 +519,14 @@ void compute_fire_effects(
 				thin_type,
 				mort);
 
+
+
             /*----------------------------------------------------------------------------------------*/
             /* accumulate the monthly fire effects output to yearly by for yearly fire output         */
             /*----------------------------------------------------------------------------------------*/
 
             if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
-                canopy_target[0].fe.acc_year.m_cwdc_to_atmos += canopy_target[0].fe.m_cwdc_to_atmos;
-                canopy_target[0].fe.acc_year.m_cwdn_to_atmos += canopy_target[0].fe.m_cwdn_to_atmos;
+
                 //canopy_target.fe.acc_year.canopy_target_height +=
                 canopy_target[0].fe.acc_year.canopy_target_height_u_prop += canopy_target[0].fe.canopy_target_height_u_prop;
                 canopy_target[0].fe.acc_year.canopy_target_prop_mort += canopy_target[0].fe.canopy_target_prop_mort;
@@ -438,13 +542,12 @@ void compute_fire_effects(
                 canopy_target[0].fe.acc_year.canopy_subtarget_prop_mort += canopy_target[0].fe.canopy_subtarget_prop_mort;
                 canopy_target[0].fe.acc_year.canopy_subtarget_prop_mort_consumed += canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
                 canopy_target[0].fe.acc_year.canopy_subtarget_prop_c_consumed += canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
-                //canopy_target.fe.acc_year.canopy_subtarget_c +=
-                canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;
+
 
                 canopy_target[0].fe.acc_year.length +=1;
 
 
-            }
+            } //end accumulation
 
 
 
@@ -463,18 +566,42 @@ void compute_fire_effects(
 			if (patch[0].num_layers > (layer+1)){
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
 				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
-				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
-						canopy_subtarget[0].cs.live_stemc +
-						canopy_subtarget[0].cs.dead_stemc;
+
+				canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc +
+						canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc +
+						canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc +
+						canopy_subtarget[0].cs.frootc + canopy_subtarget[0].cs.cpool;
+
+                canopy_target[0].fe.canopy_subtarget_leafc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc;
+                canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
+                canopy_target[0].fe.canopy_subtarget_rootc = canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc + canopy_subtarget[0].cs.frootc;
+
                 } else {
 				canopy_target[0].fe.canopy_subtarget_height = 0;
-				canopy_target[0].fe.canopy_subtarget_c = 0;
+				canopy_target[0].fe.canopy_subtarget_biomassc = 0;
+
+            // add the over story NREN
+            canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
+                    canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
+                    canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc +
+                    canopy_target[0].cs.frootc + canopy_target[0].cs.cpool;
+
+
+            canopy_target[0].fe.canopy_target_leafc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc;
+            canopy_target[0].fe.canopy_target_stemc = canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc;
+            canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
+
+
+
 			}
 
            } // end for c=0
         } //end for layer =0
 
     }
+
+
+
 	return;
 } /*end compute_fire_effects.c*/
 

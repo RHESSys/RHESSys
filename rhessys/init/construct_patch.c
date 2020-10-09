@@ -259,6 +259,7 @@ struct patch_object *construct_patch(
 
 	patch[0].acc_year.burn = 0.0;
 	patch[0].burn = 0.0;
+	patch[0].litterc_burned = 0.0; //new NREN
 	patch[0].overstory_burn = 0.0; //Add overstory_burn for burn beetle-caused snag pool NREN 20190914
 	patch[0].acc_year.pcp = 0.0;
 	patch[0].acc_year.snowin = 0.0;

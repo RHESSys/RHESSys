@@ -35,6 +35,7 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 			int patchID,
 			struct	canopy_strata_object	*stratum,
 			struct	date	current_date,
+			struct	command_line_object *command_line,
 			FILE *outfile)
 {
 	/*--------------------------------------------------------------*/
@@ -74,16 +75,16 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec,
 		stratum[0].ns.redneedlen + stratum[0].ns.delay_redneedlen,
 		stratum[0].cs.dead_rootc_beetle,
-		stratum[0].ns.dead_rootn_beetle
+		stratum[0].ns.dead_rootn_beetle,
 
     stratum[0].epv.height, // the reason here height is different with fire.yearly, is fire.yearly is before burning but, stratum.yearly; if turn off the fire effect they should be the same
     stratum[0].rootzone.depth*1000.0);
-  
+
   if (command_line[0].f == NULL) { //If there is fire yearly growth output, set up set in the fire yearly growth output
-    
+
     stratum[0].acc_year.psn = 0.0;
     stratum[0].acc_year.minNSC = -999;
   }
-  
+
 	return;
 } /*end output_yearly_growth_canopy_stratum*/

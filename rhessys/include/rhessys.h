@@ -1903,6 +1903,7 @@ struct patch_object
 /*----------------------------------------------------------*/
 
         double  burn;                           /* 0-1 % burned */
+        double  litterc_burned;                  /* kgC/m2 total litter carbon consumed by fire ; from fire effect model*/
         double  overstory_burn;                 /* 0-1 % save the overstory burned for burn the beetle-caused snag burn NREN 20190914 */
         double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
         double  preday_totalc;                  /* kgC/m2 total carbon */
@@ -2826,11 +2827,13 @@ struct epconst_struct
 /*----------------------------------------------------------*/
 
 struct accumulate_fire_object {
-  
+
   int length;
+  int length_overstory;
+  int length_understory;
   double  m_cwdc_to_atmos;
   double  m_cwdn_to_atmos;
-  
+
   //double  canopy_target_height;
   double  canopy_target_height_u_prop;
   double  canopy_target_prop_mort;
@@ -2841,14 +2844,30 @@ struct accumulate_fire_object {
   double  canopy_target_prop_c_remain;
   double  canopy_target_prop_c_remain_adjusted;
   double  canopy_target_prop_c_remain_adjusted_leafc;
-  
+
   //double  canopy_subtarget_height;
   double  canopy_subtarget_height_u_prop;
   double  canopy_subtarget_prop_mort;
   double  canopy_subtarget_prop_mort_consumed;
   double  canopy_subtarget_prop_c_consumed;
   //double  canopy_subtarget_c;
+
+  double  litter_c_consumed;
   double  understory_c_consumed;
+  double  understory_leafc_consumed;
+  double  understory_stemc_consumed;
+  double  understory_rootc_consumed;
+
+  double  overstory_c_consumed;
+  double  overstory_leafc_consumed;
+  double  overstory_stemc_consumed;
+  double  overstory_rootc_consumed;
+
+  double  overstory_c_mortality;
+  double  overstory_leafc_mortality;
+  double  overstory_stemc_mortality;
+  double  overstory_rootc_mortality;
+
 };
 
 
@@ -2870,16 +2889,40 @@ struct  fire_effects_object {
 	double  canopy_target_prop_c_remain;
 	double  canopy_target_prop_c_remain_adjusted;
 	double  canopy_target_prop_c_remain_adjusted_leafc;
+	//new
+	double  canopy_target_biomassc;
+	double  canopy_target_leafc;
+	double  canopy_target_stemc;
+	double  canopy_target_rootc;
 
 	double  canopy_subtarget_height;
 	double  canopy_subtarget_height_u_prop;
 	double  canopy_subtarget_prop_mort;
 	double  canopy_subtarget_prop_mort_consumed;
 	double  canopy_subtarget_prop_c_consumed;
-	double  canopy_subtarget_c;
+	double  canopy_subtarget_biomassc;
+	double  canopy_subtarget_leafc;
+	double  canopy_subtarget_stemc;
+	double  canopy_subtarget_rootc;
+
+
 	double  understory_c_consumed;
+	double  understory_leafc_consumed;
+	double  understory_stemc_consumed;
+	double  understory_rootc_consumed;
+
+	double  overstory_c_consumed;
+	double  overstory_leafc_consumed;
+	double  overstory_stemc_consumed;
+	double  overstory_rootc_consumed;
+
+	double  overstory_c_mortality;
+	double  overstory_leafc_mortality;
+	double  overstory_stemc_mortality;
+	double  overstory_rootc_mortality;
+
 	struct  accumulate_fire_object acc_year;
-	
+
 };
 
 

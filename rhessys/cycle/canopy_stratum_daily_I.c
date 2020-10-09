@@ -119,7 +119,7 @@ void	canopy_stratum_daily_I(
 		struct mortality_struct);
 
 	int	zero_stratum_daily_flux(struct cdayflux_struct *,
-		struct ndayflux_struct *);
+		struct ndayflux_struct *, struct fire_effects_object *);
 
 
 	/*--------------------------------------------------------------*/
@@ -140,10 +140,11 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	/*  zero all of the carbon daily flux variables.		*/
 	/*--------------------------------------------------------------*/
-	if (zero_stratum_daily_flux(&(stratum[0].cdf), &(stratum[0].ndf) )){
+	if (zero_stratum_daily_flux(&(stratum[0].cdf), &(stratum[0].ndf), &(stratum[0].fe) )){
 		fprintf(stderr,"fATAL ERROR: in zero_day_flux() ... Exiting\n");
 		exit(EXIT_FAILURE);
 	}
+
 
 
 /*	stratum[0].Kup_direct = 0.0;

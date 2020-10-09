@@ -76,6 +76,9 @@ void	output_growth_basin(
 	struct hillslope_object *hillslope;
 	struct  canopy_strata_object    *strata;
 	double apro_abc_litr;
+	double alitterc_burned, aoverstory_biomassc_consumed, aoverstory_leafc_consumed, aoverstory_stemc_consumed;
+	double acwdc_to_atoms, aoverstory_biomassc_mortality, aoverstory_leafc_mortality, aoverstory_stemc_mortality;
+	double aunderstory_biomassc_consumed, aunderstory_leafc_consumed, aunderstory_stemc_consumed, aburn;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -87,7 +90,7 @@ void	output_growth_basin(
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
-	alitrn = 0.0; asoiln = 0.0; asoiln_noslow;
+	alitrn = 0.0; asoiln = 0.0; asoiln_noslow = 0.0;
 	anitrate = 0.0;
 	asurfaceN = 0.0;
 	asoilc = 0.0; asminn=0.0;
@@ -140,6 +143,11 @@ void	output_growth_basin(
 	aunderstory_rootdepth = 0;
 	aunderstory_npp = 0;
 	apro_abc_litr =0;
+	alitterc_burned = 0.0;
+	acwdc_to_atoms = 0.0; aburn = 0.0;
+    aoverstory_biomassc_consumed = 0.0; aoverstory_leafc_consumed = 0.0, aoverstory_stemc_consumed = 0.0;
+	aoverstory_biomassc_mortality = 0.0, aoverstory_leafc_mortality = 0.0, aoverstory_stemc_mortality = 0.0;
+	aunderstory_biomassc_consumed = 0.0, aunderstory_leafc_consumed = 0.0, aunderstory_stemc_consumed = 0.0;
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
@@ -186,7 +194,12 @@ void	output_growth_basin(
 				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
 				anfix += (patch[0].ndf.nfix_to_sminn) * patch[0].area;
 				acloss += (patch[0].grazing_Closs) * patch[0].area;
-				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area,
+				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area;
+				alitterc_burned += (patch[0].litterc_burned)* patch[0].area; //new
+				aburn += (patch[0].burn) * patch[0].area;
+				/*zero the fire effect flux after output */
+                patch[0].litterc_burned = 0.0; //don't know why if I put it in zero_patch_flux the basin daily outputs zero always
+                patch[0].burn = 0.0;
 
 				asoilhr += (
 					patch[0].cdf.litr1c_hr +
@@ -290,8 +303,44 @@ void	output_growth_basin(
 							+ strata->cs.dead_stemc) * patch[0].area * p_under;
 						aunderstory_biomassc += (woodc + frootc + leafc) * p_under;
 
+                        /* fire burned */
+                        aoverstory_biomassc_consumed += strata->cover_fraction * patch[0].area *
+                                 strata->fe.overstory_c_consumed * p_over; //p_over to make sure overstory only calculated once
+                        aoverstory_leafc_consumed += strata->cover_fraction * patch[0].area *
+                                 strata->fe.overstory_leafc_consumed * p_over;
+                        aoverstory_stemc_consumed += strata->cover_fraction * patch[0].area *
+                                 strata->fe.overstory_stemc_consumed * p_over;
+                        /* fire caused mortality */
+                        aoverstory_biomassc_mortality += strata->cover_fraction * patch[0].area *
+                                 strata->fe.overstory_c_mortality * p_over; //p_over to make sure overstory only calculated once
+                        aoverstory_leafc_mortality += strata->cover_fraction * patch[0].area *
+                                 strata->fe.overstory_leafc_mortality * p_over;
+                        aoverstory_stemc_mortality += strata->cover_fraction * patch[0].area *
+                                 strata->fe.overstory_stemc_mortality * p_over;
+                        /* fire burn understory */
+                        aunderstory_biomassc_consumed += strata->cover_fraction * patch[0].area *
+                                 strata->fe.understory_c_consumed * p_over; //p_over to make sure overstory only calculated once
+                        aunderstory_leafc_consumed += strata->cover_fraction * patch[0].area *
+                                 strata->fe.understory_leafc_consumed * p_over;
+                        aunderstory_stemc_consumed += strata->cover_fraction * patch[0].area *
+                                 strata->fe.understory_stemc_consumed * p_over;
+                        /* cwd burned */
+                        acwdc_to_atoms += strata->cover_fraction * (strata->fe.m_cwdc_to_atmos) * patch[0].area;
 
-
+                        /*---zero these fire effect output flux after output it ------------*/
+                        strata[0].fe.overstory_c_consumed = 0.0;
+                        strata[0].fe.overstory_leafc_consumed = 0.0;
+                        strata[0].fe.overstory_stemc_consumed = 0.0;
+                        /* fire caused mortality */
+                        strata[0].fe.overstory_c_mortality = 0.0;//p_over to make sure overstory only calculated once
+                        strata[0].fe.overstory_leafc_mortality = 0.0;
+                        strata[0].fe.overstory_stemc_mortality = 0.0;
+                        /* fire burn understory */
+                        strata[0].fe.understory_c_consumed = 0.0; //p_over to make sure overstory only calculated once
+                        strata[0].fe.understory_leafc_consumed = 0.0;
+                        strata[0].fe.understory_stemc_consumed = 0.0;
+                        /* cwd burned */
+                        strata[0].fe.m_cwdc_to_atmos = 0.0;
 
 						/* output the basin snag and red needle carbon NREN 2018715 */
 						asnagc += strata->cover_fraction * (strata->cs.snagc +strata->cs.delay_snagc)*patch[0].area;
@@ -401,6 +450,21 @@ void	output_growth_basin(
 	hgwNO3out = hgwNO3out / basin_area;
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
+	/* output fire result in total 12 */
+	aburn = aburn / basin_area;
+	alitterc_burned = alitterc_burned / basin_area;
+	acwdc_to_atoms = acwdc_to_atoms / basin_area;
+	aoverstory_biomassc_consumed = aoverstory_biomassc_consumed / basin_area;
+	aoverstory_leafc_consumed = aoverstory_leafc_consumed / basin_area;
+	aoverstory_stemc_consumed = aoverstory_stemc_consumed / basin_area;
+	aoverstory_biomassc_mortality = aoverstory_biomassc_mortality / basin_area;
+	aoverstory_leafc_mortality = aoverstory_leafc_mortality / basin_area;
+	aoverstory_stemc_mortality = aoverstory_stemc_mortality / basin_area;
+	aunderstory_biomassc_consumed = aunderstory_biomassc_consumed / basin_area;
+	aunderstory_leafc_consumed = aunderstory_leafc_consumed / basin_area;
+	aunderstory_stemc_consumed = aunderstory_stemc_consumed / basin_area;
+
+
 	/* output the basin scale snag pool */
 	asnagc /=aarea;
 	asnagn /=aarea;
@@ -415,7 +479,7 @@ void	output_growth_basin(
 	apro_abc_litr /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -472,6 +536,20 @@ void	output_growth_basin(
 		aoverstory_stemc,
 		aoverstory_biomassc,
 		aoverstory_height,
+        //fire g carbon/m2
+        aburn,
+        alitterc_burned*1000,
+        acwdc_to_atoms*1000,
+        aoverstory_biomassc_consumed*1000,
+        aoverstory_leafc_consumed*1000,
+        aoverstory_stemc_consumed*1000,
+        aoverstory_biomassc_mortality*1000,
+        aoverstory_leafc_mortality*1000,
+        aoverstory_stemc_mortality*1000,
+        aunderstory_biomassc_consumed*1000,
+        aunderstory_leafc_consumed*1000,
+        aunderstory_stemc_consumed*1000,
+
 		asnagc,
 		asnagn,
 		aredneedlec,
@@ -488,5 +566,7 @@ void	output_growth_basin(
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/
 	/*	basin[0].ID, date.year, date.month, date.day);*/
 	/*------------------------------------------*/
+
+
 	return;
 } /*end output_daily_growth_basin*/

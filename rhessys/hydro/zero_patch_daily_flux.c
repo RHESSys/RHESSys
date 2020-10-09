@@ -61,6 +61,10 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	patch[0].bgc_to_litrc = 0.0;  //NREN 20190927
 	patch[0].flux_litterc_out = 0.0;
 
+	/* fire effect */
+	//patch[0].litterc_burned = 0.0;
+	//patch[0].burn = 0.0;
+
 	/*--------------------------------------------------------------*/
 	/* daily carbon fluxes */
 	/*--------------------------------------------------------------*/

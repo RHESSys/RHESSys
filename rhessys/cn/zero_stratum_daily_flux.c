@@ -31,18 +31,19 @@
 
 int zero_stratum_daily_flux(
 							struct cdayflux_struct *cdf,
-							struct ndayflux_struct *ndf)
+							struct ndayflux_struct *ndf,
+							struct fire_effects_object *fe)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	int ok=1;
 
-		
+
 	/* sets all the daily flux variables to 0.0 at the beginning of the day */
 	/* carbon fluxes */
 	cdf->psn_to_cpool = 0.0;    /* (kgC/m2/d) gross photosynthesis */
@@ -84,7 +85,7 @@ int zero_stratum_daily_flux(
 	cdf->froot_mr = 0.0;
 	cdf->livestem_mr = 0.0;
 	cdf->livecroot_mr = 0.0;
-  cdf->total_mr = 0.0;
+    cdf->total_mr = 0.0;
 	/* growth respiration fluxes */
 	cdf->transfer_leaf_gr = 0.0;
 	cdf->cpool_froot_gr = 0.0;
@@ -132,6 +133,55 @@ int zero_stratum_daily_flux(
 	ndf->deadstemn_store_to_deadstemn_transfer = 0.0;
 	ndf->livecrootn_store_to_livecrootn_transfer = 0.0;
 	ndf->deadcrootn_store_to_deadcrootn_transfer = 0.0;
+
+	/* fire effect object */
+	/*fe->m_cwdc_to_atmos = 0.0;
+	fe->m_cwdn_to_atmos = 0.0;
+
+	fe->canopy_target_height = 0.0;
+	fe->canopy_target_height_u_prop = 0.0;
+	fe->canopy_target_prop_mort = 0.0;
+	fe->canopy_target_prop_mort_consumed = 0.0;
+	fe->canopy_target_prop_mort_u_component = 0.0;
+	fe->canopy_target_prop_mort_o_component = 0.0;
+	fe->canopy_target_prop_c_consumed = 0.0;
+	fe->canopy_target_prop_c_remain = 0.0;
+	fe->canopy_target_prop_c_remain_adjusted = 0.0;
+	fe->canopy_target_prop_c_remain_adjusted_leafc = 0.0;
+	//new
+	fe->canopy_target_biomassc = 0.0;
+	fe->canopy_target_leafc = 0.0;
+	fe->canopy_target_stemc = 0.0;
+	fe->canopy_target_rootc = 0.0;
+
+	fe->canopy_subtarget_height = 0.0;
+	fe->canopy_subtarget_height_u_prop = 0.0;
+	fe->canopy_subtarget_prop_mort = 0.0;
+	fe->canopy_subtarget_prop_mort_consumed = 0.0;
+	fe->canopy_subtarget_prop_c_consumed = 0.0;
+	fe->canopy_subtarget_biomassc = 0.0;
+	fe->canopy_subtarget_leafc = 0.0;
+	fe->canopy_subtarget_stemc = 0.0;
+	fe->canopy_subtarget_rootc = 0.0;
+
+
+	fe->understory_c_consumed = 0.0;
+	fe->understory_leafc_consumed = 0.0;
+	fe->understory_stemc_consumed = 0.0;
+	fe->understory_rootc_consumed = 0.0;
+
+	fe->overstory_c_consumed = 0.0;
+	fe->overstory_leafc_consumed = 0.0;
+	fe->overstory_stemc_consumed = 0.0;
+	fe->overstory_rootc_consumed = 0.0;
+
+	fe->overstory_c_mortality = 0.0;
+	fe->overstory_leafc_mortality = 0.0;
+	fe->overstory_stemc_mortality = 0.0;
+	fe->overstory_rootc_mortality = 0.0; */
+
+
+
 	return (!ok);
 } /* end zero_stratum_daily_flux */
 
