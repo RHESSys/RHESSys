@@ -2002,7 +2002,6 @@ void	canopy_stratum_daily_F(
 			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone))/(patch[0].fire_defaults[0][0].ndays_average + 1);
 		//	+ stratum[0].evaporation))/ // MCK: look at et without the evaporation part
 
-
 			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +
 			(stratum[0].PET))/
 			(patch[0].fire_defaults[0][0].ndays_average + 1);

@@ -42,7 +42,8 @@ void execute_firespread_event(
 
 	void	compute_fire_effects(
 		struct patch_object *,
-		double);
+		double,
+		struct	command_line_object	*);
 
 
 	/*--------------------------------------------------------------*/
@@ -55,7 +56,7 @@ void execute_firespread_event(
 	int i,j,p,c,layer;
 	double pspread;
 	double mean_fuel_veg=0,mean_fuel_litter=0,mean_soil_moist=0,mean_fuel_moist=0,mean_relative_humidity=0,
-		mean_wind_direction=0,mean_wind=0,mean_z=0,mean_temp=0,mean_et=0,mean_pet=0,mean_understory_et=0,mean_understory_pet=0;
+		mean_wind_direction=0,mean_wind=0,mean_z=0,mean_temp=0,mean_et=0,mean_pet=0,mean_understory_et=0,mean_understory_pet=0, mean_trans=0;
 	double denom_for_mean=0;
 
 	patch_fire_grid=world[0].patch_fire_grid;
@@ -93,6 +94,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].pet=1.0;
 				    world[0].fire_grid[i][j].understory_et=0.0;
 				    world[0].fire_grid[i][j].understory_pet=1.0;
+                    world[0].fire_grid[i][j].trans=0.0; //NR add transpiration
 				    world[0].fire_grid[i][j].ign_available=0;
 
 
@@ -114,7 +116,7 @@ void execute_firespread_event(
 				    world[0].fire_grid[i][j].pet=0.0;
 				    world[0].fire_grid[i][j].understory_et=0.0;
 				    world[0].fire_grid[i][j].understory_pet=0.0;
-
+                    world[0].fire_grid[i][j].trans=0.0; //NR add transpiration
 				    world[0].fire_grid[i][j].ign_available=0;
 			  }
 		}
@@ -133,6 +135,7 @@ void execute_firespread_event(
 		    world[0].fire_grid[i][j].pet=0.0;
 		    world[0].fire_grid[i][j].understory_et=0.0;
 		    world[0].fire_grid[i][j].understory_pet=0.0;
+            world[0].fire_grid[i][j].trans=0.0; //NR add transpiration
 		    world[0].fire_grid[i][j].ign_available=1;	/* then make this available for ignition */
 		}
 //    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
@@ -186,15 +189,18 @@ void execute_firespread_event(
 			world[0].fire_grid[i][j].temp += patch[0].zone[0].metv.tavg*patch_fire_grid[i][j].prop_patch_in_grid[p];// temperature? mk
 			world[0].fire_grid[i][j].et += patch[0].fire.et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			world[0].fire_grid[i][j].pet += patch[0].fire.pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
-			if(patch[0].fire.understory_et==0&&patch[0].fire.understory_pet==0) // means no understory present, then use overall et and pet for deficit calculation for this patch
+			world[0].fire_grid[i][j].trans += patch[0].fire.trans * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p]; //where is fire.trans
+			if(patch[0].fire.understory_et==0 && patch[0].fire.understory_pet==0) // means no understory present, then use overall et and pet for deficit calculation for this patch
 			{
 				world[0].fire_grid[i][j].understory_et = world[0].fire_grid[i][j].et;
 				world[0].fire_grid[i][j].understory_pet = world[0].fire_grid[i][j].pet;
+
 			}
 			else
 			{
 				world[0].fire_grid[i][j].understory_et += patch[0].fire.understory_et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 				world[0].fire_grid[i][j].understory_pet += patch[0].fire.understory_pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+
 			}
 	//printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
 
@@ -214,6 +220,7 @@ void execute_firespread_event(
 			mean_pet+=world[0].fire_grid[i][j].pet;
 			mean_understory_et+=world[0].fire_grid[i][j].understory_et;
 			mean_understory_pet+=world[0].fire_grid[i][j].understory_pet;
+			mean_trans += world[0].fire_grid[i][j].trans; //NEW NR
 		//	printf("et: %f  pet: %f  ",world[0].fire_grid[i][j].et,world[0].fire_grid[i][j].pet);
 		}
 
@@ -221,6 +228,7 @@ void execute_firespread_event(
 		world[0].fire_grid[i][j].pet=world[0].fire_grid[i][j].pet*1000; // convert to mm
 		world[0].fire_grid[i][j].understory_et=world[0].fire_grid[i][j].understory_et*1000; // convert to mm
 		world[0].fire_grid[i][j].understory_pet=world[0].fire_grid[i][j].understory_pet*1000; // convert to mm
+		world[0].fire_grid[i][j].trans=world[0].fire_grid[i][j].trans*1000;//NEW NR
 
 
 	}
@@ -241,6 +249,8 @@ void execute_firespread_event(
 		mean_pet=mean_pet/denom_for_mean;
 		mean_understory_et=mean_understory_et/denom_for_mean;
 		mean_understory_pet=mean_understory_pet/denom_for_mean;
+		mean_trans=mean_trans/denom_for_mean;
+
 	//	printf("mean et: %f  mean pet: %f  ",mean_et,mean_pet);
 
 	//	printf("mean pet, mean et: %lf\t%lf\n",mean_pet,mean_et);
@@ -263,6 +273,7 @@ void execute_firespread_event(
 				world[0].fire_grid[i][j].pet=mean_pet*1000; // convert to mm
 				world[0].fire_grid[i][j].understory_et=mean_understory_et*1000; // convert to mm
 				world[0].fire_grid[i][j].understory_pet=mean_understory_pet*1000; // convert to mm
+                world[0].fire_grid[i][j].trans=mean_trans*1000;//NEW NR
 	//	printf("in denom if take 2 update values\n");
 			  }
 		     }

@@ -2251,6 +2251,11 @@ void		patch_daily_F(
 				+ patch[0].PET) /
 		(patch[0].fire_defaults[0][0].ndays_average + 1);
 
+		//trans NREN
+		patch[0].fire.trans = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.trans
+				+ (patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone)) /
+		(patch[0].fire_defaults[0][0].ndays_average + 1);
+
 		}
 
 

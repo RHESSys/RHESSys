@@ -80,6 +80,7 @@ struct fire_object
 	double temp; /* temperature of the cell */
 	double et; // total evapotranspiration
 	double pet; // total potential evapotranspiration
+	double trans;
 	int ign_available; /* 1 if available for ignition, 0 otherwise*/
 	double understory_et; //evapotranspiration of only the understory
 	double understory_pet; //potential evapotranspiration of only the understory

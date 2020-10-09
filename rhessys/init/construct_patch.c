@@ -300,6 +300,7 @@ struct patch_object *construct_patch(
 		patch[0].fire.pet = 0.0;
 		patch[0].fire.understory_et = 0;
 		patch[0].fire.understory_pet = 0;
+		patch[0].fire.trans = 0;
 		// here set fire.understory_et and fire.understory_pet = 0;
 		}
 

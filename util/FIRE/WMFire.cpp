@@ -1001,6 +1001,26 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		curFile.append(curMonth);
 		curFile.append(".txt");
 
+    /*-----new trans-------*/
+	//	ofstream fireOut;
+		fireOut.open(curFile.c_str());
+		for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+		{
+			for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
+			{
+				fireOut<<fireGrid_[i][j].trans<<"\t";
+			}
+			fireOut<<"\n";
+		}
+		fireOut.close();
+
+		curFile.assign("TRANSGridYear");
+		curFile.append(curYear);
+		curFile.append("Month");
+		curFile.append(curMonth);
+		curFile.append(".txt");
+
+
 	//	ofstream fireOut;
 		fireOut.open(curFile.c_str());
 		for(int i=0; i<rows_; i++)	//then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
