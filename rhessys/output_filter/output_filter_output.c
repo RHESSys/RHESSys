@@ -26,9 +26,23 @@ inline static void add_to_accum_reset_list(PointerList_t **list_ptr, void *entit
 	}
 }
 
-inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
+inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * entity) {
 	MaterializedVariable mat_var;
 	size_t offset = v->offset;
+	if (v->sub_struct_ptr) {
+		// TODO: Remove comment
+		// Change entity to point to struct pointed to by original entity+offset.
+		// Do this by going to where the pointer to the sub-struct is within the original
+		// struct (e.g. entity+offset), then cast to char * (even though that's not the type)
+		// just so that we can de-reference the pointer to get the address of the substruct,
+		// which is the new entity whose member (indicated by v->sub_struct_var_offset) we
+		// want to access.
+		//entity = (void *) ((char *)entity) + offset;
+
+		// Variable of interest is in another struct pointed to from the main struct. The entity should already
+		// be that other struct at this point, so we can ignore the offset to the other struct pointer.
+		offset = 0;
+	}
 	if (v->sub_struct_var_offset != SIZE_MAX) {
 		// If sub_struct_var_offset has been set for this variable
 		// (which means this must be a sub-struct variable) apply it to the offset
@@ -37,47 +51,83 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 	switch (v->data_type) {
 	case DATA_TYPE_BOOL:
 		mat_var.data_type = v->data_type;
-		mat_var.u.bool_val = *((bool *)(entity + offset));
+		if (entity != NULL) {
+			mat_var.u.bool_val = *((bool *)(entity + offset));
+		} else {
+			mat_var.u.bool_val = false;
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
 		break;
 	case DATA_TYPE_CHAR:
 		mat_var.data_type = v->data_type;
-		mat_var.u.char_val = *((char *)(entity + offset));
+		if (entity != NULL) {
+			mat_var.u.char_val = *((char *)(entity + offset));
+		} else {
+			mat_var.u.char_val = '\0';
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
 		break;
 	case DATA_TYPE_STRING:
 		mat_var.data_type = v->data_type;
-		mat_var.u.char_array = (char *)(entity + offset);
+		if (entity != NULL) {
+			mat_var.u.char_array = (char *)(entity + offset);
+		} else {
+			mat_var.u.char_array = NULL;
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
 		break;
 	case DATA_TYPE_INT:
 		mat_var.data_type = v->data_type;
-		mat_var.u.int_val = *((int *)(entity + offset));
+		if (entity != NULL) {
+			mat_var.u.int_val = *((int *)(entity + offset));
+		} else {
+			mat_var.u.int_val = 0;
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
 		break;
 	case DATA_TYPE_LONG:
 		mat_var.data_type = v->data_type;
-		mat_var.u.long_val = *((long *)(entity + offset));
+		if (entity != NULL) {
+			mat_var.u.long_val = *((long *)(entity + offset));
+		} else {
+			mat_var.u.long_val = 0;
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
 		break;
 	case DATA_TYPE_LONG_ARRAY:
 		mat_var.data_type = v->data_type;
-		mat_var.u.long_array = (long *)(entity + offset);
+		if (entity != NULL) {
+			mat_var.u.long_array = (long *)(entity + offset);
+		} else {
+			mat_var.u.long_array = NULL;
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
 		break;
 	case DATA_TYPE_FLOAT:
 		mat_var.data_type = v->data_type;
-		mat_var.u.float_val = *((float *)(entity + offset));
+		if (entity != NULL) {
+			mat_var.u.float_val = *((float *)(entity + offset));
+		} else {
+			mat_var.u.float_val = 0.0;
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
 		break;
 	case DATA_TYPE_DOUBLE:
 		mat_var.data_type = v->data_type;
-		mat_var.u.double_val = *((double *)(entity + offset));
+		if (entity != NULL) {
+			mat_var.u.double_val = *((double *)(entity + offset));
+		} else {
+			mat_var.u.double_val = 0.0;
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
 		break;
 	case DATA_TYPE_DOUBLE_ARRAY:
 		mat_var.data_type = v->data_type;
-		mat_var.u.double_array = (double *)(entity + offset);
+		if (entity != NULL) {
+			mat_var.u.double_array = (double *)(entity + offset);
+		} else {
+			mat_var.u.double_array = NULL;
+		}
 		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
 		break;
 	default:
@@ -89,7 +139,12 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 }
 
 inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
-		struct canopy_strata_object *stratum) {
+		OutputFilterVariable *var,
+		void *entity_in) {
+	// Since determine_stratum_entity() will be called, via a function pointer, from output_variables()
+	// the stratum is passed in as a void * pointer (since output_variables() can be called on
+	// any entity type), so we need to cast back into struct canopy_strata_object *.
+	struct canopy_strata_object *stratum = (struct canopy_strata_object *)entity_in;
 	void *entity = NULL;
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
@@ -103,14 +158,36 @@ inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
 	case TIMESTEP_HOURLY:
 	case TIMESTEP_DAILY:
 	default:
-		entity = (void *)stratum;
+		if (var->sub_struct_ptr) {
+			// Variable of interest is in a sub struct referenced by a pointer, check if substruct is one
+			// that is supported by output filtering
+			if (strcmp("hourly", var->name) == 0) {
+				entity = (void *)(stratum->hourly);
+			} else {
+				char *local_error = (char *)calloc(MAXSTR, sizeof(char));
+				snprintf(local_error, MAXSTR, "determine_stratum_entity:  sub struct pointer named '%s' is not supported for entity type canopy_strata_object.\n",
+						 var->name);
+				fprintf(stderr, local_error);
+				free(local_error);
+				return NULL;
+			}
+		} else {
+			// Variable of interest is not in a sub struct referenced by a pointer, so just use the
+			// base entity as the entity.
+			entity = (void *)stratum;
+		}
 		break;
 	}
 	return entity;
 }
 
 inline static void *determine_patch_entity(OutputFilterTimestep timestep,
-		struct patch_object *patch) {
+		OutputFilterVariable *var,
+		void *entity_in) {
+	// Since determine_patch_entity() will be called, via a function pointer, from output_variables()
+	// the patch is passed in as a void * pointer (since output_variables() can be called on
+	// any entity type), so we need to cast back into struct patch_object *.
+	struct patch_object *patch = (struct patch_object *)entity_in;
 	void *entity = NULL;
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
@@ -124,8 +201,29 @@ inline static void *determine_patch_entity(OutputFilterTimestep timestep,
 	case TIMESTEP_HOURLY:
 	case TIMESTEP_DAILY:
 	default:
-		// Not sure this is quite right for hourly but going with it for now
-		entity = (void *)patch;
+		if (var->sub_struct_ptr) {
+			// Variable of interest is in a sub struct referenced by a pointer, check if substruct is one
+			// that is supported by output filtering
+			if (strcmp("hourly", var->name) == 0) {
+				entity = (void *)(patch->hourly);
+			} else if (strcmp("grow", var->name) == 0) {
+				entity = (void *)(patch->grow);
+			} else if (strcmp("zone", var->name) == 0) {
+				entity = (void *)(patch->zone);
+			} else {
+				char *local_error = (char *)calloc(MAXSTR, sizeof(char));
+				snprintf(local_error, MAXSTR, "determine_patch_entity:  sub struct pointer named '%s' is not supported for entity type patch_object.\n",
+						 var->name);
+				fprintf(stderr, local_error);
+				free(local_error);
+				return NULL;
+			}
+		} else {
+			// Variable of interest is not in a sub struct referenced by a pointer, so just use the
+			// base entity as the entity.
+			entity = (void *)patch;
+		}
+
 		break;
 	}
 	return entity;
@@ -138,6 +236,7 @@ static bool apply_to_strata_in_patch(char * const error, size_t error_len,
 	for (size_t i = 0; i < s->patch->num_canopy_strata; i++) {
 		struct canopy_strata_object *stratum = s->patch->canopy_strata[i];
 		id.canopy_strata_ID = stratum->ID;
+		// TODO: Pass determine_stratum_entity as function ptr instead
 		void *entity = determine_stratum_entity(filter->timestep, stratum);
 		bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 		if (!status) return false;
@@ -152,6 +251,7 @@ static bool apply_to_patches_in_zone(char * const error, size_t error_len,
 	for (size_t i = 0; i < p->zone->num_patches; i++) {
 		struct patch_object *patch = p->zone->patches[i];
 		id.patch_ID = patch->ID;
+		// TODO: Pass determine_patch_entity as function ptr instead
 		void *entity = determine_patch_entity(filter->timestep, patch);
 		bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 		if (!status) return false;
@@ -169,6 +269,7 @@ static bool apply_to_strata_in_zone(char * const error, size_t error_len,
 		for (size_t j = 0; j < patch->num_canopy_strata; j++) {
 			struct canopy_strata_object *stratum = patch->canopy_strata[j];
 			id.canopy_strata_ID = stratum->ID;
+			// TODO: Pass determine_stratum_entity as function ptr instead
 			void *entity = determine_stratum_entity(filter->timestep, stratum);
 			bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 			if (!status) return false;
@@ -187,6 +288,7 @@ static bool apply_to_patches_in_hillslope(char * const error, size_t error_len,
 		for (size_t j = 0; j < z->num_patches; j++) {
 			struct patch_object *patch = z->patches[j];
 			id.patch_ID = patch->ID;
+			// TODO: Pass determine_patch_entity as function ptr instead
 			void *entity = determine_patch_entity(filter->timestep, patch);
 			bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 			if (!status) return false;
@@ -208,6 +310,7 @@ static bool apply_to_strata_in_hillslope(char * const error, size_t error_len,
 			for (size_t k = 0; k < patch->num_canopy_strata; k++) {
 				struct canopy_strata_object *stratum = patch->canopy_strata[k];
 				id.canopy_strata_ID = stratum->ID;
+				// TODO: Pass determine_stratum_entity as function ptr instead
 				void *entity = determine_stratum_entity(filter->timestep, stratum);
 				bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 				if (!status) return false;
@@ -230,6 +333,7 @@ static bool apply_to_patches_in_basin(char * const error, size_t error_len,
 			for (size_t k = 0; k < z->num_patches; k++) {
 				struct patch_object *patch = z->patches[k];
 				id.patch_ID = patch->ID;
+				// TODO: Pass determine_patch_entity as function ptr instead
 				void *entity = determine_patch_entity(filter->timestep, patch);
 				bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 				if (!status) return false;
@@ -255,6 +359,7 @@ static bool apply_to_strata_in_basin(char * const error, size_t error_len,
 				for (size_t l = 0; l < patch->num_canopy_strata; l++) {
 					struct canopy_strata_object *stratum = patch->canopy_strata[l];
 					id.canopy_strata_ID = stratum->ID;
+					// TODO: Pass determine_stratum_entity as function ptr instead
 					void *entity = determine_stratum_entity(filter->timestep, stratum);
 					bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 					if (!status) return false;
@@ -265,8 +370,12 @@ static bool apply_to_strata_in_basin(char * const error, size_t error_len,
 	return true;
 }
 
-static bool output_variables(char * const error, size_t error_len,
-		struct date date, void * const entity, EntityID id, OutputFilter const * const f) {
+/* TODO: Refactor to take function of type: (void *)(*determine_entity)(OutputFilterTimestep timestep, OutputFilterVariable var, void *entity)
+ *
+ * */
+static bool output_variables(char * const error, size_t error_len, struct date date,
+		void *(*determine_entity)(OutputFilterTimestep timestep, OutputFilterVariable *var, void *entity),
+		EntityID id, OutputFilter const * const f) {
 	fprintf(stderr, "\t\toutput_variables(num_named_variables: %hu)...\n", f->num_named_variables);
 
 	char *local_error;
@@ -279,6 +388,12 @@ static bool output_variables(char * const error, size_t error_len,
 		switch (v->variable_type) {
 		case NAMED:
 			// Materialize variable and add it to array
+			void *entity = (*determine_entity)(f->timestep, v, entity);
+			if (entity == NULL) {
+				local_error = (char *)calloc(MAXSTR, sizeof(char));
+				snprintf(local_error, MAXSTR, "output_variables: received NULL entity, aborting.");
+				return_with_error(error, error_len, local_error);
+			}
 			mat_var = materialize_variable(v, entity);
 			if (mat_var.data_type == DATA_TYPE_UNDEFINED) {
 				local_error = (char *)calloc(MAXSTR, sizeof(char));
@@ -333,6 +448,7 @@ static bool output_patch(char * const error, size_t error_len,
 			id.zone_ID = p->zoneID;
 			id.patch_ID = p->patchID;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			// TODO: Pass determine_patch_entity as function ptr instead
 			void *entity = determine_patch_entity(filter->timestep, p->patch);
 			status = output_variables(error, error_len, date, entity, id, filter);
 			break;
@@ -392,6 +508,7 @@ static bool output_stratum(char * const error, size_t error_len,
 			id.zone_ID = s->zoneID;
 			id.patch_ID = s->patchID;
 			id.canopy_strata_ID = s->stratumID;
+			// TODO: Pass determine_stratum_entity as function ptr instead
 			void *entity = determine_stratum_entity(filter->timestep, s->stratum);
 			status = output_variables(error, error_len, date, entity, id, filter);
 			break;
@@ -472,6 +589,9 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 	return status;
 }
 
+/*
+ * TODO: Send accumulator lists into output_* functions instead of using global variables
+ */
 bool output_filter_output_monthly(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const filters) {
 	fprintf(stderr, "output_filter_output_monthly(): Where filtered output will happen...\n");
@@ -503,6 +623,9 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 	return status;
 }
 
+/*
+ * TODO: Send accumulator lists into output_* functions instead of using global variables
+ */
 bool output_filter_output_yearly(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const filters) {
 	fprintf(stderr, "output_filter_output_yearly(): Where filtered output will happen...\n");

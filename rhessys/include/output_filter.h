@@ -85,6 +85,7 @@ typedef struct of_var {
 	char *sub_struct_varname;
 	size_t offset;
 	size_t sub_struct_var_offset;
+	bool sub_struct_ptr;
 	void *meta;
 } OutputFilterVariable;
 

@@ -1,7 +1,8 @@
 OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 VERSION = 7.2
 PGM  = rhessys$(VERSION)
-CC = gcc
+#CC = gcc
+CC = clang
 #CXX = g++
 INCLUDES = -Iinclude
 
@@ -17,8 +18,10 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2 -g
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2 -g
+#CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2 -g
+#CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2 -g
+CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -g
+CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -g
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
@@ -392,7 +395,7 @@ rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) -fopenmp $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) -fopenmp $(LINK_FLEX) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -v -o $(PGM)
 endif
 else
 ifdef wmfire
@@ -1054,7 +1057,7 @@ output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_fil
 	flex output_filter_parser.l
 util/index_struct_fields.c: include/rhessys.h
 	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h \
-	--include_structs patch_object accumulate_patch_object patch_hourly_object patch_fire_water_object rooting_zone_object soil_c_object soil_n_object litter_object litter_c_object litter_n_object cdayflux_patch_struct ndayflux_patch_struct canopy_strata_object cstate_struct accumulate_strata_object \
+	--include_structs zone_object patch_object accumulate_patch_object grow_patch_object patch_hourly_object patch_fire_water_object rooting_zone_object soil_c_object soil_n_object litter_object litter_c_object litter_n_object cdayflux_patch_struct ndayflux_patch_struct canopy_strata_object cstate_struct accumulate_strata_object \
 	--output util/index_struct_fields.c
 $(OBJ)/string_list.o: util/string_list.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o $(OBJ)/string_list.o

@@ -52,7 +52,8 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 				return false;
 			}
 			v->offset = var_idx_entry->offset;
-			if (var_idx_entry->data_type ==  DATA_TYPE_STRUCT) {
+			if (var_idx_entry->data_type == DATA_TYPE_STRUCT ||
+					var_idx_entry->data_type == DATA_TYPE_STRUCT_PTR) {
 				if (var_idx_entry->sub_struct_index == NULL) {
 					fprintf(stderr, "init_variables_hourly_daily: variable %s.%s is a sub-struct variable, but does not have a sub-struct index.\n",
 							v->name, v->sub_struct_varname);
@@ -68,6 +69,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 					return false;
 				}
 				v->sub_struct_var_offset = sub_var_idx_entry->offset;
+				v->sub_struct_ptr = var_idx_entry->data_type == DATA_TYPE_STRUCT_PTR;
 				v->data_type = sub_var_idx_entry->data_type;
 			} else {
 				// This is a direct variable within the entity struct, use the data type from

@@ -13,8 +13,10 @@ typedef struct struct_index_s {
 	// pointer to the dictionary associated with the so-named struct. This will
 	// allow for dynamic lookup of struct member offsets when the struct name is
 	// not known until runtime.
+	Dictionary_t *zone_object;
 	Dictionary_t *patch_object;
 	Dictionary_t *accumulate_patch_object;
+	Dictionary_t *grow_patch_object;
 	Dictionary_t *patch_hourly_object;
 	// Begin, structs nested within patch_object...
 	Dictionary_t *patch_fire_water_object;

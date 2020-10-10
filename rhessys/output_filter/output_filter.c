@@ -308,6 +308,7 @@ OutputFilterVariable *create_new_output_filter_variable(char *name) {
 	new_var->sub_struct_varname = NULL;
 	new_var->offset = SIZE_MAX;
 	new_var->sub_struct_var_offset = SIZE_MAX;
+	new_var->sub_struct_ptr = false;
 	new_var->meta = NULL;
 	return new_var;
 }

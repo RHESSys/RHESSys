@@ -17,8 +17,10 @@ TYPES = {
 }
 
 STRUCT_NAMES = [
+	'zone_object',
 	'patch_object',
 	'accumulate_patch_object',
+	'grow_patch_object',
 	'patch_hourly_object',
 	'patch_fire_water_object',
 	'rooting_zone_object',
@@ -80,8 +82,10 @@ output.write('''#include <stdio.h>
 StructIndex_t *new_struct_index() {
 	StructIndex_t *i = (StructIndex_t *) malloc(sizeof(StructIndex_t));
 	assert(i);
+	i->zone_object = NULL;
 	i->patch_object = NULL;
 	i->accumulate_patch_object = NULL;
+	i->grow_patch_object = NULL;
 	i->patch_hourly_object = NULL;
 	i->patch_fire_water_object = NULL;
 	i->rooting_zone_object = NULL;
@@ -109,12 +113,20 @@ StructIndex_t *new_struct_index() {
 
 void free_struct_index(StructIndex_t *i) {
 	if (i == NULL) return;
+	
+	if (i->zone_object) {
+		freeDictionary(i->zone_object);
+	}
+	
 	if (i->patch_object) {
 		freeDictionary(i->patch_object);
 	}
 	
 	if (i->accumulate_patch_object) {
 		freeDictionary(i->accumulate_patch_object);
+	}
+	if (i->grow_patch_object) {
+		freeDictionary(i->grow_patch_object);
 	}
 	if (i->patch_hourly_object) {
 		freeDictionary(i->patch_hourly_object);
@@ -188,10 +200,14 @@ void free_struct_index(StructIndex_t *i) {
 
 StructIndex_t *index_struct_fields() {
 	StructIndex_t *i = new_struct_index();
+	
+	i->zone_object = newDictionary(DICTIONARY_SIZE_LARGE);
+	
 	i->patch_object = newDictionary(DICTIONARY_DEFAULT_SIZE);
 	i->accumulate_patch_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
-	i->patch_hourly_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	
+	i->patch_hourly_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->grow_patch_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	i->patch_fire_water_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	i->rooting_zone_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	i->soil_c_object = newDictionary(DICTIONARY_SIZE_SMALL);
