@@ -567,7 +567,7 @@ void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
 		case DATA_TYPE_BOOL:
 			fprintf(stderr, "%s\tvariable_type: bool,\n", prefix);
 			break;
-		case DATA_TYPE_CHAR_ARRAY:
+		case DATA_TYPE_STRING:
 			fprintf(stderr, "%s\tvariable_type: string,\n", prefix);
 			break;
 		case DATA_TYPE_INT:

@@ -48,7 +48,7 @@ inline int get_netcdf_data_type(DataType type) {
 		return NC_BYTE;
 	case DATA_TYPE_CHAR:
 		return NC_CHAR;
-	case DATA_TYPE_CHAR_ARRAY:
+	case DATA_TYPE_STRING:
 		return NC_STRING;
 	case DATA_TYPE_INT:
 		return NC_INT;
@@ -209,7 +209,7 @@ static bool output_variable_to_netcdf(char * const error, size_t error_len,
 	case DATA_TYPE_CHAR:
 		rv = nc_put_var1_schar(ncid, varid, dimids, &(v.u.char_val));
 		break;
-	case DATA_TYPE_CHAR_ARRAY:
+	case DATA_TYPE_STRING:
 		rv = nc_put_var1_string(ncid, varid, dimids, &(v.u.char_array));
 		break;
 	case DATA_TYPE_INT:

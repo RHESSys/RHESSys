@@ -125,7 +125,7 @@ static bool output_variable_to_stream(char * const error, size_t error_len,
 	case DATA_TYPE_CHAR:
 		rv = fprintf(fp, FMT_STR_CHAR, delim, v.u.char_val);
 		break;
-	case DATA_TYPE_CHAR_ARRAY:
+	case DATA_TYPE_STRING:
 		rv = fprintf(fp, FMT_STR_CHAR_ARRAY, delim, v.u.char_array);
 		break;
 	case DATA_TYPE_INT:

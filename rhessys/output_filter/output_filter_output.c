@@ -45,7 +45,7 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 		mat_var.u.char_val = *((char *)(entity + offset));
 		fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
 		break;
-	case DATA_TYPE_CHAR_ARRAY:
+	case DATA_TYPE_STRING:
 		mat_var.data_type = v->data_type;
 		mat_var.u.char_array = (char *)(entity + offset);
 		fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
