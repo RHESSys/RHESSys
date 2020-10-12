@@ -277,6 +277,7 @@ struct stratum_default *construct_stratum_defaults(
 			epc->deadwood_fscel = 0.0;
 			epc->deadwood_cn = 0.0;
 		}
+		default_object_list[i].epc.alloc_frootc_crootc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_frootc_crootc", "%lf", 1.0, 1);
 		default_object_list[i].epc.alloc_frootc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_frootc_leafc", "%lf", 1.325, 1);
 		default_object_list[i].epc.alloc_crootc_stemc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_crootc_stemc", "%lf", 0.3, 1);
 		default_object_list[i].epc.alloc_stemc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_stemc_leafc", "%lf", 1.62, 1);
@@ -301,13 +302,16 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.litter_gsurf_slope = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_gsurf_slope", "%lf", 0.0, 1);
 		default_object_list[i].epc.litter_gsurf_intercept = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_gsurf_intercept", "%lf", 100000000, 1);
 		default_object_list[i].epc.coef_CO2 = getDoubleParam(&paramCnt, &paramPtr, "epc.coef_CO2", "%lf", 1.0, 1);
-		default_object_list[i].epc.root_growth_direction = getDoubleParam(&paramCnt, &paramPtr, "epc.root_growth_direction", "%lf", 0.8, 1);
-		default_object_list[i].epc.root_distrib_parm = getDoubleParam(&paramCnt, &paramPtr, "epc.root_distrib_parm", "%lf", 8.0, 1);
+		default_object_list[i].epc.root_growth_direction = getDoubleParam(&paramCnt, &paramPtr, "epc.root_growth_direction", "%lf", 0.7, 1);
+
+		/* adjusted value from Arora and Boer (2003) to account for the include of stem stem density default of 0.02 by dividing by 1.25 by (1/0.02)exp(0.7) */
+		default_object_list[i].epc.root_distrib_parm = getDoubleParam(&paramCnt, &paramPtr, "epc.root_distrib_parm", "%lf", 19, 1);
 		default_object_list[i].epc.max_root_depth = getDoubleParam(&paramCnt, &paramPtr, "epc.max_root_depth", "%lf", 9999.0, 1);
 		default_object_list[i].epc.crown_ratio = getDoubleParam(&paramCnt, &paramPtr, "epc.crown_ratio", "%lf", 0.6, 1);
 		if (epc->veg_type != TREE) 
 			default_object_list[i].epc.crown_ratio = 1.0; 
 		default_object_list[i].epc.max_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.max_stem_density", "%lf", 1.5, 1);
+		default_object_list[i].epc.resprout_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.resprout_stem_density", "%lf", 0.03, 1);
 		/*--------------------------------------------------------------*/
 		/*	Fire effect parameters					*/
 		/*--------------------------------------------------------------*/

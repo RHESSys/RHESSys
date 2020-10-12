@@ -122,7 +122,8 @@ struct zone_object *construct_zone(
 	int		i, k, j;
 	int		notfound;
     int     basestation_id;
-	float   base_x, base_y;	
+	float   base_x, base_y;
+	float	sum_patch_area; 
 	char	record[MAXSTR];
 	struct	zone_object *zone;
 	int paramCnt=0;
@@ -133,7 +134,7 @@ struct zone_object *construct_zone(
 	base_y = 0.0;
 	j = 0;
 	k = 0;	
-
+	sum_patch_area = 0;
 
 	/*--------------------------------------------------------------*/
 	/*	Allocate a zone object.								*/
@@ -407,8 +408,15 @@ struct zone_object *construct_zone(
 			world_base_stations,
 			defaults);
 		zone[0].patches[i][0].zone = zone;
+		sum_patch_area += zone[0].patches[i][0].area;
 	} /*end for*/
 
+	// check that zone area is equal to sum of patch areas
+	if ( abs(sum_patch_area -zone[0].area) > ZERO)
+	{
+		fprintf(stderr,"patch areas do not sum to zone area for zone %d\n", zone[0].ID);
+		exit(0);
+	}
 
 	/*--------------------------------------------------------------*/
 	/*	Get number + ID of patch families for this zone				*/

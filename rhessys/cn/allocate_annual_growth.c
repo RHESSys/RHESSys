@@ -82,7 +82,7 @@ int allocate_annual_growth(				int id,
 	double cnl, cnlw, cndw, cnfr, mean_cn;
 	double fcroot, flive, fdead, fleaf, froot, fwood;
 	double total_wood_c, total_wood_n, wood_cn;
-	double rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
+	double retransn, rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
 	double unmetn, carbohydrate_transfer_n;
 	double plantc, excess_lai, excess_leaf_carbon, stemc, leafc;
 	double delta_leaf, leaf_growth_deficit;
@@ -197,9 +197,7 @@ int allocate_annual_growth(				int id,
 	else
 		ratio = 1.0;
 
-        /* if (epc.max_storage_percent > ZERO)
-	              storage_transfer_prop = 1.0 - (1.0  - epc.storage_transfer_prop) * (epc.max_storage_percent - ratio)/ epc.max_storage_percent;
-	*/
+
          if ((epc.max_storage_percent > ZERO) && (ratio < epc.max_storage_percent))
 		storage_transfer_prop = epc.storage_transfer_prop;
         else
@@ -218,7 +216,7 @@ int allocate_annual_growth(				int id,
 	if (((total_store < epc.cpool_mort_fract*total_biomass) || (cs->cpool < ZERO))  && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
 
-		if (cs->cpool > ZERO)
+		if (epc.cpool_mort_fract*total_biomass > ZERO)
 			excess_carbon = 1.0 - total_store/(epc.cpool_mort_fract*total_biomass);
 		else
 			excess_carbon = 1.0;
@@ -238,6 +236,9 @@ int allocate_annual_growth(				int id,
 						 ns, ndf, ndf_patch, 
 						 cs_litr, ns_litr, 1,
 						 mort);	
+
+		cs->stem_density = (cs->stem_density - cs->stem_density*excess_carbon);
+		cs->stem_density = max(cs->stem_density, 0.01); 
 	}
 		
 	
@@ -296,6 +297,7 @@ int allocate_annual_growth(				int id,
 	/*  we include a delay on storage output so that the
 		veg does not die in a bad year -esp. for Grasses	*/
 	/*--------------------------------------------------------------*/
+	cdf->storage_transfer_prop = storage_transfer_prop;
 	cdf->leafc_store_to_leafc_transfer = cs->leafc_store * storage_transfer_prop;
 	cs->cpool += cs->leafc_store * (1.0-storage_transfer_prop);
 	cs->leafc_store = 0.0;
@@ -360,7 +362,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	
 	if (total_above_biomass > ZERO)
-		 excess_carbon = (cdf->leafc_store_to_leafc_transfer+cs->leafc) - epc.min_percent_leafg*total_biomass;  
+		 excess_carbon = (cdf->leafc_store_to_leafc_transfer) - epc.min_percent_leafg*total_biomass;  
 	else
 		excess_carbon = 0.0;
 
@@ -369,7 +371,10 @@ int allocate_annual_growth(				int id,
 		carbohydrate_transfer = -1.0*excess_carbon; 
 
 
-		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
+		if (epc.allocation_flag == COMBINED)
+			fleaf = exp(-1.0*epc.waring_pa * epv->proj_lai);
+		else
+			fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
 
 		if (epc.veg_type==TREE) {
@@ -406,10 +411,11 @@ int allocate_annual_growth(				int id,
 		}
 		else unmetn=0.0;
 
-		ns->retransn = max(ns->retransn, 0.0);
-		if (unmetn > ns->retransn)   {
-			ndf->retransn_to_npool += ns->retransn;
-			carbohydrate_transfer = (ns->npool+ns->retransn)*mean_cn;
+		retransn = max(ns->retransn, 0.0);
+		retransn = 0.0;
+		if ((unmetn > retransn) && (unmetn > 0))   {
+			ndf->retransn_to_npool += retransn;
+			carbohydrate_transfer = (ns->npool+retransn)*mean_cn;
 			}
 			else {
 			ndf->retransn_to_npool += unmetn;
@@ -435,16 +441,22 @@ int allocate_annual_growth(				int id,
 		cs->cpool -= carbohydrate_transfer;
 		if (mean_cn > ZERO)
 			ns->npool -= carbohydrate_transfer/mean_cn;
+
+		cdf->carbohydrate_transfer = carbohydrate_transfer;
+		ndf->carbohydrate_transfer = carbohydrate_transfer/(mean_cn);
 	}
 	/*--------------------------------------------------------------*/
 	/* finally if there is really nothing restart with small amount of growth   */
 	/*	we allow only a certain amount of resprouting based on 	*/
 	/*	a stratum default file parameterization 		*/
 	/*--------------------------------------------------------------*/
-	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) {
+
+	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) <= epc.min_leaf_carbon) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
 		printf("\n Resprouting stratum %d", id);
+
+		/*cs->stem_density = epc.resprout_stem_density;*/
 		cs->num_resprout += 1;
 		cs->age = 0.0;
 		cs->cpool = epc.resprout_leaf_carbon;

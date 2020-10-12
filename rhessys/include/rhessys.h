@@ -991,7 +991,7 @@ struct  zone_default
         double search_x;                                /* meters */
         double search_y;                                /* meters */
         double res_patch;                               /* meters */
-        int    grid_interpolation                       /* 0/1    */ // 0 no interpolation of grid climate data
+        int    grid_interpolation;                       /* 0/1    */ // 0 no interpolation of grid climate data
 
         };
 
@@ -1189,6 +1189,7 @@ struct	soil_default
 	double	m_v;						/* m^-1	*/
 	double	m_z;						/* m^-1	*/
 	double	mz_v;						/* m^-1	*/
+	double	nitrif_parm_smax;						/* 0-1	*/
 	double	porosity_0;						/* unitless */
 	double	porosity_decay;						/* m^-1 */
 	double	p3;						/* unitless */
@@ -1209,6 +1210,7 @@ struct	soil_default
 	double  snow_light_ext_coef;				/* (DIM) radiation extinction */
 	double  snow_melt_Tcoef;				/* unitless */
 	double  fixed_t_mult;					/* 0 to 1 and -999 to turn off */
+	double  fixed_w_mult;					/* 0 to 1 and -999 to turn off */
 	double	fs_spill;					/* multiplier*/
 	double	fs_percolation;					/* multiplier */
 	double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */
@@ -1283,6 +1285,8 @@ struct  cdayflux_patch_struct
     double psoil3c_loss;        /* (kgC/m2/d) release of shielded cellulose */
     double psoil4c_loss;        /* (kgC/m2/d) recalcitrant SOM formation */
     double kl4;                 /* (1/day) rate constant for lignin litter decomp */
+    double decomp_w_scalar;		/* (0-1) soil moisture scalar on decomp */
+    double decomp_t_scalar;		/* (0-1) temperature scalar on decomp */
 
     /* daily turnover fluxes */
     double leafc_to_litr1c;  /* (kgC/m2/d) leaf litfall (labile) */
@@ -1351,6 +1355,7 @@ struct  cdayflux_patch_struct
     double m_soil2c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
     double m_soil3c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
     double m_soil4c_to_atmos;       /* (kgC/m2) microbial recycling pool to atmosphere */
+
 
         };
 
@@ -2464,6 +2469,7 @@ struct epvar_struct
 {
 
 
+        double fcroot; /* 0-1 */
         double fleaf; /* 0-1 */
         double froot; /* 0-1 */
         double fwood; /* 0-1 */
@@ -2504,6 +2510,7 @@ struct epvar_struct
         double cpool_to_deadcrootc;          /* (kgC/m2/d) */
         double cpool_to_deadcrootc_store;  /* (kgC/m2/d) */
         double cpool_to_gresp_store;       /* (kgC/m2/d) */
+   	double actual_C_growth;   /* (kgC/m2) total C used for growth */
 
         /* annual turnover of storage to transfer pools */
         double leafc_store_to_leafc_transfer;           /* (kgC/m2/d) */
@@ -2513,6 +2520,8 @@ struct epvar_struct
         double livecrootc_store_to_livecrootc_transfer; /* (kgC/m2/d) */
         double deadcrootc_store_to_deadcrootc_transfer; /* (kgC/m2/d) */
         double gresp_store_to_gresp_transfer;           /* (kgC/m2/d) */
+	double carbohydrate_transfer;			/* (kg/m2/day) */
+	double storage_transfer_prop;			/* 0-1 */ 
 
         /* turnover of live wood to dead wood */
         double livestemc_to_deadstemc;        /* (kgC/m2/d) */
@@ -2642,6 +2651,7 @@ struct epvar_struct
         double deadstemn_store_to_deadstemn_transfer;   /* (kgN/m2/d) */
         double livecrootn_store_to_livecrootn_transfer; /* (kgN/m2/d) */
         double deadcrootn_store_to_deadcrootn_transfer; /* (kgN/m2/d) */
+	double carbohydrate_transfer;			/* (kgN/m2/day) */
 
         /* turnover of live wood to dead wood, with retranslocation */
         double livestemn_to_deadstemn;        /* (kgN/m2/d) */
@@ -2792,6 +2802,7 @@ struct epconst_struct
     double deadwood_fscel;   /* (DIM) dead wood shielded cellulose fraction */
     double deadwood_flig;    /* (DIM) dead wood lignin fraction */
     double deadwood_cn;      /* (kgC/kgN) dead wood C:N (calc. internally) */
+    double alloc_frootc_crootc; /* (ratio) new fine root C to new coarse root C */
     double alloc_frootc_leafc; /* (ratio) new fine root C to new leaf C */
     double alloc_crootc_stemc; /* (ratio) new live croot C to new live stem C */
     double alloc_stemc_leafc; /* (ratio) new live stem C to new leaf C */
@@ -2809,6 +2820,7 @@ struct epconst_struct
     double root_growth_direction; /* (0-1) 1 is full vertical, 0 fully horizontal */
     double root_distrib_parm; /*  (DIM) used with root biomass in kg/m2 */
     double max_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
+    double resprout_stem_density; /*  (stem/m2) maximum number of stems per m2 (can be less than 1) */
     double max_root_depth; /*  (m) optionally used to constratin maximum rooting depth by species */
         double crown_ratio; /*  (DIM) ratio of crown height to total tree height */
     int     max_years_resprout; /* num years of resprouting before death */
@@ -2960,6 +2972,7 @@ struct  canopy_strata_object
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;
         double  dC13;           /* % discrimination of C13 */
+        double  T_canopy;  /* deg C */
         double  evaporation;                                    /* meters/day   */
         double  ga;                                             /* m/s          */
         double  gap_fraction;                                   /* unitless     */
