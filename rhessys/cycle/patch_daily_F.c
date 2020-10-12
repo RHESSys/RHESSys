@@ -537,7 +537,7 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Adjust kdown if multiscale routing is used					*/
 	/*--------------------------------------------------------------*/
-	if (command_line[0].multiscale_flag == 1 && patch[0].landuse_defaults[0][0].shading_flag == 1) {
+	if (command_line[0].multiscale_flag == 1 && patch[0].landuse_defaults[0][0].msr_shading_flag == 1) {
 		compute_shaded_kdown(patch, zone, command_line);
 	} 
 

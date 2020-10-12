@@ -288,7 +288,7 @@ void	canopy_stratum_daily_I(
 		current_date,
 		command_line[0].grow_flag, 
 		command_line[0].multiscale_flag,
-		patch[0].landuse_defaults[0][0].shading_flag);
+		patch[0].landuse_defaults[0][0].msr_shading_flag);
 
 	/*--------------------------------------------------------------*/
 	/* if it is the last day of litterfall, perform carbon/nitrogen */
