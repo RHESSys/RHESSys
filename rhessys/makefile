@@ -389,10 +389,10 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) -fopenmp $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) -fopenmp $(LINK_FLEX) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -v -o $(PGM)
 endif
 else
 ifdef wmfire

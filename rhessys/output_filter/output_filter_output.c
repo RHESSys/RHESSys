@@ -6,23 +6,35 @@
 #include "pointer_list.h"
 
 
-static PointerList_t *accum_patch_obj_to_reset = NULL;
-static PointerList_t *accum_strata_obj_to_reset = NULL;
-
-
 inline static void reset_accum_obj(PointerList_t *list, size_t len) {
 	if (list == NULL) return;
 	memset(list->ptr, 0, len);
-	if (list->next) {
-		reset_accum_obj(list->next, len);
-	}
+	reset_accum_obj(list->next, len);
 }
 
 inline static void add_to_accum_reset_list(PointerList_t **list_ptr, void *entity) {
-	if (*list_ptr == NULL) {
+	if (list_ptr == NULL) {
+		fprintf(stderr, "WARNING: output_filter_output::add_to_accum_reset_list(): list_ptr was NULL but should not be!");
+	} else if (*list_ptr == NULL) {
 		*list_ptr = newPointerList(entity);
 	} else {
 		pointerListAppend(*list_ptr, entity);
+	}
+}
+
+static void reset_accumulator_patch(PointerList_t **acc_objs_to_reset) {
+	if (*acc_objs_to_reset) {
+		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_patch_object));
+		freePointerList(*acc_objs_to_reset);
+		*acc_objs_to_reset = NULL;
+	}
+}
+
+static void reset_accumulator_stratum(PointerList_t **acc_objs_to_reset) {
+	if (*acc_objs_to_reset) {
+		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_strata_object));
+		freePointerList(*acc_objs_to_reset);
+		*acc_objs_to_reset = NULL;
 	}
 }
 
@@ -89,16 +101,17 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 }
 
 inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
-		struct canopy_strata_object *stratum) {
+		struct canopy_strata_object *stratum,
+		PointerList_t **accum_objs_to_reset) {
 	void *entity = NULL;
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
 		entity = (void *)(&(stratum->acc_month));
-		add_to_accum_reset_list(&accum_strata_obj_to_reset, entity);
+		add_to_accum_reset_list(accum_objs_to_reset, entity);
 		break;
 	case TIMESTEP_YEARLY:
 		entity = (void *)(&(stratum->acc_year));
-		add_to_accum_reset_list(&accum_strata_obj_to_reset, entity);
+		add_to_accum_reset_list(accum_objs_to_reset, entity);
 		break;
 	case TIMESTEP_HOURLY:
 	case TIMESTEP_DAILY:
@@ -110,16 +123,17 @@ inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
 }
 
 inline static void *determine_patch_entity(OutputFilterTimestep timestep,
-		struct patch_object *patch) {
+		struct patch_object *patch,
+		PointerList_t **acc_objs_to_reset) {
 	void *entity = NULL;
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
 		entity = (void *)(&(patch->acc_month));
-		add_to_accum_reset_list(&accum_patch_obj_to_reset, entity);
+		add_to_accum_reset_list(acc_objs_to_reset, entity);
 		break;
 	case TIMESTEP_YEARLY:
 		entity = (void *)(&(patch->acc_year));
-		add_to_accum_reset_list(&accum_patch_obj_to_reset, entity);
+		add_to_accum_reset_list(acc_objs_to_reset, entity);
 		break;
 	case TIMESTEP_HOURLY:
 	case TIMESTEP_DAILY:
@@ -134,11 +148,12 @@ inline static void *determine_patch_entity(OutputFilterTimestep timestep,
 static bool apply_to_strata_in_patch(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
+		PointerList_t **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < s->patch->num_canopy_strata; i++) {
 		struct canopy_strata_object *stratum = s->patch->canopy_strata[i];
 		id.canopy_strata_ID = stratum->ID;
-		void *entity = determine_stratum_entity(filter->timestep, stratum);
+		void *entity = determine_stratum_entity(filter->timestep, stratum, acc_objs_to_reset);
 		bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 		if (!status) return false;
 	}
@@ -148,11 +163,12 @@ static bool apply_to_strata_in_patch(char * const error, size_t error_len,
 static bool apply_to_patches_in_zone(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
+		PointerList_t **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < p->zone->num_patches; i++) {
 		struct patch_object *patch = p->zone->patches[i];
 		id.patch_ID = patch->ID;
-		void *entity = determine_patch_entity(filter->timestep, patch);
+		void *entity = determine_patch_entity(filter->timestep, patch, acc_objs_to_reset);
 		bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 		if (!status) return false;
 	}
@@ -162,6 +178,7 @@ static bool apply_to_patches_in_zone(char * const error, size_t error_len,
 static bool apply_to_strata_in_zone(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
+		PointerList_t **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < s->zone->num_patches; i++) {
 		struct patch_object *patch = s->zone->patches[i];
@@ -169,7 +186,7 @@ static bool apply_to_strata_in_zone(char * const error, size_t error_len,
 		for (size_t j = 0; j < patch->num_canopy_strata; j++) {
 			struct canopy_strata_object *stratum = patch->canopy_strata[j];
 			id.canopy_strata_ID = stratum->ID;
-			void *entity = determine_stratum_entity(filter->timestep, stratum);
+			void *entity = determine_stratum_entity(filter->timestep, stratum, acc_objs_to_reset);
 			bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 			if (!status) return false;
 		}
@@ -180,6 +197,7 @@ static bool apply_to_strata_in_zone(char * const error, size_t error_len,
 static bool apply_to_patches_in_hillslope(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
+		PointerList_t **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < p->hill->num_zones; i++) {
 		struct zone_object *z = p->hill->zones[i];
@@ -187,7 +205,7 @@ static bool apply_to_patches_in_hillslope(char * const error, size_t error_len,
 		for (size_t j = 0; j < z->num_patches; j++) {
 			struct patch_object *patch = z->patches[j];
 			id.patch_ID = patch->ID;
-			void *entity = determine_patch_entity(filter->timestep, patch);
+			void *entity = determine_patch_entity(filter->timestep, patch, acc_objs_to_reset);
 			bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 			if (!status) return false;
 		}
@@ -198,6 +216,7 @@ static bool apply_to_patches_in_hillslope(char * const error, size_t error_len,
 static bool apply_to_strata_in_hillslope(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
+		PointerList_t **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < s->hill->num_zones; i++) {
 		struct zone_object *z = s->hill->zones[i];
@@ -208,7 +227,7 @@ static bool apply_to_strata_in_hillslope(char * const error, size_t error_len,
 			for (size_t k = 0; k < patch->num_canopy_strata; k++) {
 				struct canopy_strata_object *stratum = patch->canopy_strata[k];
 				id.canopy_strata_ID = stratum->ID;
-				void *entity = determine_stratum_entity(filter->timestep, stratum);
+				void *entity = determine_stratum_entity(filter->timestep, stratum, acc_objs_to_reset);
 				bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 				if (!status) return false;
 			}
@@ -220,6 +239,7 @@ static bool apply_to_strata_in_hillslope(char * const error, size_t error_len,
 static bool apply_to_patches_in_basin(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
+		PointerList_t **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < p->basin->num_hillslopes; i++) {
 		struct hillslope_object *h = p->basin->hillslopes[i];
@@ -230,7 +250,7 @@ static bool apply_to_patches_in_basin(char * const error, size_t error_len,
 			for (size_t k = 0; k < z->num_patches; k++) {
 				struct patch_object *patch = z->patches[k];
 				id.patch_ID = patch->ID;
-				void *entity = determine_patch_entity(filter->timestep, patch);
+				void *entity = determine_patch_entity(filter->timestep, patch, acc_objs_to_reset);
 				bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 				if (!status) return false;
 			}
@@ -242,6 +262,7 @@ static bool apply_to_patches_in_basin(char * const error, size_t error_len,
 static bool apply_to_strata_in_basin(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
+		PointerList_t **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < s->basin->num_hillslopes; i++) {
 		struct hillslope_object *h = s->basin->hillslopes[i];
@@ -255,7 +276,7 @@ static bool apply_to_strata_in_basin(char * const error, size_t error_len,
 				for (size_t l = 0; l < patch->num_canopy_strata; l++) {
 					struct canopy_strata_object *stratum = patch->canopy_strata[l];
 					id.canopy_strata_ID = stratum->ID;
-					void *entity = determine_stratum_entity(filter->timestep, stratum);
+					void *entity = determine_stratum_entity(filter->timestep, stratum, acc_objs_to_reset);
 					bool status = (*output_fn)(error, error_len, date, entity, id, filter);
 					if (!status) return false;
 				}
@@ -317,7 +338,8 @@ static bool output_variables(char * const error, size_t error_len,
 }
 
 static bool output_patch(char * const error, size_t error_len,
-		struct date date, OutputFilter const * const filter) {
+		struct date date, OutputFilter const * const filter,
+		PointerList_t **acc_objs_to_reset) {
 	fprintf(stderr, "\toutput_patch()...\n");
 
 	char *local_error;
@@ -333,7 +355,7 @@ static bool output_patch(char * const error, size_t error_len,
 			id.zone_ID = p->zoneID;
 			id.patch_ID = p->patchID;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			void *entity = determine_patch_entity(filter->timestep, p->patch);
+			void *entity = determine_patch_entity(filter->timestep, p->patch, acc_objs_to_reset);
 			status = output_variables(error, error_len, date, entity, id, filter);
 			break;
 		case PATCH_TYPE_ZONE:
@@ -342,7 +364,7 @@ static bool output_patch(char * const error, size_t error_len,
 			id.zone_ID = p->zoneID;
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			status = apply_to_patches_in_zone(error, error_len, date, filter, p, id,
+			status = apply_to_patches_in_zone(error, error_len, date, filter, p, id, acc_objs_to_reset,
 					*output_variables);
 			break;
 		case PATCH_TYPE_HILLSLOPE:
@@ -351,7 +373,7 @@ static bool output_patch(char * const error, size_t error_len,
 			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			status = apply_to_patches_in_hillslope(error, error_len, date, filter, p, id,
+			status = apply_to_patches_in_hillslope(error, error_len, date, filter, p, id, acc_objs_to_reset,
 					*output_variables);
 			break;
 		case PATCH_TYPE_BASIN:
@@ -360,7 +382,7 @@ static bool output_patch(char * const error, size_t error_len,
 			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			status = apply_to_patches_in_basin(error, error_len, date, filter, p, id,
+			status = apply_to_patches_in_basin(error, error_len, date, filter, p, id, acc_objs_to_reset,
 					*output_variables);
 			break;
 		default:
@@ -376,7 +398,8 @@ static bool output_patch(char * const error, size_t error_len,
 }
 
 static bool output_stratum(char * const error, size_t error_len,
-		struct date date, OutputFilter const * const filter) {
+		struct date date, OutputFilter const * const filter,
+		PointerList_t **acc_objs_to_reset) {
 	fprintf(stderr, "\toutput_stratum()...\n");
 
 	char *local_error;
@@ -392,7 +415,7 @@ static bool output_stratum(char * const error, size_t error_len,
 			id.zone_ID = s->zoneID;
 			id.patch_ID = s->patchID;
 			id.canopy_strata_ID = s->stratumID;
-			void *entity = determine_stratum_entity(filter->timestep, s->stratum);
+			void *entity = determine_stratum_entity(filter->timestep, s->stratum, acc_objs_to_reset);
 			status = output_variables(error, error_len, date, entity, id, filter);
 			break;
 		case STRATUM_TYPE_PATCH:
@@ -401,7 +424,7 @@ static bool output_stratum(char * const error, size_t error_len,
 			id.zone_ID = s->zoneID;
 			id.patch_ID = s->patchID;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			status = apply_to_strata_in_patch(error, error_len, date, filter, s, id,
+			status = apply_to_strata_in_patch(error, error_len, date, filter, s, id, acc_objs_to_reset,
 					*output_variables);
 			break;
 		case STRATUM_TYPE_ZONE:
@@ -410,7 +433,7 @@ static bool output_stratum(char * const error, size_t error_len,
 			id.zone_ID = s->zoneID;
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			status = apply_to_strata_in_zone(error, error_len, date, filter, s, id,
+			status = apply_to_strata_in_zone(error, error_len, date, filter, s, id, acc_objs_to_reset,
 					*output_variables);
 			break;
 		case STRATUM_TYPE_HILLSLOPE:
@@ -419,7 +442,7 @@ static bool output_stratum(char * const error, size_t error_len,
 			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			status = apply_to_strata_in_hillslope(error, error_len, date, filter, s, id,
+			status = apply_to_strata_in_hillslope(error, error_len, date, filter, s, id, acc_objs_to_reset,
 					*output_variables);
 			break;
 		case STRATUM_TYPE_BASIN:
@@ -428,7 +451,7 @@ static bool output_stratum(char * const error, size_t error_len,
 			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
 			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
-			status = apply_to_strata_in_basin(error, error_len, date, filter, s, id,
+			status = apply_to_strata_in_basin(error, error_len, date, filter, s, id, acc_objs_to_reset,
 					*output_variables);
 			break;
 		default:
@@ -454,11 +477,11 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
-				status = output_patch(error, error_len, date, f);
+				status = output_patch(error, error_len, date, f, NULL);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_CANOPY_STRATUM:
-				status = output_stratum(error, error_len, date, f);
+				status = output_stratum(error, error_len, date, f, NULL);
 				if (!status) return false;
 				break;
 			default:
@@ -479,15 +502,20 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 	char *local_error;
 	bool status = true;
 
+	PointerList_t *acc_patch_obj_to_reset = NULL;
+	PointerList_t *acc_stratum_obj_to_reset = NULL;
+
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_MONTHLY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
-				status = output_patch(error, error_len, date, f);
+				// TODO: Pass in accumulator list head pointer
+				status = output_patch(error, error_len, date, f, &acc_patch_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_CANOPY_STRATUM:
-				status = output_stratum(error, error_len, date, f);
+				// TODO: Pass in accumulator list head pointer
+				status = output_stratum(error, error_len, date, f, &acc_stratum_obj_to_reset);
 				if (!status) return false;
 				break;
 			default:
@@ -498,7 +526,9 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 		}
 	}
 
-	reset_accumulators();
+	// Reset monthly accumulators as necessary
+	reset_accumulator_patch(&acc_patch_obj_to_reset);
+	reset_accumulator_stratum(&acc_stratum_obj_to_reset);
 
 	return status;
 }
@@ -510,15 +540,20 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 	char *local_error;
 	bool status = true;
 
+	PointerList_t *acc_patch_obj_to_reset = NULL;
+	PointerList_t *acc_stratum_obj_to_reset = NULL;
+
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_YEARLY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_PATCH:
-				status = output_patch(error, error_len, date, f);
+				// TODO: Pass in accumulator list head pointer
+				status = output_patch(error, error_len, date, f, &acc_patch_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_CANOPY_STRATUM:
-				status = output_stratum(error, error_len, date, f);
+				// TODO: Pass in accumulator list head pointer
+				status = output_stratum(error, error_len, date, f, &acc_stratum_obj_to_reset);
 				if (!status) return false;
 				break;
 			default:
@@ -529,21 +564,9 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 		}
 	}
 
-	reset_accumulators();
+	// Reset yearly accumulators as necessary
+	reset_accumulator_patch(&acc_patch_obj_to_reset);
+	reset_accumulator_stratum(&acc_stratum_obj_to_reset);
 
 	return status;
-}
-
-void reset_accumulators() {
-	if (accum_patch_obj_to_reset) {
-		reset_accum_obj(accum_patch_obj_to_reset, sizeof(struct accumulate_patch_object));
-		freePointerList(accum_patch_obj_to_reset);
-		accum_patch_obj_to_reset = NULL;
-	}
-
-	if (accum_strata_obj_to_reset) {
-		reset_accum_obj(accum_strata_obj_to_reset, sizeof(struct accumulate_strata_object));
-		freePointerList(accum_strata_obj_to_reset);
-		accum_strata_obj_to_reset = NULL;
-	}
 }

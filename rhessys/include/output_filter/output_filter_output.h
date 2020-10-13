@@ -29,6 +29,4 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 bool output_filter_output_yearly(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const filters);
 
-void reset_accumulators();
-
 #endif /* INCLUDE_OUTPUT_FILTER_OUTPUT_FILTER_OUTPUT_H_ */
