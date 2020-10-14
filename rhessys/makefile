@@ -1,7 +1,8 @@
 OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 VERSION = 7.2
 PGM  = rhessys$(VERSION)
-CC = gcc
+#CC = gcc
+CC = clang
 #CXX = g++
 INCLUDES = -Iinclude
 
@@ -17,8 +18,10 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2 -g
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2 -g
+#CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2 -g
+#CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2 -g
+CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -g
+CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -g
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
@@ -362,7 +365,7 @@ $(OBJ)/get_num_daywhourly.o \
 $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
 $(OBJ)/string_list.o \
-$(OBJ)/pointer_list.o \
+$(OBJ)/pointer_set.o \
 $(OBJ)/dictionary.o \
 $(OBJ)/output_filter.o \
 $(OBJ)/construct_output_filter.o \
@@ -1058,8 +1061,8 @@ util/index_struct_fields.c: include/rhessys.h
 	--output util/index_struct_fields.c
 $(OBJ)/string_list.o: util/string_list.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o $(OBJ)/string_list.o
-$(OBJ)/pointer_list.o: util/pointer_list.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c util/pointer_list.c -o $(OBJ)/pointer_list.o
+$(OBJ)/pointer_set.o: util/pointer_set.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/pointer_set.c -o $(OBJ)/pointer_set.o
 $(OBJ)/dictionary.o: util/dictionary.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/dictionary.c -o $(OBJ)/dictionary.o
 $(OBJ)/output_filter.o: output_filter/output_filter.c

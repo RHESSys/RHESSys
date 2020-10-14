@@ -3,37 +3,37 @@
 
 #include "rhessys.h"
 #include "output_filter/output_filter_output.h"
-#include "pointer_list.h"
+#include "pointer_set.h"
 
 
-inline static void reset_accum_obj(PointerList_t *list, size_t len) {
-	if (list == NULL) return;
-	memset(list->ptr, 0, len);
-	reset_accum_obj(list->next, len);
+inline static void reset_accum_obj(PointerSet *set, size_t len) {
+	if (set == NULL) return;
+	memset(set->ptr, 0, len);
+	reset_accum_obj(set->next, len);
 }
 
-inline static void add_to_accum_reset_list(PointerList_t **list_ptr, void *entity) {
-	if (list_ptr == NULL) {
-		fprintf(stderr, "WARNING: output_filter_output::add_to_accum_reset_list(): list_ptr was NULL but should not be!");
-	} else if (*list_ptr == NULL) {
-		*list_ptr = newPointerList(entity);
+inline static void add_to_accum_reset_list(PointerSet **set_ptr, void *entity) {
+	if (set_ptr == NULL) {
+		fprintf(stderr, "WARNING: output_filter_output::add_to_accum_reset_list(): set_ptr was NULL but should not be!");
+	} else if (*set_ptr == NULL) {
+		*set_ptr = newPointerSet(entity);
 	} else {
-		pointerListAppend(*list_ptr, entity);
+		pointerSetAppend(*set_ptr, entity);
 	}
 }
 
-static void reset_accumulator_patch(PointerList_t **acc_objs_to_reset) {
+static void reset_accumulator_patch(PointerSet **acc_objs_to_reset) {
 	if (*acc_objs_to_reset) {
 		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_patch_object));
-		freePointerList(*acc_objs_to_reset);
+		freePointerSet(*acc_objs_to_reset);
 		*acc_objs_to_reset = NULL;
 	}
 }
 
-static void reset_accumulator_stratum(PointerList_t **acc_objs_to_reset) {
+static void reset_accumulator_stratum(PointerSet **acc_objs_to_reset) {
 	if (*acc_objs_to_reset) {
 		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_strata_object));
-		freePointerList(*acc_objs_to_reset);
+		freePointerSet(*acc_objs_to_reset);
 		*acc_objs_to_reset = NULL;
 	}
 }
@@ -102,7 +102,7 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 
 inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
 		struct canopy_strata_object *stratum,
-		PointerList_t **accum_objs_to_reset) {
+		PointerSet **accum_objs_to_reset) {
 	void *entity = NULL;
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
@@ -124,7 +124,7 @@ inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
 
 inline static void *determine_patch_entity(OutputFilterTimestep timestep,
 		struct patch_object *patch,
-		PointerList_t **acc_objs_to_reset) {
+		PointerSet **acc_objs_to_reset) {
 	void *entity = NULL;
 	switch (timestep) {
 	case TIMESTEP_MONTHLY:
@@ -148,7 +148,7 @@ inline static void *determine_patch_entity(OutputFilterTimestep timestep,
 static bool apply_to_strata_in_patch(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
-		PointerList_t **acc_objs_to_reset,
+		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < s->patch->num_canopy_strata; i++) {
 		struct canopy_strata_object *stratum = s->patch->canopy_strata[i];
@@ -163,7 +163,7 @@ static bool apply_to_strata_in_patch(char * const error, size_t error_len,
 static bool apply_to_patches_in_zone(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
-		PointerList_t **acc_objs_to_reset,
+		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < p->zone->num_patches; i++) {
 		struct patch_object *patch = p->zone->patches[i];
@@ -178,7 +178,7 @@ static bool apply_to_patches_in_zone(char * const error, size_t error_len,
 static bool apply_to_strata_in_zone(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
-		PointerList_t **acc_objs_to_reset,
+		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < s->zone->num_patches; i++) {
 		struct patch_object *patch = s->zone->patches[i];
@@ -197,7 +197,7 @@ static bool apply_to_strata_in_zone(char * const error, size_t error_len,
 static bool apply_to_patches_in_hillslope(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
-		PointerList_t **acc_objs_to_reset,
+		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < p->hill->num_zones; i++) {
 		struct zone_object *z = p->hill->zones[i];
@@ -216,7 +216,7 @@ static bool apply_to_patches_in_hillslope(char * const error, size_t error_len,
 static bool apply_to_strata_in_hillslope(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
-		PointerList_t **acc_objs_to_reset,
+		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < s->hill->num_zones; i++) {
 		struct zone_object *z = s->hill->zones[i];
@@ -239,7 +239,7 @@ static bool apply_to_strata_in_hillslope(char * const error, size_t error_len,
 static bool apply_to_patches_in_basin(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
-		PointerList_t **acc_objs_to_reset,
+		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < p->basin->num_hillslopes; i++) {
 		struct hillslope_object *h = p->basin->hillslopes[i];
@@ -262,7 +262,7 @@ static bool apply_to_patches_in_basin(char * const error, size_t error_len,
 static bool apply_to_strata_in_basin(char * const error, size_t error_len,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
-		PointerList_t **acc_objs_to_reset,
+		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, struct date date, void * const, EntityID, OutputFilter const * const)) {
 	for (size_t i = 0; i < s->basin->num_hillslopes; i++) {
 		struct hillslope_object *h = s->basin->hillslopes[i];
@@ -339,7 +339,7 @@ static bool output_variables(char * const error, size_t error_len,
 
 static bool output_patch(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const filter,
-		PointerList_t **acc_objs_to_reset) {
+		PointerSet **acc_objs_to_reset) {
 	fprintf(stderr, "\toutput_patch()...\n");
 
 	char *local_error;
@@ -399,7 +399,7 @@ static bool output_patch(char * const error, size_t error_len,
 
 static bool output_stratum(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const filter,
-		PointerList_t **acc_objs_to_reset) {
+		PointerSet **acc_objs_to_reset) {
 	fprintf(stderr, "\toutput_stratum()...\n");
 
 	char *local_error;
@@ -502,8 +502,8 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 	char *local_error;
 	bool status = true;
 
-	PointerList_t *acc_patch_obj_to_reset = NULL;
-	PointerList_t *acc_stratum_obj_to_reset = NULL;
+	PointerSet *acc_patch_obj_to_reset = NULL;
+	PointerSet *acc_stratum_obj_to_reset = NULL;
 
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_MONTHLY) {
@@ -540,8 +540,8 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 	char *local_error;
 	bool status = true;
 
-	PointerList_t *acc_patch_obj_to_reset = NULL;
-	PointerList_t *acc_stratum_obj_to_reset = NULL;
+	PointerSet *acc_patch_obj_to_reset = NULL;
+	PointerSet *acc_stratum_obj_to_reset = NULL;
 
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_YEARLY) {
