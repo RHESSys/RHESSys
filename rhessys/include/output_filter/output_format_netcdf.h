@@ -10,14 +10,25 @@
 
 #define OUTPUT_FORMAT_EXT_NETCDF "nc"
 #define INVALID_TYPE -1
-#define OF_DIMENSION_TIME "time"
+#define OF_DIM_VECTOR 1
+
+#define OF_DIMENSION_IDX "index"
+#define OF_VAR_YEAR "year"
+#define OF_VAR_MONTH "month"
+#define OF_VAR_DAY "day"
+#define OF_VAR_HOUR "hour"
 
 
 typedef struct of_fmt_netcdf_meta {
 	char *abs_path;
 	int ncid;
-	int dim_time_id;
-	int var_time_id;
+	int dim_idx_id;
+	int var_idx_id;
+	int var_time_hour_id;
+	int var_time_day_id;
+	int var_time_month_id;
+	int var_time_year_id;
+	int index;
 } OutputFormatNetCDFMetadata;
 
 typedef struct of_fmt_netcdf_var_meta {
