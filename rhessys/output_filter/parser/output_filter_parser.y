@@ -181,7 +181,7 @@ filename: FILENAME FILENAME_SPEC {
       syntax_error = true;
       yyerror("filename definition must be nested within output definition");
     } else {
-      curr_filter->output->filename = (char *) malloc(FILENAME_LEN * sizeof(char *));
+      curr_filter->output->filename = (char *) malloc(FILENAME_LEN * sizeof(char));
       if (curr_filter->output->filename == NULL) {
       	syntax_error = true;
       	yyerror("unable to allocate memory for filename");

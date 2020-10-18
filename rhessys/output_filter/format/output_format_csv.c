@@ -30,14 +30,14 @@ bool output_format_csv_init(OutputFilter * const f) {
 		return false;
 	}
 	size_t abs_path_len = 2 * FILEPATH_LEN;
-	char *abs_path = malloc(abs_path_len * sizeof(char *));
+	char *abs_path = (char *) malloc(abs_path_len * sizeof(char));
 	snprintf(abs_path, abs_path_len, "%s%c%s%c%s",
 			f->output->path, PATH_SEP,
 			f->output->filename, FILE_EXT_SEP, OUTPUT_FORMAT_EXT_CSV);
 	// Use buffered output
 	FILE *fp = fopen(abs_path, "w");
 	if (fp == NULL) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "Unable to open file %s", abs_path);
 		perror(error_mesg);
 		free(error_mesg);

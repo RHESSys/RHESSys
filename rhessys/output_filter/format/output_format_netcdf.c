@@ -17,7 +17,7 @@ static inline bool create_meta_variable(char *abs_path, int ncid, int dimids[],
 		char *name, nc_type type, int *time_id) {
 	bool status = nc_def_var(ncid, name, type, OF_DIM_VECTOR, dimids, time_id);
 	if (status != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "Unable to create meta variable %s for dimension %s in output file %s, netCDF driver returned error: %s.\n",
 				name, OF_DIMENSION_IDX, abs_path, nc_strerror(status));
 		fprintf(stderr, error_mesg);
@@ -30,7 +30,7 @@ static inline bool create_meta_variable(char *abs_path, int ncid, int dimids[],
 static inline bool create_variable(OutputFilterVariable *v, int ncid, int dimids[]) {
 	int nc_type = get_netcdf_data_type(v->data_type);
 	if (nc_type == INVALID_TYPE) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "Unable to create variable %s, output filter data type %d not supported by netCDF driver.\n",
 				v->name,v->data_type);
 		fprintf(stderr, error_mesg);
@@ -38,7 +38,7 @@ static inline bool create_variable(OutputFilterVariable *v, int ncid, int dimids
 		return false;
 	}
 	int varid;
-	char *var_name = malloc(NC_MAX_NAME * sizeof(char));
+	char *var_name = (char *) malloc(NC_MAX_NAME * sizeof(char));
 	if (v->sub_struct_varname == NULL) {
 		// Variable name is simple (e.g. "foo")
 		snprintf(var_name, NC_MAX_NAME, "%s", v->name);
@@ -49,7 +49,7 @@ static inline bool create_variable(OutputFilterVariable *v, int ncid, int dimids
 	int status = nc_def_var(ncid, var_name, nc_type, 1, dimids,
 			&varid);
 	if (status != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "Unable to create variable %s, netCDF driver returned value of: %s.\n",
 				v->name, nc_strerror(status));
 		fprintf(stderr, error_mesg);
@@ -57,7 +57,7 @@ static inline bool create_variable(OutputFilterVariable *v, int ncid, int dimids
 		return false;
 	}
 	// Save variable ID so that we can retrieve it when we need to write data for this variable.
-	OutputFormatNetCDFVariableMetadata *var_meta = malloc(sizeof(OutputFormatNetCDFVariableMetadata));
+	OutputFormatNetCDFVariableMetadata *var_meta = (OutputFormatNetCDFVariableMetadata *) malloc(sizeof(OutputFormatNetCDFVariableMetadata));
 	var_meta->varid = varid;
 	v->meta = var_meta;
 
@@ -68,7 +68,7 @@ static inline bool output_byte_to_netcdf(char *abs_path, int ncid, size_t idx[],
 		int varid, char value) {
 	int retval = nc_put_var1_schar(ncid, varid, idx, &value);
 	if (retval != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_byte_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
 				nc_strerror(retval), varid, abs_path);
 		fprintf(stderr, error_mesg);
@@ -82,7 +82,7 @@ static inline bool output_short_to_netcdf(char *abs_path, int ncid, size_t idx[]
 		int varid, short value) {
 	int retval = nc_put_var1_short(ncid, varid, idx, &value);
 	if (retval != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_short_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
 				nc_strerror(retval), varid, abs_path);
 		fprintf(stderr, error_mesg);
@@ -96,7 +96,7 @@ static inline bool output_int_to_netcdf(char *abs_path, int ncid, size_t idx[],
 		int varid, int value) {
 	int retval = nc_put_var1_int(ncid, varid, idx, &value);
 	if (retval != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_int_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
 				nc_strerror(retval), varid, abs_path);
 		fprintf(stderr, error_mesg);
@@ -139,14 +139,14 @@ static bool output_materialized_variable_to_netcdf(char * const error, size_t er
 	case DATA_TYPE_LONG_ARRAY:
 	case DATA_TYPE_DOUBLE_ARRAY:
 	default:
-		local_error = (char *)calloc(MAXSTR, sizeof(char));
+		local_error = (char *) calloc(MAXSTR, sizeof(char));
 		snprintf(local_error, MAXSTR, "output_format_netcdf_write_data: unknown/unsupported variable type %d.",
 				 v->data_type);
 		return return_with_error(error, error_len, local_error);
 	}
 
 	if (rv != NC_NOERR) {
-		local_error = (char *)calloc(MAXSTR, sizeof(char));
+		local_error = (char *) calloc(MAXSTR, sizeof(char));
 		snprintf(local_error, MAXSTR,
 				"output_format_netcdf::output_materialized_variable_to_netcdf: error writing output, NetCDF driver returned error: %s.",
 				nc_strerror(rv));
@@ -182,7 +182,7 @@ bool output_format_netcdf_init(OutputFilter * const f) {
 		return false;
 	}
 	size_t abs_path_len = 2 * FILEPATH_LEN;
-	char *abs_path = malloc(abs_path_len * sizeof(char *));
+	char *abs_path = (char *) malloc(abs_path_len * sizeof(char));
 	snprintf(abs_path, abs_path_len, "%s%c%s%c%s",
 			f->output->path, PATH_SEP,
 			f->output->filename, FILE_EXT_SEP, OUTPUT_FORMAT_EXT_NETCDF);
@@ -190,7 +190,7 @@ bool output_format_netcdf_init(OutputFilter * const f) {
 	OutputFormatNetCDFMetadata *meta = calloc(1, sizeof(OutputFormatNetCDFMetadata));
 	int status = nc_create(abs_path, NC_CLOBBER, &(meta->ncid));
 	if (status != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "Unable to open file %s, netCDF driver returned error: %s.\n",
 				abs_path, nc_strerror(status));
 		perror(error_mesg);
@@ -202,7 +202,7 @@ bool output_format_netcdf_init(OutputFilter * const f) {
 	// Define index dimension
 	status = nc_def_dim(meta->ncid, OF_DIMENSION_IDX, NC_UNLIMITED, &(meta->dim_idx_id));
 	if (status != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "Unable to create dimension %s in output file %s, netCDF driver returned error: %s.\n",
 				OF_DIMENSION_IDX, abs_path, nc_strerror(status));
 		perror(error_mesg);
@@ -227,7 +227,7 @@ bool output_format_netcdf_destroy(OutputFilter * const f) {
 	OutputFormatNetCDFMetadata *meta = (OutputFormatNetCDFMetadata *)f->output->meta;
 	int status = nc_close(meta->ncid);
 	if (status != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "Unable to close netCDF file %s, netCDF driver returned value of: %s.\n",
 				meta->abs_path, nc_strerror(status));
 		perror(error_mesg);
@@ -311,7 +311,7 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	// Create variable for first field
 	status = create_variable(f->variables, ncid, dimids);
 	if (!status) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "Failed variable creation was in netCDF file %s.\n",
 				meta->abs_path);
 		fprintf(stderr, error_mesg);
@@ -323,7 +323,7 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	while (v != NULL) {
 		status = create_variable(v, ncid, dimids);
 		if (!status) {
-			char *error_mesg = malloc(MAXSTR * sizeof(char *));
+			char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 			snprintf(error_mesg, MAXSTR, "Failed variable creation was in netCDF file %s.\n",
 					meta->abs_path);
 			fprintf(stderr, error_mesg);
@@ -335,7 +335,7 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 
 	retval = nc_enddef(ncid);
 	if (retval != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "NetCDF driver error %s encountered when ending definition section of netCDF file %s.\n",
 				nc_strerror(retval), meta->abs_path);
 		fprintf(stderr, error_mesg);
@@ -422,7 +422,7 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 	if (flush) {
 		int retval = nc_sync(ncid);
 		if (retval != NC_NOERR) {
-			char *error_mesg = malloc(MAXSTR * sizeof(char *));
+			char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 			snprintf(error_mesg, MAXSTR, "NetCDF driver error %s encountered when calling nc_sync() on netCDF file %s.\n",
 					nc_strerror(retval), meta->abs_path);
 			fprintf(stderr, error_mesg);

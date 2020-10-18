@@ -38,7 +38,7 @@ bool destroy_output_filter(char * const error, size_t error_len,
 		}
 		bool status = destroy_output(f);
 		if (!status) {
-			char *destroy_error = (char *)calloc(MAXSTR, sizeof(char));
+			char *destroy_error = (char *) calloc(MAXSTR, sizeof(char));
 			snprintf(destroy_error, MAXSTR, "unable to destroy output %s/%s for output filter.",
 					f->output->path, f->output->filename);
 			return returnWithError(error, error_len, destroy_error);
