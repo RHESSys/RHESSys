@@ -17,6 +17,12 @@
 #define OF_VAR_MONTH "month"
 #define OF_VAR_DAY "day"
 #define OF_VAR_HOUR "hour"
+#define OF_VAR_BASIN "basinID"
+#define OF_VAR_HILL "hillID"
+#define OF_VAR_ZONE "zoneID"
+#define OF_VAR_PATCH "patchID"
+#define OF_VAR_STRATUM "stratumID"
+
 
 
 typedef struct of_fmt_netcdf_meta {
@@ -28,6 +34,11 @@ typedef struct of_fmt_netcdf_meta {
 	int var_time_day_id;
 	int var_time_month_id;
 	int var_time_year_id;
+	int var_id_basin_id;
+	int var_id_hill_id;
+	int var_id_zone_id;
+	int var_id_patch_id;
+	int var_id_stratum_id;
 	int index;
 } OutputFormatNetCDFMetadata;
 

@@ -13,11 +13,12 @@ static void free_metadata(OutputFormatNetCDFMetadata *meta) {
 	free(meta);
 }
 
-static inline bool create_time_variable(char *abs_path, int ncid, int dimids[], char *name, nc_type type, int *time_id) {
+static inline bool create_meta_variable(char *abs_path, int ncid, int dimids[],
+		char *name, nc_type type, int *time_id) {
 	bool status = nc_def_var(ncid, name, type, OF_DIM_VECTOR, dimids, time_id);
 	if (status != NC_NOERR) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
-		snprintf(error_mesg, MAXSTR, "Unable to create time variable %s for dimension %s in output file %s, netCDF driver returned error: %s.\n",
+		snprintf(error_mesg, MAXSTR, "Unable to create meta variable %s for dimension %s in output file %s, netCDF driver returned error: %s.\n",
 				name, OF_DIMENSION_IDX, abs_path, nc_strerror(status));
 		fprintf(stderr, error_mesg);
 		free(error_mesg);
@@ -60,7 +61,7 @@ static inline bool output_byte_to_netcdf(char *abs_path, int ncid, size_t idx[],
 	int retval = nc_put_var1_schar(ncid, varid, idx, &value);
 	if (retval != NC_NOERR) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
-		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_variable_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
+		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_byte_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
 				nc_strerror(retval), varid, abs_path);
 		fprintf(stderr, error_mesg);
 		free(error_mesg);
@@ -74,7 +75,21 @@ static inline bool output_short_to_netcdf(char *abs_path, int ncid, size_t idx[]
 	int retval = nc_put_var1_short(ncid, varid, idx, &value);
 	if (retval != NC_NOERR) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
-		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_variable_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
+		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_short_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
+				nc_strerror(retval), varid, abs_path);
+		fprintf(stderr, error_mesg);
+		free(error_mesg);
+		return false;
+	}
+	return true;
+}
+
+static inline bool output_int_to_netcdf(char *abs_path, int ncid, size_t idx[],
+		int varid, int value) {
+	int retval = nc_put_var1_int(ncid, varid, idx, &value);
+	if (retval != NC_NOERR) {
+		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_int_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
 				nc_strerror(retval), varid, abs_path);
 		fprintf(stderr, error_mesg);
 		free(error_mesg);
@@ -239,16 +254,16 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	// Define variables for timestep
 	switch (f->timestep) {
 	case TIMESTEP_HOURLY:
-		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_HOUR, NC_BYTE, &(meta->var_time_hour_id));
+		status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_HOUR, NC_BYTE, &(meta->var_time_hour_id));
 		if (!status) return false;
 	case TIMESTEP_DAILY:
-		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_DAY, NC_BYTE, &(meta->var_time_day_id));
+		status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_DAY, NC_BYTE, &(meta->var_time_day_id));
 		if (!status) return false;
 	case TIMESTEP_MONTHLY:
-		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_MONTH, NC_BYTE, &(meta->var_time_month_id));
+		status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_MONTH, NC_BYTE, &(meta->var_time_month_id));
 		if (!status) return false;
 	case TIMESTEP_YEARLY:
-		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_YEAR, NC_SHORT, &(meta->var_time_year_id));
+		status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_YEAR, NC_SHORT, &(meta->var_time_year_id));
 		if (!status) return false;
 		break;
 	default:
@@ -256,7 +271,34 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 		break;
 	}
 
-	// TODO: Create variables for ID fields
+	// Create variables for ID fields
+	// Basin ID
+	status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_BASIN, NC_INT, &(meta->var_id_basin_id));
+	if (!status) return false;
+	// Hillslope ID
+	status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_HILL, NC_INT, &(meta->var_id_hill_id));
+	if (!status) return false;
+	// Zone ID
+	status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_ZONE, NC_INT, &(meta->var_id_zone_id));
+	if (!status) return false;
+	switch (f->type) {
+		case OUTPUT_FILTER_PATCH:
+			// Patch ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_PATCH, NC_INT, &(meta->var_id_patch_id));
+			if (!status) return false;
+			break;
+		case OUTPUT_FILTER_CANOPY_STRATUM:
+			// Patch ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_PATCH, NC_INT, &(meta->var_id_patch_id));
+			if (!status) return false;
+			// Stratum ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_STRATUM, NC_INT, &(meta->var_id_stratum_id));
+			if (!status) return false;
+			break;
+		default:
+			// Do not print ID headers for unknown output filter types
+			break;
+	}
 
 	// Create variable for first field
 	status = create_variable(f->variables, ncid, dimids);
@@ -311,22 +353,18 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 	short year;
 	switch (f->timestep) {
 	case TIMESTEP_HOURLY:
-		//hour = (short)date.hour;
 		status = output_byte_to_netcdf(meta->abs_path, ncid, curr_idx,
 				meta->var_time_hour_id, (char)date.hour);
 		if (!status) return false;
 	case TIMESTEP_DAILY:
-		//day = (short)date.day;
 		status = output_byte_to_netcdf(meta->abs_path, ncid, curr_idx,
 				meta->var_time_day_id, (char)date.day);
 		if (!status) return false;
 	case TIMESTEP_MONTHLY:
-		//month = (short)date.month;
 		status = output_byte_to_netcdf(meta->abs_path, ncid, curr_idx,
 				meta->var_time_month_id, (char)date.month);
 		if (!status) return false;
 	case TIMESTEP_YEARLY:
-		//year = (short)date.year;
 		status = output_short_to_netcdf(meta->abs_path, ncid, curr_idx,
 				meta->var_time_year_id, (short)date.year);
 		if (!status) return false;
@@ -336,7 +374,33 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 		break;
 	}
 
-	// TODO: Output entity ID fields
+	// Output entity ID fields
+	if (id.basin_ID != OUTPUT_FILTER_ID_EMPTY) {
+		status = output_int_to_netcdf(meta->abs_path, ncid, curr_idx,
+				meta->var_id_basin_id, id.basin_ID);
+		if (!status) return false;
+	}
+	if (id.hillslope_ID != OUTPUT_FILTER_ID_EMPTY) {
+		status = output_int_to_netcdf(meta->abs_path, ncid, curr_idx,
+				meta->var_id_hill_id, id.hillslope_ID);
+		if (!status) return false;
+	}
+	if (id.zone_ID != OUTPUT_FILTER_ID_EMPTY) {
+		status = output_int_to_netcdf(meta->abs_path, ncid, curr_idx,
+				meta->var_id_zone_id, id.zone_ID);
+		if (!status) return false;
+	}
+	if (id.patch_ID != OUTPUT_FILTER_ID_EMPTY) {
+		status = output_int_to_netcdf(meta->abs_path, ncid, curr_idx,
+				meta->var_id_patch_id, id.patch_ID);
+		if (!status) return false;
+
+	}
+	if (id.canopy_strata_ID != OUTPUT_FILTER_ID_EMPTY) {
+		status = output_int_to_netcdf(meta->abs_path, ncid, curr_idx,
+				meta->var_id_stratum_id, id.canopy_strata_ID);
+		if (!status) return false;
+	}
 
 	// Output variables
 	for (int i = 0; i < f->num_named_variables; i++) {
