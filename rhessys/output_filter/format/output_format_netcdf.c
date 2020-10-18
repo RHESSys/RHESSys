@@ -38,7 +38,15 @@ static inline bool create_variable(OutputFilterVariable *v, int ncid, int dimids
 		return false;
 	}
 	int varid;
-	int status = nc_def_var(ncid, v->name, nc_type, 1, dimids,
+	char *var_name = malloc(NC_MAX_NAME * sizeof(char));
+	if (v->sub_struct_varname == NULL) {
+		// Variable name is simple (e.g. "foo")
+		snprintf(var_name, NC_MAX_NAME, "%s", v->name);
+	} else {
+		// Variable name is compound (e.g. "foo.bar")
+		snprintf(var_name, NC_MAX_NAME, "%s.%s", v->name, v->sub_struct_varname);
+	}
+	int status = nc_def_var(ncid, var_name, nc_type, 1, dimids,
 			&varid);
 	if (status != NC_NOERR) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));

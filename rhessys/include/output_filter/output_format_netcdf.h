@@ -24,7 +24,6 @@
 #define OF_VAR_STRATUM "stratumID"
 
 
-
 typedef struct of_fmt_netcdf_meta {
 	char *abs_path;
 	int ncid;
