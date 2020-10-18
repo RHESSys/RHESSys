@@ -55,7 +55,21 @@ static inline bool create_variable(OutputFilterVariable *v, int ncid, int dimids
 	return true;
 }
 
-static inline bool output_variable_to_netcdf(char *abs_path, int ncid, size_t idx[],
+static inline bool output_byte_to_netcdf(char *abs_path, int ncid, size_t idx[],
+		int varid, char value) {
+	int retval = nc_put_var1_schar(ncid, varid, idx, &value);
+	if (retval != NC_NOERR) {
+		char *error_mesg = malloc(MAXSTR * sizeof(char *));
+		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_variable_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
+				nc_strerror(retval), varid, abs_path);
+		fprintf(stderr, error_mesg);
+		free(error_mesg);
+		return false;
+	}
+	return true;
+}
+
+static inline bool output_short_to_netcdf(char *abs_path, int ncid, size_t idx[],
 		int varid, short value) {
 	int retval = nc_put_var1_short(ncid, varid, idx, &value);
 	if (retval != NC_NOERR) {
@@ -151,7 +165,7 @@ bool output_format_netcdf_init(OutputFilter * const f) {
 			f->output->filename, FILE_EXT_SEP, OUTPUT_FORMAT_EXT_NETCDF);
 
 	OutputFormatNetCDFMetadata *meta = calloc(1, sizeof(OutputFormatNetCDFMetadata));
-	int status = nc_create(abs_path, NC_CLOBBER|NC_NETCDF4, &(meta->ncid));
+	int status = nc_create(abs_path, NC_CLOBBER, &(meta->ncid));
 	if (status != NC_NOERR) {
 		char *error_mesg = malloc(MAXSTR * sizeof(char *));
 		snprintf(error_mesg, MAXSTR, "Unable to open file %s, netCDF driver returned error: %s.\n",
@@ -222,29 +236,16 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	int dimids[1];
 	dimids[0] = meta->dim_idx_id;
 
-	// Define index variable
-	status = create_time_variable(abs_path, ncid, dimids, OF_DIMENSION_IDX, NC_INT64, &(meta->var_idx_id));
-	if (!status) return false;
-//	retval = nc_def_var_fill(ncid, meta->var_idx_id, NC_NOFILL, NULL);
-//	if (retval != NC_NOERR) {
-//		char *error_mesg = malloc(MAXSTR * sizeof(char *));
-//		snprintf(error_mesg, MAXSTR, "Unable to set fill for variable %s for dimension %s in output file %s, netCDF driver returned error: %s.\n",
-//				OF_DIMENSION_IDX, OF_DIMENSION_IDX, abs_path, nc_strerror(status));
-//		fprintf(stderr, error_mesg);
-//		free(error_mesg);
-//		return false;
-//	}
-
 	// Define variables for timestep
 	switch (f->timestep) {
 	case TIMESTEP_HOURLY:
-		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_HOUR, NC_SHORT, &(meta->var_time_hour_id));
+		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_HOUR, NC_BYTE, &(meta->var_time_hour_id));
 		if (!status) return false;
 	case TIMESTEP_DAILY:
-		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_DAY, NC_SHORT, &(meta->var_time_day_id));
+		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_DAY, NC_BYTE, &(meta->var_time_day_id));
 		if (!status) return false;
 	case TIMESTEP_MONTHLY:
-		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_MONTH, NC_SHORT, &(meta->var_time_month_id));
+		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_MONTH, NC_BYTE, &(meta->var_time_month_id));
 		if (!status) return false;
 	case TIMESTEP_YEARLY:
 		status = create_time_variable(abs_path, ncid, dimids, OF_VAR_YEAR, NC_SHORT, &(meta->var_time_year_id));
@@ -303,19 +304,7 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 	int ncid = meta->ncid;
 	int dimids[1];
 	dimids[0] = meta->dim_idx_id;
-	size_t curr_idx[] = {meta->index};
-
-	// First, output index variable
-	int retval = nc_put_var1_int(ncid, meta->var_idx_id, curr_idx, &(meta->index));
-	if (retval != NC_NOERR) {
-		char *error_mesg = malloc(MAXSTR * sizeof(char *));
-		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_format_netcdf_write_data: error writing index variable value %d, NetCDF driver error %s encountered when writing to netCDF file %s.\n",
-				meta->index, nc_strerror(retval), meta->abs_path);
-		fprintf(stderr, error_mesg);
-		free(error_mesg);
-		return false;
-	}
-	meta->index += 1;
+	size_t curr_idx[] = {meta->index++};
 
 	// Second, output time step variables
 	short hour, day, month;
@@ -323,22 +312,22 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 	switch (f->timestep) {
 	case TIMESTEP_HOURLY:
 		//hour = (short)date.hour;
-		status = output_variable_to_netcdf(meta->abs_path, ncid, curr_idx,
-				meta->var_time_hour_id, (short)date.hour);
+		status = output_byte_to_netcdf(meta->abs_path, ncid, curr_idx,
+				meta->var_time_hour_id, (char)date.hour);
 		if (!status) return false;
 	case TIMESTEP_DAILY:
 		//day = (short)date.day;
-		status = output_variable_to_netcdf(meta->abs_path, ncid, curr_idx,
-				meta->var_time_day_id, (short)date.day);
+		status = output_byte_to_netcdf(meta->abs_path, ncid, curr_idx,
+				meta->var_time_day_id, (char)date.day);
 		if (!status) return false;
 	case TIMESTEP_MONTHLY:
 		//month = (short)date.month;
-		status = output_variable_to_netcdf(meta->abs_path, ncid, curr_idx,
-				meta->var_time_month_id, (short)date.month);
+		status = output_byte_to_netcdf(meta->abs_path, ncid, curr_idx,
+				meta->var_time_month_id, (char)date.month);
 		if (!status) return false;
 	case TIMESTEP_YEARLY:
 		//year = (short)date.year;
-		status = output_variable_to_netcdf(meta->abs_path, ncid, curr_idx,
+		status = output_short_to_netcdf(meta->abs_path, ncid, curr_idx,
 				meta->var_time_year_id, (short)date.year);
 		if (!status) return false;
 		break;
