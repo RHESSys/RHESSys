@@ -38,6 +38,8 @@ static void reset_accumulator_stratum(PointerSet **acc_objs_to_reset) {
 	}
 }
 
+// TODO: Maybe: Update to support hierarchy level to support basin level output? Though this may not be necessary as
+// output_basin should be able to infer the correct entity before materialize_variable() is called.
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
 	size_t offset = v->offset;
@@ -286,12 +288,28 @@ static bool apply_to_strata_in_basin(char * const error, size_t error_len,
 	return true;
 }
 
+static inline bool output_materialized_variables(char * const error, size_t error_len,
+		struct date date, EntityID id, OutputFilter const * const f, MaterializedVariable *mat_vars) {
+	// Output materialized variables array using appropriate driver
+	switch (f->output->format) {
+	case OUTPUT_TYPE_CSV:
+		return output_format_csv_write_data(error, error_len,
+				date, f, id, mat_vars, true);
+	case OUTPUT_TYPE_NETCDF:
+		return output_format_netcdf_write_data(error, error_len,
+				date, f, id, mat_vars, true);
+	default:
+		fprintf(stderr, "output_materialized_variables: output format type %d is unknown or not yet implemented.",
+				f->output->format);
+		return false;
+	}
+}
+
 static bool output_variables(char * const error, size_t error_len,
 		struct date date, void * const entity, EntityID id, OutputFilter const * const f) {
 	fprintf(stderr, "\t\toutput_variables(num_named_variables: %hu)...\n", f->num_named_variables);
 
 	char *local_error;
-	bool status;
 	MaterializedVariable mat_var;
 	MaterializedVariable *mat_vars = f->output->materialized_variables;
 	num_elements_t curr_var = 0;
@@ -318,23 +336,19 @@ static bool output_variables(char * const error, size_t error_len,
 		}
 	}
 
-	// Output materialized variables array using appropriate driver
-	switch (f->output->format) {
-	case OUTPUT_TYPE_CSV:
-		status = output_format_csv_write_data(error, error_len,
-				date, f, id, mat_vars, true);
-		break;
-	case OUTPUT_TYPE_NETCDF:
-		status = output_format_netcdf_write_data(error, error_len,
-				date, f, id, mat_vars, true);
-		break;
-	default:
-		fprintf(stderr, "output_variables: output format type %d is unknown or not yet implemented.",
-				f->output->format);
-		return false;
-	}
+	return output_materialized_variables(error, error_len, date, id, f, mat_vars);
+}
 
-	return status;
+static bool output_basin(char * const error, size_t error_len,
+		struct date date, OutputFilter const * const filter,
+		PointerSet **patch_acc_objs_to_reset, PointerSet **stratum_acc_objs_to_reset) {
+	fprintf(stderr, "\toutput_basin()...\n");
+
+	// TODO: Implement areal averaging over all patch and stratum variables in a basin
+	// Iterate over all basins
+	// Within each basin, iterate over all patch and stratum objects, performing areal averaging as we go
+	// Then, once all specified variables have been averaged, output them (they will have to be stored as materialized
+	// variables since this is what the output drivers know how to write data).
 }
 
 static bool output_patch(char * const error, size_t error_len,
@@ -476,6 +490,10 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
+			case OUTPUT_FILTER_BASIN:
+				status = output_basin(error, error_len, date, f, NULL, NULL);
+				if (!status) return false;
+				break;
 			case OUTPUT_FILTER_PATCH:
 				status = output_patch(error, error_len, date, f, NULL);
 				if (!status) return false;
@@ -508,13 +526,16 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_MONTHLY) {
 			switch (f->type) {
+			case OUTPUT_FILTER_BASIN:
+				status = output_basin(error, error_len, date, f,
+						acc_patch_obj_to_reset, acc_stratum_obj_to_reset);
+				if (!status) return false;
+				break;
 			case OUTPUT_FILTER_PATCH:
-				// TODO: Pass in accumulator list head pointer
 				status = output_patch(error, error_len, date, f, &acc_patch_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_CANOPY_STRATUM:
-				// TODO: Pass in accumulator list head pointer
 				status = output_stratum(error, error_len, date, f, &acc_stratum_obj_to_reset);
 				if (!status) return false;
 				break;
@@ -546,13 +567,16 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 	for (OutputFilter const * f = filters; f != NULL; f = f->next) {
 		if (f->timestep == TIMESTEP_YEARLY) {
 			switch (f->type) {
+			case OUTPUT_FILTER_BASIN:
+				status = output_basin(error, error_len, date, f,
+						acc_patch_obj_to_reset, acc_stratum_obj_to_reset);
+				if (!status) return false;
+				break;
 			case OUTPUT_FILTER_PATCH:
-				// TODO: Pass in accumulator list head pointer
 				status = output_patch(error, error_len, date, f, &acc_patch_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_CANOPY_STRATUM:
-				// TODO: Pass in accumulator list head pointer
 				status = output_stratum(error, error_len, date, f, &acc_stratum_obj_to_reset);
 				if (!status) return false;
 				break;

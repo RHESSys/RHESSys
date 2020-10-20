@@ -37,6 +37,7 @@ OutputFilter *curr_filter = NULL;
 %token FORMAT
 %token PATH
 %token FILENAME
+/* %token BASIN_TOK */
 %token PATCH_TOK
 %token STRATUM_TOK
 %token IDS
@@ -66,6 +67,7 @@ filter_list:
 	| filter_list format EOL {}
 	| filter_list path EOL {}
 	| filter_list filename EOL {}
+/*	| filter_list basin EOL {} */
 	| filter_list patch EOL {}
 	| filter_list stratum EOL {}
 	| filter_list ids EOL {}
@@ -413,6 +415,7 @@ variables: VARS variable_spec {
 	}
 	;
 
+// TODO: update variable_spec to allow patch. and stratum. to precede variable_spec.
 variable_spec: IDENTIFIER {
 		printf("\t\tVARIABLE: %s\n", $1);
 		

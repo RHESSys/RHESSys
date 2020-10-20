@@ -7,6 +7,8 @@
 
 %}
 
+/* ^([ ]{2}+|[\t]+)"basin:" { return BASIN_TOK; } */
+
 %%
 
 ^"filter:" { return FILTER; }

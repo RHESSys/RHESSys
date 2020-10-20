@@ -24,6 +24,14 @@ typedef enum {
 } OutputFilterTimestep;
 
 typedef enum {
+	OF_HIERARCHY_LEVEL_BASIN,
+	OF_HIERARCHY_LEVEL_HILLSLOPE,
+	OF_HIERARCHY_LEVEL_ZONE,
+	OF_HIERARCHY_LEVEL_PATCH,
+	OF_HIERARCHY_LEVEL_STRATUM
+} HierarchyLevel;
+
+typedef enum {
 	OUTPUT_TYPE_CSV,
 	OUTPUT_TYPE_NETCDF
 } OutputFormat;
@@ -78,6 +86,7 @@ typedef struct of_output_output {
 // output_filter_variable_list
 typedef struct of_var {
 	VariableType variable_type;
+	// TODO: Add HierarchyLevel hierarchy_level
 	struct of_var *next;
 
 	DataType data_type;
@@ -129,6 +138,7 @@ typedef struct of_stratum {
 
 typedef enum {
 	OUTPUT_FILTER_UNDEFINED,
+	OUTPUT_FILTER_BASIN,
 	OUTPUT_FILTER_PATCH,
 	OUTPUT_FILTER_CANOPY_STRATUM
 } OutputFilterType;
@@ -140,6 +150,7 @@ typedef struct of_filter {
 	OutputFilterOutput *output;
 	OutputFilterPatch *patches;
 	OutputFilterStratum *strata;
+	// TODO: Add: OutputFilterBasin *basins;
 	OutputFilterVariable *variables;
 	num_elements_t num_named_variables;
 	bool parse_error;

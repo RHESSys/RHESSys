@@ -26,6 +26,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 				return false;
 	}
 
+	// TODO: Determine struct_index and struct_name for each variable (since this can change per variable for basin output)
 	Dictionary_t *struct_index = NULL;
 	char *struct_name = NULL;
 	switch (f->type) {
@@ -44,6 +45,8 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 
 	OutputFilterVariable *v = f->variables;
 	while (v != NULL) {
+		// TODO: To support basin-level output (where variables will be stratum, patch, or hillslope variables) determine
+		// struct_index and struct_name for each variable instead of once before we iterate over variables.
 		if (v->variable_type == NAMED) {
 			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
@@ -89,6 +92,7 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 				return false;
 	}
 
+	// TODO: Determine struct_index and struct_name for each variable (since this can change per variable for basin output)
 	Dictionary_t *struct_index = NULL;
 	char *struct_name = NULL;
 	switch (f->type) {
@@ -107,6 +111,8 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 
 	OutputFilterVariable *v = f->variables;
 	while (v != NULL) {
+		// TODO: To support basin-level output (where variables will be stratum, patch, or hillslope variables) determine
+		// struct_index and struct_name for each variable instead of once before we iterate over variables.
 		if (v->variable_type == NAMED) {
 			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
@@ -372,6 +378,7 @@ static bool init_spatial_hierarchy(OutputFilter *f,
 	case OUTPUT_FILTER_CANOPY_STRATUM:
 		return init_spatial_hierarchy_stratum(f, w, cmd);
 	default:
+		// TODO: Add version of basin output
 		fprintf(stderr, "init_spatial_hierarchy: output filter type %d is unknown or not yet implemented.\n", f->type);
 		return false;
 	}
