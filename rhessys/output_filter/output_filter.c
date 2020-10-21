@@ -201,6 +201,43 @@ static bool var_supersedes_or_duplicates(const OutputFilterVariable *existing, c
 	}
 }
 
+// output_filter_basin_list
+OutputFilterBasin *create_new_output_filter_basin() {
+	OutputFilterBasin *new_basin = (OutputFilterBasin *) malloc(sizeof(OutputFilterBasin));
+	new_basin->next = NULL;
+	return new_basin;
+}
+
+OutputFilterBasin *add_to_output_filter_basin_list(OutputFilterBasin * const head,
+		OutputFilterBasin * const new_basin) {
+	if (head == NULL) return new_basin;
+	// Iterate over basin list, checking to see if new_basin is duplicative
+	OutputFilterBasin *tmp = head;
+	while (tmp != NULL) {
+		if (tmp->basinID == new_basin->basinID) {
+			// new_patch duplicates tmp, don't add to list
+			return NULL;
+		}
+		if (tmp->next == NULL) {
+			// Don't run off the end of the list (i.e. preserve tmp so that we can
+			// assign the new entry to the tmp->next).
+			break;
+		}
+		tmp = tmp->next;
+	}
+	// new_basin is not a duplicate of any current entries in the list, add it to the end of the list.
+	tmp->next = new_basin;
+	return tmp->next;
+}
+
+void free_output_filter_basin_list(OutputFilterBasin *head) {
+	if (head == NULL) { return; }
+	if (head->next != NULL) {
+		free_output_filter_basin_list(head->next);
+	}
+	free(head);
+}
+
 // output_filter_patch_list
 OutputFilterPatch *create_new_output_filter_patch() {
 	OutputFilterPatch *new_patch = (OutputFilterPatch *) malloc(sizeof(OutputFilterPatch));
@@ -299,9 +336,10 @@ void free_output_filter_stratum_list(OutputFilterStratum *head) {
 }
 
 // output_filter_variable_list
-OutputFilterVariable *create_new_output_filter_variable(char *name) {
+OutputFilterVariable *create_new_output_filter_variable(HierarchyLevel level, char *name) {
 	OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
 	new_var->next = NULL;
+	new_var->hierarchy_level = level;
 	new_var->variable_type = NAMED;
 	new_var->data_type = DATA_TYPE_UNDEFINED;
 	new_var->name = strdup(name);
@@ -312,9 +350,10 @@ OutputFilterVariable *create_new_output_filter_variable(char *name) {
 	return new_var;
 }
 
-OutputFilterVariable *create_new_output_filter_sub_struct_variable(char *name, char *sub_struct_varname) {
+OutputFilterVariable *create_new_output_filter_sub_struct_variable(HierarchyLevel level, char *name, char *sub_struct_varname) {
 	OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
 	new_var->next = NULL;
+	new_var->hierarchy_level = level;
 	new_var->variable_type = NAMED;
 	new_var->data_type = DATA_TYPE_UNDEFINED;
 	new_var->name = strdup(name);
@@ -328,6 +367,7 @@ OutputFilterVariable *create_new_output_filter_sub_struct_variable(char *name, c
 OutputFilterVariable *create_new_output_filter_variable_any() {
 	OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
 	new_var->next = NULL;
+	new_var->hierarchy_level = OF_HIERARCHY_LEVEL_UNDEFINED;
 	new_var->variable_type = ANY_VAR;
 	new_var->data_type = DATA_TYPE_UNDEFINED;
 	new_var->sub_struct_varname = NULL;
@@ -409,6 +449,7 @@ OutputFilter *create_new_output_filter() {
 	new_filter->timestep = TIMESTEP_UNDEFINED;
 	new_filter->next = NULL;
 	new_filter->output = NULL;
+	new_filter->basins = NULL;
 	new_filter->patches = NULL;
 	new_filter->strata = NULL;
 	new_filter->variables = NULL;
@@ -460,6 +501,18 @@ void print_output_filter_output(OutputFilterOutput *o, char *prefix) {
 		}
 		fprintf(stderr, "%s\tpath: %s,\n", prefix, o->path);
 		fprintf(stderr, "%s\tfilename: %s,\n", prefix, o->filename);
+	}
+	fprintf(stderr, "%s}", prefix);
+}
+
+void print_output_filter_basin(OutputFilterBasin *b, char *prefix) {
+	if (prefix == NULL) {
+		prefix = "";
+	}
+	fprintf(stderr, "%sOutputFilterBasin@%p {\n", prefix, (void *)b);
+	if (b != NULL) {
+		fprintf(stderr, "%s\tbasinID: %d,\n", prefix, b->basinID);
+		fprintf(stderr, "%s\tbasin: %p,\n", prefix, b->basin);
 	}
 	fprintf(stderr, "%s}", prefix);
 }
@@ -551,6 +604,27 @@ void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
 	fprintf(stderr, "%sOutputFilterVariable@%p {\n", prefix, (void *)v);
 	if (v != NULL) {
 		fprintf(stderr, "%s\tnext: %p,\n", prefix, (void *)v->next);
+		switch (v->hierarchy_level) {
+		case OF_HIERARCHY_LEVEL_UNDEFINED:
+			fprintf(stderr, "%s\thierarchy_level: undefined,\n", prefix);
+			break;
+		case OF_HIERARCHY_LEVEL_BASIN:
+			fprintf(stderr, "%s\thierarchy_level: basin,\n", prefix);
+			break;
+		case OF_HIERARCHY_LEVEL_HILLSLOPE:
+			fprintf(stderr, "%s\thierarchy_level: hillslope,\n", prefix);
+			break;
+		case OF_HIERARCHY_LEVEL_ZONE:
+			fprintf(stderr, "%s\thierarchy_level: zone,\n", prefix);
+			break;
+		case OF_HIERARCHY_LEVEL_PATCH:
+			fprintf(stderr, "%s\thierarchy_level: patch,\n", prefix);
+			break;
+		case OF_HIERARCHY_LEVEL_STRATUM:
+			fprintf(stderr, "%s\thierarchy_level: stratum,\n", prefix);
+			break;
+		}
+
 		switch (v->variable_type) {
 		case ANY_VAR:
 			fprintf(stderr, "%s\tvariable_type: any,\n", prefix);
@@ -562,43 +636,43 @@ void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
 
 		switch (v->data_type) {
 		case DATA_TYPE_UNDEFINED:
-			fprintf(stderr, "%s\tvariable_type: undefined,\n", prefix);
+			fprintf(stderr, "%s\ttype: undefined,\n", prefix);
 			break;
 		case DATA_TYPE_BOOL:
-			fprintf(stderr, "%s\tvariable_type: bool,\n", prefix);
+			fprintf(stderr, "%s\ttype: bool,\n", prefix);
 			break;
 		case DATA_TYPE_STRING:
-			fprintf(stderr, "%s\tvariable_type: string,\n", prefix);
+			fprintf(stderr, "%s\ttype: string,\n", prefix);
 			break;
 		case DATA_TYPE_INT:
-			fprintf(stderr, "%s\tvariable_type: int,\n", prefix);
+			fprintf(stderr, "%s\ttype: int,\n", prefix);
 			break;
 		case DATA_TYPE_LONG:
-			fprintf(stderr, "%s\tvariable_type: long,\n", prefix);
+			fprintf(stderr, "%s\ttype: long,\n", prefix);
 			break;
 		case DATA_TYPE_LONG_ARRAY:
-			fprintf(stderr, "%s\tvariable_type: long[],\n", prefix);
+			fprintf(stderr, "%s\ttype: long[],\n", prefix);
 			break;
 		case DATA_TYPE_FLOAT:
-			fprintf(stderr, "%s\tvariable_type: float,\n", prefix);
+			fprintf(stderr, "%s\ttype: float,\n", prefix);
 			break;
 		case DATA_TYPE_DOUBLE:
-			fprintf(stderr, "%s\tvariable_type: double,\n", prefix);
+			fprintf(stderr, "%s\ttype: double,\n", prefix);
 			break;
 		case DATA_TYPE_DOUBLE_ARRAY:
-			fprintf(stderr, "%s\tvariable_type: double[],\n", prefix);
+			fprintf(stderr, "%s\ttype: double[],\n", prefix);
 			break;
 		case DATA_TYPE_FILE_PTR:
-			fprintf(stderr, "%s\tvariable_type: FILE *,\n", prefix);
+			fprintf(stderr, "%s\ttype: FILE *,\n", prefix);
 			break;
 		case DATA_TYPE_STRUCT:
-			fprintf(stderr, "%s\tvariable_type: struct,\n", prefix);
+			fprintf(stderr, "%s\ttype: struct,\n", prefix);
 			break;
 		case DATA_TYPE_STRUCT_PTR:
-			fprintf(stderr, "%s\tvariable_type: struct *,\n", prefix);
+			fprintf(stderr, "%s\ttype: struct *,\n", prefix);
 			break;
 		case DATA_TYPE_STRUCT_PTR_ARRAY:
-			fprintf(stderr, "%s\tvariable_type: struct **,\n", prefix);
+			fprintf(stderr, "%s\ttype: struct **,\n", prefix);
 			break;
 		default:
 			break;
@@ -620,6 +694,9 @@ void print_output_filter(OutputFilter *f) {
 		switch (f->type) {
 		case OUTPUT_FILTER_UNDEFINED:
 			fprintf(stderr, "\ttype: undefined,\n");
+			break;
+		case OUTPUT_FILTER_BASIN:
+			fprintf(stderr, "\ttype: basin,\n");
 			break;
 		case OUTPUT_FILTER_PATCH:
 			fprintf(stderr, "\ttype: patch,\n");
@@ -652,6 +729,14 @@ void print_output_filter(OutputFilter *f) {
 		fprintf(stderr, ",\n");
 
 		switch(f->type) {
+		case OUTPUT_FILTER_BASIN:
+			fprintf(stderr, "\basins: [\n");
+			for (OutputFilterBasin *b = f->basins; b != NULL; b = b->next) {
+				print_output_filter_basin(b, "\t\t");
+				fprintf(stderr, ",\n");
+			}
+			fprintf(stderr, "\t],\n");
+			break;
 		case OUTPUT_FILTER_PATCH:
 			fprintf(stderr, "\tpatches: [\n");
 			for (OutputFilterPatch *p = f->patches; p != NULL; p = p->next) {
@@ -672,7 +757,6 @@ void print_output_filter(OutputFilter *f) {
 		default:
 			break;
 		}
-
 
 		fprintf(stderr, "\tnum_named_variables: %hu,\n", f->num_named_variables);
 

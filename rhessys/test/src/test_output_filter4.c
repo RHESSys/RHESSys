@@ -38,14 +38,17 @@ void test_output_filter4() {
 	g_assert(s2->next == NULL);
 	// Variables
 	OutputFilterVariable *v1 = filter->variables;
+	g_assert(v1->hierarchy_level == OF_HIERARCHY_LEVEL_STRATUM);
 	g_assert(v1->variable_type == NAMED);
 	cmp = strcmp(v1->name, "PET");
 	g_assert(cmp == 0);
 	OutputFilterVariable *v2 = v1->next;
+	g_assert(v2->hierarchy_level == OF_HIERARCHY_LEVEL_STRATUM);
 	g_assert(v2->variable_type == NAMED);
 	cmp = strcmp(v2->name, "gs");
 	g_assert(cmp == 0);
 	OutputFilterVariable *v3 = v2->next;
+	g_assert(v3->hierarchy_level == OF_HIERARCHY_LEVEL_STRATUM);
 	g_assert(v3->variable_type == NAMED);
 	cmp = strcmp(v3->name, "cs");
 	g_assert(cmp == 0);

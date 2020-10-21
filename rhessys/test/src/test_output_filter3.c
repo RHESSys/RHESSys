@@ -30,13 +30,16 @@ void test_output_filter3() {
 	g_assert(p1->next == NULL);
 	// Variables
 	OutputFilterVariable *v1 = filter->variables;
+	g_assert(v1->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
 	g_assert(v1->variable_type == NAMED);
 	cmp = strcmp(v1->name, "water_balance");
 	g_assert(cmp == 0);
 	OutputFilterVariable *v2 = v1->next;
-	g_assert(v1->variable_type == NAMED);
-	cmp = strcmp(v1->name, "Qout");
+	g_assert(v2->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
+	g_assert(v2->variable_type == NAMED);
+	cmp = strcmp(v2->name, "Qout");
 	OutputFilterVariable *v3 = v2->next;
+	g_assert(v3->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
 	g_assert(v3->variable_type == NAMED);
 	cmp = strcmp(v3->name, "Qin");
 	g_assert(v3->next == NULL);

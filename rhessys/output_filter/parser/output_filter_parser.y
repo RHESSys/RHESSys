@@ -12,6 +12,7 @@ int set_input_file(char * const file_path);
 // State machine
 bool in_filter = false;
 bool in_output = false;
+bool in_basin = false;
 bool in_patch = false;
 bool in_stratum = false;
 bool syntax_error = false;
@@ -37,7 +38,7 @@ OutputFilter *curr_filter = NULL;
 %token FORMAT
 %token PATH
 %token FILENAME
-/* %token BASIN_TOK */
+%token BASIN_TOK
 %token PATCH_TOK
 %token STRATUM_TOK
 %token IDS
@@ -47,6 +48,8 @@ OutputFilter *curr_filter = NULL;
 %token <string> FILENAME_SPEC
 /* patch_id_spec components */
 %token <string> IDENTIFIER
+%token <string> LEVEL_PATCH
+%token <string> LEVEL_STRATUM
 %token KLEENE
 %token <integer> NUMBER
 %token DELIM
@@ -67,7 +70,7 @@ filter_list:
 	| filter_list format EOL {}
 	| filter_list path EOL {}
 	| filter_list filename EOL {}
-/*	| filter_list basin EOL {} */
+	| filter_list basin EOL {}
 	| filter_list patch EOL {}
 	| filter_list stratum EOL {}
 	| filter_list ids EOL {}
@@ -79,7 +82,9 @@ filter: FILTER {
 		// Update state machine
 		in_filter = true;
 		in_output = false;
+		in_basin = false;
 		in_patch = false;
+		in_stratum = false;
 		
 		curr_filter = create_new_output_filter();
 		if (filters == NULL) {
@@ -124,7 +129,7 @@ timestep: TIMESTEP IDENTIFIER {
 				printf("\tTIMESTEP IS: %s\n", $2);
 			} else {
 				syntax_error = true;
-				yyerror("unkown timestamp definition");
+				yyerror("unknown timestamp definition");
 			}
 		}
 	}
@@ -195,13 +200,37 @@ filename: FILENAME FILENAME_SPEC {
   }
 	;
 
+basin: BASIN_TOK {
+		if (!in_filter) {
+			syntax_error = true;
+			yyerror("basin definition must be nested within filter definition");
+		} else if (curr_filter->patches != NULL || curr_filter->strata != NULL) {
+			syntax_error = true;
+			yyerror("only one of basin, patch, or stratum is allowed in a filter, but more than one was encountered.");
+		} else if (curr_filter->basins != NULL) {
+			syntax_error = true;
+			yyerror("only one basin definition is allowed in a filter, but more than one was encountered.");
+		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
+		  syntax_error = true;
+		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to basin.");
+		} else {
+			in_basin = true;
+			in_patch = false;
+			in_stratum = false;
+			in_output = false;
+			curr_filter->type = OUTPUT_FILTER_BASIN;
+			printf("\tBEGIN BASIN\n");
+		}
+	}
+	;
+
 patch: PATCH_TOK {
 		if (!in_filter) {
 			syntax_error = true;
 			yyerror("patch definition must be nested within filter definition");
-		} else if (curr_filter->strata != NULL) {
+		} else if (curr_filter->basins != NULL || curr_filter->strata != NULL) {
 			syntax_error = true;
-			yyerror("only a stratum definition or a patch definition is allowed in a filter, but both were encountered.");
+			yyerror("only one of basin, patch, or stratum is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->patches != NULL) {
 			syntax_error = true;
 			yyerror("only one patch definition is allowed in a filter, but more than one was encountered.");
@@ -209,6 +238,7 @@ patch: PATCH_TOK {
 		  syntax_error = true;
 		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to patch.");
 		} else {
+			in_basin = false;
 			in_patch = true;
 			in_stratum = false;
 			in_output = false;
@@ -222,9 +252,9 @@ stratum: STRATUM_TOK {
 		if (!in_filter) {
 			syntax_error = true;
 			yyerror("stratum definition must be nested within filter definition");
-		} else if (curr_filter->patches != NULL) {
+		} else if (curr_filter->basins != NULL || curr_filter->patches != NULL) {
 			syntax_error = true;
-			yyerror("only a patch definition or a stratum definition is allowed in a filter, but both were encountered.");
+			yyerror("only one of basin, patch, or stratum is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->strata != NULL) {
 			syntax_error = true;
 			yyerror("only one stratum definition is allowed in a filter, but more than one was encountered.");
@@ -232,6 +262,7 @@ stratum: STRATUM_TOK {
 		  syntax_error = true;
 		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to stratum.");
 		} else {
+			in_basin = false;
 			in_stratum = true;
 			in_patch = false;
 			in_output = false;
@@ -242,9 +273,9 @@ stratum: STRATUM_TOK {
  	;
 
 ids: IDS patch_stratum_id_spec { 
-		if (!in_patch && !in_stratum) {
+		if (!in_basin && !in_patch && !in_stratum) {
 			syntax_error = true;
-			yyerror("ids definition must be nested within patch or stratum definition");
+			yyerror("ids definition must be nested within basin, patch, or stratum definition");
 		} 
 	}
 	;
@@ -252,7 +283,16 @@ ids: IDS patch_stratum_id_spec {
 patch_stratum_id_spec: NUMBER {
 		printf("\t\tIDS: basinID: %d\n", $1);
 		
-		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
+			OutputFilterBasin *new_basin = create_new_output_filter_basin();
+			new_basin->basinID = $1;
+			
+			if (curr_filter->basins == NULL) {
+				curr_filter->basins = new_basin;
+			} else {
+				add_to_output_filter_basin_list(curr_filter->basins, new_basin);
+			}
+		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_BASIN;
 			new_patch->basinID = $1;
@@ -280,7 +320,10 @@ patch_stratum_id_spec: NUMBER {
 	| NUMBER DELIM NUMBER { 
 		printf("\t\tIDS: basinID: %d, hillID: %d\n", $1, $3); 
 	
-		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
+			syntax_error = true;
+			yyerror("Hillslope ID specified for basin ID.");
+		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_HILLSLOPE;
 			new_patch->basinID = $1;
@@ -310,7 +353,10 @@ patch_stratum_id_spec: NUMBER {
 	| NUMBER DELIM NUMBER DELIM NUMBER { 
 		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d\n", $1, $3, $5);
 		
-		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
+			syntax_error = true;
+			yyerror("Zone ID specified for basin ID.");
+		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_ZONE;
 			new_patch->basinID = $1;
@@ -342,7 +388,10 @@ patch_stratum_id_spec: NUMBER {
 	| NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER { 
 		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d\n", $1, $3, $5, $7); 
 	
-		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
+			syntax_error = true;
+			yyerror("Patch ID specified for basin ID.");
+		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_PATCH;
 			new_patch->basinID = $1;
@@ -376,7 +425,10 @@ patch_stratum_id_spec: NUMBER {
 	| NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER { 
 		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d, stratumID: %d\n", $1, $3, $5, $7, $9); 
 	
-		if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
+			syntax_error = true;
+			yyerror("Stratum ID specified for basin ID.");
+		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			syntax_error = true;
 			yyerror("Stratum ID specified by filter type is patch.");
 		} else if (curr_filter->type == OUTPUT_FILTER_CANOPY_STRATUM) {
@@ -402,9 +454,9 @@ patch_stratum_id_spec: NUMBER {
 	;
 
 variables: VARS variable_spec {
-		if (!in_patch && !in_stratum) {
+		if (!in_basin && !in_patch && !in_stratum) {
 			syntax_error = true;
-			yyerror("variables definition must be nested within patch or stratum definition");
+			yyerror("variables definition must be nested within basin, patch, or stratum definition");
 		} 
 	}
 	| VARS KLEENE {
@@ -415,11 +467,19 @@ variables: VARS variable_spec {
 	}
 	;
 
-// TODO: update variable_spec to allow patch. and stratum. to precede variable_spec.
 variable_spec: IDENTIFIER {
 		printf("\t\tVARIABLE: %s\n", $1);
 		
-		OutputFilterVariable *new_var = create_new_output_filter_variable($1);
+		HierarchyLevel level;
+		if (in_basin) {
+			syntax_error = true;
+			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_patch) {
+			level = OF_HIERARCHY_LEVEL_PATCH;
+		} else if (in_stratum) {
+			level = OF_HIERARCHY_LEVEL_STRATUM;
+		}
+		OutputFilterVariable *new_var = create_new_output_filter_variable(level, $1);
 		
 		if (curr_filter->variables == NULL) {
 			curr_filter->variables = new_var;
@@ -430,7 +490,60 @@ variable_spec: IDENTIFIER {
 	| IDENTIFIER DOT IDENTIFIER {
 		printf("\t\tVARIABLE: %s.%s\n", $1, $3);
 		
-		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable($1, $3);
+		HierarchyLevel level;
+		if (in_basin) {
+			syntax_error = true;
+			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_patch) {
+			level = OF_HIERARCHY_LEVEL_PATCH;
+		} else if (in_stratum) {
+			level = OF_HIERARCHY_LEVEL_STRATUM;
+		}
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
+		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_PATCH IDENTIFIER {
+		printf("\t\tVARIABLE: patch.%s\n", $2);
+		
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_PATCH, $2);
+		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_PATCH IDENTIFIER DOT IDENTIFIER {
+		printf("\t\tVARIABLE: patch.%s.%s\n", $2, $4);
+		
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_PATCH, $2, $4);
+		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_STRATUM IDENTIFIER {
+		printf("\t\tVARIABLE: stratum.%s\n", $2);
+		
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_STRATUM, $2);
+		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_STRATUM IDENTIFIER DOT IDENTIFIER {
+		printf("\t\tVARIABLE: stratum.%s.%s\n", $2, $4);
+		
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_STRATUM, $2, $4);
 		
 		if (curr_filter->variables == NULL) {
 			curr_filter->variables = new_var;
@@ -440,7 +553,6 @@ variable_spec: IDENTIFIER {
 	}
 	| variable_spec COMMA variable_spec { /* do nothing, allow individual variable_spec to be evaluated by above rules */ }
 	;
-	
 
 
 %%

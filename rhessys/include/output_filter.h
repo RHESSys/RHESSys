@@ -24,6 +24,7 @@ typedef enum {
 } OutputFilterTimestep;
 
 typedef enum {
+	OF_HIERARCHY_LEVEL_UNDEFINED,
 	OF_HIERARCHY_LEVEL_BASIN,
 	OF_HIERARCHY_LEVEL_HILLSLOPE,
 	OF_HIERARCHY_LEVEL_ZONE,
@@ -86,7 +87,7 @@ typedef struct of_output_output {
 // output_filter_variable_list
 typedef struct of_var {
 	VariableType variable_type;
-	// TODO: Add HierarchyLevel hierarchy_level
+	HierarchyLevel hierarchy_level;
 	struct of_var *next;
 
 	DataType data_type;
@@ -96,6 +97,14 @@ typedef struct of_var {
 	size_t sub_struct_var_offset;
 	void *meta;
 } OutputFilterVariable;
+
+// output_filter_basin_list
+typedef struct of_basin {
+	struct of_basin *next;
+
+	int basinID;
+	struct basin_object *basin;
+} OutputFilterBasin;
 
 // output_filter_patch_list
 typedef struct of_patch {
@@ -148,13 +157,18 @@ typedef struct of_filter {
 	OutputFilterTimestep timestep;
 	struct of_filter *next;
 	OutputFilterOutput *output;
+	OutputFilterBasin *basins;
 	OutputFilterPatch *patches;
 	OutputFilterStratum *strata;
-	// TODO: Add: OutputFilterBasin *basins;
 	OutputFilterVariable *variables;
 	num_elements_t num_named_variables;
 	bool parse_error;
 } OutputFilter;
+
+OutputFilterBasin *create_new_output_filter_basin();
+OutputFilterBasin *add_to_output_filter_basin_list(OutputFilterBasin * const head,
+		OutputFilterBasin * const new_basin);
+void free_output_filter_basin_list(OutputFilterBasin *head);
 
 OutputFilterPatch *create_new_output_filter_patch();
 OutputFilterPatch *add_to_output_filter_patch_list(OutputFilterPatch * const head,
@@ -166,8 +180,8 @@ OutputFilterStratum *add_to_output_filter_stratum_list(OutputFilterStratum * con
 		OutputFilterStratum * const new_stratum);
 void free_output_filter_stratum_list(OutputFilterStratum *head);
 
-OutputFilterVariable *create_new_output_filter_variable(char *name);
-OutputFilterVariable *create_new_output_filter_sub_struct_variable(char *name, char *sub_struct_varname);
+OutputFilterVariable *create_new_output_filter_variable(HierarchyLevel level, char *name);
+OutputFilterVariable *create_new_output_filter_sub_struct_variable(HierarchyLevel level, char *name, char *sub_struct_varname);
 OutputFilterVariable *create_new_output_filter_variable_any();
 OutputFilterVariable *add_to_output_filter_variable_list(OutputFilterVariable * const head,
 		OutputFilterVariable * const new_var);
