@@ -456,7 +456,7 @@ int allocate_annual_growth(				int id,
 
 		printf("\n Resprouting stratum %d", id);
 
-		cs->stem_density = epc.resprout_stem_density;
+		/*cs->stem_density = epc.resprout_stem_density;*/
 		cs->num_resprout += 1;
 		cs->age = 0.0;
 		cs->cpool = epc.resprout_leaf_carbon;
