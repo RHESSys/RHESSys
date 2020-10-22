@@ -26,28 +26,30 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 				return false;
 	}
 
-	// TODO: Determine struct_index and struct_name for each variable (since this can change per variable for basin output)
 	Dictionary_t *struct_index = NULL;
 	char *struct_name = NULL;
-	switch (f->type) {
-	case OUTPUT_FILTER_PATCH:
-		struct_index = i->patch_object;
-		struct_name = STRUCT_NAME_PATCH;
-		break;
-	case OUTPUT_FILTER_CANOPY_STRATUM:
-		struct_index = i->canopy_strata_object;
-		struct_name = STRUCT_NAME_STRATUM;
-		break;
-	default:
-		fprintf(stderr, "init_variables_hourly_daily: output filter type %d is unknown or not yet implemented.\n", f->type);
-		return false;
-	}
 
 	OutputFilterVariable *v = f->variables;
 	while (v != NULL) {
-		// TODO: To support basin-level output (where variables will be stratum, patch, or hillslope variables) determine
-		// struct_index and struct_name for each variable instead of once before we iterate over variables.
 		if (v->variable_type == NAMED) {
+			// To support basin-level output (where variables will be stratum, patch, or hillslope variables)
+			// as well as patch and stratum, determine struct_index and struct_name for each variable instead
+			// of once before we iterate over variables.
+			switch (v->hierarchy_level) {
+			case OF_HIERARCHY_LEVEL_PATCH:
+				struct_index = i->patch_object;
+				struct_name = STRUCT_NAME_PATCH;
+				break;
+			case OF_HIERARCHY_LEVEL_STRATUM:
+				struct_index = i->canopy_strata_object;
+				struct_name = STRUCT_NAME_STRATUM;
+				break;
+			default:
+				fprintf(stderr, "init_variables_hourly_daily: variable hierarchy level %d is unknown or not yet implemented.\n",
+						v->hierarchy_level);
+				return false;
+			}
+
 			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
 				fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of struct %s.\n",
@@ -92,28 +94,29 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 				return false;
 	}
 
-	// TODO: Determine struct_index and struct_name for each variable (since this can change per variable for basin output)
 	Dictionary_t *struct_index = NULL;
 	char *struct_name = NULL;
-	switch (f->type) {
-	case OUTPUT_FILTER_PATCH:
-		struct_index = i->accumulate_patch_object;
-		struct_name = STRUCT_NAME_ACCUM_PATCH;
-		break;
-	case OUTPUT_FILTER_CANOPY_STRATUM:
-		struct_index = i->accumulate_strata_object;
-		struct_name = STRUCT_NAME_ACCUM_STRATUM;
-		break;
-	default:
-		fprintf(stderr, "init_variables_monthly_yearly: output filter type %d is unknown or not yet implemented.\b", f->type);
-		return false;
-	}
 
 	OutputFilterVariable *v = f->variables;
 	while (v != NULL) {
-		// TODO: To support basin-level output (where variables will be stratum, patch, or hillslope variables) determine
-		// struct_index and struct_name for each variable instead of once before we iterate over variables.
 		if (v->variable_type == NAMED) {
+			// To support basin-level output (where variables will be stratum, patch, or hillslope variables)
+			// as well as patch and stratum, determine struct_index and struct_name for each variable instead
+			// of once before we iterate over variables.
+			switch (v->hierarchy_level) {
+			case OF_HIERARCHY_LEVEL_PATCH:
+				struct_index = i->accumulate_patch_object;
+				struct_name = STRUCT_NAME_ACCUM_PATCH;
+				break;
+			case OF_HIERARCHY_LEVEL_STRATUM:
+				struct_index = i->accumulate_strata_object;
+				struct_name = STRUCT_NAME_ACCUM_STRATUM;
+				break;
+			default:
+				fprintf(stderr, "init_variables_monthly_yearly: variable hierarchy level %d is unknown or not yet implemented.\n",
+						v->hierarchy_level);
+				return false;
+			}
 			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
 			if (var_idx_entry == NULL) {
 				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct %s.\n",
@@ -143,6 +146,52 @@ static bool init_variables(OutputFilter *f, StructIndex_t *i, bool verbose) {
 		fprintf(stderr, "init_variable: timestep %d is unknown or not yet implemented.\n", f->timestep);
 		return false;
 	}
+
+	return true;
+}
+
+static bool init_spatial_hierarchy_basin(OutputFilter *f,
+		struct world_object * const w,
+		struct command_line_object * const cmd) {
+
+	bool verbose = cmd->verbose_flag;
+
+	if (f->basins == NULL) {
+		fprintf(stderr, "init_spatial_hierarchy_basin: no basins defined but basin type was specified.\n");
+		return false;
+	}
+
+	if (verbose) fprintf(stderr, "BEGIN init_spatial_hierarchy_basin\n");
+
+	OutputFilterBasin *b = f->basins;
+	while (b != NULL) {
+		if (verbose) {
+			fprintf(stderr, "\tbasinID: %d\n", b->basinID);
+		}
+
+		b->basin = find_basin(b->basinID, w);
+		if (b->basin == NULL) {
+			fprintf(stderr, "init_spatial_hierarchy_basin: no basin with ID %d could be found.\n",
+					b->basinID);
+			return false;
+		}
+
+		b = b->next;
+	}
+
+	if (f->timestep == TIMESTEP_MONTHLY) {
+		// Turn on monthly accumulation for patches
+		cmd->output_filter_patch_accum_monthly = true;
+		// Turn on monthly accumulation for strata
+		cmd->output_filter_strata_accum_monthly = true;
+	} else if (f->timestep == TIMESTEP_YEARLY) {
+		// Turn on yearly accumulation for patches
+		cmd->output_filter_patch_accum_yearly = true;
+		// Turn on yearly accumulation for strata
+		cmd->output_filter_strata_accum_yearly = true;
+	}
+
+	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_basin\n");
 
 	return true;
 }
@@ -373,12 +422,13 @@ static bool init_spatial_hierarchy(OutputFilter *f,
 		struct world_object * const w,
 		struct command_line_object * const cmd) {
 	switch (f->type) {
+	case OUTPUT_FILTER_BASIN:
+		return init_spatial_hierarchy_basin(f, w, cmd);
 	case OUTPUT_FILTER_PATCH:
 		return init_spatial_hierarchy_patch(f, w, cmd);
 	case OUTPUT_FILTER_CANOPY_STRATUM:
 		return init_spatial_hierarchy_stratum(f, w, cmd);
 	default:
-		// TODO: Add version of basin output
 		fprintf(stderr, "init_spatial_hierarchy: output filter type %d is unknown or not yet implemented.\n", f->type);
 		return false;
 	}
