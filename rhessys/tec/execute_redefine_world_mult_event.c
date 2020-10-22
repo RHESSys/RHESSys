@@ -112,6 +112,8 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 		struct basin_object *);
 	struct basin_object	*find_basin( int, 
 		struct world_object *);
+	void sort_patch_layers( struct patch_object *);
+	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

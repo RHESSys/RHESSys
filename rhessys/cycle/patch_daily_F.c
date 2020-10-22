@@ -387,6 +387,13 @@ void		patch_daily_F(
         struct  command_line_object *);
 
 	long julday( struct date);
+
+	void	compute_Lstar(
+		int,
+		struct	basin_object *,
+		struct	zone_object	*,
+		struct	patch_object *);
+	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
