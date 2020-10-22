@@ -528,7 +528,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
 				status = output_basin(error, error_len, date, f,
-						acc_patch_obj_to_reset, acc_stratum_obj_to_reset);
+						&acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -569,7 +569,7 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
 				status = output_basin(error, error_len, date, f,
-						acc_patch_obj_to_reset, acc_stratum_obj_to_reset);
+						&acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
