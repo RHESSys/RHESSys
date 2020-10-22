@@ -154,8 +154,5 @@ int	compute_leaf_litfall(
 		}
 	}
 
-	/* put all retrans n into N pool */
-	ns->npool = ns->retransn;
-	ns->retransn = 0.0;
 	return(0);
 } /*compute_leaf_litfall*/ 
