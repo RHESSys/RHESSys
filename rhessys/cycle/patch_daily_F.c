@@ -247,6 +247,7 @@ void		patch_daily_F(
 		struct ndayflux_patch_struct *,
 		struct patch_object *);
 
+
 	int	update_decomp(
 		struct	date,
 		struct  soil_c_object   *,
@@ -257,6 +258,7 @@ void		patch_daily_F(
 		struct ndayflux_patch_struct *,
 		struct patch_object *);
 
+
 	int	update_dissolved_organic_losses_bg(
 		struct	date,
 		double,
@@ -266,7 +268,6 @@ void		patch_daily_F(
 		struct  litter_n_object *,
 		struct cdayflux_patch_struct *,
 		struct ndayflux_patch_struct *);
-
 
 	int	update_dissolved_organic_losses(
 		struct	date,
@@ -2155,11 +2156,23 @@ void		patch_daily_F(
 	/* 	and any septic losses							*/
 	/*------------------------------------------------------------------------*/
 
+
 	// put the update decomp of under ground litter before update_decomp
 
+	//debug
+	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+	  patch[0].soil_ns.nitrate<0 || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+	  patch[0].soil_ns.sminn<0 || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<0 ||
+	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<0)
+	  printf("patch daily F5 N balance issue [%d,%d]{%e,%e,%e,%e}\n",
+          patch[0].ID,
+          patch[0].drainage_type,
+          patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC
+          );
 
 
 	if ((command_line[0].grow_flag > 0) && (vegtype == 1)) {
+
 
 		if ( update_decomp_bg(
 			current_date,
@@ -2174,6 +2187,7 @@ void		patch_daily_F(
 			exit(EXIT_FAILURE);
 		}
 
+
 		if ( update_decomp(
 			current_date,
 			&(patch[0].soil_cs),
@@ -2186,6 +2200,17 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
+
+		//debug
+		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<0 || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<0 || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<0 ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<0 )
+		  printf("patch daily F6 update_decomp N balance issue [%d,%d]{%e,%e,%e,%e}\n",
+           patch[0].ID,
+           patch[0].drainage_type,
+           patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC,
+           patch[0].soil_ns.DON);
 
 
 		if (patch[0].soil_defaults[0][0].DON_production_rate > ZERO) {
@@ -2215,9 +2240,27 @@ void		patch_daily_F(
 			}
 		patch[0].surface_DOC += (patch[0].cdf.do_litr1c_loss +
 				patch[0].cdf.do_litr2c_loss + patch[0].cdf.do_litr3c_loss + patch[0].cdf.do_litr4c_loss);
-		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss +
-				 patch[0].ndf.do_litr4n_loss); // for below ground DOC and DON should this go to soil
+
+		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss + 
+				 patch[0].ndf.do_litr4n_loss);
+
 		}
+		//debug
+		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
+     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
+     patch[0].soil_cs.DOC<0)
+     printf("patch daily F7 DOM decomp [%d,%d]{%e,%e,%e,%e}\n",
+                      patch[0].ID, patch[0].drainage_type,
+                      patch[0].soil_ns.nitrate,
+                      patch[0].soil_ns.sminn,
+                      patch[0].soil_cs.DOC,
+                      patch[0].soil_ns.DON
+                     );
 
 		if ( update_nitrif(
 			&(patch[0].soil_cs),
@@ -2234,6 +2277,24 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
+
+		//debug
+		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
+     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
+     patch[0].soil_cs.DOC<0)
+     printf("patch daily F8 update nitrate [%d,%d]{%e,%e,%e,%e}\n",
+                      patch[0].ID, patch[0].drainage_type,
+                      patch[0].soil_ns.nitrate,
+                      patch[0].soil_ns.sminn,
+                      patch[0].soil_cs.DOC,
+                      patch[0].soil_ns.DON);
+
+
 		if ( update_denitrif(
 			&(patch[0].soil_cs),
 			&(patch[0].soil_ns),
@@ -2245,7 +2306,25 @@ void		patch_daily_F(
 			exit(EXIT_FAILURE);
 		}
 
-	}
+		// check the update debug
+		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
+     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
+     patch[0].soil_cs.DOC<0 )
+		  printf("patch daily F9 after denitrif [%d]{%e,%e,%e,%e}\n",
+           patch[0].ID,
+           patch[0].soil_ns.nitrate,
+           patch[0].soil_ns.sminn,
+           patch[0].soil_cs.DOC,
+           patch[0].soil_ns.DON
+		  );
+
+
+	} //line 2150 grow
 
 
 	/* track variables for snow assimilation  */
@@ -2334,6 +2413,7 @@ void		patch_daily_F(
 			patch[0].ID, patch[0].preday_totalc, patch[0].net_plant_psn, patch[0].totalc, resp);} */
 
 	if (command_line[0].snow_scale_flag == 1)
+
 	  patch[0].water_balance = zone[0].rain + zone[0].snow*patch[0].snow_redist_scale
 		+ patch[0].preday_detention_store
 		+ irrigation
@@ -2347,6 +2427,7 @@ void		patch_daily_F(
 		- (patch[0].preday_sat_deficit - patch[0].sat_deficit)
 		- patch[0].delta_snowpack - patch[0].delta_rain_stored
 		- patch[0].delta_snow_stored - patch[0].detention_store;
+
 	else
 	  patch[0].water_balance = zone[0].rain + zone[0].snow
 		+ patch[0].preday_detention_store
