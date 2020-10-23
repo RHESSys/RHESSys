@@ -347,8 +347,28 @@ static bool output_basin(char * const error, size_t error_len,
 	// TODO: Implement areal averaging over all patch and stratum variables in a basin
 	// Iterate over all basins
 	// Within each basin, iterate over all patch and stratum objects, performing areal averaging as we go
+	// (using the OutputFilterOutput->materialized_variables as the accumulator scratch space)
 	// Then, once all specified variables have been averaged, output them (they will have to be stored as materialized
 	// variables since this is what the output drivers know how to write data).
+	for (OutputFilterBasin *b = filter->basins; b != NULL; b = b->next) {
+		struct basin_object *basin = b->basin;
+		for (size_t i = 0; i < basin->num_hillslopes; i++) {
+			struct hillslope_object *h = basin->hillslopes[i];
+			// TODO: Acummulate groundwater and baseflow (which are only done at the hillslope level)
+			for (size_t j = 0; j < h->num_zones; j++) {
+				struct zone_object *z = h->zones[j];
+				for (size_t k = 0; k < z->num_patches; k++) {
+					struct patch_object *patch = z->patches[k];
+					// TODO: Iterate over filter variables accumulating any patch variables
+					for (size_t l = 0; l < patch->num_canopy_strata; l++) {
+						struct canopy_strata_object *stratum = patch->canopy_strata[l];
+						// TODO: Iterate over filter variables accumulating any stratum variables
+					}
+				}
+			}
+		}
+		// TODO: Do output for this basin here...
+	}
 }
 
 static bool output_patch(char * const error, size_t error_len,
