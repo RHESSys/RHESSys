@@ -72,7 +72,9 @@ void	output_monthly_patch(
 		patch[0].area,
 		patch[0].soil_ns.nitrate+patch[0].surface_NO3,
 		patch[0].soil_ns.sminn,
-		patch[0].acc_month.burn);
+		patch[0].acc_month.burn
+
+		);
 
 	if (check <= 0) {
 		fprintf(stdout,

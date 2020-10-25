@@ -153,6 +153,8 @@ void		patch_daily_I(
 		double,
 		double,
 		double,
+		double,
+		double,
 		struct  soil_c_object   *,
 		struct  soil_n_object   *,
 		struct  litter_c_object *,
@@ -183,6 +185,7 @@ void		patch_daily_I(
 	double	cnt, count, theta;
 
 	double  edible_leafc, grazing_mean_nc, grazing_Closs;
+	double root_growth, water_transfer;
 	struct  canopy_strata_object *strata;
 	struct  dated_sequence	clim_event;
 
@@ -318,6 +321,12 @@ void		patch_daily_I(
 		patch[0].potential_cap_rise = 0.0;
 	patch[0].cap_rise=0.0;
 
+	/*--------------------------------------------------------------*/
+	/* this should also be limited by "soil depth"	
+	/*--------------------------------------------------------------*/
+	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO) 
+		patch[0].potential_cap_rise = 0.0;
+		
 
 
 	/*--------------------------------------------------------------*/
@@ -535,6 +544,8 @@ void		patch_daily_I(
 			patch[0].rootzone.S,
 			patch[0].theta_std,
 			patch[0].soil_defaults[0][0].fixed_t_mult,
+			patch[0].soil_defaults[0][0].fixed_w_mult,
+			patch[0].soil_defaults[0][0].nitrif_parm_smax,
 			&(patch[0].soil_cs),
 			&(patch[0].soil_ns),
 			&(patch[0].litter_cs),

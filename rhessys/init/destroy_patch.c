@@ -59,7 +59,7 @@ void destroy_patch(
 	/*--------------------------------------------------------------*/
 	/*	destroy the routing list							*/
 	/*--------------------------------------------------------------*/
-	free(patch[0].innundation_list[0].neighbours); // there is core dump error too..NREN 2019/04/07
+	free(patch[0].innundation_list[0].neighbours); 
 	free(patch[0].innundation_list);
 	free(patch[0].surface_innundation_list[0].neighbours);
 	free(patch[0].surface_innundation_list);

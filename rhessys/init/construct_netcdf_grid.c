@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rhessys.h"
-#include "UTM.h"  //NREN 2019.5.31
+#include "UTM.h"  
 
 struct base_station_object *construct_netcdf_grid (
 #ifdef LIU_NETCDF_READER
@@ -105,17 +105,15 @@ struct base_station_object *construct_netcdf_grid (
         char	bufferrain[MAXSTR*100];
         char *lat_name = "lat";
         char *lon_name = "lon";
-        //T.N Temporalily add threshold for tmax and tmin to check for errors in input data
+        //Temporalily add threshold for tmax and tmin to check for errors in input data
         //TO DO: put these into one of the def files or one extra input files
         double max_tmax;
-        double min_tmin;  //N.R 2019/05/30
+        double min_tmin;  
 
         //For WA, the threshold are below
         //http://www.ncdc.noaa.gov/extremes/scec/records
         max_tmax = 50;
         min_tmin = -50;
-
-
 
         FILE*	base_station_file;
 
@@ -212,10 +210,9 @@ struct base_station_object *construct_netcdf_grid (
                         alloc(duration->day * sizeof(double),"day_rain_dur", "construct_netcdf_grid");
 
         }
-
-        /*-------------------------------------------------------------*/
-        /* convert the WGS84 lon and lat to UTM           N.R.2019531  */
-        /*-------------------------------------------------------------*/
+       /*------------------------------------------------------------*/
+       /* convert the WGS84 lon and lat to UTM                      */
+       /*-----------------------------------------------------------*/
         int utm_zone;
         float x_utm;
         float y_utm;
@@ -339,13 +336,6 @@ struct base_station_object *construct_netcdf_grid (
                         base_station[0].daily_clim[0].tmin[j] =  (double)tempdata[j];
                 } else if (var == CLM_RAIN) {
                     base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult;
-
-                    //T.N Jul 2017: warning for NA precip values
-                    //Adopted by N.R. 2019/05/30
-                    if ((base_station[0].daily_clim[0].rain[j] < 0.0))
-                    {
-                        printf("WARNING: day:%d precip:% <0 \n", j, base_station[0].daily_clim[0].rain[j]);
-                    }
                 }
 #ifdef LIU_EXTEND_CLIM_VAR
                 else if (var == CLM_HUSS) {
@@ -388,8 +378,8 @@ struct base_station_object *construct_netcdf_grid (
            }
 #endif */
 
-        /*T.N Jul 2017: Check for abnormal values in tmin tmax */
-        /*adopted from TN. by N.R. 2019/05/30             */
+       /*Check for abnormal values in tmin tmax */
+
         for (j=0; j<duration->day;j++){
 
             if ((base_station[0].daily_clim[0].tmin[j] < min_tmin) || (base_station[0].daily_clim[0].tmin[j] > max_tmax))

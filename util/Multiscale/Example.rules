@@ -1,0 +1,30 @@
+# Anything proceeded with "#" will be ignored.
+# "|" delimits different aspatial patches 
+# empty lines, indentation, and white spaces are okay
+# subpatch_count and pct_family_area must be included above patch level ie below ID and above _patch
+# normal syntax for a worldfile template should be followed otherwise
+# vars can be set to NA if needed, and they should ineherit from the  base template
+
+# ----- Rule 1 - conifer/shrub, shrub, open -----
+ID		1
+subpatch_count	3
+_patch
+	pct_family_area	value 0.6 | 0.3 | 0.1
+	_canopy_strata 2 | 1 | 1
+		veg_parm_ID		dvalue 7  50 | 50 | 31
+
+# ----- Rule 2 - conifer/grass, shrub, grass -----
+ID		2
+subpatch_count 3
+_patch	1
+	pct_family_area value 0.4 | 0.4 | 0.2
+	_canopy_strata 2 | 1 | 1
+	  veg_parm_ID dvalue 7 2 | 50 | 2
+
+# ----- Rule 3 - shrub, grass -----
+ID		3
+subpatch_count 2
+_patch
+  pct_family_area value 0.5 | 0.5
+  _canopy_strata 2 | 1
+    veg_parm_ID		dvalue 50 2 |  2

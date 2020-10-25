@@ -76,6 +76,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
+#include <openmp.h>
 #include <math.h>
 #include "rhessys.h"
 
@@ -381,7 +382,13 @@ void		patch_daily_F(
 	void	compute_fire_effects(
 		struct patch_object *,
 		double);
-    void  compute_beetle_effects( //NREN 20180629
+   
+	void    compute_shaded_kdown(
+		struct  patch_object *,
+        struct  zone_object  *,
+        struct  command_line_object *);
+
+ void  compute_beetle_effects( //NREN 20180629
         struct patch_object *,
         int inx,
         int min_abc,
@@ -434,6 +441,7 @@ void		patch_daily_F(
 	double snow_melt_covered, snow_melt_exposed;
 	double 	rz_drainage,unsat_drainage;
 	double prop_detention_store_infiltrated;
+	double water_transfer, root_growth;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
@@ -544,6 +552,13 @@ void		patch_daily_F(
 
 	if ( command_line[0].verbose_flag == -5 ){
 	printf("\nPATCH DAILY F:");
+	}
+
+	/*--------------------------------------------------------------*/
+	/*	Adjust kdown if multiscale routing is used					*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].multiscale_flag == 1 && patch[0].landuse_defaults[0][0].shading_flag == 1) {
+		compute_shaded_kdown(patch, zone, command_line);
 	}
 
 	/*--------------------------------------------------------------*/
@@ -839,7 +854,7 @@ void		patch_daily_F(
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
-			if (dum == 0) {
+/* 			if (dum == 0) {
 				patch[0].ga_final = tmpga;
 				patch[0].gasnow_final = tmpgasnow;
 				patch[0].wind_final = patch[0].layers[layer].null_cover * tmpwind;
@@ -848,22 +863,23 @@ void		patch_daily_F(
 				if ( command_line[0].verbose_flag == -5 ){
 					printf("\n     ***TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
 				}
+			} */
+			//else {
+			patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
+			patch[0].gasnow_final = patch[0].layers[layer].null_cover * patch[0].gasnow;
+			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
+			patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow;
+			patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;
+			if ( command_line[0].verbose_flag == -5 ){
+				printf("\n     ***NOT TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
 			}
-			else {
-				patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
-				patch[0].gasnow_final = patch[0].layers[layer].null_cover * patch[0].gasnow;
-				patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
-				patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow;
-				patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;
-				if ( command_line[0].verbose_flag == -5 ){
-					printf("\n     ***NOT TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
-				}
-			}
+			//}
 
 			/*--------------------------------------------------------------*/
 			/*		Cycle through the canopy strata in this layer	*/
 			/*--------------------------------------------------------------*/
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+
 					canopy_stratum_daily_F(
 						world,
 						basin,
@@ -992,7 +1008,7 @@ void		patch_daily_F(
 						patch,
 						&patch[0].snowpack,
 						basin[0].theta_noon,
-						zone[0].metv.tavg,
+						zone[0].metv.tday,
 						zone[0].e_dewpoint,
 						patch[0].gasnow/10.0,
 						zone[0].metv.pa,
@@ -1019,7 +1035,7 @@ void		patch_daily_F(
 						patch,
 						&patch[0].snowpack,
 						basin[0].theta_noon,
-						zone[0].metv.tavg,
+						zone[0].metv.tday,
 						zone[0].e_dewpoint,
 						patch[0].gasnow/10.0,
 						zone[0].metv.pa,
@@ -1065,7 +1081,7 @@ void		patch_daily_F(
 					patch,
 					&patch[0].snowpack,
 					basin[0].theta_noon,
-					zone[0].metv.tavg,
+					zone[0].metv.tday,
 					zone[0].e_dewpoint,
 					patch[0].gasnow/10.0,
 					zone[0].metv.pa,
@@ -1695,7 +1711,7 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
 		-1.0 * patch[0].sat_deficit);
-	temp = patch[0].sat_deficit_z;
+
 
 	available_sat_water = min((compute_delta_water(
 			0,
@@ -1707,16 +1723,24 @@ void		patch_daily_F(
 
 	available_sat_water = max(available_sat_water, 0.0);
 
-	patch[0].sat_deficit += available_sat_water;
-	sat_zone_patch_demand -= available_sat_water;
-
+	temp = patch[0].sat_deficit_z;
 	patch[0].sat_deficit_z = compute_z_final(
 		command_line[0].verbose_flag,
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
-		-1.0 * patch[0].sat_deficit);
+		-1.0 * (patch[0].sat_deficit+available_sat_water));
+
+	/* to prevent instability if available sat water is close to soil depth  don't allow its use */
+	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO) {
+			patch[0].sat_deficit_z = temp;
+			available_sat_water = 0.0;
+	}
+
+
+	patch[0].sat_deficit += available_sat_water;
+	sat_zone_patch_demand -= available_sat_water;
 
 
 		/*--------------------------------------------------------------*/
@@ -1974,6 +1998,7 @@ void		patch_daily_F(
 	/* in order to restrict denitri/nitrific on non-veg patches type */
 	/* 	tag vegtype							*/
 	/*--------------------------------------------------------------*/
+        patch[0].rootzone.depth = 0.0;
 	vegtype = 0;
   patch[0].target_status = 1;
 
@@ -2041,8 +2066,39 @@ void		patch_daily_F(
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
 			strata->acc_year.psn += strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
+			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
 		}
 	}
+
+
+
+	/*--------------------------------------------------------------*/
+	/* move water associated with root growth 			*/
+	/* if roots go into sat zone the transfer happens automatically */
+	/* when water sources for transpiration are computed 		*/
+	/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
+	/* if roots grow move water from unsat to rz storage		*/
+	/*--------------------------------------------------------------*/
+	root_growth = patch[0].rootzone.depth - patch[0].rootzone.preday_depth;
+	if ((root_growth > ZERO) && (patch[0].sat_deficit_z > patch[0].rootzone.preday_depth) && (patch[0].sat_deficit_z > ZERO)) {
+			water_transfer = patch[0].unsat_storage * root_growth / patch[0].sat_deficit_z;
+			patch[0].rz_storage += water_transfer;
+			patch[0].unsat_storage -= water_transfer;
+			}
+
+	/*--------------------------------------------------------------*/
+	/* if roots grow (grow is negative ) move water from  rz storage to unsat		*/
+	/*--------------------------------------------------------------*/
+	if ((root_growth < -ZERO) && (patch[0].sat_deficit_z > patch[0].rootzone.preday_depth) && (patch[0].sat_deficit_z > ZERO)) {
+			water_transfer = patch[0].rz_storage * root_growth / patch[0].sat_deficit_z;
+			patch[0].rz_storage += water_transfer;
+			patch[0].unsat_storage -= water_transfer;
+			}
+
+	/* printf("\n ID %d, growth from %lf to %lf  water_transfer %lf, rz %lf", patch[0].ID, patch[0].rootzone.preday_depth, patch[0].rootzone.depth,
+		water_transfer, patch[0].rz_storage); */
+
 	/*-------------------------------------------------------------------------*/
 	/*	Compute current actual depth to water table				*/
 	/*------------------------------------------------------------------------*/
@@ -2167,6 +2223,19 @@ void		patch_daily_F(
 	/*	finalized soil and litter decomposition					*/
 	/* 	and any septic losses							*/
 	/*------------------------------------------------------------------------*/
+
+	//debug
+	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+	  patch[0].soil_ns.nitrate<0 || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+	  patch[0].soil_ns.sminn<0 || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<0 ||
+	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<0)
+	  printf("patch daily F5 N balance issue [%d,%d]{%e,%e,%e,%e}\n",
+          patch[0].ID,
+          patch[0].drainage_type,
+          patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC
+          );
+
+
 	if ((command_line[0].grow_flag > 0) && (vegtype == 1)) {
 
 		if ( update_decomp(
@@ -2181,6 +2250,17 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
+
+		//debug
+		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<0 || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<0 || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<0 ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<0 )
+		  printf("patch daily F6 update_decomp N balance issue [%d,%d]{%e,%e,%e,%e}\n",
+           patch[0].ID,
+           patch[0].drainage_type,
+           patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC,
+           patch[0].soil_ns.DON);
 
 
 		if (patch[0].soil_defaults[0][0].DON_production_rate > ZERO) {
@@ -2201,6 +2281,22 @@ void		patch_daily_F(
 		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss +
 				 patch[0].ndf.do_litr4n_loss);
 		}
+		//debug
+		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
+     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
+     patch[0].soil_cs.DOC<0)
+     printf("patch daily F7 DOM decomp [%d,%d]{%e,%e,%e,%e}\n",
+                      patch[0].ID, patch[0].drainage_type,
+                      patch[0].soil_ns.nitrate,
+                      patch[0].soil_ns.sminn,
+                      patch[0].soil_cs.DOC,
+                      patch[0].soil_ns.DON
+                     );
 
 		if ( update_nitrif(
 			&(patch[0].soil_cs),
@@ -2217,6 +2313,24 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
+
+		//debug
+		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
+     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
+     patch[0].soil_cs.DOC<0)
+     printf("patch daily F8 update nitrate [%d,%d]{%e,%e,%e,%e}\n",
+                      patch[0].ID, patch[0].drainage_type,
+                      patch[0].soil_ns.nitrate,
+                      patch[0].soil_ns.sminn,
+                      patch[0].soil_cs.DOC,
+                      patch[0].soil_ns.DON);
+
+
 		if ( update_denitrif(
 			&(patch[0].soil_cs),
 			&(patch[0].soil_ns),
@@ -2228,7 +2342,25 @@ void		patch_daily_F(
 			exit(EXIT_FAILURE);
 		}
 
-	}
+		// check the update debug
+		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
+     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
+     patch[0].soil_cs.DOC<0 )
+		  printf("patch daily F9 after denitrif [%d]{%e,%e,%e,%e}\n",
+           patch[0].ID,
+           patch[0].soil_ns.nitrate,
+           patch[0].soil_ns.sminn,
+           patch[0].soil_cs.DOC,
+           patch[0].soil_ns.DON
+		  );
+
+
+	} //line 2150 grow
 
 
 	/* track variables for snow assimilation  */

@@ -44,10 +44,9 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
-#include <omp.h>
+#include <openmp.h>
 #include "rhessys.h"
 #include "phys_constants.h"
-
 
 void		basin_daily_I(
 						  long	day,
@@ -76,6 +75,7 @@ void		basin_daily_I(
 	double	sinegeom;
 	double	coshss;
 	double	hss;
+   
 	/*--------------------------------------------------------------*/
 	/*	Daylength (seconds)											*/
 	/*	Now using GBGC computation taken from Jones,		*/

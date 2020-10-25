@@ -104,7 +104,7 @@ void compute_fire_effects(
 			patch[0].litter_cs.litr3c * fire_loss.loss_litr3c +
 			patch[0].litter_cs.litr4c * fire_loss.loss_litr4c;
 
-    patch[0].litterc_burned = litter_c_consumed;//new NREN
+    patch[0].litterc_burned = litter_c_consumed;//new NREN need to update with new historical fire model 20201023
 
 	update_litter_soil_mortality(
 		 &(patch[0].cdf),
@@ -426,7 +426,11 @@ void compute_fire_effects(
 			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 
-
+			/* this is for burn snag pool don't delet 20201022 */
+			if (canopy_target[0].defaults[0][0].epc.veg_type == TREE && canopy_target[0].defaults[0][0].epc.phenology_type == EVERGREEN) //To make sure only save the overstory consumption NREN 20190914
+			{ patch[0].overstory_burn = canopy_target[0].fe.canopy_target_prop_c_consumed;
+			  //   printf("\n the fire consuption is %lf",mort.mort_cpool);
+			}
 
 			thin_type =2;	/* Harvest option */
 			update_mortality(

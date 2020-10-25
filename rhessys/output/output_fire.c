@@ -70,7 +70,7 @@ void	output_fire( int basinID, int hillID, int zoneID, int patchID,
 		stratum[0].fe.canopy_subtarget_prop_mort,
 		stratum[0].fe.canopy_subtarget_prop_mort_consumed,
 		stratum[0].fe.canopy_subtarget_prop_c_consumed,
-		stratum[0].fe.canopy_subtarget_biomassc,
+		stratum[0].fe.canopy_subtarget_c,
 		stratum[0].fe.understory_c_consumed);
 	return;
 } /*end output_fire*/

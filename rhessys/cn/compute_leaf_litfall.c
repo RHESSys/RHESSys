@@ -153,5 +153,9 @@ int	compute_leaf_litfall(
 		ns_litr->litr4n += n4 * cover_fraction;
 		}
 	}
+
+	/* put all retrans n into N pool */
+	ns->npool = ns->retransn;
+	ns->retransn = 0.0;
 	return(0);
 } /*compute_leaf_litfall*/ 

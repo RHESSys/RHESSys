@@ -86,6 +86,16 @@ double	compute_varbased_flow(
 	fs_spill = patch[0].soil_defaults[0][0].fs_spill;
 	fs_percolation = patch[0].soil_defaults[0][0].fs_percolation;
 
+	/*--------------------------------------------------------------*/
+	/* restrict drainage if below soil depth - note that we assume soil depth here is the depth of a confining layer */
+	/*--------------------------------------------------------------*/
+
+	if (patch[0].sat_deficit_z > soil_depth) {
+		flow = 0.0; }
+
+	else {
+
+
 	normal[0] = 0;
 	normal[1] = 0.253;
 	normal[2] = 0.524;
@@ -143,6 +153,8 @@ double	compute_varbased_flow(
 	}
 
 	flow = flow*gamma;
+
+	} /* end sat_deficit greater than soil depth condition */
 
 	  return(flow);
 } /*compute_varbased_flow*/

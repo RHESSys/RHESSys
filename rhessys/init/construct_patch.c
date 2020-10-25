@@ -129,17 +129,20 @@ struct patch_object *construct_patch(
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
 
 	patch[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"patch_ID","%d",-9999,0);
+	if (command_line[0].multiscale_flag == 1) {
+		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
+	} else {
+		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
+	}
+	
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
 	patch[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
 	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",-9999,0);
 	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
 
-	if (command_line[0].firespread_flag == 1) {
-		//fscanf(world_file,"%d",&(fire_parm_ID));
-		//read_record(world_file, record);//NREn 20190224
 		fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",-9999,0);
-		}
+		
 
 /* read the input from worldfile if the beetlespread_flag is set */
     if (command_line[0].beetlespread_flag == 1) {
@@ -148,11 +151,7 @@ struct patch_object *construct_patch(
 		beetle_defaults_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"beetle_parm_ID","%d",-9999,0);
 		}
 
-
-	if (command_line[0].surface_energy_flag == 1) {
-		fscanf(world_file,"%d",&(surface_energy_default_object_ID));
-		read_record(world_file, record);
-		}
+	surface_energy_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"surface_energy_default_object_ID", "%d", -9999,1);
 
 	patch[0].area = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",-9999,0);
 	patch[0].slope = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",-9999,0);
@@ -212,7 +211,7 @@ struct patch_object *construct_patch(
 	patch[0].soil_cs.soil4c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",0.0,1);
 	patch[0].num_base_stations =
-		      getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
+		      getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",0,0);
 
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;

@@ -30,7 +30,7 @@ void update_hillslope_accumulator(
 			struct command_line_object *command_line,
 			struct basin_object *basin){
 	/*--------------------------------------------------------------------------------------*/
-	/* Local variables definitin								*/
+	/* Local variables definition								*/
 	/*--------------------------------------------------------------------------------------*/
   // moved these into for loop below for openmp functionality
 	/*--------------------------------------------------------------------------------------*/

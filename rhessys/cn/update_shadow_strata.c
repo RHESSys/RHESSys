@@ -12,7 +12,7 @@
 /*							                                              	*/
 /*	DESCRIPTION					                                       	*/
 /*							                                              	*/
-/*	PROGRAMMER NOTES				                                   	*/
+/*	PROGRAMMER NOTES	   			                                   	*/
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -98,7 +98,7 @@ void	update_shadow_strata(
     shadow_strata[0].epv.min_vwc = stratum[0].epv.min_vwc;
   }
  
-  if (stratum[0].epv.proj_lai >= (stratum[0].target.lai - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai)) {
+ if (stratum[0].epv.proj_lai >= (stratum[0].target.lai - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai)) {
     if ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc)) {
       if (stratum[0].epv.height >= (stratum[0].target.height - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.height)) {
         if(((current_date.year - command_line[0].start_date.year) > stratum[0].target.age) && current_date.month==9 && current_date.day==30){

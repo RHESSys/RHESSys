@@ -57,6 +57,7 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 	/* Plant allocation flux, from N retrans pool and soil mineral N pool */
 	ns->npool      += ndf->retransn_to_npool;
 	ns->retransn   -= ndf->retransn_to_npool;
+	if(ns->retransn<0) ns->retransn=0.0;
 	ns->npool      += ndf->sminn_to_npool;
 
 
@@ -108,7 +109,7 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 		ns->cwdn + ns->retransn);
 	}
 
-
+	if(ns->npool < -ZERO) printf("update_N_stratum_daily %e\n",ns->npool);
 	return (!ok);
 }/*end update_N_stratum_daily.c*/		
 

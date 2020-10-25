@@ -47,6 +47,7 @@ double	leaf_conductance_APAR_curve(	double	APAR,
 	/*	mean stratum conductance reduction 			*/
 	/*	APAR was the only factor.				*/
 	/*--------------------------------------------------------------*/
+
 	if (APAR_coef > ZERO)
 	       m_APAR = ( APAR * APAR_coef ) / ( 1.0 + APAR * APAR_coef );
 	else

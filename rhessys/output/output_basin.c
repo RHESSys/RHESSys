@@ -78,6 +78,7 @@ void	output_basin(			int routing_flag,
 	double acLstar;
 	double acdrip;
 	double acga;
+	double alitter_cap;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
@@ -186,10 +187,6 @@ void	output_basin(			int routing_flag,
 				apcpassim += patch[0].precip_with_assim * patch[0].area;
 				asat_deficit_z += patch[0].sat_deficit_z * patch[0].area;
 				asat_deficit += patch[0].sat_deficit * patch[0].area;
-				// debug if the sat_deficit is NaN
-				if (isnan(patch[0].sat_deficit)==1) {
-				printf("warning, the patchID %ld have NaN sat_deficit\n", patch[0].ID);
-				}
 				arecharge += patch[0].recharge * patch[0].area;
 				arz_storage += patch[0].rz_storage * patch[0].area;
 				aunsat_storage += patch[0].unsat_storage * patch[0].area;
@@ -210,6 +207,7 @@ void	output_basin(			int routing_flag,
 				asnowmelt += patch[0].snow_melt*patch[0].area;
 				aPET += (patch[0].PET) * patch[0].area;
 				alitter_store += patch[0].litter.rain_stored * patch[0].area;
+				alitter_cap += patch[0].litter.rain_capacity * patch[0].area;
 				adetention_store += patch[0].detention_store*patch[0].area;
 				aacctrans += patch[0].acc_year_trans * patch[0].area;
 				atranspiration += (patch[0].transpiration_sat_zone
@@ -235,9 +233,6 @@ void	output_basin(			int routing_flag,
 						astreamflow += patch[0].streamflow*patch[0].area;
 						areturn_flow += patch[0].return_flow * patch[0].area;
 						abase_flow += patch[0].base_flow * patch[0].area;
-                     if (isnan(patch[0].base_flow)==1) {
-				printf("warning, the patchID %ld have NaN baseflow\n", patch[0].ID);
-				 }
 				}
 				else {
 						/* for Topmodel version compute only return flow and later added to streamflow */
@@ -355,6 +350,7 @@ void	output_basin(			int routing_flag,
 	asublimation /= aarea  ;
 	aperc_snow /= aarea  ;
 	alitter_store /= aarea;
+	alitter_cap /= aarea;
 	atranspiration /= aarea  ;
 	astreamflow /= aarea;
 	apsn /= aarea ;
@@ -456,6 +452,7 @@ void	output_basin(			int routing_flag,
 		adetention_store * 1000,
 		asat_area * 100,
 		alitter_store * 1000,
+		alitter_cap * 1000,
 		acrain * 1000.0,
 		aperc_snow *100,
 		asublimation * 1000.0,

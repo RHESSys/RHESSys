@@ -68,7 +68,6 @@ int update_gw_drainage(
 	/*------------------------------------------------------*/
 	/*		assume percent of incoming precip	*/
 	/*------------------------------------------------------*/
-
 	if (zone[0].hourly_rain_flag==1){
 	  sat_to_gw_coeff = patch[0].soil_defaults[0][0].sat_to_gw_coeff / 24;
 	}
@@ -78,7 +77,8 @@ int update_gw_drainage(
 	/* multiply by Ksat vertical which is surface Ksat 	*/
 	/* so that impervious areas don't infiltrate to deep gw */
 	/*------------------------------------------------------*/
-	sat_to_gw_coeff = sat_to_gw_coeff * patch[0].Ksat_vertical;//impervious Ksat is zero!!
+	sat_to_gw_coeff = sat_to_gw_coeff * patch[0].Ksat_vertical;
+
 	drainage = sat_to_gw_coeff * patch[0].detention_store;
 	patch[0].detention_store -= drainage;
 	patch[0].gw_drainage = drainage;
