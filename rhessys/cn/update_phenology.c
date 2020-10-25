@@ -72,7 +72,7 @@ void update_phenology(struct zone_object  *zone,
 					  struct date current_date,
 					  int	grow_flag,
 					  int   multiscale_flag,
-                                          int	shading_flag
+                        int	shading_flag,
 					  struct world_object *world)
 {
 	/*--------------------------------------------------------------*/
@@ -758,12 +758,12 @@ void update_phenology(struct zone_object  *zone,
 	if ((epc.veg_type==TREE) && ((cs->live_stemc + cs->dead_stemc) < ZERO) && (cs->leafc > ZERO)) {
 		epv->height = 0.01;
 	}
-	
+
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/
 	if (cs->stem_density > ZERO) {
-	if ((multiscale_flag == 0) || (shading_flag == 0)) {	
+	if ((multiscale_flag == 0) || (shading_flag == 0)) {
         horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
 	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
 	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);

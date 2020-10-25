@@ -149,7 +149,7 @@ void execute_firespread_event(
 			}
 			patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
 			if(world[0].defaults[0].fire[0].fire_verbose==1)
-				printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c); 
+				printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c);
 
             if (world[0].defaults[0].fire[0].calc_above_ground_litter == 1) {
             world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
@@ -174,8 +174,8 @@ void execute_firespread_event(
 
 			for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 				for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
-		
-						if(world[0].defaults[0].fire[0].fire_verbose==1)				
+
+						if(world[0].defaults[0].fire[0].fire_verbose==1)
 							printf("Layers: %d, count: %d\n",layer,c);
 
 					world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
@@ -211,8 +211,9 @@ void execute_firespread_event(
 				world[0].fire_grid[i][j].understory_et += patch[0].fire.understory_et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 				world[0].fire_grid[i][j].understory_pet += patch[0].fire.understory_pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			}
-		 if(world[0].defaults[0].fire[0].fire_verbose==1)
-	//printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
+		 if(world[0].defaults[0].fire[0].fire_verbose==1){
+            printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
+            }
 
 		}
 		if(world[0].patch_fire_grid[i][j].occupied_area>0&&world[0].defaults[0].fire[0].fire_in_buffer==1) // if allowing fire into the buffer (on raster grid outside of watershed boundaries), then fill with mean field values within watershed boundary

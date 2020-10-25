@@ -4,7 +4,7 @@
 #include "rhessys.h"
 
 struct routing_list_object *construct_ddn_routing_topology(
-      FILE * routing_file, 
+      FILE * routing_file,
       struct hillslope_object *hillslope
 );
 
@@ -22,7 +22,7 @@ double compute_prop_alloc_daily(
 
 void *alloc(size_t size, char *array_name, char *calling_function);
 
-struct routing_list_object *construct_topmodel_patchlist(struct basin_object * const basin);
+struct routing_list_object *construct_topmodel_patchlist(struct hillslope_object * const hillslope);
 
 double	compute_potential_exfiltration(int 	verbose_flag,
 									   double	S,

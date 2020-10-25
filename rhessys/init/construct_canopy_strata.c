@@ -46,6 +46,7 @@ struct canopy_strata_object *construct_canopy_strata(
 													 FILE	*world_file,
 													 struct	patch_object	*patch,
 													 int		num_world_base_stations,
+													 int        num_world_extra_base_stations,
 													 struct base_station_object **world_base_stations,
 													 struct	default_object	*defaults)
 {
@@ -144,7 +145,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	}
 
 	canopy_strata[0].cs.stem_density = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",0.02,1);
-	
+
 	canopy_strata[0].snow_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_stored","%lf",0.0,1);
 
 	canopy_strata[0].rain_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"rain_stored","%lf",0.0,1);
@@ -154,9 +155,9 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",0.0,1);
 
 	 canopy_strata[0].cs.leafc_age2 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age2","%lf",canopy_strata[0].cs.leafc/2.0,1);
-    
+
          canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc/2.0,1);
-	
+
 	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
 
 	canopy_strata[0].cs.leafc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",0.0,1);
@@ -165,7 +166,7 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	canopy_strata[0].cs.live_stemc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",0.0,1);
 
-	
+
 	canopy_strata[0].cs.livestemc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_store","%lf",0.0,1);
 
 	canopy_strata[0].cs.livestemc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_transfer","%lf",0.0,1);
@@ -481,21 +482,6 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.stem_density = min(canopy_strata[0].cs.stem_density,
 			canopy_strata[0].defaults[0][0].epc.max_stem_density);
 
-	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
-		canopy_strata[0].epv.height =
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
-		* pow((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc),
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
-	else
-		canopy_strata[0].epv.height =
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
-		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
-
-	/*--------------------------------------------------------------*/
-	/*	calculate all sided  and project pai from max projected lai	*/
-	/*--------------------------------------------------------------*/
-
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
 
 	/* tree - use stem density if available */
@@ -514,7 +500,7 @@ struct canopy_strata_object *construct_canopy_strata(
 
 		}
 	}
-/* grass height */
+	/* grass height */
 	else {
 		canopy_strata[0].epv.height =
 		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
@@ -692,7 +678,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].phen.lfseasonday = -1;
 		canopy_strata[0].phen.pheno_flag = 0;
 		/* use a stem density as max stem density until we include a more complex model of self thinning */
-		canopy_strata[0].cs.stem_density = min(canopy_strata[0].defaults[0][0].epc.max_stem_density, 
+		canopy_strata[0].cs.stem_density = min(canopy_strata[0].defaults[0][0].epc.max_stem_density,
 						canopy_strata[0].cs.stem_density);
 
 	/*--------------------------------------------------------------*/

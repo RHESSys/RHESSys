@@ -697,11 +697,11 @@ void	canopy_stratum_daily_F(
 	}
 
 
-	
+
 		/* save the radiation that is absorbed by leaf (sensible and latent) */
   	stratum[0].Kstar_potential_both = stratum[0].Kstar_direct+stratum[0].Kstar_diffuse;
 
-		
+
 
 	if ( stratum[0].Kstar_direct < -1 ) {
 			printf("CANOPY_START ID=%d: pai=%lf snowstor=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n",
@@ -799,7 +799,7 @@ void	canopy_stratum_daily_F(
 					printf("\nCASE3");
 				}
 				windcan = wind;
-*--------------------------------------------------------------*/
+            /*--------------------------------------------------------------*/
 			/* for mosses and other low stature veg an alternative ra model can be used */
 			/*--------------------------------------------------------------*/
 
@@ -813,6 +813,7 @@ void	canopy_stratum_daily_F(
 					stratum[0].epv.height,
 					layer[0].base,
 					&(ga));
+            }
 				else {
 
 				stratum[0].ga = 1.0 /
@@ -2018,7 +2019,7 @@ void	canopy_stratum_daily_F(
 	patch[0].ustar_final += ustar * stratum[0].cover_fraction;
 	/* these are very approximate but will acount for latent effect on energy partitioning  */
 	patch[0].T_canopy_final += (zone[0].metv.tavg + deltaT) * stratum[0].cover_fraction;
-	stratum[0].T_canopy = (zone[0].metv.tavg + deltaT); 
+	stratum[0].T_canopy = (zone[0].metv.tavg + deltaT);
 
 	/* track variables for fire spread */
 	if (command_line[0].firespread_flag == 1) {

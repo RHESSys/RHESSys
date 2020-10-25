@@ -2547,7 +2547,7 @@ struct epvar_struct
         double deadcrootc_store_to_deadcrootc_transfer; /* (kgC/m2/d) */
         double gresp_store_to_gresp_transfer;           /* (kgC/m2/d) */
 	double carbohydrate_transfer;			/* (kg/m2/day) */
-	double storage_transfer_prop;			/* 0-1 */ 
+	double storage_transfer_prop;			/* 0-1 */
 
         /* turnover of live wood to dead wood */
         double livestemc_to_deadstemc;        /* (kgC/m2/d) */
@@ -3047,6 +3047,7 @@ struct  canopy_strata_object
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;
         double  dC13;           /* % discrimination of C13 */
+        double  T_canopy;  /* deg C */
         double  evaporation;                                    /* meters/day   */
         double  ga;                                             /* m/s          */
         double  gap_fraction;                                   /* unitless     */

@@ -1,10 +1,4 @@
-<<<<<<< HEAD
 VERSION = 8
-||||||| merged common ancestors
-VERSION = 5.20.1
-=======
-VERSION = 7.2
->>>>>>> db17435fee817ee32f0abd4e9af92f64fbc96725
 PGM  = rhessys$(VERSION)
 CC = gcc
 #CXX = g++
@@ -16,7 +10,6 @@ OBJ = objects
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
-<<<<<<< HEAD
 DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID  
 
 ifdef extend_clim
@@ -28,25 +21,6 @@ CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES) -fno-stack-protector
 ifdef openmp
   CFLAGS += -fopenmp
 endif
-||||||| merged common ancestors
-DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID 
-CFLAGS =-Wall -g -std=c99 -fopenmp -O2 $(DEFINES)
-=======
-DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID
-
-ifdef extend_clim
-  DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
-endif
-
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
-# -w to supress warnings, feel free to remove
-# -Og for debug
-# -O2 for speed
-
-ifdef openmp
-  CFLAGS += -fopenmp
-endif
->>>>>>> db17435fee817ee32f0abd4e9af92f64fbc96725
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
@@ -118,7 +92,6 @@ $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
 $(OBJ)/compute_fire_effects.o \
 $(OBJ)/compute_beetle_effects.o \
-$(OBJ)/climate_grid_interpolation.o \
 $(OBJ)/compute_growingseason_index.o \
 $(OBJ)/compute_layer_field_capacity.o \
 $(OBJ)/compute_froot_litfall.o \
@@ -400,13 +373,7 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-<<<<<<< HEAD
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM)
-||||||| merged common ancestors
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM) 
-=======
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L../lib -lwmfire -v -o $(PGM)
->>>>>>> db17435fee817ee32f0abd4e9af92f64fbc96725
 else
 rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM)
@@ -414,22 +381,10 @@ endif
 else
 ifdef wmfire
 rhessys: $(OBJECTS)
-<<<<<<< HEAD
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM)
-||||||| merged common ancestors
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM) 
-=======
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -lwmfire -v -o $(PGM)
->>>>>>> db17435fee817ee32f0abd4e9af92f64fbc96725
 else
 rhessys: $(OBJECTS)
-<<<<<<< HEAD
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM)
-||||||| merged common ancestors
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM) 
-=======
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -v -o $(PGM)
->>>>>>> db17435fee817ee32f0abd4e9af92f64fbc96725
 endif
 endif
 
@@ -974,7 +929,6 @@ $(OBJ)/compute_annual_litfall.o: cn/compute_annual_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_annual_litfall.c -o $(OBJ)/compute_annual_litfall.o
 $(OBJ)/compute_cwd_decay.o: cn/compute_cwd_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_cwd_decay.c -o $(OBJ)/compute_cwd_decay.o
-<<<<<<< HEAD
 $(OBJ)/compute_snag_decay.o: cn/compute_snag_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_snag_decay.c -o $(OBJ)/compute_snag_decay.o
 $(OBJ)/compute_redneedle_decay.o: cn/compute_redneedle_decay.c
@@ -982,11 +936,6 @@ $(OBJ)/compute_redneedle_decay.o: cn/compute_redneedle_decay.c
 $(OBJ)/update_deadroot_decay.o: cn/update_deadroot_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/update_deadroot_decay.c -o $(OBJ)/update_deadroot_decay.o
 $(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c
-||||||| merged common ancestors
-$(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c 
-=======
-$(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c
->>>>>>> db17435fee817ee32f0abd4e9af92f64fbc96725
 	$(CC) -c $(CFLAGS) -I include cn/compute_deadleaf_turnover.c -o $(OBJ)/compute_deadleaf_turnover.o
 $(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_leaf_litfall.c -o $(OBJ)/compute_leaf_litfall.o
@@ -1048,15 +997,9 @@ $(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
-<<<<<<< HEAD
 $(OBJ)/update_beetle_attack_mortality.o: cn/update_beetle_attack_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_beetle_attack_mortality.c -o $(OBJ)/update_beetle_attack_mortality.o
 $(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c
-||||||| merged common ancestors
-$(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c 
-=======
-$(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c
->>>>>>> db17435fee817ee32f0abd4e9af92f64fbc96725
 	$(CC) -c $(CFLAGS) -I include cn/update_litter_soil_mortality.c -o $(OBJ)/update_litter_soil_mortality.o
 $(OBJ)/update_branch_mortality.o: cn/update_branch_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_branch_mortality.c -o $(OBJ)/update_branch_mortality.o
