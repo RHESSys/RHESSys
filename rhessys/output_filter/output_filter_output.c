@@ -6,6 +6,39 @@
 #include "pointer_set.h"
 
 
+inline static void reset_materialized_variable_array(OutputFilter *f) {
+	if (f == NULL) return;
+	memset(f->output->materialized_variables, 0, f->num_named_variables * sizeof(MaterializedVariable));
+}
+
+inline static void accum_materialized_variable(MaterializedVariable *accum, MaterializedVariable *value,
+		double dbl_scalar) {
+	switch (value->data_type) {
+	case DATA_TYPE_BOOL:
+		accum->u.bool_val |= value->u.bool_val;
+		break;
+	case DATA_TYPE_CHAR:
+		accum->u.char_val += value->u.char_val;
+		break;
+	case DATA_TYPE_INT:
+		accum->u.int_val += value->u.int_val;
+		break;
+	case DATA_TYPE_LONG:
+		accum->u.long_val += value->u.long_val;
+		break;
+	case DATA_TYPE_FLOAT:
+		accum->u.float_val += value->u.float_val;
+		break;
+	case DATA_TYPE_DOUBLE:
+		accum->u.double_val += value->u.double_val * dbl_scalar;
+		break;
+	default:
+		fprintf(stderr, "WARNING: output_filter_output::accum_materialized_variable(): Unable to accumulate materialized variable of type %d",
+				value->data_type);
+		break;
+	}
+}
+
 inline static void reset_accum_obj(PointerSet *set, size_t len) {
 	if (set == NULL) return;
 	memset(set->ptr, 0, len);
@@ -340,9 +373,14 @@ static bool output_variables(char * const error, size_t error_len,
 }
 
 static bool output_basin(char * const error, size_t error_len,
-		struct date date, OutputFilter const * const filter,
+		struct date date, OutputFilter const * const f,
 		PointerSet **patch_acc_objs_to_reset, PointerSet **stratum_acc_objs_to_reset) {
 	fprintf(stderr, "\toutput_basin()...\n");
+
+	bool status;
+	EntityID id;
+	MaterializedVariable mat_var;
+	MaterializedVariable *mat_vars = f->output->materialized_variables;
 
 	// TODO: Implement areal averaging over all patch and stratum variables in a basin
 	// Iterate over all basins
@@ -350,7 +388,9 @@ static bool output_basin(char * const error, size_t error_len,
 	// (using the OutputFilterOutput->materialized_variables as the accumulator scratch space)
 	// Then, once all specified variables have been averaged, output them (they will have to be stored as materialized
 	// variables since this is what the output drivers know how to write data).
-	for (OutputFilterBasin *b = filter->basins; b != NULL; b = b->next) {
+	for (OutputFilterBasin *b = f->basins; b != NULL; b = b->next) {
+		reset_materialized_variable_array(f);
+		id.basin_ID = b->basinID;
 		struct basin_object *basin = b->basin;
 		for (size_t i = 0; i < basin->num_hillslopes; i++) {
 			struct hillslope_object *h = basin->hillslopes[i];
@@ -359,16 +399,45 @@ static bool output_basin(char * const error, size_t error_len,
 				struct zone_object *z = h->zones[j];
 				for (size_t k = 0; k < z->num_patches; k++) {
 					struct patch_object *patch = z->patches[k];
-					// TODO: Iterate over filter variables accumulating any patch variables
+					// Iterate over filter variables accumulating any patch variables
+					int var_num = 0;
+					for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
+						if (v->variable_type == NAMED) {
+							if (v->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH) {
+								void *entity = determine_patch_entity(f->timestep, patch, patch_acc_objs_to_reset);
+								mat_var = materialize_variable(v, entity);
+								accum_materialized_variable(&mat_vars[var_num], &mat_var, patch->area);
+							}
+							var_num += 1;
+						}
+					}
 					for (size_t l = 0; l < patch->num_canopy_strata; l++) {
 						struct canopy_strata_object *stratum = patch->canopy_strata[l];
-						// TODO: Iterate over filter variables accumulating any stratum variables
+						// Iterate over filter variables accumulating any stratum variables
+						int var_num = 0;
+						for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
+							if (v->variable_type == NAMED) {
+								if (v->hierarchy_level == OF_HIERARCHY_LEVEL_STRATUM) {
+									void *entity = determine_stratum_entity(f->timestep, stratum, stratum_acc_objs_to_reset);
+									mat_var = materialize_variable(v, entity);
+									// TODO: Figure out whether stratum variables should be scaled by patch area
+									accum_materialized_variable(&mat_vars[var_num], &mat_var, 1.0);
+								}
+								var_num += 1;
+							}
+						}
 					}
 				}
 			}
 		}
-		// TODO: Do output for this basin here...
+		status = output_materialized_variables(error, error_len, date, id, f, mat_vars);
+		if (status == false) {
+			char *local_error = (char *)calloc(MAXSTR, sizeof(char));
+			snprintf(local_error, MAXSTR, "output_filter_output::output_basin: failed to output materialized variables.");
+			return_with_error(error, error_len, local_error);
+		}
 	}
+	return true;
 }
 
 static bool output_patch(char * const error, size_t error_len,
