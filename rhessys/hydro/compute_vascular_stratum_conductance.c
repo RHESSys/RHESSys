@@ -38,7 +38,7 @@
 /*	New code based on compute_stratum_conductance but now */
 /*	labelled so it applies only to vascular strata.			*/
 /*								*/
-/*	Sep 3 1997 RAF						*/
+/*	Sep 3 1997 RAF			     			*/
 /*	Made sure stratum conductance was non zero.		*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
@@ -146,7 +146,7 @@ double	compute_vascular_stratum_conductance(
 		/*	}													*/
 		/*}														*/
 
-			}
+	}
 	else m_LWP=1.0;
 
 	/*--------------------------------------------------------------*/

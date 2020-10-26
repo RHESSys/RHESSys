@@ -42,7 +42,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
-#include <omp.h>
+#include <openmp.h>
 #include "rhessys.h"
 
 void	basin_daily_F(
@@ -67,11 +67,6 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/* this part has been moved to basin_hourly			*/
 	/*--------------------------------------------------------------*/
-	/* void	compute_subsurface_routing(
-		struct command_line_object *,
-		struct basin_object *,
-		int, struct	date); */
-
 	double	compute_stream_routing(
 		struct command_line_object *,
 		struct stream_network_object *,
@@ -105,7 +100,7 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Simulate the hillslopes in this basin for the whole day		*/
 	/*--------------------------------------------------------------*/
-    #pragma omp parallel for                                                    // schedule(dynamic) num_threads(4)
+    #pragma omp parallel for                                                     //schedule(dynamic) num_threads(4)
     for (int h = 0 ; h < basin[0].num_hillslopes; h ++ ){
 		hillslope_daily_F(	day,
 			world,
@@ -122,17 +117,6 @@ void	basin_daily_F(
 	basin[0].snowpack.T /=  basin[0].area_withsnow;
 	basin[0].snowpack.energy_deficit /=  basin[0].area_withsnow;
 
-
-	/*--------------------------------------------------------------*/
-	/*  For routing option - route water between patches within     */
-	/*      the basin:  this part has been moved to basin_hourly    */
-	/*--------------------------------------------------------------*/
-  /*  if ( command_line[0].routing_flag == 1 && zone[0].hourly_rain_flag == 0) {
-		compute_subsurface_routing(command_line,
-			basin,
-			basin[0].defaults[0][0].n_routing_timesteps,
-			current_date);
-    }  */ //NREN 20190213
 
 	/*--------------------------------------------------------------*/
 	/*  For stream routing option - route water between patches within     */

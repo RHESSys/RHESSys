@@ -144,7 +144,7 @@ struct zone_default *construct_zone_defaults(
 
         /*--------------------------------------------------------------*/
         /* read in the searching distance and grid cell resolution      */
-        /* this is for interpolation of climate data N.R. 2019/06/01    */
+        /* this is for interpolation of climate data                    */
         /*--------------------------------------------------------------*/
 
         default_object_list[i].search_x = getDoubleParam(&paramCnt, &paramPtr, "search_x", "%lf", 3376.0, 1); // the default value is for DayMet data which has grid around 4km by 4km
@@ -192,7 +192,6 @@ struct zone_default *construct_zone_defaults(
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
-                free(s);
                 s = strbuf;
                 token = strtok(s, ".");
                 if (token != NULL) {

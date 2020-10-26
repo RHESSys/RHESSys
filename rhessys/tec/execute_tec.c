@@ -273,8 +273,10 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*			Simulate the world for the start of this day e		*/
 			/*--------------------------------------------------------------*/
-      /*      if ( current_date.hour == 1 ) printf("Current_date year = %d mon = %d day = %d\r",
-                   current_date.year,current_date.month,current_date.day);*/ /*ning*/
+
+
+//            if ( current_date.hour == 1 ) printf("\nCurrent_date year = %d mon = %d day = %d\r",
+                    // current_date.year,current_date.month,current_date.day);
             //fflush(stdout);
 			if ( current_date.hour == 1 ){
                 world_daily_I(

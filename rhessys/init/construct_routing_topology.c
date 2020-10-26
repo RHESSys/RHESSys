@@ -22,7 +22,7 @@
 /*	creates neighbourhood structure for each patch in the basin */
 /*	returns a list giving order for patch-level routing			*/
 /*																*/
-/*																*/
+/*			   													*/
 /*																*/
 /*	PROGRAMMER NOTES											*/
 /*																*/

@@ -1,0 +1,128 @@
+---
+title: "Run_RHESSysPreprocess"
+author: "William Burke"
+date: "2/13/2020"
+output: pdf_document
+urlcolor: blue
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Overview
+This is an example workflow/script showing how the RHESSysPreprocess.R function should be run.
+
+1. Install the RHESSysPreprocessing package.
+2. Copy this script, and edit where indicated.
+3. Run the RHESSysPreprocess.R function.
+4. The funciton will produce:
+    * Worldfile
+    * Flowtable
+    * Header (optional)
+
+For additional directions on generating inputs for the Regional HydroEcologic Simulation System (RHESSys) see the [RHESSys Wiki](https://github.com/RHESSys/RHESSys/wiki)
+
+## Install & Load Package
+If you haven't already installed the package, do so now (shown here using the devtools package), and then load the package.
+```{r setup, eval = FALSE}
+library(devtools)
+devtools::install_github("RHESSys/RHESSysPreprocessing")
+library(RHESSysPreprocessing)
+```
+
+## Filepaths
+This script uses relative filepaths. This means that it will look for folders and files relative to your current working directory. If needed, set your current working directory to the folder of your project:
+```{r, eval = FALSE}
+setwd("~/Documents/MyProject")
+```
+The "~" is a shorthand method of navigating to your "home" user directory - typically the folder named for your username.
+
+## Template
+The worldfile template is the guiding document that outlines how your worldfile will be built. The template argument should point to the name and location of your template. See the [template](https://github.com/RHESSys/RHESSys/wiki/Template) section of the RHESSys Wiki for more information.
+```{r}
+template = "/templates/example.template"
+```
+
+## Spatial Data
+You will need provide the spatial data inputs being referenced in your template. There is now only one supported method of spatial data input, which is using raster data - spatial data in any raster format supported by R [GDAL](https://gdal.org/drivers/raster/index.html), read in from a folder. Previously there was support for using GRASS GIS, if you used that method previously, output those maps to raster formats (geotiff, ascii, etc.). See the Wiki section on [Spatial Input Requirements](https://github.com/RHESSys/RHESSys/wiki/Spatial-Input-Requirements) for more information.
+
+To use spatial data from a folder of rasters:
+
+1. Input data should have the same projections, extents, and cell sizes.
+2. Set `type` to "raster"
+```{r}
+type = "raster"
+```
+3. Set `typepars` to the path of the folder containing your rasters
+```{r}
+typepars = "spatial_data"
+```
+
+## Name
+Set the name and path for all function outputs. Suffixes of .world, .flow, and .hdr will be appended to the worldfile, flowtable, and (optional) header files respectively.
+```{r}
+name = "/output/my_watershed"
+```
+
+## Overwrite
+TRUE/FALSE if an existing worldfile and flowtable should be overwritten.
+```{r}
+overwrite = FALSE
+```
+
+## Streams
+Streams map to be used in creation of the flowtable - this is just the name of the map, to be found via the method indicated with `type`, at the path indicated by `typepars`
+```{r}
+streams = "my_watershed_streams"
+```
+
+## Optional Flowtable Spatial Data
+These maps are optional inputs in flowtable creation
+```{r}
+roads = "roads_map"
+impervious = "impervious_map"
+roofs = "roofs_map"
+```
+
+## Header
+TRUE/FALSE to produce a header file. Header file will be have same name(and location) set by "name", with the ".hdr" suffix.
+```{r}
+header = FALSE
+```
+
+Parallelization
+---------------
+Current (v7.1+, Dec 2018 and on) develop branch RHESSys is hillslope paralleized and requires a flowtable that is compatible. This makes a few key changes relative to the old flowtable generation, highlighted in the R help documentation for RHESSysPreprocess and CreateFlownet.
+```{r}
+parallel = TRUE
+```
+
+The `make_stream` argument defines the distance from an existing stream that the outlet of a hillslope can be set to be a stream. Since all hilslopes must have stream outlets, if a hillslope outlet exists outside of the distance threshold set by "make_stream",an error will occur and indicae the problem hillslope/outlet patch of that hillslope. This typically occurs as an artifact of how watershed analysis is done, and hillslopes are created, which sometimes results in fragmented or very
+small/skinny hillslopes, far away from streams. `make_stream` can be set to any positive value, or TRUE to always set hillslope outlets to streams.
+Default is 4, which is meant to roughly account for the errors/aritifacts that might occur from GIS, without including any
+extreme outlying hillslopes
+```{r}
+make_stream = 4
+```
+
+## Run RHESSysPreprocess
+Finally, run the function.  Depending on size, it may take a few mintues (or more).
+```{r}
+RHESSysPreprocess(
+  template = template,
+  name = name,
+  type = type,
+  typepars = typepars,
+  streams = streams,
+  overwrite = overwrite,
+  header = header)
+
+```
+
+## Troubleshooting
+If you encounter errors or are unable to create your RHESSys inputs, first consult the [RHESSys Wiki](https://github.com/RHESSys/RHESSys/wiki) and the R help documentation via `?RHESSysPreprocessing::RHESSysPreprocess`.  If possible try testing with different inputs. If it seems to be a bug, you can create an issue on the [RHESSysPreprocessing GitHub](https://github.com/RHESSys/RHESSysPreprocessing).

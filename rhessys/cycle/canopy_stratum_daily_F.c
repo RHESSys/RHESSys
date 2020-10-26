@@ -22,11 +22,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
+#include <openmp.h>
 #include "rhessys.h"
 #include "phys_constants.h"
 #include "functions.h"
-
-
 
 void	canopy_stratum_daily_F(
 							   struct	world_object		      *world,
@@ -45,6 +44,7 @@ void	canopy_stratum_daily_F(
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
 	long	julday(struct date calendar_date);
+
 
 	double	compute_diffuse_radiative_fluxes(
 		int,
@@ -395,6 +395,8 @@ void	canopy_stratum_daily_F(
 	stratum[0].Kstar_direct = 0.0;
 	stratum[0].APAR_direct = 0.0;
 	stratum[0].potential_evaporation = 0.0;
+	stratum[0].transpiration_unsat_zone = 0.0;
+	stratum[0].transpiration_sat_zone = 0.0;
 	 m_APAR_sunlit=0.0;
 	 m_tavg_sunlit=0.0;
 	 m_LWP_sunlit=0.0;
@@ -695,6 +697,12 @@ void	canopy_stratum_daily_F(
 	}
 
 
+
+		/* save the radiation that is absorbed by leaf (sensible and latent) */
+  	stratum[0].Kstar_potential_both = stratum[0].Kstar_direct+stratum[0].Kstar_diffuse;
+
+
+
 	if ( stratum[0].Kstar_direct < -1 ) {
 			printf("CANOPY_START ID=%d: pai=%lf snowstor=%lf APARused=%lf APARdir=%lf APAR=%lf Rnet_used=%lf Kstardir=%lf Kstar=%lf Lstar=%lf \n",
 				   stratum[0].ID,
@@ -791,6 +799,11 @@ void	canopy_stratum_daily_F(
 					printf("\nCASE3");
 				}
 				windcan = wind;
+            /*--------------------------------------------------------------*/
+			/* for mosses and other low stature veg an alternative ra model can be used */
+			/*--------------------------------------------------------------*/
+
+				if (stratum[0].defaults[0][0].epc.alternative_ra_surface == 1) {
 				stratum[0].ga = 1.0 /
 					compute_ra_surface(
 					command_line[0].verbose_flag,
@@ -800,6 +813,18 @@ void	canopy_stratum_daily_F(
 					stratum[0].epv.height,
 					layer[0].base,
 					&(ga));
+            }
+				else {
+
+				stratum[0].ga = 1.0 /
+					compute_ra_understory(
+					command_line[0].verbose_flag,
+					stratum[0].defaults[0][0].wind_attenuation_coeff * stratum[0].epv.proj_pai,
+					&(wind),
+					stratum[0].epv.height,
+					layer[0].base,
+					&(ga));
+				}
 				windsnow = wind;
 				gasnow = ga;
 			}
@@ -1032,7 +1057,7 @@ void	canopy_stratum_daily_F(
 		stratum[0].defaults[0][0].epc.psi_threshold,
 		stratum[0].defaults[0][0].epc.psi_slp,
 		stratum[0].defaults[0][0].epc.psi_intercpt,
-		stratum[0].defaults[0][0].epc.gl_smax,
+		stratum[0].defaults[0][0].epc.gl_smax_shade,
 		stratum[0].defaults[0][0].epc.topt,
 		stratum[0].defaults[0][0].epc.tcoef,
 		stratum[0].defaults[0][0].epc.tmax,
@@ -1104,7 +1129,6 @@ void	canopy_stratum_daily_F(
 	stratum[0].mult_conductance.LWP = (m_LWP_shade*stratum[0].epv.proj_lai_shade +
 		m_LWP_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
-
 	stratum[0].mult_conductance.CO2 = (m_CO2_shade*stratum[0].epv.proj_lai_shade +
 		m_CO2_sunlit * stratum[0].epv.proj_lai_sunlit)
 		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
@@ -1190,7 +1214,6 @@ void	canopy_stratum_daily_F(
 			   stratum[0].surface_heat_flux/86.4);
 		}
 
-
 	/*--------------------------------------------------------------*/
 	/*	Estimate potential evap rates.				*/
 	/*--------------------------------------------------------------*/
@@ -1264,7 +1287,7 @@ void	canopy_stratum_daily_F(
 	/*	Reduce rnet for transpiration by ratio of lai to pai	*/
 	/*--------------------------------------------------------------*/
 
-	if (zone[0].metv.dayl > ZERO) {
+	if ((zone[0].metv.dayl > ZERO) && (stratum[0].epv.proj_pai > ZERO)) {
 		rnet_trans_sunlit = 1000 * ((stratum[0].Kstar_direct + (perc_sunlit)*stratum[0].Kstar_diffuse)
 				+ perc_sunlit * (stratum[0].Lstar_day + surface_heat_flux_day) ) / daylength
 						* ( stratum[0].epv.proj_lai / stratum[0].epv.proj_pai );
@@ -1348,6 +1371,7 @@ void	canopy_stratum_daily_F(
 
 	stratum[0].cdf.trans_sunlit = transpiration_rate_sunlit;
 	stratum[0].cdf.trans_shade = transpiration_rate_shade;
+
 	transpiration_rate = transpiration_rate_sunlit +  transpiration_rate_shade;
 	potential_transpiration_rate = potential_transpiration_rate_sunlit +  potential_transpiration_rate_shade;
 
@@ -1570,6 +1594,9 @@ void	canopy_stratum_daily_F(
 		/* Remove energy for tracking purposes, although not accurate since we are */
 		/* transferring this energy into sensible heat. */
 		/* ASSUMES ONLY NEGATIVE FLUX CAN BE LSTAR... SURFACE HEAT?? */
+
+		/* save the radiation that is absorbed by leaf (sensible and latent) */
+		stratum[0].Kstar_potential_both = stratum[0].Kstar_direct+stratum[0].Kstar_diffuse;
 		if (Rnet_used > 0.0) {
 			if ( (stratum[0].Lstar > 0) && (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar + stratum[0].surface_heat_flux > 0) ){
 				fraction_L_used = stratum[0].Lstar
@@ -1990,7 +2017,9 @@ void	canopy_stratum_daily_F(
 	patch[0].wind_final += wind * stratum[0].cover_fraction;
 	patch[0].windsnow_final += windsnow * stratum[0].cover_fraction;
 	patch[0].ustar_final += ustar * stratum[0].cover_fraction;
+	/* these are very approximate but will acount for latent effect on energy partitioning  */
 	patch[0].T_canopy_final += (zone[0].metv.tavg + deltaT) * stratum[0].cover_fraction;
+	stratum[0].T_canopy = (zone[0].metv.tavg + deltaT);
 
 	/* track variables for fire spread */
 	if (command_line[0].firespread_flag == 1) {

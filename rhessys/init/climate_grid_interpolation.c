@@ -7,7 +7,7 @@
 /* SYMAP interpolation Algorthim Shepard, D.S., 1984, Spatial         */
 /* Statistics and Models. reference code source also from VIC websit  */
 /* https://vic.readthedocs.io/en/vic.4.2.d/Documentation/GridNCDC/    */
-/* Adapted by N.R. 2019.06.01                                         */
+/* Adapted by N.R. 2019.06.01                                          */
 /*--------------------------------------------------------------------*/
 
 #include <stdio.h>

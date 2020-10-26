@@ -1,6 +1,7 @@
 # Compiled object files
 *.o
 *.pyc
+
 rhessys/rhessys5.20.1
 
 .nfs*
@@ -36,13 +37,23 @@ lai.trai.2018.txt
 ./rhessys/rhessys5.bf_PAI
 ./rhessys/rhessys7
 ./rhessys/rhe5time_def.txt
+rhessys/rhessys5.20.1
+
+
+rhessys/rhessys7.0
+rhessys/rhessys7*
+*.save
+
 
 # Build directories
 objects/
 
+build/
+
 build/Qt/gcc/bin/
 build/Qt/gcc/RHESSys/RHESSys.pro.user
 build/Qt/gcc/RHESSys/RHESSys.pro.user.2.7pre1
+
 objects/*.daily
 objects/*.yearly
 objects/*.monthly
@@ -57,6 +68,11 @@ rhessys/rhessys5
 Fire*.txt
 rhessys/RhessyDEMOut.txt
 
+result/
+rhessys_bk_20200925/
+
+
+RHESSys/util/netcdf_data_processes
 
 #Qt git structure
 .directory
@@ -72,15 +88,29 @@ g2w/grass2world/g2w
 .project
 .cproject
 
+# vscode editor data
+.vscode
+rhessys/.vscode
+*.code-workspace
+
 # OS X extended attribute stores
 .DS_Store
+.DS_Store*
 
 # Editor leftovers
 *~
 
-# Libraries
+# Fire-spread model files 
+*.dylib
 libwmfire.dylib
 libwmfire.so
 
+# R
 .Rproj.user
+.Rhistory
 
+# vscode 
+rhessys/.vscode
+
+# made by R func compile_rhessys (should be deleted typically)
+.makefile_tmp

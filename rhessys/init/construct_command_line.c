@@ -102,7 +102,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
-	command_line[0].vmort_flag = 0;
+	command_line[0].vmort_flag = 0;// make default not on 20201024
 	command_line[0].version_flag = 0;
 	command_line[0].vsen[M] = 1.0;
 	command_line[0].vsen[K] = 1.0;
@@ -131,6 +131,8 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
+	command_line[0].multiscale_flag = 0;
+	command_line[0].cpool_mort_fract = 0;
 
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -192,17 +194,8 @@ struct	command_line_object	*construct_command_line(
 			/*------------------------------------------*/
 			/*Check if the variable mortality flag is next.           */
 			/*------------------------------------------*/
-			else if ( strcmp(main_argv[i],"-vmort") == 0 ){
-				command_line[0].vmort_flag = 1;
-				i++;
-				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
-					fprintf(stderr,"FATAL ERROR: Value for vmort flag not specified\n");
-					exit(EXIT_FAILURE);
-				} /*end if*/
-				/*-------------------------------*/
-				/*Read in the tmp value		*/
-				/*-------------------------------*/
-				command_line[0].cpool_mort_fract = (double)atof(main_argv[i]);
+			else if ( strcmp(main_argv[i],"-vmort_off") == 0 ){
+				command_line[0].vmort_flag = 0;
 				i++;
 			}
 			/*------------------------------------------*/
@@ -1196,6 +1189,16 @@ struct	command_line_object	*construct_command_line(
 				i++;
 			}
 
+			/*--------------------------------------------------------------*/
+			/*		Check for multiscale routing flag next				    */
+			/*--------------------------------------------------------------*/
+
+			else if (strcmp(main_argv[i],"-msr") == 0) {
+				//printf("-msr flag triggered\n");
+				command_line[0].multiscale_flag = 1;
+				i++;
+			}
+
 			/*----------------------------------------------------------*/
 			/* climate interpolation UTM zone options  N.R 20190610     */
 			/*----------------------------------------------------------*/
@@ -1205,7 +1208,7 @@ struct	command_line_object	*construct_command_line(
                 i++;
                 command_line[0].utm_zone = 12; // default is utm n 12 zone
 			// read in the utm parameters
-			if (  (i != main_argc) && (valid_option(main_argv[i])==0) ){
+			if ((i != main_argc) && (valid_option(main_argv[i])==0) ){
 					command_line[0].utm_zone = (double)atof(main_argv[i]);
 					i++;
 				}/*end if*/

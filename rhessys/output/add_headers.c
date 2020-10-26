@@ -131,6 +131,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"detention_store",
 		"%sat_area",
 		"litter_store",
+		"litter_capacity",
 		"canopy_store",
 		"%snow_cover",
 		"snow_subl",
@@ -380,7 +381,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
 		check = fprintf(outfile,
-						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 						"day",
 						"month",
 						"year",
@@ -388,6 +389,8 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"hillID",
 						"zoneID",
 						"patchID",
+						"familyID",
+						"family_horizon",
 						"rain_thr",
 						"detention_store",
 						"sat_def_z",
@@ -399,6 +402,9 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"unsat_stor",
 						"rz_drainage",
 						"unsat_drain",
+						"rz_transfer",
+						"unsat_transfer",
+						"sat_transfer",
 						"sublimation",
 						"return",
 						"evap",
@@ -425,7 +431,8 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
 						"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
 						"LEcanopy",
-						"SED","snow_age");
+						"SED","snow_age",
+						"fire_et");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
@@ -445,7 +452,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"et",
 		"psn",
 		"DOC",
-		"DON","lai","nitrif","mineralized","uptake","theta","snow","area","nitrate","sminn", "burn");
+		"DON","lai","nitrif","mineralized","uptake","theta","snow","area","nitrate","sminn","burn");
 	/*--------------------------------------------------------------*/
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
@@ -482,7 +489,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].daily;
 	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
 		"day",
 		"month",
 		"year",
@@ -494,8 +501,11 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"lai",
 		"proj_lai_when_red",
 		"evap",
+		"ppfd_sunlit",
+		"ppfd_shade",
 		"APAR_direct",
 		"APAR_diffuse",
+		"Kstar_potential_both",
 		"sublim",
 		"trans",
 		"ga",
@@ -510,7 +520,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"m_APAR","m_tavg","m_LWP","m_CO2","m_tmin","m_vpd","dC13",
 		"Kstar_dir","Kstar_dif",
 		"Lstar","surf_heat",
-		"height","covfrac","vegID", "wstress_days", "potential_psn_to_cpool");
+		"height","covfrac","vegID");
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
 	/*--------------------------------------------------------------*/
@@ -526,9 +536,9 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
-
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s\n",
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s \n", 
+		"month",
 		"year",
 		"basinID",
 		"hillID",
@@ -548,7 +558,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
-/*	outfile = world_output_files[0].fire[0].daily;
+	/*outfile = world_output_files[0].fire[0].daily;
 	fprintf(outfile,
 		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
@@ -579,7 +589,6 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"canopy_subtarget_prop_c_consumed",
 		"canopy_subtarget_c",
 		"understory_c_consumed"); */
-
 
 	/*--------------------------------------------------------------*/
 	/*	yearly 							*/

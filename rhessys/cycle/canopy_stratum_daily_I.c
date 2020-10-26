@@ -102,7 +102,7 @@ void	canopy_stratum_daily_I(
 		double,
 		int,
 		struct date,
-		int,
+		int,int, int,
 		struct world_object *);
 
 	void	update_mortality(
@@ -131,7 +131,6 @@ void	canopy_stratum_daily_I(
 	struct mortality_struct mort;
 	double leafcloss_perc, daily_mortality;
 
-
 	/*--------------------------------------------------------------*/
 	/* no processing at present for non-veg types			*/
 	/*--------------------------------------------------------------*/
@@ -144,7 +143,6 @@ void	canopy_stratum_daily_I(
 		fprintf(stderr,"fATAL ERROR: in zero_day_flux() ... Exiting\n");
 		exit(EXIT_FAILURE);
 	}
-
 
 
 /*	stratum[0].Kup_direct = 0.0;
@@ -268,8 +266,7 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	/*  perform seasonal leaf sens. and budding						*/
 	/*--------------------------------------------------------------*/
-
-	update_phenology(zone, &(stratum[0].epv),
+	update_phenology( zone, &(stratum[0].epv),
 		stratum[0].defaults[0][0].epc,
 		&(stratum[0].phen),
 		&(stratum[0].cs),
@@ -291,6 +288,8 @@ void	canopy_stratum_daily_I(
 		basin[0].defaults[0][0].wyday_start,
 		current_date,
 		command_line[0].grow_flag,
+		command_line[0].multiscale_flag,
+		patch[0].landuse_defaults[0][0].shading_flag,
 		world);
 
 	/*--------------------------------------------------------------*/

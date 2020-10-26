@@ -90,7 +90,7 @@
 	/*--------------------------------------------------------------*/
 	/*	Read in the number of  patch base stations 					*/
 	/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,1);
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",0,1);
       	
 	if (dtmp > 0)  {
 		/*patch[0].num_base_stations = dtmp;*/

@@ -78,6 +78,8 @@ int zero_stratum_daily_flux(
 	cdf->livecrootc_store_to_livecrootc_transfer = 0.0;
 	cdf->deadcrootc_store_to_deadcrootc_transfer = 0.0;
 	cdf->gresp_store_to_gresp_transfer = 0.0;
+	cdf->storage_transfer_prop = 0.0;
+	cdf->carbohydrate_transfer = 0.0;
 
 	/* autotroph  maintenance respiration fluxes */
 	cdf->leaf_day_mr = 0.0;
@@ -133,7 +135,7 @@ int zero_stratum_daily_flux(
 	ndf->deadstemn_store_to_deadstemn_transfer = 0.0;
 	ndf->livecrootn_store_to_livecrootn_transfer = 0.0;
 	ndf->deadcrootn_store_to_deadcrootn_transfer = 0.0;
-
+	ndf->carbohydrate_transfer = 0.0;
 	/* fire effect object */
 	/*fe->m_cwdc_to_atmos = 0.0;
 	fe->m_cwdn_to_atmos = 0.0;

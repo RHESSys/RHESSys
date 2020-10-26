@@ -12,14 +12,14 @@
 /*	DESCRIPTION													*/
 /*																*/
 /*	PROGRAMMER NOTES											*/
-/*																*/
+/*										  						*/
 /*	Original code, January 15, 1996.							*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
 bool is_close_to_station(const double x, const double y, const base_station_object *station,
-                         const base_station_ncheader_object *ncheader);          
+                         const base_station_ncheader_object *ncheader);         
 struct base_station_object
 		*assign_base_station_xy(
 					 float		x,

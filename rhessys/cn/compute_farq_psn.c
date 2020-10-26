@@ -111,6 +111,7 @@ Farquhar photosynthesis routine
 	double aa,bb,cc,det;
 	/* New vbl introduced in BGC 4.1.1 for Jmax calc - netpabs - smitch 2001 */
 	double netpabs;	/* (mol/mol) photons absorbed by PSII per e- xported */
+
 	int c3;		/* c3 flag to match bgc */
 	/*------------------------------------------------------------------
 	the weight proportion of Rubisco to its nitrogen content, fnr, is
@@ -289,8 +290,6 @@ Farquhar photosynthesis routine
 		out->Aj = Aj;
 	/*
 		printf("\n %lf %lf %lf %lf %lf %lf", A, out->Ci, out->Vmax, out->Jmax, out->dC13, out->Ca); 
-	*/
-/*
                  printf("psnin: %lf %lf %lf %lf %lf %lf %lf %lf %d %lf\n",
                                 in->pa, in->co2, t, in->irad,
                                 g, in->Rd, in->lnc, in->flnr,
@@ -299,8 +298,7 @@ Farquhar photosynthesis routine
                                 g, O2, Ca, Ca - A/g,
                                 out->gamma, Kc, Ko, act,
                                 Vmax, Jmax, J, Av,
-                                Aj, A);   
-*/
+                               Aj, A);    */
 	return (!ok);
 }	 /* end compute_farq_psn.c */
 

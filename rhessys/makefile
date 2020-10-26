@@ -69,6 +69,7 @@ $(OBJ)/canopy_stratum_daily_I.o \
 $(OBJ)/canopy_stratum_growth.o \
 $(OBJ)/canopy_stratum_hourly.o \
 $(OBJ)/check_zero_stores.o \
+$(OBJ)/climate_grid_interpolation.o \
 $(OBJ)/compute_Lstar.o \
 $(OBJ)/compute_Lstar_canopy.o \
 $(OBJ)/compute_N_leached.o \
@@ -86,11 +87,11 @@ $(OBJ)/compute_diffuse_radiative_PAR_fluxes.o \
 $(OBJ)/compute_diffuse_radiative_fluxes.o \
 $(OBJ)/compute_direct_radiative_PAR_fluxes.o \
 $(OBJ)/compute_direct_radiative_fluxes.o \
+$(OBJ)/compute_family_shading.o\
 $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
 $(OBJ)/compute_fire_effects.o \
 $(OBJ)/compute_beetle_effects.o \
-$(OBJ)/climate_grid_interpolation.o \
 $(OBJ)/compute_growingseason_index.o \
 $(OBJ)/compute_layer_field_capacity.o \
 $(OBJ)/compute_froot_litfall.o \
@@ -104,6 +105,7 @@ $(OBJ)/compute_lwp_predawn.o \
 $(OBJ)/compute_maint_resp.o \
 $(OBJ)/compute_mean_hillslope_parameters.o \
 $(OBJ)/compute_nonvascular_stratum_conductance.o \
+$(OBJ)/compute_patch_family_routing.o \
 $(OBJ)/compute_potential_N_uptake.o \
 $(OBJ)/compute_potential_N_uptake_Dickenson.o \
 $(OBJ)/compute_potential_N_uptake_Waring.o \
@@ -120,6 +122,7 @@ $(OBJ)/compute_radiative_fluxes.o \
 $(OBJ)/compute_rain_stored.o \
 $(OBJ)/compute_return_flow.o \
 $(OBJ)/compute_saturation_vapor_pressure.o \
+$(OBJ)/compute_shaded_kdown.o \
 $(OBJ)/compute_varbased_returnflow.o \
 $(OBJ)/compute_varbased_flow.o \
 $(OBJ)/compute_snow_stored.o \
@@ -158,6 +161,7 @@ $(OBJ)/construct_monthly_clim.o \
 $(OBJ)/construct_output_files.o \
 $(OBJ)/construct_output_fileset.o \
 $(OBJ)/construct_patch.o \
+$(OBJ)/construct_patch_family.o \
 $(OBJ)/construct_fire_grid.o \
 $(OBJ)/construct_beetle_grid.o\
 $(OBJ)/construct_routing_topology.o \
@@ -369,7 +373,7 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L./lib -lwmfire -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L../lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM)
@@ -377,10 +381,10 @@ endif
 else
 ifdef wmfire
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -lwmfire -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L./lib -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -v -o $(PGM)
 endif
 endif
 
@@ -680,6 +684,8 @@ $(OBJ)/construct_zone.o: init/construct_zone.c
 	$(CC) -c $(CFLAGS) -I include init/construct_zone.c -o $(OBJ)/construct_zone.o
 $(OBJ)/construct_patch.o: init/construct_patch.c
 	$(CC) -c $(CFLAGS) -I include init/construct_patch.c -o $(OBJ)/construct_patch.o
+$(OBJ)/construct_patch_family.o: init/construct_patch_family.c
+	$(CC) -c $(CFLAGS) -I include init/construct_patch_family.c -o $(OBJ)/construct_patch_family.o
 $(OBJ)/find_patch.o: util/find_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch.c -o $(OBJ)/find_patch.o
 $(OBJ)/key_compare.o: util/key_compare.c
@@ -802,6 +808,8 @@ $(OBJ)/compute_layer_field_capacity.o: hydro/compute_layer_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_layer_field_capacity.c -o $(OBJ)/compute_layer_field_capacity.o
 $(OBJ)/compute_growingseason_index.o: cn/compute_growingseason_index.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_growingseason_index.c -o $(OBJ)/compute_growingseason_index.o
+$(OBJ)/compute_family_shading.o: hydro/compute_family_shading.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_family_shading.c -o $(OBJ)/compute_family_shading.o
 $(OBJ)/compute_field_capacity.o: hydro/compute_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_field_capacity.c -o $(OBJ)/compute_field_capacity.o
 $(OBJ)/compute_fire_effects.o: cn/compute_fire_effects.c
@@ -820,12 +828,16 @@ $(OBJ)/compute_return_flow.o: hydro/compute_return_flow.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_return_flow.c -o $(OBJ)/compute_return_flow.o
 $(OBJ)/compute_saturation_vapor_pressure.o: hydro/compute_saturation_vapor_pressure.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_saturation_vapor_pressure.c -o $(OBJ)/compute_saturation_vapor_pressure.o
+$(OBJ)/compute_shaded_kdown.o: rad/compute_shaded_kdown.c
+	$(CC) -c $(CFLAGS) -I include rad/compute_shaded_kdown.c -o $(OBJ)/compute_shaded_kdown.o
 $(OBJ)/compute_snow_sublimation.o: hydro/compute_snow_sublimation.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_snow_sublimation.c -o $(OBJ)/compute_snow_sublimation.o
 $(OBJ)/compute_capillary_rise.o: hydro/compute_capillary_rise.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_capillary_rise.c -o $(OBJ)/compute_capillary_rise.o
 $(OBJ)/compute_unsat_zone_drainage.o: hydro/compute_unsat_zone_drainage.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_unsat_zone_drainage.c -o $(OBJ)/compute_unsat_zone_drainage.o
+$(OBJ)/compute_patch_family_routing.o: hydro/compute_patch_family_routing.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_patch_family_routing.c -o $(OBJ)/compute_patch_family_routing.o
 $(OBJ)/snowpack_daily_F.o: hydro/snowpack_daily_F.c
 	$(CC) -c $(CFLAGS) -I include hydro/snowpack_daily_F.c -o $(OBJ)/snowpack_daily_F.o
 $(OBJ)/sort_by_elevation.o: util/sort_by_elevation.c

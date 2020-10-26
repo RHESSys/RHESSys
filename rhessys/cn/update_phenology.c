@@ -71,17 +71,20 @@ void update_phenology(struct zone_object  *zone,
 					  int 		wyday_start,
 					  struct date current_date,
 					  int	grow_flag,
+					  int   multiscale_flag,
+                        int	shading_flag,
 					  struct world_object *world)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/
-	long	yearday( struct date);
+	long	yearday(struct date);
 	long	wateryearday(
 		struct date,
 		int);
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
+		double,
 		double,
 		double,
 		double,
@@ -158,7 +161,7 @@ void update_phenology(struct zone_object  *zone,
 	double excess_n, horiz;
 	int remdays_transfer;
 	int expand_flag, litfall_flag;
-	//struct beetle_default beetle;
+
 
 
 	expand_flag = 0;
@@ -537,7 +540,8 @@ void update_phenology(struct zone_object  *zone,
 
 			excess_n = max(0.0, ndf->livestemn_to_deadstemn -
 						(cdf->livestemc_to_deadstemc / epc.deadwood_cn ) );
-			ns->retransn += excess_n;
+			//ns->retransn += excess_n;
+                        ns->npool += excess_n;
 			cs->live_stemc -= cdf->livestemc_to_deadstemc;
 			cs->dead_stemc += cdf->livestemc_to_deadstemc;
 			ns->live_stemn -= ndf->livestemn_to_deadstemn;
@@ -550,7 +554,8 @@ void update_phenology(struct zone_object  *zone,
 
 			excess_n = max(0.0, ndf->livecrootn_to_deadcrootn -
 						(cdf->livecrootc_to_deadcrootc / epc.deadwood_cn ) );
-			ns->retransn += excess_n;
+			//ns->retransn += excess_n;
+                        ns->npool += excess_n;
 			cs->live_crootc -= cdf->livecrootc_to_deadcrootc;
 			cs->dead_crootc += cdf->livecrootc_to_deadcrootc;
 			ns->live_crootn -= ndf->livecrootn_to_deadcrootn;
@@ -592,7 +597,7 @@ void update_phenology(struct zone_object  *zone,
 		if (ok && update_rooting_depth(
 			rootzone, rootc, epc.root_growth_direction, epc.root_distrib_parm,
 			epc.max_root_depth,
-			effective_soil_depth)){
+			effective_soil_depth, cs->stem_density)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from update_phenology()\n");
 			exit(EXIT_FAILURE);
@@ -699,13 +704,13 @@ void update_phenology(struct zone_object  *zone,
 	/*	update height						*/
 	/*--------------------------------------------------------------*/
 	if (epc.veg_type == TREE)
-		if ( (cs->live_stemc + cs->dead_stemc) > ZERO){
+		if ( (cs->live_stemc + cs->dead_stemc) > ZERO) {
 			if (cs->stem_density > ZERO) {
 				epv->height = epc.height_to_stem_coef
 				* pow ( (cs->live_stemc + cs->dead_stemc)/(cs->stem_density), epc.height_to_stem_exp);
 				}
 			else {
-				epv->height = epc.height_to_stem_coef
+				epv->height = (epc.height_to_stem_coef)
 				* pow ( (cs->live_stemc + cs->dead_stemc), epc.height_to_stem_exp);
 			}
 		}
@@ -717,7 +722,7 @@ void update_phenology(struct zone_object  *zone,
 			epv->height = 0.0;
 			}
 		else {	if (cs->leafc > ZERO)
-				epv->height = epc.height_to_stem_coef
+				epv->height = (epc.height_to_stem_coef)
 					* pow ( (cs->leafc), epc.height_to_stem_exp);
 			else
 				epv->height = 0.0;
@@ -746,16 +751,23 @@ void update_phenology(struct zone_object  *zone,
     if (world[0].defaults[0].beetle != NULL && world[0].defaults[0].beetle[0].pai_include_snag != 1)  {//NREN 20191129
     epv->proj_pai_when_red = epv->proj_pai; }
 
+        /*--------------------------------------------------------------*/
+	/* if tree but no stem as yet allow a minimum height 		*/
+        /*--------------------------------------------------------------*/
+
+	if ((epc.veg_type==TREE) && ((cs->live_stemc + cs->dead_stemc) < ZERO) && (cs->leafc > ZERO)) {
+		epv->height = 0.01;
+	}
 
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/
-
 	if (cs->stem_density > ZERO) {
+	if ((multiscale_flag == 0) || (shading_flag == 0)) {
         horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
 	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
 	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);
-	}
+	}}
 
 	/*--------------------------------------------------------------*/
 	/*	keep a seasonal max_lai for outputing purposes		*/

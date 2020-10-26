@@ -87,7 +87,8 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-fs") == 0) ||
 
 		(strcmp(command_line,"-vegspinup") == 0) ||
-		(strcmp(command_line,"-template") == 0))
+		(strcmp(command_line,"-template") == 0) ||
+		(strcmp(command_line,"-msr") == 0))
 
 		i = 0;
 	if ( i == 0 ){

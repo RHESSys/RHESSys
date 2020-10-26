@@ -132,7 +132,7 @@
 /*	we will assume the potential rate is essentially	*/
 /*	infnite.						*/
 /*								*/
-/*  PROGRAMMER NOTES                                            */
+/*  PROGRAMMER NOTES                                              */
 /*                                                              */
 /*                                                              */
 /*--------------------------------------------------------------*/
@@ -183,6 +183,7 @@ double	compute_capillary_rise(
 		mc = 2 + 3 * pore_size_index;
 		w = K_1 * ( 1 + 1.5 / (mc - 1))
 			* pow((psi_1/(Z-psi_1)),mc);
+
 		w = min(cap_rise_max, w);
 	}
 	else{

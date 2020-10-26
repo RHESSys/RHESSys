@@ -169,6 +169,7 @@ void update_basin_patch_accumulator(
 							+ patch[0].surface_ns_leach);
 					patch[0].acc_month.burn += patch[0].burn;
 					patch[0].acc_month.length += 1;
+			
 
 				}
 				if ((command_line[0].output_flags.yearly == 1)
@@ -284,6 +285,7 @@ void update_basin_patch_accumulator(
 								+ patch[0].PE - tmp);
 					patch[0].acc_year.lai =
 							max(patch[0].acc_year.lai, patch[0].lai);
+							
 
 					tmp = patch[0].sat_deficit - patch[0].unsat_storage
 							- patch[0].rz_storage;
