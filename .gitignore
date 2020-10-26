@@ -3,6 +3,7 @@
 *.pyc
 rhessys/rhessys7.0
 
+
 rhessys/rhessys7.*
 rhessys/rhessys7*
 .gitignore.save
@@ -15,15 +16,26 @@ rhessys/rhessys7*
 *.save
 
 
+rhessys/rhessys7.*
+
+
+rhessys/rhessys7*
+*.save
+
 # Build directories
 objects/
 build/
 build/Qt/gcc/bin/
 build/Qt/gcc/RHESSys/RHESSys.pro.user
 build/Qt/gcc/RHESSys/RHESSys.pro.user.2.7pre1
+
 result/
 rhessys_bk_20200925/
 
+
+
+rhessys_bk_20200925/
+result/
 
 RHESSys/util/netcdf_data_processes
 
