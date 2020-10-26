@@ -6,9 +6,12 @@
 #include "pointer_set.h"
 
 
-inline static void reset_materialized_variable_array(OutputFilter *f) {
+inline static void reset_materialized_variable_array(OutputFilter const * const f) {
 	if (f == NULL) return;
-	memset(f->output->materialized_variables, 0, f->num_named_variables * sizeof(MaterializedVariable));
+	for (int i = 0; i < f->num_named_variables; i++) {
+		// double_val should be the widest value, so this should zero an value.
+		f->output->materialized_variables[i].u.double_val = 0.0;
+	}
 }
 
 inline static void accum_materialized_variable(MaterializedVariable *accum, MaterializedVariable *value,
@@ -33,11 +36,13 @@ inline static void accum_materialized_variable(MaterializedVariable *accum, Mate
 		accum->u.double_val += value->u.double_val * dbl_scalar;
 		break;
 	default:
-		fprintf(stderr, "WARNING: output_filter_output::accum_materialized_variable(): Unable to accumulate materialized variable of type %d",
+		fprintf(stderr, "WARNING: output_filter_output::accum_materialized_variable(): Unable to accumulate materialized variable of type %d.\n",
 				value->data_type);
 		break;
 	}
+	// Make sure metadata get copied at least once
 	accum->data_type = value->data_type;
+	accum->meta = value->meta;
 }
 
 inline static void reset_accum_obj(PointerSet *set, size_t len) {

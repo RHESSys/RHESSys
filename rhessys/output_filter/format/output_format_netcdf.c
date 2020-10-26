@@ -283,19 +283,26 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	// Basin ID
 	status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_BASIN, NC_INT, &(meta->var_id_basin_id));
 	if (!status) return false;
-	// Hillslope ID
-	status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_HILL, NC_INT, &(meta->var_id_hill_id));
-	if (!status) return false;
-	// Zone ID
-	status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_ZONE, NC_INT, &(meta->var_id_zone_id));
-	if (!status) return false;
+
 	switch (f->type) {
 		case OUTPUT_FILTER_PATCH:
+			// Hillslope ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_HILL, NC_INT, &(meta->var_id_hill_id));
+			if (!status) return false;
+			// Zone ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_ZONE, NC_INT, &(meta->var_id_zone_id));
+			if (!status) return false;
 			// Patch ID
 			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_PATCH, NC_INT, &(meta->var_id_patch_id));
 			if (!status) return false;
 			break;
 		case OUTPUT_FILTER_CANOPY_STRATUM:
+			// Hillslope ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_HILL, NC_INT, &(meta->var_id_hill_id));
+			if (!status) return false;
+			// Zone ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_ZONE, NC_INT, &(meta->var_id_zone_id));
+			if (!status) return false;
 			// Patch ID
 			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_PATCH, NC_INT, &(meta->var_id_patch_id));
 			if (!status) return false;
