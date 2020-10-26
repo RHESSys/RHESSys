@@ -317,6 +317,7 @@ void	output_growth_basin(
 						(patch->soil_defaults[0][0].overstory_height_thresh-patch->soil_defaults[0][0].understory_height_thresh);
 						p_under = min(1.0, p_under);
 						p_over = 1.0-p_under;
+						//printf("the p_voer is %lf, p_under is %lf, understory_c_consumed is %lf \n", p_over, p_under, strata->fe.understory_c_consumed);
 
 						aoverstory_height += strata->cover_fraction *
 								strata->epv.height * patch[0].area * p_over;
@@ -336,7 +337,7 @@ void	output_growth_basin(
 
                         /* fire burned */
                         aoverstory_biomassc_consumed += strata->cover_fraction * patch[0].area *
-                                 strata->fe.overstory_c_consumed * p_over; //p_over to make sure overstory only calculated once
+                                 strata->fe.overstory_c_consumed * p_over; //p_over to make sure overstory only calculated once this including litter!
                         aoverstory_leafc_consumed += strata->cover_fraction * patch[0].area *
                                  strata->fe.overstory_leafc_consumed * p_over;
                         aoverstory_stemc_consumed += strata->cover_fraction * patch[0].area *
@@ -350,9 +351,9 @@ void	output_growth_basin(
                                  strata->fe.overstory_stemc_mortality * p_over;
                         /* fire burn understory */
                         aunderstory_biomassc_consumed += strata->cover_fraction * patch[0].area *
-                                 strata->fe.understory_c_consumed * p_over; //p_over to make sure overstory only calculated once
+                                 strata->fe.understory_biomassc_consumed * p_over; //p_over to make sure overstory only calculated once
                         aunderstory_leafc_consumed += strata->cover_fraction * patch[0].area *
-                                 strata->fe.understory_leafc_consumed * p_over;
+                                 strata->fe.understory_leafc_consumed * p_over;// p_over correct don't use p_under, since this fe is saved all in overstory
                         aunderstory_stemc_consumed += strata->cover_fraction * patch[0].area *
                                  strata->fe.understory_stemc_consumed * p_over;
                         /* cwd burned */
@@ -367,9 +368,9 @@ void	output_growth_basin(
                         strata[0].fe.overstory_leafc_mortality = 0.0;
                         strata[0].fe.overstory_stemc_mortality = 0.0;
                         /* fire burn understory */
-                        strata[0].fe.understory_c_consumed = 0.0; //p_over to make sure overstory only calculated once
+                        strata[0].fe.understory_biomassc_consumed = 0.0; //p_over to make sure overstory only calculated once
                         strata[0].fe.understory_leafc_consumed = 0.0;
-                        strata[0].fe.understory_stemc_consumed = 0.0;
+                        strata[0].fe.understory_stemc_consumed = 0.0; // here is correct too, so make zero after output the zero layer all saved there
                         /* cwd burned */
                         strata[0].fe.m_cwdc_to_atmos = 0.0;
 
@@ -495,18 +496,18 @@ void	output_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 	/* output fire result in total 12 */
-	aburn = aburn / basin_area;
-	alitterc_burned = alitterc_burned / basin_area;
-	acwdc_to_atoms = acwdc_to_atoms / basin_area;
-	aoverstory_biomassc_consumed = aoverstory_biomassc_consumed / basin_area;
-	aoverstory_leafc_consumed = aoverstory_leafc_consumed / basin_area;
-	aoverstory_stemc_consumed = aoverstory_stemc_consumed / basin_area;
-	aoverstory_biomassc_mortality = aoverstory_biomassc_mortality / basin_area;
-	aoverstory_leafc_mortality = aoverstory_leafc_mortality / basin_area;
-	aoverstory_stemc_mortality = aoverstory_stemc_mortality / basin_area;
-	aunderstory_biomassc_consumed = aunderstory_biomassc_consumed / basin_area;
-	aunderstory_leafc_consumed = aunderstory_leafc_consumed / basin_area;
-	aunderstory_stemc_consumed = aunderstory_stemc_consumed / basin_area;
+	aburn = aburn / aarea ;
+	alitterc_burned = alitterc_burned / aarea;
+	acwdc_to_atoms = acwdc_to_atoms / aarea;
+	aoverstory_biomassc_consumed = aoverstory_biomassc_consumed / aarea;
+	aoverstory_leafc_consumed = aoverstory_leafc_consumed / aarea;
+	aoverstory_stemc_consumed = aoverstory_stemc_consumed / aarea;
+	aoverstory_biomassc_mortality = aoverstory_biomassc_mortality / aarea;
+	aoverstory_leafc_mortality = aoverstory_leafc_mortality / aarea;
+	aoverstory_stemc_mortality = aoverstory_stemc_mortality / aarea;
+	aunderstory_biomassc_consumed = aunderstory_biomassc_consumed / aarea; //this including litter!!
+	aunderstory_leafc_consumed = aunderstory_leafc_consumed / aarea;
+	aunderstory_stemc_consumed = aunderstory_stemc_consumed / aarea;
 
 
 	/* output the basin scale snag pool */

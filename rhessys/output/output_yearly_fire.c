@@ -75,7 +75,7 @@ void	output_yearly_fire( int basinID, int hillID, int zoneID, int patchID,
 		 // new output
 
 		 stratum[0].fe.acc_year.litter_c_consumed,
-		 stratum[0].fe.acc_year.understory_c_consumed, //exist
+		 stratum[0].fe.acc_year.understory_biomassc_consumed, //exist
 		 stratum[0].fe.acc_year.understory_leafc_consumed,
 		 stratum[0].fe.acc_year.understory_stemc_consumed,
 		 stratum[0].fe.acc_year.understory_rootc_consumed,
@@ -118,11 +118,11 @@ void	output_yearly_fire( int basinID, int hillID, int zoneID, int patchID,
 		stratum[0].fe.acc_year.canopy_subtarget_prop_mort = 0.0;
 		stratum[0].fe.acc_year.canopy_subtarget_prop_mort_consumed = 0.0;
 		stratum[0].fe.acc_year.canopy_subtarget_prop_c_consumed = 0.0;
-		//stratum[0].fe.canopy_subtarget_c, //different
+		stratum[0].fe.canopy_subtarget_c = 0.0;
 
 		stratum[0].fe.acc_year.litter_c_consumed = 0.0;
 
-		stratum[0].fe.acc_year.understory_c_consumed = 0.0;
+		stratum[0].fe.acc_year.understory_biomassc_consumed = 0.0;
 		stratum[0].fe.acc_year.understory_leafc_consumed = 0.0;
 		stratum[0].fe.acc_year.understory_stemc_consumed = 0.0;
 		stratum[0].fe.acc_year.understory_rootc_consumed = 0.0;

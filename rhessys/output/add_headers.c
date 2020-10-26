@@ -620,10 +620,10 @@ void add_headers(struct world_output_file_object *world_output_files,
          "canopy_subtarget_prop_mort",
          "canopy_subtarget_prop_mort_consumed",
          "canopy_subtarget_prop_c_consumed",
-         "canopy_subtarget_c", "litter_c_consumed",
-         "understory_c_consumed", "undersotry_leafc_consumed", "understory_stemc_consumed", "understory_rootc_consumed",
-         "overstory_c_consumed", "overstory_leafc_consumed", "overstory_stemc_consumed", "overstory_rootc_consumed",
-         "overstory_c_mortality", "overstory_leafc_mortality", "overstory_stemc_mortality", "overstory_rootc_mortality",
+         "canopy_subtarget_biomassc", "litter_c_consumed",
+         "understory_biomassc_consumed", "undersotry_leafc_consumed", "understory_stemc_consumed", "understory_rootc_consumed",
+         "overstory_biomssc_consumed", "overstory_leafc_consumed", "overstory_stemc_consumed", "overstory_rootc_consumed",
+         "overstory_biomassc_mortality", "overstory_leafc_mortality", "overstory_stemc_mortality", "overstory_rootc_mortality",
           "acc_length", "acc_length_overstory","acc_length_understory");
 
 	}

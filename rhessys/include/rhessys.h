@@ -2897,10 +2897,11 @@ struct accumulate_fire_object {
   double  canopy_subtarget_prop_mort;
   double  canopy_subtarget_prop_mort_consumed;
   double  canopy_subtarget_prop_c_consumed;
-  //double  canopy_subtarget_c;
+  double  canopy_subtarget_c;
 
   double  litter_c_consumed;
-  double  understory_c_consumed;
+  double  understory_c_consumed; // for ps
+  double  understory_biomassc_consumed; // for output
   double  understory_leafc_consumed;
   double  understory_stemc_consumed;
   double  understory_rootc_consumed;
@@ -2947,13 +2948,15 @@ struct  fire_effects_object {
 	double  canopy_subtarget_prop_mort;
 	double  canopy_subtarget_prop_mort_consumed;
 	double  canopy_subtarget_prop_c_consumed;
+	double  canopy_subtarget_c;
 	double  canopy_subtarget_biomassc;
 	double  canopy_subtarget_leafc;
 	double  canopy_subtarget_stemc;
 	double  canopy_subtarget_rootc;
 
 
-	double  understory_c_consumed;
+	double  understory_c_consumed; //for ps
+	double  understory_biomassc_consumed; //for output
 	double  understory_leafc_consumed;
 	double  understory_stemc_consumed;
 	double  understory_rootc_consumed;

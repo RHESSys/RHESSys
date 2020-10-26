@@ -104,7 +104,7 @@ void compute_fire_effects(
 			patch[0].litter_cs.litr3c * fire_loss.loss_litr3c +
 			patch[0].litter_cs.litr4c * fire_loss.loss_litr4c;
 
-    patch[0].litterc_burned = litter_c_consumed;//new NREN need to update with new historical fire model 20201023
+    patch[0].litterc_burned = litter_c_consumed;//new NREN
 
 	update_litter_soil_mortality(
 		 &(patch[0].cdf),
@@ -148,20 +148,40 @@ void compute_fire_effects(
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
 				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
 
-				canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc +
+				canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc + // for output
 						canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc +
 						canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc +
 						canopy_subtarget[0].cs.frootc + canopy_subtarget[0].cs.cpool;
+
+  				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc + // for calculating the overstory pburn
+						canopy_subtarget[0].cs.live_stemc +
+						canopy_subtarget[0].cs.dead_stemc;
 
                 canopy_target[0].fe.canopy_subtarget_leafc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc;
                 canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
                 canopy_target[0].fe.canopy_subtarget_rootc = canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc + canopy_subtarget[0].cs.frootc;
 
-			} else {
-				canopy_target[0].fe.canopy_subtarget_height = 0;
-				canopy_target[0].fe.canopy_subtarget_biomassc = 0;
+                // add the over story NREN why do i need overstory
+                canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
+                    canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
+                    canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc +
+                    canopy_target[0].cs.frootc + canopy_target[0].cs.cpool;
 
-            // add the over story NREN
+
+                canopy_target[0].fe.canopy_target_leafc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc;
+                canopy_target[0].fe.canopy_target_stemc = canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc;
+                canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
+
+
+			} else {
+				canopy_target[0].fe.canopy_subtarget_height = 0.0;
+				canopy_target[0].fe.canopy_subtarget_c = 0.0;
+				canopy_target[0].fe.canopy_subtarget_biomassc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_rootc = 0.0;
+
+            // add the over story NREN why do i need overstory why not put it in previous section too
                 canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
                     canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
                     canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc +
@@ -236,8 +256,8 @@ void compute_fire_effects(
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed); // + litter_c_consumed;
-
+					canopy_target[0].fe.understory_biomassc_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+                    canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 					//new outputs
 					canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
 					canopy_target[0].fe.understory_stemc_consumed = canopy_target[0].fe.canopy_subtarget_stemc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
@@ -252,7 +272,7 @@ void compute_fire_effects(
                     // litter
                         canopy_target[0].fe.acc_year.litter_c_consumed += litter_c_consumed; //should be here so not double counts
                     // understory
-                        canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;// including litter
+                        canopy_target[0].fe.acc_year.understory_biomassc_consumed +=  canopy_target[0].fe.understory_biomassc_consumed;// including litter
                         canopy_target[0].fe.acc_year.understory_leafc_consumed += canopy_target[0].fe.understory_leafc_consumed;
                         canopy_target[0].fe.acc_year.understory_stemc_consumed += canopy_target[0].fe.understory_stemc_consumed;
                         canopy_target[0].fe.acc_year.understory_rootc_consumed += canopy_target[0].fe.understory_rootc_consumed;
@@ -343,7 +363,7 @@ void compute_fire_effects(
 				//canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
                 /* Determine the amount of carbon consumed in the understory subtarget canopy */
-					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed); // + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
 					//new outputs
 					canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
@@ -359,7 +379,7 @@ void compute_fire_effects(
                     // litter
                         canopy_target[0].fe.acc_year.litter_c_consumed += litter_c_consumed; //should be here so not double counts
                     // understory
-                        canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;// including litter
+                        canopy_target[0].fe.acc_year.understory_biomassc_consumed +=  canopy_target[0].fe.understory_biomassc_consumed;// including litter
                         canopy_target[0].fe.acc_year.understory_leafc_consumed += canopy_target[0].fe.understory_leafc_consumed;
                         canopy_target[0].fe.acc_year.understory_stemc_consumed += canopy_target[0].fe.understory_stemc_consumed;
                         canopy_target[0].fe.acc_year.understory_rootc_consumed += canopy_target[0].fe.understory_rootc_consumed;
@@ -426,11 +446,11 @@ void compute_fire_effects(
 			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
 
-			/* this is for burn snag pool don't delet 20201022 */
-			if (canopy_target[0].defaults[0][0].epc.veg_type == TREE && canopy_target[0].defaults[0][0].epc.phenology_type == EVERGREEN) //To make sure only save the overstory consumption NREN 20190914
-			{ patch[0].overstory_burn = canopy_target[0].fe.canopy_target_prop_c_consumed;
-			  //   printf("\n the fire consuption is %lf",mort.mort_cpool);
-			}
+            /* this is for burn snag pool don't delet 20201022 */
+             if (canopy_target[0].defaults[0][0].epc.veg_type == TREE && canopy_target[0].defaults[0][0].epc.phenology_type == EVERGREEN) //To make sure only save the overstory consumption NREN 20190914
+                { patch[0].overstory_burn = canopy_target[0].fe.canopy_target_prop_c_consumed;
+               //   printf("\n the fire consuption is %lf",mort.mort_cpool);
+                                                                    }
 
 			thin_type =2;	/* Harvest option */
 			update_mortality(
@@ -562,11 +582,11 @@ void compute_fire_effects(
             for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
             for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 
-			/* Calculates metrics for targer canopy */
+			// Calculates metrics for targer canopy
 			canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 
-			/* Calculates metrics for next lowest canopy (subtarget canopy) */
+			// Calculates metrics for next lowest canopy (subtarget canopy)
 			if (patch[0].num_layers > (layer+1)){
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
 				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
@@ -580,9 +600,26 @@ void compute_fire_effects(
                 canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
                 canopy_target[0].fe.canopy_subtarget_rootc = canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc + canopy_subtarget[0].cs.frootc;
 
+                            // add the over story NREN
+            canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
+                    canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
+                    canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc +
+                    canopy_target[0].cs.frootc + canopy_target[0].cs.cpool;
+
+
+            canopy_target[0].fe.canopy_target_leafc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc;
+            canopy_target[0].fe.canopy_target_stemc = canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc;
+            canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
+
+
+
+
                 } else {
 				canopy_target[0].fe.canopy_subtarget_height = 0;
 				canopy_target[0].fe.canopy_subtarget_biomassc = 0;
+				canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_rootc = 0.0;
 
             // add the over story NREN
             canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
