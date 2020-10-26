@@ -20,6 +20,7 @@
 #define FMT_STR_SUB_STRUCT_VAR ".%s"
 #define FMT_STR_UNDEFINED NULL
 
+#define HEADER_ID_BASIN "basinID,"
 #define HEADER_ID_PATCH "basinID,hillID,zoneID,patchID,"
 #define HEADER_ID_CANOPY_STRATUM "basinID,hillID,zoneID,patchID,stratumID,"
 
@@ -85,6 +86,9 @@ bool output_format_csv_write_headers(OutputFilter * const f) {
 
 	// Output ID headers
 	switch (f->type) {
+	case OUTPUT_FILTER_BASIN:
+		fprintf(fp, HEADER_ID_BASIN);
+		break;
 	case OUTPUT_FILTER_PATCH:
 		fprintf(fp, HEADER_ID_PATCH);
 		break;

@@ -37,6 +37,7 @@ inline static void accum_materialized_variable(MaterializedVariable *accum, Mate
 				value->data_type);
 		break;
 	}
+	accum->data_type = value->data_type;
 }
 
 inline static void reset_accum_obj(PointerSet *set, size_t len) {
@@ -378,7 +379,7 @@ static bool output_basin(char * const error, size_t error_len,
 	fprintf(stderr, "\toutput_basin()...\n");
 
 	bool status;
-	EntityID id;
+	EntityID id = {OUTPUT_FILTER_ID_EMPTY, OUTPUT_FILTER_ID_EMPTY, OUTPUT_FILTER_ID_EMPTY, OUTPUT_FILTER_ID_EMPTY, OUTPUT_FILTER_ID_EMPTY};
 	MaterializedVariable mat_var;
 	MaterializedVariable *mat_vars = f->output->materialized_variables;
 
