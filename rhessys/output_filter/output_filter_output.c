@@ -6,16 +6,30 @@
 #include "pointer_set.h"
 
 
-inline static void reset_materialized_variable_array(OutputFilter const * const f) {
+inline static void reset_materialized_variable_array_values(OutputFilter const * const f) {
 	if (f == NULL) return;
 	for (int i = 0; i < f->num_named_variables; i++) {
-		// double_val should be the widest value, so this should zero an value.
+		// double_val should be the widest value, so this should zero any value.
 		f->output->materialized_variables[i].u.double_val = 0.0;
 	}
 }
 
+inline static void scale_materialized_variable_array_values(OutputFilter const * const f, double scalar) {
+	// TODO: Generalize this to handle all numeric types for value (not just double)
+	if (f == NULL) return;
+
+	MaterializedVariable *mat_vars = f->output->materialized_variables;
+
+	for (int i = 0; i < f->num_named_variables; i++) {
+		if (mat_vars[i].data_type == DATA_TYPE_DOUBLE) {
+			mat_vars[i].u.double_val /= scalar;
+		}
+	}
+}
+
 inline static void accum_materialized_variable(MaterializedVariable *accum, MaterializedVariable *value,
-		double dbl_scalar) {
+		double scalar) {
+	// TODO: Generalize this to allow scaling for all numeric types (not just double)
 	switch (value->data_type) {
 	case DATA_TYPE_BOOL:
 		accum->u.bool_val |= value->u.bool_val;
@@ -33,7 +47,7 @@ inline static void accum_materialized_variable(MaterializedVariable *accum, Mate
 		accum->u.float_val += value->u.float_val;
 		break;
 	case DATA_TYPE_DOUBLE:
-		accum->u.double_val += value->u.double_val * dbl_scalar;
+		accum->u.double_val += value->u.double_val * scalar;
 		break;
 	default:
 		fprintf(stderr, "WARNING: output_filter_output::accum_materialized_variable(): Unable to accumulate materialized variable of type %d.\n",
@@ -388,17 +402,21 @@ static bool output_basin(char * const error, size_t error_len,
 	MaterializedVariable mat_var;
 	MaterializedVariable *mat_vars = f->output->materialized_variables;
 
+	double basin_area = 0.0;
+	double hillslope_area = 0.0;
+
 	// Iterate over all basins
 	// Within each basin, iterate over all patch and stratum objects, performing areal averaging as we go
 	// (using the OutputFilterOutput->materialized_variables as the accumulator scratch space)
 	// Then, once all specified variables have been averaged, output them (they will have to be stored as materialized
 	// variables since this is what the output drivers know how to write data).
 	for (OutputFilterBasin *b = f->basins; b != NULL; b = b->next) {
-		reset_materialized_variable_array(f);
+		reset_materialized_variable_array_values(f);
 		id.basin_ID = b->basinID;
 		struct basin_object *basin = b->basin;
 		for (size_t i = 0; i < basin->num_hillslopes; i++) {
 			struct hillslope_object *h = basin->hillslopes[i];
+			hillslope_area = 0.0;
 			// TODO: Acummulate groundwater and baseflow (which are only done at the hillslope level)
 			for (size_t j = 0; j < h->num_zones; j++) {
 				struct zone_object *z = h->zones[j];
@@ -425,16 +443,19 @@ static bool output_basin(char * const error, size_t error_len,
 								if (v->hierarchy_level == OF_HIERARCHY_LEVEL_STRATUM) {
 									void *entity = determine_stratum_entity(f->timestep, stratum, stratum_acc_objs_to_reset);
 									mat_var = materialize_variable(v, entity);
-									// TODO: Figure out whether stratum variables should be scaled by patch area
-									accum_materialized_variable(&mat_vars[var_num], &mat_var, 1.0);
+									accum_materialized_variable(&mat_vars[var_num], &mat_var, patch->area);
 								}
 								var_num += 1;
 							}
 						}
 					}
+					basin_area += patch->area;
+					hillslope_area += patch->area;
 				}
 			}
 		}
+		// Scale values by basin area
+		scale_materialized_variable_array_values(f, basin_area);
 		status = output_materialized_variables(error, error_len, date, id, f, mat_vars);
 		if (status == false) {
 			char *local_error = (char *)calloc(MAXSTR, sizeof(char));
