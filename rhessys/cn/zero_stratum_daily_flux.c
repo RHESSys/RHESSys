@@ -166,6 +166,7 @@ int zero_stratum_daily_flux(
 
 
 	fe->understory_c_consumed = 0.0;
+	fe->understory_biomassc_consumed = 0.0;
 	fe->understory_leafc_consumed = 0.0;
 	fe->understory_stemc_consumed = 0.0;
 	fe->understory_rootc_consumed = 0.0;
