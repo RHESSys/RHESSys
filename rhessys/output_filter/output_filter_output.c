@@ -383,7 +383,6 @@ static bool output_basin(char * const error, size_t error_len,
 	MaterializedVariable mat_var;
 	MaterializedVariable *mat_vars = f->output->materialized_variables;
 
-	// TODO: Implement areal averaging over all patch and stratum variables in a basin
 	// Iterate over all basins
 	// Within each basin, iterate over all patch and stratum objects, performing areal averaging as we go
 	// (using the OutputFilterOutput->materialized_variables as the accumulator scratch space)
