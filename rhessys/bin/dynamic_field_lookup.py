@@ -41,6 +41,8 @@ STRUCT_NAMES = [
 	'phenology_struct',
 	'fire_effects_object',
 	'mult_conduct_struct',
+	'hillslope_object',
+	'gw_object'
 ]
 
 COMMENT_PATT = re.compile('^\s*//.*')
@@ -103,6 +105,8 @@ StructIndex_t *new_struct_index() {
 	i->phenology_struct = NULL;
 	i->fire_effects_object = NULL;
 	i->mult_conduct_struct = NULL;
+	i->hillslope_object == NULL;
+	i->gw_object == NULL;
 	
 	return i;
 }
@@ -183,6 +187,13 @@ void free_struct_index(StructIndex_t *i) {
 		freeDictionary(i->mult_conduct_struct);
 	}
 	
+	if (i->hillslope_object) {
+		freeDictionary(i->hillslope_object);
+	}
+	if (i->gw_object) {
+		freeDictionary(i->gw_object);
+	}
+	
 	free(i);
 }
 
@@ -202,6 +213,7 @@ StructIndex_t *index_struct_fields() {
 	i->cdayflux_patch_struct = newDictionary(DICTIONARY_SIZE_LARGE);
 	i->ndayflux_patch_struct = newDictionary(DICTIONARY_SIZE_LARGE);
 	
+	
 	i->canopy_strata_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
 	
 	i->accumulate_strata_object = newDictionary(DICTIONARY_SIZE_SMALL);
@@ -214,6 +226,11 @@ StructIndex_t *index_struct_fields() {
 	i->phenology_struct = newDictionary(DICTIONARY_SIZE_SMALL);
 	i->fire_effects_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	i->mult_conduct_struct = newDictionary(DICTIONARY_SIZE_SMALL);
+	
+	
+	i->hillslope_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
+	
+	i->gw_object = newDictionary(DICTIONARY_SIZE_SMALL);
 ''')
 
 in_struct = False
