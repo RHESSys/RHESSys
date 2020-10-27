@@ -26,6 +26,7 @@
 [a-zA-Z0-9_\-\(\)\[\]]+ { yylval.string = strdup(yytext); return FILENAME_SPEC; }
 (\.{1,2}\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+ { yylval.string = strdup(yytext); return PATH_SPEC; }
 
+"hill." { return LEVEL_HILLSLOPE; }
 "patch." { return LEVEL_PATCH; }
 "stratum." { return LEVEL_STRATUM; }
 

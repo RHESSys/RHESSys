@@ -34,11 +34,13 @@ void test_output_filter5() {
 	g_assert(v1->variable_type == NAMED);
 	cmp = strcmp(v1->name, "evaporation");
 	g_assert(cmp == 0);
+
 	OutputFilterVariable *v2 = v1->next;
 	g_assert(v2->hierarchy_level == OF_HIERARCHY_LEVEL_STRATUM);
 	g_assert(v2->variable_type == NAMED);
 	cmp = strcmp(v2->name, "PET");
 	g_assert(cmp == 0);
+
 	OutputFilterVariable *v3 = v2->next;
 	g_assert(v3->hierarchy_level == OF_HIERARCHY_LEVEL_STRATUM);
 	g_assert(v3->variable_type == NAMED);
@@ -46,7 +48,30 @@ void test_output_filter5() {
 	g_assert(cmp == 0);
 	cmp = strcmp(v3->sub_struct_varname, "leafc");
 	g_assert(cmp == 0);
-	g_assert(v3->next == NULL);
+
+	OutputFilterVariable *v4 = v3->next;
+	g_assert(v4->hierarchy_level == OF_HIERARCHY_LEVEL_HILLSLOPE);
+	g_assert(v4->variable_type == NAMED);
+	cmp = strcmp(v4->name, "base_flow");
+	g_assert(cmp == 0);
+
+	OutputFilterVariable *v5 = v4->next;
+	g_assert(v5->hierarchy_level == OF_HIERARCHY_LEVEL_HILLSLOPE);
+	g_assert(v5->variable_type == NAMED);
+	cmp = strcmp(v5->name, "gw");
+	g_assert(cmp == 0);
+	cmp = strcmp(v5->sub_struct_varname, "storage");
+	g_assert(cmp == 0);
+
+	OutputFilterVariable *v6 = v5->next;
+	g_assert(v6->hierarchy_level == OF_HIERARCHY_LEVEL_HILLSLOPE);
+	g_assert(v6->variable_type == NAMED);
+	cmp = strcmp(v6->name, "gw");
+	g_assert(cmp == 0);
+	cmp = strcmp(v6->sub_struct_varname, "Qout");
+	g_assert(cmp == 0);
+
+	g_assert(v6->next == NULL);
 
 	free(filter);
 }

@@ -191,14 +191,22 @@ static bool stratum_is_parent_or_duplicate(const OutputFilterStratum *existing, 
  * Returns true if existing supersedes or duplicates new_var.
  */
 static bool var_supersedes_or_duplicates(const OutputFilterVariable *existing, const OutputFilterVariable *new_var) {
-	switch(existing->variable_type) {
-	case ANY_VAR:
+	if (existing->variable_type == ANY_VAR) {
 		// * supersedes all.
 		return true;
-	case NAMED:
-	default:
+	} else if (existing->sub_struct_varname == NULL && new_var->sub_struct_varname == NULL){
+		// Simple variable name, just compare names
 		return strcmp(existing->name, new_var->name) == 0;
+	} else if (existing->sub_struct_varname != NULL && new_var->sub_struct_varname != NULL) {
+		// Compound variable name, compare both parts
+		int name_cmp = strcmp(existing->name, new_var->name);
+		int sub_struct_varname_cmp = strcmp(existing->sub_struct_varname, new_var->sub_struct_varname);
+		if (name_cmp == 0 && sub_struct_varname_cmp == 0) {
+			// Both parts are equal
+			return true;
+		}
 	}
+	return false;
 }
 
 // output_filter_basin_list

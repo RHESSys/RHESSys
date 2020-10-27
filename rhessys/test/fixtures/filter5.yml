@@ -6,4 +6,4 @@ filter:
 		filename: scenario-abc4.foo
 	basin:
 		ids: 1
-		variables: patch.evaporation, stratum.PET, stratum.cs.leafc
+		variables: patch.evaporation, stratum.PET, stratum.cs.leafc, hill.base_flow, hill.gw.storage, hill.gw.Qout

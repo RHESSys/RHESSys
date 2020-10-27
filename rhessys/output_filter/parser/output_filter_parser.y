@@ -48,6 +48,7 @@ OutputFilter *curr_filter = NULL;
 %token <string> FILENAME_SPEC
 /* patch_id_spec components */
 %token <string> IDENTIFIER
+%token <string> LEVEL_HILLSLOPE
 %token <string> LEVEL_PATCH
 %token <string> LEVEL_STRATUM
 %token KLEENE
@@ -500,6 +501,28 @@ variable_spec: IDENTIFIER {
 			level = OF_HIERARCHY_LEVEL_STRATUM;
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
+		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_HILLSLOPE IDENTIFIER {
+		printf("\t\tVARIABLE: hill.%s\n", $2);
+		
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $2);
+		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_HILLSLOPE IDENTIFIER DOT IDENTIFIER {
+		printf("\t\tVARIABLE: hill.%s.%s\n", $2, $4);
+		
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $2, $4);
 		
 		if (curr_filter->variables == NULL) {
 			curr_filter->variables = new_var;
