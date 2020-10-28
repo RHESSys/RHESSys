@@ -83,6 +83,10 @@ static void reset_accumulator_patch(PointerSet **acc_objs_to_reset) {
 	}
 }
 
+inline static void reset_accumulator_hillslope(PointerSet **acc_objs_to_reset) {
+	reset_accumulator_patch(acc_objs_to_reset);
+}
+
 static void reset_accumulator_stratum(PointerSet **acc_objs_to_reset) {
 	if (*acc_objs_to_reset) {
 		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_strata_object));
@@ -195,6 +199,29 @@ inline static void *determine_patch_entity(OutputFilterTimestep timestep,
 	default:
 		// Not sure this is quite right for hourly but going with it for now
 		entity = (void *)patch;
+		break;
+	}
+	return entity;
+}
+
+inline static void *determine_hillslope_entity(OutputFilterTimestep timestep,
+		struct hillslope_object *hillslope,
+		PointerSet **acc_objs_to_reset) {
+	void *entity = NULL;
+	switch (timestep) {
+	case TIMESTEP_MONTHLY:
+		entity = (void *)(&(hillslope->acc_month));
+		add_to_accum_reset_list(acc_objs_to_reset, entity);
+		break;
+	case TIMESTEP_YEARLY:
+		entity = (void *)(&(hillslope->acc_year));
+		add_to_accum_reset_list(acc_objs_to_reset, entity);
+		break;
+	case TIMESTEP_HOURLY:
+	case TIMESTEP_DAILY:
+	default:
+		// Not sure this is quite right for hourly but going with it for now
+		entity = (void *)hillslope;
 		break;
 	}
 	return entity;
@@ -394,7 +421,7 @@ static bool output_variables(char * const error, size_t error_len,
 
 static bool output_basin(char * const error, size_t error_len,
 		struct date date, OutputFilter const * const f,
-		PointerSet **patch_acc_objs_to_reset, PointerSet **stratum_acc_objs_to_reset) {
+		PointerSet **hillslope_acc_objs_to_reset, PointerSet **patch_acc_objs_to_reset, PointerSet **stratum_acc_objs_to_reset) {
 	fprintf(stderr, "\toutput_basin()...\n");
 
 	bool status;
@@ -415,11 +442,11 @@ static bool output_basin(char * const error, size_t error_len,
 		id.basin_ID = b->basinID;
 		struct basin_object *basin = b->basin;
 		for (size_t i = 0; i < basin->num_hillslopes; i++) {
-			struct hillslope_object *h = basin->hillslopes[i];
+			struct hillslope_object *hillslope = basin->hillslopes[i];
 			hillslope_area = 0.0;
-			// TODO: Acummulate groundwater and baseflow (which are only done at the hillslope level)
-			for (size_t j = 0; j < h->num_zones; j++) {
-				struct zone_object *z = h->zones[j];
+
+			for (size_t j = 0; j < hillslope->num_zones; j++) {
+				struct zone_object *z = hillslope->zones[j];
 				for (size_t k = 0; k < z->num_patches; k++) {
 					struct patch_object *patch = z->patches[k];
 					// Iterate over filter variables accumulating any patch variables
@@ -451,6 +478,19 @@ static bool output_basin(char * const error, size_t error_len,
 					}
 					basin_area += patch->area;
 					hillslope_area += patch->area;
+				}
+			}
+
+			// Iterate over filter variables accumulating any hillslope variables
+			int var_num = 0;
+			for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
+				if (v->variable_type == NAMED) {
+					if (v->hierarchy_level == OF_HIERARCHY_LEVEL_HILLSLOPE) {
+						void *entity = determine_hillslope_entity(f->timestep, hillslope, hillslope_acc_objs_to_reset);
+						mat_var = materialize_variable(v, entity);
+						accum_materialized_variable(&mat_vars[var_num], &mat_var, hillslope_area);
+					}
+					var_num += 1;
 				}
 			}
 		}
@@ -606,7 +646,7 @@ bool output_filter_output_daily(char * const error, size_t error_len,
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
-				status = output_basin(error, error_len, date, f, NULL, NULL);
+				status = output_basin(error, error_len, date, f, NULL, NULL, NULL);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -635,6 +675,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 	char *local_error;
 	bool status = true;
 
+	PointerSet *acc_hillslope_obj_to_reset = NULL;
 	PointerSet *acc_patch_obj_to_reset = NULL;
 	PointerSet *acc_stratum_obj_to_reset = NULL;
 
@@ -643,7 +684,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
 				status = output_basin(error, error_len, date, f,
-						&acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+						&acc_hillslope_obj_to_reset, &acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -663,6 +704,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len,
 	}
 
 	// Reset monthly accumulators as necessary
+	reset_accumulator_hillslope(&acc_hillslope_obj_to_reset);
 	reset_accumulator_patch(&acc_patch_obj_to_reset);
 	reset_accumulator_stratum(&acc_stratum_obj_to_reset);
 
@@ -676,6 +718,7 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 	char *local_error;
 	bool status = true;
 
+	PointerSet *acc_hillslope_obj_to_reset = NULL;
 	PointerSet *acc_patch_obj_to_reset = NULL;
 	PointerSet *acc_stratum_obj_to_reset = NULL;
 
@@ -684,7 +727,7 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
 				status = output_basin(error, error_len, date, f,
-						&acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+						&acc_hillslope_obj_to_reset, &acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -704,6 +747,7 @@ bool output_filter_output_yearly(char * const error, size_t error_len,
 	}
 
 	// Reset yearly accumulators as necessary
+	reset_accumulator_hillslope(&acc_hillslope_obj_to_reset);
 	reset_accumulator_patch(&acc_patch_obj_to_reset);
 	reset_accumulator_stratum(&acc_stratum_obj_to_reset);
 
