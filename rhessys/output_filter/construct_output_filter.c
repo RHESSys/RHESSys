@@ -6,6 +6,8 @@
 #include "output_filter/output_format_csv.h"
 #include "output_filter/output_format_netcdf.h"
 
+#define STRUCT_NAME_HILLSLOPE "hillslope_object"
+#define STRUCT_NAME_ACCUM_HILLSLOPE "accumulate_patch_object"
 #define STRUCT_NAME_PATCH "patch_object"
 #define STRUCT_NAME_ACCUM_PATCH "accumulate_patch_object"
 #define STRUCT_NAME_STRATUM "canopy_strata_object"
@@ -36,6 +38,10 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 			// as well as patch and stratum, determine struct_index and struct_name for each variable instead
 			// of once before we iterate over variables.
 			switch (v->hierarchy_level) {
+			case OF_HIERARCHY_LEVEL_HILLSLOPE:
+				struct_index = i->hillslope_object;
+				struct_name = STRUCT_NAME_HILLSLOPE;
+				break;
 			case OF_HIERARCHY_LEVEL_PATCH:
 				struct_index = i->patch_object;
 				struct_name = STRUCT_NAME_PATCH;
@@ -57,7 +63,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 				return false;
 			}
 			v->offset = var_idx_entry->offset;
-			if (var_idx_entry->data_type ==  DATA_TYPE_STRUCT) {
+			if (var_idx_entry->data_type == DATA_TYPE_STRUCT) {
 				if (var_idx_entry->sub_struct_index == NULL) {
 					fprintf(stderr, "init_variables_hourly_daily: variable %s.%s is a sub-struct variable, but does not have a sub-struct index.\n",
 							v->name, v->sub_struct_varname);
@@ -104,6 +110,10 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 			// as well as patch and stratum, determine struct_index and struct_name for each variable instead
 			// of once before we iterate over variables.
 			switch (v->hierarchy_level) {
+			case OF_HIERARCHY_LEVEL_HILLSLOPE:
+				struct_index = i->accumulate_patch_object;
+				struct_name = STRUCT_NAME_ACCUM_HILLSLOPE;
+				break;
 			case OF_HIERARCHY_LEVEL_PATCH:
 				struct_index = i->accumulate_patch_object;
 				struct_name = STRUCT_NAME_ACCUM_PATCH;
