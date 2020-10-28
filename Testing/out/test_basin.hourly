@@ -1,0 +1,1 @@
+hour day month year basinID pot_surface_infil sat_def_z sat_def rz_stor unsat_stor rz_drainage unsat_drainage subsur2stream_flow sur2stream_flow streamflow gw.Qout gw.storage detention_store %sat_area litter_store canopy_store precip routedstreamflow 
