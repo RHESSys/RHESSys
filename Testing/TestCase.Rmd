@@ -1,6 +1,8 @@
 ---
 title: "Watershed 8 Test Case"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -28,6 +30,11 @@ Load the tidyverse and RHESSysIOinR libraries:
 library(tidyverse)
 library(RHESSysIOinR)
 ```
+### Load the base results
+```
+load("W8TestCase.RData")
+```
+
 ### Input files    
 Edit the **rhessys_ver** = path and file name to point to your new version of RHESSys    
 Unless new development changes are being made to the worldfile or flowtable, you will use the same input files.
