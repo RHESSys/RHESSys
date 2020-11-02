@@ -66,8 +66,8 @@ void execute_yearly_output_event(int reset_flag, struct world_object *world,
 		/*----------------------------------------------------------------------*/
 		bool of_result = true;
 		char *of_error = (char*) calloc(MAXSTR, sizeof(char));
-		of_result = output_filter_output_yearly(of_error, MAXSTR, date,
-				command_line->output_filter);
+		of_result = output_filter_output_yearly(of_error, MAXSTR, command_line->verbose_flag,
+				date, command_line->output_filter);
 		if (!of_result) {
 			fprintf(stderr,
 					"output_filter_output_yearly failed with error: %s\n",

@@ -24,6 +24,8 @@
 /*								*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include <assert.h>
+
 #include "rhessys.h"
 #include "phys_constants.h"
 

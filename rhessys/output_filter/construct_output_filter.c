@@ -25,7 +25,7 @@ struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone
 static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_hourly_daily: no variables defined.\n");
-				return false;
+		return false;
 	}
 
 	Dictionary_t *struct_index = NULL;
@@ -97,7 +97,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_monthly_yearly: no variables defined.\n");
-				return false;
+		return false;
 	}
 
 	Dictionary_t *struct_index = NULL;
@@ -175,9 +175,7 @@ static bool init_spatial_hierarchy_basin(OutputFilter *f,
 
 	OutputFilterBasin *b = f->basins;
 	while (b != NULL) {
-		if (verbose) {
-			fprintf(stderr, "\tbasinID: %d\n", b->basinID);
-		}
+		if (verbose) fprintf(stderr, "\tbasinID: %d\n", b->basinID);
 
 		b->basin = find_basin(b->basinID, w);
 		if (b->basin == NULL) {
@@ -224,9 +222,8 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 	while (p != NULL) {
 		switch (p->output_patch_type) {
 		case PATCH_TYPE_BASIN:
-			if (verbose) {
-				fprintf(stderr, "\tbasinID: %d\n", p->basinID);
-			}
+			if (verbose) fprintf(stderr, "\tbasinID: %d\n", p->basinID);
+
 			p->basin = find_basin(p->basinID, w);
 			if (p->basin == NULL) {
 				fprintf(stderr, "init_spatial_hierarchy_patch: no basin with ID %d could be found.\n",
