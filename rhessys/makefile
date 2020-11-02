@@ -9,6 +9,8 @@ INCLUDES = -Iinclude
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
+netcdf=T
+
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
