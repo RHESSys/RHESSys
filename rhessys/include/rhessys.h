@@ -142,12 +142,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "types.h"
+#include "output_filter.h"
 //#include "../../util/WMFireInterface.h" /* required for fire spread*/
 #include "WMFireInterface.h" /* required for fire spread*/
+
 /*----------------------------------------------------------*/
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
 #define FILEPATH_LEN 1024
+#define PATH_SEP '/'
+#define FILE_EXT_SEP '.'
 #define TEC_CMD_LEN 256
 #define NULLVAL -9999
 #define TRUE    1
@@ -218,13 +223,6 @@ int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *)
 int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
 #endif
-
-/*----------------------------------------------------------*/
-/*      Define types                                        */
-/*----------------------------------------------------------*/
-typedef short bool;
-static const short true = 1;
-static const short false = 0;
 
 /*----------------------------------------------------------*/
 /*      Define a calendar date object.                      */
@@ -2150,6 +2148,16 @@ struct  command_line_object
 	double	fs_percolation;
 	double	fs_threshold;
         struct  output_flag     output_flags;
+
+        bool					output_filter_flag;
+        char                    *output_filter_filename;
+        OutputFilter            *output_filter;
+        bool					output_filter_patch_accum_monthly;
+        bool					output_filter_patch_accum_yearly;
+        bool					output_filter_strata_accum_monthly;
+        bool					output_filter_strata_accum_yearly;
+
+        bool    legacy_output_flag; // Remove when legacy output is removed.
         struct  b_option        *b;
         struct  h_option        *h;
         struct  z_option        *z;

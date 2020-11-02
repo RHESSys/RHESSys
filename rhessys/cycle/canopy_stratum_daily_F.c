@@ -2027,7 +2027,8 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*      update accumlator variables                             */
 	/*--------------------------------------------------------------*/
-	if((command_line[0].output_flags.monthly == 1)&&(command_line[0].c != NULL)){
+	if ((command_line[0].output_flags.monthly == 1) &&
+			(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
 		stratum[0].acc_month.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
 		stratum[0].acc_month.lwp += stratum[0].epv.psi;
 		stratum[0].acc_month.leafc += stratum[0].cs.leafc;
@@ -2035,7 +2036,8 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
 		stratum[0].acc_month.length += 1;
 	}
-	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL || command_line[0].f != NULL)){
+	if ((command_line[0].output_flags.yearly == 1) &&
+			(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){
 		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
 		if (stratum[0].acc_year.minNSC == -999)
