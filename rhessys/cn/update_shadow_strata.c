@@ -30,17 +30,17 @@ void	update_shadow_strata(
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration		                          		*/
 	/*--------------------------------------------------------------*/
-	
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	   
+
 	/*------------------------------------------------------------------------*/
 	/*	Check whether the target.met flag is set                              */
 	/*	if it is do nothing, if not copy strata values to shadow              */
 	/*	then check if targets have been met. If so, set target.met flag to 1 	*/
 	/*------------------------------------------------------------------------*/
-  
+
  // printf("\ntarget met: %d", stratum[0].target.met);
 
   if(stratum[0].target.met != 1){
@@ -97,7 +97,7 @@ void	update_shadow_strata(
     shadow_strata[0].epv.max_fparabs = stratum[0].epv.max_fparabs;
     shadow_strata[0].epv.min_vwc = stratum[0].epv.min_vwc;
   }
- 
+
  if (stratum[0].epv.proj_lai >= (stratum[0].target.lai - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai)) {
     if ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc)) {
       if (stratum[0].epv.height >= (stratum[0].target.height - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.height)) {
@@ -110,8 +110,8 @@ void	update_shadow_strata(
 
  if((current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years) && current_date.month ==9 && current_date.day==30){
     stratum[0].target.met = 1;
-    printf("\nexceeded max years for patch:%d", stratum[0].patch_ID);
-  }	
+    printf("\nexceeded max years for patch:%d", stratum[0].ID);
+  }
 
 	return;
 } /*end update_shadow_strata.c*/

@@ -232,11 +232,11 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 		/*		compute isohyet difference adjustment					*/
 		/*--------------------------------------------------------------*/
-		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_precip == NULL) {
-		if (zone[0].defaults[0][0].lapse_rate_precip_default != -999.0)
+		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_precip == NULL) { // no time series of input
+		if (zone[0].defaults[0][0].lapse_rate_precip_default != -999.0) //zone def have input
 			isohyet_adjustment = zone[0].defaults[0][0].lapse_rate_precip_default*z_delta+1.0;
 		else
-			isohyet_adjustment = zone[0].precip_lapse_rate;
+			isohyet_adjustment = zone[0].precip_lapse_rate; // if no define in zone.def read from world file
 
 		}
 		else {
@@ -769,7 +769,7 @@ void zone_daily_I(
 		temp = zone[0].base_stations[0][0].daily_clim[0].tavg[day];
 		if ( temp != -999.0 ){
 			if (zone[0].base_stations[0][0].daily_clim[0].lapse_rate_tavg == NULL) {
-				if (zone[0].rain > ZERO) 
+				if (zone[0].rain > ZERO)
 					Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
 				else
 					Tlapse_adjustment = z_delta * zone[0].defaults[0][0].lapse_rate_tavg;
