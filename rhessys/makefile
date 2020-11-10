@@ -1,5 +1,5 @@
 OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
-VERSION = 7.2
+VERSION = 7.3
 PGM  = rhessys$(VERSION)
 #CC = gcc
 CC = clang
