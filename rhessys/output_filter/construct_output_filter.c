@@ -14,7 +14,7 @@
 #define STRUCT_NAME_ACCUM_STRATUM "accumulate_strata_object"
 
 
-OutputFilter *parse(const char* input);
+OutputFilter *parse(const char* input, bool verbose);
 struct basin_object *find_basin(int basin_ID, struct world_object *world);
 struct hillslope_object *find_hillslope_in_basin(int hillslope_ID, struct basin_object *basin);
 struct zone_object *find_zone_in_hillslope(int zone_ID, struct hillslope_object *hillslope);
@@ -476,7 +476,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 	}
 
 	// Parse output filter
-	OutputFilter *filters = parse(cmd->output_filter_filename);
+	OutputFilter *filters = parse(cmd->output_filter_filename, cmd->verbose_flag);
 	if (filters == NULL) {
 		return return_with_error(error, error_len, "unable to parse output filter.");
 	}

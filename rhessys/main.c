@@ -403,17 +403,15 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].output_filter_flag) {
-		if (command_line->verbose_flag) {
-			bool of_result = true;
-			fprintf(stderr, "Using output filter filename: %s\n", command_line->output_filter_filename);
-			char *of_error = (char *)calloc(MAXSTR, sizeof(char));
-			of_result = construct_output_filter(of_error, MAXSTR, command_line, world);
-			if (!of_result) {
-				fprintf(stderr, "construct_output_filter failed with error: %s\n", of_error);
-				exit(EXIT_FAILURE);
-			}
-			if(command_line->verbose_flag) fprintf(stderr,"FINISHED CON OUTPUT_FILTER\n");
+		bool of_result = true;
+		if (command_line->verbose_flag) fprintf(stderr, "Using output filter filename: %s\n", command_line->output_filter_filename);
+		char *of_error = (char *)calloc(MAXSTR, sizeof(char));
+		of_result = construct_output_filter(of_error, MAXSTR, command_line, world);
+		if (!of_result) {
+			fprintf(stderr, "construct_output_filter failed with error: %s\n", of_error);
+			exit(EXIT_FAILURE);
 		}
+		if(command_line->verbose_flag) fprintf(stderr,"FINISHED CON OUTPUT_FILTER\n");
 	} else if (command_line[0].legacy_output_flag) {
 		/*--------------------------------------------------------------*/
 		/*      Make up the prefix for the output files.                */

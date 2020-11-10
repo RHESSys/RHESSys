@@ -4,11 +4,11 @@
 
 #include "output_filter.h"
 
-OutputFilter *parse(const char* input);
+OutputFilter *parse(const char* input, bool verbose);
 
 
 void test_output_filter2() {
-	OutputFilter *filter = parse("test/fixtures/filter2.yml");
+	OutputFilter *filter = parse("test/fixtures/filter2.yml", true);
 
 	// First filter
 	print_output_filter(filter);

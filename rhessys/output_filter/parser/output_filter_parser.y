@@ -9,6 +9,9 @@ void yyerror(char *s);
 int yylex(void);
 int set_input_file(char * const file_path);
 
+// Control variables
+bool verbose_output = false;
+
 // State machine
 bool in_filter = false;
 bool in_output = false;
@@ -94,7 +97,7 @@ filter: FILTER {
 			add_to_output_filter_list(filters, curr_filter);
 		}
 		
-		printf("BEGIN FILTER\n");
+		if (verbose_output) fprintf(stderr, "BEGIN FILTER\n");
 	}
 	;
 
@@ -106,7 +109,7 @@ output: OUTPUT {
 			in_output = true;
 			in_patch = false;
 			curr_filter->output = create_new_output_filter_output();
-			printf("\tBEGIN OUTPUT\n");
+			if (verbose_output) fprintf(stderr, "\tBEGIN OUTPUT\n");
 		}
 	}
 	;
@@ -118,16 +121,16 @@ timestep: TIMESTEP IDENTIFIER {
 		} else {
 			if (strcmp($2, OUTPUT_TIMESTEP_HOURLY) == 0) {
 				curr_filter->timestep = TIMESTEP_HOURLY;
-				printf("\tTIMESTEP IS: %s\n", $2);
+				if (verbose_output) fprintf(stderr, "\tTIMESTEP IS: %s\n", $2);
 			} else if (strcmp($2, OUTPUT_TIMESTEP_DAILY) == 0) {
 				curr_filter->timestep = TIMESTEP_DAILY;
-				printf("\tTIMESTEP IS: %s\n", $2);
+				if (verbose_output) fprintf(stderr, "\tTIMESTEP IS: %s\n", $2);
 			} else if (strcmp($2, OUTPUT_TIMESTEP_MONTHLY) == 0) {
 				curr_filter->timestep = TIMESTEP_MONTHLY;
-				printf("\tTIMESTEP IS: %s\n", $2);
+				if (verbose_output) fprintf(stderr, "\tTIMESTEP IS: %s\n", $2);
 			} else if (strcmp($2, OUTPUT_TIMESTEP_YEARLY) == 0) {
 				curr_filter->timestep = TIMESTEP_YEARLY;
-				printf("\tTIMESTEP IS: %s\n", $2);
+				if (verbose_output) fprintf(stderr, "\tTIMESTEP IS: %s\n", $2);
 			} else {
 				syntax_error = true;
 				yyerror("unknown timestamp definition");
@@ -143,10 +146,10 @@ format: FORMAT IDENTIFIER {
 		} else {
 			if (strcmp($2, OUTPUT_FORMAT_CSV) == 0) {
 				curr_filter->output->format = OUTPUT_TYPE_CSV;
-				printf("\t\tOUTPUT FORMAT IS: %s\n", $2);
+				if (verbose_output) fprintf(stderr, "\t\tOUTPUT FORMAT IS: %s\n", $2);
 			} else if (strcmp($2, OUTPUT_FORMAT_NETCDF) == 0) {
 				curr_filter->output->format = OUTPUT_TYPE_NETCDF;
-				printf("\t\tOUTPUT FORMAT IS: %s\n", $2);
+				if (verbose_output) fprintf(stderr, "\t\tOUTPUT FORMAT IS: %s\n", $2);
 			} else {
 				syntax_error = true;
 				yyerror("unkown format definition");
@@ -161,7 +164,7 @@ path: PATH PATH_SPEC {
 			yyerror("path definition must be nested within output definition");
 		} else {
 			curr_filter->output->path = strdup($2);
-			printf("\t\tOUTPUT PATH IS: %s\n", $2);
+			if (verbose_output) fprintf(stderr, "\t\tOUTPUT PATH IS: %s\n", $2);
 		}
 	}
 	;
@@ -172,7 +175,7 @@ filename: FILENAME FILENAME_SPEC {
 			yyerror("filename definition must be nested within output definition");
 		} else {
 			curr_filter->output->filename = strdup($2);
-			printf("\t\tOUTPUT FILENAME IS: %s\n", $2);
+			if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", $2);
 		}
 	}
 	| FILENAME IDENTIFIER {
@@ -181,7 +184,7 @@ filename: FILENAME FILENAME_SPEC {
       yyerror("filename definition must be nested within output definition");
     } else {
       curr_filter->output->filename = strdup($2);
-      printf("\t\tOUTPUT FILENAME IS: %s\n", $2);
+      if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", $2);
     }
   }
   | FILENAME FILENAME_SPEC DOT IDENTIFIER {
@@ -196,7 +199,7 @@ filename: FILENAME FILENAME_SPEC {
       }
       snprintf(curr_filter->output->filename, FILENAME_LEN,
       	"%s.%s", $2, $4);
-      printf("\t\tOUTPUT FILENAME IS: %s\n", curr_filter->output->filename);
+      if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", curr_filter->output->filename);
     }
   }
 	;
@@ -220,7 +223,7 @@ basin: BASIN_TOK {
 			in_stratum = false;
 			in_output = false;
 			curr_filter->type = OUTPUT_FILTER_BASIN;
-			printf("\tBEGIN BASIN\n");
+			if (verbose_output) fprintf(stderr, "\tBEGIN BASIN\n");
 		}
 	}
 	;
@@ -244,7 +247,7 @@ patch: PATCH_TOK {
 			in_stratum = false;
 			in_output = false;
 			curr_filter->type = OUTPUT_FILTER_PATCH;
-			printf("\tBEGIN PATCH\n");
+			if (verbose_output) fprintf(stderr, "\tBEGIN PATCH\n");
 		}
 	}
 	;
@@ -268,7 +271,7 @@ stratum: STRATUM_TOK {
 			in_patch = false;
 			in_output = false;
 			curr_filter->type = OUTPUT_FILTER_CANOPY_STRATUM;
-			printf("\tBEGIN STRATUM\n");
+			if (verbose_output) fprintf(stderr, "\tBEGIN STRATUM\n");
 		}
 	}
  	;
@@ -282,7 +285,7 @@ ids: IDS patch_stratum_id_spec {
 	;
 
 patch_stratum_id_spec: NUMBER {
-		printf("\t\tIDS: basinID: %d\n", $1);
+		if (verbose_output) fprintf(stderr, "\t\tIDS: basinID: %d\n", $1);
 		
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			OutputFilterBasin *new_basin = create_new_output_filter_basin();
@@ -319,7 +322,7 @@ patch_stratum_id_spec: NUMBER {
 		}
 	}
 	| NUMBER DELIM NUMBER { 
-		printf("\t\tIDS: basinID: %d, hillID: %d\n", $1, $3); 
+		if (verbose_output) fprintf(stderr, "\t\tIDS: basinID: %d, hillID: %d\n", $1, $3); 
 	
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			syntax_error = true;
@@ -352,7 +355,7 @@ patch_stratum_id_spec: NUMBER {
 		}
 	}
 	| NUMBER DELIM NUMBER DELIM NUMBER { 
-		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d\n", $1, $3, $5);
+		if (verbose_output) fprintf(stderr, "\t\tIDS: basinID: %d, hillID: %d, zoneID: %d\n", $1, $3, $5);
 		
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			syntax_error = true;
@@ -387,7 +390,7 @@ patch_stratum_id_spec: NUMBER {
 		}
 	}
 	| NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER { 
-		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d\n", $1, $3, $5, $7); 
+		if (verbose_output) fprintf(stderr, "\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d\n", $1, $3, $5, $7); 
 	
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			syntax_error = true;
@@ -424,7 +427,7 @@ patch_stratum_id_spec: NUMBER {
 		}
 	}
 	| NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER DELIM NUMBER { 
-		printf("\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d, stratumID: %d\n", $1, $3, $5, $7, $9); 
+		if (verbose_output) fprintf(stderr, "\t\tIDS: basinID: %d, hillID: %d, zoneID: %d, patchID: %d, stratumID: %d\n", $1, $3, $5, $7, $9); 
 	
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			syntax_error = true;
@@ -461,7 +464,7 @@ variables: VARS variable_spec {
 		} 
 	}
 	| VARS KLEENE {
-		printf("\t\tVARIABLE: Any variable\n");
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: Any variable\n");
 		// * overrides all variable definitions, remove existing variables and start over
 		free_output_filter_variable_list(curr_filter->variables);
 		curr_filter->variables = create_new_output_filter_variable_any();
@@ -469,7 +472,7 @@ variables: VARS variable_spec {
 	;
 
 variable_spec: IDENTIFIER {
-		printf("\t\tVARIABLE: %s\n", $1);
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s\n", $1);
 		
 		HierarchyLevel level;
 		if (in_basin) {
@@ -489,7 +492,7 @@ variable_spec: IDENTIFIER {
 		}
 	}
 	| IDENTIFIER DOT IDENTIFIER {
-		printf("\t\tVARIABLE: %s.%s\n", $1, $3);
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s.%s\n", $1, $3);
 		
 		HierarchyLevel level;
 		if (in_basin) {
@@ -509,7 +512,7 @@ variable_spec: IDENTIFIER {
 		}
 	}
 	| LEVEL_HILLSLOPE IDENTIFIER {
-		printf("\t\tVARIABLE: hill.%s\n", $2);
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: hill.%s\n", $2);
 		
 		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $2);
 		
@@ -520,7 +523,7 @@ variable_spec: IDENTIFIER {
 		}
 	}
 	| LEVEL_HILLSLOPE IDENTIFIER DOT IDENTIFIER {
-		printf("\t\tVARIABLE: hill.%s.%s\n", $2, $4);
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: hill.%s.%s\n", $2, $4);
 		
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $2, $4);
 		
@@ -531,7 +534,7 @@ variable_spec: IDENTIFIER {
 		}
 	}
 	| LEVEL_PATCH IDENTIFIER {
-		printf("\t\tVARIABLE: patch.%s\n", $2);
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: patch.%s\n", $2);
 		
 		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_PATCH, $2);
 		
@@ -542,7 +545,7 @@ variable_spec: IDENTIFIER {
 		}
 	}
 	| LEVEL_PATCH IDENTIFIER DOT IDENTIFIER {
-		printf("\t\tVARIABLE: patch.%s.%s\n", $2, $4);
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: patch.%s.%s\n", $2, $4);
 		
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_PATCH, $2, $4);
 		
@@ -553,7 +556,7 @@ variable_spec: IDENTIFIER {
 		}
 	}
 	| LEVEL_STRATUM IDENTIFIER {
-		printf("\t\tVARIABLE: stratum.%s\n", $2);
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: stratum.%s\n", $2);
 		
 		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_STRATUM, $2);
 		
@@ -564,7 +567,7 @@ variable_spec: IDENTIFIER {
 		}
 	}
 	| LEVEL_STRATUM IDENTIFIER DOT IDENTIFIER {
-		printf("\t\tVARIABLE: stratum.%s.%s\n", $2, $4);
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: stratum.%s.%s\n", $2, $4);
 		
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_STRATUM, $2, $4);
 		
@@ -584,7 +587,8 @@ variable_spec: IDENTIFIER {
   * Note: This is not a re-entrant parser. Do not call more than once in a given
   * process.
   */ 
-OutputFilter *parse(char * const input) {
+OutputFilter *parse(char * const input, bool verbose) {
+	verbose_output = verbose_output;
 	int status = set_input_file(input);
 	if (!status) {
 		return NULL;

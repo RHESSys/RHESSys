@@ -35,7 +35,6 @@ bool output_format_csv_init(OutputFilter * const f) {
 	snprintf(abs_path, abs_path_len, "%s%c%s%c%s",
 			f->output->path, PATH_SEP,
 			f->output->filename, FILE_EXT_SEP, OUTPUT_FORMAT_EXT_CSV);
-	// Use buffered output
 	FILE *fp = fopen(abs_path, "w");
 	if (fp == NULL) {
 		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
