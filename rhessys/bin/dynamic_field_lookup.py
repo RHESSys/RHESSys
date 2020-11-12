@@ -22,6 +22,7 @@ STRUCT_NAMES = [
 	'patch_hourly_object',
 	'patch_fire_water_object',
 	'rooting_zone_object',
+	'snowpack_object',
 	'soil_c_object',
 	'soil_n_object',
 	'litter_object',
@@ -87,6 +88,7 @@ StructIndex_t *new_struct_index() {
 	i->patch_hourly_object = NULL;
 	i->patch_fire_water_object = NULL;
 	i->rooting_zone_object = NULL;
+	i->snowpack_object = NULL;
 	i->soil_c_object = NULL;
 	i->soil_n_object = NULL;
 	i->litter_object = NULL;
@@ -128,6 +130,9 @@ void free_struct_index(StructIndex_t *i) {
 	}
 	if (i->rooting_zone_object) {
 		freeDictionary(i->rooting_zone_object);
+	}
+	if (i->snowpack_object) {
+		freeDictionary(i->snowpack_object);
 	}
 	if (i->soil_c_object) {
 		freeDictionary(i->soil_c_object);
@@ -205,6 +210,7 @@ StructIndex_t *index_struct_fields() {
 	
 	i->patch_fire_water_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	i->rooting_zone_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	i->snowpack_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	i->soil_c_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	i->soil_n_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
 	i->litter_object = newDictionary(DICTIONARY_SIZE_SMALL);

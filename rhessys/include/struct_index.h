@@ -13,6 +13,7 @@ typedef struct struct_index_s {
 	// Begin, structs nested within patch_object...
 	Dictionary_t *patch_fire_water_object;
 	Dictionary_t *rooting_zone_object;
+	Dictionary_t *snowpack_object;
 	Dictionary_t *soil_c_object;
 	Dictionary_t *soil_n_object;
 	Dictionary_t *litter_object;
