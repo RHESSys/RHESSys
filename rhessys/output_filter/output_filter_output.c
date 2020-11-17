@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include "rhessys.h"
 #include "output_filter/output_filter_output.h"
