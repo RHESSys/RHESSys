@@ -576,6 +576,7 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
 
+	patch[0].total_water_in = zone[0].rain + zone[0].snow + irrigation;
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
 	patch[0].NO3_throughfall = 0;
@@ -618,6 +619,7 @@ void		patch_daily_F(
 				}
 			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				snow_melt_input = clim_event.value;
+				patch[0].total_water_in += snow_melt_input;
 				}
 			else snow_melt_input = 0.0;
 			} 
@@ -1030,10 +1032,6 @@ void		patch_daily_F(
 
 			if (snow_melt_input == -999.0) 
 				patch[0].rain_throughfall += patch[0].snow_melt;
-			else {
-				patch[0].rain_throughfall += snow_melt_input;
-				patch[0].snow_melt = snow_melt_input;
-			}
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;
 			/* Force turbulent fluxes to 0 under snowpack */
@@ -1042,7 +1040,8 @@ void		patch_daily_F(
 		}
 		
 		else {
-			patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
+			if (snow_melt_input == -999.0) 
+				patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth = 0.0;
 			patch[0].snowpack.height = 0.0;
@@ -1068,7 +1067,8 @@ void		patch_daily_F(
 	}
 	
 	if (patch[0].snowpack.water_equivalent_depth < 0.0001) {
-		patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
+		if (snow_melt_input == -999.0) 
+			patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 		patch[0].snowpack.water_equivalent_depth = 0.0;
 		patch[0].snowpack.energy_deficit = 0.001;
 		patch[0].snowpack.surface_age = 0.0;
@@ -1082,6 +1082,10 @@ void		patch_daily_F(
 			   patch[0].Kup_diffuse/86.4);
 	}
 	
+	if (snow_melt_input  > -999.0)  {
+			patch[0].rain_throughfall += snow_melt_input;
+			patch[0].snow_melt = snow_melt_input;
+			}
 	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height less than the	*/
