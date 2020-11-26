@@ -104,7 +104,7 @@ ggplot(base$bd, aes(date, watbal))+geom_point()+geom_point(data=test, aes(date, 
 
 
 ```
-
+### THIS HAS NOT BEEN ADAPTED TO OURPUT FILTER Variables names YET - IN PROGRESS
 ### Difference between the base and the test scenarios     
 The **percent_diff_mean** object shows the difference in the mean streamflow, transpiration, evaporation, psn, and plant carbon results between the base and test scenarios.     
 If there are large differences - are they reasonable given the changes to functionality with your new code?
