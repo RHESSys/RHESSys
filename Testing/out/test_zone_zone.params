@@ -32,4 +32,8 @@
 0.000000 psen.p1high
 0.000000 psen.p2high
 6.000000 ravg_days
+3376.000000 search_x
+4638.000000 search_y
+100.000000 res_patch
+0 grid_interpolation
 322.000000 atm_CO2 

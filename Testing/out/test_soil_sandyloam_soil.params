@@ -26,11 +26,13 @@
 0.100000 clay
 0.200000 silt
 0.0 sat_to_gw_coeff
+0.5 nitrif_parm_smax
 0.800000 cap_rise_max
 age snow_albedo_flag
 2.000000 bats_b
 0.300000 bats_r3
 -999.000000 fixed_t_mult
+-999.000000 fixed_w_mult
 1.000000 fs_spill
 1.000000 fs_percolation
 0.200000 fs_threshold

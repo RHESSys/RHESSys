@@ -1,0 +1,10 @@
+
+filter:
+	timestep: daily
+	output:
+		format: csv
+		path: ../Testing/out
+		filename: basin_daily
+	basin:
+		ids: 1
+		variables: patch.total_water_in, patch.streamflow, hill.gw.Qout, patch.transpiration_sat_zone, patch.transpiration_unsat_zone, patch.evaporation, patch.evaporation_surf, patch.exfiltration_sat_zone, patch.exfiltration_unsat_zone, patch.sat_deficit, patch.unsat_storage, patch.rz_storage, patch.detention_store, patch.litter.rain_stored, stratum.rain_stored, stratum.snow_stored, hill.gw.storage, patch.snowpack.water_equivalent_depth, stratum.cs.frootc, stratum.cs.leafc, stratum.cs.live_stemc, stratum.cs.dead_stemc, stratum.cs.live_crootc, stratum.cs.dead_crootc, stratum.epv.height, patch.streamflow_NO3, patch.streamflow_DON, hill.gw.NO3out, hill.gw.DONout, patch.litter_cs.litr1c , patch.litter_cs.litr2c, patch.litter_cs.litr3c, patch.litter_cs.litr4c, patch.soil_cs.soil1c, patch.soil_cs.soil2c, patch.soil_cs.soil3c, patch.soil_cs.soil4c, stratum.epv.proj_lai, stratum.cs.net_psn
