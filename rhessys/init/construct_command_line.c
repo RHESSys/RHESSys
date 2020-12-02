@@ -109,7 +109,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].sen[K] = 1.0;
 	command_line[0].sen[SOIL_DEPTH] = 1.0;
 	command_line[0].prev_flag = 0;
-	command_line[0].gw_flag = 0;
+	command_line[0].gw_flag = 1;
 	command_line[0].gwtoriparian_flag = 0;
 	command_line[0].tchange_flag = 0;
 	command_line[0].tmax_add = 0.0;
