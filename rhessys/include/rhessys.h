@@ -317,6 +317,7 @@ struct world_object
         char    **landuse_default_files;
         char    **stratum_default_files;
         char    **fire_default_files;
+        char    **fire_grid_prefix;
         char    **surface_energy_default_files;
         char    **spinup_default_files;
         char    **spinup_thresholds_files;

@@ -609,6 +609,14 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		world[0].fire_default_files= construct_filename_list( header_file,
 			world[0].defaults[0].num_fire_default_files);
 
+		// Fire grid file (prefix)
+		int 	num_fire_grid_prefix;
+		// including this for continuity but not really needed/shouldn't be more than 1
+		fscanf(header_file,"%d", &num_fire_grid_prefix);
+
+		read_record(header_file, record);
+		world[0].fire_grid_prefix = construct_filename_list( header_file, num_fire_grid_prefix);
+		//printf("Fire grid prefix: %s\n", world[0].fire_grid_prefix[0]);
 
   		/*--------------------------------------------------------------*/
   		/* read in WUI file and create WUI structure if salience flag is set */

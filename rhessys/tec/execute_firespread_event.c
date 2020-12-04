@@ -138,17 +138,19 @@ void execute_firespread_event(
 		 if(world[0].defaults[0].fire[0].fire_verbose==1)
 			printf("Initialize ws patches\n");
 		}
-//    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
+
+		//printf("Num patches: %d\n", world[0].patch_fire_grid[i][j].num_patches)
+		//printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) { // should just be 1 now...
-                         if(world[0].defaults[0].fire[0].fire_verbose==1)
+			if (world[0].defaults[0].fire[0].fire_verbose == 1)
 			{
-                                printf("Patch p: %d, i: %d, j:%d\n",p,i,j);
+				printf("Patch p: %d, i: %d, j:%d\n", p, i, j);
 			}
 
 			patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
 			if(world[0].defaults[0].fire[0].fire_verbose==1)
 				printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c); 
-			patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
+			
 			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
 				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p];
 			if(world[0].defaults[0].fire[0].fire_verbose==1)
