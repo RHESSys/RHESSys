@@ -59,6 +59,7 @@ int update_rooting_depth( struct rooting_zone_object *rootzone,
 	}
 	else {
 	rootzone->depth = 3.0 * pow((biomass_carbon_ratio*rootc), root_growth_direction) 
+				/ root_distrib_parm;
 	}
 
 	rootzone->depth = min(rootzone->depth, max_root_depth);
