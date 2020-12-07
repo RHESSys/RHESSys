@@ -312,6 +312,14 @@ struct	command_line_object	*construct_command_line(
       }
 
 			/*-------------------------------------------------*/
+			/*	turn gw off option */
+			/*-------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-gw_off") == 0 ){
+				i++;
+				printf("\n Turning off deeper groundwater \n ");
+				command_line[0].gw_flag = 0;
+			}/* end if */
+			/*-------------------------------------------------*/
 			/*	routing gw to riparian option */
 			/*-------------------------------------------------*/
 			else if ( strcmp(main_argv[i],"-gwtoriparian") == 0 ){
