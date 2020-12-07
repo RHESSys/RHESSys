@@ -239,7 +239,6 @@ void	execute_redefine_world_event(struct world_object *world,
 			/*	height							*/
 			/*--------------------------------------------------------------*/
 								sort_patch_layers(patch, &rec);
-								if (rec > 0) {printf("Recursively adjusted height %d times", rec);}
 								} /* end patch if */
 
 							else {

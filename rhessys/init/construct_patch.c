@@ -674,7 +674,6 @@ struct patch_object *construct_patch(
 	patch[0].num_layers = 0;
 	rec = 0;
 	sort_patch_layers(patch, &rec);
-	if (rec > 0) printf("\n Recursively adjust heights %d times", rec);
 
 		
 

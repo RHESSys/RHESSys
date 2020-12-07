@@ -504,7 +504,6 @@ void		patch_daily_I(
 	/*------------------------------------------------------------------------*/
 	rec=0;
 	sort_patch_layers(patch, &rec);
-	if (rec > 0) { printf(" \nRecursively adjusted heights  %d times", rec);}
 
 
 	/*------------------------------------------------------------------------*/
