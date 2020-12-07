@@ -162,7 +162,7 @@ void		patch_daily_I(
 		struct  cdayflux_patch_struct *,
 		struct  ndayflux_patch_struct *);
 	
-	void    sort_patch_layers(struct patch_object *);
+	void    sort_patch_layers(struct patch_object *, int *);
 
 		
 	void	update_litter_interception_capacity (double, 
@@ -180,7 +180,7 @@ void		patch_daily_I(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int	layer, inx;
+	int	layer, inx, rec;
 	int	stratum;
 	double	cnt, count, theta;
 	
@@ -502,7 +502,9 @@ void		patch_daily_I(
 	/*	re-sort patch layers to account for any changes in 	*/
 	/*	height							*/
 	/*------------------------------------------------------------------------*/
-	sort_patch_layers(patch);
+	rec=0;
+	sort_patch_layers(patch, &rec);
+	if (rec > 0) { printf(" \nRecursively adjusted heights  %d times", rec);}
 
 
 	/*------------------------------------------------------------------------*/

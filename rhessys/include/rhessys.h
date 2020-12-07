@@ -2416,6 +2416,7 @@ struct epvar_struct
         double fwood; /* 0-1 */
 
         /* gross PSN input */
+    double added_carbon;  /* (kgC/m2) carbon added due to resprouting, height adjustments to prevent > 100 cover */
     double assim_sunlit; /* (umol/m2/s per leaf) */
     double assim_shade; /* (umol/m2/s  per leaf) */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
