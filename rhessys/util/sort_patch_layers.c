@@ -147,8 +147,6 @@ void sort_patch_layers( struct patch_object *patch, *rec)
 		/* 		simply pick the last in the list */
 		/*--------------------------------------------------------------*/
 		if (( cover_fraction > 1.0 ) && ( patch[0].layers[i].height > ZERO)){
-			printf( "\n WARNING in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
-				patch[0].layers[i].height);
 	
 			maxstemcID = 0;
 			maxleafcID = 0;
