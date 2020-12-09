@@ -67,7 +67,7 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
         	stratum[0].ns.dead_stemn + stratum[0].ns.deadstemn_store + stratum[0].ns.deadstemn_transfer) ,
         	stratum[0].cs.cwdc,
         	stratum[0].ns.cwdn,
-            stratum[0].acc_year.psn,
+            stratum[0].acc_year.gpsn-stratum[0].acc_year.resp,
             stratum[0].acc_year.minNSC,
             stratum[0].cs.mortality_fract,
             stratum[0].epv.height, // the reason here height is different with fire.yearly, is fire.yearly is before burning but, stratum.yearly; if turn off the fire effect they should be the same
@@ -75,7 +75,8 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 
             if (command_line[0].f == NULL) { //If there is fire yearly growth output, set up set in the fire yearly growth output
 
-            stratum[0].acc_year.psn = 0.0;
+            stratum[0].acc_year.gpsn = 0.0;
+            stratum[0].acc_year.resp = 0.0;
             stratum[0].acc_year.minNSC = -999;
             }
 

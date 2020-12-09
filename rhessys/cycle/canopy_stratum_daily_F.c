@@ -2029,21 +2029,40 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].output_flags.monthly == 1) &&
 			(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
-		stratum[0].acc_month.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
+
+		stratum[0].acc_month.gpsn += stratum[0].cdf.psn_to_cpool; 
+		stratum[0].acc_month.resp += stratum[0].cdf.total_mr;
+		stratum[0].acc_month.lai += stratum[0].epv.proj_lai;
+		stratum[0].acc_month.height += stratum[0].epv.height;
 		stratum[0].acc_month.lwp += stratum[0].epv.psi;
+		if (stratum[0].acc_month.minNSC == -999)
+			stratum[0].acc_month.minNSC = stratum[0].cs.cpool;
+		else
+			stratum[0].acc_month.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_month.minNSC);
 		stratum[0].acc_month.leafc += stratum[0].cs.leafc;
 		stratum[0].acc_month.rootc += stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
 		stratum[0].acc_month.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
+		stratum[0].acc_month.totalc += stratum[0].cs.totalc;
+		stratum[0].acc_month.totaln += stratum[0].ns.totaln;
+
 		stratum[0].acc_month.length += 1;
 	}
 	if ((command_line[0].output_flags.yearly == 1) &&
 			(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){
-		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
+		stratum[0].acc_year.gpsn += stratum[0].cdf.psn_to_cpool; 
+		stratum[0].acc_year.resp += stratum[0].cdf.total_mr;
+		stratum[0].acc_year.lai += stratum[0].epv.proj_lai;
+		stratum[0].acc_year.height += stratum[0].epv.height;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
 		if (stratum[0].acc_year.minNSC == -999)
 			stratum[0].acc_year.minNSC = stratum[0].cs.cpool;
 		else
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
+		stratum[0].acc_year.leafc += stratum[0].cs.leafc;
+		stratum[0].acc_year.rootc += stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
+		stratum[0].acc_year.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
+		stratum[0].acc_year.totalc += stratum[0].cs.totalc;
+		stratum[0].acc_year.totaln += stratum[0].ns.totaln;
 		stratum[0].acc_year.length += 1;
 	}
 	return;

@@ -252,6 +252,6 @@ void	canopy_stratum_growth(
 		+ ns->dead_stemn + ns->deadstemn_store +  ns->deadstemn_transfer
 		+ ns->live_crootn + ns->livecrootn_store +  ns->livecrootn_transfer
 		+ ns->dead_crootn + ns->deadcrootn_store +  ns->deadcrootn_transfer);
-	stratum[0].acc_month.lai += stratum[0].epv.proj_lai;
+
 	return;
 } /*end canopy_stratum_daily_growth.c*/
