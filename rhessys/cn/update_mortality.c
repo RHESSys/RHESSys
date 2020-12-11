@@ -258,9 +258,6 @@ void update_mortality(
 		cs_litr->litr4c    += m_deadleafc_to_litr4c;		
 		cs_litr->litr1c    += m_leafc_store_to_litr1c;
 		cs_litr->litr1c    += m_leafc_transfer_to_litr1c;
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at line 274  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 		if (epc.veg_type == TREE) {
 			/*    Stem wood mortality */
 			/*	  Transfer to DEADWOOD if standing dead */
@@ -282,9 +279,6 @@ printf("\n at line 274  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		cs_litr->litr1c         += m_gresp_store_to_litr1c;
 		cs_litr->litr1c         += m_gresp_transfer_to_litr1c;
 
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 		}
 	/* Remove aboveground dead c from carbon stores in all cases. */
 	cs->cpool -= m_cpool;
@@ -394,9 +388,6 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 			ns_litr->litr1n    += m_livestemn_transfer_to_litr1n;
 			ns_litr->litr1n    += m_deadstemn_transfer_to_litr1n;
 			}
-//if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 3) {
-//printf("\n at line 393 update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-//}
 		}
 	/* Remove aboveground dead n from n stores in all cases. */
 	ns->npool -= m_npool;
@@ -468,9 +459,6 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 	}*/
   
  
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at the end of update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	return;
 }/*end update_mortality*/
 
