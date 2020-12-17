@@ -225,6 +225,7 @@ $(OBJ)/execute_yearly_output_event.o \
 $(OBJ)/find_basin.o \
 $(OBJ)/find_hillslope_in_basin.o \
 $(OBJ)/find_patch.o \
+$(OBJ)/find_patch_family.o \
 $(OBJ)/find_patch_in_hillslope.o \
 $(OBJ)/find_patch_in_zone.o \
 $(OBJ)/find_stratum.o \
@@ -308,6 +309,7 @@ $(OBJ)/resolve_sminn_competition.o \
 $(OBJ)/snowpack_daily_F.o \
 $(OBJ)/sort_by_elevation.o \
 $(OBJ)/sort_patch_layers.o \
+$(OBJ)/sort_patch_family_layers.o \
 $(OBJ)/surface_daily_F.o \
 $(OBJ)/surface_hourly.o \
 $(OBJ)/top_model.o \
@@ -624,6 +626,8 @@ $(OBJ)/find_stratum.o: util/find_stratum.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum.c -o $(OBJ)/find_stratum.o
 $(OBJ)/find_stratum_in_patch.o: util/find_stratum_in_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum_in_patch.c -o $(OBJ)/find_stratum_in_patch.o
+$(OBJ)/find_patch_family.o: util/find_patch_family.c
+	$(CC) -c $(CFLAGS) -I include util/find_patch_family.c -o $(OBJ)/find_patch_family.o	
 $(OBJ)/find_patch_in_hillslope.o: util/find_patch_in_hillslope.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch_in_hillslope.c -o $(OBJ)/find_patch_in_hillslope.o
 $(OBJ)/find_patch_in_zone.o: util/find_patch_in_zone.c
@@ -842,6 +846,8 @@ $(OBJ)/sort_by_elevation.o: util/sort_by_elevation.c
 	$(CC) -c $(CFLAGS) -I include util/sort_by_elevation.c -o $(OBJ)/sort_by_elevation.o
 $(OBJ)/sort_patch_layers.o: util/sort_patch_layers.c
 	$(CC) -c $(CFLAGS) -I include util/sort_patch_layers.c -o $(OBJ)/sort_patch_layers.o
+$(OBJ)/sort_patch_family_layers.o: util/sort_patch_family_layers.c
+	$(CC) -c $(CFLAGS) -I include util/sort_patch_family_layers.c -o $(OBJ)/sort_patch_family_layers.o
 $(OBJ)/top_model.o: hydro/top_model.c
 	$(CC) -c $(CFLAGS) -I include hydro/top_model.c -o $(OBJ)/top_model.o
 $(OBJ)/compute_maint_resp.o: cn/compute_maint_resp.c
