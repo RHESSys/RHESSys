@@ -334,7 +334,7 @@ struct world_object
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;
-	struct patch_fire_object **patch_fire_grid;  //mk
+	struct  patch_fire_object **patch_fire_grid;  //mk
         struct  spinup_thresholds_list_object  *spinup_thresholds ;   
 	struct  date			**master_hourly_date;	
 	struct  WUI_object	*WUI_list;
@@ -3054,15 +3054,16 @@ struct mortality_struct
 /*******************************************/
 struct patch_fire_object
 {
-	int num_patches;
-	int tmp_patch; // which patch among the num_patches are we on?
-	struct patch_object **patches;
-	double *prop_patch_in_grid; /* proportion of total cell area occupied by this patch, this array matches the patch pointer array, for updating cell fuel and moisture values*/
-	double *prop_grid_in_patch; 	/* 0-1, proportion of total patch area that overlaps with this cell, this array matches the patch pointer array, for updating patch mortality */
-	double occupied_area; /*gives the total patch area in the current grid	*/
-	struct fire_default_object *defaults;
-	double elev; // elevation if read in from grid
-	int wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
+	int     num_patches;
+	int     tmp_patch; // which patch among the num_patches are we on?
+        int     wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
+	double  *prop_patch_in_grid; /* proportion of total cell area occupied by this patch, this array matches the patch pointer array, for updating cell fuel and moisture values*/
+	double  *prop_grid_in_patch; 	/* 0-1, proportion of total patch area that overlaps with this cell, this array matches the patch pointer array, for updating patch mortality */
+	double  occupied_area; /*gives the total patch area in the current grid	*/
+	double  elev; // elevation if read in from grid
+	struct  fire_default_object *defaults;
+        struct  patch_object **patches;
+        struct  patch_family_object     **patch_families;
 };
 
 /*----------------------------------------------------------*/

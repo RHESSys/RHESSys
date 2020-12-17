@@ -49,6 +49,9 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 	struct patch_object *find_patch(int patch_ID,int zone_ID, int hill_ID,
 								struct basin_object *basin);
 
+	struct patch_family_object *find_patch_family(int patch_family_ID, int zone_ID, int hill_ID,
+									   struct basin_object *basin);
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -183,17 +186,15 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				//		}
 				//		world[0].num_fire_grid_row = grid_dimY;
 				//		world[0].num_fire_grid_col = grid_dimX;
-
 				//		printf("Rows: %d Cols: %d\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col);
-
 				//		int tmpPatchID;
 				//		FILE *patchesIn;
 				//		patchesIn=fopen(command_line[0].firegrid_patch_filename,"r");
 				/*		if(def.include_wui==1) // then readin the wui LUT
-		{
-			FILE *wuiIn;
-			wuiIn=fopen(command_line[0].wui_lut_filename,"r");
-		}*/
+						{
+							FILE *wuiIn;
+							wuiIn=fopen(command_line[0].wui_lut_filename,"r");
+						}*/
 				//patchesIn=fopen("../auxdata/patchGrid.txt","r");
 				// for now do away with the header
 				//		for(i=0; i<grid_dimY;i++){
@@ -207,7 +208,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				tmpPatchID = -9999;
 				fscanf(patchesIn, "%lf\t", &tmpPatchID);
 				printf("tmp patch ID: %lf\n",tmpPatchID);
-				
+
 				tmpZoneID = -9999;
 				fscanf(zoneIn, "%lf\t", &tmpZoneID);
 
@@ -233,24 +234,16 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				printf("Zone: %d | Hill: %d\n",tmpZoneID,tmpHillID);
 
 				if (tmpPatchID >= 0)
-				{	// then find the corresponding patch and allocate it--only one patch per grid cell!
+				{	
+					// then find the corresponding patch and allocate it--only one patch per grid cell!
 					//	printf("numPatches 0: %d\n",fire_grid[j][i].num_patches);
 					//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,j,i);
-					fire_grid[i][j].num_patches = 1;
+
 					curPatchID = tmpPatchID;
 					curZoneID = tmpZoneID;
 					printf("Current patch id: %f, X: %d  Y: %d\n", curPatchID, j, i);
 
 					//printf("numPatches 1: %d\n",fire_grid[j][i].num_patches);
-					fire_grid[i][j].patches = (struct patch_object **)malloc(fire_grid[i][j].num_patches * sizeof(struct patch_object *));
-					fire_grid[i][j].prop_patch_in_grid = (double *)malloc(fire_grid[i][j].num_patches * sizeof(double));
-					fire_grid[i][j].prop_grid_in_patch = (double *)malloc(fire_grid[i][j].num_patches * sizeof(double));
-					//					printf("allocated patch array");
-
-					//				}
-					//			}
-					//		}
-					//              fclose(patchesIn);
 
 					//1	#pragma omp parallel for
 					//             for(i=0; i<grid_dimY;i++){
@@ -258,56 +251,50 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 					//                 for(j=0;j<grid_dimX;j++){
 					//			if(fire_grid[i][j].num_patches==1)
 					//			{
+					
+					fire_grid[i][j].occupied_area = cell_res * cell_res; // this grid cell is 100% occupied - lets assume this is still true
 
 					for (b = 0; b < world[0].num_basin_files; ++b)
 					{
-						 																
-/* 								// if multistcale
-								if (command_line[0].multiscale_flag == 1) {
-									// loop through zone[z][0].patch_families
-									for (pf = 0; pf < world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patch_families; ++pf) {
-										// loop through patches pointed to by family
-										
-										for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].patch_families[pf][0].patches; ++p) {
-											patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patch_families[pf][0].patches[p];
+						if (command_line[0].multiscale_flag == 1)
+						{
+							// assuming 1 patch family per grid, curpatch is family not patch here
+							fire_grid[i][j].patch_families = (struct patch_family_object **)malloc(1 * sizeof(struct patch_family_object *));
+							fire_grid[i][j].patch_families = find_patch_family(curPatchID, curZoneID, tmpHillID, world[0].basins[b]);
+							fire_grid[i][j].num_patches = fire_grid[i][j].patch_families[0][0].num_patches_in_fam;
 
-											if(patch[0].ID==tmpPatchID)
-											{
-												//printf("now filling in array--found a match!\n");
-												fire_grid[i][j].patches[0]=patch; // assign the current patch to this grid cell
-												//printf("patch1\n");
-												fire_grid[i][j].occupied_area=cell_res*cell_res; // this grid cell is 100% occupied
-												//printf("patch2: area, cell res %lf, %lf\n",patch[0].area,cell_res);
-												fire_grid[i][j].prop_grid_in_patch[0]=(cell_res*cell_res)/patch[0].area; // the proportion of this patch in this cell
-												//printf("patch3\n");
-												fire_grid[i][j].prop_patch_in_grid[0]= patch[0].family_pct_cover;// the whole cell is occupied this patch
-												//printf("array filled\n");
-												
-												if(def.include_wui==0)
-													break; //? or keep loop to help point to wui patches as well// break would speed this up a little bit
-												
-												// if we have found the correct patch, stop looking
-											}
-										} // end patch loop (patches in patch family)
-									} // end patch family loop
-									// end multiscale IF
-								} else {
-									// normal code goes here
+							fire_grid[i][j].patches = (struct patch_object **)malloc(fire_grid[i][j].num_patches * sizeof(struct patch_object *));
+							fire_grid[i][j].prop_patch_in_grid = (double *)malloc(fire_grid[i][j].num_patches * sizeof(double));
+							fire_grid[i][j].prop_grid_in_patch = (double *)malloc(fire_grid[i][j].num_patches * sizeof(double));
 
-								} // end non multiscale  */
+							fire_grid[i][j].prop_grid_in_patch[0] = (cell_res * cell_res) / fire_grid[i][j].patch_families[0][0].area;
+							// iterate through patches in family and set prop_patch_in_grid to patch area/fam area
+							for (p = 0; p < fire_grid[i][j].patch_families[0][0].num_patches_in_fam; ++p)
+							{
+								fire_grid[i][j].patches[p] = fire_grid[i][j].patch_families[0][0].patches[p];
+								fire_grid[i][j].prop_patch_in_grid[p] = fire_grid[i][j].patches[p][0].family_pct_cover;
+							}
+						}
+						else
+						{
+							fire_grid[i][j].num_patches = 1;
 
-						patch = find_patch(curPatchID, curZoneID, tmpHillID, world[0].basins[b]);
-						fire_grid[i][j].patches[0] = patch; // assign the current patch to this grid cell
-						//printf("patch1\n");
-						fire_grid[i][j].occupied_area = cell_res * cell_res; // this grid cell is 100% occupied
-						//printf("patch2: area, cell res %lf, %lf\n",patch[0].area,cell_res);
-						fire_grid[i][j].prop_grid_in_patch[0] = (cell_res * cell_res) / patch[0].area; // the proportion of this patch in this cell
-						//printf("patch3\n");
-						fire_grid[i][j].prop_patch_in_grid[0] = 1; // the whole cell is occupied this patch
-																   //										printf("array filled\n");
+							fire_grid[i][j].patches = (struct patch_object **)malloc(fire_grid[i][j].num_patches * sizeof(struct patch_object *));
+							fire_grid[i][j].prop_patch_in_grid = (double *)malloc(fire_grid[i][j].num_patches * sizeof(double));
+							fire_grid[i][j].prop_grid_in_patch = (double *)malloc(fire_grid[i][j].num_patches * sizeof(double));
 
+							patch = find_patch(curPatchID, curZoneID, tmpHillID, world[0].basins[b]);
+							fire_grid[i][j].patches[0] = patch; // assign the current patch to this grid cell
+							//printf("patch2: area, cell res %lf, %lf\n",patch[0].area,cell_res);
+							fire_grid[i][j].prop_grid_in_patch[0] = (cell_res * cell_res) / patch[0].area; // the proportion of this patch in this cell
+							//printf("patch3\n");
+							fire_grid[i][j].prop_patch_in_grid[0] = 1; // the whole cell is occupied this patch
+						}
+
+						//	printf("array filled\n");
 						// if we have found the correct patch, stop looking
 					}
+					
 					/*if(patch[0].wuiID>=0&&def.include_wui==1) // then see if this pixel is within salience distance of this wui patch, and if it is add this patch to the pixel linked list
 									{
 										if(fire_grid[i][j].wui_dists[patch[0].wuiID]<=3)

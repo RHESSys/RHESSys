@@ -58,6 +58,7 @@ void execute_firespread_event(
 	double mean_fuel_veg=0,mean_fuel_litter=0,mean_soil_moist=0,mean_fuel_moist=0,mean_relative_humidity=0,
 		mean_wind_direction=0,mean_wind=0,mean_z=0,mean_temp=0,mean_et=0,mean_pet=0,mean_understory_et=0,mean_understory_pet=0;
 	double denom_for_mean=0;
+	double understory_pct_cover;
 
 	patch_fire_grid=world[0].patch_fire_grid;
 	fire_grid = world[0].fire_grid;
@@ -76,6 +77,8 @@ void execute_firespread_event(
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 		  world[0].fire_grid[i][j].fire_size=0; // reset grid to no fire
+		  understory_pct_cover = 0; // set to 0 for each grid/patch family
+
 		if(world[0].patch_fire_grid[i][j].occupied_area==0)
 		{
 			  if(world[0].defaults[0].fire[0].fire_in_buffer==0)
@@ -141,13 +144,13 @@ void execute_firespread_event(
 
 		//printf("Num patches: %d\n", world[0].patch_fire_grid[i][j].num_patches)
 		//printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
-		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) { // should just be 1 now...
+		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) { // should just be 1 now... - 1 if non MSR, n if MSR where n is patches in patch fam
 			if (world[0].defaults[0].fire[0].fire_verbose == 1)
 			{
 				printf("Patch p: %d, i: %d, j:%d\n", p, i, j);
 			}
 
-			patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
+			patch = world[0].patch_fire_grid[i][j].patches[p]; //patch is still always a patch, loop over num patches w/ p will iterate over patches in patch family
 			if(world[0].defaults[0].fire[0].fire_verbose==1)
 				printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c); 
 			
@@ -194,20 +197,51 @@ void execute_firespread_event(
 			world[0].fire_grid[i][j].temp += patch[0].zone[0].metv.tavg*patch_fire_grid[i][j].prop_patch_in_grid[p];// temperature? mk
 			world[0].fire_grid[i][j].et += patch[0].fire.et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
 			world[0].fire_grid[i][j].pet += patch[0].fire.pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
-			if(patch[0].fire.understory_et==0&&patch[0].fire.understory_pet==0) // means no understory present, then use overall et and pet for deficit calculation for this patch
+			
+			if (command_line[0].multiscale_flag = 1)
+			{
+				if (patch[0].fire.understory_et != 0 || patch[0].fire.understory_pet != 0)
+				{
+					world[0].fire_grid[i][j].understory_et += patch[0].fire.understory_et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+					world[0].fire_grid[i][j].understory_pet += patch[0].fire.understory_pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+					understory_pct_cover += world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+				}
+			}
+			else
+			{
+				if (patch[0].fire.understory_et == 0 && patch[0].fire.understory_pet == 0) // means no understory present, then use overall et and pet for deficit calculation for this patch
+				{
+					world[0].fire_grid[i][j].understory_et = world[0].fire_grid[i][j].et;
+					world[0].fire_grid[i][j].understory_pet = world[0].fire_grid[i][j].pet;
+				}
+				else
+				{
+					world[0].fire_grid[i][j].understory_et += patch[0].fire.understory_et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+					world[0].fire_grid[i][j].understory_pet += patch[0].fire.understory_pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+				}
+			}
+
+		 if(world[0].defaults[0].fire[0].fire_verbose==1)
+			printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
+
+		}
+
+		// normalize understory et and PET by the pct coverage that actually has a understory, if no understory then use global values like above
+		if (command_line[0].multiscale_flag = 1)
+		{
+			if (understory_pct_cover == 0)
 			{
 				world[0].fire_grid[i][j].understory_et = world[0].fire_grid[i][j].et;
 				world[0].fire_grid[i][j].understory_pet = world[0].fire_grid[i][j].pet;
 			}
 			else
 			{
-				world[0].fire_grid[i][j].understory_et += patch[0].fire.understory_et * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
-				world[0].fire_grid[i][j].understory_pet += patch[0].fire.understory_pet * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];
+				// if all patches have understory == 1 and no change, if half have understory == 0.5, and adjusts et and pet to correct patch (family) scale values
+				world[0].fire_grid[i][j].understory_et /= understory_pct_cover;
+				world[0].fire_grid[i][j].understory_pet /= understory_pct_cover;
 			}
-		 if(world[0].defaults[0].fire[0].fire_verbose==1)
-			printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
-
 		}
+
 		if(world[0].patch_fire_grid[i][j].occupied_area>0&&world[0].defaults[0].fire[0].fire_in_buffer==1) // if allowing fire into the buffer (on raster grid outside of watershed boundaries), then fill with mean field values within watershed boundary
 		{ // this loop fills sums to calculate the mean value across watershed
 			denom_for_mean+=1;
