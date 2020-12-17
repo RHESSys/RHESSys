@@ -4,7 +4,6 @@
 rhessys/rhessys7.0
 rhessys/rhessys7.*
 
-
 # Build directories
 objects/
 build/
@@ -22,7 +21,6 @@ util/GRASS/cxy/.directory
 #other unitility
 util/GRASS/cxy/cxy
 g2w/grass2world/g2w
-
 
 # Eclipse metadata
 .project
@@ -55,3 +53,12 @@ libwmfire.so
 
 # made by R func compile_rhessys (should be deleted typically)
 .makefile_tmp
+
+# test binaries - maybe could be a separate dir?
+/rhessys/test/test_compute_potential_exfiltration
+rhessys/test/test_dictionary
+rhessys/test/test_isodate
+rhessys/test/test_output*
+rhessys/test/test_pointer_set
+rhessys/test/test_string_list
+rhessys/test/example

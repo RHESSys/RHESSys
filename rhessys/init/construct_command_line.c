@@ -110,16 +110,26 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].sen[K] = 1.0;
 	command_line[0].sen[SOIL_DEPTH] = 1.0;
 	command_line[0].prev_flag = 0;
-	command_line[0].gw_flag = 0;
+	command_line[0].gw_flag = 1;
 	command_line[0].gwtoriparian_flag = 0;
 	command_line[0].tchange_flag = 0;
 	command_line[0].tmax_add = 0.0;
 	command_line[0].tmin_add = 0.0;
+
+	command_line[0].output_filter_flag = false;
+	command_line[0].output_filter_filename = NULL;
+	command_line[0].output_filter = NULL;
+	command_line[0].output_filter_patch_accum_monthly = false;
+	command_line[0].output_filter_patch_accum_yearly = false;
+	command_line[0].output_filter_strata_accum_monthly = false;
+	command_line[0].output_filter_strata_accum_yearly = false;
+
 	command_line[0].output_prefix = NULL;
 	command_line[0].output_flags.yearly = 0;
 	command_line[0].output_flags.monthly = 0;
 	command_line[0].output_flags.daily = 0;
 	command_line[0].output_flags.hourly = 0;
+	command_line[0].legacy_output_flag = false;
 	command_line[0].stro = NULL;
 	command_line[0].b = NULL;
 	command_line[0].h = NULL;
@@ -321,6 +331,14 @@ struct	command_line_object	*construct_command_line(
 				i++;
       }
 
+			/*-------------------------------------------------*/
+			/*	turn gw off option */
+			/*-------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-gw_off") == 0 ){
+				i++;
+				printf("\n Turning off deeper groundwater \n ");
+				command_line[0].gw_flag = 0;
+			}/* end if */
 			/*-------------------------------------------------*/
 			/*	routing gw to riparian option */
 			/*-------------------------------------------------*/
@@ -793,6 +811,29 @@ struct	command_line_object	*construct_command_line(
 				i++;
 			} /*end if*/
 			/*--------------------------------------------------------------*/
+			/*		Check if output filter is next.							*/
+			/*--------------------------------------------------------------*/
+			else if( strcmp(main_argv[i],"-of") == 0 ){
+				/*--------------------------------------------------------------*/
+				/*          Check that the next arguement exists.               */
+				/*--------------------------------------------------------------*/
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
+					fprintf(stderr,"FATAL ERROR: Output filter filename not specified\n");
+					exit(EXIT_FAILURE);
+				} /*end if*/
+				/*--------------------------------------------------------------*/
+				/*	Allocate an array for the output filter filename and		*/
+				/*	Read in the output filter filename.							*/
+				/*--------------------------------------------------------------*/
+				command_line[0].output_filter_filename =
+					(char *) alloc((1+strlen(main_argv[i]))*sizeof(char),
+					"output_filter_filename","construct_command_line");
+				strcpy(command_line[0].output_filter_filename, main_argv[i]);
+				command_line[0].output_filter_flag = true;
+				i++;
+			}
+			/*--------------------------------------------------------------*/
 			/*		Check if the output prefix is next.						*/
 			/*--------------------------------------------------------------*/
 			else if( strcmp(main_argv[i],"-pre") == 0 ){
@@ -825,7 +866,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].stro = (struct stro_option *)
 					alloc(sizeof(struct stro_option), "stro","construct_command_line" );
 				command_line[0].stro[0].reachID 	= -999;
-				
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -851,7 +892,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].b = (struct b_option *)
 					alloc(sizeof(struct b_option), "b","construct_command_line" );
 				command_line[0].b[0].basinID 	= -999;
-                               
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -877,6 +918,7 @@ struct	command_line_object	*construct_command_line(
 					alloc(sizeof(struct h_option), "h", "construct_command_line" );
 				command_line[0].h[0].basinID 	= -999;
 				command_line[0].h[0].hillID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*-------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*-------------------------------------------------------*/
@@ -915,6 +957,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].z[0].basinID 	= -999;
 				command_line[0].z[0].hillID 	= -999;
 				command_line[0].z[0].zoneID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*-------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*-------------------------------------------------------*/
@@ -966,6 +1009,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].p[0].hillID 	= -999;
 				command_line[0].p[0].zoneID 	= -999;
 				command_line[0].p[0].patchID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -1031,6 +1075,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].c[0].zoneID 	= -999;
 				command_line[0].c[0].patchID 	= -999;
 				command_line[0].c[0].stratumID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -1109,6 +1154,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].f[0].zoneID 	= -999;
 				command_line[0].f[0].patchID 	= -999;
 				command_line[0].f[0].stratumID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/

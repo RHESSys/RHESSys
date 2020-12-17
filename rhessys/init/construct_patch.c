@@ -80,14 +80,14 @@ struct patch_object *construct_patch(
 		struct litter_c_object *,
 		struct litter_object *);
 	
-	void	sort_patch_layers(struct patch_object *);
+	void	sort_patch_layers(struct patch_object *, int *);
 	void	*alloc(	size_t, char *, char *);
 
 	/*--------------------------------------------------------------*/
 	/*	Local variable definitions				*/
 	/*--------------------------------------------------------------*/
 	int		base_stationID;
-	int		i;
+	int		i, rec;
 	int		fire_default_object_ID;
 	int		surface_energy_default_object_ID;
 	char		record[MAXSTR];
@@ -240,6 +240,10 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.PET = 0.0;
 	patch[0].acc_month.psn = 0.0;
 	patch[0].acc_month.num_threshold = 0;
+	patch[0].acc_month.soilc = 0.0;
+	patch[0].acc_month.litterc = 0.0;
+	patch[0].acc_month.soiln = 0.0;
+	patch[0].acc_month.littern = 0.0;
 
 
 	patch[0].acc_year.burn = 0.0;
@@ -276,6 +280,10 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.potential_recharge_wyd = 0.0;
 	patch[0].acc_year.recharge = 0.0;
 	patch[0].acc_year.recharge_wyd = 0.0;
+	patch[0].acc_year.soilc = 0.0;
+	patch[0].acc_year.litterc = 0.0;
+	patch[0].acc_year.soiln = 0.0;
+	patch[0].acc_year.littern = 0.0;
 
 	if (command_line[0].firespread_flag == 1) {
 		patch[0].fire.et = 0.0;
@@ -673,7 +681,8 @@ struct patch_object *construct_patch(
 	patch[0].layers = (struct layer_object *) alloc( patch[0].num_canopy_strata *
 		sizeof( struct layer_object ),"layers","construct_patch");
 	patch[0].num_layers = 0;
-	sort_patch_layers(patch);
+	rec = 0;
+	sort_patch_layers(patch, &rec);
 
 		
 

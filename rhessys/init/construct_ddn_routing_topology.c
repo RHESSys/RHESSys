@@ -44,6 +44,12 @@ struct routing_list_object *construct_ddn_routing_topology(
 		int,
     struct hillslope_object *,
 		FILE *);
+
+	int assign_neighbours_in_hillslope (
+		struct neighbour_object *,
+		int,
+    	struct hillslope_object *,
+		FILE *);
 	
 	void *alloc(size_t, char *, char *);
 	

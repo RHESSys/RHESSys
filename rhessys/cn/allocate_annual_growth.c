@@ -237,8 +237,9 @@ int allocate_annual_growth(				int id,
 						 cs_litr, ns_litr, 1,
 						 mort);	
 
+		/*
 		cs->stem_density = (cs->stem_density - cs->stem_density*excess_carbon);
-		cs->stem_density = max(cs->stem_density, 0.01); 
+		cs->stem_density = max(cs->stem_density, 0.01);  */
 	}
 		
 	

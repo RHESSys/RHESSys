@@ -116,9 +116,6 @@ void update_mortality(
 	/* mortality fluxes out of leaf and fine root pools */
 	/* carbon depts in cpool have to die with the plant - could result in a carbon balance issue */
 
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at the beginning of update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 
 	m_cpool = mort.mort_cpool * cs->cpool;
 	m_npool = mort.mort_cpool * ns->npool;
@@ -167,9 +164,6 @@ printf("\n at the beginning of update mortality: litter 1=%lf, litter2 =%lf, lit
 		m_deadcrootc_transfer_to_litr1c = mort.mort_cpool * cs->deadcrootc_transfer;
 	}
 	
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at line 171  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	/* daily nitrogen fluxes due to mortality */
 	/* mortality fluxes out of leaf and fine root pools */
 	if (epc.leaf_cn > ZERO) {
@@ -212,9 +206,6 @@ printf("\n at line 171  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		m_frootn_to_litr4n = 0.0;		
 		}
 
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at line 216  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	/* mortality fluxes out of storage and transfer pools */
 	/* Assumes same mortality fractions as for c pools */
 	/* Assumes cpool mortality fraction applies to all non-structural stores and transfers */
@@ -244,9 +235,6 @@ printf("\n at line 216  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		m_deadcrootn_transfer_to_litr1n = mort.mort_cpool * ns->deadcrootn_transfer;		
 	}
 	
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at line 248  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	/* update state variables */
 	
 	/* ---------------------------------------- */
@@ -270,9 +258,6 @@ printf("\n at line 248  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		cs_litr->litr4c    += m_deadleafc_to_litr4c;		
 		cs_litr->litr1c    += m_leafc_store_to_litr1c;
 		cs_litr->litr1c    += m_leafc_transfer_to_litr1c;
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at line 274  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 		if (epc.veg_type == TREE) {
 			/*    Stem wood mortality */
 			/*	  Transfer to DEADWOOD if standing dead */
@@ -294,9 +279,6 @@ printf("\n at line 274  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		cs_litr->litr1c         += m_gresp_store_to_litr1c;
 		cs_litr->litr1c         += m_gresp_transfer_to_litr1c;
 
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 		}
 	/* Remove aboveground dead c from carbon stores in all cases. */
 	cs->cpool -= m_cpool;
@@ -406,9 +388,6 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 			ns_litr->litr1n    += m_livestemn_transfer_to_litr1n;
 			ns_litr->litr1n    += m_deadstemn_transfer_to_litr1n;
 			}
-//if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 3) {
-//printf("\n at line 393 update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-//}
 		}
 	/* Remove aboveground dead n from n stores in all cases. */
 	ns->npool -= m_npool;
@@ -480,9 +459,6 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 	}*/
   
  
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-printf("\n at the end of update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	return;
 }/*end update_mortality*/
 

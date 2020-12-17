@@ -142,12 +142,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "types.h"
+#include "output_filter.h"
 //#include "../../util/WMFireInterface.h" /* required for fire spread*/
 #include "WMFireInterface.h" /* required for fire spread*/
+
 /*----------------------------------------------------------*/
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
 #define FILEPATH_LEN 1024
+#define PATH_SEP '/'
+#define FILE_EXT_SEP '.'
 #define TEC_CMD_LEN 256
 #define NULLVAL -9999
 #define TRUE    1
@@ -224,13 +229,6 @@ int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *)
 int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
 #endif
-
-/*----------------------------------------------------------*/
-/*      Define types                                        */
-/*----------------------------------------------------------*/
-typedef short bool;
-static const short true = 1;
-static const short false = 0;
 
 /*----------------------------------------------------------*/
 /*      Define a calendar date object.                      */
@@ -425,6 +423,10 @@ struct accumulate_patch_object
    double snowin;
    double Qin_total;
    double Qout_total;
+   double soilc;
+   double litterc;
+   double soiln;
+   double littern;
 };
 
 
@@ -1503,6 +1505,7 @@ struct  litter_object
 
 struct  litter_c_object
         {
+    double totalc; 	/* (kgC/m2) total litter C */
     double litr1c;         /* (kgC/m2) litter labile C */
     double litr2c;         /* (kgC/m2) litter unshielded cellulose C */
     double litr3c;         /* (kgC/m2) litter shielded cellulose C */
@@ -1517,6 +1520,7 @@ struct  litter_c_object
 
 struct  litter_n_object
         {
+    double totaln; 	/* (kgN/m2) total litter N */
     double litr1n;          /* (kgN/m2) litter labile N */
     double litr2n;          /* (kgN/m2) litter unshielded cellulose N */
     double litr3n;          /* (kgN/m2) litter shielded cellulose N */
@@ -1802,6 +1806,7 @@ struct patch_object
         double  NO3_throughfall;        /* kg/m2 day  */
         double  NO3_throughfall_final;  /* kg/m2 day */
         double  rain_stored;            /* m water      */
+	double	total_water_in;		/* m water */
         double  slope;                  /* degrees              */
         double  S;                      /* m/m          */
         double  sat_zone_storage;       /* m water      */
@@ -2217,6 +2222,16 @@ struct  command_line_object
 	double	fs_percolation;
 	double	fs_threshold;
         struct  output_flag     output_flags;
+
+        bool					output_filter_flag;
+        char                    *output_filter_filename;
+        OutputFilter            *output_filter;
+        bool					output_filter_patch_accum_monthly;
+        bool					output_filter_patch_accum_yearly;
+        bool					output_filter_strata_accum_monthly;
+        bool					output_filter_strata_accum_yearly;
+
+        bool    legacy_output_flag; // Remove when legacy output is removed.
         struct  b_option        *b;
         struct  h_option        *h;
         struct  z_option        *z;
@@ -2331,7 +2346,7 @@ struct cstate_struct
     double  age; /* (num years) */
     double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
-    double totalc;          /* (kgC/m2) previous days plant carbon total */
+    double totalc;          /* (kgC/m2) plant carbon total */
     double net_psn;         /* (kgC/m2)  net photosynthesis (psn-respiration) */
     double nppcum;          /* (kgC/m2) cumulative daily npp (net_psn) */
     double cpool;           /* (kgC/m2) temporary plant C pool */
@@ -2474,6 +2489,7 @@ struct epvar_struct
         double fwood; /* 0-1 */
 
         /* gross PSN input */
+    double added_carbon;  /* (kgC/m2) carbon added due to resprouting, height adjustments to prevent > 100 cover */
     double assim_sunlit; /* (umol/m2/s per leaf) */
     double assim_shade; /* (umol/m2/s  per leaf) */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
@@ -2576,7 +2592,7 @@ struct epvar_struct
 {
     double    nlimit;          /* (0-1) 0 is not limited on that day */
     double preday_totaln;   /* (kgN/m2) previous days plant nitrogen total */
-    double totaln;          /* (kgN/m2) previous days plant nitrogen total */
+    double totaln;          /* (kgN/m2)  plant nitrogen total */
     double npool;           /* (kgN/m2) temporary plant N pool */
     double leafn;           /* (kgN/m2) leaf N */
     double dead_leafn;      /* (kgN/m2) standing dead leaf N for grasses */
@@ -2948,13 +2964,17 @@ struct  stratum_default
         struct accumulate_strata_object {
 
         int length;
-        double psn;
+        double resp;
+        double gpsn;
         double lai;
         double lwp;
         double minNSC;
         double stemc;
         double rootc;
         double leafc;
+	double totalc;
+	double totaln;
+	double height;
         };
 
 
