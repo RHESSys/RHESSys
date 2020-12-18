@@ -54,6 +54,9 @@ void execute_yearly_output_event(int reset_flag, struct world_object *world,
 			struct canopy_strata_object*, struct date, FILE*);
 	void output_yearly_fire(int, int, int, int, struct canopy_strata_object*,
 			struct date, FILE*);
+
+	bool output_filter_output_yearly(char * const error, size_t error_len, bool verbose,
+                struct date date, OutputFilter const * const filters);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
