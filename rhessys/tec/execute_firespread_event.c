@@ -44,6 +44,11 @@ void execute_firespread_event(
 		struct patch_object *,
 		double,
 		struct	command_line_object	*);
+	
+	void	compute_family_fire_effects(
+		struct patch_family_object *,
+		double,
+		struct	command_line_object	*);
 
 
 	/*--------------------------------------------------------------*/
@@ -52,6 +57,7 @@ void execute_firespread_event(
 	struct fire_object **fire_grid;
 	struct patch_fire_object **patch_fire_grid;
 	struct patch_object *patch;
+	struct patch_family_object *patch_family;
 //	struct node_fire_wui_dist *tmp_node;
 	int i,j,p,c,layer;
 	double pspread;
@@ -326,23 +332,41 @@ void execute_firespread_event(
 	// if(world[0].fire_grid[0][0].fire_size>0) // only do this if there was a fire
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   		for (j=0; j < world[0].num_fire_grid_col; j++) {
-			for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
-				patch = world[0].patch_fire_grid[i][j].patches[p];
 
-				patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-// so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
-				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
-				{
-					compute_fire_effects(
-						patch,
-						pspread,
-						command_line);
-				}
+			if (command_line[0].multiscale_flag = 1)
+			{
+				patch_family = world[0].patch_fire_grid[i][j].patch_families[0];
+				//patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+				// grid in patch is length 1 since only the [0] is ever set, regardless of allocation
+				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[0];
 
+				compute_family_fire_effects(
+					patch_family,
+					pspread,
+					command_line
+				);
 			}
-		}
-	}
+			else
+			{
+				for (p = 0; p < patch_fire_grid[i][j].num_patches; ++p)
+				{
+					patch = world[0].patch_fire_grid[i][j].patches[p];
+
+					patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+					pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+					// so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
+					if (world[0].defaults[0].fire[0].calc_fire_effects == 1)
+					{
+						compute_fire_effects(
+							patch,
+							pspread,
+							command_line);
+					}
+				}
+			} // end IF NOT MSR
+
+		} // end for grid col
+	} // end for grid row
 	return;
 } /*end execute_firespread_event.c*/
 

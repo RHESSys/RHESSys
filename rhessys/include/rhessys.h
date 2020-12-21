@@ -1968,8 +1968,15 @@ struct patch_family_object
         {
         int family_ID;
         int num_patches_in_fam;
+        int num_layers;
+        int num_canopy_strata;
+        int strata_patch_index;                 // for each strata, position of the patch containing it within the patch family (eg 0, 0, 1, 1, 2...)
         double area;
+        double  overstory_height_thresh;        /* Defines lower limit of overstory (m) - MIN of patches*/
+	double  understory_height_thresh;       /* Defines upper limit of understory (m) - MAX of patches*/
         struct  patch_object            **patches;
+        struct  layer_object            *layers; // all layers in all patches within family
+        struct  canopy_strata_object    **canopy_strata;
         };
 
 /*----------------------------------------------------------*/
@@ -2987,6 +2994,7 @@ struct  canopy_strata_object
         int             ID;
         int             num_base_stations;
 	int		veg_parm_ID;
+        int             fam_patch_ind;                          /* index of containing patch in patch family */
         double  APAR_direct;                                    /* (umol photon/m2*day) */
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;
