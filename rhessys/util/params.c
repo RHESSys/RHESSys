@@ -9,17 +9,17 @@ param * readParamFile(int *paramCnt, char *filename)
     /* Read all parameters from the specified parameter file into a character array.
        The parameters will be accessed by the calling program via the get* functions
        that follow.
-       
+
        Parameters are of the format:
 
            <value> <name> <comment>
 
        for example:
-       
+
            0.071   epc.alloc_livewoodc_woodc               # White p.28 - Mean value. Was 0.60
 
     */
-   
+
     int paramInd = -1;
     int iParam;
 
@@ -132,7 +132,7 @@ char * getStrParam(int *paramCnt, param **paramPtr, char *paramName, char *readF
         sLen = string_length(defaultVal);
         outStr = (char *)malloc(sizeof(char) * sLen);
 	sscanf(defaultVal,readFormat,outStr);
-        
+
 	return outStr;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
@@ -311,7 +311,7 @@ void printParams(int paramCnt, param *params, char *outFilename) {
     	fprintf(stderr, "FATAL ERROR:Error opening output parameter filename %s\n", outFilename);
     	exit(EXIT_FAILURE);
     }
-    
+
     for (iParam = 0; iParam < paramCnt; iParam++) {
         /* Print the parameter value with the format that was specified when the parameter was read, i.e. call to getIntParameter */
         if (params[iParam].accessed) {
@@ -325,10 +325,10 @@ void printParams(int paramCnt, param *params, char *outFilename) {
 int string_length(char *s)
 {
    int c = 0;
- 
+
    while(*(s+c))
       c++;
- 
+
    return c;
 }
 
@@ -400,7 +400,7 @@ int getIntWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *rea
     } else if (useDefaultVal) {
         return defaultVal;
     } else {
-        printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+        //printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
     }
 }
 

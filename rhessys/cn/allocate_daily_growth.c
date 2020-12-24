@@ -417,7 +417,7 @@ int allocate_daily_growth(int nlimit,
 	---------------------------------------------------------------------------*/
   //debug
   if(ndf->actual_N_uptake!=ndf->actual_N_uptake || sminn_to_npool!=sminn_to_npool){
-    printf("allocate_daily_growth [%d,%d,%d]: (%e{%e,%e}[%e,%e],%e[%e],%d,%e>=%e,%e)\n",
+   /* printf("allocate_daily_growth [%d,%d,%d]: (%e{%e,%e}[%e,%e],%e[%e],%d,%e>=%e,%e)\n",
            current_date.day, current_date.month, current_date.year,
            plant_nalloc, ns->retransn, ndf->potential_N_uptake,
            ndf->retransn_to_npool,sminn_to_npool, //nan
@@ -425,7 +425,7 @@ int allocate_daily_growth(int nlimit,
            nlimit,
            ndf_patch->plant_potential_ndemand,
            ndf_patch->plant_avail_uptake,
-           ndf->actual_N_uptake);
+           ndf->actual_N_uptake); */
   }//debug
 
 
@@ -433,13 +433,13 @@ int allocate_daily_growth(int nlimit,
 
   // should ndf->actual_N_uptake = plant_nalloc; ndf->actual_N_uptake < plant_nalloc --> increasing npool
   if(ndf->actual_N_uptake + 1e-8 < plant_nalloc && plant_nalloc>0 && plant_calloc>0){ //<<----- bad
-    printf("allocate_daily_growth N balance[%d,%d,%d]: (%e, %e, %e, %e)\n",
+    /*printf("allocate_daily_growth N balance[%d,%d,%d]: (%e, %e, %e, %e)\n",
         current_date.day, current_date.month, current_date.year,
            ndf->actual_N_uptake,
            plant_nalloc,
            ndf->retransn_to_npool,
            sminn_to_npool
-    );
+    );*/
     ndf->retransn_to_npool *= ndf->actual_N_uptake/plant_nalloc;
     sminn_to_npool *= ndf->actual_N_uptake/plant_nalloc;
   }//debug

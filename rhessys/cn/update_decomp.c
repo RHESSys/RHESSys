@@ -115,9 +115,10 @@ int update_decomp(
 		ndf->sminn_to_soil1n_l1 = ndf->pmnf_l1s1;
 		daily_net_nmin -= ndf->pmnf_l1s1;
 	} else{ // check which patch has negative litr1c
-	  //        cs_litr->litr1c = 0.0;
-	  //        ns_litr->litr1n = 0.0;
-	  if ((cs_litr->litr1c < 0.0) || (ns_litr->litr1n < 0.0)) printf("lc1=%e, ln1=%e\n",cs_litr->litr1c, ns_litr->litr1n);
+
+	  if ((cs_litr->litr1c < 0.0) || (ns_litr->litr1n < 0.0)); //printf("lc1=%e, ln1=%e\n",cs_litr->litr1c, ns_litr->litr1n);
+        cs_litr->litr1c = 0.0; //Nbalance check 20201104
+        ns_litr->litr1n = 0.0;
 	  cdf->litr1c_hr = 0.0;
 	  cdf->litr1c_to_soil1c = 0.0;
 	  ndf->litr1n_to_soil1n = 0.0;
@@ -138,9 +139,10 @@ int update_decomp(
 		ndf->sminn_to_soil2n_l2 = ndf->pmnf_l2s2;
 		daily_net_nmin -= ndf->pmnf_l2s2;
 	} else{
-	  //        cs_litr->litr2c = 0.0;
-	  //        ns_litr->litr2n = 0.0;
+
 	  if ((cs_litr->litr2c < 0.0) || (ns_litr->litr2n < 0.0)) printf("lc2=%e, ln2=%e\n",cs_litr->litr2c, ns_litr->litr2n);
+        cs_litr->litr2c = 0.0;
+        ns_litr->litr2n = 0.0;
 	  cdf->litr2c_hr = 0.0;
 	  cdf->litr2c_to_soil2c = 0.0;
 	  ndf->litr2n_to_soil2n = 0.0;
@@ -163,9 +165,10 @@ int update_decomp(
 		ndf->sminn_to_soil2n_l3 = ndf->pmnf_l3l2;
 		daily_net_nmin -= ndf->pmnf_l3l2;
 	} else{
-	  //        cs_litr->litr3c = 0.0;
-	  //        ns_litr->litr3n = 0.0;
+
 	  if ((cs_litr->litr3c < 0.0) || (ns_litr->litr3n < 0.0)) printf("lc3=%e, ln3=%e\n",cs_litr->litr3c, ns_litr->litr3n);
+        cs_litr->litr3c = 0.0;
+        ns_litr->litr3n = 0.0;
 	  cdf->litr3c_hr = 0.0;
 	  cdf->litr3c_to_litr2c = 0.0;
 	  ndf->litr3n_to_litr2n = 0.0;
@@ -186,9 +189,10 @@ int update_decomp(
 		ndf->sminn_to_soil3n_l4 = ndf->pmnf_l4s3;
 		daily_net_nmin -= ndf->pmnf_l4s3;
 	} else{
-	  //        cs_litr->litr4c = 0.0;
-	  //        ns_litr->litr4n = 0.0;
+
 	  if ((cs_litr->litr4c < 0.0) || (ns_litr->litr4n < 0.0)) printf("lc4=%e, ln4=%e\n",cs_litr->litr4c, ns_litr->litr4n);
+        cs_litr->litr4c = 0.0;
+        ns_litr->litr4n = 0.0;
 	  cdf->litr4c_hr = 0.0;
 	  cdf->litr4c_to_soil3c = 0.0;
 	  ndf->litr4n_to_soil3n = 0.0;
@@ -207,8 +211,8 @@ int update_decomp(
 		ndf->sminn_to_soil2n_s1 = ndf->pmnf_s1s2;
 		daily_net_nmin -= ndf->pmnf_s1s2;
 	} else{
-	  //        cs_soil->soil1c = 0.0;
-	  //        ns_soil->soil1n = 0.0;
+	  cs_soil->soil1c = 0.0;
+	  ns_soil->soil1n = 0.0;
 	  cdf->soil1c_hr = 0.0;
 	  cdf->soil1c_to_soil2c = 0.0;
 	  ndf->soil1n_to_soil2n = 0.0;
@@ -227,8 +231,8 @@ int update_decomp(
 		ndf->sminn_to_soil3n_s2 = ndf->pmnf_s2s3;
 		daily_net_nmin -= ndf->pmnf_s2s3;
 	} else{
-	  //        cs_soil->soil2c = 0.0;
-	  //        ns_soil->soil2n = 0.0;
+	   cs_soil->soil2c = 0.0;
+	  ns_soil->soil2n = 0.0;
 	  cdf->soil2c_hr = 0.0;
 	  cdf->soil2c_to_soil3c = 0.0;
 	  ndf->soil2n_to_soil3n = 0.0;
@@ -247,8 +251,8 @@ int update_decomp(
 		ndf->sminn_to_soil4n_s3 = ndf->pmnf_s3s4;
 		daily_net_nmin -= ndf->pmnf_s3s4;
 	} else{
-	  //        cs_soil->soil3c = 0.0;
-	  //        ns_soil->soil3n = 0.0;
+	  cs_soil->soil3c = 0.0;
+	  ns_soil->soil3n = 0.0;
 	  cdf->soil3c_hr = 0.0;
 	  cdf->soil3c_to_soil4c = 0.0;
 	  ndf->soil3n_to_soil4n = 0.0;//<<-------
@@ -261,8 +265,8 @@ int update_decomp(
 		ndf->soil4n_to_sminn = cdf->psoil4c_loss / cn_s4;
 		daily_net_nmin += ndf->soil4n_to_sminn;
 	} else{
-	  //        cs_soil->soil4c = 0.0;
-	  //        ns_soil->soil4n = 0.0;
+        cs_soil->soil4c = 0.0;
+        ns_soil->soil4n = 0.0;
 	  cdf->soil4c_hr = 0.0;
 	  ndf->soil4n_to_sminn = 0.0;
 	}
