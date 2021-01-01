@@ -68,7 +68,7 @@ void compute_family_fire_effects(
 	// struct fire_effects_object fe_under;
 	// struct fire_effects_object fe_int;
 	int p, c, layer;
-	int thin_type;
+	int thin_type, sev;
 	double litter_c_consumed;
 	double under_h, under_c, under_pct_area;
 	double intr_h, intr_c, intr_pct_area;
@@ -529,13 +529,18 @@ void compute_family_fire_effects(
 	/*--------------------------------------------------------------*/
 	layer=0;
 	c=0;
-	canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
-	if (canopy_target[0].fe.canopy_target_prop_mort < patch[0].landuse_defaults[0][0].mid_fire_severity_p)
-		patch[0].fire.severity = LOW_FIRE;
-	else if (canopy_target[0].fe.canopy_target_prop_mort < patch[0].landuse_defaults[0][0].high_fire_severity_p)
-		patch[0].fire.severity = MID_FIRE;
-		else 
-		patch[0].fire.severity = HIGH_FIRE;
+	canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
+	if (canopy_target[0].fe.canopy_target_prop_mort < patch_family[0].patches[canopy_target[0].fam_patch_ind][0].landuse_defaults[0][0].mid_fire_severity_p)
+		sev = LOW_FIRE;
+	else if (canopy_target[0].fe.canopy_target_prop_mort < patch_family[0].patches[canopy_target[0].fam_patch_ind][0].landuse_defaults[0][0].high_fire_severity_p)
+		sev = MID_FIRE;
+	else
+		sev = HIGH_FIRE;
+
+	for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
+	{
+		patch_family[0].patches[p][0].fire.severity = sev;
+	}
 
 	} /* end if(pspread > 0 ) */
     else 
@@ -544,7 +549,6 @@ void compute_family_fire_effects(
 		{
 			for (c = 0; c < patch_family[0].layers[layer].count; c++)
 			{
-
 				/* Calculates metrics for targer canopy */
 				canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
 				canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
@@ -563,12 +567,15 @@ void compute_family_fire_effects(
 					canopy_target[0].fe.canopy_subtarget_height = 0;
 					canopy_target[0].fe.canopy_subtarget_c = 0;
 				}
-
 			} // end for c=0
-		}	  //end for layer =0
+		} //end for layer =0
 
-	patch[0].fire.severity = NO_FIRE;
-	}
+		for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
+		{
+			patch_family[0].patches[p][0].fire.severity = NO_FIRE;
+		}
+
+	} // end if pspread = 0
 
 	return;
 } /*end compute_family_fire_effects.c*/

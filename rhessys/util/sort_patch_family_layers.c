@@ -138,6 +138,9 @@ void sort_patch_family_layers( struct patch_family_object *patch_family, int *re
 				cover_fraction += patch_family[0].canopy_strata[j][0].cover_fraction;
 			}
 		}
+
+		// leaving just commented out for now, but this shouldn't be needed - only using sort on family layers for height order
+
 		/*--------------------------------------------------------------*/
 		/*		Report a fatal error if the cover fraction for	*/
 		/*		this layer does not add to 1.0			*/
@@ -145,48 +148,48 @@ void sort_patch_family_layers( struct patch_family_object *patch_family, int *re
 		/*         with most stem (tree) or leaf (grass) - if the same (which is likely) */
 		/* 		simply pick the last in the list */
 		/*--------------------------------------------------------------*/
-		if (( cover_fraction > 1.0 ) && ( patch_family[0].layers[i].height > ZERO)){
+		// if (( cover_fraction > 1.0 ) && ( patch_family[0].layers[i].height > ZERO)){
 	
-			maxstemcID = 0;
-			maxleafcID = 0;
-			maxstemc = 0;
-			maxleafc = 0;
-			for ( s = 0; s < patch_family[0].layers[i].count; s++) {
-				if (patch_family[0].canopy_strata[patch_family[0].layers[i].strata[s]][0].defaults[0][0].epc.veg_type == TREE) {
-				if (patch_family[0].canopy_strata[patch_family[0].layers[i].strata[s]][0].cs.dead_stemc >  maxstemc)
-					maxstemcID = s;;
-				} 
-				else {
-				if (patch_family[0].canopy_strata[patch_family[0].layers[i].strata[s]][0].cs.leafc >  maxleafc)
-					maxleafcID = s;;
-				}
-				}
+		// 	maxstemcID = 0;
+		// 	maxleafcID = 0;
+		// 	maxstemc = 0;
+		// 	maxleafc = 0;
+		// 	for ( s = 0; s < patch_family[0].layers[i].count; s++) {
+		// 		if (patch_family[0].canopy_strata[patch_family[0].layers[i].strata[s]][0].defaults[0][0].epc.veg_type == TREE) {
+		// 		if (patch_family[0].canopy_strata[patch_family[0].layers[i].strata[s]][0].cs.dead_stemc >  maxstemc)
+		// 			maxstemcID = s;;
+		// 		} 
+		// 		else {
+		// 		if (patch_family[0].canopy_strata[patch_family[0].layers[i].strata[s]][0].cs.leafc >  maxleafc)
+		// 			maxleafcID = s;;
+		// 		}
+		// 		}
 
-			if (maxstemc > 0) {
-				stratum=patch_family[0].canopy_strata[patch_family[0].layers[i].strata[maxstemcID]];
-				stratum->cs.dead_stemc += 0.0001; 
-				stratum->cdf.added_carbon += 0.0001;
-				stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef
-                                * pow ( (stratum->cs.live_stemc + stratum->cs.dead_stemc)/(stratum->cs.stem_density), stratum->defaults[0][0].epc.height_to_stem_exp);
-				}
-			else {
-				stratum=patch_family[0].canopy_strata[patch_family[0].layers[i].strata[maxleafcID]];
-                                stratum->cs.leafc += 0.0001;                                                      
-				stratum->cdf.added_carbon += 0.0001;
-                                stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef                    
-                                * pow ( (stratum->cs.leafc), stratum->defaults[0][0].epc.height_to_stem_exp);
-				}
+		// 	if (maxstemc > 0) {
+		// 		stratum=patch_family[0].canopy_strata[patch_family[0].layers[i].strata[maxstemcID]];
+		// 		stratum->cs.dead_stemc += 0.0001; 
+		// 		stratum->cdf.added_carbon += 0.0001;
+		// 		stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef
+        //                         * pow ( (stratum->cs.live_stemc + stratum->cs.dead_stemc)/(stratum->cs.stem_density), stratum->defaults[0][0].epc.height_to_stem_exp);
+		// 		}
+		// 	else {
+		// 		stratum=patch_family[0].canopy_strata[patch_family[0].layers[i].strata[maxleafcID]];
+        //                         stratum->cs.leafc += 0.0001;                                                      
+		// 		stratum->cdf.added_carbon += 0.0001;
+        //                         stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef                    
+        //                         * pow ( (stratum->cs.leafc), stratum->defaults[0][0].epc.height_to_stem_exp);
+		// 		}
 					
 				
-			patch_family[0].layers[i].null_cover = 0.0;
+		// 	patch_family[0].layers[i].null_cover = 0.0;
 
-			/* recursively call patch layers to fix this - should always work because we are changing the height */
-			rec += 1;
-			sort_patch_family_layers(patch_family, *rec);
-		}
-		else {
-			patch_family[0].layers[i].null_cover = 1.0 - cover_fraction;
-		}
+		// 	/* recursively call patch layers to fix this - should always work because we are changing the height */
+		// 	rec += 1;
+		// 	sort_patch_family_layers(patch_family, *rec);
+		// }
+		// else {
+		// 	patch_family[0].layers[i].null_cover = 1.0 - cover_fraction;
+		// }
 	}
 	return;
 }

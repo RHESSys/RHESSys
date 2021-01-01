@@ -679,31 +679,35 @@ void		patch_daily_F(
 
 	/*--------------------------------------------------------------*/
 	/* call fire effects on a particular date, based  		*/
-	/* on time series input						*/
+	/* on time series input - NO MSR						*/
 	/*--------------------------------------------------------------*/
-	if (patch[0].base_stations != NULL) {
-		inx = patch[0].base_stations[0][0].dated_input[0].pspread.inx;
-		if (inx > -999) {
-			clim_event = patch[0].base_stations[0][0].dated_input[0].pspread.seq[inx];
-			while (julday(clim_event.edate) < julday(current_date)) {
-				patch[0].base_stations[0][0].dated_input[0].pspread.inx += 1;
-				inx = patch[0].base_stations[0][0].dated_input[0].pspread.inx;
+	if (command_line[0].multiscale_flag == 0)
+	{
+		if (patch[0].base_stations != NULL)
+		{
+			inx = patch[0].base_stations[0][0].dated_input[0].pspread.inx;
+			if (inx > -999)
+			{
 				clim_event = patch[0].base_stations[0][0].dated_input[0].pspread.seq[inx];
+				while (julday(clim_event.edate) < julday(current_date))
+				{
+					patch[0].base_stations[0][0].dated_input[0].pspread.inx += 1;
+					inx = patch[0].base_stations[0][0].dated_input[0].pspread.inx;
+					clim_event = patch[0].base_stations[0][0].dated_input[0].pspread.seq[inx];
 				}
-			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
-				pspread = clim_event.value;
+				if ((clim_event.edate.year != 0) && (julday(clim_event.edate) == julday(current_date)))
+				{
+					pspread = clim_event.value;
 
-				printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
-				compute_fire_effects(
-					patch,
-					pspread);
-				/* could put a call to update_fire_in_WUI.c here */
-
+					printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
+					compute_fire_effects(
+						patch,
+						pspread);
+					/* could put a call to update_fire_in_WUI.c here */
+				}
 			}
-		} 
+		}
 	}
-
-
 
 	/*--------------------------------------------------------------*/
 	/*	Compute the stability correction factor for aero cond	*/

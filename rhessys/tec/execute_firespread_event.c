@@ -370,16 +370,10 @@ void execute_firespread_event(
 	return;
 } /*end execute_firespread_event.c*/
 
-
 // ----------printing code samples -----------
 //	printf("in execute_firespread_event_1\n");
 //	printf("*********************\n");
 //	printf("Understory Height = %f\n", height_under);
-
-
-
-
-
 
 /*
 
@@ -398,6 +392,3 @@ struct fire_veg_loss_struct	fire_veg_effects;
 	double layer_lower_c
 	double understory_litter_c
 };*/
-
-
-

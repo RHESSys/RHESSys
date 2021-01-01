@@ -371,17 +371,17 @@ se(patchesIn);
 /*		if(def.include_wui==1) // then readin the wui LUT
 			fclose(wuiIn);
 */		
-//		FILE *demIn;
-//		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
-//		demIn=fopen("../auxdata/DemGrid.txt","r");
-		// for now do away with the header, so this file has no header
-//		for(i=0; i<grid_dimY;i++){
-//for(j=0;j<grid_dimX;j++){				
-//				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
-//printf("Which column? %d \n",i);
-//printf("Before closing files\n");
+		//		FILE *demIn;
+		//		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
+		//		demIn=fopen("../auxdata/DemGrid.txt","r");
+				// for now do away with the header, so this file has no header
+		//		for(i=0; i<grid_dimY;i++){
+		//for(j=0;j<grid_dimX;j++){				
+		//				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
+		//printf("Which column? %d \n",i);
+		//printf("Before closing files\n");
 		fclose(patchesIn);
-//printf("patchesInClosed\n");
+		//printf("patchesInClosed\n");
 		fclose(demIn);
 		fclose(hillIn);
 		fclose(zoneIn);

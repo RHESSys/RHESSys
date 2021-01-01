@@ -124,6 +124,8 @@ struct patch_family_object *construct_patch_family(
             cs_count++;
         }
 
+        // we are assuming that patch families are greedy in their fire spread properties -- any ladder fuel that propegates to the overstory should count
+        // so using max understory and min overstory height threshold
         if (command_line[0].firespread_flag == 1)
         {
             if (patch_family[0].patches[i][0].soil_defaults[0][0].understory_height_thresh > 
@@ -135,9 +137,17 @@ struct patch_family_object *construct_patch_family(
         }
     }
 
-    patch_family[0].understory_height_thresh = patch_family[0].patches[max_under_loc][0].soil_defaults[0][0].understory_height_thresh;    
-    patch_family[0].overstory_height_thresh = patch_family[0].patches[min_over_loc][0].soil_defaults[0][0].overstory_height_thresh;
-    //patch_family[0].strata_patch_index = strata_patch_loc;
+    if (command_line[0].firespread_flag == 1)
+    {
+        patch_family[0].understory_height_thresh = patch_family[0].patches[max_under_loc][0].soil_defaults[0][0].understory_height_thresh;
+        patch_family[0].overstory_height_thresh = patch_family[0].patches[min_over_loc][0].soil_defaults[0][0].overstory_height_thresh;
+        // check that the thresholds make logical sense (under is < overstory threshold)
+        if (patch_family[0].understory_height_thresh >= patch_family[0].overstory_height_thresh)
+        {
+            fprintf(stderr, "FATAL ERROR:  Understory height threshold is greater than overstory threshold for patch family %d\n", patch_family_ID);
+			exit(EXIT_FAILURE);
+        }
+    }
 
     /*--------------------------------------------------------------*/
     /*	Define a list of canopy strata layers that can at least	*/
