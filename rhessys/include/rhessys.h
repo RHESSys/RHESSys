@@ -448,6 +448,17 @@ struct spinup_thresholds_list_object
         int num_stratum;
         struct stratum_object **list;
         };
+
+/*----------------------------------------------------------*/
+/*      Define target object                                */
+/*----------------------------------------------------------*/
+       struct target_object {
+              double lai;
+              double total_stemc;
+              double height;
+              double age;
+              int    met;
+       };
 /*----------------------------------------------------------*/
 /*      Define reservoir object.                            */
 /*----------------------------------------------------------*/
@@ -1638,6 +1649,8 @@ struct spinup_default {
         int ID;
         double tolerance;   // percent as fraction of 1
         double max_years;   /* years */
+        int    target_type; // to specify which layers of LAI is used, 1 is use stratum LAI and 2 is use patch LAI
+        int    max_ID; // the maximum stratum ID that is overstory, normally understory is one degree larger than overstory
         };
 
 struct spinup_object
@@ -1875,6 +1888,7 @@ struct patch_object
         struct  accumulate_patch_object acc_year;
         struct  rooting_zone_object     rootzone;
         struct  zone_object             *zone; /* parent zone */
+        struct  target_object   target; /* this target is only for use LAI as target to spin up REN 20201203*/
 
 
 /*----------------------------------------------------------*/
@@ -3010,16 +3024,7 @@ struct  stratum_default
 	double overstory_mort_k2; 		/* Centerpoint of sigmoid function relating understory biomass consumed and overstory mortality */
 };
 
-/*----------------------------------------------------------*/
-/*      Define target object                                */
-/*----------------------------------------------------------*/
-       struct target_object {
-              double lai;
-              double total_stemc;
-              double height;
-              double age;
-              int    met;
-       };
+
 /*----------------------------------------------------------*/
 /*      Define accumulator object                           */
 /*----------------------------------------------------------*/
@@ -3178,7 +3183,7 @@ struct beetle_default {
      int leaf_year_delay; //red needle delay uear
      int leaf_half_life;  // red needle half life
      int calc_single_attack;
-     int min_abc; // the minmum above ground carbon that a patch have to make sure an attack happen g/m2
+     double min_abc; // the minmum above ground carbon that a patch have to make sure an attack happen g/m2
      int mortality_type; //type 1 is beetle attack, type 2 is fire, type 3 is thinning/Ning Ren 2019/04/30
      int root_alive; //1 is root is still alive after attack and 0 is root is dead after attack, 2 is dead root go to decay pool
      int harvest_dead_root; //1 is dead root is harvest not go to litter pool and 0 is dead root go to litter pool

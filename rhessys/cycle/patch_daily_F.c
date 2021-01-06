@@ -391,7 +391,7 @@ void		patch_daily_F(
  void  compute_beetle_effects( //NREN 20180629
         struct patch_object *,
         int inx,
-        int min_abc,
+        double min_abc,
         int root_alive,
         int harvest_dead_root,
         double);
@@ -721,16 +721,36 @@ void		patch_daily_F(
     	if (patch[0].base_stations != NULL) {       // this means in the world file you need to modify the patch num_basestations=1 and also specify another basestationID
 		inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
 
-               //
-		if (inx > -999) {
+		if (inx > -999) { // here control the inx just 24 each, because other inx may smaller than -999
 
+            int inx2 = floor(inx/24)*24;
+            inx = inx2;
 			clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
+
+            if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
+                 printf("\n checking beetle attack squence before while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);}
+
 			while (julday(clim_event.edate) < julday(current_date)) {
 				patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx += 1;
 				inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
 				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
+
+				//if (patch[0].ID == 7788){
+                 printf("\n checking beetle attack squence in while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);//}
+
 				}
-			if ((clim_event.edate.year != 0) && (clim_event.value > 1e-6)&&( julday(clim_event.edate) == julday(current_date)) ) {
+
+				// sometime the chcking overshoot the inx;
+				inx2 = floor(inx/24)*24;
+				inx = inx2;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
+
+            if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
+                 printf("\n checking beetle attack squence after while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);}
+			if ((clim_event.edate.year > 0) && (clim_event.value > 0.0) && (clim_event.value <= 1) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				attack_mortality = clim_event.value;
               //initialize the snage_sequences c and n
              /*  if (inx ==0) {  // here 300 is hard coded, it is means most 300/24 12.5 events
@@ -755,12 +775,14 @@ void		patch_daily_F(
                     strata[0].redneedle_sequence.seq[inx].Nvalue = 0;
                         }
                     }
-                int min_abc = world[0].defaults[0].beetle[0].min_abc;
+                double min_abc = world[0].defaults[0].beetle[0].min_abc;
                 int root_alive = world[0].defaults[0].beetle[0].root_alive;
                 int harvest_dead_root = world[0].defaults[0].beetle[0].harvest_dead_root;
 
                 if (world[0].defaults[0].beetle[0].mortality_type ==1) {//type 1 is beetle type 2 is fire NR 2019/04/30
-//				printf("\n Implementing beetle attack effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
+                    if (patch[0].ID == 7788){
+                      printf("\n Implementing beetle attack effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d, the min_abc is %lf",
+                             attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day, min_abc);}
 				compute_beetle_effects(
 					patch,
 					inx, // to remember current index
@@ -781,7 +803,7 @@ void		patch_daily_F(
     /*---------------------------------------------------------------*/
     if (command_line[0].beetlespread_flag==1 && world[0].defaults[0].beetle[0].mortality_type==2 && current_date.year ==world[0].defaults[0].beetle[0].year_attack && current_date.month==8 && current_date.day==15){
 
-                printf("\n Implementing prescribed beetle effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
+                printf("\n Implementing prescribed fire effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d", attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day);
                 attack_mortality = world[0].defaults[0].beetle[0].attack_mortality;
                 compute_fire_effects(
                     patch,

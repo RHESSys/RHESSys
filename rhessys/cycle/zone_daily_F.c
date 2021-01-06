@@ -382,13 +382,13 @@ void		zone_daily_F(
 		/*	Modified so that the base station LAI is subtracted from the*/
 		/*		zone lai.												*/
 		/*--------------------------------------------------------------*/
-		//zone[0].effective_lai = 0.0;
-		//for ( patch=0 ; patch<zone[0].num_patches ; patch++ ){
-		//	zone[0].effective_lai
-		//		+= zone[0].patches[patch][0].effective_lai
-		//		* zone[0].patches[patch][0].area;
-		//}
-		//zone[0].effective_lai = zone[0].effective_lai / zone[0].area;
+		zone[0].effective_lai = 0.0; //calculate zone level LAI and use it as target NREN
+		for ( patch=0 ; patch<zone[0].num_patches ; patch++ ){
+			zone[0].effective_lai
+				+= zone[0].patches[patch][0].effective_lai
+				* zone[0].patches[patch][0].area;
+		}
+		zone[0].effective_lai = zone[0].effective_lai / zone[0].area;
 		//if ( zone[0].radrat <  1.0 ){
 		//	zone[0].LAI_temp_adjustment
 		//		=-1 * ( 1/zone[0].radrat ) * ( 1 + (zone[0].effective_lai
@@ -670,7 +670,7 @@ void		zone_daily_F(
 			zone,
 			command_line
 		);
-		
+
 	}
 
 	/*--------------------------------------------------------------*/
