@@ -1121,6 +1121,7 @@ struct zone_object
         struct  zone_hourly_object      *hourly;
         struct  accumulate_zone_object  acc_month;
         struct  accumulate_zone_object  acc_year;
+        struct  target_object   target;
 
         };
 

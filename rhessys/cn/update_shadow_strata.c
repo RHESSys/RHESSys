@@ -22,7 +22,7 @@
 
 void	update_shadow_strata(
 							   struct	world_object		      *world,
-							   //struct   zone_object               *zone,
+							   struct   zone_object               *zone,
 							   struct   patch_object              *patch,
 							   struct canopy_strata_object 	*stratum,
                                struct canopy_strata_object  *shadow_strata,
@@ -125,7 +125,14 @@ void	update_shadow_strata(
 
    } //if world
 
+   /* add third option to use zone effective LAI as target to solve the MSR incompatible problem NR 20210105*/
+   else if (world[0].defaults[0].spinup[0].target_type == 3) {
+        if (zone[0].effective_lai >= zone[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) {
+                stratum[0].target.met = 1;
+                  printf("\n 3. zone target meet zoneID is: %d, simulated zone effective LAI is: %lf, stratumID is: %d, simulate stratum LAI is %lf \n target LAI is %lf, target.met %d \n", zone[0].ID, zone[0].effective_lai, stratum[0].ID, stratum[0].epv.proj_lai, zone[0].target.lai, stratum[0].target.met);
+        }
 
+   }
 
 
   else if (world[0].defaults[0].spinup[0].target_type == 1){ //default is one

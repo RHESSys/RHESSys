@@ -35,18 +35,21 @@
 
 void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 		  struct world_object *world)
-													  
+
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.					                				*/
 	/*--------------------------------------------------------------*/
-	struct canopy_strata_object *find_stratum(int, int, int, int, int, struct world_object *); 	
-	
+	struct canopy_strata_object *find_stratum(int, int, int, int, int, struct world_object *);
+	struct patch_object *find_patch( int, int, int,struct basin_object *);
+	struct zone_object  *find_zone_in_hillslope(int, struct hillslope_object *);
+	struct hillslope_object *find_hillslope_in_basin(int, struct basin_object *);
+
 	void *alloc(size_t, char *, char *);
-  struct target_read {
+    struct target_read {
     char name[120];
     double value;
-  };	
+  };
 // need to add read record function - no the function is defined in rhessys.h??
 
 	/*--------------------------------------------------------------*/
@@ -58,13 +61,16 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 	FILE	  *spinup_thresholds_file;
 	struct  spinup_thresholds_list_object	*stlist;
 	struct	canopy_strata_object	*strata;
+	struct  patch_object            *patch;
+	struct  zone_object             *zone;
+	struct  hillslope_object        *hillslope;
   double  target_lai;
   double  target_total_stemc;
   double  target_height;
   double  target_age;
-  struct  target_read *target_array;	
+  struct  target_read *target_array;
 	char	  record[MAXSTR];
-	
+
 	/*--------------------------------------------------------------*/
 	/*  Try to open the spinup_thresholds file in read mode.        */
 	/*--------------------------------------------------------------*/
@@ -76,12 +82,12 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 
 //create target array, times number of targets (readin first)
   fscanf(spinup_thresholds_file,"%d",&num_stratum);
-  read_record(spinup_thresholds_file, record);  
+  read_record(spinup_thresholds_file, record);
   fscanf(spinup_thresholds_file,"%d",&num_targets);
   read_record(spinup_thresholds_file, record);
 
   target_array = (struct target_read *)alloc( sizeof(struct target_read)*num_targets, "target_array", "construct_spinup_thresholds");
-  
+
   for (j=0; j< num_targets; j++){
     fscanf(spinup_thresholds_file, "%s", target_array[j].name 	);
     read_record(spinup_thresholds_file, record);
@@ -92,7 +98,7 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 	/*--------------------------------------------------------------*/
   read_record(spinup_thresholds_file, record);
 
-  for (i=0; i< num_stratum; ++i) {  
+  for (i=0; i< num_stratum; ++i) {
 		fscanf(spinup_thresholds_file,"%d %d %d %d %d",
 			&basin_ID,
 			&hill_ID,
@@ -101,6 +107,10 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 			&stratum_ID);
 
     strata = find_stratum(stratum_ID, patch_ID, zone_ID, hill_ID, basin_ID, world);
+    /* search patch for lai target NREN 20201203*/
+    patch = find_patch(patch_ID, zone_ID, hill_ID, world[0].basins[0]);
+    hillslope = find_hillslope_in_basin(hill_ID, world[0].basins[0]);
+    zone  = find_zone_in_hillslope(zone_ID, hillslope);
 
 	  if (strata == NULL) {
 		  fprintf(stderr,	"FATAL ERROR: Could not find strata %d \n", stratum_ID);
@@ -108,13 +118,15 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
     }
 
     strata->target.met = 0;
-     
+
       for (j=0; j< num_targets; ++j) {
 		      fscanf(spinup_thresholds_file,"%lf", &target_array[j].value);
-            
-        if( strcmp (target_array[j].name, "LAI") == 0 || strcmp (target_array[j].name, "lai") == 0){ 
+
+        if( strcmp (target_array[j].name, "LAI") == 0 || strcmp (target_array[j].name, "lai") == 0){
           strata->target.lai = target_array[j].value;
-        } 
+          patch->target.lai = target_array[j].value;//NREN 20201203
+          zone->target.lai = target_array[j].value;//NREN 20210106
+        }
         if( strcmp (target_array[j].name,"total_stemc") == 0 ) {
           strata->target.total_stemc = target_array[j].value;
         }
@@ -133,6 +145,6 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
      }
   }
 
- 
+
 } /*end construct_spinup_thresholds.c*/
 

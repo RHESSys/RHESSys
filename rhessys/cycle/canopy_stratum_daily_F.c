@@ -249,6 +249,7 @@ void	canopy_stratum_daily_F(
 
   void	update_shadow_strata(
 	  struct	world_object		      *world,
+	  struct    zone_object               *zone,
 	  struct    patch_object              *patch,
 	  struct canopy_strata_object 	*stratum,
     struct canopy_strata_object   *shadow_strata,
@@ -2063,7 +2064,7 @@ void	canopy_stratum_daily_F(
 	/*	have been met                                                       	*/
 	/*------------------------------------------------------------------------*/
 	if(command_line[0].vegspinup_flag > 0){
-    update_shadow_strata(world, patch, stratum, shadow_strata, command_line, current_date);
+    update_shadow_strata(world, zone, patch, stratum, shadow_strata, command_line, current_date);
   }
 
    /***********************************************************************/
