@@ -42,7 +42,7 @@ void	output_zone(	int basinID, int hillID,
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	fprintf(outfile,
-		"%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -73,6 +73,6 @@ void	output_zone(	int basinID, int hillID,
 			zone[0].defaults[0][0].sea_level_clear_sky_trans + zone[0].z * zone[0].defaults[0][0].atm_trans_lapse_rate,
 			0.036 * exp(-0.154 * zone[0].Delta_T),
 			zone[0].cloud_fraction,
-			zone[0].CO2); //NREN20181115
+			zone[0].CO2, zone[0].effective_lai); //NREN20181115
 	return;
 } /*end output_zone*/
