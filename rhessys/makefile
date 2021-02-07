@@ -11,6 +11,9 @@ OBJ = objects
 
 netcdf=T
 
+# IF THIS IS DEFINED NO TESTS WILL RUN - NEEDED IF RUNNING WMFIRE, comment out or remove if you want to run tests
+#skiptests='T'
+
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
@@ -66,8 +69,12 @@ SRCS_TESTS := $(shell find $(SRCDIR_TESTS) -name '*.c')
 TESTSDIR = $(TESTS_ROOTDIR)
 OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
 OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
-TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
 TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
+
+# if people are having touble w specific syntax, change to ifdef
+ifneq ($(skiptests), T)
+	TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
+endif
 
 
 OBJECTS = \
@@ -409,6 +416,8 @@ dir:
 ifdef netcdf
 ifdef wmfire
 rhessys: $(OBJECTS) test
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
+rhessys: $(OBJECTS) 
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -L../lib -lwmfire -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test

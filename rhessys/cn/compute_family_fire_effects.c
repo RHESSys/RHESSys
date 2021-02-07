@@ -141,6 +141,18 @@ void compute_family_fire_effects(
 	lowest canopy. Hence, code may need to be revised if working with more
 	than two canopies. */
 
+// TOP 
+// layer 0 -> uses aggregate of understory + understory component of all intr stories 
+// layer 1 -> uses aggregate of understory + understory component of all intr stories 
+// --- overstory threshold
+// layer 2 -> (uses aggregate of understory + understory component of all intr stories) + understory consumption (function of pspread)
+// layer 3 -> (uses aggregate of understory + understory component of all intr stories) + understory consumption (function of pspread)
+// --- understory threshold
+// layer 4 -> understory consumption (function of pspread)
+// layer 5 -> understory consumption (function of pspread)
+// BOTTOM
+
+
 	// build aggregate understory layer to serve as universal canopy subtarget
 	// just need to create a aggregate canopy height, and C, (leaf+live stem +dead stem)
 	// either redirect references to subtarget canopy w that throughout, or replicate it and add it to canopy.fe.subtarget...
@@ -254,7 +266,27 @@ void compute_family_fire_effects(
 						canopy_target[0].fe.canopy_subtarget_height_u_prop = (patch_family[0].overstory_height_thresh - intr_h) /
 																			 (patch_family[0].overstory_height_thresh - patch_family[0].understory_height_thresh);
 						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
-						subtarget_c = intr_c;
+						//subtarget_c =+ intr_c;
+						intr_c;
+						if (canopy_target[0].defaults[0][0].consumption == 1)
+						{
+							canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
+						}
+						else
+						{
+							canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
+								(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) /
+								(canopy_target[0].defaults[0][0].consumption - 1);
+						}
+						/* Determine the proportion of subtarget canopy carbon consumed */
+						canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort *
+																			   canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
+
+						/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
+						canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+						//canopy_target[0].fe.understory_c_consumed_intr = (intr_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+						
+
 					}
 					/* Determine the proportion of subtarget canopy mortality consumed */
 					if (canopy_target[0].defaults[0][0].consumption == 1)

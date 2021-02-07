@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-// test comment
 void execute_firespread_event(
 									 struct	world_object *world,
 									 struct	command_line_object	*command_line,
@@ -49,6 +48,15 @@ void execute_firespread_event(
 		struct patch_family_object *,
 		double,
 		struct	command_line_object	*);
+
+	struct fire_object **WMFire(
+		double cell_res, 
+		int nrow, 
+		int ncol, 
+		long year, 
+		long month, 
+		struct fire_object **fire_grid, 
+		struct fire_default def);
 
 
 	/*--------------------------------------------------------------*/
@@ -323,7 +331,7 @@ void execute_firespread_event(
 	/*--------------------------------------------------------------*/
 	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);
 // needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
-	world[0].fire_grid=WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
+	world[0].fire_grid = WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
  	printf("Finished calling WMFire\n");
 	/*--------------------------------------------------------------*/
 	/* update biomass after fire					*/
@@ -333,7 +341,7 @@ void execute_firespread_event(
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   		for (j=0; j < world[0].num_fire_grid_col; j++) {
 
-			if (command_line[0].multiscale_flag = 1)
+			if (command_line[0].multiscale_flag == 1)
 			{
 				patch_family = world[0].patch_fire_grid[i][j].patch_families[0];
 				//patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
