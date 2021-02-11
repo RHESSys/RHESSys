@@ -190,6 +190,19 @@ void		zone_daily_F(
 
 
 #endif
+        /*If read in the text format of gridMET data do the same thing as netcdf format*/
+        if (zone[0].base_stations[0][0].daily_clim[0].surface_shortwave_rad !=NULL && command_line[0].gridded_netcdf_flag !=1){
+             double rsds_obs = zone[0].base_stations[0][0].daily_clim[0].surface_shortwave_rad[day] * (double)SECONDS_PER_DAY;
+             if ((zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat) > 1e-6){
+            double adj = rsds_obs * 0.001 / (zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat);
+            zone[0].Kdown_direct        *= adj;
+            zone[0].Kdown_diffuse       *= adj;
+            zone[0].Kdown_direct_flat   *= adj;
+            zone[0].Kdown_diffuse_flat  *= adj;
+
+             }
+          }
+
 		}
 	/* Otherwise use input Kdowns and calculate transmissivity as	*/
 	/* ratio between given and calculated, then generate cloud		*/

@@ -806,6 +806,7 @@ struct  daily_clim_object
         double  *vpd;                           /*      Pa              */
         double  *wind;                          /*      m/s             */
         double  *wind_direction;                /*      degrees         */
+        double  *surface_shortwave_rad;         /*      W m-2  daily average  */
 #ifdef LIU_EXTEND_CLIM_VAR
         double  *relative_humidity_max;         /*      0 - 1                 */
         double  *relative_humidity_min;         /*      0 - 1                 */

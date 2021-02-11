@@ -74,7 +74,7 @@ struct	daily_clim_object *construct_daily_clim(
 	daily_clim = (struct daily_clim_object *)
 		alloc(1*sizeof(struct daily_clim_object),"daily_clim",
 		"construct_daily_clim" );
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Attempt to open the daily clim sequence file for each		*/
 	/*	critical clim parameter and read them in.					*/
@@ -129,7 +129,8 @@ struct	daily_clim_object *construct_daily_clim(
 	daily_clim[0].lapse_rate_tmin = NULL;
 	daily_clim[0].lapse_rate_tavg = NULL;
 	daily_clim[0].lapse_rate_precip = NULL;
-	
+	daily_clim[0].surface_shortwave_rad = NULL;
+
 	/*--------------------------------------------------------------*/
 	/*	Read the still open base station file for the number of		*/
 	/*	non-critical parameters.									*/
@@ -137,7 +138,7 @@ struct	daily_clim_object *construct_daily_clim(
 	fscanf(base_station_file,"%d", &num_non_critical_sequences);
 	read_record(base_station_file, record);
 
-	printf("\n Non critical sequences %d", num_non_critical_sequences); 
+	printf("\n Non critical sequences %d", num_non_critical_sequences);
 	/*--------------------------------------------------------------*/
 	/*	Loop through all of the non-critical sequences and attempt	*/
 	/*	to construct them.											*/
@@ -194,6 +195,14 @@ struct	daily_clim_object *construct_daily_clim(
 			strcpy(file_name, file_prefix);
 			daily_clim[0].Kdown_direct = construct_clim_sequence(
 				(char *)strcat(file_name,".Kdown_direct"),
+				start_date,
+				duration, clim_repeat_flag);
+		}
+		else if ( strcmp(sequence_name,"rsds") == 0 ) { //new input NREN 20210210
+			strcpy(file_name, file_prefix);
+			printf("\n Reading surface shortwave radiation");
+			daily_clim[0].surface_shortwave_rad = construct_clim_sequence(
+				(char *)strcat(file_name,".rsds"),
 				start_date,
 				duration, clim_repeat_flag);
 		}
@@ -338,8 +347,8 @@ struct	daily_clim_object *construct_daily_clim(
 				start_date,
 				duration, clim_repeat_flag);
 		}
-		
-		
+
+
 		else  fprintf(stderr,
 			"WARNING -  clim sequence %s not found.\n",sequence_name);
 	} /*end for*/

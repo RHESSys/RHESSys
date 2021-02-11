@@ -255,7 +255,7 @@ void	output_growth_basin(
 						------------------------------*/
 						anpool += strata->cover_fraction * (strata->ns.npool);
 						aresp_leaf += strata->cover_fraction
-							* (strata->cdf.leaf_day_mr + + strata->cdf.leaf_night_mr )
+							* (strata->cdf.leaf_day_mr + strata->cdf.leaf_night_mr )
 							* patch[0].area;
 						aresp += strata->cover_fraction
 							* (strata->cdf.leaf_day_mr + strata->cdf.cpool_leaf_gr
