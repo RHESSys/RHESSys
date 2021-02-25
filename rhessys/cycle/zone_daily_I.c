@@ -288,11 +288,15 @@ void zone_daily_I(
 				isohyet_adjustment = 0.0;
 		} /* end stocastic noise addition */
 
+		if (zone[0].defaults[0][0].precip_multiplier != -999){
+            isohyet_adjustment = zone[0].defaults[0][0].precip_multiplier;
+		}
 
 		if ( temp != -999.0 ){
 			zone[0].rain =  temp * isohyet_adjustment;
 			flag++;
 		}
+
 
 		/*--------------------------------------------------------------*/
 		/* 	temperature lapse rates with elevation can be daily values or constant (zone defaults) 		*/

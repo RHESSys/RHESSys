@@ -1012,6 +1012,7 @@ struct  zone_default
         double  psen[7];
         double  ravg_days; /* (days) number of days for running average */
         struct  zone_grow_default       *grow_defaults;
+        double precip_multiplier;
    //add the searching distance for climate data interpolation
         double search_x;                                /* meters */
         double search_y;                                /* meters */
