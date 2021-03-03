@@ -9,7 +9,6 @@
 0.798750 psi_air_entry
 0.010000 psi_max
 200.000000 soil_depth
-0.400000 m_z
 0.000000 detention_store_size
 1.000000 deltaZ
 10.000000 active_zone_z
@@ -27,7 +26,9 @@
 0.200000 silt
 0.0 sat_to_gw_coeff
 0.5 nitrif_parm_smax
+3.000000 Ksat_0_v
 0.800000 cap_rise_max
+0.120000 m_v
 age snow_albedo_flag
 2.000000 bats_b
 0.300000 bats_r3
