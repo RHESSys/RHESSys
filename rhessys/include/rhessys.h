@@ -2865,31 +2865,31 @@ struct epconst_struct
 /*      Define accumulator object   for fire effect output  */
 /*----------------------------------------------------------*/
 
-    struct accumulate_fire_object {
+struct accumulate_fire_object
+{
+        int length;
+        double m_cwdc_to_atmos;
+        double m_cwdn_to_atmos;
 
-    int length;
-    double  m_cwdc_to_atmos;
-	double  m_cwdn_to_atmos;
+        //double  canopy_target_height;
+        double canopy_target_height_u_prop;
+        double canopy_target_prop_mort;
+        double canopy_target_prop_mort_consumed;
+        double canopy_target_prop_mort_u_component;
+        double canopy_target_prop_mort_o_component;
+        double canopy_target_prop_c_consumed;
+        double canopy_target_prop_c_remain;
+        double canopy_target_prop_c_remain_adjusted;
+        double canopy_target_prop_c_remain_adjusted_leafc;
 
-	//double  canopy_target_height;
-	double  canopy_target_height_u_prop;
-	double  canopy_target_prop_mort;
-	double  canopy_target_prop_mort_consumed;
-	double  canopy_target_prop_mort_u_component;
-	double  canopy_target_prop_mort_o_component;
-	double  canopy_target_prop_c_consumed;
-	double  canopy_target_prop_c_remain;
-	double  canopy_target_prop_c_remain_adjusted;
-	double  canopy_target_prop_c_remain_adjusted_leafc;
-
-	//double  canopy_subtarget_height;
-	double  canopy_subtarget_height_u_prop;
-	double  canopy_subtarget_prop_mort;
-	double  canopy_subtarget_prop_mort_consumed;
-	double  canopy_subtarget_prop_c_consumed;
-	//double  canopy_subtarget_c;
-	double  understory_c_consumed;
-        };
+        //double  canopy_subtarget_height;
+        double canopy_subtarget_height_u_prop;
+        double canopy_subtarget_prop_mort;
+        double canopy_subtarget_prop_mort_consumed;
+        double canopy_subtarget_prop_c_consumed;
+        //double  canopy_subtarget_c;
+        double understory_c_consumed;
+};
 
 /*----------------------------------------------------------*/
 /*      Define a fire effects object.                                                */

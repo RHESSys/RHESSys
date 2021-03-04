@@ -1,24 +1,28 @@
 /*--------------------------------------------------------------*/
-/* 													*/
-/*			compute_family_fire_effects								*/
-/*													*/
-/*	NAME												*/
-/*	compute_family_fire_effects.c 										*/
-/*													*/
-/*	SYNOPSIS											*/
-/*													*/
-/* 													*/
-/*													*/
-/*	OPTIONS												*/
-/*													*/
-/*													*/
-/*	DESCRIPTION											*/
-/*	Determines vegetation loss following fire							*/
-/*													*/
-/*													*/
-/*													*/
-/*	PROGRAMMER NOTES										*/
-/*													*/
+/* 																*/
+/*			compute_family_fire_effects							*/
+/*																*/
+/*	NAME														*/
+/*	compute_family_fire_effects.c 								*/
+/*																*/
+/*	SYNOPSIS													*/
+/*																*/
+/* 																*/
+/*																*/
+/*	OPTIONS														*/
+/*																*/
+/*																*/
+/*	DESCRIPTION													*/
+/*	Determines vegetation loss following fire					*/
+/*																*/
+/*																*/
+/*																*/
+/*	PROGRAMMER NOTES											*/
+/*	This function builds on the standard compute_fire_effects	*/
+/*	written by Ryan Bart, but restructures it to function on 	*/
+/*	more than 2 layers, and using aggreate under and			*/
+/*	intermedaite stories										*/
+/*																*/
 /*--------------------------------------------------------------*/
 #include <string.h>
 #include <stdio.h>
@@ -69,13 +73,14 @@ void compute_family_fire_effects(
 	// struct fire_effects_object fe_int;
 	int p, c, layer;
 	int thin_type, sev;
+	int under_ct, intr_ct;
 	double litter_c_consumed;
-	double under_h, under_c, under_pct_area;
-	double intr_h, intr_c, intr_pct_area;
-	double subtarget_c;
+	double agg_under_height, agg_under_carbon, under_pct_area;
+	double agg_intr_height, agg_intr_carbon, intr_pct_area;
+	double intr_height_u_prop, intr_c_consumed, under_c_consumed;
 
 	/*--------------------------------------------------------------*/
-	/*	Compute litter and soil removed.			*/
+	/*	Compute litter and soil removed.							*/
 	/*--------------------------------------------------------------*/
 
 	if (pspread > 0) {
@@ -123,7 +128,7 @@ void compute_family_fire_effects(
 	}
 
 	/*--------------------------------------------------------------*/
-	/*		Compute vegetation effects.			*/
+	/*		Fire Effects Outline									*/
 	/*--------------------------------------------------------------*/
 	/* For each patch that burns (pspread > 0), fire effects is computed
 	for each canopy starting with the tallest and proceeding down
@@ -141,25 +146,35 @@ void compute_family_fire_effects(
 	lowest canopy. Hence, code may need to be revised if working with more
 	than two canopies. */
 
-// TOP 
-// layer 0 -> uses aggregate of understory + understory component of all intr stories 
-// layer 1 -> uses aggregate of understory + understory component of all intr stories 
-// --- overstory threshold
-// layer 2 -> (uses aggregate of understory + understory component of all intr stories) + understory consumption (function of pspread)
-// layer 3 -> (uses aggregate of understory + understory component of all intr stories) + understory consumption (function of pspread)
-// --- understory threshold
-// layer 4 -> understory consumption (function of pspread)
-// layer 5 -> understory consumption (function of pspread)
-// BOTTOM
+	// Example layers for FAMILY fire effects - NOT using subtarget, just checking if in X story then looks to the appropriate aggregate layer
+	// TOP 
+	// layer 0 -> uses aggregate of understory + understory component of all intr stories 
+	// layer 1 -> uses aggregate of understory + understory component of all intr stories 
+	// --- overstory threshold
+	// layer 2 -> (uses aggregate of understory + understory component of all intr stories) + understory consumption (function of pspread)
+	// layer 3 -> (uses aggregate of understory + understory component of all intr stories) + understory consumption (function of pspread)
+	// --- understory threshold
+	// layer 4 -> understory consumption (function of pspread)
+	// layer 5 -> understory consumption (function of pspread)
+	// BOTTOM
 
 
+	/*--------------------------------------------------------------*/
+	/*		Create aggregate layers for under & intermediate		*/
+	/*--------------------------------------------------------------*/
 	// build aggregate understory layer to serve as universal canopy subtarget
 	// just need to create a aggregate canopy height, and C, (leaf+live stem +dead stem)
 	// either redirect references to subtarget canopy w that throughout, or replicate it and add it to canopy.fe.subtarget...
-	under_h = 0;
-	under_c = 0;
+	agg_under_height = 0;
+	agg_under_carbon = 0;
 	under_pct_area = 0;
+	agg_intr_height = 0;
+	agg_intr_carbon = 0;
+	intr_pct_area = 0;
+	under_ct = 0;
+	intr_ct = 0;
 
+	// TODO add as much processing as possible to this first set of loops - check existing code
 	for (layer = 0; layer < patch_family[0].num_layers; layer++)
 	{
 		for (c = 0; c < patch_family[0].layers[layer].count; c++)
@@ -167,21 +182,23 @@ void compute_family_fire_effects(
 			canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
 			if (canopy_target[0].epv.height <= patch_family[0].overstory_height_thresh)
 			{
-				// understory height
+				// understory height + carbon
 				if (canopy_target[0].epv.height <= patch_family[0].understory_height_thresh)
 				{
-					under_h += canopy_target[0].epv.height * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
-					under_c += (canopy_target[0].cs.leafc + canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc) *
+					under_ct++;
+					agg_under_height += canopy_target[0].epv.height * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
+					agg_under_carbon += (canopy_target[0].cs.leafc + canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc) *
 							   patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
 					under_pct_area += patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
 				}
 
-				// intermediate height
+				// intermediate height + carbon
 				if (canopy_target[0].epv.height <= patch_family[0].overstory_height_thresh &&
 					canopy_target[0].epv.height >= patch_family[0].understory_height_thresh)
 				{
-					intr_h += canopy_target[0].epv.height * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
-					intr_c += (canopy_target[0].cs.leafc + canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc) *
+					intr_ct++;
+					agg_intr_height += canopy_target[0].epv.height * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
+					agg_intr_carbon += (canopy_target[0].cs.leafc + canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc) *
 							  patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
 					intr_pct_area += patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
 				}
@@ -190,35 +207,29 @@ void compute_family_fire_effects(
 	}
 
 	// normalize by coverage
-	under_h /= under_pct_area;
-	under_c /= under_pct_area;
-	intr_h /= intr_pct_area;
-	intr_c /= intr_pct_area;
-	subtarget_c = under_c;
+	agg_under_height /= under_pct_area;
+	agg_under_carbon /= under_pct_area;
+	agg_intr_height /= intr_pct_area;
+	agg_intr_carbon /= intr_pct_area;
 
+	/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
+	// since using agg intr story height, calc this for all stories
+	intr_height_u_prop = (patch_family[0].overstory_height_thresh - agg_intr_height) /
+						 (patch_family[0].overstory_height_thresh - patch_family[0].understory_height_thresh);
+	
+
+	/*--------------------------------------------------------------*/
+	/*		Compute effects for each layer							*/
+	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer < patch_family[0].num_layers; layer++ ){
 		for ( c=0 ; c < patch_family[0].layers[layer].count; c++ ){
 
 			/* Calculates metrics for targer canopy */
 			canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
 			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
-			/* Calculates metrics for next lowest canopy (subtarget canopy) */
-			if (patch_family[0].num_layers > (layer + 1))
-			{
-				canopy_subtarget = patch_family[0].canopy_strata[(patch_family[0].layers[layer + 1].strata[c])];
-				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
-				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
-														 canopy_subtarget[0].cs.live_stemc +
-														 canopy_subtarget[0].cs.dead_stemc;
-			}
-			else
-			{
-				canopy_target[0].fe.canopy_subtarget_height = 0;
-				canopy_target[0].fe.canopy_subtarget_c = 0;
-			}
-
+			
 			/*--------------------------------------------------------------*/
-			/* Calculate coarse woody debris removed			*/
+			/* Calculate coarse woody debris removed						*/
 			/*--------------------------------------------------------------*/
 			/* Litter consumption is approximated based CONSUME model outputs */
 			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
@@ -229,84 +240,94 @@ void compute_family_fire_effects(
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 
 			/*--------------------------------------------------------------*/
+			/* Param checks, calc initial mortality							*/
+			/*--------------------------------------------------------------*/
+			// get initial prop_mort
+			if (canopy_target[0].defaults[0][0].understory_mort <= 0)
+			{
+				fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
+				exit(EXIT_FAILURE);
+			}
+			else if (canopy_target[0].defaults[0][0].understory_mort == 1)
+			{
+				canopy_target[0].fe.canopy_target_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+			}
+			else
+			{
+				canopy_target[0].fe.canopy_target_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort =
+					(pow(canopy_target[0].defaults[0][0].understory_mort, pspread) - 1) / (canopy_target[0].defaults[0][0].understory_mort - 1);
+			}
+
+			/* Determine the proportion of target canopy mortality consumed */
+			if (canopy_target[0].defaults[0][0].consumption <= 0)
+			{
+				fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
+				exit(EXIT_FAILURE);
+			} 
+			
+			// TODO maybe just leave the exit and remove these?
+			else if (canopy_target[0].defaults[0][0].consumption == 1)
+			{
+				canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
+				canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
+			}
+			else
+			{
+				canopy_target[0].fe.canopy_target_prop_mort_consumed =
+					(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_target_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
+				canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
+					(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
+			}
+
+			/*--------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is tall			*/
 			/*--------------------------------------------------------------*/
 			if (canopy_target[0].fe.canopy_target_height > patch_family[0].overstory_height_thresh)
 			{
-				/* Determine the amount of understory carbon consumed, which is used to */
-				/* compute how well fire is propogated to overstory */
-				/* Is subtarget canopy tall? */
-				if (canopy_target[0].fe.canopy_subtarget_height > patch_family[0].overstory_height_thresh)
+				/* Determine the amount of understory carbon consumed understory_c_consumed, which is used to compute how well fire is propogated to overstory */
+				if (under_ct == 0 && intr_ct == 0) // if no under or intr stories
 				{
 					canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
 				}
-				else if (canopy_target[0].fe.canopy_subtarget_height <= patch_family[0].overstory_height_thresh)
+				if (under_ct > 0) // there is at least 1 understory
 				{
-					/* Is subtarget canopy of intermediate or short height? Then calculate mortality/consumption of understory */
-					/* Determine the proportion of carbon mortality in the subtarget canopy */
-					if (canopy_target[0].defaults[0][0].understory_mort <= 0)
-					{
-						fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
-						exit(EXIT_FAILURE);
-					}
-					else if (canopy_target[0].defaults[0][0].understory_mort == 1)
-					{
-						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
-					}
-					else
-					{
-						canopy_target[0].fe.canopy_subtarget_prop_mort =
-							(pow(canopy_target[0].defaults[0][0].understory_mort, pspread) - 1) / (canopy_target[0].defaults[0][0].understory_mort - 1);
-					}
-					/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
-					if (canopy_target[0].fe.canopy_subtarget_height <= patch_family[0].overstory_height_thresh &&
-						canopy_target[0].fe.canopy_subtarget_height >= patch_family[0].understory_height_thresh)
-					{
-						/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
-						canopy_target[0].fe.canopy_subtarget_height_u_prop = (patch_family[0].overstory_height_thresh - intr_h) /
-																			 (patch_family[0].overstory_height_thresh - patch_family[0].understory_height_thresh);
-						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
-						//subtarget_c =+ intr_c;
-						intr_c;
-						if (canopy_target[0].defaults[0][0].consumption == 1)
-						{
-							canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
-						}
-						else
-						{
-							canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
-								(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) /
-								(canopy_target[0].defaults[0][0].consumption - 1);
-						}
-						/* Determine the proportion of subtarget canopy carbon consumed */
-						canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort *
-																			   canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
-
-						/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-						canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
-						//canopy_target[0].fe.understory_c_consumed_intr = (intr_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
-						
-
-					}
-					/* Determine the proportion of subtarget canopy mortality consumed */
-					if (canopy_target[0].defaults[0][0].consumption == 1)
-					{
+					// find consumption
+					if (canopy_target[0].defaults[0][0].consumption == 1) {
 						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
-					}
-					else
-					{
+					} else {
 						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
-							(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) /
-							(canopy_target[0].defaults[0][0].consumption - 1);
+							(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
 					}
-
+					/* Determine the proportion of understory canopy carbon consumed */
+					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
+					// Determine the amount of carbon consumed in the understory based on aggregate understory
+					under_c_consumed = (agg_under_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed);
+					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
+					canopy_target[0].fe.understory_c_consumed = under_c_consumed + litter_c_consumed;
+				}
+				if (intr_ct > 0) // there's at least 1 intr story
+				{
+					/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component, based on aggregate intrmediate height */
+					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * intr_height_u_prop;
+					// need to recalc prop mort consumption
+					if (canopy_target[0].defaults[0][0].consumption == 1) {
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
+					} else {
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
+							(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
+					}
 					/* Determine the proportion of subtarget canopy carbon consumed */
-					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * 
-					canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
-
-					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-					//canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
-					canopy_target[0].fe.understory_c_consumed = (subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
+					/* Determine the amount of carbon consumed in the intmediate story */
+					intr_c_consumed = agg_intr_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
+					canopy_target[0].fe.understory_c_consumed = intr_c_consumed + litter_c_consumed;
+				}
+				if (under_ct > 0 && intr_ct > 0)
+				{
+					// Combine understory and intermediate story consumptions, weighted by area(?), add litter in
+					canopy_target[0].fe.understory_c_consumed = (under_c_consumed * under_pct_area / (under_pct_area + intr_pct_area)) +
+																(intr_c_consumed * intr_pct_area / (under_pct_area + intr_pct_area)) + litter_c_consumed;
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
@@ -314,10 +335,7 @@ void compute_family_fire_effects(
 				canopy_target[0].defaults[0][0].overstory_mort_k2)))));
 
 				/* Determine the proportion of target canopy mortality consumed */
-				if (canopy_target[0].defaults[0][0].consumption <= 0){
-					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
-    					exit(EXIT_FAILURE);
-				} else if (canopy_target[0].defaults[0][0].consumption == 1){
+				 if (canopy_target[0].defaults[0][0].consumption == 1){
 					canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
 				} else {
 					canopy_target[0].fe.canopy_target_prop_mort_consumed = 
@@ -334,75 +352,49 @@ void compute_family_fire_effects(
 				/* Determine the proportion of target canopy attributed to understory. Proportion overstory is 1 - canopy_target_height_u_prop */
 				canopy_target[0].fe.canopy_target_height_u_prop = (patch_family[0].overstory_height_thresh - canopy_target[0].fe.canopy_target_height) /
 																  (patch_family[0].overstory_height_thresh - patch_family[0].understory_height_thresh);
-
-				/* ------- Determine mortality/consumption for understory component of target canopy ------- */
-				/* This involves computing the mortality/consumption of the target canopy based on pspread. */
-				/* Determine the proportion of carbon mortality in the target canopy */
-				if (canopy_target[0].defaults[0][0].understory_mort <= 0)
-				{
-					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
-					exit(EXIT_FAILURE);
-				}
-				else if (canopy_target[0].defaults[0][0].understory_mort == 1)
-				{
-					canopy_target[0].fe.canopy_target_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
-				}
-				else
-				{
-					canopy_target[0].fe.canopy_target_prop_mort =
-						(pow(canopy_target[0].defaults[0][0].understory_mort, pspread) - 1) / (canopy_target[0].defaults[0][0].understory_mort - 1);
-				}
-
 				/* Adjust canopy_target_prop_mort to only account for understory component */
 				canopy_target[0].fe.canopy_target_prop_mort_u_component = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_height_u_prop;
 
-				/* ------- Determine mortality/consumption for overstory component of target canopy ------- */
-				/* This involves computing the consumption of the subtarget canopy, which is used to determine target
-				canopy mortality/consumption. */
-				/* Determine the proportion of carbon mortality in the subtarget canopy */
-				if (canopy_target[0].defaults[0][0].understory_mort <= 0)
+				if (under_ct > 0) // there is at least 1 understory
 				{
-					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
-					exit(EXIT_FAILURE);
+					// find consumption
+					if (canopy_target[0].defaults[0][0].consumption == 1) {
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
+					} else {
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
+							(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
+					}
+					/* Determine the proportion of understory canopy carbon consumed */
+					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
+					// Determine the amount of carbon consumed in the understory based on aggregate understory
+					under_c_consumed = (agg_under_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed);
+					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
+					canopy_target[0].fe.understory_c_consumed = under_c_consumed + litter_c_consumed;
 				}
-				else if (canopy_target[0].defaults[0][0].understory_mort == 1)
+				if (intr_ct > 0) // there's at least 1 intr story
 				{
-					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+					/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component, based on aggregate intrmediate height */
+					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * intr_height_u_prop;
+					// need to recalc prop mort consumption
+					if (canopy_target[0].defaults[0][0].consumption == 1) {
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
+					} else {
+						canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
+							(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
+					}
+					/* Determine the proportion of subtarget canopy carbon consumed */
+					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
+					/* Determine the amount of carbon consumed in the intmediate story */
+					intr_c_consumed = agg_intr_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
+					canopy_target[0].fe.understory_c_consumed = intr_c_consumed + litter_c_consumed;
 				}
-				else
+				if (under_ct > 0 && intr_ct > 0)
 				{
-					canopy_target[0].fe.canopy_subtarget_prop_mort = 
-					(pow(canopy_target[0].defaults[0][0].understory_mort, pspread) - 1) / (canopy_target[0].defaults[0][0].understory_mort - 1);
+					// Combine understory and intermediate story consumptions, weighted by area(?), add litter in
+					canopy_target[0].fe.understory_c_consumed = (under_c_consumed * under_pct_area / (under_pct_area + intr_pct_area)) +
+																(intr_c_consumed * intr_pct_area / (under_pct_area + intr_pct_area)) + litter_c_consumed;
 				}
-
-				/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
-				if (canopy_target[0].fe.canopy_subtarget_height <= patch_family[0].overstory_height_thresh &&
-					canopy_target[0].fe.canopy_subtarget_height >= patch_family[0].understory_height_thresh)
-				{
-					/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
-					canopy_target[0].fe.canopy_subtarget_height_u_prop = (patch_family[0].overstory_height_thresh - intr_h) /
-																		 (patch_family[0].overstory_height_thresh - patch_family[0].understory_height_thresh);
-					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
-					subtarget_c = intr_c;
-				}
-
-				/* Determine the proportion of subtarget canopy mortality consumed */
-				if (canopy_target[0].defaults[0][0].consumption == 1)
-				{
-					canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
-				}
-				else
-				{
-					canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
-						(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) /
-						(canopy_target[0].defaults[0][0].consumption - 1);
-				}
-
-				/* Determine the proportion of subtarget canopy carbon consumed */
-				canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
-
-				/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-				canopy_target[0].fe.understory_c_consumed = (subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship)
 				and then account for target canopy height allocation */
@@ -416,30 +408,17 @@ void compute_family_fire_effects(
 				/* Combine target canopy mortality from overstory and understory components */
 				canopy_target[0].fe.canopy_target_prop_mort = max(min(canopy_target[0].fe.canopy_target_prop_mort_u_component + canopy_target[0].fe.canopy_target_prop_mort_o_component,1.0),0);
 
-				/* Determine the proportion of target canopy mortality consumed */
-				if (canopy_target[0].defaults[0][0].consumption <= 0){
-					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
-    					exit(EXIT_FAILURE);
-				} else if (canopy_target[0].defaults[0][0].consumption == 1){
+				if (canopy_target[0].defaults[0][0].consumption == 1){
 					canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
 				} else {
-					canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
+					canopy_target[0].fe.canopy_target_prop_mort_consumed = 
+						(pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
 
 			/*--------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is short			*/
 			/*--------------------------------------------------------------*/
 			} else if (canopy_target[0].fe.canopy_target_height < patch_family[0].understory_height_thresh) {
-
-				/* Determine the proportion of carbon mortality in the target canopy */
-				if (canopy_target[0].defaults[0][0].understory_mort <= 0){
-					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
-    					exit(EXIT_FAILURE);
-				} else if (canopy_target[0].defaults[0][0].understory_mort == 1){
-					canopy_target[0].fe.canopy_target_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
-				} else {
-					canopy_target[0].fe.canopy_target_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
-				}
 
 				/* Determine the proportion of target canopy mortality consumed */
 				if (canopy_target[0].defaults[0][0].consumption == 1){
