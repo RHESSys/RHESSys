@@ -266,18 +266,18 @@ void compute_family_fire_effects(
 			} 
 			
 			// TODO maybe just leave the exit and remove these?
-			else if (canopy_target[0].defaults[0][0].consumption == 1)
-			{
-				canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
-				canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
-			}
-			else
-			{
-				canopy_target[0].fe.canopy_target_prop_mort_consumed =
-					(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_target_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
-				canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
-					(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
-			}
+			// else if (canopy_target[0].defaults[0][0].consumption == 1)
+			// {
+			// 	canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
+			// 	canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
+			// }
+			// else
+			// {
+			// 	canopy_target[0].fe.canopy_target_prop_mort_consumed =
+			// 		(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_target_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
+			// 	canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
+			// 		(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
+			// }
 
 			/*--------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is tall			*/
