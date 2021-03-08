@@ -109,6 +109,8 @@ void compute_family_fire_effects(
 
 	/* Calculate litter consumed for use later in canopy effects */
 	// iterate thru patches in fam, weight + accumulate
+	litter_c_consumed = 0;
+
 	for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
 	{
 		litter_c_consumed += (patch_family[0].patches[p][0].litter_cs.litr1c * fire_loss.loss_litr1c +
@@ -171,6 +173,7 @@ void compute_family_fire_effects(
 	agg_intr_height = 0;
 	agg_intr_carbon = 0;
 	intr_pct_area = 0;
+	// count for layer groups
 	under_ct = 0;
 	intr_ct = 0;
 
@@ -194,7 +197,7 @@ void compute_family_fire_effects(
 
 				// intermediate height + carbon
 				if (canopy_target[0].epv.height <= patch_family[0].overstory_height_thresh &&
-					canopy_target[0].epv.height >= patch_family[0].understory_height_thresh)
+					canopy_target[0].epv.height > patch_family[0].understory_height_thresh)
 				{
 					intr_ct++;
 					agg_intr_height += canopy_target[0].epv.height * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].family_pct_cover;
@@ -243,7 +246,7 @@ void compute_family_fire_effects(
 			/* Param checks, calc initial mortality							*/
 			/*--------------------------------------------------------------*/
 			// get initial prop_mort
-			if (canopy_target[0].defaults[0][0].understory_mort <= 0)
+			if (canopy_target[0].defaults[0][0].understory_mort <= ZERO)
 			{
 				fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
 				exit(EXIT_FAILURE);
@@ -259,25 +262,11 @@ void compute_family_fire_effects(
 			}
 
 			/* Determine the proportion of target canopy mortality consumed */
-			if (canopy_target[0].defaults[0][0].consumption <= 0)
+			if (canopy_target[0].defaults[0][0].consumption <= ZERO)
 			{
 				fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
 				exit(EXIT_FAILURE);
 			} 
-			
-			// TODO maybe just leave the exit and remove these?
-			// else if (canopy_target[0].defaults[0][0].consumption == 1)
-			// {
-			// 	canopy_target[0].fe.canopy_target_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_target_prop_mort;
-			// 	canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = canopy_target[0].defaults[0][0].consumption * canopy_target[0].fe.canopy_subtarget_prop_mort;
-			// }
-			// else
-			// {
-			// 	canopy_target[0].fe.canopy_target_prop_mort_consumed =
-			// 		(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_target_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
-			// 	canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
-			// 		(pow(canopy_target[0].defaults[0][0].consumption, canopy_target[0].fe.canopy_subtarget_prop_mort) - 1) / (canopy_target[0].defaults[0][0].consumption - 1);
-			// }
 
 			/*--------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is tall			*/
@@ -342,9 +331,9 @@ void compute_family_fire_effects(
 					(pow(canopy_target[0].defaults[0][0].consumption,canopy_target[0].fe.canopy_target_prop_mort)-1)/(canopy_target[0].defaults[0][0].consumption-1);
 				}
 
-			/*--------------------------------------------------------------*/
+			/*----------------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is an intermediate height	*/
-			/*--------------------------------------------------------------*/
+			/*----------------------------------------------------------------------*/
 			}
 			else if (canopy_target[0].fe.canopy_target_height <= patch_family[0].overstory_height_thresh &&
 					 canopy_target[0].fe.canopy_target_height >= patch_family[0].overstory_height_thresh)
@@ -429,7 +418,7 @@ void compute_family_fire_effects(
 			}
 
 			/*--------------------------------------------------------------*/
-			/* Compute effects						*/
+			/* Compute effects												*/
 			/*--------------------------------------------------------------*/
 			/* Determine the proportion of total target canopy carbon that is consumed by fire */
 			canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_prop_mort_consumed;

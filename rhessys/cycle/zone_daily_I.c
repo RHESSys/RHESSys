@@ -1089,6 +1089,8 @@ void zone_daily_I(
 			   trans_coeff1,
 			   trans_coeff2);
 	}
+	// TODO Add sort_patch_family_layers here
+
 
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches 									*/
