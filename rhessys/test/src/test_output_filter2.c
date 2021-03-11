@@ -108,10 +108,15 @@ void test_output_filter2() {
 	g_assert(p1->zoneID == 4);
 	g_assert(p1->next == NULL);
 	// Variables
-	v1 = filter3->variables;
-	g_assert(v1->hierarchy_level == OF_HIERARCHY_LEVEL_UNDEFINED);
-	g_assert(v1->variable_type == ANY_VAR);
-	g_assert(v1->next == NULL);
+    v1 = filter3->variables;
+    g_assert(v1->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
+    g_assert(v1->variable_type == NAMED);
+    cmp = strcmp(v1->name, "blef");
+    g_assert(cmp == 0);
+    v2 = v1->next;
+    g_assert(v2->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
+    g_assert(v2->variable_type == NAMED);
+    cmp = strcmp(v2->name, "quux");
 }
 
 int main(int argc, char **argv) {

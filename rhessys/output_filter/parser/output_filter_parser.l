@@ -23,14 +23,13 @@
 
 [0-9]+ { yylval.integer = atoi(yytext); return NUMBER; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.string = strdup(yytext); return IDENTIFIER; }
-[a-zA-Z0-9_\-\(\)\[\]]+ { yylval.string = strdup(yytext); return FILENAME_SPEC; }
-(\.{1,2}\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+ { yylval.string = strdup(yytext); return PATH_SPEC; }
+\"[a-zA-Z0-9_\-\(\)\[\]\.]+\" { yylval.string = strdup(yytext); return FILENAME_SPEC; }
+\"(\.{1,2}\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+\" { yylval.string = strdup(yytext); return PATH_SPEC; }
 
 "hill." { return LEVEL_HILLSLOPE; }
 "patch." { return LEVEL_PATCH; }
 "stratum." { return LEVEL_STRATUM; }
 
-"*" { return KLEENE; }
 ":" { return DELIM; }
 "," { return COMMA; }
 "." { return DOT; }

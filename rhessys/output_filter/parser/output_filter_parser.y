@@ -4,6 +4,7 @@
 
 #include "output_filter_parser.tab.h"
 #include "output_filter.h"
+#include "strings.h"
 
 void yyerror(char *s);
 int yylex(void);
@@ -54,7 +55,6 @@ OutputFilter *curr_filter = NULL;
 %token <string> LEVEL_HILLSLOPE
 %token <string> LEVEL_PATCH
 %token <string> LEVEL_STRATUM
-%token KLEENE
 %token <integer> NUMBER
 %token DELIM
 %token COMMA
@@ -163,7 +163,7 @@ path: PATH PATH_SPEC {
 			syntax_error = true;
 			yyerror("path definition must be nested within output definition");
 		} else {
-			curr_filter->output->path = strdup($2);
+			curr_filter->output->path = strip($2);
 			if (verbose_output) fprintf(stderr, "\t\tOUTPUT PATH IS: %s\n", $2);
 		}
 	}
@@ -174,34 +174,10 @@ filename: FILENAME FILENAME_SPEC {
 			syntax_error = true;
 			yyerror("filename definition must be nested within output definition");
 		} else {
-			curr_filter->output->filename = strdup($2);
+			curr_filter->output->filename = strip($2);
 			if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", $2);
 		}
 	}
-	| FILENAME IDENTIFIER {
-    if (!in_output) {
-      syntax_error = true;
-      yyerror("filename definition must be nested within output definition");
-    } else {
-      curr_filter->output->filename = strdup($2);
-      if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", $2);
-    }
-  }
-  | FILENAME FILENAME_SPEC DOT IDENTIFIER {
-  	if (!in_output) {
-      syntax_error = true;
-      yyerror("filename definition must be nested within output definition");
-    } else {
-      curr_filter->output->filename = (char *) malloc(FILENAME_LEN * sizeof(char));
-      if (curr_filter->output->filename == NULL) {
-      	syntax_error = true;
-      	yyerror("unable to allocate memory for filename");
-      }
-      snprintf(curr_filter->output->filename, FILENAME_LEN,
-      	"%s.%s", $2, $4);
-      if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", curr_filter->output->filename);
-    }
-  }
 	;
 
 basin: BASIN_TOK {
@@ -462,12 +438,6 @@ variables: VARS variable_spec {
 			syntax_error = true;
 			yyerror("variables definition must be nested within basin, patch, or stratum definition");
 		} 
-	}
-	| VARS KLEENE {
-		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: Any variable\n");
-		// * overrides all variable definitions, remove existing variables and start over
-		free_output_filter_variable_list(curr_filter->variables);
-		curr_filter->variables = create_new_output_filter_variable_any();
 	}
 	;
 
