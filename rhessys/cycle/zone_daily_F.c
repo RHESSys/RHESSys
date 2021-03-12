@@ -158,6 +158,9 @@ void		zone_daily_F(
 	void	compute_family_shading(
 		struct	zone_object	*,
 		struct	command_line_object	*);
+    void    compute_patch_famil_litter_routing(
+        struct zone_object      *,
+        struct command_line_object *);
 
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -683,7 +686,13 @@ void		zone_daily_F(
 			zone,
 			command_line
 		);
-
+        // here compuate patch family litter sharing between veg patches and no veg patches
+        // needs a flag in landuse to turn this on, only happens if there is no-veg patches inside of it
+        if (zone[0].defaults[0][0].route_litter == 1){
+            compute_patch_family_litter_routing(
+                zone,
+                command_line);
+        };
 	}
 
 	/*--------------------------------------------------------------*/

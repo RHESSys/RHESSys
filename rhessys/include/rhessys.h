@@ -1018,6 +1018,8 @@ struct  zone_default
         double search_y;                                /* meters */
         double res_patch;                               /* meters */
         int    grid_interpolation;                       /* 0/1    */ // 0 no interpolation of grid climate data
+        int    route_litter;
+        double sh_litter
 
         };
 

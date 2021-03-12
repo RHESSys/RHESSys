@@ -10,11 +10,11 @@ OBJ = objects
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
-DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID  
+DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID
 
 ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
-endif 
+endif
 
 CFLAGS = -Wall -g -std=c99 -O2 $(DEFINES) -fno-stack-protector
 
@@ -88,6 +88,7 @@ $(OBJ)/compute_diffuse_radiative_fluxes.o \
 $(OBJ)/compute_direct_radiative_PAR_fluxes.o \
 $(OBJ)/compute_direct_radiative_fluxes.o \
 $(OBJ)/compute_family_shading.o\
+$(OBJ)/compute_patch_family_litter_routing.o\
 $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
 $(OBJ)/compute_fire_effects.o \
@@ -810,6 +811,8 @@ $(OBJ)/compute_growingseason_index.o: cn/compute_growingseason_index.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_growingseason_index.c -o $(OBJ)/compute_growingseason_index.o
 $(OBJ)/compute_family_shading.o: hydro/compute_family_shading.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_family_shading.c -o $(OBJ)/compute_family_shading.o
+$(OBJ)/compute_patch_family_litter_routing.o: cn/compute_patch_family_litter_routing.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_patch_family_litter_routing.c -o $(OBJ)/compute_patch_family_litter_routing.o
 $(OBJ)/compute_field_capacity.o: hydro/compute_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_field_capacity.c -o $(OBJ)/compute_field_capacity.o
 $(OBJ)/compute_fire_effects.o: cn/compute_fire_effects.c

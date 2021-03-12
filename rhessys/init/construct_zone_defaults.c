@@ -153,9 +153,10 @@ struct zone_default *construct_zone_defaults(
         printf("\n the searching distance x %lf, searching distance y %lf, patch_res %lf \n", default_object_list[i].search_x, default_object_list[i].search_y, default_object_list[i].res_patch);
         default_object_list[i].grid_interpolation = getIntParam(&paramCnt, &paramPtr, "grid_interpolation", "%d", 0,1); //change the default to not do interpolation NREN 2019/1019
         printf("\n the netcdf grid data interploation is %d \n", default_object_list[i].grid_interpolation);
-
-		/*--------------------------------------------------------------*/
-		/* read any optional (tagged) defaults here			*/
+        default_object_list[i].route_litter = getIntParam(&paramCnt, &paramPtr, "route_litter", "%d", 0, 1);
+        printf("\n route litter is %d \n", default_object_list[i].route_litter);
+        default_object_list[i].sh_litter = getDoubleParam(&paramCnt, &paramPtr, "sh_litter", "%lf", 0, 1);
+        printf("\n litter share percentage is %lf \n", default_object_list[i].sh_litter);
 		/*--------------------------------------------------------------*/
 		/*	CO2 is initialized/default to 322 ppm			*/
 		/*--------------------------------------------------------------*/
