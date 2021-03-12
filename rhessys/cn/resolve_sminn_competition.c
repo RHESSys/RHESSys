@@ -64,11 +64,15 @@ int resolve_sminn_competition(
 	perc_inroot = (1.0-exp(-N_decay_rate * rooting_depth)) /
 			(1.0 - exp(-N_decay_rate * active_zone_z));
 	perc_inroot = min(perc_inroot,1.0);
-	if (rooting_depth > ZERO)
-		perc_inroot = max(0.1, perc_inroot);
+	if (rooting_depth > ZERO) {
+        perc_inroot = max(0.1, perc_inroot);
+        sum_avail = perc_inroot * sum_avail;//test if there is no root how the decom works Ren
+
+	}
 
 
-	sum_avail = perc_inroot * sum_avail;
+
+
 
 	if (sum_ndemand <= sum_avail){
 	/* N availability is not limiting immobilization or plant
