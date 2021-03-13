@@ -86,6 +86,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         int p_no_veg;
         int area_sum;
         int area_sum_g;
+        int area_sum_l;
+        int area_sum_g_act;
         double dL_c_act;
         double dL_c_pot;
         double dL_n_act;
@@ -101,6 +103,10 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         double litter_n_adjust;
         double litr1c_mean;
         double litr1n_mean;
+        double patch_area;
+        int loss_patch;
+        double litter_c_adjust_total;
+        double litter_n_adjust_total;
 
         /* Initializations */
         skip[p_ct];          // 0 = skip, 1 = lose, 2 = gain
@@ -114,16 +120,28 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         p_no_veg = 0;
         area_sum = 0;
         area_sum_g = 0;
+        area_sum_g_act = 0;
+        area_sum_l = 0;
         dL_c_act = 0;
         dL_c_pot = 0;
         dL_n_act = 0;
         dL_n_pot = 0;
+        dG_c_act = 0;
+        dG_n_act = 0;
+        dG_c_pot = 0;
+        dG_n_pot = 0;
+
+
         litter_c_transfer = 0;
         litter_n_transfer = 0;
         litter_c_adjust = 0;
         litter_n_adjust = 0;
         litr1c_mean = 0;
         litr1n_mean = 0;
+        patch_area = 0;
+        loss_patch = 0;
+        litter_c_adjust_total = 0.0;
+        litter_n_adjust_total = 0.0;
 
 
         /*--------------------------------------------------------------*/
@@ -171,6 +189,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                         // do I need to save the ID which one is no veg patches? create a vevtor save i?
                         no_veg_patch[p_no_veg] = zone[0].patch_families[pf][0].patches[i][0].ID;
                         p_no_veg +=1; //count how many no veg patches
+                        // incrament gainer area
+                        area_sum_g += zone[0].patch_families[pf][0].patches[i][0].area;
                          if (command_line[0].verbose_flag == -6) {printf("\n No veg patches are %d | ", zone[0].patch_families[pf][0].patches[i][0].ID);}
                     }
 
@@ -210,42 +230,48 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
             // if - no skip, patches are veg patches, and have litter >zer0
             if (skip[i] > 0 && (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c) > ZERO &&
                  (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
-                 (p_ct_skip > p_no_veg))
+                 (p_ct_skip > p_no_veg) && zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c > litr1c_mean &&
+                  zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n > litr1n_mean)
             {
-                dL_c[i] = litr1c_mean*p_no_veg/(p_ct_skip - p_no_veg) *// make sure p_ct_skip > p_no_veg
-                        zone[0].patch_families[pf][0].patches[i][0].area * zone[0].defaults[0][0].sh_litter;//only veg patch lose litter
-                dL_c_act += dL_c[i];
-                dL_c_pot += litr1c_mean*p_no_veg/(p_ct_skip - p_no_veg) *// make sure p_ct_skip > p_no_veg
-                        zone[0].patch_families[pf][0].patches[i][0].area;
+                loss_patch += 1;
+                patch_area = zone[0].patch_families[pf][0].patches[i][0].area;
+
+                dL_c[i] = (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c - litr1c_mean) *// make sure p_ct_skip > p_no_veg
+                        patch_area * zone[0].defaults[0][0].sh_litter;//only veg patch lose litter
+                dL_c_act += dL_c[i];// this is important to track the total litter
+                dL_c_pot += (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c - litr1c_mean) *// make sure p_ct_skip > p_no_veg
+                       patch_area;
 
                 // litter 1 n
-                dL_n[i] = litr1n_mean*p_no_veg/(p_ct_skip - p_no_veg) *// make sure p_ct_skip > p_no_veg
-                        zone[0].patch_families[pf][0].patches[i][0].area * zone[0].defaults[0][0].sh_litter;//only veg patch lose litter
-                dL_n_act += dL_n[i];
-                dL_n_pot += litr1n_mean*p_no_veg/(p_ct_skip - p_no_veg) *// make sure p_ct_skip > p_no_veg
-                        zone[0].patch_families[pf][0].patches[i][0].area;
+                dL_n[i] = (zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n - litr1n_mean) *// make sure p_ct_skip > p_no_veg
+                        patch_area * zone[0].defaults[0][0].sh_litter;//only veg patch lose litter
+                dL_n_act += dL_n[i]; // this is important to track the total litter
+                dL_n_pot += (zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n - litr1n_mean) *// make sure p_ct_skip > p_no_veg
+                        patch_area;
 
                 if (command_line[0].verbose_flag == -6)
-                    printf("[losing litter mean]%f ", dL_c[i] / zone[0].patch_families[pf][0].patches[i][0].area);
+                    printf("[losing litter mean]%f ", dL_c[i] / patch_area);
                 if (command_line[0].verbose_flag == -6)
-                    printf("[losing litter sum]%f ", dL_c[i]);
+                    printf("[losing litter sum]%f || [total cumulative losing is sum %f]", dL_c[i], dL_c_act);
 
                 //remove litter from these patches
+                // make them to be mean
 
-                litter_c_transfer = dL_c[i];
-                zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c -= litter_c_transfer;
-                litter_n_transfer = dL_n[i];
-                zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n -= litter_n_transfer;
+               // litter_c_transfer = dL_c[i];
+                zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c = litr1c_mean;
+                //litter_n_transfer = dL_n[i];
+                zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n = litr1n_mean;
 
                 // if the patch doesn't have enough litter to share, then skip this patch
-                if( zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c < ZERO ||
+               /* if( zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c < ZERO ||
                     zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n < ZERO ){
-                     zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c += litter_c_transfer;//add it back
-                     zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n += litter_n_transfer;
-                     litter_c_adjust += litter_c_transfer;
-                     litter_n_adjust += litter_n_transfer;
+                     zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c += litter_c_transfer/patch_area;//add it back
+                     zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n += litter_n_transfer/patch_area;
+                     litter_c_adjust += litter_c_transfer/patch_area;
+                     litter_n_adjust += litter_n_transfer/patch_area;
 
-                    }
+                    }*/
+                area_sum_l += zone[0].patch_families[pf][0].patches[i][0].area;
 
 
             }
@@ -271,50 +297,58 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         /*--------------------------------------------------------------*/
 
         if (command_line[0].verbose_flag == -6)
-            printf("\n|| Litter Gaining (No-veg) Patches ||\n");
+            printf("\n|| Litter Gaining (No-veg) Patches || ");
 
         for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
         {
+
+            patch_area = zone[0].patch_families[pf][0].patches[i][0].area;
             // route the litter to no-veg patches(gainers)
             if (skip[i] == 2 &&
-                (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG)
+                (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                 zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c < litr1c_mean &&
+                 zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n < litr1n_mean)
             {
                 if (command_line[0].verbose_flag == -6)
                     printf("ID %d", zone[0].patch_families[pf][0].patches[i][0].ID);
+                // the gain is equally distributed among no-veg patches
+                // what if one patch has litter > mean, so the number of gain patches is different from # of no-veg patches
 
-                dG_c[i] = litr1c_mean * // this the mean for each patch
-                        zone[0].patch_families[pf][0].patches[i][0].area *
-                        zone[0].defaults[0][0].sh_litter;
+                dG_c[i] = dL_c_act /area_sum_g * patch_area;// this the mean for each patch
+                dG_c_act += dG_c[i];
 
-                dG_c_pot += litr1c_mean * // this the mean for each patch
-                        zone[0].patch_families[pf][0].patches[i][0].area ;
-
-                dG_n[i] = litr1n_mean * // this the mean for each patch
-                        zone[0].patch_families[pf][0].patches[i][0].area *
-                        zone[0].defaults[0][0].sh_litter;
-
-                dG_n_pot += litr1n_mean * // this the mean for each patch
-                        zone[0].patch_families[pf][0].patches[i][0].area ;
+                dG_n[i] = dL_n_act/area_sum_g * patch_area;
+                dG_n_act += dG_n[i];
 
 
-
-                if (command_line[0].verbose_flag == -6)
+                if (command_line[0].verbose_flag == -6){
                     printf("||[actual litter Gain]%f \n", dG_c[i]);
+                    printf("|| [cumulative litter Gain]%f \n", dG_c_act);
+                    printf("|| [before add litter] the litr1c is %f \n", zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c);}
 
-                // Division of gaining water (dG) between rz & unsat
                 // litter carbon gain
-                litter_c_transfer = dG_c[i] - litter_c_adjust/p_no_veg; // do I need to consider area transformation
+                litter_c_transfer = dG_c[i] / patch_area;
                 zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c += litter_c_transfer;
-                litter_n_transfer = dG_n[i] - litter_n_adjust/p_no_veg;
+                litter_n_transfer = dG_n[i] / patch_area;
                 zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n += litter_n_transfer;
 
 
-                if (command_line[0].verbose_flag == -6)
+                if (command_line[0].verbose_flag == -6){
                     printf("[litter c gain]%f ", litter_c_transfer);
+                    printf("|| [after add litter], [the litr1c is] %f, [the amount of litter is transfered] %f\n", zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c, litter_c_transfer);}
+
+                 // here needs to check if the gaining patches have litter more than mean, then adjust it
+
+                 if( zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c > litr1c_mean ||
+                    zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n > litr1n_mean ){
 
 
+                     litter_c_adjust_total += (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c - litr1c_mean)*patch_area;
+                     litter_n_adjust_total += (zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n - litr1n_mean)*patch_area;
+
+                    }
                 // incrament gainer area
-                area_sum_g += zone[0].patch_families[pf][0].patches[i][0].area;
+                area_sum_g_act += zone[0].patch_families[pf][0].patches[i][0].area;
             }// end skip==2 and no veg
             else
             {
@@ -324,6 +358,48 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
         }     // end loop 3
 
+
+        /*--------------------------------------------------------------*/
+        /* Loop 4                                                       */
+        /*--------------------------------------------------------------*/
+        if (command_line[0].verbose_flag == -6)
+            printf("\n|| Adjust litter gain patches loop 4|| ");
+
+        for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
+        {
+
+            patch_area = zone[0].patch_families[pf][0].patches[i][0].area;
+            // adjust the litter to no-veg patches(gainers)
+            if (skip[i] == 1 &&
+                (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
+                 zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c >= litr1c_mean &&
+                 zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n >= litr1n_mean)
+            {
+                if (command_line[0].verbose_flag == -6)
+                    printf("ID %d", zone[0].patch_families[pf][0].patches[i][0].ID);
+                // the gain is equally distributed among no-veg patches
+
+                litter_c_adjust = litter_c_adjust_total/area_sum_l* patch_area;
+                litter_n_adjust = litter_n_adjust_total/area_sum_l* patch_area;
+
+
+                if (command_line[0].verbose_flag == -6){
+                    printf("||[total litter adjust*area]%f \n", litter_c_adjust_total);
+                    printf("|| [litter c adjust for this patch]%f \n", litter_c_adjust);
+                    printf("|| [before adjust litter] the litr1c is %f \n", zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c);
+                    }
+
+                // litter carbon gain
+                litter_c_transfer = litter_c_adjust / patch_area;
+                zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c += litter_c_transfer;
+                litter_n_transfer = litter_n_adjust / patch_area;
+                zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n += litter_n_transfer;
+
+
+
+
+                }
+            }
 
         /*--------------------------------------------------------------*/
         /*	Testing -_-                                              	*/

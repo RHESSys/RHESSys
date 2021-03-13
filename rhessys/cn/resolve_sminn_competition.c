@@ -66,11 +66,11 @@ int resolve_sminn_competition(
 	perc_inroot = min(perc_inroot,1.0);
 	if (rooting_depth > ZERO) {
         perc_inroot = max(0.1, perc_inroot);
-        sum_avail = perc_inroot * sum_avail;//test if there is no root how the decom works Ren
+       // sum_avail = perc_inroot * sum_avail;//test if there is no root how the decom works Ren
 
 	}
 
-
+     sum_avail = perc_inroot * sum_avail;
 
 
 
