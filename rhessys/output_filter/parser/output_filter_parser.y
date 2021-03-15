@@ -32,6 +32,8 @@ OutputFilter *curr_filter = NULL;
 %union {
 	char *string;
 	int integer;
+	struct of_var_expr_ast *ast;
+        double d;
 }
 
 /* tokens */
@@ -52,16 +54,25 @@ OutputFilter *curr_filter = NULL;
 %token <string> FILENAME_SPEC
 /* patch_id_spec components */
 %token <string> IDENTIFIER
+%token <string> VAR_DEF
 %token <string> LEVEL_HILLSLOPE
 %token <string> LEVEL_PATCH
 %token <string> LEVEL_STRATUM
 %token <integer> NUMBER
+%token <d> FLOAT
 %token DELIM
 %token COMMA
 %token DOT
 /* whitespace */
 %token INDENT
 %token EOL
+
+%right '='
+%left '+' '-'
+%left '*' '/'
+%nonassoc UMINUS
+
+%type <ast> exp
 
 %start filter_list
 
@@ -441,7 +452,16 @@ variables: VARS variable_spec {
 	}
 	;
 
-variable_spec: IDENTIFIER {
+variable_spec: | VAR_DEF exp {
+		//if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s=%s\n", $1, $3);
+
+		// TODO: Store AST into variable & do any pre-processing needed to make the
+		// AST usable for producing filtered output.
+
+		fprintf(stderr, "\t\tVARIABLE name : %s, AST:\n", $1);
+		print_of_expr_ast($2, 1);
+      	}
+	| IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s\n", $1);
 		
 		HierarchyLevel level;
@@ -550,6 +570,26 @@ variable_spec: IDENTIFIER {
 	| variable_spec COMMA variable_spec { /* do nothing, allow individual variable_spec to be evaluated by above rules */ }
 	;
 
+exp: exp '+' exp {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR OP: +\n");
+		$$ = new_of_expr_ast('+', $1, $3);
+	}
+	| exp '-' exp {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR OP: %s - %s\n", $1, $3);
+		$$ = new_of_expr_ast('-', $1, $3);
+	}
+	| exp '*' exp { $$ = new_of_expr_ast('*', $1, $3); }
+        | exp '/' exp { $$ = new_of_expr_ast('/', $1, $3); }
+        | '(' exp ')' { $$ = $2; }
+        | '-' exp %prec UMINUS { $$ = new_of_expr_ast('M', $2, NULL); }
+        | FLOAT { $$ = new_of_expr_const($1); }
+        | NUMBER { $$ = new_of_expr_const((double) $1); }
+	| IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s\n", $1);
+
+		$$ = new_of_expr_name($1);
+	}
+	;
 
 %%
 
@@ -558,7 +598,7 @@ variable_spec: IDENTIFIER {
   * process.
   */ 
 OutputFilter *parse(char * const input, bool verbose) {
-	verbose_output = verbose_output;
+	verbose_output = verbose;
 	int status = set_input_file(input);
 	if (!status) {
 		return NULL;

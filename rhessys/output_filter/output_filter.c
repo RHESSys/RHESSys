@@ -210,6 +210,102 @@ static bool var_supersedes_or_duplicates(const OutputFilterVariable *existing, c
 	return false;
 }
 
+// Variable expression support
+OutputFilterExprAst *new_of_expr_ast(int nodetype, OutputFilterExprAst *l, OutputFilterExprAst *r) {
+    OutputFilterExprAst *ast = (OutputFilterExprAst *) malloc(sizeof(OutputFilterExprAst));
+    ast->nodetype = nodetype;
+    ast->l = l;
+    ast->r = r;
+    return ast;
+}
+
+OutputFilterExprAst *new_of_expr_const(double d) {
+    OutputFilterExprNumval *n = (OutputFilterExprNumval *) malloc(sizeof(OutputFilterExprNumval));
+    n->nodetype = OF_VAR_EXPR_AST_NODE_CONST;
+    n->number = d;
+    return (OutputFilterExprAst *) n;
+}
+
+OutputFilterExprName *new_of_expr_name(const char const *name) {
+    OutputFilterExprName *n = (OutputFilterExprName *) malloc(sizeof(OutputFilterExprName));
+    n->nodetype = OF_VAR_EXPR_AST_NODE_NAME;
+    n->name = strdup(name);
+    return (OutputFilterExprAst *) n;
+}
+
+// What will be the return type? Not a double?
+double of_expr_eval(OutputFilterExprAst *a) {
+    // TBD
+}
+
+void free_of_expr_ast(OutputFilterExprAst *a) {
+    switch (a->nodetype) {
+        /* two subtrees */
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            free_of_expr_ast(a->r);
+            /* one subtree */
+        case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
+            free_of_expr_ast(a->l);
+            /* no subtree */
+        case OF_VAR_EXPR_AST_NODE_CONST:
+        case OF_VAR_EXPR_AST_NODE_NAME:
+            free(a);
+            break;
+
+        default:
+            printf("free_of_expr_ast: unknown node type: %c\n", a->nodetype);
+    }
+}
+
+void print_of_expr_ast(OutputFilterExprAst *a, int level) {
+    fprintf(stderr, "%*s", level*2, "");
+    fprintf(stderr, "OutputFilterExprAst@%p {\n", a);
+    switch(a->nodetype) {
+        case OF_VAR_EXPR_AST_NODE_NAME:
+            fprintf(stderr, "%*s", level*4, "");
+            fprintf(stderr, "IDENTIFIER(%s);\n", ((OutputFilterExprName *)a)->name);
+            break;
+        case OF_VAR_EXPR_AST_NODE_CONST:
+            fprintf(stderr, "%*s", level*4, "");
+            fprintf(stderr, "CONSTANT(%f);\n", ((OutputFilterExprNumval *)a)->number);
+            break;
+        case '+':
+            print_of_expr_ast(a->l, level+1);
+            fprintf(stderr, "%*s", level*4, "");
+            fprintf(stderr, "OP(+)\n");
+            print_of_expr_ast(a->r, level+1);
+            break;
+        case '-':
+            print_of_expr_ast(a->l, level+1);
+            fprintf(stderr, "%*s", level*4, "");
+            fprintf(stderr, "OP(-)\n");
+            print_of_expr_ast(a->r, level+1);
+            break;
+        case '*':
+            print_of_expr_ast(a->l,level+1);
+            fprintf(stderr, "%*s", level*4, "");
+            fprintf(stderr, "OP(*)\n");
+            print_of_expr_ast(a->r, level+1);
+            break;
+        case '/':
+            print_of_expr_ast(a->l, level+1);
+            fprintf(stderr, "%*s", level*4, "");
+            fprintf(stderr, "OP(/)\n");
+            print_of_expr_ast(a->r, level+1);
+            break;
+        case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
+            fprintf(stderr, "%*s", level*4, "");
+            fprintf(stderr, "UNARY_OP(-)\n");
+            print_of_expr_ast(a->l, level+1);
+            break;
+    }
+    fprintf(stderr, "%*s", level*2, "");
+    fprintf(stderr, "}\n");
+}
+
 // output_filter_basin_list
 OutputFilterBasin *create_new_output_filter_basin() {
 	OutputFilterBasin *new_basin = (OutputFilterBasin *) malloc(sizeof(OutputFilterBasin));

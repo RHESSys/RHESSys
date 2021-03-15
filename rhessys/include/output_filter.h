@@ -13,6 +13,10 @@
 #define OUTPUT_FORMAT_CSV "csv"
 #define OUTPUT_FORMAT_NETCDF "netcdf"
 
+#define OF_VAR_EXPR_AST_NODE_UNARY_MINUS 'M'
+#define OF_VAR_EXPR_AST_NODE_CONST 'K'
+#define OF_VAR_EXPR_AST_NODE_NAME 'N'
+
 #define FILENAME_LEN 255
 
 typedef enum {
@@ -39,7 +43,8 @@ typedef enum {
 
 typedef enum {
 	ANY_VAR,
-	NAMED
+	NAMED,
+	VAR_TYPE_EXPR
 } VariableType;
 
 typedef enum {
@@ -164,6 +169,30 @@ typedef struct of_filter {
 	num_elements_t num_named_variables;
 	bool parse_error;
 } OutputFilter;
+
+typedef struct of_var_expr_ast {
+    int nodetype;
+    struct of_var_expr_ast *l;
+    struct of_var_expr_ast *r;
+} OutputFilterExprAst;
+
+typedef struct of_var_expr_numval {
+    int nodetype;   /* type K for constant */
+    double number;
+} OutputFilterExprNumval;
+
+typedef struct of_var_expr_name {
+    int nodetype;  /* type N for name */
+    char *name;
+} OutputFilterExprName;
+
+OutputFilterExprAst *new_of_expr_ast(int nodetype, OutputFilterExprAst *l, OutputFilterExprAst *r);
+OutputFilterExprAst *new_of_expr_const(double d);
+OutputFilterExprName *new_of_expr_name(const char const *name);
+// What will be the return type? Not a double?
+double of_expr_eval(OutputFilterExprAst *ast);
+void free_of_expr_ast(OutputFilterExprAst *ast);
+void print_of_expr_ast(OutputFilterExprAst *ast, int level);
 
 OutputFilterBasin *create_new_output_filter_basin();
 OutputFilterBasin *add_to_output_filter_basin_list(OutputFilterBasin * const head,
