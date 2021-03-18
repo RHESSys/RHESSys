@@ -589,6 +589,11 @@ exp: exp '+' exp {
 
 		$$ = new_of_expr_name($1);
 	}
+	| IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s.%s\n", $1, $3);
+
+                $$ = new_of_expr_name($1);
+	}
 	;
 
 %%
