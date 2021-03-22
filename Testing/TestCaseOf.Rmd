@@ -1,8 +1,8 @@
 ---
 title: "Watershed 8 Test Case"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -52,7 +52,7 @@ Unless new development changes are being made to the worldfile or flowtable, you
 
 ```{r setrunvars}
 
-rhessys_ver = "/PATH_TO__RHESSys_EXECUTABLE/rhessys7.3"
+rhessys_ver = "/work.firelight/rhessys/newestrh/rhessys_git/rhessys/rhessys7.3"
 worldfile = "worldfiles/w8TC.world"
 header = "worldfiles/w8TC.hdr"
 flowtable = "flowtables/w8TC.flow"
@@ -77,11 +77,21 @@ system(command_line)
 
 
 ```{r getyourresults}
-
+base = read.table("out/base_basin_daily.csv", header=T, sep=",")
+base = mkdate(base)
 test = read.table("out/test_basin_daily.csv", header=T, sep=",")
 test = mkdate(test)
 
 # we have to make some variables
+base = base %>% mutate(streamflow=1000*(streamflow+gw.Qout), trans=1000*(transpiration_sat_zone+
+                         transpiration_unsat_zone), 
+            evap = 1000*(evaporation+evaporation_surf +exfiltration_sat_zone+exfiltration_unsat_zone), 
+      plantc = cs.frootc+cs.leafc+cs.live_stemc+cs.dead_stemc+cs.live_crootc+cs.dead_crootc,
+      streamflow_NO3 = streamflow_NO3+gw.NO3out, streamflow_DON= streamflow_DON+gw.DONout, 
+      psn   = cs.net_psn,
+      gpsn = cdf.psn_to_cpool,
+      plant_resp = cdf.total_mr + cdf.total_gr)
+
 test = test %>% mutate(streamflow=1000*(streamflow+gw.Qout), trans=1000*(transpiration_sat_zone+
                          transpiration_unsat_zone), 
             evap = 1000*(evaporation+evaporation_surf +exfiltration_sat_zone+exfiltration_unsat_zone), 
@@ -97,6 +107,7 @@ In general water balance should be close to zero - there are of course small rou
 We will plot both so you can see if there is a water balance issue with your new code
 
 ```{r waterbalance}
+base = watbal_basin_of(base)
 test = watbal_basin_of(test)
 
 # your results are in red
