@@ -52,7 +52,7 @@ Unless new development changes are being made to the worldfile or flowtable, you
 
 ```{r setrunvars}
 
-rhessys_ver = "/work.firelight/rhessys/newestrh/rhessys_git/rhessys/rhessys7.3"
+rhessys_ver = "/PATH_TO_RHESSys_Version/rhessys7.3"
 worldfile = "worldfiles/w8TC.world"
 header = "worldfiles/w8TC.hdr"
 flowtable = "flowtables/w8TC.flow"
