@@ -226,10 +226,14 @@ OutputFilterExprAst *new_of_expr_const(double d) {
     return (OutputFilterExprAst *) n;
 }
 
-OutputFilterExprName *new_of_expr_name(const char const *name) {
+OutputFilterExprName *new_of_expr_name(const char *name,
+                                       const char *sub_struct_name,
+                                       OutputFilterVariable *var) {
     OutputFilterExprName *n = (OutputFilterExprName *) malloc(sizeof(OutputFilterExprName));
     n->nodetype = OF_VAR_EXPR_AST_NODE_NAME;
-    n->name = strdup(name);
+    n->name = name;
+    n->sub_struct_name = sub_struct_name;
+    n->var = var;
     return (OutputFilterExprAst *) n;
 }
 
@@ -451,11 +455,13 @@ OutputFilterVariable *create_new_output_filter_variable(HierarchyLevel level, ch
 	new_var->sub_struct_varname = NULL;
 	new_var->offset = SIZE_MAX;
 	new_var->sub_struct_var_offset = SIZE_MAX;
+	new_var->expr = NULL;
 	new_var->meta = NULL;
 	return new_var;
 }
 
-OutputFilterVariable *create_new_output_filter_sub_struct_variable(HierarchyLevel level, char *name, char *sub_struct_varname) {
+OutputFilterVariable *create_new_output_filter_sub_struct_variable(HierarchyLevel level, char *name,
+                                                                   char *sub_struct_varname) {
 	OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
 	new_var->next = NULL;
 	new_var->hierarchy_level = level;
@@ -465,6 +471,7 @@ OutputFilterVariable *create_new_output_filter_sub_struct_variable(HierarchyLeve
 	new_var->sub_struct_varname = strdup(sub_struct_varname);
 	new_var->offset = SIZE_MAX;
 	new_var->sub_struct_var_offset = SIZE_MAX;
+	new_var->expr = NULL;
 	new_var->meta = NULL;
 	return new_var;
 }
@@ -479,7 +486,24 @@ OutputFilterVariable *create_new_output_filter_variable_any() {
 	new_var->name = NULL;
 	new_var->offset = SIZE_MAX;
 	new_var->sub_struct_var_offset = SIZE_MAX;
+    new_var->expr = NULL;
 	return new_var;
+}
+
+OutputFilterVariable *create_new_output_filter_expr_variable(HierarchyLevel level, char *name,
+                                                             OutputFilterExprAst *expr) {
+    OutputFilterVariable *new_var = (OutputFilterVariable *) malloc(sizeof(OutputFilterVariable));
+    new_var->next = NULL;
+    new_var->hierarchy_level = level;
+    new_var->variable_type = VAR_TYPE_EXPR;
+    new_var->data_type = DATA_TYPE_UNDEFINED;
+    new_var->name = strdup(name);
+    new_var->sub_struct_varname = NULL;
+    new_var->offset = SIZE_MAX;
+    new_var->sub_struct_var_offset = SIZE_MAX;
+    new_var->expr = expr;
+    new_var->meta = NULL;
+    return new_var;
 }
 
 OutputFilterVariable *add_to_output_filter_variable_list(OutputFilterVariable * const head,
@@ -737,6 +761,12 @@ void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
 		case NAMED:
 			fprintf(stderr, "%s\tvariable_type: named,\n", prefix);
 			break;
+		case VAR_TYPE_EXPR:
+		    fprintf(stderr, "%s\tvariable_type: expression,\n", prefix);
+		    break;
+		default:
+            fprintf(stderr, "%s\tvariable_type: undefined,\n", prefix);
+            break;
 		}
 
 		switch (v->data_type) {
@@ -787,6 +817,10 @@ void print_output_filter_variable(OutputFilterVariable *v, char *prefix) {
 		fprintf(stderr, "%s\tsub_struct_varname: %s,\n", prefix, v->sub_struct_varname);
 		fprintf(stderr, "%s\toffset: %zu,\n", prefix, v->offset);
 		fprintf(stderr, "%s\tsub_struct_var_offset: %zu,\n", prefix, v->sub_struct_var_offset);
+		if (v->expr != NULL) {
+            fprintf(stderr, "%s\texpr:\n", prefix);
+            print_of_expr_ast(v->expr, 16);
+        }
 	}
 	fprintf(stderr, "%s}", prefix);
 }

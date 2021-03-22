@@ -453,13 +453,28 @@ variables: VARS variable_spec {
 	;
 
 variable_spec: | VAR_DEF exp {
-		//if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s=%s\n", $1, $3);
+		if (verbose_output) {
+			fprintf(stderr, "\t\tVARIABLE name : %s, AST:\n", $1);
+			print_of_expr_ast($2, 1);
+		}
 
-		// TODO: Store AST into variable & do any pre-processing needed to make the
-		// AST usable for producing filtered output.
+		HierarchyLevel level;
+		if (in_basin) {
+			syntax_error = true;
+			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_patch) {
+			level = OF_HIERARCHY_LEVEL_PATCH;
+		} else if (in_stratum) {
+			level = OF_HIERARCHY_LEVEL_STRATUM;
+		}
+		OutputFilterVariable *new_var = create_new_output_filter_expr_variable(level, $1, $2);
 
-		fprintf(stderr, "\t\tVARIABLE name : %s, AST:\n", $1);
-		print_of_expr_ast($2, 1);
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+
       	}
 	| IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s\n", $1);
@@ -587,12 +602,34 @@ exp: exp '+' exp {
 	| IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s\n", $1);
 
-		$$ = new_of_expr_name($1);
+		HierarchyLevel level;
+		if (in_basin) {
+			syntax_error = true;
+			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_patch) {
+			level = OF_HIERARCHY_LEVEL_PATCH;
+		} else if (in_stratum) {
+			level = OF_HIERARCHY_LEVEL_STRATUM;
+		}
+		OutputFilterVariable *new_var = create_new_output_filter_variable(level, $1);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var->name, NULL, new_var);
 	}
 	| IDENTIFIER DOT IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s.%s\n", $1, $3);
 
-                $$ = new_of_expr_name($1);
+		HierarchyLevel level;
+		if (in_basin) {
+			syntax_error = true;
+			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_patch) {
+			level = OF_HIERARCHY_LEVEL_PATCH;
+		} else if (in_stratum) {
+			level = OF_HIERARCHY_LEVEL_STRATUM;
+		}
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var->name, new_var->sub_struct_varname, new_var);
 	}
 	;
 

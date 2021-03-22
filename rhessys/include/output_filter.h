@@ -100,6 +100,7 @@ typedef struct of_var {
 	char *sub_struct_varname;
 	size_t offset;
 	size_t sub_struct_var_offset;
+	struct of_var_expr_ast *expr;
 	void *meta;
 } OutputFilterVariable;
 
@@ -184,11 +185,15 @@ typedef struct of_var_expr_numval {
 typedef struct of_var_expr_name {
     int nodetype;  /* type N for name */
     char *name;
+    char *sub_struct_name;
+    OutputFilterVariable *var;
 } OutputFilterExprName;
 
 OutputFilterExprAst *new_of_expr_ast(int nodetype, OutputFilterExprAst *l, OutputFilterExprAst *r);
 OutputFilterExprAst *new_of_expr_const(double d);
-OutputFilterExprName *new_of_expr_name(const char const *name);
+OutputFilterExprName *new_of_expr_name(const char *name,
+                                       const char *sub_struct_name,
+                                       OutputFilterVariable *var);
 // What will be the return type? Not a double?
 double of_expr_eval(OutputFilterExprAst *ast);
 void free_of_expr_ast(OutputFilterExprAst *ast);
@@ -210,8 +215,11 @@ OutputFilterStratum *add_to_output_filter_stratum_list(OutputFilterStratum * con
 void free_output_filter_stratum_list(OutputFilterStratum *head);
 
 OutputFilterVariable *create_new_output_filter_variable(HierarchyLevel level, char *name);
-OutputFilterVariable *create_new_output_filter_sub_struct_variable(HierarchyLevel level, char *name, char *sub_struct_varname);
+OutputFilterVariable *create_new_output_filter_sub_struct_variable(HierarchyLevel level, char *name,
+                                                                   char *sub_struct_varname);
 OutputFilterVariable *create_new_output_filter_variable_any();
+OutputFilterVariable *create_new_output_filter_expr_variable(HierarchyLevel level, char *name,
+                                                             OutputFilterExprAst *expr);
 OutputFilterVariable *add_to_output_filter_variable_list(OutputFilterVariable * const head,
 		OutputFilterVariable * const new_var);
 void free_output_filter_variable_list(OutputFilterVariable *head);
