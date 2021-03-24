@@ -86,7 +86,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 				v->data_type = var_idx_entry->data_type;
 			}
 
-			f->num_named_variables += 1;
+			f->num_variables += 1;
 		}
 		v = v->next;
 	}
@@ -135,7 +135,7 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 			}
 			v->offset = var_idx_entry->offset;
 			v->data_type = var_idx_entry->data_type;
-			f->num_named_variables += 1;
+			f->num_variables += 1;
 		}
 		v = v->next;
 	}
@@ -528,10 +528,10 @@ bool construct_output_filter(char * const error, size_t error_len,
 			return return_with_error(error, error_len, init_error);
 		}
 
-		// Allocate array for num_named_variables materialized variables.
+		// Allocate array for num_variables materialized variables.
 		// This will be used to temporarily store materialized variables before they are
 		// output each time step.
-		f->output->materialized_variables = calloc(f->num_named_variables, sizeof(MaterializedVariable));
+		f->output->materialized_variables = calloc(f->num_variables, sizeof(MaterializedVariable));
 		if (f->output->materialized_variables == NULL) {
 			perror("construct_output_filter: Unable to allocate materialized variable array");
 			return false;

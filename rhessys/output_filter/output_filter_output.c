@@ -17,7 +17,7 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 
 inline static void reset_materialized_variable_array_values(OutputFilter const * const f) {
 	if (f == NULL) return;
-	for (int i = 0; i < f->num_named_variables; i++) {
+	for (int i = 0; i < f->num_variables; i++) {
 		// double_val should be the widest value, so this should zero any value.
 		f->output->materialized_variables[i].u.double_val = 0.0;
 	}
@@ -29,7 +29,7 @@ inline static void scale_materialized_variable_array_values(OutputFilter const *
 
 	MaterializedVariable *mat_vars = f->output->materialized_variables;
 
-	for (int i = 0; i < f->num_named_variables; i++) {
+	for (int i = 0; i < f->num_variables; i++) {
 		if (mat_vars[i].data_type == DATA_TYPE_DOUBLE) {
 			mat_vars[i].u.double_val /= scalar;
 		}
@@ -412,7 +412,7 @@ static inline bool output_materialized_variables(char * const error, size_t erro
 
 static bool output_variables(char * const error, size_t error_len, bool verbose,
 		struct date date, void * const entity, EntityID id, OutputFilter const * const f) {
-	if (verbose) fprintf(stderr, "\t\toutput_variables(num_named_variables: %hu)...\n", f->num_named_variables);
+	if (verbose) fprintf(stderr, "\t\toutput_variables(num_variables: %hu)...\n", f->num_variables);
 
 	char *local_error;
 	MaterializedVariable mat_var;

@@ -167,7 +167,7 @@ typedef struct of_filter {
 	OutputFilterPatch *patches;
 	OutputFilterStratum *strata;
 	OutputFilterVariable *variables;
-	num_elements_t num_named_variables;
+	num_elements_t num_variables;
 	bool parse_error;
 } OutputFilter;
 

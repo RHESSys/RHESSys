@@ -166,7 +166,7 @@ static bool output_variable_to_stream(char * const error, size_t error_len,
 bool output_format_csv_write_data(char * const error, size_t error_len,
 		struct date date, OutputFilter * const f,
 		EntityID id, MaterializedVariable * const vars, bool flush) {
-	if (f->num_named_variables < 1) return true;
+	if (f->num_variables < 1) return true;
 
 	bool status;
 	int curr_var = 0;
@@ -217,7 +217,7 @@ bool output_format_csv_write_data(char * const error, size_t error_len,
 		return false;
 	}
 	// Output remaining values
-	while (curr_var < f->num_named_variables) {
+	while (curr_var < f->num_variables) {
 		MaterializedVariable v = vars[curr_var++];
 		status = output_variable_to_stream(error, error_len, fp, v, CSV_DELIM_DEFAULT);
 		if (!status) {
