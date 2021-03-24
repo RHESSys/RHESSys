@@ -22,76 +22,100 @@ struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct b
 struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone_ID, int hill_ID, int basin_ID, struct world_object *world);
 
 
+static bool init_hourly_daily_variable(Dictionary_t *struct_index, char *struct_name, OutputFilterVariable *v) {
+    DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
+    if (var_idx_entry == NULL) {
+        fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of struct %s.\n",
+                v->name, struct_name);
+        return false;
+    }
+    v->offset = var_idx_entry->offset;
+    if (var_idx_entry->data_type == DATA_TYPE_STRUCT) {
+        if (var_idx_entry->sub_struct_index == NULL) {
+            fprintf(stderr, "init_variables_hourly_daily: variable %s.%s is a sub-struct variable, but does not have a sub-struct index.\n",
+                    v->name, v->sub_struct_varname);
+            return false;
+        }
+        // This is a sub-struct variable, look it up in the index so that we can set
+        // sub_struct_var_offset and data type
+        DictionaryValue_t *sub_var_idx_entry = dictionaryGet(var_idx_entry->sub_struct_index,
+                                                             v->sub_struct_varname);
+        if (sub_var_idx_entry == NULL) {
+            fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of sub-struct named %s in struct %s.\n",
+                    v->sub_struct_varname, v->name, struct_name);
+            return false;
+        }
+        v->sub_struct_var_offset = sub_var_idx_entry->offset;
+        v->data_type = sub_var_idx_entry->data_type;
+    } else {
+        // This is a direct variable within the entity struct, use the data type from
+        // the index for this entity.
+        v->data_type = var_idx_entry->data_type;
+    }
+    return true;
+}
+
 static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_hourly_daily: no variables defined.\n");
 		return false;
 	}
 
+	bool status;
 	Dictionary_t *struct_index = NULL;
 	char *struct_name = NULL;
 
 	OutputFilterVariable *v = f->variables;
 	while (v != NULL) {
+        // To support basin-level output (where variables will be stratum, patch, or hillslope variables)
+        // as well as patch and stratum, determine struct_index and struct_name for each variable instead
+        // of once before we iterate over variables.
+        switch (v->hierarchy_level) {
+            case OF_HIERARCHY_LEVEL_HILLSLOPE:
+                struct_index = i->hillslope_object;
+                struct_name = STRUCT_NAME_HILLSLOPE;
+                break;
+            case OF_HIERARCHY_LEVEL_PATCH:
+                struct_index = i->patch_object;
+                struct_name = STRUCT_NAME_PATCH;
+                break;
+            case OF_HIERARCHY_LEVEL_STRATUM:
+                struct_index = i->canopy_strata_object;
+                struct_name = STRUCT_NAME_STRATUM;
+                break;
+            default:
+                fprintf(stderr, "init_variables_hourly_daily: variable hierarchy level %d is unknown or not yet implemented.\n",
+                        v->hierarchy_level);
+                return false;
+        }
+
 		if (v->variable_type == NAMED) {
-			// To support basin-level output (where variables will be stratum, patch, or hillslope variables)
-			// as well as patch and stratum, determine struct_index and struct_name for each variable instead
-			// of once before we iterate over variables.
-			switch (v->hierarchy_level) {
-			case OF_HIERARCHY_LEVEL_HILLSLOPE:
-				struct_index = i->hillslope_object;
-				struct_name = STRUCT_NAME_HILLSLOPE;
-				break;
-			case OF_HIERARCHY_LEVEL_PATCH:
-				struct_index = i->patch_object;
-				struct_name = STRUCT_NAME_PATCH;
-				break;
-			case OF_HIERARCHY_LEVEL_STRATUM:
-				struct_index = i->canopy_strata_object;
-				struct_name = STRUCT_NAME_STRATUM;
-				break;
-			default:
-				fprintf(stderr, "init_variables_hourly_daily: variable hierarchy level %d is unknown or not yet implemented.\n",
-						v->hierarchy_level);
-				return false;
+			status = init_hourly_daily_variable(struct_index, struct_name, v);
+			if (!status) {
+			    return false;
 			}
-
-			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
-			if (var_idx_entry == NULL) {
-				fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of struct %s.\n",
-						v->name, struct_name);
-				return false;
-			}
-			v->offset = var_idx_entry->offset;
-			if (var_idx_entry->data_type == DATA_TYPE_STRUCT) {
-				if (var_idx_entry->sub_struct_index == NULL) {
-					fprintf(stderr, "init_variables_hourly_daily: variable %s.%s is a sub-struct variable, but does not have a sub-struct index.\n",
-							v->name, v->sub_struct_varname);
-					return false;
-				}
-				// This is a sub-struct variable, look it up in the index so that we can set
-				// sub_struct_var_offset and data type
-				DictionaryValue_t *sub_var_idx_entry = dictionaryGet(var_idx_entry->sub_struct_index,
-						v->sub_struct_varname);
-				if (sub_var_idx_entry == NULL) {
-					fprintf(stderr, "init_variables_hourly_daily: variable %s does not appear to be a member of sub-struct named %s in struct %s.\n",
-							v->sub_struct_varname, v->name, struct_name);
-					return false;
-				}
-				v->sub_struct_var_offset = sub_var_idx_entry->offset;
-				v->data_type = sub_var_idx_entry->data_type;
-			} else {
-				// This is a direct variable within the entity struct, use the data type from
-				// the index for this entity.
-				v->data_type = var_idx_entry->data_type;
-			}
-
 			f->num_variables += 1;
+		} else if (v->variable_type == VAR_TYPE_EXPR) {
+		    // TODO: Initialize any variables in the expression AST
+            f->num_variables += 1;
 		}
 		v = v->next;
 	}
 
 	return true;
+}
+
+static bool init_monthly_yearly_variable(Dictionary_t *struct_index, char *struct_name, OutputFilterVariable *v) {
+    DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
+    if (var_idx_entry == NULL) {
+        fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct %s.\n",
+                v->name, struct_name);
+        return false;
+    }
+    v->offset = var_idx_entry->offset;
+    v->data_type = var_idx_entry->data_type;
+
+    return true;
 }
 
 static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, bool verbose) {
@@ -100,43 +124,44 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
 		return false;
 	}
 
+	bool status;
 	Dictionary_t *struct_index = NULL;
 	char *struct_name = NULL;
 
 	OutputFilterVariable *v = f->variables;
 	while (v != NULL) {
+        // To support basin-level output (where variables will be stratum, patch, or hillslope variables)
+        // as well as patch and stratum, determine struct_index and struct_name for each variable instead
+        // of once before we iterate over variables.
+        switch (v->hierarchy_level) {
+            case OF_HIERARCHY_LEVEL_HILLSLOPE:
+                struct_index = i->accumulate_patch_object;
+                struct_name = STRUCT_NAME_ACCUM_HILLSLOPE;
+                break;
+            case OF_HIERARCHY_LEVEL_PATCH:
+                struct_index = i->accumulate_patch_object;
+                struct_name = STRUCT_NAME_ACCUM_PATCH;
+                break;
+            case OF_HIERARCHY_LEVEL_STRATUM:
+                struct_index = i->accumulate_strata_object;
+                struct_name = STRUCT_NAME_ACCUM_STRATUM;
+                break;
+            default:
+                fprintf(stderr, "init_variables_monthly_yearly: variable hierarchy level %d is unknown or not yet implemented.\n",
+                        v->hierarchy_level);
+                return false;
+        }
+
 		if (v->variable_type == NAMED) {
-			// To support basin-level output (where variables will be stratum, patch, or hillslope variables)
-			// as well as patch and stratum, determine struct_index and struct_name for each variable instead
-			// of once before we iterate over variables.
-			switch (v->hierarchy_level) {
-			case OF_HIERARCHY_LEVEL_HILLSLOPE:
-				struct_index = i->accumulate_patch_object;
-				struct_name = STRUCT_NAME_ACCUM_HILLSLOPE;
-				break;
-			case OF_HIERARCHY_LEVEL_PATCH:
-				struct_index = i->accumulate_patch_object;
-				struct_name = STRUCT_NAME_ACCUM_PATCH;
-				break;
-			case OF_HIERARCHY_LEVEL_STRATUM:
-				struct_index = i->accumulate_strata_object;
-				struct_name = STRUCT_NAME_ACCUM_STRATUM;
-				break;
-			default:
-				fprintf(stderr, "init_variables_monthly_yearly: variable hierarchy level %d is unknown or not yet implemented.\n",
-						v->hierarchy_level);
-				return false;
-			}
-			DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
-			if (var_idx_entry == NULL) {
-				fprintf(stderr, "init_variables_monthly_yearly: variable %s does not appear to be a member of struct %s.\n",
-						v->name, struct_name);
-				return false;
-			}
-			v->offset = var_idx_entry->offset;
-			v->data_type = var_idx_entry->data_type;
+		    status = init_monthly_yearly_variable(struct_index, struct_name, v);
+            if (!status) {
+                return false;
+            }
 			f->num_variables += 1;
-		}
+        } else if (v->variable_type == VAR_TYPE_EXPR) {
+            // TODO: Initialize any variables in the expression AST
+            f->num_variables += 1;
+        }
 		v = v->next;
 	}
 
