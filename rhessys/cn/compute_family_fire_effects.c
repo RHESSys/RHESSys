@@ -166,7 +166,6 @@ void compute_family_fire_effects(
 	/*--------------------------------------------------------------*/
 	// build aggregate understory layer to serve as universal canopy subtarget
 	// just need to create a aggregate canopy height, and C, (leaf+live stem +dead stem)
-	// either redirect references to subtarget canopy w that throughout, or replicate it and add it to canopy.fe.subtarget...
 	agg_under_height = 0;
 	agg_under_carbon = 0;
 	under_pct_area = 0;
@@ -177,7 +176,6 @@ void compute_family_fire_effects(
 	under_ct = 0;
 	intr_ct = 0;
 
-	// TODO add as much processing as possible to this first set of loops - check existing code
 	for (layer = 0; layer < patch_family[0].num_layers; layer++)
 	{
 		for (c = 0; c < patch_family[0].layers[layer].count; c++)
@@ -231,6 +229,14 @@ void compute_family_fire_effects(
 			canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
 			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 			
+			// set aggregate values for each layer - mainly for tracking (heights aren't used after this point anyways)
+			canopy_target[0].fe.agg_under_height = agg_under_height;
+			canopy_target[0].fe.agg_under_carbon = agg_under_carbon;
+			canopy_target[0].fe.agg_under_pct_cover = under_pct_area;
+			canopy_target[0].fe.agg_intr_height = agg_intr_height;
+			canopy_target[0].fe.agg_intr_carbon = agg_intr_carbon;
+			canopy_target[0].fe.agg_intr_pct_cover = intr_pct_area;
+
 			/*--------------------------------------------------------------*/
 			/* Calculate coarse woody debris removed						*/
 			/*--------------------------------------------------------------*/
@@ -290,7 +296,7 @@ void compute_family_fire_effects(
 					/* Determine the proportion of understory canopy carbon consumed */
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 					// Determine the amount of carbon consumed in the understory based on aggregate understory
-					under_c_consumed = (agg_under_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed);
+					under_c_consumed = (canopy_target[0].fe.agg_under_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed);
 					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
 					canopy_target[0].fe.understory_c_consumed = under_c_consumed + litter_c_consumed;
 				}
@@ -308,15 +314,15 @@ void compute_family_fire_effects(
 					/* Determine the proportion of subtarget canopy carbon consumed */
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 					/* Determine the amount of carbon consumed in the intmediate story */
-					intr_c_consumed = agg_intr_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+					intr_c_consumed = canopy_target[0].fe.agg_intr_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
 					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
 					canopy_target[0].fe.understory_c_consumed = intr_c_consumed + litter_c_consumed;
 				}
 				if (under_ct > 0 && intr_ct > 0)
 				{
 					// Combine understory and intermediate story consumptions, weighted by area(?), add litter in
-					canopy_target[0].fe.understory_c_consumed = (under_c_consumed * under_pct_area / (under_pct_area + intr_pct_area)) +
-																(intr_c_consumed * intr_pct_area / (under_pct_area + intr_pct_area)) + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = (under_c_consumed * canopy_target[0].fe.agg_under_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) +
+																(intr_c_consumed * canopy_target[0].fe.agg_intr_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) + litter_c_consumed;
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
@@ -356,7 +362,7 @@ void compute_family_fire_effects(
 					/* Determine the proportion of understory canopy carbon consumed */
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 					// Determine the amount of carbon consumed in the understory based on aggregate understory
-					under_c_consumed = (agg_under_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed);
+					under_c_consumed = (canopy_target[0].fe.agg_under_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed);
 					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
 					canopy_target[0].fe.understory_c_consumed = under_c_consumed + litter_c_consumed;
 				}
@@ -374,15 +380,15 @@ void compute_family_fire_effects(
 					/* Determine the proportion of subtarget canopy carbon consumed */
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 					/* Determine the amount of carbon consumed in the intmediate story */
-					intr_c_consumed = agg_intr_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+					intr_c_consumed = canopy_target[0].fe.agg_intr_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
 					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
 					canopy_target[0].fe.understory_c_consumed = intr_c_consumed + litter_c_consumed;
 				}
 				if (under_ct > 0 && intr_ct > 0)
 				{
 					// Combine understory and intermediate story consumptions, weighted by area(?), add litter in
-					canopy_target[0].fe.understory_c_consumed = (under_c_consumed * under_pct_area / (under_pct_area + intr_pct_area)) +
-																(intr_c_consumed * intr_pct_area / (under_pct_area + intr_pct_area)) + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = (under_c_consumed * canopy_target[0].fe.agg_under_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) +
+																(intr_c_consumed * canopy_target[0].fe.agg_intr_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) + litter_c_consumed;
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship)
@@ -517,6 +523,12 @@ void compute_family_fire_effects(
                 canopy_target[0].fe.acc_year.canopy_subtarget_prop_c_consumed += canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
                 //canopy_target.fe.acc_year.canopy_subtarget_c +=
                 canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;
+				// added these here since subtarget kind of loses meaning with the new MSR fire effects method
+				canopy_target[0].fe.acc_year.agg_under_height += canopy_target[0].fe.agg_under_height; 
+				canopy_target[0].fe.acc_year.agg_under_carbon += canopy_target[0].fe.agg_under_carbon;
+        		canopy_target[0].fe.acc_year.agg_intr_height += canopy_target[0].fe.agg_intr_height;
+        		canopy_target[0].fe.acc_year.agg_intr_carbon += canopy_target[0].fe.agg_intr_carbon;
+
 
                 canopy_target[0].fe.acc_year.length +=1;
             }

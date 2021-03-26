@@ -185,6 +185,7 @@ void zone_daily_I(
 	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
 	int		season;
 	season = 0;
+	int		pf, rec;
 
 	int	inx;
 	struct	dated_sequence	clim_event;
@@ -1089,8 +1090,14 @@ void zone_daily_I(
 			   trans_coeff1,
 			   trans_coeff2);
 	}
-	// TODO Add sort_patch_family_layers here
 
+	// sort patch family layers, this should only matter for fire
+	if (command_line[0].multiscale_flag == 1 && command_line[0].firespread_flag == 1) {
+		for (pf = 0; pf < zone[0].num_patch_families; pf++) {
+			rec = 0;
+			sort_patch_family_layers(zone[0].patch_families[pf], &rec);
+		}
+	}
 
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches 									*/

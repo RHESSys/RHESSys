@@ -2889,6 +2889,12 @@ struct accumulate_fire_object
         double canopy_subtarget_prop_c_consumed;
         //double  canopy_subtarget_c;
         double understory_c_consumed;
+        // for aggregate under and intr layers with MSR
+        double agg_under_height;
+        double agg_under_carbon;
+        double agg_intr_height;
+        double agg_intr_carbon;
+        
 };
 
 /*----------------------------------------------------------*/
@@ -2917,6 +2923,13 @@ struct  fire_effects_object {
 	double  canopy_subtarget_c;
 	double  understory_c_consumed;
 	struct  accumulate_fire_object acc_year;
+        // these used for aggregate 
+        double agg_under_height;
+        double agg_under_carbon;
+        double agg_under_pct_cover;
+        double agg_intr_height;
+        double agg_intr_carbon;
+        double agg_intr_pct_cover;
 };
 
 
