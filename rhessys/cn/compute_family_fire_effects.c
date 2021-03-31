@@ -20,7 +20,7 @@
 /*	PROGRAMMER NOTES											*/
 /*	This function builds on the standard compute_fire_effects	*/
 /*	written by Ryan Bart, but restructures it to function on 	*/
-/*	more than 2 layers, and using aggreate under and			*/
+/*	more than 2 layers, and using aggregate under and			*/
 /*	intermedaite stories										*/
 /*																*/
 /*--------------------------------------------------------------*/
@@ -69,6 +69,7 @@ void compute_family_fire_effects(
 	struct mortality_struct mort;
 	struct fire_litter_soil_loss_struct fire_loss;
 	struct patch_object *patch;
+
 	// struct fire_effects_object fe_under;
 	// struct fire_effects_object fe_int;
 	int p, c, layer;
@@ -82,7 +83,6 @@ void compute_family_fire_effects(
 	/*--------------------------------------------------------------*/
 	/*	Compute litter and soil removed.							*/
 	/*--------------------------------------------------------------*/
-
 	if (pspread > 0) {
 
 	/* Litter consumption is approximated based CONSUME model outputs */
@@ -176,6 +176,10 @@ void compute_family_fire_effects(
 	under_ct = 0;
 	intr_ct = 0;
 
+	if(command_line[0].verbose_flag <= -7) {
+		printf("Begin fire effects aggregation loops");
+	}
+
 	for (layer = 0; layer < patch_family[0].num_layers; layer++)
 	{
 		for (c = 0; c < patch_family[0].layers[layer].count; c++)
@@ -222,6 +226,9 @@ void compute_family_fire_effects(
 	/*--------------------------------------------------------------*/
 	/*		Compute effects for each layer							*/
 	/*--------------------------------------------------------------*/
+	if(command_line[0].verbose_flag <= -7) {
+		printf("Begin fire effects computation loops");
+	}
 	for ( layer=0 ; layer < patch_family[0].num_layers; layer++ ){
 		for ( c=0 ; c < patch_family[0].layers[layer].count; c++ ){
 

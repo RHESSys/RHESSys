@@ -87,7 +87,8 @@ void execute_firespread_event(
 	/* update fire grid variables			*/
 	/* first reset the values				*/
 	/*--------------------------------------------------------------*/
-	printf("In WMFire\n");
+	//printf("In WMFire\n");
+	printf("Start execute firespread event\n");
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 		  world[0].fire_grid[i][j].fire_size=0; // reset grid to no fire
@@ -153,7 +154,7 @@ void execute_firespread_event(
 		    world[0].fire_grid[i][j].understory_pet=0.0;
 		    world[0].fire_grid[i][j].ign_available=1;	/* then make this available for ignition */
 		 if(world[0].defaults[0].fire[0].fire_verbose==1)
-			printf("Initialize ws patches\n");
+			printf("Initialized fire grid patches\n");
 		}
 
 		//printf("Num patches: %d\n", world[0].patch_fire_grid[i][j].num_patches)
@@ -161,17 +162,17 @@ void execute_firespread_event(
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) { // should just be 1 now... - 1 if non MSR, n if MSR where n is patches in patch fam
 			if (world[0].defaults[0].fire[0].fire_verbose == 1)
 			{
-				printf("Patch p: %d, i: %d, j:%d\n", p, i, j);
+				printf("\nPatch p: %d, i: %d, j:%d\n", p, i, j);
 			}
 
 			patch = world[0].patch_fire_grid[i][j].patches[p]; //patch is still always a patch, loop over num patches w/ p will iterate over patches in patch family
 			if(world[0].defaults[0].fire[0].fire_verbose==1)
-				printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c); 
+				printf("Patch litter 1c %lf\n", patch[0].litter_cs.litr1c); 
 			
 			world[0].fire_grid[i][j].fuel_litter += (patch[0].litter_cs.litr1c +	patch[0].litter_cs.litr2c +	// This sums the litter pools
 				patch[0].litter_cs.litr3c +	patch[0].litter_cs.litr4c) * patch_fire_grid[i][j].prop_patch_in_grid[p];
 			if(world[0].defaults[0].fire[0].fire_verbose==1)
-				printf("grif litter %\f\n",world[0].fire_grid[i][j].fuel_litter);
+				printf("Fire grid fuel litter %lf\n",world[0].fire_grid[i][j].fuel_litter);
 
 			if( patch[0].litter.rain_capacity!=0)	// then update the fuel moisture, otherwise don't change it
 			    world[0].fire_grid[i][j].fuel_moist += (patch[0].litter.rain_stored / patch[0].litter.rain_capacity) *
@@ -188,7 +189,7 @@ void execute_firespread_event(
 				for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 		
 						if(world[0].defaults[0].fire[0].fire_verbose==1)				
-							printf("Layers: %d, count: %d\n",layer,c);
+							printf("Current layer: %d, count: %d\n",layer,c);
 
 					world[0].fire_grid[i][j].fuel_veg += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc) *
@@ -199,7 +200,7 @@ void execute_firespread_event(
 					}
 				}
 		 if(world[0].defaults[0].fire[0].fire_verbose==1)
-			printf("pixel veg and prop patch in grid: %lf\t%lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
+			printf("pixel veg: %lf | prop patch in grid: %lf\n",world[0].fire_grid[i][j].fuel_veg,patch_fire_grid[i][j].prop_patch_in_grid[p]);
 			
 
 			world[0].fire_grid[i][j].soil_moist += patch[0].rootzone.S * world[0].patch_fire_grid[i][j].prop_patch_in_grid[p];	//soil moisture, divided by proportion of the patch in that grid cell;
@@ -236,8 +237,7 @@ void execute_firespread_event(
 			}
 
 		 if(world[0].defaults[0].fire[0].fire_verbose==1)
-			printf("patch pet, patch et: %lf\t%lf\n",patch[0].fire.pet,patch[0].fire.et);
-
+			printf("Patch PET: %lf | ET: %lf\n",patch[0].fire.pet,patch[0].fire.et);
 		}
 
 		// normalize understory et and PET by the pct coverage that actually has a understory, if no understory then use global values like above
@@ -278,8 +278,6 @@ void execute_firespread_event(
 		world[0].fire_grid[i][j].pet=world[0].fire_grid[i][j].pet*1000; // convert to mm
 		world[0].fire_grid[i][j].understory_et=world[0].fire_grid[i][j].understory_et*1000; // convert to mm
 		world[0].fire_grid[i][j].understory_pet=world[0].fire_grid[i][j].understory_pet*1000; // convert to mm
-
-
 	}
 	}
 //	printf("denom: %lf\t",denom_for_mean);
@@ -327,32 +325,42 @@ void execute_firespread_event(
 	}
 
 	/*--------------------------------------------------------------*/
-	/* Call WMFire	 						*/
+	/* Call WMFire	 												*/
 	/*--------------------------------------------------------------*/
-	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);
-// needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
+	if (command_line[0].verbose_flag <= -7) {printf("\n----- Starting WMFire -----\n");}
+	printf("Calling WMFire on: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);
+	// needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
 	world[0].fire_grid = WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
- 	printf("Finished calling WMFire\n");
+	if (command_line[0].verbose_flag <= -7) {printf("----- Finished WMFire -----\n");}
 	/*--------------------------------------------------------------*/
-	/* update biomass after fire					*/
+	/* update biomass after fire									*/
 	/*--------------------------------------------------------------*/
-
+	if (command_line[0].verbose_flag <= -7) { printf("Updating biomass\n");}
 	// if(world[0].fire_grid[0][0].fire_size>0) // only do this if there was a fire
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   		for (j=0; j < world[0].num_fire_grid_col; j++) {
 
 			if (command_line[0].multiscale_flag == 1)
 			{
-				patch_family = world[0].patch_fire_grid[i][j].patch_families[0];
-				//patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-				// grid in patch is length 1 since only the [0] is ever set, regardless of allocation
-				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[0];
+				if (world[0].patch_fire_grid[i][j].num_patches > 0) // TODO - this is needed to avoid seg faults from null grids, probably needed for non msr?
+				{
+					patch_family = world[0].patch_fire_grid[i][j].patch_families[0];
+					// grid in patch is length 1 since only the [0] is ever set, regardless of allocation
+					pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[0];
 
-				compute_family_fire_effects(
-					patch_family,
-					pspread,
-					command_line
-				);
+					// Add pspread to patch
+					// TODO
+
+					if (world[0].defaults[0].fire[0].fire_verbose == 1)
+					{
+						printf("Start fire effects: grid i:%d j:%d | patch family %d | num patches %d | pspread %lf | burn %lf\n",
+							   i, j, patch_family[0].family_ID, patch_family[0].num_patches_in_fam, pspread, world[0].fire_grid[i][j].burn);
+					}
+					compute_family_fire_effects(
+						patch_family,
+						pspread,
+						command_line);
+				}
 			}
 			else
 			{

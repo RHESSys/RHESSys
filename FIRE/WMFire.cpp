@@ -808,8 +808,8 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		firePropOut.close();
 		fireFailedIterOut.close();
 	}
-
-	cout<<"Year: "<<year<<" Month: "<<month<<"\n\n";
+	if(def_.fire_verbose==1)
+		cout<<"Year: "<<year<<" Month: "<<month<<"\n\n";
 
 	if(def_.fire_write>2)
 	{

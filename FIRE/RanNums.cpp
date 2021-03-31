@@ -169,7 +169,7 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 		curKappa=kappa1;
 	}
 	
-	cout<<"p: "<<p<<" mean: "<<curMean<<" kappa: "<<curKappa<<"\n";
+	//cout<<"p: "<<p<<" mean: "<<curMean<<" kappa: "<<curKappa<<"\n";
 	double rvm_val=1;
 	
 	int vm=1,flag=1;
@@ -192,9 +192,9 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 				tmpVal=-1;
 			else
 				tmpVal=1;
-			cout<<"rvm_val1: "<<rvm_val<<" acosf "<<acos(f)<<"\n";
+			//cout<<"rvm_val1: "<<rvm_val<<" acosf "<<acos(f)<<"\n";
 			rvm_val=tmpVal*acos(f)+curMean; // sign!
-			cout<<"rvm_val1: "<<rvm_val<<" acosf "<<acos(f)<<"\n";
+			//cout<<"rvm_val1: "<<rvm_val<<" acosf "<<acos(f)<<"\n";
 			if(rvm_val<0)
 			{
 				rvm_val=ceil(-rvm_val/(2*3.141593))*2*3.141593+rvm_val;
@@ -205,7 +205,7 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 			}
 		//	rvm_val=fmod((rvm_val),(2*3.141593)); // %%!
 			flag=0;
-			cout<<"testing rvmdev1: test0:"<<test0<<" test1 "<<test1<<" a "<<a<<" b "<<b<<" r "<<r<<" z "<<z<<" f  "<<f<<" test2 "<<test2<<" c "<<c<<" test3 "<<test3<<" tmpVal "<<tmpVal<<" rvm_val "<<rvm_val<<" mean "<<curMean<<" kappa "<<curKappa<<" \n";
+			//cout<<"testing rvmdev1: test0:"<<test0<<" test1 "<<test1<<" a "<<a<<" b "<<b<<" r "<<r<<" z "<<z<<" f  "<<f<<" test2 "<<test2<<" c "<<c<<" test3 "<<test3<<" tmpVal "<<tmpVal<<" rvm_val "<<rvm_val<<" mean "<<curMean<<" kappa "<<curKappa<<" \n";
 		}
 		else
 		{
@@ -216,9 +216,9 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 					tmpVal=-1;
 				else
 					tmpVal=1;
-				cout<<"rvm_val2: "<<" acosf "<<acos(f)<<rvm_val<<"\n";
+				//cout<<"rvm_val2: "<<" acosf "<<acos(f)<<rvm_val<<"\n";
 				rvm_val=tmpVal*acos(f)+curMean; // sign!
-				cout<<"rvm_val2: "<<" acosf "<<acos(f)<<rvm_val<<"\n";
+				//cout<<"rvm_val2: "<<" acosf "<<acos(f)<<rvm_val<<"\n";
 				if(rvm_val<0)
 				{
 					rvm_val=ceil(-rvm_val/(2*3.141593))*2*3.141593+rvm_val;
@@ -230,7 +230,7 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 		//	rvm_val=fmod((rvm_val),(2*3.141593)); // %%!
 			//rvm_val=fmod(rvm_val,(2*3.141593)); // %%! = modulus I think
 				flag=0;
-				cout<<"testing rvmdev2: test0:"<<test0<<" test1 "<<test1<<" a "<<a<<" b "<<b<<" r "<<r<<" z "<<z<<" f  "<<f<<" test2 "<<test2<<" c "<<c<<" test3 "<<test3<<" tmpVal "<<tmpVal<<" rvm_val "<<rvm_val<<" mean "<<curMean<<" kappa "<<curKappa<<" \n";
+				//cout<<"testing rvmdev2: test0:"<<test0<<" test1 "<<test1<<" a "<<a<<" b "<<b<<" r "<<r<<" z "<<z<<" f  "<<f<<" test2 "<<test2<<" c "<<c<<" test3 "<<test3<<" tmpVal "<<tmpVal<<" rvm_val "<<rvm_val<<" mean "<<curMean<<" kappa "<<curKappa<<" \n";
 			}
 		}
 	}

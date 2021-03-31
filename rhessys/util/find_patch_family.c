@@ -60,6 +60,7 @@ struct patch_family_object *find_patch_family(int patch_family_ID, int zone_ID, 
 			"FATAL ERROR: Could not find hillslope %d in find_patch\n",hill_ID);
 		exit(EXIT_FAILURE);
 	}
+	//printf("Patch family %d found in: hillslope %d, ", patch_family_ID, hillslope[0].ID);
 	/*--------------------------------------------------------------*/
 	/*	find zones													*/
 	/*--------------------------------------------------------------*/
@@ -79,6 +80,7 @@ struct patch_family_object *find_patch_family(int patch_family_ID, int zone_ID, 
 			"FATAL ERROR: Could not find zone %d in find_patch\n",zone_ID);
 		exit(EXIT_FAILURE);
 	}
+	//printf("zone %d ", zone[0].ID);
 	/*--------------------------------------------------------------*/
 	/*	find patch families											*/
 	/*--------------------------------------------------------------*/
@@ -99,5 +101,7 @@ struct patch_family_object *find_patch_family(int patch_family_ID, int zone_ID, 
 			patch_family_ID, zone_ID, hill_ID);
 		exit(EXIT_FAILURE);
 	}
+	//printf("successfully!\n");
+
 	return(patch_family);
-} /*end find.patch.c*/
+}
