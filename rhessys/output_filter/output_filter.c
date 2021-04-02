@@ -897,7 +897,7 @@ void print_output_filter(OutputFilter *f) {
 			break;
 		}
 
-		fprintf(stderr, "\tnum_named_variables: %hu,\n", f->num_variables);
+		fprintf(stderr, "\tnum_variables: %hu,\n", f->num_variables);
 
 		fprintf(stderr, "\tvariables: [\n");
 		for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {

@@ -184,8 +184,8 @@ typedef struct of_var_expr_numval {
 
 typedef struct of_var_expr_name {
     int nodetype;  /* type N for name */
-    char *name;
-    char *sub_struct_name;
+    char *name; // Do we need this? It is in var.
+    char *sub_struct_name; // Do we need this? It is in var.
     OutputFilterVariable *var;
 } OutputFilterExprName;
 

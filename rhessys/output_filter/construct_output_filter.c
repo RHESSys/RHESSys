@@ -22,6 +22,32 @@ struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct b
 struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone_ID, int hill_ID, int basin_ID, struct world_object *world);
 
 
+static bool init_expr_variable(Dictionary_t *struct_index, char *struct_name, OutputFilterExprAst *expr,
+                               bool (*init_fn)(Dictionary_t *struct_index, char *struct_name, OutputFilterVariable *v)) {
+    bool status = true;
+    OutputFilterExprName *v = NULL;
+    switch (expr->nodetype) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            init_expr_variable(struct_index, struct_name, expr->r, init_fn);
+            /* one subtree */
+        case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
+            init_expr_variable(struct_index, struct_name, expr->l, init_fn);
+            /* no subtree */
+        case OF_VAR_EXPR_AST_NODE_NAME:
+            v = (OutputFilterExprName *)expr;
+            status = (*init_fn)(struct_index, struct_name, v);
+            break;
+        case OF_VAR_EXPR_AST_NODE_CONST:
+        default:
+            break;
+    }
+    return status;
+}
+
+
 static bool init_hourly_daily_variable(Dictionary_t *struct_index, char *struct_name, OutputFilterVariable *v) {
     DictionaryValue_t *var_idx_entry = dictionaryGet(struct_index, v->name);
     if (var_idx_entry == NULL) {
@@ -96,7 +122,14 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 			}
 			f->num_variables += 1;
 		} else if (v->variable_type == VAR_TYPE_EXPR) {
-		    // TODO: Initialize any variables in the expression AST
+		    // Initialize any variables in the expression AST
+		    if (v->expr == NULL) {
+		        fprintf(stderr, "init_variables_hourly_daily: expression variable '%s' has no expression defined.",
+                  v->name);
+		        return false;
+		    }
+            init_expr_variable(struct_index, struct_name, v->expr, *init_hourly_daily_variable);
+
             f->num_variables += 1;
 		}
 		v = v->next;
@@ -159,7 +192,14 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
             }
 			f->num_variables += 1;
         } else if (v->variable_type == VAR_TYPE_EXPR) {
-            // TODO: Initialize any variables in the expression AST
+            // Initialize any variables in the expression AST
+            if (v->expr == NULL) {
+                fprintf(stderr, "init_variables_monthly_yearly: expression variable '%s' has no expression defined.",
+                        v->name);
+                return false;
+            }
+            init_expr_variable(struct_index, struct_name, v->expr, *init_monthly_yearly_variable);
+
             f->num_variables += 1;
         }
 		v = v->next;
