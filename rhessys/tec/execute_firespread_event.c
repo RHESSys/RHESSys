@@ -342,14 +342,15 @@ void execute_firespread_event(
 
 			if (command_line[0].multiscale_flag == 1)
 			{
-				if (world[0].patch_fire_grid[i][j].num_patches > 0) // TODO - this is needed to avoid seg faults from null grids, probably needed for non msr?
+				if (world[0].patch_fire_grid[i][j].num_patches > 0) // TODO - this is needed to avoid seg faults from null grids, needed for non msr?
 				{
 					patch_family = world[0].patch_fire_grid[i][j].patch_families[0];
 					// grid in patch is length 1 since only the [0] is ever set, regardless of allocation
 					pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[0];
-
 					// Add pspread to patch
-					// TODO
+					for (p = 0; p < patch_family[0].num_patches_in_fam; p++) {
+						patch_family[0].patches[p][0].pspread = pspread;
+					}
 
 					if (world[0].defaults[0].fire[0].fire_verbose == 1)
 					{
@@ -367,9 +368,9 @@ void execute_firespread_event(
 				for (p = 0; p < patch_fire_grid[i][j].num_patches; ++p)
 				{
 					patch = world[0].patch_fire_grid[i][j].patches[p];
-
-					patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 					pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+					patch[0].pspread = pspread;
+					
 					// so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
 					if (world[0].defaults[0].fire[0].calc_fire_effects == 1)
 					{

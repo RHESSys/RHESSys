@@ -1936,7 +1936,8 @@ struct patch_object
 /*      carbon and nitrogen objects for patch soil and litter */
 /*----------------------------------------------------------*/
 
-        double  burn;                           /* 0-1 % burned */
+        //double  burn;                           /* 0-1 % burned */
+        double  pspread;                        /* pspread 0-1 */
         double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
         double  preday_totalc;                  /* kgC/m2 total carbon */
         double  totalc;                         /* kgC/m2 total carbon */
