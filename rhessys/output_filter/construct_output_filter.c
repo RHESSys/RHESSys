@@ -22,7 +22,16 @@ struct patch_object *find_patch(int patch_ID, int zone_ID, int hill_ID, struct b
 struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone_ID, int hill_ID, int basin_ID, struct world_object *world);
 
 
-static bool init_expr_variable(Dictionary_t *struct_index, char *struct_name, OutputFilterExprAst *expr,
+static void infer_expr_variable_data_type(OutputFilterVariable * const expr_var, const OutputFilterVariable *sub_var) {
+    if (expr_var->data_type == NULL) {
+        expr_var->data_type = sub_var->data_type;
+    } else if (sub_var->data_type > expr_var->data_type) {
+        expr_var->data_type = sub_var->data_type;
+    }
+}
+
+static bool init_expr_variable(Dictionary_t *struct_index, char *struct_name,
+                               OutputFilterVariable * const expr_var, OutputFilterExprAst * const expr,
                                bool (*init_fn)(Dictionary_t *struct_index, char *struct_name, OutputFilterVariable *v)) {
     bool status = true;
     OutputFilterExprName *v = NULL;
@@ -31,14 +40,15 @@ static bool init_expr_variable(Dictionary_t *struct_index, char *struct_name, Ou
         case '-':
         case '*':
         case '/':
-            init_expr_variable(struct_index, struct_name, expr->r, init_fn);
+            init_expr_variable(struct_index, struct_name, expr_var, expr->r, init_fn);
             /* one subtree */
         case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
-            init_expr_variable(struct_index, struct_name, expr->l, init_fn);
+            init_expr_variable(struct_index, struct_name, expr_var, expr->l, init_fn);
             /* no subtree */
         case OF_VAR_EXPR_AST_NODE_NAME:
             v = (OutputFilterExprName *)expr;
             status = (*init_fn)(struct_index, struct_name, v);
+            infer_expr_variable_data_type(expr_var, v->var);
             break;
         case OF_VAR_EXPR_AST_NODE_CONST:
         default:
@@ -128,7 +138,7 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
                   v->name);
 		        return false;
 		    }
-            init_expr_variable(struct_index, struct_name, v->expr, *init_hourly_daily_variable);
+            init_expr_variable(struct_index, struct_name, v, v->expr, *init_hourly_daily_variable);
 
             f->num_variables += 1;
 		}
@@ -198,7 +208,7 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
                         v->name);
                 return false;
             }
-            init_expr_variable(struct_index, struct_name, v->expr, *init_monthly_yearly_variable);
+            init_expr_variable(struct_index, struct_name, v, v->expr, *init_monthly_yearly_variable);
 
             f->num_variables += 1;
         }
