@@ -104,6 +104,77 @@ static void reset_accumulator_stratum(PointerSet **acc_objs_to_reset) {
 	}
 }
 
+inline static void materialize_named_variable(OutputFilterVariable const * const v, void * const entity, size_t offset,
+                                              MaterializedVariable * const mat_var) {
+    switch (v->data_type) {
+        case DATA_TYPE_BOOL:
+            mat_var->data_type = v->data_type;
+            mat_var->u.bool_val = *((bool *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
+#endif
+            break;
+        case DATA_TYPE_CHAR:
+            mat_var->data_type = v->data_type;
+            mat_var->u.char_val = *((char *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
+#endif
+            break;
+        case DATA_TYPE_STRING:
+            mat_var->data_type = v->data_type;
+            mat_var->u.char_array = (char *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
+#endif
+            break;
+        case DATA_TYPE_INT:
+            mat_var->data_type = v->data_type;
+            mat_var->u.int_val = *((int *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
+#endif
+            break;
+        case DATA_TYPE_LONG:
+            mat_var->data_type = v->data_type;
+            mat_var->u.long_val = *((long *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
+#endif
+            break;
+        case DATA_TYPE_LONG_ARRAY:
+            mat_var->data_type = v->data_type;
+            mat_var->u.long_array = (long *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
+#endif
+            break;
+        case DATA_TYPE_FLOAT:
+            mat_var->data_type = v->data_type;
+            mat_var->u.float_val = *((float *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
+#endif
+            break;
+        case DATA_TYPE_DOUBLE:
+            mat_var->data_type = v->data_type;
+            mat_var->u.double_val = *((double *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
+#endif
+            break;
+        case DATA_TYPE_DOUBLE_ARRAY:
+            mat_var->data_type = v->data_type;
+            mat_var->u.double_array = (double *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
+#endif
+            break;
+        default:
+            mat_var->data_type = DATA_TYPE_UNDEFINED;
+    }
+}
+
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
 	size_t offset = v->offset;
@@ -112,72 +183,10 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 		// (which means this must be a sub-struct variable) apply it to the offset
 		offset += v->sub_struct_var_offset;
 	}
-	switch (v->data_type) {
-	case DATA_TYPE_BOOL:
-		mat_var.data_type = v->data_type;
-		mat_var.u.bool_val = *((bool *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
-#endif
-		break;
-	case DATA_TYPE_CHAR:
-		mat_var.data_type = v->data_type;
-		mat_var.u.char_val = *((char *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
-#endif
-		break;
-	case DATA_TYPE_STRING:
-		mat_var.data_type = v->data_type;
-		mat_var.u.char_array = (char *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
-#endif
-		break;
-	case DATA_TYPE_INT:
-		mat_var.data_type = v->data_type;
-		mat_var.u.int_val = *((int *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
-#endif
-		break;
-	case DATA_TYPE_LONG:
-		mat_var.data_type = v->data_type;
-		mat_var.u.long_val = *((long *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
-#endif
-		break;
-	case DATA_TYPE_LONG_ARRAY:
-		mat_var.data_type = v->data_type;
-		mat_var.u.long_array = (long *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
-#endif
-		break;
-	case DATA_TYPE_FLOAT:
-		mat_var.data_type = v->data_type;
-		mat_var.u.float_val = *((float *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
-#endif
-		break;
-	case DATA_TYPE_DOUBLE:
-		mat_var.data_type = v->data_type;
-		mat_var.u.double_val = *((double *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
-#endif
-		break;
-	case DATA_TYPE_DOUBLE_ARRAY:
-		mat_var.data_type = v->data_type;
-		mat_var.u.double_array = (double *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
-#endif
-		break;
-	default:
-		mat_var.data_type = DATA_TYPE_UNDEFINED;
+	if (v->variable_type == NAMED) {
+        materialize_named_variable(v, entity, offset, &mat_var);
+    } else if (v->variable_type == VAR_TYPE_EXPR) {
+	    // Evaluate expression variable
 	}
 	// Copy pointer to any metadata for this variable
 	mat_var.meta = v->meta;
