@@ -226,20 +226,11 @@ OutputFilterExprAst *new_of_expr_const(double d) {
     return (OutputFilterExprAst *) n;
 }
 
-OutputFilterExprName *new_of_expr_name(const char *name,
-                                       const char *sub_struct_name,
-                                       OutputFilterVariable *var) {
+OutputFilterExprName *new_of_expr_name(OutputFilterVariable *var) {
     OutputFilterExprName *n = (OutputFilterExprName *) malloc(sizeof(OutputFilterExprName));
     n->nodetype = OF_VAR_EXPR_AST_NODE_NAME;
-    n->name = name;
-    n->sub_struct_name = sub_struct_name;
     n->var = var;
     return (OutputFilterExprAst *) n;
-}
-
-// What will be the return type? Not a double?
-double of_expr_eval(OutputFilterExprAst *a) {
-    // TBD
 }
 
 void free_of_expr_ast(OutputFilterExprAst *a) {
@@ -270,7 +261,7 @@ void print_of_expr_ast(OutputFilterExprAst *a, int level) {
     switch(a->nodetype) {
         case OF_VAR_EXPR_AST_NODE_NAME:
             fprintf(stderr, "%*s", level*4, "");
-            fprintf(stderr, "IDENTIFIER(%s);\n", ((OutputFilterExprName *)a)->name);
+            fprintf(stderr, "IDENTIFIER(%s);\n", ((OutputFilterExprName *)a)->var->name);
             break;
         case OF_VAR_EXPR_AST_NODE_CONST:
             fprintf(stderr, "%*s", level*4, "");

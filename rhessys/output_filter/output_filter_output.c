@@ -177,6 +177,201 @@ inline static MaterializedVariable materialize_named_variable(OutputFilterVariab
     }
 }
 
+inline static double mat_var_scalar_to_double(MaterializedVariable a) {
+    double result;
+    switch (a.data_type) {
+        case DATA_TYPE_BOOL:
+            result = a.u.bool_val;
+            return result;
+        case DATA_TYPE_INT:
+            result = a.u.int_val;
+            return result;
+        case DATA_TYPE_LONG:
+            result = a.u.long_val;
+            return result;
+        case DATA_TYPE_FLOAT:
+            result = a.u.float_val;
+            return result;
+        case DATA_TYPE_DOUBLE:
+            result = a.u.double_val;
+            return result;
+        default:
+            fprintf(stderr,
+                    "WARNING: mat_var_scalar_to_double(): Encountered non-scalar/non-numeric value when trying to convert variable of type %d to type double. Returning NaN.\n",
+                    a.data_type);
+            result = NAN;
+            return result;
+    }
+}
+
+inline static MaterializedVariable mat_var_add(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_add(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_add(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left + right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_sub(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_sub(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_sub(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left - right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_mul(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_mul(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_mul(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left * right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_div(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    } else if (right == 0.0) {
+        // Should we return 0.0 instead?
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Denominator is 0.0, returning NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left / right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_neg(MaterializedVariable l) {
+    double operand;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    operand = mat_var_scalar_to_double(l);
+    if (operand == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_neg(): Negation operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = -operand;
+    return v;
+}
+
+static MaterializedVariable eval_expr(void * const entity, size_t offset,
+                                      OutputFilterExprAst * const expr) {
+    MaterializedVariable mat_var;
+    switch (expr->nodetype) {
+        case '+':
+            mat_var = mat_var_add(eval_expr(entity, offset, expr->l),
+                                  eval_expr(entity, offset, expr->r));
+            return mat_var;
+        case '-':
+            mat_var = mat_var_sub(eval_expr(entity, offset, expr->l),
+                                  eval_expr(entity, offset, expr->r));
+            return mat_var;
+        case '*':
+            mat_var = mat_var_mul(eval_expr(entity, offset, expr->l),
+                                  eval_expr(entity, offset, expr->r));
+            return mat_var;
+        case '/':
+            mat_var = mat_var_div(eval_expr(entity, offset, expr->l),
+                                  eval_expr(entity, offset, expr->r));
+            return mat_var;
+        case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
+            mat_var = mat_var_neg(eval_expr(entity, offset, expr->l));
+            return mat_var;
+            /* no subtree */
+        case OF_VAR_EXPR_AST_NODE_NAME:
+            // This is probably the wrong v. Need the variable in the expression, not the root variable.
+            mat_var = materialize_named_variable(((OutputFilterExprName *)expr)->var, entity, offset);
+            return mat_var;
+        case OF_VAR_EXPR_AST_NODE_CONST:
+            mat_var.data_type = DATA_TYPE_DOUBLE;
+            mat_var.u.double_val = ((OutputFilterExprNumval *)expr)->number;
+            return mat_var;
+        default:
+            fprintf(stderr,
+                    "WARNING: undefined data type in expression variable.\n");
+            mat_var.data_type = DATA_TYPE_UNDEFINED;
+            return mat_var;
+    }
+}
+
+static MaterializedVariable materialize_expr_variable(OutputFilterVariable const * const v,
+                                                      void * const entity, size_t offset) {
+    if (v->expr == NULL) {
+        fprintf(stderr, "WARNING: materialize_expr_variable: expression variable '%s' has no expression defined.",
+                v->name);
+        return (MaterializedVariable){.data_type=DATA_TYPE_UNDEFINED};
+    }
+    return eval_expr(entity, offset, v->expr);
+}
+
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
 	size_t offset = v->offset;
@@ -188,7 +383,7 @@ inline static MaterializedVariable materialize_variable(OutputFilterVariable con
 	if (v->variable_type == NAMED) {
         mat_var = materialize_named_variable(v, entity, offset);
     } else if (v->variable_type == VAR_TYPE_EXPR) {
-	    // Evaluate expression variable
+        mat_var = materialize_expr_variable(v, entity, offset);
 	}
 	// Copy pointer to any metadata for this variable
 	mat_var.meta = v->meta;

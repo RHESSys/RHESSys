@@ -613,7 +613,7 @@ exp: exp '+' exp {
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_variable(level, $1);
 
-		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var->name, NULL, new_var);
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
 	}
 	| IDENTIFIER DOT IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s.%s\n", $1, $3);
@@ -629,7 +629,7 @@ exp: exp '+' exp {
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
 
-		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var->name, new_var->sub_struct_varname, new_var);
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
 	}
 	;
 

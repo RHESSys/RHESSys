@@ -139,6 +139,9 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
 		        return false;
 		    }
             init_expr_variable(struct_index, struct_name, v, v->expr, *init_hourly_daily_variable);
+            // Override inferred type of expression for now as the output code
+            // assumes double.
+            v->data_type = DATA_TYPE_DOUBLE;
 
             f->num_variables += 1;
 		}
@@ -209,6 +212,9 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
                 return false;
             }
             init_expr_variable(struct_index, struct_name, v, v->expr, *init_monthly_yearly_variable);
+            // Override inferred type of expression for now as the output code
+            // assumes double.
+            v->data_type = DATA_TYPE_DOUBLE;
 
             f->num_variables += 1;
         }

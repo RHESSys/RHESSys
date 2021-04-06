@@ -184,18 +184,12 @@ typedef struct of_var_expr_numval {
 
 typedef struct of_var_expr_name {
     int nodetype;  /* type N for name */
-    char *name; // Do we need this? It is in var.
-    char *sub_struct_name; // Do we need this? It is in var.
     OutputFilterVariable *var;
 } OutputFilterExprName;
 
 OutputFilterExprAst *new_of_expr_ast(int nodetype, OutputFilterExprAst *l, OutputFilterExprAst *r);
 OutputFilterExprAst *new_of_expr_const(double d);
-OutputFilterExprName *new_of_expr_name(const char *name,
-                                       const char *sub_struct_name,
-                                       OutputFilterVariable *var);
-// What will be the return type? Not a double?
-double of_expr_eval(OutputFilterExprAst *ast);
+OutputFilterExprName *new_of_expr_name(OutputFilterVariable *var);
 void free_of_expr_ast(OutputFilterExprAst *ast);
 void print_of_expr_ast(OutputFilterExprAst *ast, int level);
 
