@@ -628,6 +628,7 @@ static bool output_variables(char * const error, size_t error_len, bool verbose,
 	for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
 		switch (v->variable_type) {
 		case NAMED:
+		case VAR_TYPE_EXPR:
 			// Materialize variable and add it to array
 			mat_var = materialize_variable(v, entity);
 			if (mat_var.data_type == DATA_TYPE_UNDEFINED) {

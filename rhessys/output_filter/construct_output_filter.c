@@ -41,13 +41,12 @@ static bool init_expr_variable(Dictionary_t *struct_index, char *struct_name,
         case '*':
         case '/':
             init_expr_variable(struct_index, struct_name, expr_var, expr->r, init_fn);
-            /* one subtree */
         case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
             init_expr_variable(struct_index, struct_name, expr_var, expr->l, init_fn);
-            /* no subtree */
+            break;
         case OF_VAR_EXPR_AST_NODE_NAME:
             v = (OutputFilterExprName *)expr;
-            status = (*init_fn)(struct_index, struct_name, v);
+            status = (*init_fn)(struct_index, struct_name, v->var);
             infer_expr_variable_data_type(expr_var, v->var);
             break;
         case OF_VAR_EXPR_AST_NODE_CONST:
