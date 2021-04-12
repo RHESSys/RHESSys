@@ -36,6 +36,16 @@ inline static void scale_materialized_variable_array_values(OutputFilter const *
 	}
 }
 
+inline static size_t compute_struct_member_offset(OutputFilterVariable const * const v) {
+    size_t offset = v->offset;
+    if (v->sub_struct_var_offset != SIZE_MAX) {
+        // If sub_struct_var_offset has been set for this variable
+        // (which means this must be a sub-struct variable) apply it to the offset
+        offset += v->sub_struct_var_offset;
+    }
+    return offset;
+}
+
 inline static void accum_materialized_variable(MaterializedVariable *accum, MaterializedVariable *value,
 		double scalar) {
 	// TODO: Generalize this to allow scaling for all numeric types (not just double)
@@ -322,33 +332,34 @@ inline static MaterializedVariable mat_var_neg(MaterializedVariable l) {
     return v;
 }
 
-static MaterializedVariable eval_expr(void * const entity, size_t offset,
+static MaterializedVariable eval_expr(void * const entity,
                                       OutputFilterExprAst * const expr) {
     MaterializedVariable mat_var;
+    OutputFilterVariable *v;
     switch (expr->nodetype) {
         case '+':
-            mat_var = mat_var_add(eval_expr(entity, offset, expr->l),
-                                  eval_expr(entity, offset, expr->r));
+            mat_var = mat_var_add(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
             return mat_var;
         case '-':
-            mat_var = mat_var_sub(eval_expr(entity, offset, expr->l),
-                                  eval_expr(entity, offset, expr->r));
+            mat_var = mat_var_sub(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
             return mat_var;
         case '*':
-            mat_var = mat_var_mul(eval_expr(entity, offset, expr->l),
-                                  eval_expr(entity, offset, expr->r));
+            mat_var = mat_var_mul(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
             return mat_var;
         case '/':
-            mat_var = mat_var_div(eval_expr(entity, offset, expr->l),
-                                  eval_expr(entity, offset, expr->r));
+            mat_var = mat_var_div(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
             return mat_var;
         case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
-            mat_var = mat_var_neg(eval_expr(entity, offset, expr->l));
+            mat_var = mat_var_neg(eval_expr(entity, expr->l));
             return mat_var;
             /* no subtree */
         case OF_VAR_EXPR_AST_NODE_NAME:
-            // This is probably the wrong v. Need the variable in the expression, not the root variable.
-            mat_var = materialize_named_variable(((OutputFilterExprName *)expr)->var, entity, offset);
+            v = ((OutputFilterExprName *)expr)->var;
+            mat_var = materialize_named_variable(v, entity, compute_struct_member_offset(v));
             return mat_var;
         case OF_VAR_EXPR_AST_NODE_CONST:
             mat_var.data_type = DATA_TYPE_DOUBLE;
@@ -363,27 +374,21 @@ static MaterializedVariable eval_expr(void * const entity, size_t offset,
 }
 
 static MaterializedVariable materialize_expr_variable(OutputFilterVariable const * const v,
-                                                      void * const entity, size_t offset) {
+                                                      void * const entity) {
     if (v->expr == NULL) {
         fprintf(stderr, "WARNING: materialize_expr_variable: expression variable '%s' has no expression defined.",
                 v->name);
         return (MaterializedVariable){.data_type=DATA_TYPE_UNDEFINED};
     }
-    return eval_expr(entity, offset, v->expr);
+    return eval_expr(entity, v->expr);
 }
 
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
-	size_t offset = v->offset;
-	if (v->sub_struct_var_offset != SIZE_MAX) {
-		// If sub_struct_var_offset has been set for this variable
-		// (which means this must be a sub-struct variable) apply it to the offset
-		offset += v->sub_struct_var_offset;
-	}
 	if (v->variable_type == NAMED) {
-        mat_var = materialize_named_variable(v, entity, offset);
+        mat_var = materialize_named_variable(v, entity, compute_struct_member_offset(v));
     } else if (v->variable_type == VAR_TYPE_EXPR) {
-        mat_var = materialize_expr_variable(v, entity, offset);
+        mat_var = materialize_expr_variable(v, entity);
 	}
 	// Copy pointer to any metadata for this variable
 	mat_var.meta = v->meta;
