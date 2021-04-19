@@ -12,6 +12,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "types.h"
 #include "output_filter.h"
 #include "basin_accum_table.h"
 
@@ -29,11 +30,14 @@ static size_t _hash(BasinAccumTableKey_t *key, size_t tableSize) {
 }
 
 static bool keysAreEqual(BasinAccumTableKey_t *key1, BasinAccumTableKey_t *key2) {
-    int cmp = strcmp(key2, key1.)
-    //return strcmp(key1, key2) == 0;
-    return 0;
+    int cmp = strcmp(key1->name, key2->name);
+    if (cmp != 0) {
+        return false;
+    }
+    return strcmp(key1->sub_struct_varname, key2->sub_struct_varname) == 0;
 }
 
-static bool keyIsEmpty(char *key) {
+static bool keyIsEmpty(BasinAccumTableKey_t *key) {
     return key == BASIN_ACCUM_TABLE_KEY_EMPTY;
 }
+
