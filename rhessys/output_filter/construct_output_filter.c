@@ -6,6 +6,7 @@
 #include "output_filter/output_format_csv.h"
 #include "output_filter/output_format_netcdf.h"
 
+#define STRUCT_NAME_BASIN "basin_object"
 #define STRUCT_NAME_HILLSLOPE "hillslope_object"
 #define STRUCT_NAME_ACCUM_HILLSLOPE "accumulate_patch_object"
 #define STRUCT_NAME_PATCH "patch_object"
@@ -106,6 +107,10 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
         // as well as patch and stratum, determine struct_index and struct_name for each variable instead
         // of once before we iterate over variables.
         switch (v->hierarchy_level) {
+            case OF_HIERARCHY_LEVEL_BASIN:
+                struct_index = i->basin_object;
+                struct_name = STRUCT_NAME_BASIN;
+                break;
             case OF_HIERARCHY_LEVEL_HILLSLOPE:
                 struct_index = i->hillslope_object;
                 struct_name = STRUCT_NAME_HILLSLOPE;

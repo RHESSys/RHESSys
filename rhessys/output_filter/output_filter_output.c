@@ -674,6 +674,15 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 	// (using the OutputFilterOutput->materialized_variables as the accumulator scratch space)
 	// Then, once all specified variables have been averaged, output them (they will have to be stored as materialized
 	// variables since this is what the output drivers know how to write data).
+	// TODO: To support expressions for basin level variables, what we need is a table mapping the name of
+	//       variables to be accumulated to the accumulated value. This table will be composed of entries from individual
+	//       named variables, and named variables that appear in expressions. Then, accumulation will happen for all
+	//       variables in the table. Once accumulation has been done, then the variables will be processed in order
+	//       from the filter's variable list. The accumulated value of simple named variables will be added to the
+	//       materialized variable array, and expression variables will be evaluated and have their values also written
+	//       to the materialized variable array. This will require a separate, or at least functionally abstracted
+	//       version of the expression variable evaluation function so that instead of getting variable values from
+	//       calling materialize_variable, we will instead get the value from the accumulation table.
 	for (OutputFilterBasin *b = f->basins; b != NULL; b = b->next) {
 		reset_materialized_variable_array_values(f);
 		id.basin_ID = b->basinID;

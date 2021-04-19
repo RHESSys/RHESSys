@@ -42,6 +42,8 @@ typedef struct struct_index_s {
 	Dictionary_t *gw_object;
 	// End, structs nested within hillslope_object.
 
+	Dictionary_t *basin_object;
+
 } StructIndex_t;
 
 #endif

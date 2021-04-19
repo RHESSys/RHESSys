@@ -202,8 +202,8 @@ basin: BASIN_TOK {
 			syntax_error = true;
 			yyerror("only one basin definition is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
-		  syntax_error = true;
-		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to basin.");
+		  	syntax_error = true;
+		  	yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to basin.");
 		} else {
 			in_basin = true;
 			in_patch = false;
@@ -226,8 +226,8 @@ patch: PATCH_TOK {
 			syntax_error = true;
 			yyerror("only one patch definition is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
-		  syntax_error = true;
-		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to patch.");
+		  	syntax_error = true;
+		  	yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to patch.");
 		} else {
 			in_basin = false;
 			in_patch = true;
@@ -460,8 +460,7 @@ variable_spec: | VAR_DEF exp {
 
 		HierarchyLevel level;
 		if (in_basin) {
-			syntax_error = true;
-			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+			level = OF_HIERARCHY_LEVEL_BASIN;
 		} else if (in_patch) {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
@@ -630,6 +629,48 @@ exp: exp '+' exp {
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
 
 		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_HILLSLOPE IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: hill.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $2);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_HILLSLOPE IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: hill.%s.%s\n", $2, $4);
+
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $2, $4);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_PATCH IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: patch.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_PATCH, $2);
+
+                $$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_PATCH IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: patch.%s.%s\n", $2, $4);
+
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_PATCH, $2, $4);
+
+                $$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_STRATUM IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: stratum.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_STRATUM, $2);
+
+                $$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_STRATUM IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: stratum.%s.%s\n", $2, $4);
+
+                OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_STRATUM, $2, $4);
+
+                $$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
 	}
 	;
 

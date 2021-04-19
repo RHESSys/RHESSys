@@ -43,7 +43,8 @@ STRUCT_NAMES = [
 	'fire_effects_object',
 	'mult_conduct_struct',
 	'hillslope_object',
-	'gw_object'
+	'gw_object',
+	'basin_objct'
 ]
 
 COMMENT_PATT = re.compile('^\s*//.*')
@@ -107,8 +108,9 @@ StructIndex_t *new_struct_index() {
 	i->phenology_struct = NULL;
 	i->fire_effects_object = NULL;
 	i->mult_conduct_struct = NULL;
-	i->hillslope_object == NULL;
-	i->gw_object == NULL;
+	i->hillslope_object = NULL;
+	i->gw_object = NULL;
+	i->basin_object = NULL;
 	
 	return i;
 }
@@ -199,6 +201,10 @@ void free_struct_index(StructIndex_t *i) {
 		freeDictionary(i->gw_object);
 	}
 	
+	if (i->basin_object) {
+		freeDictionary(i->basin_object);
+	}
+	
 	free(i);
 }
 
@@ -237,6 +243,10 @@ StructIndex_t *index_struct_fields() {
 	i->hillslope_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
 	
 	i->gw_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	
+	
+	i->basin_object = newDictionary(DICTIONARY_SIZE_SMALL);
+
 ''')
 
 in_struct = False
