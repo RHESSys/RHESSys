@@ -88,9 +88,8 @@ filter_list:
 	| filter_list basin EOL {}
 	| filter_list patch EOL {}
 	| filter_list stratum EOL {}
-	| filter_list ids EOL {}
-	| filter_list variables EOL {}
-	| filter_list EOL {}
+	| filter_list ids {}
+	| filter_list variables {}
 	;
 
 filter: FILTER {
@@ -271,7 +270,7 @@ ids: IDS patch_stratum_id_spec {
 	}
 	;
 
-patch_stratum_id_spec: NUMBER {
+patch_stratum_id_spec: | NUMBER {
 		if (verbose_output) fprintf(stderr, "\t\tIDS: basinID: %d\n", $1);
 		
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
@@ -442,6 +441,7 @@ patch_stratum_id_spec: NUMBER {
 		}
 	}
 	| patch_stratum_id_spec COMMA patch_stratum_id_spec { /* do nothing, allow individual patch_id_spec to be evaluated by above rules */ }
+	| patch_stratum_id_spec EOL patch_stratum_id_spec { }
 	;
 
 variables: VARS variable_spec {
@@ -583,6 +583,7 @@ variable_spec: | VAR_DEF exp {
 		}
 	}
 	| variable_spec COMMA variable_spec { /* do nothing, allow individual variable_spec to be evaluated by above rules */ }
+	| variable_spec EOL variable_spec { }
 	;
 
 exp: exp '+' exp {

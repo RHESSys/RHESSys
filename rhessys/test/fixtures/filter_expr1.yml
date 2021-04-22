@@ -5,5 +5,7 @@ filter:
 		path: "../output/fire-project-1"
 		filename: "scenario-abc1"
 	patch:
-		ids: 1:2:3:4, 2
-		variables: foo=Qin-soil_cs.frootc, evaporation, doubleQ = 2 * Qout
+		ids: 1:2:3:4,
+			 2
+		variables: foo=Qin-soil_cs.frootc,
+				   evaporation, doubleQ = 2 * Qout

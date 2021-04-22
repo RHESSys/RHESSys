@@ -57,6 +57,7 @@
 "." { return DOT; }
 
 [ \t] { /* ignore whitespace that is not at the start of a line */ }
+
 \n { return EOL; }
 
 <<EOF>> { yyterminate(); }
