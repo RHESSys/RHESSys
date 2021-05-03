@@ -48,6 +48,12 @@ typedef enum {
 } VariableType;
 
 typedef enum {
+	ZONE_TYPE_BASIN = 3,
+	ZONE_TYPE_HILLSLOPE = 2,
+	ZONE_TYPE_ZONE = 1,
+} OutputZoneType;
+
+typedef enum {
 	PATCH_TYPE_BASIN = 4,
 	PATCH_TYPE_HILLSLOPE = 3,
 	PATCH_TYPE_ZONE = 2,
@@ -112,6 +118,21 @@ typedef struct of_basin {
 	struct basin_object *basin;
 } OutputFilterBasin;
 
+// output_filter_zone_list
+typedef struct of_zone {
+	OutputZoneType output_zone_type;
+	struct of_zone *next;
+
+	int basinID;
+	struct basin_object *basin;
+
+	int hillslopeID;
+	struct hillslope_object *hill;
+
+	int zoneID;
+	struct zone_object *zone;
+} OutputFilterZone;
+
 // output_filter_patch_list
 typedef struct of_patch {
 	OutputPatchType output_patch_type;
@@ -154,6 +175,7 @@ typedef struct of_stratum {
 typedef enum {
 	OUTPUT_FILTER_UNDEFINED,
 	OUTPUT_FILTER_BASIN,
+	OUTPUT_FILTER_ZONE,
 	OUTPUT_FILTER_PATCH,
 	OUTPUT_FILTER_CANOPY_STRATUM
 } OutputFilterType;
@@ -164,6 +186,7 @@ typedef struct of_filter {
 	struct of_filter *next;
 	OutputFilterOutput *output;
 	OutputFilterBasin *basins;
+	OutputFilterZone *zones;
 	OutputFilterPatch *patches;
 	OutputFilterStratum *strata;
 	OutputFilterVariable *variables;

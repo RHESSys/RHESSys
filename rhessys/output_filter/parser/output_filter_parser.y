@@ -17,6 +17,7 @@ bool verbose_output = false;
 bool in_filter = false;
 bool in_output = false;
 bool in_basin = false;
+bool in_zone = false;
 bool in_patch = false;
 bool in_stratum = false;
 bool syntax_error = false;
@@ -45,6 +46,7 @@ OutputFilter *curr_filter = NULL;
 %token PATH
 %token FILENAME
 %token BASIN_TOK
+%token ZONE_TOK
 %token PATCH_TOK
 %token STRATUM_TOK
 %token IDS
@@ -52,10 +54,11 @@ OutputFilter *curr_filter = NULL;
 /* output format components */
 %token <string> PATH_SPEC
 %token <string> FILENAME_SPEC
-/* patch_id_spec components */
+/* id_spec components */
 %token <string> IDENTIFIER
 %token <string> VAR_DEF
 %token <string> LEVEL_HILLSLOPE
+%token <string> LEVEL_ZONE
 %token <string> LEVEL_PATCH
 %token <string> LEVEL_STRATUM
 %token <integer> NUMBER
@@ -80,23 +83,25 @@ OutputFilter *curr_filter = NULL;
 
 filter_list: 
   | filter_list filter EOL { /* do nothing, allow filter to be evaluated below */ }
-	| filter_list output EOL {}
-	| filter_list timestep EOL {}
-	| filter_list format EOL {}
-	| filter_list path EOL {}
-	| filter_list filename EOL {}
-	| filter_list basin EOL {}
-	| filter_list patch EOL {}
-	| filter_list stratum EOL {}
-	| filter_list ids {}
-	| filter_list variables {}
-	;
+  | filter_list output EOL {}
+  | filter_list timestep EOL {}
+  | filter_list format EOL {}
+  | filter_list path EOL {}
+  | filter_list filename EOL {}
+  | filter_list basin EOL {}
+  | filter_list zone EOL {}
+  | filter_list patch EOL {}
+  | filter_list stratum EOL {}
+  | filter_list ids {}
+  | filter_list variables {}
+  ;
 
 filter: FILTER {
 		// Update state machine
 		in_filter = true;
 		in_output = false;
 		in_basin = false;
+		in_zone = false;
 		in_patch = false;
 		in_stratum = false;
 		
@@ -117,7 +122,10 @@ output: OUTPUT {
 			yyerror("output definition must be nested within filter definition");
 		} else {
 			in_output = true;
+			in_basin = false;
+			in_zone = false;
 			in_patch = false;
+			in_stratum = false;
 			curr_filter->output = create_new_output_filter_output();
 			if (verbose_output) fprintf(stderr, "\tBEGIN OUTPUT\n");
 		}
@@ -194,9 +202,9 @@ basin: BASIN_TOK {
 		if (!in_filter) {
 			syntax_error = true;
 			yyerror("basin definition must be nested within filter definition");
-		} else if (curr_filter->patches != NULL || curr_filter->strata != NULL) {
+		} else if (curr_filter->patches != NULL || curr_filter->zones != NULL || curr_filter->strata != NULL) {
 			syntax_error = true;
-			yyerror("only one of basin, patch, or stratum is allowed in a filter, but more than one was encountered.");
+			yyerror("only one of basin, zone, patch, or stratum is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->basins != NULL) {
 			syntax_error = true;
 			yyerror("only one basin definition is allowed in a filter, but more than one was encountered.");
@@ -214,13 +222,38 @@ basin: BASIN_TOK {
 	}
 	;
 
+zone: ZONE_TOK {
+		if (!in_filter) {
+			syntax_error = true;
+			yyerror("zone definition must be nested within filter definition");
+		} else if (curr_filter->basins != NULL || curr_filter->patches != NULL || curr_filter->strata != NULL) {
+			syntax_error = true;
+			yyerror("only one of basin, zone, patch, or stratum is allowed in a filter, but more than one was encountered.");
+		} else if (curr_filter->zones != NULL) {
+			syntax_error = true;
+			yyerror("only one zone definition is allowed in a filter, but more than one was encountered.");
+		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
+		  	syntax_error = true;
+		  	yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to zone.");
+		} else {
+			in_basin = false;
+			in_zone = true;
+			in_patch = false;
+			in_stratum = false;
+			in_output = false;
+			curr_filter->type = OUTPUT_FILTER_ZONE;
+			if (verbose_output) fprintf(stderr, "\tBEGIN ZONE\n");
+		}
+	}
+	;
+
 patch: PATCH_TOK {
 		if (!in_filter) {
 			syntax_error = true;
 			yyerror("patch definition must be nested within filter definition");
-		} else if (curr_filter->basins != NULL || curr_filter->strata != NULL) {
+		} else if (curr_filter->basins != NULL || curr_filter->zones != NULL || curr_filter->strata != NULL) {
 			syntax_error = true;
-			yyerror("only one of basin, patch, or stratum is allowed in a filter, but more than one was encountered.");
+			yyerror("only one of basin, zone, patch, or stratum is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->patches != NULL) {
 			syntax_error = true;
 			yyerror("only one patch definition is allowed in a filter, but more than one was encountered.");
@@ -242,9 +275,9 @@ stratum: STRATUM_TOK {
 		if (!in_filter) {
 			syntax_error = true;
 			yyerror("stratum definition must be nested within filter definition");
-		} else if (curr_filter->basins != NULL || curr_filter->patches != NULL) {
+		} else if (curr_filter->basins != NULL || curr_filter->zones != NULL || curr_filter->patches != NULL) {
 			syntax_error = true;
-			yyerror("only one of basin, patch, or stratum is allowed in a filter, but more than one was encountered.");
+			yyerror("only one of basin, zone, patch, or stratum is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->strata != NULL) {
 			syntax_error = true;
 			yyerror("only one stratum definition is allowed in a filter, but more than one was encountered.");
@@ -262,15 +295,15 @@ stratum: STRATUM_TOK {
 	}
  	;
 
-ids: IDS patch_stratum_id_spec { 
-		if (!in_basin && !in_patch && !in_stratum) {
+ids: IDS id_spec {
+		if (!in_basin && !in_zone && !in_patch && !in_stratum) {
 			syntax_error = true;
-			yyerror("ids definition must be nested within basin, patch, or stratum definition");
+			yyerror("ids definition must be nested within basin, zone, patch, or stratum definition");
 		} 
 	}
 	;
 
-patch_stratum_id_spec: | NUMBER {
+id_spec: | NUMBER {
 		if (verbose_output) fprintf(stderr, "\t\tIDS: basinID: %d\n", $1);
 		
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
@@ -282,6 +315,8 @@ patch_stratum_id_spec: | NUMBER {
 			} else {
 				add_to_output_filter_basin_list(curr_filter->basins, new_basin);
 			}
+		} else if (curr_filter->type == OUTPUT_FILTER_ZONE) {
+			// TODO
 		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_BASIN;
@@ -313,7 +348,9 @@ patch_stratum_id_spec: | NUMBER {
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			syntax_error = true;
 			yyerror("Hillslope ID specified for basin ID.");
-		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+		} else if (curr_filter->type == OUTPUT_FILTER_ZONE) {
+			// TODO
+		}else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_HILLSLOPE;
 			new_patch->basinID = $1;
@@ -346,7 +383,9 @@ patch_stratum_id_spec: | NUMBER {
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			syntax_error = true;
 			yyerror("Zone ID specified for basin ID.");
-		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+		} else if (curr_filter->type == OUTPUT_FILTER_ZONE) {
+                  	// TODO
+                } else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_ZONE;
 			new_patch->basinID = $1;
@@ -380,8 +419,11 @@ patch_stratum_id_spec: | NUMBER {
 	
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			syntax_error = true;
-			yyerror("Patch ID specified for basin ID.");
-		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
+			yyerror("Patch-level ID specified for basin ID.");
+		} else if (curr_filter->type == OUTPUT_FILTER_ZONE) {
+                  	syntax_error = true;
+                        yyerror("Patch-level ID specified for zone ID.");
+                } else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_PATCH;
 			new_patch->basinID = $1;
@@ -417,7 +459,10 @@ patch_stratum_id_spec: | NUMBER {
 	
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
 			syntax_error = true;
-			yyerror("Stratum ID specified for basin ID.");
+			yyerror("Stratum-level ID specified for basin ID.");
+		} else if (curr_filter->type == OUTPUT_FILTER_ZONE) {
+			syntax_error = true;
+			yyerror("Stratum-level ID specified for zone ID.");
 		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			syntax_error = true;
 			yyerror("Stratum ID specified by filter type is patch.");
@@ -440,8 +485,8 @@ patch_stratum_id_spec: | NUMBER {
 			yyerror("Filter type unkown but should not be.");
 		}
 	}
-	| patch_stratum_id_spec COMMA patch_stratum_id_spec { /* do nothing, allow individual patch_id_spec to be evaluated by above rules */ }
-	| patch_stratum_id_spec EOL patch_stratum_id_spec { }
+	| id_spec COMMA id_spec { /* do nothing, allow individual id_spec to be evaluated by above rules */ }
+	| id_spec EOL id_spec { }
 	;
 
 variables: VARS variable_spec {
