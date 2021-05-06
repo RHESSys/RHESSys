@@ -316,7 +316,15 @@ id_spec: | NUMBER {
 				add_to_output_filter_basin_list(curr_filter->basins, new_basin);
 			}
 		} else if (curr_filter->type == OUTPUT_FILTER_ZONE) {
-			// TODO
+			OutputFilterZone *new_zone = create_new_output_filter_zone();
+			new_zone->output_zone_type = ZONE_TYPE_BASIN;
+			new_zone->basinID = $1;
+
+			if (curr_filter->zones == NULL) {
+				curr_filter->zones = new_zone;
+			} else {
+				add_to_output_filter_zone_list(curr_filter->zones, new_zone);
+			}
 		} else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_BASIN;
@@ -349,7 +357,16 @@ id_spec: | NUMBER {
 			syntax_error = true;
 			yyerror("Hillslope ID specified for basin ID.");
 		} else if (curr_filter->type == OUTPUT_FILTER_ZONE) {
-			// TODO
+			OutputFilterZone *new_zone = create_new_output_filter_zone();
+			new_zone->output_zone_type = ZONE_TYPE_HILLSLOPE;
+			new_zone->basinID = $1;
+			new_zone->hillslopeID = $3;
+
+			if (curr_filter->zones == NULL) {
+				curr_filter->zones = new_zone;
+			} else {
+				add_to_output_filter_zone_list(curr_filter->zones, new_zone);
+			}
 		}else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_HILLSLOPE;
@@ -384,7 +401,17 @@ id_spec: | NUMBER {
 			syntax_error = true;
 			yyerror("Zone ID specified for basin ID.");
 		} else if (curr_filter->type == OUTPUT_FILTER_ZONE) {
-                  	// TODO
+                  	OutputFilterZone *new_zone = create_new_output_filter_zone();
+			new_zone->output_zone_type = ZONE_TYPE_ZONE;
+			new_zone->basinID = $1;
+			new_zone->hillslopeID = $3;
+			new_zone->zoneID = $5;
+
+			if (curr_filter->zones == NULL) {
+				curr_filter->zones = new_zone;
+			} else {
+				add_to_output_filter_zone_list(curr_filter->zones, new_zone);
+			}
                 } else if (curr_filter->type == OUTPUT_FILTER_PATCH) {
 			OutputFilterPatch *new_patch = create_new_output_filter_patch();
 			new_patch->output_patch_type = PATCH_TYPE_ZONE;

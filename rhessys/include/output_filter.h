@@ -221,6 +221,11 @@ OutputFilterBasin *add_to_output_filter_basin_list(OutputFilterBasin * const hea
 		OutputFilterBasin * const new_basin);
 void free_output_filter_basin_list(OutputFilterBasin *head);
 
+OutputFilterZone *create_new_output_filter_zone();
+OutputFilterZone *add_to_output_filter_zone_list(OutputFilterZone * const head,
+                                                 OutputFilterZone * const new_zone);
+void free_output_filter_zone_list(OutputFilterZone *head);
+
 OutputFilterPatch *create_new_output_filter_patch();
 OutputFilterPatch *add_to_output_filter_patch_list(OutputFilterPatch * const head,
 		OutputFilterPatch * const new_patch);
@@ -250,9 +255,10 @@ OutputFilter *add_to_output_filter_list(OutputFilter * const head,
 void free_output_filter(OutputFilter *filter);
 
 void print_output_filter_output(OutputFilterOutput *output, char *prefix);
+void print_output_filter_zone(OutputFilterZone *zone, char *prefix);
 void print_output_filter_patch(OutputFilterPatch *patch, char *prefix);
 void print_output_filter_stratum(OutputFilterStratum *stratum, char *prefix);
-void print_output_filter_variale(OutputFilterVariable *variable, char *prefix);
+void print_output_filter_variable(OutputFilterVariable *variable, char *prefix);
 void print_output_filter(OutputFilter *filter);
 
 bool return_with_error(char * const error, size_t error_len, char *error_mesg);
