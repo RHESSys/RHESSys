@@ -538,6 +538,8 @@ variable_spec: | VAR_DEF exp {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
 			level = OF_HIERARCHY_LEVEL_STRATUM;
+		} else if (in_zone) {
+			level = OF_HIERARCHY_LEVEL_ZONE;
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_expr_variable(level, $1, $2);
 
@@ -559,6 +561,8 @@ variable_spec: | VAR_DEF exp {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
 			level = OF_HIERARCHY_LEVEL_STRATUM;
+		} else if (in_zone) {
+			level = OF_HIERARCHY_LEVEL_ZONE;
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_variable(level, $1);
 		
@@ -579,6 +583,8 @@ variable_spec: | VAR_DEF exp {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
 			level = OF_HIERARCHY_LEVEL_STRATUM;
+		} else if (in_zone) {
+			level = OF_HIERARCHY_LEVEL_ZONE;
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
 		
@@ -648,6 +654,28 @@ variable_spec: | VAR_DEF exp {
 		
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_STRATUM, $2, $4);
 		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_ZONE IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: zone.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_ZONE, $2);
+
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_ZONE IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: zone.%s.%s\n", $2, $4);
+
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_ZONE, $2, $4);
+
 		if (curr_filter->variables == NULL) {
 			curr_filter->variables = new_var;
 		} else {
