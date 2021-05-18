@@ -484,22 +484,22 @@ int allocate_annual_growth(				int id,
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 
 		if (epc.veg_type == TREE) {
-			cs->livecrootc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			cs->livecrootc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc * epc.alloc_crootc_stemc * epc.alloc_livewoodc_woodc;
 			ns->livecrootn_store = cs->livecrootc_store / epc.livewood_cn;
 			cdf->livecrootc_store_to_livecrootc_transfer = cs->livecrootc_store;
 			ndf->livecrootn_store_to_livecrootn_transfer = ns->livecrootn_store;
 
-			cs->livestemc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			cs->livestemc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc* epc.alloc_livewoodc_woodc;;
 			ns->livestemn_store = cs->livestemc_store / epc.livewood_cn;
 			cdf->livestemc_store_to_livestemc_transfer = cs->livestemc_store;
 			ndf->livestemn_store_to_livestemn_transfer = ns->livestemn_store;
 
-			cs->deadcrootc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			cs->deadcrootc_store = cs->livecrootc_store* (1-epc.alloc_livewoodc_woodc);
 			ns->deadcrootn_store = cs->deadcrootc_store / epc.deadwood_cn;
 			cdf->deadcrootc_store_to_deadcrootc_transfer = cs->deadcrootc_store;
 			ndf->deadcrootn_store_to_deadcrootn_transfer = ns->deadcrootn_store;
 
-			cs->deadstemc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			cs->deadstemc_store = cs->livestemc_store * (1-epc.alloc_livewoodc_woodc);
 			ns->deadstemn_store = cs->deadstemc_store / epc.deadwood_cn;
 			cdf->deadstemc_store_to_deadstemc_transfer = cs->deadstemc_store;
 			ndf->deadstemn_store_to_deadstemn_transfer = ns->deadstemn_store;
