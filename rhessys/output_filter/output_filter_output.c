@@ -94,6 +94,14 @@ inline static void add_to_accum_reset_list(PointerSet **set_ptr, void *entity) {
 	}
 }
 
+static void reset_accumulator_zone(PointerSet **acc_objs_to_reset) {
+	if (*acc_objs_to_reset) {
+		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_zone_object));
+		freePointerSet(*acc_objs_to_reset);
+		*acc_objs_to_reset = NULL;
+	}
+}
+
 static void reset_accumulator_patch(PointerSet **acc_objs_to_reset) {
 	if (*acc_objs_to_reset) {
 		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_patch_object));
@@ -417,6 +425,29 @@ inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
 	return entity;
 }
 
+inline static void *determine_zone_entity(OutputFilterTimestep timestep,
+                                           struct zone_object *zone,
+                                           PointerSet **acc_objs_to_reset) {
+	void *entity = NULL;
+	switch (timestep) {
+	case TIMESTEP_MONTHLY:
+		entity = (void *)(&(zone->acc_month));
+		add_to_accum_reset_list(acc_objs_to_reset, entity);
+		break;
+	case TIMESTEP_YEARLY:
+		entity = (void *)(&(zone->acc_year));
+		add_to_accum_reset_list(acc_objs_to_reset, entity);
+		break;
+	case TIMESTEP_HOURLY:
+	case TIMESTEP_DAILY:
+	default:
+		// Not sure this is quite right for hourly but going with it for now
+		entity = (void *)zone;
+		break;
+	}
+	return entity;
+}
+
 inline static void *determine_patch_entity(OutputFilterTimestep timestep,
 		struct patch_object *patch,
 		PointerSet **acc_objs_to_reset) {
@@ -512,6 +543,21 @@ static bool apply_to_strata_in_zone(char * const error, size_t error_len, bool v
 	return true;
 }
 
+static bool apply_to_zones_in_hillslope(char * const error, size_t error_len, bool verbose,
+                                        struct date date,
+                                        OutputFilter const * const filter, OutputFilterZone const * const z, EntityID id,
+                                        PointerSet **acc_objs_to_reset,
+                                        bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
+	for (size_t i = 0; i < z->hill->num_zones; i++) {
+		struct zone_object *zone = z->hill->zones[i];
+		id.zone_ID = zone->ID;
+		void *entity = determine_zone_entity(filter->timestep, zone, acc_objs_to_reset);
+		bool status = (*output_fn)(error, error_len, verbose, date, entity, id, filter);
+		if (!status) return false;
+	}
+	return true;
+}
+
 static bool apply_to_patches_in_hillslope(char * const error, size_t error_len, bool verbose,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
@@ -549,6 +595,24 @@ static bool apply_to_strata_in_hillslope(char * const error, size_t error_len, b
 				bool status = (*output_fn)(error, error_len, verbose, date, entity, id, filter);
 				if (!status) return false;
 			}
+		}
+	}
+	return true;
+}
+
+static bool apply_to_zones_in_basin(char * const error, size_t error_len, bool verbose,
+									struct date date, OutputFilter const * const filter, OutputFilterZone const * const z, EntityID id,
+									PointerSet **acc_objs_to_reset,
+									bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
+	for (size_t i = 0; i < z->basin->num_hillslopes; i++) {
+		struct hillslope_object *h = z->basin->hillslopes[i];
+		id.hillslope_ID = h->ID;
+		for (size_t j = 0; j < h->num_zones; j++) {
+			struct zone_object *zone = h->zones[j];
+			id.zone_ID = zone->ID;
+			void *entity = determine_zone_entity(filter->timestep, zone, acc_objs_to_reset);
+			bool status = (*output_fn)(error, error_len, verbose, date, entity, id, filter);
+			if (!status) return false;
 		}
 	}
 	return true;
@@ -658,7 +722,8 @@ static bool output_variables(char * const error, size_t error_len, bool verbose,
 
 static bool output_basin(char * const error, size_t error_len, bool verbose,
 		struct date date, OutputFilter const * const f,
-		PointerSet **hillslope_acc_objs_to_reset, PointerSet **patch_acc_objs_to_reset, PointerSet **stratum_acc_objs_to_reset) {
+		PointerSet **hillslope_acc_objs_to_reset, PointerSet **zone_acc_objs_to_reset,
+		PointerSet **patch_acc_objs_to_reset, PointerSet **stratum_acc_objs_to_reset) {
 	if (verbose) fprintf(stderr, "\toutput_basin()...\n");
 
 	bool status;
@@ -684,6 +749,7 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 
 			for (size_t j = 0; j < hillslope->num_zones; j++) {
 				struct zone_object *z = hillslope->zones[j];
+
 				for (size_t k = 0; k < z->num_patches; k++) {
 					struct patch_object *patch = z->patches[k];
 					// Iterate over filter variables accumulating any patch variables
@@ -716,6 +782,21 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 					basin_area += patch->area;
 					hillslope_area += patch->area;
 				}
+
+				// Iterate over filter variables accumulating any zone variables
+				int var_num = 0;
+				for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
+					if (v->variable_type == NAMED) {
+						if (v->hierarchy_level == OF_HIERARCHY_LEVEL_ZONE) {
+							void *entity = determine_zone_entity(f->timestep, z, zone_acc_objs_to_reset);
+							mat_var = materialize_variable(v, entity);
+							// Not sure what to scale accumulated zone variables,
+							// so using the identity function for now (i.e., 1.0).
+							accum_materialized_variable(&mat_vars[var_num], &mat_var, 1.0);
+						}
+						var_num += 1;
+					}
+				}
 			}
 
 			// Iterate over filter variables accumulating any hillslope variables
@@ -731,7 +812,7 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 				}
 			}
 		}
-		// Scale values by basin area
+		// Scale values by basin area (not sure this makes sense for all variables, including many zone variables)
 		scale_materialized_variable_array_values(f, basin_area);
 		status = output_materialized_variables(error, error_len, date, id, f, mat_vars);
 		if (status == false) {
@@ -740,6 +821,57 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 			return_with_error(error, error_len, local_error);
 		}
 	}
+	return true;
+}
+
+static bool output_zone(char * const error, size_t error_len, bool verbose,
+                         struct date date, OutputFilter const * const filter,
+                         PointerSet **acc_objs_to_reset) {
+	if (verbose) fprintf(stderr, "\toutput_zone()...\n");
+
+	char *local_error;
+	bool status;
+
+	for (OutputFilterZone *z = filter->zones; z != NULL; z = z->next) {
+		status = true;
+		EntityID id;
+		switch (z->output_zone_type) {
+		case ZONE_TYPE_ZONE:
+			id.basin_ID = z->basinID;
+			id.hillslope_ID = z->hillslopeID;
+			id.zone_ID = z->zoneID;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			void *entity = determine_zone_entity(filter->timestep, z->zone, acc_objs_to_reset);
+			status = output_variables(error, error_len, verbose, date, entity, id, filter);
+			break;
+		case ZONE_TYPE_HILLSLOPE:
+			id.basin_ID = z->basinID;
+			id.hillslope_ID = z->hillslopeID;
+			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			status = apply_to_zones_in_hillslope(error, error_len, verbose, date, filter, z, id, acc_objs_to_reset,
+									             *output_variables);
+			break;
+		case ZONE_TYPE_BASIN:
+			id.basin_ID = z->basinID;
+			id.hillslope_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			status = apply_to_zones_in_basin(error, error_len, verbose, date, filter, z, id, acc_objs_to_reset,
+								             *output_variables);
+			break;
+		default:
+			local_error = (char *)calloc(MAXSTR, sizeof(char));
+			snprintf(local_error, MAXSTR, "output_zone: zone type %d is unknown or not yet implemented.",
+			         z->output_zone_type);
+			return_with_error(error, error_len, local_error);
+		}
+		if (!status) return false;
+	}
+
 	return true;
 }
 
@@ -793,7 +925,7 @@ static bool output_patch(char * const error, size_t error_len, bool verbose,
 			break;
 		default:
 			local_error = (char *)calloc(MAXSTR, sizeof(char));
-			snprintf(local_error, MAXSTR, "output_patch_daily: patch type %d is unknown or not yet implemented.",
+			snprintf(local_error, MAXSTR, "output_patch: patch type %d is unknown or not yet implemented.",
 					p->output_patch_type);
 			return_with_error(error, error_len, local_error);
 		}
@@ -883,7 +1015,11 @@ bool output_filter_output_daily(char * const error, size_t error_len, bool verbo
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
-				status = output_basin(error, error_len, verbose, date, f, NULL, NULL, NULL);
+				status = output_basin(error, error_len, verbose, date, f, NULL, NULL, NULL, NULL);
+				if (!status) return false;
+				break;
+			case OUTPUT_FILTER_ZONE:
+				status = output_zone(error, error_len, verbose, date, f, NULL);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -915,6 +1051,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len, bool ver
 	bool status = true;
 
 	PointerSet *acc_hillslope_obj_to_reset = NULL;
+	PointerSet *acc_zone_obj_to_reset = NULL;
 	PointerSet *acc_patch_obj_to_reset = NULL;
 	PointerSet *acc_stratum_obj_to_reset = NULL;
 
@@ -923,7 +1060,12 @@ bool output_filter_output_monthly(char * const error, size_t error_len, bool ver
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
 				status = output_basin(error, error_len, verbose, date, f,
-						&acc_hillslope_obj_to_reset, &acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+						&acc_hillslope_obj_to_reset, &acc_zone_obj_to_reset,
+						&acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+				if (!status) return false;
+				break;
+			case OUTPUT_FILTER_ZONE:
+				status = output_zone(error, error_len, verbose, date, f, &acc_zone_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -944,6 +1086,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len, bool ver
 
 	// Reset monthly accumulators as necessary
 	reset_accumulator_hillslope(&acc_hillslope_obj_to_reset);
+	reset_accumulator_zone(&acc_zone_obj_to_reset);
 	reset_accumulator_patch(&acc_patch_obj_to_reset);
 	reset_accumulator_stratum(&acc_stratum_obj_to_reset);
 
@@ -960,6 +1103,7 @@ bool output_filter_output_yearly(char * const error, size_t error_len, bool verb
 	bool status = true;
 
 	PointerSet *acc_hillslope_obj_to_reset = NULL;
+	PointerSet *acc_zone_obj_to_reset = NULL;
 	PointerSet *acc_patch_obj_to_reset = NULL;
 	PointerSet *acc_stratum_obj_to_reset = NULL;
 
@@ -968,7 +1112,12 @@ bool output_filter_output_yearly(char * const error, size_t error_len, bool verb
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
 				status = output_basin(error, error_len, verbose, date, f,
-						&acc_hillslope_obj_to_reset, &acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+						&acc_hillslope_obj_to_reset, &acc_zone_obj_to_reset,
+						&acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+				if (!status) return false;
+				break;
+			case OUTPUT_FILTER_ZONE:
+				status = output_zone(error, error_len, verbose, date, f, &acc_zone_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -989,6 +1138,7 @@ bool output_filter_output_yearly(char * const error, size_t error_len, bool verb
 
 	// Reset yearly accumulators as necessary
 	reset_accumulator_hillslope(&acc_hillslope_obj_to_reset);
+	reset_accumulator_zone(&acc_zone_obj_to_reset);
 	reset_accumulator_patch(&acc_patch_obj_to_reset);
 	reset_accumulator_stratum(&acc_stratum_obj_to_reset);
 

@@ -533,7 +533,7 @@ variable_spec: | VAR_DEF exp {
 		HierarchyLevel level;
 		if (in_basin) {
 			syntax_error = true;
-			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+			yyerror("Variable in basin definitions can only be named variables, not expression variables.");
 		} else if (in_patch) {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {

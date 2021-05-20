@@ -284,6 +284,91 @@ static bool init_spatial_hierarchy_basin(OutputFilter *f,
 	return true;
 }
 
+static bool init_spatial_hierarchy_zone(OutputFilter *f,
+                                         struct world_object * const w,
+                                         struct command_line_object * const cmd) {
+	bool verbose = cmd->verbose_flag;
+	struct basin_object *b;
+
+	if (f->zones == NULL) {
+		fprintf(stderr, "init_spatial_hierarchy_zone: no zone defined but zone type was specified.\n");
+		return false;
+	}
+
+	if (verbose) fprintf(stderr, "BEGIN init_spatial_hierarchy_zone\n");
+
+	OutputFilterZone *z = f->zones;
+	while (z != NULL) {
+		switch (z->output_zone_type) {
+		case ZONE_TYPE_BASIN:
+			if (verbose) fprintf(stderr, "\tbasinID: %d\n", z->basinID);
+
+			z->basin = find_basin(z->basinID, w);
+			if (z->basin == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_zone: no basin with ID %d could be found.\n",
+				        z->basinID);
+				return false;
+			}
+			break;
+		case ZONE_TYPE_HILLSLOPE:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d\n",
+				        z->basinID, z->hillslopeID);
+			}
+			b = find_basin(z->basinID, w);
+			if (b == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_zone: basin %d could not be found, so could not locate hillslope %d.\n",
+				        z->basinID, z->hillslopeID);
+				return false;
+			}
+			z->hill = find_hillslope_in_basin(z->hillslopeID, b);
+			if (z->hill == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_zone: hillslope %d could not be found in basin %d.\n",
+				        z->hillslopeID, z->basinID);
+				return false;
+			}
+			break;
+		case ZONE_TYPE_ZONE:
+			if (verbose) {
+				fprintf(stderr, "\tbasinID: %d, hillslopeID: %d, zoneID: %d\n",
+				        z->basinID, z->hillslopeID, z->zoneID);
+			}
+			b = find_basin(z->basinID, w);
+			if (b == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_zone: basin %d could not be found, so could not locate zone %d in hillslope %d.\n",
+				        z->basinID, z->zoneID, z->hillslopeID);
+				return false;
+			}
+			struct hillslope_object *h = find_hillslope_in_basin(z->hillslopeID, b);
+			if (h == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_zone: hillslope %d could not be found in basin %d, so could not locate zone %d.\n",
+				        z->hillslopeID, z->basinID, z->zoneID);
+				return false;
+			}
+			z->zone = find_zone_in_hillslope(z->zoneID, h);
+			if (z->zone == NULL) {
+				fprintf(stderr, "init_spatial_hierarchy_zone: zone %d could not be found in hillslope %d, basin %d.\n",
+				        z->zoneID, z->hillslopeID, z->basinID);
+				return false;
+			}
+			break;
+		}
+		z = z->next;
+	}
+
+	if (f->timestep == TIMESTEP_MONTHLY) {
+		// Turn on monthly accumulation for patches
+		cmd->output_filter_patch_accum_monthly = true;
+	} else if (f->timestep == TIMESTEP_YEARLY) {
+		// Turn on yearly accumulation for patches
+		cmd->output_filter_patch_accum_yearly = true;
+	}
+
+	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_patch\n");
+
+	return true;
+}
+
 static bool init_spatial_hierarchy_patch(OutputFilter *f,
 		struct world_object * const w,
 		struct command_line_object * const cmd) {
@@ -511,6 +596,8 @@ static bool init_spatial_hierarchy(OutputFilter *f,
 	switch (f->type) {
 	case OUTPUT_FILTER_BASIN:
 		return init_spatial_hierarchy_basin(f, w, cmd);
+	case OUTPUT_FILTER_ZONE:
+		return init_spatial_hierarchy_zone(f, w, cmd);
 	case OUTPUT_FILTER_PATCH:
 		return init_spatial_hierarchy_patch(f, w, cmd);
 	case OUTPUT_FILTER_CANOPY_STRATUM:
