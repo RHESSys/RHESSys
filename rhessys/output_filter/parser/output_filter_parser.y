@@ -209,8 +209,8 @@ basin: BASIN_TOK {
 			syntax_error = true;
 			yyerror("only one basin definition is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
-		  syntax_error = true;
-		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to basin.");
+		  	syntax_error = true;
+		  	yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to basin.");
 		} else {
 			in_basin = true;
 			in_patch = false;
@@ -258,8 +258,8 @@ patch: PATCH_TOK {
 			syntax_error = true;
 			yyerror("only one patch definition is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
-		  syntax_error = true;
-		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to patch.");
+		  	syntax_error = true;
+		  	yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to patch.");
 		} else {
 			in_basin = false;
 			in_patch = true;
@@ -282,8 +282,8 @@ stratum: STRATUM_TOK {
 			syntax_error = true;
 			yyerror("only one stratum definition is allowed in a filter, but more than one was encountered.");
 		} else if (curr_filter->type != OUTPUT_FILTER_UNDEFINED) {
-		  syntax_error = true;
-		  yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to stratum.");
+		  	syntax_error = true;
+		  	yyerror("current output filter already has a type assigned and can have only one type, so failing to re-assign type to stratum.");
 		} else {
 			in_basin = false;
 			in_stratum = true;
@@ -517,7 +517,7 @@ id_spec: | NUMBER {
 	;
 
 variables: VARS variable_spec {
-		if (!in_basin && !in_patch && !in_stratum) {
+		if (!in_basin && !in_zone && !in_patch && !in_stratum) {
 			syntax_error = true;
 			yyerror("variables definition must be nested within basin, patch, or stratum definition");
 		} 
@@ -746,7 +746,7 @@ OutputFilter *parse(char * const input, bool verbose) {
 	if (!status) {
 		return NULL;
 	} else {
-		// Don't look at the return value from yyparse becuase a non-zero value will be 
+		// Don't look at the return value from yyparse because a non-zero value will be
 		// returned at end of file. Instead, rely on our own syntax_error flag...
 	  yyparse();
 	  filters->parse_error = syntax_error;
