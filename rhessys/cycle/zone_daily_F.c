@@ -650,6 +650,17 @@ void		zone_daily_F(
 			   zone[0].Ldown/86.4);
 	}
 
+		if (command_line[0].multiscale_flag == 1 && zone[0].defaults[0][0].route_litter == 1) {
+		if (command_line[0].verbose_flag == -6) printf("\n -----Computing patch family litter routing for zone %d, day %d-------\n", zone[0].ID, day);
+        // here compuate patch family litter sharing between veg patches and no veg patches
+        // needs a flag in landuse to turn this on, only happens if there is no-veg patches inside of it
+
+            compute_patch_family_litter_routing(
+                zone,
+                command_line);
+
+	}
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches for day end computations		    	*/
 	/*--------------------------------------------------------------*/

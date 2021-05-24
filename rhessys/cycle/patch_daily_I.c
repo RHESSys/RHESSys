@@ -201,6 +201,7 @@ void		patch_daily_I(
 
 
 	patch[0].precip_with_assim = 0.0;
+	patch[0].rooting_depth_mean = 0.0;
 
     patch[0].preday_rootzone_depth = patch[0].rootzone.depth; //NREN 20190914 for move root water
 
@@ -322,11 +323,11 @@ void		patch_daily_I(
 	patch[0].cap_rise=0.0;
 
 	/*--------------------------------------------------------------*/
-	/* this should also be limited by "soil depth"	
+	/* this should also be limited by "soil depth"
 	/*--------------------------------------------------------------*/
-	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO) 
+	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO)
 		patch[0].potential_cap_rise = 0.0;
-		
+
 
 
 	/*--------------------------------------------------------------*/

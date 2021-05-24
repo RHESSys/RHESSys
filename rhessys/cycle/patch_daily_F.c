@@ -1953,13 +1953,34 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/* 	Resolve plant uptake and soil microbial N demands	*/
 	/*--------------------------------------------------------------*/
-	if (command_line[0].grow_flag > 0)  {
+	if (command_line[0].grow_flag > 0 && command_line[0].multiscale_flag !=1 )  {
                 resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
                         patch[0].surface_NH4,
                         patch[0].rootzone.depth,
                         patch[0].soil_defaults[0][0].active_zone_z,
                         patch[0].soil_defaults[0][0].N_decay_rate,
                         &(patch[0].ndf));
+	}
+	else if(command_line[0].grow_flag > 0 && command_line[0].multiscale_flag == 1 ){
+
+        if (patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type != NON_VEG) {
+
+                resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
+                        patch[0].surface_NH4,
+                        patch[0].rootzone.depth,
+                        patch[0].soil_defaults[0][0].active_zone_z,
+                        patch[0].soil_defaults[0][0].N_decay_rate,
+                        &(patch[0].ndf));
+        } else if (patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == NON_VEG) {//if overstory is no veg use the mean rootdepth
+         resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
+                        patch[0].surface_NH4,
+                        // patch[0].rootzone.depth,
+                        patch[0].rooting_depth_mean,//for no veg patches use the mean root depth of that patch family
+                        patch[0].soil_defaults[0][0].active_zone_z,
+                        patch[0].soil_defaults[0][0].N_decay_rate,
+                        &(patch[0].ndf));    }
+
+
 	}
 	/*--------------------------------------------------------------*/
 	/*	Reduce the stratum actual transpiration and compute 	*/

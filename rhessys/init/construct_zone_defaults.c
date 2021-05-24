@@ -155,7 +155,7 @@ struct zone_default *construct_zone_defaults(
         printf("\n the netcdf grid data interploation is %d \n", default_object_list[i].grid_interpolation);
         default_object_list[i].route_litter = getIntParam(&paramCnt, &paramPtr, "route_litter", "%d", 0, 1);
         printf("\n route litter is %d \n", default_object_list[i].route_litter);
-        default_object_list[i].sh_litter = getDoubleParam(&paramCnt, &paramPtr, "sh_litter", "%lf", 0, 1);
+        default_object_list[i].sh_litter = getDoubleParam(&paramCnt, &paramPtr, "sh_litter", "%lf", 1, 1);
         printf("\n litter share percentage is %lf \n", default_object_list[i].sh_litter);
 		/*--------------------------------------------------------------*/
 		/*	CO2 is initialized/default to 322 ppm			*/

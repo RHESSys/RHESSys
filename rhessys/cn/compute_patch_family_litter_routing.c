@@ -107,6 +107,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         int loss_patch;
         double litter_c_adjust_total;
         double litter_n_adjust_total;
+        double rooting_depth_mean;
 
         /* Initializations */
         skip[p_ct];          // 0 = skip, 1 = lose, 2 = gain
@@ -142,6 +143,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         loss_patch = 0;
         litter_c_adjust_total = 0.0;
         litter_n_adjust_total = 0.0;
+        rooting_depth_mean = 0.0;
 
 
         /*--------------------------------------------------------------*/
@@ -175,6 +177,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 litr1c_mean += zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c * zone[0].patch_families[pf][0].patches[i][0].area;
                 litr1n_mean += zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n * zone[0].patch_families[pf][0].patches[i][0].area;
 
+                //for mineralization if no-veg patches use mean_rootdepth instead of zero
+                rooting_depth_mean += zone[0].patch_families[pf][0].patches[i][0].rootzone.depth * zone[0].patch_families[pf][0].patches[i][0].area;
 
 
                 // area sum (patch fam without skipped patches)
@@ -207,15 +211,18 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         {
             litr1c_mean /= area_sum;
             litr1n_mean /= area_sum;
+            rooting_depth_mean /= area_sum;
         }
         else
         {
             litr1c_mean = 0.0;
             litr1n_mean = 0.0;
+            rooting_depth_mean = 0.0;
         }
 
-        if (command_line[0].verbose_flag == -6)
+        if (command_line[0].verbose_flag == -6){
             printf("Mean litter1c = %f|| Mean litter1n = %f \n", litr1c_mean, litr1n_mean);
+            printf("Mean root depth is %f \n", rooting_depth_mean);}
 
         /*--------------------------------------------------------------*/
         /*  loop 2, loop through losing (>mean) patches                 */
@@ -237,17 +244,17 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 patch_area = zone[0].patch_families[pf][0].patches[i][0].area;
 
                 dL_c[i] = (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c - litr1c_mean) *// make sure p_ct_skip > p_no_veg
-                        patch_area * zone[0].defaults[0][0].sh_litter;//only veg patch lose litter
+                        patch_area; //* zone[0].defaults[0][0].sh_litter;//only veg patch lose litter
                 dL_c_act += dL_c[i];// this is important to track the total litter
-                dL_c_pot += (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c - litr1c_mean) *// make sure p_ct_skip > p_no_veg
-                       patch_area;
+               // dL_c_pot += (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c - litr1c_mean) *// make sure p_ct_skip > p_no_veg
+                 //      patch_area;
 
                 // litter 1 n
                 dL_n[i] = (zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n - litr1n_mean) *// make sure p_ct_skip > p_no_veg
-                        patch_area * zone[0].defaults[0][0].sh_litter;//only veg patch lose litter
+                        patch_area; //* zone[0].defaults[0][0].sh_litter;//only veg patch lose litter
                 dL_n_act += dL_n[i]; // this is important to track the total litter
-                dL_n_pot += (zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n - litr1n_mean) *// make sure p_ct_skip > p_no_veg
-                        patch_area;
+               // dL_n_pot += (zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n - litr1n_mean) *// make sure p_ct_skip > p_no_veg
+                  //      patch_area;
 
                 if (command_line[0].verbose_flag == -6)
                     printf("[losing litter mean]%f ", dL_c[i] / patch_area);
@@ -281,6 +288,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 skip[i] = 2;
                 dL_c[i] = 0;
                 dL_n[i] = 0;
+                // here set no veg patch a mean root depth for mineralization
+                zone[0].patch_families[pf][0].patches[i][0].rooting_depth_mean = rooting_depth_mean;
             }
             else
             {
@@ -314,11 +323,13 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 // the gain is equally distributed among no-veg patches
                 // what if one patch has litter > mean, so the number of gain patches is different from # of no-veg patches
 
-                dG_c[i] = dL_c_act /area_sum_g * patch_area;// this the mean for each patch
+                dG_c[i] = dL_c_act /area_sum_g * patch_area * zone[0].defaults[0][0].sh_litter;// this the mean for each patch
                 dG_c_act += dG_c[i];
+                dG_c_pot +=  dL_c_act /area_sum_g * patch_area;
 
-                dG_n[i] = dL_n_act/area_sum_g * patch_area;
+                dG_n[i] = dL_n_act/area_sum_g * patch_area  * zone[0].defaults[0][0].sh_litter;
                 dG_n_act += dG_n[i];
+                dG_n_pot += dL_n_act/area_sum_g * patch_area ;
 
 
                 if (command_line[0].verbose_flag == -6){
@@ -339,14 +350,26 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
                  // here needs to check if the gaining patches have litter more than mean, then adjust it
 
-                 if( zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c > litr1c_mean ||
+                 if (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c > litr1c_mean ||
                     zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n > litr1n_mean ){
 
 
                      litter_c_adjust_total += (zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c - litr1c_mean)*patch_area;
                      litter_n_adjust_total += (zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n - litr1n_mean)*patch_area;
+                     // make the no-veg gain patches litter mean
+                     zone[0].patch_families[pf][0].patches[i][0].litter_cs.litr1c = litr1c_mean;
+                     zone[0].patch_families[pf][0].patches[i][0].litter_ns.litr1n = litr1n_mean;
 
                     }
+
+                  //if the act gain is smaller than potential gain due to parameters, adjust it too
+                  if (dG_c_pot > dG_c_act && dG_n_pot > dG_n_act)  {
+
+                  litter_c_adjust_total += dG_c_pot - dG_c_act;
+                  litter_n_adjust_total += dG_n_pot - dG_n_act;
+
+                  }
+
                 // incrament gainer area
                 area_sum_g_act += zone[0].patch_families[pf][0].patches[i][0].area;
             }// end skip==2 and no veg

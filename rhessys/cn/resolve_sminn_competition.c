@@ -72,6 +72,7 @@ int resolve_sminn_competition(
 
      sum_avail = perc_inroot * sum_avail;
 
+     //printf("\n|| [rooting_depth] %f, [active_zone_z] %f, [perc_inroot] %f || ", rooting_depth, active_zone_z, perc_inroot);
 
 
 	if (sum_ndemand <= sum_avail){

@@ -1690,6 +1690,7 @@ struct patch_object
 	int		soil_parm_ID;
 	int		landuse_parm_ID;
 	double		mpar;
+	double      rooting_depth_mean;
 	//int				wuiID;
         double  x;                                                                      /* meters       */
         double  y;                                                                      /* meters       */
