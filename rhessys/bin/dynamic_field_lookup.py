@@ -255,9 +255,9 @@ StructIndex_t *index_struct_fields() {
 	i->gw_object = newDictionary(DICTIONARY_SIZE_SMALL);
 	
 	
-	i->zone_object == newDictionary(DICTIONARY_SIZE_LARGE);
-	i->accumulate_zone_object == newDictionary(DICTIONARY_SIZE_TINY);
-	i->metvar_struct == newDictionary(DICTIONARY_SIZE_SMALL);
+	i->zone_object = newDictionary(DICTIONARY_SIZE_LARGE);
+	i->accumulate_zone_object = newDictionary(DICTIONARY_SIZE_TINY);
+	i->metvar_struct = newDictionary(DICTIONARY_SIZE_SMALL);
 ''')
 
 in_struct = False

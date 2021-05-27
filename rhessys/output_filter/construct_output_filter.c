@@ -8,6 +8,8 @@
 
 #define STRUCT_NAME_HILLSLOPE "hillslope_object"
 #define STRUCT_NAME_ACCUM_HILLSLOPE "accumulate_patch_object"
+#define STRUCT_NAME_ZONE "zone_object"
+#define STRUCT_NAME_ACCUM_ZONE "accumulate_zone_object"
 #define STRUCT_NAME_PATCH "patch_object"
 #define STRUCT_NAME_ACCUM_PATCH "accumulate_patch_object"
 #define STRUCT_NAME_STRATUM "canopy_strata_object"
@@ -110,6 +112,10 @@ static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool 
                 struct_index = i->hillslope_object;
                 struct_name = STRUCT_NAME_HILLSLOPE;
                 break;
+        	case OF_HIERARCHY_LEVEL_ZONE:
+        		struct_index = i->zone_object;
+        		struct_name = STRUCT_NAME_ZONE;
+        		break;
             case OF_HIERARCHY_LEVEL_PATCH:
                 struct_index = i->patch_object;
                 struct_name = STRUCT_NAME_PATCH;
@@ -183,6 +189,10 @@ static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, boo
                 struct_index = i->accumulate_patch_object;
                 struct_name = STRUCT_NAME_ACCUM_HILLSLOPE;
                 break;
+        	case OF_HIERARCHY_LEVEL_ZONE:
+        		struct_index = i->accumulate_zone_object;
+        		struct_name = STRUCT_NAME_ACCUM_ZONE;
+        		break;
             case OF_HIERARCHY_LEVEL_PATCH:
                 struct_index = i->accumulate_patch_object;
                 struct_name = STRUCT_NAME_ACCUM_PATCH;
