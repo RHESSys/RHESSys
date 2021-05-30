@@ -367,14 +367,14 @@ static bool init_spatial_hierarchy_zone(OutputFilter *f,
 	}
 
 	if (f->timestep == TIMESTEP_MONTHLY) {
-		// Turn on monthly accumulation for patches
-		cmd->output_filter_patch_accum_monthly = true;
+		// Turn on monthly accumulation for zones
+		cmd->output_filter_zone_accum_monthly = true;
 	} else if (f->timestep == TIMESTEP_YEARLY) {
-		// Turn on yearly accumulation for patches
-		cmd->output_filter_patch_accum_yearly = true;
+		// Turn on yearly accumulation for zones
+		cmd->output_filter_zone_accum_yearly = true;
 	}
 
-	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_patch\n");
+	if (verbose) fprintf(stderr, "END init_spatial_hierarchy_zone\n");
 
 	return true;
 }
