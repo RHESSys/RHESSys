@@ -534,12 +534,12 @@ variable_spec: | VAR_DEF exp {
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable in basin definitions can only be named variables, not expression variables.");
+		} else if (in_zone) {
+			level = OF_HIERARCHY_LEVEL_ZONE;
 		} else if (in_patch) {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
 			level = OF_HIERARCHY_LEVEL_STRATUM;
-		} else if (in_zone) {
-			level = OF_HIERARCHY_LEVEL_ZONE;
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_expr_variable(level, $1, $2);
 
@@ -557,12 +557,12 @@ variable_spec: | VAR_DEF exp {
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_zone) {
+			level = OF_HIERARCHY_LEVEL_ZONE;
 		} else if (in_patch) {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
 			level = OF_HIERARCHY_LEVEL_STRATUM;
-		} else if (in_zone) {
-			level = OF_HIERARCHY_LEVEL_ZONE;
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_variable(level, $1);
 		
@@ -579,12 +579,12 @@ variable_spec: | VAR_DEF exp {
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_zone) {
+			level = OF_HIERARCHY_LEVEL_ZONE;
 		} else if (in_patch) {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
 			level = OF_HIERARCHY_LEVEL_STRATUM;
-		} else if (in_zone) {
-			level = OF_HIERARCHY_LEVEL_ZONE;
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
 		
@@ -610,6 +610,28 @@ variable_spec: | VAR_DEF exp {
 		
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $2, $4);
 		
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_ZONE IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: zone.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_ZONE, $2);
+
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+	}
+	| LEVEL_ZONE IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: zone.%s.%s\n", $2, $4);
+
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_ZONE, $2, $4);
+
 		if (curr_filter->variables == NULL) {
 			curr_filter->variables = new_var;
 		} else {
@@ -660,28 +682,6 @@ variable_spec: | VAR_DEF exp {
 			add_to_output_filter_variable_list(curr_filter->variables, new_var);
 		}
 	}
-	| LEVEL_ZONE IDENTIFIER {
-		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: zone.%s\n", $2);
-
-		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_ZONE, $2);
-
-		if (curr_filter->variables == NULL) {
-			curr_filter->variables = new_var;
-		} else {
-			add_to_output_filter_variable_list(curr_filter->variables, new_var);
-		}
-	}
-	| LEVEL_ZONE IDENTIFIER DOT IDENTIFIER {
-		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: zone.%s.%s\n", $2, $4);
-
-		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_ZONE, $2, $4);
-
-		if (curr_filter->variables == NULL) {
-			curr_filter->variables = new_var;
-		} else {
-			add_to_output_filter_variable_list(curr_filter->variables, new_var);
-		}
-	}
 	| variable_spec COMMA variable_spec { /* do nothing, allow individual variable_spec to be evaluated by above rules */ }
 	| variable_spec EOL variable_spec { }
 	;
@@ -707,6 +707,8 @@ exp: exp '+' exp {
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_zone) {
+			level = OF_HIERARCHY_LEVEL_ZONE;
 		} else if (in_patch) {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
@@ -723,12 +725,70 @@ exp: exp '+' exp {
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_zone) {
+			level = OF_HIERARCHY_LEVEL_ZONE;
 		} else if (in_patch) {
 			level = OF_HIERARCHY_LEVEL_PATCH;
 		} else if (in_stratum) {
 			level = OF_HIERARCHY_LEVEL_STRATUM;
 		}
 		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_HILLSLOPE IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: hill.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $1);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_HILLSLOPE IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: hill.%s.%s\n", $2, $4);
+
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_HILLSLOPE, $2, $4);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_ZONE IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: zone.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_ZONE, $2);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_ZONE IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: zone.%s.%s\n", $2, $4);
+
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_ZONE, $2, $4);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_PATCH IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: patch.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_PATCH, $2);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_PATCH IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: patch.%s.%s\n", $2, $4);
+
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_PATCH, $2, $4);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_STRATUM IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: stratum.%s\n", $2);
+
+		OutputFilterVariable *new_var = create_new_output_filter_variable(OF_HIERARCHY_LEVEL_STRATUM, $2);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| LEVEL_STRATUM IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: stratum.%s.%s\n", $2, $4);
+
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(OF_HIERARCHY_LEVEL_STRATUM, $2, $4);
 
 		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
 	}
@@ -759,6 +819,7 @@ void yyerror(char *s) {
 	if (*yytext == '\0') {
 		// End of file, do not report the error.
 	} else {
-  	fprintf(stderr, "Error: %s, for token: |%s|\n", s, yytext);
-  }
+		syntax_error = true;
+  		fprintf(stderr, "Error: %s, for token: |%s|\n", s, yytext);
+  	}
 }
