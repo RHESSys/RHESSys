@@ -2280,6 +2280,7 @@ void		patch_daily_F(
 
 
 	if ((command_line[0].grow_flag > 0) ){//&& (vegtype == 1)) {
+	//if ((command_line[0].grow_flag > 0) && (vegtype == 1)) {
 
 		if ( update_decomp(
 			current_date,

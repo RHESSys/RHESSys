@@ -1402,6 +1402,7 @@ struct  ndayflux_patch_struct
     /* potential decomp fluxes */
     double mineralized;         /* (kgN/m2/d) total mineralized N */
     double potential_immob;     /* (kgN/m2/d) potential imobilized N */
+    double perc_inroot; /* percentage, calculate n limitation based on rootdepth in resolve_siminn_competition
     double net_mineralized;   /* (kgN/m2/d) net mineralization */
 
     /* potential mineralization */

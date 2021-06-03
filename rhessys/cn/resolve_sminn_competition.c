@@ -63,6 +63,7 @@ int resolve_sminn_competition(
 	/*--------------------------------------------------------------*/
 	perc_inroot = (1.0-exp(-N_decay_rate * rooting_depth)) /
 			(1.0 - exp(-N_decay_rate * active_zone_z));
+    ndf->perc_inroot = perc_inroot;
 	perc_inroot = min(perc_inroot,1.0);
 	if (rooting_depth > ZERO) {
         perc_inroot = max(0.1, perc_inroot);

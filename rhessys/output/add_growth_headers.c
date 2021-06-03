@@ -285,7 +285,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"day",
 		"month",
 		"year",
@@ -324,8 +324,8 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"netleach",
 		"DON_loss",
 		"DOC_loss",
-		"soilNO3",
-		"soilNH4",
+		"soilNO3",//nitrate
+		"soilNH4", //sminn
 		"streamNO3",
 		"streamNH4",
 		"streamDON",
@@ -340,7 +340,8 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"nfix",
 		"grazingC",
 		"area",
-		"fpi");
+		"fpi", "sminn", "nitrate", "mineralized", "plant_potential_ndemand", "potential_immob", "perc_inroot"
+		);
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
