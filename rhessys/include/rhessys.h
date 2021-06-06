@@ -1019,7 +1019,7 @@ struct  zone_default
         double res_patch;                               /* meters */
         int    grid_interpolation;                       /* 0/1    */ // 0 no interpolation of grid climate data
         int    route_litter;
-        double sh_litter
+        double sh_litter;
 
         };
 
@@ -3253,4 +3253,3 @@ struct surface_energy_default {
         };
 
 #endif
-
