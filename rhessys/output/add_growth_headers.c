@@ -285,7 +285,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"day",
 		"month",
 		"year",
@@ -340,7 +340,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"nfix",
 		"grazingC",
 		"area",
-		"fpi", "sminn", "nitrate", "mineralized", "plant_potential_ndemand", "potential_immob", "perc_inroot"
+		"fpi", "sminn", "nitrate", "mineralized", "plant_potential_ndemand", "potential_immob", "perc_inroot", "mean_root_depth"
 		);
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/

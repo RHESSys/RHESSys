@@ -514,10 +514,10 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
                                    //if the act gain is smaller than potential gain due to parameters, adjust it too ??
                   if (dG_c_pot1 > dG_c_act1 && dG_n_pot1 > dG_n_act1)  {
-
-                  printf("\n loop 4 adjust differences between actual gain and potential gain for litter1 [act]%f, [pot]%f \n", dG_c_act1, dG_c_pot1);//improve
-                  litter_c_adjust_total1 += (dG_c_pot1 - dG_c_act1);
-                  litter_n_adjust_total1 += (dG_n_pot1 - dG_n_act1);
+                   if (command_line[0].verbose_flag == -6)
+                   printf("\n loop 4 adjust differences between actual gain and potential gain for litter1 [act]%f, [pot]%f \n", dG_c_act1, dG_c_pot1);//improve
+                   litter_c_adjust_total1 += (dG_c_pot1 - dG_c_act1);
+                   litter_n_adjust_total1 += (dG_n_pot1 - dG_n_act1);
 
                   }
 
@@ -588,8 +588,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                     printf("\n||[after add litter2], [the litr2c is] %f, [the amount of litter is transfered] %f\n", patches[0].litter_cs.litr2c, (dG_c2[i] / patch_area));}
 
                                   //if the act gain is smaller than potential gain due to parameters, adjust it too ??
-                  if (dG_c_pot2 > dG_c_act2 && dG_n_pot2 > dG_n_act2)  {
-
+                if (dG_c_pot2 > dG_c_act2 && dG_n_pot2 > dG_n_act2)  {
+                  if (command_line[0].verbose_flag == -6)
                   printf("\n loop 4 adjust differences between actual gain and potential gain for litter2 [act]%f, [pot]%f \n", dG_c_act2, dG_c_pot2);//improve
                   litter_c_adjust_total2 += (dG_c_pot2 - dG_c_act2);
                   litter_n_adjust_total2 += (dG_n_pot2 - dG_n_act2);
@@ -664,8 +664,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                  // here needs to check if the gaining patches have litter more than mean, then adjust it
 
                    //if the act gain is smaller than potential gain due to parameters, adjust it too ??
-                  if (dG_c_pot3 > dG_c_act3 && dG_n_pot3 > dG_n_act3)  {
-
+                if (dG_c_pot3 > dG_c_act3 && dG_n_pot3 > dG_n_act3)  {
+                  if (command_line[0].verbose_flag == -6)
                   printf("\n loop 4 adjust differences between actual gain and potential gain for litter3 [act]%f, [pot]%f \n", dG_c_act3, dG_c_pot3);//improve                    //printf("/n adjust differences between actual gain and potential gain for litter3");//improve
                   litter_c_adjust_total3 += (dG_c_pot3 - dG_c_act3);
                   litter_n_adjust_total3 += (dG_n_pot3 - dG_n_act3);
@@ -738,8 +738,9 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
 
                   //if the act gain is smaller than potential gain due to parameters, adjust it too ??
-                  if (dG_c_pot4 > dG_c_act4 && dG_n_pot4 > dG_n_act4)  {
-                 printf("\n loop 4 adjust differences between actual gain and potential gain for litter4 [act]%f, [pot]%f \n", dG_c_act4, dG_c_pot4);//improve
+                if (dG_c_pot4 > dG_c_act4 && dG_n_pot4 > dG_n_act4)  {
+                  if (command_line[0].verbose_flag == -6)
+                  printf("\n loop 4 adjust differences between actual gain and potential gain for litter4 [act]%f, [pot]%f \n", dG_c_act4, dG_c_pot4);//improve
                   litter_c_adjust_total4 += (dG_c_pot4 - dG_c_act4);
                   litter_n_adjust_total4 += (dG_n_pot4 - dG_n_act4);
 
@@ -936,6 +937,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 litr3n_mean_after+= patches[0].litter_ns.litr3n * patches[0].area;
                 litr4c_mean_after+= patches[0].litter_cs.litr4c * patches[0].area;
                 litr4n_mean_after+= patches[0].litter_ns.litr4n * patches[0].area;
+                rooting_depth_mean+= patches[0].rootzone.depth * patches[0].area;
 
 
                 // area sum (patch fam without skipped patches)

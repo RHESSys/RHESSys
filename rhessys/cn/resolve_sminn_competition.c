@@ -63,7 +63,9 @@ int resolve_sminn_competition(
 	/*--------------------------------------------------------------*/
 	perc_inroot = (1.0-exp(-N_decay_rate * rooting_depth)) /
 			(1.0 - exp(-N_decay_rate * active_zone_z));
-    ndf->perc_inroot = perc_inroot;
+
+
+
 	perc_inroot = min(perc_inroot,1.0);
 	if (rooting_depth > ZERO) {
         perc_inroot = max(0.1, perc_inroot);
@@ -71,9 +73,11 @@ int resolve_sminn_competition(
 
 	}
 
-     sum_avail = perc_inroot * sum_avail;
+	//ndf->perc_inroot = perc_inroot;
+	ns_soil->perc_inroot = perc_inroot;
+    sum_avail = perc_inroot * sum_avail;
 
-     //printf("\n|| [rooting_depth] %f, [active_zone_z] %f, [perc_inroot] %f || ", rooting_depth, active_zone_z, perc_inroot);
+     //printf("\n|| [ns_soil.perc_inroot] %f, [perc_inroot] %f || ", ns_soil->perc_inroot, perc_inroot);
 
 
 	if (sum_ndemand <= sum_avail){
@@ -84,6 +88,8 @@ int resolve_sminn_competition(
 		ns_soil->fract_potential_immob = 1.0;
 		ns_soil->fract_potential_uptake = 1.0;
 		ndf->plant_avail_uptake = ndf->plant_potential_ndemand;
+		//printf("\n===== N demand[%f] < N avail[%f], perc_inroot[%f], rootDepth[%f], Ndecay[%f],active_z[%f]===========\n",
+	//	sum_ndemand, sum_avail, perc_inroot, rooting_depth, N_decay_rate, active_zone_z);
 	}
 	else{
 	/* N availability can not satisfy the sum of immobiliation and
@@ -97,6 +103,9 @@ int resolve_sminn_competition(
 			ns_soil->fract_potential_immob = 0.0;
 		else
 			ns_soil->fract_potential_immob = actual_immob/ndf->potential_immob;
+
+        //printf("\n===== N demand[%f] > N avail[%f], actual_immob[%f], potentail_immob[%f], fpi[%f], perc_inroot[%f], rootDepth[%f], Ndecay[%f],active_z[%f]===========\n",
+        //        sum_ndemand, sum_avail, actual_immob, ndf->potential_immob, ns_soil->fract_potential_immob, perc_inroot, rooting_depth, N_decay_rate, active_zone_z);
 
 		if (ndf->plant_potential_ndemand == 0) {
 			ns_soil->fract_potential_uptake = 0.0;

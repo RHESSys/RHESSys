@@ -1402,7 +1402,7 @@ struct  ndayflux_patch_struct
     /* potential decomp fluxes */
     double mineralized;         /* (kgN/m2/d) total mineralized N */
     double potential_immob;     /* (kgN/m2/d) potential imobilized N */
-    double perc_inroot; /* percentage, calculate n limitation based on rootdepth in resolve_siminn_competition
+    double perc_inroot; /* percentage, calculate n limitation based on rootdepth in resolve_siminn_competition */
     double net_mineralized;   /* (kgN/m2/d) net mineralization */
 
     /* potential mineralization */
@@ -1579,6 +1579,7 @@ struct  soil_n_object
     double nlimit;                         /* DIM (0 or 1) */
     double  fract_potential_immob;                              /* DIM (0-1) */
     double fract_potential_uptake;                              /* DIM (0-1) */
+     double perc_inroot; /* percentage, calculate n limitation based on rootdepth in resolve_siminn_competition */
     double totaln;         /* (kgN/m2) total soil  N    */
     double soil_npool;      /* (kgN/m2) temporary soil nitrogen pool    */
     double DON;            /* (kgN/m2) DON */
