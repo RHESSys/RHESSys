@@ -421,7 +421,6 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Get number + ID of patch families for this zone				*/
 	/*--------------------------------------------------------------*/
-
 	if (command_line[0].multiscale_flag == 1 || command_line[0].firespread_flag == 1) {
 
 		// Vars
@@ -431,14 +430,7 @@ struct zone_object *construct_zone(
 		
 		zone[0].num_patch_families = 0;
 
-		// TODO - IF ISSUES FROM WMFIRE AND NO MSR, COMMENT THIS OUT
-		if (command_line[0].firespread_flag == 1 && command_line[0].multiscale_flag == 0) {
-			for (i = 0; i < zone[0].num_patches; i++) {
-				zone[0].patches[i][0].family_ID = zone[0].patches[i][0].ID;
-			}
-			// set multi flag here - this makes fire flag always trigger msr flag.
-			command_line[0].multiscale_flag = 1;
-		}
+		// dummy patch creation, really just setting the family ID, happens in construct patch now, when the inputs are parsed
 
 		// get number of patch families
 		for (i = 0; i < zone[0].num_patches; i++) freq[i] = -1; // set freq to -1 for all patches
