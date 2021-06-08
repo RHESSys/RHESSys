@@ -74,10 +74,10 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
         int p_ct_skip;
         int p_no_veg;
-        int area_sum;
-        int area_sum_g; //area sum of all gain (no-veg) patches
-        int area_sum_l1, area_sum_l2, area_sum_l3, area_sum_l4; // area sum of loss patches
-        int area_sum_g_act1, area_sum_g_act2, area_sum_g_act3, area_sum_g_act4; //area sum of actual gain patches
+        double area_sum; //area is integer causing the carbon not balanced shoud use float //REN less
+        double area_sum_g; //area sum of all gain (no-veg) patches
+        double area_sum_l1, area_sum_l2, area_sum_l3, area_sum_l4; // area sum of loss patches
+        double area_sum_g_act1, area_sum_g_act2, area_sum_g_act3, area_sum_g_act4; //area sum of actual gain patches
         double dL_c_act1, dL_c_act2, dL_c_act3, dL_c_act4;
         //double dL_c_pot;
         double dL_n_act1, dL_n_act2, dL_n_act3, dL_n_act4;
@@ -483,7 +483,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                  patches[0].litter_ns.litr1n < litr1n_mean)
             {
                 if (command_line[0].verbose_flag == -6)
-                    printf("\n || Litter1 gaining ID %d", patches[0].ID);
+                    printf("\n || Litter1 gaining ID %d, [area] %f", patches[0].ID, patch_area);//if Area is integer so don't use %f REN lession
                 // the gain is equally distributed among no-veg patches
                 // what if one patch has litter > mean, so the number of gain patches is different from # of no-veg patches
                 //TODO: should add check to make sure sh_litter >0 and <1
@@ -513,32 +513,36 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
 
                                    //if the act gain is smaller than potential gain due to parameters, adjust it too ??
-                  if (dG_c_pot1 > dG_c_act1 && dG_n_pot1 > dG_n_act1)  {
+                  if ((dG_c_pot1 - dG_c_act1)>ZERO && (dG_n_pot1 - dG_n_act1)>ZERO)  {
                    if (command_line[0].verbose_flag == -6)
                    printf("\n loop 4 adjust differences between actual gain and potential gain for litter1 [act]%f, [pot]%f \n", dG_c_act1, dG_c_pot1);//improve
-                   litter_c_adjust_total1 += (dG_c_pot1 - dG_c_act1);
-                   litter_n_adjust_total1 += (dG_n_pot1 - dG_n_act1);
+                   /*litter_c_adjust_total1 += (dG_c_pot1 - dG_c_act1);
+                   litter_n_adjust_total1 += (dG_n_pot1 - dG_n_act1); */
 
                   }
 
                  // here needs to check if the gaining patches have litter more than mean, then adjust it
 
-                 if (patches[0].litter_cs.litr1c > litr1c_mean && //? should be &&
-                     patches[0].litter_ns.litr1n > litr1n_mean ){
+                 if ((patches[0].litter_cs.litr1c - litr1c_mean)>ZERO && //? should be &&
+                     (patches[0].litter_ns.litr1n - litr1n_mean)>ZERO ){
+                    printf("\n REN loop 4 adjust larger than mean part for litter1 [litr1c]%f, [litrcc_mean]%f \n", patches[0].litter_cs.litr1c, litr1c_mean);//improve
 
-
-                     litter_c_adjust_total1 += (patches[0].litter_cs.litr1c - litr1c_mean)*patch_area; //to do
-                     litter_n_adjust_total1 += (patches[0].litter_ns.litr1n - litr1n_mean)*patch_area;
+                     litter_c_adjust_total1 = (patches[0].litter_cs.litr1c - litr1c_mean)*patch_area; //to do
+                     litter_n_adjust_total1 = (patches[0].litter_ns.litr1n - litr1n_mean)*patch_area;
                      // make the no-veg gain patches litter mean
                      patches[0].litter_cs.litr1c = litr1c_mean;
                      patches[0].litter_ns.litr1n = litr1n_mean;
 
-                    }
-                if (command_line[0].verbose_flag == -6)
-                    printf("\n || Litter1 adjusting [1c]%f, [1n]%f \n", litter_c_adjust_total1, litter_n_adjust_total1);
+                     // adjust the total gain here Ren
+                     dG_c_act1 -= litter_c_adjust_total1;
+                     dG_n_act1 -= litter_n_adjust_total1;
+
+                   }
 
                 // incrament gainer area
                 area_sum_g_act1 += patches[0].area; //to do
+                if (command_line[0].verbose_flag == -6)
+                    printf("\n || REN Litter1 adjusting [1c]%f, [1n]%f,[area_sum_g]%f  [area_sum_g_Act1] %f \n", litter_c_adjust_total1, litter_n_adjust_total1, area_sum_g, area_sum_g_act1);
             }// end skip==2 and no veg
             else
             {
@@ -546,12 +550,18 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 dG_n1[i] = 0;
             }
                 //improve what is area_sum_g_act4 < area_sum_g and dG_c_act4 >ZERO; then adjust too
-         if (area_sum_g_act1 < area_sum_g && dG_c_act1 >ZERO){
+         if ((dG_c_act1 - dL_c_act1) < ZERO && (dG_n_act1 - dL_n_act1)< ZERO && dG_c_act1 >ZERO){ //REN LESSON here must use >ZERO rather than dG>DL
             if (command_line[0].verbose_flag == -6)
-             printf("\n [Adjust] actual gaining no-veg patches are not all no-veg patches for litter 1");
-             litter_c_adjust_total1 += dL_c_act1 /area_sum_g *(area_sum_g - area_sum_g_act1);
-             litter_n_adjust_total1 += dL_n_act1 /area_sum_g *(area_sum_g - area_sum_g_act1);
+             printf("\n REN [Adjust] actual gaining no-veg patches are not all no-veg patches for litter 1, [dL_c_act1] %f, [dG_c_act1] %f", dL_c_act1, dG_c_act1);
+             litter_c_adjust_total1 = dL_c_act1 - dG_c_act1;
+             litter_n_adjust_total1 = dL_n_act1 - dG_n_act1;
+             //printf("\n REN [Adjust] actual gaining no-veg patches are not all for litr1 [area_sum_g] %f, [area_sum_g_act1] %f, [litter_c_adjust_total1] %f", area_sum_g, area_sum_g_act1, litter_c_adjust_total1);
             }
+          else if((dG_c_act1 - dL_c_act1) > ZERO || (dG_n_act1 - dL_n_act1)>ZERO )  {
+            printf("\n Warning carbon not balanced, total gain cannot larger than total lose, [gain]%f, [loss]%f, [area_sum_g] %f, [area_sum_g_act1] %f", dG_c_act1,  dL_c_act1, area_sum_g, area_sum_g_act1);
+            litter_c_adjust_total1 = 0;
+            litter_n_adjust_total1 = 0;
+          }
 
         /* litter 2 */
             if (skip2[i] == 2 &&
@@ -588,24 +598,27 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                     printf("\n||[after add litter2], [the litr2c is] %f, [the amount of litter is transfered] %f\n", patches[0].litter_cs.litr2c, (dG_c2[i] / patch_area));}
 
                                   //if the act gain is smaller than potential gain due to parameters, adjust it too ??
-                if (dG_c_pot2 > dG_c_act2 && dG_n_pot2 > dG_n_act2)  {
+                if ((dG_c_pot2 - dG_c_act2)>ZERO && (dG_n_pot2 - dG_n_act2)>ZERO)  {
                   if (command_line[0].verbose_flag == -6)
-                  printf("\n loop 4 adjust differences between actual gain and potential gain for litter2 [act]%f, [pot]%f \n", dG_c_act2, dG_c_pot2);//improve
-                  litter_c_adjust_total2 += (dG_c_pot2 - dG_c_act2);
-                  litter_n_adjust_total2 += (dG_n_pot2 - dG_n_act2);
+                  printf("\n loop 3 adjust differences between actual gain and potential gain for litter2 [act]%f, [pot]%f \n", dG_c_act2, dG_c_pot2);//improve
+                  /*litter_c_adjust_total2 += (dG_c_pot2 - dG_c_act2);
+                  litter_n_adjust_total2 += (dG_n_pot2 - dG_n_act2);*/
 
                   }
                  // here needs to check if the gaining patches have litter more than mean, then adjust it
 
-                 if (patches[0].litter_cs.litr2c > litr2c_mean &&
-                     patches[0].litter_ns.litr2n > litr2n_mean ){
+                 if ((patches[0].litter_cs.litr2c - litr2c_mean)>ZERO &&
+                     (patches[0].litter_ns.litr2n - litr2n_mean)>ZERO ){
 
 
-                     litter_c_adjust_total2 += (patches[0].litter_cs.litr2c - litr2c_mean)*patch_area; //to do
-                     litter_n_adjust_total2 += (patches[0].litter_ns.litr2n - litr2n_mean)*patch_area;
+                     litter_c_adjust_total2 = (patches[0].litter_cs.litr2c - litr2c_mean)*patch_area; //to do
+                     litter_n_adjust_total2 = (patches[0].litter_ns.litr2n - litr2n_mean)*patch_area;
                      // make the no-veg gain patches litter mean
                      patches[0].litter_cs.litr2c = litr2c_mean;
                      patches[0].litter_ns.litr2n = litr2n_mean;
+
+                     dG_c_act2 -= litter_c_adjust_total2;
+                     dG_n_act2 -= litter_n_adjust_total2;
 
                     }
 
@@ -619,14 +632,18 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 dG_c2[i] = 0;
                 dG_n2[i] = 0;
             }
-                //improve what is area_sum_g_act4 < area_sum_g and dG_c_act4 >ZERO; then adjust too
-         if (area_sum_g_act2 < area_sum_g && dG_c_act2 >ZERO){
-             if (command_line[0].verbose_flag == -6)
-             printf("/n [Adjust] actual gaining no-veg patches are not all no-veg patches for litter 2");
-             litter_c_adjust_total2 += dL_c_act2 /area_sum_g *(area_sum_g - area_sum_g_act2);
-             litter_n_adjust_total2 += dL_n_act2 /area_sum_g *(area_sum_g - area_sum_g_act2);
-            }
-
+            //improve what is area_sum_g_act4 < area_sum_g and dG_c_act4 >ZERO; then adjust too
+     if ((dG_c_act2 - dL_c_act2) < ZERO && (dG_n_act2 - dL_n_act2)< ZERO && dG_c_act2 >ZERO){ //REN LESSON here must use >ZERO rather than dG>DL
+        if (command_line[0].verbose_flag == -6)
+         printf("\n REN [Adjust] actual gaining no-veg patches are not all no-veg patches for litter 2, [dL_c_act2] %f, [dG_c_act2] %f", dL_c_act2, dG_c_act2);
+         litter_c_adjust_total2 = dL_c_act2 - dG_c_act2;
+         litter_n_adjust_total2 = dL_n_act2 - dG_n_act2;
+       }
+      else if((dG_c_act2 - dL_c_act2) > ZERO || (dG_n_act2 - dL_n_act2)>ZERO )  {
+        printf("\n Warning carbon not balanced, total gain cannot larger than total lose, [gain]%f, [loss]%f, [area_sum_g] %f, [area_sum_g_act2] %f", dG_c_act2,  dL_c_act2, area_sum_g, area_sum_g_act2);
+        litter_c_adjust_total2 = 0;
+        litter_n_adjust_total2 = 0;
+      }
         /* litter 3 */
             if (skip3[i] == 2 &&
                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
@@ -664,22 +681,25 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                  // here needs to check if the gaining patches have litter more than mean, then adjust it
 
                    //if the act gain is smaller than potential gain due to parameters, adjust it too ??
-                if (dG_c_pot3 > dG_c_act3 && dG_n_pot3 > dG_n_act3)  {
+                if ((dG_c_pot3 - dG_c_act3)>ZERO && (dG_n_pot3 - dG_n_act3)>ZERO)  {
                   if (command_line[0].verbose_flag == -6)
-                  printf("\n loop 4 adjust differences between actual gain and potential gain for litter3 [act]%f, [pot]%f \n", dG_c_act3, dG_c_pot3);//improve                    //printf("/n adjust differences between actual gain and potential gain for litter3");//improve
-                  litter_c_adjust_total3 += (dG_c_pot3 - dG_c_act3);
-                  litter_n_adjust_total3 += (dG_n_pot3 - dG_n_act3);
+                  printf("\n loop 3 adjust differences between actual gain and potential gain for litter3 [act]%f, [pot]%f \n", dG_c_act3, dG_c_pot3);//improve                    //printf("/n adjust differences between actual gain and potential gain for litter3");//improve
+                /*  litter_c_adjust_total3 += (dG_c_pot3 - dG_c_act3);
+                  litter_n_adjust_total3 += (dG_n_pot3 - dG_n_act3);*/
 
                   }
-                 if (patches[0].litter_cs.litr3c > litr3c_mean &&
-                     patches[0].litter_ns.litr3n > litr3n_mean ){
+                 if ((patches[0].litter_cs.litr3c - litr3c_mean)>ZERO &&
+                     (patches[0].litter_ns.litr3n - litr3n_mean)>ZERO ){
 
 
-                     litter_c_adjust_total3 += (patches[0].litter_cs.litr3c - litr3c_mean)*patch_area; //to do
-                     litter_n_adjust_total3 += (patches[0].litter_ns.litr3n - litr3n_mean)*patch_area;
+                     litter_c_adjust_total3 = (patches[0].litter_cs.litr3c - litr3c_mean)*patch_area; //to do
+                     litter_n_adjust_total3 = (patches[0].litter_ns.litr3n - litr3n_mean)*patch_area;
                      // make the no-veg gain patches litter mean
                      patches[0].litter_cs.litr3c = litr3c_mean;
                      patches[0].litter_ns.litr3n = litr3n_mean;
+
+                     dG_c_act3 -= litter_c_adjust_total3;
+                     dG_n_act3 -= litter_n_adjust_total3;
 
                     }
 
@@ -692,14 +712,18 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 dG_c3[i] = 0;
                 dG_n3[i] = 0;
             }
-                //improve what is area_sum_g_act4 < area_sum_g and dG_c_act4 >ZERO; then adjust too
-         if (area_sum_g_act3< area_sum_g && dG_c_act3 >ZERO){
-             if (command_line[0].verbose_flag == -6)
-             printf("\n [Adjust] actual gaining no-veg patches are not all no-veg patches for litter 3");
-             litter_c_adjust_total3 += dL_c_act3 /area_sum_g *(area_sum_g - area_sum_g_act3);
-             litter_n_adjust_total3 += dL_n_act3 /area_sum_g *(area_sum_g - area_sum_g_act3);
-            }
-
+            //improve what is area_sum_g_act4 < area_sum_g and dG_c_act4 >ZERO; then adjust too
+     if ((dG_c_act3 - dL_c_act3) < ZERO && (dG_n_act3 - dL_n_act3)< ZERO && dG_c_act3 >ZERO){ //REN LESSON here must use >ZERO rather than dG>DL
+        if (command_line[0].verbose_flag == -6)
+         printf("\n REN [Adjust] actual gaining no-veg patches are not all no-veg patches for litter 3, [dL_c_act3] %f, [dG_c_act3] %f", dL_c_act3, dG_c_act3);
+         litter_c_adjust_total3 = dL_c_act3 - dG_c_act3;
+         litter_n_adjust_total3 = dL_n_act3 - dG_n_act3;
+       }
+      else if((dG_c_act3 - dL_c_act3) > ZERO || (dG_n_act3 - dL_n_act3)>ZERO )  {
+        printf("\n Warning carbon not balanced, total gain cannot larger than total lose, [gain]%f, [loss]%f, [area_sum_g] %f, [area_sum_g_act3] %f", dG_c_act3,  dL_c_act3, area_sum_g, area_sum_g_act3);
+        litter_c_adjust_total3 = 0;
+        litter_n_adjust_total3 = 0;
+      }
         /* litter 4 */
             if (skip4[i] == 2 &&
                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
@@ -738,25 +762,28 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
 
                   //if the act gain is smaller than potential gain due to parameters, adjust it too ??
-                if (dG_c_pot4 > dG_c_act4 && dG_n_pot4 > dG_n_act4)  {
+                if ((dG_c_pot4 - dG_c_act4)>ZERO && (dG_n_pot4 - dG_n_act4)>ZERO)  {
                   if (command_line[0].verbose_flag == -6)
-                  printf("\n loop 4 adjust differences between actual gain and potential gain for litter4 [act]%f, [pot]%f \n", dG_c_act4, dG_c_pot4);//improve
-                  litter_c_adjust_total4 += (dG_c_pot4 - dG_c_act4);
-                  litter_n_adjust_total4 += (dG_n_pot4 - dG_n_act4);
+                  printf("\n loop 3 adjust differences between actual gain and potential gain for litter4 [act]%f, [pot]%f \n", dG_c_act4, dG_c_pot4);//improve
+                /*  litter_c_adjust_total4 += (dG_c_pot4 - dG_c_act4);
+                  litter_n_adjust_total4 += (dG_n_pot4 - dG_n_act4);*/
 
                   }
 
               // here needs to check if the gaining patches have litter more than mean, then adjust it
 
-                 if (patches[0].litter_cs.litr4c > litr4c_mean &&
-                     patches[0].litter_ns.litr4n > litr4n_mean ){
+                 if ((patches[0].litter_cs.litr4c - litr4c_mean)>ZERO &&
+                     (patches[0].litter_ns.litr4n - litr4n_mean)>ZERO ){
 
-
-                     litter_c_adjust_total4 += (patches[0].litter_cs.litr4c - litr4c_mean)*patch_area; //to do
-                     litter_n_adjust_total4 += (patches[0].litter_ns.litr4n - litr4n_mean)*patch_area;
+                    printf("\n adjust no-veg larger than mean after gain");
+                     litter_c_adjust_total4 = (patches[0].litter_cs.litr4c - litr4c_mean)*patch_area; //to do
+                     litter_n_adjust_total4 = (patches[0].litter_ns.litr4n - litr4n_mean)*patch_area;
                      // make the no-veg gain patches litter mean
                      patches[0].litter_cs.litr4c = litr4c_mean;
                      patches[0].litter_ns.litr4n = litr4n_mean;
+
+                     dG_c_act4 -= litter_c_adjust_total4;
+                     dG_n_act4 -= litter_n_adjust_total4;
 
                     }
 
@@ -769,12 +796,17 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 dG_n4[i] = 0;
             }
         //improve what is area_sum_g_act4 < area_sum_g and dG_c_act4 >0; then adjust too
-         if (area_sum_g_act4 < area_sum_g && dG_c_act4 >ZERO){
-             if (command_line[0].verbose_flag == -6)
-             printf("\n [Adjust] actual gaining no-veg patches are not all no-veg patches for litter 4");
-             litter_c_adjust_total4 += dL_c_act4 /area_sum_g *(area_sum_g - area_sum_g_act4);
-             litter_n_adjust_total4 += dL_n_act4 /area_sum_g *(area_sum_g - area_sum_g_act4);
-            }
+        if ((dG_c_act4 - dL_c_act4) < ZERO && (dG_n_act4 - dL_n_act4)< ZERO && dG_c_act4 >ZERO){ //REN LESSON here must use >ZERO rather than dG>DL
+           if (command_line[0].verbose_flag == -6)
+            printf("\n REN [Adjust] actual gaining no-veg patches are not all no-veg patches for litter 4, [dL_c_act4] %f, [dG_c_act4] %f", dL_c_act4, dG_c_act4);
+            litter_c_adjust_total4 = dL_c_act4 - dG_c_act4;
+            litter_n_adjust_total4 = dL_n_act4 - dG_n_act4;
+          }
+         else if((dG_c_act4 - dL_c_act4) > ZERO || (dG_n_act4 - dL_n_act4)>ZERO )  {
+           printf("\n Warning carbon not balanced, total gain cannot larger than total lose, [gain]%f, [loss]%f, [area_sum_g] %f, [area_sum_g_act4] %f", dG_c_act4,  dL_c_act4, area_sum_g, area_sum_g_act4);
+           litter_c_adjust_total4 = 0;
+           litter_n_adjust_total4 = 0;
+         }
 
 
         }     // end loop 3
@@ -812,7 +844,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 if (command_line[0].verbose_flag == -6){
                     printf("\n||loop4 adjust [total litter1 adjust*area]%f \n", litter_c_adjust_total1);
                     printf("|| [litter 1c adjust for this patch]%f \n", litter_c_adjust1);
-                    printf("|| [before adjust litter1] the litr1c is %f \n",patches[0].litter_cs.litr1c);
+                    printf("|| REN [before adjust litter1] the litr1c is %f, [area_sum_l1] %f, [patch_area] %f \n",patches[0].litter_cs.litr1c, area_sum_l1, patch_area);
                     }
 
                 // litter carbon gain
