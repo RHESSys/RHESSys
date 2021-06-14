@@ -143,6 +143,8 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].snow_scale_tol = 999999999;
 	command_line[0].multiscale_flag = 1;
 	command_line[0].cpool_mort_fract = 0;
+	command_line[0].sat_to_gw_coeff_mult = 1;
+	command_line[0].gw_loss_coeff_mult = 1;
 	
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
