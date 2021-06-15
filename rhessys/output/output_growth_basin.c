@@ -59,7 +59,7 @@ void	output_growth_basin(
 	double asoilc, asminn, anitrate, asurfaceN;
 	double afpi, amineralized, at_scalar, aw_scalar;
 	double alitrn, asoiln, asoiln_noslow,anfix, anuptake;
-	double aarea, hill_area, basin_area;
+	double aarea, hill_area, zone_area, basin_area;
 	double acarbon_balance, anitrogen_balance;
 	double atotaln, adenitrif;
 	double aNO3_stored;
@@ -166,6 +166,7 @@ void	output_growth_basin(
 		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
+			zone_area = 0.0;
 				aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
@@ -399,8 +400,9 @@ void	output_growth_basin(
 				}
 				aarea +=  patch[0].area;
 				hill_area += patch[0].area;
+				zone_area += patch[0].area; //NREN
 			}
-
+			aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone_area;//NREN
 		}
 		hgwNO3 += hillslope[0].gw.NO3 * hill_area;
 		hgwNH4 += hillslope[0].gw.NH4 * hill_area;
