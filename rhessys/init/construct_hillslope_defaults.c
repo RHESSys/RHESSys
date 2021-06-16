@@ -94,7 +94,7 @@ struct hillslope_default *construct_hillslope_defaults(
 		if (default_object_list[i].n_routing_timesteps < 1)
 			default_object_list[i].n_routing_timesteps = 1;
 		
-		if (command_line[0].gw_flag > 0) {
+		if (command_line[0].gw_loss_coeff_mult < 1.0) {
 			default_object_list[i].gw_loss_coeff *= command_line[0].gw_loss_coeff_mult;
 			default_object_list[i].gw_loss_fast_coeff *= command_line[0].gw_loss_coeff_mult;
 			}
