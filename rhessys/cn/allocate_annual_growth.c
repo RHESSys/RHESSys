@@ -184,7 +184,7 @@ int allocate_annual_growth(				int id,
 
 	total_store =  cs->cpool;
 	if (epc.veg_type == TREE){
-			total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool + cs->dead_stemc + cs->dead_crootc);}
+			total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc  + cs->dead_stemc + cs->dead_crootc);}
 		else {
 			total_biomass =  (cs->leafc + cs->frootc + cs->cpool );}
 
