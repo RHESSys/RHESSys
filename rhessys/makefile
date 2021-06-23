@@ -380,6 +380,7 @@ $(OBJ)/get_num_daywhourly.o \
 $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
 $(OBJ)/string_list.o \
+$(OBJ)/strings.o \
 $(OBJ)/pointer_set.o \
 $(OBJ)/dictionary.o \
 $(OBJ)/output_filter.o \
@@ -1088,6 +1089,8 @@ util/index_struct_fields.c: include/rhessys.h
 	--output util/index_struct_fields.c
 $(OBJ)/string_list.o: util/string_list.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o $(OBJ)/string_list.o
+$(OBJ)/strings.o: util/strings.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/strings.c -o $(OBJ)/strings.o
 $(OBJ)/pointer_set.o: util/pointer_set.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/pointer_set.c -o $(OBJ)/pointer_set.o
 $(OBJ)/dictionary.o: util/dictionary.c
