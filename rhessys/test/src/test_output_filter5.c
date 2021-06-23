@@ -7,7 +7,7 @@
 OutputFilter *parse(const char* input, bool verbose);
 
 void test_output_filter5() {
-	OutputFilter *filter = parse("test/fixtures/filter5.yml", true);
+	OutputFilter *filter = parse("fixtures/filter5.yml", true);
 
 	print_output_filter(filter);
 
