@@ -3033,7 +3033,6 @@ struct  canopy_strata_object
         double  Lstar_night;									/* Kj/(m2*day)  */
         double  Lstar_day;										/* Kj/(m2*day)  */
         double  NO3_stored;                                     /* kg/m2        */
-        double  PAR_after_reflection;                           /* (umol photon/m2*day) */
         double  ppfd_sunlit;                    /*  (umol/m2/s) PAR photon flux density */
         double  ppfd_shade;                     /*  (umol/m2/s) PAR photon flux density */
         double  potential_evaporation;                          /*  meters/day  */
