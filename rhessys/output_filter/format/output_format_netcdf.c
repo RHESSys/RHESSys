@@ -418,7 +418,7 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 	}
 
 	// Output variables
-	for (int i = 0; i < f->num_named_variables; i++) {
+	for (int i = 0; i < f->num_variables; i++) {
 		MaterializedVariable *v = &vars[i];
 		bool status = output_materialized_variable_to_netcdf(error, error_len, ncid, curr_idx, v);
 		if (!status) {

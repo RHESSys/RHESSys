@@ -4,6 +4,7 @@
 
 #include "output_filter_parser.tab.h"
 #include "output_filter.h"
+#include "strings.h"
 
 void yyerror(char *s);
 int yylex(void);
@@ -31,6 +32,8 @@ OutputFilter *curr_filter = NULL;
 %union {
 	char *string;
 	int integer;
+	struct of_var_expr_ast *ast;
+        double d;
 }
 
 /* tokens */
@@ -51,17 +54,25 @@ OutputFilter *curr_filter = NULL;
 %token <string> FILENAME_SPEC
 /* patch_id_spec components */
 %token <string> IDENTIFIER
+%token <string> VAR_DEF
 %token <string> LEVEL_HILLSLOPE
 %token <string> LEVEL_PATCH
 %token <string> LEVEL_STRATUM
-%token KLEENE
 %token <integer> NUMBER
+%token <d> FLOAT
 %token DELIM
 %token COMMA
 %token DOT
 /* whitespace */
 %token INDENT
 %token EOL
+
+%right '='
+%left '+' '-'
+%left '*' '/'
+%nonassoc UMINUS
+
+%type <ast> exp
 
 %start filter_list
 
@@ -77,9 +88,8 @@ filter_list:
 	| filter_list basin EOL {}
 	| filter_list patch EOL {}
 	| filter_list stratum EOL {}
-	| filter_list ids EOL {}
-	| filter_list variables EOL {}
-	| filter_list EOL {}
+	| filter_list ids {}
+	| filter_list variables {}
 	;
 
 filter: FILTER {
@@ -163,7 +173,7 @@ path: PATH PATH_SPEC {
 			syntax_error = true;
 			yyerror("path definition must be nested within output definition");
 		} else {
-			curr_filter->output->path = strdup($2);
+			curr_filter->output->path = strip($2);
 			if (verbose_output) fprintf(stderr, "\t\tOUTPUT PATH IS: %s\n", $2);
 		}
 	}
@@ -174,34 +184,10 @@ filename: FILENAME FILENAME_SPEC {
 			syntax_error = true;
 			yyerror("filename definition must be nested within output definition");
 		} else {
-			curr_filter->output->filename = strdup($2);
+			curr_filter->output->filename = strip($2);
 			if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", $2);
 		}
 	}
-	| FILENAME IDENTIFIER {
-    if (!in_output) {
-      syntax_error = true;
-      yyerror("filename definition must be nested within output definition");
-    } else {
-      curr_filter->output->filename = strdup($2);
-      if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", $2);
-    }
-  }
-  | FILENAME FILENAME_SPEC DOT IDENTIFIER {
-  	if (!in_output) {
-      syntax_error = true;
-      yyerror("filename definition must be nested within output definition");
-    } else {
-      curr_filter->output->filename = (char *) malloc(FILENAME_LEN * sizeof(char));
-      if (curr_filter->output->filename == NULL) {
-      	syntax_error = true;
-      	yyerror("unable to allocate memory for filename");
-      }
-      snprintf(curr_filter->output->filename, FILENAME_LEN,
-      	"%s.%s", $2, $4);
-      if (verbose_output) fprintf(stderr, "\t\tOUTPUT FILENAME IS: %s\n", curr_filter->output->filename);
-    }
-  }
 	;
 
 basin: BASIN_TOK {
@@ -284,7 +270,7 @@ ids: IDS patch_stratum_id_spec {
 	}
 	;
 
-patch_stratum_id_spec: NUMBER {
+patch_stratum_id_spec: | NUMBER {
 		if (verbose_output) fprintf(stderr, "\t\tIDS: basinID: %d\n", $1);
 		
 		if (curr_filter->type == OUTPUT_FILTER_BASIN) {
@@ -455,6 +441,7 @@ patch_stratum_id_spec: NUMBER {
 		}
 	}
 	| patch_stratum_id_spec COMMA patch_stratum_id_spec { /* do nothing, allow individual patch_id_spec to be evaluated by above rules */ }
+	| patch_stratum_id_spec EOL patch_stratum_id_spec { }
 	;
 
 variables: VARS variable_spec {
@@ -463,15 +450,33 @@ variables: VARS variable_spec {
 			yyerror("variables definition must be nested within basin, patch, or stratum definition");
 		} 
 	}
-	| VARS KLEENE {
-		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: Any variable\n");
-		// * overrides all variable definitions, remove existing variables and start over
-		free_output_filter_variable_list(curr_filter->variables);
-		curr_filter->variables = create_new_output_filter_variable_any();
-	}
 	;
 
-variable_spec: IDENTIFIER {
+variable_spec: | VAR_DEF exp {
+		if (verbose_output) {
+			fprintf(stderr, "\t\tVARIABLE name : %s, AST:\n", $1);
+			print_of_expr_ast($2, 1);
+		}
+
+		HierarchyLevel level;
+		if (in_basin) {
+			syntax_error = true;
+			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_patch) {
+			level = OF_HIERARCHY_LEVEL_PATCH;
+		} else if (in_stratum) {
+			level = OF_HIERARCHY_LEVEL_STRATUM;
+		}
+		OutputFilterVariable *new_var = create_new_output_filter_expr_variable(level, $1, $2);
+
+		if (curr_filter->variables == NULL) {
+			curr_filter->variables = new_var;
+		} else {
+			add_to_output_filter_variable_list(curr_filter->variables, new_var);
+		}
+
+      	}
+	| IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s\n", $1);
 		
 		HierarchyLevel level;
@@ -578,8 +583,56 @@ variable_spec: IDENTIFIER {
 		}
 	}
 	| variable_spec COMMA variable_spec { /* do nothing, allow individual variable_spec to be evaluated by above rules */ }
+	| variable_spec EOL variable_spec { }
 	;
 
+exp: exp '+' exp {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR OP: +\n");
+		$$ = new_of_expr_ast('+', $1, $3);
+	}
+	| exp '-' exp {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR OP: %s - %s\n", $1, $3);
+		$$ = new_of_expr_ast('-', $1, $3);
+	}
+	| exp '*' exp { $$ = new_of_expr_ast('*', $1, $3); }
+        | exp '/' exp { $$ = new_of_expr_ast('/', $1, $3); }
+        | '(' exp ')' { $$ = $2; }
+        | '-' exp %prec UMINUS { $$ = new_of_expr_ast('M', $2, NULL); }
+        | FLOAT { $$ = new_of_expr_const($1); }
+        | NUMBER { $$ = new_of_expr_const((double) $1); }
+	| IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s\n", $1);
+
+		HierarchyLevel level;
+		if (in_basin) {
+			syntax_error = true;
+			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_patch) {
+			level = OF_HIERARCHY_LEVEL_PATCH;
+		} else if (in_stratum) {
+			level = OF_HIERARCHY_LEVEL_STRATUM;
+		}
+		OutputFilterVariable *new_var = create_new_output_filter_variable(level, $1);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	| IDENTIFIER DOT IDENTIFIER {
+		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s.%s\n", $1, $3);
+
+		HierarchyLevel level;
+		if (in_basin) {
+			syntax_error = true;
+			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
+		} else if (in_patch) {
+			level = OF_HIERARCHY_LEVEL_PATCH;
+		} else if (in_stratum) {
+			level = OF_HIERARCHY_LEVEL_STRATUM;
+		}
+		OutputFilterVariable *new_var = create_new_output_filter_sub_struct_variable(level, $1, $3);
+
+		$$ = (struct of_var_expr_ast *) new_of_expr_name(new_var);
+	}
+	;
 
 %%
 
@@ -588,7 +641,7 @@ variable_spec: IDENTIFIER {
   * process.
   */ 
 OutputFilter *parse(char * const input, bool verbose) {
-	verbose_output = verbose_output;
+	verbose_output = verbose;
 	int status = set_input_file(input);
 	if (!status) {
 		return NULL;
