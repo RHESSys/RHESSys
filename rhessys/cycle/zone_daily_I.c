@@ -173,6 +173,9 @@ void zone_daily_I(
 	double unifdist(double, double);
 
 	long  julday(struct date);
+
+	void sort_patch_family_layers(struct patch_family_object  *, int);
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
