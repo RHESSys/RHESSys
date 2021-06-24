@@ -2,8 +2,8 @@ filter:
 	timestep: daily
 	output:
 		format: csv
-		path: ../output/fire-project-1
-		filename: scenario-abc4.foo
+		path: "../output/fire-project-1"
+		filename: "scenario-abc4.foo"
 	basin:
 		ids: 1
 		variables: patch.evaporation, stratum.PET, stratum.cs.leafc, hill.base_flow, hill.gw.storage, hill.gw.Qout

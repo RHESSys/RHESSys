@@ -17,7 +17,7 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 
 inline static void reset_materialized_variable_array_values(OutputFilter const * const f) {
 	if (f == NULL) return;
-	for (int i = 0; i < f->num_named_variables; i++) {
+	for (int i = 0; i < f->num_variables; i++) {
 		// double_val should be the widest value, so this should zero any value.
 		f->output->materialized_variables[i].u.double_val = 0.0;
 	}
@@ -29,11 +29,21 @@ inline static void scale_materialized_variable_array_values(OutputFilter const *
 
 	MaterializedVariable *mat_vars = f->output->materialized_variables;
 
-	for (int i = 0; i < f->num_named_variables; i++) {
+	for (int i = 0; i < f->num_variables; i++) {
 		if (mat_vars[i].data_type == DATA_TYPE_DOUBLE) {
 			mat_vars[i].u.double_val /= scalar;
 		}
 	}
+}
+
+inline static size_t compute_struct_member_offset(OutputFilterVariable const * const v) {
+    size_t offset = v->offset;
+    if (v->sub_struct_var_offset != SIZE_MAX) {
+        // If sub_struct_var_offset has been set for this variable
+        // (which means this must be a sub-struct variable) apply it to the offset
+        offset += v->sub_struct_var_offset;
+    }
+    return offset;
 }
 
 inline static void accum_materialized_variable(MaterializedVariable *accum, MaterializedVariable *value,
@@ -104,80 +114,281 @@ static void reset_accumulator_stratum(PointerSet **acc_objs_to_reset) {
 	}
 }
 
+inline static MaterializedVariable materialize_named_variable(OutputFilterVariable const * const v,
+                                                              void * const entity, size_t offset) {
+    MaterializedVariable mat_var;
+    switch (v->data_type) {
+        case DATA_TYPE_BOOL:
+            mat_var.data_type = v->data_type;
+            mat_var.u.bool_val = *((bool *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_CHAR:
+            mat_var.data_type = v->data_type;
+            mat_var.u.char_val = *((char *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_STRING:
+            mat_var.data_type = v->data_type;
+            mat_var.u.char_array = (char *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
+#endif
+            return mat_var;
+        case DATA_TYPE_INT:
+            mat_var.data_type = v->data_type;
+            mat_var.u.int_val = *((int *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_LONG:
+            mat_var.data_type = v->data_type;
+            mat_var.u.long_val = *((long *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_LONG_ARRAY:
+            mat_var.data_type = v->data_type;
+            mat_var.u.long_array = (long *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
+#endif
+            return mat_var;
+        case DATA_TYPE_FLOAT:
+            mat_var.data_type = v->data_type;
+            mat_var.u.float_val = *((float *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_DOUBLE:
+            mat_var.data_type = v->data_type;
+            mat_var.u.double_val = *((double *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_DOUBLE_ARRAY:
+            mat_var.data_type = v->data_type;
+            mat_var.u.double_array = (double *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
+#endif
+            return mat_var;
+        default:
+            mat_var.data_type = DATA_TYPE_UNDEFINED;
+            return mat_var;
+    }
+}
+
+inline static double mat_var_scalar_to_double(MaterializedVariable a) {
+    double result;
+    switch (a.data_type) {
+        case DATA_TYPE_BOOL:
+            result = a.u.bool_val;
+            return result;
+        case DATA_TYPE_INT:
+            result = a.u.int_val;
+            return result;
+        case DATA_TYPE_LONG:
+            result = a.u.long_val;
+            return result;
+        case DATA_TYPE_FLOAT:
+            result = a.u.float_val;
+            return result;
+        case DATA_TYPE_DOUBLE:
+            result = a.u.double_val;
+            return result;
+        default:
+            fprintf(stderr,
+                    "WARNING: mat_var_scalar_to_double(): Encountered non-scalar/non-numeric value when trying to convert variable of type %d to type double. Returning NaN.\n",
+                    a.data_type);
+            result = NAN;
+            return result;
+    }
+}
+
+inline static MaterializedVariable mat_var_add(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_add(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_add(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left + right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_sub(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_sub(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_sub(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left - right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_mul(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_mul(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_mul(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left * right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_div(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    } else if (right == 0.0) {
+        // Should we return 0.0 instead?
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Denominator is 0.0, returning NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left / right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_neg(MaterializedVariable l) {
+    double operand;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    operand = mat_var_scalar_to_double(l);
+    if (operand == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_neg(): Negation operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = -operand;
+    return v;
+}
+
+static MaterializedVariable eval_expr(void * const entity,
+                                      OutputFilterExprAst * const expr) {
+    MaterializedVariable mat_var;
+    OutputFilterVariable *v;
+    switch (expr->nodetype) {
+        case '+':
+            mat_var = mat_var_add(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
+            return mat_var;
+        case '-':
+            mat_var = mat_var_sub(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
+            return mat_var;
+        case '*':
+            mat_var = mat_var_mul(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
+            return mat_var;
+        case '/':
+            mat_var = mat_var_div(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
+            return mat_var;
+        case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
+            mat_var = mat_var_neg(eval_expr(entity, expr->l));
+            return mat_var;
+            /* no subtree */
+        case OF_VAR_EXPR_AST_NODE_NAME:
+            v = ((OutputFilterExprName *)expr)->var;
+            mat_var = materialize_named_variable(v, entity, compute_struct_member_offset(v));
+            return mat_var;
+        case OF_VAR_EXPR_AST_NODE_CONST:
+            mat_var.data_type = DATA_TYPE_DOUBLE;
+            mat_var.u.double_val = ((OutputFilterExprNumval *)expr)->number;
+            return mat_var;
+        default:
+            fprintf(stderr,
+                    "WARNING: undefined data type in expression variable.\n");
+            mat_var.data_type = DATA_TYPE_UNDEFINED;
+            return mat_var;
+    }
+}
+
+static MaterializedVariable materialize_expr_variable(OutputFilterVariable const * const v,
+                                                      void * const entity) {
+    if (v->expr == NULL) {
+        fprintf(stderr, "WARNING: materialize_expr_variable: expression variable '%s' has no expression defined.",
+                v->name);
+        return (MaterializedVariable){.data_type=DATA_TYPE_UNDEFINED};
+    }
+    return eval_expr(entity, v->expr);
+}
+
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
-	size_t offset = v->offset;
-	if (v->sub_struct_var_offset != SIZE_MAX) {
-		// If sub_struct_var_offset has been set for this variable
-		// (which means this must be a sub-struct variable) apply it to the offset
-		offset += v->sub_struct_var_offset;
-	}
-	switch (v->data_type) {
-	case DATA_TYPE_BOOL:
-		mat_var.data_type = v->data_type;
-		mat_var.u.bool_val = *((bool *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
-#endif
-		break;
-	case DATA_TYPE_CHAR:
-		mat_var.data_type = v->data_type;
-		mat_var.u.char_val = *((char *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
-#endif
-		break;
-	case DATA_TYPE_STRING:
-		mat_var.data_type = v->data_type;
-		mat_var.u.char_array = (char *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
-#endif
-		break;
-	case DATA_TYPE_INT:
-		mat_var.data_type = v->data_type;
-		mat_var.u.int_val = *((int *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
-#endif
-		break;
-	case DATA_TYPE_LONG:
-		mat_var.data_type = v->data_type;
-		mat_var.u.long_val = *((long *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
-#endif
-		break;
-	case DATA_TYPE_LONG_ARRAY:
-		mat_var.data_type = v->data_type;
-		mat_var.u.long_array = (long *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
-#endif
-		break;
-	case DATA_TYPE_FLOAT:
-		mat_var.data_type = v->data_type;
-		mat_var.u.float_val = *((float *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
-#endif
-		break;
-	case DATA_TYPE_DOUBLE:
-		mat_var.data_type = v->data_type;
-		mat_var.u.double_val = *((double *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
-#endif
-		break;
-	case DATA_TYPE_DOUBLE_ARRAY:
-		mat_var.data_type = v->data_type;
-		mat_var.u.double_array = (double *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
-#endif
-		break;
-	default:
-		mat_var.data_type = DATA_TYPE_UNDEFINED;
+	if (v->variable_type == NAMED) {
+        mat_var = materialize_named_variable(v, entity, compute_struct_member_offset(v));
+    } else if (v->variable_type == VAR_TYPE_EXPR) {
+        mat_var = materialize_expr_variable(v, entity);
 	}
 	// Copy pointer to any metadata for this variable
 	mat_var.meta = v->meta;
@@ -412,7 +623,7 @@ static inline bool output_materialized_variables(char * const error, size_t erro
 
 static bool output_variables(char * const error, size_t error_len, bool verbose,
 		struct date date, void * const entity, EntityID id, OutputFilter const * const f) {
-	if (verbose) fprintf(stderr, "\t\toutput_variables(num_named_variables: %hu)...\n", f->num_named_variables);
+	if (verbose) fprintf(stderr, "\t\toutput_variables(num_variables: %hu)...\n", f->num_variables);
 
 	char *local_error;
 	MaterializedVariable mat_var;
@@ -422,6 +633,7 @@ static bool output_variables(char * const error, size_t error_len, bool verbose,
 	for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
 		switch (v->variable_type) {
 		case NAMED:
+		case VAR_TYPE_EXPR:
 			// Materialize variable and add it to array
 			mat_var = materialize_variable(v, entity);
 			if (mat_var.data_type == DATA_TYPE_UNDEFINED) {

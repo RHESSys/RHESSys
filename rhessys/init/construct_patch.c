@@ -124,11 +124,18 @@ struct patch_object *construct_patch(
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
 	
 	patch[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"patch_ID","%d",-9999,0);
-	if (command_line[0].multiscale_flag == 1) {
-		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
-	} else {
-		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
+	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
+	// esentially creates the dummy patch families here by creating unique family IDs if not present in the worldfile
+	// this will be a mess if SOME but not ALL patches have family IDs
+	if (patch[0].family_ID == -9999) {
+		patch[0].family_ID = patch[0].ID;
 	}
+	// TODO remove when multiscale flag is fully removed
+	// if (command_line[0].multiscale_flag == 1) {
+	// 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
+	// } else {
+	// 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
+	// }
 	
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);

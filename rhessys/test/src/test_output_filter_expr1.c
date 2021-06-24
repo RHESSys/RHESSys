@@ -7,7 +7,7 @@
 OutputFilter *parse(const char* input, bool verbose);
 
 void test_output_filter1() {
-	OutputFilter *filter = parse("fixtures/filter1.yml", true);
+	OutputFilter *filter = parse("fixtures/filter_expr1.yml", true);
 
 	print_output_filter(filter);
 
@@ -38,17 +38,20 @@ void test_output_filter1() {
 	// Variables
 	OutputFilterVariable *v1 = filter->variables;
 	g_assert(v1->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
-	g_assert(v1->variable_type == NAMED);
-	cmp = strcmp(v1->name, "Qout");
+	g_assert(v1->variable_type == VAR_TYPE_EXPR);
+    cmp = strcmp(v1->name, "foo");
 	g_assert(cmp == 0);
+
 	OutputFilterVariable *v2 = v1->next;
 	g_assert(v2->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
 	g_assert(v2->variable_type == NAMED);
-	cmp = strcmp(v2->name, "Qin");
-	OutputFilterVariable *v3 = v2->next;
-	g_assert(v3->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
-	g_assert(v3->variable_type == NAMED);
-	cmp = strcmp(v3->name, "evaporation");
+	cmp = strcmp(v2->name, "evaporation");
+
+    OutputFilterVariable *v3 = v2->next;
+    g_assert(v3->hierarchy_level == OF_HIERARCHY_LEVEL_PATCH);
+    g_assert(v3->variable_type == VAR_TYPE_EXPR);
+    cmp = strcmp(v3->name, "doubleQ");
+
 	g_assert(v3->next == NULL);
 
 	free(filter);

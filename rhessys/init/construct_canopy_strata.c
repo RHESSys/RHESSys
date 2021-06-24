@@ -263,7 +263,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	fscanf(world_file,"%lf",&(canopy_strata[0].epv.min_vwc));
 	read_record(world_file, record);*/
 	
-	canopy_strata[0].epv.wstress_days  = getIntWorldfile(&paramCnt,&paramPtr,"epv.wstress_days","%lf",0,1);
+	canopy_strata[0].epv.wstress_days  = getIntWorldfile(&paramCnt,&paramPtr,"epv.wstress_days","%d",0,1);
 
 	canopy_strata[0].epv.max_fparabs = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.max_fparabs","%lf",0.0,1);
 	

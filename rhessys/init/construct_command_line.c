@@ -141,8 +141,10 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
-	command_line[0].multiscale_flag = 0;
+	command_line[0].multiscale_flag = 1;
 	command_line[0].cpool_mort_fract = 0;
+	command_line[0].sat_to_gw_coeff_mult = 1;
+	command_line[0].gw_loss_coeff_mult = 1;
 	
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -1239,12 +1241,12 @@ struct	command_line_object	*construct_command_line(
 			/*--------------------------------------------------------------*/
 			/*		Check for multiscale routing flag next				    */
 			/*--------------------------------------------------------------*/
-
-			else if (strcmp(main_argv[i],"-msr") == 0) {
-				//printf("-msr flag triggered\n");
-				command_line[0].multiscale_flag = 1;
-				i++;
-			}
+			// now defaulting to ON (1) - left here till flag is fully removed
+			// else if (strcmp(main_argv[i],"-msr") == 0) {
+			// 	//printf("-msr flag triggered\n");
+			// 	command_line[0].multiscale_flag = 1;
+			// 	i++;
+			// }
 
 			/*----------------------------------------------------------*/
 			/* climate interpolation UTM zone options  N.R 20190610     */

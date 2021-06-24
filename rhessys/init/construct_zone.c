@@ -123,7 +123,7 @@ struct zone_object *construct_zone(
 	int		notfound;
     int     basestation_id;
 	float   base_x, base_y;
-	float	sum_patch_area; 
+	double	sum_patch_area; 
 	char	record[MAXSTR];
 	struct	zone_object *zone;
 	int paramCnt=0;
@@ -134,7 +134,7 @@ struct zone_object *construct_zone(
 	base_y = 0.0;
 	j = 0;
 	k = 0;	
-	sum_patch_area = 0;
+	sum_patch_area = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	Allocate a zone object.								*/
@@ -397,6 +397,7 @@ struct zone_object *construct_zone(
 	zone[0].metv.tmin_ravg = 3.0;
 	zone[0].metv.vpd_ravg = 900;
 	zone[0].metv.dayl_ravg = 38000;
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the intervals in this zone.						*/
 	/*--------------------------------------------------------------*/
@@ -412,16 +413,15 @@ struct zone_object *construct_zone(
 	} /*end for*/
 
 	// check that zone area is equal to sum of patch areas
-	if ( abs(sum_patch_area -zone[0].area) > ZERO)
+	if ( fabs(sum_patch_area -zone[0].area) > ZERO)
 	{
-		fprintf(stderr,"patch areas do not sum to zone area for zone %d\n", zone[0].ID);
+		fprintf(stderr,"patch areas do not sum to zone area %lf for zone %d\n", sum_patch_area, zone[0].ID);
 		exit(0);
 	}
 
 	/*--------------------------------------------------------------*/
 	/*	Get number + ID of patch families for this zone				*/
 	/*--------------------------------------------------------------*/
-
 	if (command_line[0].multiscale_flag == 1 || command_line[0].firespread_flag == 1) {
 
 		// Vars
@@ -431,14 +431,7 @@ struct zone_object *construct_zone(
 		
 		zone[0].num_patch_families = 0;
 
-		// TODO - IF ISSUES FROM WMFIRE AND NO MSR, COMMENT THIS OUT
-		if (command_line[0].firespread_flag == 1 && command_line[0].multiscale_flag == 0) {
-			for (i = 0; i < zone[0].num_patches; i++) {
-				zone[0].patches[i][0].family_ID = zone[0].patches[i][0].ID;
-			}
-			// set multi flag here - this makes fire flag always trigger msr flag.
-			command_line[0].multiscale_flag = 1;
-		}
+		// dummy patch creation, really just setting the family ID, happens in construct patch now, when the inputs are parsed
 
 		// get number of patch families
 		for (i = 0; i < zone[0].num_patches; i++) freq[i] = -1; // set freq to -1 for all patches
