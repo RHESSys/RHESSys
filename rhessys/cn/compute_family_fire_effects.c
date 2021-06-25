@@ -575,11 +575,14 @@ void compute_family_fire_effects(
 				/* Calculates metrics for next lowest canopy (subtarget canopy) */
 				if (patch_family[0].num_layers > (layer + 1))
 				{
-					canopy_subtarget = patch_family[0].canopy_strata[(patch_family[0].layers[layer + 1].strata[c])];
-					canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
-					canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
+					if(c<patch_family[0].layers[layer+1].count)
+					{
+						canopy_subtarget = patch_family[0].canopy_strata[(patch_family[0].layers[layer + 1].strata[c])];
+						canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
+						canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
 															 canopy_subtarget[0].cs.live_stemc +
 															 canopy_subtarget[0].cs.dead_stemc;
+					}
 				}
 				else
 				{
