@@ -790,9 +790,7 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 						if (v->hierarchy_level == OF_HIERARCHY_LEVEL_ZONE) {
 							void *entity = determine_zone_entity(f->timestep, z, zone_acc_objs_to_reset);
 							mat_var = materialize_variable(v, entity);
-							// Not sure what to scale accumulated zone variables,
-							// so using the identity function for now (i.e., 1.0).
-							accum_materialized_variable(&mat_vars[var_num], &mat_var, 1.0);
+							accum_materialized_variable(&mat_vars[var_num], &mat_var, z->area);
 						}
 						var_num += 1;
 					}
