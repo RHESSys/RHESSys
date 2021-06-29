@@ -423,11 +423,11 @@ void	execute_tec(
 						command_line,
 						current_date);
 
-				if (command_line[0].salience_flag == 1) {
+//				if (command_line[0].salience_flag == 1) {
 					/* first determine if fire in 2, 5, 10km buffer of each WUI */
-					update_fire_in_WUI(
-						world[0].WUI_list);
-				}	
+//					update_fire_in_WUI(
+//						world[0].WUI_list);
+//				}	
 				}
 				
 				/*--------------------------------------------------------------*/
@@ -461,12 +461,12 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				Do yearly stuff.								*/
 				/*--------------------------------------------------------------*/
-				if (command_line[0].salience_flag == 1) {
+//				if (command_line[0].salience_flag == 1) {
 					/* update patch scale salience treatment probablities
 					after this year's fire has accumulated*/
-					update_salience(world[0].WUI_list); //MK move to yearly
-					reset_fire_in_WUI(world[0].WUI_list);//after salience is updated reset WUI fire areas
-				}	
+//					update_salience(world[0].WUI_list); //MK move to yearly
+//					reset_fire_in_WUI(world[0].WUI_list);//after salience is updated reset WUI fire areas
+//				}	
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/
