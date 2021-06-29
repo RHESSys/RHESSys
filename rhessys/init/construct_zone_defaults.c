@@ -141,7 +141,8 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].psen[P1HIGH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p1high", "%lf", 0.0, 1);
 		default_object_list[i].psen[P2HIGH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p2high", "%lf", 0.0, 1);
 		default_object_list[i].ravg_days= 		getDoubleParam(&paramCnt, &paramPtr, "ravg_days", "%lf", 6.0, 1);
-        default_object_list[i].precip_multiplier = getDoubleParam(&paramCnt, &paramPtr, "precip_multiplier", "%lf",-999, 1);
+    default_object_list[i].precip_multiplier = getDoubleParam(&paramCnt, &paramPtr, "precip_multiplier", "%lf",-999, 1);
+		printf("\n precipitation multiplier is %lf \n", default_object_list[i].precip_multiplier);
         /*--------------------------------------------------------------*/
         /* read in the searching distance and grid cell resolution      */
         /* this is for interpolation of climate data                    */

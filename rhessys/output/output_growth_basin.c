@@ -474,7 +474,7 @@ void	output_growth_basin(
 	acloss /= aarea;
 	anuptake /= aarea;
 	aNO3_throughfall /=aarea;
-	aninput /= aarea;
+	//aninput /= aarea; here is the problem I divid the area twice NREN
 	afertilizer_NO3 /= aarea;
 	afertilizer_NH4 /= aarea;
 	aunderstory_height /= aarea;
