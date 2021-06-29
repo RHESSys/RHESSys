@@ -279,10 +279,12 @@ struct patch_object_list {
 
 struct WUI_object {
 	int ID;
-	struct  patch_object_list *patches_dist2km;
-	struct  patch_object_list *patches_dist5km;
-	struct  patch_object_list *patches_dist10km;
-	double  fire_occurence[3];
+	struct  patch_object_list *patches_trt2km;//linked list of patches treated if 2km sal event triggered
+	struct  patch_object_list *patches_trt5km;//linked list of patches treated if 5 km sal event triggered
+	struct  patch_object_list *patches_trt10km;//linked list of patches treated if 10 km sal event triggered
+	double  fire_occurence[3]; // flag for whether salient fire has occurred this year, array of 3 (one for each dist). 
+	int ntrt[3];// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
+// This will then match the patch-level trt ord
 	struct WUI_object *next;
 	};
 
@@ -1673,6 +1675,14 @@ struct fuel_treatment_object  {
 /*----------------------------------------------------------*/
 /*      Define an patch object                              */      
 /*----------------------------------------------------------*/
+struct wui_dist_list
+{
+	int dist; // dist to wui, as simply 1, 5, 10 or 100 (where 100 is not near wui
+	int wui_id; // wui ID for this dist. To help ensure consistent ordering for the wuis
+	struct wui_dist_list *next;
+	struct wui_dist_list *prev; // to help with reordering if necessary
+};
+
 struct patch_object
 
         {
@@ -1959,7 +1969,10 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
-        };
+/******************* salience and fire misc**************/
+
+        struct wui_dist_list *wui_dist;
+         };
 
 /*----------------------------------------------------------*/
 /*      Define a patch family object                        */

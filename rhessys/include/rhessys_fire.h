@@ -84,7 +84,11 @@ struct fire_object
 	double understory_pet; //potential evapotranspiration of only the understory
 	double fire_size; // I think this would be the easiest way to transfer fire size to rhessys,and allow for an if fire_size>0 then calculate fire effects, otherwise don't bother; keep as 0 in general, and just fill in the first element in the grid as a placeholder
 						// returned as the number of pixels, should be converted to ha
-	//double *wui_dists;  this has to be a dynamically allocated array with nWUI from the fire default
+	int iter; // fire progression iteration. 0 if no fire, then iteration of fire
+        struct wui_dist_list *wui_dist;// dist to wui for this grid cell
+        struct wui_dist_list *sal_dist;// a placeholder to document whether the fire got within sal_dist of wui, dynamically allocated for each WUI. would be stored in [0][0] as in fire_size above
+ 
+ 
 	//struct node_fire_wui_dist *patch_wui_dist[3] // intended to be an array of 3 patch WUI linked lists					
 };	
 
