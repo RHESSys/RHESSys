@@ -116,6 +116,7 @@ private:
 	int BurnCells(int iter,GenerateRandom& rng); // runs through the vector of source cells for spread and tests neighbors
 	int testIgnition(int cur_row, int cur_col, GenerateRandom& rng); // to test whether the randomly chosen cell should ignite
 	double calc_pSpreadTest(int cur_row, int cur_col, int new_row, int new_col,double fire_dir); // calculate p_spread based on conditions of the pixel
+	double calc_FireSuppression(double pBurn, int cur_row, int cur_col,double fire_dir);
 	void calc_FireEffects(int new_row,int new_col, int iter,double cur_pBurn); // updates the grid to return a measure of fire effects, in this case the p_spread value
 	int TestFireStop(int numBurnedThisIter,int test_once,int borders[4]); // test whether conditions are met for stopping the fire
 	LocalFireGrid localFireGrid_;	// 2-D array of pixels for the current landscape, FireNodes above

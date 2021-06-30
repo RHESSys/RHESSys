@@ -286,6 +286,7 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 	int numBurnedThisIter=0;
 	int test_once=0;
 	double cur_pBurn;
+	double suppression_pBurn;
 
 	std::vector<BurnedCells> burnedThisTime;
 
@@ -329,12 +330,22 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 			if(test_burn==1&&fireGrid_[new_row][new_col].burn==0) // only test if it is not already burned, and not beyond the border
 			{
 				test_once=test_once+1;
-
 				cur_pBurn=calc_pSpreadTest(firstBurned_[x].rowId, firstBurned_[x].colId, new_row, new_col, fire_dir[i]); // mk: calculate the spread probability for this combination of idx/idy and new_idx/new_idy
-				burned = IsBurned(rng, cur_pBurn); // mk: need to merge IsBurned with BurnTest
+				if(iter >= def_.suppression_delay)
+				{
+					if(def_.fire_verbose==1)
+						cout<<"iter: "<<iter<<"\n";
+					suppression_pBurn=calc_FireSuppression(cur_pBurn, firstBurned_[x].rowId, firstBurned_[x].colId, fire_dir[i]);
+					burned = IsBurned(rng, suppression_pBurn);
+				}
+				else
+				{
+					burned = IsBurned(rng, cur_pBurn);
+				}
+				
 				if(burned==1)	// if 1 is returned, then burn the cell and update the new linked list of burned cells
 				{
-					calc_FireEffects(new_row, new_col,iter,cur_pBurn);
+					calc_FireEffects(new_row, new_col,iter,cur_pBurn);  //  The original (non-suppression) pspread values are passed to fire effects. May need to make additional output containing suppression pspread values. 
 
 					numBurnedThisIter=numBurnedThisIter+1; // update the number burned
 					BurnedCells bc = {new_row, new_col};
@@ -351,6 +362,67 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 	stop=TestFireStop(numBurnedThisIter,test_once,currentBorders);
 
 	return stop;
+}
+
+
+/******************** calc_FireSuppression **********************************/
+/* This function calculates how much pspread is reduced due to fire			*/
+/* suppression. Suppression efforts are provided by a suppression_magnitude */
+/* parameter. Suppression effectiveness is then reduced if winds are higher	*/
+/*																			*/
+/* called by BurnCells()													*/
+/****************************************************************************/
+double LandScape::calc_FireSuppression(double pBurn, int cur_row, int cur_col,double fire_dir)
+{
+	double p_winddir,winddir,windspeed,k1wind;
+	double suppression_max_effectiveness;
+	double suppression_pBurn_multiplier;
+	double suppression_applied;
+	double suppression_pBurn;
+
+	if(cur_fire_.winddir>=0)
+	{
+		winddir=cur_fire_.winddir;
+		if(cur_fire_.windspeed<=def_.suppression_windmax)
+			windspeed=cur_fire_.windspeed/def_.suppression_windmax;
+		else
+			windspeed=1;
+	}
+	else
+	{
+		winddir=fireGrid_[cur_row][cur_col].wind_direction;
+		cur_fire_.windspeed=fireGrid_[cur_row][cur_col].wind;
+		if(cur_fire_.windspeed<=def_.suppression_windmax)
+			windspeed=cur_fire_.windspeed/def_.suppression_windmax;
+		else
+			windspeed=1;
+	}
+	k1wind=def_.suppression_winddir_k1*windspeed;
+	p_winddir=def_.suppression_winddir_k2+k1wind *(1+cos(fire_dir-winddir));
+	if(p_winddir>1)
+		p_winddir=1;
+	if(p_winddir<0)
+		p_winddir=0;
+
+	suppression_max_effectiveness = -def_.suppression_effectiveness*log(p_winddir);			//Maximum theoretical suppression effort (reflected as a reduction in pspread) for a given wind speed.
+	if(def_.suppression_magnitude >= suppression_max_effectiveness)    // The amount of suppression applied (suppression_magnitude) can be restricted by suppression_max_effectiveness if the theoretical limit is lower than suppression_magnitude.
+		suppression_applied=suppression_max_effectiveness - 0.000001;
+	else
+		suppression_applied=def_.suppression_magnitude;
+	suppression_pBurn_multiplier=1/(1-(suppression_applied/suppression_max_effectiveness));    // The ratio between the theoretical suppression effort and the applied suppression.
+	suppression_pBurn=suppression_pBurn_multiplier * (pBurn - suppression_applied);			// Adjust pSpread by the multiplier 
+	// # Set some threshold limits
+  	if(pBurn >= suppression_max_effectiveness)
+	  	suppression_pBurn=pBurn;
+	if(suppression_pBurn<0)
+		suppression_pBurn=0;
+	if(suppression_pBurn>1)
+		suppression_pBurn=1;
+
+	if(def_.fire_verbose==1)
+		cout<<"suppression test, pburn: "<<pBurn<<", suppression_pBurn: "<<suppression_pBurn<<", wind: "<<p_winddir<<"\n";
+
+	return suppression_pBurn;
 }
 
 
@@ -431,7 +503,7 @@ void LandScape::initializeCurrentFire(GenerateRandom& rng)
 	}
 	if(def_.fire_verbose==1)
 		cout<<"pvm here?: "<<def_.p_rvm<<"\n";
-	
+
 	if(def_.fire_verbose==1)
 		cout<<"wind speed: "<<fire.windspeed<<"\nwinddir: "<<fire.winddir<<"\n";
 	

@@ -52,6 +52,12 @@ struct fire_default {
 	int include_wui; //0 for no WUI grid, 1 for wui grid--0 by default
 	int fire_size_name; // value to append to FireSizes.txt filename. This file is appended to every time WMFire is called. defaults to 1
 	double wind_shift; // shifts the wind direction distribution so the center is pi (splits the modes)
+	int suppression_delay; // number of fire spread iterations before suppression starts. Analogous to delay in fire resources on a fire. A very high value (e.g. 10000) will turn off suppression.
+	double suppression_magnitude; // maximum reduction in ps due to fire suppression. Theoretical range from 0 (no suppression) to 1 (complete suppression).
+	double suppression_effectiveness; // reduces effectiveness of fire suppression with higher relative (suppression) wind speed. For high parameter values (>2), suppression is more effective. For low values (<0.5), suppression is less effective.
+	double suppression_winddir_k1; // the modifying constant for wind direction, depending on windspeed
+	double suppression_winddir_k2; // intercept for wind direction
+	double suppression_windmax; // maximum wind speed to calculate relative windspeed for fire suppression effectiveness
 //	char **patch_file_name;
 };
 

@@ -155,13 +155,22 @@ struct fire_default *construct_fire_defaults(
 		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
 		default_object_list[i].include_wui=getIntParam(&paramCnt, &paramPtr, "include_wui", "%d", 0, 1);
 		printf("include_wui: %d\n",default_object_list[i].include_wui);
-    		default_object_list[i].fire_size_name=getIntParam(&paramCnt, &paramPtr, "fire_size_name", "%d", 0, 1);
-                printf("fire_size_name: %d\n",default_object_list[i].fire_size_name);
+    	default_object_list[i].fire_size_name=getIntParam(&paramCnt, &paramPtr, "fire_size_name", "%d", 0, 1);
+        printf("fire_size_name: %d\n",default_object_list[i].fire_size_name);
 		default_object_list[i].wind_shift = getDoubleParam(&paramCnt, &paramPtr, "wind_shift", "%lf", 0, 1);
-                printf("wind_shift: %lf\n",default_object_list[i].wind_shift);
-
-
-
+        printf("wind_shift: %lf\n",default_object_list[i].wind_shift);
+		default_object_list[i].suppression_delay = getIntParam(&paramCnt, &paramPtr, "suppression_delay", "%d", 10000, 1);
+        printf("suppression_delay: %d\n",default_object_list[i].suppression_delay);
+		default_object_list[i].suppression_magnitude = getDoubleParam(&paramCnt, &paramPtr, "suppression_magnitude", "%lf", 0.2, 1);
+        printf("suppression_magnitude: %lf\n",default_object_list[i].suppression_magnitude);		
+		default_object_list[i].suppression_effectiveness = getDoubleParam(&paramCnt, &paramPtr, "suppression_effectiveness", "%lf", 1, 1);
+        printf("suppression_effectiveness: %lf\n",default_object_list[i].suppression_effectiveness);
+		default_object_list[i].suppression_winddir_k1=getDoubleParam(&paramCnt, &paramPtr, "suppression_winddir_k1", "%lf", 0.5, 1);
+		printf("suppression_winddir_k1: %lf\n",default_object_list[i].suppression_winddir_k1);
+ 		default_object_list[i].suppression_winddir_k2=getDoubleParam(&paramCnt, &paramPtr, "suppression_winddir_k2", "%lf", 0, 1);
+		printf("suppression_winddir_k2: %lf\n",default_object_list[i].suppression_winddir_k2);		
+		default_object_list[i].suppression_windmax = getDoubleParam(&paramCnt, &paramPtr, "suppression_windmax", "%lf", 10, 1);
+        printf("suppression_windmax: %lf\n",default_object_list[i].suppression_windmax);
  
 /*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
