@@ -84,6 +84,8 @@ void	output_growth_basin(
 	double acwdc_to_atoms, aoverstory_biomassc_mortality, aoverstory_leafc_mortality, aoverstory_stemc_mortality;
 	double aunderstory_biomassc_consumed, aunderstory_leafc_consumed, aunderstory_stemc_consumed, aburn;
 	double alitterNO3stored, aNO3_throughfall, anvolatilized_snk;
+	double aprecip, aplant_potential_ndem, apotential_immob;
+	double alitr_hr, alitrc_to_soil;
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
@@ -160,6 +162,8 @@ void	output_growth_basin(
     aoverstory_biomassc_consumed = 0.0; aoverstory_leafc_consumed = 0.0, aoverstory_stemc_consumed = 0.0;
 	aoverstory_biomassc_mortality = 0.0, aoverstory_leafc_mortality = 0.0, aoverstory_stemc_mortality = 0.0;
 	aunderstory_biomassc_consumed = 0.0, aunderstory_leafc_consumed = 0.0, aunderstory_stemc_consumed = 0.0;
+	aprecip = 0.0, aplant_potential_ndem = 0.0, apotential_immob = 0.0;
+	alitr_hr = 0.0, alitrc_to_soil = 0.0;
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
@@ -167,11 +171,18 @@ void	output_growth_basin(
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			zone_area = 0.0;
-				aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone[0].area;
+			aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone[0].area;
+			aprecip += (zone[0].rain_hourly_total+zone[0].rain+zone[0].snow)*zone[0].area; //NREN
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
 
-                apro_abc_litr += patch[0].prop_litrc_above_ground * patch[0].area;
+				//NREN
+				//aprecip += patch[0].precipitation; patch[0].cdf.litterc_to_atmos*1000.0, patch[0].cdf.litterc_to_soil*1000.0
+				alitr_hr += patch[0].cdf.litterc_to_atmos * patch[0].area;
+				alitrc_to_soil +=  patch[0].cdf.litterc_to_soil * patch[0].area;
+				aplant_potential_ndem += patch[0].ndf.plant_potential_ndemand * patch[0].area;
+				apotential_immob += patch[0].ndf.potential_immob * patch[0].area; //NREN
+        apro_abc_litr += patch[0].prop_litrc_above_ground * patch[0].area;
 				alitrn += (patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n
 					+ patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n)
 					* patch[0].area;
@@ -402,7 +413,7 @@ void	output_growth_basin(
 				hill_area += patch[0].area;
 				zone_area += patch[0].area; //NREN
 			}
-			aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone_area;//NREN
+		//	aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone_area;//NREN
 		}
 		hgwNO3 += hillslope[0].gw.NO3 * hill_area;
 		hgwNH4 += hillslope[0].gw.NH4 * hill_area;
@@ -475,6 +486,12 @@ void	output_growth_basin(
 	anuptake /= aarea;
 	aNO3_throughfall /=aarea;
 	//aninput /= aarea; here is the problem I divid the area twice NREN
+	aninput /= zone_area;
+	aprecip /= zone_area; //NREN
+	alitr_hr /= aarea;
+	alitrc_to_soil /= aarea;
+	aplant_potential_ndem /= aarea;
+	apotential_immob /= aarea;
 	afertilizer_NO3 /= aarea;
 	afertilizer_NH4 /= aarea;
 	aunderstory_height /= aarea;
@@ -526,7 +543,7 @@ void	output_growth_basin(
 	apro_abc_litr /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -618,7 +635,8 @@ void	output_growth_basin(
 		aunderstory_resp,
 		aunderstory_rootdepth,
 		aunderstory_npp,
-		apro_abc_litr
+		apro_abc_litr, aprecip, aplant_potential_ndem, apotential_immob,
+		alitr_hr*1000, alitrc_to_soil*1000
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/

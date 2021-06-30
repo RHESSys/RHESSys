@@ -93,7 +93,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
 
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -181,7 +181,10 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"total_redneedlen",
 		"deadrootc_beetle",
 		"deadrootn_beetle",
-		"understory_gpsn","understory_resp", "understory_rootdepth", "understory_npp", "ratio_abg_litter");
+		"understory_gpsn","understory_resp", "understory_rootdepth", "understory_npp", "ratio_abg_litter",
+		"precip", "plant_potential_ndem", "potentail_immob",
+		"litr_hr", "litrc_to_soil"
+	);
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
@@ -285,7 +288,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"day",
 		"month",
 		"year",
@@ -340,7 +343,10 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"nfix",
 		"grazingC",
 		"area",
-		"fpi", "sminn", "nitrate", "mineralized", "plant_potential_ndemand", "potential_immob", "perc_inroot", "mean_root_depth"
+		"fpi", "sminn", "nitrate", "mineralized", "plant_potential_ndemand", "potential_immob", "perc_inroot", "mean_root_depth",
+		"canopy_NO3_stored", "litter_NO3_stored", "NO3_throughfall",
+		"nitrification", "streamNO3_from_surface", "streamNO3_from_sub",
+		"litr_hr", "litrc_to_soil", "soil_hr_pure"
 		);
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
