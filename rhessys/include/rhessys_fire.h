@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAXSTR 200
+//#define MAXSTR 200
 
 #ifdef __cplusplus
 extern "C" {

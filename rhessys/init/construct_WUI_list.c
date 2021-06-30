@@ -36,6 +36,7 @@ struct WUI_object *construct_WUI_list(
       struct command_line_object  *command_line)
 													  
 {
+printf("in construct_wui\n");
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
@@ -57,18 +58,19 @@ struct WUI_object *construct_WUI_list(
         struct hillslope_object *hillslope;
         struct patch_object *patch;
         struct patch_family_object *patch_family;
-
+printf("loc 1\n");
 	struct WUI_object *WUI_list;	
 	struct WUI_object *WUI_ptr;	
 	struct wui_dist_list *prev_wui_dist_list_ptr;
 	struct wui_dist_list *next_wui_dist_list_ptr;
 	FILE *WUI_file;
- 
+ printf("loc2\n");
 	struct patch_object_list *patches_trt2km_ptr;
+printf("loc2a\n");
 	struct patch_object_list *patches_trt5km_ptr;
+printf("loc2b\n");
 	struct patch_object_list *patches_trt10km_ptr;
-
-
+printf("\nloc3\n ");
 	/*--------------------------------------------------------------*/
         /*  Try to open the WUI file in read mode.                    */
         /*--------------------------------------------------------------*/
@@ -96,7 +98,14 @@ struct WUI_object *construct_WUI_list(
 			&trt_ord5,
 			&trt_ord10);
 
-
+printf("\nIn read WUI file %d %d %d %d %d %d %d ",
+                        line_n,
+                        patch_ID,
+                        WUI_ID,
+                        wui_dist,
+                        trt_ord2,
+                        trt_ord5,
+                        trt_ord10);
 	/* have we created any WUI's yet?, if not create one */
 	if (n_WUI == 0) {
 	WUI_list = (struct WUI_object *) malloc(sizeof(struct WUI_object));
@@ -125,6 +134,7 @@ struct WUI_object *construct_WUI_list(
 		}
 	}
 	}
+printf("loc2 ");
 
 	/* couldn't find an existing WUI so make a new one */
 	if ((WUI_ptr->ID != WUI_ID)) {
@@ -142,6 +152,7 @@ struct WUI_object *construct_WUI_list(
 	h=0; z=0; pf=0; p=0; b=0;
 	fnd = 0;
 	/* find the patch that this WUI is refering too */
+printf("loc3 ");
 
          while ( (fnd == 0) && (b >= 0) && (b < world[0].num_basin_files)) { 
 		basin = world[0].basins[b];		
@@ -177,6 +188,8 @@ struct WUI_object *construct_WUI_list(
 	}
 
 
+printf("loc4 ");
+
 	/* now add this to the appropriate patch list for the current WUI */
 	if (trt_ord2 > 0) {//if available for treatment for a 2 km salience event for this WUI
 
@@ -187,12 +200,14 @@ struct WUI_object *construct_WUI_list(
 				WUI_ptr->patches_trt2km->patch = patch_family[0].patches[0];;
 				patches_trt2km_ptr = WUI_ptr->patches_trt2km;
 				/* add all the patches in the family */
+printf("loc4a ");
 				for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
 					patches_trt2km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
 					patches_trt2km_ptr = patches_trt2km_ptr->next;
 					patches_trt2km_ptr->patch = patch_family[0].patches[i];
 					patches_trt2km_ptr->next = NULL;
 					}
+printf("loc4b ");
 			} 
 			else {
 				WUI_ptr->patches_trt2km->patch = patch;
@@ -219,7 +234,7 @@ struct WUI_object *construct_WUI_list(
 			}
 			}
 	}
-
+printf("loc5 ");
 
 	if (trt_ord5 > 0) { //if available for treatment for a 10 km salience event for this WUI
 
@@ -262,7 +277,7 @@ struct WUI_object *construct_WUI_list(
 			}
 			}
 	}
-
+printf("loc6\n");
 
 	if (trt_ord10 > 0) { //if available for treatment for a 10 km salience event for this WUI
 
@@ -307,7 +322,7 @@ struct WUI_object *construct_WUI_list(
 		}
 		
 	}
-
+printf("loc7\n");
 	/* and now update the wuiDist for this patch for this wui*/
 	if(patch_family[0].patches[0]->wui_dist==NULL)// first wui for this patch family
 	{
@@ -450,8 +465,9 @@ struct WUI_object *construct_WUI_list(
 			next_wui_dist_list_ptr->prev= prev_wui_dist_list_ptr;*/
 			
 		}
- 
 	}
+fclose(WUI_file);
+printf("Closed file\n");
 /* echo back */
 
 	WUI_ptr = WUI_list;

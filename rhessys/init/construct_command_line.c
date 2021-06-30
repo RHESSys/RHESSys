@@ -302,6 +302,7 @@ struct	command_line_object	*construct_command_line(
 				/*-------------------------------*/
 				strncpy(command_line[0].WUI_filename, main_argv[i], FILEPATH_LEN);
 				i++;
+printf("%s ",command_line[0].WUI_filename);
 			}/* end if */
 
 
