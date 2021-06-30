@@ -83,6 +83,7 @@ struct fire_object
 	double understory_et; //evapotranspiration of only the understory
 	double understory_pet; //potential evapotranspiration of only the understory
 	double fire_size; // I think this would be the easiest way to transfer fire size to rhessys,and allow for an if fire_size>0 then calculate fire effects, otherwise don't bother; keep as 0 in general, and just fill in the first element in the grid as a placeholder
+	int iter; // iteration for fire progression for burned cells. -1 if unburned
 						// returned as the number of pixels, should be converted to ha
 	int iter; // fire progression iteration. 0 if no fire, then iteration of fire
         struct wui_dist_list *wui_dist;// dist to wui for this grid cell
