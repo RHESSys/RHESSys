@@ -279,9 +279,9 @@ struct patch_object_list {
 
 struct WUI_object {
 	int ID;
-	struct  patch_object_list *patches_trt2km;//linked list of patches treated if 2km sal event triggered
-	struct  patch_object_list *patches_trt5km;//linked list of patches treated if 5 km sal event triggered
-	struct  patch_object_list *patches_trt10km;//linked list of patches treated if 10 km sal event triggered
+	struct  patch_object_list *patches_dist2km;//linked list of patches treated if 2km sal event triggered
+	struct  patch_object_list *patches_dist5km;//linked list of patches treated if 5 km sal event triggered
+	struct  patch_object_list *patches_dist10km;//linked list of patches treated if 10 km sal event triggered
 	double  fire_occurence[3]; // flag for whether salient fire has occurred this year, array of 3 (one for each dist). 
 	int ntrt[3];// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
 // This will then match the patch-level trt ord

@@ -36,7 +36,6 @@ struct WUI_object *construct_WUI_list(
       struct command_line_object  *command_line)
 													  
 {
-printf("in construct_wui\n");
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
@@ -49,8 +48,7 @@ printf("in construct_wui\n");
 	int		i, h,z,pf,p,b;
 	int fnd, n_WUI;
 	int		line_n;
-	int		patch_ID, WUI_ID, wui_dist,trt_ord2,trt_ord5,trt_ord10;
-	int stop_flag;
+	int		patch_ID, WUI_ID, wui_dist;
 	double dist;
 
         struct basin_object *basin;
@@ -58,19 +56,17 @@ printf("in construct_wui\n");
         struct hillslope_object *hillslope;
         struct patch_object *patch;
         struct patch_family_object *patch_family;
-printf("loc 1\n");
+
 	struct WUI_object *WUI_list;	
 	struct WUI_object *WUI_ptr;	
-	struct wui_dist_list *prev_wui_dist_list_ptr;
-	struct wui_dist_list *next_wui_dist_list_ptr;
+
 	FILE *WUI_file;
- printf("loc2\n");
-	struct patch_object_list *patches_trt2km_ptr;
-printf("loc2a\n");
-	struct patch_object_list *patches_trt5km_ptr;
-printf("loc2b\n");
-	struct patch_object_list *patches_trt10km_ptr;
-printf("\nloc3\n ");
+ 
+	struct patch_object_list *patches_dist2km_ptr;
+	struct patch_object_list *patches_dist5km_ptr;
+	struct patch_object_list *patches_dist10km_ptr;
+
+
 	/*--------------------------------------------------------------*/
         /*  Try to open the WUI file in read mode.                    */
         /*--------------------------------------------------------------*/
@@ -86,35 +82,23 @@ printf("\nloc3\n ");
 
 	/* read through file line by line */
 	while (!feof(WUI_file)) {
-	trt_ord2=-1;
-	trt_ord5=-1;
-	trt_ord10=-1; // initialize treatment order as -1
-	fscanf(WUI_file, "%d %d %d %d %d %d %d",
+	fscanf(WUI_file, "%d %d %d %lf %d",
 			&line_n,
 			&patch_ID,
 			&WUI_ID,
-			&wui_dist,
-			&trt_ord2,
-			&trt_ord5,
-			&trt_ord10);
+			&dist,
+			&wui_dist);
 
-printf("\nIn read WUI file %d %d %d %d %d %d %d ",
-                        line_n,
-                        patch_ID,
-                        WUI_ID,
-                        wui_dist,
-                        trt_ord2,
-                        trt_ord5,
-                        trt_ord10);
+
 	/* have we created any WUI's yet?, if not create one */
 	if (n_WUI == 0) {
 	WUI_list = (struct WUI_object *) malloc(sizeof(struct WUI_object));
 	WUI_list->ID = WUI_ID;
 	n_WUI += 1;
 	WUI_ptr = WUI_list;
-	WUI_ptr->patches_trt2km = NULL;
-	WUI_ptr->patches_trt5km = NULL;
-	WUI_ptr->patches_trt10km = NULL;
+	WUI_ptr->patches_dist2km = NULL;
+	WUI_ptr->patches_dist5km = NULL;
+	WUI_ptr->patches_dist10km = NULL;
 	}
 	else {
 	/* try to an existing WUI  */
@@ -134,16 +118,15 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d ",
 		}
 	}
 	}
-printf("loc2 ");
 
 	/* couldn't find an existing WUI so make a new one */
 	if ((WUI_ptr->ID != WUI_ID)) {
 		WUI_ptr->next = (struct WUI_object *)malloc(sizeof(struct WUI_object));
 		WUI_ptr = WUI_ptr->next;
 		WUI_ptr->ID = WUI_ID;
-		WUI_ptr->patches_trt2km = NULL;
-		WUI_ptr->patches_trt5km = NULL;
-		WUI_ptr->patches_trt10km = NULL;
+		WUI_ptr->patches_dist2km = NULL;
+		WUI_ptr->patches_dist5km = NULL;
+		WUI_ptr->patches_dist10km = NULL;
 		n_WUI +=1;
 		} 
 	
@@ -152,7 +135,6 @@ printf("loc2 ");
 	h=0; z=0; pf=0; p=0; b=0;
 	fnd = 0;
 	/* find the patch that this WUI is refering too */
-printf("loc3 ");
 
          while ( (fnd == 0) && (b >= 0) && (b < world[0].num_basin_files)) { 
 		basin = world[0].basins[b];		
@@ -188,305 +170,157 @@ printf("loc3 ");
 	}
 
 
-printf("loc4 ");
-
 	/* now add this to the appropriate patch list for the current WUI */
-	if (trt_ord2 > 0) {//if available for treatment for a 2 km salience event for this WUI
+	if (wui_dist == 2) {
 
 		/* first in this list so allocate room */
-		if (WUI_ptr->patches_trt2km == NULL) {
-			WUI_ptr->patches_trt2km = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+		if (WUI_ptr->patches_dist2km == NULL) {
+			WUI_ptr->patches_dist2km = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
 			if (command_line[0].multiscale_flag == 1) {
-				WUI_ptr->patches_trt2km->patch = patch_family[0].patches[0];;
-				patches_trt2km_ptr = WUI_ptr->patches_trt2km;
+				WUI_ptr->patches_dist2km->patch = patch_family[0].patches[0];;
+				patches_dist2km_ptr = WUI_ptr->patches_dist2km;
 				/* add all the patches in the family */
-printf("loc4a ");
 				for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
-					patches_trt2km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-					patches_trt2km_ptr = patches_trt2km_ptr->next;
-					patches_trt2km_ptr->patch = patch_family[0].patches[i];
-					patches_trt2km_ptr->next = NULL;
+					patches_dist2km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+					patches_dist2km_ptr = patches_dist2km_ptr->next;
+					patches_dist2km_ptr->patch = patch_family[0].patches[i];
+					patches_dist2km_ptr->next = NULL;
 					}
-printf("loc4b ");
 			} 
 			else {
-				WUI_ptr->patches_trt2km->patch = patch;
-				WUI_ptr->patches_trt2km->next = NULL;
-				patches_trt2km_ptr = WUI_ptr->patches_trt2km;
+				WUI_ptr->patches_dist2km->patch = patch;
+				WUI_ptr->patches_dist2km->next = NULL;
+				patches_dist2km_ptr = WUI_ptr->patches_dist2km;
 			 }
 		}
 		/* list exists so add additional patches */
 		else {
 			if (command_line[0].multiscale_flag == 1) {
 				for (i=0; i < patch_family[0].num_patches_in_fam; i++) {
-					patches_trt2km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-					patches_trt2km_ptr = patches_trt2km_ptr->next;
-					patches_trt2km_ptr->patch = patch_family[0].patches[i];
-					patches_trt2km_ptr->next = NULL;
+					patches_dist2km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+					patches_dist2km_ptr = patches_dist2km_ptr->next;
+					patches_dist2km_ptr->patch = patch_family[0].patches[i];
+					patches_dist2km_ptr->next = NULL;
 					}
 			}
 			else {
 			/* add all the patches in the family */
-			patches_trt2km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-			patches_trt2km_ptr = patches_trt2km_ptr->next;
-			patches_trt2km_ptr->patch = patch;
-			patches_trt2km_ptr->next = NULL;
+			patches_dist2km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+			patches_dist2km_ptr = patches_dist2km_ptr->next;
+			patches_dist2km_ptr->patch = patch;
+			patches_dist2km_ptr->next = NULL;
 			}
 			}
 	}
-printf("loc5 ");
 
-	if (trt_ord5 > 0) { //if available for treatment for a 10 km salience event for this WUI
+
+	if (wui_dist == 5) {
 
 		/* first in this list so allocate room */
-		if (WUI_ptr->patches_trt5km == NULL) {
-			WUI_ptr->patches_trt5km = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+		if (WUI_ptr->patches_dist5km == NULL) {
+			WUI_ptr->patches_dist5km = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
 			if (command_line[0].multiscale_flag == 1) {
-				WUI_ptr->patches_trt5km->patch = patch_family[0].patches[0];;
-				patches_trt5km_ptr = WUI_ptr->patches_trt5km;
+				WUI_ptr->patches_dist5km->patch = patch_family[0].patches[0];;
+				patches_dist5km_ptr = WUI_ptr->patches_dist5km;
 				/* add all the patches in the family */
 				for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
-					patches_trt5km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-					patches_trt5km_ptr = patches_trt5km_ptr->next;
-					patches_trt5km_ptr->patch = patch_family[0].patches[i];
-					patches_trt5km_ptr->next = NULL;
+					patches_dist5km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+					patches_dist5km_ptr = patches_dist5km_ptr->next;
+					patches_dist5km_ptr->patch = patch_family[0].patches[i];
+					patches_dist5km_ptr->next = NULL;
 					}
 			} 
 			else {
-				WUI_ptr->patches_trt5km->patch = patch;
-				WUI_ptr->patches_trt5km->next = NULL;
-				patches_trt5km_ptr = WUI_ptr->patches_trt5km;
+				WUI_ptr->patches_dist5km->patch = patch;
+				WUI_ptr->patches_dist5km->next = NULL;
+				patches_dist5km_ptr = WUI_ptr->patches_dist5km;
 			 }
 		}
 		/* list exists so add additional patches */
 		else {
 			if (command_line[0].multiscale_flag == 1) {
 				for (i=0; i < patch_family[0].num_patches_in_fam; i++) {
-					patches_trt5km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-					patches_trt5km_ptr = patches_trt5km_ptr->next;
-					patches_trt5km_ptr->patch = patch_family[0].patches[i];
-					patches_trt5km_ptr->next = NULL;
+					patches_dist5km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+					patches_dist5km_ptr = patches_dist5km_ptr->next;
+					patches_dist5km_ptr->patch = patch_family[0].patches[i];
+					patches_dist5km_ptr->next = NULL;
 					}
 			}
 			else {
 			/* add all the patches in the family */
-			patches_trt5km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-			patches_trt5km_ptr = patches_trt5km_ptr->next;
-			patches_trt5km_ptr->patch = patch;
-			patches_trt5km_ptr->next = NULL;
+			patches_dist5km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+			patches_dist5km_ptr = patches_dist5km_ptr->next;
+			patches_dist5km_ptr->patch = patch;
+			patches_dist5km_ptr->next = NULL;
 			}
 			}
 	}
-printf("loc6\n");
 
-	if (trt_ord10 > 0) { //if available for treatment for a 10 km salience event for this WUI
+
+	if (wui_dist == 10) {
 
 		/* first in this list so allocate room */
-		if (WUI_ptr->patches_trt10km == NULL) {
-			WUI_ptr->patches_trt10km = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+		if (WUI_ptr->patches_dist10km == NULL) {
+			WUI_ptr->patches_dist10km = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
 			if (command_line[0].multiscale_flag == 1) {
-				WUI_ptr->patches_trt10km->patch = patch_family[0].patches[0];;
-				patches_trt10km_ptr = WUI_ptr->patches_trt10km;
+				WUI_ptr->patches_dist10km->patch = patch_family[0].patches[0];;
+				patches_dist10km_ptr = WUI_ptr->patches_dist10km;
 				/* add all the patches in the family */
 				for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
-					patches_trt10km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-					patches_trt10km_ptr = patches_trt10km_ptr->next;
-					patches_trt10km_ptr->patch = patch_family[0].patches[i];
-					patches_trt10km_ptr->next = NULL;
+					patches_dist10km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+					patches_dist10km_ptr = patches_dist10km_ptr->next;
+					patches_dist10km_ptr->patch = patch_family[0].patches[i];
+					patches_dist10km_ptr->next = NULL;
 					}
 			} 
 			else {
-				WUI_ptr->patches_trt10km->patch = patch;
-				WUI_ptr->patches_trt10km->next = NULL;
-				patches_trt10km_ptr = WUI_ptr->patches_trt10km;
+				WUI_ptr->patches_dist10km->patch = patch;
+				WUI_ptr->patches_dist10km->next = NULL;
+				patches_dist10km_ptr = WUI_ptr->patches_dist10km;
 			 }
 		}
 		/* list exists so add additional patches */
 		else {
 			if (command_line[0].multiscale_flag == 1) {
 				for (i=0; i < patch_family[0].num_patches_in_fam; i++) {
-					patches_trt10km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-					patches_trt10km_ptr = patches_trt10km_ptr->next;
-					patches_trt10km_ptr->patch = patch_family[0].patches[i];
-					patches_trt10km_ptr->next = NULL;
+					patches_dist10km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+					patches_dist10km_ptr = patches_dist10km_ptr->next;
+					patches_dist10km_ptr->patch = patch_family[0].patches[i];
+					patches_dist10km_ptr->next = NULL;
 					}
 			}
 			else {
 			/* add all the patches in the family */
-			patches_trt10km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-			patches_trt10km_ptr = patches_trt10km_ptr->next;
-			patches_trt10km_ptr->patch = patch;
-			patches_trt10km_ptr->next = NULL;
+			patches_dist10km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+			patches_dist10km_ptr = patches_dist10km_ptr->next;
+			patches_dist10km_ptr->patch = patch;
+			patches_dist10km_ptr->next = NULL;
 			}
-		}
-		}
+			}
+	}
 		
-	}
-printf("loc7\n");
-	/* and now update the wuiDist for this patch for this wui*/
-	if(patch_family[0].patches[0]->wui_dist==NULL)// first wui for this patch family
-	{
-		patch_family[0].patches[0]->wui_dist=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
-		patch_family[0].patches[0]->wui_dist->dist=wui_dist;
-		 patch_family[0].patches[0]->wui_dist->wui_id=WUI_ID;
-		patch_family[0].patches[0]->wui_dist->next=NULL;
-		 patch_family[0].patches[0]->wui_dist->prev=NULL;
-		for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
-		        patch_family[0].patches[i]->wui_dist=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
-        	        patch_family[0].patches[i]->wui_dist->dist=wui_dist;
-                 	patch_family[0].patches[i]->wui_dist->wui_id=WUI_ID;
- 	                patch_family[0].patches[i]->wui_dist->next=NULL;
-			patch_family[0].patches[i]->wui_dist->prev=NULL;
-
-		}
-
-	}
-	else // find the end of the list and make a new entry. Make sure it's in the right order
-	{
-		prev_wui_dist_list_ptr=patch_family[0].patches[0]->wui_dist;
-		stop_flag=1; // initialize as 1
-		if(prev_wui_dist_list_ptr->next!=NULL)
-		{
-			if(prev_wui_dist_list_ptr->wui_id<WUI_ID)
-			{
-				stop_flag=0; // then find its place in the list
-			}
-			else
-			{
-				stop_flag=2; // then we have to insert the new one before this one in the list
-			}
-		}
-
-//		while(prev_wui_dist_list_ptr->next!=NULL)
-		while(stop_flag==0)
-		{
-			if(prev_wui_dist_list_ptr->next==NULL)
-			{
-				stop_flag=1;
-			}
-			else
-			{
-				prev_wui_dist_list_ptr=prev_wui_dist_list_ptr->next;
-				if(prev_wui_dist_list_ptr->wui_id>WUI_ID)
-				{
-					stop_flag=2;
-				}
-			}
-		}
-		next_wui_dist_list_ptr=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
-                next_wui_dist_list_ptr->dist=wui_dist;
-                next_wui_dist_list_ptr->wui_id=WUI_ID;
-     // Now are we putting it at the end of the list (stop_flag=1), or do we have to insert it?
-     		if(stop_flag==1) // put it at the end of the list
-		{
-			next_wui_dist_list_ptr->next=NULL;
-			next_wui_dist_list_ptr->prev= prev_wui_dist_list_ptr;
-			prev_wui_dist_list_ptr->next= next_wui_dist_list_ptr;
-		}
-		else // insert it between the prev-->prev and the prev
-		{
-			if(prev_wui_dist_list_ptr->prev!=NULL) //not the first in the list
-			{
-				 prev_wui_dist_list_ptr->prev->next= next_wui_dist_list_ptr; // then point its previous one to this one
-				 next_wui_dist_list_ptr->prev= prev_wui_dist_list_ptr->prev; // and point this one to it backwards
-			}
-			else // prev is first in list, so make this one first
-			{
-				 next_wui_dist_list_ptr->prev=NULL;
-			}
-			 prev_wui_dist_list_ptr->prev= next_wui_dist_list_ptr;// regardless, this one goes before the prev one and don't change the next
-			 next_wui_dist_list_ptr->next= prev_wui_dist_list_ptr;
-		}
-                for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
-	                prev_wui_dist_list_ptr=patch_family[0].patches[i]->wui_dist;
-	                stop_flag=1; // initialize as 1
-        	        if(prev_wui_dist_list_ptr->next!=NULL)
-                	{
-                        	if(prev_wui_dist_list_ptr->wui_id<WUI_ID)
-	                        {
-        	                        stop_flag=0; // then find its place in the list
-                	        }
-	                        else
-        	                {
-                	                stop_flag=2; // then we have to insert the new one before this one in the list
-                        	}
-	                }
-	                while(stop_flag==0)
-        	        {
-                	        if(prev_wui_dist_list_ptr->next==NULL)
-                       		{
-                                	stop_flag=1;
-	                        }
-        	                else
-                	        {
-                        	        prev_wui_dist_list_ptr=prev_wui_dist_list_ptr->next;
-	                                if(prev_wui_dist_list_ptr->wui_id>WUI_ID)
-        	                        {
-                	                        stop_flag=2;
-                        	        }
-	                        }
-        	        }
-	                next_wui_dist_list_ptr=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
-        	        next_wui_dist_list_ptr->dist=wui_dist;
-                	next_wui_dist_list_ptr->wui_id=WUI_ID;
-
- 	              if(stop_flag==1) // put it at the end of the list
-        	        {
-	                        next_wui_dist_list_ptr->next=NULL;
-        	                next_wui_dist_list_ptr->prev= prev_wui_dist_list_ptr;
-                	        prev_wui_dist_list_ptr->next= next_wui_dist_list_ptr;
-	                }
-        	        else // insert it between the prev-->prev and the prev
-                	{
-	                        if(prev_wui_dist_list_ptr->prev!=NULL) //not the first in the list
-        	                {
-                	                 prev_wui_dist_list_ptr->prev->next= next_wui_dist_list_ptr; // then point its previous one to this one
-                        	         next_wui_dist_list_ptr->prev= prev_wui_dist_list_ptr->prev; // and point this one to it backwards
-	                        }
-        	                else // prev is first in list, so make this one first
-                	        {
-                        	         next_wui_dist_list_ptr->prev=NULL;
-	                        }
-        	                 prev_wui_dist_list_ptr->prev= next_wui_dist_list_ptr;// regardless, this one goes before the prev one and don't change the next
-                	         next_wui_dist_list_ptr->next= prev_wui_dist_list_ptr;
-	                }
- 
+}
 
 
-	            /*    while(prev_wui_dist_list_ptr->next!=NULL)
-        	        {
-                	        prev_wui_dist_list_ptr=wui_dist_list_ptr->next;
-	                }
-			
-        	        next_wui_dist_list_ptr=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
-			next_wui_dist_list_ptr->dist=wui_dist;
-			next_wui_dist_list_ptr->wui_id=WUI_ID; //wui_ID to ensure the order is correct
-                	next_wui_dist_list_ptr->next=NULL;
-			next_wui_dist_list_ptr->prev= prev_wui_dist_list_ptr;*/
-			
-		}
-	}
-fclose(WUI_file);
-printf("Closed file\n");
 /* echo back */
 
-	WUI_ptr = WUI_list;
-	while(WUI_ptr != NULL) {
+WUI_ptr = WUI_list;
+while(WUI_ptr != NULL) {
 	printf("\n For WUI %d", WUI_ptr->ID);
-	patches_trt2km_ptr = WUI_ptr->patches_trt2km;
-	while(patches_trt2km_ptr != NULL) {
-		printf("\n	we have at 2km %d",patches_trt2km_ptr->patch[0].ID);
-		patches_trt2km_ptr = patches_trt2km_ptr->next;
+	patches_dist2km_ptr = WUI_ptr->patches_dist2km;
+	while(patches_dist2km_ptr != NULL) {
+		printf("\n	we have at 2km %d",patches_dist2km_ptr->patch[0].ID);
+		patches_dist2km_ptr = patches_dist2km_ptr->next;
 		}
-	patches_trt5km_ptr = WUI_ptr->patches_trt5km;
-	while(patches_trt5km_ptr != NULL) {
-		printf("\n	we have at 5km %d",patches_trt5km_ptr->patch[0].ID);
-		patches_trt5km_ptr = patches_trt5km_ptr->next;
+	patches_dist5km_ptr = WUI_ptr->patches_dist5km;
+	while(patches_dist5km_ptr != NULL) {
+		printf("\n	we have at 5km %d",patches_dist5km_ptr->patch[0].ID);
+		patches_dist5km_ptr = patches_dist5km_ptr->next;
 		}
-	patches_trt10km_ptr = WUI_ptr->patches_trt10km;
-	while(patches_trt10km_ptr != NULL) {
-		printf("\n	we have at 10km %d",patches_trt10km_ptr->patch[0].ID);
-		patches_trt10km_ptr = patches_trt10km_ptr->next;
+	patches_dist10km_ptr = WUI_ptr->patches_dist10km;
+	while(patches_dist10km_ptr != NULL) {
+		printf("\n	we have at 10km %d",patches_dist10km_ptr->patch[0].ID);
+		patches_dist10km_ptr = patches_dist10km_ptr->next;
 		}
 	WUI_ptr = WUI_ptr->next;
 	}
@@ -495,3 +329,4 @@ printf("Closed file\n");
 
 	return(WUI_list);
 } /*end construct_WUI_list.c*/
+

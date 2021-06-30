@@ -377,7 +377,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	void resemble_hourly_date(struct world_object *);
 
 	
-  	struct WUI_object *construct_WUI_list( char *, struct world_object *, struct	command_line_object *);
+  	struct WUI_object **construct_WUI_list( char *, struct world_object *, struct	command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

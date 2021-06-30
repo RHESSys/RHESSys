@@ -45,9 +45,9 @@ void update_salience(struct WUI_object *WUI_list)
 	struct WUI_object *WUI_ptr;	
 	double fire_area_occur;
  
-	struct patch_object_list *patches_trt2km_ptr;
-	struct patch_object_list *patches_trt5km_ptr;
-	struct patch_object_list *patches_trt10km_ptr;
+	struct patch_object_list *patches_dist2km_ptr;
+	struct patch_object_list *patches_dist5km_ptr;
+	struct patch_object_list *patches_dist10km_ptr;
 
 	struct patch_object *patch;
 	/*--------------------------------------------------------------*/
@@ -62,9 +62,9 @@ void update_salience(struct WUI_object *WUI_list)
 	/*--------------------------------------------------------------*/
 
 	/* 2km list */
-	patches_trt2km_ptr = WUI_ptr->patches_trt2km;
-	while( (patches_trt2km_ptr != NULL) ) {
-		patch = patches_trt2km_ptr->patch;
+	patches_dist2km_ptr = WUI_ptr->patches_dist2km;
+	while( (patches_dist2km_ptr != NULL) ) {
+		patch = patches_dist2km_ptr->patch;
 
 		if (WUI_ptr->fire_occurence[D2KM] >= patch[0].landuse_defaults[0][0].salience_fire_area) 
 			patch[0].fuel_treatment.salience_prob[D2KM][D2KM] = patch[0].landuse_defaults[0][0].salience_2km2km_prob;
@@ -72,13 +72,13 @@ void update_salience(struct WUI_object *WUI_list)
 			patch[0].fuel_treatment.salience_prob[D2KM][D5KM] = patch[0].landuse_defaults[0][0].salience_2km5km_prob;
 		if (WUI_ptr->fire_occurence[D10KM] >= patch[0].landuse_defaults[0][0].salience_fire_area)
 			patch[0].fuel_treatment.salience_prob[D2KM][D10KM] = patch[0].landuse_defaults[0][0].salience_2km10km_prob;
-		patches_trt2km_ptr = patches_trt2km_ptr->next;
+		patches_dist2km_ptr = patches_dist2km_ptr->next;
 		}
 
 	/* 5km list */
-	patches_trt5km_ptr = WUI_ptr->patches_trt5km;
-	while( (patches_trt5km_ptr != NULL) ) {
-		patch = patches_trt5km_ptr->patch;
+	patches_dist5km_ptr = WUI_ptr->patches_dist5km;
+	while( (patches_dist5km_ptr != NULL) ) {
+		patch = patches_dist5km_ptr->patch;
 
 		if (WUI_ptr->fire_occurence[D2KM] >= patch[0].landuse_defaults[0][0].salience_fire_area)
 			patch[0].fuel_treatment.salience_prob[D5KM][D2KM] = patch[0].landuse_defaults[0][0].salience_2km2km_prob;
@@ -86,12 +86,13 @@ void update_salience(struct WUI_object *WUI_list)
 			patch[0].fuel_treatment.salience_prob[D5KM][D5KM] = patch[0].landuse_defaults[0][0].salience_2km5km_prob;
 		if (WUI_ptr->fire_occurence[D10KM] >= patch[0].landuse_defaults[0][0].salience_fire_area)
 			patch[0].fuel_treatment.salience_prob[D5KM][D10KM] = patch[0].landuse_defaults[0][0].salience_2km10km_prob;
+		patches_dist5km_ptr = patches_dist5km_ptr->next;
 		}
 
 	/* 10km list */
-	patches_trt10km_ptr = WUI_ptr->patches_trt10km;
-	while( (patches_trt10km_ptr != NULL) ) {
-		patch = patches_trt10km_ptr->patch;
+	patches_dist10km_ptr = WUI_ptr->patches_dist10km;
+	while( (patches_dist10km_ptr != NULL) ) {
+		patch = patches_dist10km_ptr->patch;
 
 		if (WUI_ptr->fire_occurence[D2KM] >= patch[0].landuse_defaults[0][0].salience_fire_area)
 			patch[0].fuel_treatment.salience_prob[D10KM][D2KM] = patch[0].landuse_defaults[0][0].salience_2km2km_prob;
@@ -100,7 +101,7 @@ void update_salience(struct WUI_object *WUI_list)
 		if (WUI_ptr->fire_occurence[D10KM] >= patch[0].landuse_defaults[0][0].salience_fire_area)
 			patch[0].fuel_treatment.salience_prob[D10KM][D10KM] = patch[0].landuse_defaults[0][0].salience_2km10km_prob;
 
-		patches_trt10km_ptr = patches_trt10km_ptr->next;
+		patches_dist10km_ptr = patches_dist10km_ptr->next;
 		}
 
 
