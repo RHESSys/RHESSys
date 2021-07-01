@@ -36,6 +36,7 @@ struct WUI_object *construct_WUI_list(
       struct command_line_object  *command_line)
 													  
 {
+printf("just entered construct wui list\n");
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
@@ -89,6 +90,12 @@ struct WUI_object *construct_WUI_list(
 			&dist,
 			&wui_dist);
 
+printf("File scanned correctly?  %d %d %d %lf %d\n",
+                        line_n,
+                        patch_ID,
+                        WUI_ID,
+                        dist,
+                        wui_dist);
 
 	/* have we created any WUI's yet?, if not create one */
 	if (n_WUI == 0) {
@@ -99,6 +106,7 @@ struct WUI_object *construct_WUI_list(
 	WUI_ptr->patches_dist2km = NULL;
 	WUI_ptr->patches_dist5km = NULL;
 	WUI_ptr->patches_dist10km = NULL;
+	printf("new WUI found\n");
 	}
 	else {
 	/* try to an existing WUI  */
@@ -129,29 +137,34 @@ struct WUI_object *construct_WUI_list(
 		WUI_ptr->patches_dist10km = NULL;
 		n_WUI +=1;
 		} 
-	
 		
-
 	h=0; z=0; pf=0; p=0; b=0;
 	fnd = 0;
-	/* find the patch that this WUI is refering too */
 
+printf("Test1: %d\n", WUI_ptr->ID);
+	/* find the patch that this WUI is refering too */
+/*if((fnd == 0) && (b >= 0)){// && (b < world[0].num_basin_files)) {
+printf("nWUI %d wui_ID %d patch_ID %d wui_dist %d\n",n_WUI,WUI_ID,patch_ID,wui_dist);
+ }
+*/
          while ( (fnd == 0) && (b >= 0) && (b < world[0].num_basin_files)) { 
 		basin = world[0].basins[b];		
-
          	while ( (fnd == 0) && (h >= 0) && (h < basin[0].num_hillslopes)) { 
                 hillslope =  basin[0].hillslopes[h];
-
+//printf("looking for hillslope\n");
                 while ( (fnd == 0) && (z >= 0) && (z <= hillslope[0].num_zones)) {
                 zone = hillslope[0].zones[z];
                 
         	/* are we looking for patch families or patches */
                 if (command_line[0].multiscale_flag == 1) {
+//printf("looking for patch family\n");
                 while ( (fnd == 0) && (pf >= 0) && (pf <= zone[0].num_patch_families)) {
                 patch_family = zone[0].patch_families[pf];
-
+//printf("patch_family ID: %d\n",patch_family[0].family_ID);
                 if (patch_ID == patch_family[0].family_ID) {
-                        fnd = 1;}
+                        fnd = 1;
+//			printf("found patch family\n");
+			}
 		else { pf += 1; }
                 }
                 }
@@ -179,6 +192,7 @@ struct WUI_object *construct_WUI_list(
 			if (command_line[0].multiscale_flag == 1) {
 				WUI_ptr->patches_dist2km->patch = patch_family[0].patches[0];;
 				patches_dist2km_ptr = WUI_ptr->patches_dist2km;
+				patches_dist2km_ptr->next=NULL;
 				/* add all the patches in the family */
 				for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
 					patches_dist2km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
@@ -222,6 +236,7 @@ struct WUI_object *construct_WUI_list(
 			if (command_line[0].multiscale_flag == 1) {
 				WUI_ptr->patches_dist5km->patch = patch_family[0].patches[0];;
 				patches_dist5km_ptr = WUI_ptr->patches_dist5km;
+				patches_dist5km_ptr->next = NULL;
 				/* add all the patches in the family */
 				for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
 					patches_dist5km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
@@ -238,6 +253,7 @@ struct WUI_object *construct_WUI_list(
 		}
 		/* list exists so add additional patches */
 		else {
+printf("ShouldI be here? WUI ID %d, patch family: %d \n",WUI_ptr->ID, patch_family[0].num_patches_in_fam);
 			if (command_line[0].multiscale_flag == 1) {
 				for (i=0; i < patch_family[0].num_patches_in_fam; i++) {
 					patches_dist5km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
@@ -265,6 +281,7 @@ struct WUI_object *construct_WUI_list(
 			if (command_line[0].multiscale_flag == 1) {
 				WUI_ptr->patches_dist10km->patch = patch_family[0].patches[0];;
 				patches_dist10km_ptr = WUI_ptr->patches_dist10km;
+				patches_dist10km_ptr->next = NULL;
 				/* add all the patches in the family */
 				for (i=1; i < patch_family[0].num_patches_in_fam; i++) {
 					patches_dist10km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
@@ -273,11 +290,11 @@ struct WUI_object *construct_WUI_list(
 					patches_dist10km_ptr->next = NULL;
 					}
 			} 
-			else {
+		/*	else {
 				WUI_ptr->patches_dist10km->patch = patch;
 				WUI_ptr->patches_dist10km->next = NULL;
 				patches_dist10km_ptr = WUI_ptr->patches_dist10km;
-			 }
+			 }*/
 		}
 		/* list exists so add additional patches */
 		else {
@@ -289,13 +306,13 @@ struct WUI_object *construct_WUI_list(
 					patches_dist10km_ptr->next = NULL;
 					}
 			}
-			else {
-			/* add all the patches in the family */
+	/*		else {
+			/* add all the patches in the family *
 			patches_dist10km_ptr->next = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
 			patches_dist10km_ptr = patches_dist10km_ptr->next;
 			patches_dist10km_ptr->patch = patch;
 			patches_dist10km_ptr->next = NULL;
-			}
+			}*/
 			}
 	}
 		
@@ -303,24 +320,32 @@ struct WUI_object *construct_WUI_list(
 
 
 /* echo back */
-
+int iter2km=0,iter5km=0,iter10km=0;
 WUI_ptr = WUI_list;
 while(WUI_ptr != NULL) {
-	printf("\n For WUI %d", WUI_ptr->ID);
+	printf("\n For WUI %d\n", WUI_ptr->ID);
 	patches_dist2km_ptr = WUI_ptr->patches_dist2km;
+	iter2km=0;
+	iter5km=0;
+	iter10km=0;
 	while(patches_dist2km_ptr != NULL) {
-		printf("\n	we have at 2km %d",patches_dist2km_ptr->patch[0].ID);
+		iter2km+=1;
+		printf("\n	we have at 2km %d, iter: %d",patches_dist2km_ptr->patch[0].ID,iter2km);
 		patches_dist2km_ptr = patches_dist2km_ptr->next;
 		}
+
 	patches_dist5km_ptr = WUI_ptr->patches_dist5km;
 	while(patches_dist5km_ptr != NULL) {
-		printf("\n	we have at 5km %d",patches_dist5km_ptr->patch[0].ID);
+		iter5km+=1;
+		printf("\n	we have at 5km %d, iter: %d",patches_dist5km_ptr->patch[0].ID,iter5km);
 		patches_dist5km_ptr = patches_dist5km_ptr->next;
 		}
 	patches_dist10km_ptr = WUI_ptr->patches_dist10km;
+
 	while(patches_dist10km_ptr != NULL) {
 		printf("\n	we have at 10km %d",patches_dist10km_ptr->patch[0].ID);
 		patches_dist10km_ptr = patches_dist10km_ptr->next;
+		iter10km+=1;
 		}
 	WUI_ptr = WUI_ptr->next;
 	}
