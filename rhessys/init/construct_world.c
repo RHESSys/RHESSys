@@ -623,11 +623,11 @@ printf("just before fire default ");
 
   		/*--------------------------------------------------------------*/
   		/* read in WUI file and create WUI structure if salience flag is set */
-  		/*--------------------------------------------------------------*/
+  		/*--------------------------------------------------------------*
   		if ( command_line[0].salience_flag == 1) {
 printf("about to enter construct wui\n");
 			world[0].WUI_list = construct_WUI_list(command_line[0].WUI_filename, world, command_line);
-  		}
+  		}*/
 
 	}
 	
@@ -925,8 +925,15 @@ printf("about to enter construct wui\n");
 	world[0].num_fire_grid_row = 0;
 	world[0].num_fire_grid_col = 0;
 	if (command_line[0].firespread_flag == 1) {
-		world[0].patch_fire_grid = construct_patch_fire_grid(world, command_line,*(world[0].defaults[0].fire));
-		world[0].fire_grid = construct_fire_grid(world);
+  		/*--------------------------------------------------------------*/
+  		/* read in WUI file and create WUI structure if salience flag is set */
+  		/*--------------------------------------------------------------*/
+  		if ( command_line[0].salience_flag == 1) {
+			world[0].WUI_list = construct_WUI_list(command_line[0].WUI_filename, world, command_line);
+  		}
+                world[0].patch_fire_grid = construct_patch_fire_grid(world, command_line,*(world[0].defaults[0].fire));
+                world[0].fire_grid = construct_fire_grid(world);
+
 
 	}	
 
