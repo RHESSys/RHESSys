@@ -20,7 +20,7 @@
 /*	DESCRIPTION						*/
 /*								*/
 /*	Updates amount of rain stored after using supplied 	*/
-/*	daytime potential evaporation,  rainfall 			*/ 
+/*	daytime potential evaporation,  rainfall 			*/
 /*	to evaporate and input respectively to the storage.	*/
 /*	Evaporation from the storage is performed first.	*/
 /*								*/
@@ -33,7 +33,7 @@
 
 double	compute_litter_rain_stored(
 								   int	verbose_flag,
-								   struct	patch_object	*patch) 
+								   struct	patch_object	*patch)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
@@ -48,17 +48,17 @@ double	compute_litter_rain_stored(
 	double	potential_interception_evaporated;
 	double	throughfall;
 	struct	litter_object *litter;
-	
+
 	if (verbose_flag == -5) {
 		printf("\n     COMPUTE LITTER RAIN STORED: START evap_surf=%lf",patch[0].evaporation_surf);
 	}
-	
+
 	litter = &(patch[0].litter);
 	/*--------------------------------------------------------------*/
 	/*	Transfer potential evaporation to a working variable.	*/
 	/*--------------------------------------------------------------*/
 	potential_evaporation = patch[0].potential_evaporation;
-			
+
 	/*--------------------------------------------------------------*/
 	/*	Compute amount potentially intercepted.			*/
 	/*	m = m2PlANT / m2ground *  ( (kg  / m2 * day * m2PLANT )	*/
@@ -86,7 +86,7 @@ double	compute_litter_rain_stored(
 	/*--------------------------------------------------------------*/
 	litter[0].rain_stored  -= storage_evaporated;
 	/*--------------------------------------------------------------*/
-	/*	Update potentail evaporation.				*/
+	/*	Update potential evaporation.				*/
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
 	potential_evaporation -= storage_evaporated;
@@ -141,7 +141,7 @@ double	compute_litter_rain_stored(
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);
 	patch[0].detention_store = throughfall;
-	
+
 	if (verbose_flag == -5) {
 		printf(" END evap_surf=%lf",patch[0].evaporation_surf);
 	}

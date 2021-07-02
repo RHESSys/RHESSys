@@ -195,7 +195,7 @@ void	output_growth_patch(
 		patch[0].rooting_depth_mean,
 		acanopy_N_store, patch[0].litter.NO3_stored, patch[0].NO3_throughfall, patch[0].ndf.sminn_to_nitrate,
 		patch[0].streamNO3_from_surface, patch[0].streamNO3_from_sub,
-		patch[0].cdf.litterc_to_atmos*1000.0, patch[0].cdf.litterc_to_soil*1000.0,
+		patch[0].cdf.litterc_to_atmos*1000.0, patch[0].cdf.litterc_to_soilc*1000.0,
 		(patch[0].cdf.soil1c_hr + patch[0].cdf.soil2c_hr + patch[0].cdf.soil3c_hr + patch[0].cdf.soil4c_hr)*1000.0
 		);// in update_decomp.c in line 73 fpi is ns_soil->fract_potential_immbo, so the output name is fpi
 	if (check <= 0) {

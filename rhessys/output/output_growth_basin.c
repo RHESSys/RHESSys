@@ -179,7 +179,7 @@ void	output_growth_basin(
 				//NREN
 				//aprecip += patch[0].precipitation; patch[0].cdf.litterc_to_atmos*1000.0, patch[0].cdf.litterc_to_soil*1000.0
 				alitr_hr += patch[0].cdf.litterc_to_atmos * patch[0].area;
-				alitrc_to_soil +=  patch[0].cdf.litterc_to_soil * patch[0].area;
+				alitrc_to_soil +=  patch[0].cdf.litterc_to_soilc * patch[0].area;
 				aplant_potential_ndem += patch[0].ndf.plant_potential_ndemand * patch[0].area;
 				apotential_immob += patch[0].ndf.potential_immob * patch[0].area; //NREN
         apro_abc_litr += patch[0].prop_litrc_above_ground * patch[0].area;

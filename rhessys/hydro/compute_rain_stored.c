@@ -100,7 +100,7 @@ double	compute_rain_stored(
 	/*--------------------------------------------------------------*/
 	stratum[0].rain_stored  -= storage_evaporated;
 	/*--------------------------------------------------------------*/
-	/*	Update potentail evaporation.				*/
+	/*	Update potential evaporation.				*/
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
 	potential_evaporation -= storage_evaporated;

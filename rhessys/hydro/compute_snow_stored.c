@@ -218,7 +218,7 @@ if (Tair_mean_day > 0) {
 		potential_interception,potential_sublimation,storage_sublimated,
 		stratum[0].snow_stored);
 	/*--------------------------------------------------------------*/
-	/*	Update potentail sublimation.				*/
+	/*	Update potential sublimation.				*/
 	/*--------------------------------------------------------------*/
 	tmp5 = potential_sublimation;
 	potential_sublimation -= storage_sublimated;

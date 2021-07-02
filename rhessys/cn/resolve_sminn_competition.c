@@ -104,7 +104,7 @@ int resolve_sminn_competition(
 		else
 			ns_soil->fract_potential_immob = actual_immob/ndf->potential_immob;
 
-        //printf("\n===== N demand[%f] > N avail[%f], actual_immob[%f], potentail_immob[%f], fpi[%f], perc_inroot[%f], rootDepth[%f], Ndecay[%f],active_z[%f]===========\n",
+        //printf("\n===== N demand[%f] > N avail[%f], actual_immob[%f], potential_immob[%f], fpi[%f], perc_inroot[%f], rootDepth[%f], Ndecay[%f],active_z[%f]===========\n",
         //        sum_ndemand, sum_avail, actual_immob, ndf->potential_immob, ns_soil->fract_potential_immob, perc_inroot, rooting_depth, N_decay_rate, active_zone_z);
 
 		if (ndf->plant_potential_ndemand == 0) {
@@ -121,4 +121,3 @@ int resolve_sminn_competition(
 
 	return(0);
 } /* end resolve_sminn_competition.c */
-

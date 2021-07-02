@@ -182,7 +182,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"deadrootc_beetle",
 		"deadrootn_beetle",
 		"understory_gpsn","understory_resp", "understory_rootdepth", "understory_npp", "ratio_abg_litter",
-		"precip", "plant_potential_ndem", "potentail_immob",
+		"precip", "plant_potential_ndem", "potential_immob",
 		"litr_hr", "litrc_to_soil"
 	);
 	/*--------------------------------------------------------------*/
