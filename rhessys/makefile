@@ -28,8 +28,8 @@ endif
 # make CFLAGS=-w
 # override CFLAGS += -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2
+CFLAGS = -g -Wall -std=c99 $(DEFINES) -fno-stack-protector -O
+CFLAGS_NO_C99 = -g -Wall $(DEFINES) -fno-stack-protector -O
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
