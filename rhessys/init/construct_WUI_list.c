@@ -373,7 +373,7 @@ printf("Test1: %d\n", WUI_ptr->ID);
 	}
 
 //	if(patch_family[0].patches[0]->wui_dist->next!=NULL)
-		printf("anything happen here? patchID %d, wui ptr IS:%d, patch dist WUI IS %d\n",patch[0].ID,WUI_ptr->ID,WUI_ptr->patches_dist2km->patch[0].wui_dist->wui_id);
+	//	printf("anything happen here? patchID %d, wui ptr IS:%d, patch dist WUI IS %d\n",patch[0].ID,WUI_ptr->ID,WUI_ptr->patches_dist2km->patch[0].wui_dist->wui_id);
 		
 }
 
