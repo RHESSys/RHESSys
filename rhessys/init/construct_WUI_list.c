@@ -148,6 +148,10 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d %d \n",
 		WUI_ptr->patches_dist2km = NULL;
 		WUI_ptr->patches_dist5km = NULL;
 		WUI_ptr->patches_dist10km = NULL;
+		WUI_ptr->fire_occurence=100;// initialize salience event as 100, replace with new salience distance as triggered
+      		WUI_ptr->ntrt[0]=0;// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
+		WUI_ptr->ntrt[1]=0;
+		WUI_ptr->ntrt[2]=0;
 		n_WUI +=1;
 		} 
 	}		

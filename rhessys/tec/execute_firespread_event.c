@@ -336,7 +336,15 @@ void execute_firespread_event(
 	/* update biomass after fire									*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].verbose_flag <= -7) { printf("Updating biomass\n");}
-	// if(world[0].fire_grid[0][0].fire_size>0) // only do this if there was a fire
+	double fire_size_ha;// convert fire_size in pixels to fire size in ha, for salience
+	struct WUI_object *WUI_ptr;//pointers to navigate salience lists
+	struct wui_dist_list *patch_wui_dist_list_ptr;
+	struct wui_dist_list *sal_wui_dist_list_ptr;
+	fire_size_ha=world[0].fire_grid[0][0].fire_size*command_line[0].fire_grid_res*command_line[0].fire_grid_res*.0001;//.0001 ha/m^2, assumes resolution is in m
+	if(world[0].fire_grid[0][0].fire_size>0) // only do this if there was a fire
+	{
+	if (world[0].defaults[0].fire[0].calc_fire_effects == 1||command_line[0].salience_flag == 1)// enter loop if either fire effects or salience is flagged
+	{
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   		for (j=0; j < world[0].num_fire_grid_col; j++) {
 
@@ -357,10 +365,29 @@ void execute_firespread_event(
 						printf("Start fire effects: grid i:%d j:%d | patch family %d | num patches %d | pspread %lf | burn %lf\n",
 							   i, j, patch_family[0].family_ID, patch_family[0].num_patches_in_fam, pspread, world[0].fire_grid[i][j].burn);
 					}
-					compute_family_fire_effects(
-						patch_family,
-						pspread,
-						command_line);
+                                        compute_family_fire_effects(
+                                                patch_family,
+                                                pspread,
+                                                command_line);
+
+					if(fire_size_ha>400&&command_line[0].salience_flag == 1)// then potential salience event. Check if any  burned pixels are within 2,5,10 km of wui
+					{
+//patch[0].fire.severity >= patch[0].landuse_defaults[0][0].salience_fire_level
+// a fire severity flag rather than just burned or not?	
+						patch_wui_dist_list_ptr=patch_family[0].patches[0][0].wui_dist;
+						WUI_ptr=world[0].WUI_list;
+						if(patch_wui_dist_list_ptr->dist<WUI_ptr->fire_occurence)
+						     WUI_ptr->fire_occurence=patch_wui_dist_list_ptr->dist; // then a fire occurred this year closer to the wui. Record this one					
+						while( patch_wui_dist_list_ptr->next!=NULL)
+						{
+							 patch_wui_dist_list_ptr= patch_wui_dist_list_ptr->next;
+							WUI_ptr=WUI_ptr->next;
+							 if(patch_wui_dist_list_ptr->dist<WUI_ptr->fire_occurence)
+                                                     		WUI_ptr->fire_occurence=patch_wui_dist_list_ptr->dist; // then a fire occurred this year closer to the wui. Record this one
+						}					
+	// first patch in the list for this patch family should be fine
+					}
+					
 				}
 			}
 			else
@@ -383,7 +410,9 @@ void execute_firespread_event(
 			} // end IF NOT MSR
 
 		} // end for grid col
-	} // end for grid row
+	}// end for grid row
+	} 
+	}
 	return;
 } /*end execute_firespread_event.c*/
 

@@ -61,7 +61,7 @@ void update_salience(struct WUI_object *WUI_list)
 	/* cycle patches in each distance  */
 	/*--------------------------------------------------------------*/
 
-	/* 2km list */
+	/* 2km list *
 	patches_dist2km_ptr = WUI_ptr->patches_dist2km;
 	while( (patches_dist2km_ptr != NULL) ) {
 		patch = patches_dist2km_ptr->patch;
@@ -75,7 +75,7 @@ void update_salience(struct WUI_object *WUI_list)
 		patches_dist2km_ptr = patches_dist2km_ptr->next;
 		}
 
-	/* 5km list */
+	/* 5km list *
 	patches_dist5km_ptr = WUI_ptr->patches_dist5km;
 	while( (patches_dist5km_ptr != NULL) ) {
 		patch = patches_dist5km_ptr->patch;
@@ -89,7 +89,7 @@ void update_salience(struct WUI_object *WUI_list)
 		patches_dist5km_ptr = patches_dist5km_ptr->next;
 		}
 
-	/* 10km list */
+	/* 10km list *
 	patches_dist10km_ptr = WUI_ptr->patches_dist10km;
 	while( (patches_dist10km_ptr != NULL) ) {
 		patch = patches_dist10km_ptr->patch;
@@ -103,7 +103,7 @@ void update_salience(struct WUI_object *WUI_list)
 
 		patches_dist10km_ptr = patches_dist10km_ptr->next;
 		}
-
+*/
 
 
 	WUI_ptr = WUI_ptr->next;

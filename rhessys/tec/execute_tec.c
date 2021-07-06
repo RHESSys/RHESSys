@@ -178,8 +178,8 @@ void	execute_tec(
 		struct	command_line_object	*,
 		struct	date);
 
-	void    update_fire_in_WUI(
-		struct WUI_object *);
+/*	void    update_fire_in_WUI(
+		struct WUI_object *);*/
 
 		void    update_salience(
 		struct WUI_object *);
