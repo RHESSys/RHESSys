@@ -49,7 +49,7 @@ printf("just entered construct wui list\n");
 	int		i, h,z,pf,p,b;
 	int fnd, n_WUI,stop_flag;
 	int		line_n;
-	int		family_ID,patch_ID, WUI_ID, wui_dist,trt_ord2,trt_ord5,trt_ord10;
+	int		family_ID,patch_ID, WUI_ID, wui_dist,trt_ord2,trt_ord5,trt_ord10,trt_ord100;
 	int iter2km=0,iter5km=0,iter10km=0;
 	double dist;
 
@@ -61,7 +61,7 @@ printf("just entered construct wui list\n");
 
 	struct WUI_object *WUI_list;	
 	struct WUI_object *WUI_ptr;	
-
+	struct WUI_object *new_WUI_ptr;
 	FILE *WUI_file;
 
 	struct wui_dist_list *prev_wui_dist_list_ptr;
@@ -70,6 +70,7 @@ printf("just entered construct wui list\n");
 	struct patch_object_list *patches_dist2km_ptr;
 	struct patch_object_list *patches_dist5km_ptr;
 	struct patch_object_list *patches_dist10km_ptr;
+        struct patch_object_list *patches_dist100km_ptr;
 
 
 	/*--------------------------------------------------------------*/
@@ -87,7 +88,7 @@ printf("just entered construct wui list\n");
 
 	/* read through file line by line */
 	while (!feof(WUI_file)) {
-		fscanf(WUI_file, "%d %d %d %d %d %d %d %d\n",
+		fscanf(WUI_file, "%d %d %d %d %d %d %d %d %d\n",
 			&line_n,
 			&family_ID,
 			&patch_ID,
@@ -95,8 +96,9 @@ printf("just entered construct wui list\n");
 			&wui_dist,
 			&trt_ord2,
 			&trt_ord5,
-			&trt_ord10);
-printf("\nIn read WUI file %d %d %d %d %d %d %d %d \n",
+			&trt_ord10,
+			&trt_ord100);
+printf("\nIn read WUI file %d %d %d %d %d %d %d %d %d \n",
                         line_n,
 			family_ID,
                         patch_ID,
@@ -104,18 +106,39 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d %d \n",
                         wui_dist,
                         trt_ord2,
                         trt_ord5,
-                        trt_ord10);
+                        trt_ord10,trt_ord100);
 
 
 	/* have we created any WUI's yet?, if not create one */
+	// create WUI 0, then this WUI
 	if (n_WUI == 0) {
-	WUI_list = (struct WUI_object *) malloc(sizeof(struct WUI_object));
-	WUI_list->ID = WUI_ID;
-	n_WUI += 1;
-	WUI_ptr = WUI_list;
-	WUI_ptr->patches_dist2km = NULL;
-	WUI_ptr->patches_dist5km = NULL;
-	WUI_ptr->patches_dist10km = NULL;
+	        WUI_list = (struct WUI_object *) malloc(sizeof(struct WUI_object));
+        	WUI_list->ID = 0;// WUI 0 for background treatment order
+	        n_WUI += 1;
+	        WUI_ptr = WUI_list;
+	        WUI_ptr->patches_dist2km = NULL;
+	        WUI_ptr->patches_dist5km = NULL;
+	        WUI_ptr->patches_dist10km = NULL;
+	        WUI_ptr->fire_occurence=100;// initialize salience event as 100, replace with new salience distance as triggered
+	        WUI_ptr->ntrt[0]=0;// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
+	        WUI_ptr->ntrt[1]=0;
+	        WUI_ptr->ntrt[2]=0;
+	        WUI_ptr->next=(struct WUI_object *) malloc(sizeof(struct WUI_object));// now the first official WUI
+		WUI_ptr->prev=NULL;
+		
+		WUI_ptr= WUI_ptr->next;
+		WUI_ptr->ID = WUI_ID;
+		n_WUI += 1;
+		WUI_ptr->patches_dist2km = NULL;
+		WUI_ptr->patches_dist5km = NULL;
+		WUI_ptr->patches_dist10km = NULL;
+		WUI_ptr->fire_occurence=100;// initialize salience event as 100, replace with new salience distance as triggered
+	        WUI_ptr->ntrt[0]=0;// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
+	        WUI_ptr->ntrt[1]=0;
+	        WUI_ptr->ntrt[2]=0;
+		WUI_ptr->next=NULL;
+		WUI_ptr->prev=WUI_list; // point it back to the beginning of the list
+
 	}
 	else {
 	/* try to find an existing WUI  */
@@ -132,18 +155,36 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d %d \n",
 			if (WUI_ptr->next==NULL)// stop because we have reached the end of the list
 				i = n_WUI;
 			else {// otherwise keep looking
-				i=i+1;
-				WUI_ptr = WUI_ptr->next;
+				if(WUI_ptr->ID>WUI_ID) // the WUI should be entered before this one
+				{
+					fnd=1;// stop and add previous to this WUI
+				}
+				else{
+					i=i+1;
+					WUI_ptr = WUI_ptr->next;
+					}
 				}
 		}
 	}
 //	}
 
-	/* couldn't find an existing WUI so make a new one */
+	/* couldn't find an existing WUI so make a new one. otherwise WUI_ptr is the correct WUI */
 	if ((WUI_ptr->ID != WUI_ID)) {
-		printf("not here at the end!\n");
-		WUI_ptr->next = (struct WUI_object *)malloc(sizeof(struct WUI_object));
-		WUI_ptr = WUI_ptr->next;
+		if(WUI_ID>WUI_ptr->ID)// then add it to the end of the list
+		{
+			WUI_ptr->next = (struct WUI_object *)malloc(sizeof(struct WUI_object));
+			new_WUI_ptr = WUI_ptr->next;
+			new_WUI_ptr->next=NULL;
+			new_WUI_ptr->prev=WUI_ptr;
+		}
+		else// then add it before this one
+		{	
+			new_WUI_ptr=(struct WUI_object *)malloc(sizeof(struct WUI_object));
+			new_WUI_ptr->next=WUI_ptr;
+			WUI_ptr->prev->next=new_WUI_ptr;
+		}		
+
+		WUI_ptr=new_WUI_ptr;
 		WUI_ptr->ID = WUI_ID;
 		WUI_ptr->patches_dist2km = NULL;
 		WUI_ptr->patches_dist5km = NULL;
@@ -152,6 +193,7 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d %d \n",
       		WUI_ptr->ntrt[0]=0;// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
 		WUI_ptr->ntrt[1]=0;
 		WUI_ptr->ntrt[2]=0;
+		
 		n_WUI +=1;
 		} 
 	}		
@@ -302,24 +344,65 @@ printf("Test1: %d\n", WUI_ptr->ID);
                          printf("Added patch %d to WUI %d at trt_ord10\n",patches_dist10km_ptr->patch[0].ID,WUI_ptr->ID);
 			}
 	}
+	if(trt_ord100>0) {// then add this to the first WUI0
+		if(WUI_list->patches_dist100km == NULL) {
+                        WUI_list->patches_dist100km = (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+                        patches_dist100km_ptr = WUI_list->patches_dist100km;
+                         patches_dist100km_ptr->patch=patch;
+                        patches_dist100km_ptr->next=NULL;
+			 printf("Added patch %d to WUI %d at trt_ord100\n",patches_dist100km_ptr->patch[0].ID,WUI_ptr->ID);
+                }
+                else {
+                        patches_dist100km_ptr = WUI_list->patches_dist100km;
+                        while(patches_dist100km_ptr->next!=NULL&&patches_dist100km_ptr->patch[0].ID!=patch_ID)//Find end of list or if this patch already in list, don't add
+                        {
+                                patches_dist100km_ptr=patches_dist100km_ptr->next;
+                        }
+			if(patches_dist100km_ptr->patch[0].ID!=patch_ID)
+			{
+	                         patches_dist100km_ptr->next= (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
+        	                 patches_dist100km_ptr = patches_dist100km_ptr->next;
+                	         patches_dist100km_ptr->patch = patch;
+				patches_dist100km_ptr->next = NULL;
+			// and assign its first wui_dist to this trt_ord
+
+                         	printf("Added patch %d to WUI %d at trt_ord100\n",patches_dist100km_ptr->patch[0].ID,WUI_ptr->ID);
+			}
+                }
+	}
 	/* and now update the wuiDist for this patch for this wui*/
 //	if(patch_family[0].patches[0]->wui_dist==NULL)// first wui for this patch family
 	if(patch[0].wui_dist==NULL)
 	{
 //		patch_family[0].patches[0]->wui_dist=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
 		patch[0].wui_dist=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
+                patch[0].wui_dist->dist=100;
+                patch[0].wui_dist->wui_id=0;
+                patch[0].wui_dist->trt_ord2=-1;
+                patch[0].wui_dist->trt_ord5=-1;
+                patch[0].wui_dist->trt_ord10=-1;
+		patch[0].wui_dist->trt_ord100=trt_ord100;
+		patch[0].wui_dist->prev=NULL;
+		patch[0].wui_dist->next=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
+		
+
 //		prev_wui_dist_list_ptr= patch_family[0].patches[0]->wui_dist;
-		prev_wui_dist_list_ptr= patch[0].wui_dist;
+		prev_wui_dist_list_ptr= patch[0].wui_dist->next;
 		prev_wui_dist_list_ptr->dist=wui_dist;
 		 prev_wui_dist_list_ptr->wui_id=WUI_ID;
+		prev_wui_dist_list_ptr->trt_ord2=trt_ord2;
+                prev_wui_dist_list_ptr->trt_ord5=trt_ord5;
+                prev_wui_dist_list_ptr->trt_ord10=trt_ord10;
+
 		prev_wui_dist_list_ptr->next=NULL;
-		 prev_wui_dist_list_ptr->prev=NULL;
+		prev_wui_dist_list_ptr->prev=patch[0].wui_dist;
 	}
 //Check	}
 	else // find the correct place in the list and make a new entry. Make sure it's in the right order
 	{
-		prev_wui_dist_list_ptr=patch[0].wui_dist;// start at the first in the wui_dist
-//		stop_flag=1; // initialize as 1, which is the flag for end of the list
+
+		
+		stop_flag=1; // initialize as 1, which is the flag for end of the list
 //		if(prev_wui_dist_list_ptr->next!=NULL)//it is not the end of the list
 //		{
 			if(prev_wui_dist_list_ptr->wui_id<=WUI_ID) // the first in the list has a lower wuiID or the same, so this one should be placed after
@@ -351,6 +434,9 @@ printf("Test1: %d\n", WUI_ptr->ID);
 		next_wui_dist_list_ptr=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));// make a entry
                 next_wui_dist_list_ptr->dist=wui_dist;//fill it in
                 next_wui_dist_list_ptr->wui_id=WUI_ID;
+		next_wui_dist_list_ptr->trt_ord2=trt_ord2;
+                next_wui_dist_list_ptr->trt_ord5=trt_ord5;
+                next_wui_dist_list_ptr->trt_ord10=trt_ord10;
 		// find where it should be located based on stop_flag;
 
      		if(stop_flag==1) // put it at the end of the list
@@ -399,7 +485,7 @@ while(WUI_ptr != NULL) {
 		while(prev_wui_dist_list_ptr->next!=NULL)
 		{
 			prev_wui_dist_list_ptr=prev_wui_dist_list_ptr->next;
-			printf("wui dist: %d",prev_wui_dist_list_ptr->dist);
+			printf(" patch WUI ID: %d wui dist: %d",prev_wui_dist_list_ptr->wui_id, prev_wui_dist_list_ptr->dist);
 		}
 
 		patches_dist2km_ptr = patches_dist2km_ptr->next;
@@ -415,9 +501,15 @@ while(WUI_ptr != NULL) {
 
 	while(patches_dist10km_ptr != NULL) {
 		iter10km+=1;
-		printf("\n	we have at 10km %d, iter: %d",patches_dist10km_ptr->patch[0].ID,iter10km);
+		printf("\n	we have at 10km %d, iter: %d wui: %d patch WUI: %d",patches_dist10km_ptr->patch[0].ID,iter10km,WUI_ptr->ID,WUI_ptr->patches_dist10km->patch[0].wui_dist->wui_id);
 		patches_dist10km_ptr = patches_dist10km_ptr->next;
 		}
+        patches_dist100km_ptr = WUI_ptr->patches_dist100km;
+       while(patches_dist100km_ptr != NULL) {
+                printf("\n      we have at 100-km %d, wui: %d trtOrd: %d",patches_dist100km_ptr->patch[0].ID,WUI_ptr->ID,patches_dist100km_ptr->patch[0].wui_dist->trt_ord100);
+                patches_dist100km_ptr = patches_dist100km_ptr->next;
+                }
+
 	WUI_ptr = WUI_ptr->next;
 	}
 	return(WUI_list);
