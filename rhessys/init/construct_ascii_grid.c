@@ -109,14 +109,6 @@ struct base_station_object **construct_ascii_grid (
 	char	bufferndep_NO3[MAXSTR*100];
 	char	bufferndep_NH4[MAXSTR*100];
 	char	*tokc;
-	char	*last;
-	char	*laste;
-	char	*lasttmax;
-	char	*lasttmin;
-	char	*lastrain;
-	char	*lastndep_NO3;
-	char	*lastndep_NH4;
-	char	*lastdaytime_rain_duration;
 	
 	FILE*	base_station_file;
 	FILE*   tmax_file;
@@ -218,23 +210,28 @@ struct base_station_object **construct_ascii_grid (
 	for ( i = 0; i < num_base_stations; i++) {
 		/*Allocate base_stations */
 		base_stations[i] = (struct base_station_object*) alloc(1 * sizeof(struct base_station_object),
-											"base_station", "construct_ascii_grid");
+							"base_station", "construct_ascii_grid");    
 		/* Populate base_stations[i] */
 		base_stations[i][0].effective_lai = strtod(eff_lai,NULL);
 		base_stations[i][0].screen_height = strtod(screen_height,NULL);
+
 		if (i==0) {
-		tokc = strtok_r(ids," ",&last);
-		sscanf(tokc, "%d", &(base_stations[i][0].ID));		// reading 3rd line (should be IDs) at ith integer 
-		tokc = strtok_r(elevs," ",&laste);
-		sscanf(tokc, "%lf", &(base_stations[i][0].z));		// reading 4th line (should be elevs) at ith integer 
-		}
-		else {
-			tokc = strtok_r(NULL," ",&last);
+			tokc = strtok(ids," ");
+			sscanf(tokc, "%d", &(base_stations[i][0].ID));		// reading 3rd line (should be IDs) at ith integer 
+		} else {
+			 tokc = strtok(NULL," ");
 			sscanf(tokc, "%d", &(base_stations[i][0].ID)); //read 3rd line (should be IDs) 
-			tokc = strtok_r(NULL," ",&laste);
+		}
+	}
+
+        for ( i = 0; i < num_base_stations; i++) {
+		if (i==0){
+			tokc = strtok(elevs," ");
+			sscanf(tokc, "%lf", &(base_stations[i][0].z));		// reading 4th line (should be elevs) at ith integer 
+		} else {
+			tokc = strtok(NULL," ");
 			sscanf(tokc, "%lf", &(base_stations[i][0].z)); //read 4th line (should be elevs) 
 		}
-		
 		
 		/* For each daily clim structure allocate clim seqs for all required & optional clims */
 		base_stations[i][0].daily_clim = (struct daily_clim_object *)
@@ -507,51 +504,75 @@ struct base_station_object **construct_ascii_grid (
 			fprintf(stderr,"\n optional clim end date beyond end of clim sequence\n");
 			exit(EXIT_FAILURE);
 		}}
-		for (i=0; i < num_base_stations; i++) {
-			
+
+		/*--------------------------------------------------------------*/
+
+		for (i=0; i < num_base_stations; i++) {	
 			if (i==0) {
-				tokc = strtok_r(buffertmax, " ", &lasttmax);
+				tokc = strtok(buffertmax, " ");
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmax[j]));
-				tokc = strtok_r(buffertmin, " ", &lasttmin);
+     			} else {
+    		    	tokc = strtok(NULL," ");
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmax[j]));
+			}
+		}
+        for (i=0; i < num_base_stations; i++) {
+			if (i==0) {
+				tokc = strtok(buffertmin, " ");
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmin[j]));
-				tokc = strtok_r(bufferrain, " ", &lastrain);
-				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].rain[j]));
-				if (daily_flags.daytime_rain_duration == 1) {
-					tokc = strtok_r(bufferdaytime_rain_duration, " ", &lastdaytime_rain_duration);
-					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
-				}
-				if (daily_flags.ndep_NO3 == 1) {
-					tokc = strtok_r(bufferndep_NO3, " ", &lastndep_NO3);
-					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NO3[j]));
-				}
-				if (daily_flags.ndep_NH4 == 1) {
-					tokc = strtok_r(bufferndep_NH4, " ", &lastndep_NH4);
-					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
-				}
 			} else {
-				tokc = strtok_r(NULL," ",&lasttmax);
-				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmax[j]));
-				tokc = strtok_r(NULL," ",&lasttmin);
+        		tokc = strtok(NULL," ");
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmin[j]));
-				tokc = strtok_r(NULL," ",&lastrain);
+			}
+		}
+    	for (i=0; i < num_base_stations; i++) {
+    		if (i==0) {
+				tokc = strtok(bufferrain, " ");
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].rain[j]));
+    		} else {
+        		tokc = strtok(NULL," ");
+    			sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].rain[j]));
+			}
+		}
+		for (i=0; i < num_base_stations; i++) {
+    		if (i==0) {
 				if (daily_flags.daytime_rain_duration == 1) {
-					tokc = strtok_r(NULL," ",&lastdaytime_rain_duration);
+					tokc = strtok(bufferdaytime_rain_duration, " ");
 					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
 				}
+    		} else {
+    			if (daily_flags.daytime_rain_duration == 1) {
+        			tokc = strtok(NULL," ");
+    				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
+        		}
+			}
+		}
+        for (i=0; i < num_base_stations; i++) {
+            if (i==0) {
 				if (daily_flags.ndep_NO3 == 1) {
-					tokc = strtok_r(NULL," ",&lastndep_NO3);
+					tokc = strtok(bufferndep_NO3, " ");
 					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NO3[j]));
 				}
-				if (daily_flags.ndep_NH4 == 1) {
-					tokc = strtok_r(NULL," ",&lastndep_NH4);
-					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
+        	} else {
+    			if (daily_flags.ndep_NO3 == 1) {
+    				tokc = strtok(NULL," ");
+    				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NO3[j]));
 				}
 			}
-			
-
 		}
-
+    	for (i=0; i < num_base_stations; i++) {
+    		if (i==0) {
+				if (daily_flags.ndep_NH4 == 1) {
+					tokc = strtok(bufferndep_NH4, " ");
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
+				}
+            } else {
+    			if (daily_flags.ndep_NH4 == 1) {
+    				tokc = strtok(NULL," ");
+    				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
+                }
+			}
+		}
 	}
 	fclose(tmax_file);
 	fclose(tmin_file);
