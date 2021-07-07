@@ -461,12 +461,13 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				Do yearly stuff.								*/
 				/*--------------------------------------------------------------*/
-//				if (command_line[0].salience_flag == 1) {
+				if (command_line[0].salience_flag == 1) {
 					/* update patch scale salience treatment probablities
 					after this year's fire has accumulated*/
 //					update_salience(world[0].WUI_list); //MK move to yearly
-//					reset_fire_in_WUI(world[0].WUI_list);//after salience is updated reset WUI fire areas
-//				}	
+//					Instead, this should be execute_treatment_event(world,salience_flag)
+					reset_fire_in_WUI(world[0].WUI_list);//after salience is updated reset WUI fire areas
+				}	
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/

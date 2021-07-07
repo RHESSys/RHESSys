@@ -358,6 +358,8 @@ void execute_firespread_event(
 					// Add pspread to patch
 					for (p = 0; p < patch_family[0].num_patches_in_fam; p++) {
 						patch_family[0].patches[p][0].pspread = pspread;
+						if(pspread>0)
+							patch_family[0].patches[p][0].nburn+=1;
 					}
 
 					if (world[0].defaults[0].fire[0].fire_verbose == 1)
