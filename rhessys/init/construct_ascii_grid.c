@@ -511,66 +511,66 @@ struct base_station_object **construct_ascii_grid (
 			if (i==0) {
 				tokc = strtok(buffertmax, " ");
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmax[j]));
-     			} else {
-    		    	tokc = strtok(NULL," ");
-					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmax[j]));
+			} else {
+				tokc = strtok(NULL," ");
+				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmax[j]));
 			}
 		}
-        for (i=0; i < num_base_stations; i++) {
+		for (i=0; i < num_base_stations; i++) {
 			if (i==0) {
 				tokc = strtok(buffertmin, " ");
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmin[j]));
 			} else {
-        		tokc = strtok(NULL," ");
+				tokc = strtok(NULL," ");
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].tmin[j]));
 			}
 		}
-    	for (i=0; i < num_base_stations; i++) {
-    		if (i==0) {
+		for (i=0; i < num_base_stations; i++) {
+			if (i==0) {
 				tokc = strtok(bufferrain, " ");
 				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].rain[j]));
-    		} else {
-        		tokc = strtok(NULL," ");
-    			sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].rain[j]));
+			} else {
+				tokc = strtok(NULL," ");
+				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].rain[j]));
 			}
 		}
 		for (i=0; i < num_base_stations; i++) {
-    		if (i==0) {
+			if (i==0) {
 				if (daily_flags.daytime_rain_duration == 1) {
 					tokc = strtok(bufferdaytime_rain_duration, " ");
 					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
 				}
-    		} else {
-    			if (daily_flags.daytime_rain_duration == 1) {
-        			tokc = strtok(NULL," ");
-    				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
-        		}
+			} else {
+				if (daily_flags.daytime_rain_duration == 1) {
+					tokc = strtok(NULL," ");
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].daytime_rain_duration[j]));
+				}
 			}
 		}
-        for (i=0; i < num_base_stations; i++) {
-            if (i==0) {
+		for (i=0; i < num_base_stations; i++) {
+			if (i==0) {
 				if (daily_flags.ndep_NO3 == 1) {
 					tokc = strtok(bufferndep_NO3, " ");
 					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NO3[j]));
 				}
-        	} else {
-    			if (daily_flags.ndep_NO3 == 1) {
-    				tokc = strtok(NULL," ");
-    				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NO3[j]));
+			} else {
+				if (daily_flags.ndep_NO3 == 1) {
+					tokc = strtok(NULL," ");
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NO3[j]));
 				}
 			}
 		}
-    	for (i=0; i < num_base_stations; i++) {
-    		if (i==0) {
+		for (i=0; i < num_base_stations; i++) {
+			if (i==0) {
 				if (daily_flags.ndep_NH4 == 1) {
 					tokc = strtok(bufferndep_NH4, " ");
 					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
 				}
-            } else {
-    			if (daily_flags.ndep_NH4 == 1) {
-    				tokc = strtok(NULL," ");
-    				sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
-                }
+			} else {
+				if (daily_flags.ndep_NH4 == 1) {
+					tokc = strtok(NULL," ");
+					sscanf(tokc, "%lf", &(base_stations[i][0].daily_clim[0].ndep_NH4[j]));
+				}
 			}
 		}
 	}
