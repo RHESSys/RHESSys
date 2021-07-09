@@ -158,7 +158,16 @@ void		zone_daily_F(
 	void	compute_family_shading(
 		struct	zone_object	*,
 		struct	command_line_object	*);
+
+
 	
+	void update_fuel_treatment_effects(struct zone_object *,
+                                   struct command_line_object *);
+
+	void compute_family_fire_effects(
+		struct patch_family_object *,
+		double,
+		struct command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/

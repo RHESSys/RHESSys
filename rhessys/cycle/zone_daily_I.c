@@ -168,6 +168,9 @@ void zone_daily_I(
         long    day);
 
 
+
+	void sort_patch_family_layers( struct patch_family_object *, int *);
+
 	double normdist(double, double);
 
 	double unifdist(double, double);

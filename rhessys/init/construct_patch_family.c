@@ -39,6 +39,7 @@ struct patch_family_object *construct_patch_family(
     struct command_line_object *command_line)
 {
 
+	void sort_patch_family_layers( struct patch_family_object *, int *);
     /*--------------------------------------------------------------*/
     /*	Local function definition.				                    */
     /*--------------------------------------------------------------*/
