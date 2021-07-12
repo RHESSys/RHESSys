@@ -47,7 +47,7 @@
     return VAR_DEF;
 }
 \"[a-zA-Z0-9_\-\(\)\[\]\.]+\" { yylval.string = strdup(yytext); return FILENAME_SPEC; }
-\"(\.{1,2}\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+\" { yylval.string = strdup(yytext); return PATH_SPEC; }
+\"(\.{1,2}\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+\/*\" { yylval.string = strdup(yytext); return PATH_SPEC; }
 
 "hill." { return LEVEL_HILLSLOPE; }
 "zone." { return LEVEL_ZONE; }

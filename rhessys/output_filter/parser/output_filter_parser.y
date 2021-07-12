@@ -185,6 +185,15 @@ path: PATH PATH_SPEC {
 			if (verbose_output) fprintf(stderr, "\t\tOUTPUT PATH IS: %s\n", $2);
 		}
 	}
+	| PATH FILENAME_SPEC {
+		if (!in_output) {
+			syntax_error = true;
+			yyerror("path definition must be nested within output definition");
+		} else {
+			curr_filter->output->path = strip($2);
+			if (verbose_output) fprintf(stderr, "\t\tOUTPUT PATH IS: %s\n", $2);
+		}
+	}
 	;
 
 filename: FILENAME FILENAME_SPEC {
