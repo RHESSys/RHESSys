@@ -1597,6 +1597,7 @@ struct patch_fire_water_object
         double et;                      /* mm */
 	double understory_et; /*mm; understory layer et*/
 	double understory_pet; /*mm; understory layer pet*/
+	double litter_c_consumed; /* kg carbon lost in fire */
 	
 
 };
