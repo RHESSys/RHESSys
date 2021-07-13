@@ -285,6 +285,14 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 	if (!status) return false;
 
 	switch (f->type) {
+		case OUTPUT_FILTER_ZONE:
+			// Hillslope ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_HILL, NC_INT, &(meta->var_id_hill_id));
+			if (!status) return false;
+			// Zone ID
+			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_ZONE, NC_INT, &(meta->var_id_zone_id));
+			if (!status) return false;
+			break;
 		case OUTPUT_FILTER_PATCH:
 			// Hillslope ID
 			status = create_meta_variable(abs_path, ncid, dimids, OF_VAR_HILL, NC_INT, &(meta->var_id_hill_id));
