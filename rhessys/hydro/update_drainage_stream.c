@@ -47,7 +47,7 @@ void  update_drainage_stream(
 		int,
 		double  ,
 		double  );
-	
+
 	double  compute_delta_water(
 		int,
 		double,
@@ -55,7 +55,7 @@ void  update_drainage_stream(
 		double,
 		double,
 		double);
-	
+
 	double compute_N_leached(
 		int,
 		double,
@@ -70,7 +70,7 @@ void  update_drainage_stream(
 		double,
 		double,
 		double, double *);
-	
+
 	double compute_varbased_returnflow(
 		double,
 		double,
@@ -87,19 +87,19 @@ void  update_drainage_stream(
 		double *,
 		struct patch_object *patch);
 
-	double recompute_gamma(	
+	double recompute_gamma(
 		struct patch_object *,
 		double);
-	/*--------------------------------------------------------------*/ 
-	/*	Local variable definition.				*/ 
-	/*--------------------------------------------------------------*/ 
-	int i, j,k, d; 
-	double m, Ksat; 
-	double return_flow;  /* m */ 
-	double NO3_leached_total, NO3_leached_to_stream; /* kg/m2 */ 
-	double NH4_leached_total, NH4_leached_to_stream; /* kg/m2 */ 
-	double DON_leached_total, DON_leached_to_stream; /* kg/m2 */ 
-	double DOC_leached_total, DOC_leached_to_stream; /* kg/m2 */ 
+	/*--------------------------------------------------------------*/
+	/*	Local variable definition.				*/
+	/*--------------------------------------------------------------*/
+	int i, j,k, d;
+	double m, Ksat;
+	double return_flow;  /* m */
+	double NO3_leached_total, NO3_leached_to_stream; /* kg/m2 */
+	double NH4_leached_total, NH4_leached_to_stream; /* kg/m2 */
+	double DON_leached_total, DON_leached_to_stream; /* kg/m2 */
+	double DOC_leached_total, DOC_leached_to_stream; /* kg/m2 */
 	double patch_int_depth;  /* m of H2O */
 	double  route_to_stream; /* m3 */
 	double route_to_surface;
@@ -107,7 +107,7 @@ void  update_drainage_stream(
 	double gamma, total_gamma, percent_tobe_routed;
 	double Nin, Nout;  /* kg/m2 */
 	double t1,t2,t3;
-	
+
 	d=0;
 	route_to_stream = 0.0;
 	return_flow=0.0;
@@ -153,7 +153,7 @@ void  update_drainage_stream(
 
 	if (route_to_stream < 0.0) route_to_stream = 0.0;
 
-		
+
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount with baseflow		*/
 	/*--------------------------------------------------------------*/
@@ -250,10 +250,10 @@ void  update_drainage_stream(
 	/*	and route any infiltration excess			*/
 	/*--------------------------------------------------------------*/
 	if ((patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage) < -1.0*ZERO) {
-		return_flow = compute_varbased_returnflow(patch[0].std * command_line[0].std_scale, 
+		return_flow = compute_varbased_returnflow(patch[0].std * command_line[0].std_scale,
 			patch[0].rz_storage+patch[0].unsat_storage,
 			patch[0].sat_deficit, &(patch[0].litter));
-		patch[0].detention_store += return_flow;  
+		patch[0].detention_store += return_flow;
 		patch[0].sat_deficit += (return_flow - (patch[0].unsat_storage+patch[0].rz_storage));;
 		patch[0].unsat_storage = 0.0;
 		patch[0].rz_storage = 0.0;
@@ -352,7 +352,9 @@ void  update_drainage_stream(
 		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_NO3;
 		patch[0].surface_NO3  -= Nout;
 		patch[0].streamflow_NO3 += Nout;
+		patch[0].streamNO3_from_surface += Nout; //NREN
 		patch[0].hourly[0].streamflow_NO3 += Nout;
+		patch[0].hourly[0].streamflow_NO3_from_surface += Nout; //NREN
 
 		patch[0].surface_ns_leach += Nout;
 		Nout = (min(1.0, Qout / patch[0].detention_store)) * patch[0].surface_DOC;
@@ -365,9 +367,8 @@ void  update_drainage_stream(
 		patch[0].surface_NH4  -= Nout;
 		patch[0].streamflow_NH4 += Nout;
 		patch[0].detention_store -= Qout;
-		patch[0].return_flow += Qout; 
+		patch[0].return_flow += Qout;
 		patch[0].hourly_sur2stream_flow += Qout;
 		}
 
 } /*end update_drainage_stream.c*/
-

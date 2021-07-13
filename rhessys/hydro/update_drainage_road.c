@@ -43,7 +43,7 @@ void  update_drainage_road(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
-	
+
 	double  compute_delta_water(
 		int,
 		double,
@@ -66,7 +66,7 @@ void  update_drainage_road(
 		double,
 		double,
 		double, double *);
-	
+
 	double compute_varbased_flow(
 		int,
 		double,
@@ -76,7 +76,7 @@ void  update_drainage_road(
 		double *,
 		struct patch_object *patch);
 
-	double recompute_gamma(	
+	double recompute_gamma(
 		struct patch_object *,
 		double);
 
@@ -86,7 +86,7 @@ void  update_drainage_road(
 		double,
 		double,
 		struct litter_object *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
@@ -105,7 +105,7 @@ void  update_drainage_road(
 	double available_sat_water, route_total; /* m3 */
 	double  Qin, Qout, Qstr_total;  /* m */
 	double total_gamma, percent_loss;
-	double Nin, Nout; /* kg/m2 */ 
+	double Nin, Nout; /* kg/m2 */
 	double percent_tobe_routed;
 
 	struct patch_object *neigh;
@@ -164,9 +164,9 @@ void  update_drainage_road(
 	/*-----------------------------------------------------------*/
 		route_to_patch =  time_int * compute_varbased_flow(
 			patch[0].num_soil_intervals,
-			patch[0].std * command_line[0].std_scale, 
+			patch[0].std * command_line[0].std_scale,
 			road_int_depth,
-			total_gamma, 
+			total_gamma,
 			patch[0].soil_defaults[0][0].interval_size,
 			patch[0].transmissivity_profile,
 			patch);
@@ -176,9 +176,9 @@ void  update_drainage_road(
 		/*-----------------------------------------------------------*/
 		route_to_stream =  time_int * compute_varbased_flow(
 			patch[0].num_soil_intervals,
-			patch[0].std * command_line[0].std_scale, 
+			patch[0].std * command_line[0].std_scale,
 			patch[0].sat_deficit,
-			total_gamma, 
+			total_gamma,
 			patch[0].soil_defaults[0][0].interval_size,
 			patch[0].transmissivity_profile,
 			patch) - route_to_patch;
@@ -224,7 +224,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].NO3_adsorption_rate,
 				patch[0].transmissivity_profile) -
 				NO3_leached_to_patch;
-			if (NO3_leached_to_stream < 0.0) NO3_leached_to_stream = 0.0;	
+			if (NO3_leached_to_stream < 0.0) NO3_leached_to_stream = 0.0;
 			patch[0].soil_ns.NO3_Qout += (NO3_leached_to_patch + NO3_leached_to_stream);
 
 			NH4_leached_to_patch = compute_N_leached(
@@ -331,13 +331,13 @@ void  update_drainage_road(
 				DOC_leached_to_patch;
 
 			if (DOC_leached_to_stream < 0.0) DOC_leached_to_stream = 0.0;
-		      
+
 			patch[0].soil_cs.DOC_Qout += (DOC_leached_to_patch + DOC_leached_to_stream);
-					 
+
 		}
 		patch[0].Qout += ((route_to_patch + route_to_stream) / patch[0].area);
 
-		
+
 	}
 	/*--------------------------------------------------------------*/
 	/* if road is below the water_table - no routing to the stream  */
@@ -346,15 +346,15 @@ void  update_drainage_road(
 		route_to_stream = 0.0;
 		route_to_patch =  time_int * compute_varbased_flow(
 			patch[0].num_soil_intervals,
-			patch[0].std * command_line[0].std_scale, 
+			patch[0].std * command_line[0].std_scale,
 			patch[0].sat_deficit,
-			total_gamma, 
+			total_gamma,
 			patch[0].soil_defaults[0][0].interval_size,
 			patch[0].transmissivity_profile,
 			patch);
 
 		if (route_to_patch < 0.0) route_to_patch = 0.0;
-		if (route_to_patch > available_sat_water) 
+		if (route_to_patch > available_sat_water)
 			route_to_patch = available_sat_water;
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount				*/
@@ -438,7 +438,7 @@ void  update_drainage_road(
 		}
 
 		patch[0].Qout += ((route_to_patch + route_to_stream) / patch[0].area);
-		
+
 	}
 
 	/*--------------------------------------------------------------*/
@@ -453,10 +453,10 @@ void  update_drainage_road(
 	/*	i.e becomes part of Qout				*/
 	/*--------------------------------------------------------------*/
 	if ((patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage) < -1.0*ZERO) {
-		return_flow = compute_varbased_returnflow(patch[0].std * command_line[0].std_scale, 
+		return_flow = compute_varbased_returnflow(patch[0].std * command_line[0].std_scale,
 			patch[0].rz_storage+patch[0].unsat_storage,
 			patch[0].sat_deficit, &(patch[0].litter));
-		patch[0].detention_store += return_flow;  
+		patch[0].detention_store += return_flow;
 		patch[0].sat_deficit += (return_flow - (patch[0].unsat_storage+patch[0].rz_storage));;
 		patch[0].unsat_storage = 0.0;
 		patch[0].rz_storage = 0.0;
@@ -543,9 +543,9 @@ void  update_drainage_road(
 		patch[0].surface_DOC += Nout;
 		patch[0].soil_cs.DOC_Qout += Nout;
 
-		
+
 		}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	route water and nitrogen lossed due to infiltration excess */
 	/*	note we assume that this happens before return_flow losses */
@@ -575,7 +575,7 @@ void  update_drainage_road(
 		patch[0].next_stream[0].hourly_sur2stream_flow += Qout *  patch[0].area / patch[0].next_stream[0].area;
 		patch[0].detention_store -= Qout;
 		}
-		
+
 
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/
@@ -597,14 +597,14 @@ void  update_drainage_road(
 		patch[0].next_stream[0].streamflow_DOC += Nin;
 		Nin = (NO3_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NO3 += Nin;
-		patch[0].next_stream[0].streamNO3_from_sub += Nin;
+		patch[0].next_stream[0].streamNO3_from_surface += Nin; //change from sub to from surface NREN
 		patch[0].next_stream[0].hourly[0].streamflow_NO3 += Nin;
 		patch[0].next_stream[0].hourly[0].streamflow_NO3_from_surface += Nin;
 		Nin = (NH4_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NH4 += Nin;
 		}
 
-		
+
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/
 	/*	route n_leaching if grow flag specfied			*/
@@ -614,22 +614,22 @@ void  update_drainage_road(
 	/*--------------------------------------------------------------*/
 	d=0;
 	for (j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
-		neigh = patch[0].innundation_list[d].neighbours[j].patch;  
+		neigh = patch[0].innundation_list[d].neighbours[j].patch;
 		/*--------------------------------------------------------------*/
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
 		if (command_line[0].grow_flag > 0) {
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NO3_leached_to_patch * patch[0].area) 
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NO3_leached_to_patch * patch[0].area)
 				/ neigh[0].area;
 			neigh[0].soil_ns.NO3_Qin += Nin;
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch * patch[0].area) 
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch * patch[0].area)
 				/ neigh[0].area;
 			neigh[0].soil_ns.NH4_Qin += Nin;
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch * patch[0].area) 
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch * patch[0].area)
 				/ neigh[0].area;
 			neigh[0].soil_ns.DON_Qin += Nin;
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch * patch[0].area) 
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch * patch[0].area)
 				/ neigh[0].area;
 			neigh[0].soil_cs.DOC_Qin += Nin;
 			}
@@ -640,4 +640,3 @@ void  update_drainage_road(
 
 
 } /*end update_drainage_road.c*/
-

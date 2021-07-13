@@ -129,7 +129,7 @@ double	top_model(
 		double,
 		double,
 		double);
-	
+
 	double compute_varbased_returnflow(
 		double,
 		double,
@@ -174,15 +174,15 @@ double	top_model(
 		double,
 		double,
 		double);
-		
+
 	double  compute_delta_water(
                 int,
                 double,
                 double,
                 double,
                 double,
-                double);	
-	
+                double);
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -205,7 +205,7 @@ double	top_model(
 	double  mean_N_leached, mean_nitrate;
 	double	preday_sat_deficit_z, add_field_capacity;
 	struct	patch_object *patch;
-	
+
 
 	/*--------------------------------------------------------------*/
 	/* allow for iteration at sub-daily time steps			*/
@@ -233,11 +233,11 @@ double	top_model(
 				* zones[i][0].patches[j][0].area;
 			preday_total_litter_store += patch[0].litter.rain_stored
 				* zones[i][0].patches[j][0].area;
-				
+
 		}
 	}
 
-	for ( k=0; k< num_timesteps; ++k) { 
+	for ( k=0; k< num_timesteps; ++k) {
 
 	mean_sat_deficit = 0.0;
 	mean_hillslope_lna = 0.0;
@@ -257,23 +257,23 @@ double	top_model(
 	/*--------------------------------------------------------------*/
 	/*	get rid of any intial return flow from infiltration excess	*/
 	/*--------------------------------------------------------------*/
-			
+
 			patch =  zones[i][0].patches[j];
 			return_flow = 0.0;
 			total_detention_store += patch[0].detention_store * patch[0].area;
 			total_litter_store += patch[0].litter.rain_stored * patch[0].area;
-			
+
 			if ((patch[0].sat_deficit - patch[0].rz_storage - patch[0].unsat_storage) < -1.0*ZERO)  {
 				return_flow = compute_varbased_returnflow(
-					patch[0].std * std_scale, 
+					patch[0].std * std_scale,
 					patch[0].rz_storage + patch[0].unsat_storage,
 					patch[0].sat_deficit, &(patch[0].litter));
-				patch[0].detention_store += return_flow; 
+				patch[0].detention_store += return_flow;
 				patch[0].sat_deficit += (return_flow-(patch[0].unsat_storage+patch[0].rz_storage)) ;
 				patch[0].unsat_storage = 0.0;
 				patch[0].rz_storage = 0.0;
 			}
-			
+
 			/*------------------------------------------------------------------*/
 			/*  Distribute excess water between transmission and rootzone layer */
 			/*------------------------------------------------------------------*/
@@ -281,27 +281,27 @@ double	top_model(
 			else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)  {
 				if (patch[0].sat_deficit - patch[0].rootzone.potential_sat - patch[0].unsat_storage < -1.0*ZERO) {
 					patch[0].sat_deficit -= patch[0].unsat_storage;
-					patch[0].unsat_storage = 0.0;	
+					patch[0].unsat_storage = 0.0;
 				}
-			
+
 				if (patch[0].rootzone.potential_sat - patch[0].rz_storage < -1.0*ZERO)  {
 					patch[0].unsat_storage += patch[0].rz_storage - patch[0].rootzone.potential_sat;
 					patch[0].rz_storage = patch[0].rootzone.potential_sat;	/* fully saturated */
 				}
 			}
-			
+
 			else {
 				patch[0].sat_deficit -= patch[0].unsat_storage;
 				patch[0].unsat_storage = 0.0;
-			}			
-			
+			}
+
 			if (patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) {
 				return_flow = patch[0].detention_store -
 						patch[0].soil_defaults[0][0].detention_store_size;
 				patch[0].detention_store -= return_flow;
 				patch[0].return_flow += return_flow;
 			}
-			
+
 	/*--------------------------------------------------------------*/
 	/*	compute mean soil moisture				*/
 	/*--------------------------------------------------------------*/
@@ -368,7 +368,7 @@ double	top_model(
 					mean_sat_deficit,
 					hillslope[0].aggdefs.soil_water_cap,
 					hillslope[0].aggdefs.m,
-					hillslope[0].aggdefs.Ksat_0 / num_timesteps,	
+					hillslope[0].aggdefs.Ksat_0 / num_timesteps,
 					hillslope[0].aggdefs.porosity_0,
 					hillslope[0].aggdefs.porosity_decay,
 					hillslope[0].aggdefs.N_decay_rate,
@@ -377,7 +377,8 @@ double	top_model(
 					hillslope[0].aggdefs.NO3_adsorption_rate,
 					NULL);
 		hillslope[0].streamflow_NO3 += mean_N_leached;
-		mean_nitrate -= hillslope[0].streamflow_NO3;
+		mean_nitrate -= mean_N_leached; //hillslope[0].streamflow_NO3; NREN 
+		//printf("\n testing hillslope n streamflow NO3 [mean_N_leached] is %lf, and [stream_NO3] is %lf, [mean nitrate] is %lf \n", mean_N_leached, hillslope[0].streamflow_NO3, mean_nitrate);
 	}
 	/*--------------------------------------------------------------*/
 	/*	Adjust the mean_sat_deficit for the base_flow.		*/
@@ -437,8 +438,8 @@ double	top_model(
 					patch[0].soil_defaults[0][0].porosity_0,
 					patch[0].soil_defaults[0][0].porosity_decay,
 					patch[0].sat_deficit_z,
-					patch[0].sat_deficit_z, 0.0);				
-					
+					patch[0].sat_deficit_z, 0.0);
+
 				patch[0].field_capacity = 0.0;
 			}
 			else  {
@@ -453,7 +454,7 @@ double	top_model(
 					patch[0].soil_defaults[0][0].porosity_decay,
 					patch[0].sat_deficit_z,
 					patch[0].sat_deficit_z, 0);
-					
+
 				patch[0].rootzone.field_capacity = compute_layer_field_capacity(
 					command_line[0].verbose_flag,
 					patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -464,7 +465,7 @@ double	top_model(
 					patch[0].soil_defaults[0][0].porosity_0,
 					patch[0].soil_defaults[0][0].porosity_decay,
 					patch[0].sat_deficit_z,
-					patch[0].rootzone.depth, 0.0);	
+					patch[0].rootzone.depth, 0.0);
 			}
 
 			/*--------------------------------------------------------------*/
@@ -475,13 +476,13 @@ double	top_model(
 				patch[0].rootzone.S = 1.0;
 				rz_drainage = 0.0;
 				unsat_drainage = 0.0;
-			}	
+			}
 			else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)  {		/* Constant vertical profile of soil porosity */
 
 				/*-------------------------------------------------------*/
 				/*	soil drainage and storage update	     	 */
 				/*-------------------------------------------------------*/
-				patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
+				patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
 				rz_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
 					patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -489,12 +490,12 @@ double	top_model(
 					patch[0].rootzone.S,
 					patch[0].soil_defaults[0][0].mz_v,
 					patch[0].rootzone.depth,
-					patch[0].soil_defaults[0][0].Ksat_0 / num_timesteps / 2,	
+					patch[0].soil_defaults[0][0].Ksat_0 / num_timesteps / 2,
 					patch[0].rz_storage - patch[0].rootzone.field_capacity);
-					
+
 				patch[0].rz_storage -=  rz_drainage;
-				patch[0].unsat_storage +=  rz_drainage;	
-										
+				patch[0].unsat_storage +=  rz_drainage;
+
 				patch[0].S = min(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat), 1.0);
 				unsat_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
@@ -505,14 +506,14 @@ double	top_model(
 					patch[0].sat_deficit_z,
 					patch[0].soil_defaults[0][0].Ksat_0 / num_timesteps / 2,
 					patch[0].unsat_storage - patch[0].field_capacity);
-					
+
 				patch[0].unsat_storage -=  unsat_drainage;
 				patch[0].sat_deficit -=  unsat_drainage;
 			}
 			else  {
 				patch[0].sat_deficit -= patch[0].unsat_storage;	/* transfer left water in unsat storage to rootzone layer */
-				patch[0].unsat_storage = 0.0;   
-								
+				patch[0].unsat_storage = 0.0;
+
 				patch[0].S = min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
 				rz_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
@@ -522,35 +523,35 @@ double	top_model(
 					patch[0].soil_defaults[0][0].mz_v,
 					patch[0].sat_deficit_z,
 					patch[0].soil_defaults[0][0].Ksat_0 / num_timesteps / 2,
-					patch[0].rz_storage - patch[0].rootzone.field_capacity);	
-				
-				unsat_drainage = 0.0;	   				  		
-				
+					patch[0].rz_storage - patch[0].rootzone.field_capacity);
+
+				unsat_drainage = 0.0;
+
 				patch[0].rz_storage -=  rz_drainage;
 				patch[0].sat_deficit -=  rz_drainage;
 			}
 
 			patch[0].unsat_drainage += unsat_drainage;
 			patch[0].rz_drainage += rz_drainage;
-			
+
 			if (grow_flag > 0) {
 				patch[0].soil_ns.nitrate = mean_nitrate;
 			}
-			
+
 			/*--------------------------------------------------------------*/
 			/*	compute any saturation excess flow			*/
 			/*--------------------------------------------------------------*/
 			if ((patch[0].sat_deficit - patch[0].rz_storage - patch[0].unsat_storage) < -1.0*ZERO)  {
 				return_flow = compute_varbased_returnflow(
-					patch[0].std * std_scale, 
+					patch[0].std * std_scale,
 					patch[0].rz_storage + patch[0].unsat_storage,
 					patch[0].sat_deficit, &(patch[0].litter));
-				patch[0].detention_store += return_flow; 
+				patch[0].detention_store += return_flow;
 				patch[0].sat_deficit = 0.0;
 				patch[0].unsat_storage = 0.0;
 				patch[0].rz_storage = 0.0;
 			}
-			
+
 			/*------------------------------------------------------------------*/
 			/*  Distribute excess water between transmission and rootzone layer */
 			/*------------------------------------------------------------------*/
@@ -558,27 +559,27 @@ double	top_model(
 			else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)  {
 				if (patch[0].sat_deficit - patch[0].rootzone.potential_sat - patch[0].unsat_storage < -1.0*ZERO) {
 					patch[0].sat_deficit -= patch[0].unsat_storage;
-					patch[0].unsat_storage = 0.0;	
+					patch[0].unsat_storage = 0.0;
 				}
-			
+
 				if (patch[0].rootzone.potential_sat - patch[0].rz_storage < -1.0*ZERO)  {
 					patch[0].unsat_storage += patch[0].rz_storage - patch[0].rootzone.potential_sat;
 					patch[0].rz_storage = patch[0].rootzone.potential_sat;	/* fully saturated */
 				}
 			}
-			
+
 			else {
 				patch[0].sat_deficit -= patch[0].unsat_storage;		/* Make sure that there is no unsat_storage */
 				patch[0].unsat_storage = 0.0;
-			}			
-			
+			}
+
 			if (patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) {
 				return_flow = patch[0].detention_store -
 						patch[0].soil_defaults[0][0].detention_store_size;
 				patch[0].detention_store -= return_flow;
 				patch[0].return_flow += return_flow;
 			}
-			
+
 			patch[0].sat_deficit_z = compute_z_final(
 				verbose_flag,
 				patch[0].soil_defaults[0][0].porosity_0,
@@ -608,31 +609,31 @@ double	top_model(
 					preday_sat_deficit_z);
 
 				patch[0].sat_deficit += add_field_capacity;
-			
-				if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) && (preday_sat_deficit_z > patch[0].rootzone.depth))				
+
+				if ((patch[0].sat_deficit_z > patch[0].rootzone.depth) && (preday_sat_deficit_z > patch[0].rootzone.depth))
 					patch[0].unsat_storage += add_field_capacity;
-				
+
 				else if ((patch[0].sat_deficit_z <= patch[0].rootzone.depth) && (preday_sat_deficit_z <= patch[0].rootzone.depth))
 					patch[0].rz_storage += add_field_capacity;
-				
+
 				else  {
-					patch[0].rz_storage += add_field_capacity * (patch[0].rootzone.depth - preday_sat_deficit_z) 
+					patch[0].rz_storage += add_field_capacity * (patch[0].rootzone.depth - preday_sat_deficit_z)
 						/ (patch[0].sat_deficit_z - preday_sat_deficit_z);
-					patch[0].unsat_storage += add_field_capacity * (patch[0].sat_deficit_z - patch[0].rootzone.depth) 
-						/ (patch[0].sat_deficit_z - preday_sat_deficit_z);					
+					patch[0].unsat_storage += add_field_capacity * (patch[0].sat_deficit_z - patch[0].rootzone.depth)
+						/ (patch[0].sat_deficit_z - preday_sat_deficit_z);
 				}
 			}
 
 			/* ---------------------------------------------- */
 			/*     Final rootzone saturation calculation      */
 			/* ---------------------------------------------- */
-		 
+
 			if (patch[0].sat_deficit > patch[0].rootzone.potential_sat)
 				patch[0].rootzone.S = min(patch[0].rz_storage / (patch[0].rootzone.potential_sat), 1.0);
-			else 
+			else
 				patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 					/ (patch[0].rootzone.potential_sat), 1.0);
-			
+
 			total_new_return_flow += patch[0].return_flow * patch[0].area;
 			new_mean_sat_deficit += patch[0].sat_deficit * patch[0].area;
 			new_mean_unsat_storage += patch[0].unsat_storage * patch[0].area;
@@ -640,8 +641,8 @@ double	top_model(
 			new_total_detention_store += patch[0].detention_store * patch[0].area;
 			new_total_litter_store += patch[0].litter.rain_stored * patch[0].area;
 
-			patch[0].streamflow = patch[0].return_flow;	
-			
+			patch[0].streamflow = patch[0].return_flow;
+
 			patch[0].sat_deficit_z = compute_z_final(
 				verbose_flag,
 				patch[0].soil_defaults[0][0].porosity_0,
@@ -656,16 +657,16 @@ double	top_model(
 
 	/* for now water balance cannot be computed for multiple  */
 	if (total_detention_store < ZERO)
-		water_balance = ( -new_mean_sat_deficit + preday_mean_sat_deficit + 
+		water_balance = ( -new_mean_sat_deficit + preday_mean_sat_deficit +
 			new_mean_unsat_storage + new_mean_rz_storage + new_total_litter_store -
-			preday_total_litter_store - preday_mean_unsat_storage - preday_mean_rz_storage + 
+			preday_total_litter_store - preday_mean_unsat_storage - preday_mean_rz_storage +
 			total_new_return_flow - preday_total_detention_store + new_total_detention_store) / hillslope[0].area
-		 + total_baseflow; 
-	 
+		 + total_baseflow;
+
 	else
 		water_balance = 0.0;
 
-	if ((water_balance > 0.0000001) || (water_balance < -0.0000001))  
+	if ((water_balance > 0.0000001) || (water_balance < -0.0000001))
 		printf("\n Hill Water Balance is %12.8f on %d %d %d for Hill %d base %lf return %lf sd %lf %lf un %lf %lf rz %lf %lf litter %lf %lf det %lf %lf\n",
 		water_balance,
 		current_date.day,
@@ -719,7 +720,7 @@ double	top_model(
 			basin[0].acc_year.lai += patch[0].lai * scale;
 			}
 
-	
+
 		if((command_line[0].output_flags.monthly == 1)&&(command_line[0].p != NULL)){
 			patch[0].acc_month.sm_deficit += (patch[0].sat_deficit - patch[0].unsat_storage);
 
@@ -761,7 +762,7 @@ double	top_model(
 			patch[0].acc_year.et += (patch[0].transpiration_unsat_zone
 				+ patch[0].transpiration_sat_zone + patch[0].evaporation);
 			patch[0].acc_year.lai = max(patch[0].acc_year.lai, patch[0].lai);
-			
+
 		}
 	   }
 	}
@@ -773,4 +774,3 @@ double	top_model(
 
 	return(total_baseflow);
 } /*end top_model.c*/
-

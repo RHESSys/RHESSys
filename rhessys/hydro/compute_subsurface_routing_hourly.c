@@ -35,8 +35,8 @@
 
 void compute_subsurface_routing_hourly(
 		struct command_line_object *command_line,
-		struct hillslope_object *hillslope, 
-		int n_timesteps, 
+		struct hillslope_object *hillslope,
+		int n_timesteps,
 		struct date current_date) {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
@@ -89,7 +89,7 @@ void compute_subsurface_routing_hourly(
 	double preday_hillslope_sat_deficit;
 	double preday_sat_deficit;
 	double preday_hillslope_return_flow;
-	double preday_hillslope_detention_store;	
+	double preday_hillslope_detention_store;
 	double add_field_capacity, rz_drainage, unsat_drainage;
 	double streamflow, Qout, Qin_total, Qstr_total;
 	struct patch_object *patch;
@@ -99,7 +99,7 @@ void compute_subsurface_routing_hourly(
 	/*--------------------------------------------------------------*/
 	/*	initializations						*/
 	/*--------------------------------------------------------------*/
-	
+
 		grow_flag = command_line[0].grow_flag;
 		verbose_flag = command_line[0].verbose_flag;
 
@@ -199,7 +199,7 @@ void compute_subsurface_routing_hourly(
 				patch[0].surface_DON_Qin = 0.0;
 				patch[0].surface_DOC_Qout = 0.0;
 				patch[0].surface_DOC_Qin = 0.0;
-			
+
 				patch[0].streamNO3_from_surface	= 0.0;
 				patch[0].streamNO3_from_sub = 0.0;
 			}
@@ -211,14 +211,14 @@ void compute_subsurface_routing_hourly(
 	/*--------------------------------------------------------------*/
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
 			patch = hillslope->route_list->list[i];
-						
+
 			patch[0].preday_sat_deficit = patch[0].sat_deficit;
 			patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
 					patch[0].soil_defaults[0][0].porosity_0,
 					patch[0].soil_defaults[0][0].porosity_decay,
 					patch[0].soil_defaults[0][0].soil_depth, 0.0,
 					-1.0 * patch[0].sat_deficit);
-			
+
 		      	patch[0].hourly_subsur2stream_flow = 0;
 			patch[0].hourly_sur2stream_flow = 0;
 			patch[0].hourly_stream_flow = 0;
@@ -370,7 +370,7 @@ void compute_subsurface_routing_hourly(
 			/*	that it accumulates flux in from patches		*/
 			/*	(roads) that direct water to the stream			*/
 			/*--------------------------------------------------------------*/
-			
+
 		      	if ((patch[0].sat_deficit
 	    		    	- (patch[0].unsat_storage + patch[0].rz_storage))
 			      	< -1.0 * ZERO) {
@@ -382,7 +382,7 @@ void compute_subsurface_routing_hourly(
 					patch[0].unsat_storage = 0.0;
 					patch[0].rz_storage = 0.0;
 
-				
+
 					if (grow_flag > 0) {
 						Nout =
 								compute_N_leached(verbose_flag,
@@ -400,7 +400,7 @@ void compute_subsurface_routing_hourly(
 						patch[0].surface_DOC += Nout;
 						patch[0].soil_cs.DOC -= Nout;
 					}
-	
+
 					if (grow_flag > 0) {
 						Nout =
 								compute_N_leached(verbose_flag,
@@ -550,7 +550,7 @@ void compute_subsurface_routing_hourly(
 											* patch[0].area / neigh[0].area);
 									neigh[0].hourly[0].streamflow_NO3 += (NO3_out
 											* patch[0].area / neigh[0].area);
-									neigh[0].hourly[0].streamflow_NO3_from_sub +=(NO3_out
+									neigh[0].hourly[0].streamflow_NO3_from_surface +=(NO3_out
 											* patch[0].area / neigh[0].area);
 
 
@@ -642,8 +642,8 @@ void compute_subsurface_routing_hourly(
 						patch[0].unsat_storage += add_field_capacity;
 					else
 						patch[0].rz_storage += add_field_capacity;
-				}				
-			
+				}
+
 				if (patch[0].rootzone.depth > ZERO) {
 					if ((patch[0].sat_deficit > ZERO)
 							&& (patch[0].rz_storage == 0.0)) {
@@ -811,7 +811,7 @@ void compute_subsurface_routing_hourly(
 						-1.0 * patch[0].sat_deficit);
 
 
-			
+
 				/*--------------------------------------------------------------*/
 				/*	compute new field capacity				*/
 				/*--------------------------------------------------------------*/
@@ -949,7 +949,7 @@ void compute_subsurface_routing_hourly(
 			/*--------------------------------------------------------------*/
 			/*--------------------------------------------------------------*/
 			/*--------------------------------------------------------------*/
-			/*--------------------------------------------------------------*/			
+			/*--------------------------------------------------------------*/
 			patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 		      				+ patch[0].hourly_sur2stream_flow;
 
@@ -966,10 +966,10 @@ void compute_subsurface_routing_hourly(
 							+ patch[0].base_flow;
 				    }
 			}
-		    
 
-			
-	
+
+
+
 
 		} /* end i */
 
@@ -997,5 +997,3 @@ void compute_subsurface_routing_hourly(
 	return;
 
 } /*end compute_subsurface_routing_hourly.c*/
-
-

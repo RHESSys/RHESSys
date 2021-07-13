@@ -444,7 +444,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].surface_NO3 += Nout;
 						patch[0].soil_ns.nitrate -= Nout;
 						if (patch[0].drainage_type == STREAM) {
+								patch[0].streamflow_NO3 += Nout; //NREN
 								patch[0].streamNO3_from_sub += Nout;
+
 								}
 					}
 
@@ -489,15 +491,15 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							patch[0].streamflow_NO3 += (excess
 									/ patch[0].detention_store)
 									* patch[0].surface_NO3;
-						/*	patch[0].streamNO3_from_surface +=(excess
+							patch[0].streamNO3_from_surface +=(excess
 									/ patch[0].detention_store)
-									* patch[0].surface_NO3; */
+									* patch[0].surface_NO3;
 							patch[0].hourly[0].streamflow_NO3 += (excess
 									/ patch[0].detention_store)
 									* patch[0].surface_NO3;
-						/*	patch[0].hourly[0].streamflow_NO3_from_surface +=(excess
+						 	patch[0].hourly[0].streamflow_NO3_from_surface +=(excess
 									/ patch[0].detention_store)
-									* patch[0].surface_NO3; */
+									* patch[0].surface_NO3;
 
 
 
@@ -565,7 +567,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 									neigh[0].streamflow_NO3 += (NO3_out
 											* patch[0].area / neigh[0].area);
-									neigh[0].streamNO3_from_surface +=(NO3_out
+									neigh[0].streamNO3_from_sub +=(NO3_out //NREN this should be sub
 											* patch[0].area / neigh[0].area);
 									neigh[0].hourly[0].streamflow_NO3 += (NO3_out
 											* patch[0].area / neigh[0].area);
@@ -1035,4 +1037,3 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	return;
 
 } /*end compute_subsurface_routing.c*/
-
