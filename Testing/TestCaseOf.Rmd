@@ -52,7 +52,7 @@ Unless new development changes are being made to the worldfile or flowtable, you
 
 ```{r setrunvars}
 
-rhessys_ver = "/PATH_TO_RHESSys_Version/rhessys7.3"
+rhessys_ver = "/Users/naomitague/Model/RHESSys/rhessys/rhessys7.3"
 worldfile = "worldfiles/w8TC.world"
 header = "worldfiles/w8TC.hdr"
 flowtable = "flowtables/w8TC.flow"
@@ -73,6 +73,7 @@ command_line = paste(cmd1,cmd2,cmd3)
 ```{r runrhessys}
 system(command_line)
 ```
+
 ### Read in the test results and plot the water balance results
 
 
@@ -88,8 +89,11 @@ test = test %>% mutate(streamflow=1000*(streamflow+gw.Qout), trans=1000*(transpi
       streamflow_NO3 = streamflow_NO3+gw.NO3out, streamflow_DON= streamflow_DON+gw.DONout, 
       psn   = cs.net_psn,
       gpsn = cdf.psn_to_cpool,
-      plant_resp = cdf.total_mr + cdf.total_gr)
+      plant_resp = cdf.total_mr + cdf.total_gr, sat_def = sat_deficit*1000, rz_storage=rz_storage*1000, snowpack=snowpack.water_equivalent_depth*1000, unsat_stor=unsat_storage*1000, litter_store=litter.rain_stored*1000,
+    canopy_store=(rain_stored+snow_stored)*1000, 
+    precip=total_water_in*1000)
 
+test = watbal_basin(test)
 ```
 
 In general water balance should be close to zero - there are of course small rounding errors, typically daily water balance is less than +- 2e-06, you can see by plotting results from the water balance test for base case (included in *W8TestCase.RData*)
