@@ -42,6 +42,12 @@ typedef struct struct_index_s {
 	Dictionary_t *gw_object;
 	// End, structs nested within hillslope_object.
 
+	Dictionary_t *zone_object;
+	Dictionary_t *accumulate_zone_object;
+	// Begin, structs nested within zone_object...
+	Dictionary_t *metvar_struct;
+	// End, structs nested within zone_object.
+
 } StructIndex_t;
 
 #endif

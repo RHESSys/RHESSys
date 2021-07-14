@@ -7,6 +7,32 @@
 #include "output_filter.h"
 
 /**
+ * Returns true of new_zone supersedes existing.
+ */
+static bool zone_supersedes(const OutputFilterZone *existing, const OutputFilterZone *new_zone) {
+	switch(new_zone->output_zone_type) {
+	case ZONE_TYPE_BASIN:
+		if (existing->output_zone_type < ZONE_TYPE_BASIN &&
+		    new_zone->basinID == existing->basinID) {
+			return true;
+		} else {
+			return false;
+		}
+	case ZONE_TYPE_HILLSLOPE:
+		if (existing->output_zone_type < ZONE_TYPE_HILLSLOPE &&
+		    new_zone->basinID == existing->basinID &&
+		    new_zone->hillslopeID == existing->hillslopeID) {
+			return true;
+		} else {
+			return false;
+		}
+	case ZONE_TYPE_ZONE:
+	default:
+		return false;
+	}
+}
+
+/**
  * Returns true of new_patch supersedes existing.
  */
 static bool patch_supersedes(const OutputFilterPatch *existing, const OutputFilterPatch *new_patch) {
@@ -97,6 +123,36 @@ static bool new_var_supersedes(const OutputFilterVariable *existing, const Outpu
 	case NAMED:
 	default:
 		return false;
+	}
+}
+
+/**
+ * Returns true if existing is a parent to or duplicates new_zone.
+ */
+static bool zone_is_parent_or_duplicate(const OutputFilterZone *existing, const OutputFilterZone *new_zone) {
+	switch(existing->output_zone_type) {
+	case ZONE_TYPE_BASIN:
+		if (existing->basinID == new_zone->basinID) {
+			return true;
+		} else {
+			return false;
+		}
+	case ZONE_TYPE_HILLSLOPE:
+		if (existing->basinID == new_zone->basinID &&
+		    existing->hillslopeID == new_zone->hillslopeID) {
+			return true;
+		} else {
+			return false;
+		}
+	case ZONE_TYPE_ZONE:
+	default:
+		if (existing->basinID == new_zone->basinID &&
+		    existing->hillslopeID == new_zone->hillslopeID &&
+		    existing->zoneID == new_zone->zoneID) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
 
@@ -315,7 +371,7 @@ OutputFilterBasin *add_to_output_filter_basin_list(OutputFilterBasin * const hea
 	OutputFilterBasin *tmp = head;
 	while (tmp != NULL) {
 		if (tmp->basinID == new_basin->basinID) {
-			// new_patch duplicates tmp, don't add to list
+			// new_basin duplicates tmp, don't add to list
 			return NULL;
 		}
 		if (tmp->next == NULL) {
@@ -334,6 +390,51 @@ void free_output_filter_basin_list(OutputFilterBasin *head) {
 	if (head == NULL) { return; }
 	if (head->next != NULL) {
 		free_output_filter_basin_list(head->next);
+	}
+	free(head);
+}
+
+// output_filter_zone_list
+OutputFilterZone *create_new_output_filter_zone() {
+	OutputFilterZone *new_zone = (OutputFilterZone *) malloc(sizeof(OutputFilterZone));
+	new_zone->next = NULL;
+	return new_zone;
+}
+
+OutputFilterZone *add_to_output_filter_zone_list(OutputFilterZone * const head,
+                                                 OutputFilterZone * const new_zone) {
+	if (head == NULL) return new_zone;
+	// Iterate over zone list, checking to see if new_zone is duplicative
+	OutputFilterZone *tmp = head;
+	while (tmp != NULL) {
+		if (zone_is_parent_or_duplicate(tmp, new_zone)) {
+			// new_zone duplicates or is superseded by tmp, don't add to list
+			return NULL;
+		} else if (zone_supersedes(tmp, new_zone)) {
+			// new_zone supersedes tmp, make new_zone replace tmp
+			tmp->output_zone_type = new_zone->output_zone_type;
+			tmp->basinID = new_zone->basinID;
+			tmp->hillslopeID = new_zone->hillslopeID;
+			tmp->zoneID = new_zone->zoneID;
+			free(new_zone);
+			return tmp;
+		}
+		if (tmp->next == NULL) {
+			// Don't run off the end of the list (i.e. preserve tmp so that we can
+			// assign the new entry to the tmp->next).
+			break;
+		}
+		tmp = tmp->next;
+	}
+	// new_zone is not a duplicate of any current entries in the list, add it to the end of the list.
+	tmp->next = new_zone;
+	return tmp->next;
+}
+
+void free_output_filter_zone_list(OutputFilterZone *head) {
+	if (head == NULL) { return; }
+	if (head->next != NULL) {
+		free_output_filter_zone_list(head->next);
 	}
 	free(head);
 }
@@ -570,6 +671,7 @@ OutputFilter *create_new_output_filter() {
 	new_filter->next = NULL;
 	new_filter->output = NULL;
 	new_filter->basins = NULL;
+	new_filter->zones = NULL;
 	new_filter->patches = NULL;
 	new_filter->strata = NULL;
 	new_filter->variables = NULL;
@@ -600,7 +702,11 @@ void free_output_filter(OutputFilter *head) {
 		free_output_filter(head->next);
 	}
 	free_output_filter_variable_list(head->variables);
+	free_output_filter_basin_list(head->basins);
+	free_output_filter_zone_list(head->zones);
 	free_output_filter_patch_list(head->patches);
+	free_output_filter_stratum_list(head->strata);
+
 	free_output_filter_output(head->output);
 	free(head);
 }
@@ -633,6 +739,37 @@ void print_output_filter_basin(OutputFilterBasin *b, char *prefix) {
 	if (b != NULL) {
 		fprintf(stderr, "%s\tbasinID: %d,\n", prefix, b->basinID);
 		fprintf(stderr, "%s\tbasin: %p,\n", prefix, b->basin);
+	}
+	fprintf(stderr, "%s}", prefix);
+}
+
+void print_output_filter_zone(OutputFilterZone *p, char *prefix) {
+	if (prefix == NULL) {
+		prefix = "";
+	}
+	fprintf(stderr, "%sOutputFilterZone@%p {\n", prefix, (void *)p);
+	if (p != NULL) {
+		fprintf(stderr, "%s\tnext: %p,\n", prefix, (void *)p->next);
+		switch (p->output_zone_type) {
+		case ZONE_TYPE_BASIN:
+			fprintf(stderr, "%s\toutput_zone_type: basin,\n", prefix);
+			break;
+		case ZONE_TYPE_HILLSLOPE:
+			fprintf(stderr, "%s\toutput_zone_type: hillslope,\n", prefix);
+			break;
+		case ZONE_TYPE_ZONE:
+			fprintf(stderr, "%s\toutput_zone_type: zone,\n", prefix);
+			break;
+		}
+
+		fprintf(stderr, "%s\tbasinID: %d,\n", prefix, p->basinID);
+		fprintf(stderr, "%s\tbasin: %p,\n", prefix, p->basin);
+
+		fprintf(stderr, "%s\thillslopeID: %d,\n", prefix, p->hillslopeID);
+		fprintf(stderr, "%s\thillslope: %p,\n", prefix, p->hill);
+
+		fprintf(stderr, "%s\tzoneID: %d,\n", prefix, p->zoneID);
+		fprintf(stderr, "%s\tzone: %p,\n", prefix, p->zone);
 	}
 	fprintf(stderr, "%s}", prefix);
 }
@@ -860,9 +997,17 @@ void print_output_filter(OutputFilter *f) {
 
 		switch(f->type) {
 		case OUTPUT_FILTER_BASIN:
-			fprintf(stderr, "\basins: [\n");
+			fprintf(stderr, "\tbasins: [\n");
 			for (OutputFilterBasin *b = f->basins; b != NULL; b = b->next) {
 				print_output_filter_basin(b, "\t\t");
+				fprintf(stderr, ",\n");
+			}
+			fprintf(stderr, "\t],\n");
+			break;
+		case OUTPUT_FILTER_ZONE:
+			fprintf(stderr, "\tzones: [\n");
+			for (OutputFilterZone *z = f->zones; z != NULL; z = z->next) {
+				print_output_filter_zone(z, "\t\t");
 				fprintf(stderr, ",\n");
 			}
 			fprintf(stderr, "\t],\n");

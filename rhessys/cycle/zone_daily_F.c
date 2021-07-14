@@ -725,13 +725,24 @@ void		zone_daily_F(
 	/*      update accumulator variables                            */
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].output_flags.monthly == 1) &&
-		(command_line[0].z != NULL) ){
+			(command_line[0].output_filter_zone_accum_monthly ||
+				command_line[0].z != NULL) ){
 		zone[0].acc_month.precip += zone[0].rain + zone[0].snow;
 		zone[0].acc_month.tmin += zone[0].metv.tmin;
 		zone[0].acc_month.tmax += zone[0].metv.tmax;
 		zone[0].acc_month.K_direct += zone[0].Kdown_direct;
 		zone[0].acc_month.K_diffuse += zone[0].Kdown_diffuse;
 		zone[0].acc_month.length += 1;
+	}
+
+	if ((command_line[0].output_flags.yearly == 1) &&
+	    (command_line[0].output_filter_zone_accum_monthly) ){
+		zone[0].acc_year.precip += zone[0].rain + zone[0].snow;
+		zone[0].acc_year.tmin += zone[0].metv.tmin;
+		zone[0].acc_year.tmax += zone[0].metv.tmax;
+		zone[0].acc_year.K_direct += zone[0].Kdown_direct;
+		zone[0].acc_year.K_diffuse += zone[0].Kdown_diffuse;
+		zone[0].acc_year.length += 1;
 	}
 
 	return;
