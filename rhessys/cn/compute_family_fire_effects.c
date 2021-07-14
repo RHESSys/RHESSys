@@ -567,30 +567,30 @@ void compute_family_fire_effects(
 	} /* end if(pspread > 0 ) */
     else 
 	{
-		for (layer = 0; layer < patch_family[0].num_layers; layer++)
-		{
-			for (c = 0; c < patch_family[0].layers[layer].count; c++)
-			{
-				/* Calculates metrics for targer canopy */
-				canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
-				canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
+		// for (layer = 0; layer < patch_family[0].num_layers; layer++)
+		// {
+		// 	for (c = 0; c < patch_family[0].layers[layer].count; c++)
+		// 	{
+		// 		/* Calculates metrics for targer canopy */
+		// 		canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
+		// 		canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 
-				/* Calculates metrics for next lowest canopy (subtarget canopy) */
-				if (patch_family[0].num_layers > (layer + 1))
-				{
-					canopy_subtarget = patch_family[0].canopy_strata[(patch_family[0].layers[layer + 1].strata[c])];
-					canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
-					canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
-															 canopy_subtarget[0].cs.live_stemc +
-															 canopy_subtarget[0].cs.dead_stemc;
-				}
-				else
-				{
-					canopy_target[0].fe.canopy_subtarget_height = 0;
-					canopy_target[0].fe.canopy_subtarget_c = 0;
-				}
-			} // end for c=0
-		} //end for layer =0
+		// 		/* Calculates metrics for next lowest canopy (subtarget canopy) */
+		// 		if (patch_family[0].num_layers > (layer + 1))
+		// 		{
+		// 			canopy_subtarget = patch_family[0].canopy_strata[(patch_family[0].layers[layer + 1].strata[c])];
+		// 			canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
+		// 			canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
+		// 													 canopy_subtarget[0].cs.live_stemc +
+		// 													 canopy_subtarget[0].cs.dead_stemc;
+		// 		}
+		// 		else
+		// 		{
+		// 			canopy_target[0].fe.canopy_subtarget_height = 0;
+		// 			canopy_target[0].fe.canopy_subtarget_c = 0;
+		// 		}
+		// 	} // end for c=0
+		// } //end for layer =0
 
 		for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
 		{

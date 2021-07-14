@@ -336,54 +336,58 @@ void execute_firespread_event(
 	/* update biomass after fire									*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].verbose_flag <= -7) { printf("Updating biomass\n");}
-	// if(world[0].fire_grid[0][0].fire_size>0) // only do this if there was a fire
-	for  (i=0; i< world[0].num_fire_grid_row; i++) {
-  		for (j=0; j < world[0].num_fire_grid_col; j++) {
+	
+	if(world[0].fire_grid[0][0].fire_size > 0 && world[0].defaults[0].fire[0].calc_fire_effects == 1) // only do this if there was a fire
+	{
+		for  (i=0; i< world[0].num_fire_grid_row; i++) {
+			for (j=0; j < world[0].num_fire_grid_col; j++) {
 
-			if (command_line[0].multiscale_flag == 1)
-			{
-				if (world[0].patch_fire_grid[i][j].num_patches > 0) // TODO - this is needed to avoid seg faults from null grids, needed for non msr?
+				if (command_line[0].multiscale_flag == 1)
 				{
-					patch_family = world[0].patch_fire_grid[i][j].patch_families[0];
-					// grid in patch is length 1 since only the [0] is ever set, regardless of allocation
-					pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[0];
-					// Add pspread to patch
-					for (p = 0; p < patch_family[0].num_patches_in_fam; p++) {
-						patch_family[0].patches[p][0].pspread = pspread;
-					}
+					if (world[0].patch_fire_grid[i][j].num_patches > 0)
+					{
+						patch_family = world[0].patch_fire_grid[i][j].patch_families[0];
+						// grid in patch is length 1 since only the [0] is ever set, regardless of allocation
+						pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[0];
+						// Add pspread to patch
+						for (p = 0; p < patch_family[0].num_patches_in_fam; p++) {
+							patch_family[0].patches[p][0].pspread = pspread;
+						}
 
-					if (world[0].defaults[0].fire[0].fire_verbose == 1)
-					{
-						printf("Start fire effects: grid i:%d j:%d | patch family %d | num patches %d | pspread %lf | burn %lf\n",
-							   i, j, patch_family[0].family_ID, patch_family[0].num_patches_in_fam, pspread, world[0].fire_grid[i][j].burn);
-					}
-					compute_family_fire_effects(
-						patch_family,
-						pspread,
-						command_line);
-				}
-			}
-			else
-			{
-				for (p = 0; p < patch_fire_grid[i][j].num_patches; ++p)
-				{
-					patch = world[0].patch_fire_grid[i][j].patches[p];
-					pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-					patch[0].pspread = pspread;
-					
-					// so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
-					if (world[0].defaults[0].fire[0].calc_fire_effects == 1)
-					{
-						compute_fire_effects(
-							patch,
+						if (world[0].defaults[0].fire[0].fire_verbose == 1)
+						{
+							printf("Start fire effects: grid i:%d j:%d | patch family %d | num patches %d | pspread %lf | burn %lf\n",
+								i, j, patch_family[0].family_ID, patch_family[0].num_patches_in_fam, pspread, world[0].fire_grid[i][j].burn);
+						}
+						compute_family_fire_effects(
+							patch_family,
 							pspread,
 							command_line);
 					}
 				}
-			} // end IF NOT MSR
+				else
+				{
+					for (p = 0; p < patch_fire_grid[i][j].num_patches; ++p)
+					{
+						patch = world[0].patch_fire_grid[i][j].patches[p];
+						pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+						patch[0].pspread = pspread;
+						
+						// so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
+						if (world[0].defaults[0].fire[0].calc_fire_effects == 1)
+						{
+							compute_fire_effects(
+								patch,
+								pspread,
+								command_line);
+						}
+					}
+				} // end IF NOT MSR
 
-		} // end for grid col
-	} // end for grid row
+			} // end for grid col
+		} // end for grid row
+	}
+
 	return;
 } /*end execute_firespread_event.c*/
 
