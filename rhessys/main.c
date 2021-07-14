@@ -25,7 +25,7 @@
 
 		-p		Patch output option.  Print out response variables for
 				specified patches.
-        
+
 		-r		Routing option. Gives name of flow_table to define explicit routing
 				connectivity.  Also trigger use of explicit routing over TOPMODEL
 				approach
@@ -44,17 +44,17 @@
 		-w		Name of world file.
 
 		-z		Zone output option.  Print out response variables for
-				specified zones.  
+				specified zones.
 
 		-pre		Give a particular output prefix.
-	
+
 		-st		start date (optional over-ride of worldfile)
 		-ed		end date (optional over-ride of worldfile)
 		-cvs		comma separated output
 		-tmp		temporary value (CURRENTLY DON)a
 		-th		threshold sat deficit (for drought output)
-		-gw		include hillslope scale groundwater (sat_to_gw_coeff; gw_loss_coeff parameters scaled)
-        -str    Streamflow routing option. Gives name of stream_table to define explicit streamflow routing connectivit.     
+		-gw		include hillslope scale groundwater (surf_to_gw_coeff(original one should named as this); gw_loss_coeff parameters and sat_to_gw_coeff (gw3)scaled)
+        -str    Streamflow routing option. Gives name of stream_table to define explicit streamflow routing connectivit.
         -stro   Streamflow routing output option. Print out streamflow for specified stream reaches.
 		-version Prints the RHESSys version number, then exits immediately
 
@@ -62,37 +62,37 @@
 
 
 		This routine is the main (and only) entry point into the
-		Regional Hydro Ecological Simulation System   
+		Regional Hydro Ecological Simulation System
 		Version 4.0 (RHESSys4.0).  RHESSys4.0 code or data objects
 		are not compatible with previous versions of RHESSys.
-		Users of previous versions of RHESSys should consult 
-		online RHESSys4.0 documentation at 
+		Users of previous versions of RHESSys should consult
+		online RHESSys4.0 documentation at
 
 		http:\\eos.geog.utoronto.ca\\u\bandits\html\rhessys4
 
 		for information regarding why this revision was designed.
 
-		The RHESSys4.0 software implementation consists of 
+		The RHESSys4.0 software implementation consists of
 		a data object definition and a compatible event driven
 		simulation shell which executes routines that :
 
 		a. take input from the UNIX command line, ASCII data files
 		with suitable format and potentially events sent via
-		UNIX pipes.  
+		UNIX pipes.
 
 		b.  use the input and physically based algorithms to
 		update data object state variables.
 
 		c.  produce output as directed by input events in the
 		form of state variable histories or ASCII files suiatable
-		for use as subsequent input. 
+		for use as subsequent input.
 
 		For compactness all documentation of the software
 		implementation, file formats and object formats is
 		embedded in the C source code text file headers.
 		It should be noted that RHESSys4.0 is not a completely
 		object oriented system in that algorithms that operate
-		on objects are not embedded in the object definitions. 
+		on objects are not embedded in the object definitions.
 		This was a concious design decision to permit linking
 		to third party algorithms.  However, the potential
 		for the development of algorithms which are not compatible
@@ -110,7 +110,7 @@
 		receiving potential model output and a temporal
 		event control object (tec object).
 		A time sequential event loop is then
-		initiated.  At the end of the event loop the 
+		initiated.  At the end of the event loop the
 		existing objects are destroyed.
 
 		OUTPUT OPTIONS
@@ -119,18 +119,18 @@
 
 		Output can be requested in a separate file corresponding
 		to a certain level of the modelling object heirarchy:
-		basins, hillslopes, zones, intervals, patches.  
-		  
+		basins, hillslopes, zones, intervals, patches.
+
 		If no arguements follow an output flag ALL of the objects
 		defined at the selected level of the heirarchy will be
-		printed to the appropriate SINGLE output file.    
+		printed to the appropriate SINGLE output file.
 		ID's at selected level in option structure
 		are set to -999 to indicate this conditions
 
 		One can also opt to print out only one those objects attached
 		to one BRANCH of the modelling object heirarchy.  To do
 		thi one should specify valid ID numbers defining the connection
-		from the world object to the branch requested.  
+		from the world object to the branch requested.
 		Verification of the fact that the connection between the
 		world object and the branch requested does in fact exist will
 		be performed.
@@ -166,7 +166,7 @@
 		The output file has a default name world_stratum.<time_step>.
 
 		The -pre option followed by a character string will add a
-		prefix to each output file. 
+		prefix to each output file.
 
 		The -s option produces one output data file per time step.
 		The output file gives the response of each patch in the
@@ -175,7 +175,7 @@
 
 		CONTROL OPTIONS
 
-		The -g option implies that the user has provided input 
+		The -g option implies that the user has provided input
 		specifiction files which have appropriate "grow" parameters
 		required by dynamic bgc.  In addition, all output will also
 		include grow parameters.  The "grow" parameters are ignored
@@ -183,14 +183,14 @@
 		used.
 
 		The -v option will result in various status reports being
-		sent to stdout.  Lines of verbose output have a date stamp 
+		sent to stdout.  Lines of verbose output have a date stamp
 		and a stamp identifying what part of the source code they
 		are from.
 
 		The -w option followed by a valid world file name specifies
 		the world file to use with the simulation run.
 
-		The -t option allows the user to specify the time duration 
+		The -t option allows the user to specify the time duration
 		over which the response variables for the selected output
 		mapping unit will be printed.  If the -t option is not
 		used the time interval is defaulted as the range specified
@@ -199,25 +199,25 @@
 		The -t option requires the user to have already created an
 		ASCII time event control (tec) file with the format:
 
-		<start of file>	
-		start_out_date end_out_date 
+		<start of file>
+		start_out_date end_out_date
 		start_out_date end_out_date
 		start_out_date end_out_date
 			.
 			.
-			. 
+			.
 		start_out_date end_out_date
 		<end of file>
 
 		The additional constraints placed upon the TEC file are:
 
 		1.  All of the dates must match entries in
-			all the base station clim files for each time step. 
+			all the base station clim files for each time step.
 		2.  The days must be listed in non-decreasing order from
 			the first to nth entry pair.
 		3.  There must be both a start and end date for every entry.
 
-		To implement this file we have had to also enforce that	
+		To implement this file we have had to also enforce that
 		all clim files have dates which increase sequentially and
 		cover the requested intervals.
 
@@ -229,11 +229,11 @@
 
 		%rhessys -w sobs.world -t sobs.tec -p -pre boreas
 
-		This will result in a four output files called 
+		This will result in a four output files called
 		"boreas_patch.yearly", "boreas_patch.monthly",
 		"boreas_patch.daily", and "boreas_patch.hourly"
 		which will contain response at the
-		patch level for each patch specified in the sobs.world file 
+		patch level for each patch specified in the sobs.world file
 		for the time durations specified in sobs.tec.
 		Each line in the output files will have a date stamp and
 		will uniquely identify the patch the line corresponds to.
@@ -250,7 +250,7 @@
 		as in example 1.
 
 	3.  Run the simulation using the world file "tlw.world" with the
-		TEC file "tlw.tec" and get output for:        
+		TEC file "tlw.tec" and get output for:
 
 			- the basin with basinID = 1
 			- all hillslopes in the basin with basinID = 2
@@ -261,14 +261,14 @@
 
 	NOTES
 
-		The -b, -h, -z, -i and -p output options can be used in 
+		The -b, -h, -z, -i and -p output options can be used in
 		parallel.
 
 		We have purposely avoided the ability for separate -t files
 		for separate mapping units.
 
 		We have purposely avoided the ability for being able to
-		specify output without traversing down a branch in the 
+		specify output without traversing down a branch in the
 		modelling object heirarchy (e.g. no asking for zone 1 for
 		all hillslopes for basin 1 ; but you can ask for all zones
 		for all hillslopes for basin 1).
@@ -312,44 +312,44 @@ int	main( int main_argc, char **main_argv)
 	struct	world_output_file_object	*output;
 	struct	world_output_file_object	*growth_output;
 	char	*prefix;
-	
+
 	/*--------------------------------------------------------------*/
 	/* Local Function declarations 									*/
 	/*--------------------------------------------------------------*/
 	struct   command_line_object *construct_command_line(
 		int,
 		char **);
-	
+
 	struct   world_object *construct_world(
 		struct command_line_object *);
-	
+
 	struct	world_output_file_object	*construct_output_files(
 		char *,
 		struct command_line_object	*);
-	
-	
+
+
 	struct	tec_object	*construct_tec(
 		struct command_line_object *,
 		struct world_object * );
-	
+
 	void 	execute_tec(
 		struct	tec_object	*,
 		struct	command_line_object	*,
 		struct	world_output_file_object *,
 		struct	world_output_file_object *,
 		struct	world_object *);
-	
+
 	void	destroy_tec(
 		struct tec_object * );
-	
+
 	void	destroy_output_files(
 		struct	command_line_object	*,
 		struct	world_output_file_object	*);
-	
+
 	void	destroy_world(
 		struct command_line_object *,
 		struct world_object *);
-	
+
 	void	destroy_command_line(
 		struct command_line_object * );
 
@@ -382,7 +382,7 @@ int	main( int main_argc, char **main_argv)
 
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED CON COMMAND LINE ***\n");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the world object.									*/
 	/*--------------------------------------------------------------*/
@@ -417,14 +417,14 @@ int	main( int main_argc, char **main_argv)
 
 	if(command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED CON OUTPUT\n");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Create the tec object (temporal event control)				*/
 	/*																*/
 	/*	This object specifies temporal events such as output.		*/
 	/*--------------------------------------------------------------*/
 	tec = construct_tec( command_line, world);
-	
+
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED CON TEC\n");
 	/*--------------------------------------------------------------*/
@@ -434,52 +434,51 @@ int	main( int main_argc, char **main_argv)
 	execute_tec( tec, command_line, output, growth_output, world );
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED EXE TEC\n");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Destroy the tec object.										*/
 	/*--------------------------------------------------------------*/
 	destroy_tec( tec );
-	
+
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED DES TEC\n");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Destroy output file objects (close them)					*/
 	/*--------------------------------------------------------------*/
 	destroy_output_files( command_line, output );
-	
+
 	if (command_line[0].grow_flag > 0)
 		destroy_output_files( command_line, growth_output );
-	
+
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED DES OUTPUT FILES\n");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Destroy the world.											*/
 	/*--------------------------------------------------------------*/
 	destroy_world(command_line, world );
-	
+
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED DES WORLD\n");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Destroy the command_line_object								*/
 	/*--------------------------------------------------------------*/
 	destroy_command_line( command_line );
-	
+
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED DES COMMAND LINE\n");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	The end.													*/
 	/*--------------------------------------------------------------*/
     clock_t endClock =clock();
-	
+
     printf("\ntime cost = %ld seconds\n",(endClock - startClock)/CLOCKS_PER_SEC);
 
 	return(EXIT_SUCCESS);
-	
+
 } /*end main*/
 
 /* this is a branch test by LMF */
-

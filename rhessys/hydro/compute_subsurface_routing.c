@@ -139,6 +139,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].return_flow = 0.0;
 		patch[0].base_flow = 0.0;
 		patch[0].infiltration_excess = 0.0;
+		//add more zero flux
+		patch[0].gw_drainage = 0.0;
+		patch[0].gw_drainage_NO3 = 0.0;
+		patch[0].gw_drainage_NH4 = 0.0;
+		patch[0].gw_drainage_DON = 0.0;
+		patch[0].gw_drainage_DOC = 0.0;
+
 		preday_hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
 		preday_hillslope_unsat_storage += patch[0].unsat_storage * patch[0].area;
 		preday_hillslope_sat_deficit += patch[0].sat_deficit * patch[0].area;

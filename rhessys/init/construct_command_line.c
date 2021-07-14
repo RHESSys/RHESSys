@@ -341,10 +341,23 @@ struct	command_line_object	*construct_command_line(
 				/*-------------------------------*/
 				/*Read in the loss to gw rate multiplier values		*/
 				/*-------------------------------*/
-				command_line[0].sat_to_gw_coeff_mult = (double)atof(main_argv[i]);
+				command_line[0].surf_to_gw_coeff_mult = (double)atof(main_argv[i]);
 				i++;
 				command_line[0].gw_loss_coeff_mult = (double)atof(main_argv[i]);
 				i++;
+
+				/*--------------------------------------------------------------------------------*/
+					/*    check to see if there is a 3rd sensitivity parameter 	sat_to_gw_coeff								    */
+					/*    if not set to 1.0           orginal From Laurence Lin    added by NREN     */
+					/*-------------------------------------------------------------------------------*/
+					if (  (i != main_argc) && (valid_option(main_argv[i]) == 0) ){
+							command_line[0].sat_to_gw_coeff_mult = (double)atof(main_argv[i]);
+							i++;
+					}  /*end if*/
+					printf("gw scalers %f %f %f\n",
+								 command_line[0].gw_loss_coeff_mult,
+								 command_line[0].surf_to_gw_coeff_mult,
+							 	 command_line[0].sat_to_gw_coeff_mult);
 			}/* end if */
 
 

@@ -141,15 +141,15 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].albedo = 		getDoubleParam(&paramCnt, &paramPtr, "albedo", "%lf", 0.28, 1);
 		default_object_list[i].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1);
 		default_object_list[i].N_decay_rate = 		getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1);
-		default_object_list[i].fixed_t_mult = 		getDoubleParam(&paramCnt, &paramPtr, "fixed_t_mult", "%lf", -999, 1); 
-		default_object_list[i].fixed_w_mult = 		getDoubleParam(&paramCnt, &paramPtr, "fixed_w_mult", "%lf", -999, 1); 
-		default_object_list[i].nitrif_parm_smax = 		getDoubleParam(&paramCnt, &paramPtr, "nitrif_parm_smax", "%lf", 0.68, 1); 
+		default_object_list[i].fixed_t_mult = 		getDoubleParam(&paramCnt, &paramPtr, "fixed_t_mult", "%lf", -999, 1);
+		default_object_list[i].fixed_w_mult = 		getDoubleParam(&paramCnt, &paramPtr, "fixed_w_mult", "%lf", -999, 1);
+		default_object_list[i].nitrif_parm_smax = 		getDoubleParam(&paramCnt, &paramPtr, "nitrif_parm_smax", "%lf", 0.68, 1);
 
-		if (default_object_list[i].fixed_t_mult > -999) 
-				printf("\n Warming using a fixed values for temperature control on soil/liter decomp %lf", 
+		if (default_object_list[i].fixed_t_mult > -999)
+				printf("\n Warming using a fixed values for temperature control on soil/liter decomp %lf",
 				default_object_list[i].fixed_t_mult);
-		if (default_object_list[i].fixed_w_mult > -999) 
-				printf("\n Warming using a fixed values for water control on soil/liter decomp %lf", 
+		if (default_object_list[i].fixed_w_mult > -999)
+				printf("\n Warming using a fixed values for water control on soil/liter decomp %lf",
 				default_object_list[i].fixed_t_mult);
 		/*
 		if (command_line[0].tmp_value > ZERO)
@@ -172,8 +172,13 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].soil_type.clay);
 		} /*end if*/
 		if (command_line[0].gw_flag > 0) {
-			default_object_list[i].sat_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "sat_to_gw_coeff", "%lf", 1.0, 1);
-			default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
+			default_object_list[i].surf_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "surf_to_gw_coeff", "%lf", 1.0, 1);
+			default_object_list[i].surf_to_gw_coeff *= command_line[0].surf_to_gw_coeff_mult;
+				default_object_list[i].sat_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "sat_to_gw_coeff", "%lf", 1.0, 1);//NREN / 24.0; // conver to hourly
+				default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
+					default_object_list[i].actionGWDRAIN = getIntParam(&paramCnt, &paramPtr, "actionGWDRAIN", "%d", 0, 1);//default is off
+					printf("\n Drain saturate zone water to ground water %d",
+					default_object_list[i].actionGWDRAIN);
 			}
 
 		/*-----------------------------------------------------------------------------

@@ -1210,7 +1210,9 @@ struct	soil_default
 	double	pore_size_index;				/* unitless */
 	double	psi_air_entry;					/* m */
 	double	psi_max;					/* m */
-	double	sat_to_gw_coeff;				/* percent/day */
+	double	surf_to_gw_coeff;				/* percent/day */
+  double  sat_to_gw_coeff; 				/* percent/day */
+  double  actionGWDRAIN;
 	double	soil_depth;					/* m */
 	double	effective_soil_depth;					/* m */
 	double	soil_water_cap;					/* m of water */
@@ -1716,6 +1718,10 @@ struct patch_object
         double  gasnow;                 /* m/s */
         double  gasnow_final;           /* m/s */
         double  gw_drainage;            /* m/day */
+        double  gw_drainage_DON;        /*g/day*/ //check the unit NREN
+        double  gw_drainage_DOC;
+        double  gw_drainage_NH4;
+        double  gw_drainage_NO3;        //check the unit NREN
 	    double	gw_drainage_hourly;     /* m/day  */
         double  hourly_rz_drainage;     /* m water  */
         double  hourly_unsat_drainage;  /* m water  */
@@ -2246,7 +2252,8 @@ struct  command_line_object
         double  tmin_add;
         double  fire_grid_res;
         double  beetle_grid_res; // for beetle grid
-        double  sat_to_gw_coeff_mult;
+        double  surf_to_gw_coeff_mult;
+        double  sat_to_gw_coeff_mult;//NREN
         double  gw_loss_coeff_mult;
         double  snow_scale_tol;
         double  sen[3];

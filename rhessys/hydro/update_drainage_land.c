@@ -151,7 +151,7 @@ void  update_drainage_land(
 	m = patch[0].m ;
 	Ksat = patch[0].soil_defaults[0][0].Ksat_0 ;
 	d=0;
-
+	double sat_to_gw_coeff = patch[0].soil_defaults[0][0].sat_to_gw_coeff; //REN do I need to divide it by 24
 	/*--------------------------------------------------------------*/
 	/*	recalculate gamma based on current saturation deficits  */
 	/*      to account the effect of changes in water table slope 	*/
@@ -412,22 +412,41 @@ void  update_drainage_land(
 	for (j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
 		neigh = patch[0].innundation_list[d].neighbours[j].patch;
 		/*--------------------------------------------------------------*/
+		/* first transfer subsurface water and nitrogen */  // --------- subsurface
+		/*--------------------------------------------------------------*/
+		/* some "transmissivity_flux2neighbour" is loss to GW_storage  */
+		if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1){
+				//how do we know how fill is the GW?
+				patch[0].gw_drainage += route_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area // reset to zero every patch_daily_I()
+				route_to_patch *= 1.0 - sat_to_gw_coeff;
+		}//end of if
+
+		/*--------------------------------------------------------------*/
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
 		if (Qin < 0) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);
 		if (command_line[0].grow_flag > 0) {
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch)
-				/ neigh[0].area;
+			 /* add water more from sat zone to deep groundwater NREN 20210714*/
+			 double coef;
+	     if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1){
+	                     coef = 1.0 - sat_to_gw_coeff;
+	                     coef /= neigh[0].area;
+	                     patch[0].gw_drainage_DON += DON_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
+	                     patch[0].gw_drainage_DOC += DOC_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
+	                     patch[0].gw_drainage_NO3 += NO3_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
+	                     patch[0].gw_drainage_NH4 += NH4_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
+	       }else{
+	                     coef = 1.0/neigh[0].area;
+	       }
+
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch) * coef;
 			neigh[0].soil_ns.DON_Qin += Nin;
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch)
-				/ neigh[0].area;
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch) * coef;
 			neigh[0].soil_cs.DOC_Qin += Nin;
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NO3_leached_to_patch)
-				/ neigh[0].area;
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NO3_leached_to_patch) * coef;
 			neigh[0].soil_ns.NO3_Qin += Nin;
-			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch)
-				/ neigh[0].area;
+			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch) * coef;
 			neigh[0].soil_ns.NH4_Qin += Nin;
 			}
 		neigh[0].Qin += Qin;
@@ -568,4 +587,3 @@ void  update_drainage_land(
 	return;
 
 } /*end update_drainage_land.c*/
-

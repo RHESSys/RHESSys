@@ -1474,6 +1474,17 @@ void		patch_daily_F(
 			/*	move both nitrogen and water				    	*/
 			/*------------------------------------------------------------------------*/
 			if (command_line[0].gw_flag > 0) {
+					//bridge sat_zone to deep groundwater NREN
+					if (patch[0].soil_defaults[0][0].actionGWDRAIN == 1){
+						hillslope[0].gw.storage += patch[0].gw_drainage / hillslope[0].area;
+						hillslope[0].gw.DON += patch[0].gw_drainage_DON / hillslope[0].area;
+						hillslope[0].gw.DOC += patch[0].gw_drainage_DOC / hillslope[0].area;
+						hillslope[0].gw.NH4 += patch[0].gw_drainage_NH4 / hillslope[0].area;
+						hillslope[0].gw.NO3 += patch[0].gw_drainage_NO3 / hillslope[0].area;
+						patch[0].gw_drainage /= patch[0].area; // for water balance below;
+					}
+
+
 			if ( update_gw_drainage(patch,
 					hillslope,
 					zone,
