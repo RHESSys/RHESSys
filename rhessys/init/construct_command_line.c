@@ -355,8 +355,8 @@ struct	command_line_object	*construct_command_line(
 							i++;
 					}  /*end if*/
 					printf("gw scalers %f %f %f\n",
-								 command_line[0].gw_loss_coeff_mult,
 								 command_line[0].surf_to_gw_coeff_mult,
+								 command_line[0].gw_loss_coeff_mult,
 							 	 command_line[0].sat_to_gw_coeff_mult);
 			}/* end if */
 
