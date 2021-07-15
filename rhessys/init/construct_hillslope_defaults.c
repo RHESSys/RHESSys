@@ -43,7 +43,7 @@ struct hillslope_default *construct_hillslope_defaults(
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
 	void	*alloc(	size_t, char *, char *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
@@ -59,14 +59,14 @@ struct hillslope_default *construct_hillslope_defaults(
 	struct	hillslope_default	*default_object_list;
         param *paramPtr = NULL;
         int paramCnt = 0;
-	
+
 	/*-------------------------------------------------------------*/
 	/*	Allocate an array of default objects.		       */
 	/*-------------------------------------------------------------*/
 	default_object_list   = (struct hillslope_default *)
 		alloc(num_default_files * sizeof(struct hillslope_default),
 		"default_object_list", "construct_hillslope_defaults");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
@@ -87,13 +87,19 @@ struct hillslope_default *construct_hillslope_defaults(
 		/* 	read in optional paramters				*/
 		/*--------------------------------------------------------------*/
 		default_object_list[i].gw_loss_coeff = 		getDoubleParam(&paramCnt, &paramPtr, "gw_loss_coeff", "%lf", 1.0, 1);
+		default_object_list[i].gw_soluteConc_decay = getDoubleParam(&paramCnt, &paramPtr, "gw_soluteConc_decay", "%lf", 0.0, 1);//NEW NREN
+		default_object_list[i].gw_loss_coeff_decay = getDoubleParam(&paramCnt, &paramPtr, "gw_loss_coeff_decay", "%lf", 0.0, 1);
+		default_object_list[i].gw_soluteLOSSCoef = 0.0; //NEW NREN
+        if(fabs(default_object_list[i].gw_loss_coeff_decay)>0 && fabs(default_object_list[i].gw_soluteConc_decay)>0) default_object_list[i].gw_soluteLOSSCoef = (1.0/default_object_list[i].gw_loss_coeff_decay + 1.0/default_object_list[i].gw_soluteConc_decay);
+        //if(default_object_list[i].gw_soluteLOSSCoef>0) default_object_list[i].gw_soluteLOSSCoef *= default_object_list[i].gw_loss_coeff;
+
 		default_object_list[i].n_routing_timesteps = 	getIntParam(&paramCnt, &paramPtr, "n_routing_timesteps", "%d", 24, 1);
 		default_object_list[i].gw_loss_fast_threshold = 	getDoubleParam(&paramCnt, &paramPtr, "gw_loss_fast_threshold", "%lf", -1.0, 1);
 		default_object_list[i].gw_loss_fast_coeff = 	getDoubleParam(&paramCnt, &paramPtr, "gw_loss_fast_coeff", "%lf", 3.0*default_object_list[i].gw_loss_coeff, 1);
 
 		if (default_object_list[i].n_routing_timesteps < 1)
 			default_object_list[i].n_routing_timesteps = 1;
-		
+
 		if (command_line[0].gw_flag > 0) {
 			default_object_list[i].gw_loss_coeff *= command_line[0].gw_loss_coeff_mult;
 			default_object_list[i].gw_loss_fast_coeff *= command_line[0].gw_loss_coeff_mult;
@@ -105,14 +111,14 @@ struct hillslope_default *construct_hillslope_defaults(
                 char *y = NULL;
                 char *token = NULL;
                 char filename[256];
-    
+
                 // Store filename portion of path in 't'
                 while ((token = strtok(s, "/")) != NULL) {
                     // Save the latest component of the filename
                     strcpy(filename, token);
                     s = NULL;
-                } 
-    
+                }
+
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
@@ -121,10 +127,10 @@ struct hillslope_default *construct_hillslope_defaults(
                 if (token != NULL) {
                     strcpy(filename, token);
                 }
-        
+
                 memset(outFilename, '\0', filenameLen);
 
-    
+
             // Concatenate the output prefix with the filename of the input .def file
             // and "_hillslope.params"
             if (command_line[0].output_prefix != NULL) {
@@ -134,7 +140,7 @@ struct hillslope_default *construct_hillslope_defaults(
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_hillslope.params");
-            } 
+            }
             else {
                 if (filename != NULL) {
                     strcat(outFilename, "_");
@@ -142,12 +148,12 @@ struct hillslope_default *construct_hillslope_defaults(
                 }
                 strcat(outFilename, "hillslope.params");
             }
-    
+
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 
                 if (paramPtr != NULL)
                     free(paramPtr);
-		    
+
 	return(default_object_list);
 } /*end construct_hillslope_defaults*/

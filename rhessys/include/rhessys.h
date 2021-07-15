@@ -826,6 +826,10 @@ struct hillslope_default
         double  gw_loss_coeff;                                  /* percent/day */
         double  gw_loss_fast_coeff;                                     /* percent/day */
         double  gw_loss_fast_threshold;                                 /* m */
+        double  gw_soluteConc_decay;            /* rate, new NREN*/
+        double  gw_soluteLOSSCoef;              /* percentage, new NREN*/
+        double  gw_loss_coeff_decay;            /* rate for fast and slow NREN */
+
         };
 
 /*----------------------------------------------------------*/
@@ -870,6 +874,7 @@ struct  gw_object
         double  hourly_NH4out;          /* kgN/m2/day   */
         double  hourly_DONout;          /* kgN/m2/day   */
         double  hourly_DOCout;          /* kgC/m2/day   */
+        double soluteConc0coef;         /* percentage */ //NREN
 
         };
 /*----------------------------------------------------------*/
@@ -1210,9 +1215,11 @@ struct	soil_default
 	double	pore_size_index;				/* unitless */
 	double	psi_air_entry;					/* m */
 	double	psi_max;					/* m */
-	double	surf_to_gw_coeff;				/* percent/day */
+	double	surf_to_gw_coeff;				/* percent/day */ //NREN
   double  sat_to_gw_coeff; 				/* percent/day */
-  double  actionGWDRAIN;
+  int  actionGWDRAIN;
+  int    water_film; //NREN creat a hotspot or not
+
 	double	soil_depth;					/* m */
 	double	effective_soil_depth;					/* m */
 	double	soil_water_cap;					/* m of water */

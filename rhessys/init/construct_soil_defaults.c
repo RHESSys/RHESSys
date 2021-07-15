@@ -177,8 +177,10 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].sat_to_gw_coeff = getDoubleParam(&paramCnt, &paramPtr, "sat_to_gw_coeff", "%lf", 1.0, 1);//NREN / 24.0; // conver to hourly
 				default_object_list[i].sat_to_gw_coeff *= command_line[0].sat_to_gw_coeff_mult;
 					default_object_list[i].actionGWDRAIN = getIntParam(&paramCnt, &paramPtr, "actionGWDRAIN", "%d", 0, 1);//default is off
-					printf("\n Drain saturate zone water to ground water %d",
-					default_object_list[i].actionGWDRAIN);
+					printf("\n Drain saturate zone water to ground water %d", default_object_list[i].actionGWDRAIN);
+					//when it is dry there is no lateral follow out of no-veg Patches
+					default_object_list[i].water_film = getIntParam(&paramCnt, &paramPtr, "water_film", "%d", 0, 1); //default is off
+					printf("\n creat a hotspot for no-veg patches %d", default_object_list[i].water_film);
 			}
 
 		/*-----------------------------------------------------------------------------

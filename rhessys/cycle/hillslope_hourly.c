@@ -61,7 +61,7 @@ void		hillslope_hourly(
 	void    compute_subsurface_routing_hourly(
 		struct command_line_object *command_line,
     struct hillslope_object *hillslope,
-		int n_timesteps, 
+		int n_timesteps,
 		struct date current_date);
 
 
@@ -73,7 +73,7 @@ void		hillslope_hourly(
 	double  hourly_gw_Qout;
 	double	gw_Qout_ratio;
 	struct patch_object *patch;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate the hillslope houly parameter array.				*/
 	/*--------------------------------------------------------------*/
@@ -119,7 +119,7 @@ void		hillslope_hourly(
 	/*--------------------------------------------------------------*/
 	/* this part is nearly the same as in the basin_daily_F		*/
 
-	if ( command_line[0].routing_flag == 1 && hillslope[0].zones[0][0].hourly_rain_flag==1) { 
+	if ( command_line[0].routing_flag == 1 && hillslope[0].zones[0][0].hourly_rain_flag==1) {
 		compute_subsurface_routing_hourly(command_line,
 			hillslope,
 			basin[0].defaults[0][0].n_routing_timesteps,
@@ -144,61 +144,101 @@ void		hillslope_hourly(
 	hillslope[0].hourly_streamflow_DON = 0.0;
 
 	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag==0)) {
-	    if (hillslope[0].defaults[0][0].gw_loss_fast_threshold < ZERO) {	
-		      hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
-				  hillslope[0].defaults[0][0].gw_loss_coeff / 24;
+			double gw_loss_coeff_ksat0;
+			gw_loss_coeff_ksat0 = hillslope[0].slope * hillslope[0].defaults[0][0].gw_loss_coeff/24; //NREN why 1.571
+
+			if (hillslope[0].defaults[0][0].gw_loss_fast_threshold < ZERO) {
+		      hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 *
+				  hillslope[0].defaults[0][0].gw_loss_coeff / 24;// here convert from daily to hourly NREN why 1.57
 	    }
 	    else {
 		slow_store = min(hillslope[0].defaults[0][0].gw_loss_fast_threshold, hillslope[0].gw.storage);
-	      	hillslope[0].gw.hourly_Qout = slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_coeff/24; 
+	      	hillslope[0].gw.hourly_Qout = slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_coeff/24;
 		fast_store = max(0.0,hillslope[0].gw.storage - hillslope[0].defaults[0][0].gw_loss_fast_threshold);
-		hillslope[0].gw.hourly_Qout += fast_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24; 
+		hillslope[0].gw.hourly_Qout += fast_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24;
 	    }
 
+			/* add more checking and solute concentration decay NREN 20210714 */
+			if(hillslope[0].gw.hourly_Qout >= hillslope[0].gw.storage){
+            // all out
+            hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage;
+            hillslope[0].gw.hourly_NH4out = hillslope[0].gw.NH4;
+            hillslope[0].gw.hourly_NO3out = hillslope[0].gw.NO3;
+            hillslope[0].gw.hourly_DONout = hillslope[0].gw.DON;
+            hillslope[0].gw.hourly_DOCout = hillslope[0].gw.DOC;
+        }else if(fabs(hillslope[0].defaults[0][0].gw_soluteLOSSCoef)>0){
+
+            hillslope[0].gw.soluteConc0coef = 1.0;
+            hillslope[0].gw.soluteConc0coef /= hillslope[0].defaults[0][0].gw_soluteConc_decay * (1.0 - exp(-hillslope[0].gw.storage / hillslope[0].defaults[0][0].gw_soluteConc_decay)) * hillslope[0].gw.storage;
+            //[N0] is a concentration, where gwN = gwQ * [N0] *decay* (1-exp(-gwQ/decay)
+
+            double tmp = gw_loss_coeff_ksat0 / hillslope[0].defaults[0][0].gw_soluteLOSSCoef;
+            tmp *= 1.0 - exp(-hillslope[0].gw.storage * hillslope[0].defaults[0][0].gw_soluteLOSSCoef );
+            tmp *= hillslope[0].gw.soluteConc0coef;
+            if(tmp > 1.0) tmp = 1.0; // just in case;
+
+            hillslope[0].gw.hourly_NH4out = tmp * hillslope[0].gw.NH4;
+            hillslope[0].gw.hourly_NO3out = tmp * hillslope[0].gw.NO3;
+            hillslope[0].gw.hourly_DONout = tmp * hillslope[0].gw.DON;
+            hillslope[0].gw.hourly_DOCout = tmp * hillslope[0].gw.DOC;
+
+        }else{
+            // assume solutes are well mixed !
+            hillslope[0].gw.hourly_NH4out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
+            hillslope[0].gw.hourly_NO3out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
+            hillslope[0].gw.hourly_DONout = hillslope[0].gw.hourly_Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;
+            hillslope[0].gw.hourly_DOCout = hillslope[0].gw.hourly_Qout * hillslope[0].gw.DOC / hillslope[0].gw.storage;
+        }
+
+
+
+
+
+		//hourly flux
 		hillslope[0].hourly_base_flow += hillslope[0].gw.hourly_Qout;
-		
-		hillslope[0].gw.hourly_NH4out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
-		hillslope[0].gw.hourly_NO3out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NO3 / hillslope[0].gw.storage;
-		hillslope[0].gw.hourly_DONout = hillslope[0].gw.hourly_Qout * hillslope[0].gw.DON / hillslope[0].gw.storage;
-		hillslope[0].gw.hourly_DOCout = hillslope[0].gw.hourly_Qout * hillslope[0].gw.DOC / hillslope[0].gw.storage;
-	      	hillslope[0].gw.NO3out += hillslope[0].gw.hourly_NO3out;
+
+		//daily flux
+		hillslope[0].gw.NO3out += hillslope[0].gw.hourly_NO3out;
 		hillslope[0].gw.NH4out += hillslope[0].gw.hourly_NH4out;
 		hillslope[0].gw.DOCout += hillslope[0].gw.hourly_DOCout;
 		hillslope[0].gw.DONout += hillslope[0].gw.hourly_DONout;
 
 		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;
 
-
+		// go to stream hourly
 		hillslope[0].hourly_streamflow_NO3 += hillslope[0].gw.hourly_NO3out;
 		hillslope[0].hourly_streamflow_NH4 += hillslope[0].gw.hourly_NH4out;
 		hillslope[0].hourly_streamflow_DON += hillslope[0].gw.hourly_DONout;
 		hillslope[0].hourly_streamflow_DOC += hillslope[0].gw.hourly_DOCout;
+
+		// update stage, go out of gw daily
 		hillslope[0].gw.NH4 -= hillslope[0].gw.hourly_NH4out;
 		hillslope[0].gw.NO3 -= hillslope[0].gw.hourly_NO3out;
 		hillslope[0].gw.DON -= hillslope[0].gw.hourly_DONout;
 		hillslope[0].gw.DOC -= hillslope[0].gw.hourly_DOCout;
 
+		// update daily hillslope fluxes; go to stream daily
 		hillslope[0].streamflow_NO3 +=hillslope[0].hourly_streamflow_NO3;
 		hillslope[0].streamflow_NH4 +=hillslope[0].hourly_streamflow_NH4;
 		hillslope[0].streamflow_DOC +=hillslope[0].hourly_streamflow_DOC;
 		hillslope[0].streamflow_DON +=hillslope[0].hourly_streamflow_DON;
 
 	}
-	
+
 	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag == 1)) {
-		hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
+		hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 *
 					hillslope[0].defaults[0][0].gw_loss_coeff / 24;
 
 
-		if (hillslope[0].defaults[0][0].gw_loss_fast_threshold < ZERO) {	
-			hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 * 
+		if (hillslope[0].defaults[0][0].gw_loss_fast_threshold < ZERO) {
+			hillslope[0].gw.hourly_Qout = hillslope[0].gw.storage * hillslope[0].slope / 1.571 *
 					hillslope[0].defaults[0][0].gw_loss_coeff / 24;
 		}
 		else {
 			slow_store = min(hillslope[0].defaults[0][0].gw_loss_fast_threshold, hillslope[0].gw.storage);
-			hillslope[0].gw.hourly_Qout = slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_coeff/24; 
+			hillslope[0].gw.hourly_Qout = slow_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_coeff/24;
 			fast_store = max(0.0,hillslope[0].gw.storage - hillslope[0].defaults[0][0].gw_loss_fast_threshold);
-			hillslope[0].gw.hourly_Qout += fast_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24; 
+			hillslope[0].gw.hourly_Qout += fast_store * hillslope[0].slope / 1.571 * hillslope[0].defaults[0][0].gw_loss_fast_coeff/24;
 	      	}
 
 		hillslope[0].gw.hourly_NH4out = hillslope[0].gw.hourly_Qout * hillslope[0].gw.NH4 / hillslope[0].gw.storage;
@@ -216,7 +256,7 @@ void		hillslope_hourly(
 			hillslope[0].hourly_streamflow_NH4 += hillslope[0].gw.hourly_NH4out;
 			hillslope[0].hourly_streamflow_DON += hillslope[0].gw.hourly_DONout;
 			hillslope[0].hourly_streamflow_DOC += hillslope[0].gw.hourly_DOCout;
-			
+
 			hillslope[0].hourly_base_flow += hillslope[0].gw.hourly_Qout;
 			hourly_gw_Qout = 0.0;
 		}
@@ -235,7 +275,7 @@ void		hillslope_hourly(
 		}
 
 
-		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;	
+		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;
 		hillslope[0].gw.NH4 -= hillslope[0].gw.hourly_NH4out;
 		hillslope[0].gw.NO3 -= hillslope[0].gw.hourly_NO3out;
 		hillslope[0].gw.DON -= hillslope[0].gw.hourly_DONout;
@@ -253,7 +293,7 @@ void		hillslope_hourly(
 	}
 	hillslope[0].gw.Qout += hillslope[0].gw.hourly_Qout; // this is the daily gw.Qout, used in hillslop_daily_F
 	hillslope[0].base_flow += hillslope[0].hourly_base_flow; // daily base_flow
- 
+
 
 
 } /*end hillslope_hourly.c*/

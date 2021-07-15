@@ -181,6 +181,14 @@ void  update_drainage_land(
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water)
 		route_to_patch *= (available_sat_water)/(route_to_patch);
+
+		/* add a hotspot to no-veg patches, only route water if precip 2mm */
+		//rain_throughfall NREN
+		if (patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == NON_VEG && patch[0].rain_throughfall >= 0.002 && patch[0].soil_defaults[0][0].water_film == 1) {
+			route_to_patch = 0;
+			printf("zero patch lateral flow of patchID: %lf", patch[0].ID);
+		}
+
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount				*/
 	/*--------------------------------------------------------------*/
@@ -425,6 +433,9 @@ void  update_drainage_land(
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
+		/* creat a hotspot for no-veg patches */
+
+
 		if (Qin < 0) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);
 		if (command_line[0].grow_flag > 0) {
 			 /* add water more from sat zone to deep groundwater NREN 20210714*/
