@@ -546,11 +546,11 @@ void compute_subsurface_routing_hourly(
 
 									neigh[0].streamflow_NO3 += (NO3_out
 											* patch[0].area / neigh[0].area);
-									neigh[0].streamNO3_from_surface +=(NO3_out
+									neigh[0].streamNO3_from_sub +=(NO3_out //change to sub NREN 20210716
 											* patch[0].area / neigh[0].area);
 									neigh[0].hourly[0].streamflow_NO3 += (NO3_out
 											* patch[0].area / neigh[0].area);
-									neigh[0].hourly[0].streamflow_NO3_from_surface +=(NO3_out
+									neigh[0].hourly[0].streamflow_NO3_from_sub +=(NO3_out
 											* patch[0].area / neigh[0].area);
 
 
