@@ -665,7 +665,7 @@ void		zone_daily_F(
 					if ((clim_event.edate.year != 0) && (julday(clim_event.edate) == julday(current_date)))
 					{
 						pspread = clim_event.value;
-						printf("\n Implementing fire effects with a pspread of %f in patch family %d\n", pspread, zone[0].patch_families[pf][0].family_ID);
+						printf("\n Implementing fire effects with a pspread of %lf in patch family %d\n", pspread, zone[0].patch_families[pf][0].family_ID);
 						compute_family_fire_effects(
 							zone[0].patch_families[pf],
 							pspread,

@@ -85,7 +85,6 @@ void compute_family_fire_effects(
 	/*--------------------------------------------------------------*/
 	if (pspread > 0) {
 
-	printf("\n Running with pspread of %lf", pspread);
 	/* Litter consumption is approximated based CONSUME model outputs */
 	/* Consumption 1hr-fuel = 1 * 1hr-fuel */
 	/* Consumption 10hr-fuel = 0.8469 * 10hr-fuel */

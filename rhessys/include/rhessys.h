@@ -2999,6 +2999,9 @@ struct  stratum_default
 	double totalc;
 	double totaln;
 	double height;
+	double fe_prop_c_consumed;
+	double fe_prop_c_mortality;
+	double fe_prop_c_mortality_leaf;
         };
 
 
