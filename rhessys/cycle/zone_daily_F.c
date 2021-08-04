@@ -158,7 +158,16 @@ void		zone_daily_F(
 	void	compute_family_shading(
 		struct	zone_object	*,
 		struct	command_line_object	*);
+
+
 	
+	void update_fuel_treatment_effects(struct zone_object *,
+                                   struct command_line_object *);
+
+	void compute_family_fire_effects(
+		struct patch_family_object *,
+		double,
+		struct command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -656,7 +665,7 @@ void		zone_daily_F(
 					if ((clim_event.edate.year != 0) && (julday(clim_event.edate) == julday(current_date)))
 					{
 						pspread = clim_event.value;
-						printf("\n Implementing fire effects with a pspread of %f in patch family %d\n", pspread, zone[0].patch_families[pf][0].family_ID);
+						printf("\n Implementing fire effects with a pspread of %lf in patch family %d\n", pspread, zone[0].patch_families[pf][0].family_ID);
 						compute_family_fire_effects(
 							zone[0].patch_families[pf],
 							pspread,

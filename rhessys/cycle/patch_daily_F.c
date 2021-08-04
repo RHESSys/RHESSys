@@ -379,7 +379,8 @@ void		patch_daily_F(
 
 	void	compute_fire_effects(
 		struct patch_object *,
-		double);
+		double,
+		struct command_line_object *);
 
 	void    compute_shaded_kdown(
 		struct  patch_object *, 
@@ -702,7 +703,7 @@ void		patch_daily_F(
 					printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
 					compute_fire_effects(
 						patch,
-						pspread);
+						pspread, command_line);
 					/* could put a call to update_fire_in_WUI.c here */
 				}
 			}
