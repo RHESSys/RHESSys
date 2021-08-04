@@ -1597,6 +1597,7 @@ struct patch_fire_water_object
         double et;                      /* mm */
 	double understory_et; /*mm; understory layer et*/
 	double understory_pet; /*mm; understory layer pet*/
+	double litter_c_consumed; /* kg carbon lost in fire */
 	
 
 };
@@ -1936,7 +1937,7 @@ struct patch_object
 /*      carbon and nitrogen objects for patch soil and litter */
 /*----------------------------------------------------------*/
 
-        //double  burn;                           /* 0-1 % burned */
+        double  burn;                           /* 0-1 % burned */
         double  pspread;                        /* pspread 0-1 */
         double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
         double  preday_totalc;                  /* kgC/m2 total carbon */
@@ -2234,6 +2235,8 @@ struct  command_line_object
         bool					output_filter_flag;
         char                    *output_filter_filename;
         OutputFilter            *output_filter;
+        bool                    output_filter_zone_accum_monthly;
+        bool                    output_filter_zone_accum_yearly;
         bool					output_filter_patch_accum_monthly;
         bool					output_filter_patch_accum_yearly;
         bool					output_filter_strata_accum_monthly;
@@ -2996,6 +2999,9 @@ struct  stratum_default
 	double totalc;
 	double totaln;
 	double height;
+	double fe_prop_c_consumed;
+	double fe_prop_c_mortality;
+	double fe_prop_c_mortality_leaf;
         };
 
 

@@ -158,7 +158,16 @@ void		zone_daily_F(
 	void	compute_family_shading(
 		struct	zone_object	*,
 		struct	command_line_object	*);
+
+
 	
+	void update_fuel_treatment_effects(struct zone_object *,
+                                   struct command_line_object *);
+
+	void compute_family_fire_effects(
+		struct patch_family_object *,
+		double,
+		struct command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -656,7 +665,7 @@ void		zone_daily_F(
 					if ((clim_event.edate.year != 0) && (julday(clim_event.edate) == julday(current_date)))
 					{
 						pspread = clim_event.value;
-						printf("\n Implementing fire effects with a pspread of %f in patch family %d\n", pspread, zone[0].patch_families[pf][0].family_ID);
+						printf("\n Implementing fire effects with a pspread of %lf in patch family %d\n", pspread, zone[0].patch_families[pf][0].family_ID);
 						compute_family_fire_effects(
 							zone[0].patch_families[pf],
 							pspread,
@@ -725,13 +734,24 @@ void		zone_daily_F(
 	/*      update accumulator variables                            */
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].output_flags.monthly == 1) &&
-		(command_line[0].z != NULL) ){
+			(command_line[0].output_filter_zone_accum_monthly ||
+				command_line[0].z != NULL) ){
 		zone[0].acc_month.precip += zone[0].rain + zone[0].snow;
 		zone[0].acc_month.tmin += zone[0].metv.tmin;
 		zone[0].acc_month.tmax += zone[0].metv.tmax;
 		zone[0].acc_month.K_direct += zone[0].Kdown_direct;
 		zone[0].acc_month.K_diffuse += zone[0].Kdown_diffuse;
 		zone[0].acc_month.length += 1;
+	}
+
+	if ((command_line[0].output_flags.yearly == 1) &&
+	    (command_line[0].output_filter_zone_accum_monthly) ){
+		zone[0].acc_year.precip += zone[0].rain + zone[0].snow;
+		zone[0].acc_year.tmin += zone[0].metv.tmin;
+		zone[0].acc_year.tmax += zone[0].metv.tmax;
+		zone[0].acc_year.K_direct += zone[0].Kdown_direct;
+		zone[0].acc_year.K_diffuse += zone[0].Kdown_diffuse;
+		zone[0].acc_year.length += 1;
 	}
 
 	return;
