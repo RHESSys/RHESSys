@@ -351,15 +351,6 @@ void execute_firespread_event(
 
 				if (command_line[0].multiscale_flag == 1)
 				{
-					patch_family = world[0].patch_fire_grid[i][j].patch_families[0];
-					// grid in patch is length 1 since only the [0] is ever set, regardless of allocation
-					pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[0];
-					// Add pspread to patch
-					for (p = 0; p < patch_family[0].num_patches_in_fam; p++) {
-						patch_family[0].patches[p][0].pspread = pspread;
-						if(pspread>0)
-							patch_family[0].patches[p][0].nburn+=1;
-					}
 
 					if (world[0].patch_fire_grid[i][j].num_patches > 0)
 					{
