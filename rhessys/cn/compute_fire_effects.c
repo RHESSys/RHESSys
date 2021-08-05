@@ -382,7 +382,7 @@ void compute_fire_effects(
 			if (fabs(canopy_target[0].fe.canopy_target_prop_c_consumed - 1.0) < ZERO){
 				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = 0;
 			} else {
-				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = (1 - canopy_target[0].fe.canopy_target_prop_mort) / (1 - canopy_target[0].fe.canopy_target_prop_c_consumed);
+				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = (canopy_target[0].fe.canopy_target_prop_mort - canopy_target[0].fe.canopy_target_prop_c_consumed) / (1 - canopy_target[0].fe.canopy_target_prop_c_consumed);
 			}
 
 
