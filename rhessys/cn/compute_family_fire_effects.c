@@ -219,6 +219,20 @@ void compute_family_fire_effects(
 	agg_intr_height /= intr_pct_area;
 	agg_intr_carbon /= intr_pct_area;
 
+
+
+	// normalize by coverage
+	if (under_pct_area > ZERO) {
+        agg_under_height /= under_pct_area;
+        agg_under_carbon /= under_pct_area;
+        }
+
+        if (intr_pct_area > ZERO) {
+        agg_intr_height /= intr_pct_area;
+        agg_intr_carbon /= intr_pct_area;
+        }
+
+
 	/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
 	// since using agg intr story height, calc this for all stories
 	intr_height_u_prop = (patch_family[0].overstory_height_thresh - agg_intr_height) /
