@@ -1084,6 +1084,9 @@ struct zone_object
         double  e_horizon;      /* cos of angle to normal of flat       */
         double  e_horizon_topog;      /* cos of angle to normal of flat       */
         double  effective_lai;          /* area wt. average m^2/m^2     */
+        double  lai;
+        double  total_stemc;
+        double  height;
         double  Kdown_diffuse;                          /* Kj/(m^2*day) */
         double  Kdown_diffuse_calc;                             /* Kj/(m^2*day) */
         double  Kdown_diffuse_adjustment;               /*  0-1 */
@@ -1735,6 +1738,8 @@ struct patch_object
         double  hourly_subsur2stream_flow;      /* m water */
         double  hourly_sur2stream_flow;  /* m water  */
         double  hourly_stream_flow;     /* m water */
+        double  height;
+        double  total_stemc;
         double  interim_sat;            /* m */
         double  stream_gamma;           /* meters**2/day        */
         double  Kdown_direct;           /* Kj/(m^2*day) */

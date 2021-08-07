@@ -307,7 +307,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].zone[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s $s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -328,7 +328,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"tdew","edew",
 		"transmis",
 		"wind",
-		"deltaT","clearskytransmis","tcoeff1","cloudfrac","CO2_ppm", "effective_LAI", "NO3_dep");
+		"deltaT","clearskytransmis","tcoeff1","cloudfrac","CO2_ppm", "LAI", "NO3_dep", "total_stemc", "height");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/

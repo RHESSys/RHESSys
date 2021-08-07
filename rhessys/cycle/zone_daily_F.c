@@ -399,12 +399,27 @@ void		zone_daily_F(
 		/*		zone lai.												*/
 		/*--------------------------------------------------------------*/
 		zone[0].effective_lai = 0.0; //calculate zone level LAI and use it as target NREN
+		zone[0].lai = 0.0;
+		zone[0].total_stemc = 0.0;
+		zone[0].height = 0.0;
 		for ( patch=0 ; patch<zone[0].num_patches ; patch++ ){
 			zone[0].effective_lai
 				+= zone[0].patches[patch][0].effective_lai
 				* zone[0].patches[patch][0].area;
+            zone[0].lai
+ 				+= zone[0].patches[patch][0].lai
+				* zone[0].patches[patch][0].area;
+            zone[0].total_stemc
+                += zone[0].patches[patch][0].total_stemc
+                * zone[0].patches[patch][0].area;
+            zone[0].height
+                += zone[0].patches[patch][0].height
+                * zone[0].patches[patch][0].area;
+
 		}
 		zone[0].effective_lai = zone[0].effective_lai / zone[0].area;
+		zone[0].total_stemc = zone[0].total_stemc / zone[0].area;
+		zone[0].height = zone[0].height / zone[0].area;
 		//if ( zone[0].radrat <  1.0 ){
 		//	zone[0].LAI_temp_adjustment
 		//		=-1 * ( 1/zone[0].radrat ) * ( 1 + (zone[0].effective_lai

@@ -477,12 +477,18 @@ void		patch_daily_I(
 	/*	also determine total plant carbon			*/
 	/*	- if grow option is specified				*/
 	/*--------------------------------------------------------------*/
-	patch[0].effective_lai = 0.0;
+	patch[0].effective_lai = 0.0; //for zone climate
+	patch[0].total_stemc = 0.0; //New NREN
+	patch[0].height = 0.0;
 	patch[0].soil_cs.frootc = 0.0;
 	patch[0].rootzone.depth = 0.0;
 	count = 0.0;
 	for ( stratum=0 ; stratum<patch[0].num_canopy_strata; stratum++){
-		patch[0].effective_lai += patch[0].canopy_strata[stratum][0].epv.proj_lai;
+		patch[0].effective_lai += patch[0].canopy_strata[stratum][0].epv.proj_lai; // why proj_lai no need to multiple cover fraction, because line 507
+		patch[0].total_stemc += patch[0].canopy_strata[stratum][0].cover_fraction
+                                 * (patch[0].canopy_strata[stratum][0].cs.live_stemc + patch[0].canopy_strata[stratum][0].cs.dead_stemc);
+        patch[0].height += patch[0].canopy_strata[stratum][0].cover_fraction * patch[0].canopy_strata[stratum][0].epv.height;
+
 		if (command_line[0].grow_flag > 0) {
 			patch[0].soil_cs.frootc
 				+= patch[0].canopy_strata[stratum][0].cover_fraction
@@ -500,6 +506,7 @@ void		patch_daily_I(
 			 patch[0].canopy_strata[stratum][0].rootzone.depth);
 	}
 	patch[0].effective_lai = patch[0].effective_lai / patch[0].num_canopy_strata;
+
 	/*--------------------------------------------------------------*/
 	/*	re-sort patch layers to account for any changes in 	*/
 	/*	height							*/

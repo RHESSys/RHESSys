@@ -118,30 +118,48 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
     }
 
     strata->target.met = 0;
+    //initialization of target to -9999
+    patch->target.lai = NULLVAL;
+    patch->target.total_stemc = NULLVAL;
+    patch->target.height = NULLVAL;
+    patch->target.age = NULLVAL;
+    // zone level
+    zone->target.lai = NULLVAL;
+    zone->target.total_stemc = NULLVAL;
+    zone->target.height = NULLVAL;
+    zone->target.age = NULLVAL;
 
       for (j=0; j< num_targets; ++j) {
 		      fscanf(spinup_thresholds_file,"%lf", &target_array[j].value);
 
         if( strcmp (target_array[j].name, "LAI") == 0 || strcmp (target_array[j].name, "lai") == 0){
           strata->target.lai = target_array[j].value;
-          patch->target.lai = target_array[j].value;//NREN 20201203
+          patch->target.lai = target_array[j].value;//NREN 20201203, the oversotry+understory together LAI
           zone->target.lai = target_array[j].value;//NREN 20210106
         }
         if( strcmp (target_array[j].name,"total_stemc") == 0 ) {
           strata->target.total_stemc = target_array[j].value;
+          patch->target.total_stemc = target_array[j].value;
+          zone->target.total_stemc = target_array[j].value;
+
         }
-	if( strcmp (target_array[j].name, "height") == 0 ) {
+        if( strcmp (target_array[j].name, "height") == 0 ) {
           strata->target.height = target_array[j].value;
+          patch->target.height = target_array[j].value;
+          zone->target.height = target_array[j].value;
         }
         if( strcmp (target_array[j].name,"age") == 0 ) {
           strata->target.age = target_array[j].value;
+          patch->target.age = target_array[j].value;
+          zone->target.age = target_array[j].value;
         }
-        if( strcmp (target_array[j].name, "height") == 0 ) {
+     /*   if( strcmp (target_array[j].name, "height") == 0 ) {
             strata->target.height = target_array[j].value;
         }
         if( strcmp (target_array[j].name,"age") == 0 ) {
             strata->target.age = target_array[j].value;
-        }
+
+        } */ //  why this is repeated twice for height and age
      }
   }
 

@@ -248,7 +248,7 @@ struct canopy_strata_object *construct_canopy_strata(
 
 
 	if (command_line[0].vegspinup_flag > 0){
-     canopy_strata[0].target.lai = NULLVAL;
+     canopy_strata[0].target.lai = NULLVAL; //-9999
      canopy_strata[0].target.total_stemc = NULLVAL;
      canopy_strata[0].target.height = NULLVAL;
      canopy_strata[0].target.age = NULLVAL;

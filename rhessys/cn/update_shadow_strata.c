@@ -106,30 +106,33 @@ void	update_shadow_strata(
 
   /* use patch level LAI as target instead of only use overstory LAI NREN 20201203 */
    if (world[0].defaults[0].spinup[0].target_type == 2) {
-    if (patch[0].lai >= patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) {
-
+    if (patch[0].lai >= patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance) &&
+        patch[0].total_stemc >= patch[0].target.total_stemc *(1 - world[0].defaults[0].spinup[0].tolerance) &&
+        patch[0].height >= patch[0].target.height *(1 - world[0].defaults[0].spinup[0].tolerance) &&
+        (current_date.year - command_line[0].start_date.year) > patch[0].target.age && current_date.month==9 && current_date.day==30)
+    {
+        stratum[0].target.met = 1;
         //printf("\n 1. for patch before check over-under ratio target: patchID is: %d, simulated patch LAI is %lf, target LAI is %lf, stratumID is %d, simulated stratum LAI is %lf \n", patch[0].ID, patch[0].lai, patch[0].target.lai, stratum[0].ID, stratum[0].epv.proj_lai);
-
         // prevent the patch reach target too soon because of understory fast grow at the beginning
-        if ( stratum[0].epv.proj_lai*stratum[0].cover_fraction >= 0.9*patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)  && stratum[0].ID < world[0].defaults[0].spinup[0].max_ID)
-        patch[0].target.met = 1;
-
-
+        /*if ( stratum[0].epv.proj_lai >= 0.9*patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)  && stratum[0].ID < world[0].defaults[0].spinup[0].max_ID)
+            {stratum[0].target.met = 1;} */
+            //printf("\n 2. patch target meet2 after check over-under ratio for patchID is: %d, simulated patch LAI is: %lf, stratumID is: %d, simulate stratum LAI is %lf \n target LAI is %lf, target.met %d \n", patch[0].ID, patch[0].lai, stratum[0].ID, stratum[0].epv.proj_lai, patch[0].target.lai, stratum[0].target.met);
 
     } // if patchi lai
 
-    if (patch[0].target.met == 1) {
-        stratum[0].target.met = 1;
-        printf("\n 2. patch target meet2 after check over-under ratio for patchID is: %d, simulated patch LAI is: %lf, stratumID is: %d, simulate stratum LAI is %lf \n target LAI is %lf, target.met %d \n", patch[0].ID, patch[0].lai, stratum[0].ID, stratum[0].epv.proj_lai, patch[0].target.lai, stratum[0].target.met);
-        }
+
 
    } //if world
 
    /* add third option to use zone effective LAI as target to solve the MSR incompatible problem NR 20210105*/
    else if (world[0].defaults[0].spinup[0].target_type == 3) {
-        if (zone[0].effective_lai >= zone[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) {
+        if ( (zone[0].lai >= zone[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) &&
+             (zone[0].total_stemc >= zone[0].target.total_stemc * (1- world[0].defaults[0].spinup[0].tolerance)) &&
+             (zone[0].height >= zone[0].target.height *(1 - world[0].defaults[0].spinup[0].tolerance)) &&
+             (current_date.year - command_line[0].start_date.year) > zone[0].target.age && current_date.month==9 && current_date.day==30)
+         {
                 stratum[0].target.met = 1;
-                  printf("\n 3. zone target meet zoneID is: %d, simulated zone effective LAI is: %lf, stratumID is: %d, simulate stratum LAI is %lf \n target LAI is %lf, target.met %d \n", zone[0].ID, zone[0].effective_lai, stratum[0].ID, stratum[0].epv.proj_lai, zone[0].target.lai, stratum[0].target.met);
+                 printf("\n 3. zone target meet zoneID is: %d, simulated zone effective LAI is: %lf, stratumID is: %d, simulate stratum LAI is %lf \n target LAI is %lf, target.met %d \n", zone[0].ID, zone[0].effective_lai, stratum[0].ID, stratum[0].epv.proj_lai, zone[0].target.lai, stratum[0].target.met);
         }
 
    }
