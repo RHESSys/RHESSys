@@ -1,0 +1,27 @@
+# Makefile template for a shared library in C
+# # https://www.topbug.net/blog/2019/10/28/makefile-template-for-a-shared-library-in-c-with-explanations/
+
+CC = c++  # C compiler
+#LIBLOC2 = /usr/local/boost/boost_1_59_0/
+CFLAGS = -Wall -Wextra -I /usr/local/boost/boost_1_59_0/ -O2 -g  # C flags
+LDFLAGS = -shared -fPIC   # linking flags
+RM = rm -f   # rm command
+TARGET_LIB = libwmfire.so  # target lib
+
+SRCS = RanNums.cpp WMFire.cpp  # source files
+OBJS = $(SRCS:.cpp=.o)
+
+.PHONY: all
+all: ${TARGET_LIB}
+
+$(TARGET_LIB): $(OBJS) 
+	$(CXX) ${LDFLAGS} -v -o $@ $^
+
+	$(SRCS:.cpp=.d):%.d:%.cpp
+		$(CC) $(CFLAGS) -MM $< >$@
+
+		include $(SRCS:.c=.d)
+#
+		.PHONY: clean
+		clean:
+			-${RM} ${TARGET_LIB} ${OBJS} $(SRCS:.c=.d)

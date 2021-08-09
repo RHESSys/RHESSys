@@ -103,7 +103,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -131,6 +131,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"detention_store",
 		"%sat_area",
 		"litter_store",
+		"litter_capacity",
 		"canopy_store",
 		"%snow_cover",
 		"snow_subl",
@@ -285,28 +286,28 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].zone[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n " ,
-		"day",
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"ID",
-		"rain",
-		"snow",
-		"tmax",
-		"tmin",
-		"vpd",
-		"Kdown_direct",
-		"Kdown_diffuse",
-		"PAR_direct",
-		"PAR_diffuse",
-		"Ldown",
-		"relH","aspect","z","slope","ehr","whr",
-		"tdew","edew",
-		"transmis",
-		"wind",
-		"deltaT","clearskytransmis","tcoeff1","cloudfrac");
+	  fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s $s %s\n" ,
+           "day",
+           "month",
+           "year",
+           "basinID",
+           "hillID",
+           "ID",
+           "rain",
+           "snow",
+           "tmax",
+           "tmin",
+           "vpd",
+           "Kdown_direct",
+           "Kdown_diffuse",
+           "PAR_direct",
+           "PAR_diffuse",
+           "Ldown",
+           "relH","aspect","z","slope","ehr","whr",
+           "tdew","edew",
+           "transmis",
+           "wind",
+           "deltaT","clearskytransmis","tcoeff1","cloudfrac","CO2_ppm", "LAI", "NO3_dep", "total_stemc", "height");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
@@ -359,7 +360,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
 		check = fprintf(outfile,
-						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 						"day",
 						"month",
 						"year",
@@ -367,6 +368,8 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"hillID",
 						"zoneID",
 						"patchID",
+						"familyID",
+						"family_horizon",
 						"rain_thr",
 						"detention_store",
 						"sat_def_z",
@@ -378,6 +381,9 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"unsat_stor",
 						"rz_drainage",
 						"unsat_drain",
+						"rz_transfer",
+						"unsat_transfer",
+						"sat_transfer",
 						"sublimation",
 						"return",
 						"evap",
@@ -404,7 +410,8 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
 						"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
 						"LEcanopy",
-						"SED","snow_age");
+						"SED","snow_age",
+						"fire_et");
 		
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
@@ -461,7 +468,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].daily;
 	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s \n" ,
 		"day",
 		"month",
 		"year",
@@ -472,8 +479,11 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"stratumID",
 		"lai",
 		"evap",
+		"ppfd_sunlit",
+		"ppfd_shade",
 		"APAR_direct",
 		"APAR_diffuse",
+		"Kstar_potential_both",
 		"sublim",
 		"trans",
 		"ga",
@@ -505,7 +515,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s \n", 
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s \n", 
 		"month",
 		"year",
 		"basinID",
@@ -514,8 +524,10 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"patchID",
 		"stratumID",
 		"lai",
-		"psn",
-		"lwp");
+		"gpsn",
+		"resp",
+		"totalc",
+		"lwp","height","rootdepth");
 	}
 
 
@@ -526,7 +538,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].fire[0].daily;
+	/*outfile = world_output_files[0].fire[0].daily;
 	fprintf(outfile,
 		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
@@ -556,8 +568,42 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"canopy_subtarget_prop_mort_consumed",
 		"canopy_subtarget_prop_c_consumed",
 		"canopy_subtarget_c",
-		"understory_c_consumed");
+		"understory_c_consumed"); */
+
+	/*--------------------------------------------------------------*/
+	/*	yearly 							*/
+	/*--------------------------------------------------------------*/
+	outfile = world_output_files[0].fire[0].yearly;
+	fprintf(outfile,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"year",
+		"basinID",
+		"hillID",
+		"zoneID",
+		"patchID",
+		"stratumID",
+		"vegID",
+		"m_cwdc_to_atmos",
+		"m_cwdn_to_atmos",
+		"canopy_target_height",
+		"canopy_target_height_u_prop",
+		"canopy_target_prop_mort",
+		"canopy_target_prop_mort_consumed",
+		"canopy_target_prop_mort_u_component",
+		"canopy_target_prop_mort_o_component",
+		"canopy_target_prop_c_consumed",
+		"canopy_target_prop_c_remain",
+		"canopy_target_prop_c_remain_adjusted",
+		"canopy_target_prop_c_remain_adjusted_leafc",
+		"canopy_subtarget_height",
+		"canopy_subtarget_height_u_prop",
+		"canopy_subtarget_prop_mort",
+		"canopy_subtarget_prop_mort_consumed",
+		"canopy_subtarget_prop_c_consumed",
+		"canopy_subtarget_c",
+		"understory_c_consumed", "acc_length");
 	}
+
 
 	/*--------------------------------------------------------------*/
 	/*	Stream routing file headers					*/

@@ -210,7 +210,6 @@ struct hillslope_object *construct_hillslope(
 
 	
 	for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
-		printf("\n Construction zone %d", i);
 		hillslope[0].zones[i] = construct_zone( command_line,
 			world_file,
 			num_world_base_stations,

@@ -34,6 +34,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
+#include "math.h"
 
 double	leaf_conductance_tavg_curve(	double	Tair_mean_day,
 									double	topt,
@@ -60,8 +61,14 @@ double	leaf_conductance_tavg_curve(	double	Tair_mean_day,
 		pp = pow(((tmax-Tair_mean_day)/(tmax - topt)),((tmax - topt)/(topt +10)));
 		m_tavg  = (Tair_mean_day +10 ) / (topt + 10 ) * pp;
 		dt = tmax - topt;
+
+		if (fabs(Tair_mean_day-topt) > 0.1) {
 		temp = exp(log((tmax-Tair_mean_day)/dt) * dt * tcoef);
 		m_tavg = temp * exp(tcoef * (Tair_mean_day - topt));
+		}
+		else
+		{ m_tavg = 1.0; }
+
 		if ( Tair_mean_day < 5.0 ){
 			m_tavg = m_tavg * Tair_mean_day / 5.0;
 		}

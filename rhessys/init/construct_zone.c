@@ -90,6 +90,11 @@ struct zone_object *construct_zone(
 		int		num_world_base_stations,
 		struct base_station_object **world_base_stations,
 		struct	default_object	*defaults);
+
+	struct patch_family_object *construct_patch_family(
+		struct zone_object *zone,
+		int     patch_family_ID,
+		struct 	command_line_object *command_line);
 	
 	struct base_station_object *construct_netcdf_grid(
         #ifdef LIU_NETCDF_READER
@@ -117,7 +122,8 @@ struct zone_object *construct_zone(
 	int		i, k, j;
 	int		notfound;
     int     basestation_id;
-	float   base_x, base_y;	
+	float   base_x, base_y;
+	double	sum_patch_area; 
 	char	record[MAXSTR];
 	struct	zone_object *zone;
 	int paramCnt=0;
@@ -128,7 +134,7 @@ struct zone_object *construct_zone(
 	base_y = 0.0;
 	j = 0;
 	k = 0;	
-
+	sum_patch_area = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	Allocate a zone object.								*/
@@ -153,6 +159,13 @@ struct zone_object *construct_zone(
 	zone[0].e_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"e_horizon","%lf",-9999,0);
 	zone[0].w_horizon = getDoubleWorldfile(&paramCnt,&paramPtr,"w_horizon","%lf",-9999,0);
 	zone[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"zone_n_basestations","%d",0,0);	
+	/*--------------------------------------------------------------*/
+	/* check for negative horizons - these may occur if using a GIS function that is computing topographic rather than */
+	/* sun horizons - for us, those will be zero			*/
+	/*--------------------------------------------------------------*/
+
+	if (zone[0].e_horizon < ZERO) zone[0].e_horizon = 0.0;
+	if (zone[0].w_horizon < ZERO) zone[0].w_horizon = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/* if using stem density to change e and w horizons need to remember originals */
@@ -384,6 +397,7 @@ struct zone_object *construct_zone(
 	zone[0].metv.tmin_ravg = 3.0;
 	zone[0].metv.vpd_ravg = 900;
 	zone[0].metv.dayl_ravg = 38000;
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the intervals in this zone.						*/
 	/*--------------------------------------------------------------*/
@@ -395,12 +409,78 @@ struct zone_object *construct_zone(
 			world_base_stations,
 			defaults);
 		zone[0].patches[i][0].zone = zone;
+		sum_patch_area += zone[0].patches[i][0].area;
 	} /*end for*/
 
+	// check that zone area is equal to sum of patch areas
+	if ( fabs(sum_patch_area -zone[0].area) > 0.01)
+	{
+		fprintf(stderr,"patch areas do not sum to zone area %lf for zone %d\n", sum_patch_area, zone[0].ID);
+		exit(0);
+	}
+
+	/*--------------------------------------------------------------*/
+	/*	Get number + ID of patch families for this zone				*/
+	/*--------------------------------------------------------------*/
+
+	if (command_line[0].multiscale_flag == 1) {
+
+		// Vars
+		int count;
+		int freq[zone[0].num_patches];
+		int patch_family_IDs[zone[0].num_patches];
+		
+		zone[0].num_patch_families = 0;
+
+		// get number of patch families
+		for (i = 0; i < zone[0].num_patches; i++) freq[i] = -1; // set freq to -1 for all patches
+
+		for (i = 0; i < zone[0].num_patches; i++) // iterate through patches
+		{
+			count = 1; // count duplicates
+			for (j = i + 1; j < zone[0].num_patches; j++) // iterate through all patches after patch i
+			{
+				if (zone[0].patches[i][0].family_ID == zone[0].patches[j][0].family_ID) // if theres a duplicate
+				{
+					count++; // incrament counter
+					freq[j] = 0; // set freq of duplicate to 0 to not double count
+				}
+			}
+			if (freq[i] != 0)	freq[i] = count; // if not a duplicate, set freq to the number of duplicates
+		}
+        
+		for (i = 0; i < zone[0].num_patches; i++)
+		{
+			if (freq[i] > 0)
+			{
+				patch_family_IDs[zone[0].num_patch_families] = zone[0].patches[i][0].family_ID;
+				zone[0].num_patch_families ++;
+			}
+		}
+
+		if (command_line[0].verbose_flag == -6) printf("\n Constructing %d patch families for zone %d\n",zone[0].num_patch_families, zone[0].ID);
+		
+	/*--------------------------------------------------------------*/
+	/*	Allocate pointers to patch family objects					*/
+  	/*--------------------------------------------------------------*/
+		zone[0].patch_families = (struct patch_family_object **) 
+			alloc(zone[0].num_patch_families * sizeof(struct patch_family_object *), "patch_families", "construct_zone");
+
+	/*--------------------------------------------------------------*/
+	/*	Construct patch families									*/
+  	/*--------------------------------------------------------------*/
+		for (i = 0; i < zone[0].num_patch_families; i++)
+		{
+			if (command_line[0].verbose_flag == -6) printf("\nPatch fam ID %d, itr %d \n",patch_family_IDs[i], i);
+			zone[0].patch_families[i] = construct_patch_family(
+			zone,
+			patch_family_IDs[i],
+			command_line);
+		}
+	} /* end patch family for loop */
 
 	if(paramPtr!=NULL)
 	  free(paramPtr);
-
 	
 	return(zone);
 } /*end construct_zone.c*/

@@ -76,6 +76,7 @@ void input_new_strata_mult(
 		double,
 		double,
 		double,
+		double,
 		double);
 
 	double compute_delta_water(
@@ -223,8 +224,8 @@ void input_new_strata_mult(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.cwdn = ltmp * canopy_strata[0].ns.cwdn;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",1,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp * canopy_strata[0].ns.retransn;
-//	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",1,1);
-//	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp * canopy_strata[0].cs.age;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",1,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp * canopy_strata[0].cs.age;
 
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
@@ -238,7 +239,7 @@ void input_new_strata_mult(
 	
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",canopy_strata[0].num_base_stations,0);	
 
-	
+
 		/*--------------------------------------------------------------*/
 		/*	Assign	defaults for this canopy_strata								*/
 		/*--------------------------------------------------------------*/
@@ -302,16 +303,31 @@ void input_new_strata_mult(
 		canopy_strata[0].defaults[0][0].epc.lai_ratio;
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
 	
-	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE)
+	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
+	/* use stem density if included otherwise default to simply stem carbon */
+		if (canopy_strata[0].cs.stem_density < ZERO) {
 		canopy_strata[0].epv.height =
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
+		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
 		* pow((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+		}
+		else {
+		canopy_strata[0].cs.stem_density = min(canopy_strata[0].cs.stem_density,
+			canopy_strata[0].defaults[0][0].epc.max_stem_density);
+		canopy_strata[0].epv.height =
+                canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
+                * pow(((canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc)/
+                        canopy_strata[0].cs.stem_density),
+                canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+		}
+	}
+	/* grass */
 	else
 		canopy_strata[0].epv.height =
-		canopy_strata[0].defaults[0][0].epc.height_to_stem_coef
+		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+	
 	/*--------------------------------------------------------------*/
 	/*	calculate all sided  and project pai from max projected lai	*/
 	/*--------------------------------------------------------------*/
@@ -360,7 +376,8 @@ void input_new_strata_mult(
 			canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
 			canopy_strata[0].defaults[0][0].epc.max_root_depth,
-			patch[0].soil_defaults[0][0].effective_soil_depth)){
+			patch[0].soil_defaults[0][0].effective_soil_depth,
+			canopy_strata[0].cs.stem_density)){
 			fprintf(stderr,
 				"FATAL ERROR: in compute_rooting_depth() from construct_canopy_strata()\n");
 			exit(EXIT_FAILURE);
@@ -368,7 +385,7 @@ void input_new_strata_mult(
 	}
 	}
 	patch[0].rootzone.depth = max(patch[0].rootzone.depth, canopy_strata[0].rootzone.depth);
-	
+
 		/*--------------------------------------------------------------*/
 		/*	set phenology timing if static allocation		*/
 		/*--------------------------------------------------------------*/
@@ -396,13 +413,10 @@ void input_new_strata_mult(
 		canopy_strata[0].phen.lfseasonday = -1;
 		canopy_strata[0].phen.pheno_flag = 0;
 	}
-	else {
-		fprintf(stderr,"\nFATAL ERROR - construct_canopy_stratum.c");
-		fprintf(stderr,"\n phenology flag must be set to 0 for STATIC");
-		fprintf(stderr,"\n since dynamic phenology timing not yet implemented");
-		exit(EXIT_FAILURE);
+	else { 
+		printf("\n note - input_new_strata_mult.c");
+		printf("\n phenology flag dyanmics may be unstable for first year of regrowth");
 	}
-
 	/*--------------------------------------------------------------*/
 	/* initialize runnning average of psi using current day psi     */
 	/*--------------------------------------------------------------*/

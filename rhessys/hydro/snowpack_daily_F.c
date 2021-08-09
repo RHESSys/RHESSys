@@ -433,7 +433,6 @@ double	snowpack_daily_F(
 										Rnet, 
 										pa,
 										&(radsubl));
-		/*Q_radiation_net -= snowpack[0].sublimation * latent_heat_sublimation * pho_water;*/
 				
 		if ( verbose_flag == -5 ){
 			printf("\nSNOWPACK post sublim:T=%lf ea=%lf swe=%lf gasnow=%lf ht=%lf K=%lf L=%lf pa=%lf subl=%lf",

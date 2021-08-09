@@ -152,6 +152,12 @@ void		zone_daily_F(
 		struct tec_entry *,
 		struct date);
 	long julday(struct date);
+	void 	compute_patch_family_routing(
+  		struct 	zone_object 	*,
+		struct	command_line_object *);
+	void	compute_family_shading(
+		struct	zone_object	*,
+		struct	command_line_object	*);
 	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -372,13 +378,31 @@ void		zone_daily_F(
 		/*	Modified so that the base station LAI is subtracted from the*/
 		/*		zone lai.												*/
 		/*--------------------------------------------------------------*/
-		//zone[0].effective_lai = 0.0;
-		//for ( patch=0 ; patch<zone[0].num_patches ; patch++ ){
-		//	zone[0].effective_lai
-		//		+= zone[0].patches[patch][0].effective_lai
-		//		* zone[0].patches[patch][0].area;
-		//}
-		//zone[0].effective_lai = zone[0].effective_lai / zone[0].area;
+		
+		zone[0].effective_lai = 0.0; //calculate zone level LAI and use it as target
+		zone[0].lai = 0.0;
+		zone[0].total_stemc = 0.0;
+		zone[0].height = 0.0;
+		for ( patch=0 ; patch<zone[0].num_patches ; patch++ ){
+		  zone[0].effective_lai
+		    += zone[0].patches[patch][0].effective_lai
+		   * zone[0].patches[patch][0].area;
+		  zone[0].lai
+		    += zone[0].patches[patch][0].lai
+		    * zone[0].patches[patch][0].area;
+		  zone[0].total_stemc
+		    += zone[0].patches[patch][0].total_stemc
+		    * zone[0].patches[patch][0].area;
+		  zone[0].height
+		    += zone[0].patches[patch][0].height
+		    * zone[0].patches[patch][0].area;
+		        
+		}
+		zone[0].effective_lai = zone[0].effective_lai / zone[0].area;
+		zone[0].lai = zone[0].lai / zone[0].area;
+		zone[0].total_stemc = zone[0].total_stemc / zone[0].area;
+		zone[0].height = zone[0].height / zone[0].area;
+		
 		//if ( zone[0].radrat <  1.0 ){
 		//	zone[0].LAI_temp_adjustment
 		//		=-1 * ( 1/zone[0].radrat ) * ( 1 + (zone[0].effective_lai
@@ -581,7 +605,7 @@ void		zone_daily_F(
 		/ zone[0].metv.dayl ;
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -222.1 ",julday(current_date)-2449000);
-	if ( command_line[0].verbose_flag > 0  )
+	if ( command_line[0].verbose_flag > 1  )
 		printf("%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f ",
 		zone[0].metv.dayl,
 		zone[0].metv.tmax,
@@ -593,7 +617,7 @@ void		zone_daily_F(
 		zone[0].tdewpoint);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8d -222.2 ",julday(current_date)-2449000);
-	if ( command_line[0].verbose_flag > 0 )
+	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.4f %8.4f %8.2f ",
 		zone[0].rain,
 		zone[0].snow,
@@ -646,16 +670,45 @@ void		zone_daily_F(
 	}
 
 	/*--------------------------------------------------------------*/
+	/*	Compute patch family routing				    			*/
+	/*--------------------------------------------------------------*/
+
+	if (command_line[0].multiscale_flag == 1) {
+		if (command_line[0].verbose_flag == -6) printf("\n---------- Computing patch family routing for zone %d, day %d ----------\n", zone[0].ID, day);
+		compute_patch_family_routing(
+			zone,
+			command_line);
+
+		// shading goes here
+		compute_family_shading(
+			zone,
+			command_line
+		);
+		
+	}
+
+	/*--------------------------------------------------------------*/
 	/*      update accumulator variables                            */
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].output_flags.monthly == 1) &&
-		(command_line[0].z != NULL) ){
+			(command_line[0].output_filter_zone_accum_monthly ||
+				command_line[0].z != NULL) ){
 		zone[0].acc_month.precip += zone[0].rain + zone[0].snow;
 		zone[0].acc_month.tmin += zone[0].metv.tmin;
 		zone[0].acc_month.tmax += zone[0].metv.tmax;
 		zone[0].acc_month.K_direct += zone[0].Kdown_direct;
 		zone[0].acc_month.K_diffuse += zone[0].Kdown_diffuse;
 		zone[0].acc_month.length += 1;
+	}
+
+	if ((command_line[0].output_flags.yearly == 1) &&
+	    (command_line[0].output_filter_zone_accum_monthly) ){
+		zone[0].acc_year.precip += zone[0].rain + zone[0].snow;
+		zone[0].acc_year.tmin += zone[0].metv.tmin;
+		zone[0].acc_year.tmax += zone[0].metv.tmax;
+		zone[0].acc_year.K_direct += zone[0].Kdown_direct;
+		zone[0].acc_year.K_diffuse += zone[0].Kdown_diffuse;
+		zone[0].acc_year.length += 1;
 	}
 
 	return;

@@ -37,6 +37,9 @@
 /*	PROGRAMMER NOTES					*/
 /*								*/
 /*--------------------------------------------------------------*/
+double exp(
+	double);
+
 double compute_saturation_vapor_pressure(double temperature) {
 	double es = 613.75 * exp( (17.502 * temperature)
 			/ ( 240.97 + temperature) );

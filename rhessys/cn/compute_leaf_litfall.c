@@ -153,5 +153,6 @@ int	compute_leaf_litfall(
 		ns_litr->litr4n += n4 * cover_fraction;
 		}
 	}
+
 	return(0);
 } /*compute_leaf_litfall*/ 

@@ -1,6 +1,10 @@
 # Compiled object files
 *.o
 *.pyc
+<<<<<<< HEAD
+=======
+rhessys/rhessys7.0
+>>>>>>> develop
 rhessys/rhessys7.*
 
 # Build directories
@@ -21,7 +25,6 @@ util/GRASS/cxy/.directory
 util/GRASS/cxy/cxy
 g2w/grass2world/g2w
 
-
 # Eclipse metadata
 .project
 .cproject
@@ -29,9 +32,11 @@ g2w/grass2world/g2w
 # vscode editor data
 .vscode
 rhessys/.vscode
+*.code-workspace
 
 # OS X extended attribute stores
 .DS_Store
+.DS_Store*
 
 # Editor leftovers
 *~
@@ -41,10 +46,28 @@ rhessys/.vscode
 libwmfire.dylib
 libwmfire.so
 
+# R
 .Rproj.user
+<<<<<<< HEAD
+=======
+.Rhistory
+>>>>>>> develop
 
 # vscode 
 rhessys/.vscode
 
 # made by R func compile_rhessys (should be deleted typically)
+<<<<<<< HEAD
 .makefile_tmp
+=======
+.makefile_tmp
+
+# test binaries - maybe could be a separate dir?
+/rhessys/test/test_compute_potential_exfiltration
+rhessys/test/test_dictionary
+rhessys/test/test_isodate
+rhessys/test/test_output*
+rhessys/test/test_pointer_set
+rhessys/test/test_string_list
+rhessys/test/example
+>>>>>>> develop

@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void sort_patch_layers( struct patch_object *patch)
+void sort_patch_layers( struct patch_object *patch, int *rec)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
@@ -35,9 +35,12 @@ void sort_patch_layers( struct patch_object *patch)
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int i, j,k;
+	int s, i, j,k;
 	int list_bottom;
+	int maxstemcID, maxleafcID;
 	double cover_fraction;
+	double maxstemc, maxleafc;
+	struct canopy_strata_object *stratum;
 	/*--------------------------------------------------------------*/
 	/*	free current layer structure				*/
 	/*--------------------------------------------------------------*/
@@ -139,12 +142,48 @@ void sort_patch_layers( struct patch_object *patch)
 		/*--------------------------------------------------------------*/
 		/*		Report a fatal error if the cover fraction for	*/
 		/*		this layer does not add to 1.0			*/
+		/*		corrected this by adding a very small amount to height of stratum       */
+		/*         with most stem (tree) or leaf (grass) - if the same (which is likely) */
+		/* 		simply pick the last in the list */
 		/*--------------------------------------------------------------*/
-		if ( cover_fraction > 1.0 ){
-			/*printf( "\nFATAL ERROR: in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
-				patch[0].layers[i].height);
-			printf("\n for patch %d, cover fraction %lf\n", patch[0].ID, cover_fraction);
-			patch[0].layers[i].null_cover = 0.0;*/
+		if (( cover_fraction > 1.0 ) && ( patch[0].layers[i].height > ZERO)){
+	
+			maxstemcID = 0;
+			maxleafcID = 0;
+			maxstemc = 0;
+			maxleafc = 0;
+			for ( s = 0; s < patch[0].layers[i].count; s++) {
+				if (patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].defaults[0][0].epc.veg_type == TREE) {
+				if (patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].cs.dead_stemc >  maxstemc)
+					maxstemcID = s;;
+				} 
+				else {
+				if (patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].cs.leafc >  maxleafc)
+					maxleafcID = s;;
+				}
+				}
+
+			if (maxstemc > 0) {
+				stratum=patch[0].canopy_strata[patch[0].layers[i].strata[maxstemcID]];
+				stratum->cs.dead_stemc += 0.0001; 
+				stratum->cdf.added_carbon += 0.0001;
+				stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef
+                                * pow ( (stratum->cs.live_stemc + stratum->cs.dead_stemc)/(stratum->cs.stem_density), stratum->defaults[0][0].epc.height_to_stem_exp);
+				}
+			else {
+				stratum=patch[0].canopy_strata[patch[0].layers[i].strata[maxleafcID]];
+                                stratum->cs.leafc += 0.0001;                                                      
+				stratum->cdf.added_carbon += 0.0001;
+                                stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef                    
+                                * pow ( (stratum->cs.leafc), stratum->defaults[0][0].epc.height_to_stem_exp);
+				}
+					
+				
+			patch[0].layers[i].null_cover = 0.0;
+
+			/* recursively call patch layers to fix this - should always work because we are changing the height */
+			rec += 1;
+			sort_patch_layers(patch, *rec);
 		}
 		else {
 			patch[0].layers[i].null_cover = 1.0 - cover_fraction;

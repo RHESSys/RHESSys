@@ -137,8 +137,9 @@ void update_basin_patch_accumulator(
 					basin[0].acc_year.lai += patch[0].lai * scale;
 				}
 
-				if ((command_line[0].output_flags.monthly == 1)
-						&& (command_line[0].p != NULL )) {
+				if ((command_line[0].output_flags.monthly == 1) &&
+						(command_line[0].output_filter_patch_accum_monthly ||
+								command_line[0].p != NULL)) {
 					patch[0].acc_month.theta += patch[0].rootzone.S;
 					patch[0].acc_month.sm_deficit +=
 							max(0.0,
@@ -169,11 +170,16 @@ void update_basin_patch_accumulator(
 							+ patch[0].surface_ns_leach);
 					patch[0].acc_month.burn += patch[0].burn;
 					patch[0].acc_month.length += 1;
+					patch[0].acc_month.soiln += patch[0].soil_ns.totaln;
+					patch[0].acc_month.littern += patch[0].litter_ns.totaln;
+					patch[0].acc_month.soilc += patch[0].soil_cs.totalc;
+					patch[0].acc_month.litterc += patch[0].litter_cs.totalc;
 			
 
 				}
-				if ((command_line[0].output_flags.yearly == 1)
-						&& (command_line[0].p != NULL )) {
+				if ((command_line[0].output_flags.yearly == 1) &&
+						(command_line[0].output_filter_patch_accum_yearly ||
+								command_line[0].p != NULL )) {
 					patch[0].acc_year.length += 1;
 					if ((patch[0].sat_deficit - patch[0].unsat_storage)
 							> command_line[0].thresholds[SATDEF])
@@ -287,6 +293,10 @@ void update_basin_patch_accumulator(
 							max(patch[0].acc_year.lai, patch[0].lai);
 							
 
+					patch[0].acc_year.soiln += patch[0].soil_ns.totaln;
+					patch[0].acc_year.littern += patch[0].litter_ns.totaln;
+					patch[0].acc_year.soilc += patch[0].soil_cs.totalc;
+					patch[0].acc_year.litterc += patch[0].litter_cs.totalc;
 					tmp = patch[0].sat_deficit - patch[0].unsat_storage
 							- patch[0].rz_storage;
 					if (tmp <= 0)

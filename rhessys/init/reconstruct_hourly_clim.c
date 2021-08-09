@@ -37,6 +37,7 @@ void reconstruct_hourly_clim(struct world_object * world,
    *-----------------------------------------------------------------------------*/
   int get_num_daywhourly(struct base_station_object *);
   void *alloc(size_t, char *, char *);
+  long	julday( struct date);
   /*-----------------------------------------------------------------------------
    *  Local variable definition
    *-----------------------------------------------------------------------------*/

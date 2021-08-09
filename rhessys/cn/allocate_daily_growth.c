@@ -109,8 +109,12 @@ int allocate_daily_growth(int nlimit,
 	fleaf = cdf->fleaf;
 	froot = cdf->froot;
 	fwood = cdf->fwood;
+
+	if (cdf->fcroot > ZERO);
+		fcroot = cdf->fcroot;
 	
 	if ((fleaf + froot) > ZERO) {	
+
 
 	if (epc.veg_type == TREE){
 		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
@@ -237,6 +241,7 @@ int allocate_daily_growth(int nlimit,
 	transfer pools */
 	nlc = plant_calloc * fleaf;
 
+	cdf->storage_transfer_prop = pnow;
 	/* daily C fluxes out of cpool and into new growth or storage */
 	cdf->cpool_to_leafc              = nlc * pnow;
 	cdf->cpool_to_leafc_store      = nlc * (1.0-pnow);
@@ -298,7 +303,7 @@ int allocate_daily_growth(int nlimit,
 
 */
 
-	totalc_used = 
+	cdf->actual_C_growth  = 
 		cdf->cpool_to_leafc +
 		cdf->cpool_to_leafc_store+
 		cdf->cpool_to_frootc +

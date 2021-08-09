@@ -70,7 +70,6 @@ void	canopy_stratum_growth(
 		int,
 		int,
 		double,
-		double,
 		struct epvar_struct *,
 		struct cdayflux_struct *,
 		struct cstate_struct *,
@@ -83,12 +82,27 @@ void	canopy_stratum_growth(
 		struct	epconst_struct,
 		struct	command_line_object *);
 
+	 int     update_rooting_depth(
+                struct rooting_zone_object *,
+                double,
+                double,
+                double,
+                double,
+                double,
+                double);
+
+	double		compute_prop_alloc_daily(
+		double,
+		struct cstate_struct *,
+		struct epconst_struct);
+	
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
-	double pnow;
+	double pnow, rootc;
 	/*--------------------------------------------------------------*/
 	/*	perform daily carbon and nitrogen allocations		*/
 	/*--------------------------------------------------------------*/
@@ -146,7 +160,6 @@ void	canopy_stratum_growth(
 			stratum[0].defaults[0][0].ID,
 			command_line[0].vmort_flag,
 			stratum[0].cover_fraction,
-			command_line[0].cpool_mort_fract,
 			&(stratum[0].epv),
 			&(stratum[0].cdf),
 			&(stratum[0].cs),
@@ -164,6 +177,26 @@ void	canopy_stratum_growth(
 	}
 
 	}
+	/*--------------------------------------------------------------*/
+	/*	update root depth*/
+	/*--------------------------------------------------------------*/
+
+	rootc = stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
+        if ((command_line[0].grow_flag > 0) && (rootc > ZERO)){
+                if ( update_rooting_depth(
+                        &(stratum[0].rootzone), 
+			rootc, 
+			stratum[0].defaults[0][0].epc.root_growth_direction, stratum[0].defaults[0][0].epc.root_distrib_parm,
+                        stratum[0].defaults[0][0].epc.max_root_depth,
+                        patch[0].soil_defaults[0][0].effective_soil_depth,
+			stratum[0].cs.stem_density) != 0){
+                        fprintf(stderr,
+                                "FATAL ERROR: in compute_rooting_depth() from canopy_stratum_growth()\n");
+                        exit(EXIT_FAILURE);
+                }
+        }
+
+
 	/*--------------------------------------------------------------*/
 	/*	update carbon state variables 				*/
 	/*--------------------------------------------------------------*/
@@ -203,7 +236,7 @@ void	canopy_stratum_growth(
 
 
 	cs = &(stratum[0].cs);
-	stratum[0].cs.totalc = (cs->cpool + cs->cwdc + cs->dead_leafc
+	stratum[0].cs.totalc = (cs->cpool  + cs->dead_leafc
 		+ cs->leafc + cs->leafc_store +  cs->leafc_transfer
 		+ cs->gresp_transfer + cs->gresp_store
 		+ cs->frootc + cs->frootc_store +  cs->frootc_transfer
@@ -212,13 +245,13 @@ void	canopy_stratum_growth(
 		+ cs->live_crootc + cs->livecrootc_store +  cs->livecrootc_transfer
 		+ cs->dead_crootc + cs->deadcrootc_store +  cs->deadcrootc_transfer);
 	ns = &(stratum[0].ns);
-	stratum[0].ns.totaln = (ns->npool + ns->cwdn + ns->retransn + ns->dead_leafn
+	stratum[0].ns.totaln = (ns->npool  + ns->retransn + ns->dead_leafn
 		+ ns->leafn + ns->leafn_store +  ns->leafn_transfer
 		+ ns->frootn + ns->frootn_store +  ns->frootn_transfer
 		+ ns->live_stemn + ns->livestemn_store +  ns->livestemn_transfer
 		+ ns->dead_stemn + ns->deadstemn_store +  ns->deadstemn_transfer
 		+ ns->live_crootn + ns->livecrootn_store +  ns->livecrootn_transfer
 		+ ns->dead_crootn + ns->deadcrootn_store +  ns->deadcrootn_transfer);
-	stratum[0].acc_month.lai += stratum[0].epv.proj_lai;
+
 	return;
 } /*end canopy_stratum_daily_growth.c*/

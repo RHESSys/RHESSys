@@ -158,7 +158,8 @@ struct stratum_default *construct_stratum_defaults(
 			fprintf(stderr, "\nWARNING construct_stratum_defaults");
 			fprintf(stderr, "\n  leaf litter C:N < leaf C:N");
 		}
-		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 1.0, 1);
+		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 0.7, 1);
+		default_object_list[i].epc.cpool_mort_fract = getDoubleParam(&paramCnt, &paramPtr, "epc.cpool_mort_fract", "%lf", 0.001, 1);
 		default_object_list[i].epc.froot_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.froot_turnover", "%lf", 0.27, 1);
 
 		if  ((default_object_list[i].epc.veg_type == GRASS) || (default_object_list[i].epc.veg_type == C4GRASS)) {
@@ -276,6 +277,7 @@ struct stratum_default *construct_stratum_defaults(
 			epc->deadwood_fscel = 0.0;
 			epc->deadwood_cn = 0.0;
 		}
+		default_object_list[i].epc.alloc_frootc_crootc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_frootc_crootc", "%lf", 1.0, 1);
 		default_object_list[i].epc.alloc_frootc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_frootc_leafc", "%lf", 1.325, 1);
 		default_object_list[i].epc.alloc_crootc_stemc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_crootc_stemc", "%lf", 0.3, 1);
 		default_object_list[i].epc.alloc_stemc_leafc 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.alloc_stemc_leafc", "%lf", 1.62, 1);
@@ -289,7 +291,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.dynamic_alloc_prop_day_growth = getIntParam(&paramCnt, &paramPtr, "epc.dyn_alloc_prop_day_growth", "%d", 0, 1);
 		default_object_list[i].epc.daily_fire_turnover 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_fire_turnover", "%lf", 0.0, 1);
 		default_object_list[i].epc.height_to_stem_exp 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_exp", "%lf", 0.57, 1);
-		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 11.39, 1);
+		default_object_list[i].epc.height_to_stem_coef 	 = getDoubleParam(&paramCnt, &paramPtr, "epc.height_to_stem_coef", "%lf", 4.5510415, 1);
 		/*--------------------------------------------------------------*/
 		/*	optionally read in parameters on re-sprouting		*/
 		/* 	and other newly implemented vegetation routines		*/
@@ -300,13 +302,16 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.litter_gsurf_slope = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_gsurf_slope", "%lf", 0.0, 1);
 		default_object_list[i].epc.litter_gsurf_intercept = getDoubleParam(&paramCnt, &paramPtr, "epc.litter_gsurf_intercept", "%lf", 100000000, 1);
 		default_object_list[i].epc.coef_CO2 = getDoubleParam(&paramCnt, &paramPtr, "epc.coef_CO2", "%lf", 1.0, 1);
-		default_object_list[i].epc.root_growth_direction = getDoubleParam(&paramCnt, &paramPtr, "epc.root_growth_direction", "%lf", 0.8, 1);
-		default_object_list[i].epc.root_distrib_parm = getDoubleParam(&paramCnt, &paramPtr, "epc.root_distrib_parm", "%lf", 8.0, 1);
+		default_object_list[i].epc.root_growth_direction = getDoubleParam(&paramCnt, &paramPtr, "epc.root_growth_direction", "%lf", 0.7, 1);
+
+		/* adjusted value from Arora and Boer (2003) to account for the include of stem stem density default of 0.02 by dividing by 1.25 by (1/0.02)exp(0.7) */
+		default_object_list[i].epc.root_distrib_parm = getDoubleParam(&paramCnt, &paramPtr, "epc.root_distrib_parm", "%lf", 19, 1);
 		default_object_list[i].epc.max_root_depth = getDoubleParam(&paramCnt, &paramPtr, "epc.max_root_depth", "%lf", 9999.0, 1);
 		default_object_list[i].epc.crown_ratio = getDoubleParam(&paramCnt, &paramPtr, "epc.crown_ratio", "%lf", 0.6, 1);
 		if (epc->veg_type != TREE) 
 			default_object_list[i].epc.crown_ratio = 1.0; 
-		default_object_list[i].epc.max_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.max_stem_density", "%lf", 0.05, 1);
+		default_object_list[i].epc.max_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.max_stem_density", "%lf", 1.5, 1);
+		default_object_list[i].epc.resprout_stem_density = getDoubleParam(&paramCnt, &paramPtr, "epc.resprout_stem_density", "%lf", 0.03, 1);
 		/*--------------------------------------------------------------*/
 		/*	Fire effect parameters					*/
 		/*--------------------------------------------------------------*/
@@ -393,6 +398,10 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.shade_sla_mult = 1.0;
 
 
+		/*--------------------------------------------------------------*/
+		/* some low statured understory may do better with an alternative ra/ga conductance model */
+		/*--------------------------------------------------------------*/
+		default_object_list[i].epc.alternative_ra_surface = getIntParam(&paramCnt, &paramPtr, "epc.alternative_ra_surface", "%d", 0, 1);
 
 	     /*--------------------------------------------------------------*/
                 /* set sunlit and shaded if not available    netpabs, gl_smax,  flnr            */
@@ -422,6 +431,10 @@ struct stratum_default *construct_stratum_defaults(
 
 
 
+		/*--------------------------------------------------------------*/
+		/* have root/leaf turnover stop for new plants 			*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].epc.zero_turnover_sprouts =	getIntParam(&paramCnt, &paramPtr, "epc.zero_turnover_sprouts", "%d", 1, 1);
 		/*--------------------------------------------------------------*/
 		/*	Apply sensitivity analysis if appropriate		*/
 		/*--------------------------------------------------------------*/

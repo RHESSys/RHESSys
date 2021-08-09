@@ -101,7 +101,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
-	command_line[0].vmort_flag = 0;
+	command_line[0].vmort_flag = 1;
 	command_line[0].version_flag = 0;
 	command_line[0].vsen[M] = 1.0;
 	command_line[0].vsen[K] = 1.0;
@@ -109,16 +109,28 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].sen[K] = 1.0;
 	command_line[0].sen[SOIL_DEPTH] = 1.0;
 	command_line[0].prev_flag = 0;
-	command_line[0].gw_flag = 0;
+	command_line[0].gw_flag = 1;
 	command_line[0].gwtoriparian_flag = 0;
 	command_line[0].tchange_flag = 0;
 	command_line[0].tmax_add = 0.0;
 	command_line[0].tmin_add = 0.0;
+
+	command_line[0].output_filter_flag = false;
+	command_line[0].output_filter_filename = NULL;
+	command_line[0].output_filter = NULL;
+	command_line[0].output_filter_zone_accum_monthly = false;
+	command_line[0].output_filter_zone_accum_yearly = false;
+	command_line[0].output_filter_patch_accum_monthly = false;
+	command_line[0].output_filter_patch_accum_yearly = false;
+	command_line[0].output_filter_strata_accum_monthly = false;
+	command_line[0].output_filter_strata_accum_yearly = false;
+
 	command_line[0].output_prefix = NULL;
 	command_line[0].output_flags.yearly = 0;
 	command_line[0].output_flags.monthly = 0;
 	command_line[0].output_flags.daily = 0;
 	command_line[0].output_flags.hourly = 0;
+	command_line[0].legacy_output_flag = false;
 	command_line[0].stro = NULL;
 	command_line[0].b = NULL;
 	command_line[0].h = NULL;
@@ -130,7 +142,10 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
+	command_line[0].multiscale_flag = 0;
 	command_line[0].cpool_mort_fract = 0;
+	command_line[0].sat_to_gw_coeff_mult = 1;
+	command_line[0].gw_loss_coeff_mult = 1;
 	
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -192,17 +207,8 @@ struct	command_line_object	*construct_command_line(
 			/*------------------------------------------*/
 			/*Check if the variable mortality flag is next.           */
 			/*------------------------------------------*/
-			else if ( strcmp(main_argv[i],"-vmort") == 0 ){
-				command_line[0].vmort_flag = 1;
-				i++;
-				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
-					fprintf(stderr,"FATAL ERROR: Value for vmort flag not specified\n");
-					exit(EXIT_FAILURE);
-				} /*end if*/
-				/*-------------------------------*/
-				/*Read in the tmp value		*/
-				/*-------------------------------*/
-				command_line[0].cpool_mort_fract = (double)atof(main_argv[i]);
+			else if ( strcmp(main_argv[i],"-vmort_off") == 0 ){
+				command_line[0].vmort_flag = 0;
 				i++;
 			}
 			/*------------------------------------------*/
@@ -309,6 +315,14 @@ struct	command_line_object	*construct_command_line(
 				i++;
       }
 
+			/*-------------------------------------------------*/
+			/*	turn gw off option */
+			/*-------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-gw_off") == 0 ){
+				i++;
+				printf("\n Turning off deeper groundwater \n ");
+				command_line[0].gw_flag = 0;
+			}/* end if */
 			/*-------------------------------------------------*/
 			/*	routing gw to riparian option */
 			/*-------------------------------------------------*/
@@ -781,6 +795,29 @@ struct	command_line_object	*construct_command_line(
 				i++;
 			} /*end if*/
 			/*--------------------------------------------------------------*/
+			/*		Check if output filter is next.							*/
+			/*--------------------------------------------------------------*/
+			else if( strcmp(main_argv[i],"-of") == 0 ){
+				/*--------------------------------------------------------------*/
+				/*          Check that the next arguement exists.               */
+				/*--------------------------------------------------------------*/
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1)){
+					fprintf(stderr,"FATAL ERROR: Output filter filename not specified\n");
+					exit(EXIT_FAILURE);
+				} /*end if*/
+				/*--------------------------------------------------------------*/
+				/*	Allocate an array for the output filter filename and		*/
+				/*	Read in the output filter filename.							*/
+				/*--------------------------------------------------------------*/
+				command_line[0].output_filter_filename =
+					(char *) alloc((1+strlen(main_argv[i]))*sizeof(char),
+					"output_filter_filename","construct_command_line");
+				strcpy(command_line[0].output_filter_filename, main_argv[i]);
+				command_line[0].output_filter_flag = true;
+				i++;
+			}
+			/*--------------------------------------------------------------*/
 			/*		Check if the output prefix is next.						*/
 			/*--------------------------------------------------------------*/
 			else if( strcmp(main_argv[i],"-pre") == 0 ){
@@ -813,7 +850,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].stro = (struct stro_option *)
 					alloc(sizeof(struct stro_option), "stro","construct_command_line" );
 				command_line[0].stro[0].reachID 	= -999;
-				
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -839,7 +876,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].b = (struct b_option *)
 					alloc(sizeof(struct b_option), "b","construct_command_line" );
 				command_line[0].b[0].basinID 	= -999;
-                               
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -865,6 +902,7 @@ struct	command_line_object	*construct_command_line(
 					alloc(sizeof(struct h_option), "h", "construct_command_line" );
 				command_line[0].h[0].basinID 	= -999;
 				command_line[0].h[0].hillID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*-------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*-------------------------------------------------------*/
@@ -903,6 +941,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].z[0].basinID 	= -999;
 				command_line[0].z[0].hillID 	= -999;
 				command_line[0].z[0].zoneID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*-------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*-------------------------------------------------------*/
@@ -954,6 +993,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].p[0].hillID 	= -999;
 				command_line[0].p[0].zoneID 	= -999;
 				command_line[0].p[0].patchID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -1019,6 +1059,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].c[0].zoneID 	= -999;
 				command_line[0].c[0].patchID 	= -999;
 				command_line[0].c[0].stratumID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -1097,6 +1138,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].f[0].zoneID 	= -999;
 				command_line[0].f[0].patchID 	= -999;
 				command_line[0].f[0].stratumID 	= -999;
+				command_line[0].legacy_output_flag = true;
 				/*--------------------------------------------------------------*/
 				/*			Check that the next arguement exists.				*/
 				/*--------------------------------------------------------------*/
@@ -1177,6 +1219,34 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].evap_use_longwave_flag = 1;
 				i++;
 			}
+
+			/*--------------------------------------------------------------*/
+			/*		Check for multiscale routing flag next				    */
+			/*--------------------------------------------------------------*/
+
+			else if (strcmp(main_argv[i],"-msr") == 0) {
+				//printf("-msr flag triggered\n");
+				command_line[0].multiscale_flag = 1;
+				i++;
+			}
+
+			/*----------------------------------------------------------*/
+			/* climate interpolation UTM zone options  N.R 20190610     */
+			/*----------------------------------------------------------*/
+			else if (strcmp(main_argv[i], "-ncgridinterp") ==0 ) {
+                 printf("\n Netcdf grid climate data interpolation utm zone should combine with necdfgrid command line \n");
+                 command_line[0].ncgridinterp_flag =1;
+                 i++;
+                 command_line[0].utm_zone = 12; // default is utm n 12 zone
+			// read in the utm parameters
+			if ((i != main_argc) && (valid_option(main_argv[i])==0) ){
+			     command_line[0].utm_zone = (double)atof(main_argv[i]);
+			     i++;
+				}/*end if*/
+				 printf("\n The UTM Zone specified by user is UTM N%d \n", command_line[0].utm_zone);
+			}/* end if */
+
+
 			/*--------------------------------------------------------------*/
 			/*	NOTE:  ADD MORE OPTION PARSING HERE.						*/
 			/*--------------------------------------------------------------*/

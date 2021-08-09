@@ -135,7 +135,7 @@ double	compute_ra_understory(
 	/*--------------------------------------------------------------*/
 	/*	compute exponential decay of wind throught the canopy  */
 	/*--------------------------------------------------------------*/
-	*u = max((*u * exp(cn*(max(h_u, 0.1*h_o)/h_o - 1))), 0.0); /* FIXED MISSING PARENTHESES */
+	*u = max((*u * exp(cn*(max(h_u, 0.1*h_o)/h_o - 1))), 0.0); 
 	/*printf(" u_bot=%lf ra_bot1=%lf",*u,ra_u);*/
 
 	/*--------------------------------------------------------------*/

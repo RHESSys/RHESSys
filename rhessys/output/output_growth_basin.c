@@ -45,6 +45,8 @@ void	output_growth_basin(
 	int  layer;
 	double p_over, p_under;
 	double agpsn, aresp, aresp_leaf;
+	double acg, ang;
+	double astorage_transfer_prop, acarbohydrate_transfer_c, acarbohydrate_transfer_n;
 	double alai;
 	double leafc, frootc, woodc;	
 	double aleafc, afrootc, awoodc;
@@ -55,10 +57,12 @@ void	output_growth_basin(
 	double asoilhr;
 	double acloss;
 	double asoilc, asminn, anitrate, asurfaceN;
+	double afpi, amineralized, at_scalar, aw_scalar;
 	double alitrn, asoiln, asoiln_noslow,anfix, anuptake;
 	double aarea, hill_area, basin_area;
 	double acarbon_balance, anitrogen_balance;
 	double atotaln, adenitrif;
+	double aNO3_stored;
 	double astreamflow_NO3, astreamflow_NH4, astreamflow_DON, astreamflow_DOC;
 	double anitrif, aDOC, aDON, arootdepth;
 	double aninput, afertilizer_NO3, afertilizer_NH4;
@@ -79,9 +83,12 @@ void	output_growth_basin(
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
 	alai = 0.0; acpool=0.0; anpool = 0.0;
+	aNO3_stored = 0.0;
 	aleafc = 0.0; afrootc=0.0; awoodc=0.0;
 	aleafn = 0.0; afrootn=0.0; awoodn=0.0;
 	agpsn = 0.0; aresp=0.0; anfix=0.0; anuptake=0.0; aresp_leaf = 0.0;
+	ang = 0.0; acg=0.0;
+	astorage_transfer_prop=0.0; acarbohydrate_transfer_c=0.0; acarbohydrate_transfer_n=0.0;
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
@@ -89,6 +96,8 @@ void	output_growth_basin(
 	anitrate = 0.0;
 	asurfaceN = 0.0;
 	asoilc = 0.0; asminn=0.0;
+	afpi=0.0; amineralized=0.0; at_scalar=0.0; aw_scalar=0.0;
+
 	acarbon_balance = 0.0;
 	anitrogen_balance = 0.0;
 	astreamflow_DOC = 0.0;
@@ -151,7 +160,11 @@ void	output_growth_basin(
 				asoilc += (patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c
 					+ patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c)
 					* patch[0].area;
-				asminn += (patch[0].soil_ns.sminn) * patch[0].area;
+				afpi += (patch[0].soil_ns.fract_potential_immob) * patch[0].area;
+				asminn+= (patch[0].soil_ns.sminn) * patch[0].area;
+				amineralized += (patch[0].ndf.net_mineralized) * patch[0].area;
+				at_scalar += (patch[0].cdf.decomp_t_scalar) * patch[0].area;
+				aw_scalar += (patch[0].cdf.decomp_w_scalar) * patch[0].area;
 				anitrate += (patch[0].soil_ns.nitrate) * patch[0].area;
 				asurfaceN += (patch[0].surface_DON+patch[0].surface_NO3+patch[0].surface_NH4) * patch[0].area;
 				atotaln += (patch[0].totaln) * patch[0].area;
@@ -187,6 +200,18 @@ void	output_growth_basin(
 						strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 
 								
+						aNO3_stored += strata->cover_fraction * strata->NO3_stored
+							* patch[0].area;
+						acg+= strata->cover_fraction * strata->cdf.actual_C_growth
+								* patch[0].area;
+						ang+= strata->cover_fraction * strata->ndf.actual_N_uptake
+								* patch[0].area;
+						astorage_transfer_prop+= strata->cover_fraction * strata->cdf.storage_transfer_prop
+								* patch[0].area;
+						acarbohydrate_transfer_c+= strata->cover_fraction * strata->cdf.carbohydrate_transfer
+								* patch[0].area;
+						acarbohydrate_transfer_n+= strata->cover_fraction * strata->ndf.carbohydrate_transfer
+								* patch[0].area;
 						agpsn += strata->cover_fraction * strata->cdf.psn_to_cpool
 							* patch[0].area;
 						/*---------------------------
@@ -221,7 +246,7 @@ void	output_growth_basin(
 							+ strata->ns.livestemn_transfer
 							+ strata->ns.deadcrootn_transfer
 							+ strata->ns.deadstemn_transfer
-							+ strata->ns.cwdn + strata->ns.retransn + strata->ns.npool ) * patch[0].area;
+							+ strata->ns.retransn  ) * patch[0].area;
 						leafc = strata->cover_fraction	* (strata->cs.leafc
 							+ strata->cs.leafc_store + strata->cs.leafc_transfer )
 							* patch[0].area;
@@ -238,8 +263,7 @@ void	output_growth_basin(
 							+ strata->cs.livecrootc_transfer
 							+ strata->cs.livestemc_transfer
 							+ strata->cs.deadcrootc_transfer
-							+ strata->cs.deadstemc_transfer
-							+ strata->cs.cwdc + strata->cs.cpool)* patch[0].area;
+							+ strata->cs.deadstemc_transfer)* patch[0].area;
 						awoodc += woodc;
 						arootdepth += strata->cover_fraction * (strata->rootzone.depth)
 							* patch[0].area;
@@ -293,9 +317,15 @@ void	output_growth_basin(
 		
 	}
 	agpsn /= aarea ;
+	acg /= aarea ;
+	ang /= aarea ;
+	acarbohydrate_transfer_c /= aarea ;
+	acarbohydrate_transfer_n /= aarea ;
+	astorage_transfer_prop /= aarea ;
 	aresp /= aarea ;
 	aresp_leaf /= aarea ;
 	alai /= aarea ;
+	aNO3_stored /= aarea ;
 	anitrate /= aarea;
 	asurfaceN /= aarea;
 	acpool /= aarea ;
@@ -313,6 +343,10 @@ void	output_growth_basin(
 	asoiln /= aarea;
 	asoiln_noslow /= aarea;
 	asminn /= aarea;
+	amineralized /= aarea;
+	at_scalar /= aarea;
+	aw_scalar /= aarea;
+	afpi /= aarea;
 	atotaln /= aarea;
 	acarbon_balance /= aarea;
 	anitrogen_balance /= aarea;
@@ -355,18 +389,27 @@ void	output_growth_basin(
 	hgwDOCout = hgwDOCout / basin_area;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
 		basin[0].ID,
 		alai,
 		agpsn * 1000,
+		acg * 1000,
+		ang * 1000,
+		astorage_transfer_prop,
+		acarbohydrate_transfer_c*1000.0,
+		acarbohydrate_transfer_n*1000.0,
 		aresp * 1000,
 		aresp_leaf * 1000,
 		asoilhr * 1000,
 		anitrate * 1000,
 		asminn * 1000,
+		afpi,
+		amineralized*1000,
+		at_scalar,
+		aw_scalar,
 		asurfaceN * 1000,
 		(aleafc + awoodc + afrootc),
 		(aleafn + awoodn + afrootn),
@@ -408,7 +451,8 @@ void	output_growth_basin(
 		aoverstory_leafc,
 		aoverstory_stemc,
 		aoverstory_biomassc,
-		aoverstory_height
+		aoverstory_height,
+		aNO3_stored*1000
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 

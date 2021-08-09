@@ -381,9 +381,19 @@ void		patch_daily_F(
 		struct patch_object *,
 		double);
 
-
+	void    compute_shaded_kdown(
+		struct  patch_object *, 
+        struct  zone_object  *, 
+        struct  command_line_object *);
 
 	long julday( struct date);
+
+	void	compute_Lstar(
+		int,
+		struct	basin_object *,
+		struct	zone_object	*,
+		struct	patch_object *);
+	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -425,6 +435,7 @@ void		patch_daily_F(
 	double snow_melt_covered, snow_melt_exposed;
 	double 	rz_drainage,unsat_drainage;
 	double prop_detention_store_infiltrated;
+	double water_transfer, root_growth;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
@@ -529,7 +540,14 @@ void		patch_daily_F(
 	if ( command_line[0].verbose_flag == -5 ){
 	printf("\nPATCH DAILY F:");
 	}
-	
+
+	/*--------------------------------------------------------------*/
+	/*	Adjust kdown if multiscale routing is used					*/
+	/*--------------------------------------------------------------*/
+	if (command_line[0].multiscale_flag == 1 && patch[0].landuse_defaults[0][0].shading_flag == 1) {
+		compute_shaded_kdown(patch, zone, command_line);
+	} 
+
 	/*--------------------------------------------------------------*/
 	/*	Set the patch rain and snow throughfall equivalent to the	*/
 	/*	rain and snow coming down over the zone.					*/
@@ -558,6 +576,7 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
 
+	patch[0].total_water_in = zone[0].rain + zone[0].snow + irrigation;
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
 	patch[0].NO3_throughfall = 0;
@@ -600,6 +619,7 @@ void		patch_daily_F(
 				}
 			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				snow_melt_input = clim_event.value;
+				patch[0].total_water_in += snow_melt_input;
 				}
 			else snow_melt_input = 0.0;
 			} 
@@ -717,11 +737,14 @@ void		patch_daily_F(
 	/*	Calculate initial pond height		*/
 	pond_height = max(0.0,-1 * patch[0].sat_deficit_z + patch[0].detention_store);
 
+
 	/*--------------------------------------------------------------*/
 	/* Layers above snowpack and pond */
 	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		patch[0].snowpack.overstory_height = zone[0].base_stations[0][0].screen_height;
+
+
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) &&
 			(patch[0].layers[layer].height > pond_height) ){
 			if ( command_line[0].verbose_flag == -5 ){
@@ -771,6 +794,7 @@ void		patch_daily_F(
 			/*		Cycle through the canopy strata in this layer	*/
 			/*--------------------------------------------------------------*/
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+
 					canopy_stratum_daily_F(
 						world,
 						basin,
@@ -899,7 +923,7 @@ void		patch_daily_F(
 						patch,
 						&patch[0].snowpack,
 						basin[0].theta_noon,
-						zone[0].metv.tavg,
+						zone[0].metv.tday,
 						zone[0].e_dewpoint,
 						patch[0].gasnow/10.0,
 						zone[0].metv.pa,
@@ -926,7 +950,7 @@ void		patch_daily_F(
 						patch,
 						&patch[0].snowpack,
 						basin[0].theta_noon,
-						zone[0].metv.tavg,
+						zone[0].metv.tday,
 						zone[0].e_dewpoint,
 						patch[0].gasnow/10.0,
 						zone[0].metv.pa,
@@ -972,7 +996,7 @@ void		patch_daily_F(
 					patch,
 					&patch[0].snowpack,
 					basin[0].theta_noon,
-					zone[0].metv.tavg,
+					zone[0].metv.tday,
 					zone[0].e_dewpoint,
 					patch[0].gasnow/10.0,
 					zone[0].metv.pa,
@@ -1008,10 +1032,6 @@ void		patch_daily_F(
 
 			if (snow_melt_input == -999.0) 
 				patch[0].rain_throughfall += patch[0].snow_melt;
-			else {
-				patch[0].rain_throughfall += snow_melt_input;
-				patch[0].snow_melt = snow_melt_input;
-			}
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;
 			/* Force turbulent fluxes to 0 under snowpack */
@@ -1020,7 +1040,8 @@ void		patch_daily_F(
 		}
 		
 		else {
-			patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
+			if (snow_melt_input == -999.0) 
+				patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth = 0.0;
 			patch[0].snowpack.height = 0.0;
@@ -1046,7 +1067,8 @@ void		patch_daily_F(
 	}
 	
 	if (patch[0].snowpack.water_equivalent_depth < 0.0001) {
-		patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
+		if (snow_melt_input == -999.0) 
+			patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 		patch[0].snowpack.water_equivalent_depth = 0.0;
 		patch[0].snowpack.energy_deficit = 0.001;
 		patch[0].snowpack.surface_age = 0.0;
@@ -1060,6 +1082,10 @@ void		patch_daily_F(
 			   patch[0].Kup_diffuse/86.4);
 	}
 	
+	if (snow_melt_input  > -999.0)  {
+			patch[0].rain_throughfall += snow_melt_input;
+			patch[0].snow_melt = snow_melt_input;
+			}
 	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height less than the	*/
@@ -1100,6 +1126,7 @@ void		patch_daily_F(
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
+
 					canopy_stratum_daily_F(
 						world,
 						basin,
@@ -1147,6 +1174,8 @@ void		patch_daily_F(
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+
+
 					canopy_stratum_daily_F(
 						world,
 						basin,
@@ -1602,7 +1631,7 @@ void		patch_daily_F(
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
 		-1.0 * patch[0].sat_deficit);
-	temp = patch[0].sat_deficit_z;
+
 	
 	available_sat_water = min((compute_delta_water(
 			0, 
@@ -1614,16 +1643,24 @@ void		patch_daily_F(
 
 	available_sat_water = max(available_sat_water, 0.0);
 
-	patch[0].sat_deficit += available_sat_water;
-	sat_zone_patch_demand -= available_sat_water;        
-
+	temp = patch[0].sat_deficit_z;
 	patch[0].sat_deficit_z = compute_z_final(
 		command_line[0].verbose_flag,
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
 		0.0,
-		-1.0 * patch[0].sat_deficit);
+		-1.0 * (patch[0].sat_deficit+available_sat_water));
+
+	/* to prevent instability if available sat water is close to soil depth  don't allow its use */
+	if ((patch[0].soil_defaults[0][0].soil_depth - patch[0].sat_deficit_z) < ZERO) {
+			patch[0].sat_deficit_z = temp;
+			available_sat_water = 0.0;
+	}			
+
+	
+	patch[0].sat_deficit += available_sat_water;
+	sat_zone_patch_demand -= available_sat_water;        
 
 
 		/*--------------------------------------------------------------*/
@@ -1774,7 +1811,7 @@ void		patch_daily_F(
 	patch[0].unsat_storage += cap_rise_to_unsat;
 	cap_rise_to_rz_storage = min(patch[0].potential_cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
 	cap_rise_to_rz_storage = min(rz_deficit, cap_rise_to_rz_storage);
-	patch[0].rz_storage +- cap_rise_to_rz_storage;
+	patch[0].rz_storage += cap_rise_to_rz_storage;
 
 	patch[0].cap_rise = (cap_rise_to_unsat + cap_rise_to_rz_storage);
 	patch[0].potential_cap_rise -= patch[0].cap_rise;
@@ -1882,6 +1919,8 @@ void		patch_daily_F(
 	/* in order to restrict denitri/nitrific on non-veg patches type */
 	/* 	tag vegtype							*/	
 	/*--------------------------------------------------------------*/
+        patch[0].rootzone.depth = 0.0;
+
 	vegtype = 0;
   patch[0].target_status = 1;
 
@@ -1947,10 +1986,40 @@ void		patch_daily_F(
 			patch[0].totalc += strata->cover_fraction * strata->cs.totalc;
 			patch[0].totaln += strata->cover_fraction * strata->ns.totaln;
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
-			strata->acc_year.psn += strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
+			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
 		}
 	}
+
+
+
+	/*--------------------------------------------------------------*/
+	/* move water associated with root growth 			*/
+	/* if roots go into sat zone the transfer happens automatically */
+	/* when water sources for transpiration are computed 		*/
+	/*--------------------------------------------------------------*/
+	/*--------------------------------------------------------------*/
+	/* if roots grow move water from unsat to rz storage		*/
+	/*--------------------------------------------------------------*/
+	root_growth = patch[0].rootzone.depth - patch[0].rootzone.preday_depth;
+	if ((root_growth > ZERO) && (patch[0].sat_deficit_z > patch[0].rootzone.preday_depth) && (patch[0].sat_deficit_z > ZERO)) {
+			water_transfer = patch[0].unsat_storage * root_growth / patch[0].sat_deficit_z;
+			patch[0].rz_storage += water_transfer;
+			patch[0].unsat_storage -= water_transfer; 
+			}
+
+	/*--------------------------------------------------------------*/
+	/* if roots grow (grow is negative ) move water from  rz storage to unsat		*/
+	/*--------------------------------------------------------------*/
+	if ((root_growth < -ZERO) && (patch[0].sat_deficit_z > patch[0].rootzone.preday_depth) && (patch[0].sat_deficit_z > ZERO)) {
+			water_transfer = patch[0].rz_storage * root_growth / patch[0].sat_deficit_z;
+			patch[0].rz_storage += water_transfer;
+			patch[0].unsat_storage -= water_transfer; 
+			}
+
+	/* printf("\n ID %d, growth from %lf to %lf  water_transfer %lf, rz %lf", patch[0].ID, patch[0].rootzone.preday_depth, patch[0].rootzone.depth, 
+		water_transfer, patch[0].rz_storage); */
+
 	/*-------------------------------------------------------------------------*/
 	/*	Compute current actual depth to water table				*/
 	/*------------------------------------------------------------------------*/
@@ -2067,7 +2136,6 @@ void		patch_daily_F(
 		0.0,
 		-1.0 * patch[0].sat_deficit);
 
-
 	theta = patch[0].rootzone.S;
 	patch[0].theta_std = (patch[0].soil_defaults[0][0].theta_mean_std_p2*theta*theta + 
 				patch[0].soil_defaults[0][0].theta_mean_std_p1*theta);
@@ -2166,16 +2234,18 @@ void		patch_daily_F(
 	patch[0].soil_cs.totalc = ((patch[0].soil_cs.soil1c)
 		+ (patch[0].soil_cs.soil2c) +	(patch[0].soil_cs.soil3c)
 		+ (patch[0].soil_cs.soil4c));
-	patch[0].totalc += ((patch[0].soil_cs.totalc) + (patch[0].litter_cs.litr1c)
-		+ (patch[0].litter_cs.litr2c) + (patch[0].litter_cs.litr3c)
+	patch[0].litter_cs.totalc = ((patch[0].litter_cs.litr1c)
+		+ (patch[0].litter_cs.litr2c) +	(patch[0].litter_cs.litr3c)
 		+ (patch[0].litter_cs.litr4c));
 	patch[0].soil_ns.totaln = ((patch[0].soil_ns.soil1n)
 		+ (patch[0].soil_ns.soil2n) + (patch[0].soil_ns.soil3n)
 		+ (patch[0].soil_ns.soil4n) + (patch[0].soil_ns.nitrate)
 		+ (patch[0].soil_ns.sminn));
-	patch[0].totaln += (patch[0].soil_ns.totaln + (patch[0].litter_ns.litr1n)
-		+ (patch[0].litter_ns.litr2n) + (patch[0].litter_ns.litr3n)
+	patch[0].litter_ns.totaln = ((patch[0].litter_ns.litr1n)
+		+ (patch[0].litter_ns.litr2n) +	(patch[0].litter_ns.litr3n)
 		+ (patch[0].litter_ns.litr4n));
+	patch[0].totalc += (patch[0].soil_cs.totalc + patch[0].litter_cs.totalc);
+	patch[0].totaln += (patch[0].soil_ns.totaln + patch[0].litter_ns.totaln);
 	patch[0].nitrogen_balance = patch[0].preday_totaln - patch[0].totaln - patch[0].ndf.N_to_gw
 		+ zone[0].ndep_NO3 + zone[0].ndep_NH4 - patch[0].ndf.denitrif + fertilizer_NO3 + fertilizer_NH4;
 

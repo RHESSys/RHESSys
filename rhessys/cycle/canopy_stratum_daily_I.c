@@ -102,7 +102,7 @@ void	canopy_stratum_daily_I(
 		double,
 		int,
 		struct date,
-		int);
+		int, int, int);
 
 	void	update_mortality(
 		struct epconst_struct,
@@ -126,7 +126,6 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
-	double wilting_point;
 	struct mortality_struct mort;
 	double leafcloss_perc, daily_mortality;
 
@@ -286,7 +285,9 @@ void	canopy_stratum_daily_I(
 		basin[0].theta_noon,
 		basin[0].defaults[0][0].wyday_start,
 		current_date,
-		command_line[0].grow_flag);
+		command_line[0].grow_flag, 
+		command_line[0].multiscale_flag,
+		patch[0].landuse_defaults[0][0].shading_flag);
 
 	/*--------------------------------------------------------------*/
 	/* if it is the last day of litterfall, perform carbon/nitrogen */

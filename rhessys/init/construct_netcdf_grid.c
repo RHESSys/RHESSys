@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rhessys.h"
+#include "UTM.h"  
 
 struct base_station_object *construct_netcdf_grid (
 #ifdef LIU_NETCDF_READER
@@ -104,6 +105,15 @@ struct base_station_object *construct_netcdf_grid (
         char	bufferrain[MAXSTR*100];
         char *lat_name = "lat";       
         char *lon_name = "lon";    
+        //Temporalily add threshold for tmax and tmin to check for errors in input data
+        //TO DO: put these into one of the def files or one extra input files
+        double max_tmax;
+        double min_tmin;  
+
+        //For WA, the threshold are below
+        //http://www.ncdc.noaa.gov/extremes/scec/records
+        max_tmax = 50;
+        min_tmin = -50;
 
         FILE*	base_station_file;
 
@@ -200,6 +210,33 @@ struct base_station_object *construct_netcdf_grid (
                         alloc(duration->day * sizeof(double),"day_rain_dur", "construct_netcdf_grid");
 
         }
+       /*------------------------------------------------------------*/
+       /* convert the WGS84 lon and lat to UTM                      */
+       /*-----------------------------------------------------------*/
+        int utm_zone;
+        float x_utm;
+        float y_utm;
+        float lat;
+        float lon;
+        int return_value;
+
+        lat = base_station[0].lat;
+        lon = base_station[0].lon;
+        if (command_line[0].ncgridinterp_flag != NULL) {
+        utm_zone = command_line[0].utm_zone;
+        printf("\n Read in the UTM zone from command line for climate data interpolation, the zone is %d \n", utm_zone);
+        }
+        else {
+        utm_zone = 12;
+       // printf("\n Not specify the UTM zone in command line, using default zone UTM 12, if you want to change the UTM zone using -ncgridinterp NUM \n");
+        }
+
+         return_value= LatLonToUTMXY(lat, lon, utm_zone, &x_utm, &y_utm);
+         printf(" the utm x and utm y are %f, %f \n",x_utm, y_utm);
+         base_station[0].proj_x = (double)x_utm;
+         base_station[0].proj_y = (double)y_utm;
+
+
         /*--------------------------------------------------------------*/
         /*	Allocate the yearly clim object.								*/
         /*--------------------------------------------------------------*/
@@ -340,6 +377,77 @@ struct base_station_object *construct_netcdf_grid (
 #endif
            }
 #endif */
+
+       /*Check for abnormal values in tmin tmax */
+
+        for (j=0; j<duration->day;j++){
+
+            if ((base_station[0].daily_clim[0].tmin[j] < min_tmin) || (base_station[0].daily_clim[0].tmin[j] > max_tmax))
+            {
+                printf("WARNING: day:%d tmin: %f smaller than tmin & bigger than tmax thresholds for ID %f\n", j, base_station[0].daily_clim[0].tmin[j],  min_tmin);
+                if ( j==0 || j==duration->day) // if first day or last day
+                {
+                    base_station[0].daily_clim[0].tmin[j] = min_tmin;
+                    printf("Tmin after fixing 1 (tmin) : %f \n", base_station[0].daily_clim[0].tmin[j]);
+
+                }
+                else  //do interpolation between the previous day and the next day
+                {
+                    if (base_station[0].daily_clim[0].tmin[j+1] > min_tmin) // if the next day doesn't have error
+                    {
+                        base_station[0].daily_clim[0].tmin[j] = 0.5* (base_station[0].daily_clim[0].tmin[j+1] + base_station[0].daily_clim[0].tmin[j-1]);
+                        printf("Tmin after fixing 2 (interpolation): %f \n", base_station[0].daily_clim[0].tmin[j]);
+
+                    }
+                    else
+                    {
+                        base_station[0].daily_clim[0].tmin[j] = base_station[0].daily_clim[0].tmin[j-1];
+                        printf("Tmin after fixing 3 (using previous non NA values): %f \n", base_station[0].daily_clim[0].tmin[j]);
+
+                    }
+
+
+                }
+
+            }
+
+            // check the abnormal values in tmax
+            if ((base_station[0].daily_clim[0].tmax[j] > max_tmax) || (base_station[0].daily_clim[0].tmax[j] < min_tmin))
+            {
+                printf("WARNING: day:%d tmax:%f bigger than tmax & smaller than tmin thresholds for WA %f\n", j, base_station[0].daily_clim[0].tmax[j], max_tmax);
+                if (j==0 || j==duration->day)  // if the first day or last day
+                {
+                    base_station[0].daily_clim[0].tmax[j] = max_tmax;
+                    printf(" Tmax after fixing 1 (tmax WA): %f \n", base_station[0].daily_clim[0].tmax[j]);
+                }
+                else  //do interpolation between the previous day & the next day
+
+                {
+                    if (base_station[0].daily_clim[0].tmax[j+1] < max_tmax)  // if the next day doesn't have error
+                    {
+                        base_station[0].daily_clim[0].tmax[j] = 0.5*(base_station[0].daily_clim[0].tmax[j+1] + base_station[0].daily_clim[0].tmax[j-1]);
+                        printf("Tmax after fixing 2 (interpolation): %f \n", base_station[0].daily_clim[0].tmax[j]);
+                    }
+                    else
+                    {
+                        base_station[0].daily_clim[0].tmax[j] = base_station[0].daily_clim[0].tmax[j-1];
+                        printf("Tmax after fixing 3 (previous non NA value): %f \n", base_station[0].daily_clim[0].tmax[j]);
+
+                    }
+
+
+                }
+
+
+            }
+
+            // check tmax and tmin
+            if ((base_station[0].daily_clim[0].tmax[j])< base_station[0].daily_clim[0].tmin[j]) {
+                printf("\n WARNING: day: %d, tmax %f is smaller than tmin %f \n", j, base_station[0].daily_clim[0].tmax[j], base_station[0].daily_clim[0].tmin[j]);
+            }
+
+        }
+
 
 
         /* ------------------ ELEV ------------------ */

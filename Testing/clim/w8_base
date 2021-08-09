@@ -1,0 +1,14 @@
+101  base_station_id
+100.0 x_coordinate
+100.0 y_coordinate
+975.0 z_coordinate
+3.5  effective_lai
+160.0 screen_height
+hja_prime_annual	annual_climate_prefix
+0			number_non_critical_annual_sequences
+hja_prime_monthly 	monthly_climate_prefix
+0			number_non_critical_monthly_sequences
+clim/w8_daily	daily_climate_prefix
+0
+hja_prime_hourly 	hourly_climate_prefix
+0			number_non_critical_hourly_sequences
