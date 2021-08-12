@@ -4,7 +4,6 @@
 ```
 https://github.com/RHESSys/RHESSys/wiki/What's-New
 
->>>>>>> develop
 RHESSys - The Regional Hydro-Ecologic Simulation System
 =======================================================
 
