@@ -130,7 +130,7 @@ void	output_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
-		"%ld %ld %ld %ld %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%ld %ld %ld %ld %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -186,17 +186,18 @@ void	output_growth_patch(
 		patch[0].grazing_Closs * 1000.0,
 		patch[0].area,
 		patch[0].soil_ns.fract_potential_immob,
-		patch[0].soil_ns.sminn, //n_avai
-		patch[0].soil_ns.nitrate, //n_avai
-		patch[0].ndf.mineralized, //n_avai
-		patch[0].ndf.plant_potential_ndemand,
-		patch[0].ndf.potential_immob,
+		patch[0].soil_ns.sminn*1000.0, //n_avai
+		patch[0].soil_ns.nitrate*1000.0, //n_avai
+		patch[0].ndf.mineralized*1000.0, //what is the differences between net_mineralized
+		patch[0].ndf.plant_potential_ndemand*1000.0,
+		patch[0].ndf.potential_immob*1000.0,
 		patch[0].soil_ns.perc_inroot,
 		patch[0].rooting_depth_mean,
-		acanopy_N_store, patch[0].litter.NO3_stored, patch[0].NO3_throughfall, patch[0].ndf.sminn_to_nitrate,
-		patch[0].streamNO3_from_surface, patch[0].streamNO3_from_sub,
+		acanopy_N_store, patch[0].litter.NO3_stored, patch[0].NO3_throughfall*1000, // this is N input
+		patch[0].ndf.sminn_to_nitrate*1000.0,
+		patch[0].streamNO3_from_surface*1000.0, patch[0].streamNO3_from_sub*1000.0,
 		patch[0].cdf.litterc_to_atmos*1000.0, patch[0].cdf.litterc_to_soilc*1000.0,
-		(patch[0].cdf.soil1c_hr + patch[0].cdf.soil2c_hr + patch[0].cdf.soil3c_hr + patch[0].cdf.soil4c_hr)*1000.0
+		(patch[0].cdf.soil1c_hr + patch[0].cdf.soil2c_hr + patch[0].cdf.soil3c_hr + patch[0].cdf.soil4c_hr)*1000.0, patch[0].ndf.net_mineralized*1000
 		);// in update_decomp.c in line 73 fpi is ns_soil->fract_potential_immbo, so the output name is fpi
 	if (check <= 0) {
 		fprintf(stdout, "\nWARNING: output_growth error has occured in output_growth_patch");
