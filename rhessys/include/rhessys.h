@@ -2835,6 +2835,7 @@ struct epconst_struct
         int phenology_flag;     /* (DIM) set as 1 for dynamic phenology */
         int allocation_flag;    /* (DIM) set as 1 for dynamic allocation */
         int veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
+        int hot_spot;           /* (DIM) 1 is hotspot and 0 is not hotspot for no-veg patches*/
         int phenology_type;     /* (DIM) set as 1 for decid; 0 for evergreen    */
         int nfix;               /* (DIM) set a 1 for n-fixers; 0 for not nfixers */
         int psi_curve;          /* (DIM) set to 0 for biome-bgc psi-conductance curve, other values give type of model 1=linear, 2=squared etc */

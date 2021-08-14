@@ -206,13 +206,13 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 // patch count (all patches)
                 p_ct_skip += 1;
                 // count no veg patches
-                if (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == NON_VEG){
+                if (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 ){
 
                         no_veg_patch[p_no_veg] = patches[0].ID;
                         p_no_veg +=1; //count how many no veg patches
                         // incrament gainer area
                         area_sum_g += patches[0].area;
-                         if (command_line[0].verbose_flag == -6) {printf("\n No veg patches are %d | ", patches[0].ID);}
+                         if (command_line[0].verbose_flag == -6) {printf("\n No veg && hotspot patches are %d | ", patches[0].ID);}
                     }
             }
             else
@@ -244,7 +244,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         }
         //if there is no no-veg patches no need to share
         if(p_no_veg == 0) {
-          if (command_line[0].verbose_flag == -6) {printf("\n No veg patches zero | no need to share ", p_no_veg);}
+          if (command_line[0].verbose_flag == -6) {printf("\n No veg && hotspot patches zero | no need to share ", p_no_veg);}
           share_litter = 0;
         }
 
@@ -259,11 +259,11 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         /*--------------------------------------------------------------*/
         /*  loop 2, loop through losing (>mean) patches                 */
         /*--------------------------------------------------------------*/
-    if (share_litter == 1) {
+    if (share_litter == 1) {// here to control share or not share
+     printf("|| Loop 2 Losing litter (>mean) Patches ||\n");
         if (command_line[0].verbose_flag == -6){
             printf("\n ==============================\n");
-            printf("|| Loop 2 Losing litter (>mean) Patches ||\n");
-            }
+            printf("|| Loop 2 Losing litter (>mean) Patches ||\n");}
 
         for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
         {
@@ -304,7 +304,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
             }
 
-            else if (skip1[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG)
+            else if (skip1[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                     patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 )
             {
                 // is a gaining patch
                 skip1[i] = 2; //
@@ -346,7 +347,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 area_sum_l2 += patches[0].area;
 
             }
-            else if (skip2[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG)
+            else if (skip2[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                    patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 )
             {
                 // is a gaining patch
                 skip2[i] = 2; // to do skip = 1 is losing patches, skip =2 is gaining patch skip =0 skip patch
@@ -386,7 +388,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 area_sum_l3 += patches[0].area;
             }
 
-            else if (skip3[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG)
+            else if (skip3[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                        patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 )
             {
                 // is a gaining patch
                 skip3[i] = 2; // to do
@@ -427,7 +430,9 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 area_sum_l4 += patches[0].area;
             }
 
-            else if (skip4[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG)
+            else if (skip4[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                     patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1
+                        )
             {
             // is a gaining patch
                 skip4[i] = 2; // to do
@@ -469,7 +474,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 area_sum_l5 += patches[0].area; // here index is 5
             }
 
-            else if (skip5[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG)
+            else if (skip5[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                     patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 )
             {
             // is a gaining patch
                 skip5[i] = 2; // to do NEW NREN
@@ -507,7 +513,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
             // route the litter to no-veg patches(gainers)
             // litter 1 pool
             if (skip1[i] == 2 &&
-                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 &&
                  patches[0].litter_cs.litr1c < litr1c_mean &&
                  patches[0].litter_ns.litr1n < litr1n_mean)
             {
@@ -570,7 +576,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
         /* litter 2 */
             if (skip2[i] == 2 &&
-                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 &&
                  patches[0].litter_cs.litr2c < litr2c_mean &&
                  patches[0].litter_ns.litr2n < litr2n_mean)
             {
@@ -642,7 +648,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
         /* litter 3 */
             if (skip3[i] == 2 &&
-                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 &&
                  patches[0].litter_cs.litr3c < litr3c_mean &&
                  patches[0].litter_ns.litr3n < litr3n_mean)
             {
@@ -711,7 +717,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
         /* litter 4 */
             if (skip4[i] == 2 &&
-                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 &&
                  patches[0].litter_cs.litr4c < litr4c_mean &&
                  patches[0].litter_ns.litr4n < litr4n_mean)
             {
@@ -777,7 +783,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
             }
 /* soil 4c */
             if (skip5[i] == 2 &&
-                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 &&
                  patches[0].soil_cs.soil4c < soil4c_mean &&
                  patches[0].soil_ns.soil4n < soil4n_mean)
             {

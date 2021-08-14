@@ -38,7 +38,7 @@ struct stratum_default *construct_stratum_defaults(
 		int	num_default_files,
 		char	**default_files,
 		struct command_line_object *command_line)
-												   
+
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
@@ -94,10 +94,11 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "stratum_default_ID", "%d", 7, 1); // new param name
 		default_object_list[i].epc.veg_type = 		parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.veg.type", "%s", "TREE", 1)); // param name is "epc.veg.type" in param file
+		default_object_list[i].epc.hot_spot = 		getIntParam(&paramCnt, &paramPtr, "hot_spot", "%d", 0, 1); //defautl is zero not a hotspot
 		default_object_list[i].K_absorptance = 		getDoubleParam(&paramCnt, &paramPtr, "K_absorptance", "%lf", 0.8, 1); // parameter misspelled in file as "K_apsorbtance"
 		default_object_list[i].K_reflectance = 		getDoubleParam(&paramCnt, &paramPtr, "K_reflectance", "%lf", 0.1, 1);
-		default_object_list[i].K_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "K_transmittance", "%lf", 0.1, 1); 
-		default_object_list[i].PAR_absorptance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_absorptance", "%lf", 1.0, 1); // param misspelled in file "PAR_absrptance" 
+		default_object_list[i].K_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "K_transmittance", "%lf", 0.1, 1);
+		default_object_list[i].PAR_absorptance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_absorptance", "%lf", 1.0, 1); // param misspelled in file "PAR_absrptance"
 		default_object_list[i].PAR_reflectance =  	getDoubleParam(&paramCnt, &paramPtr, "PAR_reflectance", "%lf", 0.0, 1);
 		default_object_list[i].PAR_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "PAR_transmittance", "%lf", 0.0, 1);
 		default_object_list[i].epc.ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "epc.ext_coef", "%lf", 0.5, 1);
@@ -264,7 +265,7 @@ struct stratum_default *construct_stratum_defaults(
 			if (epc->deadwood_cn < epc->livewood_cn){
 				fprintf(stderr,"\nFATAL ERROR: construct_canopy_stratum");
 				fprintf(stderr,"\ndeadwood C:N must be > livewood C:N");
-				exit(EXIT_FAILURE); 
+				exit(EXIT_FAILURE);
 			}
 				*/
 			epc->deadwood_cn = (epc->deadwood_fucel + epc->deadwood_fscel) * CEL_CN
@@ -319,7 +320,7 @@ struct stratum_default *construct_stratum_defaults(
  		default_object_list[i].consumption = getDoubleParam(&paramCnt, &paramPtr, "consumption", "%lf", 1, 1);
 		default_object_list[i].overstory_mort_k1 = getDoubleParam(&paramCnt, &paramPtr, "overstory_mort_k1", "%lf", -10, 1);
 		default_object_list[i].overstory_mort_k2 = getDoubleParam(&paramCnt, &paramPtr, "overstory_mort_k2", "%lf", 1, 1);
-		
+
 		/*--------------------------------------------------------------*/
 		/* default values for phenology (leaf onset/offset) model parameters */
 		/* are set based on Jolly et al., 2005, Global Change Biology   */
@@ -381,12 +382,12 @@ struct stratum_default *construct_stratum_defaults(
 		/* xylem conductance parms						*/
 		/*--------------------------------------------------------------*/
 
-		default_object_list[i].epc.gxylem_min_gs =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_min_gs", "%lf", 
+		default_object_list[i].epc.gxylem_min_gs =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_min_gs", "%lf",
 								default_object_list[i].epc.gl_c*10, 1);
-		default_object_list[i].epc.gxylem_max =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_max", "%lf", 
+		default_object_list[i].epc.gxylem_max =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_max", "%lf",
 								default_object_list[i].epc.gl_smax, 1);
 		default_object_list[i].epc.LWP_gxylem_min =	getDoubleParam(&paramCnt, &paramPtr, "epc.LWP_gxylem_min", "%lf", -9999.0, 1);
-		default_object_list[i].epc.gxylem_recovery_rate = getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_recovery_rate", "%lf", 
+		default_object_list[i].epc.gxylem_recovery_rate = getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_recovery_rate", "%lf",
 					default_object_list[i].epc.gxylem_max*0.1, 1);
 
 		default_object_list[i].epc.gxylem_csat =	getDoubleParam(&paramCnt, &paramPtr, "epc.gxylem_csat", "%lf", 4.08, 1);
@@ -438,7 +439,7 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		/*	Apply sensitivity analysis if appropriate		*/
 		/*--------------------------------------------------------------*/
-		
+
 		if (command_line[0].vgsen_flag == 1) {
 			default_object_list[i].epc.proj_sla *= command_line[0].veg_sen1;
 			default_object_list[i].epc.shade_sla_mult *= command_line[0].veg_sen2;
@@ -460,7 +461,7 @@ struct stratum_default *construct_stratum_defaults(
                 // Save the latest component of the filename
                 strcpy(filename, token);
                 s = NULL;
-            } 
+            }
 
             // Remove the file extension, if one exists
             memset(strbuf, '\0', strbufLen);
@@ -472,7 +473,7 @@ struct stratum_default *construct_stratum_defaults(
             }
 
             memset(outFilename, '\0', filenameLen);
-    
+
             // Concatenate the output prefix with the filename of the input .def file
             // and "_stratum.params"
             if (command_line[0].output_prefix != NULL) {
@@ -482,7 +483,7 @@ struct stratum_default *construct_stratum_defaults(
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_stratum.params");
-            } 
+            }
             else {
                 if (filename != NULL) {
                     strcat(outFilename, "_");
@@ -490,12 +491,12 @@ struct stratum_default *construct_stratum_defaults(
                 }
                 strcat(outFilename, "stratum.params");
             }
-    
+
             printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
 
                 if (paramPtr != NULL)
                     free(paramPtr);
-		    
+
 	return(default_object_list);
 } /*end construct_stratum_defaults*/
