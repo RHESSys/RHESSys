@@ -75,16 +75,10 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 
             if (command_line[0].f == NULL) { //If there is fire yearly growth output, set up set in the fire yearly growth output
 
-<<<<<<< HEAD
-	stratum[0].acc_year.psn = 0.0;
-	stratum[0].acc_year.minNSC = -999;
-	stratum[0].acc_year.length = 0;
-=======
             stratum[0].acc_year.gpsn = 0.0;
             stratum[0].acc_year.resp = 0.0;
             stratum[0].acc_year.minNSC = -999;
             }
->>>>>>> develop
 
 	return;
 } /*end output_yearly_growth_canopy_stratum*/

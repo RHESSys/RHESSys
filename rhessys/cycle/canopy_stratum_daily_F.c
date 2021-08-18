@@ -2049,17 +2049,12 @@ void	canopy_stratum_daily_F(
 
 		stratum[0].acc_month.length += 1;
 	}
-<<<<<<< HEAD
-	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL)){
-		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr- stratum[0].cdf.total_gr;
-=======
 	if ((command_line[0].output_flags.yearly == 1) &&
 			(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){
 		stratum[0].acc_year.gpsn += stratum[0].cdf.psn_to_cpool; 
 		stratum[0].acc_year.resp += stratum[0].cdf.total_mr;
 		stratum[0].acc_year.lai += stratum[0].epv.proj_lai;
 		stratum[0].acc_year.height += stratum[0].epv.height;
->>>>>>> develop
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
 		if (stratum[0].acc_year.minNSC == -999)
 			stratum[0].acc_year.minNSC = stratum[0].cs.cpool;

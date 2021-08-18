@@ -60,17 +60,6 @@ void execute_yearly_output_event(int reset_flag, struct world_object *world,
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-<<<<<<< HEAD
-	int	basinID, hillID, patchID, zoneID, stratumID;
-	int b,h,p,z,c;
-
-	/*--------------------------------------------------------------*/
-	/*	check to see if there are any print options					*/
-	/*--------------------------------------------------------------*/
-	if ((command_line[0].b != NULL) || (command_line[0].h != NULL) ||
-		(command_line[0].z != NULL) || (command_line[0].p != NULL) ||
-		(command_line[0].c != NULL)){
-=======
 	int basinID, hillID, patchID, zoneID, stratumID;
 	int b, h, p, z, c;
 
@@ -93,7 +82,6 @@ void execute_yearly_output_event(int reset_flag, struct world_object *world,
 		/*  Handle legacy output.                                               */
 		/*----------------------------------------------------------------------*/
 
->>>>>>> develop
 		/*--------------------------------------------------------------*/
 		/*	check to see if there are any print options					*/
 		/*--------------------------------------------------------------*/

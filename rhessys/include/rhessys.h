@@ -2295,15 +2295,9 @@ struct phenology_struct
 /* carbon state variables (including sums for sources and sinks) */
 struct cstate_struct
 {
-<<<<<<< HEAD
-        int     num_resprout; /* (num years) running index of years of resprouting */   
-    
-    double age; /* (num years) */
-=======
         int     num_resprout; /* (num years) running index of years of resprouting */
 
     double  age; /* (num years) */
->>>>>>> develop
     double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
     double totalc;          /* (kgC/m2) plant carbon total */
