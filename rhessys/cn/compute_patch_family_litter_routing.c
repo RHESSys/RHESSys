@@ -260,7 +260,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         /*  loop 2, loop through losing (>mean) patches                 */
         /*--------------------------------------------------------------*/
     if (share_litter == 1) {// here to control share or not share
-     printf("|| Loop 2 Losing litter (>mean) Patches ||\n");
+
         if (command_line[0].verbose_flag == -6){
             printf("\n ==============================\n");
             printf("|| Loop 2 Losing litter (>mean) Patches ||\n");}
