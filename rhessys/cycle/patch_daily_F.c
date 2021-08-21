@@ -403,7 +403,7 @@ void		patch_daily_F(
 		struct	basin_object *,
 		struct	zone_object	*,
 		struct	patch_object *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -1054,7 +1054,7 @@ void		patch_daily_F(
 		}
 
 		else {
-			if (snow_melt_input == -999.0) 
+			if (snow_melt_input == -999.0)
 			patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth = 0.0;
@@ -1081,7 +1081,7 @@ void		patch_daily_F(
 	}
 
 	if (patch[0].snowpack.water_equivalent_depth < 0.0001) {
-		if (snow_melt_input == -999.0) 
+		if (snow_melt_input == -999.0)
 		patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 		patch[0].snowpack.water_equivalent_depth = 0.0;
 		patch[0].snowpack.energy_deficit = 0.001;
@@ -1100,7 +1100,7 @@ void		patch_daily_F(
 			patch[0].rain_throughfall += snow_melt_input;
 			patch[0].snow_melt = snow_melt_input;
 			}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height less than the	*/
 	/*	snowpack but more than  0				*/
@@ -2000,7 +2000,7 @@ void		patch_daily_F(
 			patch[0].totalc += strata->cover_fraction * strata->cs.totalc;
 			patch[0].totaln += strata->cover_fraction * strata->ns.totaln;
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
-			strata->acc_year.psn += strata->cs.net_psn;
+			strata->acc_year.gpsn += strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
 			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
 		}

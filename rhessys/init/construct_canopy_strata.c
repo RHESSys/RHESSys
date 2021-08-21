@@ -412,7 +412,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_month.leafc = 0.0;
 	canopy_strata[0].acc_month.rootc = 0.0;
 	canopy_strata[0].acc_month.stemc = 0.0;
-	canopy_strata[0].acc_month.psn = 0.0;
+	//canopy_strata[0].acc_month.psn = 0.0;
 	canopy_strata[0].acc_month.gpsn = 0.0;
 	canopy_strata[0].acc_month.resp = 0.0;
 	canopy_strata[0].acc_month.totalc = 0.0;
