@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------*/
-/*                                                              */ 
+/*                                                              */
 /*		sort_patch_layers									*/
 /*                                                              */
 /*  NAME                                                        */
@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void sort_patch_layers( struct patch_object *patch, *rec)
+void sort_patch_layers( struct patch_object *patch, int *rec)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
@@ -147,7 +147,7 @@ void sort_patch_layers( struct patch_object *patch, *rec)
 		/* 		simply pick the last in the list */
 		/*--------------------------------------------------------------*/
 		if (( cover_fraction > 1.0 ) && ( patch[0].layers[i].height > ZERO)){
-	
+
 			maxstemcID = 0;
 			maxleafcID = 0;
 			maxstemc = 0;
@@ -156,7 +156,7 @@ void sort_patch_layers( struct patch_object *patch, *rec)
 				if (patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].defaults[0][0].epc.veg_type == TREE) {
 				if (patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].cs.dead_stemc >  maxstemc)
 					maxstemcID = s;;
-				} 
+				}
 				else {
 				if (patch[0].canopy_strata[patch[0].layers[i].strata[s]][0].cs.leafc >  maxleafc)
 					maxleafcID = s;;
@@ -165,20 +165,20 @@ void sort_patch_layers( struct patch_object *patch, *rec)
 
 			if (maxstemc > 0) {
 				stratum=patch[0].canopy_strata[patch[0].layers[i].strata[maxstemcID]];
-				stratum->cs.dead_stemc += 0.0001; 
+				stratum->cs.dead_stemc += 0.0001;
 				stratum->cdf.added_carbon += 0.0001;
 				stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef
                                 * pow ( (stratum->cs.live_stemc + stratum->cs.dead_stemc)/(stratum->cs.stem_density), stratum->defaults[0][0].epc.height_to_stem_exp);
 				}
 			else {
 				stratum=patch[0].canopy_strata[patch[0].layers[i].strata[maxleafcID]];
-                                stratum->cs.leafc += 0.0001;                                                      
+                                stratum->cs.leafc += 0.0001;
 				stratum->cdf.added_carbon += 0.0001;
-                                stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef                    
+                                stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef
                                 * pow ( (stratum->cs.leafc), stratum->defaults[0][0].epc.height_to_stem_exp);
 				}
-					
-				
+
+
 			patch[0].layers[i].null_cover = 0.0;
 
 			/* recursively call patch layers to fix this - should always work because we are changing the height */
