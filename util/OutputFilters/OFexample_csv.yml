@@ -1,0 +1,9 @@
+filter:
+  timestep: daily
+  output:
+    format: csv
+    path: "../out/oftest"
+    filename: "test_expr1"
+  patch:
+    ids: 1:162:135119, 1:162:136790:136790
+    variables: sat_deficit, rain_throughfall, mySatdef=sat_deficit, doubleSatdef=2*sat_deficit, divzero=sat_deficit/0.0, foo=(rain_throughfall + 2.0)*sat_deficit, soil_cs.frootc, frootc=soil_cs.frootc

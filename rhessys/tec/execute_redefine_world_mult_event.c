@@ -112,11 +112,13 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 		struct basin_object *);
 	struct basin_object	*find_basin( int, 
 		struct world_object *);
+	void sort_patch_layers( struct patch_object *, int *);
+	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	FILE	*world_input_file;
-	int	b,h,z,p,c;
+	int	b,h,z,p,c, rec;
 	int	basin_ID, world_ID, hill_ID, zone_ID, patch_ID, stratum_ID;
 	int	num_basin, num_hill, num_zone, num_patch, num_stratum;
 	char	world_input_filename[MAXSTR];
@@ -127,7 +129,8 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 	struct	zone_object	*zone;
 	struct	hillslope_object	*hillslope;
 	struct	basin_object	*basin;
-		
+	
+	rec = 0;	
 	/*--------------------------------------------------------------*/
 	/*	Try to open the world file in read mode.					*/
 	/*--------------------------------------------------------------*/
@@ -232,7 +235,7 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 			/*	re-sort patch layers to account for any changes in 	*/
 			/*	height							*/
 			/*--------------------------------------------------------------*/
-								sort_patch_layers(patch);
+								sort_patch_layers(patch, &rec);
 								} /* end patch if */
 
 							else {

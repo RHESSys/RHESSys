@@ -142,12 +142,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "types.h"
+#include "output_filter.h"
 //#include "../../util/WMFireInterface.h" /* required for fire spread*/
 #include "WMFireInterface.h" /* required for fire spread*/
+
 /*----------------------------------------------------------*/
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
 #define FILEPATH_LEN 1024
+#define PATH_SEP '/'
+#define FILE_EXT_SEP '.'
 #define TEC_CMD_LEN 256
 #define NULLVAL -9999
 #define TRUE    1
@@ -218,13 +223,6 @@ int get_netcdf_xy(char *, char *, char *, float, float, float, float *, float *)
 int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *);
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
 #endif
-
-/*----------------------------------------------------------*/
-/*      Define types                                        */
-/*----------------------------------------------------------*/
-typedef short bool;
-static const short true = 1;
-static const short false = 0;
 
 /*----------------------------------------------------------*/
 /*      Define a calendar date object.                      */
@@ -399,6 +397,10 @@ struct accumulate_patch_object
    double snowin;
    double Qin_total;
    double Qout_total;
+   double soilc;
+   double litterc;
+   double soiln;
+   double littern;
 };
 
 
@@ -486,6 +488,16 @@ struct stream_list_object
         double streamflow;
         struct stream_network_object *stream_network;
         };
+/*----------------------------------------------------------*/
+/*      Define target object                                */
+/*----------------------------------------------------------*/
+struct target_object {
+  double lai;
+  double total_stemc;
+  double height;
+  double age;
+  int    met;
+};
 
 /*----------------------------------------------------------*/
 /*	Define a snowpack object.								*/
@@ -1027,6 +1039,9 @@ struct zone_object
         double  e_horizon;      /* cos of angle to normal of flat       */
         double  e_horizon_topog;      /* cos of angle to normal of flat       */
         double  effective_lai;          /* area wt. average m^2/m^2     */
+        double  lai;
+        double  total_stemc;
+        double  height;
         double  Kdown_diffuse;                          /* Kj/(m^2*day) */
         double  Kdown_diffuse_calc;                             /* Kj/(m^2*day) */
         double  Kdown_diffuse_adjustment;               /*  0-1 */
@@ -1073,6 +1088,7 @@ struct zone_object
         struct  zone_hourly_object      *hourly;
         struct  accumulate_zone_object  acc_month;
         struct  accumulate_zone_object  acc_year;
+        struct  target_object   target;
 
         };
 
@@ -1561,6 +1577,7 @@ struct  litter_object
 
 struct  litter_c_object
         {
+    double totalc; 	/* (kgC/m2) total litter C */
     double litr1c;         /* (kgC/m2) litter labile C */
     double litr2c;         /* (kgC/m2) litter unshielded cellulose C */
     double litr3c;         /* (kgC/m2) litter shielded cellulose C */
@@ -1589,6 +1606,7 @@ struct  litter_c_object
 
 struct  litter_n_object
         {
+    double totaln; 	/* (kgN/m2) total litter N */
     double litr1n;          /* (kgN/m2) litter labile N */
     double litr2n;          /* (kgN/m2) litter unshielded cellulose N */
     double litr3n;          /* (kgN/m2) litter shielded cellulose N */
@@ -1708,6 +1726,8 @@ struct spinup_default {
         int ID;
         double tolerance;   // percent as fraction of 1
         double max_years;   /* years */
+        int    target_type; // to specify which layers of LAI is used, 1 is use stratum LAI and 2 is use patch LAI, 3 use zone LAI
+
         };
 
 struct spinup_object
@@ -1771,6 +1791,8 @@ struct patch_object
         double  hourly_subsur2stream_flow;      /* m water */
         double  hourly_sur2stream_flow;  /* m water  */
         double  hourly_stream_flow;     /* m water */
+        double  height;
+        double  total_stemc;
         double  interim_sat;            /* m */
         double  stream_gamma;           /* meters**2/day        */
         double  Kdown_direct;           /* Kj/(m^2*day) */
@@ -1857,6 +1879,7 @@ struct patch_object
         double  NO3_throughfall;        /* kg/m2 day  */
         double  NO3_throughfall_final;  /* kg/m2 day */
         double  rain_stored;            /* m water      */
+	double	total_water_in;		/* m water */
         double  slope;                  /* degrees              */
         double  S;                      /* m/m          */
         double  sat_zone_storage;       /* m water      */
@@ -1941,6 +1964,7 @@ struct patch_object
         struct  accumulate_patch_object acc_year;
         struct  rooting_zone_object     rootzone;
         struct  zone_object             *zone; /* parent zone */
+        struct  target_object   target;
 
 
 /*----------------------------------------------------------*/
@@ -2271,6 +2295,18 @@ struct  command_line_object
 	double	fs_percolation;
 	double	fs_threshold;
         struct  output_flag     output_flags;
+
+        bool					output_filter_flag;
+        char                    *output_filter_filename;
+        OutputFilter            *output_filter;
+        bool                    output_filter_zone_accum_monthly;
+        bool                    output_filter_zone_accum_yearly;
+        bool					output_filter_patch_accum_monthly;
+        bool					output_filter_patch_accum_yearly;
+        bool					output_filter_strata_accum_monthly;
+        bool					output_filter_strata_accum_yearly;
+
+        bool    legacy_output_flag; // Remove when legacy output is removed.
         struct  b_option        *b;
         struct  h_option        *h;
         struct  z_option        *z;
@@ -2385,7 +2421,7 @@ struct cstate_struct
     double  age; /* (num years) */
     double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
-    double totalc;          /* (kgC/m2) previous days plant carbon total */
+    double totalc;          /* (kgC/m2) plant carbon total */
     double net_psn;         /* (kgC/m2)  net photosynthesis (psn-respiration) */
     double nppcum;          /* (kgC/m2) cumulative daily npp (net_psn) */
     double cpool;           /* (kgC/m2) temporary plant C pool */
@@ -2529,6 +2565,7 @@ struct epvar_struct
         double fwood; /* 0-1 */
 
         /* gross PSN input */
+    double added_carbon;  /* (kgC/m2) carbon added due to resprouting, height adjustments to prevent > 100 cover */
     double assim_sunlit; /* (umol/m2/s per leaf) */
     double assim_shade; /* (umol/m2/s  per leaf) */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
@@ -2575,7 +2612,7 @@ struct epvar_struct
         double deadcrootc_store_to_deadcrootc_transfer; /* (kgC/m2/d) */
         double gresp_store_to_gresp_transfer;           /* (kgC/m2/d) */
 	double carbohydrate_transfer;			/* (kg/m2/day) */
-	double storage_transfer_prop;			/* 0-1 */ 
+	double storage_transfer_prop;			/* 0-1 */
 
         /* turnover of live wood to dead wood */
         double livestemc_to_deadstemc;        /* (kgC/m2/d) */
@@ -2631,7 +2668,7 @@ struct epvar_struct
 {
     double    nlimit;          /* (0-1) 0 is not limited on that day */
     double preday_totaln;   /* (kgN/m2) previous days plant nitrogen total */
-    double totaln;          /* (kgN/m2) previous days plant nitrogen total */
+    double totaln;          /* (kgN/m2)  plant nitrogen total */
     double npool;           /* (kgN/m2) temporary plant N pool */
     double leafn;           /* (kgN/m2) leaf N */
     double dead_leafn;      /* (kgN/m2) standing dead leaf N for grasses */
@@ -2987,16 +3024,7 @@ struct  stratum_default
 	double overstory_mort_k2; 		/* Centerpoint of sigmoid function relating understory biomass consumed and overstory mortality */
 };
 
-/*----------------------------------------------------------*/
-/*      Define target object                                */
-/*----------------------------------------------------------*/
-       struct target_object {
-              double lai;
-              double total_stemc;
-              double height;
-              double age;
-              int    met;
-       };
+
 /*----------------------------------------------------------*/
 /*      Define accumulator object                           */
 /*----------------------------------------------------------*/
@@ -3004,13 +3032,17 @@ struct  stratum_default
         struct accumulate_strata_object {
 
         int length;
-        double psn;
+        double resp;
+        double gpsn;
         double lai;
         double lwp;
         double minNSC;
         double stemc;
         double rootc;
         double leafc;
+	double totalc;
+	double totaln;
+	double height;
         };
 
 

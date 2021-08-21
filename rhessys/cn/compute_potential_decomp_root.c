@@ -245,13 +245,13 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 	if (pmnf_l4s3 > ZERO) potential_immob += pmnf_l4s3;
 	else mineralized += -pmnf_l4s3;
 
-	/*if (pmnf_s1s2 > 0.0) potential_immob += pmnf_s1s2;
+	/*if (pmnf_s1s2 > ZERO) potential_immob += pmnf_s1s2;
 	else mineralized += -pmnf_s1s2;
 
-	if (pmnf_s2s3 > 0.0) potential_immob += pmnf_s2s3;
+	if (pmnf_s2s3 > zERO) potential_immob += pmnf_s2s3;
 	else mineralized += -pmnf_s2s3;
 
-	if (pmnf_s3s4 > 0.0) potential_immob += pmnf_s3s4;
+	if (pmnf_s3s4 > ZERO) potential_immob += pmnf_s3s4;
 	else mineralized += -pmnf_s3s4;
 	mineralized += -pmnf_s4;
 

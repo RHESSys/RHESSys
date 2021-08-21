@@ -12,7 +12,7 @@
 /*							                                              	*/
 /*	DESCRIPTION					                                       	*/
 /*							                                              	*/
-/*	PROGRAMMER NOTES				                                   	*/
+/*	PROGRAMMER NOTES	   			                                   	*/
 /*--------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -22,8 +22,10 @@
 
 void	update_shadow_strata(
 							   struct	world_object		      *world,
+							   struct   zone_object               *zone,
+							   struct   patch_object              *patch,
 							   struct canopy_strata_object 	*stratum,
-                 struct canopy_strata_object  *shadow_strata,
+                               struct canopy_strata_object  *shadow_strata,
 							   struct command_line_object	  *command_line,
 							   struct date 			            current_date)
 {
@@ -41,6 +43,10 @@ void	update_shadow_strata(
 	/*	then check if targets have been met. If so, set target.met flag to 1 	*/
 	/*------------------------------------------------------------------------*/
 
+   struct canopy_strata_object *canopy_target;
+	struct canopy_strata_object *canopy_subtarget;
+	int c;
+	int layer;
  // printf("\ntarget met: %d", stratum[0].target.met);
 
   if(stratum[0].target.met != 1){
@@ -70,7 +76,6 @@ void	update_shadow_strata(
     shadow_strata[0].cs.frootc_store = stratum[0].cs.frootc_store;
     shadow_strata[0].cs.frootc_transfer = stratum[0].cs.frootc_transfer;
     shadow_strata[0].cs.cwdc = stratum[0].cs.cwdc;
-    shadow_strata[0].cs.cwdc_bg = stratum[0].cs.cwdc_bg;
     shadow_strata[0].epv.prev_leafcalloc = stratum[0].epv.prev_leafcalloc;
     shadow_strata[0].ns.npool = stratum[0].ns.npool;
     shadow_strata[0].ns.leafn = stratum[0].ns.leafn;
@@ -93,12 +98,43 @@ void	update_shadow_strata(
     shadow_strata[0].ns.frootn_store = stratum[0].ns.frootn_store;
     shadow_strata[0].ns.frootn_transfer = stratum[0].ns.frootn_transfer;
     shadow_strata[0].ns.cwdn = stratum[0].ns.cwdn;
-    shadow_strata[0].ns.cwdn_bg = stratum[0].ns.cwdn_bg;
     shadow_strata[0].ns.retransn = stratum[0].ns.retransn;
     shadow_strata[0].epv.wstress_days = stratum[0].epv.wstress_days;
     shadow_strata[0].epv.max_fparabs = stratum[0].epv.max_fparabs;
     shadow_strata[0].epv.min_vwc = stratum[0].epv.min_vwc;
-  }
+  //}
+
+  /* use patch level LAI as target instead of only use overstory LAI  */
+   if (world[0].defaults[0].spinup[0].target_type == 2) {
+    if (patch[0].lai >= patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance) &&
+        patch[0].total_stemc >= patch[0].target.total_stemc *(1 - world[0].defaults[0].spinup[0].tolerance) &&
+        patch[0].height >= patch[0].target.height *(1 - world[0].defaults[0].spinup[0].tolerance) &&
+        (current_date.year - command_line[0].start_date.year) > patch[0].target.age && current_date.month==9 && current_date.day==30)
+    {
+        stratum[0].target.met = 1;
+        //printf("\n 2. patch target meet2 after check over-under ratio for patchID is: %d, simulated patch LAI is: %lf, stratumID is: %d, simulate stratum LAI is %lf \n target LAI is %lf, target.met %d \n", patch[0].ID, patch[0].lai, stratum[0].ID, stratum[0].epv.proj_lai, patch[0].target.lai, stratum[0].target.met);
+
+    } // if patchi lai
+
+
+
+   } //if world
+
+   /* add third option to use zone effective LAI as target to solve the MSR incompatible issue*/
+   else if (world[0].defaults[0].spinup[0].target_type == 3) {
+        if ( (zone[0].lai >= zone[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) &&
+             (zone[0].total_stemc >= zone[0].target.total_stemc * (1- world[0].defaults[0].spinup[0].tolerance)) &&
+             (zone[0].height >= zone[0].target.height *(1 - world[0].defaults[0].spinup[0].tolerance)) &&
+             (current_date.year - command_line[0].start_date.year) > zone[0].target.age && current_date.month==9 && current_date.day==30)
+         {
+                stratum[0].target.met = 1;
+                // printf("\n 3. zone target meet zoneID is: %d, simulated zone effective LAI is: %lf, stratumID is: %d, simulate stratum LAI is %lf \n target LAI is %lf, target.met %d \n", zone[0].ID, zone[0].effective_lai, stratum[0].ID, stratum[0].epv.proj_lai, zone[0].target.lai, stratum[0].target.met);
+        }
+
+   }
+
+
+  else if (world[0].defaults[0].spinup[0].target_type == 1){ //default is thisone
 
  if (stratum[0].epv.proj_lai >= (stratum[0].target.lai - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai)) {
     if ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc)) {
@@ -109,11 +145,13 @@ void	update_shadow_strata(
       }
     }
   }
+}
 
- if((current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years) && current_date.month ==9 && current_date.day==30){
+ if((current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years) && current_date.month ==9 && current_date.day==30 && stratum[0].target.met != 1){
     stratum[0].target.met = 1;
-    printf("\nexceeded max years for patch:%d", stratum[0].patch_ID);
+    printf("\n exceeded max years for stratumID:%d, simluated stratum LAI is %lf, target LAI is %lf, simulate patch LAI is %lf  \n", stratum[0].ID, stratum[0].epv.proj_lai, stratum[0].target.lai, patch[0].lai);
   }
 
+ }//52 if target not meet
 	return;
 } /*end update_shadow_strata.c*/

@@ -1,11 +1,15 @@
-VERSION = 7.2
+OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+VERSION = 7.3
 PGM  = rhessys$(VERSION)
-CC = gcc
+#CC = gcc
+CC = clang
 #CXX = g++
 INCLUDES = -Iinclude
 
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
+
+netcdf=T
 
 #netcdf ?=FALSE
 #wmfire ?=FALSE
@@ -17,9 +21,14 @@ ifdef extend_clim
 endif
 
 CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
+CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
+
+ifdef ofdebug
+	CFLAGS += -DOF_DEBUG
+endif
 
 ifdef openmp
   CFLAGS += -fopenmp
@@ -27,16 +36,34 @@ endif
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
-	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -Wmacro-redefined -std=c99
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+	# Linker flag for flex and bison
+	LINK_FLEX = -ll
+	WMFIRE_SO = libwmfire.dylib
 else ifeq ($(OS), Linux)
 	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+	# Linker flag for flex and bison
+	LINK_FLEX = -lfl
+	WMFIRE_SO = libwmfire.so
 else
 	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+	# Linker flag for flex and bison
+	LINK_FLEX = -lfl
+	WMFIRE_SO = libwmfire.so
 endif
 
+LOCAL_LIBS = -L../lib
+LINK_NETCDF = `pkg-config --libs netcdf`
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
+TEST_FIRE_LIB_PATH = test/$(WMFIRE_SO)
+ifdef wmfire
+LDLIBS_FIRE = -lwmfire
+FIRE_LIB_PATH = ../lib/$(WMFIRE_SO)
+else
+LDLIBS_FIRE = ''
+endif
 
-SRCS := $(shell find clim cn cycle hydro init rad tec util -name '*.c')
+SRCS := $(shell find clim cn cycle hydro init rad tec util output_filter -name '*.c')
 OBJDIR := OBJ
 
 TESTS_ROOTDIR = test
@@ -47,8 +74,6 @@ OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
 OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
 TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
 TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
-
-OS := $(shell uname)
 
 
 OBJECTS = \
@@ -239,6 +264,7 @@ $(OBJ)/input_new_strata_mult.o \
 $(OBJ)/input_new_strata_thin.o \
 $(OBJ)/input_new_zone.o \
 $(OBJ)/input_new_zone_mult.o \
+$(OBJ)/isodate.o \
 $(OBJ)/julday.o \
 $(OBJ)/key_compare.o \
 $(OBJ)/leaf_conductance_APAR_curve.o \
@@ -357,32 +383,48 @@ $(OBJ)/union_date_combine.o \
 $(OBJ)/get_num_daywhourly.o \
 $(OBJ)/date_oper_union.o \
 $(OBJ)/reconstruct_hourly_clim.o \
+$(OBJ)/string_list.o \
+$(OBJ)/strings.o \
+$(OBJ)/pointer_set.o \
+$(OBJ)/dictionary.o \
+$(OBJ)/output_filter.o \
+$(OBJ)/construct_output_filter.o \
+$(OBJ)/destroy_output_filter.o \
+$(OBJ)/output_filter_output.o \
+$(OBJ)/output_format_csv.o \
+$(OBJ)/output_format_netcdf.o
 
 ifdef netcdf
 OBJECTS += $(OBJ)/read_netcdf.o
 endif
+
+# Objects for generated source files related to output filtering
+OBJECTS += $(OBJ)/output_filter_parser.tab.o \
+$(OBJ)/lex.yy.o \
+$(OBJ)/index_struct_fields.o
 
 all:	dir rhessys
 
 dir:
 	mkdir -p $(OBJ)
 	mkdir -p $(OBJDIR_TESTS)
+	mkdir -p ../lib
 
 ifdef netcdf
 ifdef wmfire
-rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -L../lib -lwmfire -v -o $(PGM)
+rhessys: $(OBJECTS) test
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) $(LOCAL_LIBS) $(LDLIBS_FIRE) -v -o $(PGM)
 else
-rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L/usr/local/lib -lnetcdf -fopenmp -v -o $(PGM)
+rhessys: $(OBJECTS) test
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -v -o $(PGM)
 endif
 else
 ifdef wmfire
-rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -lwmfire -v -o $(PGM)
+rhessys: $(OBJECTS) test
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) $(LDLIBS_FIRE) -v -o $(PGM)
 else
-rhessys: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm -L../lib -v -o $(PGM)
+rhessys: $(OBJECTS) test
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) -v -o $(PGM)
 endif
 endif
 
@@ -390,22 +432,31 @@ endif
 print-%  : ; @echo $* = $($*)
 
 OBJECTS_NO_MAIN := $(patsubst $(OBJ)/main.o,,$(OBJECTS))
-test: dir $(TESTS)
-	# Run each unit test
-	$(patsubst %,%;,$(TESTS_TO_RUN))
 
+ifdef wmfire
+test: dir $(TESTS)
+    # Copy FIRE_LIB to test directory so that tests will run.
+	cp $(FIRE_LIB_PATH) $(TEST_FIRE_LIB_PATH)
+	# Run each unit test
+	$(patsubst test/%,cd test; ./%; cd -;,$(TESTS_TO_RUN))
+else
+test: dir $(TESTS)
+	$(patsubst test/%,cd test; ./%; cd -;,$(TESTS_TO_RUN))
+endif
+
+# $(OBJ)/lex.yy.o $(OBJ)/output_filter_parser.tab.o $(OBJ)/output_filter.o $(OBJ)/string_list.o $(OBJ)/dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS)
 $(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 else ifeq ($(OS), Linux)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -lbsd -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
 else
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 endif
 	cp $@ $(TESTS_ROOTDIR)
 
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
-	$(CC) $(CFLAGS_TESTS) $(INCLUDES) -c -o $@ $<
+	$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) -c -o $@ $<
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
@@ -632,6 +683,8 @@ $(OBJ)/julday.o: util/julday.c
 	$(CC) -c $(CFLAGS) -I include util/julday.c -o $(OBJ)/julday.o
 $(OBJ)/create_random_distrb.o: util/create_random_distrb.c
 	$(CC) -c $(CFLAGS) -I include util/create_random_distrb.c -o $(OBJ)/create_random_distrb.o
+$(OBJ)/isodate.o: util/isodate.c
+	$(CC) -c $(CFLAGS) -I include util/isodate.c -o $(OBJ)/isodate.o
 $(OBJ)/compute_mean_hillslope_parameters.o: init/compute_mean_hillslope_parameters.c
 	$(CC) -c $(CFLAGS) -I include init/compute_mean_hillslope_parameters.c -o $(OBJ)/compute_mean_hillslope_parameters.o
 $(OBJ)/compute_radiative_fluxes.o: rad/compute_radiative_fluxes.c
@@ -1032,6 +1085,47 @@ $(OBJ)/date_oper_union.o: util/date_oper_union.c
 	$(CC) -c $(CFLAGS) -I include util/date_oper_union.c -o $(OBJ)/date_oper_union.o
 $(OBJ)/reconstruct_hourly_clim.o: init/reconstruct_hourly_clim.c
 	$(CC) -c $(CFLAGS) -I include init/reconstruct_hourly_clim.c -o $(OBJ)/reconstruct_hourly_clim.o
+
+# Output filtering
+# Generate code
+output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_filter_parser.y output_filter/parser/output_filter_parser.l
+	cd output_filter/parser && \
+	bison --report=none -d output_filter_parser.y && \
+	flex output_filter_parser.l
+util/index_struct_fields.c: include/rhessys.h
+	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h \
+	--include_structs patch_object accumulate_patch_object patch_hourly_object patch_fire_water_object rooting_zone_object \
+	snowpack_object soil_c_object soil_n_object litter_object litter_c_object litter_n_object cdayflux_patch_struct ndayflux_patch_struct \
+	canopy_strata_object accumulate_strata_object cdayflux_struct cstate_struct target_object epvar_struct nstate_struct \
+	ndayflux_struct phenology_struct fire_effects_object mult_conduct_struct hillslope_object gw_object \
+	zone_object accumulate_zone_object metvar_struct \
+	--output util/index_struct_fields.c
+$(OBJ)/string_list.o: util/string_list.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o $(OBJ)/string_list.o
+$(OBJ)/strings.o: util/strings.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/strings.c -o $(OBJ)/strings.o
+$(OBJ)/pointer_set.o: util/pointer_set.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/pointer_set.c -o $(OBJ)/pointer_set.o
+$(OBJ)/dictionary.o: util/dictionary.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/dictionary.c -o $(OBJ)/dictionary.o
+$(OBJ)/output_filter.o: output_filter/output_filter.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter.c -o $(OBJ)/output_filter.o
+$(OBJ)/output_filter_parser.tab.o: output_filter/parser/output_filter_parser.tab.c
+	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/output_filter_parser.tab.c -o $(OBJ)/output_filter_parser.tab.o
+	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/lex.yy.c -o $(OBJ)/lex.yy.o
+$(OBJ)/index_struct_fields.o: util/index_struct_fields.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c util/index_struct_fields.c -o $(OBJ)/index_struct_fields.o
+$(OBJ)/construct_output_filter.o: output_filter/construct_output_filter.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/construct_output_filter.c -o $(OBJ)/construct_output_filter.o
+$(OBJ)/destroy_output_filter.o: output_filter/destroy_output_filter.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/destroy_output_filter.c -o $(OBJ)/destroy_output_filter.o
+$(OBJ)/output_filter_output.o: output_filter/output_filter_output.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter_output.c -o $(OBJ)/output_filter_output.o
+$(OBJ)/output_format_csv.o: output_filter/format/output_format_csv.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/format/output_format_csv.c -o $(OBJ)/output_format_csv.o
+$(OBJ)/output_format_netcdf.o: output_filter/format/output_format_netcdf.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/format/output_format_netcdf.c -o $(OBJ)/output_format_netcdf.o
+
 $(OBJ)/main.o: main.c setversion
 	$(CC) -c $(CFLAGS) -I include main.c -o $(OBJ)/main.o
 
@@ -1051,6 +1145,9 @@ clean:
 	rm -f $(OBJECTS)
 	rm -f $(OBJDIR_TESTS)/*
 	rm -f $(TESTS_TO_RUN)
+	rm -f $(TEST_FIRE_LIB_PATH)
+	# Remove generated code
+	rm -f output_filter/parser/lex.yy.c output_filter/parser/output_filter_parser.tab.c output_filter/parser/output_filter_parser.tab.h util/index_struct_fields.c
 
 clobber:
 	rm -f $(OBJECTS) $(PGM)

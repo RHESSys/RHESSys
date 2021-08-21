@@ -1,0 +1,238 @@
+---
+title: "Watershed 8 Test Case"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+Before new functionality can be added to RHESSys, new code changes must be tested for their effects on the model.    
+This test case is for a small watershed (W8) located in the HJ Andrews experimental forest in Oregon.
+
+The base simulation was run for 10 years, generating basin daily output.
+Use this script to run the same simulation with your new code and compare output to this base case scenario. 
+
+1. Edit the **rhessys_ver =** to point to your new version of RHESSys.
+   (and/or edit worldfile and flowtable input files if there are changes to the structure of those files )
+2. Execute the commands to run RHESSys with your new code and compare the output to this base test case output with the results in:
+waterbalance_diff    
+percent_diff
+and various time series comparisons 
+R code below guides you through this process
+
+Download the RHESSysIOinR package at https://github.com/RHESSys/RHESSysIOinR
+or directly from Rstudio with
+
+You will also need *tidyverse* and *gpubr* that are available from R mirror sites
+
+You don't have to run this if you have already installed RHESSYsIOinR
+```{r installation}
+devtools::install_github("RHESSys/RHESSysIOinR")
+```
+
+Make sure you set your working directory to the **Testing** directory
+
+Now insure you have needed librarier and load results from prior RHESSys simulations for comparison
+```{r requiredlibraries}
+
+library(tidyverse)
+library(RHESSysIOinR)
+library(ggpubr)
+load("W8TestCase.RData")
+```
+
+
+
+### Input files    
+Edit the **rhessys_ver** = path and file name to point to your new version of RHESSys    (in R chunk below)
+Unless new development changes are being made to the worldfile or flowtable, you will use the same input files.
+
+```{r setrunvars}
+
+rhessys_ver = "/Users/naomitague/Model/RHESSys/rhessys/rhessys7.3"
+worldfile = "worldfiles/w8TC.world"
+header = "worldfiles/w8TC.hdr"
+flowtable = "flowtables/w8TC.flow"
+tecfile = "tecfiles/tec.test"
+offile = "tecfiles/testing_filter.yml"
+```
+#### Creates the command line
+```{r commandlinegen}
+
+cmd1 = sprintf("%s -t %s -w %s -whdr %s -r %s",
+                     rhessys_ver, tecfile, worldfile, header, flowtable)
+cmd2 = sprintf("-pre out/test -s 0.355794 651.390265 -sv 0.355794 651.390265 -svalt 1.083102 1.193924, -gw 0.116316 0.916922 -of %s", offile)
+cmd3 = sprintf("-st 1988 10 1 1 -ed 2000 10 1 1  -g ")
+command_line = paste(cmd1,cmd2,cmd3)
+```
+
+### Run RHESSys
+```{r runrhessys}
+system(command_line)
+```
+
+### Read in the test results and plot the water balance results
+
+
+```{r getyourresults}
+test = read.table("out/test_basin_daily.csv", header=T, sep=",")
+test = mkdate(test)
+
+# we have to make some variables
+test = test %>% mutate(streamflow=1000*(streamflow+gw.Qout), trans=1000*(transpiration_sat_zone+
+                         transpiration_unsat_zone), 
+            evap = 1000*(evaporation+evaporation_surf +exfiltration_sat_zone+exfiltration_unsat_zone), 
+      plantc = cs.frootc+cs.leafc+cs.live_stemc+cs.dead_stemc+cs.live_crootc+cs.dead_crootc,
+      streamflow_NO3 = streamflow_NO3+gw.NO3out, streamflow_DON= streamflow_DON+gw.DONout, 
+      psn   = cs.net_psn,
+      gpsn = cdf.psn_to_cpool,
+      plant_resp = cdf.total_mr + cdf.total_gr, sat_def = sat_deficit*1000, rz_storage=rz_storage*1000, snowpack=snowpack.water_equivalent_depth*1000, unsat_stor=unsat_storage*1000, litter_store=litter.rain_stored*1000,
+    canopy_store=(rain_stored+snow_stored)*1000, 
+    precip=total_water_in*1000)
+
+test = watbal_basin(test)
+```
+
+In general water balance should be close to zero - there are of course small rounding errors, typically daily water balance is less than +- 2e-06, you can see by plotting results from the water balance test for base case (included in *W8TestCase.RData*)
+We will plot both so you can see if there is a water balance issue with your new code
+
+```{r waterbalance}
+test = watbal_basin_of(test)
+
+# your results are in red
+ggplot(base, aes(date, watbal))+geom_point()+geom_point(data=test, aes(date, watbal), col="red", alpha=0.4)
+
+```
+### THIS HAS NOT BEEN ADAPTED TO OURPUT FILTER Variables names YET - IN PROGRESS
+### Difference between the base and the test scenarios     
+The **percent_diff_mean** object shows the difference in the mean streamflow, transpiration, evaporation, psn, and plant carbon results between the base and test scenarios.     
+If there are large differences - are they reasonable given the changes to functionality with your new code?
+
+```{r percentmeandiff}
+
+base.mean = base %>% select(streamflow, psn, trans, evap, plantc) %>% summarize_if(is.numeric, mean)
+
+test.mean = test %>% select(streamflow, psn, trans, evap, plantc) %>% summarize_if(is.numeric, mean)
+
+percent_diff_mean = ((test.mean-base.mean)/base.mean)*100
+
+percent_diff_mean
+
+
+base.grow.mean = base %>% select(streamflow_NO3, ndf.sminn_to_nitrate, ndf.denitrif, plant_resp, gpsn, soil_cs.totalc, litter_cs.totalc) %>% summarize_if(is.numeric, mean)
+test.grow.mean = test %>% select(streamflow_NO3, ndf.sminn_to_nitrate, ndf.denitrif, plant_resp, gpsn, soil_cs.totalc, litter_cs.totalc) %>% summarize_if(is.numeric, mean)
+
+percent_gdiff_mean = ((test.grow.mean-base.grow.mean)/base.grow.mean)*100
+percent_gdiff_mean
+
+```
+
+## Time Series Plots
+
+You should also look for any significant changes in key fluxes/stored
+Again - if your code was designed to improve these - great - if not then make sure that changes are reasonable
+
+First we will create some data frames 
+We will then   estimate max and min differences for variables of interest
+and then plot some time series
+
+####  Time Series
+
+
+```{r timeseriessummary, echo=TRUE}
+
+# baseline 
+tmp = base %>% select(date, streamflow, epv.proj_lai, snowpack.water_equivalent_depth, psn, sat_deficit, rz_storage, trans, evap, epv.height)
+tmp2 = base %>% select(plantc, streamflow_NO3, litter_cs.totalc, soil_cs.totalc, gpsn, plant_resp, ndf.sminn_to_nitrate, ndf.denitrif)
+tmpb = cbind.data.frame(tmp, tmp2)
+tmpb$new =FALSE
+# new results
+tmp = test %>% select(date, streamflow, epv.proj_lai, snowpack.water_equivalent_depth, psn, sat_deficit, rz_storage, trans, evap, epv.height)
+tmp2 = test %>% select(plantc, streamflow_NO3, litter_cs.totalc, soil_cs.totalc, gpsn, plant_resp, ndf.sminn_to_nitrate, ndf.denitrif)
+tmpt = cbind.data.frame(tmp, tmp2)
+tmpt$new =TRUE
+```
+Also look for big departures (needs timeseries R chunk to be run)
+
+```{r timeseriesdep, echo=TRUE}
+tmpa2 = inner_join(tmpb, tmpt, by=c("date"), suffix=c(".base",".test"))
+
+
+
+# if any of these values are large > +- 4e-6 then you should understand the reason 
+res = data.frame(matrix(ncol=0, nrow=2))
+
+res$streamflow = c(max(tmpa2$streamflow.test-tmpa2$streamflow.base),
+min(tmpa2$streamflow.test-tmpa2$streamflow.base))
+
+res$snowpack = c(max(tmpa2$snowpack.water_equivalent_depth.test-tmpa2$snowpack.water_equivalent_depth.base),
+min(tmpa2$snowpack.water_equivalent_depth.test-tmpa2$snowpack.water_equivalent_depth.base))
+
+res$evap = c(max(tmpa2$evap.test-tmpa2$evap.base),
+min(tmpa2$evap.test-tmpa2$evap.base))
+
+res$trans = c(max(tmpa2$trans.test-tmpa2$trans.base),
+min(tmpa2$trans.test-tmpa2$trans.base))
+
+res$sat_def = c(max(tmpa2$sat_deficit.test-tmpa2$sat_deficit.base),
+min(tmpa2$sat_deficit.test-tmpa2$sat_deficit.base))
+
+res$rz_storage = c(max(tmpa2$rz_storage.test-tmpa2$rz_storage.base),
+min(tmpa2$rz_storage.test-tmpa2$rz_storage.base))
+
+res$plantc = c(max(tmpa2$plantc.test-tmpa2$plantc.base),
+min(tmpa2$plantc.test-tmpa2$plantc.base))
+
+
+res$soilc = c(max(tmpa2$soil_cs.totalc.test-tmpa2$soil_cs.totalc.base),
+min(tmpa2$soil_cs.totalc.test-tmpa2$soil_cs.totalc.base))
+
+
+res$litrc = c(max(tmpa2$litter_cs.totalc.test-tmpa2$litter_cs.totalc.base),
+min(tmpa2$litter_cs.totalc.test-tmpa2$litter_cs.totalc.base))
+
+res$psn = c(max(tmpa2$psn.test-tmpa2$psn.base),
+min(tmpa2$psn.test-tmpa2$psn.base))
+
+res$streamflow_NO3 = c(max(tmpa2$streamflow_NO3.test-tmpa2$streamflow_NO3.base),
+min(tmpa2$streamflow_NO3.test-tmpa2$streamflow_NO3.base))
+
+res$height = c(max(tmpa2$epv.height.test-tmpa2$epv.height.base),
+min(tmpa2$epv.height.test-tmpa2$epv.height.base))
+
+
+res=t(res)
+colnames(res)=c("min","max")
+res
+```
+
+If you see big departures you may want to look at plots
+
+```{r timeseriesplots, echo=TRUE}
+tmpa = rbind.data.frame(tmpb, tmpt)
+
+a = ggplot(tmpa, aes(date, streamflow, col=new))+geom_line()+scale_y_continuous(trans="log")
+b = ggplot(tmpa, aes(date, plantc, col=new))+geom_line()
+c = ggplot(tmpa, aes(date, snowpack.water_equivalent_depth, col=new))+geom_line()
+d = ggplot(tmpa, aes(date, trans, col=new))+geom_line()
+e = ggplot(tmpa, aes(date, epv.proj_lai, col=new))+geom_line()
+f = ggplot(tmpa, aes(date, evap, col=new))+geom_line()
+g = ggplot(tmpa, aes(date, litter_cs.totalc, col=new))+geom_line()
+h = ggplot(tmpa, aes(date, psn, col=new))+geom_line()
+i = ggplot(tmpa, aes(date, sat_deficit, col=new))+geom_line()
+j = ggplot(tmpa, aes(date, streamflow_NO3, col=new))+geom_line()
+k = ggplot(tmpa, aes(date, soil_cs.totalc, col=new))+geom_line()
+l = ggplot(tmpa, aes(date, epv.height, col=new))+geom_line()
+
+# to see any of the individual plots, just type the letter for that plot
+
+# you may have to zoom to see everything here
+ggarrange(a,b,c,d,e,f,ncol=3, nrow=2)
+ggarrange(g,h,i,j,k,l, ncol=3, nrow=2)
+```
+
+
+

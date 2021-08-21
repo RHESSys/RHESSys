@@ -196,6 +196,7 @@ double compute_potential_N_uptake_combined(
 		fleaf = 0.0;
 		froot = 0.0;
 		fwood = 0.0;
+		fcroot = 0.0;
 	}
 
 	cdf->fleaf = fleaf;

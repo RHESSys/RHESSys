@@ -286,28 +286,28 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].zone[0].daily;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n " ,
-		"day",
-		"month",
-		"year",
-		"basinID",
-		"hillID",
-		"ID",
-		"rain",
-		"snow",
-		"tmax",
-		"tmin",
-		"vpd",
-		"Kdown_direct",
-		"Kdown_diffuse",
-		"PAR_direct",
-		"PAR_diffuse",
-		"Ldown",
-		"relH","aspect","z","slope","ehr","whr",
-		"tdew","edew",
-		"transmis",
-		"wind",
-		"deltaT","clearskytransmis","tcoeff1","cloudfrac");
+	  fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s $s %s\n" ,
+           "day",
+           "month",
+           "year",
+           "basinID",
+           "hillID",
+           "ID",
+           "rain",
+           "snow",
+           "tmax",
+           "tmin",
+           "vpd",
+           "Kdown_direct",
+           "Kdown_diffuse",
+           "PAR_direct",
+           "PAR_diffuse",
+           "Ldown",
+           "relH","aspect","z","slope","ehr","whr",
+           "tdew","edew",
+           "transmis",
+           "wind",
+           "deltaT","clearskytransmis","tcoeff1","cloudfrac","CO2_ppm", "LAI", "NO3_dep", "total_stemc", "height");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
@@ -515,7 +515,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s \n", 
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s \n", 
 		"month",
 		"year",
 		"basinID",
@@ -524,8 +524,10 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"patchID",
 		"stratumID",
 		"lai",
-		"psn",
-		"lwp");
+		"gpsn",
+		"resp",
+		"totalc",
+		"lwp","height","rootdepth");
 	}
 
 

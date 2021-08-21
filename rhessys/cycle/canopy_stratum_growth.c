@@ -91,6 +91,12 @@ void	canopy_stratum_growth(
                 double,
                 double);
 
+	double		compute_prop_alloc_daily(
+		double,
+		struct cstate_struct *,
+		struct epconst_struct);
+	
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/

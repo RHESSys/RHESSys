@@ -60,11 +60,16 @@ void	output_monthly_canopy_stratum( int basinID, int hillID,
 	/*	reset accumulator variables				*/
 	/*--------------------------------------------------------------*/
 	stratum[0].acc_month.lai = 0.0;
-	stratum[0].acc_month.psn = 0.0;
+	stratum[0].acc_month.gpsn = 0.0;
+	stratum[0].acc_month.resp = 0.0;
+	stratum[0].acc_month.height = 0.0;
+	stratum[0].acc_month.totalc = 0.0;
+	stratum[0].acc_month.totaln = 0.0;
 	stratum[0].acc_month.lwp = 0.0;
 	stratum[0].acc_month.length = 0;
 	stratum[0].acc_month.rootc = 0.0;
 	stratum[0].acc_month.stemc = 0.0;
 	stratum[0].acc_month.leafc = 0.0;
+	stratum[0].acc_month.minNSC = 0.0;
 	return;
 } /*end output_monthly_canopy_stratum*/
