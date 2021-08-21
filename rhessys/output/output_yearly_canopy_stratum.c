@@ -51,21 +51,30 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 	/*--------------------------------------------------------------*/
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
-	fprintf(outfile,"%d %d %d %d %d %d %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf \n",
 		current_date.year,
 		basinID,
 		hillID,
 		zoneID,
 		patchID,
 		stratum[0].ID,
-		(stratum[0].acc_year.psn) / stratum[0].acc_year.length,
+		(stratum[0].acc_year.lai) / stratum[0].acc_year.length,
+		(stratum[0].acc_year.gpsn) / stratum[0].acc_year.length,
+		(stratum[0].acc_year.resp) / stratum[0].acc_year.length,
+		(stratum[0].acc_year.totalc) / stratum[0].acc_year.length,
 		(stratum[0].acc_year.lwp) / stratum[0].acc_year.length,
+		(stratum[0].acc_year.height) / stratum[0].acc_year.length,
 		stratum[0].rootzone.depth*1000.0);
 	/*--------------------------------------------------------------*/
 	/*	reset accumulator variables				*/
 	/*--------------------------------------------------------------*/
 	if (reset_flag == 1) {
-	stratum[0].acc_year.psn = 0.0;
+	stratum[0].acc_year.gpsn = 0.0;
+	stratum[0].acc_year.height = 0.0;
+	stratum[0].acc_year.resp = 0.0;
+	stratum[0].acc_year.lai = 0.0;
+	stratum[0].acc_year.totalc = 0.0;
+	stratum[0].acc_year.height = 0.0;
 	stratum[0].acc_year.lwp = 0.0;
 	stratum[0].acc_year.length = 0;
 	}

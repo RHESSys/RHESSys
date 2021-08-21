@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void sort_patch_layers( struct patch_object *patch)
+void sort_patch_layers( struct patch_object *patch, *rec)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
@@ -147,8 +147,6 @@ void sort_patch_layers( struct patch_object *patch)
 		/* 		simply pick the last in the list */
 		/*--------------------------------------------------------------*/
 		if (( cover_fraction > 1.0 ) && ( patch[0].layers[i].height > ZERO)){
-			printf( "\n WARNING in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
-				patch[0].layers[i].height);
 	
 			maxstemcID = 0;
 			maxleafcID = 0;
@@ -167,25 +165,25 @@ void sort_patch_layers( struct patch_object *patch)
 
 			if (maxstemc > 0) {
 				stratum=patch[0].canopy_strata[patch[0].layers[i].strata[maxstemcID]];
-				stratum->cs.dead_stemc += 0.00001; 
+				stratum->cs.dead_stemc += 0.0001; 
+				stratum->cdf.added_carbon += 0.0001;
 				stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef
                                 * pow ( (stratum->cs.live_stemc + stratum->cs.dead_stemc)/(stratum->cs.stem_density), stratum->defaults[0][0].epc.height_to_stem_exp);
 				}
 			else {
 				stratum=patch[0].canopy_strata[patch[0].layers[i].strata[maxleafcID]];
-                                stratum->cs.leafc += 0.00001;                                                      
+                                stratum->cs.leafc += 0.0001;                                                      
+				stratum->cdf.added_carbon += 0.0001;
                                 stratum->epv.height = stratum->defaults[0][0].epc.height_to_stem_coef                    
                                 * pow ( (stratum->cs.leafc), stratum->defaults[0][0].epc.height_to_stem_exp);
 				}
 					
 				
 			patch[0].layers[i].null_cover = 0.0;
-			printf("\n for patch %d, cover fraction > %lf  fixed by  changing height for %d strata", patch[0].ID, cover_fraction,
-					stratum->ID);
-			printf("\n carbon will not balance for this day");
 
 			/* recursively call patch layers to fix this - should always work because we are changing the height */
-			sort_patch_layers(patch);
+			rec += 1;
+			sort_patch_layers(patch, *rec);
 		}
 		else {
 			patch[0].layers[i].null_cover = 1.0 - cover_fraction;

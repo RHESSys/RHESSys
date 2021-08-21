@@ -1,0 +1,11 @@
+# Editors
+*~
+
+# IDEs
+.settings/
+
+# Generated code
+output_filter/parser/lex.yy.c
+output_filter/parser/output_filter_parser.tab.c
+output_filter/parser/output_filter_parser.tab.h
+util/index_struct_fields.c

@@ -69,6 +69,13 @@ void	execute_hourly_output_event(
 		struct	canopy_strata_object *,
 		struct	date,
 		FILE	*);
+
+	void output_hourly_zone(
+		int, int,
+		struct	zone_object	*,
+		struct	date,
+		FILE *);
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

@@ -1,0 +1,9 @@
+filter:
+	timestep: daily
+	output:
+		format: csv
+		path: "../output/fire-project-1"
+		filename: "scenario-abc1"
+	zone:
+		ids: 1:2:3, 2
+		variables: zone.PAR_direct, PAR_diffuse, par=PAR_direct+PAR_diffuse, metv.tmax, zone.metv.vpd_night
