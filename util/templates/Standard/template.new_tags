@@ -47,6 +47,7 @@ _world AREA_or_BASIN_MAP.tif 1
 				z			aver  DEM_MAP.tif
 				soil_parm_ID	        value 3.0	
 				landuse_parm_ID		value 1.0
+				fire_parm_ID		value 1.0
 				area			area	
 				slope			aver  SLOPE_MAP.tif			
 				lna 			value 7.0	
