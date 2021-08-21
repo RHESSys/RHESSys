@@ -148,7 +148,7 @@ void		patch_daily_I(
 
     /* add below ground litter carbon decomposition */
 
-    int  compute_potential_decomp_bg(
+    int  compute_potential_decomp_root(
 		double,
 		double,
 		double,
@@ -553,7 +553,7 @@ void		patch_daily_I(
 			&(patch[0].litter));
 
         /* add compute potential decomp for below ground litter carbon */
- 		if (compute_potential_decomp_bg(
+ 		if (compute_potential_decomp_root(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].psi_max,
 			patch[0].soil_defaults[0][0].psi_air_entry,

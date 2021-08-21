@@ -99,7 +99,7 @@ void update_phenology(struct zone_object  *zone,
 		struct cstate_struct *,
 		int);
 
-	int     compute_cwd_decay_bg(	struct epconst_struct *,
+	int     compute_cwd_decay_root(	struct epconst_struct *,
 		double,
 		struct cstate_struct *,
 		struct nstate_struct *,
@@ -523,6 +523,15 @@ void update_phenology(struct zone_object  *zone,
 		/*--------------------------------------------------------------*/
 		/*	compute coarse woody debris fragmentation		*/
 		/*--------------------------------------------------------------*/
+ 		if ((cs->cwdc_bg > ZERO) && (cover_fraction > ZERO)) {
+			if (ok && compute_cwd_decay_root(&(epc),cover_fraction, cs,ns,cs_litr,
+				ns_litr,cdf_patch,ndf_patch, ndf)){
+				fprintf(stderr,
+					"FATAL ERROR: in cwd_decay_root() from update_phenology()\n");
+				exit(EXIT_FAILURE);
+			}
+
+		}
 		if ((cs->cwdc > ZERO) && (cover_fraction > ZERO)) {
 			if (ok && compute_cwd_decay(&(epc),cover_fraction, cs,ns,cs_litr,
 				ns_litr,cdf_patch,ndf_patch, ndf)){
@@ -531,15 +540,6 @@ void update_phenology(struct zone_object  *zone,
 				exit(EXIT_FAILURE);
 			}
         }
- 		if ((cs->cwdc_bg > ZERO) && (cover_fraction > ZERO)) {
-			if (ok && compute_cwd_decay_bg(&(epc),cover_fraction, cs,ns,cs_litr,
-				ns_litr,cdf_patch,ndf_patch, ndf)){
-				fprintf(stderr,
-					"FATAL ERROR: in cwd_decay_bg() from update_phenology()\n");
-				exit(EXIT_FAILURE);
-			}
-
-		}
 		/*--------------------------------------------------------------*/
 		/*	compute live steam and coarse root turnover		*/
 		/* 	excess n from live stem turnover is added to retranslocated N */

@@ -237,25 +237,25 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	nlimit = 0;
 	potential_immob = 0.0;
 	mineralized = 0.0;
-	if (pmnf_l1s1 > 0.0) potential_immob += pmnf_l1s1;
+	if (pmnf_l1s1 > ZERO) potential_immob += pmnf_l1s1;
 	else mineralized += -pmnf_l1s1;
 
-	if (pmnf_l2s2 > 0.0) potential_immob += pmnf_l2s2;
+	if (pmnf_l2s2 > ZERO) potential_immob += pmnf_l2s2;
 	else mineralized += -pmnf_l2s2;
 
-	if (pmnf_l3l2 > 0.0) potential_immob += pmnf_l3l2;
+	if (pmnf_l3l2 > ZERO) potential_immob += pmnf_l3l2;
 	else mineralized += -pmnf_l3l2;
 
-	if (pmnf_l4s3 > 0.0) potential_immob += pmnf_l4s3;
+	if (pmnf_l4s3 > ZERO) potential_immob += pmnf_l4s3;
 	else mineralized += -pmnf_l4s3;
 
-	if (pmnf_s1s2 > 0.0) potential_immob += pmnf_s1s2;
+	if (pmnf_s1s2 > ZERO) potential_immob += pmnf_s1s2;
 	else mineralized += -pmnf_s1s2;
 
-	if (pmnf_s2s3 > 0.0) potential_immob += pmnf_s2s3;
+	if (pmnf_s2s3 > ZERO) potential_immob += pmnf_s2s3;
 	else mineralized += -pmnf_s2s3;
 
-	if (pmnf_s3s4 > 0.0) potential_immob += pmnf_s3s4;
+	if (pmnf_s3s4 > ZERO) potential_immob += pmnf_s3s4;
 	else mineralized += -pmnf_s3s4;
 	mineralized += -pmnf_s4;
 

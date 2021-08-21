@@ -74,20 +74,20 @@ int update_decomp(
 
   // check the range
 	if(fpi>1.0){fpi=1.0;}
-	if(fpi<0.0){fpi=0.0;}
+	if(fpi<ZERO){fpi=ZERO;}
 	/* now use the N limitation information fpi to assess the final decomposition
-	fluxes. Mineralizing fluxes (pmnf* < 0.0) occur at the potential rate
+	fluxes. Mineralizing fluxes (pmnf* < ZERO) occur at the potential rate
 	regardless of the competing N demands between microbial processes and
 	plant uptake, but immobilizing fluxes are reduced when soil mineral
 	N is limiting */
 	/* calculate litter and soil compartment C:N ratios */
-	if ((cs_litr->litr1c > 0.0) && (ns_litr->litr1n > 0.0)) cn_l1 = cs_litr->litr1c/ns_litr->litr1n;
+	if ((cs_litr->litr1c > ZERO) && (ns_litr->litr1n > ZERO)) cn_l1 = cs_litr->litr1c/ns_litr->litr1n;
 		else cn_l1 = LIVELAB_CN;
-	if ((cs_litr->litr2c > 0.0) && (ns_litr->litr2n > 0.0)) cn_l2 = cs_litr->litr2c/ns_litr->litr2n;
+	if ((cs_litr->litr2c > ZERO) && (ns_litr->litr2n > ZERO)) cn_l2 = cs_litr->litr2c/ns_litr->litr2n;
 		else cn_l2 = CEL_CN;
-		if ((cs_litr->litr3c > 0.0) && (ns_litr->litr3n > 0.0))  cn_l3 = cs_litr->litr3c/ns_litr->litr3n;
+		if ((cs_litr->litr3c > ZERO) && (ns_litr->litr3n > ZERO))  cn_l3 = cs_litr->litr3c/ns_litr->litr3n;
 		else cn_l3 = LIG_CN;
-		if ((cs_litr->litr4c > 0.0) && (ns_litr->litr4n > 0.0)) cn_l4 = cs_litr->litr4c/ns_litr->litr4n;
+		if ((cs_litr->litr4c > ZERO) && (ns_litr->litr4n > ZERO)) cn_l4 = cs_litr->litr4c/ns_litr->litr4n;
 		else cn_l4 = LIG_CN;
 	cn_s1 = SOIL1_CN;
 	cn_s2 = SOIL2_CN;
@@ -103,7 +103,7 @@ int update_decomp(
 	daily_net_nmin = 0.0;
 	/* labile litter fluxes */
 	if ((cs_litr->litr1c > ZERO) && (ns_litr->litr1n > ZERO)) {
-		if (nlimit && ndf->pmnf_l1s1 > 0.0){
+		if (nlimit && ndf->pmnf_l1s1 > ZERO){
 			cdf->plitr1c_loss *= fpi;
 			ndf->pmnf_l1s1 *= fpi;
 		}
@@ -117,7 +117,7 @@ int update_decomp(
 	} else{ // check which patch has negative litr1c
 	  //        cs_litr->litr1c = 0.0;
 	  //        ns_litr->litr1n = 0.0;
-	  if ((cs_litr->litr1c < 0.0) || (ns_litr->litr1n < 0.0)) printf("lc1=%e, ln1=%e\n",cs_litr->litr1c, ns_litr->litr1n);
+	  if ((cs_litr->litr1c < ZERO) || (ns_litr->litr1n < ZERO)) printf("update_decomp: lc1=%e, ln1=%e\n",cs_litr->litr1c, ns_litr->litr1n);
 	  cdf->litr1c_hr = 0.0;
 	  cdf->litr1c_to_soil1c = 0.0;
 	  ndf->litr1n_to_soil1n = 0.0;
@@ -126,7 +126,7 @@ int update_decomp(
 
 	/* cellulose litter fluxes */
 	if ((cs_litr->litr2c > ZERO) && (ns_litr->litr2n > ZERO)){
-		if (nlimit && ndf->pmnf_l2s2 > 0.0){
+		if (nlimit && ndf->pmnf_l2s2 > ZERO){
 			cdf->plitr2c_loss *= fpi;
 			ndf->pmnf_l2s2 *= fpi;
 		}
@@ -140,7 +140,7 @@ int update_decomp(
 	} else{
 	  //        cs_litr->litr2c = 0.0;
 	  //        ns_litr->litr2n = 0.0;
-	  if ((cs_litr->litr2c < 0.0) || (ns_litr->litr2n < 0.0)) printf("lc2=%e, ln2=%e\n",cs_litr->litr2c, ns_litr->litr2n);
+	  if ((cs_litr->litr2c < ZERO) || (ns_litr->litr2n < ZERO)) printf("update_decomp: lc2=%e, ln2=%e\n",cs_litr->litr2c, ns_litr->litr2n);
 	  cdf->litr2c_hr = 0.0;
 	  cdf->litr2c_to_soil2c = 0.0;
 	  ndf->litr2n_to_soil2n = 0.0;
@@ -151,13 +151,13 @@ int update_decomp(
 	lignin litter */
 	/* actually going to litr 2 rather than soil but will use soil2 as repository for mineralized N */
 	if ((cs_litr->litr3c > ZERO) && (ns_litr->litr3n > ZERO)){
-		if (nlimit && ndf->pmnf_l3l2 > 0.0){
+		if (nlimit && ndf->pmnf_l3l2 > ZERO){
 			cdf->plitr3c_loss *= fpi;
 			ndf->pmnf_l3l2 *= fpi;
 		}
 		cdf->litr3c_hr = rfl4s3 * cdf->plitr3c_loss;
 		cdf->litr3c_to_litr2c = (1.0 - rfl4s3) * cdf->plitr3c_loss; // litter3c to litter 2c
-		if (ns_litr->litr3n > 0.000000001)
+		if (ns_litr->litr3n > ZERO)
 			ndf->litr3n_to_litr2n = cdf->plitr3c_loss / cn_l3;
 		else ndf->litr3n_to_litr2n = 0.0;
 		ndf->sminn_to_soil2n_l3 = ndf->pmnf_l3l2;
@@ -165,7 +165,7 @@ int update_decomp(
 	} else{
 	  //        cs_litr->litr3c = 0.0;
 	  //        ns_litr->litr3n = 0.0;
-	  if ((cs_litr->litr3c < 0.0) || (ns_litr->litr3n < 0.0)) printf("lc3=%e, ln3=%e\n",cs_litr->litr3c, ns_litr->litr3n);
+	  if ((cs_litr->litr3c < ZERO) || (ns_litr->litr3n < ZERO)) printf("update_decomp: lc3=%e, ln3=%e\n",cs_litr->litr3c, ns_litr->litr3n);
 	  cdf->litr3c_hr = 0.0;
 	  cdf->litr3c_to_litr2c = 0.0;
 	  ndf->litr3n_to_litr2n = 0.0;
@@ -180,7 +180,7 @@ int update_decomp(
 		}
 		cdf->litr4c_hr = rfl4s3 * cdf->plitr4c_loss;
 		cdf->litr4c_to_soil3c = (1.0 - rfl4s3) * cdf->plitr4c_loss; //litter4c to soil 3c
-		if (ns_litr->litr4n > 0.000000001)
+		if (ns_litr->litr4n > ZERO)
 			ndf->litr4n_to_soil3n = cdf->plitr4c_loss / cn_l4;
 		else ndf->litr4n_to_soil3n = 0.0;
 		ndf->sminn_to_soil3n_l4 = ndf->pmnf_l4s3;
@@ -188,7 +188,7 @@ int update_decomp(
 	} else{
 	  //        cs_litr->litr4c = 0.0;
 	  //        ns_litr->litr4n = 0.0;
-	  if ((cs_litr->litr4c < 0.0) || (ns_litr->litr4n < 0.0)) printf("lc4=%e, ln4=%e\n",cs_litr->litr4c, ns_litr->litr4n);
+	  if ((cs_litr->litr4c < ZERO) || (ns_litr->litr4n < ZERO)) printf("update_decomp: lc4=%e, ln4=%e\n",cs_litr->litr4c, ns_litr->litr4n);
 	  cdf->litr4c_hr = 0.0;
 	  cdf->litr4c_to_soil3c = 0.0;
 	  ndf->litr4n_to_soil3n = 0.0;
@@ -197,7 +197,7 @@ int update_decomp(
 
 	/* fast microbial recycling pool */
 	if (cs_soil->soil1c > ZERO && ns_soil->soil1n > ZERO){
-		if (nlimit && ndf->pmnf_s1s2 > 0.0){
+		if (nlimit && ndf->pmnf_s1s2 > ZERO){
 			cdf->psoil1c_loss *= fpi;
 			ndf->pmnf_s1s2 *= fpi;
 		}
@@ -217,7 +217,7 @@ int update_decomp(
 
 	/* medium microbial recycling pool */
 	if (cs_soil->soil2c > ZERO && ns_soil->soil2n > ZERO){
-		if (nlimit && ndf->pmnf_s2s3 > 0.0){
+		if (nlimit && ndf->pmnf_s2s3 > ZERO){
 			cdf->psoil2c_loss *= fpi;
 			ndf->pmnf_s2s3 *= fpi;
 		}
@@ -237,7 +237,7 @@ int update_decomp(
 
 	/* slow microbial recycling pool */
 	if (cs_soil->soil3c > ZERO && ns_soil->soil3n > ZERO){
-		if (nlimit && ndf->pmnf_s3s4 > 0.0){
+		if (nlimit && ndf->pmnf_s3s4 > ZERO){
 			cdf->psoil3c_loss *= fpi;
 			ndf->pmnf_s3s4 *= fpi;
 		}
@@ -271,11 +271,11 @@ int update_decomp(
 	/* Fluxes out of labile litter pool */
 	cs_litr->litr1c_hr_snk += cdf->litr1c_hr;
 	cs_litr->litr1c       -= cdf->litr1c_hr;
-	if (cs_litr->litr1c - cdf->litr1c_to_soil1c < 0.0) {
+	if (cs_litr->litr1c - cdf->litr1c_to_soil1c < ZERO) {
 		cdf->litr1c_to_soil1c = max(cs_litr->litr1c,0.0);
 		ndf->litr1n_to_soil1n = cdf->litr1c_to_soil1c / cn_l1 ;
 	}
-	if (ns_litr->litr1n - ndf->litr1n_to_soil1n < 0.0) {
+	if (ns_litr->litr1n - ndf->litr1n_to_soil1n < ZERO) {
 		ndf->litr1n_to_soil1n = max(ns_litr->litr1n,0.0);
 		cdf->litr1c_to_soil1c = cdf->litr1c_to_soil1c * cn_l1 ;
 	}
@@ -284,14 +284,14 @@ int update_decomp(
 	/* Fluxes out of cellulose litter pool */
 	cs_litr->litr2c_hr_snk += cdf->litr2c_hr;
 	cs_litr->litr2c       -= cdf->litr2c_hr;
-	if (cs_litr->litr2c - cdf->litr2c_to_soil2c < 0.0) {
+	if (cs_litr->litr2c - cdf->litr2c_to_soil2c < ZERO) {
 		cdf->litr2c_to_soil2c = max(cs_litr->litr2c,0.0);
 		ndf->litr2n_to_soil2n = max(ns_litr->litr2n,0.0);
 	}
 	cs_soil->soil2c       += cdf->litr2c_to_soil2c;
 	cs_litr->litr2c       -= cdf->litr2c_to_soil2c;
 	/* Fluxes from shielded to unshielded cellulose pools */
-	if (cs_litr->litr3c - cdf->litr3c_to_litr2c < 0.0) {
+	if (cs_litr->litr3c - cdf->litr3c_to_litr2c < ZERO) {
 		cdf->litr3c_to_litr2c = max(cs_litr->litr3c,0.0);
 		ndf->litr3n_to_litr2n = max(ns_litr->litr3n,0.0);
 	}
@@ -300,7 +300,7 @@ int update_decomp(
 	/* Fluxes out of lignin litter pool */
 	cs_litr->litr4c_hr_snk += cdf->litr4c_hr;
 	cs_litr->litr4c       -= cdf->litr4c_hr;
-	if (cs_litr->litr4c - cdf->litr4c_to_soil3c < 0.0) {
+	if (cs_litr->litr4c - cdf->litr4c_to_soil3c < ZERO) {
 		cdf->litr4c_to_soil3c = max(cs_litr->litr4c,0.0);
 		ndf->litr4n_to_soil3n = max(ns_litr->litr4n,0.0);
 	}
@@ -309,7 +309,7 @@ int update_decomp(
 	/* Fluxes out of fast soil pool */
 	cs_soil->soil1c_hr_snk += cdf->soil1c_hr;
 	cs_soil->soil1c       -= cdf->soil1c_hr;
-	if (cs_soil->soil1c - cdf->soil1c_to_soil2c < 0.0) {
+	if (cs_soil->soil1c - cdf->soil1c_to_soil2c < ZERO) {
 		cdf->soil1c_to_soil2c = max(cs_soil->soil1c, 0.0);
 		ndf->soil1n_to_soil2n = max(ns_soil->soil1n, 0.0);
 	}
@@ -318,7 +318,7 @@ int update_decomp(
 	/* Fluxes out of medium soil pool */
 	cs_soil->soil2c_hr_snk += cdf->soil2c_hr;
 	cs_soil->soil2c       -= cdf->soil2c_hr;
-	if (cs_soil->soil2c - cdf->soil2c_to_soil3c < 0.0) {
+	if (cs_soil->soil2c - cdf->soil2c_to_soil3c < ZERO) {
 		cdf->soil2c_to_soil3c = max(cs_soil->soil2c, 0.0);
 		ndf->soil2n_to_soil3n = max(ns_soil->soil2n, 0.0);
 	}
@@ -327,7 +327,7 @@ int update_decomp(
 	/* Fluxes out of slow soil pool */
 	cs_soil->soil3c_hr_snk += cdf->soil3c_hr;
 	cs_soil->soil3c       -= cdf->soil3c_hr;
-	if (cs_soil->soil3c - cdf->soil3c_to_soil4c < 0.0) {
+	if (cs_soil->soil3c - cdf->soil3c_to_soil4c < ZERO) {
 		cdf->soil3c_to_soil4c = max(cs_soil->soil3c, 0.0);
 		ndf->soil3n_to_soil4n = max(ns_soil->soil3n, 0.0);
 	}

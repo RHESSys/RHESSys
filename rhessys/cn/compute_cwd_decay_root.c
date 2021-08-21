@@ -27,7 +27,7 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 
-int	compute_cwd_decay_bg(
+int	compute_cwd_decay_root(
 					  struct epconst_struct *epc,
 					  double cover_fraction,
 					  struct cstate_struct *cs,

@@ -41,7 +41,7 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 
-int compute_potential_decomp_bg(double tsoil, double maxpsi,
+int compute_potential_decomp_root(double tsoil, double maxpsi,
 							 double minpsi,
 							 double theta,
 							 double std,
@@ -233,16 +233,16 @@ int compute_potential_decomp_bg(double tsoil, double maxpsi,
 	nlimit = 0;
 	potential_immob = 0.0;
 	mineralized = 0.0;
-	if (pmnf_l1s1 > 0.0) potential_immob += pmnf_l1s1;
+	if (pmnf_l1s1 > ZERO) potential_immob += pmnf_l1s1;
 	else mineralized += -pmnf_l1s1;
 
-	if (pmnf_l2s2 > 0.0) potential_immob += pmnf_l2s2;
+	if (pmnf_l2s2 > ZERO) potential_immob += pmnf_l2s2;
 	else mineralized += -pmnf_l2s2;
 
-	if (pmnf_l3l2 > 0.0) potential_immob += pmnf_l3l2;
+	if (pmnf_l3l2 > ZERO) potential_immob += pmnf_l3l2;
 	else mineralized += -pmnf_l3l2;
 
-	if (pmnf_l4s3 > 0.0) potential_immob += pmnf_l4s3;
+	if (pmnf_l4s3 > ZERO) potential_immob += pmnf_l4s3;
 	else mineralized += -pmnf_l4s3;
 
 	/*if (pmnf_s1s2 > 0.0) potential_immob += pmnf_s1s2;

@@ -237,7 +237,7 @@ void		patch_daily_F(
 		struct  litter_n_object *
 		);
 
-	int	update_decomp_bg(
+	int	update_decomp_root(
 		struct	date,
 		struct  soil_c_object   *,
 		struct  soil_n_object   *,
@@ -257,17 +257,6 @@ void		patch_daily_F(
 		struct cdayflux_patch_struct *,
 		struct ndayflux_patch_struct *,
 		struct patch_object *);
-
-
-	int	update_dissolved_organic_losses_bg(
-		struct	date,
-		double,
-		struct  soil_c_object   *,
-		struct  soil_n_object   *,
-		struct  litter_c_object *,
-		struct  litter_n_object *,
-		struct cdayflux_patch_struct *,
-		struct ndayflux_patch_struct *);
 
 	int	update_dissolved_organic_losses(
 		struct	date,
@@ -2174,7 +2163,7 @@ void		patch_daily_F(
 	if ((command_line[0].grow_flag > 0) && (vegtype == 1)) {
 
 
-		if ( update_decomp_bg(
+		if ( update_decomp_root( //to make sure update root decomposition first, because everything will add to soil in update_decomp
 			current_date,
 			&(patch[0].soil_cs),
 			&(patch[0].soil_ns),
@@ -2214,18 +2203,6 @@ void		patch_daily_F(
 
 
 		if (patch[0].soil_defaults[0][0].DON_production_rate > ZERO) {
-			if ( update_dissolved_organic_losses_bg(
-				current_date,
-				patch[0].soil_defaults[0][0].DON_production_rate,
-				&(patch[0].soil_cs),
-				&(patch[0].soil_ns),
-				&(patch[0].litter_cs),
-				&(patch[0].litter_ns),
-				&(patch[0].cdf),
-				&(patch[0].ndf)) != 0){
-				fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
-				exit(EXIT_FAILURE);
-			}
 			if ( update_dissolved_organic_losses(
 				current_date,
 				patch[0].soil_defaults[0][0].DON_production_rate,
@@ -2241,7 +2218,7 @@ void		patch_daily_F(
 		patch[0].surface_DOC += (patch[0].cdf.do_litr1c_loss +
 				patch[0].cdf.do_litr2c_loss + patch[0].cdf.do_litr3c_loss + patch[0].cdf.do_litr4c_loss);
 
-		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss + 
+		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss +
 				 patch[0].ndf.do_litr4n_loss);
 
 		}
