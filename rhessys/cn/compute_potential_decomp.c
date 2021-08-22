@@ -72,8 +72,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	double cn_l1,cn_l2,cn_l4,cn_s1,cn_s2,cn_s3,cn_s4;
 	double plitr1c_loss, plitr3c_loss, plitr2c_loss, plitr4c_loss;
 	double psoil1c_loss, psoil2c_loss, psoil3c_loss, psoil4c_loss;
-	double pmnf_l1s1,pmnf_l2s2,pmnf_l3l2, pmnf_l4s3,pmnf_s1s2,pmnf_s2s3,pmnf_s3s4,pmnf_s4;
-	double potential_immob,mineralized;
+	double pmnf_l1s1, pmnf_l2s2, pmnf_l3l2, pmnf_l4s3,pmnf_s1s2, pmnf_s2s3, pmnf_s3s4, pmnf_s4;
+	double potential_immob, mineralized;
 	double weight1, weight2, theta1, theta2;
 	int nlimit, i;
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
