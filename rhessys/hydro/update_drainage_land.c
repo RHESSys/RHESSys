@@ -68,7 +68,7 @@ void  update_drainage_land(
 		struct patch_object *);
 
 
-	double compute_N_leached(int,
+	/*double compute_N_leached(int,
 		double,
 		double,
 		double,
@@ -81,7 +81,17 @@ void  update_drainage_land(
 		double,
 		double,
 		double,
-		double *);
+		double *);*/
+
+	double compute_Nsat_leached(
+         int verbose_flag,
+         double total_nitrate,
+         double Qout,
+         double N_decay_rate,
+         double activedepthz,
+         double N_absorption_rate,
+         int signal,
+         struct patch_object *patch);
 
 	double recompute_gamma(
 		struct patch_object *,
@@ -190,12 +200,13 @@ void  update_drainage_land(
 		}
 
 	/*--------------------------------------------------------------*/
-	/* compute Nitrogen leaching amount				*/
+	/* compute Nitrogen leaching amount		some code orignally developed by Laurence Lin		*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0) {
-		Nout = compute_N_leached(
+		/*Nout = compute_N_leached(
 			verbose_flag,
-			patch[0].soil_ns.nitrate,
+			//patch[0].soil_ns.nitrate,
+			patch[0].sat_NO3, //New NO3 in saturated zone
 			route_to_patch / patch[0].area,
 			patch[0].sat_deficit,
 			patch[0].soil_defaults[0][0].soil_water_cap,
@@ -207,12 +218,21 @@ void  update_drainage_land(
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
 			patch[0].soil_defaults[0][0].NO3_adsorption_rate,
-			patch[0].transmissivity_profile);
+			patch[0].transmissivity_profile); */
+
+ Nout = compute_Nsat_leached(
+             verbose_flag,
+             patch[0].sat_NO3, //total solute <--- projected total_sat_solute
+             route_to_patch / patch[0].area,//Qout (already time_int adjusted)
+             patch[0].soil_defaults[0][0].N_decay_rate,
+             patch[0].soil_defaults[0][0].active_zone_z, //activedepthz
+             patch[0].soil_defaults[0][0].NO3_adsorption_rate, // N_absorption_rate
+             1,patch); // signal, patch
 		NO3_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_ns.NO3_Qout += Nout;
 
 
-		Nout = compute_N_leached(
+		/*Nout = compute_N_leached(
 			verbose_flag,
 			patch[0].soil_ns.sminn,
 			route_to_patch / patch[0].area,
@@ -226,11 +246,20 @@ void  update_drainage_land(
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
 			patch[0].soil_defaults[0][0].NH4_adsorption_rate,
-			patch[0].transmissivity_profile);
+			patch[0].transmissivity_profile); */
+		Nout = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_NH4,
+			route_to_patch / patch[0].area,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+            patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].NH4_adsorption_rate,
+            1,patch);
 		NH4_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_ns.NH4_Qout += Nout;
+        if(Nout<0 || Nout!=Nout ) printf("update_drainage_land[%d,%e]: soil NH4 (%e) flux (%e)\n", patch[0].ID,route_to_patch,patch[0].soil_ns.sminn, Nout);
 
-		Nout = compute_N_leached(
+		/*Nout = compute_N_leached(
 			verbose_flag,
 			patch[0].soil_ns.DON,
 			route_to_patch / patch[0].area,
@@ -246,9 +275,21 @@ void  update_drainage_land(
 			patch[0].soil_defaults[0][0].DON_adsorption_rate,
 			patch[0].transmissivity_profile);
 		DON_leached_to_patch = Nout * patch[0].area;
+		patch[0].soil_ns.DON_Qout += Nout; */
+		Nout = compute_Nsat_leached(
+			verbose_flag,
+            patch[0].sat_DON,
+			route_to_patch / patch[0].area,
+			patch[0].soil_defaults[0][0].DOM_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].DON_adsorption_rate,
+			1,patch);
+		DON_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_ns.DON_Qout += Nout;
+        if(Nout<0 || Nout!=Nout) printf("update_drainage_land[%d,%e]: soil DON (%e) flux (%e)\n", patch[0].ID,route_to_patch,patch[0].soil_ns.DON, Nout);
 
-		Nout = compute_N_leached(
+
+		/*Nout = compute_N_leached(
 			verbose_flag,
 			patch[0].soil_cs.DOC,
 			route_to_patch / patch[0].area,
@@ -264,7 +305,18 @@ void  update_drainage_land(
 			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
 			patch[0].transmissivity_profile);
 		DOC_leached_to_patch = Nout * patch[0].area;
+		patch[0].soil_cs.DOC_Qout += Nout; */
+		Nout = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_DOC,
+			route_to_patch / patch[0].area,
+			patch[0].soil_defaults[0][0].DOM_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
+			14,patch);
+		DOC_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_cs.DOC_Qout += Nout;
+        if(Nout<0 || Nout!=Nout) printf("update_drainage_land[%d,%e]: soil DOC (%e) flux (%e)\n", patch[0].ID,route_to_patch,patch[0].soil_cs.DOC, Nout);
 
 
 	}
@@ -299,7 +351,7 @@ void  update_drainage_land(
 	/*	we assume that only nitrate follows return flow		*/
 	/*	lost in subsurface flow routing				*/
 	/*--------------------------------------------------------------*/
-		if (command_line[0].grow_flag > 0) {
+	/*	if (command_line[0].grow_flag > 0) {
 			Nout = compute_N_leached(
 				verbose_flag,
 				patch[0].soil_ns.nitrate - (NO3_leached_to_patch/patch[0].area),
@@ -372,7 +424,63 @@ void  update_drainage_land(
 				patch[0].transmissivity_profile);
 			patch[0].surface_DOC += Nout;
 			patch[0].soil_cs.DOC_Qout += Nout;
-		}
+		} */
+
+		/* new nitrate leaching process, originally developed by Laurence Lin */
+    // leaching from surface;
+    // when return_flow>0, then extrawater = patch[0].rz_storage+patch[0].unsat_storage - patch[0].sat_deficit - route_to_patch/patch[0].area + patch[0].constraintWaterTableTopDepth_def >0
+		if (command_line[0].grow_flag > 0 && return_flow > ZERO) {
+			Nout = compute_Nsat_leached(
+				verbose_flag,
+                /// problem re-project!! && "soil_ns -= going2sat_NO3"
+				patch[0].sat_NO3 - patch[0].soil_ns.NO3_Qout,
+				return_flow,
+				patch[0].soil_defaults[0][0].N_decay_rate,
+				patch[0].soil_defaults[0][0].active_zone_z,
+				patch[0].soil_defaults[0][0].NO3_adsorption_rate,
+                17,patch);
+			patch[0].surface_NO3 += Nout;
+			patch[0].soil_ns.NO3_Qout += Nout;
+            if(Nout<0 || Nout!=Nout || patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate || patch[0].soil_ns.nitrate<0 || NO3_leached_to_patch<0 || NO3_leached_to_patch!=NO3_leached_to_patch) printf("update_drainage_land[%d,%e]: return NO3 (%e,%e) flux (%e)\n", patch[0].ID,return_flow,patch[0].soil_ns.nitrate - (NO3_leached_to_patch/patch[0].area),NO3_leached_to_patch, Nout);
+
+			Nout = compute_Nsat_leached(
+				verbose_flag,
+				patch[0].sat_NH4 - patch[0].soil_ns.NH4_Qout,
+				return_flow,
+				patch[0].soil_defaults[0][0].N_decay_rate,
+                patch[0].soil_defaults[0][0].active_zone_z,
+				patch[0].soil_defaults[0][0].NH4_adsorption_rate,
+				20,patch);
+			patch[0].surface_NH4 += Nout;
+			patch[0].soil_ns.NH4_Qout += Nout;
+            if(Nout<0 || Nout!=Nout) printf("update_drainage_land[%d,%e]: return NH4 (%e) flux (%e)\n", patch[0].ID,return_flow,patch[0].soil_ns.sminn - (NH4_leached_to_patch/patch[0].area), Nout);
+
+			Nout = compute_Nsat_leached(
+				verbose_flag,
+				patch[0].sat_DON - patch[0].soil_ns.DON_Qout,
+				return_flow,
+				patch[0].soil_defaults[0][0].DOM_decay_rate,
+				patch[0].soil_defaults[0][0].active_zone_z,
+				patch[0].soil_defaults[0][0].DON_adsorption_rate,
+				23,patch);
+			patch[0].surface_DON += Nout;
+			patch[0].soil_ns.DON_Qout += Nout;
+            if(Nout<0 || Nout!=Nout) printf("update_drainage_land[%d,%e]: return DON (%e) flux (%e)\n", patch[0].ID,return_flow,patch[0].soil_ns.DON - (DON_leached_to_patch/patch[0].area), Nout);
+
+			Nout = compute_Nsat_leached(
+				verbose_flag,
+				patch[0].sat_DOC - patch[0].soil_cs.DOC_Qout,
+				return_flow,
+				patch[0].soil_defaults[0][0].DOM_decay_rate,
+				patch[0].soil_defaults[0][0].active_zone_z,
+				patch[0].soil_defaults[0][0].DOC_adsorption_rate,
+				26,patch);
+			patch[0].surface_DOC += Nout;
+			patch[0].soil_cs.DOC_Qout += Nout;
+            if(Nout<0 || Nout!=Nout) printf("update_drainage_land[%d,%e]: return DOC (%e) flux (%e)\n", patch[0].ID,return_flow,patch[0].soil_cs.DOC - (DOC_leached_to_patch/patch[0].area), Nout);
+		}//
+
+    patch[0].overland_flow += return_flow; //TODO: should add this to overland_flow NREN?
 
 	/*--------------------------------------------------------------*/
 	/*	route water and nitrogen lossed due to infiltration excess */

@@ -200,11 +200,11 @@ void	output_growth_basin(
 					+ patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c)
 					* patch[0].area;
 				afpi += (patch[0].soil_ns.fract_potential_immob) * patch[0].area;
-				asminn+= (patch[0].soil_ns.sminn) * patch[0].area;
+				asminn+= (patch[0].soil_ns.sminn + patch[0].sat_NH4) * patch[0].area; //sminn is NH4
 				amineralized += (patch[0].ndf.net_mineralized) * patch[0].area;
 				at_scalar += (patch[0].cdf.decomp_t_scalar) * patch[0].area;
 				aw_scalar += (patch[0].cdf.decomp_w_scalar) * patch[0].area;
-				anitrate += (patch[0].soil_ns.nitrate) * patch[0].area;
+				anitrate += (patch[0].soil_ns.nitrate + patch[0].sat_NO3) * patch[0].area; //nitrate is NO3
 				anvolatilized_snk += (patch[0].soil_ns.nvolatilized_snk) * patch[0].area;
 				asurfaceN += (patch[0].surface_DON+patch[0].surface_NO3+patch[0].surface_NH4) * patch[0].area;
 				atotaln += (patch[0].totaln) * patch[0].area;
@@ -220,8 +220,8 @@ void	output_growth_basin(
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
 				afertilizer_NO3 += (patch[0].fertilizer_NO3) * patch[0].area;
 				afertilizer_NH4 += (patch[0].fertilizer_NH4) * patch[0].area;
-				aDON += (patch[0].soil_ns.DON) * patch[0].area;
-				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
+				aDON += (patch[0].soil_ns.DON + patch[0].sat_DON) * patch[0].area; // add sat_DON
+				aDOC += (patch[0].soil_cs.DOC + patch[0].sat_DOC) * patch[0].area; // add sat_DOC
 				anfix += (patch[0].ndf.nfix_to_sminn) * patch[0].area;
 				acloss += (patch[0].grazing_Closs) * patch[0].area;
 				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area;

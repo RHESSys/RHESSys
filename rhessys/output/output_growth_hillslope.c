@@ -37,7 +37,7 @@ void	output_growth_hillslope(              int  basinID,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -126,8 +126,8 @@ void	output_growth_hillslope(              int  basinID,
 				asoilc += (patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c
 					+ patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c)
 					* patch[0].area;
-				asminn += (patch[0].soil_ns.sminn) * patch[0].area;
-				anitrate += (patch[0].soil_ns.nitrate) * patch[0].area;
+				asminn += (patch[0].soil_ns.sminn + patch[0].sat_NH4) * patch[0].area;
+				anitrate += (patch[0].soil_ns.nitrate + patch[0].sat_NO3) * patch[0].area;
 				asurfaceN += (patch[0].surface_DON+patch[0].surface_NO3+patch[0].surface_NH4) * patch[0].area;
 				atotaln += (patch[0].totaln) * patch[0].area;
 				astreamflow_NH4 += patch[0].streamflow_NH4 * patch[0].area;
@@ -138,7 +138,7 @@ void	output_growth_hillslope(              int  basinID,
 				streamNO3_from_sub += patch[0].streamNO3_from_sub * patch[0].area;
 				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
-				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
+				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
 				aDON += (patch[0].soil_ns.DON) * patch[0].area;
 				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
@@ -147,12 +147,12 @@ void	output_growth_hillslope(              int  basinID,
 				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area,
 
 				asoilhr += (
-					patch[0].cdf.litr1c_hr + 
-					patch[0].cdf.litr2c_hr + 
-					patch[0].cdf.litr4c_hr + 
-					patch[0].cdf.soil1c_hr + 
-					patch[0].cdf.soil2c_hr + 
-					patch[0].cdf.soil3c_hr + 
+					patch[0].cdf.litr1c_hr +
+					patch[0].cdf.litr2c_hr +
+					patch[0].cdf.litr4c_hr +
+					patch[0].cdf.soil1c_hr +
+					patch[0].cdf.soil2c_hr +
+					patch[0].cdf.soil3c_hr +
 					patch[0].cdf.soil4c_hr) * patch[0].area;
 
 				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
@@ -231,7 +231,7 @@ void	output_growth_hillslope(              int  basinID,
 		hstreamflow_NO3 = hillslope[0].streamflow_NO3 ;
 		hstreamflow_DON = hillslope[0].streamflow_DON ;
 		hstreamflow_DOC = hillslope[0].streamflow_DOC ; */
-		
+
 	agpsn /= aarea ;
 	aresp /= aarea ;
 	alai /= aarea ;
@@ -247,7 +247,7 @@ void	output_growth_hillslope(              int  basinID,
 	awoodn /= aarea;
 	alitrc /= aarea;
 	asoilc /= aarea;
-	asoilhr /= aarea;	
+	asoilhr /= aarea;
 	alitrn /= aarea;
 	asoiln /= aarea;
 	asminn /= aarea;
@@ -314,7 +314,7 @@ void	output_growth_hillslope(              int  basinID,
 		streamNO3_from_sub * 1000.0
 		);
 	/*------------------------------------------*/
-	/*printf("\n Hill %d Output %4d %3d %3d \n",*/ 
+	/*printf("\n Hill %d Output %4d %3d %3d \n",*/
 	/*	hillslope[0].ID, date.year, date.month, date.day);*/
 	/*------------------------------------------*/
 	return;

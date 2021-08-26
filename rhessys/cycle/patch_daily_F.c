@@ -274,7 +274,7 @@ void		patch_daily_F(
 		double,
 		double,
 		double,
-		double,
+		double, struct patch_object *,
 		double);
 
 	int	update_denitrif(
@@ -284,13 +284,14 @@ void		patch_daily_F(
 		struct ndayflux_patch_struct *,
 		struct soil_class,
 		double,
+		struct patch_object *,
 		double);
 
 
 	int	resolve_sminn_competition(
 		struct  soil_n_object   *,
 		double, double,
-		double, double, double,
+		double, double, double, struct patch_object *,
 		struct ndayflux_patch_struct *);
 
 	void   canopy_stratum_growth(
@@ -453,6 +454,18 @@ void		patch_daily_F(
      double leaf_time_diff;
      double year_delay, leaf_year_delay;
      struct date impact_date; */
+
+    /* update sat def related variables */
+    if(patch[0].sat_deficit >= 0){
+        patch[0].sat_deficit = min(patch[0].sat_deficit,patch[0].soil_defaults[0][0].soil_water_cap);
+        patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;
+    }else{
+        // surface
+        patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap;
+        patch[0].sat_deficit_z = patch[0].sat_deficit;
+    }
+
+
 
 	/*--------------------------------------------------------------*/
 	/*	We assume the zone soil temp applies to the patch as well.	*/
@@ -1929,6 +1942,22 @@ void		patch_daily_F(
 	patch[0].cap_rise = (cap_rise_to_unsat + cap_rise_to_rz_storage);
 	patch[0].potential_cap_rise -= patch[0].cap_rise;
 	patch[0].sat_deficit += patch[0].cap_rise;
+
+	/* move nitrate with capillary rise too Originally from Laurence Lin took by NREN*/
+	    if(cap_rise > 0.0 && patch[0].available_soil_water > 0.0 && command_line[0].grow_flag > 0){
+        // cap_rise also carries satSolute up to unsat
+        double tmp_ratio = min(1.0, cap_rise/patch[0].available_soil_water);
+        //tmp_ratio /= patch[0].soil_defaults[0][0].porosity_0 * patch[0].soil_defaults[0][0].porosity_decay * (exp(-(patch[0].sat_deficit_z>0? patch[0].sat_deficit_z : 0.0)/patch[0].soil_defaults[0][0].porosity_decay) - exp(-patch[0].soil_defaults[0][0].soil_depth/patch[0].soil_defaults[0][0].porosity_decay));// integration of sat_z and soildepth
+        patch[0].soil_ns.nitrate += patch[0].sat_NO3 * tmp_ratio;
+        patch[0].soil_ns.sminn += patch[0].sat_NH4 * tmp_ratio;
+        patch[0].soil_cs.DOC += patch[0].sat_DOC * tmp_ratio;
+        patch[0].soil_ns.DON += patch[0].sat_DON * tmp_ratio;
+        patch[0].sat_NO3 *= 1.0 - tmp_ratio;
+        patch[0].sat_NH4 *= 1.0 - tmp_ratio;
+        patch[0].sat_DOC *= 1.0 - tmp_ratio;
+        patch[0].sat_DON *= 1.0 - tmp_ratio;
+    }// if
+
 	/*--------------------------------------------------------------*/
 	/*	Now supply the remaining demand with water left in	*/
 	/*	the unsat zone.  We are going below field cap now!!	*/
@@ -1969,7 +1998,7 @@ void		patch_daily_F(
                         patch[0].surface_NH4,
                         patch[0].rootzone.depth,
                         patch[0].soil_defaults[0][0].active_zone_z,
-                        patch[0].soil_defaults[0][0].N_decay_rate,
+                        patch[0].soil_defaults[0][0].N_decay_rate, patch,
                         &(patch[0].ndf));
 	}
 	else if(command_line[0].grow_flag > 0 && command_line[0].multiscale_flag == 1 ){
@@ -1980,7 +2009,7 @@ void		patch_daily_F(
                         patch[0].surface_NH4,
                         patch[0].rootzone.depth,
                         patch[0].soil_defaults[0][0].active_zone_z,
-                        patch[0].soil_defaults[0][0].N_decay_rate,
+                        patch[0].soil_defaults[0][0].N_decay_rate, patch,
                         &(patch[0].ndf));
         } else if (patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) {//if overstory is hotspot use the mean rootdepth
          resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
@@ -1988,7 +2017,7 @@ void		patch_daily_F(
                         // patch[0].rootzone.depth,
                         patch[0].rooting_depth_mean,//for no veg patches use the mean root depth of that patch family
                         patch[0].soil_defaults[0][0].active_zone_z,
-                        patch[0].soil_defaults[0][0].N_decay_rate,
+                        patch[0].soil_defaults[0][0].N_decay_rate, patch,
                         &(patch[0].ndf));    }
 
 
@@ -2228,6 +2257,26 @@ void		patch_daily_F(
 		patch[0].rz_storage -=  rz_drainage;
 		patch[0].sat_deficit -=  rz_drainage;
 	}
+
+	/* move solute, need to improve the code too */
+	 // need to move the solutes as well
+        if(unsat_drainage > 0.0 && command_line[0].grow_flag > 0 && (patch[0].rz_storage + patch[0].unsat_storage) > ZERO){
+            // cap_rise also carries satSolute up to unsat
+
+                double tmp_ratio = max(0.0,min(1.0,unsat_drainage/( patch[0].unsat_storage + patch[0].rz_storage))); // rz_drainage/patch[0].rz_storage * unsat_drainage/rz_drainage
+                patch[0].sat_NO3 += patch[0].soil_ns.nitrate * tmp_ratio;//patch[0].soil_defaults[0][0].rtz2NO3prop[patch[0].soil_defaults[0][0].active_zone_index]*tmp_ratio;
+                patch[0].sat_NH4 += patch[0].soil_ns.sminn * tmp_ratio;//patch[0].soil_defaults[0][0].rtz2NH4prop[patch[0].soil_defaults[0][0].active_zone_index]*tmp_ratio;
+                patch[0].sat_DOC += patch[0].soil_cs.DOC * tmp_ratio;//patch[0].soil_defaults[0][0].rtz2DOMprop[patch[0].soil_defaults[0][0].active_zone_index]*tmp_ratio;
+                patch[0].sat_DON += patch[0].soil_ns.DON * tmp_ratio;//patch[0].soil_defaults[0][0].rtz2DOMprop[patch[0].soil_defaults[0][0].active_zone_index]*tmp_ratio;
+
+                tmp_ratio = max(0.0, 1.0 - tmp_ratio);
+                patch[0].soil_ns.nitrate *= tmp_ratio;
+                patch[0].soil_ns.sminn *= tmp_ratio;
+                patch[0].soil_cs.DOC *= tmp_ratio;
+                patch[0].soil_ns.DON *= tmp_ratio;
+
+        }// if
+
 	patch[0].unsat_drainage += unsat_drainage;
 	patch[0].rz_drainage += rz_drainage;
 	patch[0].hourly_unsat_drainage += unsat_drainage;
@@ -2364,7 +2413,8 @@ void		patch_daily_F(
 			patch[0].Tsoil,
 			patch[0].soil_defaults[0][0].porosity_0,
 			0.25,
-			patch[0].soil_defaults[0][0].NO3_adsorption_rate,patch[0].theta_std) != 0){
+			patch[0].soil_defaults[0][0].NO3_adsorption_rate, patch,
+			patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_nitrific() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
@@ -2392,7 +2442,8 @@ void		patch_daily_F(
 			&(patch[0].cdf),
 			&(patch[0].ndf),
 			patch[0].soil_defaults[0][0].soil_type,
-			patch[0].rootzone.S, patch[0].theta_std) != 0){
+			patch[0].rootzone.S, patch,
+			patch[0].theta_std) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_denitrif() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}

@@ -308,7 +308,7 @@ double	top_model(
 			mean_sat_deficit += zones[i][0].patches[j][0].sat_deficit
 				* zones[i][0].patches[j][0].area;
 			if (grow_flag > 0) {
-				mean_nitrate += zones[i][0].patches[j][0].soil_ns.nitrate
+				mean_nitrate += (zones[i][0].patches[j][0].soil_ns.nitrate + zones[i][0].patches[j][0].sat_NO3)
 					* zones[i][0].patches[j][0].area;
 			}
 			area += zones[i][0].patches[j][0].area;
@@ -377,7 +377,7 @@ double	top_model(
 					hillslope[0].aggdefs.NO3_adsorption_rate,
 					NULL);
 		hillslope[0].streamflow_NO3 += mean_N_leached;
-		mean_nitrate -= mean_N_leached; //hillslope[0].streamflow_NO3; NREN 
+		mean_nitrate -= mean_N_leached; //hillslope[0].streamflow_NO3; NREN
 		//printf("\n testing hillslope n streamflow NO3 [mean_N_leached] is %lf, and [stream_NO3] is %lf, [mean nitrate] is %lf \n", mean_N_leached, hillslope[0].streamflow_NO3, mean_nitrate);
 	}
 	/*--------------------------------------------------------------*/

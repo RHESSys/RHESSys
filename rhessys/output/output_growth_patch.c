@@ -130,7 +130,7 @@ void	output_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
-		"%ld %ld %ld %ld %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%ld %ld %ld %ld %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -197,7 +197,7 @@ void	output_growth_patch(
 		patch[0].ndf.sminn_to_nitrate*1000.0,
 		patch[0].streamNO3_from_surface*1000.0, patch[0].streamNO3_from_sub*1000.0,
 		patch[0].cdf.litterc_to_atmos*1000.0, patch[0].cdf.litterc_to_soilc*1000.0,
-		(patch[0].cdf.soil1c_hr + patch[0].cdf.soil2c_hr + patch[0].cdf.soil3c_hr + patch[0].cdf.soil4c_hr)*1000.0, patch[0].ndf.net_mineralized*1000
+		(patch[0].cdf.soil1c_hr + patch[0].cdf.soil2c_hr + patch[0].cdf.soil3c_hr + patch[0].cdf.soil4c_hr)*1000.0, patch[0].ndf.net_mineralized*1000, patch[0].sat_NO3*1000, patch[0].sat_NH4*1000, patch[0].sat_DON*1000, patch[0].sat_DOC*1000
 		);// in update_decomp.c in line 73 fpi is ns_soil->fract_potential_immbo, so the output name is fpi
 	if (check <= 0) {
 		fprintf(stdout, "\nWARNING: output_growth error has occured in output_growth_patch");

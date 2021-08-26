@@ -1259,6 +1259,13 @@ struct	soil_default
 	double  overstory_height_thresh;        /* Defines lower limit of overstory (m) */
 	double  understory_height_thresh;       /* Defines upper limit of understory (m) */
 	struct soil_class	soil_type;
+	//new NREN
+	int active_zone_index;
+	double active_zone_sat_0z;
+	double active_zone_sat_0z_1;
+	double soildepthLen;
+	double *rtz2sat_def_0z;
+
 	};
 
 /*----------------------------------------------------------*/
@@ -1982,6 +1989,8 @@ struct patch_object
         struct  soil_n_object   *shadow_soil_ns;
         struct  litter_c_object *shadow_litter_cs;
         struct  litter_n_object *shadow_litter_ns;
+        double  shadow_sat_NH4; //NEW
+        double  shadow_sat_NO3;  //NEW
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
 
@@ -1991,6 +2000,9 @@ struct patch_object
         double flux_litterc_out; /*kgC/m2, daily fluxes out of litter pool */
         double prop_litrc_above_ground; /* percentage of above ground litter */
 
+        double sat_NO3, sat_NH4, sat_DOC, sat_DON;
+        double rtzNO3, rtzSatNO3, rtzNH4, rtzSatNH4;
+        double available_soil_water;
 
  /*---------------------------------------------------------------------------------*/
 /*     TODO beetle related climate stuff, mainly seasonal temperature and precipitation */

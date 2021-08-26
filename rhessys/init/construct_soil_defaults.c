@@ -67,6 +67,7 @@ struct soil_default *construct_soil_defaults(
 	void	*alloc(	size_t, char *, char *);
         param *paramPtr = NULL;
         int paramCnt = 0;
+        double soildepth = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.			*/
@@ -275,6 +276,30 @@ struct soil_default *construct_soil_defaults(
 		printf("\n the fire effect model overstory height thresh: %lf\n",default_object_list[i].overstory_height_thresh);
 		default_object_list[i].understory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "understory_height_thresh", "%lf", 4, 1);
 		printf("\n the fire effect model understory height thresh: %lf\n",default_object_list[i].understory_height_thresh);
+
+		/* add new soil nitrate decay profile from Laurence Lin */
+		soildepth = default_object_list[i].soil_depth;
+		double p0 = default_object_list[i].porosity_0;
+        double p_decay = default_object_list[i].porosity_decay;
+		double p_decay_1 = -1.0/default_object_list[i].porosity_decay;
+		double max_sat_def = p0*p_decay*(1-exp(p_decay_1*soildepth));
+		double soildepth = default_object_list[i].soil_depth;
+		int ii;
+		double zzz;
+
+        //default_object_list[i].soil_water_cap = p0* p_decay*(1.0-exp(p_decay_1*soildepth));
+        default_object_list[i].active_zone_index = (int)(round(default_object_list[i].active_zone_z*1000));
+        default_object_list[i].active_zone_sat_0z = p0* p_decay*(1.0-exp(p_decay_1*default_object_list[i].active_zone_z));
+        default_object_list[i].active_zone_sat_0z_1 = 1.0/default_object_list[i].active_zone_sat_0z;
+
+        int rt_len = (int)(default_object_list[i].soil_depth*1000)+1; //(int)(soildepth*1000) + 1; //
+        default_object_list[i].soildepthLen = rt_len;
+        default_object_list[i].rtz2sat_def_0z = (double*)calloc(rt_len, sizeof(double));
+        for( ii=0; ii<rt_len; ii++){
+            zzz = ii*0.001;
+            default_object_list[i].rtz2sat_def_0z[ii] = p0*p_decay*(1.0-exp(p_decay_1*zzz));
+            }
+        default_object_list[i].rtz2sat_def_0z[0] = 0.0;
 
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/

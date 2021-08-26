@@ -288,7 +288,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"day",
 		"month",
 		"year",
@@ -346,7 +346,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"fpi", "sminn", "nitrate", "mineralized", "plant_potential_ndemand", "potential_immob", "perc_inroot", "mean_root_depth",
 		"canopy_NO3_stored", "litter_NO3_stored", "NO3_throughfall",
 		"nitrification", "streamNO3_from_surface", "streamNO3_from_sub",
-		"litr_hr", "litrc_to_soil", "soil_hr_pure", "net_mineralization"
+		"litr_hr", "litrc_to_soil", "soil_hr_pure", "net_mineralization", "sat_NO3", "sat_NH4", "sat_DON", "sat_DOC"
 		);
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/

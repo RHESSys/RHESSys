@@ -39,6 +39,7 @@ int resolve_sminn_competition(
 							  double rooting_depth,
 							  double active_zone_z,
 							  double N_decay_rate,
+							  struct patch_object *patch,
 							  struct ndayflux_patch_struct *ndf)
 {
 	/*------------------------------------------------------*/
@@ -76,6 +77,18 @@ int resolve_sminn_competition(
 	//ndf->perc_inroot = perc_inroot;
 	ns_soil->perc_inroot = perc_inroot;
     sum_avail = perc_inroot * sum_avail;
+    // sum_avail also needs to consider the N_sat at saturated zone
+    double avail_rtzN = 0.0;
+    patch[0].rtzSatNH4 = 0.0;
+    if(patch[0].available_soil_water>0){
+        //change the sat solute profile
+        patch[0].rtzSatNH4 = patch[0].sat_NH4 * max(patch[0].rootzone.potential_sat-patch[0].sat_deficit,0.0)/patch[0].available_soil_water;
+    }//if
+    patch[0].rtzSatNO3 = 0.0;
+    if(patch[0].available_soil_water>0){
+        patch[0].rtzSatNO3 = patch[0].sat_NO3 * max(patch[0].rootzone.potential_sat-patch[0].sat_deficit,0.0)/patch[0].available_soil_water;
+    }//if
+    sum_avail = sum_avail + patch[0].rtzSatNO3 + patch[0].rtzSatNH4;
 
      //printf("\n|| [ns_soil.perc_inroot] %f, [perc_inroot] %f || ", ns_soil->perc_inroot, perc_inroot);
 

@@ -56,7 +56,7 @@ void  update_drainage_stream(
 		double,
 		double);
 
-	double compute_N_leached(
+/*	double compute_N_leached(
 		int,
 		double,
 		double,
@@ -69,7 +69,17 @@ void  update_drainage_stream(
 		double,
 		double,
 		double,
-		double, double *);
+		double, double *);*/
+
+    double compute_Nsat_leached(
+                             int verbose_flag,
+                             double total_nitrate,
+                             double Qout,
+                             double N_decay_rate,
+                             double activedepthz,
+                             double N_absorption_rate,
+                             int signal,
+                             struct patch_object *patch);
 
 	double compute_varbased_returnflow(
 		double,
@@ -159,7 +169,7 @@ void  update_drainage_stream(
 	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0) {
 
-		NO3_leached_to_stream = compute_N_leached(
+		/*NO3_leached_to_stream = compute_N_leached(
 			verbose_flag,
 			patch[0].soil_ns.nitrate,
 			route_to_stream / patch[0].area,
@@ -226,7 +236,50 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].soil_depth,
 			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
 			patch[0].transmissivity_profile);
-		patch[0].soil_cs.DOC_Qout += DOC_leached_to_stream;
+		patch[0].soil_cs.DOC_Qout += DOC_leached_to_stream; */
+
+
+        NO3_leached_to_stream = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_NO3, //patch[0].soil_ns.nitrate,
+			route_to_stream / patch[0].area,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].NO3_adsorption_rate,
+			5,patch);
+		patch[0].soil_ns.NO3_Qout += NO3_leached_to_stream;
+
+
+		NH4_leached_to_stream = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_NH4, //patch[0].soil_ns.sminn,
+			route_to_stream / patch[0].area,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+            patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].NH4_adsorption_rate,
+			8,patch);
+		patch[0].soil_ns.NH4_Qout += NH4_leached_to_stream;
+
+		DON_leached_to_stream = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_DON, //patch[0].soil_ns.DON,
+			route_to_stream / patch[0].area,
+			patch[0].soil_defaults[0][0].DOM_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].DON_adsorption_rate,
+			11,patch);
+		patch[0].soil_ns.DON_Qout += DON_leached_to_stream;
+
+		DOC_leached_to_stream = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_DOC, //patch[0].soil_cs.DOC,
+			route_to_stream / patch[0].area,
+			patch[0].soil_defaults[0][0].DOM_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
+			14,patch);
+		patch[0].soil_cs.DOC_Qout += DOC_leached_to_stream; //end here
+
 		patch[0].streamflow_NO3 += NO3_leached_to_stream;
 		patch[0].streamNO3_from_sub += NO3_leached_to_stream;
 		patch[0].hourly[0].streamflow_NO3 += NO3_leached_to_stream;
@@ -265,8 +318,8 @@ void  update_drainage_stream(
 	/*	due to subsurface routing above				*/
 	/* 	note only nitrate is assumed to follow return flow		*/
 	/*--------------------------------------------------------------*/
-	if (return_flow > ZERO) {
-		Nout = compute_N_leached(
+	if (command_line[0].grow_flag > 0 && return_flow > ZERO) {
+		/*Nout = compute_N_leached(
 			verbose_flag,
 			patch[0].soil_ns.nitrate - NO3_leached_to_stream,
 			return_flow,
@@ -336,6 +389,50 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].soil_depth,
 			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
 			patch[0].transmissivity_profile);
+		patch[0].surface_DOC += Nout;
+		patch[0].soil_cs.DOC_Qout += Nout; */
+
+		Nout = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_NO3 - patch[0].soil_ns.NO3_Qout, //patch[0].soil_ns.nitrate - NO3_leached_to_stream,
+			return_flow,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].NO3_adsorption_rate,
+			17, patch);
+		patch[0].surface_NO3 += Nout;
+		patch[0].soil_ns.NO3_Qout += Nout;
+
+		Nout = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_NH4 - patch[0].soil_ns.NH4_Qout, //patch[0].soil_ns.sminn - NH4_leached_to_stream,
+			return_flow,
+			patch[0].soil_defaults[0][0].N_decay_rate,
+            patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].NH4_adsorption_rate,
+			20, patch);
+		patch[0].surface_NH4 += Nout;
+		patch[0].soil_ns.NH4_Qout += Nout;
+
+		Nout = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_DON - patch[0].soil_ns.DON_Qout, //patch[0].soil_ns.DON - DON_leached_to_stream,
+			return_flow,
+			patch[0].soil_defaults[0][0].DOM_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].DON_adsorption_rate,
+			23, patch);
+		patch[0].surface_DON += Nout;
+		patch[0].soil_ns.DON_Qout += Nout;
+
+		Nout = compute_Nsat_leached(
+			verbose_flag,
+			patch[0].sat_DOC - patch[0].soil_cs.DOC_Qout, //patch[0].soil_cs.DOC - DOC_leached_to_stream,
+			return_flow,
+			patch[0].soil_defaults[0][0].DOM_decay_rate,
+			patch[0].soil_defaults[0][0].active_zone_z,
+			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
+			26, patch);
 		patch[0].surface_DOC += Nout;
 		patch[0].soil_cs.DOC_Qout += Nout;
 

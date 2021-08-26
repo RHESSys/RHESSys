@@ -189,6 +189,15 @@ void		patch_daily_I(
 	struct  canopy_strata_object *strata;
 	struct  dated_sequence	clim_event;
 
+    /* update sat_deficit reated variables */
+    if(patch[0].sat_deficit >= 0){
+        patch[0].sat_deficit = min(patch[0].sat_deficit,patch[0].soil_defaults[0][0].soil_water_cap);
+        patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;
+    }else{
+        // surface
+        patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap;
+        patch[0].sat_deficit_z = patch[0].sat_deficit;
+    }
 
 	/*--------------------------------------------------------------*/
 	/*	zero out daily fluxes					*/

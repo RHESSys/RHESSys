@@ -103,7 +103,7 @@ void	output_patch_state(
 		fprintf(outfile,"\n          ");
 	}
 	fprintf(outfile,"%-30.8f %s",patch[0].rz_storage, "rz_storage");
-	fprintf(outfile,"\n          ");	
+	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30.8f %s",patch[0].unsat_storage, "unsat_storage");
 	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30.8f %s",patch[0].sat_deficit, "sat_deficit");
@@ -155,6 +155,10 @@ void	output_patch_state(
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_soil_ns->nitrate, "soil_ns.nitrate");
 	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_sat_NH4, "sat_NH4"); //new check
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_sat_NO3, "sat_NO3"); //new check where save shadow
+      fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_soil_cs->soil2c, "soil_cs.soil2c");
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].shadow_soil_cs->soil3c, "soil_cs.soil3c");
@@ -179,6 +183,10 @@ void	output_patch_state(
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].soil_ns.nitrate, "soil_ns.nitrate");
 	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].sat_NH4, "sat_NH4"); //new
+	  fprintf(outfile,"\n          ");
+	  fprintf(outfile,"%-30.8f %s",patch[0].sat_NO3, "sat_NO3"); //new
+	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].soil_cs.soil2c, "soil_cs.soil2c");
 	  fprintf(outfile,"\n          ");
 	  fprintf(outfile,"%-30.8f %s",patch[0].soil_cs.soil3c, "soil_cs.soil3c");
@@ -202,7 +210,7 @@ void	output_patch_state(
     if (command_line[0].vegspinup_flag > 0){
 		  output_canopy_strata_state(patch[0].shadow_strata[p],
 			current_date, command_line, outfile);
-    } 
+    }
     else {
 		output_canopy_strata_state(patch[0].canopy_strata[p],
 			current_date, command_line, outfile);

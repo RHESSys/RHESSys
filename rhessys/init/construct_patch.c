@@ -134,7 +134,7 @@ struct patch_object *construct_patch(
 	} else {
 		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
 	}
-	
+
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
 	patch[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
@@ -142,7 +142,7 @@ struct patch_object *construct_patch(
 	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
 
 		fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",-9999,0);
-		
+
 
 /* read the input from worldfile if the beetlespread_flag is set */
     if (command_line[0].beetlespread_flag == 1) {
@@ -358,6 +358,10 @@ struct patch_object *construct_patch(
 	patch[0].fertilizer_NH4 = 0.0;
 	patch[0].grazing_Closs = 0.0;
 	patch[0].soil_potential_evaporation = 0.0; //NREN 2020
+	patch[0].sat_NH4 = 0.0;
+	patch[0].sat_NO3 = 0.0;
+	patch[0].sat_DOC = 0.0;
+	patch[0].sat_DON = 0.0;
 
 	/* for calculating above ground litter proportion NREN 20190927 */
 	patch[0].prop_litrc_above_ground = 0.85; // this is hard coded at the beginning all these litter is from leaf
@@ -385,6 +389,9 @@ struct patch_object *construct_patch(
     patch[0].shadow_soil_ns[0].soil2n = patch[0].soil_ns.soil2n;
     patch[0].shadow_soil_ns[0].soil3n = patch[0].soil_ns.soil3n;
     patch[0].shadow_soil_ns[0].soil4n = patch[0].soil_ns.soil4n;
+
+    patch[0].shadow_sat_NH4 = patch[0].sat_NH4;
+    patch[0].shadow_sat_NO3 = patch[0].sat_NO3;
   }
 
 

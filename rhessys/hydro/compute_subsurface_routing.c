@@ -55,8 +55,18 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 	double compute_z_final(int, double, double, double, double, double);
 
-	double compute_N_leached(int, double, double, double, double, double,
-			double, double, double, double, double, double, double,double *);
+	/*double compute_N_leached(int, double, double, double, double, double,
+			double, double, double, double, double, double, double,double *); */
+
+    double compute_Nsat_leached(
+         int verbose_flag,
+         double total_nitrate,
+         double Qout,
+         double N_decay_rate,
+         double activedepthz,
+         double N_absorption_rate,
+         int signal,
+         struct patch_object *patch);
 
 	double compute_layer_field_capacity(int, int, double, double, double,
 			double, double, double, double, double, double);
@@ -290,6 +300,43 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					-1.0 * patch[0].sat_deficit);
 
 			if (grow_flag > 0) {
+
+			/* here N go to sat_N instead of soil_bs originally code are developed by Laurence Lin*/
+                 if(patch[0].sat_NO3*1.001 < patch[0].soil_ns.NO3_Qout)
+                    printf("sub_routing _Qout[%d]{%e,%e}\n",
+                           patch[0].ID, patch[0].sat_NO3, patch[0].soil_ns.NO3_Qout);
+
+                patch[0].soil_ns.NO3_Qout = min(patch[0].sat_NO3, patch[0].soil_ns.NO3_Qout);
+                patch[0].soil_ns.NH4_Qout = min(patch[0].sat_NH4, patch[0].soil_ns.NH4_Qout);
+                patch[0].soil_cs.DOC_Qout = min(patch[0].sat_DOC, patch[0].soil_cs.DOC_Qout);
+                patch[0].soil_ns.DON_Qout = min(patch[0].sat_DON, patch[0].soil_ns.DON_Qout);
+                patch[0].sat_NO3 += (patch[0].soil_ns.NO3_Qin - patch[0].soil_ns.NO3_Qout);
+                patch[0].sat_NH4 += (patch[0].soil_ns.NH4_Qin - patch[0].soil_ns.NH4_Qout);
+                patch[0].sat_DOC += (patch[0].soil_cs.DOC_Qin - patch[0].soil_cs.DOC_Qout);
+                patch[0].sat_DON += (patch[0].soil_ns.DON_Qin - patch[0].soil_ns.DON_Qout);
+
+                if( patch[0].sat_deficit > patch[0].preday_sat_deficit){
+                    // water table drops
+
+                    double sat_leftbehind_frac = (patch[0].sat_deficit - patch[0].preday_sat_deficit) / (patch[0].soil_defaults[0][0].soil_water_cap - patch[0].preday_sat_deficit);//soil_water_cap - sat_deficit is sat_zone capacity
+
+                    if(sat_leftbehind_frac<0 || sat_leftbehind_frac>1.0 || patch[0].sat_NO3<0 || patch[0].sat_NO3!=patch[0].sat_NO3) printf("sub_routing (%d) [%e,%e,%e], %f %f %f \n", patch[0].ID, sat_leftbehind_frac, patch[0].soil_ns.nitrate, patch[0].sat_NO3,
+                        patch[0].sat_deficit,  patch[0].preday_sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap);
+
+                    // for negative "soil_ns.nitrate" problem
+                    patch[0].soil_ns.nitrate += patch[0].sat_NO3 * sat_leftbehind_frac;
+                    patch[0].soil_ns.sminn += patch[0].sat_NH4 * sat_leftbehind_frac;
+                    patch[0].soil_cs.DOC += patch[0].sat_DOC * sat_leftbehind_frac;
+                    patch[0].soil_ns.DON += patch[0].sat_DON * sat_leftbehind_frac;
+
+                    patch[0].sat_NO3 *= 1.0 - sat_leftbehind_frac;
+                    patch[0].sat_NH4 *= 1.0 - sat_leftbehind_frac;
+                    patch[0].sat_DOC *= 1.0 - sat_leftbehind_frac;
+                    patch[0].sat_DON *= 1.0 - sat_leftbehind_frac;
+
+                }// water table drops
+
+			/*
 				patch[0].soil_ns.nitrate += (patch[0].soil_ns.NO3_Qin
 						- patch[0].soil_ns.NO3_Qout);
 				patch[0].soil_ns.sminn += (patch[0].soil_ns.NH4_Qin
@@ -297,7 +344,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				patch[0].soil_cs.DOC += (patch[0].soil_cs.DOC_Qin
 						- patch[0].soil_cs.DOC_Qout);
 				patch[0].soil_ns.DON += (patch[0].soil_ns.DON_Qin
-						- patch[0].soil_ns.DON_Qout);
+						- patch[0].soil_ns.DON_Qout); */
 			}
 
 			/*--------------------------------------------------------------*/
@@ -386,7 +433,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                          patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 								+ patch[0].hourly_sur2stream_flow;
 
-			if (k == (n_timesteps -1))
+			if (k == (n_timesteps -1))//return flow from sat to detention store
 					{
 
 			      if ((patch[0].sat_deficit
@@ -401,9 +448,11 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 					patch[0].rz_storage = 0.0;
 
 					if (grow_flag > 0) {
-						Nout =
+					/*	Nout =
 								compute_N_leached(verbose_flag,
-										patch[0].soil_cs.DOC, excess, 0.0, 0.0,
+										//patch[0].soil_cs.DOC,
+										patch[0].sat_DOC, //return flow from sat to detension store
+										excess, 0.0, 0.0,
 										patch[0].m,
 										patch[0].innundation_list[d].gamma
 												/ patch[0].area * time_int,
@@ -413,14 +462,25 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
 										patch[0].soil_defaults[0][0].DOC_adsorption_rate,
-										patch[0].transmissivity_profile);
+										patch[0].transmissivity_profile);  */
+                        Nout =
+                              compute_Nsat_leached(
+                                      verbose_flag,
+                                      patch[0].sat_DOC,
+                                      excess,
+                                      patch[0].soil_defaults[0][0].DOM_decay_rate,
+                                      patch[0].soil_defaults[0][0].active_zone_z,
+                                      patch[0].soil_defaults[0][0].DOC_adsorption_rate,
+                                      26,patch);
 						patch[0].surface_DOC += Nout;
-						patch[0].soil_cs.DOC -= Nout;
+						patch[0].sat_DOC -= Nout; // change here out from sat_DOC
 					}
 					if (grow_flag > 0) {
-						Nout =
+						/*Nout =
 								compute_N_leached(verbose_flag,
-										patch[0].soil_ns.DON, excess, 0.0, 0.0,
+										//patch[0].soil_ns.DON,
+										patch[0].sat_DON,
+										excess, 0.0, 0.0,
 										patch[0].m,
 										patch[0].innundation_list[d].gamma
 												/ patch[0].area * time_int,
@@ -430,14 +490,25 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
 										patch[0].soil_defaults[0][0].DON_adsorption_rate,
-										patch[0].transmissivity_profile);
+										patch[0].transmissivity_profile); */
+                       Nout =
+                              compute_Nsat_leached(verbose_flag,
+                                      patch[0].sat_DON,
+                                      excess,
+                                      patch[0].soil_defaults[0][0].DOM_decay_rate,
+                                      patch[0].soil_defaults[0][0].active_zone_z,
+                                      patch[0].soil_defaults[0][0].DON_adsorption_rate,
+                                      23,patch);
+
 						patch[0].surface_DON += Nout;
-						patch[0].soil_ns.DON -= Nout;
+						patch[0].sat_DON -= Nout; //change here out from sat_DON
 					}
 					if (grow_flag > 0) {
-						Nout =
+						/*Nout =
 								compute_N_leached(verbose_flag,
-										patch[0].soil_ns.nitrate, excess, 0.0,
+										//patch[0].soil_ns.nitrate,
+										patch[0].sat_NO3,
+										excess, 0.0,
 										0.0, patch[0].m,
 										patch[0].innundation_list[d].gamma
 												/ patch[0].area * time_int,
@@ -447,20 +518,31 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
 										patch[0].soil_defaults[0][0].NO3_adsorption_rate,
-										patch[0].transmissivity_profile);
+										patch[0].transmissivity_profile); */
+                      Nout =
+                              compute_Nsat_leached(verbose_flag,
+                                      patch[0].sat_NO3,
+                                      excess,
+                                      patch[0].soil_defaults[0][0].N_decay_rate,
+                                      patch[0].soil_defaults[0][0].active_zone_z,
+                                      patch[0].soil_defaults[0][0].NO3_adsorption_rate,
+                                      17,patch);
+
 						patch[0].surface_NO3 += Nout;
-						patch[0].soil_ns.nitrate -= Nout;
-						if (patch[0].drainage_type == STREAM) {
+						patch[0].sat_NO3 -= Nout; //change here too
+					/*	if (patch[0].drainage_type == STREAM) {
 								patch[0].streamflow_NO3 += Nout; //NREN
 								patch[0].streamNO3_from_sub += Nout;
 
-								}
+								} */ //maybe remove here
 					}
 
 					if (grow_flag > 0) {
-						Nout =
+						/*Nout =
 								compute_N_leached(verbose_flag,
-										patch[0].soil_ns.sminn, excess, 0.0,
+										//patch[0].soil_ns.sminn,
+										patch[0].sat_NH4,
+										 excess, 0.0,
 										0.0, patch[0].m,
 										patch[0].innundation_list[d].gamma
 												/ patch[0].area * time_int,
@@ -470,9 +552,16 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 										patch[0].soil_defaults[0][0].active_zone_z,
 										patch[0].soil_defaults[0][0].soil_depth,
 										patch[0].soil_defaults[0][0].NH4_adsorption_rate,
-										patch[0].transmissivity_profile);
+										patch[0].transmissivity_profile); */
+                            compute_Nsat_leached(verbose_flag,
+                                      patch[0].sat_NH4,
+                                      excess,
+                                      patch[0].soil_defaults[0][0].N_decay_rate,
+                                      patch[0].soil_defaults[0][0].active_zone_z,
+                                      patch[0].soil_defaults[0][0].NH4_adsorption_rate,
+                                      20,patch);
 						patch[0].surface_NH4 += Nout;
-						patch[0].soil_ns.sminn -= Nout;
+						patch[0].sat_NH4 -= Nout;
 					}
 				}
 
