@@ -93,7 +93,7 @@ double	compute_Nsat_leached(
 	    /* update sat_deficit reated variables */
     if(patch[0].sat_deficit >= 0){
         patch[0].sat_deficit = min(patch[0].sat_deficit,patch[0].soil_defaults[0][0].soil_water_cap);
-        patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;
+        patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;// this is how much sat water
     }else{
         // surface
         patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap;

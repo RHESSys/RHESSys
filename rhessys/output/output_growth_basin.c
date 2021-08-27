@@ -57,6 +57,7 @@ void	output_growth_basin(
 	double asoilhr;
 	double acloss;
 	double asoilc, asminn, anitrate, asurfaceN;
+	double asatNO3, asatNH4;
 	double afpi, amineralized, at_scalar, aw_scalar;
 	double alitrn, asoiln, asoiln_noslow,anfix, anuptake;
 	double aarea, hill_area, zone_area, basin_area;
@@ -103,6 +104,7 @@ void	output_growth_basin(
 	anitrate = 0.0;
 	asurfaceN = 0.0;
 	asoilc = 0.0; asminn=0.0;
+	asatNH4 = 0.0; asatNO3 = 0.0;
 	afpi=0.0; amineralized=0.0; at_scalar=0.0; aw_scalar=0.0;
 
 	acarbon_balance = 0.0;
@@ -201,10 +203,12 @@ void	output_growth_basin(
 					* patch[0].area;
 				afpi += (patch[0].soil_ns.fract_potential_immob) * patch[0].area;
 				asminn+= (patch[0].soil_ns.sminn + patch[0].sat_NH4) * patch[0].area; //sminn is NH4
+				asatNH4 += patch[0].sat_NH4 * patch[0].area;//NEW
 				amineralized += (patch[0].ndf.net_mineralized) * patch[0].area;
 				at_scalar += (patch[0].cdf.decomp_t_scalar) * patch[0].area;
 				aw_scalar += (patch[0].cdf.decomp_w_scalar) * patch[0].area;
 				anitrate += (patch[0].soil_ns.nitrate + patch[0].sat_NO3) * patch[0].area; //nitrate is NO3
+				asatNO3 += patch[0].sat_NO3 * patch[0].area; //new
 				anvolatilized_snk += (patch[0].soil_ns.nvolatilized_snk) * patch[0].area;
 				asurfaceN += (patch[0].surface_DON+patch[0].surface_NO3+patch[0].surface_NH4) * patch[0].area;
 				atotaln += (patch[0].totaln) * patch[0].area;
@@ -463,6 +467,8 @@ void	output_growth_basin(
 	asoiln /= aarea;
 	asoiln_noslow /= aarea;
 	asminn /= aarea;
+	asatNH4 /= aarea;
+	asatNO3 /= aarea;
 	amineralized /= aarea;
 	at_scalar /= aarea;
 	aw_scalar /= aarea;
@@ -543,7 +549,7 @@ void	output_growth_basin(
 	apro_abc_litr /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -636,7 +642,7 @@ void	output_growth_basin(
 		aunderstory_rootdepth,
 		aunderstory_npp,
 		apro_abc_litr, aprecip, aplant_potential_ndem, apotential_immob,
-		alitr_hr*1000, alitrc_to_soil*1000
+		alitr_hr*1000, alitrc_to_soil*1000, asatNH4*1000, asatNO3*1000
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/

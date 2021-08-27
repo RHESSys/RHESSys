@@ -362,6 +362,11 @@ struct patch_object *construct_patch(
 	patch[0].sat_NO3 = 0.0;
 	patch[0].sat_DOC = 0.0;
 	patch[0].sat_DON = 0.0;
+	patch[0].rtzNO3 = 0.0;
+	patch[0].rtzSatNO3 = 0.0;
+	patch[0].rtzNH4 = 0.0;
+	patch[0].rtzSatNH4 = 0.0;
+	patch[0].available_soil_water = 0.0;
 
 	/* for calculating above ground litter proportion NREN 20190927 */
 	patch[0].prop_litrc_above_ground = 0.85; // this is hard coded at the beginning all these litter is from leaf
