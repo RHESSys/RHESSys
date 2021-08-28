@@ -778,9 +778,9 @@ void  update_drainage_road(
 		patch[0].next_stream[0].streamflow_DOC += Nin;
 		Nin = (NO3_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NO3 += Nin;
-		patch[0].next_stream[0].streamNO3_from_surface += Nin; //change from sub to from surface NREN
+		patch[0].next_stream[0].streamNO3_from_sub += Nin; //change back NREN
 		patch[0].next_stream[0].hourly[0].streamflow_NO3 += Nin;
-		patch[0].next_stream[0].hourly[0].streamflow_NO3_from_surface += Nin;
+		patch[0].next_stream[0].hourly[0].streamflow_NO3_from_sub += Nin;
 		Nin = (NH4_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NH4 += Nin;
 		}

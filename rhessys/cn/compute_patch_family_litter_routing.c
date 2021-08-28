@@ -354,8 +354,6 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 skip2[i] = 2; // to do skip = 1 is losing patches, skip =2 is gaining patch skip =0 skip patch
                 dL_c2[i] = 0; // 1, 2, 3, 4
                 dL_n2[i] = 0;
-                // here set no veg patch a mean root depth for mineralization
-                //patches[0].rooting_depth_mean = rooting_depth_mean;
             }
             else
             {
@@ -395,8 +393,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 skip3[i] = 2; // to do
                 dL_c3[i] = 0; // 1, 2, 3, 4
                 dL_n3[i] = 0;
-                // here set no veg patch a mean root depth for mineralization
-                //patches[0].rooting_depth_mean = rooting_depth_mean;
+
             }
             else
             {
@@ -438,8 +435,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 skip4[i] = 2; // to do
                 dL_c4[i] = 0; // 1, 2, 3, 4
                 dL_n4[i] = 0;
-                // here set no veg patch a mean root depth for mineralization
-                //patches[0].rooting_depth_mean = rooting_depth_mean;
+
             }
             else
             {

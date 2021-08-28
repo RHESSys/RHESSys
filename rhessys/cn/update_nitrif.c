@@ -106,7 +106,7 @@ int update_nitrif(
 		theta = 1.0;
 
     resource_satNH4 = perc_sat*patch[0].sat_NH4;
-
+    if(patch[0].sat_NH4 < ZERO) printf("Warning update nitrif [sat_NH4 %e] is smaller than ZERO", patch[0].sat_NH4);
 	if ((ns_soil->sminn + patch[0].sat_NH4) > ZERO) {
 
         //resource_satNH4 = perc_sat*patch[0].sat_NH4;
@@ -191,13 +191,13 @@ int update_nitrif(
 
 	ndf->sminn_to_nitrate = nitrify;
 
-	double ratio = ns_soil->sminn / (ns_soil->sminn + resource_satNH4);
-	if (ns_soil->sminn > ZERO) {
+	double ratio ;
+	if ((ns_soil->sminn + resource_satNH4) > ZERO) {
+	ratio = ns_soil->sminn / (ns_soil->sminn + resource_satNH4);
+	ratio = max(min(ratio, 1), 0.0);
 	ns_soil->sminn -= (nitrify) *ratio;
 	ns_soil->sminn = max(0.0, ns_soil->sminn);
-	ns_soil->nitrate += (nitrify) *ratio;}
-
-	if (resource_satNH4 > ZERO) {
+	ns_soil->nitrate += (nitrify) *ratio;
 
 	patch[0].sat_NH4 -= nitrify * (1- ratio);
 	patch[0].sat_NH4 = max(0.0, patch[0].sat_NH4);
