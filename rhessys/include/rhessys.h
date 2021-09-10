@@ -518,6 +518,16 @@ struct stream_list_object
         double streamflow;
         struct stream_network_object *stream_network;
         };
+/*----------------------------------------------------------*/
+/*      Define target object                                */
+/*----------------------------------------------------------*/
+struct target_object {
+  double lai;
+  double total_stemc;
+  double height;
+  double age;
+  int    met;
+};
 
 /*----------------------------------------------------------*/
 /*	Define a snowpack object.								*/
@@ -1058,6 +1068,9 @@ struct zone_object
         double  e_horizon;      /* cos of angle to normal of flat       */
         double  e_horizon_topog;      /* cos of angle to normal of flat       */
         double  effective_lai;          /* area wt. average m^2/m^2     */
+        double  lai;
+        double  total_stemc;
+        double  height;
         double  Kdown_diffuse;                          /* Kj/(m^2*day) */
         double  Kdown_diffuse_calc;                             /* Kj/(m^2*day) */
         double  Kdown_diffuse_adjustment;               /*  0-1 */
@@ -1104,6 +1117,7 @@ struct zone_object
         struct  zone_hourly_object      *hourly;
         struct  accumulate_zone_object  acc_month;
         struct  accumulate_zone_object  acc_year;
+        struct  target_object   target;
 
         };
 
@@ -1639,6 +1653,8 @@ struct spinup_default {
         int ID;
         double tolerance;   // percent as fraction of 1
         double max_years;   /* years */
+        int    target_type; // to specify which layers of LAI is used, 1 is use stratum LAI and 2 is use patch LAI, 3 use zone LAI
+
         };
 
 struct spinup_object
@@ -1737,6 +1753,8 @@ struct patch_object
         double  hourly_subsur2stream_flow;      /* m water */
         double  hourly_sur2stream_flow;  /* m water  */
         double  hourly_stream_flow;     /* m water */
+        double  height;
+        double  total_stemc;
         double  interim_sat;            /* m */
         double  stream_gamma;           /* meters**2/day        */
         double  Kdown_direct;           /* Kj/(m^2*day) */
@@ -1909,6 +1927,7 @@ struct patch_object
         struct  accumulate_patch_object acc_year;
         struct  rooting_zone_object     rootzone;
         struct  zone_object             *zone; /* parent zone */
+        struct  target_object   target;
 
 
 /*----------------------------------------------------------*/
@@ -2567,7 +2586,7 @@ struct epvar_struct
         double deadcrootc_store_to_deadcrootc_transfer; /* (kgC/m2/d) */
         double gresp_store_to_gresp_transfer;           /* (kgC/m2/d) */
 	double carbohydrate_transfer;			/* (kg/m2/day) */
-	double storage_transfer_prop;			/* 0-1 */ 
+	double storage_transfer_prop;			/* 0-1 */
 
         /* turnover of live wood to dead wood */
         double livestemc_to_deadstemc;        /* (kgC/m2/d) */
@@ -2991,16 +3010,7 @@ struct  stratum_default
 	double overstory_mort_k2; 		/* Centerpoint of sigmoid function relating understory biomass consumed and overstory mortality */
 };
 
-/*----------------------------------------------------------*/
-/*      Define target object                                */
-/*----------------------------------------------------------*/
-       struct target_object {
-              double lai;
-              double total_stemc;
-              double height;
-              double age;
-              int    met;
-       };
+
 /*----------------------------------------------------------*/
 /*      Define accumulator object                           */
 /*----------------------------------------------------------*/
