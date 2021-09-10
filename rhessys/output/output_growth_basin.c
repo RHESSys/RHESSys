@@ -37,7 +37,7 @@ void	output_growth_basin(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -48,7 +48,7 @@ void	output_growth_basin(
 	double acg, ang;
 	double astorage_transfer_prop, acarbohydrate_transfer_c, acarbohydrate_transfer_n;
 	double alai;
-	double leafc, frootc, woodc;	
+	double leafc, frootc, woodc;
 	double aleafc, afrootc, awoodc;
 	double aleafn, afrootn, awoodn;
 	double acpool;
@@ -78,6 +78,8 @@ void	output_growth_basin(
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
 	struct  canopy_strata_object    *strata;
+
+	double alitterNO3stored, aNO3_throughfall, anvolatilized_snk;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -136,6 +138,9 @@ void	output_growth_basin(
 	aunderstory_leafc = 0.0;
 	aunderstory_stemc = 0.0;
 	aunderstory_biomassc = 0.0;
+	alitterNO3stored = 0.0;
+	aNO3_throughfall = 0.0;
+	anvolatilized_snk = 0.0;
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
@@ -148,6 +153,7 @@ void	output_growth_basin(
 				alitrn += (patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n
 					+ patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n)
 					* patch[0].area;
+				alitterNO3stored += patch[0].litter.NO3_stored * patch[0].area; //litter NO3 stored
 				asoiln += (patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n
 					+ patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n)
 					* patch[0].area;
@@ -166,6 +172,7 @@ void	output_growth_basin(
 				at_scalar += (patch[0].cdf.decomp_t_scalar) * patch[0].area;
 				aw_scalar += (patch[0].cdf.decomp_w_scalar) * patch[0].area;
 				anitrate += (patch[0].soil_ns.nitrate) * patch[0].area;
+				anvolatilized_snk += (patch[0].soil_ns.nvolatilized_snk) * patch[0].area;
 				asurfaceN += (patch[0].surface_DON+patch[0].surface_NO3+patch[0].surface_NH4) * patch[0].area;
 				atotaln += (patch[0].totaln) * patch[0].area;
 				astreamflow_NH4 += patch[0].streamflow_NH4 * patch[0].area;
@@ -176,7 +183,7 @@ void	output_growth_basin(
 				streamNO3_from_sub += patch[0].streamNO3_from_sub * patch[0].area;
 				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
-				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
+				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
 				afertilizer_NO3 += (patch[0].fertilizer_NO3) * patch[0].area;
 				afertilizer_NH4 += (patch[0].fertilizer_NH4) * patch[0].area;
@@ -184,22 +191,23 @@ void	output_growth_basin(
 				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
 				anfix += (patch[0].ndf.nfix_to_sminn) * patch[0].area;
 				acloss += (patch[0].grazing_Closs) * patch[0].area;
-				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area,
+				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area;
+				aNO3_throughfall += patch[0].NO3_throughfall * patch[0].area;
 
 				asoilhr += (
-					patch[0].cdf.litr1c_hr + 
-					patch[0].cdf.litr2c_hr + 
-					patch[0].cdf.litr4c_hr + 
-					patch[0].cdf.soil1c_hr + 
-					patch[0].cdf.soil2c_hr + 
-					patch[0].cdf.soil3c_hr + 
+					patch[0].cdf.litr1c_hr +
+					patch[0].cdf.litr2c_hr +
+					patch[0].cdf.litr4c_hr +
+					patch[0].cdf.soil1c_hr +
+					patch[0].cdf.soil2c_hr +
+					patch[0].cdf.soil3c_hr +
 					patch[0].cdf.soil4c_hr) * patch[0].area;
 
 				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 						strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 
-								
+
 						aNO3_stored += strata->cover_fraction * strata->NO3_stored
 							* patch[0].area;
 						acg+= strata->cover_fraction * strata->cdf.actual_C_growth
@@ -246,6 +254,7 @@ void	output_growth_basin(
 							+ strata->ns.livestemn_transfer
 							+ strata->ns.deadcrootn_transfer
 							+ strata->ns.deadstemn_transfer
+							+ strata->ns.cwdn
 							+ strata->ns.retransn  ) * patch[0].area;
 						leafc = strata->cover_fraction	* (strata->cs.leafc
 							+ strata->cs.leafc_store + strata->cs.leafc_transfer )
@@ -263,6 +272,7 @@ void	output_growth_basin(
 							+ strata->cs.livecrootc_transfer
 							+ strata->cs.livestemc_transfer
 							+ strata->cs.deadcrootc_transfer
+							+ strata->cs.cwdc
 							+ strata->cs.deadstemc_transfer)* patch[0].area;
 						awoodc += woodc;
 						arootdepth += strata->cover_fraction * (strata->rootzone.depth)
@@ -277,22 +287,22 @@ void	output_growth_basin(
 						p_under = min(1.0, p_under);
 						p_over = 1.0-p_under;
 
-						aoverstory_height += strata->cover_fraction * 
+						aoverstory_height += strata->cover_fraction *
 								strata->epv.height * patch[0].area * p_over;
-						aoverstory_leafc += strata->cover_fraction * 
+						aoverstory_leafc += strata->cover_fraction *
 									strata->cs.leafc * patch[0].area * p_over;
-						aoverstory_stemc += strata->cover_fraction * (strata->cs.live_stemc 
+						aoverstory_stemc += strata->cover_fraction * (strata->cs.live_stemc
 							+ strata->cs.dead_stemc) * patch[0].area * p_over;
 						aoverstory_biomassc += (woodc + frootc + leafc) * p_over;
 
-						aunderstory_height += strata->cover_fraction * 
+						aunderstory_height += strata->cover_fraction *
 								strata->epv.height * patch[0].area * p_under;
-						aunderstory_leafc += strata->cover_fraction * 
+						aunderstory_leafc += strata->cover_fraction *
 									strata->cs.leafc * patch[0].area * p_under;
-						aunderstory_stemc += strata->cover_fraction * (strata->cs.live_stemc 
+						aunderstory_stemc += strata->cover_fraction * (strata->cs.live_stemc
 							+ strata->cs.dead_stemc) * patch[0].area * p_under;
 						aunderstory_biomassc += (woodc + frootc + leafc) * p_under;
-					
+
 				}
 				}
 				aarea +=  patch[0].area;
@@ -313,8 +323,8 @@ void	output_growth_basin(
 		hstreamflow_DON += hillslope[0].streamflow_DON * hillslope[0].area;
 		hstreamflow_DOC += hillslope[0].streamflow_DOC * hillslope[0].area;
 		basin_area += hill_area;
-		
-		
+
+
 	}
 	agpsn /= aarea ;
 	acg /= aarea ;
@@ -327,6 +337,7 @@ void	output_growth_basin(
 	alai /= aarea ;
 	aNO3_stored /= aarea ;
 	anitrate /= aarea;
+	anvolatilized_snk /=aarea;
 	asurfaceN /= aarea;
 	acpool /= aarea ;
 	anpool /= aarea ;
@@ -338,8 +349,9 @@ void	output_growth_basin(
 	awoodn /= aarea;
 	alitrc /= aarea;
 	asoilc /= aarea;
-	asoilhr /= aarea;	
+	asoilhr /= aarea;
 	alitrn /= aarea;
+	alitterNO3stored /=aarea;
 	asoiln /= aarea;
 	asoiln_noslow /= aarea;
 	asminn /= aarea;
@@ -364,6 +376,7 @@ void	output_growth_basin(
 	anfix /= aarea;
 	acloss /= aarea;
 	anuptake /= aarea;
+	aNO3_throughfall /=aarea;
 	aninput /= aarea;
 	afertilizer_NO3 /= aarea;
 	afertilizer_NH4 /= aarea;
@@ -389,7 +402,7 @@ void	output_growth_basin(
 	hgwDOCout = hgwDOCout / basin_area;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -452,10 +465,11 @@ void	output_growth_basin(
 		aoverstory_stemc,
 		aoverstory_biomassc,
 		aoverstory_height,
-		aNO3_stored*1000
+		aNO3_stored*1000,
+		alitterNO3stored*1000, aNO3_throughfall*1000.0, anvolatilized_snk*1000
 		);
 	/*------------------------------------------*/
-	/*printf("\n Basin %d Output %4d %3d %3d \n",*/ 
+	/*printf("\n Basin %d Output %4d %3d %3d \n",*/
 	/*	basin[0].ID, date.year, date.month, date.day);*/
 	/*------------------------------------------*/
 	return;
