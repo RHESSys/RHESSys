@@ -55,11 +55,13 @@ void reset_fire_in_WUI(struct WUI_object *WUI_list)
 	/*--------------------------------------------------------------*/
 
 	/* 2km list */
-	WUI_ptr->fire_occurence[D2KM] =0;
-	/* 5km list */
+	WUI_ptr->fire_occurence =100;
+	/* 5km list *
 	WUI_ptr->fire_occurence[D5KM] =0;
-	/* 10km list */
-	WUI_ptr->fire_occurence[D10KM] =0;
+	/* 10km list *
+	WUI_ptr->fire_occurence[D10KM] =0;*/
+	WUI_ptr=WUI_ptr->next;
+	
 	}
 	return;
 } /*end reset_fire_in_WUI.c*/

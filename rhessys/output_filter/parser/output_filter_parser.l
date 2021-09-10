@@ -24,6 +24,7 @@
 ^([ ]{4}+|[\t]{2}+)"path:" { return PATH; }
 ^([ ]{4}+|[\t]{2}+)"filename:" { return FILENAME; }
 ^([ ]{2}+|[\t]+)"basin:" { return BASIN_TOK; }
+^([ ]{2}+|[\t]+)"zone:" { return ZONE_TOK; }
 ^([ ]{2}+|[\t]+)"patch:" { return PATCH_TOK; }
 ^([ ]{2}+|[\t]+)"stratum:" { return STRATUM_TOK; }
 ^([ ]{4}+|[\t]{2}+)"ids:" { return IDS; }
@@ -46,9 +47,10 @@
     return VAR_DEF;
 }
 \"[a-zA-Z0-9_\-\(\)\[\]\.]+\" { yylval.string = strdup(yytext); return FILENAME_SPEC; }
-\"(\.{1,2}\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+\" { yylval.string = strdup(yytext); return PATH_SPEC; }
+\"(\.{1,2}\/){0,1}(\/*[a-zA-Z0-9_\-\(\)\[\]])+\/*\" { yylval.string = strdup(yytext); return PATH_SPEC; }
 
 "hill." { return LEVEL_HILLSLOPE; }
+"zone." { return LEVEL_ZONE; }
 "patch." { return LEVEL_PATCH; }
 "stratum." { return LEVEL_STRATUM; }
 

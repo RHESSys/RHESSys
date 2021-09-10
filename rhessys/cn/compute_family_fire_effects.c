@@ -127,6 +127,8 @@ void compute_family_fire_effects(
 		 &(patch_family[0].patches[p][0].litter_cs),
 		 &(patch_family[0].patches[p][0].litter_ns),
 		 fire_loss);
+
+		patch_family[0].patches[p][0].fire.litter_c_consumed = litter_c_consumed;
 	}
 
 	/*--------------------------------------------------------------*/
@@ -216,6 +218,20 @@ void compute_family_fire_effects(
 	agg_under_carbon /= under_pct_area;
 	agg_intr_height /= intr_pct_area;
 	agg_intr_carbon /= intr_pct_area;
+
+
+
+	// normalize by coverage
+	if (under_pct_area > ZERO) {
+        agg_under_height /= under_pct_area;
+        agg_under_carbon /= under_pct_area;
+        }
+
+        if (intr_pct_area > ZERO) {
+        agg_intr_height /= intr_pct_area;
+        agg_intr_carbon /= intr_pct_area;
+        }
+
 
 	/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
 	// since using agg intr story height, calc this for all stories
@@ -470,10 +486,10 @@ void compute_family_fire_effects(
 			/* Adjust canopy_target_prop_c_remain since update mortality is run twice. Vegetation carbon */
 			/* stores on the second call to update_mortality have already been altered during the first call. */
 			/* The following adjustment accounts for this change. */
-			if (fabs(canopy_target[0].fe.canopy_target_prop_c_remain - 1.0) < ZERO){
+			if (fabs(canopy_target[0].fe.canopy_target_prop_c_consumed - 1.0) < ZERO){
 				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = 0;
 			} else {
-				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = canopy_target[0].fe.canopy_target_prop_c_remain / (1 - canopy_target[0].fe.canopy_target_prop_c_remain);
+				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = (canopy_target[0].fe.canopy_target_prop_mort - canopy_target[0].fe.canopy_target_prop_c_consumed) / (1 - canopy_target[0].fe.canopy_target_prop_c_consumed);
 			}
 
 			/* For understory vegetation, complete mortality of leaves was assumed if a patch was burned, regardless of pspread */
@@ -564,30 +580,33 @@ void compute_family_fire_effects(
 	} /* end if(pspread > 0 ) */
     else 
 	{
-		for (layer = 0; layer < patch_family[0].num_layers; layer++)
-		{
-			for (c = 0; c < patch_family[0].layers[layer].count; c++)
-			{
+//		for (layer = 0; layer < patch_family[0].num_layers; layer++)
+//		{
+//			for (c = 0; c < patch_family[0].layers[layer].count; c++)
+//			{
 				/* Calculates metrics for targer canopy */
-				canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
-				canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
+//				canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
+//				canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 
-				/* Calculates metrics for next lowest canopy (subtarget canopy) */
-				if (patch_family[0].num_layers > (layer + 1))
-				{
-					canopy_subtarget = patch_family[0].canopy_strata[(patch_family[0].layers[layer + 1].strata[c])];
-					canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
-					canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
-															 canopy_subtarget[0].cs.live_stemc +
-															 canopy_subtarget[0].cs.dead_stemc;
-				}
-				else
-				{
-					canopy_target[0].fe.canopy_subtarget_height = 0;
-					canopy_target[0].fe.canopy_subtarget_c = 0;
-				}
-			} // end for c=0
-		} //end for layer =0
+//				/* Calculates metrics for next lowest canopy (subtarget canopy) */
+//				if (patch_family[0].num_layers > (layer + 1))
+//				{
+//					if(c<patch_family[0].layers[layer+1].count)
+//					{
+//						canopy_subtarget = patch_family[0].canopy_strata[(patch_family[0].layers[layer + 1].strata[c])];
+//						canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
+//						canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
+//															 canopy_subtarget[0].cs.live_stemc +
+//															 canopy_subtarget[0].cs.dead_stemc;
+//					}
+//				}
+//				else
+//				{
+//					canopy_target[0].fe.canopy_subtarget_height = 0;
+//					canopy_target[0].fe.canopy_subtarget_c = 0;
+//				}
+//			} // end for c=0
+//		} //end for layer =0
 
 		for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
 		{

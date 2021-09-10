@@ -142,6 +142,7 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 		for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
 		{
 			fireGrid_[i][j].burn=0;		// 0 indicates that the pixel has not been burned
+			fireGrid_[i][j].iter=-1; // iteraction for fire progression. -1 if unburned
 			localFireGrid_[i][j].iter=-1;
 			localFireGrid_[i][j].failedIter=-1;
 			localFireGrid_[i][j].pSlope=-1;
@@ -809,6 +810,7 @@ void LandScape::calc_FireEffects(int new_row,int new_col, int iter, double cur_p
 //	fireGrid_[new_row][new_col].burn=1;	// update the land array to indicate this cell is burned during this iteration
 	fireGrid_[new_row][new_col].burn=cur_pBurn;	// update the land array to indicate this cell is burned during this iteration, and the associated probability
 	localFireGrid_[new_row][new_col].iter=iter;
+	fireGrid_[new_row][new_col].iter=iter;
 	cur_fire_.update_size++;	// add a pixel to the current fire size
 	return ;
 }

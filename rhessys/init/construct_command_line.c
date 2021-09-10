@@ -119,6 +119,8 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].output_filter_flag = false;
 	command_line[0].output_filter_filename = NULL;
 	command_line[0].output_filter = NULL;
+	command_line[0].output_filter_zone_accum_monthly = false;
+	command_line[0].output_filter_zone_accum_yearly = false;
 	command_line[0].output_filter_patch_accum_monthly = false;
 	command_line[0].output_filter_patch_accum_yearly = false;
 	command_line[0].output_filter_strata_accum_monthly = false;
@@ -302,6 +304,7 @@ struct	command_line_object	*construct_command_line(
 				/*-------------------------------*/
 				strncpy(command_line[0].WUI_filename, main_argv[i], FILEPATH_LEN);
 				i++;
+printf("%s ",command_line[0].WUI_filename);
 			}/* end if */
 
 

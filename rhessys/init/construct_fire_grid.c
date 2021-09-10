@@ -116,8 +116,8 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				tmp.dists[w]=0;	
 		}*/
 
-		int tmpPatchID, tmpZoneID, tmpHillID;	// for reading in
-		int curPatchID, curZoneID; 				// for find_patch
+		double tmpPatchID, tmpZoneID, tmpHillID;	// for reading in
+		double curPatchID, curZoneID; 				// for find_patch
 
 		// including locally only since we don't need paths elsewhere
 		char firegrid_dem_file[FILEPATH_LEN], firegrid_patch_file[FILEPATH_LEN], firegrid_zone_file[FILEPATH_LEN], firegrid_hill_file[FILEPATH_LEN];
@@ -205,13 +205,13 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				
 				// Check map/grid values at current i & j
 				tmpPatchID = -9999;
-				fscanf(patchesIn, "%d\t", &tmpPatchID);
+				fscanf(patchesIn, "%lf\t", &tmpPatchID);
 
 				tmpZoneID = -9999;
-				fscanf(zoneIn, "%d\t", &tmpZoneID);
+				fscanf(zoneIn, "%lf\t", &tmpZoneID);
 
 				tmpHillID = -9999;
-				fscanf(hillIn, "%d\t", &tmpHillID);
+				fscanf(hillIn, "%lf\t", &tmpHillID);
 				
 				fscanf(demIn, "%lf\t", &fire_grid[i][j].elev);
 				

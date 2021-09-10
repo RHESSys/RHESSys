@@ -28,8 +28,8 @@ endif
 # make CFLAGS=-w
 # override CFLAGS += -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2
+CFLAGS = -g -Wall -std=c99 $(DEFINES) -fno-stack-protector -O
+CFLAGS_NO_C99 = -g -Wall $(DEFINES) -fno-stack-protector -O
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
@@ -1117,11 +1117,12 @@ output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_fil
 	bison --report=none -d output_filter_parser.y && \
 	flex output_filter_parser.l
 util/index_struct_fields.c: include/rhessys.h
-	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h \
+	python3.8 bin/dynamic_field_lookup.py --headers include/rhessys.h \
 	--include_structs patch_object accumulate_patch_object patch_hourly_object patch_fire_water_object rooting_zone_object \
 	snowpack_object soil_c_object soil_n_object litter_object litter_c_object litter_n_object cdayflux_patch_struct ndayflux_patch_struct \
 	canopy_strata_object accumulate_strata_object cdayflux_struct cstate_struct target_object epvar_struct nstate_struct \
 	ndayflux_struct phenology_struct fire_effects_object mult_conduct_struct hillslope_object gw_object \
+	zone_object accumulate_zone_object metvar_struct \
 	--output util/index_struct_fields.c
 $(OBJ)/string_list.o: util/string_list.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/string_list.c -o $(OBJ)/string_list.o

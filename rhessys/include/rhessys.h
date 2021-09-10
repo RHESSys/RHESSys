@@ -279,11 +279,15 @@ struct patch_object_list {
 
 struct WUI_object {
 	int ID;
-	struct  patch_object_list *patches_dist2km;
-	struct  patch_object_list *patches_dist5km;
-	struct  patch_object_list *patches_dist10km;
-	double  fire_occurence[3];
+	struct  patch_object_list *patches_dist2km;//linked list of patches treated if 2km sal event triggered
+	struct  patch_object_list *patches_dist5km;//linked list of patches treated if 5 km sal event triggered
+	struct  patch_object_list *patches_dist10km;//linked list of patches treated if 10 km sal event triggered
+	struct patch_object_list *patches_dist100km;//placeholder for WUI "0" background treatment order. Need to make sure the patch doesn't repeat
+	int  fire_occurence;// just one to take precedence, no need for all three will take value 2, 5, 10, -1[3]; // flag for whether salient fire has occurred this year, array of 3 (one for each dist). 
+	int ntrt[3];// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
+// This will then match the patch-level trt ord
 	struct WUI_object *next;
+	struct WUI_object *prev;
 	};
 
 /*----------------------------------------------------------*/
@@ -1597,6 +1601,7 @@ struct patch_fire_water_object
         double et;                      /* mm */
 	double understory_et; /*mm; understory layer et*/
 	double understory_pet; /*mm; understory layer pet*/
+	double litter_c_consumed; /* kg carbon lost in fire */
 	
 
 };
@@ -1673,6 +1678,18 @@ struct fuel_treatment_object  {
 /*----------------------------------------------------------*/
 /*      Define an patch object                              */      
 /*----------------------------------------------------------*/
+struct wui_dist_list
+{
+	int dist; // dist to wui, as simply 1, 5, 10 or 100 (where 100 is not near wui
+	int wui_id; // wui ID for this dist. To help ensure consistent ordering for the wuis
+	int trt_ord2;
+	int trt_ord5;
+	int trt_ord10;
+	int trt_ord100;
+	struct wui_dist_list *next;
+	struct wui_dist_list *prev; // to help with reordering if necessary
+};
+
 struct patch_object
 
         {
@@ -1936,9 +1953,10 @@ struct patch_object
 /*      carbon and nitrogen objects for patch soil and litter */
 /*----------------------------------------------------------*/
 
-        //double  burn;                           /* 0-1 % burned */
+        double  burn;                           /* 0-1 % burned */
         double  pspread;                        /* pspread 0-1 */
-        double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
+        int 	nburn;				// tally of number of times this patch has burned
+	double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
         double  preday_totalc;                  /* kgC/m2 total carbon */
         double  totalc;                         /* kgC/m2 total carbon */
         double  carbon_balance;                 /* kgC/m2 */
@@ -1959,7 +1977,10 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
-        };
+/******************* salience and fire misc**************/
+
+        struct wui_dist_list *wui_dist;
+         };
 
 /*----------------------------------------------------------*/
 /*      Define a patch family object                        */
@@ -2234,6 +2255,8 @@ struct  command_line_object
         bool					output_filter_flag;
         char                    *output_filter_filename;
         OutputFilter            *output_filter;
+        bool                    output_filter_zone_accum_monthly;
+        bool                    output_filter_zone_accum_yearly;
         bool					output_filter_patch_accum_monthly;
         bool					output_filter_patch_accum_yearly;
         bool					output_filter_strata_accum_monthly;
@@ -2996,6 +3019,9 @@ struct  stratum_default
 	double totalc;
 	double totaln;
 	double height;
+	double fe_prop_c_consumed;
+	double fe_prop_c_mortality;
+	double fe_prop_c_mortality_leaf;
         };
 
 

@@ -48,6 +48,12 @@ typedef enum {
 } VariableType;
 
 typedef enum {
+	ZONE_TYPE_BASIN = 3,
+	ZONE_TYPE_HILLSLOPE = 2,
+	ZONE_TYPE_ZONE = 1,
+} OutputZoneType;
+
+typedef enum {
 	PATCH_TYPE_BASIN = 4,
 	PATCH_TYPE_HILLSLOPE = 3,
 	PATCH_TYPE_ZONE = 2,
@@ -112,6 +118,21 @@ typedef struct of_basin {
 	struct basin_object *basin;
 } OutputFilterBasin;
 
+// output_filter_zone_list
+typedef struct of_zone {
+	OutputZoneType output_zone_type;
+	struct of_zone *next;
+
+	int basinID;
+	struct basin_object *basin;
+
+	int hillslopeID;
+	struct hillslope_object *hill;
+
+	int zoneID;
+	struct zone_object *zone;
+} OutputFilterZone;
+
 // output_filter_patch_list
 typedef struct of_patch {
 	OutputPatchType output_patch_type;
@@ -154,6 +175,7 @@ typedef struct of_stratum {
 typedef enum {
 	OUTPUT_FILTER_UNDEFINED,
 	OUTPUT_FILTER_BASIN,
+	OUTPUT_FILTER_ZONE,
 	OUTPUT_FILTER_PATCH,
 	OUTPUT_FILTER_CANOPY_STRATUM
 } OutputFilterType;
@@ -164,6 +186,7 @@ typedef struct of_filter {
 	struct of_filter *next;
 	OutputFilterOutput *output;
 	OutputFilterBasin *basins;
+	OutputFilterZone *zones;
 	OutputFilterPatch *patches;
 	OutputFilterStratum *strata;
 	OutputFilterVariable *variables;
@@ -198,6 +221,11 @@ OutputFilterBasin *add_to_output_filter_basin_list(OutputFilterBasin * const hea
 		OutputFilterBasin * const new_basin);
 void free_output_filter_basin_list(OutputFilterBasin *head);
 
+OutputFilterZone *create_new_output_filter_zone();
+OutputFilterZone *add_to_output_filter_zone_list(OutputFilterZone * const head,
+                                                 OutputFilterZone * const new_zone);
+void free_output_filter_zone_list(OutputFilterZone *head);
+
 OutputFilterPatch *create_new_output_filter_patch();
 OutputFilterPatch *add_to_output_filter_patch_list(OutputFilterPatch * const head,
 		OutputFilterPatch * const new_patch);
@@ -227,9 +255,10 @@ OutputFilter *add_to_output_filter_list(OutputFilter * const head,
 void free_output_filter(OutputFilter *filter);
 
 void print_output_filter_output(OutputFilterOutput *output, char *prefix);
+void print_output_filter_zone(OutputFilterZone *zone, char *prefix);
 void print_output_filter_patch(OutputFilterPatch *patch, char *prefix);
 void print_output_filter_stratum(OutputFilterStratum *stratum, char *prefix);
-void print_output_filter_variale(OutputFilterVariable *variable, char *prefix);
+void print_output_filter_variable(OutputFilterVariable *variable, char *prefix);
 void print_output_filter(OutputFilter *filter);
 
 bool return_with_error(char * const error, size_t error_len, char *error_mesg);

@@ -61,7 +61,7 @@ void update_fire_in_WUI(struct WUI_object *WUI_list)
 	/* cycle through patches in each distance list to see if there was a fire */
 	/*--------------------------------------------------------------*/
 
-	/* 2km list */
+	/* 2km list *
 	patches_dist2km_ptr = WUI_ptr->patches_dist2km;
 	while( (patches_dist2km_ptr != NULL) ) {
 		patch = patches_dist2km_ptr->patch;
@@ -69,7 +69,7 @@ void update_fire_in_WUI(struct WUI_object *WUI_list)
 			WUI_ptr->fire_occurence[D2KM] += patch[0].area;
 		patches_dist2km_ptr = patches_dist2km_ptr->next;
 		}
-	/* 5km list */
+	/* 5km list *
 	patches_dist5km_ptr = WUI_ptr->patches_dist5km;
 
 		while( (patches_dist5km_ptr != NULL) ) {
@@ -79,7 +79,7 @@ void update_fire_in_WUI(struct WUI_object *WUI_list)
 		patches_dist5km_ptr = patches_dist5km_ptr->next;
 		}
 
-	/* 10km list */
+	/* 10km list *
 	patches_dist10km_ptr = WUI_ptr->patches_dist10km;
 	while( (patches_dist10km_ptr != NULL) ) {
 		patch = patches_dist10km_ptr->patch;
@@ -89,7 +89,8 @@ void update_fire_in_WUI(struct WUI_object *WUI_list)
 		}
 	WUI_ptr = WUI_ptr->next;
 	}
-
+*/
+	}
 
 
 	return;
