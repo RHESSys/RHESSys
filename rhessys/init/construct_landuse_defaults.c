@@ -25,7 +25,7 @@
 /*	Original code, January 15, 1996.			*/
 /*	July 28, 1997	C.Tague					*/
 /*	removed capillary rise landuse variables 		*/
-/*	i.e rooting depth 					*/		
+/*	i.e rooting depth 					*/
 /*	pore size index and suction				*/
 /*								*/
 /*	Sep 15 97 RAF						*/
@@ -40,7 +40,7 @@
 struct landuse_default *construct_landuse_defaults(
 	int	num_default_files,
 	char	**default_files,
-	struct command_line_object *command_line) 
+	struct command_line_object *command_line)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
@@ -48,8 +48,8 @@ struct landuse_default *construct_landuse_defaults(
 	void	*alloc(	size_t,
 		char	*,
 		char	*);
-	
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
@@ -65,7 +65,7 @@ struct landuse_default *construct_landuse_defaults(
 	struct 	landuse_default *default_object_list;
         param *paramPtr = NULL;
         int paramCnt = 0;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Allocate an array of default objects.			*/
 	/*--------------------------------------------------------------*/
@@ -73,7 +73,7 @@ struct landuse_default *construct_landuse_defaults(
 		alloc(num_default_files *
 		sizeof(struct landuse_default),"default_object_list",
 		"construct_landuse_defaults");
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
@@ -103,8 +103,11 @@ struct landuse_default *construct_landuse_defaults(
 		default_object_list[i].percent_impervious = 	getDoubleParam(&paramCnt, &paramPtr, "landuse.percent_impervious", "%lf", 0.0, 1);
 		default_object_list[i].grazing_Closs = 	getDoubleParam(&paramCnt, &paramPtr, "grazing_Closs", "%lf", 0.0, 1) / 365;
         default_object_list[i].sh_g = getDoubleParam(&paramCnt, &paramPtr, "sh_g", "%lf", 0.0, 1);
+        printf("rout patch family sh_g %lf \n", default_object_list[i].sh_g);
         default_object_list[i].sh_l = getDoubleParam(&paramCnt, &paramPtr, "sh_l", "%lf", 0.0, 1);
+        printf("rout patch family sh_l %lf \n", default_object_list[i].sh_l);
 		default_object_list[i].msr_sat_transfer_flag = 		getIntParam(&paramCnt, &paramPtr, "msr_sat_transfer_flag", "%d", 0, 1);
+		printf("rout patch family transfer sat zone %d \n", default_object_list[i].msr_sat_transfer_flag);
         default_object_list[i].shading_flag = 		getIntParam(&paramCnt, &paramPtr, "shading_flag", "%d", 1, 1);
 
 		/*--------------------------------------------------------------*/
@@ -117,14 +120,14 @@ struct landuse_default *construct_landuse_defaults(
                 char *y = NULL;
                 char *token = NULL;
                 char filename[256];
-    
+
                 // Store filename portion of path in 't'
                 while ((token = strtok(s, "/")) != NULL) {
                     // Save the latest component of the filename
                     strcpy(filename, token);
                     s = NULL;
-                } 
-    
+                }
+
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
@@ -133,12 +136,12 @@ struct landuse_default *construct_landuse_defaults(
                 if (token != NULL) {
                     strcpy(filename, token);
                 }
-        
+
                 memset(outFilename, '\0', filenameLen);
 
 
-        
-    
+
+
             // Concatenate the output prefix with the filename of the input .def file
             // and "_landuse.params"
             if (command_line[0].output_prefix != NULL) {
@@ -148,7 +151,7 @@ struct landuse_default *construct_landuse_defaults(
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_landuse.params");
-            } 
+            }
             else {
                 if (filename != NULL) {
                     strcat(outFilename, "_");
@@ -156,7 +159,7 @@ struct landuse_default *construct_landuse_defaults(
                 }
                 strcat(outFilename, "landuse.params");
             }
-    
+
                 printParams(paramCnt, paramPtr, outFilename);
 	} /*end for*/
         free(paramPtr);

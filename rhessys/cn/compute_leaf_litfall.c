@@ -10,7 +10,7 @@
 /*								*/
 /*	SYNOPSIS						*/
 /*	double	compute_leaf_litfall( 				*/
-/*					);			*/	
+/*					);			*/
 /*								*/
 /*								*/
 /*	OPTIONS							*/
@@ -44,7 +44,7 @@ int	compute_leaf_litfall(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -53,7 +53,7 @@ int	compute_leaf_litfall(
 	double n1,n2,n3,n4;
 	double nretrans, nloss;
 	double avg_cn;
-	
+
 	avg_cn = cs->leafc/ns->leafn;
 
 	/*------------------------------------------------------*/
@@ -155,7 +155,7 @@ int	compute_leaf_litfall(
 	}
 
 	/* put all retrans n into N pool */
-	ns->npool = ns->retransn;
-	ns->retransn = 0.0;
+	/*ns->npool = ns->retransn;
+	ns->retransn = 0.0;*/ // if comments out here, where did the retransn go?
 	return(0);
-} /*compute_leaf_litfall*/ 
+} /*compute_leaf_litfall*/

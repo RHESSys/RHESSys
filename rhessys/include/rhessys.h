@@ -2003,6 +2003,7 @@ struct patch_object
         double sat_NO3, sat_NH4, sat_DOC, sat_DON;
         double rtzNO3, rtzSatNO3, rtzNH4, rtzSatNH4;
         double available_soil_water;
+        double cap_rise_ratio, unsat_drain_ratio, water_drop_ratio, water_rise_ratio;
 
  /*---------------------------------------------------------------------------------*/
 /*     TODO beetle related climate stuff, mainly seasonal temperature and precipitation */

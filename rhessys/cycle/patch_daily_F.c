@@ -448,6 +448,11 @@ void		patch_daily_F(
 	struct  dated_sequence	clim_event;
 	struct  mortality_struct mort;
     double preday_rootzone_depth, rz_transfer;
+    double tmp_ratio;
+    double potential_cap_rise;
+
+    tmp_ratio = 0.0;
+    potential_cap_rise = 0.0;
 
     /* int ok=0; //for beetle outbreak
      double time_diff;
@@ -555,12 +560,15 @@ void		patch_daily_F(
 	PAR_diffuse_exposed = 0.0;
 	snow_melt_covered = 0.0;
 	snow_melt_exposed = 0.0;
+	tmp_ratio = 0.0;
 
 	patch[0].exfiltration_unsat_zone = 0.0;
 	patch[0].exfiltration_sat_zone = 0.0;
 
 	patch[0].T_canopy = zone[0].metv.tavg;
 	patch[0].T_canopy_final = 0.0;
+	//patch[0].cap_rise_ratio = 0.0;
+	//patch[0].unsat_drain_ratio = 0.0;
 
 
 	if ( command_line[0].verbose_flag == -5 ){
@@ -1933,29 +1941,50 @@ void		patch_daily_F(
 		else  {rz_deficit=0.0;}
     	}
 
-	cap_rise_to_unsat = min(patch[0].potential_cap_rise, unsat_deficit);
+    potential_cap_rise = patch[0].potential_cap_rise;//min(patch[0].potential_cap_rise, patch[0].available_soil_water); //NREN
+
+	cap_rise_to_unsat = min(potential_cap_rise, unsat_deficit);
 	patch[0].unsat_storage += cap_rise_to_unsat;
-	cap_rise_to_rz_storage = min(patch[0].potential_cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
+
+	cap_rise_to_rz_storage = min(potential_cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
 	cap_rise_to_rz_storage = min(rz_deficit, cap_rise_to_rz_storage);
 	patch[0].rz_storage += cap_rise_to_rz_storage;
 
 	patch[0].cap_rise = (cap_rise_to_unsat + cap_rise_to_rz_storage);
+	patch[0].cap_rise = min(patch[0].cap_rise, patch[0].available_soil_water);
+
 	patch[0].potential_cap_rise -= patch[0].cap_rise;
-	patch[0].sat_deficit += patch[0].cap_rise;
+	patch[0].sat_deficit += patch[0].cap_rise;//
+
+    //patch[0].sat_deficit = min(patch[0].sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap); // add checking NREN 20210909
 
 	/* move nitrate with capillary rise too Originally from Laurence Lin took by NREN*/
-	    if(cap_rise > 0.0 && patch[0].available_soil_water > 0.0 && command_line[0].grow_flag > 0){
+	    if(patch[0].cap_rise > ZERO && patch[0].available_soil_water > ZERO && command_line[0].grow_flag > 0){
         // cap_rise also carries satSolute up to unsat
-        double tmp_ratio = min(1.0, cap_rise/patch[0].available_soil_water);
+        tmp_ratio = min(1.0, patch[0].cap_rise/patch[0].available_soil_water);
+       /* if (tmp_ratio > 0.7) // for some period, the cap_rise can be larger than available soil water which makes no sense NREN 2020909
+        {
+          printf("[cap_rise %lf], [available_soil_water %lf], [tmp_ratio %lf] \n", patch[0].cap_rise, patch[0].available_soil_water, tmp_ratio);
+          printf("|| ID %d, current year %d, month %d, yday %d \n", patch[0].ID, current_date.year, current_date.month, current_date.day);
+        } */
+        patch[0].cap_rise_ratio = tmp_ratio; //NREN 20210901
         //tmp_ratio /= patch[0].soil_defaults[0][0].porosity_0 * patch[0].soil_defaults[0][0].porosity_decay * (exp(-(patch[0].sat_deficit_z>0? patch[0].sat_deficit_z : 0.0)/patch[0].soil_defaults[0][0].porosity_decay) - exp(-patch[0].soil_defaults[0][0].soil_depth/patch[0].soil_defaults[0][0].porosity_decay));// integration of sat_z and soildepth
-        patch[0].soil_ns.nitrate += patch[0].sat_NO3 * tmp_ratio;
+       /* patch[0].soil_ns.nitrate += patch[0].sat_NO3 * tmp_ratio;
+        patch[0].soil_ns.nitrate = max(patch[0].soil_ns.nitrate, 0);
+
         patch[0].soil_ns.sminn += patch[0].sat_NH4 * tmp_ratio;
+        patch[0].soil_ns.sminn = max(patch[0].soil_ns.sminn, 0);
+
         patch[0].soil_cs.DOC += patch[0].sat_DOC * tmp_ratio;
+        patch[0].soil_cs.DOC = max(patch[0].soil_cs.DOC, 0);
+
         patch[0].soil_ns.DON += patch[0].sat_DON * tmp_ratio;
-        patch[0].sat_NO3 *= 1.0 - tmp_ratio;
-        patch[0].sat_NH4 *= 1.0 - tmp_ratio;
-        patch[0].sat_DOC *= 1.0 - tmp_ratio;
-        patch[0].sat_DON *= 1.0 - tmp_ratio;
+        patch[0].soil_ns.DON = max(patch[0].soil_ns.DON, 0);
+
+        patch[0].sat_NO3 *= (1.0 - tmp_ratio);
+        patch[0].sat_NH4 *= (1.0 - tmp_ratio);
+        patch[0].sat_DOC *= (1.0 - tmp_ratio);
+        patch[0].sat_DON *= (1.0 - tmp_ratio); */ // this maybe problematic
     }// if
 
 	/*--------------------------------------------------------------*/
@@ -1965,10 +1994,12 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	delta_unsat_zone_storage = min(unsat_zone_patch_demand, patch[0].rz_storage);
 
-	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO)) {
+	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO) && patch[0].psi_max_veg != 0.0) {
 		patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry)
 									 * patch[0].soil_defaults[0][0].pore_size_index);
+       // printf("\n [wilting point %lf], [psi_max_veg %lf] \n", patch[0].wilting_point, patch[0].psi_max_veg);//NREN psi_max_veg is zero
 		patch[0].wilting_point *= (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
+		//printf("\n [rootzone.potential_sat %lf] \n", patch[0].rootzone.potential_sat);
 		delta_unsat_zone_storage = min(patch[0].rz_storage-patch[0].wilting_point, delta_unsat_zone_storage);
 		delta_unsat_zone_storage = max(delta_unsat_zone_storage, 0.0);
 		}
@@ -2003,7 +2034,7 @@ void		patch_daily_F(
 	}
 	else if(command_line[0].grow_flag > 0 && command_line[0].multiscale_flag == 1 ){
 
-        if (patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type != NON_VEG) {
+        if (patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type != NON_VEG && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 ) {
 
                 resolve_sminn_competition(&(patch[0].soil_ns),patch[0].surface_NO3,
                         patch[0].surface_NH4,
@@ -2260,10 +2291,12 @@ void		patch_daily_F(
 
 	/* move solute, need to improve the code too */
 	 // need to move the solutes as well
-        if(unsat_drainage > 0.0 && command_line[0].grow_flag > 0 && (patch[0].rz_storage + patch[0].unsat_storage) > ZERO){
+        if(unsat_drainage > ZERO && command_line[0].grow_flag > 0 && (patch[0].rz_storage + patch[0].unsat_storage) > ZERO){//0.0 is the problem
             // cap_rise also carries satSolute up to unsat
 
-                double tmp_ratio = max(0.0,min(1.0,unsat_drainage/( patch[0].unsat_storage + patch[0].rz_storage))); // rz_drainage/patch[0].rz_storage * unsat_drainage/rz_drainage
+                tmp_ratio = max(0.0,min(1.0,unsat_drainage/( patch[0].unsat_storage + patch[0].rz_storage))); // rz_drainage/patch[0].rz_storage * unsat_drainage/rz_drainage
+                patch[0].unsat_drain_ratio = tmp_ratio;
+                //printf("unsat_drain_ratio %lf \n", tmp_ratio);
                 patch[0].sat_NO3 += patch[0].soil_ns.nitrate * tmp_ratio;//patch[0].soil_defaults[0][0].rtz2NO3prop[patch[0].soil_defaults[0][0].active_zone_index]*tmp_ratio;
                 patch[0].sat_NH4 += patch[0].soil_ns.sminn * tmp_ratio;//patch[0].soil_defaults[0][0].rtz2NH4prop[patch[0].soil_defaults[0][0].active_zone_index]*tmp_ratio;
                 patch[0].sat_DOC += patch[0].soil_cs.DOC * tmp_ratio;//patch[0].soil_defaults[0][0].rtz2DOMprop[patch[0].soil_defaults[0][0].active_zone_index]*tmp_ratio;
@@ -2329,9 +2362,9 @@ void		patch_daily_F(
 
 	//debug
 	/*if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-	  patch[0].soil_ns.nitrate<0 || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-	  patch[0].soil_ns.sminn<0 || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<0 ||
-	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<0)
+	  patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+	  patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
+	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO)
 	  printf("patch daily F5 N balance issue [%d,%d]{%e,%e,%e,%e}\n",
           patch[0].ID,
           patch[0].drainage_type,
@@ -2356,21 +2389,21 @@ void		patch_daily_F(
 		}
 
 		//debug
-		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<0 || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<0 || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<0 ||
-     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<0 ||
+	/*	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO ||
      patch[0].sat_NO3 != patch[0].sat_NO3 ||
-     patch[0].sat_NO3 <0 ||
+     patch[0].sat_NO3 <ZERO ||
      patch[0].sat_NH4 != patch[0].sat_NH4 ||
-     patch[0].sat_NH4 <0 )
+     patch[0].sat_NH4 <ZERO )
 		 printf("patch daily F6 after update decom [%d]{%e,%e,%e,%e},{sat_NO3 %lf, sat_NH4 %lf}\n",
            patch[0].ID,
            patch[0].soil_ns.nitrate,
            patch[0].soil_ns.sminn,
            patch[0].soil_cs.DOC,
            patch[0].soil_ns.DON, patch[0].sat_NO3, patch[0].sat_NH4
-		  );
+		  ); */
 
 
 		if (patch[0].soil_defaults[0][0].DON_production_rate > ZERO) {
@@ -2392,25 +2425,25 @@ void		patch_daily_F(
 				 patch[0].ndf.do_litr4n_loss);
 		}
 		//debug
-		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<0 ||
+	/*	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<ZERO ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.sminn<ZERO ||
      patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_ns.DON<ZERO ||
      patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<0 ||
+     patch[0].soil_cs.DOC<ZERO ||
      patch[0].sat_NO3 != patch[0].sat_NO3 ||
-     patch[0].sat_NO3 <0 ||
+     patch[0].sat_NO3 <ZERO ||
      patch[0].sat_NH4 != patch[0].sat_NH4 ||
-     patch[0].sat_NH4 <0 )
+     patch[0].sat_NH4 <ZERO )
 		 printf("patch daily F7 after DOM [%d]{%e,%e,%e,%e},{sat_NO3 %lf, sat_NH4 %lf}\n",
            patch[0].ID,
            patch[0].soil_ns.nitrate,
            patch[0].soil_ns.sminn,
            patch[0].soil_cs.DOC,
            patch[0].soil_ns.DON, patch[0].sat_NO3, patch[0].sat_NH4
-		  );
+		  ); */
 
 		if ( update_nitrif(
 			&(patch[0].soil_cs),
@@ -2430,25 +2463,25 @@ void		patch_daily_F(
 		}
 
 		//debug
-		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<0 ||
+	/*	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<ZERO ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.sminn<ZERO ||
      patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_ns.DON<ZERO ||
      patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<0||
+     patch[0].soil_cs.DOC<ZERO||
      patch[0].sat_NO3 != patch[0].sat_NO3 ||
-     patch[0].sat_NO3 <0 ||
+     patch[0].sat_NO3 <ZERO ||
      patch[0].sat_NH4 != patch[0].sat_NH4 ||
-     patch[0].sat_NH4 <0 )
+     patch[0].sat_NH4 <ZERO )
 		 printf("patch daily F8 after nitrif [%d]{%e,%e,%e,%e},{sat_NO3 %lf, sat_NH4 %lf}\n",
            patch[0].ID,
            patch[0].soil_ns.nitrate,
            patch[0].soil_ns.sminn,
            patch[0].soil_cs.DOC,
            patch[0].soil_ns.DON, patch[0].sat_NO3, patch[0].sat_NH4
-		  );
+		  ); */
 
 		if ( update_denitrif(
 			&(patch[0].soil_cs),
@@ -2463,25 +2496,25 @@ void		patch_daily_F(
 		}
 
 		// check the update debug
-		 if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<0 ||
+	/*	 if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+     patch[0].soil_ns.nitrate<ZERO ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.sminn<ZERO ||
      patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_ns.DON<ZERO ||
      patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<0 ||
+     patch[0].soil_cs.DOC<ZERO ||
      patch[0].sat_NO3 != patch[0].sat_NO3 ||
-     patch[0].sat_NO3 <0 ||
-     patch[0].sat_NH4 != patch[0].sat_NH4 ||
-     patch[0].sat_NH4 <0 )
+     patch[0].sat_NO3 <ZERO )//||
+   //  patch[0].sat_NH4 != patch[0].sat_NH4 ||
+    // patch[0].sat_NH4 <ZERO )
 		 printf("patch daily F9 after denitrif [%d]{%e,%e,%e,%e},{sat_NO3 %lf, sat_NH4 %lf}\n",
            patch[0].ID,
            patch[0].soil_ns.nitrate,
            patch[0].soil_ns.sminn,
            patch[0].soil_cs.DOC,
            patch[0].soil_ns.DON, patch[0].sat_NO3, patch[0].sat_NH4
-		  );
+		  ); */
 
 
 	} //line 2150 grow
@@ -2514,7 +2547,11 @@ void		patch_daily_F(
 
 		}
 
-
+    if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
+        printf("\npatch daily F 2525 NH4 < ZERO");
+         patch[0].sat_NH4 = 0.0; }
+    if (patch[0].sat_NO3 != patch[0].sat_NO3 || patch[0].sat_NO3 < -0.00001) {
+         patch[0].sat_NO3 = 0.0;  }
 
 	patch[0].soil_cs.totalc = ((patch[0].soil_cs.soil1c)
 		+ (patch[0].soil_cs.soil2c) +	(patch[0].soil_cs.soil3c)
@@ -2524,7 +2561,7 @@ void		patch_daily_F(
 		+ (patch[0].litter_cs.litr4c));
 	patch[0].soil_ns.totaln = ((patch[0].soil_ns.soil1n)
 		+ (patch[0].soil_ns.soil2n) + (patch[0].soil_ns.soil3n)
-		+ (patch[0].soil_ns.soil4n) + (patch[0].soil_ns.nitrate)
+		+ (patch[0].soil_ns.soil4n) + (patch[0].soil_ns.nitrate) + (patch[0].sat_NO3) + (patch[0].sat_NH4)// maybe here 20210903
 		+ (patch[0].soil_ns.sminn));
 	patch[0].totaln += (patch[0].soil_ns.totaln + (patch[0].litter_ns.litr1n)
 		+ (patch[0].litter_ns.litr2n) + (patch[0].litter_ns.litr3n)
@@ -2734,7 +2771,8 @@ if ( command_line[0].verbose_flag == -5 ){
 				//exit(EXIT_FAILURE);} */
 
 
-
+    if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
+        printf("\nresolve sminn competition NH4 < ZERO");}
 
 
 

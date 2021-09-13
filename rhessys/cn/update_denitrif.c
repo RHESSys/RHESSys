@@ -66,21 +66,23 @@ int update_denitrif(
 	double fnitrate, fCO2;
 	double hr, nitrate_ratio, perc_sat;
 	double resource_satNO3;
+	resource_satNO3 = 0.0;
+	perc_sat = 0.0;
 
 
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
 	double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
 
 	ok = 1;
-
-	        //----------- dynamic
+    if (patch[0].sat_NO3 < ZERO) patch[0].sat_NO3 = 0.0;
+	        //----------- dynamic means part of water table is inside of active_zone. 0z is z converted to water content
         if( patch[0].soil_defaults[0][0].active_zone_z > patch[0].sat_deficit_z){
             theta = (patch[0].rz_storage + patch[0].unsat_storage + patch[0].soil_defaults[0][0].active_zone_sat_0z - patch[0].sat_deficit) * patch[0].soil_defaults[0][0].active_zone_sat_0z_1;
 
             perc_sat = max(0.0,min(1.0,(patch[0].soil_defaults[0][0].active_zone_sat_0z - patch[0].sat_deficit)/patch[0].available_soil_water));
             // change here
 
-        }else if(patch[0].soil_defaults[0][0].active_zone_z > patch[0].rootzone.depth){
+        }else if(patch[0].soil_defaults[0][0].active_zone_z > patch[0].rootzone.depth){ // means water table not reach the active zone
             theta = (patch[0].rz_storage+patch[0].unsat_storage) / patch[0].sat_deficit; // approximate
             perc_sat = 0.0;
         }else{
@@ -88,9 +90,11 @@ int update_denitrif(
             perc_sat = 0.0;
         }
 
-        resource_satNO3 = perc_sat*patch[0].sat_NO3;
+       // resource_satNO3 = perc_sat*patch[0].sat_NO3;
 
 	if ((theta <= ZERO) || (theta > 1.0)) theta = 1.0;
+    if (patch[0].sat_deficit <= ZERO) theta = 1;
+
 	if ((ns_soil->nitrate + patch[0].sat_NO3) > ZERO) {
 		/*--------------------------------------------------------------*/
 		/*	compute denitrification rate				*/
@@ -121,13 +125,16 @@ int update_denitrif(
 				water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
 
         //double resource_satNO3 = perc_sat*patch[0].sat_NO3; // NEW NREN
-		nitrate_ratio = (ns_soil->nitrate + resource_satNO3)
-			/ (cs_soil->totalc + ns_soil->totaln) * 1e6; //NREN totalN doesn't include in patch_daily_F.c 2496
+       // resource_satNO3 = perc_sat*patch[0].sat_NO3;
+		nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)
+			/ (cs_soil->totalc + ns_soil->totaln) * 1e6; //NREN totalN doesn't include in patch_daily_F.c 2496 n20210903 maybe here is the bug
+        //printf("\n nitrate ratio %lf", nitrate_ratio);
 		/*--------------------------------------------------------------*/
 		/*	maximum denitrfication (kg/ha) based on available	*/
 		/*		N03							*/
 		/*--------------------------------------------------------------*/
 		fnitrate = atan(PI*0.002*(nitrate_ratio - 180)) * 0.004 / PI + 0.0011;
+		//printf("\n nitrate scale factor %lf", fnitrate);
 		/*--------------------------------------------------------------*/
 		/*	maximum denitrfication (kg/ha) based on available	*/
 		/*	carbon substrate - estimated from heter. respiration    */
@@ -152,18 +159,18 @@ int update_denitrif(
 	/*--------------------------------------------------------------*/
 	/*	update state and flux variables				*/
 	/*--------------------------------------------------------------*/
-	denitrify = min(denitrify, (ns_soil->nitrate + resource_satNO3));
+	denitrify = min(denitrify, (ns_soil->nitrate + patch[0].sat_NO3));
 	denitrify = max(0.0, denitrify);
 	ns_soil->nvolatilized_snk += denitrify;
 	ndf->sminn_to_nvol = denitrify;
 
 	if(ns_soil->nitrate > ZERO) {
-	 ns_soil->nitrate = ns_soil->nitrate - denitrify * ns_soil->nitrate/(resource_satNO3 + ns_soil->nitrate);
-	 ns_soil->nitrate = max(0, ns_soil->nitrate);} //New NREN
+	 ns_soil->nitrate = ns_soil->nitrate - denitrify * ns_soil->nitrate/(patch[0].sat_NO3 + ns_soil->nitrate);
+	 ns_soil->nitrate = max(0.0, ns_soil->nitrate);} //New NREN
 
-	if(resource_satNO3 > ZERO) {
-	 patch[0].sat_NO3 = patch[0].sat_NO3 - denitrify * resource_satNO3/(resource_satNO3 + ns_soil->nitrate);
-	 patch[0].sat_NO3 = max(0, patch[0].sat_NO3);}
+	if(patch[0].sat_NO3 > ZERO) {
+	 patch[0].sat_NO3 = patch[0].sat_NO3 - denitrify * patch[0].sat_NO3/(patch[0].sat_NO3 + ns_soil->nitrate);
+	 patch[0].sat_NO3 = max(0.0, patch[0].sat_NO3);}
 
 	ndf->denitrif = denitrify;
 

@@ -32,6 +32,7 @@
 #include "rhessys.h"
 
 void compute_patch_family_litter_routing(struct zone_object *zone,
+                                    struct 	date 			current_date,
                                   struct command_line_object *command_line)
 {
 
@@ -47,8 +48,9 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
     int p_ct_skip;       // number of patches in patch family without skipped patches
     //double wet_mean;     // mean wetness for rz+unsat, meters water
     //double wet_mean_sat; // mean wetness for sat zone, meters water
-    double area_sum;     // sum of areas in patch family
-    double area_sum_g;   // sum of gaining patches area
+   // double area_sum;     // sum of areas in patch family
+    //double area_sum_g;   // sum of gaining patches area
+
 
 
     /*--------------------------------------------------------------*/
@@ -63,8 +65,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         /*	Patch family definitions & initializations                  */
         /*--------------------------------------------------------------*/
         p_ct = zone[0].patch_families[pf][0].num_patches_in_fam; // for simplicity line46
-
-        /* Definitions */
+                /* Definitions */
         int skip1[p_ct], skip2[p_ct], skip3[p_ct], skip4[p_ct], skip5[p_ct];         // 0 = skip, 1 = lose, 2 = gain
         int no_veg_patch[p_ct];
         double dL_c1[p_ct], dL_c2[p_ct], dL_c3[p_ct], dL_c4[p_ct], dL_c5[p_ct];
@@ -72,7 +73,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         double dG_c1[p_ct], dG_c2[p_ct], dG_c3[p_ct], dG_c4[p_ct], dG_c5[p_ct];
         double dG_n1[p_ct], dG_n2[p_ct], dG_n3[p_ct], dG_n4[p_ct], dG_n5[p_ct];
 
-        int p_ct_skip;
+
         int p_no_veg, share_litter; //if no no-veg patches, then no share
         double area_sum; //area is integer causing the carbon not balanced shoud use float //REN less
         double area_sum_g; //area sum of all gain (no-veg) patches
@@ -102,6 +103,8 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         double rooting_depth_mean;
 
         struct  patch_object            *patches;
+
+
         /* Initializations */
         skip1[p_ct], skip2[p_ct], skip3[p_ct], skip4[p_ct], skip5[p_ct];     // 0 = skip, 1 = lose, 2 = gain
         no_veg_patch[p_ct];
@@ -141,14 +144,50 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         litter_n_adjust_total1 = 0.0, litter_n_adjust_total2 = 0, litter_n_adjust_total3 =0, litter_n_adjust_total4 = 0, soil_n_adjust_total4 = 0;
         rooting_depth_mean = 0.0;
 
+        /*----------------------------------------------------------------------------------------*/
+        /* the mean root depth is calculated at daily time step, but litter is at yearly time step*/
+        /*-----------------------------------------------------------------------------------------*/
+        for (i = 0; i< zone[0].patch_families[pf][0].num_patches_in_fam; i++)
+        {
+             patches = zone[0].patch_families[pf][0].patches[i];
 
+             if (zone[0].patch_families[pf][0].num_patches_in_fam > 1) {
+
+                rooting_depth_mean += patches[0].rootzone.depth * patches[0].area;
+                area_sum += patches[0].area;
+
+             }//if fam>1
+
+        }//for 148
+        // second loop assgin this mean root depth to no-veg patches
+
+
+        if (area_sum > ZERO) {
+                rooting_depth_mean /= area_sum;
+             } //if 158
+        else {
+                rooting_depth_mean = 0.0;
+             } //else 161
+
+        for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
+        {
+            patches = zone[0].patch_families[pf][0].patches[i];
+            if ((patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
+                     patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 )
+            {
+                patches[0].rooting_depth_mean = rooting_depth_mean;
+            }//if hotspot 172
+
+        }//for fam 167
         /*--------------------------------------------------------------*/
         /*	Loop 1 - Get litter for each patch family                */
         /*--------------------------------------------------------------*/
+
         if (command_line[0].verbose_flag == -6)
             printf("||Loop 1 Pre-litter-transfer ||\n");
+        area_sum = 0.0; //the previous area_sum can affect the next step calcualtion since area_sum += area
 
-
+        if (current_date.month == 9 && current_date.day == 30) { // only happens once a year on sep/30
 
         for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
         {
@@ -199,7 +238,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 soil4n_mean += patches[0].soil_ns.soil4n * patches[0].area;
 
                 //for mineralization if no-veg patches use mean_rootdepth instead of zero
-                rooting_depth_mean += patches[0].rootzone.depth * patches[0].area;
+                //rooting_depth_mean += patches[0].rootzone.depth * patches[0].area;
                 // area sum (patch fam without skipped patches)
                 area_sum += patches[0].area;
 
@@ -233,14 +272,14 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
             litr1c_mean /= area_sum, litr2c_mean /= area_sum, litr3c_mean /= area_sum, litr4c_mean /= area_sum;
             litr1n_mean /= area_sum, litr2n_mean /= area_sum, litr3n_mean /= area_sum, litr4n_mean /= area_sum;
             soil4c_mean /= area_sum, soil4n_mean /= area_sum;
-            rooting_depth_mean /= area_sum;
+            //rooting_depth_mean /= area_sum;
         }
         else
         {
             litr1c_mean = 0.0, litr2c_mean = 0.0, litr3c_mean = 0.0, litr4c_mean = 0.0;
             litr1n_mean = 0.0, litr2n_mean = 0.0, litr3n_mean = 0.0, litr4n_mean = 0.0;
             soil4c_mean = 0.0, soil4n_mean = 0.0;
-            rooting_depth_mean = 0.0;
+            //rooting_depth_mean = 0.0;
         }
         //if there is no no-veg patches no need to share
         if(p_no_veg == 0) {
@@ -259,7 +298,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
         /*--------------------------------------------------------------*/
         /*  loop 2, loop through losing (>mean) patches                 */
         /*--------------------------------------------------------------*/
-    if (share_litter == 1) {// here to control share or not share
+    if (share_litter > ZERO) {// here to control share or not share
 
         if (command_line[0].verbose_flag == -6){
             printf("\n ==============================\n");
@@ -274,7 +313,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 printf("\n ID %d |", patches[0].ID);
             /* litter 1 pool loop */
             // if - no skip, patches are veg patches, and have litter >zer0
-            if (skip1[i] > 0 && (patches[0].litter_cs.litr1c) > ZERO &&
+            if (skip1[i] > 0 && (patches[0].litter_cs.litr1c) > ZERO && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                  (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
                  (p_ct_skip > p_no_veg) && patches[0].litter_cs.litr1c > litr1c_mean &&
                   patches[0].litter_ns.litr1n > litr1n_mean)
@@ -312,7 +351,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                 dL_c1[i] = 0; //
                 dL_n1[i] = 0;
                 // here set no veg patch a mean root depth for mineralization
-                patches[0].rooting_depth_mean = rooting_depth_mean;
+                //patches[0].rooting_depth_mean = rooting_depth_mean;
             }
             else
             {
@@ -321,7 +360,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
             } // end of litter1
 
         /* litter 2 */
-            if (skip2[i] > 0 && (patches[0].litter_cs.litr2c) > ZERO &&
+            if (skip2[i] > 0 && (patches[0].litter_cs.litr2c) > ZERO && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                  (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
                  (p_ct_skip > p_no_veg) && patches[0].litter_cs.litr2c > litr2c_mean &&  // p_ct_skip number of total patches > p_no_veg number of no veg patches, mean not all are no-veg
                   patches[0].litter_ns.litr2n > litr2n_mean)
@@ -362,7 +401,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
             } // end of litter2
         /* litter 3 */
             if (skip3[i] > 0 && (patches[0].litter_cs.litr3c) > ZERO &&
-                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
+                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                  (p_ct_skip > p_no_veg) && patches[0].litter_cs.litr3c > litr3c_mean &&  // p_ct_skip number of total patches > p_no_veg number of no veg patches, mean not all are no-veg
                   patches[0].litter_ns.litr3n > litr3n_mean)
             {
@@ -403,7 +442,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
         /* litter 4 */
             if (skip4[i] > 0 && (patches[0].litter_cs.litr4c) > ZERO &&
-                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
+                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                  (p_ct_skip > p_no_veg) && patches[0].litter_cs.litr4c > litr4c_mean &&  // p_ct_skip number of total patches > p_no_veg number of no veg patches, mean not all are no-veg
                   patches[0].litter_ns.litr4n > litr4n_mean)
             {
@@ -428,8 +467,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
             }
 
             else if (skip4[i] > 0 && (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) == NON_VEG &&
-                     patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1
-                        )
+                     patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
             {
             // is a gaining patch
                 skip4[i] = 2; // to do
@@ -445,7 +483,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
 
         /* soil 4 */
             if (skip5[i] > 0 && (patches[0].soil_cs.soil4c) > ZERO &&
-                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
+                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                  (p_ct_skip > p_no_veg) && patches[0].soil_cs.soil4c > soil4c_mean &&  // p_ct_skip number of total patches > p_no_veg number of no veg patches, mean not all are no-veg
                   patches[0].soil_ns.soil4n > soil4n_mean)
             {
@@ -930,7 +968,7 @@ if ((dG_c_act5 - dL_c_act5) < ZERO && (dG_n_act5 - dL_n_act5)< ZERO ){ //REN LES
             // adjust the litter to no-veg patches(gainers)
             // litter 1
             if (skip1[i] == 1 && patches[0].litter_cs.litr1c >= litr1c_mean &&
-                patches[0].litter_ns.litr1n >= litr1n_mean &&
+                patches[0].litter_ns.litr1n >= litr1n_mean && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
                   litter_c_adjust_total1 > ZERO && litter_n_adjust_total1 > ZERO
                  )
@@ -954,7 +992,7 @@ if ((dG_c_act5 - dL_c_act5) < ZERO && (dG_n_act5 - dL_n_act5)< ZERO ){ //REN LES
             //}
             /* litter 2 */
              if (skip2[i] == 1 &&
-                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
+                (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                  patches[0].litter_cs.litr2c >= litr2c_mean && litter_c_adjust_total2 > ZERO && litter_n_adjust_total2 >ZERO &&
                  patches[0].litter_ns.litr2n >= litr2n_mean)
             {
@@ -975,7 +1013,7 @@ if ((dG_c_act5 - dL_c_act5) < ZERO && (dG_n_act5 - dL_n_act5)< ZERO ){ //REN LES
                 }
 
             /* litter 3 */
-             if (skip3[i] == 1 &&
+             if (skip3[i] == 1 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG && !isnan(litter_c_adjust_total3) && !isnan(litter_n_adjust_total3) &&
                  patches[0].litter_cs.litr3c >= litr3c_mean && litter_c_adjust_total3 > ZERO && litter_n_adjust_total3 >ZERO && // this is to remove the -nan
                  patches[0].litter_ns.litr3n >= litr3n_mean)
@@ -996,7 +1034,7 @@ if ((dG_c_act5 - dL_c_act5) < ZERO && (dG_n_act5 - dL_n_act5)< ZERO ){ //REN LES
 
                 }
             /* litter 4 */
-             if (skip4[i] == 1 &&
+             if (skip4[i] == 1 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
                  patches[0].litter_cs.litr4c >= litr4c_mean && litter_c_adjust_total4 > ZERO && litter_n_adjust_total4 > ZERO &&
                  patches[0].litter_ns.litr4n >= litr4n_mean)
@@ -1020,7 +1058,7 @@ if ((dG_c_act5 - dL_c_act5) < ZERO && (dG_n_act5 - dL_n_act5)< ZERO ){ //REN LES
 
                 }
             /* soil 4 */
-             if (skip5[i] == 1 &&
+             if (skip5[i] == 1 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 &&
                 (patches[0].canopy_strata[0][0].defaults[0][0].epc.veg_type) != NON_VEG &&
                  patches[0].soil_cs.soil4c >= soil4c_mean && soil_c_adjust_total4 > ZERO && soil_n_adjust_total4 > ZERO &&
                  patches[0].soil_ns.soil4n >= soil4n_mean)// here is the gaining patches since they are at leat is mean so use >= there should be a simplier way to identify these gaining patches from last roung
@@ -1043,7 +1081,7 @@ if ((dG_c_act5 - dL_c_act5) < ZERO && (dG_n_act5 - dL_n_act5)< ZERO ){ //REN LES
                 patches[0].soil_ns.soil4n += (soil_n_adjust4 / patch_area);
 
                 }
-            }
+            } //end fo loop4
         } //end if share_litter line 257
         /*--------------------------------------------------------------*/
         /*	Testing -_-  loop 5                                            	*/
@@ -1158,8 +1196,8 @@ if ((dG_c_act5 - dL_c_act5) < ZERO && (dG_n_act5 - dL_n_act5)< ZERO ){ //REN LES
 
         if (command_line[0].verbose_flag == -6)
         printf("\n end of routing litter \n ==============================\n");
-
-    } // end patch family loop
+        }//end of current date condition 186
+    } // end patch family loop 97
 
     return;
 }

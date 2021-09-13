@@ -88,8 +88,8 @@ int resolve_sminn_competition(
     if(patch[0].available_soil_water>0){
         patch[0].rtzSatNO3 = patch[0].sat_NO3 * max(patch[0].rootzone.potential_sat-patch[0].sat_deficit,0.0)/patch[0].available_soil_water;
     }//if
-    sum_avail = sum_avail + patch[0].rtzSatNO3 + patch[0].rtzSatNH4;
-
+    //sum_avail = sum_avail + patch[0].rtzSatNO3 + patch[0].rtzSatNH4;
+    sum_avail = sum_avail + patch[0].sat_NO3 + patch[0].sat_NH4;//test N balance
      //printf("\n|| [ns_soil.perc_inroot] %f, [perc_inroot] %f || ", ns_soil->perc_inroot, perc_inroot);
 
 
@@ -131,6 +131,7 @@ int resolve_sminn_competition(
 			ndf->plant_avail_uptake = actual_uptake;
 		}
 	}
-
+    if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
+        printf("\nresolve sminn competition NH4 %e< ZERO", patch[0].sat_NH4);}
 	return(0);
 } /* end resolve_sminn_competition.c */

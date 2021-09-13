@@ -288,14 +288,29 @@ void compute_subsurface_routing_hourly(
 					-1.0 * patch[0].sat_deficit);
 
 			if (grow_flag > 0) {
-				patch[0].soil_ns.nitrate += (patch[0].soil_ns.NO3_Qin
+				/*patch[0].soil_ns.nitrate += (patch[0].soil_ns.NO3_Qin
 						- patch[0].soil_ns.NO3_Qout);
 				patch[0].soil_ns.sminn += (patch[0].soil_ns.NH4_Qin
 						- patch[0].soil_ns.NH4_Qout);
 				patch[0].soil_cs.DOC += (patch[0].soil_cs.DOC_Qin
 						- patch[0].soil_cs.DOC_Qout);
 				patch[0].soil_ns.DON += (patch[0].soil_ns.DON_Qin
-						- patch[0].soil_ns.DON_Qout);
+						- patch[0].soil_ns.DON_Qout); */
+
+
+                patch[0].soil_ns.NO3_Qout = min(patch[0].sat_NO3, patch[0].soil_ns.NO3_Qout);
+                patch[0].soil_ns.NH4_Qout = min(patch[0].sat_NH4, patch[0].soil_ns.NH4_Qout);
+                patch[0].soil_cs.DOC_Qout = min(patch[0].sat_DOC, patch[0].soil_cs.DOC_Qout);
+                patch[0].soil_ns.DON_Qout = min(patch[0].sat_DON, patch[0].soil_ns.DON_Qout);
+                patch[0].sat_NO3 += (patch[0].soil_ns.NO3_Qin - patch[0].soil_ns.NO3_Qout);
+                patch[0].sat_NH4 += (patch[0].soil_ns.NH4_Qin - patch[0].soil_ns.NH4_Qout);
+                patch[0].sat_DOC += (patch[0].soil_cs.DOC_Qin - patch[0].soil_cs.DOC_Qout);
+                patch[0].sat_DON += (patch[0].soil_ns.DON_Qin - patch[0].soil_ns.DON_Qout);
+
+                patch[0].sat_NO3 = max(patch[0].sat_NO3, 0);
+                patch[0].sat_NH4 = max(patch[0].sat_NH4, 0);
+                patch[0].sat_DOC = max(patch[0].sat_DOC, 0);
+                patch[0].sat_DON = max(patch[0].sat_DON, 0);
 			}
 
 			/*--------------------------------------------------------------*/
@@ -418,7 +433,7 @@ void compute_subsurface_routing_hourly(
                                         patch[0].soil_defaults[0][0].DOC_adsorption_rate,
 										26,patch);
 						patch[0].surface_DOC += Nout;
-						patch[0].soil_cs.DOC -= Nout;
+						patch[0].sat_DOC -= Nout; //Nren 20210907
 
 					}
 
@@ -447,7 +462,7 @@ void compute_subsurface_routing_hourly(
                                         patch[0].soil_defaults[0][0].DON_adsorption_rate,
 										23,patch);
 						patch[0].surface_DON += Nout;
-						patch[0].soil_ns.DON -= Nout;
+						patch[0].sat_DON -= Nout;
 					}
 					if (grow_flag > 0) {
 						/*Nout =
@@ -474,7 +489,7 @@ void compute_subsurface_routing_hourly(
                                         patch[0].soil_defaults[0][0].NO3_adsorption_rate,
 										17,patch);
 						patch[0].surface_NO3 += Nout;
-						patch[0].soil_ns.nitrate -= Nout;
+						patch[0].sat_NO3 -= Nout;
 					}
 
 					if (grow_flag > 0) {
@@ -502,7 +517,7 @@ void compute_subsurface_routing_hourly(
                                         patch[0].soil_defaults[0][0].NH4_adsorption_rate,
 										20,patch);
 						patch[0].surface_NH4 += Nout;
-						patch[0].soil_ns.sminn -= Nout;
+						patch[0].sat_NH4 -= Nout;
 					}
 				}
 				/*--------------------------------------------------------------*/
@@ -1044,6 +1059,9 @@ void compute_subsurface_routing_hourly(
 		if (hillslope[0].hillslope_outflow <= command_line[0].thresholds[STREAMFLOW])
 			hillslope[0].acc_year.num_threshold += 1;
 	}
+
+    if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
+        printf("\nresolve sminn competition NH4 < ZERO");}
 
 	return;
 

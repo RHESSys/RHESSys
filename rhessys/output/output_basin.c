@@ -82,6 +82,7 @@ void	output_basin(			int routing_flag,
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
+	double acap_rise_ratio, aunsat_drain_ratio, awater_drop_ratio, awater_rise_ratio, asoil_water;
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
@@ -164,6 +165,8 @@ void	output_basin(			int routing_flag,
 	alitrc = 0.0;
 	acdrip = 0.0;
 	acga = 0.0;
+	acap_rise_ratio = 0.0, aunsat_drain_ratio = 0.0, awater_drop_ratio = 0.0, awater_rise_ratio = 0.0;
+	asoil_water = 0.0;
 
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
@@ -193,6 +196,11 @@ void	output_basin(			int routing_flag,
 				arz_drainage += patch[0].rz_drainage * patch[0].area;
 				aunsat_drainage += patch[0].unsat_drainage * patch[0].area;
 				acap_rise += patch[0].cap_rise * patch[0].area;
+				asoil_water += patch[0].available_soil_water * patch[0].area;
+				acap_rise_ratio += patch[0].cap_rise_ratio * patch[0].area;
+				aunsat_drain_ratio += patch[0].unsat_drain_ratio * patch[0].area;
+				awater_drop_ratio += patch[0].water_drop_ratio * patch[0].area;
+				awater_rise_ratio += patch[0].water_rise_ratio * patch[0].area;
 				aevaporation += (patch[0].evaporation + patch[0].evaporation_surf
 					+ patch[0].exfiltration_sat_zone
 					+ patch[0].exfiltration_unsat_zone) * patch[0].area;
@@ -344,6 +352,7 @@ void	output_basin(			int routing_flag,
 	arz_drainage /= aarea ;
 	aunsat_drainage /= aarea ;
 	acap_rise /= aarea ;
+	asoil_water /= aarea;
 	areturn_flow /= aarea ;
 	aevaporation /= aarea ;
 	asnowpack /= aarea  ;
@@ -392,6 +401,10 @@ void	output_basin(			int routing_flag,
 	acLstar /= aarea;
 	acdrip /= aarea;
 	acga /= aarea;
+	acap_rise_ratio /= aarea;
+	aunsat_drain_ratio /= aarea;
+	awater_drop_ratio /= aarea;
+	awater_rise_ratio /= aarea;
 
 	hgw = hgw / basin_area;
 	hgwQout = hgwQout / basin_area;
@@ -424,7 +437,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -500,7 +513,7 @@ void	output_basin(			int routing_flag,
 		aLE_snow,
 		acLstar,
 		acdrip*1000,
-		acga*1000
+		acga*1000, acap_rise_ratio, aunsat_drain_ratio, awater_drop_ratio, awater_rise_ratio, asoil_water
 		);
 	return;
 } /*end output_basin*/

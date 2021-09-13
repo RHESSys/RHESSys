@@ -103,6 +103,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	double streamflow, Qout, Qin_total, Qstr_total;
 	struct patch_object *patch;
 	struct patch_object *neigh;
+	double nitrate, NH4, sat_NO3, sat_NH4;
+	double tmp_ratio, N_decay_rate, DOM_decay_rate, z1, z2;// for calculating water table rise water into the N_sat
 	/*--------------------------------------------------------------*/
 	/*	initializations						*/
 	/*--------------------------------------------------------------*/
@@ -138,6 +140,24 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	hillslope[0].preday_hillslope_sat_deficit = 0.0;
 	hillslope[0].preday_hillslope_return_flow = 0.0;
 	hillslope[0].preday_hillslope_detention_store = 0.0;
+    tmp_ratio = 0.0;
+    z1 = 0.0;
+    z2 = 0.0;
+    nitrate = 0.0, NH4 = 0.0, sat_NO3 = 0.0, sat_NH4 = 0.0;
+
+    int compare_float(double f1, double f2)
+    {
+        float precision = 0.000001;
+        if (((f1 - precision) < f2) &&
+                ((f1 + precision) > f2))
+        {
+            return 0; //equal return 0
+        }
+        else
+        {
+            return 1; //not equal return 1
+        }
+    }
 
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
@@ -172,6 +192,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].overland_flow = 0.0;
 
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
+        N_decay_rate = patch[0].soil_defaults[0][0].N_decay_rate; //NEW NREN
+        DOM_decay_rate = patch[0].soil_defaults[0][0].DOM_decay_rate;
 
 		patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
 				patch[0].soil_defaults[0][0].porosity_0,
@@ -220,6 +242,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].streamNO3_from_surface	= 0.0;
 			patch[0].streamNO3_from_sub = 0.0;
 
+            patch[0].water_drop_ratio = 0.0;
+            patch[0].water_rise_ratio = 0.0;
+
 
 		}
 	}
@@ -237,12 +262,12 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	/*--------------------------------------------------------------*/
 	for (k = 0; k < n_timesteps; k++) {
 
-		patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
+		/*patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
 				patch[0].soil_defaults[0][0].soil_depth, 0.0,
 				-1.0 * patch[0].sat_deficit);
-		patch[0].preday_sat_deficit = patch[0].sat_deficit;
+		patch[0].preday_sat_deficit = patch[0].sat_deficit;*/ //because it is updated every hour
 
     #pragma omp parallel for
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
@@ -253,6 +278,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].hourly[0].streamflow_NO3 = 0;
 			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
 			patch[0].hourly[0].streamflow_NO3_from_surface = 0;
+
+
+
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
 			/*	is routed to downslope patches; saturated throughflow	*/
@@ -283,7 +311,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
     #pragma omp parallel for
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
 			patch = hillslope->route_list->list[i];
-
 			/*--------------------------------------------------------------*/
 			/*	update subsurface 				*/
 			/*-------------------------------------------------------------------------*/
@@ -301,6 +328,11 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 			if (grow_flag > 0) {
 
+			nitrate = patch[0].soil_ns.nitrate;
+			NH4 = patch[0].soil_ns.sminn;
+			sat_NO3 = patch[0].sat_NO3;
+			sat_NH4 = patch[0].sat_NH4;
+
 			/* here N go to sat_N instead of soil_bs originally code are developed by Laurence Lin*/
                  if(patch[0].sat_NO3*1.001 < patch[0].soil_ns.NO3_Qout)
                     printf("sub_routing _Qout[%d]{%e,%e}\n",
@@ -315,10 +347,16 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 patch[0].sat_DOC += (patch[0].soil_cs.DOC_Qin - patch[0].soil_cs.DOC_Qout);
                 patch[0].sat_DON += (patch[0].soil_ns.DON_Qin - patch[0].soil_ns.DON_Qout);
 
-                if( patch[0].sat_deficit > patch[0].preday_sat_deficit){
+                patch[0].sat_NO3 = max(patch[0].sat_NO3, 0);
+                patch[0].sat_NH4 = max(patch[0].sat_NH4, 0);
+                patch[0].sat_DOC = max(patch[0].sat_DOC, 0);
+                patch[0].sat_DON = max(patch[0].sat_DON, 0);
+
+             /*   if( patch[0].sat_deficit > patch[0].preday_sat_deficit){
                     // water table drops
 
                     double sat_leftbehind_frac = (patch[0].sat_deficit - patch[0].preday_sat_deficit) / (patch[0].soil_defaults[0][0].soil_water_cap - patch[0].preday_sat_deficit);//soil_water_cap - sat_deficit is sat_zone capacity
+                    patch[0].water_drop_ratio = sat_leftbehind_frac;
 
                     if(sat_leftbehind_frac<0 || sat_leftbehind_frac>1.0 || patch[0].sat_NO3<0 || patch[0].sat_NO3!=patch[0].sat_NO3) printf("sub_routing (%d) [%e,%e,%e], %f %f %f \n", patch[0].ID, sat_leftbehind_frac, patch[0].soil_ns.nitrate, patch[0].sat_NO3,
                         patch[0].sat_deficit,  patch[0].preday_sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap);
@@ -329,22 +367,91 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                     patch[0].soil_cs.DOC += patch[0].sat_DOC * sat_leftbehind_frac;
                     patch[0].soil_ns.DON += patch[0].sat_DON * sat_leftbehind_frac;
 
-                    patch[0].sat_NO3 *= 1.0 - sat_leftbehind_frac;
-                    patch[0].sat_NH4 *= 1.0 - sat_leftbehind_frac;
-                    patch[0].sat_DOC *= 1.0 - sat_leftbehind_frac;
-                    patch[0].sat_DON *= 1.0 - sat_leftbehind_frac;
+                    patch[0].sat_NO3 *= (1.0 - sat_leftbehind_frac);
+                    patch[0].sat_NH4 *= (1.0 - sat_leftbehind_frac);
+                    patch[0].sat_DOC *= (1.0 - sat_leftbehind_frac);
+                    patch[0].sat_DON *= (1.0 - sat_leftbehind_frac);// why this format is better because if sat_NO3 is zero this cannot go negative
 
-                }// water table drops
+                }// water table drops (what if water table rises
+                else if(patch[0].sat_deficit > ZERO && patch[0].sat_deficit< patch[0].preday_sat_deficit ){// similiar to N leached just no N apsorption
+                    z1 = compute_z_final(
+                                            verbose_flag,
+                                            patch[0].soil_defaults[0][0].porosity_0,//p_0
+                                            patch[0].soil_defaults[0][0].porosity_decay,//p
+                                            patch[0].soil_defaults[0][0].soil_depth,  // soil depth
+                                            0.0, // z_initial
+                                            -patch[0].sat_deficit); //delta water
+                    z2 = compute_z_final(
+                                            verbose_flag,
+                                            patch[0].soil_defaults[0][0].porosity_0,//p_0
+                                            patch[0].soil_defaults[0][0].porosity_decay,//p
+                                            patch[0].soil_defaults[0][0].soil_depth,  // soil depth
+                                            0.0, // z_initial
+                                            -patch[0].preday_sat_deficit); //delta water
+                     if (N_decay_rate > ZERO){
 
-			/*
-				patch[0].soil_ns.nitrate += (patch[0].soil_ns.NO3_Qin
-						- patch[0].soil_ns.NO3_Qout);
-				patch[0].soil_ns.sminn += (patch[0].soil_ns.NH4_Qin
-						- patch[0].soil_ns.NH4_Qout);
-				patch[0].soil_cs.DOC += (patch[0].soil_cs.DOC_Qin
-						- patch[0].soil_cs.DOC_Qout);
-				patch[0].soil_ns.DON += (patch[0].soil_ns.DON_Qin
-						- patch[0].soil_ns.DON_Qout); */
+                        tmp_ratio = 1/ (1.0 - exp(-1.0 * N_decay_rate * patch[0].soil_defaults[0][0].soil_depth) )*
+                                    (exp(-1.0 * N_decay_rate * z1)- exp(-1.0 * N_decay_rate * z2));}// z1 is final, z2 is start
+                        if (tmp_ratio < ZERO ) printf("\nwarning tmp_ratio < ZERO\n");
+                     else if (N_decay_rate == ZERO) {
+                       tmp_ratio = (z2 - z1)/patch[0].soil_defaults[0][0].soil_depth;}
+                       tmp_ratio = min(max(tmp_ratio, 0), 1);
+                      patch[0].water_rise_ratio = tmp_ratio;
+
+
+                      patch[0].sat_NO3 += patch[0].soil_ns.nitrate * tmp_ratio;
+                      patch[0].sat_NH4 += patch[0].soil_ns.sminn * tmp_ratio;//add first, then remove
+                      patch[0].soil_ns.nitrate *= (1 - tmp_ratio);
+                      patch[0].soil_ns.sminn *= (1- tmp_ratio);
+
+                     tmp_ratio = 0.0; // here to make the previous tmp_ratio may affect this tmp_ratio
+                     if (DOM_decay_rate > ZERO) {
+
+                        tmp_ratio = 1/ (1.0 - exp(-1.0 * DOM_decay_rate * patch[0].soil_defaults[0][0].soil_depth) )*
+                                    (exp(-1.0 * DOM_decay_rate * z1)- exp(-1.0 * DOM_decay_rate * (z2))); }// this is the ratio goes from soil_n to sat_n
+                     else if (DOM_decay_rate == 0.0) {
+                      tmp_ratio = (z2 - z1)/patch[0].soil_defaults[0][0].soil_depth;}
+                      tmp_ratio = min(max(tmp_ratio, 0), 1);
+
+                      patch[0].sat_DON += patch[0].soil_ns.DON * tmp_ratio;
+                      patch[0].sat_DOC += patch[0].soil_cs.DOC * tmp_ratio;//add first
+                      patch[0].soil_ns.DON *= (1 - tmp_ratio);
+                      patch[0].soil_cs.DOC *= (1 - tmp_ratio);
+
+                     } //if 344
+                else if (patch[0].sat_deficit <= 0.0 && patch[0].sat_deficit< patch[0].preday_sat_deficit){ // if water reach the surface then all go to sat_NO3, sat_def can be negative
+
+                    tmp_ratio = 0.99; // all soil N go to sat_N
+                    patch[0].water_rise_ratio = tmp_ratio;
+
+                    patch[0].sat_NO3 += patch[0].soil_ns.nitrate*tmp_ratio;//assign first then make them zero!
+                    patch[0].sat_NH4 += patch[0].soil_ns.sminn* tmp_ratio;//+= not =
+                    patch[0].sat_DON += patch[0].soil_ns.DON* tmp_ratio;
+                    patch[0].sat_DOC += patch[0].soil_cs.DOC* tmp_ratio;
+
+                    patch[0].soil_ns.nitrate *= (1 - tmp_ratio); //patch[0].soil_ns.nitrate - patch[0].sat_NO3
+                    patch[0].soil_ns.sminn *= (1 - tmp_ratio);
+                    patch[0].soil_cs.DOC *= (1 - tmp_ratio);
+                    patch[0].soil_ns.DON *=(1 - tmp_ratio);
+
+                    } */
+
+             //check the nitrogen balance: compare_float
+ /*            if( compare_float((nitrate + sat_NO3), (patch[0].soil_ns.nitrate + patch[0].sat_NO3))  || compare_float((NH4 + sat_NH4), (patch[0].soil_ns.sminn + patch[0].sat_NH4))){
+                   printf("\nWarning N not balanced compute sub line440 after water table changes: before-[nitrate %e], [sat_NO3 %e], after-[ns.nitrate %e], [sat_NO3] %e, before-[NH4 %e] [sat_NH4 %e], after-[sminn %e] [sat_NH4 %e] \n",
+                            nitrate, sat_NO3, patch[0].soil_ns.nitrate, patch[0].sat_NO3,
+                            NH4, sat_NH4, patch[0].soil_ns.sminn, patch[0].sat_NH4
+                            );
+                } */
+
+
+            if(patch[0].sat_NO3 < -0.00001) {
+                printf("\n Warning compute_subsurface_routing line447 [sat_NH4 %e] [sat_NO3 %e] is smaller than ZERO", patch[0].sat_NH4, patch[0].sat_NO3);
+                    patch[0].sat_NH4 = 0.0;
+                    patch[0].sat_NO3 = 0.0;
+                    }
+
+
 			}
 
 			/*--------------------------------------------------------------*/
@@ -1109,6 +1216,133 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 	} /* end k  */
 
+    for (i = 0; i < hillslope->route_list->num_patches; i++) {
+			patch = hillslope->route_list->list[i];
+
+            nitrate = patch[0].soil_ns.nitrate;
+			NH4 = patch[0].soil_ns.sminn;
+			sat_NO3 = patch[0].sat_NO3;
+			sat_NH4 = patch[0].sat_NH4;
+
+
+        if( patch[0].sat_deficit > patch[0].preday_sat_deficit){
+                    // water table drops
+
+                    double sat_leftbehind_frac = (patch[0].sat_deficit - patch[0].preday_sat_deficit) / (patch[0].soil_defaults[0][0].soil_water_cap - patch[0].preday_sat_deficit);//soil_water_cap - sat_deficit is sat_zone capacity
+
+                   /* if(sat_leftbehind_frac > 1) printf("water_drop_ratio %lf >1 [sat_deficit %lf], [preday_sat_def %lf], [soil_water_cap %lf] \n",
+                                                       patch[0].water_drop_ratio, patch[0].sat_deficit, patch[0].preday_sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap);
+
+                    if(sat_leftbehind_frac<ZERO || sat_leftbehind_frac>1.0 || patch[0].sat_NO3<ZERO || patch[0].sat_NO3!=patch[0].sat_NO3)
+                            printf("sub_routing (%d) [%lf,%lf,%lf], %f %f %f \n", patch[0].ID, sat_leftbehind_frac, patch[0].soil_ns.nitrate, patch[0].sat_NO3,
+                        patch[0].sat_deficit,  patch[0].preday_sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap);*/
+
+                    sat_leftbehind_frac = min(max(sat_leftbehind_frac, 0), 1);
+                    // for negative "soil_ns.nitrate" problem
+                    patch[0].water_drop_ratio = sat_leftbehind_frac;
+                    patch[0].soil_ns.nitrate += patch[0].sat_NO3 * sat_leftbehind_frac;
+                    patch[0].soil_ns.sminn += patch[0].sat_NH4 * sat_leftbehind_frac;
+                    patch[0].soil_cs.DOC += patch[0].sat_DOC * sat_leftbehind_frac;
+                    patch[0].soil_ns.DON += patch[0].sat_DON * sat_leftbehind_frac;
+
+                    patch[0].sat_NO3 *= (1.0 - sat_leftbehind_frac);
+                    patch[0].sat_NH4 *= (1.0 - sat_leftbehind_frac);
+                    patch[0].sat_DOC *= (1.0 - sat_leftbehind_frac);
+                    patch[0].sat_DON *= (1.0 - sat_leftbehind_frac);// why this format is better because if sat_NO3 is zero this cannot go negative
+
+                }// water table drops (what if water table rises
+                else if(patch[0].sat_deficit > ZERO && patch[0].sat_deficit< patch[0].preday_sat_deficit ){// similiar to N leached just no N apsorption
+                    z1 = compute_z_final(
+                                            verbose_flag,
+                                            patch[0].soil_defaults[0][0].porosity_0,//p_0
+                                            patch[0].soil_defaults[0][0].porosity_decay,//p
+                                            patch[0].soil_defaults[0][0].soil_depth,  // soil depth
+                                            0.0, // z_initial
+                                            -patch[0].sat_deficit); //delta water
+                    z2 = compute_z_final(
+                                            verbose_flag,
+                                            patch[0].soil_defaults[0][0].porosity_0,//p_0
+                                            patch[0].soil_defaults[0][0].porosity_decay,//p
+                                            patch[0].soil_defaults[0][0].soil_depth,  // soil depth
+                                            0.0, // z_initial
+                                            -patch[0].preday_sat_deficit); //delta water
+                     if (N_decay_rate > ZERO){
+
+                        tmp_ratio = 1/ (1.0 - exp(-1.0 * N_decay_rate * patch[0].soil_defaults[0][0].soil_depth) )*
+                                    (exp(-1.0 * N_decay_rate * z1)- exp(-1.0 * N_decay_rate * z2));}// z1 is final, z2 is start
+
+                        if (tmp_ratio < -0.00001 || tmp_ratio != tmp_ratio || tmp_ratio > 1)
+                        {
+                            printf("\nWarning [tmp_ratio %e]< ZERO, [z1 %lf, sat_def %lf], [z2 %lf, pre_sat_def %lf]\n", tmp_ratio, z1, patch[0].sat_deficit, z2, patch[0].preday_sat_deficit);
+                            tmp_ratio = min(max(tmp_ratio, 0), 1);
+                        }
+
+                     else if (N_decay_rate == ZERO) {
+                       tmp_ratio = (z2 - z1)/patch[0].soil_defaults[0][0].soil_depth;}
+
+                       tmp_ratio = min(max(tmp_ratio, 0), 1);
+                      patch[0].water_rise_ratio = tmp_ratio;
+
+
+                      patch[0].sat_NO3 += patch[0].soil_ns.nitrate * tmp_ratio;
+                      patch[0].sat_NH4 += patch[0].soil_ns.sminn * tmp_ratio;//add first, then remove
+                      patch[0].soil_ns.nitrate *= (1 - tmp_ratio);
+                      patch[0].soil_ns.sminn *= (1- tmp_ratio);
+
+                     tmp_ratio = 0.0; // here to make the previous tmp_ratio may affect this tmp_ratio
+                     if (DOM_decay_rate > ZERO)
+                     {
+
+                        tmp_ratio = 1/ (1.0 - exp(-1.0 * DOM_decay_rate * patch[0].soil_defaults[0][0].soil_depth) )*
+                                    (exp(-1.0 * DOM_decay_rate * z1)- exp(-1.0 * DOM_decay_rate * (z2)));// this is the ratio goes from soil_n to sat_n
+                        tmp_ratio = min(max(tmp_ratio, 0), 1);}
+
+                     else if (DOM_decay_rate == 0.0) {
+                      tmp_ratio = (z2 - z1)/patch[0].soil_defaults[0][0].soil_depth;}
+                      tmp_ratio = min(max(tmp_ratio, 0), 1);
+
+                      patch[0].sat_DON += patch[0].soil_ns.DON * tmp_ratio;
+                      patch[0].sat_DOC += patch[0].soil_cs.DOC * tmp_ratio;//add first
+                      patch[0].soil_ns.DON *= (1 - tmp_ratio);
+                      patch[0].soil_cs.DOC *= (1 - tmp_ratio);
+
+                     } //if 344
+                else if (patch[0].sat_deficit <= ZERO && patch[0].sat_deficit< patch[0].preday_sat_deficit &&
+                           (patch[0].soil_ns.nitrate > ZERO || patch[0].soil_ns.sminn > ZERO || patch[0].soil_ns.DON > ZERO || patch[0].soil_cs.DOC>ZERO))
+                           { // if water reach the surface then all go to sat_NO3, sat_def can be negative
+
+                    tmp_ratio = 0.999; // all soil N go to sat_N
+                    patch[0].water_rise_ratio = tmp_ratio;
+
+                    patch[0].sat_NO3 += patch[0].soil_ns.nitrate*tmp_ratio;//assign first then make them zero!
+                    patch[0].sat_NH4 += patch[0].soil_ns.sminn* tmp_ratio;//+= not =
+                    patch[0].sat_DON += patch[0].soil_ns.DON* tmp_ratio;
+                    patch[0].sat_DOC += patch[0].soil_cs.DOC* tmp_ratio;
+
+                    patch[0].soil_ns.nitrate *= (1 - tmp_ratio); //patch[0].soil_ns.nitrate - patch[0].sat_NO3
+                    patch[0].soil_ns.sminn *= (1 - tmp_ratio);
+                    patch[0].soil_cs.DOC *= (1 - tmp_ratio);
+                    patch[0].soil_ns.DON *=(1 - tmp_ratio);
+
+                    }
+
+             //check the nitrogen balance: compare_float
+             if( compare_float((nitrate + sat_NO3), (patch[0].soil_ns.nitrate + patch[0].sat_NO3))  || compare_float((NH4 + sat_NH4), (patch[0].soil_ns.sminn + patch[0].sat_NH4))){
+                   printf("\nWarning compuate_subsurface_routing line 1315 N not balanced after water table changes: [sat_def %lf] before-[nitrate %e], [sat_NO3 %e], after-[ns.nitrate %e], [sat_NO3] %e, before-[NH4 %e] [sat_NH4 %e], after-[sminn %e] [sat_NH4 %e] \n",
+                            patch[0].sat_deficit,
+                            nitrate, sat_NO3, patch[0].soil_ns.nitrate, patch[0].sat_NO3,
+                            NH4, sat_NH4, patch[0].soil_ns.sminn, patch[0].sat_NH4
+                            );
+                }
+
+
+            if(patch[0].sat_NO3 < -0.00001) {
+                printf("\n Warning compute_subsurface_routing line447 [sat_NH4 %e] [sat_NO3 %e] is smaller than ZERO", patch[0].sat_NH4, patch[0].sat_NO3);
+                    patch[0].sat_NH4 = 0.0;
+                    patch[0].sat_NO3 = 0.0;
+                    }
+
+        }// for hillslopes 1218
 	hillslope[0].hillslope_outflow /= hillslope_area;
 	hillslope[0].preday_hillslope_rz_storage /= hillslope_area;
 	hillslope[0].preday_hillslope_unsat_storage /= hillslope_area;

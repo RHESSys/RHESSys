@@ -467,5 +467,7 @@ void  update_drainage_stream(
 		patch[0].return_flow += Qout;
 		patch[0].hourly_sur2stream_flow += Qout;
 		}
+    if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
+        printf("\nresolve sminn competition NH4 < ZERO");}
 
 } /*end update_drainage_stream.c*/

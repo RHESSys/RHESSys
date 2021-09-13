@@ -83,10 +83,15 @@ int update_nitrif(
 	double perc_sat;
 	double resource_satNH4;
 
-
+    resource_satNH4 = 0.0;
+    perc_sat = 0.0;
 	ok = 1;
 	max_nit_rate = 0.0;
 
+    if (patch[0].sat_NH4 < -0.00001) {
+        printf("/n update_nitrification line 92 sat_NH4 < ZERO");
+         patch[0].sat_NH4 = 0.0;
+    }
     //----------- dynamic
         if( patch[0].soil_defaults[0][0].active_zone_z > patch[0].sat_deficit_z){
             theta = (patch[0].rz_storage + patch[0].unsat_storage + patch[0].soil_defaults[0][0].active_zone_sat_0z - patch[0].sat_deficit) * patch[0].soil_defaults[0][0].active_zone_sat_0z_1;
@@ -104,10 +109,13 @@ int update_nitrif(
 
 	if ((theta <= ZERO) || (theta > 1.0))
 		theta = 1.0;
+    if (patch[0].sat_deficit <= ZERO) theta = 1;
 
-    resource_satNH4 = perc_sat*patch[0].sat_NH4;
-    if(patch[0].sat_NH4 < ZERO) printf("Warning update nitrif [sat_NH4 %e] is smaller than ZERO", patch[0].sat_NH4);
-	if ((ns_soil->sminn + patch[0].sat_NH4) > ZERO) {
+    if(patch[0].sat_NH4 >= ZERO) {
+         resource_satNH4 = perc_sat*patch[0].sat_NH4;
+    }
+
+	if ((ns_soil->sminn + patch[0].sat_NH4) > ZERO) {// eventually I didn't use resource satNH4
 
         //resource_satNH4 = perc_sat*patch[0].sat_NH4;
 		/*--------------------------------------------------------------*/
@@ -124,7 +132,7 @@ int update_nitrif(
 		/*--------------------------------------------------------------*/
 		/* compute ammonium conc. in ppm				*/
 		/*--------------------------------------------------------------*/
-		nh4_conc = (ns_soil->sminn + resource_satNH4) / kg_soil * 1000000.0;
+		nh4_conc = (ns_soil->sminn + patch[0].sat_NH4) / kg_soil * 1000000.0;
 
 		/*--------------------------------------------------------------*/
 		/* effect of ammonium conc on nitrification			*/
@@ -173,7 +181,7 @@ int update_nitrif(
 		/* 	by scaling a maximum rate suggested by Parton et al.		*/
 		/*--------------------------------------------------------------*/
 
-		nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * ns_soil->sminn * 1000.0;
+		nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * (ns_soil->sminn + patch[0].sat_NH4) * 1000.0;// here is the problem
 
 	} /* end mineralized N available */
 	else
@@ -182,18 +190,18 @@ int update_nitrif(
 	/*	update state and flux variables				*/
 	/* 	convert from g to kg					*/
 	/*--------------------------------------------------------------*/
-	nitrify = min(nitrify/1000, ns_soil->sminn + resource_satNH4);
+	nitrify = min(nitrify/1000, ns_soil->sminn + patch[0].sat_NH4);
 	nitrify = max(nitrify, 0.0);
 	nitrify = min(nitrify, max_nit_rate);
 	// make sure nitrify is larger than zero and smaller sminn
-	nitrify = min(nitrify, ns_soil->sminn + resource_satNH4);
+	nitrify = min(nitrify, ns_soil->sminn + patch[0].sat_NH4);
 	nitrify = max(nitrify, 0.0);
 
 	ndf->sminn_to_nitrate = nitrify;
 
-	double ratio ;
-	if ((ns_soil->sminn + resource_satNH4) > ZERO) {
-	ratio = ns_soil->sminn / (ns_soil->sminn + resource_satNH4);
+	double ratio = 1; //here
+	if ((ns_soil->sminn + patch[0].sat_NH4) > ZERO) {
+	ratio = ns_soil->sminn / (ns_soil->sminn + patch[0].sat_NH4);
 	ratio = max(min(ratio, 1), 0.0);
 	ns_soil->sminn -= (nitrify) *ratio;
 	ns_soil->sminn = max(0.0, ns_soil->sminn);
@@ -203,7 +211,14 @@ int update_nitrif(
 	patch[0].sat_NH4 = max(0.0, patch[0].sat_NH4);
 	patch[0].sat_NO3 += nitrify * (1 - ratio);
 
+
 	}
+
+    if(patch[0].sat_NH4 < -0.00001 || patch[0].sat_NO3 < -0.00001) {
+       printf("\n Warning update nitrif 218 [sat_NH4 %e] [sat_NO3 %e] is smaller than ZERO", patch[0].sat_NH4, patch[0].sat_NO3);
+        patch[0].sat_NH4 = 0.0;
+        patch[0].sat_NO3 = 0.0;
+    }
 
 
 

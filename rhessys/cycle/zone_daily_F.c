@@ -160,6 +160,7 @@ void		zone_daily_F(
 		struct	command_line_object	*);
     void    compute_patch_famil_litter_routing(
         struct zone_object      *,
+        struct 	date,
         struct command_line_object *);
 
 	/*--------------------------------------------------------------*/
@@ -666,13 +667,14 @@ void		zone_daily_F(
 			   zone[0].Ldown/86.4);
 	}
 
-		if (command_line[0].multiscale_flag == 1 && zone[0].defaults[0][0].route_litter == 1 && current_date.month == 9 && current_date.day == 30) { //canopy_strata[0].defaults[0][0].epc.day_leafoff
+		if (command_line[0].multiscale_flag == 1 && zone[0].defaults[0][0].route_litter == 1){// && current_date.month == 9 && current_date.day == 30) { //canopy_strata[0].defaults[0][0].epc.day_leafoff
 		if (command_line[0].verbose_flag == -6) printf("\n -----Computing patch family litter routing for zone %d, year %d month %d, day %d-------\n", zone[0].ID, current_date.year, current_date.month, current_date.day);
         // here compuate patch family litter sharing between veg patches and no veg patches
         // needs a flag in landuse to turn this on, only happens if there is no-veg patches inside of it
 
             compute_patch_family_litter_routing(
                 zone,
+                current_date,
                 command_line);
 
 	}

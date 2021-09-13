@@ -92,7 +92,7 @@ double	compute_Nsat_leached(
 
 	    /* update sat_deficit reated variables */
     if(patch[0].sat_deficit >= 0){
-        patch[0].sat_deficit = min(patch[0].sat_deficit,patch[0].soil_defaults[0][0].soil_water_cap);
+        patch[0].sat_deficit = min(patch[0].sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap);
         patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;// this is how much sat water
     }else{
         // surface
@@ -116,7 +116,7 @@ double	compute_Nsat_leached(
                 critialZ = log(absorptionConst*patch[0].soil_defaults[0][0].porosity_0) - log(absorptionConst-N0);
                 critialZ *= patch[0].soil_defaults[0][0].porosity_decay;
                 if(critialZ>patch[0].soil_defaults[0][0].soil_depth) critialZ = patch[0].soil_defaults[0][0].soil_depth;
-                if(critialZ<0) critialZ = 0.0;
+                if(critialZ<0 ) critialZ = 0.0; // what if log(0) it will cause -inf
                 // which side?
                 if(patch[0].soil_defaults[0][0].porosity_decay>0 && critialZ>z1){
                     // any z <= critialZ
@@ -160,10 +160,10 @@ double	compute_Nsat_leached(
 	/*	availabe nitrate, so limit export by available	*/
 	/*------------------------------------------------------*/
 
-    //if (nleached > total_nitrate){nleached = total_nitrate;}
+    if (nleached > total_nitrate){nleached = total_nitrate;
+    printf("\n n leached is %lf, total_nitrate is %lf", nleached, total_nitrate);}
 
-
-    if(nleached<0 || nleached!=nleached) printf("leaching[%d, %d]: ->(%e,%e,%e), N0(%e)=(%e), absorptionConst(%e), critialZ_ini(%e), critialZ(%e)>(%e), nleached(%e)<(%e), %e %e %e\n",
+    if(nleached<-0.000001 || nleached!=nleached) printf("leaching[%d, %d]: ->(%e,%e,%e), N0(%e)=(%e), absorptionConst(%e), critialZ_ini(%e), critialZ(%e)>(%e), nleached(%e)<(%e), %e %e %e\n",
            patch[0].ID, signal,
            Qout,Qout_frac,soil_water,
            N0, N_decay_rate,
@@ -172,7 +172,7 @@ double	compute_Nsat_leached(
            critialZ, z1,
            nleached,total_nitrate,
            tmp, patch[0].soil_defaults[0][0].porosity_0, patch[0].soil_defaults[0][0].porosity_decay);
-
+    if (nleached < ZERO || nleached != nleached) nleached = 0.0;
 
 	return(nleached);
 } /* end compute_N_leached */

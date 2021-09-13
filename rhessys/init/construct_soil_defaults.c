@@ -231,7 +231,7 @@ struct soil_default *construct_soil_defaults(
 			default_object_list[i].soil_depth,
 			default_object_list[i].soil_depth,
 			0.0);
-
+        printf("soil water cap is %lf \n", default_object_list[i].soil_water_cap);
 		/*--------------------------------------------------------------*/
 		/* initialization of optional default file parms		*/
 		/*--------------------------------------------------------------*/
@@ -289,8 +289,9 @@ struct soil_default *construct_soil_defaults(
 
         //default_object_list[i].soil_water_cap = p0* p_decay*(1.0-exp(p_decay_1*soildepth));
         default_object_list[i].active_zone_index = (int)(round(default_object_list[i].active_zone_z*1000));
-        default_object_list[i].active_zone_sat_0z = p0* p_decay*(1.0-exp(p_decay_1*default_object_list[i].active_zone_z));
+        default_object_list[i].active_zone_sat_0z = p0* p_decay*(1.0-exp(p_decay_1*default_object_list[i].active_zone_z));//this convert depth to water
         default_object_list[i].active_zone_sat_0z_1 = 1.0/default_object_list[i].active_zone_sat_0z;
+        printf("\n the active_zone_sat_0z is %lf \n", default_object_list[i].active_zone_sat_0z);
 
         int rt_len = (int)(default_object_list[i].soil_depth*1000)+1; //(int)(soildepth*1000) + 1; //
         default_object_list[i].soildepthLen = rt_len;
@@ -299,6 +300,7 @@ struct soil_default *construct_soil_defaults(
             zzz = ii*0.001;
             default_object_list[i].rtz2sat_def_0z[ii] = p0*p_decay*(1.0-exp(p_decay_1*zzz));
             }
+        printf("\n rtz2sat_def_0z is %lf \n", default_object_list[i].rtz2sat_def_0z[ii]);
         default_object_list[i].rtz2sat_def_0z[0] = 0.0;
 
 		/*--------------------------------------------------------------*/

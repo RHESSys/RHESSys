@@ -32,24 +32,24 @@
 #include "rhessys.h"
 
 
-double	compute_N_leached(int verbose_flag, 
-			double total_nitrate, 
-			double Qout, 
-			double s1, 
-			double s2, 
+double	compute_N_leached(int verbose_flag,
+			double total_nitrate,
+			double Qout,
+			double s1,
+			double s2,
 			double m,
 			double gamma,
-			double n_0, 
-			double p, 
-			double N_decay_rate, 
-			double z2_N, 
-			double z2_water, 
+			double n_0,
+			double p,
+			double N_decay_rate,
+			double z2_N,
+			double z2_water,
 			double N_absorption_rate,
-			double *transmissivity) 
-			
-	{ 
-	/*------------------------------------------------------*/ 
-	/*	Local Function Declarations.						*/ 
+			double *transmissivity)
+
+	{
+	/*------------------------------------------------------*/
+	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
     	double  compute_delta_water(
                 int,
@@ -74,7 +74,7 @@ double	compute_N_leached(int verbose_flag,
 		double,
 		double,
 		double);
-		
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -91,7 +91,7 @@ double	compute_N_leached(int verbose_flag,
 	navail = 0.0;
 
 	/*------------------------------------------------------*/
-	/* nitrate export only occurs when Qout > 0.0		*/ 
+	/* nitrate export only occurs when Qout > 0.0		*/
 	/*------------------------------------------------------*/
 	if (Qout > ZERO && total_nitrate > ZERO) {
 	if (s1 < 0.0) s1 = 0.0;
@@ -104,13 +104,13 @@ double	compute_N_leached(int verbose_flag,
 	/*	is 1)						*/
 	/*------------------------------------------------------*/
 	if ((s1 == 0.0) && (s2 == 0.0)) {
-		
-		z2 = -1.0 * p * log (1 - (Qout) / (p * n_0));
+
+		z2 = -1.0 * p * log (1 - (Qout) / (p * n_0));//n_0 is porosity_0 and p is porosity_decay
 		if (z2 > z2_N)
 			z2 = z2_N;
 
 		z1 = 0.0;
-		if (N_decay_rate > ZERO) {	
+		if (N_decay_rate > ZERO) {
 			navail = total_nitrate
 				/ (1.0 - exp(-1.0 * N_decay_rate * z2_N) )
 				* (exp(-1.0 * N_decay_rate * z1)
@@ -125,18 +125,18 @@ double	compute_N_leached(int verbose_flag,
 						z2,
 						N_absorption_rate,
 						p,
-						n_0); 
+						n_0);
 	/*------------------------------------------------------*/
 	/* in return flow Qout/theta = 1 so			*/
 	/*------------------------------------------------------*/
 		if (nabsorbed > navail) {
 			navail=0;
 			}
-		else 
+		else
 		  nleached = navail-nabsorbed;
-		if (nleached > navail) nleached=navail;	
+		if (nleached > navail) nleached=navail;
 	}
-	
+
 	else {
 	/*------------------------------------------------------*/
 	/*	now for regular subsurface flow			*/
@@ -146,17 +146,17 @@ double	compute_N_leached(int verbose_flag,
 			verbose_flag,
 			n_0,
 			p,
-			z2_water,		
+			z2_water,
 			0.0,
 			-s2);
 	z1 = compute_z_final(
 			verbose_flag,
 			n_0,
 			p,
-			z2_water,		
+			z2_water,
 			0.0,
 			-s1);
-	if (N_decay_rate > 0.0) {	
+	if (N_decay_rate > 0.0) {
 		navail = total_nitrate
 			/ (1.0 - exp(-1.0 * N_decay_rate * z2_N) )
 			* (exp(-1.0 * N_decay_rate * z1)
@@ -171,9 +171,9 @@ double	compute_N_leached(int verbose_flag,
 			else
 				navail = total_nitrate * (z2-z1)/(z2_N -  septic_depth);
 		}
-	
+
 		if (navail > total_nitrate) navail=total_nitrate;
-				
+
 	/*------------------------------------------------------*/
 	/* N-leached is mass flux of soluble nitrate	*/
 	/* i.e n_avail / theta * outflow			*/
@@ -185,19 +185,19 @@ double	compute_N_leached(int verbose_flag,
 			z2,
 			z1);
 
-		
+
 		nabsorbed=compute_N_absorbed(verbose_flag,
 			z1,
 			z2,
 			N_absorption_rate,
 			p,
-			n_0); 
+			n_0);
 
 		if (nabsorbed > navail) {
 				navail=0;
 		}
 		else navail = navail-nabsorbed;
-		
+
 		if (available_water > ZERO) {
 			nleached = navail * Qout/available_water;
 		}
@@ -214,7 +214,7 @@ double	compute_N_leached(int verbose_flag,
 		/*nleached = total_nitrate;*/
 
 	nleached = max(nleached, 0.0);
-	
+
 	return(nleached);
 } /* end compute_N_leached */
 

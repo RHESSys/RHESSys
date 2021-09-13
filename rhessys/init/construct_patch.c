@@ -367,6 +367,11 @@ struct patch_object *construct_patch(
 	patch[0].rtzNH4 = 0.0;
 	patch[0].rtzSatNH4 = 0.0;
 	patch[0].available_soil_water = 0.0;
+	patch[0].cap_rise_ratio = 0.0;
+	patch[0].unsat_drain_ratio = 0.0;
+	patch[0].water_drop_ratio = 0.0;
+	patch[0].water_rise_ratio = 0.0;
+	patch[0].rooting_depth_mean = 0.0;// should be initialized here no patch_daily_I.c
 
 	/* for calculating above ground litter proportion NREN 20190927 */
 	patch[0].prop_litrc_above_ground = 0.85; // this is hard coded at the beginning all these litter is from leaf

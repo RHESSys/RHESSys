@@ -53,7 +53,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 							 struct  litter_c_object *cs_litr,
 							 struct  litter_n_object *ns_litr,
 							 struct cdayflux_patch_struct *cdf,
-							 struct ndayflux_patch_struct *ndf)
+							 struct ndayflux_patch_struct *ndf,
+							 struct patch_object *patch)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -79,7 +80,24 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
 	double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
 
+
 	ok = 0;
+
+
+    //----------- dynamic
+        if( patch[0].soil_defaults[0][0].active_zone_z > patch[0].sat_deficit_z){
+            theta = (patch[0].rz_storage + patch[0].unsat_storage + patch[0].soil_defaults[0][0].active_zone_sat_0z - patch[0].sat_deficit) * patch[0].soil_defaults[0][0].active_zone_sat_0z_1;
+
+        }else if(patch[0].soil_defaults[0][0].active_zone_z > patch[0].rootzone.depth){
+            theta = (patch[0].rz_storage+patch[0].unsat_storage) / patch[0].sat_deficit; // approximate
+
+        }else{
+            theta = patch[0].rz_storage/patch[0].rootzone.potential_sat;
+
+        }
+
+
+
 	/* calculate the rate constant scalar for soil temperature,
 	assuming that the base rate constants are assigned for non-moisture
 	limiting conditions at 25 C. The function used here is taken from
