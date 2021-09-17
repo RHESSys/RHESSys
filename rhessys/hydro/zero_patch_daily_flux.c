@@ -64,6 +64,8 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	patch[0].unsat_drain_ratio = 0.0;
 	patch[0].water_drop_ratio = 0.0;
 	patch[0].water_rise_ratio = 0.0;
+	patch[0].theta = 0.0;
+	patch[0].perc_sat = 0.0;
 
 	/* fire effect */
 	//patch[0].litterc_burned = 0.0;
@@ -166,6 +168,8 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	ndf->nfix_to_sminn = 0.0;
 	ndf->DON_to_gw = 0.0;
 	ndf->N_to_gw = 0.0;
+    ndf->Pot_denitrif_CO2 = 0.0;
+	ndf->Pot_denitrif_SS = 0.0;
 
 	/*-------------------------------
 	ndf->sminn_to_nvol_l1s1 = 0.0;

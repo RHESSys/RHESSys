@@ -1453,8 +1453,8 @@ void	canopy_stratum_daily_F(
 	if (stratum[0].rain_stored > 0){
 	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored)
 	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)
-		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
-	    NO3_throughfall = (rain_throughfall + snow_throughfall)
+		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);// why here don't consider cover fraction when calculating patch level
+	    NO3_throughfall = (rain_throughfall + snow_throughfall) // suppose rain_throughfall=0 then NO3_stored = patch[0].NO3_througfall
 		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)
 		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
 
@@ -1463,7 +1463,7 @@ void	canopy_stratum_daily_F(
 	    if (rain_throughfall > 0){
 		NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored)
 	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)
-		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);
+		* (stratum[0].NO3_stored + patch[0].NO3_throughfall);// should this * a cover fraction
 
 		NO3_throughfall =  (rain_throughfall + snow_throughfall)
 		/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)

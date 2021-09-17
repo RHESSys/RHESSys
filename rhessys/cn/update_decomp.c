@@ -405,13 +405,24 @@ int update_decomp(
 
 		}
 		nitrate_immob = min(ns_soil->nitrate + patch[0].sat_NO3, -1.0*daily_net_nmin); // daily_net_nmin < total N may larger than totalNO3
-		ns_soil->nitrate = max((ns_soil->nitrate - nitrate_immob * ratio_NO3), 0.0); // remove immobolized nitrate from soil
-		patch[0].sat_NO3 = max((patch[0].sat_NO3 - nitrate_immob * (1 - ratio_NO3)), 0.0); //remove immobolized nitrate from sat_NO3
+
+		if(ns_soil->nitrate > ZERO) {
+		ns_soil->nitrate *= max((1 - nitrate_immob * ratio_NO3/ns_soil->nitrate), 0.0);
+		} // remove immobolized nitrate from soil
+		if(patch[0].sat_NO3 > ZERO) {
+		patch[0].sat_NO3 *= max((1 - nitrate_immob * (1 - ratio_NO3)/patch[0].sat_NO3), 0.0); //remove immobolized nitrate from sat_NO3
+		}
 		//patch[0].rtzSatNO3 = max((patch[0].rtzSatNO3 - nitrate_immob *(1 - ratio_NO3)), 0.0); // this pool just for tracking the sat_NO3 is the main pool
 
 		double leftover = max((-1.0*daily_net_nmin - nitrate_immob), 0.0); // so this is daily_net_min - total NO3
-		ns_soil->sminn = max((ns_soil->sminn - leftover* ratio_NH4), 0.0);
-		patch[0].sat_NH4 = max((patch[0].sat_NH4 - leftover * (1 - ratio_NH4)), 0.0);
+
+        if(ns_soil->nitrate > ZERO) {
+		ns_soil->sminn *= max((1- leftover* ratio_NH4/ns_soil->sminn), 0.0);
+        }
+        if(patch[0].sat_NH4 > ZERO) {
+		patch[0].sat_NH4 *= max((1 - leftover * (1 - ratio_NH4)/patch[0].sat_NH4), 0.0);
+        }
+
 		if(patch[0].sat_NH4 < -0.00001) {
             //printf("Warning update decomp 412 [sat_NH4 %e] is smaller than ZERO", patch[0].sat_NH4);
             patch[0].sat_NH4 = 0.0;
@@ -469,9 +480,9 @@ int update_decomp(
 	patch[0].surface_NH4 -=  N_uptake;
 	remaining_uptake -= N_uptake;
 
-	//if (remaining_uptake > ZERO )
-      //  printf("N balance issue [n_to_npool %e], [[remaining upate %e], [patch ID %d], [totalNO3 %e], [totalNH4 %e], [ratio_NO3 %e], [ratio_NH4 %e], [patch.sat_NH4 %le, rtzSatNH4 %e], [patch.sat_NO3 %e, rtzSatNO3 %e], [ns_NO3 %e]\n",
-        //                                ndf->sminn_to_npool, remaining_uptake, patch[0].ID, totalNO3, totalNH4, ratio_NO3, ratio_NH4, patch[0].sat_NH4, patch[0].rtzSatNH4, patch[0].sat_NO3, patch[0].rtzSatNO3, ns_soil->nitrate);
+	if (remaining_uptake > ZERO )
+       printf("N balance issue [n_to_npool %e], [[remaining upate %e], [patch ID %d], [totalNO3 %e], [totalNH4 %e], [ratio_NO3 %e], [ratio_NH4 %e], [patch.sat_NH4 %le, rtzSatNH4 %e], [patch.sat_NO3 %e, rtzSatNO3 %e], [ns_NO3 %e]\n",
+                                       ndf->sminn_to_npool, remaining_uptake, patch[0].ID, totalNO3, totalNH4, ratio_NO3, ratio_NH4, patch[0].sat_NH4, patch[0].rtzSatNH4, patch[0].sat_NO3, patch[0].rtzSatNO3, ns_soil->nitrate);
 	ndf->net_mineralized = daily_net_nmin;
 	total_N = ns_litr->litr1n + ns_litr->litr2n +  ns_litr->litr3n
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n

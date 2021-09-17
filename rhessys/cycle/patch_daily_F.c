@@ -567,8 +567,8 @@ void		patch_daily_F(
 
 	patch[0].T_canopy = zone[0].metv.tavg;
 	patch[0].T_canopy_final = 0.0;
-	//patch[0].cap_rise_ratio = 0.0;
-	//patch[0].unsat_drain_ratio = 0.0;
+	patch[0].cap_rise_ratio = 0.0;
+	patch[0].unsat_drain_ratio = 0.0; // maybe here better to keep zero to reinitialize again
 
 
 	if ( command_line[0].verbose_flag == -5 ){
@@ -1941,7 +1941,7 @@ void		patch_daily_F(
 		else  {rz_deficit=0.0;}
     	}
 
-    potential_cap_rise = patch[0].potential_cap_rise;//min(patch[0].potential_cap_rise, patch[0].available_soil_water); //NREN
+    potential_cap_rise = min(patch[0].potential_cap_rise, patch[0].available_soil_water); //NREN  patch[0].potential_cap_rise;//
 
 	cap_rise_to_unsat = min(potential_cap_rise, unsat_deficit);
 	patch[0].unsat_storage += cap_rise_to_unsat;
@@ -1956,7 +1956,7 @@ void		patch_daily_F(
 	patch[0].potential_cap_rise -= patch[0].cap_rise;
 	patch[0].sat_deficit += patch[0].cap_rise;//
 
-    //patch[0].sat_deficit = min(patch[0].sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap); // add checking NREN 20210909
+    patch[0].sat_deficit = min(patch[0].sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap); // add checking NREN 20210909
 
 	/* move nitrate with capillary rise too Originally from Laurence Lin took by NREN*/
 	    if(patch[0].cap_rise > ZERO && patch[0].available_soil_water > ZERO && command_line[0].grow_flag > 0){
@@ -1995,7 +1995,7 @@ void		patch_daily_F(
 	delta_unsat_zone_storage = min(unsat_zone_patch_demand, patch[0].rz_storage);
 
 	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO) && patch[0].psi_max_veg != 0.0) {
-		patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry)
+		patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry) //log(0)= inf
 									 * patch[0].soil_defaults[0][0].pore_size_index);
        // printf("\n [wilting point %lf], [psi_max_veg %lf] \n", patch[0].wilting_point, patch[0].psi_max_veg);//NREN psi_max_veg is zero
 		patch[0].wilting_point *= (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));

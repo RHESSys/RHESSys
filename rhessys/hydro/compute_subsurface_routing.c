@@ -1230,16 +1230,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
                     double sat_leftbehind_frac = (patch[0].sat_deficit - patch[0].preday_sat_deficit) / (patch[0].soil_defaults[0][0].soil_water_cap - patch[0].preday_sat_deficit);//soil_water_cap - sat_deficit is sat_zone capacity
 
-                   /* if(sat_leftbehind_frac > 1) printf("water_drop_ratio %lf >1 [sat_deficit %lf], [preday_sat_def %lf], [soil_water_cap %lf] \n",
+                    if(sat_leftbehind_frac > 1) printf("ID %d, water_drop_ratio %lf >1 [sat_deficit %lf], [preday_sat_def %lf], [soil_water_cap %lf] \n",patch[0].ID,
                                                        patch[0].water_drop_ratio, patch[0].sat_deficit, patch[0].preday_sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap);
 
                     if(sat_leftbehind_frac<ZERO || sat_leftbehind_frac>1.0 || patch[0].sat_NO3<ZERO || patch[0].sat_NO3!=patch[0].sat_NO3)
-                            printf("sub_routing (%d) [%lf,%lf,%lf], %f %f %f \n", patch[0].ID, sat_leftbehind_frac, patch[0].soil_ns.nitrate, patch[0].sat_NO3,
-                        patch[0].sat_deficit,  patch[0].preday_sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap);*/
+                            printf("sub_routing <ZERO (%d) [%lf,%lf,%lf], %f %f %f \n", patch[0].ID, sat_leftbehind_frac, patch[0].soil_ns.nitrate, patch[0].sat_NO3,
+                        patch[0].sat_deficit,  patch[0].preday_sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap);
 
                     sat_leftbehind_frac = min(max(sat_leftbehind_frac, 0), 1);
                     // for negative "soil_ns.nitrate" problem
                     patch[0].water_drop_ratio = sat_leftbehind_frac;
+
                     patch[0].soil_ns.nitrate += patch[0].sat_NO3 * sat_leftbehind_frac;
                     patch[0].soil_ns.sminn += patch[0].sat_NH4 * sat_leftbehind_frac;
                     patch[0].soil_cs.DOC += patch[0].sat_DOC * sat_leftbehind_frac;
@@ -1311,7 +1312,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                            (patch[0].soil_ns.nitrate > ZERO || patch[0].soil_ns.sminn > ZERO || patch[0].soil_ns.DON > ZERO || patch[0].soil_cs.DOC>ZERO))
                            { // if water reach the surface then all go to sat_NO3, sat_def can be negative
 
-                    tmp_ratio = 0.999; // all soil N go to sat_N
+                    tmp_ratio = 1; // all soil N go to sat_N
                     patch[0].water_rise_ratio = tmp_ratio;
 
                     patch[0].sat_NO3 += patch[0].soil_ns.nitrate*tmp_ratio;//assign first then make them zero!

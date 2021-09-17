@@ -1505,6 +1505,8 @@ struct  ndayflux_patch_struct
     /* denitrification  (volatilization) */
         double sminn_to_nvol;                /* (kgN/ms/d) */
         double denitrif;                        /* (kgN/m2/day) */
+        double Pot_denitrif_SS;
+        double Pot_denitrif_CO2;
 
 
     /* daily N sources and sinks */
@@ -1951,6 +1953,8 @@ struct patch_object
         double  unsat_storage;                          /* meters water         */
         double  rz_storage;                             /* meters water by Taehee Hwang */
         double  unsat_zone_volume;                      /* meters water         */
+        double  theta;                                  /* 0-1 soil moisture for nitrification*/
+        double  perc_sat;                               /* 0-1 percent of sat_N is active zone */
 
 /*----------------------------------------------------------*/
 /*      Forest floor stuff                                  */

@@ -136,6 +136,7 @@ int zero_stratum_daily_flux(
 	ndf->livecrootn_store_to_livecrootn_transfer = 0.0;
 	ndf->deadcrootn_store_to_deadcrootn_transfer = 0.0;
 	ndf->carbohydrate_transfer = 0.0;
+
 	/* fire effect object */
 	/*fe->m_cwdc_to_atmos = 0.0;
 	fe->m_cwdn_to_atmos = 0.0;

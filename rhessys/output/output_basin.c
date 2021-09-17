@@ -437,7 +437,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -513,7 +513,7 @@ void	output_basin(			int routing_flag,
 		aLE_snow,
 		acLstar,
 		acdrip*1000,
-		acga*1000, acap_rise_ratio, aunsat_drain_ratio, awater_drop_ratio, awater_rise_ratio, asoil_water
+		acga*1000, acap_rise_ratio, aunsat_drain_ratio, awater_drop_ratio, awater_rise_ratio, asoil_water, aarea, zone_area
 		);
 	return;
 } /*end output_basin*/

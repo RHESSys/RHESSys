@@ -166,15 +166,18 @@ void	output_growth_basin(
 	aunderstory_biomassc_consumed = 0.0, aunderstory_leafc_consumed = 0.0, aunderstory_stemc_consumed = 0.0;
 	aprecip = 0.0, aplant_potential_ndem = 0.0, apotential_immob = 0.0;
 	alitr_hr = 0.0, alitrc_to_soil = 0.0;
+	zone_area = 0.0;
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
 		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
-			zone_area = 0.0;
+			//zone_area = 0.0;
 			aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone[0].area;
 			aprecip += (zone[0].rain_hourly_total+zone[0].rain+zone[0].snow)*zone[0].area; //NREN
+			zone_area += zone[0].area; // check what is the differences between zone_area and patch_area
+
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
 
@@ -412,11 +415,11 @@ void	output_growth_basin(
 							* patch[0].area * p_under;
 
 				}
-				}
+				}// 251 stratum
 				aarea +=  patch[0].area;
 				hill_area += patch[0].area;
-				zone_area += patch[0].area; //NREN
-			}
+				//zone_area += patch[0].area; //NREN
+			}// 181 num_patches
 		//	aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone_area;//NREN
 		}
 		hgwNO3 += hillslope[0].gw.NO3 * hill_area;
