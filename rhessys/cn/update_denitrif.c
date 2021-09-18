@@ -42,6 +42,7 @@
 #include "rhessys.h"
 #include <stdio.h>
 #include <math.h>
+#define  PARTICLE_DENSITY	2.65	/* soil particle density g/cm3 (Dingman) */
 
 int update_denitrif(
 					struct  soil_c_object   *cs_soil,
@@ -50,6 +51,8 @@ int update_denitrif(
 					struct ndayflux_patch_struct *ndf,
 					struct  soil_class   soil_type,
 					double  theta, struct patch_object *patch,
+					double  porosity,
+					double  organic_soil_depth,
 					double std)
 {
 	/*------------------------------------------------------*/
@@ -66,12 +69,23 @@ int update_denitrif(
 	double fnitrate_total, fnitrate_soil, fCO2;
 	double hr, total_nitrate_ratio, soil_nitrate_ratio, perc_sat;
 	double resource_satNO3;
+	double bulk_density, kg_soil;
+	double nbalance_pre, nbalance_after;
 	resource_satNO3 = 0.0;
 	perc_sat = 0.0;
+	bulk_density = 0.0;
+	nbalance_pre = 0.0;
+	nbalance_after = 0.0;
+	kg_soil = 0.0;
 
 
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
 	double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
+
+	nbalance_pre = patch[0].sat_NO3 + ns_soil->nitrate + patch[0].sat_NH4 + ns_soil->sminn;
+
+    bulk_density = PARTICLE_DENSITY * (1.0 - porosity) * 1000;
+    kg_soil = bulk_density * organic_soil_depth;
 
 	ok = 1;
     if (patch[0].sat_NO3 < ZERO) patch[0].sat_NO3 = 0.0;
@@ -141,8 +155,11 @@ int update_denitrif(
 				water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
 
 
-       total_nitrate_ratio = (ns_soil->nitrate + resource_satNO3)/ (cs_soil->totalc + ns_soil->totaln) * 1e6;
-       soil_nitrate_ratio = ns_soil->nitrate / (cs_soil->totalc + ns_soil->totaln) * 1e6;
+      // total_nitrate_ratio = (ns_soil->nitrate + resource_satNO3)/ (cs_soil->totalc + ns_soil->totaln) * 1e6;
+         total_nitrate_ratio = (ns_soil->nitrate + resource_satNO3)/kg_soil * 1e6;
+       //printf("total soil c %lf and soil n %lf \n", cs_soil->totalc, ns_soil->totaln);
+       //soil_nitrate_ratio = ns_soil->nitrate / (cs_soil->totalc + ns_soil->totaln) * 1e6;
+        soil_nitrate_ratio = ns_soil->nitrate / kg_soil * 1e6;
 
 		/*nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)
 			/ (cs_soil->totalc + ns_soil->totaln) * 1e6; //NREN totalN doesn't include in patch_daily_F.c 2496 n20210903 maybe here is the bug*/
@@ -236,6 +253,13 @@ int update_denitrif(
     if(ndf->denitrif<ndf->Pot_denitrif_CO2 && ndf->denitrif<ndf->Pot_denitrif_SS){
         printf("denitrification prob %d,%f,%f, %f\n", patch[0].ID,denitrify_soil,denitrify_sat,
                ndf->denitrif, ndf->Pot_denitrif_CO2, ndf->Pot_denitrif_SS );
+    }
+
+    nbalance_after = patch[0].sat_NO3 + ns_soil->nitrate + patch[0].sat_NH4 + ns_soil->sminn + ndf->denitrif;
+
+    if(compare_float(nbalance_pre, nbalance_after))
+    {
+         printf("denitrification balance issue [ID %d],[pre %f],[after %f]\n", patch[0].ID, nbalance_pre, nbalance_after);
     }
 
 

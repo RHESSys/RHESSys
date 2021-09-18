@@ -82,11 +82,16 @@ int update_nitrif(
 	double max_nit_rate; /* kg/m2/day */
 	double perc_sat;
 	double resource_satNH4;
+	double nbalance_pre, nbalance_after;
 
     resource_satNH4 = 0.0;
     perc_sat = 0.0;
 	ok = 1;
 	max_nit_rate = 0.0;
+	nbalance_pre = 0.0;
+	nbalance_after = 0.0;
+
+	nbalance_pre = patch[0].sat_NO3 + patch[0].sat_NH4 + ns_soil->nitrate + ns_soil->sminn;
 
     if (patch[0].sat_NH4 < -0.00001) {
         printf("/n update_nitrification line 92 sat_NH4 < ZERO");
@@ -131,8 +136,8 @@ int update_nitrif(
 		/*--------------------------------------------------------------*/
 		bulk_density = PARTICLE_DENSITY * (1.0 - porosity) * 1000;
 		kg_soil = bulk_density * organic_soil_depth;
-		max_nit_rate = kg_soil * MAX_RATE * 0.000001; //kgN/m2/day
-		//printf("[max_nit_rate %lf], [MAX_RATE %lf], [kg_soil %lf]/n", max_nit_rate, MAX_RATE, kg_soil);
+		max_nit_rate = kg_soil * MAX_RATE * 0.000001; //kgN/m2/day/ kg_soil is 0.55 kg/m2/day
+		//printf("[max_nit_rate %lf], [MAX_RATE %lf], [kg_soil %lf]\n", max_nit_rate, MAX_RATE, kg_soil);
 		/*--------------------------------------------------------------*/
 		/* compute ammonium conc. in ppm				*/
 		/*--------------------------------------------------------------*/
@@ -265,11 +270,20 @@ int update_nitrif(
 
 	}
 
+
+
     if(patch[0].sat_NH4 < -0.00001 || patch[0].sat_NO3 < -0.00001) {
        printf("\n Warning update nitrif 218 [sat_NH4 %e] [sat_NO3 %e] is smaller than ZERO", patch[0].sat_NH4, patch[0].sat_NO3);
         patch[0].sat_NH4 = 0.0;
         patch[0].sat_NO3 = 0.0;
     } */
+
+    nbalance_after = patch[0].sat_NO3 + patch[0].sat_NH4 + ns_soil->nitrate + ns_soil->sminn;
+
+    if(compare_float(nbalance_pre, nbalance_after))
+    {
+         printf("nitrification balance issue [ID %d],[pre %f],[after %f]\n", patch[0].ID, nbalance_pre, nbalance_after);
+    }
 
 
 
