@@ -190,19 +190,19 @@ int update_nitrif(
         //nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * ns_soil->sminn * 1000.0;
         // this difference between lin are that lin use max_nit_rate, while we use MAX_RATE *(nitrate)
 		nitrify_total = min(ns_soil->sminn + resource_satNH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * MAX_RATE * (ns_soil->sminn + resource_satNH4)) ;// here is the problem
-        nitrify_total = min(ns_soil->sminn + resource_satNH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * max_nit_rate) ;//lin
+        //nitrify_total = min(ns_soil->sminn + resource_satNH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * max_nit_rate) ;//lin
         nitrify_total = min(nitrify_total, max_nit_rate);
 
 
-        //nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * MAX_RATE * (ns_soil->sminn ) ); // ns_soil->sminn
-        nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * max_nit_rate );//lin
+        nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * MAX_RATE * (ns_soil->sminn ) ); // ns_soil->sminn
+        //nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * max_nit_rate );//lin
         nitrify_soil = min(nitrify_soil, max_nit_rate);
 
-        if (ns_soil->sminn + resource_satNH4 <= ZERO) {
+       /* if (ns_soil->sminn + resource_satNH4 <= ZERO) {
         nitrify_total = 0.0;
         nitrify_soil = 0.0;
 
-        }
+        } */
 
         nitrify_sat = min(resource_satNH4, max(0.0, nitrify_total - nitrify_soil)); // sat_NH4 max_nit_rate = kg_soil * MAX_RATE * 0.000001
 

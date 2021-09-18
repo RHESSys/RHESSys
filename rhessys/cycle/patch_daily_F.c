@@ -1941,7 +1941,7 @@ void		patch_daily_F(
 		else  {rz_deficit=0.0;}
     	}
 
-    potential_cap_rise = min(patch[0].potential_cap_rise, patch[0].available_soil_water); //NREN  patch[0].potential_cap_rise;//
+   /* potential_cap_rise = min(patch[0].potential_cap_rise, patch[0].available_soil_water); //NREN  patch[0].potential_cap_rise;//
 
 	cap_rise_to_unsat = min(potential_cap_rise, unsat_deficit);
 	patch[0].unsat_storage += cap_rise_to_unsat;
@@ -1956,7 +1956,17 @@ void		patch_daily_F(
 	patch[0].potential_cap_rise -= patch[0].cap_rise;
 	patch[0].sat_deficit += patch[0].cap_rise;//
 
-    patch[0].sat_deficit = min(patch[0].sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap); // add checking NREN 20210909
+    patch[0].sat_deficit = min(patch[0].sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap); // add checking NREN 20210909 */
+
+    cap_rise_to_unsat = min(patch[0].potential_cap_rise, unsat_deficit);
+	patch[0].unsat_storage += cap_rise_to_unsat;
+	cap_rise_to_rz_storage = min(patch[0].potential_cap_rise-cap_rise_to_unsat, unsat_zone_patch_demand);
+	cap_rise_to_rz_storage = min(rz_deficit, cap_rise_to_rz_storage);
+	patch[0].rz_storage += cap_rise_to_rz_storage;
+
+	patch[0].cap_rise = (cap_rise_to_unsat + cap_rise_to_rz_storage);
+	patch[0].potential_cap_rise -= patch[0].cap_rise;
+	patch[0].sat_deficit += patch[0].cap_rise;
 
 	/* move nitrate with capillary rise too Originally from Laurence Lin took by NREN*/
 	    if(patch[0].cap_rise > ZERO && patch[0].available_soil_water > ZERO && command_line[0].grow_flag > 0){
