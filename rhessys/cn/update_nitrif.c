@@ -141,7 +141,7 @@ int update_nitrif(
 		/*--------------------------------------------------------------*/
 		/* compute ammonium conc. in ppm				*/
 		/*--------------------------------------------------------------*/
-		nh4_conc_total = (ns_soil->sminn + resource_satNH4) / kg_soil * 1000000.0;
+		nh4_conc_total = (ns_soil->sminn + patch[0].sat_NH4) / kg_soil * 1000000.0;
         nh4_conc_soil = (ns_soil->sminn)/kg_soil * 1000000.0;
 		/*--------------------------------------------------------------*/
 		/* effect of ammonium conc on nitrification			*/
@@ -194,8 +194,8 @@ int update_nitrif(
 		/*--------------------------------------------------------------*/
         //nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * ns_soil->sminn * 1000.0;
         // this difference between lin are that lin use max_nit_rate, while we use MAX_RATE *(nitrate)
-		nitrify_total = min(ns_soil->sminn + resource_satNH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * MAX_RATE * (ns_soil->sminn + resource_satNH4)) ;// here is the problem
-        //nitrify_total = min(ns_soil->sminn + resource_satNH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * max_nit_rate) ;//lin
+		nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * MAX_RATE * (ns_soil->sminn + patch[0].sat_NH4)) ;// here is the problem
+        //nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * max_nit_rate) ;//lin
         nitrify_total = min(nitrify_total, max_nit_rate);
 
 
@@ -203,13 +203,13 @@ int update_nitrif(
         //nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * max_nit_rate );//lin
         nitrify_soil = min(nitrify_soil, max_nit_rate);
 
-       /* if (ns_soil->sminn + resource_satNH4 <= ZERO) {
+       /* if (ns_soil->sminn + patch[0].sat_NH4 <= ZERO) {
         nitrify_total = 0.0;
         nitrify_soil = 0.0;
 
         } */
 
-        nitrify_sat = min(resource_satNH4, max(0.0, nitrify_total - nitrify_soil)); // sat_NH4 max_nit_rate = kg_soil * MAX_RATE * 0.000001
+        nitrify_sat = min(patch[0].sat_NH4, max(0.0, nitrify_total - nitrify_soil)); // sat_NH4 max_nit_rate = kg_soil * MAX_RATE * 0.000001
 
         if(nitrify_soil + nitrify_sat < nitrify_total)
         {
@@ -217,12 +217,12 @@ int update_nitrif(
         }
 
 
-        if(nitrify_total!=nitrify_total || isinf(nitrify_total) || nitrify_total<0 || nitrify_soil<0 || nitrify_sat<0 || resource_satNH4<0){
+        if(nitrify_total!=nitrify_total || isinf(nitrify_total) || nitrify_total<0 || nitrify_soil<0 || nitrify_sat<0 || patch[0].sat_NH4<0){
             printf("update_nitrif has infinite or nan problem [%d]{%e(sminn),%e,%e(%e[%e %e %e] %e),%e, %e %e %e}\n",
                    patch[0].ID,
                    ns_soil->sminn,
                    nitrify_soil,
-                   nitrify_sat, perc_sat, patch[0].soil_defaults[0][0].active_zone_sat_0z, patch[0].sat_deficit,patch[0].available_soil_water, resource_satNH4, // perc_sat being negative
+                   nitrify_sat, perc_sat, patch[0].soil_defaults[0][0].active_zone_sat_0z, patch[0].sat_deficit,patch[0].available_soil_water, patch[0].sat_NH4, // perc_sat being negative
                    patch[0].rootzone.depth,
                    nitrify_total, nitrify_soil, nitrify_sat);
         }//debug
@@ -234,7 +234,7 @@ int update_nitrif(
         if(ns_soil->sminn >0.0) ns_soil->sminn *= max(0.0, 1.0-nitrify_soil/ns_soil->sminn);
         ns_soil->nitrate += nitrify_soil;
 
-        if(resource_satNH4 >0.0) patch[0].sat_NH4 *= max(0.0, 1.0-nitrify_sat/patch[0].sat_NH4);
+        if(patch[0].sat_NH4 >0.0) patch[0].sat_NH4 *= max(0.0, 1.0-nitrify_sat/patch[0].sat_NH4);
         patch[0].sat_NO3 += nitrify_sat;
         //kg_soil > =0
 

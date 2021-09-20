@@ -2575,7 +2575,7 @@ void		patch_daily_F(
 		+ (patch[0].litter_cs.litr4c));
 	patch[0].soil_ns.totaln = ((patch[0].soil_ns.soil1n)
 		+ (patch[0].soil_ns.soil2n) + (patch[0].soil_ns.soil3n)
-		+ (patch[0].soil_ns.soil4n) + (patch[0].soil_ns.nitrate) + (patch[0].sat_NO3) + (patch[0].sat_NH4)// maybe here 20210903
+		+ (patch[0].soil_ns.soil4n) + (patch[0].soil_ns.nitrate) //+ (patch[0].sat_NO3) + (patch[0].sat_NH4)// maybe here 20210903
 		+ (patch[0].soil_ns.sminn));
 	patch[0].totaln += (patch[0].soil_ns.totaln + (patch[0].litter_ns.litr1n)
 		+ (patch[0].litter_ns.litr2n) + (patch[0].litter_ns.litr3n)
