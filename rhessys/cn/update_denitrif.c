@@ -155,11 +155,11 @@ int update_denitrif(
 				water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
 
 
-       total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/ (cs_soil->totalc + ns_soil->totaln) * 1e6;
-         //total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/kg_soil * 1e6;
+       //total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/ (cs_soil->totalc + ns_soil->totaln) * 1e6;
+         total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/kg_soil * 1e6;
        //printf("total soil c %lf and soil n %lf \n", cs_soil->totalc, ns_soil->totaln);
-       soil_nitrate_ratio = ns_soil->nitrate / (cs_soil->totalc + ns_soil->totaln) * 1e6;
-       // soil_nitrate_ratio = ns_soil->nitrate / kg_soil * 1e6;
+      // soil_nitrate_ratio = ns_soil->nitrate / (cs_soil->totalc + ns_soil->totaln) * 1e6;
+       soil_nitrate_ratio = ns_soil->nitrate / kg_soil * 1e6;
 
 		/*nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)
 			/ (cs_soil->totalc + ns_soil->totaln) * 1e6; //NREN totalN doesn't include in patch_daily_F.c 2496 n20210903 maybe here is the bug*/
@@ -191,7 +191,7 @@ int update_denitrif(
         ndf->Pot_denitrif_CO2 = fCO2 * water_scalar; // respiration
         ndf->Pot_denitrif_SS = denitrify; // resource
 
-        if(ndf->Pot_denitrif_SS>0.0 && ndf->Pot_denitrif_CO2>0.0 && ndf->Pot_denitrif_CO2 < ndf->Pot_denitrif_SS){
+        if(ndf->Pot_denitrif_SS>ZERO && ndf->Pot_denitrif_CO2>ZERO && ndf->Pot_denitrif_CO2 < ndf->Pot_denitrif_SS){
             // limited by respiration factor
             denitrify_soil *= ndf->Pot_denitrif_CO2 / ndf->Pot_denitrif_SS; // here
             denitrify_sat *= ndf->Pot_denitrif_CO2 / ndf->Pot_denitrif_SS;
@@ -199,16 +199,16 @@ int update_denitrif(
 
             ns_soil->nvolatilized_snk += denitrify;
             ndf->sminn_to_nvol = denitrify;
-            if(ns_soil->nitrate > 0.0) ns_soil->nitrate *= max(0.0, 1.0-denitrify_soil/ns_soil->nitrate); //here learn
-            if(patch[0].sat_NO3 > 0.0) patch[0].sat_NO3 *= max(0.0, 1.0-denitrify_sat/patch[0].sat_NO3);
+            if(ns_soil->nitrate > ZERO) ns_soil->nitrate *= max(0.0, 1.0-denitrify_soil/ns_soil->nitrate); //here learn
+            if(patch[0].sat_NO3 > ZERO) patch[0].sat_NO3 *= max(0.0, 1.0-denitrify_sat/patch[0].sat_NO3);
             ndf->denitrif = denitrify;
 
-        }else if(ndf->Pot_denitrif_SS>0.0 && ndf->Pot_denitrif_CO2>0.0){
+        }else if(ndf->Pot_denitrif_SS>ZERO && ndf->Pot_denitrif_CO2>ZERO){
             //limited by resource
             ns_soil->nvolatilized_snk += denitrify;
             ndf->sminn_to_nvol = denitrify;
-            if(ns_soil->nitrate >0.0) ns_soil->nitrate *= max(0.0, 1.0-denitrify_soil/ns_soil->nitrate);
-            if(patch[0].sat_NO3 >0.0) patch[0].sat_NO3 *= max(0.0, 1.0-denitrify_sat/patch[0].sat_NO3);
+            if(ns_soil->nitrate >ZERO) ns_soil->nitrate *= max(0.0, 1.0-denitrify_soil/ns_soil->nitrate);
+            if(patch[0].sat_NO3 >ZERO) patch[0].sat_NO3 *= max(0.0, 1.0-denitrify_sat/patch[0].sat_NO3);
             ndf->denitrif = denitrify;
         }else{
             denitrify = 0.0;

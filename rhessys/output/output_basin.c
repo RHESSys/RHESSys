@@ -83,6 +83,7 @@ void	output_basin(			int routing_flag,
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
 	double acap_rise_ratio, aunsat_drain_ratio, awater_drop_ratio, awater_rise_ratio, asoil_water;
+	double theta, perc_sat, pot_denitrif_CO2, pot_denitrif_SS;
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
@@ -233,6 +234,11 @@ void	output_basin(			int routing_flag,
 				aLstar_snow += patch[0].Lstar_snow * patch[0].area;
 				aLE_can += patch[0].LE_canopy * patch[0].area;
 				aLE_soil += patch[0].LE_soil * patch[0].area;
+				theta += patch[0].theta * patch[0].area; //new
+				perc_sat += patch[0].perc_sat * patch[0].area; //new
+				pot_denitrif_CO2 += patch[0].ndf.Pot_denitrif_CO2 * patch[0].area;
+				pot_denitrif_SS += patch[0].ndf.Pot_denitrif_SS * patch[0].area;
+
 				aLE_snow += (-1 * patch[0].snowpack.Q_LE + patch[0].snowpack.Q_melt) * patch[0].area;
 				if (patch[0].sat_deficit <= ZERO)
 					asat_area += patch[0].area;
@@ -368,6 +374,10 @@ void	output_basin(			int routing_flag,
 	abase_flow /= aarea;
 	asat_area /= aarea;
 	aacctrans /= aarea;
+	theta /= aarea;
+	perc_sat /= aarea;
+	pot_denitrif_CO2 /= aarea;
+	pot_denitrif_SS /= aarea;
 
 	agpsn /= aarea;
 	aresp /= aarea;
@@ -437,7 +447,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -513,7 +523,7 @@ void	output_basin(			int routing_flag,
 		aLE_snow,
 		acLstar,
 		acdrip*1000,
-		acga*1000, acap_rise_ratio, aunsat_drain_ratio, awater_drop_ratio, awater_rise_ratio, asoil_water, aarea, zone_area
+		acga*1000, acap_rise_ratio, aunsat_drain_ratio, awater_drop_ratio, awater_rise_ratio, asoil_water, theta, perc_sat, pot_denitrif_CO2, pot_denitrif_SS
 		);
 	return;
 } /*end output_basin*/

@@ -406,6 +406,17 @@ int update_decomp(
 		}
 		nitrate_immob = min(ns_soil->nitrate + patch[0].sat_NO3, -1.0*daily_net_nmin); // daily_net_nmin < total N may larger than totalNO3
 
+        if (patch[0].sat_NO3 > ZERO ) {
+            totalNO3 = ns_soil->nitrate + patch[0].sat_NO3;
+            ratio_NO3 = ns_soil->nitrate / totalNO3;}
+        if ( patch[0].sat_NH4 > ZERO) {
+            totalNH4 = ns_soil->sminn + patch[0].sat_NH4;
+            ratio_NH4 = ns_soil->sminn / totalNH4;}
+
+            ratio_NO3 = min(max(ratio_NO3, 0), 1);
+            ratio_NH4 = min(max(ratio_NH4, 0), 1);
+
+
 		if(ns_soil->nitrate > ZERO) {
 		ns_soil->nitrate *= max((1 - nitrate_immob * ratio_NO3/ns_soil->nitrate), 0.0);
 		} // remove immobolized nitrate from soil
@@ -416,7 +427,7 @@ int update_decomp(
 
 		double leftover = max((-1.0*daily_net_nmin - nitrate_immob), 0.0); // so this is daily_net_min - total NO3
 
-        if(ns_soil->nitrate > ZERO) {
+        if(ns_soil->sminn > ZERO) { // here use wrong ns_soil->nitrate
 		ns_soil->sminn *= max((1- leftover* ratio_NH4/ns_soil->sminn), 0.0);
         }
         if(patch[0].sat_NH4 > ZERO) {
