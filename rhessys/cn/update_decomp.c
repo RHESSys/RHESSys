@@ -387,8 +387,8 @@ int update_decomp(
 	totalNH4 = ns_soil->sminn + patch[0].sat_NH4;
 	ratio_NH4 = ns_soil->sminn / totalNH4;}
 
-    ratio_NO3 = min(max(ratio_NO3, 0), 1);
-    ratio_NH4 = min(max(ratio_NH4, 0), 1);
+    ratio_NO3 = min(max(ratio_NO3, 0.0), 1.0);
+    ratio_NH4 = min(max(ratio_NH4, 0.0), 1.0);
 
 
 	if (daily_net_nmin > ZERO){

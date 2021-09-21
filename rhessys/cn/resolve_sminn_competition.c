@@ -80,12 +80,12 @@ int resolve_sminn_competition(
     // sum_avail also needs to consider the N_sat at saturated zone
     double avail_rtzN = 0.0;
     patch[0].rtzSatNH4 = 0.0;
-    if(patch[0].available_soil_water>0){
+    if(patch[0].available_soil_water > ZERO){
         //change the sat solute profile
         patch[0].rtzSatNH4 = patch[0].sat_NH4 * max(patch[0].rootzone.potential_sat-patch[0].sat_deficit,0.0)/patch[0].available_soil_water;
     }//if
     patch[0].rtzSatNO3 = 0.0;
-    if(patch[0].available_soil_water>0){
+    if(patch[0].available_soil_water > ZERO){
         patch[0].rtzSatNO3 = patch[0].sat_NO3 * max(patch[0].rootzone.potential_sat-patch[0].sat_deficit,0.0)/patch[0].available_soil_water;
     }//if
     //sum_avail = sum_avail + patch[0].rtzSatNO3 + patch[0].rtzSatNH4;
@@ -112,7 +112,7 @@ int resolve_sminn_competition(
 		actual_immob = (sum_avail) * (ndf->potential_immob/sum_ndemand);
 		actual_uptake = sum_avail - actual_immob;
 
-		if (ndf->potential_immob == 0)
+		if (ndf->potential_immob == 0.0)
 			ns_soil->fract_potential_immob = 0.0;
 		else
 			ns_soil->fract_potential_immob = actual_immob/ndf->potential_immob;
@@ -120,7 +120,7 @@ int resolve_sminn_competition(
         //printf("\n===== N demand[%f] > N avail[%f], actual_immob[%f], potential_immob[%f], fpi[%f], perc_inroot[%f], rootDepth[%f], Ndecay[%f],active_z[%f]===========\n",
         //        sum_ndemand, sum_avail, actual_immob, ndf->potential_immob, ns_soil->fract_potential_immob, perc_inroot, rooting_depth, N_decay_rate, active_zone_z);
 
-		if (ndf->plant_potential_ndemand == 0) {
+		if (ndf->plant_potential_ndemand == 0.0) {
 			ns_soil->fract_potential_uptake = 0.0;
 			//ndf->plant_avail_uptake = actual_uptake;
 			ndf->plant_avail_uptake = 0.0; // zero

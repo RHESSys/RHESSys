@@ -347,10 +347,10 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 patch[0].sat_DOC += (patch[0].soil_cs.DOC_Qin - patch[0].soil_cs.DOC_Qout);
                 patch[0].sat_DON += (patch[0].soil_ns.DON_Qin - patch[0].soil_ns.DON_Qout);
 
-                patch[0].sat_NO3 = max(patch[0].sat_NO3, 0);
-                patch[0].sat_NH4 = max(patch[0].sat_NH4, 0);
-                patch[0].sat_DOC = max(patch[0].sat_DOC, 0);
-                patch[0].sat_DON = max(patch[0].sat_DON, 0);
+                patch[0].sat_NO3 = max(patch[0].sat_NO3, 0.0);
+                patch[0].sat_NH4 = max(patch[0].sat_NH4, 0.0);
+                patch[0].sat_DOC = max(patch[0].sat_DOC, 0.0);
+                patch[0].sat_DON = max(patch[0].sat_DON, 0.0);
 
              /*   if( patch[0].sat_deficit > patch[0].preday_sat_deficit){
                     // water table drops
@@ -1237,7 +1237,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                             printf("sub_routing <ZERO (%d) [%lf,%lf,%lf], %f %f %f \n", patch[0].ID, sat_leftbehind_frac, patch[0].soil_ns.nitrate, patch[0].sat_NO3,
                         patch[0].sat_deficit,  patch[0].preday_sat_deficit, patch[0].soil_defaults[0][0].soil_water_cap); */
 
-                    sat_leftbehind_frac = min(max(sat_leftbehind_frac, 0), 1);
+                    sat_leftbehind_frac = min(max(sat_leftbehind_frac, 0.0), 1.0);
                     // for negative "soil_ns.nitrate" problem
                     patch[0].water_drop_ratio = sat_leftbehind_frac;
 
@@ -1281,7 +1281,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                      else if (N_decay_rate == ZERO) {
                        tmp_ratio = (z2 - z1)/patch[0].soil_defaults[0][0].soil_depth;}
 
-                       tmp_ratio = min(max(tmp_ratio, 0), 1);
+                       tmp_ratio = min(max(tmp_ratio, 0.0), 1.0);
                       patch[0].water_rise_ratio = tmp_ratio;
 
 
@@ -1296,7 +1296,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
                         tmp_ratio = 1/ (1.0 - exp(-1.0 * DOM_decay_rate * patch[0].soil_defaults[0][0].soil_depth) )*
                                     (exp(-1.0 * DOM_decay_rate * z1)- exp(-1.0 * DOM_decay_rate * (z2)));// this is the ratio goes from soil_n to sat_n
-                        tmp_ratio = min(max(tmp_ratio, 0), 1);}
+                        tmp_ratio = min(max(tmp_ratio, 0.0), 1.0);}
 
                      else if (DOM_decay_rate == 0.0) {
                       tmp_ratio = (z2 - z1)/patch[0].soil_defaults[0][0].soil_depth;}
@@ -1312,7 +1312,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                            (patch[0].soil_ns.nitrate > ZERO || patch[0].soil_ns.sminn > ZERO || patch[0].soil_ns.DON > ZERO || patch[0].soil_cs.DOC>ZERO))
                            { // if water reach the surface then all go to sat_NO3, sat_def can be negative
 
-                    tmp_ratio = 1; // all soil N go to sat_N
+                    tmp_ratio = 1.0; // all soil N go to sat_N
                     patch[0].water_rise_ratio = tmp_ratio;
 
                     patch[0].sat_NO3 += patch[0].soil_ns.nitrate*tmp_ratio;//assign first then make them zero!

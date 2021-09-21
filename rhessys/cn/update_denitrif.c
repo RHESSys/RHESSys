@@ -114,7 +114,7 @@ int update_denitrif(
 	if ((theta <= ZERO) || (theta > 1.0)) theta = 1.0;
     if (patch[0].sat_deficit <= ZERO) theta = 1;
 
-	if ((ns_soil->nitrate + patch[0].sat_NO3) > ZERO) {
+	if ((ns_soil->nitrate + patch[0].sat_NO3) > ZERO) { // here add extra condition
 
 		/*--------------------------------------------------------------*/
 		/*	maximum denitrfication (kg/ha) based on available	*/
@@ -191,7 +191,7 @@ int update_denitrif(
         ndf->Pot_denitrif_CO2 = fCO2 * water_scalar; // respiration
         ndf->Pot_denitrif_SS = denitrify; // resource
 
-        if(ndf->Pot_denitrif_SS>ZERO && ndf->Pot_denitrif_CO2>ZERO && ndf->Pot_denitrif_CO2 < ndf->Pot_denitrif_SS){
+        if(ndf->Pot_denitrif_SS > ZERO && ndf->Pot_denitrif_CO2 > ZERO && ndf->Pot_denitrif_CO2 < ndf->Pot_denitrif_SS){
             // limited by respiration factor
             denitrify_soil *= ndf->Pot_denitrif_CO2 / ndf->Pot_denitrif_SS; // here
             denitrify_sat *= ndf->Pot_denitrif_CO2 / ndf->Pot_denitrif_SS;

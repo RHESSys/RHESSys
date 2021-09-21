@@ -114,7 +114,7 @@ int update_nitrif(
 
 	if ((theta <= ZERO) || (theta > 1.0))
 		theta = 1.0;
-    if (patch[0].sat_deficit <= ZERO) theta = 1;
+    if (patch[0].sat_deficit <= ZERO) theta = 1.0;
 
     patch[0].theta = theta;
     patch[0].perc_sat = perc_sat;
@@ -123,7 +123,7 @@ int update_nitrif(
          resource_satNH4 = perc_sat*patch[0].sat_NH4;
     }
 
-	if ((ns_soil->sminn + patch[0].sat_NH4) > ZERO) {// eventually I didn't use resource satNH4
+	if ((ns_soil->sminn + patch[0].sat_NH4) > ZERO && patch[0].totalc > ZERO) {// eventually I didn't use resource satNH4, here is why N is accumulating in no-veg patches
 
         //resource_satNH4 = perc_sat*patch[0].sat_NH4;
 		/*--------------------------------------------------------------*/
@@ -231,11 +231,15 @@ int update_nitrif(
         nitrify_total = nitrify_soil + nitrify_sat;
         ndf->sminn_to_nitrate = nitrify_total;
 
-        if(ns_soil->sminn >0.0) ns_soil->sminn *= max(0.0, 1.0-nitrify_soil/ns_soil->sminn);
+        if(ns_soil->sminn > ZERO)
+        {ns_soil->sminn *= max(0.0, 1.0-nitrify_soil/ns_soil->sminn);
         ns_soil->nitrate += nitrify_soil;
+        }
 
-        if(patch[0].sat_NH4 >0.0) patch[0].sat_NH4 *= max(0.0, 1.0-nitrify_sat/patch[0].sat_NH4);
+        if(patch[0].sat_NH4 > ZERO)
+        {patch[0].sat_NH4 *= max(0.0, 1.0-nitrify_sat/patch[0].sat_NH4);
         patch[0].sat_NO3 += nitrify_sat;
+        }
         //kg_soil > =0
 
 
