@@ -685,7 +685,7 @@ void  update_drainage_land(
 		/* added an surface N flux to surface N pool	and		*/
 		/* allow infiltration of surface N				*/
 		/*--------------------------------------------------------------*/
-		if ((command_line[0].grow_flag > 0 ) && (infiltration > ZERO)) {
+		if ((command_line[0].grow_flag > 0 ) && (infiltration > ZERO) && (neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 1)) {
 			neigh[0].soil_cs.DOC_Qin += ((infiltration / neigh[0].detention_store) * neigh[0].surface_DOC);
 			neigh[0].surface_DOC -= ((infiltration / neigh[0].detention_store) * neigh[0].surface_DOC);
 			neigh[0].soil_ns.DON_Qin += ((infiltration / neigh[0].detention_store) * neigh[0].surface_DON);
