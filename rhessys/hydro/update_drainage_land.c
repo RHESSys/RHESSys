@@ -625,7 +625,7 @@ void  update_drainage_land(
 		/* now transfer surface water and nitrogen */
 		/*	- first nitrogen					*/
 		/*--------------------------------------------------------------*/
-		if (command_line[0].grow_flag > 0) {
+		if (command_line[0].grow_flag > 0 && neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) {
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NO3_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NO3 += Nin;
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NH4_leached_to_surface) / neigh[0].area;
@@ -635,6 +635,27 @@ void  update_drainage_land(
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DOC_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_DOC += Nin;
 			}
+        else if (command_line[0].grow_flag > 0 && neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 0 && patch[0].area > ZERO){
+
+ 			//Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NO3_leached_to_surface) / neigh[0].area;
+			neigh[0].surface_NO3 += 0.0;
+			patch[0].surface_NO3 += (patch[0].surface_innundation_list[d].neighbours[j].gamma * NO3_leached_to_surface)/patch[0].area; //add back
+
+			//Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NH4_leached_to_surface) / neigh[0].area;
+			neigh[0].surface_NH4 += 0.0;
+			patch[0].surface_NH4 += (patch[0].surface_innundation_list[d].neighbours[j].gamma * NH4_leached_to_surface)/patch[0].area;
+
+			//Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DON_leached_to_surface) / neigh[0].area;
+			neigh[0].surface_DON += 0.0;
+			patch[0].surface_DON += (patch[0].surface_innundation_list[d].neighbours[j].gamma * DON_leached_to_surface)/patch[0].area;
+
+			//Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DOC_leached_to_surface) / neigh[0].area;
+			neigh[0].surface_DOC += 0.0;
+            patch[0].surface_DON += (patch[0].surface_innundation_list[d].neighbours[j].gamma * DOC_leached_to_surface)/patch[0].area;
+
+
+
+            }
 
 		/*--------------------------------------------------------------*/
 		/*	- now surface water 					*/
