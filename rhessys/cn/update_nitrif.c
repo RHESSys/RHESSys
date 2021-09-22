@@ -123,7 +123,7 @@ int update_nitrif(
          resource_satNH4 = perc_sat*patch[0].sat_NH4;
     }
 
-	if ((ns_soil->sminn + patch[0].sat_NH4) > ZERO && patch[0].totalc > ZERO) {// eventually I didn't use resource satNH4, here is why N is accumulating in no-veg patches
+	if ((ns_soil->sminn + patch[0].sat_NH4) > ZERO ) {// && patch[0].totalc > ZERO eventually I didn't use resource satNH4, here is why N is accumulating in no-veg patches
 
         //resource_satNH4 = perc_sat*patch[0].sat_NH4;
 		/*--------------------------------------------------------------*/
@@ -281,6 +281,14 @@ int update_nitrif(
         patch[0].sat_NH4 = 0.0;
         patch[0].sat_NO3 = 0.0;
     } */
+
+    if(patch[0].sat_NH4 < -0.00001) {
+            //printf("Warning update decomp 412 [sat_NH4 %e] is smaller than ZERO", patch[0].sat_NH4);
+            patch[0].sat_NH4 = 0.0;
+		}
+	if(patch[0].sat_NO3 < -0.00001) {
+            patch[0].sat_NO3 = 0.0;
+        }
 
     nbalance_after = patch[0].sat_NO3 + patch[0].sat_NH4 + ns_soil->nitrate + ns_soil->sminn;
 

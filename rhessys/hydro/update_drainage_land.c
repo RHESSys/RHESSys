@@ -545,20 +545,25 @@ void  update_drainage_land(
 
 
 		if (Qin < 0) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);
-		if (command_line[0].grow_flag > 0) {
+		if (command_line[0].grow_flag > 0)
+		{
 			 /* add water more from sat zone to deep groundwater NREN 20210714*/
 			 double coef;
-	     if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1){
+	     if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1)
+	     {
 	                     coef = 1.0 - sat_to_gw_coeff;
 	                     coef /= neigh[0].area;
 	                     patch[0].gw_drainage_DON += DON_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
 	                     patch[0].gw_drainage_DOC += DOC_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
 	                     patch[0].gw_drainage_NO3 += NO3_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
 	                     patch[0].gw_drainage_NH4 += NH4_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
-	       }else{
-	                     coef = 1.0/neigh[0].area;
-	       }
+	       }else
+	       {
+	                     coef = 1.0/neigh[0].area; }
 
+           /* add extra conditions to make no nitrate route to no-veg&hotspot patches, since it is easily accumulate in there */
+			if(neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) // make sure for no-veg default is rout_N is 0
+			{
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch) * coef;
 			neigh[0].soil_ns.DON_Qin += Nin;
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch) * coef;
@@ -568,6 +573,33 @@ void  update_drainage_land(
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch) * coef;
 			neigh[0].soil_ns.NH4_Qin += Nin;
 			}
+			else if (neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 0 && patch[0].area > ZERO)
+			{
+			Nin = 0.0;//(patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch) * coef;
+			neigh[0].soil_ns.DON_Qin += Nin;
+			// reduce the corrsponding Nout too
+			patch[0].soil_ns.DON_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch)/patch[0].area;
+            patch[0].soil_ns.DON_Qout = max(0.0, patch[0].soil_ns.DON_Qout);
+
+			Nin = 0.0;//(patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch) * coef;
+			neigh[0].soil_cs.DOC_Qin += Nin;
+			patch[0].soil_cs.DOC_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch)/patch[0].area;
+            patch[0].soil_cs.DOC_Qout = max(0.0, patch[0].soil_cs.DOC_Qout);
+
+			Nin = 0.0;//(patch[0].innundation_list[d].neighbours[j].gamma * NO3_leached_to_patch) * coef;
+			neigh[0].soil_ns.NO3_Qin += Nin;
+            patch[0].soil_ns.NO3_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * NO3_leached_to_patch)/patch[0].area;
+            patch[0].soil_ns.NO3_Qout = max(0.0, patch[0].soil_ns.NO3_Qout);
+
+			Nin = 0.0; //(patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch) * coef;
+			neigh[0].soil_ns.NH4_Qin += Nin;
+			patch[0].soil_ns.NH4_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch)/patch[0].area;
+            patch[0].soil_ns.NH4_Qout = max(0.0, patch[0].soil_ns.NH4_Qout);
+
+			}
+
+
+        }// 548 grow flag
 		neigh[0].Qin += Qin;
 	}
 

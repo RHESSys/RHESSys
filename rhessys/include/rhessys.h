@@ -2853,6 +2853,7 @@ struct epconst_struct
         int allocation_flag;    /* (DIM) set as 1 for dynamic allocation */
         int veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
         int hot_spot;           /* (DIM) 1 is hotspot and 0 is not hotspot for no-veg patches*/
+
         int phenology_type;     /* (DIM) set as 1 for decid; 0 for evergreen    */
         int nfix;               /* (DIM) set a 1 for n-fixers; 0 for not nfixers */
         int psi_curve;          /* (DIM) set to 0 for biome-bgc psi-conductance curve, other values give type of model 1=linear, 2=squared etc */
@@ -3049,6 +3050,7 @@ struct  stratum_default
         double  gsurf_slope;                    /* DIM */
         double  gsurf_intercept;                        /* DIM */
         double  K_absorptance;                  /* DIM */
+        int rout_N;             /* (DIM) 1 is no-veg receive N from upslope patches, 0 is no-veg don't receive N from upslope patches */
         double  K_reflectance;                  /* DIM */
         double  K_transmittance;                /* DIM */
         double  lai_stomatal_fraction;          /* DIM  */

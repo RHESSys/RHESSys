@@ -255,6 +255,15 @@ int update_denitrif(
                ndf->denitrif, ndf->Pot_denitrif_CO2, ndf->Pot_denitrif_SS );
     }
 
+    if(patch[0].sat_NH4 < -0.00001) {
+            //printf("Warning update decomp 412 [sat_NH4 %e] is smaller than ZERO", patch[0].sat_NH4);
+            patch[0].sat_NH4 = 0.0;
+		}
+	if(patch[0].sat_NO3 < -0.00001) {
+            patch[0].sat_NO3 = 0.0;
+        }
+
+
     nbalance_after = patch[0].sat_NO3 + ns_soil->nitrate + patch[0].sat_NH4 + ns_soil->sminn + ndf->denitrif;
 
     if(compare_float(nbalance_pre, nbalance_after))

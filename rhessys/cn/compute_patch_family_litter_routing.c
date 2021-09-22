@@ -176,6 +176,7 @@ void compute_patch_family_litter_routing(struct zone_object *zone,
                      patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 )
             {
                 patches[0].rooting_depth_mean = rooting_depth_mean;
+                patches[0].canopy_strata[0][0].defaults[0][0].rout_N = 1; //if rout litter, then hotspot patch recevie N too, if no rout litter hotspot receive no N
             }//if hotspot 172
 
         }//for fam 167

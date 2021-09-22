@@ -102,7 +102,7 @@ double	compute_Nsat_leached(
 
     soil_water = patch[0].available_soil_water; //this saturated zone available soil water; patch[0].soil_defaults[0][0].soil_water_cap-max(patch[0].sat_deficit, 0.0);
 
-    if (Qout > 0 && total_nitrate>0 && soil_water>0) {
+    if (Qout > ZERO && total_nitrate> ZERO && soil_water > ZERO) {
 
         Qout_frac = min(Qout/soil_water,1.0);
         absorptionConst = PARTICLE_DENSITY * 1000.0 * N_absorption_rate; //patch[0].soil_defaults[0][0].particledensity * 1000.0 * N_absorption_rate;
@@ -160,10 +160,13 @@ double	compute_Nsat_leached(
 	/*	availabe nitrate, so limit export by available	*/
 	/*------------------------------------------------------*/
 
-    if (nleached > total_nitrate){nleached = total_nitrate;
-    printf("\n n leached is %lf, total_nitrate is %lf", nleached, total_nitrate);}
+    if (nleached > total_nitrate)
+    {
+        printf("\n [patch %d] n leached is %e, > total_nitrate is %e", patch[0].ID, nleached, total_nitrate);
+        nleached = total_nitrate;
+        }
 
-    if(nleached<-0.000001 || nleached!=nleached) printf("leaching[%d, %d]: ->(%e,%e,%e), N0(%e)=(%e), absorptionConst(%e), critialZ_ini(%e), critialZ(%e)>(%e), nleached(%e)<(%e), %e %e %e\n",
+    if(nleached<-0.000001 || nleached!=nleached) printf("\n leaching[%d, %d]: ->(%e,%e,%e), N0(%e)=(%e), absorptionConst(%e), critialZ_ini(%e), critialZ(%e)>(%e), nleached(%e)<(%e), %e %e %e\n",
            patch[0].ID, signal,
            Qout,Qout_frac,soil_water,
            N0, N_decay_rate,
@@ -173,6 +176,7 @@ double	compute_Nsat_leached(
            nleached,total_nitrate,
            tmp, patch[0].soil_defaults[0][0].porosity_0, patch[0].soil_defaults[0][0].porosity_decay);
     if (nleached < ZERO || nleached != nleached) nleached = 0.0;
+
 
 	return(nleached);
 } /* end compute_N_leached */
