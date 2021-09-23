@@ -28,20 +28,20 @@ void	update_soil_moisture(
 					  double	net_inflow,
 					  struct	patch_object	*patch,
 					  struct 	command_line_object *command_line,
-					  struct	date 			current_date) 
+					  struct	date 			current_date)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	
+
 	/*--------------------------------------------------------------*/
 	/* allow infiltration of surface N				*/
 	/*--------------------------------------------------------------*/
-	if ((command_line[0].grow_flag > 0) && (infiltration > ZERO)) {
+	if ((command_line[0].grow_flag > 0) && (infiltration > ZERO) && patch[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) {
 		patch[0].soil_ns.nitrate += infiltration / net_inflow * patch[0].surface_NO3;
 		patch[0].soil_ns.sminn += infiltration / net_inflow * patch[0].surface_NH4;
 		patch[0].surface_NO3 -= infiltration / net_inflow * patch[0].surface_NO3;
@@ -51,7 +51,7 @@ void	update_soil_moisture(
 		patch[0].surface_DOC -= infiltration /net_inflow * patch[0].surface_DOC;
 		patch[0].surface_DON -= infiltration /net_inflow * patch[0].surface_DON;
 		}
-	
+
 
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%4d %2d %2d  -333.1 ",
@@ -80,7 +80,7 @@ void	update_soil_moisture(
 		/*--------------------------------------------------------------*/
 		patch[0].potential_cap_rise += patch[0].cap_rise;
 		patch[0].cap_rise = 0;
-	}									
+	}
 	else if ((patch[0].sat_deficit > patch[0].rootzone.potential_sat) &&
 		(infiltration > patch[0].rootzone.potential_sat - patch[0].rz_storage)) {
 		/*------------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ void	update_soil_moisture(
 		/*------------------------------------------------------------------------------*/
 		patch[0].unsat_storage += infiltration - (patch[0].rootzone.potential_sat - patch[0].rz_storage);
 		patch[0].rz_storage = patch[0].rootzone.potential_sat;
-	}								
+	}
 		/* Only rootzone layer saturated - perched water table case */
 	else if ((patch[0].sat_deficit > patch[0].rootzone.potential_sat) &&
 		(infiltration <= patch[0].rootzone.potential_sat - patch[0].rz_storage)) {
@@ -104,5 +104,5 @@ void	update_soil_moisture(
 		patch[0].rz_storage += infiltration;
 		patch[0].field_capacity = 0;
 	}
-	
+
 } /*end update_soil_moisture*/

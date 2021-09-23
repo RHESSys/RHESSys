@@ -1606,7 +1606,7 @@ void		patch_daily_F(
 		/* added an surface N flux to surface N pool	and		*/
 		/* allow infiltration of surface N				*/
 		/*--------------------------------------------------------------*/
-		if ((command_line[0].grow_flag > 0) && (infiltration > ZERO)) {
+		if ((command_line[0].grow_flag > 0) && (infiltration > ZERO) && patch[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) {
 			patch[0].soil_ns.DON += ((infiltration
 					/ prop_detention_store_infiltrated) * patch[0].surface_DON);
 			patch[0].soil_cs.DOC += ((infiltration
@@ -2372,17 +2372,6 @@ void		patch_daily_F(
 	/* 	and any septic losses							*/
 	/*------------------------------------------------------------------------*/
 
-	//debug
-	/*if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-	  patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-	  patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
-	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO)
-	  printf("patch daily F5 N balance issue [%d,%d]{%e,%e,%e,%e}\n",
-          patch[0].ID,
-          patch[0].drainage_type,
-          patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC
-          );*/
-
 
 	if ((command_line[0].grow_flag > 0) ){//&& (vegtype == 1)) {
 	//if ((command_line[0].grow_flag > 0) && (vegtype == 1)) {
@@ -2401,22 +2390,6 @@ void		patch_daily_F(
 		}
 
 		//debug
-	/*	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
-     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO ||
-     patch[0].sat_NO3 != patch[0].sat_NO3 ||
-     patch[0].sat_NO3 <ZERO ||
-     patch[0].sat_NH4 != patch[0].sat_NH4 ||
-     patch[0].sat_NH4 <ZERO )
-		 printf("patch daily F6 after update decom [%d]{%e,%e,%e,%e},{sat_NO3 %lf, sat_NH4 %lf}\n",
-           patch[0].ID,
-           patch[0].soil_ns.nitrate,
-           patch[0].soil_ns.sminn,
-           patch[0].soil_cs.DOC,
-           patch[0].soil_ns.DON, patch[0].sat_NO3, patch[0].sat_NH4
-		  ); */
-
 
 		if (patch[0].soil_defaults[0][0].DON_production_rate > ZERO) {
 			if ( update_dissolved_organic_losses(
@@ -2437,25 +2410,6 @@ void		patch_daily_F(
 				 patch[0].ndf.do_litr4n_loss);
 		}
 		//debug
-	/*	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<ZERO ||
-     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<ZERO ||
-     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<ZERO ||
-     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<ZERO ||
-     patch[0].sat_NO3 != patch[0].sat_NO3 ||
-     patch[0].sat_NO3 <ZERO ||
-     patch[0].sat_NH4 != patch[0].sat_NH4 ||
-     patch[0].sat_NH4 <ZERO )
-		 printf("patch daily F7 after DOM [%d]{%e,%e,%e,%e},{sat_NO3 %lf, sat_NH4 %lf}\n",
-           patch[0].ID,
-           patch[0].soil_ns.nitrate,
-           patch[0].soil_ns.sminn,
-           patch[0].soil_cs.DOC,
-           patch[0].soil_ns.DON, patch[0].sat_NO3, patch[0].sat_NH4
-		  ); */
 
 		if ( update_nitrif(
 			&(patch[0].soil_cs),
@@ -2475,26 +2429,6 @@ void		patch_daily_F(
 		}
 
 		//debug
-	/*	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<ZERO ||
-     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<ZERO ||
-     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<ZERO ||
-     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<ZERO||
-     patch[0].sat_NO3 != patch[0].sat_NO3 ||
-     patch[0].sat_NO3 <ZERO ||
-     patch[0].sat_NH4 != patch[0].sat_NH4 ||
-     patch[0].sat_NH4 <ZERO )
-		 printf("patch daily F8 after nitrif [%d]{%e,%e,%e,%e},{sat_NO3 %lf, sat_NH4 %lf}\n",
-           patch[0].ID,
-           patch[0].soil_ns.nitrate,
-           patch[0].soil_ns.sminn,
-           patch[0].soil_cs.DOC,
-           patch[0].soil_ns.DON, patch[0].sat_NO3, patch[0].sat_NH4
-		  ); */
-
 		if ( update_denitrif(
 			&(patch[0].soil_cs),
 			&(patch[0].soil_ns),
@@ -2510,26 +2444,6 @@ void		patch_daily_F(
 		}
 
 		// check the update debug
-	/*	 if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<ZERO ||
-     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<ZERO ||
-     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<ZERO ||
-     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<ZERO ||
-     patch[0].sat_NO3 != patch[0].sat_NO3 ||
-     patch[0].sat_NO3 <ZERO )//||
-   //  patch[0].sat_NH4 != patch[0].sat_NH4 ||
-    // patch[0].sat_NH4 <ZERO )
-		 printf("patch daily F9 after denitrif [%d]{%e,%e,%e,%e},{sat_NO3 %lf, sat_NH4 %lf}\n",
-           patch[0].ID,
-           patch[0].soil_ns.nitrate,
-           patch[0].soil_ns.sminn,
-           patch[0].soil_cs.DOC,
-           patch[0].soil_ns.DON, patch[0].sat_NO3, patch[0].sat_NH4
-		  ); */
-
 
 	} //line 2150 grow
 

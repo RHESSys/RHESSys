@@ -288,14 +288,6 @@ void compute_subsurface_routing_hourly(
 					-1.0 * patch[0].sat_deficit);
 
 			if (grow_flag > 0) {
-				/*patch[0].soil_ns.nitrate += (patch[0].soil_ns.NO3_Qin
-						- patch[0].soil_ns.NO3_Qout);
-				patch[0].soil_ns.sminn += (patch[0].soil_ns.NH4_Qin
-						- patch[0].soil_ns.NH4_Qout);
-				patch[0].soil_cs.DOC += (patch[0].soil_cs.DOC_Qin
-						- patch[0].soil_cs.DOC_Qout);
-				patch[0].soil_ns.DON += (patch[0].soil_ns.DON_Qin
-						- patch[0].soil_ns.DON_Qout); */
 
 
                 patch[0].soil_ns.NO3_Qout = min(patch[0].sat_NO3, patch[0].soil_ns.NO3_Qout);
@@ -781,7 +773,7 @@ void compute_subsurface_routing_hourly(
 				/* added an surface N flux to surface N pool	and		*/
 				/* allow infiltration of surface N				*/
 				/*--------------------------------------------------------------*/
-				if ((grow_flag > 0) && (infiltration > ZERO)) {
+				if ((grow_flag > 0) && (infiltration > ZERO) && patch[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) {
 					patch[0].soil_ns.DON += ((infiltration
 							/ patch[0].detention_store) * patch[0].surface_DON);
 					patch[0].soil_cs.DOC += ((infiltration
