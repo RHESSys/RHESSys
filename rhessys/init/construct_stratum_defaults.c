@@ -95,9 +95,13 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "stratum_default_ID", "%d", 7, 1); // new param name
 		default_object_list[i].rout_N = getIntParam(&paramCnt, &paramPtr, "rout_N", "%d", 0, 1); //default is no-rout for no-veg patches
 		default_object_list[i].epc.veg_type = 		parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.veg.type", "%s", "TREE", 1)); // param name is "epc.veg.type" in param file
-		if (default_object_list[i].epc.veg_type != "NON_VEG")
+		if (default_object_list[i].epc.veg_type != NON_VEG)
 		{
             default_object_list[i].rout_N = 1;		//veg patch receive routed N
+		}
+		else if (default_object_list[i].epc.veg_type == NON_VEG)
+		{
+             default_object_list[i].rout_N = 0;
 		}
         default_object_list[i].epc.hot_spot = 		getIntParam(&paramCnt, &paramPtr, "hot_spot", "%d", 0, 1); //defautl is zero not a hotspot
         printf("\n rout_N (control receive N of no-veg patches) %d, hotspot is %d\n", default_object_list[i].rout_N , default_object_list[i].epc.hot_spot);
