@@ -312,6 +312,8 @@ void compute_patch_family_routing(struct zone_object *zone,
                 // Division of gaining water (dG) between rz & unsat
                 // rz gain
                 patches[0].rz_transfer = min((dG[i] / patches[0].area), (patches[0].rootzone.field_capacity - patches[0].rz_storage));
+                // what is field_capacity - rz_storate < ZERO
+                patches[0].rz_transfer = max(0.0, patches[0].rz_transfer);
                 patches[0].rz_storage += patches[0].rz_transfer;
 
                 if (command_line[0].verbose_flag == -9 )
@@ -401,7 +403,7 @@ void compute_patch_family_routing(struct zone_object *zone,
             if (skip[i] == 1)// since this is dynamic  && (patches[0].rz_storage + patches[0].unsat_storage) > wet_mean)
             {
                 if (command_line[0].verbose_flag == -9 )
-                    printf("ID %d", patches[0].ID);
+                    printf("ID %d, [loop 4 dL_act %lf]", patches[0].ID, dL_act);
                 // update loss values for gains less than potential, should have no impact if L actual = G actual
                 if (dL_act > ZERO)
                     dL_adj[i] = dL[i] - (dL_act - dG_act) * (dL[i] / dL_act); // (dL_act - dG_cat) / dL_act) go together, % of should be adjusted
@@ -413,7 +415,10 @@ void compute_patch_family_routing(struct zone_object *zone,
 
                 // distribute dL_adj between rz and unsat and update stores
                 // RZ - removes down to the mean wilting point of the gaining patches
-                patches[0].rz_transfer = -1 * min(dL_adj[i] / patches[0].area, patches[0].rz_storage - patches[0].wilting_point);
+                // only if dL_adj > ZERO
+            if (dL_adj[i] > ZERO)
+            {
+                patches[0].rz_transfer = -1 * min(dL_adj[i] / patches[0].area, max(0.0, (patches[0].rz_storage - patches[0].wilting_point)));
                 if (command_line[0].verbose_flag == -9 )
                     printf("\n [rz_stor %lf], [wilting %lf] [area %lf] \n",
                             patches[0].rz_storage,
@@ -431,8 +436,6 @@ void compute_patch_family_routing(struct zone_object *zone,
 
                 }
 
-
-
                 if (command_line[0].verbose_flag == -9 )
                     printf("\n [rz z]%f ", patches[0].rz_transfer);
 
@@ -441,6 +444,11 @@ void compute_patch_family_routing(struct zone_object *zone,
                 patches[0].unsat_storage += patches[0].unsat_transfer;
                 dL_act_final += (-patches[0].unsat_transfer * patches[0].area);//remember it is negative flux
                 //what is there is still leftover of dL_adj, so need to remove the leftover from the gaining patches
+            } //line 417 if
+            else {
+                dL_act_final = 0.0;
+
+            }
                 // [dL_act_final %lf]
                 if (command_line[0].verbose_flag == -9 )
                     printf("\n [dL_act_final %f] ",dL_act_final);
@@ -448,11 +456,6 @@ void compute_patch_family_routing(struct zone_object *zone,
                if (patches[0].unsat_storage < -0.000001)
                 {
                   printf("\n unsat_storage < 0 %e ", patches[0].unsat_storage);
-
-              /*   dG_adj += (0.0 - patches[0].unsat_storage) * patches[0].area;
-                 patches[0].unsat_storage = max(0.0, patches[0].unsat_storage);//this constrain adding extra water to gaining patches */
-                // because the loss patches didn't lose that much of water, but the gaining patches gains extra water so we need extra loop
-                // to balance this extra water, and substract them from the gaining patches.
 
                 }
                 area_sum_l += patches[0].area;
@@ -505,7 +508,7 @@ void compute_patch_family_routing(struct zone_object *zone,
         {
             patches = zone[0].patch_families[pf][0].patches[i];
             // rz + unsat < mean wetness (gainers)
-            if (skip[i] == 2 &&  dG_adj > ZERO) //G>L, gaining too much, remove from gaining pachesthis is dynamic (patches[0].rz_storage + patches[0].unsat_storage) < wet_mean &&
+            if (skip[i] == 2 &&  dG_adj > 0.0) //G>L, gaining too much, remove from gaining pachesthis is dynamic (patches[0].rz_storage + patches[0].unsat_storage) < wet_mean &&
             {
                 if (command_line[0].verbose_flag == -9 )
                     printf("ID %d [area_sum_g %lf] \n", patches[0].ID, area_sum_g);
@@ -536,7 +539,7 @@ void compute_patch_family_routing(struct zone_object *zone,
                 if (command_line[0].verbose_flag == -9 )
                     printf("in loop 5 after adjust actual [dG_adj_act %lf] \n", dG_adj_act);
             }
-            else if (skip[i] == 1 && dG_adj < ZERO) // negative!! Gain < loss, losing too much, so put it back to lose patches
+            else if (skip[i] == 1 && dG_adj < 0.0) // negative!! Gain < loss, losing too much, so put it back to lose patches
             {
                 if (command_line[0].verbose_flag == -9 )
                     printf("ID %d [area_sum_l %lf]", patches[0].ID, area_sum_l);
@@ -562,6 +565,8 @@ void compute_patch_family_routing(struct zone_object *zone,
                     printf("[loop 5 after adjust unsat_storage - balance issue ]%lf \n", patches[0].unsat_storage);*/
 
                 dG_adj_act -= (rz_adjust + unsat_adjust) * patches[0].area; // TODO compare with dG_adj
+                if (command_line[0].verbose_flag == -9 )
+                    printf("in loop 5 after adjust actual [dG_adj_act %lf] \n", dG_adj_act);
             }
             // sat gainers
             dG_sat[i] = 0; // idk if this is needed, since the actual patch object value is updated above

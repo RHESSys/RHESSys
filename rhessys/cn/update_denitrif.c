@@ -174,6 +174,8 @@ int update_denitrif(
 		denitrify = min(ns_soil->nitrate + patch[0].sat_NO3, fnitrate_total*water_scalar); // total nitrate
 		denitrify_soil = min(ns_soil->nitrate, fnitrate_soil*water_scalar); //ns_soil->nitrate
 		denitrify_sat = min(patch[0].sat_NO3, max(0, denitrify - denitrify_soil)); //patch_sat_NO3
+		// denitrify_sat could be zero
+		denitrify_sat = max(0.0, denitrify_sat);
 
 		if(denitrify_sat + denitrify_soil < denitrify)
 		{

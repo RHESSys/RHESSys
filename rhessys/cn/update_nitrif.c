@@ -210,6 +210,8 @@ int update_nitrif(
         } */
 
         nitrify_sat = min(patch[0].sat_NH4, max(0.0, nitrify_total - nitrify_soil)); // sat_NH4 max_nit_rate = kg_soil * MAX_RATE * 0.000001
+        // nitrify_sat could be negative
+        nitrify_sat = max(0.0, nitrify_sat);
 
         if(nitrify_soil + nitrify_sat < nitrify_total)
         {
