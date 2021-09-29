@@ -156,6 +156,7 @@ void		patch_hourly(
 	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
 
 
+
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/

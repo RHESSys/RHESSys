@@ -264,7 +264,8 @@ int update_denitrif(
 	if(patch[0].sat_NO3 < -0.00001) {
             patch[0].sat_NO3 = 0.0;
         }
-
+    if (ns_soil->nitrate < ZERO) ns_soil->nitrate = 0.0;
+    if (ns_soil->sminn < ZERO)  ns_soil->sminn = 0.0;
 
     nbalance_after = patch[0].sat_NO3 + ns_soil->nitrate + patch[0].sat_NH4 + ns_soil->sminn + ndf->denitrif;
 

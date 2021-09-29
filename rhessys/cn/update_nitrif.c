@@ -219,7 +219,7 @@ int update_nitrif(
         }
 
 
-        if(nitrify_total!=nitrify_total || isinf(nitrify_total) || nitrify_total<0 || nitrify_soil<0 || nitrify_sat<0 || patch[0].sat_NH4<0){
+       /* if(nitrify_total!=nitrify_total || isinf(nitrify_total) || nitrify_total<0 || nitrify_soil<0 || nitrify_sat<0 || patch[0].sat_NH4<0){
             printf("update_nitrif has infinite or nan problem [%d]{%e(sminn),%e,%e(%e[%e %e %e] %e),%e, %e %e %e}\n",
                    patch[0].ID,
                    ns_soil->sminn,
@@ -227,7 +227,7 @@ int update_nitrif(
                    nitrify_sat, perc_sat, patch[0].soil_defaults[0][0].active_zone_sat_0z, patch[0].sat_deficit,patch[0].available_soil_water, patch[0].sat_NH4, // perc_sat being negative
                    patch[0].rootzone.depth,
                    nitrify_total, nitrify_soil, nitrify_sat);
-        }//debug
+        }//debug */
 
               //nitrify = max(min(nitrify, ns_soil->sminn),0.0);
         nitrify_total = nitrify_soil + nitrify_sat;
@@ -291,6 +291,8 @@ int update_nitrif(
 	if(patch[0].sat_NO3 < -0.00001) {
             patch[0].sat_NO3 = 0.0;
         }
+    if (ns_soil->nitrate < ZERO) ns_soil->nitrate = 0.0;
+    if (ns_soil->sminn < ZERO)  ns_soil->sminn = 0.0;
 
     nbalance_after = patch[0].sat_NO3 + patch[0].sat_NH4 + ns_soil->nitrate + ns_soil->sminn;
 

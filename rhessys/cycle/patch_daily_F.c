@@ -1250,7 +1250,7 @@ void		patch_daily_F(
 			patch[0].PAR_diffuse_final = patch[0].layers[layer].null_cover * patch[0].PAR_diffuse;
 			patch[0].rain_throughfall_final = patch[0].layers[layer].null_cover * patch[0].rain_throughfall;
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
-			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
+			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;// so final initialized from null_cover
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 			for ( stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
@@ -1409,7 +1409,10 @@ void		patch_daily_F(
 
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
-	//patch[0].surface_NO3 += zone[0].ndep_NO3;
+	if (patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == NON_VEG)//add rout_N==1?
+       {
+        patch[0].surface_NO3 += zone[0].ndep_NO3;// no veg patch, no throughfall and no canopy store, so go to surface directly
+        }
 	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 	patch[0].surface_NH4 += zone[0].ndep_NH4;
 
