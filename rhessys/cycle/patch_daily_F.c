@@ -1409,7 +1409,8 @@ void		patch_daily_F(
 
 	patch[0].fertilizer_NO3 += fertilizer_NO3;
 	patch[0].fertilizer_NH4 += fertilizer_NH4;
-	if (patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == NON_VEG)//add rout_N==1?
+	if (patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 && zone[0].defaults[0][0].direct_Ndep == 1 &&
+        patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == NON_VEG)//add zone control
        {
         patch[0].surface_NO3 += zone[0].ndep_NO3;// no veg patch, no throughfall and no canopy store, so go to surface directly
         }

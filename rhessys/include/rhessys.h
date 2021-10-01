@@ -1025,6 +1025,7 @@ struct  zone_default
         int    grid_interpolation;                       /* 0/1    */ // 0 no interpolation of grid climate data
         int    route_litter;
         double sh_litter;
+        int direct_Ndep; /* 1 direct N dep to no-veg patch surface, 0 no-direct N dep to no-veg patch surface */
 
         };
 
