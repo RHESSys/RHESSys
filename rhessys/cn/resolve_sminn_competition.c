@@ -132,6 +132,9 @@ int resolve_sminn_competition(
 		}
 	}
     if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
-        printf("\nresolve sminn competition NH4 %e< ZERO", patch[0].sat_NH4);}
+        //printf("\nresolve sminn competition NH4 %e< ZERO", patch[0].sat_NH4);
+        patch[0].sat_NH4 = 0.0;
+
+        }
 	return(0);
 } /* end resolve_sminn_competition.c */

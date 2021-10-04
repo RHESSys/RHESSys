@@ -94,7 +94,7 @@ int update_nitrif(
 	nbalance_pre = patch[0].sat_NO3 + patch[0].sat_NH4 + ns_soil->nitrate + ns_soil->sminn;
 
     if (patch[0].sat_NH4 < -0.00001) {
-        printf("/n update_nitrification line 92 sat_NH4 < ZERO");
+        //printf("/n update_nitrification line 92 sat_NH4 < ZERO");
          patch[0].sat_NH4 = 0.0;
     }
     //----------- dynamic

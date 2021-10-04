@@ -162,7 +162,7 @@ double	compute_Nsat_leached(
 
     if (nleached > total_nitrate)
     {
-        printf("\n [patch %d] n leached is %e, > total_nitrate is %e", patch[0].ID, nleached, total_nitrate);
+        //printf("\n [patch %d] n leached is %e, > total_nitrate is %e", patch[0].ID, nleached, total_nitrate);
         nleached = total_nitrate;
         }
 
