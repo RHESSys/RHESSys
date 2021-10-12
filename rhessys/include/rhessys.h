@@ -810,7 +810,7 @@ struct  daily_clim_object
 #ifdef LIU_EXTEND_CLIM_VAR
         double  *relative_humidity_max;         /*      0 - 1                 */
         double  *relative_humidity_min;         /*      0 - 1                 */
-        double  *surface_shortwave_rad;         /*      W m-2  daily average  */
+        //double  *surface_shortwave_rad;         /*      W m-2  daily average  */
         double  *specific_humidity;             /*      kg/kg  daily average  */
 #endif
         };
