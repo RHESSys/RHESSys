@@ -7,7 +7,7 @@
 /*	DESCRIPTION	*/
 /*	PROGRAMMER NOTES*/
 /***
-	Read base station file and create netcdf 
+	Read base station file and create netcdf
 	object header with common attributes.
 	AD, 2014
 ***/
@@ -20,7 +20,9 @@
 #include <float.h>
 #include "rhessys.h"
 
-double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); 
+#define FLT_MAX 100000000 // for pronghorn
+
+double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers);
 #ifdef LIU_NETCDF_READER
 /*Get the station numbers from station file                         */
 int get_netcdf_station_number(char *base_station_filename)
@@ -50,37 +52,37 @@ int get_netcdf_station_number(char *base_station_filename)
     return account;
 }
 #endif
-struct base_station_ncheader_object *construct_netcdf_header (	
+struct base_station_ncheader_object *construct_netcdf_header (
 							 struct	world_object	*world,
 							 char *base_station_filename)
 
 {
 	void	*alloc( 	size_t, char *, char *);
-	
+
     //struct	base_station_object** base_stations;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 
 	int j;
-	
+
 	//struct	daily_optional_clim_sequence_flags	daily_flags;
 	struct base_station_ncheader_object *base_station_ncheader;
-	
+
 	char	first[MAXSTR];		//I use first & second for the while loop that reads the first base station file
-	char	second[MAXSTR];	
+	char	second[MAXSTR];
 	char	buffer[MAXSTR*1000];
-	
+
 	FILE*	base_station_file;
-	
+
 	int baseid;
 
 
 	setvbuf(stdout,NULL,_IONBF,0);
 	/* allocate daily_optional_clim_sequence_flags struct and make sure set to 0 */
 	//memset(&daily_flags, 0, sizeof(struct daily_optional_clim_sequence_flags));
-	
+
 	base_station_ncheader = (struct base_station_ncheader_object *)	alloc(sizeof(struct base_station_ncheader_object),"base_station_ncheader","construct_netcdf_header");
 
 	/*--------------------------------------------------------------*/
@@ -110,8 +112,8 @@ struct base_station_ncheader_object *construct_netcdf_header (
         //basestation[0].has_constructed  = 0;
     }
     #endif
-	 
-	fseek(base_station_file,0,SEEK_SET);	
+
+	fseek(base_station_file,0,SEEK_SET);
 	baseid = -1;
 	while (fgets(buffer, sizeof(buffer), base_station_file) != NULL) {
 		if (buffer != NULL) {
@@ -210,7 +212,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 			// Checking for optional climate sequences, store those found in the
 			// optional_flag structs for sending to the appropriate create
 			// clim sequence functions.
-			
+
 			/*} else if (strcmp(second, "number_non_critical_daily_sequences") == 0) {
 				int num_daily_optional = strtod(first, NULL);
 				for ( j=0; j < num_daily_optional; ++j ) {
@@ -220,17 +222,17 @@ struct base_station_ncheader_object *construct_netcdf_header (
 							daily_flags.atm_trans = 1;
 						} else if (strcmp(buffer, "CO2") == 0) {
 							daily_flags.CO2 = 1;
-						} 
+						}
 						else if (strcmp(buffer, "daytime_rain_duration") ) {
 							daily_flags.daytime_rain_duration = 1;
-						} 
-					}  
+						}
+					}
 				}*/
 		}
 		}//end_read_basestationfile
         base_station_ncheader[0].resolution_dd = calc_resolution(true,world[0].base_stations,world[0].num_base_stations);
         base_station_ncheader[0].resolution_meter = calc_resolution(false,world[0].base_stations,world[0].num_base_stations);
-	fclose(base_station_file);	
+	fclose(base_station_file);
     printf("finish reading base info\n");
     //printf("\nFinished construct netcdf header: lastID=%d lai=%lf ht=%lf sdist=%lf yr=%d day=%d lpyr=%d pmult=%lf",
     printf("\nFinished construct netcdf file:%s:\n\tnum_stations = %d\tresolution_dd = %lf\t\tyear_start = %d\tday_offset = %d\tlpyr = %d\tpmult = %lf\n\n",
@@ -244,7 +246,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 		   base_station_ncheader[0].day_offset,
 		   base_station_ncheader[0].leap_year,
            base_station_ncheader[0].precip_mult);
-	
+
 	return(base_station_ncheader);
 }
 //_____________________________________________________________________
