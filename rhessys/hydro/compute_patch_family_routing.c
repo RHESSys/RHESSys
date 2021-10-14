@@ -399,7 +399,7 @@ void compute_patch_family_routing(struct zone_object *zone,
             }
             if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].msr_sat_transfer_flag > 0)
             {
-                if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat && dL_sat_act > ZERO)
+                if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit < wet_mean_sat && dL_sat_act > ZERO)
                 {
                     dL_sat_adj[i] = dL_sat[i] - (dL_sat_act - dG_sat_act) * (dL_sat[i] / dL_sat_act);
 
