@@ -87,6 +87,13 @@ void		surface_daily_F(
 		double	,
 		double	);
 
+	double	compute_nonvascular_stratum_conductance_ground(
+		int	,
+		double	,
+		double	,
+		double	,
+		double	,
+		double	);
 	double	compute_litter_rain_stored(
 		int,
 		struct	patch_object *);
@@ -613,7 +620,7 @@ void		surface_daily_F(
 		}
 
 		else {
-			patch[0].gsurf = compute_nonvascular_stratum_conductance(
+			patch[0].gsurf = compute_nonvascular_stratum_conductance_ground(
 				command_line[0].verbose_flag,
 				max(patch[0].unsat_storage + patch[0].detention_store, patch[0].sat_deficit),
 				patch[0].sat_deficit,
