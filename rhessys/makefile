@@ -107,6 +107,7 @@ $(OBJ)/compute_lwp_predawn.o \
 $(OBJ)/compute_maint_resp.o \
 $(OBJ)/compute_mean_hillslope_parameters.o \
 $(OBJ)/compute_nonvascular_stratum_conductance.o \
+$(OBJ)/compute_nonvascular_stratum_conductance_ground.o \
 $(OBJ)/compute_patch_family_routing.o \
 $(OBJ)/compute_potential_N_uptake.o \
 $(OBJ)/compute_potential_N_uptake_Dickenson.o \
@@ -778,6 +779,8 @@ $(OBJ)/compute_surface_heat_flux.o: rad/compute_surface_heat_flux.c
 	$(CC) -c $(CFLAGS) -I include rad/compute_surface_heat_flux.c -o $(OBJ)/compute_surface_heat_flux.o
 $(OBJ)/compute_nonvascular_stratum_conductance.o: hydro/compute_nonvascular_stratum_conductance.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_nonvascular_stratum_conductance.c -o $(OBJ)/compute_nonvascular_stratum_conductance.o
+$(OBJ)/compute_nonvascular_stratum_conductance_ground.o: hydro/compute_nonvascular_stratum_conductance_ground.c
+	$(CC) -c $(CFLAGS) -I include hydro/compute_nonvascular_stratum_conductance_ground.c -o $(OBJ)/compute_nonvascular_stratum_conductance_ground.o
 $(OBJ)/compute_xylem_conductance.o: hydro/compute_xylem_conductance.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_xylem_conductance.c -o $(OBJ)/compute_xylem_conductance.o
 $(OBJ)/compute_vascular_stratum_conductance.o: hydro/compute_vascular_stratum_conductance.c
