@@ -134,7 +134,8 @@ void	update_shadow_strata(
              (current_date.year - command_line[0].start_date.year) > zone[0].target.age && current_date.month==9 && current_date.day==30)
          {
                 stratum[0].target.met = 1;
-                 printf("\n 3. zone target meet zoneID is: %d, simulated zone effective LAI is: %lf, stratumID is: %d, simulate stratum LAI is %lf \n target LAI is %lf, target.met %d \n", zone[0].ID, zone[0].effective_lai, stratum[0].ID, stratum[0].epv.proj_lai, zone[0].target.lai, stratum[0].target.met);
+                 printf("\n 3. zone target meet zoneID is: %d, simulated zone [effectiveLAI %lf, LAI is: %lf, target LAI: %lf], stratumID is: %d, simulate stratum LAI is %lf, target.met %d \n",
+                 zone[0].ID, zone[0].effective_lai, zone[0].lai, zone[0].target.lai, stratum[0].ID, stratum[0].epv.proj_lai,  stratum[0].target.met);
         }
 
    }
