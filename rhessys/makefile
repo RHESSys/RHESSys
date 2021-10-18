@@ -338,7 +338,6 @@ $(OBJ)/update_decomp.o \
 $(OBJ)/update_decomp_root.o \
 $(OBJ)/update_denitrif.o \
 $(OBJ)/update_dissolved_organic_losses.o \
-$(OBJ)/update_dissolved_organic_losses_root.o \
 $(OBJ)/update_drainage_land.o \
 $(OBJ)/update_drainage_road.o \
 $(OBJ)/update_drainage_stream.o \
