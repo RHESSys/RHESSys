@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-void sort_patch_layers( struct patch_object *patch, *rec)
+void sort_patch_layers( struct patch_object *patch, int *rec)
 {
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */

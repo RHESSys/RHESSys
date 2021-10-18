@@ -1,0 +1,134 @@
+1
+../defs/basin.def
+1
+../defs/hillslope.def
+1
+../defs/zone.def
+1
+../defs/soil_SOILTYPE.def
+1
+../defs/lu_undev.def
+1
+../defs/veg_VEGTYPE.def
+1
+../clim/BASESTATION_base
+_world AREA_or_BASIN_MAP.tif 1
+ _basin BASIN_MAP.tif 1
+	x		value 0.0
+	y		value 0.0
+	z		aver DEM_MAP.tif
+	basin_parm_ID	dvalue 1
+	latitude	value XX.XX 
+	basin_n_basestations 	dvalue 0	
+  	_hillslope SUBBASIN_MAP.tif 1
+		x		value 0.0
+		y		value 0.0
+		z		aver DEM_MAP.tif
+		hill_parm_ID	dvalue 1	
+		gw.storage	value 0.0
+		gw.NO3		value 0.0
+		hillslope_n_basestations	dvalue 0 	
+		_zone HILL_OR_PATCH_MAP.tif 1 
+			x		  value 0.0
+			y		  value 0.0
+			z		  aver DEM_MAP.tif 
+			zone_parm_ID  	  dvalue 1  
+			area		  area	
+			slope		  aver SLOPE_MAP.tif	
+			aspect		  spavg ASPECT_MAP.tif SLOPE_MAP.tif	
+			precip_lapse_rate value 1.0
+			e_horizon	  aver EAST_HORIZOM_MAP.tif 	
+			w_horizon	  aver WEST_HORIZON_MAP.tif	
+			zone_n_basestations	  dvalue 1	
+			zone_basestation_ID	  dvalue 101	
+			 _patch PATCH_MAP.tif 1
+				x			value 0.0
+				y			value 0.0
+				z			aver  DEM_MAP.tif
+				soil_parm_ID	        value 3.0	
+				landuse_parm_ID		value 1.0
+				fire_parm_ID		value 1.0
+				area			area	
+				slope			aver  SLOPE_MAP.tif			
+                                asp_rule		mode  ASPRULE_MAP.tif
+				lna 			value 7.0	
+				Ksat_vertical   	value 1.0 
+				mpar	        	value 0.12	
+				rz_storage		value 0.0
+				unsat_storage		value 0.0
+				sat_deficit 		value 0.0
+				snowpack.water_equivalent_depth value 0.28 
+				snowpack.water_depth 	value 0.0
+				snowpack.T 		value 0.0
+				snowpack.surface_age 	value 0.0
+				snowpack.energy_deficit value -0.1 
+				litter.cover_fraction	value 1.0
+				litter.rain_stored	value 0.0
+				litter_cs.litr1c 	value 0.0
+				litter_ns.litr1n 	value 0.0
+				litter_cs.litr2c 	value 0.0
+				litter_cs.litr3c 	value 0.0
+				litter_cs.litr4c 	value 0.0
+				soil_cs.soil1c 		value 0.01634108
+				soil_ns.sminn		value 0.0
+				soil_ns.nitrate		value 0.0
+				soil_cs.soil2c		value 0.10604145
+				soil_cs.soil3c  	value 0.81044306
+				soil_cs.soil4c		value 4.22538886
+				patch_n_basestations		dvalue 0
+				_canopy_strata PATCH_MAP.tif 2	
+					veg_parm_ID	mode OVERSTORY.tif UNDERSTORY.tif
+            				cover_fraction		value 0.6 0.6
+					gap_fraction		value 0.1 0.0 
+					rootzone.depth		value 1.0 1.0 
+					snow_stored		value 0.0 0.0 
+					rain_stored		value 0.0 0.0 
+					cs.pool			value 0.0 0.0 
+					cs.leafc		value 0.0 0.0 
+					cs.dead_leafc		value 0.0 0.0 
+					cs.leafc_store		value 0.0 0.0 
+					cs.leafc_transfer	value 0.0 0.0 
+					cs.live_stemc		value 0.0 0.0 
+					cs.livestemc_store	value 0.0 0.0 
+					cs.live.stemc_transfer	value 0.0 0.0 
+					cs.dead_stem		value 0.0 0.0 
+					cs.deadstemc_store	value 0.0 0.0 
+					cs.deadstemc_transfer	value 0.0 0.0 
+					cs.live_crootc		value 0.0 0.0 
+					cs.livecrootc_store	value 0.0 0.0 
+					cs.livecrootc_transfer	value 0.0 0.0 
+					cs.dead_crootc		value 0.0 0.0 
+					cs.deadcrootc_store	value 0.0 0.0 
+					cs.deadcrootc_transfer	value 0.0 0.0 
+					cs.frootc		value 0.0 0.0 
+					cs.frootc_store		value 0.0 0.0 
+					cs.frootc_transfer	value 0.0 0.0 
+					cs_cwdc			value 0.0 0.0 
+					epv.prev_leafcalloc	value 0.0 0.0 
+					ns.pool			value 0.0 0.0 
+					ns.leafn		value 0.0 0.0 
+					ns.dead_leafn		value 0.0 0.0 
+					ns.leafn_store		value 0.0 0.0 
+					ns.leafn_transfer	value 0.0 0.0 
+					ns.live_stemn		value 0.0 0.0 
+					ns.livestemn_store	value 0.0 0.0 
+					ns.livestemn_transfer	value 0.0 0.0 
+					ns.dead_stem		value 0.0 0.0 
+					ns.deadstemn_store	value 0.0 0.0 
+					ns.deadstemn_transfer	value 0.0 0.0 
+					ns.live_crootn		value 0.0 0.0 
+					ns.livecrootn_store	value 0.0 0.0 
+					ns.livecrootn_transfer	value 0.0 0.0 
+					ns.dead_crootn		value 0.0 0.0 
+					ns.deadcrootn_store	value 0.0 0.0 
+					ns.deadcrootn_transfer	value 0.0 0.0 
+					ns.frootn		value 0.0 0.0 
+					ns.frootn_store		value 0.0 0.0 
+					ns.frootn_transfer	value 0.0 0.0 
+					ns.cwdn			value 0.0 0.0 
+					ns.retransn		value 0.0 0.0 
+					epv.wstress_days      	dvalue 0 0 
+					epv.min_fparabs		value 0.0 0.0 
+					epv.min_vwc		value 0.0 0.0 
+					canopy_strata_n_basestations 		dvalue 0 0 
+

@@ -80,7 +80,11 @@ void execute_daily_output_event(struct world_object *world,
 		/*----------------------------------------------------------------------*/
 		bool of_result = true;
 		char *of_error = (char *)calloc(MAXSTR, sizeof(char));
-		of_result = output_filter_output_daily(of_error, MAXSTR, command_line->verbose_flag,
+		bool of_verbose = 0;
+		if(command_line[0].verbose_flag == -8) {
+			of_verbose = 1;
+		}
+		of_result = output_filter_output_daily(of_error, MAXSTR, of_verbose,
 				date, command_line->output_filter);
 		if (!of_result) {
 			fprintf(stderr, "output_filter_output_daily failed with error: %s\n", of_error);

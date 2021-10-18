@@ -161,21 +161,22 @@ void input_new_strata_thin(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
 
 	// thinning vars
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",canopy_strata[0].cs.cpool,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",NULLVAL,1);
 	  	if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_cpool = ltmp;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",canopy_strata[0].cs.leafc,1);
+
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",NULLVAL,1);
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_leafc = ltmp;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",canopy_strata[0].cs.dead_leafc,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",NULLVAL,1);
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_deadleafc = ltmp;		
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",canopy_strata[0].cs.live_stemc,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",NULLVAL,1);
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_livestemc = ltmp;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_stemc","%lf",canopy_strata[0].cs.dead_stemc,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_stemc","%lf",NULLVAL,1);
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_deadstemc = ltmp;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_crootc","%lf",canopy_strata[0].cs.live_crootc,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_crootc","%lf",NULLVAL,1);
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_livecrootc = ltmp;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_crootc","%lf",canopy_strata[0].cs.dead_crootc,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_crootc","%lf",NULLVAL,1);
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_deadcrootc = ltmp;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc","%lf",canopy_strata[0].cs.frootc,1);
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc","%lf",NULLVAL,1);
 		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_frootc = ltmp;
 
 	// For use later when looking at (or changing) basestations
