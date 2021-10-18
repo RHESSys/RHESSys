@@ -305,9 +305,6 @@ void compute_patch_family_routing(struct zone_object *zone,
                 dG_act += (zone[0].patch_families[pf][0].patches[i][0].unsat_transfer + zone[0].patch_families[pf][0].patches[i][0].rz_transfer) *
                           zone[0].patch_families[pf][0].patches[i][0].area;
 
-                // wilting point mean (of gainers)
-                // wp_mean += (zone[0].patch_families[pf][0].patches[i][0].wilting_point) * zone[0].patch_families[pf][0].patches[i][0].area;
-                // incrament gainer area
                 area_sum_g += zone[0].patch_families[pf][0].patches[i][0].area;
             }
             else
@@ -321,7 +318,7 @@ void compute_patch_family_routing(struct zone_object *zone,
                 if (skip[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit > wet_mean_sat && dL_sat_pot > ZERO)
                 {
                     dG_sat[i] = (zone[0].patch_families[pf][0].patches[i][0].sat_deficit - wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area *
-                                (dL_sat_act / dL_sat_pot) * ksat[i];
+                                (dL_sat_act / dL_sat_pot) * min(ksat[i],1.0);
                     dG_sat_act += dG_sat[i];
                     dG_sat_pot += (zone[0].patch_families[pf][0].patches[i][0].sat_deficit - wet_mean_sat) * zone[0].patch_families[pf][0].patches[i][0].area;
                     // change in sat store ***** revisit this, make sure deficit is being updated correctly, should be in meters of water *****
