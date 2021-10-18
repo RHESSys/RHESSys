@@ -254,7 +254,10 @@ static bool init_spatial_hierarchy_basin(OutputFilter *f,
 		struct world_object * const w,
 		struct command_line_object * const cmd) {
 
-	bool verbose = cmd->verbose_flag;
+	bool verbose = 0;
+	if(cmd->verbose_flag == -8) {
+		verbose = 1;
+	}
 
 	if (f->basins == NULL) {
 		fprintf(stderr, "init_spatial_hierarchy_basin: no basins defined but basin type was specified.\n");
@@ -301,7 +304,10 @@ static bool init_spatial_hierarchy_basin(OutputFilter *f,
 static bool init_spatial_hierarchy_zone(OutputFilter *f,
                                          struct world_object * const w,
                                          struct command_line_object * const cmd) {
-	bool verbose = cmd->verbose_flag;
+	bool verbose = 0;
+	if(cmd->verbose_flag == -8) {
+		verbose = 1;
+	}
 	struct basin_object *b;
 
 	if (f->zones == NULL) {
@@ -387,7 +393,10 @@ static bool init_spatial_hierarchy_patch(OutputFilter *f,
 		struct world_object * const w,
 		struct command_line_object * const cmd) {
 
-	bool verbose = cmd->verbose_flag;
+	bool verbose = 0;
+	if(cmd->verbose_flag == -8) {
+		verbose = 1;
+	}
 	struct basin_object *b;
 
 	if (f->patches == NULL) {
@@ -491,7 +500,10 @@ static bool init_spatial_hierarchy_stratum(OutputFilter *f,
 		struct world_object * const w,
 		struct command_line_object * const cmd) {
 
-	bool verbose = cmd->verbose_flag;
+	bool verbose = 0;
+	if(cmd->verbose_flag == -8) {
+		verbose = 1;
+	}
 	struct basin_object *b;
 
 	if (f->strata == NULL) {
@@ -652,12 +664,18 @@ static bool write_headers(OutputFilter *f) {
 bool construct_output_filter(char * const error, size_t error_len,
 		struct command_line_object * const cmd,
 		struct world_object * const world) {
+	
+	bool of_verbose = 0;
+	if(cmd->verbose_flag == -8) {
+		of_verbose = 1;
+	}
+
 	if (!cmd->output_filter_flag) {
 		return return_with_error(error, error_len, "output_filter_flag is false, not constructing output filter.");
 	}
 
 	// Parse output filter
-	OutputFilter *filters = parse(cmd->output_filter_filename, cmd->verbose_flag);
+	OutputFilter *filters = parse(cmd->output_filter_filename, of_verbose);
 	if (filters == NULL) {
 		return return_with_error(error, error_len, "unable to parse output filter.");
 	}
@@ -680,7 +698,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 		}
 
 		// Validate variables and write offsets and data types to filter
-		status = init_variables(f, idx, cmd->verbose_flag);
+		status = init_variables(f, idx, of_verbose);
 		if (!status) {
 			char *init_error = (char *)calloc(MAXSTR, sizeof(char));
 			snprintf(init_error, MAXSTR, "unable to initialize variables for output filter with path %s and filename %s.",
@@ -727,7 +745,7 @@ bool construct_output_filter(char * const error, size_t error_len,
 			return return_with_error(error, error_len, init_error);
 		}
 
-		if (cmd->verbose_flag) print_output_filter(f);
+		if (of_verbose) print_output_filter(f);
 	}
 
 	free_struct_index(idx);
