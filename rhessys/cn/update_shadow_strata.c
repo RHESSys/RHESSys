@@ -131,7 +131,7 @@ void	update_shadow_strata(
         if ( (zone[0].lai >= zone[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) &&
              (zone[0].total_stemc >= zone[0].target.total_stemc * (1- world[0].defaults[0].spinup[0].tolerance)) &&
              (zone[0].height >= zone[0].target.height *(1 - world[0].defaults[0].spinup[0].tolerance)) &&
-             (current_date.year - command_line[0].start_date.year) > zone[0].target.age) // && current_date.month==9 && current_date.day==30)
+             (current_date.year - command_line[0].start_date.year) > zone[0].target.age && (current_date.year - command_line[0].start_date.year)>50) // && current_date.month==9 && current_date.day==30)
          {
                 stratum[0].target.met = 1;
                  printf("\n 3. zone target meet zoneID is: %d, simulated zone [effectiveLAI %lf, LAI is: %lf, target LAI: %lf], stratumID is: %d, simulate stratum LAI is %lf, target.met %d \n",
