@@ -171,7 +171,6 @@ void	output_basin(			int routing_flag,
 		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
-			apcp += (zone[0].rain_hourly_total+zone[0].rain+zone[0].snow)*zone[0].area;
 			atmin += zone[0].metv.tmin * zone[0].area;
 			atmax += zone[0].metv.tmax * zone[0].area;
 			atavg += zone[0].metv.tavg * zone[0].area;
@@ -182,6 +181,7 @@ void	output_basin(			int routing_flag,
 			zone_area += zone[0].area;
 			for (p=0; p< zone[0].num_patches; p++){
 				patch = zone[0].patches[p];
+				apcp += (patch[0].total_water_in)* patch[0].area;
 				arain_throughfall += (patch[0].rain_throughfall_24hours + patch[0].rain_throughfall) * patch[0].area;
 				asnow_throughfall += patch[0].snow_throughfall * patch[0].area;
 				apcpassim += patch[0].precip_with_assim * patch[0].area;
@@ -321,7 +321,6 @@ void	output_basin(			int routing_flag,
 	}
 	adC13 /=  aarea;
 	amortality_fract /=  aarea;
-	apcp /= zone_area;
 	atmin /= zone_area;
 	atmax /= zone_area;
 	atavg /= zone_area;
@@ -330,6 +329,7 @@ void	output_basin(			int routing_flag,
 	aKdown /= zone_area;
 	aLdown /= zone_area;	
 
+	apcp /= aarea;
 	apcpassim /=  aarea;
 	aPET /=  aarea;
 	acrain /=  aarea;
