@@ -193,7 +193,7 @@ void  update_drainage_land(
 		route_to_patch *= (available_sat_water)/(route_to_patch);
 		/* add a hotspot to no-veg patches, only route water if precip 2mm */
 		//rain_throughfall NREN
-		if (  patch[0].rain_throughfall < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { // &&
+		if (  patch[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { // &&
 			//printf("\n 2before zero patch lateral flow of [patchID]: %d, [route_to_patch] %lf", patch[0].ID, route_to_patch);
 			route_to_patch = 0;
 			//printf("\n zero patch lateral flow of patchID: %d", patch[0].ID);

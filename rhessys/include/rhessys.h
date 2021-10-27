@@ -1221,9 +1221,9 @@ struct	soil_default
 	double	psi_max;					/* m */
 	double	surf_to_gw_coeff;				/* percent/day */ //NREN
   double  sat_to_gw_coeff; 				/* percent/day */
-  int  actionGWDRAIN;
-  int    water_film; //NREN creat a hotspot or not
-  double rain_threshold; //NREN threshold when to turn off lateral flow
+  int  actionGWDRAIN;                       /* 0 - 1*/
+  int    water_film; /* 0 -1*/  //NREN creat a hotspot or not
+  double rain_threshold; /* 0 - 1 *///NREN soil moisture threshold when sm < TH lateral flow is off
 	double	soil_depth;					/* m */
 	double	effective_soil_depth;					/* m */
 	double	soil_water_cap;					/* m of water */
