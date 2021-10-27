@@ -1678,6 +1678,7 @@ struct spinup_default {
         int ID;
         double tolerance;   // percent as fraction of 1
         double max_years;   /* years */
+        double min_years; /* minmum years required to reach target */
         int    target_type; // to specify which layers of LAI is used, 1 is use stratum LAI and 2 is use patch LAI
         int    max_ID; // the maximum stratum ID that is overstory, normally understory is one degree larger than overstory
         };

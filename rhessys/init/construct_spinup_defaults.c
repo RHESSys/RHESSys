@@ -85,6 +85,7 @@ struct spinup_default *construct_spinup_defaults(
                 /*--------------------------------------------------------------*/
                 default_object_list[i].tolerance = getDoubleParam(&paramCnt, &paramPtr, "tolerance", "%lf", 0.005, 1);
                 default_object_list[i].max_years = getDoubleParam(&paramCnt, &paramPtr, "max_years", "%lf", 500, 1);
+                default_object_list[i].min_years = getDoubleParam(&paramCnt, &paramPtr, "min_years", "%lf", 50, 1);
 
                 /* add one paramter to control the target type, type = 1 is use stratum LAI and type = 2 use patch LAI*/
                 default_object_list[i].target_type = getIntParam(&paramCnt, &paramPtr, "target_type", "%ld", 1, 1);
