@@ -193,32 +193,16 @@ void  update_drainage_land(
 		route_to_patch *= (available_sat_water)/(route_to_patch);
 		/* add a hotspot to no-veg patches, only route water if precip 2mm */
 		//rain_throughfall NREN
-		if (  patch[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { // &&
+		/*if (patch[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { // &&
 			//printf("\n 2before zero patch lateral flow of [patchID]: %d, [route_to_patch] %lf", patch[0].ID, route_to_patch);
 			route_to_patch = 0;
 			if (patch[0].ID == 37704) printf("\n zero patch lateral flow of patchID: %d", patch[0].ID);
-		}
+		} */
 
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount		some code orignally developed by Laurence Lin		*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0) {
-		/*Nout = compute_N_leached(
-			verbose_flag,
-			//patch[0].soil_ns.nitrate,
-			patch[0].sat_NO3, //New NO3 in saturated zone
-			route_to_patch / patch[0].area,
-			patch[0].sat_deficit,
-			patch[0].soil_defaults[0][0].soil_water_cap,
-			m,
-			total_gamma / patch[0].area * time_int,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].soil_defaults[0][0].N_decay_rate,
-			patch[0].soil_defaults[0][0].active_zone_z,
-			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].NO3_adsorption_rate,
-			patch[0].transmissivity_profile); */
 
  Nout = compute_Nsat_leached(
              verbose_flag,
@@ -231,22 +215,6 @@ void  update_drainage_land(
 		NO3_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_ns.NO3_Qout += Nout;
 
-
-		/*Nout = compute_N_leached(
-			verbose_flag,
-			patch[0].soil_ns.sminn,
-			route_to_patch / patch[0].area,
-			patch[0].sat_deficit,
-			patch[0].soil_defaults[0][0].soil_water_cap,
-			m,
-			total_gamma / patch[0].area * time_int,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].soil_defaults[0][0].N_decay_rate,
-			patch[0].soil_defaults[0][0].active_zone_z,
-			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].NH4_adsorption_rate,
-			patch[0].transmissivity_profile); */
 		Nout = compute_Nsat_leached(
 			verbose_flag,
 			patch[0].sat_NH4,
@@ -259,23 +227,6 @@ void  update_drainage_land(
 		patch[0].soil_ns.NH4_Qout += Nout;
         if(Nout<0 || Nout!=Nout ) printf("update_drainage_land[%d,%e]: soil NH4 (%e) flux (%e)\n", patch[0].ID,route_to_patch,patch[0].soil_ns.sminn, Nout);
 
-		/*Nout = compute_N_leached(
-			verbose_flag,
-			patch[0].soil_ns.DON,
-			route_to_patch / patch[0].area,
-			patch[0].sat_deficit,
-			patch[0].soil_defaults[0][0].soil_water_cap,
-			m,
-			total_gamma / patch[0].area * time_int,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].soil_defaults[0][0].DOM_decay_rate,
-			patch[0].soil_defaults[0][0].active_zone_z,
-			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].DON_adsorption_rate,
-			patch[0].transmissivity_profile);
-		DON_leached_to_patch = Nout * patch[0].area;
-		patch[0].soil_ns.DON_Qout += Nout; */
 		Nout = compute_Nsat_leached(
 			verbose_flag,
             patch[0].sat_DON,
@@ -289,23 +240,6 @@ void  update_drainage_land(
         if(Nout<0 || Nout!=Nout) printf("update_drainage_land[%d,%e]: soil DON (%e) flux (%e)\n", patch[0].ID,route_to_patch,patch[0].soil_ns.DON, Nout);
 
 
-		/*Nout = compute_N_leached(
-			verbose_flag,
-			patch[0].soil_cs.DOC,
-			route_to_patch / patch[0].area,
-			patch[0].sat_deficit,
-			patch[0].soil_defaults[0][0].soil_water_cap,
-			m,
-			total_gamma / patch[0].area * time_int,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].soil_defaults[0][0].DOM_decay_rate,
-			patch[0].soil_defaults[0][0].active_zone_z,
-			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
-			patch[0].transmissivity_profile);
-		DOC_leached_to_patch = Nout * patch[0].area;
-		patch[0].soil_cs.DOC_Qout += Nout; */
 		Nout = compute_Nsat_leached(
 			verbose_flag,
 			patch[0].sat_DOC,
@@ -322,7 +256,7 @@ void  update_drainage_land(
 	}
 
 
-	patch[0].Qout += (route_to_patch / patch[0].area);
+	patch[0].Qout += (route_to_patch / patch[0].area);// here change NREN 2021104
 
 
 	/*--------------------------------------------------------------*/
@@ -351,80 +285,7 @@ void  update_drainage_land(
 	/*	we assume that only nitrate follows return flow		*/
 	/*	lost in subsurface flow routing				*/
 	/*--------------------------------------------------------------*/
-	/*	if (command_line[0].grow_flag > 0) {
-			Nout = compute_N_leached(
-				verbose_flag,
-				patch[0].soil_ns.nitrate - (NO3_leached_to_patch/patch[0].area),
-				return_flow,
-				0.0,
-				0.0,
-				m,
-				total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].N_decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NO3_adsorption_rate,
-				patch[0].transmissivity_profile);
-			patch[0].surface_NO3 += Nout;
-			patch[0].soil_ns.NO3_Qout += Nout;
 
-			Nout = compute_N_leached(
-				verbose_flag,
-				patch[0].soil_ns.sminn - (NH4_leached_to_patch/patch[0].area),
-				return_flow,
-				0.0,
-				0.0,
-				m,
-				total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].N_decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NH4_adsorption_rate,
-				patch[0].transmissivity_profile);
-			patch[0].surface_NH4 += Nout;
-			patch[0].soil_ns.NH4_Qout += Nout;
-
-
-			Nout = compute_N_leached(
-				verbose_flag,
-				patch[0].soil_ns.DON - (DON_leached_to_patch/patch[0].area),
-				return_flow,
-				0.0,
-				0.0,
-				m,
-				total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].DOM_decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DON_adsorption_rate,
-				patch[0].transmissivity_profile);
-			patch[0].surface_DON += Nout;
-			patch[0].soil_ns.DON_Qout += Nout;
-
-			Nout = compute_N_leached(
-				verbose_flag,
-				patch[0].soil_cs.DOC - (DOC_leached_to_patch/patch[0].area),
-				return_flow,
-				0.0,
-				0.0,
-				m,
-				total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].DOM_decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DOC_adsorption_rate,
-				patch[0].transmissivity_profile);
-			patch[0].surface_DOC += Nout;
-			patch[0].soil_cs.DOC_Qout += Nout;
-		} */
 
 		/* new nitrate leaching process, originally developed by Laurence Lin */
     // leaching from surface;
@@ -531,16 +392,23 @@ void  update_drainage_land(
 		/* first transfer subsurface water and nitrogen */  // --------- subsurface
 		/*--------------------------------------------------------------*/
 		/* some "transmissivity_flux2neighbour" is loss to GW_storage  */
-		if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1){
+		/*if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1){
 				//how do we know how fill is the GW?
 				patch[0].gw_drainage += route_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area // reset to zero every patch_daily_I()
 				route_to_patch *= 1.0 - sat_to_gw_coeff;
-		}//end of if
+		}//end of if */
 
 		/*--------------------------------------------------------------*/
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
+		// hotspot patch when neighour patch sm < TH, water not go to that patch Qin =0 and Qout -Qin
+		//patch is the hotspot patch and neigh is their neighbour patch
+		if (neigh[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
+        {
+            patch[0].Qout -= Qin; // first remove it from Qout
+            Qin = 0.0;          //then if theta of neigh < TH make it zero
+        }
 		/* creat a hotspot for no-veg patches */
 
 
@@ -549,7 +417,7 @@ void  update_drainage_land(
 		{
 			 /* add water more from sat zone to deep groundwater NREN 20210714*/
 			 double coef;
-	     if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1)
+	    /* if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1)
 	     {
 	                     coef = 1.0 - sat_to_gw_coeff;
 	                     coef /= neigh[0].area;
@@ -559,11 +427,35 @@ void  update_drainage_land(
 	                     patch[0].gw_drainage_NH4 += NH4_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
 	       }else
 	       {
-	                     coef = 1.0/neigh[0].area; }
+	                     coef = 1.0/neigh[0].area; } */
+            coef = 1.0/neigh[0].area;
 
            /* add extra conditions to make no nitrate route to no-veg&hotspot patches, since it is easily accumulate in there */
-			if(neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) // make sure for no-veg default is rout_N is 0
+        if(neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) // make sure for no-veg default is rout_N is 0
 			{
+             // first check the threshold of hotspot, if neigh'sm < threshold, then Nin is zero
+            if (neigh[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
+            {
+                //DON -- be careful about the unit, is it area average or total
+                patch[0].soil_ns.DON_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch)/patch[0].area; // first return it back
+                patch[0].soil_ns.DON_Qout = max(0.0, patch[0].soil_ns.DON_Qout);
+                DON_leached_to_patch = 0.0;
+                //DOC
+                patch[0].soil_cs.DOC_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch)/patch[0].area;
+                patch[0].soil_cs.DOC_Qout = max(0.0, patch[0].soil_cs.DOC_Qout);
+                DOC_leached_to_patch = 0.0;
+                //NO3
+                patch[0].soil_ns.NO3_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * NO3_leached_to_patch)/patch[0].area;
+                patch[0].soil_ns.NO3_Qout = max(0.0, patch[0].soil_ns.NO3_Qout);
+                NO3_leached_to_patch = 0.0;
+                //NH4
+                patch[0].soil_ns.NH4_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch)/patch[0].area;
+                patch[0].soil_ns.NH4_Qout = max(0.0, patch[0].soil_ns.NH4_Qout);
+                NH4_leached_to_patch = 0.0;
+              } // end if theta < TH
+
+
+			// secondly normal nitrogen routing pathway
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch) * coef;
 			neigh[0].soil_ns.DON_Qin += Nin;
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DOC_leached_to_patch) * coef;
@@ -572,8 +464,8 @@ void  update_drainage_land(
 			neigh[0].soil_ns.NO3_Qin += Nin;
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch) * coef;
 			neigh[0].soil_ns.NH4_Qin += Nin;
-			}
-			else if (neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 0 && patch[0].area > ZERO)
+			} // end if rout_N
+        else if (neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 0 && patch[0].area > ZERO) // this is to control no-veg patch accumulating of nitrate
 			{
 			Nin = 0.0;//(patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch) * coef;
 			neigh[0].soil_ns.DON_Qin += Nin;
