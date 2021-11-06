@@ -404,9 +404,12 @@ void  update_drainage_land(
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
 		// hotspot patch when neighour patch sm < TH, water not go to that patch Qin =0 and Qout -Qin
 		//patch is the hotspot patch and neigh is their neighbour patch
-		if (neigh[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
+		if (neigh[0].theta < patch[0].soil_defaults[0][0].rain_threshold &&
+		patch[0].soil_defaults[0][0].water_film == 1 &&
+		patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
         {
             patch[0].Qout -= Qin; // first remove it from Qout
+            patch[0].Qout = max(0.0, patch[0].Qout);
             Qin = 0.0;          //then if theta of neigh < TH make it zero
         }
 		/* creat a hotspot for no-veg patches */
