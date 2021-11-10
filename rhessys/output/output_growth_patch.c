@@ -192,7 +192,7 @@ void	output_growth_patch(
 		patch[0].ndf.plant_potential_ndemand*1000.0,
 		patch[0].ndf.potential_immob*1000.0,
 		patch[0].soil_ns.perc_inroot,
-		patch[0].rooting_depth_mean,
+		patch[0].rooting_depth_mean*1000.0,
 		acanopy_N_store, patch[0].litter.NO3_stored, patch[0].NO3_throughfall*1000, // this is N input
 		patch[0].ndf.sminn_to_nitrate*1000.0,
 		patch[0].streamNO3_from_surface*1000.0, patch[0].streamNO3_from_sub*1000.0,

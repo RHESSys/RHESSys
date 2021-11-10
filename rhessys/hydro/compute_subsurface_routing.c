@@ -1217,22 +1217,33 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                       patch[0].soil_cs.DOC *= (1 - tmp_ratio);
 
                      } //if 344
-                else if (patch[0].sat_deficit <= ZERO && patch[0].sat_deficit< patch[0].preday_sat_deficit &&
-                           (patch[0].soil_ns.nitrate > ZERO || patch[0].soil_ns.sminn > ZERO || patch[0].soil_ns.DON > ZERO || patch[0].soil_cs.DOC>ZERO))
-                           { // if water reach the surface then all go to sat_NO3, sat_def can be negative
+                else if (patch[0].sat_deficit <= ZERO)// && patch[0].sat_deficit< patch[0].preday_sat_deficit &&)
+                    { // if water reach the surface then all go to sat_NO3, sat_def can be negative
 
                     tmp_ratio = 1.0; // all soil N go to sat_N
                     patch[0].water_rise_ratio = tmp_ratio;
 
+                    if(patch[0].soil_ns.nitrate > ZERO)
+                    {
                     patch[0].sat_NO3 += patch[0].soil_ns.nitrate*tmp_ratio;//assign first then make them zero!
-                    patch[0].sat_NH4 += patch[0].soil_ns.sminn* tmp_ratio;//+= not =
-                    patch[0].sat_DON += patch[0].soil_ns.DON* tmp_ratio;
-                    patch[0].sat_DOC += patch[0].soil_cs.DOC* tmp_ratio;
-
                     patch[0].soil_ns.nitrate *= (1 - tmp_ratio); //patch[0].soil_ns.nitrate - patch[0].sat_NO3
+                    }
+                    if(patch[0].soil_ns.sminn > ZERO)
+                    {
+                    patch[0].sat_NH4 += patch[0].soil_ns.sminn* tmp_ratio;//+= not =
                     patch[0].soil_ns.sminn *= (1 - tmp_ratio);
-                    patch[0].soil_cs.DOC *= (1 - tmp_ratio);
+                    }
+                    if(patch[0].soil_ns.DON > ZERO)
+                    {
+                    patch[0].sat_DON += patch[0].soil_ns.DON* tmp_ratio;
                     patch[0].soil_ns.DON *=(1 - tmp_ratio);
+                    }
+                    if (patch[0].soil_cs.DOC >ZERO)
+                    {
+                    patch[0].sat_DOC += patch[0].soil_cs.DOC* tmp_ratio;
+                    patch[0].soil_cs.DOC *= (1 - tmp_ratio);
+                    }
+
 
                     }
 

@@ -286,8 +286,20 @@ void		surface_daily_F(
 		if (rnet_evap_pond_day <= ZERO) rnet_evap_pond_day = 0.0;
 
 		/*** Use Penman with rsurface=0 for open water evaporation. ***/
-
+        if (patch[0].rootzone.depth > ZERO)
+        {
 		patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
+		}
+		else // for no-veg patch ga is pure water surface TODO: needs to improve
+		{
+         patch[0].ga = compute_nonvascular_stratum_conductance_ground( //_ground
+				command_line[0].verbose_flag,
+				max(patch[0].unsat_storage + patch[0].detention_store, patch[0].sat_deficit),
+				patch[0].sat_deficit,
+				patch[0].soil_defaults[0][0].gl_c,
+				patch[0].soil_defaults[0][0].gsurf_slope,
+				patch[0].soil_defaults[0][0].gsurf_intercept);
+		}
 
 		detention_store_potential_dry_evaporation_rate_night = penman_monteith(
 				command_line[0].verbose_flag,
@@ -348,9 +360,12 @@ void		surface_daily_F(
 
 		// Avoid over-estimating ET from surfaces with no detention store size
 		//   (e.g. impervious surface) by gating ET by detention_store_size
-		detention_store_evaporation = min(detention_store_potential_evaporation,
+	/*	detention_store_evaporation = min(detention_store_potential_evaporation,
 				min(patch[0].detention_store,
-						patch[0].soil_defaults[0][0].detention_store_size));
+						patch[0].soil_defaults[0][0].detention_store_size)); */// NRENwhy defaults.detention_sotre_size = 0 because the slope most water don't stay
+
+		detention_store_evaporation = min(detention_store_potential_evaporation,
+				patch[0].detention_store); // For testing
 
 		patch[0].detention_store -= detention_store_evaporation;
 
@@ -620,7 +635,7 @@ void		surface_daily_F(
 		}
 
 		else {
-			patch[0].gsurf = compute_nonvascular_stratum_conductance_ground(
+			patch[0].gsurf = compute_nonvascular_stratum_conductance( //_ground
 				command_line[0].verbose_flag,
 				max(patch[0].unsat_storage + patch[0].detention_store, patch[0].sat_deficit),
 				patch[0].sat_deficit,
