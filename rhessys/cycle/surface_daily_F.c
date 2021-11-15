@@ -360,12 +360,17 @@ void		surface_daily_F(
 
 		// Avoid over-estimating ET from surfaces with no detention store size
 		//   (e.g. impervious surface) by gating ET by detention_store_size
-	/*	detention_store_evaporation = min(detention_store_potential_evaporation,
+        if (patch[0].rootzone.depth > ZERO)
+        {
+		detention_store_evaporation = min(detention_store_potential_evaporation,
 				min(patch[0].detention_store,
-						patch[0].soil_defaults[0][0].detention_store_size)); */// NRENwhy defaults.detention_sotre_size = 0 because the slope most water don't stay
-
+						patch[0].soil_defaults[0][0].detention_store_size)); // NRENwhy defaults.detention_sotre_size = 0 because the slope most water don't stay
+        }
+        else
+        {
 		detention_store_evaporation = min(detention_store_potential_evaporation,
 				patch[0].detention_store); // For testing
+        }
 
 		patch[0].detention_store -= detention_store_evaporation;
 
