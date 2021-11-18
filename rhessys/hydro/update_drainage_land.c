@@ -178,6 +178,7 @@ void  update_drainage_land(
 	/*-----------------------------------------------------------*/
 
 	std_scale = command_line[0].std_scale;
+	//printf("\n patch[0].std is %lf", patch[0].std);
 
 	route_to_patch =  time_int * compute_varbased_flow(
 		patch[0].num_soil_intervals,
@@ -191,6 +192,7 @@ void  update_drainage_land(
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water)
 		route_to_patch *= (available_sat_water)/(route_to_patch);
+		if (patch[0].ID == 37704) printf("\n [route_to_patch %lf] of patchID: %d", route_to_patch, patch[0].ID);
 		/* add a hotspot to no-veg patches, only route water if precip 2mm */
 		//rain_throughfall NREN
 		/*if (patch[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { // &&

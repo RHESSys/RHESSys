@@ -45,7 +45,7 @@ double	compute_varbased_flow(
 				int num_soil_intervals,
 				double std,
 				double s1,
-				double gamma,	
+				double gamma,
 				double interval_size,
 				double *transmissivity,
 				struct patch_object *patch)
@@ -64,7 +64,7 @@ double	compute_varbased_flow(
 	double	normal[9], perc[9];
 	int i;
 	int didx,didthr;
-	
+
 
 	// soil deficit threshold, not the soil moisture threshold, fs_threshold is defined as the soil moiture threshold as
 	// percentage of the max soil moisture holding capacity
@@ -74,6 +74,7 @@ double	compute_varbased_flow(
 	double soil_depth;
 	double fs_spill;
 	double fs_percolation;
+	double fs_threshold;
 
 
 	/*--------------------------------------------------------------*/
@@ -83,8 +84,12 @@ double	compute_varbased_flow(
 	n_0 = patch[0].soil_defaults[0][0].porosity_0;
 	soil_depth = patch[0].soil_defaults[0][0].soil_depth;
 	threshold = n_0 * p * (1 - exp(-soil_depth/p))*(1 - patch[0].soil_defaults[0][0].fs_threshold);
+	fs_threshold = patch[0].soil_defaults[0][0].fs_threshold;
 	fs_spill = patch[0].soil_defaults[0][0].fs_spill;
 	fs_percolation = patch[0].soil_defaults[0][0].fs_percolation;
+
+	if(patch[0].ID == 37704)
+	printf("\n soil [fs_threshold %lf], [fs_percolation %lf], [fs_spill %lf], [std %lf] \n", fs_threshold, fs_percolation, fs_spill, std);
 
 	/*--------------------------------------------------------------*/
 	/* restrict drainage if below soil depth - note that we assume soil depth here is the depth of a confining layer */
@@ -110,9 +115,9 @@ double	compute_varbased_flow(
 	for (i=1; i<9; i++)
 		perc[i] = 0.1;
 
-	
+
 	flow = 0.0;
-	if (s1 < 0.0) s1 = 0.0;	
+	if (s1 < 0.0) s1 = 0.0;
 
 	if (std > ZERO) {
 	for (i=0; i <9; i++) {
@@ -139,17 +144,17 @@ double	compute_varbased_flow(
 
 		/* if sat_deficit > threshold */
 		if(patch[0].sat_deficit > threshold){
-		    flow = transmissivity[didx] * fs_percolation; // fs_percolation defaults = 1 
+		    flow = transmissivity[didx] * fs_percolation; // fs_percolation defaults = 1
 
 		}
 		// if water level exceed moisture threshold (or sat_deficit <= soil deficit threshold)
 		else {
 		    thre_flow=transmissivity[didthr];
-		    abovthre_flow = (transmissivity[didx]-thre_flow) * fs_spill; // fs_spill default value is 1 
+		    abovthre_flow = (transmissivity[didx]-thre_flow) * fs_spill; // fs_spill default value is 1
       		    flow = abovthre_flow + thre_flow * fs_percolation;  // fs_percolation defaults = 1
 		}
 
-	
+
 	}
 
 	flow = flow*gamma;
