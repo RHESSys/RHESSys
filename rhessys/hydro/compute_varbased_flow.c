@@ -88,8 +88,8 @@ double	compute_varbased_flow(
 	fs_spill = patch[0].soil_defaults[0][0].fs_spill;
 	fs_percolation = patch[0].soil_defaults[0][0].fs_percolation;
 
-	if(patch[0].ID == 37704)
-	printf("\n soil [fs_threshold %lf], [fs_percolation %lf], [fs_spill %lf], [std %lf] \n", fs_threshold, fs_percolation, fs_spill, std);
+	//if(patch[0].ID == 37704)
+	//printf("\n soil [fs_threshold %lf], [fs_percolation %lf], [fs_spill %lf], [std %lf] \n", fs_threshold, fs_percolation, fs_spill, std);
 
 	/*--------------------------------------------------------------*/
 	/* restrict drainage if below soil depth - note that we assume soil depth here is the depth of a confining layer */
