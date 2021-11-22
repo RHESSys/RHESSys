@@ -127,7 +127,7 @@ int update_dissolved_organic_losses(
 	}else{
 	  ndf->do_soil1n_loss = 0.0;
 	  cdf->do_soil1c_loss = 0.0;
-	}
+	} */
 
 	/* medium microbial recycling pool */
 	/*if (ndf->pmnf_s2s3 < ZERO && cn_s2 > ZERO) {
@@ -137,7 +137,7 @@ int update_dissolved_organic_losses(
 	}else{
 	  ndf->do_soil2n_loss = 0.0;
 	  cdf->do_soil2c_loss = 0.0;
-	}
+	} */
 
 	/* slow microbial recycling pool */
 	/*if (ndf->pmnf_s3s4 < ZERO && cn_s3 > ZERO) {
@@ -147,7 +147,7 @@ int update_dissolved_organic_losses(
 	}else{
 	  ndf->do_soil3n_loss = 0.0;
 	  cdf->do_soil3c_loss = 0.0;
-	}
+	} */
 	/* recalcitrant SOM pool (rf = 1.0, always mineralizing) */
 	/*if (ndf->soil4n_to_sminn < ZERO && cn_s4 > ZERO) {
 	  ndf->do_soil4n_loss = -1.0*(DON_production_rate * ndf->soil4n_to_sminn);
@@ -156,7 +156,7 @@ int update_dissolved_organic_losses(
 	}else{
 	  ndf->do_soil4n_loss = 0.0;
 	  cdf->do_soil4c_loss = 0.0;
-	}
+	} */
 
 	/* update soild and litter stores, soil pool will be updated after underground litter decomposes */
 	cs_litr->litr1c       -= cdf->do_litr1c_loss;
