@@ -2170,9 +2170,9 @@ void		patch_daily_F(
 
 	//debug
 	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-	  patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-	  patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
-	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO)
+	  patch[0].soil_ns.nitrate<-ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+	  patch[0].soil_ns.sminn<-ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<-ZERO ||
+	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<-ZERO)
 	  printf("patch daily F5 N balance issue [%d,%d]{%e,%e,%e,%e}\n",
           patch[0].ID,
           patch[0].drainage_type,
@@ -2212,9 +2212,9 @@ void		patch_daily_F(
 
 		//debug
 		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
-     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO )
+     patch[0].soil_ns.nitrate<-ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
+     patch[0].soil_ns.sminn<-ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<-ZERO ||
+     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<-ZERO )
 		  printf("patch daily F6 update_decomp N balance issue [%d,%d]{%e,%e,%e,%e}\n",
            patch[0].ID,
            patch[0].drainage_type,
@@ -2244,13 +2244,13 @@ void		patch_daily_F(
 		}
 		//debug
 		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.nitrate<-ZERO ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.sminn<-ZERO ||
      patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_ns.DON<-ZERO ||
      patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<0)
+     patch[0].soil_cs.DOC<-ZERO)
      printf("patch daily F7 DOM decomp [%d,%d]{%e,%e,%e,%e}\n",
                       patch[0].ID, patch[0].drainage_type,
                       patch[0].soil_ns.nitrate,
@@ -2277,13 +2277,13 @@ void		patch_daily_F(
 
 		//debug
 		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.nitrate<-ZERO ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.sminn<-ZERO ||
      patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_ns.DON<-ZERO ||
      patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<0)
+     patch[0].soil_cs.DOC<-ZERO)
      printf("patch daily F8 update nitrate [%d,%d]{%e,%e,%e,%e}\n",
                       patch[0].ID, patch[0].drainage_type,
                       patch[0].soil_ns.nitrate,
@@ -2305,13 +2305,13 @@ void		patch_daily_F(
 
 		// check the update debug
 		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<0 ||
+     patch[0].soil_ns.nitrate<-ZERO ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<0 ||
+     patch[0].soil_ns.sminn<-ZERO ||
      patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<0 ||
+     patch[0].soil_ns.DON<-ZERO ||
      patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<0 )
+     patch[0].soil_cs.DOC<-ZERO )
 		  printf("patch daily F9 after denitrif [%d]{%e,%e,%e,%e}\n",
            patch[0].ID,
            patch[0].soil_ns.nitrate,
@@ -2354,6 +2354,9 @@ void		patch_daily_F(
 	patch[0].litter_cs.totalc = ((patch[0].litter_cs.litr1c)
 		+ (patch[0].litter_cs.litr2c) +	(patch[0].litter_cs.litr3c)
 		+ (patch[0].litter_cs.litr4c));
+	patch[0].litter_cs.totalc_bg = ((patch[0].litter_cs.litr1c_bg)
+		+ (patch[0].litter_cs.litr2c_bg) +	(patch[0].litter_cs.litr3c_bg)
+		+ (patch[0].litter_cs.litr4c_bg));
 	// consider the below ground litter pool
 	patch[0].totalc += ((patch[0].soil_cs.totalc) + (patch[0].litter_cs.litr1c)
 		+ (patch[0].litter_cs.litr2c) + (patch[0].litter_cs.litr3c)
