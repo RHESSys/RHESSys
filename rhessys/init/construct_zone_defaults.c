@@ -147,7 +147,7 @@ struct zone_default *construct_zone_defaults(
 		/*--------------------------------------------------------------*/
 		/*	CO2 is initialized/default to 322 ppm			*/
 		/*--------------------------------------------------------------*/
-		default_object_list[i].atm_CO2 = 		getDoubleParam(&paramCnt, &paramPtr, "atm_CO2 ", "%lf", 322.0, 1);
+		default_object_list[i].atm_CO2 = 		getDoubleParam(&paramCnt, &paramPtr, "atm_CO2", "%lf", 322.0, 1);
 		/*--------------------------------------------------------------*/
 		/*      if grow flag allocate a grow default structure for the  */
 		/*      ith object.                                             */
