@@ -55,3 +55,8 @@ Updated 6/19/2020
 8)	Compile RHESSys with the additional argument: make wmfire='T'
 
 9)	If changes are made to the fire model, repeat steps 6-8
+	
+
+Troubleshooting
+	- Errors with fire_write>2 outputs (e.g. LoadGridYear, FireSpreadGrid) are a sign that WMFire needs to be recompiled.
+	
