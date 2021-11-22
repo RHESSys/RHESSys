@@ -400,32 +400,55 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*      initialize accumulator variables                        */
 	/*--------------------------------------------------------------*/
 	canopy_strata[0].acc_year.lai = 0.0;
+	canopy_strata[0].acc_year.leafc = 0.0;
+	canopy_strata[0].acc_year.rootc = 0.0;
+	canopy_strata[0].acc_year.stemc = 0.0;
+	canopy_strata[0].acc_year.cwdc = 0.0;
+	canopy_strata[0].acc_year.cwdc_bg = 0.0;
 	canopy_strata[0].acc_year.gpsn = 0.0;
 	canopy_strata[0].acc_year.resp = 0.0;
 	canopy_strata[0].acc_year.totalc = 0.0;
 	canopy_strata[0].acc_year.totaln = 0.0;
+	canopy_strata[0].acc_year.age = 0.0;
 	canopy_strata[0].acc_year.lwp = 0.0;
 	canopy_strata[0].acc_year.height = 0.0;
 	canopy_strata[0].acc_year.minNSC = -999;
+	canopy_strata[0].acc_year.fe_cwdc_consumed = 0.0;
+	canopy_strata[0].acc_year.fe_prop_mort = 0.0;
 	canopy_strata[0].acc_year.fe_prop_c_consumed = 0.0;
-	canopy_strata[0].acc_year.fe_prop_c_mortality = 0.0;
-	canopy_strata[0].acc_year.fe_prop_c_mortality_leaf = 0.0;
+	canopy_strata[0].acc_year.fe_prop_c_remain = 0.0;
+	canopy_strata[0].acc_year.fe_prop_c_remain_adjusted_leafc = 0.0;
+	canopy_strata[0].acc_year.redefine_cwdc_loss = 0.0;
+	canopy_strata[0].acc_year.redefine_totalc_harvest = 0.0;
+	canopy_strata[0].acc_year.redefine_totalc_remain = 0.0;
+	canopy_strata[0].acc_year.redefine_age = 0.0;
+	canopy_strata[0].acc_year.redefine_height = 0.0;
 	canopy_strata[0].acc_year.length = 0;
 	canopy_strata[0].acc_month.lai = 0.0;
 	canopy_strata[0].acc_month.leafc = 0.0;
 	canopy_strata[0].acc_month.rootc = 0.0;
 	canopy_strata[0].acc_month.stemc = 0.0;
+	canopy_strata[0].acc_month.cwdc = 0.0;
+	canopy_strata[0].acc_month.cwdc_bg = 0.0;
 	//canopy_strata[0].acc_month.psn = 0.0;
 	canopy_strata[0].acc_month.gpsn = 0.0;
 	canopy_strata[0].acc_month.resp = 0.0;
 	canopy_strata[0].acc_month.totalc = 0.0;
 	canopy_strata[0].acc_month.totaln = 0.0;
+	canopy_strata[0].acc_month.age = 0.0;
 	canopy_strata[0].acc_month.lwp = 0.0;
 	canopy_strata[0].acc_month.height = 0.0;
 	canopy_strata[0].acc_month.minNSC = -999;
+	canopy_strata[0].acc_month.fe_cwdc_consumed = 0.0;
+	canopy_strata[0].acc_month.fe_prop_mort = 0.0;
 	canopy_strata[0].acc_month.fe_prop_c_consumed = 0.0;
-	canopy_strata[0].acc_month.fe_prop_c_mortality = 0.0;
-	canopy_strata[0].acc_month.fe_prop_c_mortality_leaf = 0.0;
+	canopy_strata[0].acc_month.fe_prop_c_remain = 0.0;
+	canopy_strata[0].acc_month.fe_prop_c_remain_adjusted_leafc = 0.0;
+	canopy_strata[0].acc_month.redefine_cwdc_loss = 0.0;
+	canopy_strata[0].acc_month.redefine_totalc_harvest = 0.0;
+	canopy_strata[0].acc_month.redefine_totalc_remain = 0.0;
+	canopy_strata[0].acc_month.redefine_age = 0.0;
+	canopy_strata[0].acc_month.redefine_height = 0.0;
 	canopy_strata[0].acc_month.length = 0;
 
         canopy_strata[0].cs.Tacc = 20.0;
@@ -616,7 +639,6 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].fe.acc_year.canopy_subtarget_prop_c_consumed = 0.0;
 	//canopy_strata[0].fe.acc_year.canopy_subtarget_c = 0.0;
 	canopy_strata[0].fe.acc_year.understory_c_consumed = 0.0;
-
 
 
 	/*--------------------------------------------------------------*/

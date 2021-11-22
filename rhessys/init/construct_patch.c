@@ -261,9 +261,13 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.num_threshold = 0;
 	patch[0].acc_month.soilc = 0.0;
 	patch[0].acc_month.litterc = 0.0;
+	patch[0].acc_month.litterc_bg = 0.0;
 	patch[0].acc_month.soiln = 0.0;
 	patch[0].acc_month.littern = 0.0;
-
+	patch[0].acc_month.fe_litter_c_consumed = 0.0;
+	patch[0].acc_month.fe_soil_c_consumed = 0.0;
+	patch[0].acc_month.redefine_litterc_loss = 0.0;
+	patch[0].acc_month.redefine_soilc_loss = 0.0;
 
 	patch[0].acc_year.burn = 0.0;
 	patch[0].acc_year.pcp = 0.0;
@@ -301,8 +305,13 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.recharge_wyd = 0.0;
 	patch[0].acc_year.soilc = 0.0;
 	patch[0].acc_year.litterc = 0.0;
+	patch[0].acc_year.litterc_bg = 0.0;
 	patch[0].acc_year.soiln = 0.0;
 	patch[0].acc_year.littern = 0.0;
+	patch[0].acc_year.fe_litter_c_consumed = 0.0;
+	patch[0].acc_year.fe_soil_c_consumed = 0.0;
+	patch[0].acc_year.redefine_litterc_loss = 0.0;
+	patch[0].acc_year.redefine_soilc_loss = 0.0;
 
 	if (command_line[0].firespread_flag == 1) {
 		patch[0].fire.et = 0.0;

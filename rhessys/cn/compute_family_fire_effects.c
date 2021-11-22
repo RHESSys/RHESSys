@@ -75,7 +75,7 @@ void compute_family_fire_effects(
 	int p, c, layer;
 	int thin_type, sev;
 	int under_ct, intr_ct;
-	double litter_c_consumed;
+	double litter_c_consumed, soil_c_consumed;
 	double agg_under_height, agg_under_carbon, under_pct_area;
 	double agg_intr_height, agg_intr_carbon, intr_pct_area;
 	double intr_height_u_prop, intr_c_consumed, under_c_consumed;
@@ -110,6 +110,7 @@ void compute_family_fire_effects(
 	/* Calculate litter consumed for use later in canopy effects */
 	// iterate thru patches in fam, weight + accumulate
 	litter_c_consumed = 0;
+	soil_c_consumed = 0;
 
 	for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
 	{
@@ -117,6 +118,9 @@ void compute_family_fire_effects(
 							  patch_family[0].patches[p][0].litter_cs.litr2c * fire_loss.loss_litr2c +
 							  patch_family[0].patches[p][0].litter_cs.litr3c * fire_loss.loss_litr3c +
 							  patch_family[0].patches[p][0].litter_cs.litr4c * fire_loss.loss_litr4c) *
+							 patch_family[0].patches[p][0].family_pct_cover;
+
+		soil_c_consumed += (patch_family[0].patches[p][0].soil_cs.soil1c * fire_loss.loss_soil1c) *
 							 patch_family[0].patches[p][0].family_pct_cover;
 
 		update_litter_soil_mortality(
@@ -130,6 +134,25 @@ void compute_family_fire_effects(
 
 		patch_family[0].patches[p][0].fire.litter_c_consumed = litter_c_consumed;
 	}
+
+    /*----------------------------------------------------------------------------------------*/
+    /* accumulate patch-level fire effect outputs for output filter                         */
+    /*----------------------------------------------------------------------------------------*/
+	if ((command_line[0].output_flags.monthly == 1) &&
+			(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
+
+		patch_family[0].patches[0][0].acc_month.burn += pspread;
+		patch_family[0].patches[0][0].acc_month.fe_litter_c_consumed += litter_c_consumed;
+		patch_family[0].patches[0][0].acc_month.fe_soil_c_consumed += soil_c_consumed;
+	}
+	if ((command_line[0].output_flags.yearly == 1) &&
+			(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){
+				
+		patch_family[0].patches[0][0].acc_year.burn += pspread;
+		patch_family[0].patches[0][0].acc_year.fe_litter_c_consumed += litter_c_consumed;
+		patch_family[0].patches[0][0].acc_year.fe_soil_c_consumed += soil_c_consumed;
+	}
+
 
 	/*--------------------------------------------------------------*/
 	/*		Fire Effects Outline									*/
@@ -555,6 +578,27 @@ void compute_family_fire_effects(
 
                 canopy_target[0].fe.acc_year.length +=1;
             }
+
+            /*----------------------------------------------------------------------------------------*/
+            /* accumulate stratum-level fire effect outputs for output filter                         */
+            /*----------------------------------------------------------------------------------------*/
+			if ((command_line[0].output_flags.monthly == 1) &&
+					(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
+				canopy_target[0].acc_month.fe_cwdc_consumed += canopy_target[0].fe.m_cwdc_to_atmos;
+				canopy_target[0].acc_month.fe_prop_mort += canopy_target[0].fe.canopy_target_prop_mort;
+				canopy_target[0].acc_month.fe_prop_c_consumed += canopy_target[0].fe.canopy_target_prop_c_consumed;
+				canopy_target[0].acc_month.fe_prop_c_remain += canopy_target[0].fe.canopy_target_prop_c_remain;
+				canopy_target[0].acc_month.fe_prop_c_remain_adjusted_leafc += canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
+			}
+			if ((command_line[0].output_flags.yearly == 1) &&
+					(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){
+				canopy_target[0].acc_year.fe_cwdc_consumed += canopy_target[0].fe.m_cwdc_to_atmos;
+				canopy_target[0].acc_year.fe_prop_mort += canopy_target[0].fe.canopy_target_prop_mort;
+				canopy_target[0].acc_year.fe_prop_c_consumed += canopy_target[0].fe.canopy_target_prop_c_consumed;
+				canopy_target[0].acc_year.fe_prop_c_remain += canopy_target[0].fe.canopy_target_prop_c_remain;
+				canopy_target[0].acc_year.fe_prop_c_remain_adjusted_leafc += canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
+			}
+
 		} // end for at line 137 c
 	}
 	/*--------------------------------------------------------------*/

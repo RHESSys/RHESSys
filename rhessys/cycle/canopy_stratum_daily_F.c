@@ -2033,7 +2033,7 @@ void	canopy_stratum_daily_F(
 			(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
 
 		stratum[0].acc_month.gpsn += stratum[0].cdf.psn_to_cpool; 
-		stratum[0].acc_month.resp += stratum[0].cdf.total_mr;
+		stratum[0].acc_month.resp += stratum[0].cdf.total_mr+stratum[0].cdf.total_gr;
 		stratum[0].acc_month.lai += stratum[0].epv.proj_lai;
 		stratum[0].acc_month.height += stratum[0].epv.height;
 		stratum[0].acc_month.lwp += stratum[0].epv.psi;
@@ -2044,17 +2044,17 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.leafc += stratum[0].cs.leafc;
 		stratum[0].acc_month.rootc += stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
 		stratum[0].acc_month.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
+		stratum[0].acc_month.cwdc += stratum[0].cs.cwdc;
+		stratum[0].acc_month.cwdc_bg += stratum[0].cs.cwdc_bg;
 		stratum[0].acc_month.totalc += stratum[0].cs.totalc;
 		stratum[0].acc_month.totaln += stratum[0].ns.totaln;
-		stratum[0].acc_month.fe_prop_c_consumed += stratum[0].fe.canopy_target_prop_c_consumed;
-		stratum[0].acc_month.fe_prop_c_mortality += stratum[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
-		stratum[0].acc_month.fe_prop_c_mortality_leaf += stratum[0].fe.canopy_target_prop_c_remain_adjusted;
+		stratum[0].acc_month.age += stratum[0].cs.age;
 		stratum[0].acc_month.length += 1;
 	}
 	if ((command_line[0].output_flags.yearly == 1) &&
 			(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){
 		stratum[0].acc_year.gpsn += stratum[0].cdf.psn_to_cpool; 
-		stratum[0].acc_year.resp += stratum[0].cdf.total_mr;
+		stratum[0].acc_year.resp += stratum[0].cdf.total_mr+stratum[0].cdf.total_gr;
 		stratum[0].acc_year.lai += stratum[0].epv.proj_lai;
 		stratum[0].acc_year.height += stratum[0].epv.height;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
@@ -2065,11 +2065,11 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_year.leafc += stratum[0].cs.leafc;
 		stratum[0].acc_year.rootc += stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
 		stratum[0].acc_year.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
+		stratum[0].acc_year.cwdc += stratum[0].cs.cwdc;
+		stratum[0].acc_year.cwdc_bg += stratum[0].cs.cwdc_bg;
 		stratum[0].acc_year.totalc += stratum[0].cs.totalc;
 		stratum[0].acc_year.totaln += stratum[0].ns.totaln;
-		stratum[0].acc_year.fe_prop_c_consumed += stratum[0].fe.canopy_target_prop_c_consumed;
-		stratum[0].acc_year.fe_prop_c_mortality += stratum[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
-		stratum[0].acc_year.fe_prop_c_mortality_leaf += stratum[0].fe.canopy_target_prop_c_remain_adjusted;
+		stratum[0].acc_year.age += stratum[0].cs.age;
 		stratum[0].acc_year.length += 1;
 	}
 	return;

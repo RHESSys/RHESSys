@@ -115,6 +115,7 @@ void input_new_strata_mult(
 	int	i, dtmp, num_lines;
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
+	double cwdc_loss;
 	int	paramCnt=0;
 	param	*paramPtr=NULL;
 	/*--------------------------------------------------------------*/
@@ -177,7 +178,10 @@ void input_new_strata_mult(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc_transfer","%lf",1,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.frootc_transfer = ltmp * canopy_strata[0].cs.frootc_transfer;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cwdc","%lf",1,1);
-	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cwdc = ltmp * canopy_strata[0].cs.cwdc;
+	  if (fabs(ltmp - NULLVAL) >= ONE) {
+		cwdc_loss = (1-ltmp) * canopy_strata[0].cs.cwdc;
+		canopy_strata[0].cs.cwdc = ltmp * canopy_strata[0].cs.cwdc;
+	  }
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cwdc_bg","%lf",1,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cwdc_bg = ltmp * canopy_strata[0].cs.cwdc_bg;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.prev_leafcalloc","%lf",1,1);
@@ -492,6 +496,19 @@ void input_new_strata_mult(
 					world_base_stations);
 			} /*end for*/
 		}
+
+    /*----------------------------------------------------------------------------------------*/
+    /* accumulate the redefine losses for output filter                           */
+    /*----------------------------------------------------------------------------------------*/
+	if ((command_line[0].output_flags.monthly == 1) &&
+			(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
+		canopy_strata[0].acc_month.redefine_cwdc_loss += cwdc_loss;
+	}
+	if ((command_line[0].output_flags.yearly == 1) &&
+			(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){	
+		canopy_strata[0].acc_year.redefine_cwdc_loss += cwdc_loss;
+	}
+
 
 	if(paramPtr!=NULL){
 	  free(paramPtr);

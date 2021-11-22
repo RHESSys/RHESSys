@@ -429,8 +429,13 @@ struct accumulate_patch_object
    double Qout_total;
    double soilc;
    double litterc;
+   double litterc_bg;
    double soiln;
    double littern;
+   double fe_litter_c_consumed;
+   double fe_soil_c_consumed;
+   double redefine_litterc_loss;
+   double redefine_soilc_loss;
 };
 
 
@@ -1622,7 +1627,7 @@ struct  litter_object
 
 struct  litter_c_object
         {
-    double totalc; 	/* (kgC/m2) total litter C */
+    double totalc; 	/* (kgC/m2) total aboveground litter C */
     double litr1c;         /* (kgC/m2) litter labile C */
     double litr2c;         /* (kgC/m2) litter unshielded cellulose C */
     double litr3c;         /* (kgC/m2) litter shielded cellulose C */
@@ -1635,6 +1640,7 @@ struct  litter_c_object
     double w_scalar;    /* (DIM) tempertaure scalar for decomposition */
 
     /* below ground litter carbon pool */
+    double totalc_bg; 	/* (kgC/m2) total belowground litter C */
     double litr1c_bg;         /* (kgC/m2) litter labile C */
     double litr2c_bg;         /* (kgC/m2) litter unshielded cellulose C */
     double litr3c_bg;         /* (kgC/m2) litter shielded cellulose C */
@@ -3152,9 +3158,19 @@ struct  stratum_default
 	double totalc;
 	double totaln;
 	double height;
+        double age;
+	double cwdc;
+        double cwdc_bg;
+        double fe_cwdc_consumed;
+	double fe_prop_mort;
 	double fe_prop_c_consumed;
-	double fe_prop_c_mortality;
-	double fe_prop_c_mortality_leaf;
+	double fe_prop_c_remain;
+        double fe_prop_c_remain_adjusted_leafc;
+        double redefine_cwdc_loss;
+        double redefine_totalc_harvest;
+        double redefine_totalc_remain;
+        double redefine_age;
+        double redefine_height;
         };
 
 
@@ -3213,7 +3229,7 @@ struct  canopy_strata_object
         struct  nstate_struct   ns;
         struct  ndayflux_struct ndf;
         struct  phenology_struct phen;
-	    struct  fire_effects_object fe;
+	struct  fire_effects_object fe;
         struct  base_station_object     **base_stations;
         struct  stratum_default **defaults;
         struct  spinup_default  **spinup_defaults;

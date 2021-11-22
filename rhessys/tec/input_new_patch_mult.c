@@ -79,6 +79,8 @@
 	int		i, dtmp;
 	char		record[MAXSTR];
 	double	       ltmp;
+	double litr1c_loss, litr2c_loss, litr3c_loss, litr4c_loss;
+	double soil1c_loss;
 	int		paramCnt=0;
 	param		*paramPtr=NULL;
 
@@ -147,21 +149,27 @@
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter.rain_stored","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter.rain_stored = ltmp * patch[0].litter.rain_stored;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c","%lf",1,1);
-	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_cs.litr1c = ltmp * patch[0].litter_cs.litr1c;
+	if (fabs(ltmp - NULLVAL) >= ONE){
+		litr1c_loss = (1-ltmp) * patch[0].litter_cs.litr1c;
+		patch[0].litter_cs.litr1c = ltmp * patch[0].litter_cs.litr1c;
+		}
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_ns.litr1n = ltmp * patch[0].litter_ns.litr1n;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		litr2c_loss = (1-ltmp) * patch[0].litter_cs.litr2c;
 		patch[0].litter_cs.litr2c = ltmp * patch[0].litter_cs.litr2c;
 		patch[0].litter_ns.litr2n = patch[0].litter_cs.litr2c / CEL_CN;
 		}
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr3c","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		litr3c_loss = (1-ltmp) * patch[0].litter_cs.litr3c;
 		patch[0].litter_cs.litr3c = ltmp * patch[0].litter_cs.litr3c;
 		patch[0].litter_ns.litr3n = patch[0].litter_cs.litr3c / CEL_CN;
 		}
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		litr4c_loss = (1-ltmp) * patch[0].litter_cs.litr4c;
 		patch[0].litter_cs.litr4c = ltmp * patch[0].litter_cs.litr4c;
 		patch[0].litter_ns.litr4n = patch[0].litter_cs.litr4c / LIG_CN;
 		}
@@ -190,6 +198,7 @@
     /* soil*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil1c","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		soil1c_loss = (1-ltmp) * patch[0].soil_cs.soil1c;
 		patch[0].soil_cs.soil1c = ltmp * patch[0].soil_cs.soil1c;
 		patch[0].soil_ns.soil1n = patch[0].soil_cs.soil1c / SOIL1_CN;
 		}
@@ -350,6 +359,21 @@
 		patch[0].soil_defaults[0][0].soil_depth,
 		0,
 		-1*patch[0].sat_deficit);
+
+
+    /*----------------------------------------------------------------------------------------*/
+    /* accumulate the redefine losses for output filter                           */
+    /*----------------------------------------------------------------------------------------*/
+	if ((command_line[0].output_flags.monthly == 1) &&
+			(command_line[0].output_filter_patch_accum_monthly || command_line[0].c != NULL)) {
+		patch[0].acc_month.redefine_litterc_loss += (litr1c_loss + litr2c_loss + litr3c_loss + litr4c_loss);
+		patch[0].acc_month.redefine_soilc_loss += soil1c_loss;
+	}
+	if ((command_line[0].output_flags.yearly == 1) &&
+			(command_line[0].output_filter_patch_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){	
+		patch[0].acc_year.redefine_litterc_loss += (litr1c_loss + litr2c_loss + litr3c_loss + litr4c_loss);
+		patch[0].acc_year.redefine_soilc_loss += soil1c_loss;
+	}
 
 
 	if(paramPtr!=NULL){

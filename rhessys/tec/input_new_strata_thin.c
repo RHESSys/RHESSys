@@ -130,6 +130,10 @@ void input_new_strata_thin(
 	int	default_object_ID;
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
+	double age_initial, height_initial;
+	double cpool_loss, leafc_loss, deadleafc_loss;
+	double livestemc_loss, deadstemc_loss, livecrootc_loss;
+	double deadcrootc_loss, frootc_loss;
 	struct mortality_struct mort;
 	int	paramCnt=0;
 	param	*paramPtr=NULL;
@@ -158,26 +162,59 @@ void input_new_strata_thin(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",canopy_strata[0].cs.stem_density,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.stem_density = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",canopy_strata[0].cs.age,1);
-	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
+	  if (fabs(ltmp - NULLVAL) >= ONE){
+		age_initial = canopy_strata[0].cs.age;
+		canopy_strata[0].cs.age = ltmp;
+	  }
 
 	// thinning vars
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",NULLVAL,1);
-	  	if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_cpool = ltmp;
-
+	  	if (fabs(ltmp - NULLVAL) >= ONE){
+			cpool_loss = ltmp * (canopy_strata[0].cs.cpool
+				+ canopy_strata[0].cs.leafc_store + canopy_strata[0].cs.leafc_transfer
+				+ canopy_strata[0].cs.gresp_transfer + canopy_strata[0].cs.gresp_store
+				+ canopy_strata[0].cs.frootc_store + canopy_strata[0].cs.frootc_transfer
+				+ canopy_strata[0].cs.livestemc_store + canopy_strata[0].cs.livestemc_transfer
+				+ canopy_strata[0].cs.deadstemc_store + canopy_strata[0].cs.deadstemc_transfer
+				+ canopy_strata[0].cs.livecrootc_store + canopy_strata[0].cs.livecrootc_transfer
+				+ canopy_strata[0].cs.deadcrootc_store + canopy_strata[0].cs.deadcrootc_transfer);
+			mort.mort_cpool = ltmp;
+		}
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",NULLVAL,1);
-		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_leafc = ltmp;
+		if (fabs(ltmp - NULLVAL) >= ONE){
+			leafc_loss = ltmp * canopy_strata[0].cs.leafc;
+			mort.mort_leafc = ltmp;
+		}
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",NULLVAL,1);
-		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_deadleafc = ltmp;		
+		if (fabs(ltmp - NULLVAL) >= ONE){
+			deadleafc_loss = ltmp * canopy_strata[0].cs.dead_leafc;
+			mort.mort_deadleafc = ltmp;
+		}		
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",NULLVAL,1);
-		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_livestemc = ltmp;
+		if (fabs(ltmp - NULLVAL) >= ONE){
+			livestemc_loss = ltmp * canopy_strata[0].cs.live_stemc;
+			mort.mort_livestemc = ltmp;
+		}	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_stemc","%lf",NULLVAL,1);
-		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_deadstemc = ltmp;
+		if (fabs(ltmp - NULLVAL) >= ONE){
+			deadstemc_loss = ltmp * canopy_strata[0].cs.dead_stemc;
+			mort.mort_deadstemc = ltmp;
+		}	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_crootc","%lf",NULLVAL,1);
-		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_livecrootc = ltmp;
+		if (fabs(ltmp - NULLVAL) >= ONE){
+			livecrootc_loss = ltmp * canopy_strata[0].cs.live_crootc;
+			mort.mort_livecrootc = ltmp;
+		}	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_crootc","%lf",NULLVAL,1);
-		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_deadcrootc = ltmp;
+		if (fabs(ltmp - NULLVAL) >= ONE){
+			deadcrootc_loss = ltmp * canopy_strata[0].cs.dead_crootc;
+			mort.mort_deadcrootc = ltmp;
+		}	
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc","%lf",NULLVAL,1);
-		if (fabs(ltmp - NULLVAL) >= ONE) mort.mort_frootc = ltmp;
+		if (fabs(ltmp - NULLVAL) >= ONE){
+			frootc_loss = ltmp * canopy_strata[0].cs.frootc;
+			mort.mort_frootc = ltmp;
+		}	
 
 	// For use later when looking at (or changing) basestations
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",canopy_strata[0].num_base_stations,0);
@@ -217,7 +254,6 @@ void input_new_strata_thin(
 						 &(patch[0].litter_ns),
 						 thintyp,
 						 mort);
-	
 	
 		/*--------------------------------------------------------------*/
 		/*	zero all long term sinks				*/
@@ -264,6 +300,7 @@ void input_new_strata_thin(
 	
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
 	/* use stem density if included otherwise default to simply stem carbon */
+		height_initial = canopy_strata[0].epv.height;
 		if (canopy_strata[0].cs.stem_density < ZERO) {
 		canopy_strata[0].epv.height =
 		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
@@ -451,7 +488,39 @@ void input_new_strata_thin(
 					world_base_stations);
 			} /*end for*/
 		}
-			 
+
+	/*----------------------------------------------------------------------------------------*/
+    /* accumulate the redefine losses for output filter                           */
+    /*----------------------------------------------------------------------------------------*/
+	if (thintyp == 2){ /* Harvest */
+		if ((command_line[0].output_flags.monthly == 1) &&
+				(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
+			canopy_strata[0].acc_month.redefine_totalc_harvest += cpool_loss + leafc_loss + deadleafc_loss + 
+					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
+			canopy_strata[0].acc_month.redefine_age = age_initial;
+			canopy_strata[0].acc_month.redefine_height = height_initial;
+		}
+		if ((command_line[0].output_flags.yearly == 1) &&
+				(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){	
+			canopy_strata[0].acc_year.redefine_totalc_harvest += cpool_loss + leafc_loss + deadleafc_loss + 
+					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
+			canopy_strata[0].acc_year.redefine_age = age_initial;
+			canopy_strata[0].acc_year.redefine_height = height_initial;
+		}
+	}
+	if (thintyp != 2){ /* Remain on patch */
+		if ((command_line[0].output_flags.monthly == 1) &&
+				(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
+			canopy_strata[0].acc_month.redefine_totalc_remain += cpool_loss + leafc_loss + deadleafc_loss + 
+					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
+		}
+		if ((command_line[0].output_flags.yearly == 1) &&
+				(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){	
+			canopy_strata[0].acc_year.redefine_totalc_remain += cpool_loss + leafc_loss + deadleafc_loss + 
+					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
+		}
+	}
+
 	return;
 } /*end input_new_strata.c*/
 
