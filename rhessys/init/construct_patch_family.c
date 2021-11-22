@@ -45,8 +45,6 @@ struct patch_family_object *construct_patch_family(
     /*--------------------------------------------------------------*/
     void *alloc(size_t, char *, char *);
 
-    void sort_patch_family_layers(struct patch_family_object  *, int);
-
     /*--------------------------------------------------------------*/
     /*	Local variable definition.			                    	*/
     /*--------------------------------------------------------------*/

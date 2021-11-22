@@ -168,12 +168,13 @@ void update_basin_patch_accumulator(
 							max(patch[0].acc_month.lai, patch[0].lai);
 					patch[0].acc_month.leach += (patch[0].soil_ns.leach
 							+ patch[0].surface_ns_leach);
-					patch[0].acc_month.burn += patch[0].pspread;
+					//patch[0].acc_month.burn += patch[0].pspread;
 					patch[0].acc_month.length += 1;
 					patch[0].acc_month.soiln += patch[0].soil_ns.totaln;
 					patch[0].acc_month.littern += patch[0].litter_ns.totaln;
 					patch[0].acc_month.soilc += patch[0].soil_cs.totalc;
 					patch[0].acc_month.litterc += patch[0].litter_cs.totalc;
+					patch[0].acc_month.litterc_bg += patch[0].litter_cs.totalc_bg;
 			
 
 				}
@@ -203,7 +204,7 @@ void update_basin_patch_accumulator(
 					patch[0].acc_year.Qin_total += patch[0].Qin_total;
 					patch[0].acc_year.psn += patch[0].net_plant_psn;
 					patch[0].acc_year.PET += (patch[0].PE + patch[0].PET);
-					patch[0].acc_year.burn += patch[0].pspread;
+					//patch[0].acc_year.burn += patch[0].pspread;
 					patch[0].acc_year.potential_recharge +=
 							patch[0].rain_throughfall;
 					patch[0].acc_year.potential_recharge_wyd +=
@@ -297,6 +298,7 @@ void update_basin_patch_accumulator(
 					patch[0].acc_year.littern += patch[0].litter_ns.totaln;
 					patch[0].acc_year.soilc += patch[0].soil_cs.totalc;
 					patch[0].acc_year.litterc += patch[0].litter_cs.totalc;
+					patch[0].acc_year.litterc_bg += patch[0].litter_cs.totalc_bg;
 					tmp = patch[0].sat_deficit - patch[0].unsat_storage
 							- patch[0].rz_storage;
 					if (tmp <= 0)
