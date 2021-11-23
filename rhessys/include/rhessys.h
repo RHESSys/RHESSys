@@ -1650,6 +1650,8 @@ struct patch_object
         double  base_flow;              /* m water */
         double  cap_rise;               /* m water / day */
         double  tmp;                    /* diagnostic variable - open units */
+	double  canopy_rain_stored; 	/* m water */
+	double  canopy_snow_stored; 	/* m water */
         double  daily_fire_litter_turnover;                     /* (DIM) 0-1 */
         double  delta_rain_stored;      /* m water      */
         double  delta_snow_stored;      /* m water      */
