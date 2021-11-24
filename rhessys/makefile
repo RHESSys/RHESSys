@@ -20,8 +20,8 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2
+CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector
+CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector
 # -w to supress warnings, feel free to remove
 # -Og for debug
 # -O2 for speed
