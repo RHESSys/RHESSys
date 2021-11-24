@@ -55,7 +55,7 @@ void execute_firespread_event(
 //	struct node_fire_wui_dist *tmp_node;
 	int i,j,p,c,layer;
 	double pspread;
-	double mean_fuel_veg=0,mean_fuel_litter=0,mean_soil_moist=0,mean_fuel_moist=0,mean_relative_humidity=0,
+	double mean_fuel_veg=0,mean_fuel_litter=0, mean_fuel_cwd,mean_soil_moist=0,mean_fuel_moist=0,mean_relative_humidity=0,
 		mean_wind_direction=0,mean_wind=0,mean_z=0,mean_temp=0,mean_et=0,mean_pet=0,mean_understory_et=0,mean_understory_pet=0;
 	double denom_for_mean=0;
 
@@ -82,6 +82,7 @@ void execute_firespread_event(
 			  {
 				    world[0].fire_grid[i][j].fuel_veg = 0.0; // this should work to initialize the grid, so if none of the patches overlap a grid point the fuel is zero and fire doesn't spread
 				    world[0].fire_grid[i][j].fuel_litter = 0.0;
+				    world[0].fire_grid[i][j].fuel_cwd = 0.0;
 				    world[0].fire_grid[i][j].fuel_moist = 100.0;
 				    world[0].fire_grid[i][j].soil_moist = 100.0;
 				    world[0].fire_grid[i][j].relative_humidity = 100.0;
@@ -104,6 +105,7 @@ void execute_firespread_event(
 			  {
 				    world[0].fire_grid[i][j].fuel_veg = 10.0; // this should work to initialize the grid, so if none of the patches overlap a grid point the fuel is zero and fire doesn't spread
 				    world[0].fire_grid[i][j].fuel_litter = 10.0;
+				    world[0].fire_grid[i][j].fuel_cwd = 10.0;
 				    world[0].fire_grid[i][j].fuel_moist = 0;
 				    world[0].fire_grid[i][j].soil_moist = 0;
 				    world[0].fire_grid[i][j].relative_humidity = 0;
@@ -123,6 +125,7 @@ void execute_firespread_event(
 		{
 		    world[0].fire_grid[i][j].fuel_veg = 0.0; // this should work to initialize the grid, so if none of the patches overlap a grid point the fuel is zero and fire doesn't spread
 		    world[0].fire_grid[i][j].fuel_litter = 0.0;
+		    world[0].fire_grid[i][j].fuel_cwd = 0.0;
 		    world[0].fire_grid[i][j].fuel_moist = 0.0;
 		    world[0].fire_grid[i][j].soil_moist = 0.0;
 		    world[0].fire_grid[i][j].relative_humidity = 0.0;
@@ -177,6 +180,9 @@ void execute_firespread_event(
               world[0].fire_grid[i][j].fuel_litter +=(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
                 * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_leafc) *
                 patch_fire_grid[i][j].prop_patch_in_grid[p]; // adds standing dead grass to fuel litter for firespread
+					world[0].fire_grid[i][j].fuel_cwd += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction //coarse woody fuels
+                                                * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc) *
+                                                 patch_fire_grid[i][j].prop_patch_in_grid[p] ;
 					}
 				}
 		 if(world[0].defaults[0].fire[0].fire_verbose==1)
@@ -211,6 +217,7 @@ void execute_firespread_event(
 			denom_for_mean+=1;
 			mean_fuel_veg+=world[0].fire_grid[i][j].fuel_veg; // this should work to initialize the grid, so if none of the patches overlap a grid point the fuel is zero and fire doesn't spread
 			mean_fuel_litter+=world[0].fire_grid[i][j].fuel_litter;
+			mean_fuel_cwd+=world[0].fire_grid[i][j].fuel_cwd;
 			mean_fuel_moist+=world[0].fire_grid[i][j].fuel_moist;
 			mean_soil_moist+=world[0].fire_grid[i][j].soil_moist;
 			mean_relative_humidity+=world[0].fire_grid[i][j].relative_humidity;
@@ -238,6 +245,7 @@ void execute_firespread_event(
 //		printf("in denom if\n");
 		mean_fuel_veg=mean_fuel_veg/denom_for_mean;
 		mean_fuel_litter=mean_fuel_litter/denom_for_mean;
+		mean_fuel_cwd=mean_fuel_cwd/denom_for_mean;
 		mean_fuel_moist=mean_fuel_moist/denom_for_mean;
 		mean_soil_moist=mean_soil_moist/denom_for_mean;
 		mean_relative_humidity=mean_relative_humidity/denom_for_mean;
@@ -259,6 +267,7 @@ void execute_firespread_event(
 
 				world[0].fire_grid[i][j].fuel_veg = mean_fuel_veg; // this should work to initialize the grid, so if none of the patches overlap a grid point the fuel is zero and fire doesn't spread
 				world[0].fire_grid[i][j].fuel_litter = mean_fuel_litter;
+				world[0].fire_grid[i][j].fuel_cwd = mean_fuel_cwd;
 				world[0].fire_grid[i][j].fuel_moist = mean_fuel_moist;
 				world[0].fire_grid[i][j].soil_moist = mean_soil_moist;
 				world[0].fire_grid[i][j].relative_humidity = mean_relative_humidity;
