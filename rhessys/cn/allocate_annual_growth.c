@@ -470,6 +470,9 @@ int allocate_annual_growth(				int id,
 		ns->frootn_store = cs->frootc_store / epc.froot_cn;
 		ndf->leafn_store_to_leafn_transfer = ns->leafn_store;
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
+
+		cdf->gresp_store_to_gresp_transfer = (cdf->leafc_store_to_leafc_transfer + 
+						cdf->frootc_store_to_frootc_transfer)	;
 		cs->leafc_transfer = 0.0;
 		cs->leafc = 0.0;
 		cs->frootc_transfer = 0.0;
@@ -480,7 +483,8 @@ int allocate_annual_growth(				int id,
 		ns->frootn_transfer = 0.0;
 		ns->leafn = 0.0;
 		ns->frootn = 0.0;
-		cdf->gresp_store_to_gresp_transfer = 0.0;
+		cs->gresp_transfer = 0.0;
+
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 
 		if (epc.veg_type == TREE) {
@@ -504,35 +508,15 @@ int allocate_annual_growth(				int id,
 			cdf->deadstemc_store_to_deadstemc_transfer = cs->deadstemc_store;
 			ndf->deadstemn_store_to_deadstemn_transfer = ns->deadstemn_store;
 
-			cs->live_stemc = 0.0;
-			cs->dead_stemc = 0.0;
-			cs->live_crootc = 0.0;
-			cs->dead_crootc = 0.0;
-			ns->live_stemn = 0.0;
-			ns->dead_stemn = 0.0;
-			ns->live_crootn = 0.0;
-			ns->dead_crootn = 0.0;
-
-			cs->livestemc_transfer =  0.0;
-			cs->deadstemc_transfer =  0.0;
-			cs->livecrootc_transfer =  0.0;
-			cs->deadcrootc_transfer =  0.0;
-			ns->livestemn_transfer =  0.0;
-			ns->deadstemn_transfer =  0.0;
-			ns->livecrootn_transfer =  0.0;
-			ns->deadcrootn_transfer =  0.0;
-
-			cdf->livestemc_store_to_livestemc_transfer = 0.0;
-			cdf->deadstemc_store_to_deadstemc_transfer = 0.0;
-			cdf->livecrootc_store_to_livecrootc_transfer = 0.0;
-			cdf->deadcrootc_store_to_deadcrootc_transfer = 0.0;
-
-			ndf->livestemn_store_to_livestemn_transfer = 0.0;
-			ndf->deadstemn_store_to_deadstemn_transfer = 0.0;
-			ndf->livecrootn_store_to_livecrootn_transfer = 0.0;
-			ndf->deadcrootn_store_to_deadcrootn_transfer = 0.0;
+			cdf->gresp_store_to_gresp_transfer += 
+				(cdf->livestemc_store_to_livestemc_transfer +
+				cdf->deadstemc_store_to_deadstemc_transfer +
+				cdf->livecrootc_store_to_livecrootc_transfer +
+				cdf->deadcrootc_store_to_deadcrootc_transfer);
+				
 			
 		} /* end if TREE */
+			
 		} /* end if resprout */
 	} /* end if less than min_leaf_carbon */
 	else  {
