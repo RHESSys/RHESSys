@@ -394,11 +394,11 @@ void  update_drainage_land(
 		/* first transfer subsurface water and nitrogen */  // --------- subsurface
 		/*--------------------------------------------------------------*/
 		/* some "transmissivity_flux2neighbour" is loss to GW_storage  */
-		/*if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1){
+		if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1){
 				//how do we know how fill is the GW?
 				patch[0].gw_drainage += route_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area // reset to zero every patch_daily_I()
 				route_to_patch *= 1.0 - sat_to_gw_coeff;
-		}//end of if */
+		}//end of if
 
 		/*--------------------------------------------------------------*/
 		/* first transfer subsurface water and nitrogen */
@@ -422,7 +422,7 @@ void  update_drainage_land(
 		{
 			 /* add water more from sat zone to deep groundwater NREN 20210714*/
 			 double coef;
-	    /* if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1)
+	    if(command_line[0].gw_flag > 0 && patch[0].soil_defaults[0][0].actionGWDRAIN == 1)
 	     {
 	                     coef = 1.0 - sat_to_gw_coeff;
 	                     coef /= neigh[0].area;
@@ -432,7 +432,7 @@ void  update_drainage_land(
 	                     patch[0].gw_drainage_NH4 += NH4_leached_to_patch * sat_to_gw_coeff;// has multiplied patch[0].area
 	       }else
 	       {
-	                     coef = 1.0/neigh[0].area; } */
+	                     coef = 1.0/neigh[0].area; }
             coef = 1.0/neigh[0].area;
 
            /* add extra conditions to make no nitrate route to no-veg&hotspot patches, since it is easily accumulate in there */
