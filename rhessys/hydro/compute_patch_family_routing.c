@@ -262,7 +262,7 @@ void compute_patch_family_routing(struct zone_object *zone,
         for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
         {
             // rz + unsat < mean wetness (gainers)
-            if (skip[i] == 2 && (zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage) < wet_mean)
+            if (skip[i] == 2 && ((zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage) < wet_mean) && (dL_pot > ZERO))
             {
                 if (command_line[0].verbose_flag == -6) 
                     printf("ID %d", zone[0].patch_families[pf][0].patches[i][0].ID);
@@ -410,7 +410,6 @@ void compute_patch_family_routing(struct zone_object *zone,
         /*--------------------------------------------------------------*/
         /*	Testing -_-                                              	*/
         /*--------------------------------------------------------------*/
-        /*
         double rz_unsat_transfer_sum;   // vol
         double sat_transfer_sum;        // vol
         rz_unsat_transfer_sum = 0;
@@ -438,7 +437,6 @@ void compute_patch_family_routing(struct zone_object *zone,
 
             printf("==============================\n");
         }
-        */
 
     } // end patch family loop
 
