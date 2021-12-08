@@ -1510,6 +1510,8 @@ void		patch_daily_F(
 	patch[0].totalc = 0.0;
 	patch[0].totaln = 0.0;
 	patch[0].lai = 0.0;
+	patch[0].canopy_rain_stored = 0.0;
+	patch[0].canopy_snow_stored = 0.0;
 	unsat_zone_patch_demand = patch[0].exfiltration_unsat_zone;
 	sat_zone_patch_demand = patch[0].exfiltration_sat_zone;
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
@@ -1830,7 +1832,7 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	delta_unsat_zone_storage = min(unsat_zone_patch_demand, patch[0].rz_storage);
 
-	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO)) {
+	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO) && (patch[0].psi_max_veg > 0)) {
 		patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry) 
 									 * patch[0].soil_defaults[0][0].pore_size_index);
 		patch[0].wilting_point *= (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
@@ -1994,6 +1996,8 @@ void		patch_daily_F(
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
 			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
+			patch[0].canopy_rain_stored += strata->cover_fraction *	strata->rain_stored;
+			patch[0].canopy_snow_stored += strata->cover_fraction *	strata->snow_stored;
 		}
 	}
 

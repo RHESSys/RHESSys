@@ -339,7 +339,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.gs_npp_slp = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_npp_slp", "%lf", 187, 1);
 		default_object_list[i].epc.gs_npp_intercpt = getDoubleParam(&paramCnt, &paramPtr, "epc.gs_npp_intercpt", "%lf", 197, 1);
 		default_object_list[i].epc.max_storage_percent = getDoubleParam(&paramCnt, &paramPtr, "epc.max_storage_percent", "%lf", 0.2, 1);
-		default_object_list[i].epc.min_percent_leafg = getDoubleParam(&paramCnt, &paramPtr, "epc.min_percent_leafg", "%lf", default_object_list[i].epc.leaf_turnover, 1);
+		default_object_list[i].epc.min_percent_leafg = getDoubleParam(&paramCnt, &paramPtr, "epc.min_percent_leafg", "%lf", 0.6, 1);
 		default_object_list[i].epc.dickenson_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.dickenson_pa", "%lf", 0.25, 1);
 		default_object_list[i].epc.waring_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pa", "%lf", 0.8, 1);
 		default_object_list[i].epc.waring_pb = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pb", "%lf", 2.5, 1);
