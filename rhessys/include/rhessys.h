@@ -1918,6 +1918,7 @@ struct patch_object
         struct  patch_object            *shadow_litter;
         struct  patch_hourly_object     *hourly;
         struct  layer_object            *layers;
+        struct  patch_family_object     **patch_family;
         struct  innundation_object      *innundation_list; // Used for subsurface routing, and surface routing when no surface table is provided
         struct  innundation_object      *surface_innundation_list; // Used for surface routing
         struct  neighbour_object        *neighbours;

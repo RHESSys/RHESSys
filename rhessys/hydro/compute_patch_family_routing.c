@@ -410,33 +410,33 @@ void compute_patch_family_routing(struct zone_object *zone,
         /*--------------------------------------------------------------*/
         /*	Testing -_-                                              	*/
         /*--------------------------------------------------------------*/
-        double rz_unsat_transfer_sum;   // vol
-        double sat_transfer_sum;        // vol
-        rz_unsat_transfer_sum = 0;
-        sat_transfer_sum = 0;
+        // double rz_unsat_transfer_sum;   // vol
+        // double sat_transfer_sum;        // vol
+        // rz_unsat_transfer_sum = 0;
+        // sat_transfer_sum = 0;
        
-        for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam ; i++)
-        {
-            rz_unsat_transfer_sum += (zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) * 
-                zone[0].patch_families[pf][0].patches[i][0].area;
+        // for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam ; i++)
+        // {
+        //     rz_unsat_transfer_sum += (zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) * 
+        //         zone[0].patch_families[pf][0].patches[i][0].area;
 
-            sat_transfer_sum += zone[0].patch_families[pf][0].patches[i][0].sat_transfer * zone[0].patch_families[pf][0].patches[i][0].area;
-        }
+        //     sat_transfer_sum += zone[0].patch_families[pf][0].patches[i][0].sat_transfer * zone[0].patch_families[pf][0].patches[i][0].area;
+        // }
 
-        if (rz_unsat_transfer_sum != 0)
-        {
-            printf("\n===== Transfer Balance Error =====\nroot + unsat transfer sum = %f\n", rz_unsat_transfer_sum);
-            printf("rz transfer     unsat transfer\n");
-            for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam ; i++)
-            {
-                printf("%f          %f\n",
-                    zone[0].patch_families[pf][0].patches[i][0].rz_transfer,
-                    zone[0].patch_families[pf][0].patches[i][0].unsat_transfer
-                    );
-            }
+        // if (rz_unsat_transfer_sum != 0)
+        // {
+        //     printf("\n===== Transfer Balance Error =====\nroot + unsat transfer sum = %f\n", rz_unsat_transfer_sum);
+        //     printf("rz transfer     unsat transfer\n");
+        //     for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam ; i++)
+        //     {
+        //         printf("%f          %f\n",
+        //             zone[0].patch_families[pf][0].patches[i][0].rz_transfer,
+        //             zone[0].patch_families[pf][0].patches[i][0].unsat_transfer
+        //             );
+        //     }
 
-            printf("==============================\n");
-        }
+        //     printf("==============================\n");
+        // }
 
     } // end patch family loop
 
