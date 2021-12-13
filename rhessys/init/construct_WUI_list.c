@@ -119,6 +119,7 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d %d %d \n",
 	        WUI_ptr->patches_dist2km = NULL;
 	        WUI_ptr->patches_dist5km = NULL;
 	        WUI_ptr->patches_dist10km = NULL;
+	        WUI_ptr->patches_dist100km = NULL;
 	        WUI_ptr->fire_occurence=100;// initialize salience event as 100, replace with new salience distance as triggered
 	        WUI_ptr->ntrt[0]=0;// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
 	        WUI_ptr->ntrt[1]=0;
@@ -374,7 +375,7 @@ printf("Test1: %d\n", WUI_ptr->ID);
 //	if(patch_family[0].patches[0]->wui_dist==NULL)// first wui for this patch family
 	if(patch[0].wui_dist==NULL)
 	{
-//		patch_family[0].patches[0]->wui_dist=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
+//		first in this dist_list is WUI0, for which we're only interested in trt_ord100
 		patch[0].wui_dist=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
                 patch[0].wui_dist->dist=100;
                 patch[0].wui_dist->wui_id=0;
@@ -387,7 +388,7 @@ printf("Test1: %d\n", WUI_ptr->ID);
 		
 
 //		prev_wui_dist_list_ptr= patch_family[0].patches[0]->wui_dist;
-		prev_wui_dist_list_ptr= patch[0].wui_dist->next;
+		prev_wui_dist_list_ptr= patch[0].wui_dist->next; // then the next WUI
 		prev_wui_dist_list_ptr->dist=wui_dist;
 		 prev_wui_dist_list_ptr->wui_id=WUI_ID;
 		prev_wui_dist_list_ptr->trt_ord2=trt_ord2;
@@ -398,7 +399,7 @@ printf("Test1: %d\n", WUI_ptr->ID);
 		prev_wui_dist_list_ptr->prev=patch[0].wui_dist;
 	}
 //Check	}
-	else // find the correct place in the list and make a new entry. Make sure it's in the right order
+	else // find the correct place in the list and make a new WUI entry. Make sure it's in the right order
 	{
 
 		

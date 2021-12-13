@@ -381,8 +381,8 @@ void execute_firespread_event(
 					{
 //patch[0].fire.severity >= patch[0].landuse_defaults[0][0].salience_fire_level
 // a fire severity flag rather than just burned or not?	
-						patch_wui_dist_list_ptr=patch_family[0].patches[0][0].wui_dist;// first patch in the list for this patch family should be fine
-						WUI_ptr=world[0].WUI_list;
+						patch_wui_dist_list_ptr=patch_family[0].patches[0][0].wui_dist->next;// skip the first wui, which represents non-salience
+						WUI_ptr=world[0].WUI_list->next;
 						if(patch_wui_dist_list_ptr->dist<WUI_ptr->fire_occurence)
 						     WUI_ptr->fire_occurence=patch_wui_dist_list_ptr->dist; // then a fire occurred this year closer to the wui. Record this one					
 						while( patch_wui_dist_list_ptr->next!=NULL)
