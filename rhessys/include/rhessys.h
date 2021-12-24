@@ -1165,6 +1165,7 @@ struct  landuse_default
         int msr_sat_transfer_flag; 			/* 0 OFF 1 ON */
         int msr_shading_flag; 			        /* 0 OFF 1 ON */
         int salience_fire_level; 			        /* 0 NONE 1 LOW 2 MID 3 HIGH */
+        int fuel_treatment_type; 			        /* 1 understory, 2 overstory 3 both */
         double  mid_fire_severity_p;                     /* threshold proportion of C loss for moderate severity fire 0-1    */
         double  high_fire_severity_p;                     /* threshold proportion of C loss for high severity fire 0-1    */
 	double  salience_fire_area;			/* m2 */

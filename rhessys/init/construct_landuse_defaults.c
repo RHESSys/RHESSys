@@ -112,6 +112,15 @@ struct landuse_default *construct_landuse_defaults(
 
 
 		/*--------------------------------------------------------------*/
+		/*	fuel treatment parameters 				*/
+		/*	fuel treatment target				*/
+		/* 1 - understory only						*/
+		/* 2 - overstory only						*/
+		/* 3 - both						*/
+		/*--------------------------------------------------------------*/
+        	default_object_list[i].fuel_treatment_type = 		getIntParam(&paramCnt, &paramPtr, "fuel_treatment_type", "%ld", 1, 1);
+
+		/*--------------------------------------------------------------*/
 		/* salience model probabilities */
 		/*--------------------------------------------------------------*/
 		default_object_list[i].salience_2km2km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_2km2km", "%lf", 0.1, 1);
