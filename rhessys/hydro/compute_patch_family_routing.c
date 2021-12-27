@@ -423,7 +423,7 @@ void compute_patch_family_routing(struct zone_object *zone,
             sat_transfer_sum += zone[0].patch_families[pf][0].patches[i][0].sat_transfer * zone[0].patch_families[pf][0].patches[i][0].area;
         }
 
-        if (rz_unsat_transfer_sum != 0)
+        if (abs(rz_unsat_transfer_sum) >  ZERO)
         {
             printf("\n===== Transfer Balance Error =====\nroot + unsat transfer sum = %f\n", rz_unsat_transfer_sum);
             printf("rz transfer     unsat transfer\n");
