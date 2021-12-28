@@ -1241,16 +1241,6 @@ printf("%s ",command_line[0].WUI_filename);
 				i++;
 			}
 
-			/*--------------------------------------------------------------*/
-			/*		Check for multiscale routing flag next				    */
-			/*--------------------------------------------------------------*/
-			// now defaulting to ON (1) - left here till flag is fully removed
-			// else if (strcmp(main_argv[i],"-msr") == 0) {
-			// 	//printf("-msr flag triggered\n");
-			// 	command_line[0].multiscale_flag = 1;
-			// 	i++;
-			// }
-
 			/*----------------------------------------------------------*/
 			/* climate interpolation UTM zone options  N.R 20190610     */
 			/*----------------------------------------------------------*/
