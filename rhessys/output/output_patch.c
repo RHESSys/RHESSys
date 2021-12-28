@@ -132,7 +132,7 @@ void	output_patch(
 					patch[0].wind, patch[0].windsnow, zone[0].wind,
 					patch[0].ga*1000.0, patch[0].gasnow*1000.0,
 					patch[0].trans_reduc_perc,
-					patch[0].field_capacity,
+					patch[0].field_capacity*1000,
 					patch[0].overland_flow*1000.0,
 					aheight,
 					patch[0].ustar,
