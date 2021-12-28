@@ -345,6 +345,7 @@ $(OBJ)/sort_patch_family_layers.o \
 $(OBJ)/surface_daily_F.o \
 $(OBJ)/surface_hourly.o \
 $(OBJ)/top_model.o \
+$(OBJ)/treat_patch.o \
 $(OBJ)/update_fire_in_WUI.o \
 $(OBJ)/update_salience.o \
 $(OBJ)/reset_fire_in_WUI.o \
@@ -909,6 +910,8 @@ $(OBJ)/sort_patch_layers.o: util/sort_patch_layers.c
 	$(CC) -c $(CFLAGS) -I include util/sort_patch_layers.c -o $(OBJ)/sort_patch_layers.o
 $(OBJ)/sort_patch_family_layers.o: util/sort_patch_family_layers.c
 	$(CC) -c $(CFLAGS) -I include util/sort_patch_family_layers.c -o $(OBJ)/sort_patch_family_layers.o
+$(OBJ)/treat_patch.o: tec/treat_patch.c
+	$(CC) -c $(CFLAGS) -I include tec/treat_patch.c -o $(OBJ)/treat_patch.o
 $(OBJ)/top_model.o: hydro/top_model.c
 	$(CC) -c $(CFLAGS) -I include hydro/top_model.c -o $(OBJ)/top_model.o
 $(OBJ)/compute_maint_resp.o: cn/compute_maint_resp.c
@@ -1117,7 +1120,7 @@ output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_fil
 	bison --report=none -d output_filter_parser.y && \
 	flex output_filter_parser.l
 util/index_struct_fields.c: include/rhessys.h
-	python3.8 bin/dynamic_field_lookup.py --headers include/rhessys.h \
+	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h \
 	--include_structs patch_object accumulate_patch_object patch_hourly_object patch_fire_water_object rooting_zone_object \
 	snowpack_object soil_c_object soil_n_object litter_object litter_c_object litter_n_object cdayflux_patch_struct ndayflux_patch_struct \
 	canopy_strata_object accumulate_strata_object cdayflux_struct cstate_struct target_object epvar_struct nstate_struct \

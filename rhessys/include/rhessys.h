@@ -733,6 +733,7 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NO3;                                     /* kg/m2/day    */
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
+        struct clim_event_sequence  fueltreatment;                                 /* 1 understory 2 overstory 3 both        */
         struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
         struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */
         struct clim_event_sequence  pspread;   	 	   	                    /* 0-1        */

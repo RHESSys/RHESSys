@@ -41,6 +41,7 @@ void execute_fueltreatment_event(
 // define treatment function here
 
 
+	void treat_patch(struct patch_object *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

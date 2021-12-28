@@ -72,9 +72,9 @@ void treat_patch(
 		/* we start by assuming everything is treated (fuel treatment type is 3) */
 		treat = 1;
 		switch(patch[0].landuse_defaults[0][0].fuel_treatment_type) {
-			case 1: if(layer < patch[0].num_layers -1)
+			case 2: if(layer < patch[0].num_layers -1)
 						treat = 1; else treat = 0;break;
-			case 2:  if(layer > 0 || patch[0].num_layers==1)
+			case 1:  if(layer > 0 || patch[0].num_layers==1)
 						treat = 1; else treat = 0;break;
 			}
 	

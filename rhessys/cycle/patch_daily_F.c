@@ -395,6 +395,7 @@ void		patch_daily_F(
 		struct	zone_object	*,
 		struct	patch_object *);
 	
+	void treat_patch(struct patch_object *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -572,6 +573,28 @@ void		patch_daily_F(
 		else irrigation = patch[0].landuse_defaults[0][0].irrigation;
 		}
 	else irrigation = patch[0].landuse_defaults[0][0].irrigation;
+
+
+	/*--------------------------------------------------------------*/
+	/* allow a time series of fuel treatments 	*/
+	/* treat if triggered */
+	/*--------------------------------------------------------------*/
+
+	if (patch[0].base_stations != NULL) {
+		inx = patch[0].base_stations[0][0].dated_input[0].fueltreatment.inx;
+		if (inx > -999) {
+			clim_event = patch[0].base_stations[0][0].dated_input[0].fueltreatment.seq[inx];
+			while (julday(clim_event.edate) < julday(current_date)) {
+				patch[0].base_stations[0][0].dated_input[0].fueltreatment.inx += 1;
+				inx = patch[0].base_stations[0][0].dated_input[0].fueltreatment.inx;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].fueltreatment.seq[inx];
+				}
+			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+				patch[0].landuse_defaults[0][0].fuel_treatment_type = clim_event.value;
+				treat_patch(patch);
+				}
+			} 
+		}
 	/*--------------------------------------------------------------*/
 	/*	process any daily rainfall				*/
 	/*--------------------------------------------------------------*/
