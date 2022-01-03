@@ -17,7 +17,7 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 
 inline static void reset_materialized_variable_array_values(OutputFilter const * const f) {
 	if (f == NULL) return;
-	for (int i = 0; i < f->num_named_variables; i++) {
+	for (int i = 0; i < f->num_variables; i++) {
 		// double_val should be the widest value, so this should zero any value.
 		f->output->materialized_variables[i].u.double_val = 0.0;
 	}
@@ -29,11 +29,21 @@ inline static void scale_materialized_variable_array_values(OutputFilter const *
 
 	MaterializedVariable *mat_vars = f->output->materialized_variables;
 
-	for (int i = 0; i < f->num_named_variables; i++) {
+	for (int i = 0; i < f->num_variables; i++) {
 		if (mat_vars[i].data_type == DATA_TYPE_DOUBLE) {
 			mat_vars[i].u.double_val /= scalar;
 		}
 	}
+}
+
+inline static size_t compute_struct_member_offset(OutputFilterVariable const * const v) {
+    size_t offset = v->offset;
+    if (v->sub_struct_var_offset != SIZE_MAX) {
+        // If sub_struct_var_offset has been set for this variable
+        // (which means this must be a sub-struct variable) apply it to the offset
+        offset += v->sub_struct_var_offset;
+    }
+    return offset;
 }
 
 inline static void accum_materialized_variable(MaterializedVariable *accum, MaterializedVariable *value,
@@ -84,6 +94,14 @@ inline static void add_to_accum_reset_list(PointerSet **set_ptr, void *entity) {
 	}
 }
 
+static void reset_accumulator_zone(PointerSet **acc_objs_to_reset) {
+	if (*acc_objs_to_reset) {
+		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_zone_object));
+		freePointerSet(*acc_objs_to_reset);
+		*acc_objs_to_reset = NULL;
+	}
+}
+
 static void reset_accumulator_patch(PointerSet **acc_objs_to_reset) {
 	if (*acc_objs_to_reset) {
 		reset_accum_obj(*acc_objs_to_reset, sizeof(struct accumulate_patch_object));
@@ -104,80 +122,281 @@ static void reset_accumulator_stratum(PointerSet **acc_objs_to_reset) {
 	}
 }
 
+inline static MaterializedVariable materialize_named_variable(OutputFilterVariable const * const v,
+                                                              void * const entity, size_t offset) {
+    MaterializedVariable mat_var;
+    switch (v->data_type) {
+        case DATA_TYPE_BOOL:
+            mat_var.data_type = v->data_type;
+            mat_var.u.bool_val = *((bool *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_CHAR:
+            mat_var.data_type = v->data_type;
+            mat_var.u.char_val = *((char *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_STRING:
+            mat_var.data_type = v->data_type;
+            mat_var.u.char_array = (char *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
+#endif
+            return mat_var;
+        case DATA_TYPE_INT:
+            mat_var.data_type = v->data_type;
+            mat_var.u.int_val = *((int *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_LONG:
+            mat_var.data_type = v->data_type;
+            mat_var.u.long_val = *((long *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_LONG_ARRAY:
+            mat_var.data_type = v->data_type;
+            mat_var.u.long_array = (long *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
+#endif
+            return mat_var;
+        case DATA_TYPE_FLOAT:
+            mat_var.data_type = v->data_type;
+            mat_var.u.float_val = *((float *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_DOUBLE:
+            mat_var.data_type = v->data_type;
+            mat_var.u.double_val = *((double *) (entity + offset));
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
+#endif
+            return mat_var;
+        case DATA_TYPE_DOUBLE_ARRAY:
+            mat_var.data_type = v->data_type;
+            mat_var.u.double_array = (double *) (entity + offset);
+#if OF_DEBUG
+            fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
+#endif
+            return mat_var;
+        default:
+            mat_var.data_type = DATA_TYPE_UNDEFINED;
+            return mat_var;
+    }
+}
+
+inline static double mat_var_scalar_to_double(MaterializedVariable a) {
+    double result;
+    switch (a.data_type) {
+        case DATA_TYPE_BOOL:
+            result = a.u.bool_val;
+            return result;
+        case DATA_TYPE_INT:
+            result = a.u.int_val;
+            return result;
+        case DATA_TYPE_LONG:
+            result = a.u.long_val;
+            return result;
+        case DATA_TYPE_FLOAT:
+            result = a.u.float_val;
+            return result;
+        case DATA_TYPE_DOUBLE:
+            result = a.u.double_val;
+            return result;
+        default:
+            fprintf(stderr,
+                    "WARNING: mat_var_scalar_to_double(): Encountered non-scalar/non-numeric value when trying to convert variable of type %d to type double. Returning NaN.\n",
+                    a.data_type);
+            result = NAN;
+            return result;
+    }
+}
+
+inline static MaterializedVariable mat_var_add(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_add(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_add(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left + right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_sub(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_sub(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_sub(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left - right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_mul(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_mul(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_mul(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left * right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_div(MaterializedVariable l,
+                                               MaterializedVariable r) {
+    double left, right;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    left = mat_var_scalar_to_double(l);
+    if (left == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Left operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+    right = mat_var_scalar_to_double(r);
+    if (right == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Right operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    } else if (right == 0.0) {
+        // Should we return 0.0 instead?
+        fprintf(stderr,
+                "WARNING: mat_var_div(): Denominator is 0.0, returning NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = left / right;
+    return v;
+}
+
+inline static MaterializedVariable mat_var_neg(MaterializedVariable l) {
+    double operand;
+    MaterializedVariable v;
+    v.data_type = DATA_TYPE_DOUBLE;
+    operand = mat_var_scalar_to_double(l);
+    if (operand == NAN) {
+        fprintf(stderr,
+                "WARNING: mat_var_neg(): Negation operand is NaN.\n");
+        v.u.double_val = NAN;
+        return v;
+    }
+
+    v.u.double_val = -operand;
+    return v;
+}
+
+static MaterializedVariable eval_expr(void * const entity,
+                                      OutputFilterExprAst * const expr) {
+    MaterializedVariable mat_var;
+    OutputFilterVariable *v;
+    switch (expr->nodetype) {
+        case '+':
+            mat_var = mat_var_add(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
+            return mat_var;
+        case '-':
+            mat_var = mat_var_sub(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
+            return mat_var;
+        case '*':
+            mat_var = mat_var_mul(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
+            return mat_var;
+        case '/':
+            mat_var = mat_var_div(eval_expr(entity, expr->l),
+                                  eval_expr(entity, expr->r));
+            return mat_var;
+        case OF_VAR_EXPR_AST_NODE_UNARY_MINUS:
+            mat_var = mat_var_neg(eval_expr(entity, expr->l));
+            return mat_var;
+            /* no subtree */
+        case OF_VAR_EXPR_AST_NODE_NAME:
+            v = ((OutputFilterExprName *)expr)->var;
+            mat_var = materialize_named_variable(v, entity, compute_struct_member_offset(v));
+            return mat_var;
+        case OF_VAR_EXPR_AST_NODE_CONST:
+            mat_var.data_type = DATA_TYPE_DOUBLE;
+            mat_var.u.double_val = ((OutputFilterExprNumval *)expr)->number;
+            return mat_var;
+        default:
+            fprintf(stderr,
+                    "WARNING: undefined data type in expression variable.\n");
+            mat_var.data_type = DATA_TYPE_UNDEFINED;
+            return mat_var;
+    }
+}
+
+static MaterializedVariable materialize_expr_variable(OutputFilterVariable const * const v,
+                                                      void * const entity) {
+    if (v->expr == NULL) {
+        fprintf(stderr, "WARNING: materialize_expr_variable: expression variable '%s' has no expression defined.",
+                v->name);
+        return (MaterializedVariable){.data_type=DATA_TYPE_UNDEFINED};
+    }
+    return eval_expr(entity, v->expr);
+}
+
 inline static MaterializedVariable materialize_variable(OutputFilterVariable const * const v, void * const entity) {
 	MaterializedVariable mat_var;
-	size_t offset = v->offset;
-	if (v->sub_struct_var_offset != SIZE_MAX) {
-		// If sub_struct_var_offset has been set for this variable
-		// (which means this must be a sub-struct variable) apply it to the offset
-		offset += v->sub_struct_var_offset;
-	}
-	switch (v->data_type) {
-	case DATA_TYPE_BOOL:
-		mat_var.data_type = v->data_type;
-		mat_var.u.bool_val = *((bool *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %h\n", v->name, mat_var.u.bool_val);
-#endif
-		break;
-	case DATA_TYPE_CHAR:
-		mat_var.data_type = v->data_type;
-		mat_var.u.char_val = *((char *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %c\n", v->name, mat_var.u.char_val);
-#endif
-		break;
-	case DATA_TYPE_STRING:
-		mat_var.data_type = v->data_type;
-		mat_var.u.char_array = (char *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %s\n", v->name, mat_var.u.char_array);
-#endif
-		break;
-	case DATA_TYPE_INT:
-		mat_var.data_type = v->data_type;
-		mat_var.u.int_val = *((int *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %d\n", v->name, mat_var.u.int_val);
-#endif
-		break;
-	case DATA_TYPE_LONG:
-		mat_var.data_type = v->data_type;
-		mat_var.u.long_val = *((long *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %l\n", v->name, mat_var.u.long_val);
-#endif
-		break;
-	case DATA_TYPE_LONG_ARRAY:
-		mat_var.data_type = v->data_type;
-		mat_var.u.long_array = (long *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.long_array);
-#endif
-		break;
-	case DATA_TYPE_FLOAT:
-		mat_var.data_type = v->data_type;
-		mat_var.u.float_val = *((float *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.float_val);
-#endif
-		break;
-	case DATA_TYPE_DOUBLE:
-		mat_var.data_type = v->data_type;
-		mat_var.u.double_val = *((double *)(entity + offset));
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %f\n", v->name, mat_var.u.double_val);
-#endif
-		break;
-	case DATA_TYPE_DOUBLE_ARRAY:
-		mat_var.data_type = v->data_type;
-		mat_var.u.double_array = (double *)(entity + offset);
-#if OF_DEBUG
-		fprintf(stderr, "\t\t\tvar: %s, value: %p\n", v->name, mat_var.u.double_array);
-#endif
-		break;
-	default:
-		mat_var.data_type = DATA_TYPE_UNDEFINED;
+	if (v->variable_type == NAMED) {
+        mat_var = materialize_named_variable(v, entity, compute_struct_member_offset(v));
+    } else if (v->variable_type == VAR_TYPE_EXPR) {
+        mat_var = materialize_expr_variable(v, entity);
 	}
 	// Copy pointer to any metadata for this variable
 	mat_var.meta = v->meta;
@@ -201,6 +420,29 @@ inline static void *determine_stratum_entity(OutputFilterTimestep timestep,
 	case TIMESTEP_DAILY:
 	default:
 		entity = (void *)stratum;
+		break;
+	}
+	return entity;
+}
+
+inline static void *determine_zone_entity(OutputFilterTimestep timestep,
+                                           struct zone_object *zone,
+                                           PointerSet **acc_objs_to_reset) {
+	void *entity = NULL;
+	switch (timestep) {
+	case TIMESTEP_MONTHLY:
+		entity = (void *)(&(zone->acc_month));
+		add_to_accum_reset_list(acc_objs_to_reset, entity);
+		break;
+	case TIMESTEP_YEARLY:
+		entity = (void *)(&(zone->acc_year));
+		add_to_accum_reset_list(acc_objs_to_reset, entity);
+		break;
+	case TIMESTEP_HOURLY:
+	case TIMESTEP_DAILY:
+	default:
+		// Not sure this is quite right for hourly but going with it for now
+		entity = (void *)zone;
 		break;
 	}
 	return entity;
@@ -301,6 +543,21 @@ static bool apply_to_strata_in_zone(char * const error, size_t error_len, bool v
 	return true;
 }
 
+static bool apply_to_zones_in_hillslope(char * const error, size_t error_len, bool verbose,
+                                        struct date date,
+                                        OutputFilter const * const filter, OutputFilterZone const * const z, EntityID id,
+                                        PointerSet **acc_objs_to_reset,
+                                        bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
+	for (size_t i = 0; i < z->hill->num_zones; i++) {
+		struct zone_object *zone = z->hill->zones[i];
+		id.zone_ID = zone->ID;
+		void *entity = determine_zone_entity(filter->timestep, zone, acc_objs_to_reset);
+		bool status = (*output_fn)(error, error_len, verbose, date, entity, id, filter);
+		if (!status) return false;
+	}
+	return true;
+}
+
 static bool apply_to_patches_in_hillslope(char * const error, size_t error_len, bool verbose,
 		struct date date,
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
@@ -338,6 +595,24 @@ static bool apply_to_strata_in_hillslope(char * const error, size_t error_len, b
 				bool status = (*output_fn)(error, error_len, verbose, date, entity, id, filter);
 				if (!status) return false;
 			}
+		}
+	}
+	return true;
+}
+
+static bool apply_to_zones_in_basin(char * const error, size_t error_len, bool verbose,
+									struct date date, OutputFilter const * const filter, OutputFilterZone const * const z, EntityID id,
+									PointerSet **acc_objs_to_reset,
+									bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
+	for (size_t i = 0; i < z->basin->num_hillslopes; i++) {
+		struct hillslope_object *h = z->basin->hillslopes[i];
+		id.hillslope_ID = h->ID;
+		for (size_t j = 0; j < h->num_zones; j++) {
+			struct zone_object *zone = h->zones[j];
+			id.zone_ID = zone->ID;
+			void *entity = determine_zone_entity(filter->timestep, zone, acc_objs_to_reset);
+			bool status = (*output_fn)(error, error_len, verbose, date, entity, id, filter);
+			if (!status) return false;
 		}
 	}
 	return true;
@@ -412,7 +687,7 @@ static inline bool output_materialized_variables(char * const error, size_t erro
 
 static bool output_variables(char * const error, size_t error_len, bool verbose,
 		struct date date, void * const entity, EntityID id, OutputFilter const * const f) {
-	if (verbose) fprintf(stderr, "\t\toutput_variables(num_named_variables: %hu)...\n", f->num_named_variables);
+	if (verbose) fprintf(stderr, "\t\toutput_variables(num_variables: %hu)...\n", f->num_variables);
 
 	char *local_error;
 	MaterializedVariable mat_var;
@@ -422,6 +697,7 @@ static bool output_variables(char * const error, size_t error_len, bool verbose,
 	for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
 		switch (v->variable_type) {
 		case NAMED:
+		case VAR_TYPE_EXPR:
 			// Materialize variable and add it to array
 			mat_var = materialize_variable(v, entity);
 			if (mat_var.data_type == DATA_TYPE_UNDEFINED) {
@@ -446,7 +722,8 @@ static bool output_variables(char * const error, size_t error_len, bool verbose,
 
 static bool output_basin(char * const error, size_t error_len, bool verbose,
 		struct date date, OutputFilter const * const f,
-		PointerSet **hillslope_acc_objs_to_reset, PointerSet **patch_acc_objs_to_reset, PointerSet **stratum_acc_objs_to_reset) {
+		PointerSet **hillslope_acc_objs_to_reset, PointerSet **zone_acc_objs_to_reset,
+		PointerSet **patch_acc_objs_to_reset, PointerSet **stratum_acc_objs_to_reset) {
 	if (verbose) fprintf(stderr, "\toutput_basin()...\n");
 
 	bool status;
@@ -472,6 +749,7 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 
 			for (size_t j = 0; j < hillslope->num_zones; j++) {
 				struct zone_object *z = hillslope->zones[j];
+
 				for (size_t k = 0; k < z->num_patches; k++) {
 					struct patch_object *patch = z->patches[k];
 					// Iterate over filter variables accumulating any patch variables
@@ -504,6 +782,19 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 					basin_area += patch->area;
 					hillslope_area += patch->area;
 				}
+
+				// Iterate over filter variables accumulating any zone variables
+				int var_num = 0;
+				for (OutputFilterVariable *v = f->variables; v != NULL; v = v->next) {
+					if (v->variable_type == NAMED) {
+						if (v->hierarchy_level == OF_HIERARCHY_LEVEL_ZONE) {
+							void *entity = determine_zone_entity(f->timestep, z, zone_acc_objs_to_reset);
+							mat_var = materialize_variable(v, entity);
+							accum_materialized_variable(&mat_vars[var_num], &mat_var, z->area);
+						}
+						var_num += 1;
+					}
+				}
 			}
 
 			// Iterate over filter variables accumulating any hillslope variables
@@ -519,7 +810,7 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 				}
 			}
 		}
-		// Scale values by basin area
+		// Scale values by basin area (not sure this makes sense for all variables, including many zone variables)
 		scale_materialized_variable_array_values(f, basin_area);
 		status = output_materialized_variables(error, error_len, date, id, f, mat_vars);
 		if (status == false) {
@@ -528,6 +819,57 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 			return_with_error(error, error_len, local_error);
 		}
 	}
+	return true;
+}
+
+static bool output_zone(char * const error, size_t error_len, bool verbose,
+                         struct date date, OutputFilter const * const filter,
+                         PointerSet **acc_objs_to_reset) {
+	if (verbose) fprintf(stderr, "\toutput_zone()...\n");
+
+	char *local_error;
+	bool status;
+
+	for (OutputFilterZone *z = filter->zones; z != NULL; z = z->next) {
+		status = true;
+		EntityID id;
+		switch (z->output_zone_type) {
+		case ZONE_TYPE_ZONE:
+			id.basin_ID = z->basinID;
+			id.hillslope_ID = z->hillslopeID;
+			id.zone_ID = z->zoneID;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			void *entity = determine_zone_entity(filter->timestep, z->zone, acc_objs_to_reset);
+			status = output_variables(error, error_len, verbose, date, entity, id, filter);
+			break;
+		case ZONE_TYPE_HILLSLOPE:
+			id.basin_ID = z->basinID;
+			id.hillslope_ID = z->hillslopeID;
+			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			status = apply_to_zones_in_hillslope(error, error_len, verbose, date, filter, z, id, acc_objs_to_reset,
+									             *output_variables);
+			break;
+		case ZONE_TYPE_BASIN:
+			id.basin_ID = z->basinID;
+			id.hillslope_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.zone_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.patch_ID = OUTPUT_FILTER_ID_EMPTY;
+			id.canopy_strata_ID = OUTPUT_FILTER_ID_EMPTY;
+			status = apply_to_zones_in_basin(error, error_len, verbose, date, filter, z, id, acc_objs_to_reset,
+								             *output_variables);
+			break;
+		default:
+			local_error = (char *)calloc(MAXSTR, sizeof(char));
+			snprintf(local_error, MAXSTR, "output_zone: zone type %d is unknown or not yet implemented.",
+			         z->output_zone_type);
+			return_with_error(error, error_len, local_error);
+		}
+		if (!status) return false;
+	}
+
 	return true;
 }
 
@@ -581,7 +923,7 @@ static bool output_patch(char * const error, size_t error_len, bool verbose,
 			break;
 		default:
 			local_error = (char *)calloc(MAXSTR, sizeof(char));
-			snprintf(local_error, MAXSTR, "output_patch_daily: patch type %d is unknown or not yet implemented.",
+			snprintf(local_error, MAXSTR, "output_patch: patch type %d is unknown or not yet implemented.",
 					p->output_patch_type);
 			return_with_error(error, error_len, local_error);
 		}
@@ -671,7 +1013,11 @@ bool output_filter_output_daily(char * const error, size_t error_len, bool verbo
 		if (f->timestep == TIMESTEP_DAILY) {
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
-				status = output_basin(error, error_len, verbose, date, f, NULL, NULL, NULL);
+				status = output_basin(error, error_len, verbose, date, f, NULL, NULL, NULL, NULL);
+				if (!status) return false;
+				break;
+			case OUTPUT_FILTER_ZONE:
+				status = output_zone(error, error_len, verbose, date, f, NULL);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -703,6 +1049,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len, bool ver
 	bool status = true;
 
 	PointerSet *acc_hillslope_obj_to_reset = NULL;
+	PointerSet *acc_zone_obj_to_reset = NULL;
 	PointerSet *acc_patch_obj_to_reset = NULL;
 	PointerSet *acc_stratum_obj_to_reset = NULL;
 
@@ -711,7 +1058,12 @@ bool output_filter_output_monthly(char * const error, size_t error_len, bool ver
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
 				status = output_basin(error, error_len, verbose, date, f,
-						&acc_hillslope_obj_to_reset, &acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+						&acc_hillslope_obj_to_reset, &acc_zone_obj_to_reset,
+						&acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+				if (!status) return false;
+				break;
+			case OUTPUT_FILTER_ZONE:
+				status = output_zone(error, error_len, verbose, date, f, &acc_zone_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -732,6 +1084,7 @@ bool output_filter_output_monthly(char * const error, size_t error_len, bool ver
 
 	// Reset monthly accumulators as necessary
 	reset_accumulator_hillslope(&acc_hillslope_obj_to_reset);
+	reset_accumulator_zone(&acc_zone_obj_to_reset);
 	reset_accumulator_patch(&acc_patch_obj_to_reset);
 	reset_accumulator_stratum(&acc_stratum_obj_to_reset);
 
@@ -748,6 +1101,7 @@ bool output_filter_output_yearly(char * const error, size_t error_len, bool verb
 	bool status = true;
 
 	PointerSet *acc_hillslope_obj_to_reset = NULL;
+	PointerSet *acc_zone_obj_to_reset = NULL;
 	PointerSet *acc_patch_obj_to_reset = NULL;
 	PointerSet *acc_stratum_obj_to_reset = NULL;
 
@@ -756,7 +1110,12 @@ bool output_filter_output_yearly(char * const error, size_t error_len, bool verb
 			switch (f->type) {
 			case OUTPUT_FILTER_BASIN:
 				status = output_basin(error, error_len, verbose, date, f,
-						&acc_hillslope_obj_to_reset, &acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+						&acc_hillslope_obj_to_reset, &acc_zone_obj_to_reset,
+						&acc_patch_obj_to_reset, &acc_stratum_obj_to_reset);
+				if (!status) return false;
+				break;
+			case OUTPUT_FILTER_ZONE:
+				status = output_zone(error, error_len, verbose, date, f, &acc_zone_obj_to_reset);
 				if (!status) return false;
 				break;
 			case OUTPUT_FILTER_PATCH:
@@ -777,6 +1136,7 @@ bool output_filter_output_yearly(char * const error, size_t error_len, bool verb
 
 	// Reset yearly accumulators as necessary
 	reset_accumulator_hillslope(&acc_hillslope_obj_to_reset);
+	reset_accumulator_zone(&acc_zone_obj_to_reset);
 	reset_accumulator_patch(&acc_patch_obj_to_reset);
 	reset_accumulator_stratum(&acc_stratum_obj_to_reset);
 

@@ -52,7 +52,7 @@ Unless new development changes are being made to the worldfile or flowtable, you
 
 ```{r setrunvars}
 
-rhessys_ver = "/PATH_TO_RHESSys_Version/rhessys7.3"
+rhessys_ver = "/Users/naomitague/Model/RHESSys/rhessys/rhessys7.4"
 worldfile = "worldfiles/w8TC.world"
 header = "worldfiles/w8TC.hdr"
 flowtable = "flowtables/w8TC.flow"
@@ -73,13 +73,16 @@ command_line = paste(cmd1,cmd2,cmd3)
 ```{r runrhessys}
 system(command_line)
 ```
+
 ### Read in the test results and plot the water balance results
 
 
 ```{r getyourresults}
 test = read.table("out/test_basin_daily.csv", header=T, sep=",")
-test = mkdate(test)
+test = add_dates(test)
+test = watbal_basin_of(test)
 
+# note that base cases does not currently work with watbal_basin_of - needs to be updated 
 # we have to make some variables
 test = test %>% mutate(streamflow=1000*(streamflow+gw.Qout), trans=1000*(transpiration_sat_zone+
                          transpiration_unsat_zone), 
@@ -88,7 +91,10 @@ test = test %>% mutate(streamflow=1000*(streamflow+gw.Qout), trans=1000*(transpi
       streamflow_NO3 = streamflow_NO3+gw.NO3out, streamflow_DON= streamflow_DON+gw.DONout, 
       psn   = cs.net_psn,
       gpsn = cdf.psn_to_cpool,
-      plant_resp = cdf.total_mr + cdf.total_gr)
+      plant_resp = cdf.total_mr + cdf.total_gr, sat_def = sat_deficit*1000, rz_storage=rz_storage*1000, snowpack=snowpack.water_equivalent_depth*1000, unsat_stor=unsat_storage*1000, litter_store=litter.rain_stored*1000,
+    canopy_store=(canopy_rain_stored+canopy_snow_stored)*1000, 
+    precip=total_water_in*1000)
+
 
 ```
 

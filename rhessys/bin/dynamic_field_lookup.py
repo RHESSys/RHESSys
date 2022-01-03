@@ -43,7 +43,10 @@ STRUCT_NAMES = [
 	'fire_effects_object',
 	'mult_conduct_struct',
 	'hillslope_object',
-	'gw_object'
+	'gw_object',
+	'zone_object',
+	'accumulate_zone_object',
+	'metvar_struct'
 ]
 
 COMMENT_PATT = re.compile('^\s*//.*')
@@ -109,6 +112,9 @@ StructIndex_t *new_struct_index() {
 	i->mult_conduct_struct = NULL;
 	i->hillslope_object == NULL;
 	i->gw_object == NULL;
+	i->zone_object == NULL;
+	i->accumulate_zone_object == NULL;
+	i->metvar_struct == NULL;
 	
 	return i;
 }
@@ -199,6 +205,16 @@ void free_struct_index(StructIndex_t *i) {
 		freeDictionary(i->gw_object);
 	}
 	
+	if (i->zone_object) {
+		freeDictionary(i->zone_object);
+	}
+	if (i->accumulate_zone_object) {
+		freeDictionary(i->accumulate_zone_object);
+	}
+	if (i->metvar_struct) {
+		freeDictionary(i->metvar_struct);
+	}
+	
 	free(i);
 }
 
@@ -237,6 +253,11 @@ StructIndex_t *index_struct_fields() {
 	i->hillslope_object = newDictionary(DICTIONARY_SIZE_MEDIUM);
 	
 	i->gw_object = newDictionary(DICTIONARY_SIZE_SMALL);
+	
+	
+	i->zone_object = newDictionary(DICTIONARY_SIZE_LARGE);
+	i->accumulate_zone_object = newDictionary(DICTIONARY_SIZE_TINY);
+	i->metvar_struct = newDictionary(DICTIONARY_SIZE_SMALL);
 ''')
 
 in_struct = False

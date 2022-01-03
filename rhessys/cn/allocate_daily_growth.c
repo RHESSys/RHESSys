@@ -204,6 +204,7 @@ int allocate_daily_growth(int nlimit,
 				amt_fix = min(excess_c, amt_fix);
 				plant_calloc = plant_calloc + excess_c - amt_fix;
 				plant_nalloc = plant_calloc/mean_cn;
+				plant_calloc = plant_calloc/(1+epc.gr_perc);
 				ndf_patch->nfix_to_sminn = plant_nalloc - ndf->retransn_to_npool-sminn_to_npool;
 				excess_c = excess_c - amt_fix;
 				if (excess_c > ZERO) {
@@ -220,6 +221,7 @@ int allocate_daily_growth(int nlimit,
 					else ndf->retransn_to_npool = 0.0;
 					plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 					plant_calloc = plant_nalloc  * mean_cn;
+					plant_calloc = plant_calloc/(1+epc.gr_perc);
 					excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 					cdf->psn_to_cpool -= excess_c;
 					ns->nlimit = 1;

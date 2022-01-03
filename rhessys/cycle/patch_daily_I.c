@@ -475,11 +475,17 @@ void		patch_daily_I(
 	/*	- if grow option is specified				*/
 	/*--------------------------------------------------------------*/
 	patch[0].effective_lai = 0.0;
+	patch[0].total_stemc = 0.0; //New
+	patch[0].height = 0.0;
 	patch[0].soil_cs.frootc = 0.0;
 	patch[0].rootzone.depth = 0.0;
 	count = 0.0;
 	for ( stratum=0 ; stratum<patch[0].num_canopy_strata; stratum++){
 		patch[0].effective_lai += patch[0].canopy_strata[stratum][0].epv.proj_lai;
+	  patch[0].total_stemc += patch[0].canopy_strata[stratum][0].cover_fraction //new
+	    * (patch[0].canopy_strata[stratum][0].cs.live_stemc + patch[0].canopy_strata[stratum][0].cs.dead_stemc);
+	  patch[0].height += patch[0].canopy_strata[stratum][0].cover_fraction * patch[0].canopy_strata[stratum][0].epv.height;
+	  
 		if (command_line[0].grow_flag > 0) {
 			patch[0].soil_cs.frootc
 				+= patch[0].canopy_strata[stratum][0].cover_fraction

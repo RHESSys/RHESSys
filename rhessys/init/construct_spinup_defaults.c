@@ -36,7 +36,7 @@ struct spinup_default *construct_spinup_defaults(
         /*      Local function definition.                              */
         /*--------------------------------------------------------------*/
         void    *alloc( size_t, char *, char *);
-        
+
         /*--------------------------------------------------------------*/
         /*      Local variable definition.                              */
         /*--------------------------------------------------------------*/
@@ -52,7 +52,7 @@ struct spinup_default *construct_spinup_defaults(
         char    record[MAXSTR];
         struct  spinup_default    *default_object_list;
         param *paramPtr = NULL;
-        
+
         /*--------------------------------------------------------------*/
         /*      Allocate an array of default objects.                   */
         /*--------------------------------------------------------------*/
@@ -60,7 +60,7 @@ struct spinup_default *construct_spinup_defaults(
                 alloc(num_default_files *
                 sizeof(struct spinup_default),"default_object_list",
                 "construct_spinup_defaults");
-        
+
         /*--------------------------------------------------------------*/
         /*      Loop through the default files list.                    */
         /*--------------------------------------------------------------*/
@@ -85,6 +85,10 @@ struct spinup_default *construct_spinup_defaults(
                 /*--------------------------------------------------------------*/
                 default_object_list[i].tolerance = getDoubleParam(&paramCnt, &paramPtr, "tolerance", "%lf", 0.005, 1);
                 default_object_list[i].max_years = getDoubleParam(&paramCnt, &paramPtr, "max_years", "%lf", 500, 1);
+
+                /* add one paramter to control the target type, type = 1 is use stratum LAI and type = 2 use patch LAI, type =3 use zone LAI*/
+                default_object_list[i].target_type = getIntParam(&paramCnt, &paramPtr, "target_type", "%ld", 1, 1);
+
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */
                 /*--------------------------------------------------------------*/
@@ -95,17 +99,18 @@ struct spinup_default *construct_spinup_defaults(
                 char *y = NULL;
                 char *token = NULL;
                 char filename[256];
-    
+
                 // Store filename portion of path in 't'
                 while ((token = strtok(s, "/")) != NULL) {
                     // Save the latest component of the filename
                     strcpy(filename, token);
                     s = NULL;
-                } 
+                }
 
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
+                free(s);
                 s = strbuf;
                 token = strtok(s, ".");
                 if (token != NULL) {
@@ -113,7 +118,7 @@ struct spinup_default *construct_spinup_defaults(
                 }
 
                 memset(outFilename, '\0', filenameLen);
-    
+
                 // Concatenate the output prefix with the filename of the input .def file
                 // and "_stratum.params"
                 if (command_line[0].output_prefix != NULL) {
@@ -123,7 +128,7 @@ struct spinup_default *construct_spinup_defaults(
                         strcat(outFilename, filename);
                     }
                     strcat(outFilename, "_spinup.params");
-                } 
+                }
                 else {
                     if (filename != NULL) {
                         strcat(outFilename, "_");
@@ -131,7 +136,7 @@ struct spinup_default *construct_spinup_defaults(
                     }
                     strcat(outFilename, "spinup.params");
                 }
-        
+
             printParams(paramCnt, paramPtr, outFilename);
         } /*end for*/
         return(default_object_list);
