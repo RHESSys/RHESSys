@@ -84,7 +84,7 @@ void	output_growth_patch(
 				* (strata->ns.frootn + strata->ns.frootn_store
 				+ strata->ns.frootn_transfer);
 
-			asoilhr += (
+			asoilhr += ( // why this soil respiration is inside of strat
 					patch[0].cdf.litr1c_hr +
 					patch[0].cdf.litr2c_hr +
 					patch[0].cdf.litr4c_hr +
@@ -185,7 +185,7 @@ void	output_growth_patch(
 		patch[0].ndf.nfix_to_sminn * 1000.0, //nfix
 		patch[0].grazing_Closs * 1000.0,
 		patch[0].area,
-		patch[0].soil_ns.fract_potential_immob,
+		patch[0].soil_ns.fract_potential_immob, //fpi n limitation
 		patch[0].soil_ns.sminn*1000.0, //n_avai
 		patch[0].soil_ns.nitrate*1000.0, //n_avai
 		patch[0].ndf.mineralized*1000.0, //what is the differences between net_mineralized

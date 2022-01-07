@@ -440,20 +440,30 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].monthly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"month",
 		"year",
 		"basinID",
 		"hillID",
 		"zoneID",
 		"patchID",
+		"familyID",
 		"leach",
 		"denitrif",
 		"soil_moist_deficit",
 		"et",
 		"psn",
 		"DOC",
-		"DON","lai","nitrif","mineralized","uptake","theta","snow","area","nitrate","sminn","burn");
+		"DON","lai","nitrif","net_mineralized","uptake","rz.S","snow","area","nitrate","sminn",
+		 "trans", "soil_evap", "evap_surface", "streamflow","baseflow",
+		 "recharge", "rz_drainage", "unsat_drain", "overland_flow", "theta",
+		 "streamNO3_from_surf", "streamNO3_from_sub", "streamflow_NO3", "streamflow_NH4", "nuptake",
+		 "potential_immob", "soil_resp", "water_rise_ratio", "unsat_drain_ratio", "fpi_Nlim",
+		 "mineralized", "height", "rootdepth", "plantc", "plantn",
+		 "rz_field_capacity", "canopy_N_store", "sat_NO3", "sat_NH4", "surfaceN",
+		 "soilc", "soiln", "litrc", "litrn", "detention_store",
+		 "unsat_storage", "rz_storage", "sat_def", "pch_field_capacity"
+		);
 	/*--------------------------------------------------------------*/
 	/*	Yearly							*/
 	/*--------------------------------------------------------------*/

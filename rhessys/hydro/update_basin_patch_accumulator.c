@@ -23,7 +23,7 @@
 /*											*/
 /*	PROGRAMMER NOTES								*/
 /*											*/
-/*											*/	
+/*											*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
@@ -42,7 +42,7 @@ void update_basin_patch_accumulator(
 	int b,h,p,z,c,s;
 	/*----------------------------------------------------------------------*/
 	/* initializations		                                           */
-	/*----------------------------------------------------------------------*/	
+	/*----------------------------------------------------------------------*/
 
 	/*---------------------------------------------------------------------*/
 	/*update accumulator variables                                            */
@@ -137,8 +137,7 @@ void update_basin_patch_accumulator(
 					basin[0].acc_year.lai += patch[0].lai * scale;
 				}
 
-				if ((command_line[0].output_flags.monthly == 1)
-						&& (command_line[0].p != NULL )) {
+				if ((command_line[0].output_flags.monthly == 1)) { // I removed the p flag condition Nren 20220501 && (command_line[0].p != NULL )
 					patch[0].acc_month.theta += patch[0].rootzone.S;
 					patch[0].acc_month.sm_deficit +=
 							max(0.0,
@@ -151,16 +150,16 @@ void update_basin_patch_accumulator(
 							+ patch[0].evaporation);
 					patch[0].acc_month.denitrif += patch[0].ndf.denitrif;
 					patch[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate;
-					patch[0].acc_month.mineralized +=
+					patch[0].acc_month.net_mineralized +=
 							patch[0].ndf.net_mineralized;
-					patch[0].acc_month.uptake += patch[0].ndf.sminn_to_npool;
+					patch[0].acc_month.uptake += patch[0].ndf.sminn_to_npool; // where accumulate from strata to patch level??
 					patch[0].acc_month.DON_loss +=
 							(patch[0].soil_ns.DON_Qout_total
 									- patch[0].soil_ns.DON_Qout_total);
 					patch[0].acc_month.DOC_loss +=
 							(patch[0].soil_cs.DOC_Qout_total
 									- patch[0].soil_cs.DOC_Qout_total);
-					patch[0].acc_month.psn += patch[0].net_plant_psn;
+					patch[0].acc_month.psn += patch[0].net_plant_psn;  // where accumulate from strata to patch level?
 					patch[0].acc_month.snowpack =
 							max(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
 					patch[0].acc_month.lai =
@@ -169,7 +168,32 @@ void update_basin_patch_accumulator(
 							+ patch[0].surface_ns_leach);
 					patch[0].acc_month.burn += patch[0].burn;
 					patch[0].acc_month.length += 1;
-			
+					// add extra output NREN 20220501
+					patch[0].acc_month.trans += patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone;
+					patch[0].acc_month.soil_evap += patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone;
+					patch[0].acc_month.evap_surface += patch[0].evaporation_surf;
+					patch[0].acc_month.evap += patch[0].evaporation;
+					patch[0].acc_month.streamflow += patch[0].streamflow;
+					patch[0].acc_month.baseflow += patch[0].base_flow;
+					patch[0].acc_month.recharge += patch[0].recharge;
+					patch[0].acc_month.rz_drainage += patch[0].rz_drainage;
+					patch[0].acc_month.unsat_drain += patch[0].unsat_drainage;
+					//patch[0].acc_month.pch_field_cap += patch[0].field_capacity;
+					//patch[0].acc_month.rz_field_cap += patch[0].rootzone.field_capacity;
+					patch[0].acc_month.overland_flow += patch[0].overland_flow;
+					patch[0].acc_month.theta2 += patch[0].theta; //theta for calculating N process
+					patch[0].acc_month.streamNO3_from_surface += patch[0].streamNO3_from_surface;
+					patch[0].acc_month.streamNO3_from_sub += patch[0].streamNO3_from_sub;
+					patch[0].acc_month.streamflow_NO3 += patch[0].streamflow_NO3;
+					patch[0].acc_month.streamflow_NH4 += patch[0].streamflow_NH4;
+					patch[0].acc_month.nuptake += patch[0].ndf.sminn_to_npool;
+					patch[0].acc_month.potential_immob += patch[0].ndf.potential_immob;
+					patch[0].acc_month.soil_resp += (patch[0].cdf.soil1c_hr + patch[0].cdf.soil2c_hr + patch[0].cdf.soil3c_hr + patch[0].cdf.soil4c_hr);
+					patch[0].acc_month.water_rise_ratio += patch[0].water_rise_ratio;
+					patch[0].acc_month.unsat_drain_ratio += patch[0].unsat_drain_ratio;
+					patch[0].acc_month.fpi += patch[0].soil_ns.fract_potential_immob;
+					patch[0].acc_month.mineralized += patch[0].ndf.mineralized; // this is potential
+
 
 				}
 				if ((command_line[0].output_flags.yearly == 1)
@@ -273,7 +297,7 @@ void update_basin_patch_accumulator(
 							+ +patch[0].transpiration_sat_zone
 							+ patch[0].evaporation);
 
-							
+
 					if (patch[0].lai > patch[0].acc_year.lai) {
 						patch[0].acc_year.peaklaiday = round(
 								patch[0].acc_year.length);
@@ -285,7 +309,7 @@ void update_basin_patch_accumulator(
 								+ patch[0].PE - tmp);
 					patch[0].acc_year.lai =
 							max(patch[0].acc_year.lai, patch[0].lai);
-							
+
 
 					tmp = patch[0].sat_deficit - patch[0].unsat_storage
 							- patch[0].rz_storage;
@@ -308,7 +332,7 @@ void update_basin_patch_accumulator(
 						patch[0].acc_year.midsm_wyd = patch[0].acc_year.wyd;
 
 					patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
-		} /* end if */		
+		} /* end if */
 	} /* end of p*/
 	} /* end of z*/
 	} /* end of h*/

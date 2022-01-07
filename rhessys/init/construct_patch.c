@@ -254,6 +254,30 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.PET = 0.0;
 	patch[0].acc_month.psn = 0.0;
 	patch[0].acc_month.num_threshold = 0;
+	//new output NREN 20220501
+    patch[0].acc_month.trans = 0.0;
+    patch[0].acc_month.soil_evap = 0.0;
+    patch[0].acc_month.evap_surface = 0.0;
+    patch[0].acc_month.evap = 0.0;
+    patch[0].acc_month.streamflow = 0.0;
+    patch[0].acc_month.baseflow = 0.0;
+    patch[0].acc_month.recharge = 0.0;
+    patch[0].acc_month.rz_drainage = 0.0;
+    patch[0].acc_month.unsat_drain = 0.0;
+    patch[0].acc_month.overland_flow = 0.0;
+    patch[0].acc_month.theta2 = 0.0; //theta for calculating N process
+    patch[0].acc_month.streamNO3_from_surface = 0.0;
+    patch[0].acc_month.streamNO3_from_sub = 0.0;
+    patch[0].acc_month.streamflow_NO3 = 0.0;
+    patch[0].acc_month.streamflow_NH4 = 0.0;
+    patch[0].acc_month.nuptake = 0.0;
+    patch[0].acc_month.potential_immob = 0.0;
+    patch[0].acc_month.soil_resp = 0.0;
+    patch[0].acc_month.water_rise_ratio = 0.0;
+    patch[0].acc_month.unsat_drain_ratio = 0.0;
+    patch[0].acc_month.fpi = 0.0;
+    patch[0].acc_month.mineralized = 0.0; // this is potential
+
 
 
 	patch[0].acc_year.burn = 0.0;

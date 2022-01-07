@@ -382,7 +382,7 @@ struct accumulate_patch_object
    int midsm_wyd;
    double burn;
    double et;
-   double trans;
+   double trans; //used
    double day7trans;
    double day7pet;
    double maxtrans;
@@ -404,15 +404,38 @@ struct accumulate_patch_object
    double DON_loss;
    double theta;
    double uptake;
-   double mineralized;
+   double mineralized; //used this is potential
    double pcp;
    double potential_recharge;
    double potential_recharge_wyd;
-   double recharge;
+   double recharge; //used
    double recharge_wyd;
    double snowin;
    double Qin_total;
    double Qout_total;
+
+    double soil_evap ;
+    double evap_surface ;
+    double evap;
+    double baseflow ;
+
+    double rz_drainage ;
+    double unsat_drain ;
+    double overland_flow ;
+    double theta2; //this is theta I caclualated for denitrification
+    double streamNO3_from_surface ;
+    double streamNO3_from_sub ;
+    double streamflow_NO3 ;
+    double streamflow_NH4 ;
+    double nuptake ;
+    double potential_immob ;
+    double soil_resp ;
+    double water_rise_ratio;
+    double unsat_drain_ratio;
+    double fpi;
+    double net_mineralized;
+
+
 };
 
 
