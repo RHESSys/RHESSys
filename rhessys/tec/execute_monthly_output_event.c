@@ -30,7 +30,7 @@
 /*	We only permit one fileset per spatial modelling level.     */
 /*	Each fileset has one file for each timestep.  				*/
 /*																*/
-/*	March 14, 1997	- 	RAF				*/ 
+/*	March 14, 1997	- 	RAF				*/
 /*	Allowed output patch to also output the moss strata if	*/
 /*		moss is present.				*/
 /*--------------------------------------------------------------*/
@@ -50,23 +50,23 @@ void	execute_monthly_output_event(
 		struct	basin_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_monthly_hillslope(	int,
 		struct	hillslope_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_monthly_zone(	int, int,
 		struct	zone_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_monthly_patch(
 		int, int, int,
 		struct	patch_object *,
 		struct	date,
 		FILE	*);
-	
+
 	void output_monthly_canopy_stratum(
 		int, int, int, int,
 		struct	canopy_strata_object *,
@@ -81,7 +81,7 @@ void	execute_monthly_output_event(
 	/*	check to see if there are any print options					*/
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].b != NULL) || (command_line[0].h != NULL) ||
-		(command_line[0].z != NULL) || (command_line[0].p != NULL) ||
+		(command_line[0].z != NULL) || (command_line[0].p != NULL) || (command_line[0].pm != NULL) ||
 		(command_line[0].c != NULL)){
 		/*--------------------------------------------------------------*/
 		/*	output_monthly basins												*/
@@ -101,7 +101,7 @@ void	execute_monthly_output_event(
 			/*--------------------------------------------------------------*/
 			/*	check to see if there are any lower print options			*/
 			/*--------------------------------------------------------------*/
-			if ((command_line[0].h != NULL) || (command_line[0].z != NULL) ||
+			if ((command_line[0].h != NULL) || (command_line[0].z != NULL) || (command_line[0].pm != NULL) || //change here add b flag too to output patch.monthly
 				(command_line[0].p != NULL) || (command_line[0].c != NULL)){
 				/*--------------------------------------------------------------*/
 				/*	output_monthly hillslopes 											*/
@@ -126,7 +126,7 @@ void	execute_monthly_output_event(
 					/*------------------------------------------------------------*/
 					/*	check to see if there are any lower print options			*/
 					/*----------------------------------------------------------*/
-					if ((command_line[0].z != NULL) || (command_line[0].p != NULL) ||
+					if ((command_line[0].z != NULL) || (command_line[0].p != NULL) || (command_line[0].pm != NULL) || //change here add b flag too to output patch.monthly
 						(command_line[0].c != NULL)){
 						/*------------------------------------------------------*/
 						/*	output_monthly zones												*/
@@ -157,8 +157,8 @@ void	execute_monthly_output_event(
 							/*------------------------------------------------------*/
 							/*	check to see if there are any lower print options	  */
 							/*------------------------------------------------------*/
-							if ((command_line[0].p != NULL)
-								|| (command_line[0].c != NULL)){
+							if ((command_line[0].p != NULL) || (command_line[0].pm != NULL) ||
+								(command_line[0].c != NULL) || command_line[0].b != NULL){ //change here for out patch.monthly even not speficy p flag
 								/*--------------------------------------------------*/
 								/*	output_monthly patches 									 */
 								/*--------------------------------------------------*/
@@ -168,11 +168,11 @@ void	execute_monthly_output_event(
 									/*------------------------------------------------*/
 									/*	Construct the patch output_monthly files.		  */
 									/*------------------------------------------------*/
-									if ( command_line[0].p != NULL ){
-										basinID = command_line[0].p->basinID;
-										hillID = command_line[0].p->hillID;
-										zoneID = command_line[0].p->zoneID;
-										patchID = command_line[0].p->patchID;
+									if (  command_line[0].pm != NULL ){ //change here for out patch.monthly even not speficy p flag command_line[0].p != NULL ||
+										basinID = command_line[0].pm->basinID;
+										hillID = command_line[0].pm->hillID;
+										zoneID = command_line[0].pm->zoneID;
+										patchID = command_line[0].pm->patchID;
 										if (( world[0].basins[b][0].ID == basinID)
 											|| (basinID == -999))
 											if (( world[0].basins[b][0].hillslopes[h][0].ID == hillID)

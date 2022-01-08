@@ -2323,6 +2323,7 @@ struct  command_line_object
         struct  h_option        *h;
         struct  z_option        *z;
         struct  p_option        *p;
+        struct  p_option        *pm;
         struct  c_option        *c;
 	struct  f_option	*f;
         struct  stro_option     *stro;

@@ -51,7 +51,7 @@ struct	world_output_file_object *construct_output_files(
 	/*	selected or print a warning.								*/
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].b != NULL) || (command_line[0].h != NULL) ||
-		(command_line[0].z != NULL) || (command_line[0].p != NULL) ||
+		(command_line[0].z != NULL) || (command_line[0].p != NULL) || (command_line[0].p != NULL) ||
 		(command_line[0].c != NULL)|| (command_line[0].stro != NULL) ){
 		world_output_file = (struct world_output_file_object *)
 			alloc(1 * sizeof(struct world_output_file_object),
@@ -102,6 +102,13 @@ struct	world_output_file_object *construct_output_files(
 		strcat(root, "_patch");
 		world_output_file[0].patch = construct_output_fileset(root);
 	}
+    if ( command_line[0].pm != NULL ){
+		strcpy(root, prefix);
+		strcat(root, "_patch");
+		world_output_file[0].patch = construct_output_fileset(root);
+	}
+
+
 	/*--------------------------------------------------------------*/
 	/*	Construct the canopy stratum output files.					*/
 	/*	Always do this if a patch is requestedon the off chance we have moss.*/

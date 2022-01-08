@@ -137,7 +137,7 @@ void update_basin_patch_accumulator(
 					basin[0].acc_year.lai += patch[0].lai * scale;
 				}
 
-				if ((command_line[0].output_flags.monthly == 1)) { // I removed the p flag condition Nren 20220501 && (command_line[0].p != NULL )
+				if ((command_line[0].output_flags.monthly == 1) && (command_line[0].p != NULL || command_line[0].pm != NULL)) { // I removed the p flag condition Nren 20220501 && (command_line[0].p != NULL )
 					patch[0].acc_month.theta += patch[0].rootzone.S;
 					patch[0].acc_month.sm_deficit +=
 							max(0.0,
