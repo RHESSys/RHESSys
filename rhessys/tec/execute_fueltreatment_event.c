@@ -81,7 +81,7 @@ void execute_fueltreatment_event(
 				if(WUI_ptr->fire_occurrence==2) // is this a 2 km salience event?
 				{
 					patches_ptr=WUI_ptr->patches_dist2km; // loop through the 2 km patch list
-					WUI_ptr->ntrt[0]+=1; //update number of times this has been treated at this salience level, to match to trt_ord
+					WUI_ptr->ntrt[1]+=1; //update number of times this has been treated at this salience level, to match to trt_ord
 					while(patches_ptr!=NULL)
 					{
 						patch=patches_ptr->patch;
@@ -101,7 +101,7 @@ void execute_fueltreatment_event(
 					if(WUI_ptr->fire_occurrence==5)
 					{
 						patches_ptr=WUI_ptr->patches_dist5km;
-						WUI_ptr->ntrt[1]+=1;
+						WUI_ptr->ntrt[2]+=1;
 						while(patches_ptr!=NULL)
 						{
 							patch=patches_ptr->patch;
@@ -118,7 +118,7 @@ void execute_fueltreatment_event(
 					else
 					{
 						patches_ptr=WUI_ptr->patches_dist10km;
-						WUI_ptr->ntrt[2]+=1;
+						WUI_ptr->ntrt[3]+=1;
 						wui_dist_ptr=patch.wui_dist;
 						while(patches_ptr!=NULL)
 						{

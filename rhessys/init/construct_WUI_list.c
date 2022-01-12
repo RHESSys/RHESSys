@@ -124,6 +124,7 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d %d %d \n",
 	        WUI_ptr->ntrt[0]=0;// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
 	        WUI_ptr->ntrt[1]=0;
 	        WUI_ptr->ntrt[2]=0;
+		WUI_ptr->ntrt[3]=0;
 	        WUI_ptr->next=(struct WUI_object *) malloc(sizeof(struct WUI_object));// now the first official WUI
 		WUI_ptr->prev=NULL;
 		
@@ -137,6 +138,7 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d %d %d \n",
 	        WUI_ptr->ntrt[0]=0;// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
 	        WUI_ptr->ntrt[1]=0;
 	        WUI_ptr->ntrt[2]=0;
+		WUI_ptr->ntrt[3]=0;
 		WUI_ptr->next=NULL;
 		WUI_ptr->prev=WUI_list; // point it back to the beginning of the list
 
@@ -194,6 +196,7 @@ printf("\nIn read WUI file %d %d %d %d %d %d %d %d %d \n",
       		WUI_ptr->ntrt[0]=0;// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
 		WUI_ptr->ntrt[1]=0;
 		WUI_ptr->ntrt[2]=0;
+		WUI_ptr->ntrt[3]=0;
 		
 		n_WUI +=1;
 		} 
