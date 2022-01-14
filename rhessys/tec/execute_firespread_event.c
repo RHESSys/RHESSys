@@ -88,7 +88,7 @@ void execute_firespread_event(
 	/* first reset the values				*/
 	/*--------------------------------------------------------------*/
 	//printf("In WMFire\n");
-	printf("Start execute firespread event\n");
+//	printf("Start execute firespread event\n");
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 		  world[0].fire_grid[i][j].fire_size=0; // reset grid to no fire
@@ -377,21 +377,25 @@ void execute_firespread_event(
                                                 pspread,
                                                 command_line);
 */
-					if(fire_size_ha>400&&command_line[0].salience_flag == 1)// then potential salience event. Check if any  burned pixels are within 2,5,10 km of wui
+// make sure to change back to >400, using 0 for patch-level testing
+					if(fire_size_ha>0&&command_line[0].salience_flag == 1&pspread>0)// then potential salience event. Check if any  burned pixels are within 2,5,10 km of wui
 					{
 //patch[0].fire.severity >= patch[0].landuse_defaults[0][0].salience_fire_level
 // a fire severity flag rather than just burned or not?	
+ 					//	printf("patch ID: %d\n",patch_family[0].patches[0][0].ID);
 						patch_wui_dist_list_ptr=patch_family[0].patches[0][0].wui_dist->next;// skip the first wui, which represents non-salience
 						WUI_ptr=world[0].WUI_list->next;
-						if(patch_wui_dist_list_ptr->dist<WUI_ptr->fire_occurence)
+						printf("Pre salience event dist: %d, patch ID %d and dist %d, wui ID %d\n", WUI_ptr->fire_occurence,patch_family[0].patches[0][0].ID,patch_wui_dist_list_ptr->dist,WUI_ptr->ID);
+						if(patch_wui_dist_list_ptr->dist<WUI_ptr->fire_occurence) // for this wui, is this a more "salient" event?
 						     WUI_ptr->fire_occurence=patch_wui_dist_list_ptr->dist; // then a fire occurred this year closer to the wui. Record this one					
-						while( patch_wui_dist_list_ptr->next!=NULL)
+						while( patch_wui_dist_list_ptr->next!=NULL) //move on to the next wui for this patch
 						{
 							 patch_wui_dist_list_ptr= patch_wui_dist_list_ptr->next;
-							WUI_ptr=WUI_ptr->next;
+							WUI_ptr=WUI_ptr->next; // move through the lists in parallel
 							 if(patch_wui_dist_list_ptr->dist<WUI_ptr->fire_occurence)
                                                      		WUI_ptr->fire_occurence=patch_wui_dist_list_ptr->dist; // then a fire occurred this year closer to the wui. Record this one
 						}					
+						printf("Salience event dist: %d\n", WUI_ptr->fire_occurence);
 					}
 					
 				}

@@ -52,7 +52,7 @@ void execute_fueltreatment_event(
 
 	struct wui_dist_list *wui_dist_ptr;
 //	struct wui_dist_list *sal_wui_dist_list_ptr;
-	int salience_event;
+	int salience_event,stop_flag;
 
 	
 	
@@ -74,80 +74,138 @@ void execute_fueltreatment_event(
 		WUI_ptr=world[0].WUI_list->next; // skip the first in the list
 		while(WUI_ptr!=NULL) // loop through the WUIs
 		{
+			printf("Current wui: %d\n",WUI_ptr->ID);
+			if(WUI_ptr->next!=NULL)
+				printf("Next wui: %d\n",WUI_ptr->next->ID);
 			patches_ptr=NULL; // initialize the patch list
-			if(WUI_ptr->fire_occurrence<100) // then a salience event was triggered for this WUI
+			if(WUI_ptr->fire_occurence<100) // then a salience event was triggered for this WUI
 			{
 				salience_event=1; //flag the salience event
-				if(WUI_ptr->fire_occurrence==2) // is this a 2 km salience event?
+				if(WUI_ptr->fire_occurence==2) // is this a 2 km salience event?
 				{
 					patches_ptr=WUI_ptr->patches_dist2km; // loop through the 2 km patch list
 					WUI_ptr->ntrt[1]+=1; //update number of times this has been treated at this salience level, to match to trt_ord
-					while(patches_ptr!=NULL)
+					while(patches_ptr!=NULL)//navigate the 2km list
 					{
 						patch=patches_ptr->patch;
-						wui_dist_ptr=patch.wui_dist;
-						while(wui_dist_ptr->wui_id!=WUI_ptr->wui_id&wui_dist_ptr!=NULL) // make sure we're at the correct wui in the patch.wui_dist_list
+						wui_dist_ptr=patch->wui_dist;
+						stop_flag=0;
+						if(wui_dist_ptr->wui_id==WUI_ptr->ID)
+							stop_flag=1;
+						while(stop_flag==0) // make sure we're at the correct wui in the patch.wui_dist_list
 						{
 							wui_dist_ptr=wui_dist_ptr->next;
+							if(wui_dist_ptr!=NULL)
+							{
+								if(wui_dist_ptr->wui_id==WUI_ptr->ID)
+									stop_flag=1;
+							}
+							else
+								stop_flag=2;
 						}
-						if(wui_dist_ptr->trt_ord2==WUI_ptr->ntrt[0]) // is this the correct treatment order?
-							treat_patch(patch); // Update with final function
+						if(stop_flag==1)
+						{
+							if(wui_dist_ptr->trt_ord2==WUI_ptr->ntrt[1]) // is this the correct treatment order? for the correct wui?
+								treat_patch(patch); // Update with final function
+						}
 						patches_ptr=patches_ptr->next;
 					}
 					
+					if(WUI_ptr->next!=NULL)
+	                        	        printf("Next wui fire_occurence2: %d\n",WUI_ptr->next->ID);				
 				}
 				else // as above but for 5 and 10 km salience events
 				{
-					if(WUI_ptr->fire_occurrence==5)
+					if(WUI_ptr->fire_occurence==5)
 					{
 						patches_ptr=WUI_ptr->patches_dist5km;
 						WUI_ptr->ntrt[2]+=1;
 						while(patches_ptr!=NULL)
 						{
 							patch=patches_ptr->patch;
-							wui_dist_ptr=patch.wui_dist;
-							while(wui_dist_ptr->wui_id!=WUI_ptr->wui_id&wui_dist_ptr!=NULL)// find the place in the list
-							{
-								wui_dist_ptr=wui_dist_ptr->next;
+							wui_dist_ptr=patch->wui_dist;
+							stop_flag=0;
+                                                	if(wui_dist_ptr->wui_id==WUI_ptr->ID)
+                                                        	stop_flag=1;
+	                                                while(stop_flag==0) // make sure we're at the correct wui in the patch.wui_dist_list
+        	                                        {
+                	                                        wui_dist_ptr=wui_dist_ptr->next;
+                        	                                if(wui_dist_ptr!=NULL)
+                                	                        {
+                                        	                        if(wui_dist_ptr->wui_id==WUI_ptr->ID)
+                                                	                        stop_flag=1;
+                                                        	}
+	                                                        else
+        	                                                        stop_flag=2;
+                	                                }
+							if(stop_flag==1)
+                                                	{
+								if(wui_dist_ptr->trt_ord5==WUI_ptr->ntrt[2])
+									treat_patch(patch); // Update with final function
 							}
-							if(wui_dist_ptr->trt_ord5==WUI_ptr->ntrt[1])
-								treat_patch(patch); // Update with final function
 							patches_ptr=patches_ptr->next;
 						}
+						if(WUI_ptr->next!=NULL)
+	                                                printf("Next wui fire_occurence5: %d\n",WUI_ptr->next->ID);
 					}
 					else
 					{
 						patches_ptr=WUI_ptr->patches_dist10km;
+						if(WUI_ptr->next!=NULL)
+                                                        printf("Next wui fire_occurence10a: %d\n",WUI_ptr->next->ID);
+
 						WUI_ptr->ntrt[3]+=1;
-						wui_dist_ptr=patch.wui_dist;
-						while(patches_ptr!=NULL)
-						{
-							patch=patches_ptr->patch;
-							while(wui_dist_ptr->wui_id!=WUI_ptr->wui_id&wui_dist_ptr!=NULL)
-							{
-								wui_dist_ptr=wui_dist_ptr->next;
+						if(WUI_ptr->next!=NULL)
+                                                        printf("Next wui fire_occurence10b: %d\n",WUI_ptr->next->ID);
+	                                        while(patches_ptr!=NULL)
+                                                {
+                                                        patch=patches_ptr->patch;
+							wui_dist_ptr=patch->wui_dist;
+                        	                        stop_flag=0;
+                	                                if(wui_dist_ptr->wui_id==WUI_ptr->ID)
+ 		                                                stop_flag=1;
+                                                        while(stop_flag==0) // make sure we're at the correct wui in the patch.wui_dist_list
+                                                        {
+                                                                wui_dist_ptr=wui_dist_ptr->next;
+                                                                if(wui_dist_ptr!=NULL)
+                                                                {
+                                                                        if(wui_dist_ptr->wui_id==WUI_ptr->ID)
+                                                                                stop_flag=1;
+                                                                }
+                                                                else
+                                                                        stop_flag=2;
+                                                        }
+							if(stop_flag==1)
+	                                                { 
+								if(wui_dist_ptr->trt_ord10==WUI_ptr->ntrt[3])
+									treat_patch(patch); // Update with final function
 							}
-							if(patch.wui_dist->trt_ord10==WUI_ptr->ntrt[2])
-								treat_patch(patch); // Update with final function
 							patches_ptr=patches_ptr->next;
 						}
+						if(WUI_ptr->next!=NULL)
+	                                                printf("Next wui fire_occurence10: %d\n",WUI_ptr->next->ID);
 					}
 				}
-				WUI_ptr->fire_occurrence=100; // reset the flag for next year
+				WUI_ptr->fire_occurence=100; // reset the flag for next year
 				
 			}
+			printf("Current wui place 1a: %d\n",WUI_ptr->ID);
 			WUI_ptr=WUI_ptr->next;
+			if(WUI_ptr!=NULL)
+				printf("Current wui place 2: %d\n",WUI_ptr->ID);
 			
 		}
 		if(salience_event==0)// then test for baseline treatment
 		{
+			//printf("Current wui Non-salience 1: %d\n",WUI_ptr->ID);
 			WUI_ptr=world[0].WUI_list; // go back to the first in the list
+			printf("Current wui Non-salience 2: %d\n",WUI_ptr->ID);
 			patches_ptr=WUI_ptr->patches_dist100km;
 			WUI_ptr->ntrt[0]+=1;
 			while(patches_ptr!=NULL) // navigate this linked list
 			{
 				patch=patches_ptr->patch;
-				if(patch.wui_dist->trt_ord100==WUI_ptr->ntrt[0])
+				if(patch->wui_dist->trt_ord100==WUI_ptr->ntrt[0])
 					treat_patch(patch); // Update with final function
 				patches_ptr=patches_ptr->next;
 			}

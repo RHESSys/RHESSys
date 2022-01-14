@@ -249,6 +249,7 @@ $(OBJ)/execute_redefine_world_mult_event.o \
 $(OBJ)/execute_redefine_world_thin_event.o \
 $(OBJ)/execute_road_construction_event.o \
 $(OBJ)/execute_firespread_event.o \
+$(OBJ)/execute_fueltreatment_event.o \
 $(OBJ)/execute_state_output_event.o \
 $(OBJ)/execute_tec.o \
 $(OBJ)/execute_yearly_growth_output_event.o \
@@ -524,6 +525,8 @@ else
 $(OBJ)/execute_firespread_event.o: tec/execute_firespread_event_dummy.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event_dummy.c -o $(OBJ)/execute_firespread_event.o
 endif
+$(OBJ)/execute_fueltreatment_event.o: tec/execute_fueltreatment_event.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_fueltreatment_event.c -o $(OBJ)/execute_fueltreatment_event.o
 $(OBJ)/execute_tec.o: tec/execute_tec.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_tec.c -o $(OBJ)/execute_tec.o
 $(OBJ)/construct_command_line.o: init/construct_command_line.c

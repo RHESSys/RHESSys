@@ -169,7 +169,6 @@ double rvmdev(GenerateRandom rng,double mean1, double mean2, double kappa1, doub
 		curKappa=kappa1;
 	}
 	
-	//cout<<"p: "<<p<<" mean: "<<curMean<<" kappa: "<<curKappa<<"\n";
 	double rvm_val=1;
 	
 	int vm=1,flag=1;

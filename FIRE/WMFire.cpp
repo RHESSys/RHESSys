@@ -52,7 +52,7 @@ using boost::shared_ptr;
 //					world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year
 struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, long month, struct fire_object** fire_grid,struct fire_default def)
 {
-	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: \n"<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
+	cout<<"beginning fire spread using WMFire. ";
 	if(def.fire_verbose==1)
 		cout<<"Defaults: moisture k1 and k2, load k1, ranseed  "<<def.moisture_k1<<" "<<def.moisture_k2<<" "<<def.load_k1<<"   "<<def.ran_seed<<"\n";
 	timeval t1;

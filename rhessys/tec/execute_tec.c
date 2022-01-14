@@ -178,12 +178,10 @@ void	execute_tec(
 		struct	command_line_object	*,
 		struct	date);
 
-/*	void    update_fire_in_WUI(
-		struct WUI_object *);*/
-
-		void    update_salience(
-		struct WUI_object *);
-		
+	void execute_fueltreatment_event(
+									 struct	world_object *world,
+									 struct	command_line_object	*command_line,
+									 struct date	current_date);	
 		void reset_fire_in_WUI(
 		struct WUI_object *);
 
@@ -462,10 +460,9 @@ void	execute_tec(
 				/*				Do yearly stuff.								*/
 				/*--------------------------------------------------------------*/
 				if (command_line[0].salience_flag == 1) {
-					/* update patch scale salience treatment probablities
+					/* decide which, if any, patches are treated
 					after this year's fire has accumulated*/
-//					update_salience(world[0].WUI_list); //MK move to yearly
-//					Instead, this should be execute_treatment_event(world,salience_flag)
+					execute_fueltreatment_event(world,command_line,current_date);
 					reset_fire_in_WUI(world[0].WUI_list);//after salience is updated reset WUI fire areas
 				}	
 				/*--------------------------------------------------------------*/

@@ -498,7 +498,7 @@ while(WUI_ptr != NULL) {
 	patches_dist5km_ptr = WUI_ptr->patches_dist5km;
 	while(patches_dist5km_ptr != NULL) {
 		iter5km+=1;
-		printf("\n	we have at 5km %d, iter: %d",patches_dist5km_ptr->patch[0].ID,iter5km);
+		printf("\n	we have at 5km %d, iter: %d in WUI %d",patches_dist5km_ptr->patch[0].ID,iter5km,WUI_ptr->patches_dist5km->patch[0].wui_dist->wui_id);
 		patches_dist5km_ptr = patches_dist5km_ptr->next;
 		}
 	patches_dist10km_ptr = WUI_ptr->patches_dist10km;

@@ -284,7 +284,7 @@ struct WUI_object {
 	struct  patch_object_list *patches_dist10km;//linked list of patches treated if 10 km sal event triggered
 	struct patch_object_list *patches_dist100km;//placeholder for WUI "0" background treatment order. Need to make sure the patch doesn't repeat
 	int  fire_occurence;// just one to take precedence, no need for all three will take value 2, 5, 10, -1[3]; // flag for whether salient fire has occurred this year, array of 3 (one for each dist). 
-	int ntrt[3];// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
+	int ntrt[4];// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
 // This will then match the patch-level trt ord
 	struct WUI_object *next;
 	struct WUI_object *prev;
