@@ -117,6 +117,8 @@ struct landuse_default *construct_landuse_defaults(
 		/* 1 - understory only						*/
 		/* 2 - overstory only						*/
 		/* 3 - both						*/
+		/* 4 - understory + litter 		*/
+		/* 5  - everything (litter, understory, overstory ) 	*/
 		/*--------------------------------------------------------------*/
         	default_object_list[i].fuel_treatment_type = 		getIntParam(&paramCnt, &paramPtr, "fuel_treatment_type", "%ld", 1, 1);
 
