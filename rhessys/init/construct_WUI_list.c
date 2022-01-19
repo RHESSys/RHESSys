@@ -283,23 +283,6 @@ printf("Test1: %d\n", WUI_ptr->ID);
                         patches_dist2km_ptr->patch=patch;
                         patches_dist2km_ptr->next=NULL;
 		}		
-	/*if (command_line[0].multiscale_flag == 1) {// and now  find the correct one and add it to the end of the list
-	                     fnd=0;
- 	                     p=0;
-	                     while((fnd==0)&&(p>=0)&&(p<patch_family[0].num_patches_in_fam))
-                             {
-	                             if(patch_family[0].patches[p].ID==patch_ID)// is this the target patch within this family?
-                                     {
-					patches_dist2km_ptr->next= (struct patch_object_list *) malloc(sizeof(struct patch_object_list));
-					patches_dist2km_ptr = patches_dist2km_ptr->next;
-					patches_dist2km_ptr->patch = patch_family[0].patches[p];
-					patches_dist2km_ptr->next = NULL;
-					printf("Added patch %d to WUI %d at trt_ord2\n",patches_dist2km_ptr->patch[0].ID,WUI_ptr->ID);
-					fnd=1;
-					}
-					p+=1;
-				}
-			}*/
 	}
 
 	if (trt_ord5 >0) {/* first in this list so allocate room */
@@ -387,25 +370,28 @@ printf("Test1: %d\n", WUI_ptr->ID);
                 patch[0].wui_dist->trt_ord10=-1;
 		patch[0].wui_dist->trt_ord100=trt_ord100;
 		patch[0].wui_dist->prev=NULL;
-		patch[0].wui_dist->next=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
 		
-
-//		prev_wui_dist_list_ptr= patch_family[0].patches[0]->wui_dist;
+		// make the next wui
+		patch[0].wui_dist->next=(struct wui_dist_list *) malloc(sizeof(struct wui_dist_list));
 		prev_wui_dist_list_ptr= patch[0].wui_dist->next; // then the next WUI
 		prev_wui_dist_list_ptr->dist=wui_dist;
-		 prev_wui_dist_list_ptr->wui_id=WUI_ID;
+		prev_wui_dist_list_ptr->wui_id=WUI_ID;
 		prev_wui_dist_list_ptr->trt_ord2=trt_ord2;
                 prev_wui_dist_list_ptr->trt_ord5=trt_ord5;
                 prev_wui_dist_list_ptr->trt_ord10=trt_ord10;
+		prev_wui_dist_list_ptr->trt_ord100=trt_ord100;
 
 		prev_wui_dist_list_ptr->next=NULL;
 		prev_wui_dist_list_ptr->prev=patch[0].wui_dist;
+
 	}
 //Check	}
 	else // find the correct place in the list and make a new WUI entry. Make sure it's in the right order
 	{
 
-		
+	prev_wui_dist_list_ptr=patch[0].wui_dist->next;	
+	while(prev_wui_dist_list_ptr->next!=NULL)// find the end of the list
+		prev_wui_dist_list_ptr=prev_wui_dist_list_ptr->next;
 		stop_flag=1; // initialize as 1, which is the flag for end of the list
 //		if(prev_wui_dist_list_ptr->next!=NULL)//it is not the end of the list
 //		{
@@ -421,7 +407,6 @@ printf("Test1: %d\n", WUI_ptr->ID);
 //		}
 		while(stop_flag==0)// if the first one has a lower or equal WUI id, find the one with a higher ID or the end of the list 
 		{
-			printf("Shouldn't be here\n");
 			if(prev_wui_dist_list_ptr->next==NULL)
 			{
 				stop_flag=1;//Then it is at the end of the list and we can add the new one here
@@ -515,7 +500,9 @@ while(WUI_ptr != NULL) {
                 }
 
 	WUI_ptr = WUI_ptr->next;
+
 	}
+
 	return(WUI_list);
 } /*end construct_WUI_list.c*/
 

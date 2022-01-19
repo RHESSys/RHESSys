@@ -388,6 +388,7 @@ void execute_firespread_event(
 						printf("Pre salience event dist: %d, patch ID %d and dist %d, wui ID %d\n", WUI_ptr->fire_occurence,patch_family[0].patches[0][0].ID,patch_wui_dist_list_ptr->dist,WUI_ptr->ID);
 						if(patch_wui_dist_list_ptr->dist<WUI_ptr->fire_occurence) // for this wui, is this a more "salient" event?
 						     WUI_ptr->fire_occurence=patch_wui_dist_list_ptr->dist; // then a fire occurred this year closer to the wui. Record this one					
+						printf("Salience event loc1 dist: %d, id: %d\n", WUI_ptr->fire_occurence, WUI_ptr->ID);
 						while( patch_wui_dist_list_ptr->next!=NULL) //move on to the next wui for this patch
 						{
 							 patch_wui_dist_list_ptr= patch_wui_dist_list_ptr->next;
@@ -395,7 +396,7 @@ void execute_firespread_event(
 							 if(patch_wui_dist_list_ptr->dist<WUI_ptr->fire_occurence)
                                                      		WUI_ptr->fire_occurence=patch_wui_dist_list_ptr->dist; // then a fire occurred this year closer to the wui. Record this one
 						}					
-						printf("Salience event dist: %d\n", WUI_ptr->fire_occurence);
+						printf("Salience event dist: %d, id: %d\n", WUI_ptr->fire_occurence,WUI_ptr->ID);
 					}
 					
 				}

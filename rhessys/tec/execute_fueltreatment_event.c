@@ -106,7 +106,10 @@ void execute_fueltreatment_event(
 						if(stop_flag==1)
 						{
 							if(wui_dist_ptr->trt_ord2==WUI_ptr->ntrt[1]) // is this the correct treatment order? for the correct wui?
+							{
 								treat_patch(patch); // Update with final function
+								printf("Treated patch ID, dist2: %d, ntrt: %d\n",patch[0].ID,WUI_ptr->ntrt[1]);
+							}
 						}
 						patches_ptr=patches_ptr->next;
 					}
@@ -141,7 +144,10 @@ void execute_fueltreatment_event(
 							if(stop_flag==1)
                                                 	{
 								if(wui_dist_ptr->trt_ord5==WUI_ptr->ntrt[2])
+								{
 									treat_patch(patch); // Update with final function
+									printf("Treated patch ID, dist5: %d, ntrt: %d\n",patch[0].ID,WUI_ptr->ntrt[2]);
+								}
 							}
 							patches_ptr=patches_ptr->next;
 						}
@@ -178,7 +184,10 @@ void execute_fueltreatment_event(
 							if(stop_flag==1)
 	                                                { 
 								if(wui_dist_ptr->trt_ord10==WUI_ptr->ntrt[3])
+								{
 									treat_patch(patch); // Update with final function
+									printf("Treated patch ID, dist10: %d, ntrt: %d\n",patch[0].ID,WUI_ptr->ntrt[3]);
+								}
 							}
 							patches_ptr=patches_ptr->next;
 						}
@@ -206,7 +215,10 @@ void execute_fueltreatment_event(
 			{
 				patch=patches_ptr->patch;
 				if(patch->wui_dist->trt_ord100==WUI_ptr->ntrt[0])
+				{
 					treat_patch(patch); // Update with final function
+					printf("Treated patch ID, baseline: %d, ntrt: %d\n",patch[0].ID,WUI_ptr->ntrt[0]);
+				}
 				patches_ptr=patches_ptr->next;
 			}
 		}
