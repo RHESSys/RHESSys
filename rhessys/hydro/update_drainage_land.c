@@ -259,7 +259,7 @@ void  update_drainage_land(
 
 
 	patch[0].Qout += (route_to_patch / patch[0].area);// here change NREN 2021104
-
+    patch[0].Qout = max(0.0, patch[0].Qout);
 
 	/*--------------------------------------------------------------*/
 	/*	calculate any return flow associated with this patch	*/
@@ -404,16 +404,17 @@ void  update_drainage_land(
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
+		Qin = max(0.0, Qin);
 		// hotspot patch when neighour patch sm < TH, water not go to that patch Qin =0 and Qout -Qin
 		//patch is the hotspot patch and neigh is their neighbour patch
-		/*if (neigh[0].theta < patch[0].soil_defaults[0][0].rain_threshold &&
+		if (neigh[0].theta < patch[0].soil_defaults[0][0].rain_threshold &&
 		patch[0].soil_defaults[0][0].water_film == 1 &&
 		patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
         {
             patch[0].Qout -= Qin * neigh[0].area / patch[0].area; // first remove it from Qout
             patch[0].Qout = max(0.0, patch[0].Qout);
             Qin = 0.0;          //then if theta of neigh < TH make it zero
-        } */
+        }
 		/* creat a hotspot for no-veg patches */
 
 
@@ -439,7 +440,7 @@ void  update_drainage_land(
         if(neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) // make sure for no-veg default is rout_N is 0
 			{
              // first check the threshold of hotspot, if neigh'sm < threshold, then Nin is zero
-            if (neigh[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
+          /*  if (neigh[0].theta < patch[0].soil_defaults[0][0].rain_threshold && patch[0].soil_defaults[0][0].water_film == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
             {
                 //DON -- be careful about the unit, is it area average or total
                 patch[0].soil_ns.DON_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch)/patch[0].area; // first return it back
@@ -457,7 +458,7 @@ void  update_drainage_land(
                 patch[0].soil_ns.NH4_Qout -= (patch[0].innundation_list[d].neighbours[j].gamma * NH4_leached_to_patch)/patch[0].area;
                 patch[0].soil_ns.NH4_Qout = max(0.0, patch[0].soil_ns.NH4_Qout);
                 NH4_leached_to_patch = 0.0;
-              } // end if theta < TH
+              } // end if theta < TH */
 
 
 			// secondly normal nitrogen routing pathway
