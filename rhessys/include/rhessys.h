@@ -2143,6 +2143,7 @@ struct  command_line_object
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
         int             multiscale_flag;
+		int				parallel_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
