@@ -57,6 +57,8 @@ void	update_shadow_strata(
     shadow_strata[0].rain_stored = stratum[0].rain_stored;
 	shadow_strata[0].cs.stem_density = stratum[0].cs.stem_density;
     shadow_strata[0].cs.cpool = stratum[0].cs.cpool;
+	shadow_strata[0].cs.leafc_age1 = stratum[0].cs.leafc_age1;
+	shadow_strata[0].cs.leafc_age2 = stratum[0].cs.leafc_age2;
     shadow_strata[0].cs.leafc = stratum[0].cs.leafc;
     shadow_strata[0].cs.dead_leafc = stratum[0].cs.dead_leafc;
     shadow_strata[0].cs.leafc_store = stratum[0].cs.leafc_store;
