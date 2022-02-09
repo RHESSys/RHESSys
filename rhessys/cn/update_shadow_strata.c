@@ -55,6 +55,7 @@ void	update_shadow_strata(
     shadow_strata[0].rootzone.depth = stratum[0].rootzone.depth;
     shadow_strata[0].snow_stored = stratum[0].snow_stored;
     shadow_strata[0].rain_stored = stratum[0].rain_stored;
+	shadow_strata[0].cs.stem_density = stratum[0].cs.stem_density;
     shadow_strata[0].cs.cpool = stratum[0].cs.cpool;
     shadow_strata[0].cs.leafc = stratum[0].cs.leafc;
     shadow_strata[0].cs.dead_leafc = stratum[0].cs.dead_leafc;
@@ -99,6 +100,7 @@ void	update_shadow_strata(
     shadow_strata[0].ns.frootn_transfer = stratum[0].ns.frootn_transfer;
     shadow_strata[0].ns.cwdn = stratum[0].ns.cwdn;
     shadow_strata[0].ns.retransn = stratum[0].ns.retransn;
+	shadow_strata[0].cs.age = stratum[0].cs.age;
     shadow_strata[0].epv.wstress_days = stratum[0].epv.wstress_days;
     shadow_strata[0].epv.max_fparabs = stratum[0].epv.max_fparabs;
     shadow_strata[0].epv.min_vwc = stratum[0].epv.min_vwc;
