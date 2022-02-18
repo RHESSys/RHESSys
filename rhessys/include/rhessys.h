@@ -2372,6 +2372,7 @@ struct  command_line_object
         char    stream_routing_filename[FILEPATH_LEN];
         char    reservoir_operation_filename[FILEPATH_LEN];
         char    world_filename[FILEPATH_LEN];
+        char    redefine_filename[FILEPATH_LEN];
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
