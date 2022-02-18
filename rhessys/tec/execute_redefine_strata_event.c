@@ -81,7 +81,7 @@ void	execute_redefine_strata_event(struct world_object *world,
 		current_date.month,
 		current_date.day,
 		current_date.hour);
-	strcpy(stratum_filename, command_line[0].world_filename);
+	strcpy(stratum_filename, command_line[0].redefine_filename);
 	strcat(stratum_filename, ext);
 	if ( (stratum_file = fopen(stratum_filename,"r")) == NULL ){
 		fprintf(stderr,

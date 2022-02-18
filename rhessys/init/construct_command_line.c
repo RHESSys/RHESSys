@@ -755,8 +755,25 @@ struct	command_line_object	*construct_command_line(
 				/*--------------------------------------------------------------*/
 				command_line[0].world_flag = 1;
 				strcpy(command_line[0].world_filename,main_argv[i]);
+				strcpy(command_line[0].redefine_filename,command_line[0].world_filename);
 				i++;
 			} /*end if*/
+
+ 			else if ( strcmp(main_argv[i],"-redefn") == 0 ){
+                                /*--------------------------------------------------------------*/
+                                /*                      Check that the next arguement exists.                           */
+                                /*--------------------------------------------------------------*/
+                                i++;
+                                if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+                                        fprintf(stderr,"FATAL ERROR: Redefine file name not specified\n");
+                                        exit(EXIT_FAILURE);
+                                } /*end if*/
+                                /*--------------------------------------------------------------*/
+                                /*                      Read in the world file name.                                            */
+                                /*--------------------------------------------------------------*/
+                                strcpy(command_line[0].redefine_filename,main_argv[i]);
+                                i++;
+                        } /*end if*/
 			/*--------------------------------------------------------------*/
 			/*		Check if the world header file is next.						*/
 			/*--------------------------------------------------------------*/
