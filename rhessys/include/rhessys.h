@@ -3160,6 +3160,7 @@ struct  stratum_default
 	double totaln;
 	double height;
         double age;
+        double mortality_fract;
 	double cwdc;
         double cwdc_bg;
         double fe_cwdc_consumed;
