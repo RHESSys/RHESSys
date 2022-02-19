@@ -2049,7 +2049,7 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.totalc += stratum[0].cs.totalc;
 		stratum[0].acc_month.totaln += stratum[0].ns.totaln;
 		stratum[0].acc_month.age += stratum[0].cs.age;
-		stratum[0].acc_month.mortality_fract += stratum[0].cs.mortality_fract;
+		stratum[0].acc_month.mortality_fract = max(stratum[0].cs.mortality_fract, stratum[0].acc_month.mortality_fract);
 		stratum[0].acc_month.length += 1;
 	}
 	if ((command_line[0].output_flags.yearly == 1) &&
@@ -2071,7 +2071,7 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_year.totalc += stratum[0].cs.totalc;
 		stratum[0].acc_year.totaln += stratum[0].ns.totaln;
 		stratum[0].acc_year.age += stratum[0].cs.age;
-		stratum[0].acc_year.mortality_fract += stratum[0].cs.mortality_fract;
+		stratum[0].acc_year.mortality_fract = max(stratum[0].cs.mortality_fract, stratum[0].acc_year.mortality_fract);
 		stratum[0].acc_year.length += 1;
 	}
 	return;
