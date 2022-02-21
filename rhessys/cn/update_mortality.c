@@ -294,6 +294,8 @@ void update_mortality(
 		}
 	/* Remove aboveground dead c from carbon stores in all cases. */
 	/*    Leaf mortality */
+
+	cs->cpool -= m_cpool;
 	cs->leafc          -= m_leafc_to_litr1c;
 	cs->leafc          -= m_leafc_to_litr2c;
 	cs->leafc          -= m_leafc_to_litr3c;
