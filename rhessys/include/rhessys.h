@@ -3171,6 +3171,8 @@ struct  stratum_default
         double redefine_cwdc_loss;
         double redefine_totalc_harvest;
         double redefine_totalc_remain;
+        double redefine_stemc_harvest;
+        double redefine_stemc_remain;
         double redefine_age;
         double redefine_height;
         };

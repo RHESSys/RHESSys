@@ -497,6 +497,7 @@ void input_new_strata_thin(
 				(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
 			canopy_strata[0].acc_month.redefine_totalc_harvest += cpool_loss + leafc_loss + deadleafc_loss + 
 					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
+			canopy_strata[0].acc_month.redefine_stemc_harvest += livestemc_loss + deadstemc_loss;
 			canopy_strata[0].acc_month.redefine_age = age_initial;
 			canopy_strata[0].acc_month.redefine_height = height_initial;
 		}
@@ -504,6 +505,7 @@ void input_new_strata_thin(
 				(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){	
 			canopy_strata[0].acc_year.redefine_totalc_harvest += cpool_loss + leafc_loss + deadleafc_loss + 
 					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
+			canopy_strata[0].acc_year.redefine_stemc_harvest += livestemc_loss + deadstemc_loss;
 			canopy_strata[0].acc_year.redefine_age = age_initial;
 			canopy_strata[0].acc_year.redefine_height = height_initial;
 		}
@@ -513,11 +515,13 @@ void input_new_strata_thin(
 				(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
 			canopy_strata[0].acc_month.redefine_totalc_remain += cpool_loss + leafc_loss + deadleafc_loss + 
 					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
+			canopy_strata[0].acc_month.redefine_stemc_remain += livestemc_loss + deadstemc_loss;
 		}
 		if ((command_line[0].output_flags.yearly == 1) &&
 				(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){	
 			canopy_strata[0].acc_year.redefine_totalc_remain += cpool_loss + leafc_loss + deadleafc_loss + 
 					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
+			canopy_strata[0].acc_year.redefine_stemc_remain += livestemc_loss + deadstemc_loss;
 		}
 	}
 
