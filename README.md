@@ -1,4 +1,5 @@
 ```diff
++ trunk is now the default branch (replacing master). The master branch will remain for archival purposes, but trunk should now be used as the main branch.
 - SEE NEW CHANGES.    
 - NEW CODE MAY NOT BE BACKWARD COMPATIBLE WITH YOUR CURRENT FILES.    
 - PLEASE REVIEW INFORMATION ABOUT CHANGES ON THE WHAT'S NEW WIKI PAGE   
