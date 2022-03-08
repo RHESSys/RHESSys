@@ -1,5 +1,5 @@
 #workflow file for Github Action on RHESSys Trunk
-name: build_docker
+name: build_docker_trunk
 on:
     push:
         branches: [trunk]

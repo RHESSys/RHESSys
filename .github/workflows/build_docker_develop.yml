@@ -1,5 +1,5 @@
 #workflow file for Github Action on RHESSys Develop
-name: build_docker
+name: build_docker_develop
 on:
     push:
         branches: [develop]
