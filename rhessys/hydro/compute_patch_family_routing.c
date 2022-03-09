@@ -142,7 +142,8 @@ void compute_patch_family_routing(struct zone_object *zone,
 
             //printf("\n [ID %d], [theta, %lf], [rain_th %lf]", patches[0].ID, patches[0].theta, patches[0].soil_defaults[0][0].rain_threshold);
             //TH is lower, most of the time is off; TH is higher, on all the time ; default is on the time
-            if(patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1 && patches[0].theta > patches[0].soil_defaults[0][0].rain_threshold) {
+            //patch daily F, line 614, patch[0].rain_throughfall = zone[0].rain + irrigation;
+            if(patches[0].rain_throughfall > 0.0001) { // when there is precipitation, MSR off, when no precip, dry, MSR on, hotspot dry too
 
             zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0;
             zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0; // if no hotspot no loss no gain, the hotspot no gain no loss too
