@@ -416,6 +416,13 @@ void  update_drainage_land(
             Qin = 0.0;          //then if theta of neigh < TH make it zero
         }
 		/* creat a hotspot for no-veg patches */
+		// this is for unsat_zone water diffusion, when sm > diff_th is wet period small water gradient diff MSR is off
+		if (neigh[0].theta > patch[0].soil_defaults[0][0].diff_th && //wet period, MSR is off MSR_on = 0, default MSR_on =1, so default diff_th=1 to make it on by default
+            patch[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)
+            {
+                patch[0].MSR_on = 0;
+
+            }
 
 
 		if (Qin < 0) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);

@@ -182,8 +182,11 @@ struct soil_default *construct_soil_defaults(
 					//when it is dry there is no lateral follow out of no-veg Patches
 					default_object_list[i].water_film = getIntParam(&paramCnt, &paramPtr, "water_film", "%d", 0, 1); //default is off
 					printf("\n creat a hotspot for no-veg patches %d", default_object_list[i].water_film);
+
 					default_object_list[i].rain_threshold = getDoubleParam(&paramCnt, &paramPtr, "rain_threshold", "%lf", 0.0, 1); //default will always route>0 range from 0 -1
 					printf("\n hot spot soil moisture threshold is %lf", default_object_list[i].rain_threshold);
+
+					default_object_list[i].diff_th = getDoubleParam(&paramCnt, &paramPtr, "diff_th", "%lf", 1, 1); //default is 1 means alwasy MSR on; when SM<diff_th, dry, MSR on, hotspot loses water
 			}
 
 		/*-----------------------------------------------------------------------------

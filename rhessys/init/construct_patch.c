@@ -230,6 +230,7 @@ struct patch_object *construct_patch(
 	patch[0].detention_store = 0.0;
 	patch[0].soil_ns.DON = 0.0;
 	patch[0].soil_cs.DOC = 0.0;
+	patch[0].MSR_on = 1; //default is on, only when SM>TH, wet season, MSR_off no water out of hotspot
 
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables for this patch         */

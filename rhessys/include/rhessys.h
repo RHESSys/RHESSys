@@ -1247,6 +1247,7 @@ struct	soil_default
   int  actionGWDRAIN;                       /* 0 - 1*/
   int    water_film; /* 0 -1*/  //NREN creat a hotspot or not
   double rain_threshold; /* 0 - 1 *///NREN soil moisture threshold when sm < TH lateral flow is off
+  double diff_th; /*0 -1*/ // soil moisture threshold when sm<TH dry period, MSR on, so routing water from hotspot to normal patch
 	double	soil_depth;					/* m */
 	double	effective_soil_depth;					/* m */
 	double	soil_water_cap;					/* m of water */
@@ -1980,6 +1981,7 @@ struct patch_object
         double  unsat_zone_volume;                      /* meters water         */
         double  theta;                                  /* 0-1 soil moisture for nitrification*/
         double  perc_sat;                               /* 0-1 percent of sat_N is active zone */
+        bool  MSR_on;
 
 /*----------------------------------------------------------*/
 /*      Forest floor stuff                                  */
