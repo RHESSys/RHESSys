@@ -148,14 +148,14 @@ void compute_patch_family_routing(struct zone_object *zone,
 
             if (patches[0].rain_throughfall > 0.002 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { // when there is precipitation, MSR off, when no precip, dry, MSR on, hotspot dry too
 
-            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.001; //make it small but not that small, no MSR makes hotspot always saturated
-            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.001; // if no hotspot no loss no gain, the hotspot no gain no loss too
+            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.0001; //make it small but not that small, no MSR makes hotspot always saturated
+            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.0001; // if no hotspot no loss no gain, the hotspot no gain no loss too
             // printf("\n MSR off during wet season [ID %d]", patches[0].ID);
             }
             else if (patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //MSR on make hotspot dry
 
-            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.1; //make it small but not that small, no MSR makes hotspot always saturated
-            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.1; // if no hotspot no loss no gain, the hotspot no gain no loss too
+            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.01; //make it small but not that small, no MSR makes hotspot always saturated
+            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.01; // if no hotspot no loss no gain, the hotspot no gain no loss too
 
             }
 
