@@ -70,6 +70,7 @@ void compute_patch_family_routing(struct zone_object *zone,
     //double dG_rz;           // delta of gainers root zone, vol water
     //double dG_un;           // delta of gainers unsat zone, vol water
     double rz_trans, unsat_trans; //intermediate vars for rz and unsat transfer
+    double sm_mean, area_sum, sm_sum;
 
 // for testing
 // if (current_date.year == 2011 && current_date.month == 3 && current_date.day == 22) {
@@ -125,6 +126,36 @@ void compute_patch_family_routing(struct zone_object *zone,
         dG_sat_pot = 0;
         area_sum_g = 0;
 
+        area_sum = 0.0;
+        sm_sum = 0.0;
+        sm_mean = 0.0;
+
+        /*--------------------------------------------------------------*/
+        /* calculate the mean soil moisture of veg patches              */
+        /*--------------------------------------------------------------*/
+
+        for (i =0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
+        {
+            patches = zone[0].patch_families[pf][0].patches[i];
+
+            if (patches[0].sat_deficit > 0.1 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot != 1)
+            {
+
+                sm_sum += patches[0].theta * patches[0].area;
+                area_sum += patches[0].area;
+
+            }
+
+        }
+        if (area_sum > ZERO)
+        {
+            sm_mean = sm_sum/area_sum;
+
+        }
+        else
+        {
+            sm_mean = 0.0;
+        }
 
         /*--------------------------------------------------------------*/
         /*	Loop 1 - Get mean wetness - root+unsat, sat	                */
@@ -145,13 +176,13 @@ void compute_patch_family_routing(struct zone_object *zone,
             //printf("\n [ID %d], [theta, %lf], [rain_th %lf]", patches[0].ID, patches[0].theta, patches[0].soil_defaults[0][0].rain_threshold);
             //TH is lower, most of the time is off; TH is higher, on all the time ; default is on the time
             //patch daily F, line 614, patch[0].rain_throughfall = zone[0].rain + irrigation; unit is m
-            //update drainage land line 420 control MSR on or off
+            //update drainage land line 420 control MSR on or off; wet period, MSR is off
 
-            if (patches[0].MSR_on == 0 && patches[0].sat_deficit > 0.1 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { // when there is precipitation, MSR off, when no precip, dry, MSR on, hotspot dry too
-
+            if (sm_mean > patches[0].soil_defaults[0][0].diff_th && patches[0].sat_deficit > 0.3 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)  // when there is precipitation, MSR off, when no precip, dry, MSR on, hotspot dry too
+            { // wet period, MSR is off
             zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.0001; //make it small but not that small, no MSR makes hotspot always saturated
             zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.0001; // if no hotspot no loss no gain, the hotspot no gain no loss too
-            // printf("\n MSR off during wet season [ID %d]", patches[0].ID);
+             printf("\n MSR off during wet season [ID %d], [sm_mean %lf]", patches[0].ID, sm_mean);
             }
             else if (patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //MSR on make hotspot dry
 

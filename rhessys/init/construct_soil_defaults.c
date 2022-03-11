@@ -187,6 +187,7 @@ struct soil_default *construct_soil_defaults(
 					printf("\n hot spot soil moisture threshold is %lf", default_object_list[i].rain_threshold);
 
 					default_object_list[i].diff_th = getDoubleParam(&paramCnt, &paramPtr, "diff_th", "%lf", 1, 1); //default is 1 means alwasy MSR on; when SM<diff_th, dry, MSR on, hotspot loses water
+                    printf("\n hot spot unsat diff threshold is %lf", default_object_list[i].diff_th);
 			}
 
 		/*-----------------------------------------------------------------------------
