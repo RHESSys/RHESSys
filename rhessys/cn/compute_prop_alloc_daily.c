@@ -49,7 +49,7 @@ double 		compute_prop_alloc_daily(
 			cs->dead_crootc+cs->live_crootc);
 
 	if (total_biomass > ZERO)
-		 excess_carbon = (cs->leafc) - epc.min_percent_leafg*total_biomass;  
+		 excess_carbon = (cs->leafc) - 0.05*total_biomass;  
 	else
 		excess_carbon = 0.0;
 

@@ -48,18 +48,21 @@ int resolve_sminn_competition(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	double sum_ndemand, sum_avail;
-	double actual_immob, actual_uptake, perc_inroot;
+	double sum_ndemand, sum_avail, sum_avail_plant;
+	double actual_immob, actual_uptake, perc_inroot, actual_immob_inroot;
 	/*--------------------------------------------------------------*/
 	/* compare the combined decomposition immobilization and plant*/
 	/*growth N demands against the available soil mineral N pool. */
 	/*--------------------------------------------------------------*/
 	sum_ndemand = ndf->plant_potential_ndemand + ndf->potential_immob;
 	sum_avail = max(ns_soil->sminn + ns_soil->nitrate + ndf->mineralized, 0.0);
+
+	if (sum_ndemand > ZERO) {
 	/*--------------------------------------------------------------*/
 	/* limit available N for plants by rooting depth		*/
 	/* for really small rooting depths this can be problematic	*/
 	/* for now provide a minimum access				*/
+	/* Also allow immobiliation to use entire active zone 		*/
 	/*--------------------------------------------------------------*/
 	perc_inroot = (1.0-exp(-N_decay_rate * rooting_depth)) /
 			(1.0 - exp(-N_decay_rate * active_zone_z));
@@ -68,9 +71,9 @@ int resolve_sminn_competition(
 		perc_inroot = max(0.1, perc_inroot);
 
 
-	sum_avail = perc_inroot * sum_avail;
+	sum_avail_plant = perc_inroot * sum_avail;
 
-	if (sum_ndemand <= sum_avail){
+	if (sum_ndemand <= sum_avail_plant){
 	/* N availability is not limiting immobilization or plant
 		uptake, and both can proceed at their potential rates */
 		actual_immob = ndf->potential_immob;
@@ -84,14 +87,14 @@ int resolve_sminn_competition(
 	plant growth demands, so these two demands compete for available
 		soil mineral N */
 		ns_soil->nlimit = 1;
-		actual_immob = (sum_avail) * (ndf->potential_immob/sum_ndemand);
-		actual_uptake = sum_avail - actual_immob;
-
+		actual_immob_inroot = (sum_avail_plant) * (ndf->potential_immob/sum_ndemand);
+		actual_uptake = sum_avail_plant - actual_immob_inroot;
 		if (ndf->potential_immob == 0)
 			ns_soil->fract_potential_immob = 0.0;
-		else
-			ns_soil->fract_potential_immob = actual_immob/ndf->potential_immob;
-
+		else { 
+			actual_immob =  actual_immob_inroot + sum_avail-sum_avail_plant;
+			ns_soil->fract_potential_immob = min(1.0,actual_immob/ndf->potential_immob);
+			}
 		if (ndf->plant_potential_ndemand == 0) {
 			ns_soil->fract_potential_uptake = 0.0;
 			//ndf->plant_avail_uptake = actual_uptake;
@@ -104,6 +107,14 @@ int resolve_sminn_competition(
 		}
 	}
 
+	}  
+/* no demand case */	
+	else { 
+		ns_soil->nlimit = 0;
+		ns_soil->fract_potential_immob = 1.0;
+		ns_soil->fract_potential_uptake = 1.0;
+		ndf->plant_avail_uptake = ndf->plant_potential_ndemand;
+		}
 	return(0);
 } /* end resolve_sminn_competition.c */
 

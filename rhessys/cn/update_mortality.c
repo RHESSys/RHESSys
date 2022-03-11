@@ -114,7 +114,7 @@ void update_mortality(
 	/******************************************************************/
 	/* daily carbon fluxes due to mortality */
 	/* mortality fluxes out of leaf and fine root pools */
-	/* carbon depts in cpool have to die with the plant - could result in a carbon balance issue */
+	/* carbon deficits in cpool have to die with the plant - could result in a carbon balance issue */
 
 if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
     printf("\n at the beginning of update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n",
@@ -124,6 +124,7 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 	m_cpool = mort.mort_cpool * cs->cpool;
 	m_npool = mort.mort_cpool * ns->npool;
 
+	
 	m_leafc_to_litr1c = mort.mort_leafc * cs->leafc * epc.leaflitr_flab;
 	m_leafc_to_litr2c = mort.mort_leafc * cs->leafc * epc.leaflitr_fucel;
 	m_leafc_to_litr3c = mort.mort_leafc * cs->leafc * epc.leaflitr_fscel;
@@ -264,14 +265,16 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 		/* zero out fluxes to litter */
 		m_cpool = 0.0;
 		m_npool = 0.0;
-	}
-
+		}
+		
 	/* ABOVEGROUND C POOLS */
 
 	/* Only add dead leaf and stem c to litter and cwd pools if thintyp   */
 	/* is not 2 (harvest case). If thintyp is 2, harvest aboveground c.   */
 	if (thintyp != 2) {
+
 		cs_litr->litr1c    += m_cpool;
+		
 		/*    Leaf mortality */
 		cs_litr->litr1c    += m_leafc_to_litr1c;
 		cs_litr->litr2c    += m_leafc_to_litr2c;
@@ -314,8 +317,9 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 }
 		}
 	/* Remove aboveground dead c from carbon stores in all cases. */
-	cs->cpool -= m_cpool;
 	/*    Leaf mortality */
+
+	cs->cpool -= m_cpool;
 	cs->leafc          -= m_leafc_to_litr1c;
 	cs->leafc          -= m_leafc_to_litr2c;
 	cs->leafc          -= m_leafc_to_litr3c;

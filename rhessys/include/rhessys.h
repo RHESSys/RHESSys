@@ -1197,6 +1197,7 @@ struct  landuse_default
         double  grazing_Closs;                  /* kgC/m2/day */
         double  sh_l;                                   /* 0 - 1 */
         double  sh_g;                                   /* 0 - 1 */
+        double  routing_threshold;                      /* > 0, m/m (z/sat_def) */
 };
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/
@@ -1860,6 +1861,8 @@ struct patch_object
         double  base_flow;              /* m water */
         double  cap_rise;               /* m water / day */
         double  tmp;                    /* diagnostic variable - open units */
+	double  canopy_rain_stored; 	/* m water */
+	double  canopy_snow_stored; 	/* m water */
         double  daily_fire_litter_turnover;                     /* (DIM) 0-1 */
         double  delta_rain_stored;      /* m water      */
         double  delta_snow_stored;      /* m water      */
@@ -2365,6 +2368,7 @@ struct  command_line_object
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
         int             multiscale_flag;
+		int				parallel_flag;
         char    *output_prefix;
         char    WUI_filename[FILEPATH_LEN]; 
         char    routing_filename[FILEPATH_LEN];
