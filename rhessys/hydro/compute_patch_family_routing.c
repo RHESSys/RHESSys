@@ -177,23 +177,24 @@ void compute_patch_family_routing(struct zone_object *zone,
             //TH is lower, most of the time is off; TH is higher, on all the time ; default is on the time
             //patch daily F, line 614, patch[0].rain_throughfall = zone[0].rain + irrigation; unit is m
             //update drainage land line 420 control MSR on or off; wet period, MSR is off
-            if (current_date.month >=7 && current_date.month <=11 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //dry season must on to rout water
+            if (current_date.month >=7 && current_date.month <=12 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //dry season must on to rout water
                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.05; //make it small but not that small, no MSR makes hotspot always saturated
                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.9; // if no hotspot no loss no gain, the hotspot no gain no loss too
+                //printf("\n MSR on during dry season [ID %d], [year %d], [month %d]", patches[0].ID, current_date.year, current_date.month);
             }
 
-           else if (sm_mean > patches[0].soil_defaults[0][0].diff_th  &&
+           /*else if (sm_mean > patches[0].soil_defaults[0][0].diff_th  &&
                 patches[0].sat_deficit > 1 &&
                 patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1)  // when there is precipitation, MSR off, when no precip, dry, MSR on, hotspot dry too
             { // wet period, MSR is off
             zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.9; //make it small but not that small, no MSR makes hotspot always saturated
             zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.0001; // if no hotspot no loss no gain, the hotspot no gain no loss too
              //printf("\n MSR off during wet season [ID %d], [sm_mean %lf]", patches[0].ID, sm_mean);
-            }
-            else if (patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //MSR on make hotspot dry
+            } */
+            else if (patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //
 
-            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.05; //make it small but not that small, no MSR makes hotspot always saturated
-            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.9; // if no hotspot no loss no gain, the hotspot no gain no loss too
+            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.9; // 0.05 make it small but not that small, no MSR makes hotspot always saturated
+            zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.00001; // 0.9 if no hotspot no loss no gain, the hotspot no gain no loss too
 
             }
 
