@@ -1981,7 +1981,7 @@ struct patch_object
         double  unsat_zone_volume;                      /* meters water         */
         double  theta;                                  /* 0-1 soil moisture for nitrification*/
         double  perc_sat;                               /* 0-1 percent of sat_N is active zone */
-        bool  MSR_on;
+
 
 /*----------------------------------------------------------*/
 /*      Forest floor stuff                                  */
