@@ -1,5 +1,5 @@
 OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
-VERSION = 7.3
+VERSION = 7.4
 PGM  = rhessys$(VERSION)
 #CC = gcc
 CC = clang
@@ -1090,7 +1090,7 @@ output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_fil
 	bison --report=none -d output_filter_parser.y && \
 	flex output_filter_parser.l
 util/index_struct_fields.c: include/rhessys.h
-	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h \
+	python3.8 bin/dynamic_field_lookup.py --headers include/rhessys.h \
 	--include_structs patch_object accumulate_patch_object patch_hourly_object patch_fire_water_object rooting_zone_object \
 	snowpack_object soil_c_object soil_n_object litter_object litter_c_object litter_n_object cdayflux_patch_struct ndayflux_patch_struct \
 	canopy_strata_object accumulate_strata_object cdayflux_struct cstate_struct target_object epvar_struct nstate_struct \
