@@ -2163,7 +2163,7 @@ void		patch_daily_F(
 	// put the update decomp of under ground litter before update_decomp
 
 	//debug
-	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+	/*if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
 	  patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
 	  patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
 	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO)
