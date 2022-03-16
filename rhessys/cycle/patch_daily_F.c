@@ -2167,11 +2167,11 @@ void		patch_daily_F(
 	  patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
 	  patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
 	  patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO)
-	  printf("patch daily F5 N balance issue [%d,%d]{%e,%e,%e,%e}\n",
+	  /*printf("patch daily F5 N balance issue [%d,%d]{%e,%e,%e,%e}\n",
           patch[0].ID,
           patch[0].drainage_type,
           patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC
-          );
+          );*/
 
 
 	if ((command_line[0].grow_flag > 0) && (vegtype == 1)) {
