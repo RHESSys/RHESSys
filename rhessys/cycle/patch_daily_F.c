@@ -2205,7 +2205,7 @@ void		patch_daily_F(
 		}
 
 		//debug
-		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+	/*	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
      patch[0].soil_ns.nitrate<ZERO || patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
      patch[0].soil_ns.sminn<ZERO || patch[0].soil_ns.DON!=patch[0].soil_ns.DON||patch[0].soil_ns.DON<ZERO ||
      patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC||patch[0].soil_cs.DOC<ZERO )
@@ -2213,7 +2213,7 @@ void		patch_daily_F(
            patch[0].ID,
            patch[0].drainage_type,
            patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC,
-           patch[0].soil_ns.DON);
+           patch[0].soil_ns.DON); */
 
 
 		if (patch[0].soil_defaults[0][0].DON_production_rate > ZERO) {
@@ -2237,7 +2237,7 @@ void		patch_daily_F(
 
 		}
 		//debug
-		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+ /*		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
      patch[0].soil_ns.nitrate<0 ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
      patch[0].soil_ns.sminn<0 ||
@@ -2251,7 +2251,7 @@ void		patch_daily_F(
                       patch[0].soil_ns.sminn,
                       patch[0].soil_cs.DOC,
                       patch[0].soil_ns.DON
-                     );
+                     ); */
 
 		if ( update_nitrif(
 			&(patch[0].soil_cs),
@@ -2270,7 +2270,7 @@ void		patch_daily_F(
 		}
 
 		//debug
-		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+ /*		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
      patch[0].soil_ns.nitrate<0 ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
      patch[0].soil_ns.sminn<0 ||
@@ -2283,7 +2283,7 @@ void		patch_daily_F(
                       patch[0].soil_ns.nitrate,
                       patch[0].soil_ns.sminn,
                       patch[0].soil_cs.DOC,
-                      patch[0].soil_ns.DON);
+                      patch[0].soil_ns.DON); */
 
 
 		if ( update_denitrif(
@@ -2298,7 +2298,7 @@ void		patch_daily_F(
 		}
 
 		// check the update debug
-		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
+	/*	if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
      patch[0].soil_ns.nitrate<0 ||
      patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
      patch[0].soil_ns.sminn<0 ||
@@ -2312,7 +2312,7 @@ void		patch_daily_F(
            patch[0].soil_ns.sminn,
            patch[0].soil_cs.DOC,
            patch[0].soil_ns.DON
-		  );
+		  ); */
 
 
 	} //line 2150 grow
