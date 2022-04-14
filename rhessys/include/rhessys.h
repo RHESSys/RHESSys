@@ -1216,6 +1216,9 @@ struct  landuse_default
         double  grazing_Closs;                  /* kgC/m2/day */
         double  sh_l;                                   /* 0 - 1 */
         double  sh_g;                                   /* 0 - 1 */
+        int winter_days;
+        int spring_days;
+        double sh_l_diff;
 };
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/

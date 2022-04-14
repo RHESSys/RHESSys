@@ -105,6 +105,9 @@ void compute_patch_family_routing(struct zone_object *zone,
         double dL_sat_adj[p_ct]; // adjustment to dL_sat based on difference between dL_sat_act and dG_sat_act, vol water
         double wet_unsat[p_ct];  // wetnes in unsat - rz+unsat/satdef
         struct  patch_object            *patches;
+        int spring_days;
+        int winter_days;
+        double sh_l_diff;
 
         /* Initializations */
         p_ct_incl_sat = 0;
@@ -129,6 +132,10 @@ void compute_patch_family_routing(struct zone_object *zone,
         area_sum = 0.0;
         sm_sum = 0.0;
         sm_mean = 0.0;
+
+        spring_days = 0;
+        winter_days = 0;
+        sh_l_diff = 0.0;
 
         /*--------------------------------------------------------------*/
         /* calculate the mean soil moisture of veg patches              */
@@ -177,15 +184,18 @@ void compute_patch_family_routing(struct zone_object *zone,
             //TH is lower, most of the time is off; TH is higher, on all the time ; default is on the time
             //patch daily F, line 614, patch[0].rain_throughfall = zone[0].rain + irrigation; unit is m
             //update drainage land line 420 control MSR on or off; wet period, MSR is off
-            if (current_date.month == 5 && current_date.day <=12 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //dry season must on to rout water
+            spring_days = zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].spring_days;//default 12
+            winter_days = zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].winter_days;
+            sh_l_diff = zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l_diff;
+            if (current_date.month == 5 && current_date.day <= spring_days && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //dry season must on to rout water
                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.05; //make it small but not that small, no MSR makes hotspot always saturated
-                zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.9; // dry season mainly lose water very fast, gain water slow to make hotspot dry too
+                zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = sh_l_diff; // dry season mainly lose water very fast, gain water slow to make hotspot dry too
                 //printf("\n MSR on during dry season [ID %d], [year %d], [month %d]", patches[0].ID, current_date.year, current_date.month);
             }
-            else if (current_date.month == 10 && current_date.day <= 12 && patches[0].theta > 0.49 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1){
+            else if (current_date.month == 10 && current_date.day <= winter_days && patches[0].theta > 0.49 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1){
 
                zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.05; //make it small but not that small, no MSR makes hotspot always saturated
-               zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.9;
+               zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = sh_l_diff;
                //printf("\n MSR on during Oct [ID %d], [year %d], [month %d]", patches[0].ID, current_date.year, current_date.month);
             }
 
