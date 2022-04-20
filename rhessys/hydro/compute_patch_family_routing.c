@@ -187,12 +187,14 @@ void compute_patch_family_routing(struct zone_object *zone,
             spring_days = zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].spring_days;//default 12
             winter_days = zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].winter_days;
             sh_l_diff = zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l_diff;
-            if (current_date.month == 5 && current_date.day <= spring_days && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1) { //dry season must on to rout water
+            if (current_date.month == 5 && current_date.day <= spring_days && patches[0].sat_deficit > 1 &&
+                patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 && patches[0].theta > 0.49) { //dry season must on to rout water
                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.05; //make it small but not that small, no MSR makes hotspot always saturated
                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = sh_l_diff; // dry season mainly lose water very fast, gain water slow to make hotspot dry too
                 //printf("\n MSR on during dry season [ID %d], [year %d], [month %d]", patches[0].ID, current_date.year, current_date.month);
             }
-            else if (current_date.month == 10 && current_date.day <= winter_days && patches[0].theta > 0.49 && patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1){
+            else if (current_date.month == 10 && current_date.day <= winter_days && patches[0].theta > 0.49 && patches[0].sat_deficit > 1 &&
+                        patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1){
 
                zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.05; //make it small but not that small, no MSR makes hotspot always saturated
                zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = sh_l_diff;
@@ -216,7 +218,7 @@ void compute_patch_family_routing(struct zone_object *zone,
             else if (patches[0].canopy_strata[0][0].defaults[0][0].epc.hot_spot == 1 && patches[0].sat_deficit <= 1) {//if water table reach surface release water
 
                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g = 0.005; //make it small but not that small, no MSR makes hotspot always saturated
-                zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.9;
+                zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l = 0.95;
 
             }
 
