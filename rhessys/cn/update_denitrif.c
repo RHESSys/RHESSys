@@ -166,7 +166,7 @@ int update_denitrif(
             {rain_factor = 1;
         }
         else {
-             rain_factor = 0.05;
+             rain_factor = 0.1;
         }
         water_scalar = water_scalar * rain_factor;
 
