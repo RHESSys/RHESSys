@@ -178,6 +178,9 @@ int update_nitrif(
 			}
 
 		water_scalar = max(min(water_scalar, 1.0), 0); // in the range of zero and one
+		// make the water scalar more import NREN 20220421
+        if (water_scalar > ZERO)
+           {water_scalar = sqrt(water_scalar);}
 
 		T_scalar = min((-0.06 + 0.13 * exp(0.07 * soilT)), 1.0); // temperature scalar can not be larger than 1
 

@@ -152,8 +152,11 @@ int update_denitrif(
 				}
 			}
 		else
-				water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
 
+        water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
+        // make the water_scalar more important 20220421
+        if (water_scalar > ZERO)
+           {water_scalar = sqrt(water_scalar);}
 
        //total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/ (cs_soil->totalc + ns_soil->totaln) * 1e6;
          total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/kg_soil * 1e6;
