@@ -213,8 +213,6 @@ int update_nitrif(
              rain_factor = 0.05;
         }
 
-        nitrify_soil = nitrify_soil * rain_factor;
-
        /* if (ns_soil->sminn + patch[0].sat_NH4 <= ZERO) {
         nitrify_total = 0.0;
         nitrify_soil = 0.0;
@@ -242,6 +240,10 @@ int update_nitrif(
         }//debug */
 
               //nitrify = max(min(nitrify, ns_soil->sminn),0.0);
+         // add the rain factor
+         nitrify_sat = nitrify_sat * rain_factor;
+         nitrify_soil = nitrify_soil * rain_factor;
+
         nitrify_total = nitrify_soil + nitrify_sat;
         ndf->sminn_to_nitrate = nitrify_total;
 

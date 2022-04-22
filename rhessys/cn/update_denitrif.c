@@ -201,7 +201,10 @@ int update_denitrif(
             printf("denitrification negative %d,%f,%f,%f\n", patch[0].ID, denitrify,denitrify_soil,denitrify_sat);
         }//debug
 
-
+        // fCO2 is not the main controling factor NREN 20220421
+        if (fCO2 >= water_scalar) {
+            fCO2 = water_scalar*water_scalar;
+            }
 
 		//printf("\n nitrate scale factor %lf", fnitrate);
         denitrify = denitrify_soil + denitrify_sat; // nitrate ratio * water_scalar
