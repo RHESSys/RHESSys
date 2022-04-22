@@ -180,7 +180,8 @@ int update_nitrif(
 			}
 
 		water_scalar = max(min(water_scalar, 1.0), 0); // in the range of zero and one
-
+        if (water_scalar > ZERO)
+           {water_scalar = sqrt(water_scalar);}
 
 		T_scalar = min((-0.06 + 0.13 * exp(0.07 * soilT)), 1.0); // temperature scalar can not be larger than 1
 
@@ -207,7 +208,7 @@ int update_nitrif(
         nitrify_soil = min(nitrify_soil, max_nit_rate);
 
         // add precipitation factor, unit is meter
-        if (patch[0].rain_throughfall > 0.0001)
+        if (patch[0].rain_throughfall > 0.002)
             {rain_factor = 1; }
         else {
              rain_factor = 0.05;

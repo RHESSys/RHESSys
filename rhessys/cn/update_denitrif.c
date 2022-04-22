@@ -162,7 +162,7 @@ int update_denitrif(
            {water_scalar = sqrt(water_scalar);}
 
                    // add precipitation factor, unit is meter
-        if (patch[0].rain_throughfall > 0.0001)
+        if (patch[0].rain_throughfall > 0.002)
             {rain_factor = 1;
         }
         else {
@@ -183,6 +183,12 @@ int update_denitrif(
 		/*	maximum denitrfication (kg/ha) based on available	*/
 		/*		N03							*/
 		/*--------------------------------------------------------------*/
+        if(fnitrate_total >= water_scalar || fnitrate_soil >= water_scalar) {
+             fnitrate_soil = fnitrate_soil*water_scalar*water_scalar;
+             fnitrate_total = fnitrate_total*water_scalar*water_scalar;
+            }
+
+
 		fnitrate_total = atan(PI*0.002*(total_nitrate_ratio - 180)) * 0.004 / PI + 0.0011;
 		fnitrate_soil = atan(PI*0.002*(soil_nitrate_ratio - 180)) * 0.004 / PI + 0.0011;
 
@@ -203,7 +209,7 @@ int update_denitrif(
 
         // fCO2 is not the main controling factor NREN 20220421
         if (fCO2 >= water_scalar) {
-            fCO2 = water_scalar*water_scalar;
+            fCO2 = fCO2*water_scalar*water_scalar;
             }
 
 		//printf("\n nitrate scale factor %lf", fnitrate);
