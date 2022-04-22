@@ -83,6 +83,7 @@ int update_nitrif(
 	double perc_sat;
 	double resource_satNH4;
 	double nbalance_pre, nbalance_after;
+	double rain_factor;
 
     resource_satNH4 = 0.0;
     perc_sat = 0.0;
@@ -90,6 +91,7 @@ int update_nitrif(
 	max_nit_rate = 0.0;
 	nbalance_pre = 0.0;
 	nbalance_after = 0.0;
+	rain_factor = 0.0;
 
 	nbalance_pre = patch[0].sat_NO3 + patch[0].sat_NH4 + ns_soil->nitrate + ns_soil->sminn;
 
@@ -178,9 +180,7 @@ int update_nitrif(
 			}
 
 		water_scalar = max(min(water_scalar, 1.0), 0); // in the range of zero and one
-		// make the water scalar more import NREN 20220421
-        if (water_scalar > ZERO)
-           {water_scalar = sqrt(water_scalar);}
+
 
 		T_scalar = min((-0.06 + 0.13 * exp(0.07 * soilT)), 1.0); // temperature scalar can not be larger than 1
 
@@ -205,6 +205,15 @@ int update_nitrif(
         nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * MAX_RATE * (ns_soil->sminn ) ); // ns_soil->sminn
         //nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * max_nit_rate );//lin
         nitrify_soil = min(nitrify_soil, max_nit_rate);
+
+        // add precipitation factor, unit is meter
+        if (patch[0].rain_throughfall > 0.0001)
+            {rain_factor = 1; }
+        else {
+             rain_factor = 0.05;
+        }
+
+        nitrify_soil = nitrify_soil * rain_factor;
 
        /* if (ns_soil->sminn + patch[0].sat_NH4 <= ZERO) {
         nitrify_total = 0.0;

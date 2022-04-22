@@ -71,12 +71,15 @@ int update_denitrif(
 	double resource_satNO3;
 	double bulk_density, kg_soil;
 	double nbalance_pre, nbalance_after;
+	double rain_factor;
+
 	resource_satNO3 = 0.0;
 	perc_sat = 0.0;
 	bulk_density = 0.0;
 	nbalance_pre = 0.0;
 	nbalance_after = 0.0;
 	kg_soil = 0.0;
+	rain_factor = 0.0;
 
 
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
@@ -157,6 +160,15 @@ int update_denitrif(
         // make the water_scalar more important 20220421
         if (water_scalar > ZERO)
            {water_scalar = sqrt(water_scalar);}
+
+                   // add precipitation factor, unit is meter
+        if (patch[0].rain_throughfall > 0.0001)
+            {rain_factor = 1;
+        }
+        else {
+             rain_factor = 0.05;
+        }
+        water_scalar = water_scalar * rain_factor;
 
        //total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/ (cs_soil->totalc + ns_soil->totaln) * 1e6;
          total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/kg_soil * 1e6;
