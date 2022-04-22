@@ -184,8 +184,8 @@ int update_denitrif(
 		/*		N03							*/
 		/*--------------------------------------------------------------*/
         if(fnitrate_total >= water_scalar || fnitrate_soil >= water_scalar) {
-             fnitrate_soil = fnitrate_soil*water_scalar*water_scalar;
-             fnitrate_total = fnitrate_total*water_scalar*water_scalar;
+             fnitrate_soil = fnitrate_soil*water_scalar*water_scalar*water_scalar;
+             fnitrate_total = fnitrate_total*water_scalar*water_scalar*water_scalar;
             }
 
 
@@ -209,7 +209,7 @@ int update_denitrif(
 
         // fCO2 is not the main controling factor NREN 20220421
         if (fCO2 >= water_scalar) {
-            fCO2 = fCO2*water_scalar*water_scalar;
+            fCO2 = fCO2*water_scalar*water_scalar*water_scalar;
             }
 
 		//printf("\n nitrate scale factor %lf", fnitrate);
