@@ -195,7 +195,7 @@ int update_nitrif(
         if (patch[0].rain_throughfall > 0.002)
             {rain_factor = 1; }
         else {
-             rain_factor = 0.1;
+             rain_factor = 0.0;
         }
         //rain_factor = max(0, min(1, (patch[0].rain_throughfall*1000 -2)/10));
 
@@ -206,29 +206,29 @@ int update_nitrif(
         //nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * ns_soil->sminn * 1000.0;
         // this difference between lin are that lin use max_nit_rate, while we use MAX_RATE *(nitrate)
 		//nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * MAX_RATE * (ns_soil->sminn + patch[0].sat_NH4)*rain_factor) ;// here is the problem
-        nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * max_nit_rate*rain_factor) ;
+        nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * max_nit_rate) ;
         //nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * max_nit_rate) ;//lin
         //nitrify_total = min(nitrify_total, max_nit_rate);
 
 
         //nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * MAX_RATE * (ns_soil->sminn )*rain_factor ); // ns_soil->sminn
-        nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * max_nit_rate*rain_factor ); // ns_soil->sminn
+        nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * max_nit_rate ); // ns_soil->sminn
         //nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * max_nit_rate );//lin
        // nitrify_soil = min(nitrify_soil, max_nit_rate);
 
 
 
-       /* if (ns_soil->sminn + patch[0].sat_NH4 <= ZERO) {
+       if (ns_soil->sminn + patch[0].sat_NH4 <= ZERO) {
         nitrify_total = 0.0;
         nitrify_soil = 0.0;
 
-        } */
+        }
 
         nitrify_sat = min(patch[0].sat_NH4, max(0.0, nitrify_total - nitrify_soil)); // sat_NH4 max_nit_rate = kg_soil * MAX_RATE * 0.000001
         // nitrify_sat could be negative
         nitrify_sat = max(0.0, nitrify_sat);
 
-        if(nitrify_soil + nitrify_sat < nitrify_total)
+        if(nitrify_soil + nitrify_sat - nitrify_total < ZERO)
         {
             nitrify_soil = max(0.0, min(ns_soil->sminn, nitrify_total - nitrify_sat));
         }
@@ -247,6 +247,8 @@ int update_nitrif(
               //nitrify = max(min(nitrify, ns_soil->sminn),0.0);
          // add the rain factor
 
+        nitrify_soil = nitrify_soil * rain_factor;
+        nitrify_sat = nitrify_sat * rain_factor;
 
         nitrify_total = nitrify_soil + nitrify_sat;
         ndf->sminn_to_nitrate = nitrify_total;
