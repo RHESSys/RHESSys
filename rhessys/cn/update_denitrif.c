@@ -162,12 +162,15 @@ int update_denitrif(
            {water_scalar = sqrt(water_scalar);}
 
                    // add precipitation factor, unit is meter
-        if (patch[0].rain_throughfall > 0.002)
+        /*if (patch[0].rain_throughfall > 0.002)
             {rain_factor = 1;
         }
         else {
              rain_factor = 0.1;
-        }
+        }*/
+        rain_factor = max(0, min(1, patch[0].rain_throughfall*1000/10)); //only control rain smaller than 10mm
+
+
         water_scalar = water_scalar * rain_factor;
 
        //total_nitrate_ratio = (ns_soil->nitrate + patch[0].sat_NO3)/ (cs_soil->totalc + ns_soil->totaln) * 1e6;
@@ -183,14 +186,14 @@ int update_denitrif(
 		/*	maximum denitrfication (kg/ha) based on available	*/
 		/*		N03							*/
 		/*--------------------------------------------------------------*/
-        if(fnitrate_total >= water_scalar || fnitrate_soil >= water_scalar) {
-             fnitrate_soil = fnitrate_soil*water_scalar*water_scalar*water_scalar;
-             fnitrate_total = fnitrate_total*water_scalar*water_scalar*water_scalar;
-            }
-
 
 		fnitrate_total = atan(PI*0.002*(total_nitrate_ratio - 180)) * 0.004 / PI + 0.0011;
 		fnitrate_soil = atan(PI*0.002*(soil_nitrate_ratio - 180)) * 0.004 / PI + 0.0011;
+
+        if(fnitrate_total >= water_scalar || fnitrate_soil >= water_scalar) {
+             fnitrate_soil = fnitrate_soil*water_scalar*water_scalar;
+             fnitrate_total = fnitrate_total*water_scalar*water_scalar;
+            }
 
 		denitrify = min(ns_soil->nitrate + patch[0].sat_NO3, fnitrate_total*water_scalar); // total nitrate
 		denitrify_soil = min(ns_soil->nitrate, fnitrate_soil*water_scalar); //ns_soil->nitrate
@@ -208,8 +211,8 @@ int update_denitrif(
         }//debug
 
         // fCO2 is not the main controling factor NREN 20220421
-        if (fCO2 >= water_scalar) {
-            fCO2 = fCO2*water_scalar*water_scalar*water_scalar;
+        if (fCO2 >= (water_scalar*water_scalar)) {
+            fCO2 = fCO2*water_scalar*water_scalar;
             }
 
 		//printf("\n nitrate scale factor %lf", fnitrate);

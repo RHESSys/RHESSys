@@ -138,8 +138,8 @@ int update_nitrif(
 		/*--------------------------------------------------------------*/
 		bulk_density = PARTICLE_DENSITY * (1.0 - porosity) * 1000;
 		kg_soil = bulk_density * organic_soil_depth;
-		max_nit_rate = kg_soil * MAX_RATE * 0.000001; //kgN/m2/day/ kg_soil is 0.55 kg/m2/day
-		//printf("[max_nit_rate %lf], [MAX_RATE %lf], [kg_soil %lf]\n", max_nit_rate, MAX_RATE, kg_soil);
+		max_nit_rate = kg_soil * MAX_RATE * 0.000001; //kgN/m2/day/ kg_soil is 0.55 kg/m2/day // 120	/* mg/N/kg/day //max_nit_rate 0.044
+		printf("[max_nit_rate %lf], [MAX_RATE %d], [kg_soil %lf]\n", max_nit_rate, MAX_RATE, kg_soil); //kg soil 374, MAX_RATE 120, max_nit_rate
 		/*--------------------------------------------------------------*/
 		/* compute ammonium conc. in ppm				*/
 		/*--------------------------------------------------------------*/
@@ -192,11 +192,12 @@ int update_nitrif(
                 pH_scalar = 0.56 + (atan(PI*0.45*(-5+PH))/PI);
 
             // add precipitation factor, unit is meter
-        if (patch[0].rain_throughfall > 0.002)
+      /*  if (patch[0].rain_throughfall > 0.002)
             {rain_factor = 1; }
         else {
              rain_factor = 0.1;
-        }
+        } */
+        rain_factor = max(0, min(1, patch[0].rain_throughfall*1000/10));
 
 		/*--------------------------------------------------------------*/
 		/*	estimate nitrification				*/
@@ -204,14 +205,16 @@ int update_nitrif(
 		/*--------------------------------------------------------------*/
         //nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * ns_soil->sminn * 1000.0;
         // this difference between lin are that lin use max_nit_rate, while we use MAX_RATE *(nitrate)
-		nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * MAX_RATE * (ns_soil->sminn + patch[0].sat_NH4)*rain_factor) ;// here is the problem
+		//nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * MAX_RATE * (ns_soil->sminn + patch[0].sat_NH4)*rain_factor) ;// here is the problem
+        nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * MAX_RATE * max_nit_rate*rain_factor) ;
         //nitrify_total = min(ns_soil->sminn + patch[0].sat_NH4, water_scalar * T_scalar * N_scalar_total * pH_scalar * max_nit_rate) ;//lin
-        nitrify_total = min(nitrify_total, max_nit_rate);
+        //nitrify_total = min(nitrify_total, max_nit_rate);
 
 
-        nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * MAX_RATE * (ns_soil->sminn )*rain_factor ); // ns_soil->sminn
+        //nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * MAX_RATE * (ns_soil->sminn )*rain_factor ); // ns_soil->sminn
+        nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * MAX_RATE * max_nit_rate*rain_factor ); // ns_soil->sminn
         //nitrify_soil = min(ns_soil->sminn, water_scalar * T_scalar * N_scalar_soil * pH_scalar * max_nit_rate );//lin
-        nitrify_soil = min(nitrify_soil, max_nit_rate);
+       // nitrify_soil = min(nitrify_soil, max_nit_rate);
 
 
 
