@@ -108,9 +108,10 @@ void	update_shadow_strata(
 
   /* use patch level LAI as target instead of only use overstory LAI NREN 20201203 */
    if (world[0].defaults[0].spinup[0].target_type == 2) {
-    if (patch[0].lai >= patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance) && patch[0].lai <= patch[0].target.lai *(1 + world[0].defaults[0].spinup[0].tolerance) &&
+    if (patch[0].lai >= patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance) && //patch[0].lai <= patch[0].target.lai *(1 + world[0].defaults[0].spinup[0].tolerance) &&
         patch[0].total_stemc >= patch[0].target.total_stemc *(1 - world[0].defaults[0].spinup[0].tolerance) &&
         patch[0].height >= patch[0].target.height *(1 - world[0].defaults[0].spinup[0].tolerance) &&
+        (current_date.year - command_line[0].start_date.year)>world[0].defaults[0].spinup[0].min_years &&
         (current_date.year - command_line[0].start_date.year) > patch[0].target.age && current_date.month==9 && current_date.day==30)
     {
         stratum[0].target.met = 1;
