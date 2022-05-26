@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+#syntax=docker/dockerfile:q
 FROM ubuntu:20.04
 CMD ["/bin/bash"]
 COPY ./rhessys /RHESSys
