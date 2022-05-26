@@ -21,7 +21,7 @@ jobs:
                         uses: docker/build-push-action@v2
                         with:
                                 push: true
-                                tags: lgraup/rhessys:develop
+                                tags: RHESSys/rhessys:develop
                                 builder: ${{ steps.buildx.outputs.name }}
-                                cache-from: type=registry,ref=lgraup/rhessys:buildcachedev
-                                cache-to: type=registry,ref=lgraup/rhessys:buildcachedev,mode=max
+                                cache-from: type=registry,ref=RHESSys/rhessys:buildcachedev
+                                cache-to: type=registry,ref=RHESSys/rhessys:buildcachedev,mode=max
