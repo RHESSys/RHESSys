@@ -71,12 +71,12 @@ void compute_patch_family_routing(struct zone_object *zone,
     //double dG_un;           // delta of gainers unsat zone, vol water
     double rz_trans, unsat_trans; //intermediate vars for rz and unsat transfer
 
-// for testing
-// if (current_date.year == 2011 && current_date.month == 3 && current_date.day == 22) {
-//     command_line[0].verbose_flag = -6;
-// } else {
-//     command_line[0].verbose_flag = 0;
-// }
+    // for testing
+    // if (current_date.year == 2011 && current_date.month == 3 && current_date.day == 22) {
+    //     command_line[0].verbose_flag = -6;
+    // } else {
+    //     command_line[0].verbose_flag = 0;
+    // }
 
     /*--------------------------------------------------------------*/
     /*	Loop through patch families in the zone   	                */
@@ -258,14 +258,14 @@ void compute_patch_family_routing(struct zone_object *zone,
         for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
         {
             // if - included and rz + unsat is > mean (losers)
-            if ( incl_unsat[i] > 0 && (wet_unsat[i] - wet_mean_unsat) > ZERO)
+            if ( incl_unsat[i] > 0 && (wet_unsat[i] - wet_mean_unsat) > zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].routing_threshold)
             {
                 dL[i] = (wet_unsat[i] - wet_mean_unsat) * zone[0].patch_families[pf][0].patches[i][0].area * 
                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l * zone[0].patch_families[pf][0].patches[i][0].sat_deficit;
                 dL_act += dL[i];
                 dL_pot += (wet_unsat[i] - wet_mean_unsat) * zone[0].patch_families[pf][0].patches[i][0].area * zone[0].patch_families[pf][0].patches[i][0].sat_deficit;
             }
-            else if (incl_unsat[i] > 0 && (wet_unsat[i] - wet_mean_unsat) < ZERO)
+            else if (incl_unsat[i] > 0 && (wet_unsat[i] - wet_mean_unsat) < zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].routing_threshold)
             {
                 // is a gaining patch
                 incl_unsat[i] = 2;
@@ -279,7 +279,7 @@ void compute_patch_family_routing(struct zone_object *zone,
             dL_sat[i] = 0;
             if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].msr_sat_transfer_flag > 0)
             {
-                if (incl_sat[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit - wet_mean_sat < ZERO)
+                if (incl_sat[i] > 0 && zone[0].patch_families[pf][0].patches[i][0].sat_deficit - wet_mean_sat < zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].routing_threshold)
                 {
                     dL_sat[i] = (wet_mean_sat - zone[0].patch_families[pf][0].patches[i][0].sat_deficit) * zone[0].patch_families[pf][0].patches[i][0].area * ksat[i];
                     dL_sat_act += dL_sat[i];

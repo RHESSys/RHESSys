@@ -1,4 +1,6 @@
 ```diff
++ TRUNK IS NOW THE DEFAULT BRANCH (REPLACING MASTER).
++ THE MASTER BRANCH WILL REMAIN FOR ARCHIVAL PURPOSES, BUT TRUNK SHOULD NOW BE USED AS THE MAIN BRANCH.
 - SEE NEW CHANGES.    
 - NEW CODE MAY NOT BE BACKWARD COMPATIBLE WITH YOUR CURRENT FILES.    
 - PLEASE REVIEW INFORMATION ABOUT CHANGES ON THE WHAT'S NEW WIKI PAGE   
@@ -17,7 +19,7 @@ The old SVN repository was at http://sourceforge.net/projects/rhessys/
 Branches
 --------
 The "develop" branch should be used for day-to-day development, with
-RHESSys releases pushed to the "master" branch periodically (for example
+RHESSys releases pushed to the "trunk" (formerly "master") branch periodically (for example
 yearly).
 
 
