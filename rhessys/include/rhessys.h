@@ -2280,6 +2280,7 @@ struct phenology_struct
         double frootlitfalln; /* (kgN/m2) current growth year leaflitter nitrogen */
         double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
         double gsi;             /* (0 to 1) growing season phenology index */
+	double pnow;		/* proportion allocated on this day 0-1 */
         int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
         int expand_startday;       /* (yday) yearday of first leaf growth */
         int litfall_startday;       /* (yday) yearday of litterfall growth */
@@ -2326,6 +2327,7 @@ struct cstate_struct
     double deadcrootc_transfer;/* (kgC/m2) dead coarse root C to be allocated from last season */
     double frootc_transfer;     /* (kgC/m2) leaf C to be allocated from last season */
     double gresp_transfer;    /* (kgC/m2) growth respiration C to be allocated from last season*/
+    double mr_deficit; /* (kgC/mw) temporary store to keep track of seasonal maintence respiration deficit */
 
     double leafc_store;     /* (kgC/m2) stored leaf C stored from year's growth */
     double livestemc_store; /* (kgC/m2) live stemwood C stored from this years growth */

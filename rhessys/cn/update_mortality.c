@@ -250,6 +250,11 @@ void update_mortality(
 		m_cpool = 0.0;
 		m_npool = 0.0;
 		}
+
+	/* even though its not part of carbon balance we probably want to update any mr_deficit*/
+
+	cs->mr_deficit -= mort.mort_cpool * cs->mr_deficit;
+	cs->mr_deficit = max(0.0, cs->mr_deficit);
 		
 	/* ABOVEGROUND C POOLS */
 	
