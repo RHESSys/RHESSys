@@ -1147,6 +1147,7 @@ struct  landuse_default
         double  grazing_Closs;                  /* kgC/m2/day */
         double  sh_l;                                   /* 0 - 1 */
         double  sh_g;                                   /* 0 - 1 */
+        double  routing_threshold;                      /* > 0, m/m (z/sat_def) */
 };
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/
