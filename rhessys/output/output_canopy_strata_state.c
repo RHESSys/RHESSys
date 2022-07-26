@@ -154,8 +154,8 @@ void	output_canopy_strata_state(
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].ns.retransn)            , "ns.retransn");
 	fprintf(outfile , "\n            ");
-	//fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.age)            , "cs.age");
-	//fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.age)            , "cs.age");
+	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30ld %s"        , (canopy_strata[0].epv.wstress_days)       , "epv.wstress_days");
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].epv.max_fparabs)        , "epv.max_fparabs");
