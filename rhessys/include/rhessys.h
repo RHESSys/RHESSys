@@ -1147,6 +1147,7 @@ struct  landuse_default
         double  grazing_Closs;                  /* kgC/m2/day */
         double  sh_l;                                   /* 0 - 1 */
         double  sh_g;                                   /* 0 - 1 */
+        double  routing_threshold;                      /* > 0, m/m (z/sat_def) */
 };
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/
@@ -1771,6 +1772,8 @@ struct patch_object
         double  base_flow;              /* m water */
         double  cap_rise;               /* m water / day */
         double  tmp;                    /* diagnostic variable - open units */
+	double  canopy_rain_stored; 	/* m water */
+	double  canopy_snow_stored; 	/* m water */
         double  daily_fire_litter_turnover;                     /* (DIM) 0-1 */
         double  delta_rain_stored;      /* m water      */
         double  delta_snow_stored;      /* m water      */
@@ -2262,12 +2265,14 @@ struct  command_line_object
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
         int             multiscale_flag;
+		int				parallel_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
         char    stream_routing_filename[FILEPATH_LEN];
         char    reservoir_operation_filename[FILEPATH_LEN];
         char    world_filename[FILEPATH_LEN];
+        char    redefine_filename[FILEPATH_LEN];
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
@@ -2397,6 +2402,7 @@ struct phenology_struct
         double frootlitfalln; /* (kgN/m2) current growth year leaflitter nitrogen */
         double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
         double gsi;             /* (0 to 1) growing season phenology index */
+	double pnow;		/* proportion allocated on this day 0-1 */
         int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
         int expand_startday;       /* (yday) yearday of first leaf growth */
         int litfall_startday;       /* (yday) yearday of litterfall growth */
@@ -2443,6 +2449,7 @@ struct cstate_struct
     double deadcrootc_transfer;/* (kgC/m2) dead coarse root C to be allocated from last season */
     double frootc_transfer;     /* (kgC/m2) leaf C to be allocated from last season */
     double gresp_transfer;    /* (kgC/m2) growth respiration C to be allocated from last season*/
+    double mr_deficit; /* (kgC/mw) temporary store to keep track of seasonal maintence respiration deficit */
 
     double leafc_store;     /* (kgC/m2) stored leaf C stored from year's growth */
     double livestemc_store; /* (kgC/m2) live stemwood C stored from this years growth */

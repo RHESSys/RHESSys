@@ -59,14 +59,16 @@ double compute_potential_N_uptake_Dickenson(
 	double fstem, fcroot,fwood, fleaf, froot, fdead, fbroot; 	/* fraction allocate to each component */
 	double f4;
 	double mean_cn, ratio;
-	double plant_ndemand;
+	double transfer,plant_ndemand;
 	/*---------------------------------------------------------------
 	Assess the carbon availability on the basis of this day's
 	gross production and maintenance respiration costs
 	----------------------------------------------------------------*/
 	cs->availc = cdf->psn_to_cpool-cdf->total_mr;
 	/* no allocation when the daily C balance is negative */
-	if (cs->availc < 0.0) cs->availc = 0.0;
+ 	if (cs->availc < 0.0) {
+                cs->mr_deficit += -cs->availc;
+                        cs->availc = 0.0; }
 	/* test for cpool deficit */
 	if (cs->cpool < 0.0){
 	/*--------------------------------------------------------------
@@ -95,6 +97,17 @@ double compute_potential_N_uptake_Dickenson(
 			  cs->availc = 0.0; 
 		}
 	} /* end if negative cpool */
+
+
+	/*---------------------------------------------------------------
+	Also try to reduce any seasonal maintenance respiration deficit
+		-----------------------------------------------*/
+	 if (cs->mr_deficit > ZERO) {
+                 transfer = min(cs->availc, cs->mr_deficit);
+                  cs->availc -= transfer;
+                   cs->cpool += transfer;
+                cs->mr_deficit -= transfer;
+                }
 
 	/* assign local values for the allocation control parameters */
 	cnl = epc.leaf_cn;

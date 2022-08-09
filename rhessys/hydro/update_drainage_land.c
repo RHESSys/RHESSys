@@ -435,7 +435,7 @@ void  update_drainage_land(
 
 
 	if (NO3_leached_to_surface < 0.0)
-		printf("WARNING %d %lf",patch[0].ID, NO3_leached_to_surface);
+		printf("WARNING No3 leached to surface is negative  %d %lf",patch[0].ID, NO3_leached_to_surface);
 
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/

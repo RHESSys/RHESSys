@@ -206,6 +206,7 @@ int allocate_daily_growth(int nlimit,
 				amt_fix = min(excess_c, amt_fix);
 				plant_calloc = plant_calloc + excess_c - amt_fix;
 				plant_nalloc = plant_calloc/mean_cn;
+				plant_calloc = plant_calloc/(1+epc.gr_perc);
 				ndf_patch->nfix_to_sminn = plant_nalloc - ndf->retransn_to_npool-sminn_to_npool;
 				excess_c = excess_c - amt_fix;
 				if (excess_c > ZERO) {
@@ -214,7 +215,7 @@ int allocate_daily_growth(int nlimit,
 				}
 				else ns->nlimit=0;
 			}
-			 else { // epc.nfix == 0
+			 else { 
 				 /* if the plants are not N fixers, no N fixation is applied and previous strategy applies */
 					sminn_to_npool = soil_nsupply;
 					if (ns->retransn > ZERO)
@@ -222,6 +223,7 @@ int allocate_daily_growth(int nlimit,
 					else ndf->retransn_to_npool = 0.0;
 					plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 					plant_calloc = plant_nalloc  * mean_cn;
+					plant_calloc = plant_calloc/(1+epc.gr_perc);
 					excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 					cdf->psn_to_cpool -= excess_c;
 					ns->nlimit = 1;
@@ -244,6 +246,7 @@ int allocate_daily_growth(int nlimit,
 
 	plant_nalloc = max(plant_nalloc, 0.0);
 	plant_calloc = max(plant_calloc, 0.0);
+	plant_calloc = min(cs->availc, plant_calloc);
 
 
 
@@ -415,44 +418,7 @@ int allocate_daily_growth(int nlimit,
 	gresp_store, cdf->cpool_to_leafc, cdf->cpool_to_leafc_store, cs->leafc,
 	cs->leafc_store, cdf->psn_to_cpool);
 	---------------------------------------------------------------------------*/
-  //debug
- /* if(ndf->actual_N_uptake!=ndf->actual_N_uptake || sminn_to_npool!=sminn_to_npool){
-    printf("allocate_daily_growth [%d,%d,%d]: (%e{%e,%e}[%e,%e],%e[%e],%d,%e>=%e,%e)\n",
-           current_date.day, current_date.month, current_date.year,
-           plant_nalloc, ns->retransn, ndf->potential_N_uptake,
-           ndf->retransn_to_npool,sminn_to_npool, //nan
-           plant_calloc,cs->availc,
-           nlimit,
-           ndf_patch->plant_potential_ndemand,
-           ndf_patch->plant_avail_uptake,
-           ndf->actual_N_uptake);
-  }//debug */
 
-
-
-
-  // should ndf->actual_N_uptake = plant_nalloc; ndf->actual_N_uptake < plant_nalloc --> increasing npool
-  if(ndf->actual_N_uptake + 1e-8 < plant_nalloc && plant_nalloc>ZERO && plant_calloc>ZERO){ //<<----- bad
-   /* printf("allocate_daily_growth N balance[%d,%d,%d]: (%e, %e, %e, %e)\n",
-        current_date.day, current_date.month, current_date.year,
-           ndf->actual_N_uptake,
-           plant_nalloc,
-           ndf->retransn_to_npool,
-           sminn_to_npool
-    ); */
-    ndf->retransn_to_npool *= ndf->actual_N_uptake/plant_nalloc;
-    sminn_to_npool *= ndf->actual_N_uptake/plant_nalloc;
-  }//debug
-
-  /*if( fabs(totalc_used - plant_calloc) > 1e-8  && plant_nalloc>0 && plant_calloc>0){
-    printf("allocate_daily_growth C balance[%d,%d,%d]: (%e, %e)\n",
-           current_date.day, current_date.month, current_date.year,
-           totalc_used,
-           plant_calloc
-    );
-    excess_c = max(cs->availc - (totalc_used*(1+epc.gr_perc)),0.0); // adjust to cdf->psn_to_cpool
-    cdf->psn_to_cpool -= excess_c; // if not enough N, it will reduce fraq_psn result.
-  }//debug */
 
 	return(!ok);
 } /* end daily_allocation.c */

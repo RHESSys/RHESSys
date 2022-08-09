@@ -390,7 +390,8 @@ void		patch_daily_F(
 
 	void	compute_fire_effects(
 		struct patch_object *,
-		double);
+		double,
+		struct command_line_object *command_line);
 
 	void    compute_shaded_kdown(
 		struct  patch_object *,
@@ -706,7 +707,7 @@ void		patch_daily_F(
 				printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
 				compute_fire_effects(
 					patch,
-					pspread);
+					pspread, command_line);
 
 			}
 		}
@@ -1518,6 +1519,8 @@ void		patch_daily_F(
 	patch[0].totalc = 0.0;
 	patch[0].totaln = 0.0;
 	patch[0].lai = 0.0;
+	patch[0].canopy_rain_stored = 0.0;
+	patch[0].canopy_snow_stored = 0.0;
 	unsat_zone_patch_demand = patch[0].exfiltration_unsat_zone;
 	sat_zone_patch_demand = patch[0].exfiltration_sat_zone;
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
@@ -2005,6 +2008,8 @@ void		patch_daily_F(
 			strata->acc_year.gpsn += strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
 			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
+			patch[0].canopy_rain_stored += strata->cover_fraction *	strata->rain_stored;
+			patch[0].canopy_snow_stored += strata->cover_fraction *	strata->snow_stored;
 		}
 	}
 

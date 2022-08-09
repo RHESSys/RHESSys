@@ -138,7 +138,7 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 		current_date.month,
 		current_date.day,
 		current_date.hour);
-	strcpy(world_input_filename, command_line[0].world_filename);
+	strcpy(world_input_filename, command_line[0].redefine_filename);
 	strcat(world_input_filename, ext);
 	if ( (world_input_file = fopen(world_input_filename,"r")) == NULL ){
 		fprintf(stderr,
