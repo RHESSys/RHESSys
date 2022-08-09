@@ -2,26 +2,34 @@
 *.o
 *.pyc
 rhessys/rhessys7.0
-<<<<<<< HEAD
+
+
+
+rhessys/rhessys7.*
 rhessys/rhessys7*
+.gitignore.save
+rhessys_bk_20200925
+result/
+
+rhessys/rhessys7.*
 *.save
 
-||||||| merged common ancestors
-rhessys/rhessys7.*
 
-
-=======
-rhessys/rhessys7.*
-
->>>>>>> 2dbd165b9756f18162f7f1c341d28ad2c6f1df07
 # Build directories
 objects/
 build/
 build/Qt/gcc/bin/
 build/Qt/gcc/RHESSys/RHESSys.pro.user
 build/Qt/gcc/RHESSys/RHESSys.pro.user.2.7pre1
+
+result/
+rhessys_bk_20200925/
+
+
+
 rhessys_bk_20200925/
 result/
+
 RHESSys/util/netcdf_data_processes
 
 #Qt git structure

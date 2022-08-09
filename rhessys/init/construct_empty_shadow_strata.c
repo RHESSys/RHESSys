@@ -29,20 +29,20 @@
 #include "rhessys.h"
 
 struct canopy_strata_object *construct_empty_shadow_strata(
-                                                                                                         struct command_line_object * command_line, 
+                                                                                                         struct command_line_object * command_line,
                                                                                                          struct patch_object    *patch,
                                                                                                          struct canopy_strata_object *stratum,
                                                                                                          struct default_object  *defaults)
 {
-  
+
       /*--------------------------------------------------------------*/
         /*      Local function definition.                              */
         /*--------------------------------------------------------------*/
         struct base_station_object *assign_base_station(
                 int ,
                 int ,
-                struct base_station_object **);         
-        
+                struct base_station_object **);
+
         int compute_annual_turnover(struct epconst_struct,
                 struct epvar_struct *,
                 struct cstate_struct *);
@@ -53,7 +53,7 @@ struct canopy_strata_object *construct_empty_shadow_strata(
                 struct phenology_struct *,
                 struct cstate_struct *,
                 int);
-        
+
         int     update_rooting_depth(
                 struct rooting_zone_object *,
                 double,
@@ -71,14 +71,14 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         int     default_object_ID;
         char    record[MAXSTR];
         struct  canopy_strata_object      *shadow_strata;
-        
+
         /*--------------------------------------------------------------*/
         /*  Allocate a shadow_strata object.                            */
         /*--------------------------------------------------------------*/
         shadow_strata = (struct canopy_strata_object *) alloc( 1 *
                 sizeof( struct canopy_strata_object ),"shadow_strata",
                 "construct_shadow_strata" );
-        
+
         /*--------------------------------------------------------------*/
         /*   Initialize the next canopy strata record for this patch.   */
         /*--------------------------------------------------------------*/
@@ -108,6 +108,7 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         shadow_strata[0].cs.frootc_store = NULLVAL;
         shadow_strata[0].cs.frootc_transfer = NULLVAL;
         shadow_strata[0].cs.cwdc = NULLVAL;
+        shadow_strata[0].cs.cwdc_bg = NULLVAL;
         shadow_strata[0].epv.prev_leafcalloc = NULLVAL;
         shadow_strata[0].ns.npool = NULLVAL;
         shadow_strata[0].ns.leafn = NULLVAL;
@@ -130,22 +131,23 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         shadow_strata[0].ns.frootn_store = NULLVAL;
         shadow_strata[0].ns.frootn_transfer = NULLVAL;
         shadow_strata[0].ns.cwdn = NULLVAL;
+        shadow_strata[0].ns.cwdn_bg = NULLVAL;
         shadow_strata[0].ns.retransn = NULLVAL;
-        
+
         /*--------------------------------------------------------------*/
         /*      intialized annual flux variables                        */
         /*--------------------------------------------------------------*/
         shadow_strata[0].epv.wstress_days = NULLVAL;
         shadow_strata[0].epv.max_fparabs = NULLVAL;
         shadow_strata[0].epv.min_vwc = NULLVAL;
-        
+
         /*--------------------------------------------------------------*/
         /*      Assign  defaults for this shadow_strata           */
         /*--------------------------------------------------------------*/
-        shadow_strata[0].defaults = (struct stratum_default **)  
+        shadow_strata[0].defaults = (struct stratum_default **)
                 alloc( sizeof(struct stratum_default *),"defaults",
                 "construct_empty_shadow_strata" );
-                
+
         /*--------------------------------------------------------------*/
         /*      assign number of  strata base stations                  */
         /*--------------------------------------------------------------*/

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------*/
-/*                                                              */ 
+/*                                                              */
 /*		update_phenology				*/
 /*                                                              */
 /*  NAME                                                        */
@@ -51,7 +51,7 @@
 void update_phenology(struct zone_object  *zone,
 					  struct epvar_struct	*epv ,
 					  struct epconst_struct	epc	,
-					  struct phenology_struct *phen,	
+					  struct phenology_struct *phen,
 					  struct cstate_struct *cs,
 					  struct cdayflux_struct	*cdf,
 					  struct cdayflux_patch_struct *cdf_patch,
@@ -68,7 +68,7 @@ void update_phenology(struct zone_object  *zone,
 					  double	cover_fraction,
 					  double	gap_fraction,
 					  double	theta_noon,
-					  int 		wyday_start,	
+					  int 		wyday_start,
 					  struct date current_date,
 					  int	grow_flag,
 					  int   multiscale_flag,
@@ -89,7 +89,7 @@ void update_phenology(struct zone_object  *zone,
 		double,
 		double,
 		double);
-	void	update_litter_interception_capacity (double, 
+	void	update_litter_interception_capacity (double,
 		double,
 		struct litter_c_object *,
 		struct litter_object *);
@@ -98,6 +98,17 @@ void update_phenology(struct zone_object  *zone,
 		struct phenology_struct *,
 		struct cstate_struct *,
 		int);
+
+	int     compute_cwd_decay_root(	struct epconst_struct *,
+		double,
+		struct cstate_struct *,
+		struct nstate_struct *,
+		struct litter_c_object *,
+		struct litter_n_object *,
+		struct cdayflux_patch_struct *,
+		struct ndayflux_patch_struct *,
+		struct ndayflux_struct *);
+
 	int     compute_cwd_decay(	struct epconst_struct *,
 		double,
 		struct cstate_struct *,
@@ -141,13 +152,13 @@ void update_phenology(struct zone_object  *zone,
 		struct litter_n_object *,
 		struct cdayflux_patch_struct *,
 		struct ndayflux_patch_struct *);
-	
+
 	double compute_growingseason_index(
 		struct zone_object *,
 	 	struct epvar_struct	*epv ,
 		struct epconst_struct
 		);
-		
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -161,7 +172,7 @@ void update_phenology(struct zone_object  *zone,
 	int expand_flag, litfall_flag;
 
 
-	expand_flag = 0; 
+	expand_flag = 0;
 	leaflitfallc = 0.0;
 	frootlitfallc = 0.0;
 	litfall_flag = 0;
@@ -170,30 +181,30 @@ void update_phenology(struct zone_object  *zone,
 
 
  /*--------------------------------------------------------------*/
- /* static phenology                      */  
+ /* static phenology                      */
  /*--------------------------------------------------------------*/
 
-	
+
   if (epc.phenology_flag == STATIC) {
 
 
-	if (day == phen->expand_startday){ 
+	if (day == phen->expand_startday){
 		expand_flag = 1;
 		phen->gwseasonday = 1;
 		phen->lfseasonday = -1;
 	}
 
-	else if (day == phen->litfall_startday){ 
+	else if (day == phen->litfall_startday){
 		litfall_flag = 1;
 		phen->lfseasonday = 1;
 		phen->gwseasonday = -1;
 	}
 
-	else if (phen->gwseasonday > -1 && phen->gwseasonday <= epc.ndays_expand){ 
+	else if (phen->gwseasonday > -1 && phen->gwseasonday <= epc.ndays_expand){
 		expand_flag = 1;
 	}
 
-	else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){ 
+	else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){
 		litfall_flag = 1;
 	}
 
@@ -201,27 +212,27 @@ void update_phenology(struct zone_object  *zone,
 
 
  /*--------------------------------------------------------------*/
-  /* drought-deciduous phenology                      */  
+  /* drought-deciduous phenology                      */
   /*--------------------------------------------------------------*/
 
   else if (epc.phenology_flag == DROUGHT) {
-	
+
 	/* Resets phenology flag at the beginning of each wateryear*/
 	if (wyday == 1){
 		phen->pheno_flag = 0;
 	}
 
   	phen->gsi = compute_growingseason_index(zone, epv, epc);
- 
+
   	/* first are we before last possible date for leaf onset */
     	/* are we already in a leaf onset condition */
-      	if (phen->gwseasonday > -1 ) { 
+      	if (phen->gwseasonday > -1 ) {
         	if  (phen->gwseasonday <= epc.ndays_expand)
           	    expand_flag=1;
-        }   
+        }
       	else if (phen->gsi > epc.gsi_thresh && phen->pheno_flag == 0) {
           	phen->gwseasonday = 1;
-         	phen->lfseasonday = -1; 
+         	phen->lfseasonday = -1;
          	expand_flag=1;
 		phen->pheno_flag=1;
           	phen->expand_startday = day;
@@ -231,12 +242,12 @@ void update_phenology(struct zone_object  *zone,
 
 
 	/* cumulative NPP / litfall start relation  */
-	
+
 	if (epc.gs_npp_on == 1) {
 
 		phen->litfall_nppstart = epc.gs_npp_slp * cs->nppcum + epc.gs_npp_intercpt;	/* litfall_nppstart is wateryear day */
 
-		if (phen->lfseasonday > -1 ) {     
+		if (phen->lfseasonday > -1 ) {
           		if  (phen->lfseasonday <= epc.ndays_litfall){
              			 litfall_flag=1;
           		}
@@ -245,25 +256,25 @@ void update_phenology(struct zone_object  *zone,
 		else if (wyday >= phen->litfall_nppstart && phen->gwseasonday > 0){
 			litfall_flag = 1;
 			phen->lfseasonday = 1;
-			phen->gwseasonday = -1;		
+			phen->gwseasonday = -1;
 		}
 	}
 
 	else {
-		if (day == phen->litfall_startday){ 
+		if (day == phen->litfall_startday){
 			litfall_flag = 1;
 			phen->lfseasonday = 1;
 			phen->gwseasonday = -1;
 		}
 
-		else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){ 
+		else if (phen->lfseasonday > -1 && phen->lfseasonday <= epc.ndays_litfall){
 			litfall_flag = 1;
 		}
 	}
   }
-	
+
  /*--------------------------------------------------------------*/
-  /* dynamic phenology                      */  
+  /* dynamic phenology                      */
   /*--------------------------------------------------------------*/
 
   else {
@@ -273,52 +284,52 @@ void update_phenology(struct zone_object  *zone,
 	}
 
   phen->gsi = compute_growingseason_index(zone, epv, epc);
-  
+
   /* first are we before last possible date for leaf onset */
     /* are we already in a leaf onset condition */
-      if (phen->gwseasonday > -1 ) { 
+      if (phen->gwseasonday > -1 ) {
           if  (phen->gwseasonday <= epc.ndays_expand)
               expand_flag=1;
-          }   
+          }
       else if (phen->gsi > epc.gsi_thresh && phen->pheno_flag == 0) {
               phen->gwseasonday = 1;
-          phen->lfseasonday = -1; 
+          phen->lfseasonday = -1;
           expand_flag=1;
 	  phen->pheno_flag=1;
           phen->expand_startday = day;
           phen->expand_stopday = day + epc.ndays_expand;
-          }   
+          }
 
   /* now determine if we are before the last possible date of leaf drop */
-     
-      /* are we already in a leaf offset */
-      if (phen->lfseasonday > -1 ) { 
 
-          phen->gwseasonday = -1; 
-     
+      /* are we already in a leaf offset */
+      if (phen->lfseasonday > -1 ) {
+
+          phen->gwseasonday = -1;
+
           if  (phen->lfseasonday <= epc.ndays_litfall)
               litfall_flag=1;
           }
- 
+
 	else if ((phen->gsi < epc.gsi_thresh) && (phen->gwseasonday > epc.ndays_expand)){
                 phen->lfseasonday = 1;
-          phen->gwseasonday = -1; 
+          phen->gwseasonday = -1;
           litfall_flag=1;
           phen->litfall_startday = day;
           phen->litfall_stopday = day + epc.ndays_litfall;
-	  }   
+	  }
 
 
 
   } /* end dynamic phenology set up */
-    
 
-	
+
+
 	phen->daily_allocation = epc.alloc_prop_day_growth;
 	phen->annual_allocation = 0;
 	if (((cs->frootc + cs->frootc_transfer + cs->frootc_store) < ZERO) && (epc.phenology_flag != STATIC)) {
 		printf("\n calling annual allocation because fine roots are zero %lf %lf %lf", cs->frootc, cs->frootc_transfer, cs->frootc_store);
-		phen->annual_allocation=1;} 
+		phen->annual_allocation=1;}
 	/*--------------------------------------------------------------*/
 	/*	Leaf expansion - spring leaf out			*/
 	/*--------------------------------------------------------------*/
@@ -327,7 +338,7 @@ void update_phenology(struct zone_object  *zone,
 
 		remdays_transfer = max(1.0,(epc.ndays_expand + 1 - phen->gwseasonday));
 
-	
+
 		cdf->leafc_transfer_to_leafc = 2.0*cs->leafc_transfer / remdays_transfer;
 		ndf->leafn_transfer_to_leafn = 2.0*ns->leafn_transfer / remdays_transfer;
 		cdf->frootc_transfer_to_frootc=2.0*cs->frootc_transfer / remdays_transfer;
@@ -372,7 +383,7 @@ void update_phenology(struct zone_object  *zone,
 		leaflitfallc = 2.0*phen->leaflitfallc / remdays_transfer;
 		if (leaflitfallc > cs->leafc)
 			leaflitfallc = cs->leafc;
-		frootlitfallc = 2.0*phen->frootlitfallc / remdays_transfer;
+		frootlitfallc = 2.0*phen->frootlitfallc / remdays_transfer; //why multiply 2?
 		if (frootlitfallc > cs->frootc)
 			frootlitfallc = cs->frootc;
 	}
@@ -398,7 +409,7 @@ void update_phenology(struct zone_object  *zone,
 	/*	note all cdf and ndf variables are zero'd at the 	*/
 	/*	start of the day, so only values set above are used	*/
 	/*--------------------------------------------------------------*/
-	 
+
 	/* Leaf carbon transfer growth */
 	cs->leafc            += cdf->leafc_transfer_to_leafc;
      	cs->leafc_age1            += cdf->leafc_transfer_to_leafc;
@@ -456,7 +467,7 @@ void update_phenology(struct zone_object  *zone,
 
 	/*--------------------------------------------------------------*/
 	/*	add additional leaf litterfall if water stress conditions */
-	/*	occur							*/ 
+	/*	occur							*/
 	/*	only drop when accumulated litterfall due to water stress */
 	/*	is greater than usual litterfall			*/
 	/*--------------------------------------------------------------*/
@@ -467,7 +478,7 @@ void update_phenology(struct zone_object  *zone,
 				(epc.psi_close - epc.psi_open)) / 100.0;
 		leaflitfallc = (perc_leaflitfall * cs->leafc);
 		phen->leaflitfallc_wstress += leaflitfallc;
-		if ((phen->leaflitfallc_wstress > phen->leaflitfallc) && 
+		if ((phen->leaflitfallc_wstress > phen->leaflitfallc) &&
 			(phen->leaflitfallc_wstress < 1.5 * phen->leaflitfallc)) {
 			if (ok && compute_leaf_litfall(epc,
 				leaflitfallc,cover_fraction,
@@ -512,6 +523,15 @@ void update_phenology(struct zone_object  *zone,
 		/*--------------------------------------------------------------*/
 		/*	compute coarse woody debris fragmentation		*/
 		/*--------------------------------------------------------------*/
+ 		if ((cs->cwdc_bg > ZERO) && (cover_fraction > ZERO)) {
+			if (ok && compute_cwd_decay_root(&(epc),cover_fraction, cs,ns,cs_litr,
+				ns_litr,cdf_patch,ndf_patch, ndf)){
+				fprintf(stderr,
+					"FATAL ERROR: in cwd_decay_root() from update_phenology()\n");
+				exit(EXIT_FAILURE);
+			}
+
+		}
 		if ((cs->cwdc > ZERO) && (cover_fraction > ZERO)) {
 			if (ok && compute_cwd_decay(&(epc),cover_fraction, cs,ns,cs_litr,
 				ns_litr,cdf_patch,ndf_patch, ndf)){
@@ -519,7 +539,7 @@ void update_phenology(struct zone_object  *zone,
 					"FATAL ERROR: in cwd_decay() from update_phenology()\n");
 				exit(EXIT_FAILURE);
 			}
-		}
+        }
 		/*--------------------------------------------------------------*/
 		/*	compute live steam and coarse root turnover		*/
 		/* 	excess n from live stem turnover is added to retranslocated N */
@@ -528,10 +548,10 @@ void update_phenology(struct zone_object  *zone,
 
 		if (cs->live_stemc > ZERO) {
 			cdf->livestemc_to_deadstemc = min(epv->day_livestem_turnover, cs->live_stemc);
-			
-			ndf->livestemn_to_deadstemn= min(cdf->livestemc_to_deadstemc 
+
+			ndf->livestemn_to_deadstemn= min(cdf->livestemc_to_deadstemc
 						/ epc.livewood_cn, ns->live_stemn);
-		
+
 			excess_n = max(0.0, ndf->livestemn_to_deadstemn -
 						(cdf->livestemc_to_deadstemc / epc.deadwood_cn ) );
 			ns->npool += excess_n;
@@ -542,9 +562,9 @@ void update_phenology(struct zone_object  *zone,
 		}
 		if (cs->live_crootc > ZERO) {
 			cdf->livecrootc_to_deadcrootc = min(epv->day_livecroot_turnover, cs->live_crootc);
-			ndf->livecrootn_to_deadcrootn= min(cdf->livecrootc_to_deadcrootc 
+			ndf->livecrootn_to_deadcrootn= min(cdf->livecrootc_to_deadcrootc
 						/ epc.livewood_cn, ns->live_crootn);
-		
+
 			excess_n = max(0.0, ndf->livecrootn_to_deadcrootn -
 						(cdf->livecrootc_to_deadcrootc / epc.deadwood_cn ) );
 			ns->npool += excess_n;
@@ -607,7 +627,7 @@ void update_phenology(struct zone_object  *zone,
 
 	perc_sunlit = 0.0;
 	if ((cs->leafc > ZERO) && (epc.veg_type != NON_VEG)) {
-		epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit + 
+		epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit +
 			epv->proj_sla_shade * (1-perc_sunlit))), 0.0);
 		new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
 				(1.0 - exp(-0.5*(1-gap_fraction)*
@@ -619,7 +639,7 @@ void update_phenology(struct zone_object  *zone,
 				perc_sunlit = (epv->proj_lai_sunlit) / (epv->proj_lai_sunlit + epv->proj_lai_shade);
 			else
 				perc_sunlit = 1.0;
-			epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit + 
+			epv->proj_lai = max((cs->leafc * (epv->proj_sla_sunlit * perc_sunlit +
 				epv->proj_sla_shade * (1-perc_sunlit))), 0.0);
 			new_proj_lai_sunlit = 2.0 * cos(theta_noon) *
 					(1.0 - exp(-0.5*(1-gap_fraction)*
@@ -658,7 +678,7 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	if (epc.veg_type == TREE)
 		if ( (cs->live_stemc + cs->dead_stemc) > ZERO) {
-			if (cs->stem_density > ZERO) {	
+			if (cs->stem_density > ZERO) {
 				epv->height = epc.height_to_stem_coef
 				* pow ( (cs->live_stemc + cs->dead_stemc)/(cs->stem_density), epc.height_to_stem_exp);
 				}
@@ -688,12 +708,12 @@ void update_phenology(struct zone_object  *zone,
 	if ((epc.veg_type==TREE) && ((cs->live_stemc + cs->dead_stemc) < ZERO) && (cs->leafc > ZERO)) {
 		epv->height = 0.01;
 	}
-	
+
         /*--------------------------------------------------------------*/
         /* temporary e-w horizon                                        */
         /*--------------------------------------------------------------*/
 	if (cs->stem_density > ZERO) {
-	if ((multiscale_flag == 0) || (shading_flag == 0)) {	
+	if ((multiscale_flag == 0) || (shading_flag == 0)) {
         horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
 	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
 	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);
@@ -715,7 +735,7 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	update_litter_interception_capacity(
 		litter->moist_coef,
-		litter->density,	
+		litter->density,
 		cs_litr,
 		litter);
 
@@ -726,7 +746,7 @@ void update_phenology(struct zone_object  *zone,
 	      phen->gwseasonday += 1;
 	  if (phen->lfseasonday > 0)
 	      phen->lfseasonday += 1;
-	
+
 
 	return;
 

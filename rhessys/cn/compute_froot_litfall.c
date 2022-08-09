@@ -8,7 +8,7 @@
 /*								*/
 /*	SYNOPSIS						*/
 /*	double	compute_froot_litfall( 				*/
-/*					);			*/	
+/*					);			*/
 /*								*/
 /*								*/
 /*	OPTIONS							*/
@@ -39,11 +39,11 @@ int	compute_froot_litfall(
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	
+
 	int ok=1;
 	double c1,c2,c3,c4;
 	double n1,n2,n3,n4, nloss;
@@ -79,30 +79,32 @@ int	compute_froot_litfall(
 	}
 	if (ok){
 		/* set fluxes in daily flux structure */
-		cdf->frootc_to_litr1c = c1 * cover_fraction;
-		cdf->frootc_to_litr2c = c2 * cover_fraction;
-		cdf->frootc_to_litr3c = c3 * cover_fraction;
-		cdf->frootc_to_litr4c = c4 * cover_fraction;
-		ndf->frootn_to_litr1n = n1 * cover_fraction;
-		ndf->frootn_to_litr2n = n2 * cover_fraction;
-		ndf->frootn_to_litr3n = n3 * cover_fraction;
-		ndf->frootn_to_litr4n = n4 * cover_fraction;
+		/* move fine root to underground litter carbon pool */
+		cdf->frootc_to_litr1c_bg = c1 * cover_fraction;
+		cdf->frootc_to_litr2c_bg = c2 * cover_fraction;
+		cdf->frootc_to_litr3c_bg = c3 * cover_fraction;
+		cdf->frootc_to_litr4c_bg = c4 * cover_fraction;
+		ndf->frootn_to_litr1n_bg = n1 * cover_fraction;
+		ndf->frootn_to_litr2n_bg = n2 * cover_fraction;
+		ndf->frootn_to_litr3n_bg = n3 * cover_fraction;
+		ndf->frootn_to_litr4n_bg = n4 * cover_fraction;
 		/* update state variables */
 		cs->frootc -= litfallc;
 		if (epc.allocation_flag == STATIC)
 			cs->frootc_store += litfallc;
-		cs_litr->litr1c += c1 * cover_fraction;
-		cs_litr->litr2c += c2 * cover_fraction;
-		cs_litr->litr3c += c3 * cover_fraction;
-		cs_litr->litr4c += c4 * cover_fraction;
+        /* move fine root to underground litter carbon pool */
+		cs_litr->litr1c_bg += c1 * cover_fraction;
+		cs_litr->litr2c_bg += c2 * cover_fraction;
+		cs_litr->litr3c_bg += c3 * cover_fraction;
+		cs_litr->litr4c_bg += c4 * cover_fraction;
 		nloss =  n1+n2+n3+n4;
 		ns->frootn -= nloss;
 		if (epc.allocation_flag == STATIC)
 			ns->frootn_store += nloss;
-		ns_litr->litr1n += n1 * cover_fraction;
-		ns_litr->litr2n += n2 * cover_fraction;
-		ns_litr->litr3n += n3 * cover_fraction;
-		ns_litr->litr4n += n4 * cover_fraction;
+		ns_litr->litr1n_bg += n1 * cover_fraction;
+		ns_litr->litr2n_bg += n2 * cover_fraction;
+		ns_litr->litr3n_bg += n3 * cover_fraction;
+		ns_litr->litr4n_bg += n4 * cover_fraction;
 	}
 	return(0);
-} /*compute_froot_litfall*/ 
+} /*compute_froot_litfall*/
