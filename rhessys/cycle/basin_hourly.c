@@ -112,8 +112,12 @@ void	basin_hourly(
 		* basin[0].cos_latitude * basin[0].hourly[0].cos_hour_angle
 		+ world[0].sin_declin *	basin[0].sin_latitude;
 	
+	if (command_line[0].verbose_flag == -9) {
+		printf("\nhour= %d | cos_sza= %f", current_date.hour, basin[0].hourly[0].cos_sza);
+	}
+
 	if ( command_line[0].verbose_flag > 5 )
-		printf("\n-111.1 cos_sza= %f cod_declin=%f cos_l= %f coshh=%f sindec=%f sinlat=%f",
+		printf("\ncos_sza= %f cod_declin=%f cos_l= %f coshh=%f sindec=%f sinlat=%f",
 		basin[0].hourly[0].cos_sza,world[0].cos_declin,
 		basin[0].cos_latitude,basin[0].hourly[0].cos_hour_angle,
 		world[0].sin_declin,basin[0].sin_latitude);

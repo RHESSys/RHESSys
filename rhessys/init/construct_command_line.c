@@ -146,6 +146,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].cpool_mort_fract = 0;
 	command_line[0].sat_to_gw_coeff_mult = 1;
 	command_line[0].gw_loss_coeff_mult = 1;
+	command_line[0].parallel_flag = 0;
 	
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -754,8 +755,25 @@ struct	command_line_object	*construct_command_line(
 				/*--------------------------------------------------------------*/
 				command_line[0].world_flag = 1;
 				strcpy(command_line[0].world_filename,main_argv[i]);
+				strcpy(command_line[0].redefine_filename,command_line[0].world_filename);
 				i++;
 			} /*end if*/
+
+ 			else if ( strcmp(main_argv[i],"-redefn") == 0 ){
+                                /*--------------------------------------------------------------*/
+                                /*                      Check that the next arguement exists.                           */
+                                /*--------------------------------------------------------------*/
+                                i++;
+                                if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+                                        fprintf(stderr,"FATAL ERROR: Redefine file name not specified\n");
+                                        exit(EXIT_FAILURE);
+                                } /*end if*/
+                                /*--------------------------------------------------------------*/
+                                /*                      Read in the world file name.                                            */
+                                /*--------------------------------------------------------------*/
+                                strcpy(command_line[0].redefine_filename,main_argv[i]);
+                                i++;
+                        } /*end if*/
 			/*--------------------------------------------------------------*/
 			/*		Check if the world header file is next.						*/
 			/*--------------------------------------------------------------*/
@@ -1229,6 +1247,30 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].multiscale_flag = 1;
 				i++;
 			}
+
+			/*--------------------------------------------------------------*/
+			/*		Check for parallel flag next.				*/
+			/*--------------------------------------------------------------*/
+			else if ( strcmp(main_argv[i],"-par") == 0 ) {
+				printf("Parallel run #");
+				/*--------------------------------------------------------------*/
+				/*			Check that the next argument exists.				*/
+				/*--------------------------------------------------------------*/
+				i++;
+				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
+					printf(" not specified\n");
+				} /*end if*/
+				else {
+				/*--------------------------------------------------------------*/
+				/*			Read in the run number.						*/
+				/*--------------------------------------------------------------*/
+					command_line[0].parallel_flag = (int)atoi(main_argv[i]);
+					printf("%d\n", command_line[0].parallel_flag);
+					i++;
+				}
+			} /*end if*/
+
+
 
 			/*----------------------------------------------------------*/
 			/* climate interpolation UTM zone options  N.R 20190610     */

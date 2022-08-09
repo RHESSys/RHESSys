@@ -135,7 +135,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	
 	canopy_strata[0].gap_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",0.0,1);
 	
-	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",-9999,0);
+	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",0,0);
 
 	if (command_line[0].tmp_value > ZERO)
 	{
@@ -156,6 +156,7 @@ struct canopy_strata_object *construct_canopy_strata(
     
 	canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc/2.0,1);
 	
+	canopy_strata[0].cs.mr_deficit = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
 	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
 	
 	canopy_strata[0].cs.leafc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",0.0,1);
@@ -249,7 +250,7 @@ struct canopy_strata_object *construct_canopy_strata(
      canopy_strata[0].target.lai = NULLVAL;
      canopy_strata[0].target.total_stemc = NULLVAL;
      canopy_strata[0].target.height = NULLVAL;
-     canopy_strata[0].target.age = NULLVAL;
+     //canopy_strata[0].target.age = NULLVAL;
      canopy_strata[0].target.met = 2;
      
    }

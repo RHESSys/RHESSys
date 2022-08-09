@@ -75,8 +75,12 @@ double compute_potential_N_uptake_combined(
 	gross production and maintenance respiration costs
 	----------------------------------------------------------------*/
 	cs->availc = cdf->psn_to_cpool-cdf->total_mr;
+
 	/* no allocation when the daily C balance is negative */
-	if (cs->availc < 0.0) cs->availc = 0.0;
+	if (cs->availc < 0.0) { 
+		cs->mr_deficit += -cs->availc; 
+			cs->availc = 0.0; }
+
 	/* test for cpool deficit */
 	if (cs->cpool < 0.0){
 	/*--------------------------------------------------------------
@@ -94,6 +98,15 @@ double compute_potential_N_uptake_combined(
 			cs->availc -= transfer;
 			cs->cpool += transfer;
 	} /* end if negative cpool */
+
+	if (cs->mr_deficit > ZERO) {
+		 transfer = min(cs->availc, cs->mr_deficit);
+                  cs->availc -= transfer;
+                   cs->cpool += transfer;
+		cs->mr_deficit -= transfer;
+		}
+		
+
 	/* assign local values for the allocation control parameters */
 	f2 = epc.alloc_crootc_stemc;
 	f3 = epc.alloc_stemc_leafc;

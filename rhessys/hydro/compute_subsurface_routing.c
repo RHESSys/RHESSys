@@ -245,6 +245,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*								*/
 			/*	regular land patches - route to downslope neighbours    */
 			/*--------------------------------------------------------------*/
+
 			if ((patch[0].drainage_type == ROAD)
 					&& (command_line[0].road_flag == 1)) {
 				update_drainage_road(patch, command_line, time_int,
@@ -267,6 +268,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
 			patch = hillslope->route_list->list[i];
 
+			
 			/*--------------------------------------------------------------*/
 			/*	update subsurface 				*/
 			/*-------------------------------------------------------------------------*/
@@ -275,6 +277,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*	Recompute current actual depth to water table				*/
 			/*-------------------------------------------------------------------------*/
 			patch[0].sat_deficit += (patch[0].Qout - patch[0].Qin);
+
+
 
 			patch[0].sat_deficit_z = compute_z_final(verbose_flag,
 					patch[0].soil_defaults[0][0].porosity_0,
@@ -659,44 +663,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 						patch[0].unsat_storage += add_field_capacity;
 					else
 						patch[0].rz_storage += add_field_capacity;
-				}
-
-				if (patch[0].rootzone.depth > ZERO) {
-					if ((patch[0].sat_deficit > ZERO)
-							&& (patch[0].rz_storage == 0.0)) {
-						add_field_capacity = compute_layer_field_capacity(
-								command_line[0].verbose_flag,
-								patch[0].soil_defaults[0][0].theta_psi_curve,
-								patch[0].soil_defaults[0][0].psi_air_entry,
-								patch[0].soil_defaults[0][0].pore_size_index,
-								patch[0].soil_defaults[0][0].p3,
-								patch[0].soil_defaults[0][0].p4,
-								patch[0].soil_defaults[0][0].porosity_0,
-								patch[0].soil_defaults[0][0].porosity_decay,
-								patch[0].sat_deficit_z, patch[0].sat_deficit_z,
-								0.0);
-						add_field_capacity = max(add_field_capacity, 0.0);
-						patch[0].sat_deficit += add_field_capacity;
-						patch[0].rz_storage += add_field_capacity;
-					}
-				} else {
-					if ((patch[0].sat_deficit > ZERO)
-							&& (patch[0].unsat_storage == 0.0)) {
-						add_field_capacity = compute_layer_field_capacity(
-								command_line[0].verbose_flag,
-								patch[0].soil_defaults[0][0].theta_psi_curve,
-								patch[0].soil_defaults[0][0].psi_air_entry,
-								patch[0].soil_defaults[0][0].pore_size_index,
-								patch[0].soil_defaults[0][0].p3,
-								patch[0].soil_defaults[0][0].p4,
-								patch[0].soil_defaults[0][0].porosity_0,
-								patch[0].soil_defaults[0][0].porosity_decay,
-								patch[0].sat_deficit_z, patch[0].sat_deficit_z,
-								0.0);
-						add_field_capacity = max(add_field_capacity, 0.0);
-						patch[0].sat_deficit += add_field_capacity;
-						patch[0].unsat_storage += add_field_capacity;
-					}
 				}
 
 				/*--------------------------------------------------------------*/
