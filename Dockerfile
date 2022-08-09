@@ -8,4 +8,4 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get install --fix-missing -y build-esse
 RUN make all /RHESSys
 RUN git clone https://github.com/RHESSys/RHESSysIOinR.git /RHESSysIOinR
 RUN Rscript -e "install.packages(c('chron','dplyr','tidyr','readr','purrr','data.table','lubridate','sensitivity','hydroGOF','parallel','randtoolbox','rlang','tools','yaml','httr','gh','xml2','roxygen','devtools'), dependencies=TRUE)"
-RUN Rscript -e "setwd('../RHESSysIOinR/')" -e "library(devtools)" -e "build()" -e "install()" -e "library(RHESSysIOinR)"
+#RUN Rscript -e "setwd('../RHESSysIOinR/')" -e "library(devtools)" -e "build()" -e "install()" -e "library(RHESSysIOinR)"
