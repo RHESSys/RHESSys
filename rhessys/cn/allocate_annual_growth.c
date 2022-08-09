@@ -145,7 +145,7 @@ int allocate_annual_growth(				int id,
  					}
  			}
 
-			cs->cpool +- excess_carbon;
+			cs->cpool += excess_carbon;
 			ns->npool += excess_carbon / epc.leaf_cn;
 
 			/* 
