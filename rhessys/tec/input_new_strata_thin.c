@@ -456,7 +456,7 @@ void input_new_strata_thin(
 			canopy_strata[0].epv.wstress_days = 0;
 			canopy_strata[0].epv.max_fparabs = 0.0;
 			canopy_strata[0].epv.min_vwc = 1.0;
-			canopy_strata[0].cs.age = 0;
+		//	canopy_strata[0].cs.age = 0;
 			canopy_strata[0].cs.num_resprout = 0;
 		}
 		/*--------------------------------------------------------------*/
