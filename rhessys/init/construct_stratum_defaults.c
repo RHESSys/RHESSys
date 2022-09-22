@@ -343,7 +343,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.dickenson_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.dickenson_pa", "%lf", 0.25, 1);
 		default_object_list[i].epc.waring_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pa", "%lf", 0.8, 1);
 		default_object_list[i].epc.waring_pb = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pb", "%lf", 2.5, 1);
-		default_object_list[i].epc.branch_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.branch_turnover", "%lf", 0.1, 1) / 365.0;
+		default_object_list[i].epc.branch_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.branch_turnover", "%lf", 0.01, 1) / 365.0;
 		default_object_list[i].epc.Tacclim = getIntParam(&paramCnt, &paramPtr, "epc.Tacclim", "%d", 0, 1);
 		default_object_list[i].epc.Tacclim_intercpt = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim_intercpt", "%lf",3.22, 1);
 		default_object_list[i].epc.Tacclim_slp = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim_slp", "%lf",0.046, 1);
