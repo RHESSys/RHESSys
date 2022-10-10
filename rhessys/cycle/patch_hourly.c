@@ -165,7 +165,7 @@ void		patch_hourly(
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
 			/* NO3_throughfall_final collects NO3_throughfall first from null_cover area */
-			/* Then use it to sum up the NO3_thoughfall from canopy cover */
+			/* Then use it to sum up the NO3_throughfall from canopy cover */
 	    		patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
 			for (stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
@@ -202,7 +202,7 @@ void		patch_hourly(
 			patch[0].rain_throughfall_final = 0.0;
 			patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
 
-			for ( stratum=0;stratum<patch[0].layers[layer].count; stratum++ ){
+			for ( stratum=0; stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
 					basin,

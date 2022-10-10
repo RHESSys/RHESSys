@@ -174,7 +174,7 @@ void	output_growth_basin(
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			//zone_area = 0.0;
-			aninput = (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone[0].area;
+			aninput += (zone[0].ndep_NO3+zone[0].ndep_NH4)*zone[0].area;
 			aprecip += (zone[0].rain_hourly_total+zone[0].rain+zone[0].snow)*zone[0].area; //NREN
 			zone_area += zone[0].area; // check what is the differences between zone_area and patch_area
 
@@ -272,7 +272,7 @@ void	output_growth_basin(
 							* strata->cs.net_psn
 							* patch[0].area;
 						------------------------------*/
-						anpool += strata->cover_fraction * (strata->ns.npool);
+						//anpool += strata->cover_fraction * (strata->ns.npool) * patch[0].area;
 						aresp_leaf += strata->cover_fraction
 							* (strata->cdf.leaf_day_mr + strata->cdf.leaf_night_mr )
 							* patch[0].area;
