@@ -102,7 +102,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
-	command_line[0].vmort_flag = 0;// make default not on 20201024
+	command_line[0].vmort_flag = 1;
 	command_line[0].version_flag = 0;
 	command_line[0].vsen[M] = 1.0;
 	command_line[0].vsen[K] = 1.0;
