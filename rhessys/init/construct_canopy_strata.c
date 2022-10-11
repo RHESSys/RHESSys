@@ -156,7 +156,7 @@ struct canopy_strata_object *construct_canopy_strata(
     
 	canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc/2.0,1);
 	
-	canopy_strata[0].cs.mr_deficit = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
+	canopy_strata[0].cs.mr_deficit = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.mr_deficit","%lf",0.0,1);
 	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
 	
 	canopy_strata[0].cs.leafc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",0.0,1);
