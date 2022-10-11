@@ -158,6 +158,7 @@ struct canopy_strata_object *construct_canopy_strata(
 
          canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc/2.0,1);
 
+	canopy_strata[0].cs.mr_deficit = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.mr_deficit","%lf",0.0,1);
 	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
 
 	canopy_strata[0].cs.leafc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",0.0,1);
@@ -248,7 +249,7 @@ struct canopy_strata_object *construct_canopy_strata(
 
 
 	if (command_line[0].vegspinup_flag > 0){
-     canopy_strata[0].target.lai = NULLVAL; //-9999
+     canopy_strata[0].target.lai = NULLVAL; 
      canopy_strata[0].target.total_stemc = NULLVAL;
      canopy_strata[0].target.height = NULLVAL;
      canopy_strata[0].target.age = NULLVAL;
@@ -265,7 +266,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	fscanf(world_file,"%lf",&(canopy_strata[0].epv.min_vwc));
 	read_record(world_file, record);*/
 
-	canopy_strata[0].epv.wstress_days  = getIntWorldfile(&paramCnt,&paramPtr,"epv.wstress_days","%lf",0,1);
+	canopy_strata[0].epv.wstress_days  = getIntWorldfile(&paramCnt,&paramPtr,"epv.wstress_days","%d",0,1);
 
 	canopy_strata[0].epv.max_fparabs = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.max_fparabs","%lf",0.0,1);
 
@@ -418,16 +419,22 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*      initialize accumulator variables                        */
 	/*--------------------------------------------------------------*/
 	canopy_strata[0].acc_year.lai = 0.0;
-	canopy_strata[0].acc_year.psn = 0.0;
+	canopy_strata[0].acc_year.gpsn = 0.0;
+	canopy_strata[0].acc_year.resp = 0.0;
+	canopy_strata[0].acc_year.totalc = 0.0;
+	canopy_strata[0].acc_year.totaln = 0.0;
 	canopy_strata[0].acc_year.lwp = 0.0;
+	canopy_strata[0].acc_year.height = 0.0;
 	canopy_strata[0].acc_year.minNSC = -999;
 	canopy_strata[0].acc_year.length = 0;
 	canopy_strata[0].acc_month.lai = 0.0;
-	canopy_strata[0].acc_month.leafc = 0.0;
-	canopy_strata[0].acc_month.rootc = 0.0;
-	canopy_strata[0].acc_month.stemc = 0.0;
-	canopy_strata[0].acc_month.psn = 0.0;
+	canopy_strata[0].acc_month.gpsn = 0.0;
+	canopy_strata[0].acc_month.resp = 0.0;
+	canopy_strata[0].acc_month.totalc = 0.0;
+	canopy_strata[0].acc_month.totaln = 0.0;
 	canopy_strata[0].acc_month.lwp = 0.0;
+	canopy_strata[0].acc_month.height = 0.0;
+	canopy_strata[0].acc_month.minNSC = -999;
 	canopy_strata[0].acc_month.length = 0;
 
 	//fire

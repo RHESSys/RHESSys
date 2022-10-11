@@ -39,7 +39,6 @@ int allocate_annual_growth(				int id,
 							int default_ID,
 							int vmort_flag,
 							double cover_fraction,
-
 						   struct epvar_struct *epv,
 						   struct cdayflux_struct *cdf,
 						   struct cstate_struct *cs,
@@ -69,11 +68,11 @@ int allocate_annual_growth(				int id,
 		int,
 		struct mortality_struct);
 
-
+	
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-
+	
 	int ok=1;
 	double storage_transfer_prop;
 	double delta_livestemc, delta_deadstemc;
@@ -84,7 +83,7 @@ int allocate_annual_growth(				int id,
 	double fcroot, flive, fdead, fleaf, froot, fwood;
 	double total_wood_c, total_wood_n, wood_cn;
 	double retransn, rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
-	double unmetn, carbohydrate_transfer_n;
+	double unmetn, carbohydrate_transfer_n, excess_n, avg_cn;
 	double plantc, excess_lai, excess_leaf_carbon, stemc, leafc;
 	double delta_leaf, leaf_growth_deficit;
 	double total_store, ratio, total_above_biomass,total_biomass, carbohydrate_transfer;
@@ -108,17 +107,19 @@ int allocate_annual_growth(				int id,
 	season, instead of two growing seasons from now. */
 
 
+
+
 	/*--------------------------------------------------------------*/
 	/*	check to make sure LAI is not greater than user specified */
 	/*	max lai (note LAI here does NOT take into account sunlit */
-	/*	shaded compenent - so LAI output by RHESSys may sometime */
+	
 	/*	get to be slightly higher than specified max LAI */
 	/*	carbon in excess of that required for max LAI */
 	/*	is re-allocated to stemwood; for grasses it is allocated to roots */
 	/*--------------------------------------------------------------*/
    	excess_lai = (cs->leafc + cs->leafc_store + cs->leafc_transfer) * epc.proj_sla - epc.max_lai;
  	if ( excess_lai > ZERO) {
-
+ 
                 excess_carbon = excess_lai / epc.proj_sla;
  		rem_excess_carbon = excess_carbon;
  		if (epc.veg_type == TREE) {
@@ -144,6 +145,10 @@ int allocate_annual_growth(				int id,
  					}
  			}
 
+			cs->cpool += excess_carbon;
+			ns->npool += excess_carbon / epc.leaf_cn;
+
+			/* 
                  	cs->deadstemc_store += (1-epc.alloc_livewoodc_woodc)*excess_carbon;
                  	cs->livestemc_store+= epc.alloc_livewoodc_woodc*excess_carbon;
                  	ns->deadstemn_store += (1-epc.alloc_livewoodc_woodc)*excess_carbon / epc.deadwood_cn;
@@ -152,6 +157,7 @@ int allocate_annual_growth(				int id,
  			   (1-epc.alloc_livewoodc_woodc)*excess_carbon / epc.deadwood_cn -
  			    epc.alloc_livewoodc_woodc*excess_carbon / epc.livewood_cn;
  			ns->npool += excess_nitrogen;
+			*/
  		}
  		else {
  			/* remove excess carbon from storage, transfer and then leaf carbon until gone */
@@ -185,28 +191,20 @@ int allocate_annual_growth(				int id,
 
 	total_store =  cs->cpool;
 	if (epc.veg_type == TREE){
-			total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool + cs->dead_stemc + cs->dead_crootc);}
+			total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc  + cs->dead_stemc + cs->dead_crootc);}
 		else {
 			total_biomass =  (cs->leafc + cs->frootc + cs->cpool );}
 
 	/* Changed to just be live C */
-	/*total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->dead_stemc +
-			cs->live_crootc + cs->dead_crootc);*/
-	/*if (cs->cpool > ZERO)
-	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool);
-	else
-	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc); */
-
-	/* Changed to just be live C */
 	/*total_above_biomass =  cs->leafc+cs->dead_stemc+cs->live_stemc;*/
 	total_above_biomass =  cs->leafc+cs->live_stemc;
-
+	
 	if (total_biomass > ZERO)
 		ratio = (total_store/total_biomass);
 	else
 		ratio = 1.0;
 
-     
+
          if ((epc.max_storage_percent > ZERO) && (ratio < epc.max_storage_percent))
 		storage_transfer_prop = epc.storage_transfer_prop;
         else
@@ -219,9 +217,9 @@ int allocate_annual_growth(				int id,
 	/* 	carbohydrate starvation mortality 			*/
 	/*--------------------------------------------------------------*/
 
-	cs->mortality_fract = 0.0;
+	/* cs->mortality_fract = 0.0;*/
 
-        /* here the defualt is vmort_flag == 1
+
 	if (((total_store < epc.cpool_mort_fract*total_biomass) || (cs->cpool < ZERO))  && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
 
@@ -229,9 +227,10 @@ int allocate_annual_growth(				int id,
 			excess_carbon = 1.0 - total_store/(epc.cpool_mort_fract*total_biomass);
 		else
 			excess_carbon = 1.0;
+
 		excess_carbon = max(excess_carbon,0);
 		excess_carbon = min(1.0,excess_carbon);
-		cs->mortality_fract = excess_carbon;
+		cs->mortality_fract += excess_carbon;
 		mort.mort_cpool = excess_carbon;
 		mort.mort_leafc = excess_carbon;
 		mort.mort_deadleafc = excess_carbon;
@@ -239,17 +238,40 @@ int allocate_annual_growth(				int id,
 		mort.mort_deadstemc = excess_carbon;
 		mort.mort_livecrootc = excess_carbon;
 		mort.mort_deadcrootc = excess_carbon;
-		mort.mort_frootc = excess_carbon;
+		mort.mort_frootc = excess_carbon;					
 		update_mortality(epc,
 						 cs, cdf, cdf_patch,
-						 ns, ndf, ndf_patch,
+						 ns, ndf, ndf_patch, 
 						 cs_litr, ns_litr, 1,
-						 mort);
+						 mort);	
+
+		/*
 		cs->stem_density = (cs->stem_density - cs->stem_density*excess_carbon);
-		cs->stem_density = max(cs->stem_density, 0.01); 
+		cs->stem_density = max(cs->stem_density, 0.01);  */
 	}
+		
+
+	if (( vmort_flag == 0) && (-cs->cpool >  total_biomass)) {
+		excess_carbon = 1.0;
+		cs->mortality_fract += excess_carbon;
+                mort.mort_cpool = excess_carbon;
+                mort.mort_leafc = excess_carbon;
+                mort.mort_deadleafc = excess_carbon;
+                mort.mort_livestemc = excess_carbon;
+                mort.mort_deadstemc = excess_carbon;
+                mort.mort_livecrootc = excess_carbon;
+                mort.mort_deadcrootc = excess_carbon;
+                mort.mort_frootc = excess_carbon;
+                update_mortality(epc,
+                                                 cs, cdf, cdf_patch,
+                                                 ns, ndf, ndf_patch,
+                                                 cs_litr, ns_litr, 1,
+                                                 mort);
+		}
 
 
+
+	
 	/*--------------------------------------------------------------*/
 	/*	respiration thinning			*/
 	/*	now substituting carbon hydrat storage mortality 		*/
@@ -270,12 +292,12 @@ int allocate_annual_growth(				int id,
 			+ cs->frootc + cs->frootc_transfer + cs->frootc_store);
 
 		leafc =	 cs->leafc;
-		stemc =
-			 cs->live_stemc
+		stemc = 
+			 cs->live_stemc 
 			+ cs->dead_stemc ;
-
+		
 		if (leafc/stemc > 0.6)
-			excess_leaf_carbon = stemc*(leafc/stemc - 0.6);
+			excess_leaf_carbon = stemc*(leafc/stemc - 0.6); 
 		else
 			excess_leaf_carbon = 0.0;
 
@@ -293,7 +315,7 @@ int allocate_annual_growth(				int id,
 
 		update_mortality(epc,
 			cs, cdf, cdf_patch,
-			ns, ndf, ndf_patch,
+			ns, ndf, ndf_patch, 
 			cs_litr, ns_litr, cover_fraction, excess_carbon);
 		}
 */
@@ -363,28 +385,29 @@ int allocate_annual_growth(				int id,
 		ns->npool += ns->deadcrootn_store * (1.0-storage_transfer_prop);
 		ns->deadcrootn_store = 0.0;
 	}
-
-
+	
+	
 	/*--------------------------------------------------------------*/
 	/* use carbohydrates if stressed				*/
 	/*--------------------------------------------------------------*/
-
+	
 	if (total_above_biomass > ZERO)
-		 excess_carbon = (cdf->leafc_store_to_leafc_transfer) - epc.min_percent_leafg*total_biomass;  
-        // excess_carbon = (cdf->leafc_store_to_leafc_transfer+cs->leafc) - epc.min_percent_leafg*total_biomass;
+		 excess_carbon = cdf->leafc_store_to_leafc_transfer - epc.min_percent_leafg*cs->leafc*epc.leaf_turnover;  
+		 /* excess_carbon = cdf->leafc_store_to_leafc_transfer - epc.min_percent_leafg*total_biomass;  */
 	else
 		excess_carbon = 0.0;
 
 	if (excess_carbon < -ZERO) {
 
-		carbohydrate_transfer = -1.0*excess_carbon;
+		carbohydrate_transfer = -1.0*excess_carbon; 
 
 
 		if (epc.allocation_flag == COMBINED)
 			fleaf = exp(-1.0*epc.waring_pa * epv->proj_lai);
 		else
-		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
+			fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
+		fleaf = max(fleaf, 0.3);
 
 		if (epc.veg_type==TREE) {
 			froot = 0.5*(1-fleaf);
@@ -395,8 +418,7 @@ int allocate_annual_growth(				int id,
 			froot = (1-fleaf);
 		}
 
-		fleaf = max(0.0, fleaf);
-
+		
 		if (epc.veg_type == TREE){
 		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
 		}
@@ -404,46 +426,34 @@ int allocate_annual_growth(				int id,
 	   	mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
 		}
 
-		carbohydrate_transfer = carbohydrate_transfer/fleaf;
+		carbohydrate_transfer = (carbohydrate_transfer/fleaf)* (1+ epc.gr_perc);
 
-		carbohydrate_transfer = min(cs->cpool, carbohydrate_transfer);
+		carbohydrate_transfer = min(0.8*cs->cpool, carbohydrate_transfer);		
 		carbohydrate_transfer = max(carbohydrate_transfer, 0.0);
 
 		if (mean_cn > ZERO)
 			carbohydrate_transfer_n = carbohydrate_transfer/mean_cn;
-		else
+		else	
 			carbohydrate_transfer_n = 0.0;
-
 		if (carbohydrate_transfer > ZERO) {
 		unmetn = carbohydrate_transfer_n - ns->npool;
 		unmetn = max(unmetn, 0.0);
 		}
 		else unmetn=0.0;
 
-		retransn = max(ns->retransn, 0.0);
-		//retransn = 0.0;
-		if ((unmetn > retransn) && (unmetn > 0))   {
-			ndf->retransn_to_npool += retransn;
-			carbohydrate_transfer = (ns->npool+retransn)*mean_cn;
-
-
-
-
-               /* ns->retransn = max(ns->retransn, 0.0);
-		if (unmetn > ns->retransn)   {
+		if ((unmetn > ns->retransn) && (unmetn > 0))   {
 			ndf->retransn_to_npool += ns->retransn;
-			carbohydrate_transfer = (ns->npool+ns->retransn)*mean_cn; */
+			carbohydrate_transfer = (ns->npool+ndf->retransn_to_npool)*mean_cn;
 			}
 			else {
 			ndf->retransn_to_npool += unmetn;
-			}
-
-
+			}	
+				
 		cdf->leafc_store_to_leafc_transfer += carbohydrate_transfer * fleaf;
 		cdf->frootc_store_to_frootc_transfer += carbohydrate_transfer * froot;
 		ndf->leafn_store_to_leafn_transfer += (carbohydrate_transfer * fleaf) / cnl;
 		ndf->frootn_store_to_frootn_transfer += (carbohydrate_transfer * froot) / cnfr ;
-
+			
 		if (epc.veg_type == TREE){
 			cdf->livestemc_store_to_livestemc_transfer += carbohydrate_transfer * fwood * (1.0-fcroot) * flive;
 			cdf->livecrootc_store_to_livecrootc_transfer += carbohydrate_transfer * fwood * fcroot * flive;
@@ -455,24 +465,36 @@ int allocate_annual_growth(				int id,
 			ndf->deadcrootn_store_to_deadcrootn_transfer += (carbohydrate_transfer * fwood * fcroot * fdead) / cndw;
 		}
 
+		cdf->gresp_store_to_gresp_transfer += carbohydrate_transfer *  epc.gr_perc;
+
+
 		cs->cpool -= carbohydrate_transfer;
 		if (mean_cn > ZERO)
-			ns->npool -= carbohydrate_transfer/mean_cn;
+			ns->npool -= carbohydrate_transfer/(1+epc.gr_perc)  /mean_cn;
 
 		cdf->carbohydrate_transfer = carbohydrate_transfer;
-		ndf->carbohydrate_transfer = carbohydrate_transfer/(mean_cn);
+		ndf->carbohydrate_transfer = carbohydrate_transfer/(mean_cn)/(1+epc.gr_perc);
 	}
+
+	/*--------------------------------------------------------------*/
+	/* zero out any temporary maintenance respiration deficit 	*/
+	/* this just keeps track of seasonal respiration deficit but can be set to zero without effecting carbon balance */
+	/*--------------------------------------------------------------*/
+		cs->mr_deficit = 0.0;
+	
 	/*--------------------------------------------------------------*/
 	/* finally if there is really nothing restart with small amount of growth   */
 	/*	we allow only a certain amount of resprouting based on 	*/
 	/*	a stratum default file parameterization 		*/
 	/*--------------------------------------------------------------*/
-	//if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) {
+
 	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) <= epc.min_leaf_carbon) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
-		//printf("\n Resprouting stratum %d", id);
-		cs->stem_density = epc.resprout_stem_density;
+		printf("\n Resprouting stratum %d", id);
+
+		/*cs->stem_density = epc.resprout_stem_density;*/
+		cs->mortality_fract = 1.0;
 		cs->num_resprout += 1;
 		cs->age = 0.0;
 		cs->cpool = epc.resprout_leaf_carbon;
@@ -485,83 +507,61 @@ int allocate_annual_growth(				int id,
 		ns->frootn_store = cs->frootc_store / epc.froot_cn;
 		ndf->leafn_store_to_leafn_transfer = ns->leafn_store;
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
+
+		cdf->gresp_store_to_gresp_transfer = (cdf->leafc_store_to_leafc_transfer + 
+						cdf->frootc_store_to_frootc_transfer)	;
 		cs->leafc_transfer = 0.0;
 		cs->leafc = 0.0;
 		cs->frootc_transfer = 0.0;
 		cs->frootc = 0.0;
 		cs->leafc_age1 = 0.0;
 		cs->leafc_age2 = 0.0;
-		//cs->frootc_transfer = 0.0;
 		ns->leafn_transfer = 0.0;
 		ns->frootn_transfer = 0.0;
 		ns->leafn = 0.0;
 		ns->frootn = 0.0;
-		cdf->gresp_store_to_gresp_transfer = 0.0;
+		cs->gresp_transfer = 0.0;
+
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 
 		if (epc.veg_type == TREE) {
-			cs->livecrootc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			cs->livecrootc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc * epc.alloc_crootc_stemc * epc.alloc_livewoodc_woodc;
 			ns->livecrootn_store = cs->livecrootc_store / epc.livewood_cn;
 			cdf->livecrootc_store_to_livecrootc_transfer = cs->livecrootc_store;
 			ndf->livecrootn_store_to_livecrootn_transfer = ns->livecrootn_store;
 
-			cs->livestemc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			cs->livestemc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc* epc.alloc_livewoodc_woodc;;
 			ns->livestemn_store = cs->livestemc_store / epc.livewood_cn;
 			cdf->livestemc_store_to_livestemc_transfer = cs->livestemc_store;
 			ndf->livestemn_store_to_livestemn_transfer = ns->livestemn_store;
 
-			cs->deadcrootc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			cs->deadcrootc_store = cs->livecrootc_store* (1-epc.alloc_livewoodc_woodc);
 			ns->deadcrootn_store = cs->deadcrootc_store / epc.deadwood_cn;
 			cdf->deadcrootc_store_to_deadcrootc_transfer = cs->deadcrootc_store;
 			ndf->deadcrootn_store_to_deadcrootn_transfer = ns->deadcrootn_store;
 
-			cs->deadstemc_store = epc.resprout_leaf_carbon * epc.alloc_stemc_leafc;
+			cs->deadstemc_store = cs->livestemc_store * (1-epc.alloc_livewoodc_woodc);
 			ns->deadstemn_store = cs->deadstemc_store / epc.deadwood_cn;
 			cdf->deadstemc_store_to_deadstemc_transfer = cs->deadstemc_store;
 			ndf->deadstemn_store_to_deadstemn_transfer = ns->deadstemn_store;
 
-			cs->live_stemc = 0.0;
-			cs->dead_stemc = 0.0;
-			cs->live_crootc = 0.0;
-			cs->dead_crootc = 0.0;
-			ns->live_stemn = 0.0;
-			ns->dead_stemn = 0.0;
-			ns->live_crootn = 0.0;
-			ns->dead_crootn = 0.0;
-
-			/*cs->deadstemc_store =  0.0;
-			cs->deadcrootc_store =  0.0;
-			ns->deadstemn_store =  0.0;
-			ns->deadcrootn_store =  0.0;*/
-
-			cs->livestemc_transfer =  0.0;
-			cs->deadstemc_transfer =  0.0;
-			cs->livecrootc_transfer =  0.0;
-			cs->deadcrootc_transfer =  0.0;
-			ns->livestemn_transfer =  0.0;
-			ns->deadstemn_transfer =  0.0;
-			ns->livecrootn_transfer =  0.0;
-			ns->deadcrootn_transfer =  0.0;
-
-			cdf->livestemc_store_to_livestemc_transfer = 0.0;
-			cdf->deadstemc_store_to_deadstemc_transfer = 0.0;
-			cdf->livecrootc_store_to_livecrootc_transfer = 0.0;
-			cdf->deadcrootc_store_to_deadcrootc_transfer = 0.0;
-
-			ndf->livestemn_store_to_livestemn_transfer = 0.0;
-			ndf->deadstemn_store_to_deadstemn_transfer = 0.0;
-			ndf->livecrootn_store_to_livecrootn_transfer = 0.0;
-			ndf->deadcrootn_store_to_deadcrootn_transfer = 0.0;
-
+			cdf->gresp_store_to_gresp_transfer += 
+				(cdf->livestemc_store_to_livestemc_transfer +
+				cdf->deadstemc_store_to_deadstemc_transfer +
+				cdf->livecrootc_store_to_livecrootc_transfer +
+				cdf->deadcrootc_store_to_deadcrootc_transfer);
+				
+			
 		} /* end if TREE */
+			
 		} /* end if resprout */
 	} /* end if less than min_leaf_carbon */
 	else  {
-		 // cs->num_resprout = max(cs->num_resprout-1,0);
-		 		 cs->age = cs->age + 1.0;
+		 // cs->num_resprout = max(cs->num_resprout-1,0);	
+		 cs->age = cs->age + 1.0;
 		 cs->leafc_age2 = cs->leafc;
 		 cs->leafc_age1 = 0.0;
-		 if (cs->age > 10000000.0) {
+		 if (cs->age > 10000000.0) { 
 			printf("\n\n Age has not been reset for %lf years Resetting to avoid numerical issues",
 						cs->age);
 				cs->age=1.0;
@@ -581,8 +581,8 @@ int allocate_annual_growth(				int id,
 		cs->livecrootc_transfer += cdf->livecrootc_store_to_livecrootc_transfer;
 		cs->deadcrootc_transfer += cdf->deadcrootc_store_to_deadcrootc_transfer;
 	}
-
-
+	
+		
 	/* update states variables */
 	ns->leafn_transfer    += ndf->leafn_store_to_leafn_transfer;
 	ns->frootn_transfer   += ndf->frootn_store_to_frootn_transfer;
@@ -593,6 +593,17 @@ int allocate_annual_growth(				int id,
 		ns->deadcrootn_transfer += ndf->deadcrootn_store_to_deadcrootn_transfer;
 	}
 
+
+	/* transfer excess N in npool to retransn */
+	if (ns->npool > ZERO) {
+		avg_cn = cs->cpool/ns->npool;	
+		if (cs->cpool/ns->npool < LIVELAB_CN) {
+				excess_n = ns->npool - cs->cpool/LIVELAB_CN;
+				ns->npool -= excess_n;
+				ns->retransn += excess_n;
+		}
+	}
+	
 	/* for deciduous system, force leafc and frootc to exactly 0.0 on the
 	last day */
 	if (epc.phenology_type != EVERGREEN){

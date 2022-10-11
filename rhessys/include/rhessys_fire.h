@@ -1,5 +1,6 @@
 #pragma once
 
+#define MAXSTR 200
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -52,7 +53,8 @@ struct fire_default {
 	int calc_fire_effects; // 0 for no fire effects, 1 for fire effects
 	int seed_multiplier; //controlled stochastic NREN 201808
 	int include_wui; //0 for no WUI grid, 1 for wui grid--0 by default
-	int calc_above_ground_litter; //0 for no need to calculate the differences between above and below ground litter
+	int fire_size_name; // value to append to FireSizes.txt filename. This file is appended to every time WMFire is called. defaults to 1
+	double wind_shift; // shifts the wind direction distribution so the center is pi (splits the modes)
 //	char **patch_file_name;
 };
 
@@ -85,6 +87,7 @@ struct fire_object
 	double understory_et; //evapotranspiration of only the understory
 	double understory_pet; //potential evapotranspiration of only the understory
 	double fire_size; // I think this would be the easiest way to transfer fire size to rhessys,and allow for an if fire_size>0 then calculate fire effects, otherwise don't bother; keep as 0 in general, and just fill in the first element in the grid as a placeholder
+	int iter; // iteration for fire progression for burned cells. -1 if unburned
 						// returned as the number of pixels, should be converted to ha
 	//double *wui_dists;  this has to be a dynamically allocated array with nWUI from the fire default
 	//struct node_fire_wui_dist *patch_wui_dist[3] // intended to be an array of 3 patch WUI linked lists

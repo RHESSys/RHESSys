@@ -52,23 +52,23 @@ double compute_potential_N_uptake_Dickenson(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	double day_gpp;     /* daily gross production */
-	double day_mresp;   /* daily total maintenance respiration */
 	double cnl;         /* RATIO   leaf C:N      */
 	double cnfr;        /* RATIO   fine root C:N */
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
-	double fwood, fleaf, froot, flive, fdead; 	/* fraction allocate to each component */
-	double total_wood, B,C;
-	double mean_cn;
-	double plant_ndemand;
+	double fstem, fcroot,fwood, fleaf, froot, fdead, fbroot; 	/* fraction allocate to each component */
+	double f4;
+	double mean_cn, ratio;
+	double transfer,plant_ndemand;
 	/*---------------------------------------------------------------
 	Assess the carbon availability on the basis of this day's
 	gross production and maintenance respiration costs
 	----------------------------------------------------------------*/
 	cs->availc = cdf->psn_to_cpool-cdf->total_mr;
 	/* no allocation when the daily C balance is negative */
-	if (cs->availc < 0.0) cs->availc = 0.0;
+ 	if (cs->availc < 0.0) {
+                cs->mr_deficit += -cs->availc;
+                        cs->availc = 0.0; }
 	/* test for cpool deficit */
 	if (cs->cpool < 0.0){
 	/*--------------------------------------------------------------
@@ -98,11 +98,23 @@ double compute_potential_N_uptake_Dickenson(
 		}
 	} /* end if negative cpool */
 
+
+	/*---------------------------------------------------------------
+	Also try to reduce any seasonal maintenance respiration deficit
+		-----------------------------------------------*/
+	 if (cs->mr_deficit > ZERO) {
+                 transfer = min(cs->availc, cs->mr_deficit);
+                  cs->availc -= transfer;
+                   cs->cpool += transfer;
+                cs->mr_deficit -= transfer;
+                }
+
 	/* assign local values for the allocation control parameters */
 	cnl = epc.leaf_cn;
 	cnfr = epc.froot_cn;
 	cnlw = epc.livewood_cn;
 	cndw = epc.deadwood_cn;
+
 	/*---------------------------------------------------------------*/
 	/* constant B and C are currently set for forests from Dickenson et al. */	
 	/*----------------------------------------------------------------*/
@@ -110,46 +122,61 @@ double compute_potential_N_uptake_Dickenson(
 
 	fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
 	fleaf = min(fleaf, 1.0);
-	total_wood = (cs->live_crootc + cs->dead_crootc + cs->live_stemc + cs->dead_stemc);
 
-	
-	if (epc.veg_type==TREE) {
-		if (2*fleaf < 0.8) {
-			froot = fleaf;
-			fwood= 1.0-fleaf-froot;
+	if (epc.veg_type == TREE) {
+
+
+		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
+		fleaf = min(fleaf, 1.0);
+		fbroot = fleaf * epc.alloc_frootc_leafc ;
+		ratio = fbroot/fleaf;
+
+		if (fbroot+fleaf > 0.95) {
+			fleaf = 0.95/(1+ratio);
+			fbroot = fleaf*ratio;
 			}
-		else {
-			fleaf = min(fleaf, 0.6);
-			froot = 0.5*(1-fleaf);
-			fwood = 0.5*(1-fleaf);
-			}
+		
+		fcroot = fbroot/(1+epc.alloc_frootc_crootc);
+		froot = fbroot-fcroot;
+
+		fstem = 1.0-(froot+fcroot+fleaf);
+		fwood = fstem+fcroot;
 		}
+
 	else {
-		fwood = 0;
-		froot = (1-fleaf);
-		}
-	
-	flive = epc.alloc_livewoodc_woodc;
-	fdead = 1-flive;
+		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
+		fleaf = min(fleaf, 1.0);
+		froot = fleaf * epc.alloc_frootc_leafc ;
+		fcroot=0.0;
+		fwood=0.0;
+	}
 
-	if ((fleaf+froot) > ZERO) {
+
+	f4 = epc.alloc_livewoodc_woodc;
 	if (epc.veg_type == TREE){
-		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + flive * fwood / cnlw + fwood * fdead / cndw);
+		if ((fleaf + froot + fwood) > ZERO) 
+			mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
+		else mean_cn = 1.0;
 	}
-	else{
-	   mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
-	}
-	}
-	else mean_cn = 1.0;
+        else{
+		if ((fleaf + froot) > ZERO) 	
+           		mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
+	else
+		mean_cn=1.0;
+        }
 
+	if (mean_cn > ZERO)
+		plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
+	else
+		plant_ndemand = 0.0;
 
 
 	cdf->fleaf = fleaf;
+	cdf->fwood = fwood;
 	cdf->froot = froot;
-	cdf->fwood = fwood;	
+	cdf->fcroot = fcroot;
 
-	/* add in nitrogen for plants and for nitrogen deficit in pool */
-	plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn; 
+	
 	
 	return(plant_ndemand);
 } /* 	end compute_potential_N_uptake */

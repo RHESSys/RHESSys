@@ -243,7 +243,7 @@ void	output_basin(			int routing_flag,
 				if (patch[0].sat_deficit <= ZERO)
 					asat_area += patch[0].area;
 				if (routing_flag == 1) {
-					if (patch[0].drainage_type == STREAM  )
+					if (patch[0].drainage_type == STREAM  || patch[0].innundation_list[0].num_neighbours == 0) //from Min
 						astreamflow += patch[0].streamflow*patch[0].area;
 						areturn_flow += patch[0].return_flow * patch[0].area;
 						abase_flow += patch[0].base_flow * patch[0].area;

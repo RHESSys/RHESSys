@@ -65,13 +65,16 @@ double compute_potential_N_uptake(
 	double cnmax;       /* RATIO   max of root and leaf C:N      */
 	double c_allometry, n_allometry;
 	double plant_ndemand;
+	double transfer;
 	/*---------------------------------------------------------------
 	Assess the carbon availability on the basis of this day's
 	gross production and maintenance respiration costs
 	----------------------------------------------------------------*/
 	cs->availc = cdf->psn_to_cpool-cdf->total_mr;
 	/* no allocation when the daily C balance is negative */
-	if (cs->availc < 0.0) cs->availc = 0.0;
+ 	if (cs->availc < 0.0) {
+                cs->mr_deficit += -cs->availc;
+                        cs->availc = 0.0; }
 	/* test for cpool deficit */
 	if (cs->cpool < 0.0){
 	/*--------------------------------------------------------------
@@ -100,6 +103,16 @@ double compute_potential_N_uptake(
 			cs->availc = 0.0;
 		}
 	} /* end if negative cpool */
+
+	/*---------------------------------------------------------------
+	Also try to reduce any seasonal maintenance respiration deficit
+		-----------------------------------------------*/
+	 if (cs->mr_deficit > ZERO) {
+                 transfer = min(cs->availc, cs->mr_deficit);
+                  cs->availc -= transfer;
+                   cs->cpool += transfer;
+                cs->mr_deficit -= transfer;
+                }
 
 	/* assign local values for the allocation control parameters */
 	f1 = epc.alloc_frootc_leafc;

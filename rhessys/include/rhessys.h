@@ -434,6 +434,10 @@ struct accumulate_patch_object
     double unsat_drain_ratio;
     double fpi;
     double net_mineralized;
+   double soilc;
+   double litterc;
+   double soiln;
+   double littern;
 
 
 };
@@ -1219,6 +1223,7 @@ struct  landuse_default
         int winter_days;
         int spring_days;
         double sh_l_diff;
+        double  routing_threshold;                      /* > 0, m/m (z/sat_def) */
 };
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/
@@ -1578,6 +1583,7 @@ struct  litter_object
 
 struct  litter_c_object
         {
+    double totalc; 	/* (kgC/m2) total litter C */
     double litr1c;         /* (kgC/m2) litter labile C */
     double litr2c;         /* (kgC/m2) litter unshielded cellulose C */
     double litr3c;         /* (kgC/m2) litter shielded cellulose C */
@@ -1592,6 +1598,7 @@ struct  litter_c_object
 
 struct  litter_n_object
         {
+    double totaln; 	/* (kgN/m2) total litter N */
     double litr1n;          /* (kgN/m2) litter labile N */
     double litr2n;          /* (kgN/m2) litter unshielded cellulose N */
     double litr3n;          /* (kgN/m2) litter shielded cellulose N */
@@ -1752,6 +1759,8 @@ struct patch_object
         double  base_flow;              /* m water */
         double  cap_rise;               /* m water / day */
         double  tmp;                    /* diagnostic variable - open units */
+	double  canopy_rain_stored; 	/* m water */
+	double  canopy_snow_stored; 	/* m water */
         double  daily_fire_litter_turnover;                     /* (DIM) 0-1 */
         double  delta_rain_stored;      /* m water      */
         double  delta_snow_stored;      /* m water      */
@@ -1866,6 +1875,7 @@ struct patch_object
         double  NO3_throughfall;        /* kg/m2 day  */
         double  NO3_throughfall_final;  /* kg/m2 day */
         double  rain_stored;            /* m water      */
+	double	total_water_in;		/* m water */
         double  slope;                  /* degrees              */
         double  S;                      /* m/m          */
         double  sat_zone_storage;       /* m water      */
@@ -2289,12 +2299,14 @@ struct  command_line_object
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
         int             multiscale_flag;
+		int				parallel_flag;
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
         char    stream_routing_filename[FILEPATH_LEN];
         char    reservoir_operation_filename[FILEPATH_LEN];
         char    world_filename[FILEPATH_LEN];
+        char    redefine_filename[FILEPATH_LEN];
         char    world_header_filename[FILEPATH_LEN];
         char    tec_filename[FILEPATH_LEN];
         char    vegspinup_filename[FILEPATH_LEN];
@@ -2324,6 +2336,7 @@ struct  command_line_object
 	double	fs_percolation;
 	double	fs_threshold;
         struct  output_flag     output_flags;
+        bool    legacy_output_flag; // Remove when legacy output is removed.
         struct  b_option        *b;
         struct  h_option        *h;
         struct  z_option        *z;
@@ -2415,6 +2428,7 @@ struct phenology_struct
         double frootlitfalln; /* (kgN/m2) current growth year leaflitter nitrogen */
         double daily_allocation;    /* (DIM) signal to allocate when set to 1 */
         double gsi;             /* (0 to 1) growing season phenology index */
+	double pnow;		/* proportion allocated on this day 0-1 */
                 int annual_allocation;    /* (DIM) signal to allocate when set to 1 */
         int expand_startday;       /* (yday) yearday of first leaf growth */
         int litfall_startday;       /* (yday) yearday of litterfall growth */
@@ -2467,6 +2481,7 @@ struct cstate_struct
     double deadcrootc_transfer;/* (kgC/m2) dead coarse root C to be allocated from last season */
     double frootc_transfer;     /* (kgC/m2) leaf C to be allocated from last season */
     double gresp_transfer;    /* (kgC/m2) growth respiration C to be allocated from last season*/
+    double mr_deficit; /* (kgC/mw) temporary store to keep track of seasonal maintence respiration deficit */
 
     double leafc_store;     /* (kgC/m2) stored leaf C stored from year's growth */
     double livestemc_store; /* (kgC/m2) live stemwood C stored from this years growth */
@@ -2590,6 +2605,7 @@ struct epvar_struct
         double fwood; /* 0-1 */
 
         /* gross PSN input */
+    double added_carbon;  /* (kgC/m2) carbon added due to resprouting, height adjustments to prevent > 100 cover */
     double assim_sunlit; /* (umol/m2/s per leaf) */
     double assim_shade; /* (umol/m2/s  per leaf) */
     double psn_to_cpool;    /* (kgC/m2/d) gross photosynthesis */
@@ -2988,6 +3004,8 @@ struct accumulate_fire_object {
   double  canopy_subtarget_prop_mort;
   double  canopy_subtarget_prop_mort_consumed;
   double  canopy_subtarget_prop_c_consumed;
+	//double  canopy_subtarget_c;
+	double  understory_c_consumed;
   double  canopy_subtarget_c;
 
   double  litter_c_consumed;
@@ -3110,13 +3128,17 @@ struct  stratum_default
         struct accumulate_strata_object {
 
         int length;
-        double psn;
+        double resp;
+        double gpsn;
         double lai;
         double lwp;
         double minNSC;
 	double stemc;
 	double rootc;
 	double leafc;
+	double totalc;
+	double totaln;
+	double height;
         };
 
 

@@ -384,7 +384,8 @@ void		patch_daily_F(
 
 	void	compute_fire_effects(
 		struct patch_object *,
-		double);
+		double,
+		struct command_line_object *command_line);
 
 	void    compute_shaded_kdown(
 		struct  patch_object *,
@@ -402,6 +403,12 @@ void		patch_daily_F(
 
 
 	long julday( struct date);
+	void	compute_Lstar(
+		int,
+		struct	basin_object *,
+		struct	zone_object	*,
+		struct	patch_object *);
+	
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -613,6 +620,7 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
 
+	patch[0].total_water_in = zone[0].rain + zone[0].snow + irrigation;
 	/* the N_depo is add in patch_hourly.c in hourly */
 	/* it could be washed away hourly or daily, depending on whether the precipitation data is hourly or daily */
 	patch[0].NO3_throughfall = 0;
@@ -655,6 +663,7 @@ void		patch_daily_F(
 				}
 			if ((clim_event.edate.year != 0) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				snow_melt_input = clim_event.value;
+				patch[0].total_water_in += snow_melt_input;
 				}
 			else snow_melt_input = 0.0;
 			}
@@ -731,7 +740,7 @@ void		patch_daily_F(
 				printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
 				compute_fire_effects(
 					patch,
-					pspread);
+					pspread, command_line);
 
 			}
 		}
@@ -1162,10 +1171,7 @@ void		patch_daily_F(
 
 			if (snow_melt_input == -999.0)
 				patch[0].rain_throughfall += patch[0].snow_melt;
-			else {
-				patch[0].rain_throughfall += snow_melt_input;
-				patch[0].snow_melt = snow_melt_input;
-			}
+		
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;
 			/* Force turbulent fluxes to 0 under snowpack */
@@ -1174,6 +1180,7 @@ void		patch_daily_F(
 		}
 
 		else {
+			if (snow_melt_input == -999.0) 
 			patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth = 0.0;
@@ -1200,6 +1207,7 @@ void		patch_daily_F(
 	}
 
 	if (patch[0].snowpack.water_equivalent_depth < 0.0001) {
+		if (snow_melt_input == -999.0) 
 		patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 		patch[0].snowpack.water_equivalent_depth = 0.0;
 		patch[0].snowpack.energy_deficit = 0.001;
@@ -1214,6 +1222,10 @@ void		patch_daily_F(
 			   patch[0].Kup_diffuse/86.4);
 	}
 
+	if (snow_melt_input  > -999.0)  {
+			patch[0].rain_throughfall += snow_melt_input;
+			patch[0].snow_melt = snow_melt_input;
+			}
 
 	/*--------------------------------------------------------------*/
 	/*	Cycle through patch layers with height less than the	*/
@@ -1644,6 +1656,8 @@ void		patch_daily_F(
 	patch[0].totalc = 0.0;
 	patch[0].totaln = 0.0;
 	patch[0].lai = 0.0;
+	patch[0].canopy_rain_stored = 0.0;
+	patch[0].canopy_snow_stored = 0.0;
 	unsat_zone_patch_demand = patch[0].exfiltration_unsat_zone;
 	sat_zone_patch_demand = patch[0].exfiltration_sat_zone;
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
@@ -2197,6 +2211,8 @@ void		patch_daily_F(
 			strata->acc_year.psn += strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
 			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
+			patch[0].canopy_rain_stored += strata->cover_fraction *	strata->rain_stored;
+			patch[0].canopy_snow_stored += strata->cover_fraction *	strata->snow_stored;
 		}
 	}
 
@@ -2488,16 +2504,18 @@ void		patch_daily_F(
 	patch[0].soil_cs.totalc = ((patch[0].soil_cs.soil1c)
 		+ (patch[0].soil_cs.soil2c) +	(patch[0].soil_cs.soil3c)
 		+ (patch[0].soil_cs.soil4c));
-	patch[0].totalc += ((patch[0].soil_cs.totalc) + (patch[0].litter_cs.litr1c)
+	patch[0].litter_cs.totalc = ((patch[0].litter_cs.litr1c)
 		+ (patch[0].litter_cs.litr2c) + (patch[0].litter_cs.litr3c)
 		+ (patch[0].litter_cs.litr4c));
 	patch[0].soil_ns.totaln = ((patch[0].soil_ns.soil1n)
 		+ (patch[0].soil_ns.soil2n) + (patch[0].soil_ns.soil3n)
 		+ (patch[0].soil_ns.soil4n) + (patch[0].soil_ns.nitrate) //+ (patch[0].sat_NO3) + (patch[0].sat_NH4)// maybe here 20210903
 		+ (patch[0].soil_ns.sminn));
-	patch[0].totaln += (patch[0].soil_ns.totaln + (patch[0].litter_ns.litr1n)
+	patch[0].litter_ns.totaln = ((patch[0].litter_ns.litr1n)
 		+ (patch[0].litter_ns.litr2n) + (patch[0].litter_ns.litr3n)
 		+ (patch[0].litter_ns.litr4n));
+	patch[0].totalc += (patch[0].soil_cs.totalc + patch[0].litter_cs.totalc);
+	patch[0].totaln += (patch[0].soil_ns.totaln + patch[0].litter_ns.totaln);
 	patch[0].nitrogen_balance = patch[0].preday_totaln - patch[0].totaln - patch[0].ndf.N_to_gw
 		+ zone[0].ndep_NO3 + zone[0].ndep_NH4 - patch[0].ndf.denitrif + fertilizer_NO3 + fertilizer_NH4;
 

@@ -1085,7 +1085,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 							  + patch[0].hourly_sur2stream_flow;*/
 
 				//hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
-                                if (patch[0].drainage_type == STREAM) {
+                  if (patch[0].drainage_type == STREAM || patch[0].innundation_list[0].num_neighbours == 0) { //From Min if single patch
 					patch[0].streamflow += patch[0].return_flow
 						+ patch[0].base_flow;
 				}

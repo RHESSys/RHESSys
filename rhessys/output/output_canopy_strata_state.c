@@ -70,6 +70,8 @@ void	output_canopy_strata_state(
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc)               , "cs.leafc");
 	fprintf(outfile , "\n            ");
+	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.mr_deficit)          , "cs.mr_deficit");
+	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.dead_leafc)          , "cs.dead_leafc");
 	fprintf(outfile , "\n            ");
 	fprintf(outfile , "%-30.8f %s"       , (canopy_strata[0].cs.leafc_store)         , "cs.leafc_store");

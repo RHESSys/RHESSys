@@ -260,6 +260,9 @@ void  update_drainage_land(
 
 	patch[0].Qout += (route_to_patch / patch[0].area);// here change NREN 2021104
     patch[0].Qout = max(0.0, patch[0].Qout);
+	if (patch[0].innundation_list[0].num_neighbours == 0) { //From Min
+        patch[0].base_flow += (route_to_patch / patch[0].area);
+    }
 
 	/*--------------------------------------------------------------*/
 	/*	calculate any return flow associated with this patch	*/
@@ -371,6 +374,11 @@ void  update_drainage_land(
 		route_to_surface = (Qout *  patch[0].area);
 		patch[0].detention_store -= Qout;
 		patch[0].surface_Qout += Qout;
+		
+		    //09132022LML, from Min, do I need to add the nitrogen process too?
+		if (patch[0].innundation_list[0].num_neighbours == 0) {
+			patch[0].base_flow += (route_to_patch / patch[0].area);
+			}
 
 		}
 
@@ -525,6 +533,8 @@ void  update_drainage_land(
 		if (command_line[0].grow_flag > 0 && neigh[0].canopy_strata[0][0].defaults[0][0].rout_N == 1) {
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NO3_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NO3 += Nin;
+			if (neigh[0].drainage_type == STREAM)
+				neigh[0].streamNO3_from_surface += Nin;
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * NH4_leached_to_surface) / neigh[0].area;
 			neigh[0].surface_NH4 += Nin;
 			Nin = (patch[0].surface_innundation_list[d].neighbours[j].gamma * DON_leached_to_surface) / neigh[0].area;

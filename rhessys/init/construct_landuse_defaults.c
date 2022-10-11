@@ -113,6 +113,7 @@ struct landuse_default *construct_landuse_defaults(
         default_object_list[i].winter_days = 		getIntParam(&paramCnt, &paramPtr, "winter_days", "%d", 12, 1);
         default_object_list[i].spring_days = 		getIntParam(&paramCnt, &paramPtr, "spring_days", "%d", 12, 1);
         default_object_list[i].sh_l_diff = getDoubleParam(&paramCnt, &paramPtr, "sh_l_diff", "%lf", 0.9, 1);
+        default_object_list[i].routing_threshold = getDoubleParam(&paramCnt, &paramPtr, "routing_threshold", "%lf", 0.001, 1);
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/

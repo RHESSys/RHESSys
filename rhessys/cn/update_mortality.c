@@ -252,6 +252,20 @@ printf("\n at line 248  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 	/* ---------------------------------------- */
 	/* CARBON mortality state variable update   */
 	/* ---------------------------------------- */
+	/* if cpool or npooll has gone negative = just zero it out and add nothing to litter */
+	/* this could cause C balance or N balance issues but best option as Cpool really shouldn't be negative */
+	if ((m_cpool < 0) || (m_npool < 0)) {
+		cs->cpool = 0.0;
+		ns->npool = 0.0;
+		/* zero out fluxes to litter */
+		m_cpool = 0.0;
+		m_npool = 0.0;
+		}
+
+	/* even though its not part of carbon balance we probably want to update any mr_deficit*/
+
+	cs->mr_deficit -= mort.mort_cpool * cs->mr_deficit;
+	cs->mr_deficit = max(0.0, cs->mr_deficit);
 
 	/* ABOVEGROUND C POOLS */
 
