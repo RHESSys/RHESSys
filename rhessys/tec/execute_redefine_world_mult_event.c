@@ -68,7 +68,7 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 		struct base_station_object **,
 		struct default_object *,
 		struct basin_object *);
-	
+
 	void skip_strata( struct command_line_object *,
 		FILE *,
 		int,
@@ -99,25 +99,25 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 		int,
 		struct base_station_object **,
 		struct default_object *,
-		struct basin_object *);	
-	
-	void compute_mean_hillslope_parameters( struct hillslope_object *);
-	struct canopy_strata_object	*find_stratum_in_patch( int, 
-		struct patch_object *);
-	struct patch_object	*find_patch_in_zone( int, 
-		struct zone_object *);
-	struct zone_object	*find_zone_in_hillslope( int, 
-		struct hillslope_object *);
-	struct hillslope_object	*find_hillslope_in_basin( int, 
 		struct basin_object *);
-	struct basin_object	*find_basin( int, 
+
+	void compute_mean_hillslope_parameters( struct hillslope_object *);
+	struct canopy_strata_object	*find_stratum_in_patch( int,
+		struct patch_object *);
+	struct patch_object	*find_patch_in_zone( int,
+		struct zone_object *);
+	struct zone_object	*find_zone_in_hillslope( int,
+		struct hillslope_object *);
+	struct hillslope_object	*find_hillslope_in_basin( int,
+		struct basin_object *);
+	struct basin_object	*find_basin( int,
 		struct world_object *);
 	void sort_patch_layers( struct patch_object *, int *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	FILE	*world_input_file;
-	int	b,h,z,p,c;
+	int	b,h,z,p,c,rec;
 	int	basin_ID, world_ID, hill_ID, zone_ID, patch_ID, stratum_ID;
 	int	num_basin, num_hill, num_zone, num_patch, num_stratum;
 	char	world_input_filename[MAXSTR];
@@ -128,8 +128,8 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 	struct	zone_object	*zone;
 	struct	hillslope_object	*hillslope;
 	struct	basin_object	*basin;
-		
-	rec = 0;	
+
+	rec = 0;
 	/*--------------------------------------------------------------*/
 	/*	Try to open the world file in read mode.					*/
 	/*--------------------------------------------------------------*/
@@ -254,11 +254,11 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 												world[0].defaults,
 												patch,
 												stratum);
-									} /* end NULL canopy loop */								
+									} /* end NULL canopy loop */
 								} /* end NULL patch else */
-					
+
 							} /* end patch loop */
-			
+
 						} /* end zone if */
 
 						else {
@@ -293,9 +293,9 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 							} /* end NULL zone else */
 
 					} /* end zone loop */
-				
+
 				compute_mean_hillslope_parameters(hillslope);
-				
+
 			} /* end hillslope if */
 
 			else {
@@ -340,9 +340,9 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 					} /* end NULL zone loop */
 				} /* end NULL hillslope else */
 			} /* end hillslope loop */
-			
+
 		} /* end basin if*/
-		
+
 		else {
 			skip_basin(command_line, world_input_file,
 					   world[0].num_base_stations,
@@ -355,7 +355,7 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 				fscanf(world_input_file,"%d",&hill_ID);
 				read_record(world_input_file, record);
 				hillslope = find_hillslope_in_basin( hill_ID,
-													basin);				
+													basin);
 				skip_hillslope(command_line, world_input_file,
 							   world[0].num_base_stations,
 							   world[0].base_stations,
@@ -394,12 +394,12 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 										stratum);
 							} /* end NULL canopy loop */
 						} /* end NULL patch loop */
-					} /* end NULL zone loop */	
+					} /* end NULL zone loop */
 				} /* end NULL hillslope loop */
 			} /* end basin else */
-		
+
 		} /*end basin loop */
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Close the world_input_file.										*/
 	/*--------------------------------------------------------------*/

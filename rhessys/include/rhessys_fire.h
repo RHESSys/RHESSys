@@ -55,6 +55,7 @@ struct fire_default {
 	int include_wui; //0 for no WUI grid, 1 for wui grid--0 by default
 	int fire_size_name; // value to append to FireSizes.txt filename. This file is appended to every time WMFire is called. defaults to 1
 	double wind_shift; // shifts the wind direction distribution so the center is pi (splits the modes)
+	int calc_above_ground_litter; //0 for no need to calculate the differences between above and below ground litter
 //	char **patch_file_name;
 };
 

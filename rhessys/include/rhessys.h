@@ -3005,7 +3005,7 @@ struct accumulate_fire_object {
   double  canopy_subtarget_prop_mort_consumed;
   double  canopy_subtarget_prop_c_consumed;
 	//double  canopy_subtarget_c;
-	double  understory_c_consumed;
+
   double  canopy_subtarget_c;
 
   double  litter_c_consumed;
@@ -3130,6 +3130,7 @@ struct  stratum_default
         int length;
         double resp;
         double gpsn;
+        double psn;
         double lai;
         double lwp;
         double minNSC;

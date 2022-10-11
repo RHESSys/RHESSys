@@ -408,7 +408,7 @@ void		patch_daily_F(
 		struct	basin_object *,
 		struct	zone_object	*,
 		struct	patch_object *);
-	
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -839,7 +839,8 @@ void		patch_daily_F(
                 attack_mortality = world[0].defaults[0].beetle[0].attack_mortality;
                 compute_fire_effects(
                     patch,
-                    attack_mortality
+                    attack_mortality,
+                    command_line
 
                 );
 
@@ -1171,7 +1172,7 @@ void		patch_daily_F(
 
 			if (snow_melt_input == -999.0)
 				patch[0].rain_throughfall += patch[0].snow_melt;
-		
+
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth -= patch[0].snowpack.sublimation;
 			/* Force turbulent fluxes to 0 under snowpack */
@@ -1180,7 +1181,7 @@ void		patch_daily_F(
 		}
 
 		else {
-			if (snow_melt_input == -999.0) 
+			if (snow_melt_input == -999.0)
 			patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 			patch[0].snow_throughfall = 0.0;
 			patch[0].snowpack.water_equivalent_depth = 0.0;
@@ -1207,7 +1208,7 @@ void		patch_daily_F(
 	}
 
 	if (patch[0].snowpack.water_equivalent_depth < 0.0001) {
-		if (snow_melt_input == -999.0) 
+		if (snow_melt_input == -999.0)
 		patch[0].rain_throughfall += patch[0].snowpack.water_equivalent_depth;
 		patch[0].snowpack.water_equivalent_depth = 0.0;
 		patch[0].snowpack.energy_deficit = 0.001;
