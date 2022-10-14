@@ -1053,7 +1053,7 @@ struct  zone_default
         int    route_litter;
         double sh_litter;
         int direct_Ndep; /* 1 direct N dep to no-veg patch surface, 0 no-direct N dep to no-veg patch surface */
-
+        int veg_mort; /* to control vegtation mortality function from zone.def instead of command line, default is 0 to turn off veg mortality */
         };
 
 /*----------------------------------------------------------*/

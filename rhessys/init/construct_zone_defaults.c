@@ -165,6 +165,14 @@ struct zone_default *construct_zone_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].atm_CO2 = 		getDoubleParam(&paramCnt, &paramPtr, "atm_CO2", "%lf", 322.0, 1);
 		printf("default CO2 values is : %lf\n",default_object_list[i].atm_CO2);
+
+		default_object_list[i].veg_mort = getIntParam(&paramCnt, &paramPtr, "veg_mort", "%d", 0, 1); //vegetation mortality default is off
+		printf("vegetation mortality is: %d \n", default_object_list[i].veg_mort);
+		if (default_object_list[i].veg_mort == 0) {
+            command_line[0].vmort_flag = 0;
+		} else if (default_object_list[i].veg_mort == 1) {
+            command_line[0].vmort_flag = 1;
+		}
 		/*--------------------------------------------------------------*/
 		/*      if grow flag allocate a grow default structure for the  */
 		/*      ith object.                                             */
