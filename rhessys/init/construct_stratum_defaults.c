@@ -153,6 +153,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.lai_ratio = 		getDoubleParam(&paramCnt, &paramPtr, "epc.lai_ratio", "%lf", 2.6, 1);
 		default_object_list[i].epc.proj_swa = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_swa", "%lf", 1.4, 1);
 		default_object_list[i].epc.leaf_turnover = 	getDoubleParam(&paramCnt, &paramPtr, "epc.leaf_turnover", "%lf", 0.27, 1);
+		printf("leaf turnover is: %lf \n", default_object_list[i].epc.leaf_turnover);
 		default_object_list[i].epc.day_leafon = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafon", "%d", 91, 1);
 		default_object_list[i].epc.day_leafoff = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafoff", "%d", 260, 1);
 		default_object_list[i].epc.ndays_expand = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_expand", "%d", 30, 1);
@@ -172,6 +173,7 @@ struct stratum_default *construct_stratum_defaults(
 		}
 		default_object_list[i].epc.storage_transfer_prop = getDoubleParam(&paramCnt, &paramPtr, "epc.storage_transfer_prop", "%lf", 0.7, 1);
 		default_object_list[i].epc.cpool_mort_fract = getDoubleParam(&paramCnt, &paramPtr, "epc.cpool_mort_fract", "%lf", 0.001, 1);
+		printf("ecp.cpool_mort_fract is: %lf \n", default_object_list[i].epc.cpool_mort_fract);
 		default_object_list[i].epc.froot_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.froot_turnover", "%lf", 0.27, 1);
 
 		if  ((default_object_list[i].epc.veg_type == GRASS) || (default_object_list[i].epc.veg_type == C4GRASS)) {
@@ -356,6 +358,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.waring_pa = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pa", "%lf", 0.8, 1);
 		default_object_list[i].epc.waring_pb = getDoubleParam(&paramCnt, &paramPtr, "epc.waring_pb", "%lf", 2.5, 1);
 		default_object_list[i].epc.branch_turnover = getDoubleParam(&paramCnt, &paramPtr, "epc.branch_turnover", "%lf", 0.01, 1) / 365.0;
+		printf("branch turnover is: %lf \n", default_object_list[i].epc.branch_turnover*365);
 		default_object_list[i].epc.Tacclim = getIntParam(&paramCnt, &paramPtr, "epc.Tacclim", "%d", 0, 1);
 		default_object_list[i].epc.Tacclim_intercpt = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim_intercpt", "%lf",3.22, 1);
 		default_object_list[i].epc.Tacclim_slp = getDoubleParam(&paramCnt, &paramPtr, "epc.Tacclim_slp", "%lf",0.046, 1);
