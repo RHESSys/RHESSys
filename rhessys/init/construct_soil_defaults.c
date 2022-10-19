@@ -102,8 +102,10 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "patch_default_ID", "%d", 3, 1);
 		default_object_list[i].theta_psi_curve = 	getIntParam(&paramCnt, &paramPtr, "theta_psi_curve", "%d", 1.0, 1);
 		default_object_list[i].Ksat_0 = 		getDoubleParam(&paramCnt, &paramPtr, "Ksat_0", "%lf", 3.0, 1);
+		default_object_list[i].Ksat_0_v = 		getDoubleParam(&paramCnt, &paramPtr, "Ksat_0_v", "%lf", 3.0, 1);
 		default_object_list[i].cap_rise_max = 		getDoubleParam(&paramCnt, &paramPtr, "cap_rise_max", "%lf", 0.8, 1);
 		default_object_list[i].m = 			getDoubleParam(&paramCnt, &paramPtr, "m", "%lf", 0.12, 1);
+		default_object_list[i].m_v = 			getDoubleParam(&paramCnt, &paramPtr, "m_v", "%lf", 0.12, 1);
 		default_object_list[i].porosity_0 = 		getDoubleParam(&paramCnt, &paramPtr, "porosity_0", "%lf", 0.435, 1);
 		default_object_list[i].porosity_decay = 	getDoubleParam(&paramCnt, &paramPtr, "porosity_decay", "%lf", 4000.0, 1);
 		default_object_list[i].p3 = 			getDoubleParam(&paramCnt, &paramPtr, "P3", "%lf", 0.0, 1); // param name upper case in param file
@@ -112,7 +114,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].psi_max = 		getDoubleParam(&paramCnt, &paramPtr, "psi_max", "%lf", 0.01, 1);
 		default_object_list[i].soil_depth = 		getDoubleParam(&paramCnt, &paramPtr, "soil_depth", "%lf", 200.0, 1);
 		 printf("soil_depth defs is: %lf\n",default_object_list[i].soil_depth);
-		default_object_list[i].m_z = 			getDoubleParam(&paramCnt, &paramPtr, "m_z", "%lf", 0.4, 1);
+		//default_object_list[i].m_z = 			getDoubleParam(&paramCnt, &paramPtr, "m_z", "%lf", 0.4, 1);
 		default_object_list[i].detention_store_size = 	getDoubleParam(&paramCnt, &paramPtr, "detention_store_size", "%lf", 0.0, 1);
 		default_object_list[i].deltaz = 		getDoubleParam(&paramCnt, &paramPtr, "deltaZ", "%lf", 1.0, 1); // param name contains uppercase "Z" in param file
 		default_object_list[i].active_zone_z = 		getDoubleParam(&paramCnt, &paramPtr, "active_zone_z", "%lf", 5.0, 1);
@@ -202,9 +204,9 @@ struct soil_default *construct_soil_defaults(
 		/*	but sensitivity analysis -s is not applied to them	*/
 		/*      use -sv to change these parameters			*/
 		/*--------------------------------------------------------------*/
-			default_object_list[i].m_v = default_object_list[i].m;
+		/*	default_object_list[i].m_v = default_object_list[i].m;
 			default_object_list[i].mz_v = default_object_list[i].m_z;
-			default_object_list[i].Ksat_0_v = default_object_list[i].Ksat_0;
+			default_object_list[i].Ksat_0_v = default_object_list[i].Ksat_0;*/
 
 
 		/*--------------------------------------------------------------*/
@@ -225,6 +227,9 @@ struct soil_default *construct_soil_defaults(
 				default_object_list[i].Ksat_0 *= command_line[0].sen[K];
 				default_object_list[i].soil_depth *= command_line[0].sen[SOIL_DEPTH];
 		}
+		// why need to change here
+		default_object_list[i].m_z = 	default_object_list[i].m/default_object_list[i].porosity_0;
+		default_object_list[i].mz_v = 	default_object_list[i].m_v/default_object_list[i].porosity_0;
 
 		/*--------------------------------------------------------------*/
 		/*      calculate water_equivalent depth of soil                */
