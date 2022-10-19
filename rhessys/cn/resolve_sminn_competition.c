@@ -62,7 +62,7 @@ int resolve_sminn_competition(
 	/* for really small rooting depths this can be problematic	*/
 	/* for now provide a minimum access				*/
 	/*--------------------------------------------------------------*/
-	
+
 	if (sum_ndemand > ZERO) {
 	perc_inroot = (1.0-exp(-N_decay_rate * rooting_depth)) /
 			(1.0 - exp(-N_decay_rate * active_zone_z));
@@ -122,8 +122,8 @@ int resolve_sminn_competition(
 
 		if (ndf->plant_potential_ndemand == 0.0) {
 			ns_soil->fract_potential_uptake = 0.0;
-			//ndf->plant_avail_uptake = actual_uptake;
-			ndf->plant_avail_uptake = 0.0; // zero
+			ndf->plant_avail_uptake = actual_uptake;
+			//ndf->plant_avail_uptake = 0.0; // zero
 		}
 		else {
 			ns_soil->fract_potential_uptake = actual_uptake
@@ -131,18 +131,18 @@ int resolve_sminn_competition(
 			ndf->plant_avail_uptake = actual_uptake;
 		}
 	}
-    
+
 	}
-/* no demand case */	
-	else { 
+/* no demand case */
+	else {
 		ns_soil->nlimit = 0;
 		ns_soil->fract_potential_immob = 1.0;
 		ns_soil->fract_potential_uptake = 1.0;
 		ndf->plant_avail_uptake = ndf->plant_potential_ndemand;
-		}	
-	
-	
-	
+		}
+
+
+
 	if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
         //printf("\nresolve sminn competition NH4 %e< ZERO", patch[0].sat_NH4);
         patch[0].sat_NH4 = 0.0;
