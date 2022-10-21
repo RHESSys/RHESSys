@@ -81,7 +81,7 @@ int update_gw_drainage(
 
 	drainage = surf_to_gw_coeff * patch[0].detention_store;
 	patch[0].detention_store -= drainage;
-	patch[0].gw_drainage = +drainage; //updaye here NREN this is drainge to ground water not drainage out
+	patch[0].gw_drainage = drainage; //update here NREN this is drainge to ground water not drainage out
 	hillslope[0].gw.storage += (drainage * patch[0].area / hillslope[0].area);
 
 	/*------------------------------------------------------*/

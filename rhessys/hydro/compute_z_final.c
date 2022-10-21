@@ -183,18 +183,13 @@ double	compute_z_final(
 			/*--------------------------------------------------------------*/
 			delta_water = -1 * z_final;
 			if (p < 999.9) {
-				if ( z_final < (p*p_0) ){
+
 					z_final = -1 * p *
 						log( 1 +  delta_water / ( p * p_0) );
 				}
-				else {
-					z_final = soil_depth;
-				}
-			}
+
 			else
-				{if ((-delta_water/p_0)>soil_depth) // should compare with soil_depth here
-					z_final=soil_depth;
-				else
+
 					z_final =  (0 - delta_water/p_0); // should be 0 because start from surface, z=0
 				} 
 		}

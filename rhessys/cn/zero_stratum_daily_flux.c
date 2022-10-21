@@ -57,6 +57,7 @@ int zero_stratum_daily_flux(
 	cdf->livestemc_to_deadstemc = 0.0;
 	cdf->livecrootc_to_deadcrootc = 0.0;
 	/* daily growth fluxes */
+	cdf->added_carbon = 0.0;
 	cdf->cpool_to_leafc = 0.0;
 	cdf->cpool_to_leafc_store = 0.0;
 	cdf->cpool_to_frootc = 0.0;

@@ -79,10 +79,10 @@ int	compute_froot_litfall(
 	}
 	if (ok){
 		/* set fluxes in daily flux structure */
-		cdf->frootc_to_litr1c += c1 * cover_fraction; //accumulate c flux to litter for calculating above ground litter ratio NREN 20190926
-		cdf->frootc_to_litr2c += c2 * cover_fraction;
-		cdf->frootc_to_litr3c += c3 * cover_fraction;
-		cdf->frootc_to_litr4c += c4 * cover_fraction;
+		cdf->frootc_to_litr1c = c1 * cover_fraction;
+		cdf->frootc_to_litr2c = c2 * cover_fraction;
+		cdf->frootc_to_litr3c = c3 * cover_fraction;
+		cdf->frootc_to_litr4c = c4 * cover_fraction;
 		ndf->frootn_to_litr1n = n1 * cover_fraction;
 		ndf->frootn_to_litr2n = n2 * cover_fraction;
 		ndf->frootn_to_litr3n = n3 * cover_fraction;
