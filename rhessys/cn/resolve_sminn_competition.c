@@ -116,7 +116,7 @@ int resolve_sminn_competition(
 			ns_soil->fract_potential_immob = 0.0;
 		else {
 			actual_immob =  actual_immob_inroot + sum_avail-sum_avail_plant;
-			ns_soil->fract_potential_immob = actual_immob/ndf->potential_immob;
+			ns_soil->fract_potential_immob = min(1.0,actual_immob/ndf->potential_immob);
                       }
 
 
