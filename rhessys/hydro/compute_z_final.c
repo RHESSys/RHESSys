@@ -30,7 +30,7 @@
 /*	This routine estimates the new water table height due	*/
 /*	to a gain or loss of water when porosity is not		*/
 /*	fixed with depth.  It must be the inverse of		*/
-/*	compute_delta_water.c for stability.			*/	
+/*	compute_delta_water.c for stability.			*/
 /*								*/
 /*	Note that the current function relating porosity to 	*/
 /*	depth is a negative exponential with the p parameter 	*/
@@ -95,14 +95,14 @@ double	compute_z_final(
 		double,
 		double,
 		double);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	double	arguement;
 	double	delta_water_surf;
 	double	z_final;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	User defined function relating water table gain/loss    */
 	/*	and current water table depth to new water table depth	*/
@@ -156,13 +156,13 @@ double	compute_z_final(
 	/*	where delta_water(z_final=0) is the amount of water 	*/
 	/*	needed to reach the surface.				*/
 	/*--------------------------------------------------------------*/
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Ensure that p and p_0 is not zero 			*/
 	/*--------------------------------------------------------------*/
 	p = max(p,0.00000001);
 	p_0 = max(p_0,0.00000001);
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Case ii  water table at or above surface + recharge	*/
 	/*--------------------------------------------------------------*/
@@ -185,15 +185,15 @@ double	compute_z_final(
 			if (p < 999.9) {
 
 					z_final = -1 * p *
-						log( 1 +  delta_water / ( p * p_0) );
+						log( 1 +  delta_water / ( p * p_0));
 				}
 
 			else
 
 					z_final =  (0 - delta_water/p_0); // should be 0 because start from surface, z=0
-				} 
+				}
 		}
-	}
+
 	/*--------------------------------------------------------------*/
 	/*	Determine if we will be in case i or iv			*/
 	/*	i.e. will the recharge cause z_final to be above surface*/
@@ -210,7 +210,7 @@ double	compute_z_final(
 			soil_depth,
 			z_initial,
 			0);
-		
+
 		/*--------------------------------------------------------------*/
 		/*	Determine if we will get to the surface.	*/
 		/*--------------------------------------------------------------*/
@@ -235,10 +235,10 @@ double	compute_z_final(
 			z_final = delta_water_surf  - delta_water;
 		}
 	}
-	
+
 	/* CAN GO SLIGHTLY BELOW SOIL DEPTH AND CAUSING INSTABILITY, SO CAPPING */
 	z_final = min(z_final,soil_depth);
-	
+
 	return(z_final);
 } /*compute_z_final*/
 
