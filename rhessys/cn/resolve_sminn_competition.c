@@ -79,7 +79,7 @@ int resolve_sminn_competition(
     //sum_avail = perc_inroot * sum_avail;
 	sum_avail_plant = perc_inroot * sum_avail;
     // sum_avail also needs to consider the N_sat at saturated zone
-    /*double avail_rtzN = 0.0;
+    double avail_rtzN = 0.0;
     patch[0].rtzSatNH4 = 0.0;
     if(patch[0].available_soil_water > ZERO){
         //change the sat solute profile
@@ -91,7 +91,7 @@ int resolve_sminn_competition(
     }//if
     //sum_avail = sum_avail + patch[0].rtzSatNO3 + patch[0].rtzSatNH4;
     sum_avail_plant = sum_avail_plant + patch[0].sat_NO3 + patch[0].sat_NH4;//test N balance
-     //printf("\n|| [ns_soil.perc_inroot] %f, [perc_inroot] %f || ", ns_soil->perc_inroot, perc_inroot);*/
+     //printf("\n|| [ns_soil.perc_inroot] %f, [perc_inroot] %f || ", ns_soil->perc_inroot, perc_inroot);
 
 
 	if (sum_ndemand <= sum_avail_plant){
