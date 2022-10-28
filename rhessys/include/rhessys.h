@@ -143,7 +143,7 @@
 #include <string.h>
 
 //#include "../../util/WMFireInterface.h" /* required for fire spread*/
-#include "WMFireInterface.h" /* required for fire spread*/
+#include "../../FIRE/WMFireInterface.h" /* required for fire spread*/
 /*----------------------------------------------------------*/
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
