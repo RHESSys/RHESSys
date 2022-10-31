@@ -682,6 +682,13 @@ switch(def_.spread_calc_type)
 			cur_moist=0;
 		p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
 		break;
+	case 10: // relative def with the usual spread curve same as case 7 but with trans instead of et
+		if(fireGrid_[cur_row][cur_col].pet>0)
+			cur_moist=1-fireGrid_[cur_row][cur_col].trans/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+		else
+			cur_moist=0;
+		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+		break;
 	default: // understory def with its own ignition curve by default
 		if(fireGrid_[cur_row][cur_col].understory_pet>0)
 			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
