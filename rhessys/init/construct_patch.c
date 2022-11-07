@@ -141,14 +141,14 @@ struct patch_object *construct_patch(
 	patch[0].soil_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"soil_parm_ID","%d",-9999,0);
 	patch[0].landuse_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",-9999,0);
 
-		fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",-9999,0);
+		fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",-9999,1);
 
 
 /* read the input from worldfile if the beetlespread_flag is set */
     if (command_line[0].beetlespread_flag == 1) {
 		//fscanf(world_file,"%d",&(beetle_default_object_ID));
 		//read_record(world_file, record); //NREN 2019218
-		beetle_defaults_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"beetle_parm_ID","%d",-9999,0);
+		beetle_defaults_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"beetle_parm_ID","%d",1,1);
 		}
 
 	surface_energy_default_object_ID=getIntWorldfile(&paramCnt,&paramPtr,"surface_energy_default_object_ID", "%d", -9999,1);
