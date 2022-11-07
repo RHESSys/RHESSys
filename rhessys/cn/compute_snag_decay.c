@@ -31,12 +31,8 @@
 #include <math.h>
 
 void	compute_snag_decay(
-					  //struct epconst_struct *epc,
-					  //double cover_fraction,
 					  struct cstate_struct *cs,
 					  struct nstate_struct *ns,
-					  //struct litter_c_object *cs_litr,
-					  //struct litter_n_object *ns_litr,
 					  struct cdayflux_patch_struct *cdf, //daily carbon flux
 					  struct ndayflux_patch_struct *ndf,  // daily nitrogen flux
 					  int year_delay,

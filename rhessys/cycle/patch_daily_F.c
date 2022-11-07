@@ -750,46 +750,29 @@ void		patch_daily_F(
     /* call the beetle effects model based on the specific time input-N.Ren 2018629*/
     /*-----------------------------------------------------------------------------*/
         //int min_abc = world[0].defaults[0].beetle[0].min_abc;
-    	if (patch[0].base_stations != NULL) {       // this means in the world file you need to modify the patch num_basestations=1 and also specify another basestationID
+        //epc.veg_type==TREE && thintyp ==5 && epc.max_lai>=10 && epc.phenology_type == EVERGREEN
+    	if (patch[0].base_stations != NULL)
+    	{       // this means in the world file you need to modify the patch num_basestations=1 and also specify another basestationID
 		inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
 
-		if (inx > -999) { // here control the inx just 24 each, because other inx may smaller than -999
+		if (inx > -999 && patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == TREE &&
+            patch[0].canopy_strata[0][0].defaults[0][0].epc.phenology_type == EVERGREEN &&
+            patch[0].canopy_strata[0][0].defaults[0][0].epc.max_lai >=10
+		   )
+        { // here control the inx just 24 each, because other inx may smaller than -999
 
-            int inx2 = floor(inx/24)*24;
-            inx = inx2;
-			clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
+            for (inx=0; inx < world[0].defaults[0].beetle[0].num_snag_sequence; inx=inx+24){ // here 300 is hard coded here, should figure out some other method.
 
-            if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
-                 printf("\n checking beetle attack squence before while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
-                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);}
+                clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
 
-			while (julday(clim_event.edate) < julday(current_date)) {
-				patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx += 1;
-				inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
-				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
-
-				//if (patch[0].ID == 7788){
-                 printf("\n checking beetle attack squence in while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
-                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);//}
-
-				}
-
-				// sometime the chcking overshoot the inx;
-				inx2 = floor(inx/24)*24;
-				inx = inx2;
-				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
-
-            if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
-                 printf("\n checking beetle attack squence after while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
-                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);}
-			if ((clim_event.edate.year > 0) && (clim_event.value > 0.0) && (clim_event.value <= 1) && ( julday(clim_event.edate) == julday(current_date)) ) {
+			if ((clim_event.edate.year > 0) && (clim_event.value > 0.0) && (clim_event.value < 1) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				attack_mortality = clim_event.value;
               //initialize the snage_sequences c and n
-             /*  if (inx ==0) {  // here 300 is hard coded, it is means most 300/24 12.5 events
-                //if (patch[0].snag_sequence.seq==NULL && patch[0].redneedle_sequence.seq==NULL){
-				patch[0].snag_sequence.seq = (struct dated_sequence2 *) alloc(300*sizeof(struct dated_sequence2), "snag_sequence", "patch_daily_F");
-                patch[0].redneedle_sequence.seq = (struct dated_sequence2 *) alloc(300*sizeof(struct dated_sequence2), "snag_sequence", "patch_daily_F");
-                        }; */
+                 if (patch[0].ID == 272255 ){ //7788
+                 printf("\n checking beetle attack squence in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);
+                             }
+
 				/* track the snag pool sequences NREN 20180630*/
 				for (layer =0; layer<patch[0].num_layers; layer++) {
                     for (stratum=0; stratum<patch[0].layers[layer].count; stratum++){
@@ -811,10 +794,13 @@ void		patch_daily_F(
                 int root_alive = world[0].defaults[0].beetle[0].root_alive;
                 int harvest_dead_root = world[0].defaults[0].beetle[0].harvest_dead_root;
 
-                if (world[0].defaults[0].beetle[0].mortality_type ==1) {//type 1 is beetle type 2 is fire NR 2019/04/30
-                    if (patch[0].ID == 7788){
+                if (world[0].defaults[0].beetle[0].mortality_type ==1)
+                {//type 1 is beetle type 2 is fire NR 2019/04/30
+                    if (patch[0].ID == 272255){
                       printf("\n Implementing beetle attack effects with a mortality of %f in patch %d\n, the current date is %d, %d ,%d, the min_abc is %lf",
-                             attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day, min_abc);}
+                             attack_mortality, patch[0].ID, current_date.year, current_date.month, current_date.day, min_abc);
+                             }
+
 				compute_beetle_effects(
 					patch,
 					inx, // to remember current index
@@ -822,13 +808,14 @@ void		patch_daily_F(
 					root_alive,
 					harvest_dead_root,
 					attack_mortality);
-					}
+					} // if world
 
-			}
+			} // if climate event
 			//printf("\n the carbon in snag pool %lf and the in the red needle pool %lf, the inx is %d", patch[0].snag_sequence.seq[inx].Cvalue, patch[0].redneedle_sequence.seq[inx].Cvalue,inx);
-		}; //
+		}; // for inx
 
-	}
+	} //inx>-999
+	} //patch NULL
 
     /* --------------------------------------------------------------*/
     /* calculate the single prescribed fire By NR 20190430*/

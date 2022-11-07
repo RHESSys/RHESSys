@@ -440,7 +440,7 @@ struct zone_object *construct_zone(
 	// check that zone area is equal to sum of patch areas
 	if ( abs(sum_patch_area -zone[0].area) > ZERO)
 	{
-		fprintf(stderr,"patch areas do not sum to zone area for zone %d\n", zone[0].ID);
+		fprintf(stderr,"patch areas do not sum to zone area for zone %d, [patch_area %lf], [zone_area %lf]\n", zone[0].ID, sum_patch_area, zone[0].area);
 		exit(0);
 	}
 

@@ -59,9 +59,10 @@ void	output_hillslope(				int basinID,
 	double apsn, alai;
 	double u20, au20;
 	/* add more output varibale by NREN 2018/121/7 */
-	double aprecip, aevap_surface, asoil_evap, arz_stor, arz_stor_flux, adetention_stor, adetention_stor_flux, acanopy_stor, acanopy_stor_flux, alitter_stor;
+	double aprecip, atmin, atmax;
+	double aevap_surface, asoil_evap, arz_stor, arz_stor_flux, adetention_stor, adetention_stor_flux, acanopy_stor, acanopy_stor_flux, alitter_stor;
     double asat_deficit_flux, aunsat_stor_flux, asnowpack_flux, aunsat_stor_preday;
-	double aarea;
+	double aarea, zone_area;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	double aPET, asublimation, acanopysubl, aheight, awoodc, alai_red;
@@ -121,13 +122,23 @@ void	output_hillslope(				int basinID,
 	asoil_potential_evaporation = 0.0;
 	asoil_exfiltration_sat_zone = 0.0;
 	asoil_exfiltration_unsat_zone = 0.0;
-
+    aprecip = 0.0;
+    atmin = 0.0;
+    atmax = 0.0;
+    zone_area = 0.0;
 
 
 
 
 	for (z=0; z<hillslope[0].num_zones; z++){
 		zone = hillslope[0].zones[z];
+            /* add the other output to make the waterbuget works*/
+			/* by Ning Ren 2018/12/7*/
+			aprecip += (zone[0].rain+zone[0].snow) * zone[0].area;
+            atmin += zone[0].metv.tmin * zone[0].area;
+			atmax += zone[0].metv.tmax * zone[0].area;
+			zone_area += zone[0].area;
+
 		for (p=0; p< zone[0].num_patches; p++){
 			patch = zone[0].patches[p];
 			arain_throughfall += patch[0].rain_throughfall * patch[0].area;
@@ -136,11 +147,6 @@ void	output_hillslope(				int basinID,
 			asat_deficit += patch[0].sat_deficit * patch[0].area;
 
 
-
-
-			/* add the other output to make the waterbuget works*/
-			/* by Ning Ren 2018/12/7*/
-			aprecip += (zone[0].rain+zone[0].snow) * patch[0].area;
 			aevap_surface += patch[0].evaporation_surf * patch[0].area;
 			asoil_evap += (patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone) * patch[0].area;//soil evap is a little different
 			asoil_exfiltration_sat_zone += patch[0].exfiltration_sat_zone * patch[0].area;
@@ -243,8 +249,11 @@ void	output_hillslope(				int basinID,
 	abase_flow += hillslope[0].base_flow;
 
 
-		/* add new output by ning ning 2018/12/7*/
-	aprecip /=aarea;
+    /* add new output by ning ning 2018/12/7*/
+    aprecip /= zone_area;
+	atmin /= zone_area;
+	atmax /= zone_area;
+
 	aevap_surface /= aarea;
 	asoil_evap /=aarea;
 	arz_stor  /=aarea;
@@ -267,13 +276,13 @@ void	output_hillslope(				int basinID,
     arootzoneS /= aarea;
     ags /= aarea;
     aga /= aarea;
-    asoil_potential_evaporation /=aarea;
+   asoil_potential_evaporation /=aarea;
     asoil_exfiltration_sat_zone /= aarea;
     asoil_exfiltration_unsat_zone /= aarea;
 
 
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -322,6 +331,10 @@ void	output_hillslope(				int basinID,
 		ags,
 		aga,
 		asoil_exfiltration_sat_zone*1000,
-		asoil_exfiltration_unsat_zone*1000);
+		asoil_exfiltration_unsat_zone*1000,
+		// more 2022
+		atmax,
+		atmin
+		);
 	return;
 } /*end output_hillslope*/

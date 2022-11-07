@@ -125,12 +125,17 @@ struct spinup_default *construct_beetle_defaults(
 		        // if harvest leafc and harvest stem is true, here only control the lai and pai; you also need to change the delay time of stem and leaf to 100000
 		        // at the same time, the harvest dead root should be true and root_alive is 0 too.
 		        // if not harvest the leafc and stem, it will use the leaf_when_red and stem_when_red to calculate the LAI and PAI, and rootalive =0, harvest dead root is 0
-		        default_object_list[i].lai_include_redneedle= getIntParam(&paramCnt, &paramPtr, "lai_include_redneedle", "%d", 0, 1); //1 is alive no touching of root after beetle attack 0 is root is dead
+		        default_object_list[i].lai_include_redneedle= getIntParam(&paramCnt, &paramPtr, "lai_include_redneedle", "%d", 0, 1); // default is not inclduing
 		        printf("calculating lai considering the redneedle: %d\n", default_object_list[i].lai_include_redneedle);
-		        default_object_list[i].pai_include_snag = getIntParam(&paramCnt, &paramPtr, "pai_include_snag", "%d", 0, 1); //1 is alive no touching of root after beetle attack 0 is root is dead
+		        default_object_list[i].pai_include_snag = getIntParam(&paramCnt, &paramPtr, "pai_include_snag", "%d", 0, 1); //
 		        printf("calculating pai considering the snag: %d\n", default_object_list[i].pai_include_snag);
-		        default_object_list[i].height_include_snag = getIntParam(&paramCnt, &paramPtr, "height_include_snag", "%d", 1, 1); //1 is alive no touching of root after beetle attack 0 is root is dead
+		        default_object_list[i].height_include_snag = getIntParam(&paramCnt, &paramPtr, "height_include_snag", "%d", 1, 1); //
 		        printf("calculating height considering the snag: %d\n", default_object_list[i].height_include_snag);
+                // for logging the snags 20220731
+                default_object_list[i].logging_flag = getIntParam(&paramCnt, &paramPtr, "logging_flag", "%d", 0, 1); // default is no logging
+		        printf("logging snag flag: %d\n", default_object_list[i].logging_flag);
+		        default_object_list[i].logging_year = getIntParam(&paramCnt, &paramPtr, "logging_year", "%d", 1901, 1); // default is 1901
+		        printf("logging snag year: %d\n", default_object_list[i].logging_year);
 
 
 

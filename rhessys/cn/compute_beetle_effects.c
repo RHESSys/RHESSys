@@ -101,12 +101,12 @@ void compute_beetle_effects(
 	if (abc *1000 >= min_abc) {  // make it as an input parameter
 	   loss = attack_mortality;
         if(patch[0].ID == 7788) {
-	   printf("\n updating the beetle mortality (abc>min_abc) for inx %d, the abc are %lf kg/m2, the min_abc are %lf g/m2\n", inx, abc, min_abc);}// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
+	   printf("\n updating the beetle mortality (abc>min_abc) for inx %d,  [abc %lf kg/m2], [min_abc %lf g/m2], [mort %lf]\n", inx, abc, min_abc, loss);}// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
 	}
 	else if (abc*1000 < min_abc) {
 	   loss=0; // if the total carbon is less the 55Mg/ha, then there is no mortality in that patch
        if(patch[0].ID == 7788) {
-	   printf("\n updating the beetle mortality (abc<min_abc) for inx %d, the abc are %lf kg/m2, the min_abc are %lf g/m2\n", inx, abc, min_abc);}// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
+	   printf("\n updating the beetle mortality (abc<min_abc) for inx %d,  [abc %lf kg/m2], [min_abc %lf g/m2], [mort %lf]\n", inx, abc, min_abc, loss);}// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
 	}
 
 

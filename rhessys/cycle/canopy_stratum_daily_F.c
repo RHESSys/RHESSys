@@ -2077,22 +2077,89 @@ void	canopy_stratum_daily_F(
 
        // clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[0];
 
-        if (inx >-999) {
+        if (inx >-999 && patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == TREE &&
+            patch[0].canopy_strata[0][0].defaults[0][0].epc.phenology_type == EVERGREEN &&
+            patch[0].canopy_strata[0][0].defaults[0][0].epc.max_lai >=10
+            )
+        {
+
+        /* add a harvest option to beetle effect model, if current.year == log_year, make snag and readneedlec zero. */
+
+        if (current_date.year == world[0].defaults[0].beetle[0].logging_year && current_date.month == 9 && current_date.day == 30 &&
+            world[0].defaults[0].beetle[0].logging_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO ) {
+
+            if (stratum[0].ID == 7788) printf("\n loging the snags %lf \n", stratum[0].cs.snagc + stratum[0].cs.delay_snagc);
+
+            if ((stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec) > ZERO)
+                {
+                    stratum[0].cs.redneedlec = ZERO; // remember to remove the snag_sequency tracking too
+                    stratum[0].cs.delay_redneedlec = ZERO;
+                  }
+             if ((stratum[0].cs.snagc + stratum[0].cs.delay_snagc) > ZERO)
+                {
+                    stratum[0].cs.snagc = ZERO;
+                    stratum[0].cs.delay_snagc = ZERO;
+                    }
+             if ((stratum[0].ns.redneedlen + stratum[0].ns.delay_redneedlen) > ZERO)
+                {
+                    stratum[0].ns.redneedlen = ZERO;
+                    stratum[0].ns.delay_redneedlen = ZERO;
+                }
+             if ((stratum[0].ns.snagn + stratum[0].ns.delay_snagn) > ZERO)
+                {
+                    stratum[0].ns.snagn = ZERO;
+                    stratum[0].ns.delay_snagn = ZERO;
+                }
+
+            }
+
+
         /* update the snag pool from burning before you update it, only happens if firespread command line is on and there is snag pool*/
         /* due to the snagc is not the total snag, when snagc =0 the delay_snag is >0, so the condition snagc>0, make the fire can not burn the delay_snag*/
         /* so it is better to use the Snagc >= 0 condition for next step calculations, and just to make sure there is no negative values in flux out */
         /* if you put snagc and delay_snag combine with redneedle and delay_redneedle together condition may cause not burn once redneedle is zero */
         /* if this solution not working, maybe build two if conditions sepeartedly for snag and delay snag then using conditions and snag >=0 delay_snag>=0 */
-            if (command_line[0].firespread_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO && (stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec) >= ZERO && patch[0].overstory_burn > ZERO){
+            if (command_line[0].firespread_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO &&
+                patch[0].overstory_burn <= 1 &&
+                (stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec) >= 0.01 && patch[0].overstory_burn > ZERO){
 
                 //burn the carbon pool
                //printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
                 overstory_burn = patch[0].overstory_burn;
-                redneedlec_burn = stratum[0].cs.redneedlec * overstory_burn;
-                delay_redneedlec_burn = stratum[0].cs.delay_redneedlec * overstory_burn;
 
-                snagc_burn = stratum[0].cs.snagc * overstory_burn;
-                delay_snagc_burn = stratum[0].cs.delay_snagc * overstory_burn;
+                if(stratum[0].cs.redneedlec > ZERO )
+                {
+                    redneedlec_burn = stratum[0].cs.redneedlec * overstory_burn;
+                    redneedlec_burn = min(max(0, redneedlec_burn), stratum[0].cs.redneedlec);
+                }
+                else {
+                    redneedlec_burn = 0.0;
+                }
+
+                if(stratum[0].cs.delay_redneedlec > ZERO)
+                {
+                    delay_redneedlec_burn = stratum[0].cs.delay_redneedlec * overstory_burn;
+                    delay_redneedlec_burn = min(max(0, delay_redneedlec_burn), stratum[0].cs.delay_redneedlec);
+                }
+                else {
+                    delay_redneedlec_burn = 0.0;
+                }
+                if(stratum[0].cs.snagc > ZERO) {
+                    snagc_burn = stratum[0].cs.snagc * overstory_burn;
+                    snagc_burn = min(max(0, snagc_burn), stratum[0].cs.snagc);
+                }
+                else {
+                    snagc_burn = 0.0;
+                }
+
+                if (stratum[0].cs.delay_snagc > ZERO)
+                {
+                    delay_snagc_burn = stratum[0].cs.delay_snagc * overstory_burn;
+                    delay_snagc_burn = min(max(0, delay_snagc_burn), stratum[0].cs.delay_snagc);
+                }
+                else {
+                    delay_snagc_burn = 0.0;
+                }
 
                 //burn the redneedle and snag carbon
 
@@ -2102,11 +2169,42 @@ void	canopy_stratum_daily_F(
                 stratum[0].cs.snagc = max(0, (stratum[0].cs.snagc - snagc_burn));
                 stratum[0].cs.delay_snagc = max(0, (stratum[0].cs.delay_snagc - delay_snagc_burn));
                 //burn the nitrogen pool
-                redneedlen_burn = stratum[0].ns.redneedlen * overstory_burn;
-                delay_redneedlen_burn = stratum[0].ns.delay_redneedlen * overstory_burn;
 
-                snagn_burn = stratum[0].ns.snagn * overstory_burn;
-                delay_snagn_burn = stratum[0].ns.delay_snagn * overstory_burn;
+                if (stratum[0].ns.redneedlen > ZERO) {
+                    redneedlen_burn = stratum[0].ns.redneedlen * overstory_burn;
+                    redneedlen_burn = min(max(0, redneedlen_burn), stratum[0].ns.redneedlen);
+                }
+                else {
+                    redneedlen_burn = 0.0;
+                }
+
+                if (stratum[0].ns.delay_redneedlen > ZERO)
+                {
+                    delay_redneedlen_burn = stratum[0].ns.delay_redneedlen * overstory_burn;
+                    delay_redneedlen_burn = min(max(0, delay_redneedlen_burn), stratum[0].ns.delay_redneedlen);
+                }
+                else {
+                    delay_redneedlen_burn = 0.0;
+                }
+
+                if (stratum[0].ns.snagn > ZERO)
+                {
+                    snagn_burn = stratum[0].ns.snagn * overstory_burn;
+                    snagn_burn = min(max(0, snagn_burn), stratum[0].ns.snagn);
+                }
+                else {
+                    snagn_burn = 0.0;
+                }
+
+                if (stratum[0].ns.delay_snagn > ZERO)
+                {
+                    delay_snagn_burn = stratum[0].ns.delay_snagn * overstory_burn;
+                    delay_snagn_burn = min(max(0, delay_snagn_burn), stratum[0].ns.delay_snagn);
+                }
+                else {
+                    delay_snagn_burn = 0.0;
+                }
+
 
                 //burn the redneedle and snag nitrogen
 
@@ -2132,17 +2230,40 @@ void	canopy_stratum_daily_F(
 
        for (inx=0; inx < world[0].defaults[0].beetle[0].num_snag_sequence; inx=inx+24){ // here 300 is hard coded here, should figure out some other method.
 
+        clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx]; // this is prescribed beetle-caused mortality
         clim_event1 = stratum[0].redneedle_sequence.seq[inx];
         clim_event2 = stratum[0].snag_sequence.seq[inx];
 
-        if (clim_event2.Cvalue > ZERO && clim_event2.Cvalue<100 && command_line[0].firespread_flag ==1 &&  patch[0].overstory_burn > ZERO)
+        // add the logging event 20220731
+
+        if (clim_event2.Cvalue > 0.01 && clim_event2.Cvalue<100 &&
+            clim_event.value > ZERO && clim_event.value < 1 && world[0].defaults[0].beetle[0].logging_flag == 1 &&
+            current_date.year == world[0].defaults[0].beetle[0].logging_year && current_date.month == 9 && current_date.day == 30 )
+            {
+                stratum[0].redneedle_sequence.seq[inx].Cvalue = ZERO;
+                stratum[0].redneedle_sequence.seq[inx].Nvalue = ZERO;
+                stratum[0].snag_sequence.seq[inx].Cvalue = ZERO;
+                stratum[0].snag_sequence.seq[inx].Nvalue = ZERO;
+                }
+
+
+        if (clim_event2.Cvalue > 0.01 && clim_event2.Cvalue<100 && command_line[0].firespread_flag ==1 &&
+            clim_event.value > ZERO && clim_event.value < 1 &&
+            patch[0].overstory_burn > ZERO && patch[0].overstory_burn <= 1)//use clim_event because it is longer
             {
                 //printf("\n the overstory burn is %lf \n", patch[0].overstory_burn);
                 overstory_burn = patch[0].overstory_burn;
-                redneedlec_burn = clim_event1.Cvalue * overstory_burn;
-                snagc_burn = clim_event2.Cvalue * overstory_burn;
 
+                if (clim_event1.Cvalue > 0.0001 && clim_event1.Nvalue > ZERO && clim_event1.Cvalue <100)
+                {
+                redneedlec_burn = clim_event1.Cvalue * overstory_burn;
                 redneedlen_burn = clim_event1.Nvalue * overstory_burn;
+                }
+                else {
+                 overstory_burn = 0.0;
+                }
+
+                snagc_burn = clim_event2.Cvalue * overstory_burn;
                 snagn_burn = clim_event2.Nvalue * overstory_burn;
 
                 stratum[0].redneedle_sequence.seq[inx].Cvalue -= redneedlec_burn;
@@ -2153,11 +2274,13 @@ void	canopy_stratum_daily_F(
 
         // if Cvalue >=0 then will updating understory too (OR updating pools that is zero),but due to the understory is zero snag pool
         // so it is not an issue
-        if ((clim_event2.edate.year != 0) &&(clim_event2.Cvalue > ZERO)&&(clim_event2.Cvalue<100) && (julday(clim_event2.edate) + (int)(leaf_year_delay*365.256) == julday(current_date)))
+        if ((clim_event2.edate.year != 0) &&(clim_event1.Cvalue > 0.0001)&&(clim_event1.Cvalue<100) &&
+            clim_event.value > ZERO && clim_event.value < 1 &&
+            (julday(clim_event2.edate) + (int)(leaf_year_delay*365.256) == julday(current_date)))
                   {
 
                    if (inx ==0) {
-                      if(stratum[0].ID == 7788) {
+                      if(stratum[0].ID == 272255) {
                    printf(" \n updating the leaf pool1 the inx is %d \n", inx); } // end if at stratum.ID
                     stratum[0].cs.redneedlec = stratum[0].redneedle_sequence.seq[inx].Cvalue;// there is getting the wrong index of value or call stratum first they call the daily so no value?
                     stratum[0].ns.redneedlen = stratum[0].redneedle_sequence.seq[inx].Nvalue;
@@ -2167,7 +2290,7 @@ void	canopy_stratum_daily_F(
 
                     }
                     else if (inx >0) {
-                        if (stratum[0].ID == 7788) {
+                        if (stratum[0].ID == 272255) {
                     printf(" updating the leaf pool 2, the inx is %d \n", inx);}
                     stratum[0].cs.redneedlec += stratum[0].redneedle_sequence.seq[inx].Cvalue;
                     stratum[0].ns.redneedlen += stratum[0].redneedle_sequence.seq[inx].Nvalue;
@@ -2178,11 +2301,13 @@ void	canopy_stratum_daily_F(
                         } // if leaf_year_delay
 
         //how to make sure the model only update the overstory, not updating the understory since this snag is coresponding with stratum, if not over, the c&N is zero so still fine
-        if ((clim_event2.edate.year != 0 ) && (clim_event2.Cvalue > ZERO)&&(clim_event2.Cvalue<100) &&(julday(clim_event2.edate) + (int)(year_delay*365.256) == julday(current_date)))
+        if ((clim_event2.edate.year != 0 ) && (clim_event2.Cvalue > 0.01)&&(clim_event2.Cvalue<100) &&
+              clim_event.value > ZERO && clim_event.value < 1 &&
+             (julday(clim_event2.edate) + (int)(year_delay*365.256) == julday(current_date)))
                    {
 
               if (inx ==0) {
-                  if (stratum[0].ID == 7788) {
+                  if (stratum[0].ID == 272255) {
                     printf(" updating the snag pool the inx is %d\n", inx); }
                     stratum[0].cs.snagc = stratum[0].snag_sequence.seq[inx].Cvalue;// there is getting the wrong index of value or call stratum first they call the daily so no value?
                     stratum[0].ns.snagn = stratum[0].snag_sequence.seq[inx].Nvalue; // here need to change
@@ -2191,7 +2316,7 @@ void	canopy_stratum_daily_F(
 
                     }
               else if (inx >0) {
-                    if (stratum[0].ID == 7788) {
+                    if (stratum[0].ID == 272255) {
                 printf("updating the snag pool2 the inx is %d\n", inx); }//why??                                                       }
                 stratum[0].cs.snagc += stratum[0].snag_sequence.seq[inx].Cvalue;
                 stratum[0].ns.snagn += stratum[0].snag_sequence.seq[inx].Nvalue;
@@ -2199,9 +2324,9 @@ void	canopy_stratum_daily_F(
                 stratum[0].ns.delay_snagn -= stratum[0].snag_sequence.seq[inx].Nvalue;  //NREN 20180728
 
                              /*first move the snag _sequences to the dacay pool */
-                }
-                break;
-                }
+                } // inx > 0
+                break; //why there is a break
+                } // snag_delay
 
             } // enf for
                 }
