@@ -109,7 +109,7 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 		ns->cwdn + ns->retransn);
 	}
 
-	if(ns->npool < -ZERO) printf("update_N_stratum_daily %e\n",ns->npool);
+	//if(ns->npool < -ZERO) printf("update_N_stratum_daily %e\n",ns->npool);
 	return (!ok);
 }/*end update_N_stratum_daily.c*/		
 
