@@ -1,18 +1,42 @@
 # Compiled object files
 *.o
 *.pyc
-<<<<<<< HEAD
-=======
 rhessys/rhessys7.0
->>>>>>> develop
+rhessys/rhessys7*
+*.save
+
+
+
 rhessys/rhessys7.*
 
+
+
+rhessys/rhessys7.*
+rhessys/rhessys7*
+.gitignore.save
+rhessys_bk_20200925
+result/
+
+rhessys/rhessys7.*
+*.save
+
+
+
+rhessys/rhessys7.*
 # Build directories
 objects/
 build/
 build/Qt/gcc/bin/
 build/Qt/gcc/RHESSys/RHESSys.pro.user
 build/Qt/gcc/RHESSys/RHESSys.pro.user.2.7pre1
+
+result/
+rhessys_bk_20200925/
+
+
+
+rhessys_bk_20200925/
+result/
 
 RHESSys/util/netcdf_data_processes
 
@@ -48,19 +72,15 @@ libwmfire.so
 
 # R
 .Rproj.user
-<<<<<<< HEAD
-=======
 .Rhistory
->>>>>>> develop
 
 # vscode 
 rhessys/.vscode
 
 # made by R func compile_rhessys (should be deleted typically)
-<<<<<<< HEAD
+
 .makefile_tmp
-=======
-.makefile_tmp
+
 
 # test binaries - maybe could be a separate dir?
 /rhessys/test/test_compute_potential_exfiltration
@@ -70,4 +90,6 @@ rhessys/test/test_output*
 rhessys/test/test_pointer_set
 rhessys/test/test_string_list
 rhessys/test/example
->>>>>>> develop
+rhessys/test/example
+rhessys/test/example
+

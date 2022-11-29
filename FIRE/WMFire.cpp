@@ -539,7 +539,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use deficit for moisture status
 	}	
 //	cur_load=(1-def_._eg_fuel_weighting)*fireGrid_[new_row][new_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[new_row][new_col].fuel_veg; // modify this to always include all of the litter fuels and some proportion up to 1 of the veg fuels
-	cur_load=fireGrid_[new_row][new_col].fuel_litter;//only the fuel_litter
+//	cur_load=fireGrid_[new_row][new_col].fuel_litter;//only the fuel_litter
+	cur_load=fireGrid_[cur_row][cur_col].fuel_litter+fireGrid_[cur_row][cur_col].fuel_cwd;
 
 	p_load=1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 
@@ -835,6 +836,30 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 			fireOut<<"\n";
 		}
 		fireOut.close();
+
+
+                curFile.assign("CWDGridYear");
+                curFile.append(curYear);
+                curFile.append("Month");
+                curFile.append(curMonth);
+                curFile.append(".txt");
+
+                ofstream cwdOut;
+                cwdOut.open(curFile.c_str());
+
+                for(int i=0; i<rows_; i++)      //then, for each row, allocate an array with the # of columns.  this is now a 2-D array of fireGrids
+                {
+                        for(int j=0; j<cols_; j++)      // fill in the landscape information for each pixel
+                        {
+                                cwdOut<<fireGrid_[i][j].fuel_cwd<<"\t";
+                        }
+                        cwdOut<<"\n";
+                }
+                cwdOut.close();
+
+
+
+
 
 		curFile.assign("SoilMoistGridYear");
 		curFile.append(curYear);

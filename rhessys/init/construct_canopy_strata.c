@@ -56,8 +56,8 @@ struct canopy_strata_object *construct_canopy_strata(
 		int ,
 		int ,
 		struct base_station_object **);
-	
-	
+
+
 	int compute_annual_turnover(struct epconst_struct,
 		struct epvar_struct *,
 		struct cstate_struct *);
@@ -68,7 +68,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		struct phenology_struct *,
 		struct cstate_struct *,
 		int);
-	
+
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
 		double,
@@ -79,11 +79,11 @@ struct canopy_strata_object *construct_canopy_strata(
 		double);
 
 	double compute_delta_water(
-		int, 
-		double, 
-		double,	
-		double, 
-		double, 
+		int,
+		double,
+		double,
+		double,
+		double,
 		double);
 
 	double	compute_lwp_predawn(
@@ -108,18 +108,18 @@ struct canopy_strata_object *construct_canopy_strata(
 	int	base_stationID;
 	int	i;
 	double	sai, rootc;
-	int     spinup_default_object_ID; 
+	int     spinup_default_object_ID;
 	char	record[MAXSTR];
 	struct	canopy_strata_object	*canopy_strata;
 	int	paramCnt=0;
-	param	*paramPtr=NULL;	
+	param	*paramPtr=NULL;
 	/*--------------------------------------------------------------*/
 	/*  Allocate a canopy_strata object.                                */
 	/*--------------------------------------------------------------*/
 	canopy_strata = (struct canopy_strata_object *) alloc( 1 *
 		sizeof( struct canopy_strata_object ),"canopy_strata",
 		"construct_canopy_strata" );
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.	*/
 	/*--------------------------------------------------------------*/
@@ -132,9 +132,9 @@ struct canopy_strata_object *construct_canopy_strata(
 	spinup_default_object_ID = getIntWorldfile(&paramCnt,&paramPtr,"spinup_object_ID","%d",-9999,1);
 
 	canopy_strata[0].cover_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",1.0,1);
-	
+
 	canopy_strata[0].gap_fraction = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",0.0,1);
-	
+
 	canopy_strata[0].rootzone.depth = getDoubleWorldfile(&paramCnt,&paramPtr,"rootzone.depth","%lf",0,0);
 
 	if (command_line[0].tmp_value > ZERO)
@@ -143,103 +143,107 @@ struct canopy_strata_object *construct_canopy_strata(
 	}
 
 	canopy_strata[0].cs.stem_density = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",0.02,1);
-	
+
 	canopy_strata[0].snow_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"snow_stored","%lf",0.0,1);
-	
+
 	canopy_strata[0].rain_stored = getDoubleWorldfile(&paramCnt,&paramPtr,"rain_stored","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.cpool = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",0.0,1);
 
 	canopy_strata[0].cs.leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc","%lf",0.0,1);
 
 	canopy_strata[0].cs.leafc_age2 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age2","%lf",canopy_strata[0].cs.leafc/2.0,1);
-    
+
 	canopy_strata[0].cs.leafc_age1 = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_age1","%lf",canopy_strata[0].cs.leafc/2.0,1);
-	
+
 	canopy_strata[0].cs.mr_deficit = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.mr_deficit","%lf",0.0,1);
 	canopy_strata[0].cs.dead_leafc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_leafc","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.leafc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.leafc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.leafc_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.live_stemc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_stemc","%lf",0.0,1);
 
-	
+
 	canopy_strata[0].cs.livestemc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.livestemc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livestemc_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.dead_stemc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_stemc","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.deadstemc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadstemc_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.deadstemc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadstemc_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.live_crootc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.live_crootc","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.livecrootc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livecrootc_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.livecrootc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.livecrootc_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.dead_crootc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.dead_crootc","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.deadcrootc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadcrootc_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.deadcrootc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.deadcrootc_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.frootc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.frootc_store = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.frootc_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.frootc_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].cs.cwdc = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cwdc","%lf",0.0,1);
-	
+
+	canopy_strata[0].cs.cwdc_bg = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cwdc_bg","%lf",0.0,1);
+
 	canopy_strata[0].epv.prev_leafcalloc = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.prev_leafcalloc","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.npool = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.npool","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.leafn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.dead_leafn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_leafn","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.leafn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.leafn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.leafn_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.live_stemn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.live_stemn","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.livestemn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livestemn_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.livestemn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livestemn_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.dead_stemn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_stemn","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.deadstemn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadstemn_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.deadstemn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadstemn_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.live_crootn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.live_crootn","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.livecrootn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livecrootn_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.livecrootn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.livecrootn_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.dead_crootn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.dead_crootn","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.deadcrootn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadcrootn_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.deadcrootn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.deadcrootn_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.frootn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.frootn_store = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn_store","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.frootn_transfer = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.frootn_transfer","%lf",0.0,1);
-	
+
 	canopy_strata[0].ns.cwdn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.cwdn","%lf",0.0,1);
-	
+
+	canopy_strata[0].ns.cwdn_bg = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.cwdn_bg","%lf",0.0,1);
+
 	canopy_strata[0].ns.retransn = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",0.0,1);
 
 	canopy_strata[0].cs.age = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",0.0,1);
@@ -250,9 +254,9 @@ struct canopy_strata_object *construct_canopy_strata(
      canopy_strata[0].target.lai = NULLVAL;
      canopy_strata[0].target.total_stemc = NULLVAL;
      canopy_strata[0].target.height = NULLVAL;
-     //canopy_strata[0].target.age = NULLVAL;
+     canopy_strata[0].target.age = NULLVAL;
      canopy_strata[0].target.met = 2;
-     
+
    }
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
@@ -263,11 +267,11 @@ struct canopy_strata_object *construct_canopy_strata(
 	read_record(world_file, record);
 	fscanf(world_file,"%lf",&(canopy_strata[0].epv.min_vwc));
 	read_record(world_file, record);*/
-	
+
 	canopy_strata[0].epv.wstress_days  = getIntWorldfile(&paramCnt,&paramPtr,"epv.wstress_days","%d",0,1);
 
 	canopy_strata[0].epv.max_fparabs = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.max_fparabs","%lf",0.0,1);
-	
+
 	canopy_strata[0].epv.min_vwc = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",0.0,1);
 
 	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",0,0);
@@ -334,6 +338,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].cs.livecrootc_transfer = 0.0;
 		canopy_strata[0].cs.deadcrootc_transfer = 0.0;
 		canopy_strata[0].cs.cwdc = 0.0;
+		canopy_strata[0].cs.cwdc_bg = 0.0;
 
 		canopy_strata[0].ns.live_stemn = 0.0;
 		canopy_strata[0].ns.dead_stemn = 0.0;
@@ -348,6 +353,8 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].ns.livecrootn_transfer = 0.0;
 		canopy_strata[0].ns.deadcrootn_transfer = 0.0;
 		canopy_strata[0].ns.cwdn = 0.0;
+		canopy_strata[0].ns.cwdn_bg = 0.0;
+
 	}
 	/*--------------------------------------------------------------*/
 	/* 	zero other carbon stores for non veg			*/
@@ -375,7 +382,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	zero all long term sinks				*/
 	/*--------------------------------------------------------------*/
-	
+
 	canopy_strata[0].cs.gpsn_src = 0.0;
 	canopy_strata[0].cs.leaf_mr_snk = 0.0;
 	canopy_strata[0].cs.leaf_gr_snk = 0.0;
@@ -389,7 +396,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.froot_gr_snk = 0.0;
 	canopy_strata[0].cs.nppcum = 0.0;
 	canopy_strata[0].NO3_stored = 0.0; // this is for the NO3 deposition on leaves
-	
+
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables                        */
 	/*--------------------------------------------------------------*/
@@ -402,8 +409,11 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_year.height = 0.0;
 	canopy_strata[0].acc_year.minNSC = -999;
 	canopy_strata[0].acc_year.length = 0;
-
 	canopy_strata[0].acc_month.lai = 0.0;
+	canopy_strata[0].acc_month.leafc = 0.0;
+	canopy_strata[0].acc_month.rootc = 0.0;
+	canopy_strata[0].acc_month.stemc = 0.0;
+	//canopy_strata[0].acc_month.psn = 0.0;
 	canopy_strata[0].acc_month.gpsn = 0.0;
 	canopy_strata[0].acc_month.resp = 0.0;
 	canopy_strata[0].acc_month.totalc = 0.0;
@@ -413,7 +423,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_month.minNSC = -999;
 	canopy_strata[0].acc_month.length = 0;
 
-        canopy_strata[0].cs.Tacc = 20.0;	
+        canopy_strata[0].cs.Tacc = 20.0;
 	/*--------------------------------------------------------------*/
 	/* zero out negative stores */
 	/*--------------------------------------------------------------*/
@@ -459,7 +469,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
 	canopy_strata[0].cs.stem_density = min(canopy_strata[0].cs.stem_density,
 			canopy_strata[0].defaults[0][0].epc.max_stem_density);
-	
+
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
 
 	/* tree - use stem density if available */
@@ -526,9 +536,9 @@ struct canopy_strata_object *construct_canopy_strata(
 		rootc = canopy_strata[0].cs.frootc+canopy_strata[0].cs.live_crootc+canopy_strata[0].cs.dead_crootc;
 		if (rootc > ZERO){
 			if (update_rooting_depth(
-				&(canopy_strata[0].rootzone), 
-				rootc, 
-				canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
+				&(canopy_strata[0].rootzone),
+				rootc,
+				canopy_strata[0].defaults[0][0].epc.root_growth_direction,
 				canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
 				canopy_strata[0].defaults[0][0].epc.max_root_depth,
 				patch[0].soil_defaults[0][0].effective_soil_depth,
@@ -544,7 +554,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	/*	initialize leaf out for non-grow version		*/
 	/*--------------------------------------------------------------*/
-	if (( command_line[0].grow_flag == 0) && 
+	if (( command_line[0].grow_flag == 0) &&
 		(canopy_strata[0].defaults[0][0].epc.veg_type != NON_VEG) ){
 		/*
 		canopy_strata[0].cs.leafc_transfer = canopy_strata[0].phen.leaflitfallc;
@@ -555,7 +565,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].ns.leafn_store = 0.0;
 		*/
 	}
-	
+
 	/*--------------------------------------------------------------*/
 	/*	initialize fire effects variables			*/
 	/*--------------------------------------------------------------*/
@@ -631,7 +641,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		canopy_strata[0].phen.lfseasonday = -1;
 		canopy_strata[0].phen.pheno_flag = 0;
 		/* use a stem density as max stem density until we include a more complex model of self thinning */
-		canopy_strata[0].cs.stem_density = min(canopy_strata[0].defaults[0][0].epc.max_stem_density, 
+		canopy_strata[0].cs.stem_density = min(canopy_strata[0].defaults[0][0].epc.max_stem_density,
 						canopy_strata[0].cs.stem_density);
 
 	/*--------------------------------------------------------------*/
@@ -645,7 +655,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		/ patch[0].soil_defaults[0][0].psi_air_entry),
 		patch[0].soil_defaults[0][0].pore_size_index );
 
-	
+
 	/*--------------------------------------------------------------*/
 	/* initialize runnning average of psi using current day psi     */
 	/*--------------------------------------------------------------*/
@@ -656,8 +666,8 @@ struct canopy_strata_object *construct_canopy_strata(
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
-		canopy_strata[0].rootzone.depth, 
-		0.0);			
+		canopy_strata[0].rootzone.depth,
+		0.0);
 
 	canopy_strata[0].rootzone.S = min(patch[0].rz_storage / canopy_strata[0].rootzone.potential_sat, 1.0);
 
