@@ -1840,10 +1840,8 @@ void		patch_daily_F(
 	/*	First guess at change in sat storage to meet demand.	*/
 	/*--------------------------------------------------------------*/
 	delta_unsat_zone_storage = min(unsat_zone_patch_demand, patch[0].rz_storage);
-
-
 	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO) && (patch[0].psi_max_veg > 0)) {
-		
+
 		patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry)
 									 * patch[0].soil_defaults[0][0].pore_size_index);
 		patch[0].wilting_point *= (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
@@ -1853,6 +1851,7 @@ void		patch_daily_F(
 	else {
 		patch[0].wilting_point = 0;
 		}
+
 
 	patch[0].rz_storage -= delta_unsat_zone_storage;
 	unsat_zone_patch_demand -= delta_unsat_zone_storage;
