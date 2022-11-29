@@ -64,6 +64,11 @@ int locate(float *data, int n, float x, float md){
   int jl,ju,jm;
   float corl,coru,cormin;
   if(n<2){
+    if (n==1){
+      if (fabs(data[0]-x) < md){
+        return 0;
+      }
+    }
     fprintf(stderr,"locate size error\n");
     return -1;
   }
@@ -208,7 +213,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
   idlat = locate(lat,nlat,rlat,sd);
   idlont = locate(lont,nlont,rlon,sd);
   if(idlat == -1 || idlont == -1){
-    fprintf(stderr,"rlat:%lf\trlon:%lf\tsd:%lf\tlat[0]:%lf\tlont[0]:%lf can't locate the station get_netcdf_var_timeseries\n",rlat,rlon,sd,lat[0],lont[0]);
+    fprintf(stderr,"rlat:%lf\trlon:%lf\tsd:%lf\tlat[0]:%lf\tlont[0]:%lf\tidlat:%i\tidlont:%i\tnlat:%i\tnlont:%i\nCan't locate the station get_netcdf_var_timeseries\n",rlat,rlon,sd,lat[0],lont[0],idlat,idlont,nlat,nlont);
     free(days);
     free(lat);
     free(lont);
