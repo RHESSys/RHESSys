@@ -742,9 +742,14 @@ void update_phenology(struct zone_object  *zone,
 	  //update the tree height
 
 	  if ( (cs->live_stemc + cs->dead_stemc) > ZERO && world[0].defaults[0].beetle != NULL && world[0].defaults[0].beetle[0].height_include_snag == 1) //if zero, means snag is harveste
+			if (cs->stem_density > ZERO) {
+			epv->height = epc.height_to_stem_coef
+				* pow ( (cs->live_stemc + cs->dead_stemc + cs->snagc + cs->delay_snagc)/cs->stem_density, epc.height_to_stem_exp); //
+				}
+			else {
 			epv->height = epc.height_to_stem_coef
 				* pow ( (cs->live_stemc + cs->dead_stemc + cs->snagc + cs->delay_snagc), epc.height_to_stem_exp); //
-
+				 }
     }
 
     //NREN 20181121
