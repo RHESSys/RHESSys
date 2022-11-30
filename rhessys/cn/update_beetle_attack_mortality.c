@@ -53,9 +53,10 @@ void update_beetle_attack_mortality(
 					  struct snag_sequence_object *redneedle_sequence,
 					  int inx,
 					  int thintyp,
-					  int root_alive,
-					  int harvest_dead_root,
-					  struct mortality_struct mort)
+					  //int root_alive,
+					  //int harvest_dead_root,
+					  struct mortality_struct mort,
+					  struct beetle_default *beetle)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -147,7 +148,7 @@ void update_beetle_attack_mortality(
 
 
 
-   if (epc.veg_type==TREE && thintyp ==5 && epc.max_lai>=10 && epc.phenology_type == EVERGREEN ) //make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
+   if (epc.veg_type==TREE && thintyp ==5 && epc.max_lai>=beetle[0].max_lai_th && epc.phenology_type == EVERGREEN ) //make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
   // if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN  )// this can isolate the understory but can not isolate the shrub due to shrub is evergreen and tree 20181126
    { // if it is the beetle attack and trees
 
@@ -399,8 +400,8 @@ void update_beetle_attack_mortality(
 	/*two parameters control it, root_alive, and harvest_dead_root, in beetles.def By ning ren 20190908 */
 	/*root_alive =1 is alive =0 is root dead, root_alive ==3 is fine root is dead too, but move to dead_root_beetle pool and then slowly decay to litter pool*/
 	/***************************************************************/
-	if (root_alive == 0.0) { //if the root is dead after attack
-        if(harvest_dead_root == 0.0) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
+	if (beetle[0].root_alive == 0.0) { //if the root is dead after attack
+        if(beetle[0].harvest_dead_root == 0.0) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
 	cs_litr->litr1c    += m_frootc_to_litr1c;
 	cs_litr->litr2c    += m_frootc_to_litr2c;
 	cs_litr->litr3c    += m_frootc_to_litr3c;
@@ -435,7 +436,7 @@ void update_beetle_attack_mortality(
       /*  printf("updating beetle attack mortality, the index is %d", inx);*/
         } // end if (root_alive)
 
-    else if (root_alive ==2 ) {//if root_alive option 2 means the root is dead but moved to a dead_root_beetle pool and slowly decay to the litter pool NREN 20190910
+    else if (beetle[0].root_alive ==2 ) {//if root_alive option 2 means the root is dead but moved to a dead_root_beetle pool and slowly decay to the litter pool NREN 20190910
 
     cs->dead_rootc_beetle += (m_frootc_to_litr1c + m_frootc_to_litr2c + m_frootc_to_litr3c + m_frootc_to_litr4c + m_frootc_store_to_litr1c + m_frootc_transfer_to_litr1c);
 		/* Coarse root wood mortality */
@@ -567,8 +568,8 @@ void update_beetle_attack_mortality(
 /****************************************************************/
 	/* Belowground dead n goes to litter and cwd in all cases. */
 	/*   Fine root mortality */
-	if (root_alive == 0.0) {
-        if(harvest_dead_root ==0){
+	if (beetle[0].root_alive == 0.0) {
+        if(beetle[0].harvest_dead_root ==0){
 
 	ns_litr->litr1n    += m_frootn_to_litr1n;
 	ns_litr->litr2n    += m_frootn_to_litr2n;
@@ -606,7 +607,7 @@ void update_beetle_attack_mortality(
             } // end of the if root_alive
 
 
-    else if(root_alive == 2) { // condition 2 fine root go to dead_rootn_beetle pool, then slowly decay to litter pool
+    else if(beetle[0].root_alive == 2) { // condition 2 fine root go to dead_rootn_beetle pool, then slowly decay to litter pool
 
     ns->dead_rootn_beetle += (m_frootn_to_litr1n + m_frootn_to_litr2n + m_frootn_to_litr3n + m_frootn_to_litr4n + m_frootn_store_to_litr1n + m_frootn_transfer_to_litr1n);
 

@@ -395,10 +395,11 @@ void		patch_daily_F(
  void  compute_beetle_effects( //NREN 20180629
         struct patch_object *,
         int inx,
-        double min_abc,
-        int root_alive,
-        int harvest_dead_root,
-        double);
+       // double min_abc,
+       // int root_alive,
+      //  int harvest_dead_root,
+        double,
+        struct beetle_default *);
 
 
 
@@ -804,10 +805,12 @@ void		patch_daily_F(
 				compute_beetle_effects(
 					patch,
 					inx, // to remember current index
-					min_abc, // the minimum above carbon needs for attack
-					root_alive,
-					harvest_dead_root,
-					attack_mortality);
+					//min_abc, // the minimum above carbon needs for attack
+					//root_alive,
+					//harvest_dead_root,
+					attack_mortality,
+					&(world[0].defaults[0].beetle)
+					);
 					} // if world
 
 			} // if climate event

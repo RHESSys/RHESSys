@@ -3297,6 +3297,7 @@ struct beetle_default {
      // for logging
      int logging_flag;
      int logging_year;
+     int max_lai_th;
 
 };
 

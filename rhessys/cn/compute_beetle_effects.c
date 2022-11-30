@@ -29,10 +29,11 @@ void compute_beetle_effects(
 
 						struct patch_object *patch,
 						int inx,
-						double min_abc,
-						int root_alive,
-						int harvest_dead_root,
-						double attack_mortality)
+						//double min_abc,
+						//int root_alive,
+						//int harvest_dead_root,
+						double attack_mortality,
+						struct beetle_default *beetle)
 
 {
 
@@ -55,9 +56,10 @@ void compute_beetle_effects(
 		struct snag_sequence_object *, // this is for leaf
 		int, //this is the index
 		int, // this is thin type
-		int, //root_alive
-		int, //harvest_dead_root
-		struct mortality_struct);
+		//int, //root_alive
+		//int, //harvest_dead_root
+		struct mortality_struct,
+		struct beetle_default *);
 
     void *alloc(size_t, char *, char *);
 
@@ -98,15 +100,15 @@ void compute_beetle_effects(
     /* build a simple mortality model  once the carbon is above  55Mg/ha is converted to 5500g/m2*/
 
 
-	if (abc *1000 >= min_abc) {  // make it as an input parameter
+	if (abc *1000 >= beetle[0].min_abc) {  // make it as an input parameter
 	   loss = attack_mortality;
         if(patch[0].ID == 7788) {
-	   printf("\n updating the beetle mortality (abc>min_abc) for inx %d,  [abc %lf kg/m2], [min_abc %lf g/m2], [mort %lf]\n", inx, abc, min_abc, loss);}// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
+	   printf("\n updating the beetle mortality (abc>min_abc) for inx %d,  [abc %lf kg/m2], [min_abc %lf g/m2], [mort %lf]\n", inx, abc, beetle[0].min_abc, loss);}// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
 	}
-	else if (abc*1000 < min_abc) {
+	else if (abc*1000 < beetle[0].min_abc) {
 	   loss=0; // if the total carbon is less the 55Mg/ha, then there is no mortality in that patch
        if(patch[0].ID == 7788) {
-	   printf("\n updating the beetle mortality (abc<min_abc) for inx %d,  [abc %lf kg/m2], [min_abc %lf g/m2], [mort %lf]\n", inx, abc, min_abc, loss);}// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
+	   printf("\n updating the beetle mortality (abc<min_abc) for inx %d,  [abc %lf kg/m2], [min_abc %lf g/m2], [mort %lf]\n", inx, abc,  beetle[0].min_abc, loss);}// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
 	}
 
 
@@ -147,9 +149,10 @@ void compute_beetle_effects(
 						 &(canopy_strata[0].redneedle_sequence),
 						 inx,
 						 thin_type,
-						 root_alive,
-						 harvest_dead_root,
-						 mort);
+						// root_alive,
+						// harvest_dead_root,
+						 mort,
+						 beetle);
 				}
 			//}
 //			printf("in update mortality5 for beetle attack\n");
