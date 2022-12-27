@@ -136,7 +136,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].gsurf_intercept = 	getDoubleParam(&paramCnt, &paramPtr, "gsurf_intercept", "%lf", 1000000.0, 1);
 		default_object_list[i].epc.phenology_flag = 	parse_dyn_flag(getStrParam(&paramCnt, &paramPtr, "epc.phenology_flag", "%s", "static", 1));
 		default_object_list[i].epc.phenology_type = 	parse_phenology_type(getStrParam(&paramCnt, &paramPtr, "epc.phenology.type", "%s", "EVERGREEN", 1));
-		default_object_list[i].epc.max_lai = 		getDoubleParam(&paramCnt, &paramPtr, "epc.max_lai", "%lf", 12.0, 1);
+		default_object_list[i].epc.max_lai = 		getDoubleParam(&paramCnt, &paramPtr, "epc.max_lai", "%lf", 30.0, 1);
 		default_object_list[i].epc.proj_sla = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_sla", "%lf", 9.0, 1);
 		default_object_list[i].epc.lai_ratio = 		getDoubleParam(&paramCnt, &paramPtr, "epc.lai_ratio", "%lf", 2.6, 1);
 		default_object_list[i].epc.proj_swa = 		getDoubleParam(&paramCnt, &paramPtr, "epc.proj_swa", "%lf", 1.4, 1);
