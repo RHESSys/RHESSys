@@ -103,7 +103,6 @@ void	execute_tec(
 	/*	Local Function Declarations.								*/
 	/*--------------------------------------------------------------*/
 	int		cal_date_lt(struct date, struct date );
-	
 	long	julday( struct date );
 	
 	struct	date	caldat( long );
@@ -201,7 +200,7 @@ void	execute_tec(
 	/*	Local Variable Definition. 									*/
 	/*--------------------------------------------------------------*/
 	int check;
-        int reset_flag;
+	int 	reset_flag;	
 	long	day;
 	long	hour;
 	long	month;
@@ -368,7 +367,7 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested yearly output					*/
 				/*--------------------------------------------------------------*/
-				 if (command_line[0].output_flags.yearly_growth == 1) {reset_flag=0;}
+				if (command_line[0].output_flags.yearly_growth == 1) {reset_flag=0;}
 				if ((command_line[0].output_flags.yearly == 1) &&
 					(command_line[0].output_yearly_date.month==current_date.month)&&
 					(command_line[0].output_yearly_date.day == current_date.day))

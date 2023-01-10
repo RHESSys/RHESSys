@@ -50,6 +50,7 @@ void	execute_state_output_event(
 	FILE	*outfile;
 	char	filename[MAXSTR+100];
 	char	ext[20];
+	char	par[10];
 	/*--------------------------------------------------------------*/
 	/*	Try to open the world file in read mode.					*/
 	/*--------------------------------------------------------------*/
@@ -59,6 +60,10 @@ void	execute_state_output_event(
 		current_date.hour);
 
 	strcpy(filename, command_line[0].world_filename);
+	if (command_line[0].parallel_flag > 0) {
+		sprintf(par, "%d", command_line[0].parallel_flag);
+		strcat(filename, par);
+	}
 	strcat(filename, ext);
 	strcat(filename, ".state");
 

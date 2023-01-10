@@ -21,7 +21,7 @@
 /*	Sep 15 97 RAF						*/
 /*	Took out call to compute lwp predawn and set it		*/
 /*	to default at LWP_min_spring for now.			*/
-/*	Due to modification of porosity with depth.		*/ 
+/*	Due to modification of porosity with depth.		*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,7 +30,7 @@
 void	canopy_stratum_daily_I(
 							   struct	world_object	*world,
 							   struct	basin_object	*basin,
-							   struct	hillslope_object	*hillslope, 
+							   struct	hillslope_object	*hillslope,
 							   struct	zone_object		*zone,
 							   struct	patch_object	*patch,
 							   struct 	canopy_strata_object 	*stratum,
@@ -54,17 +54,17 @@ void	canopy_stratum_daily_I(
 		double,
 		double,
 		double);
-	
+
 	int 	compute_annual_turnover(
 		struct epconst_struct,
 		struct epvar_struct *,
 		struct cstate_struct *);
-	
+
 	int	update_rootzone_moist(
 		struct patch_object	*,
 		struct	rooting_zone_object	*,
 		struct command_line_object *);
-	
+
 
 	void	update_branch_mortality(
 		struct epconst_struct,
@@ -77,8 +77,8 @@ void	canopy_stratum_daily_I(
 		struct litter_c_object *,
 		struct litter_n_object *,
 		double, double);
-	
-	
+
+
 	void	update_phenology(
 		struct zone_object *,
 		struct epvar_struct *,
@@ -121,8 +121,8 @@ void	canopy_stratum_daily_I(
 		struct fire_effects_object *,
 		struct cdayflux_struct *,
 		struct ndayflux_struct *);
-	
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
@@ -135,7 +135,7 @@ void	canopy_stratum_daily_I(
 	/* no processing at present for non-veg types			*/
 	/*--------------------------------------------------------------*/
 	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) {
-		
+
 	/*--------------------------------------------------------------*/
 	/*  zero all of the carbon daily flux variables.		*/
 	/*--------------------------------------------------------------*/
@@ -151,13 +151,13 @@ void	canopy_stratum_daily_I(
 	if (patch[0].sat_deficit < ZERO)
 		stratum[0].rootzone.S = 1.0;
 
-	else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)  	
-		stratum[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
-	
-	else  
-		stratum[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat 
+	else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)
+		stratum[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
+
+	else
+		stratum[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat
 			- patch[0].sat_deficit)
-			/ patch[0].rootzone.potential_sat, 1.0);							
+			/ patch[0].rootzone.potential_sat, 1.0);
 	 /*--------------------------------------------------------------*/
 	/*      Compute canopy predawn LWP        			*/
 	/*	Currently defaulted at non-stressed value.		*/
@@ -176,7 +176,7 @@ void	canopy_stratum_daily_I(
 		patch[0].soil_defaults[0][0].porosity_decay,
 		stratum[0].rootzone.S);
 
-	stratum[0].epv.psi_ravg = (stratum[0].defaults[0][0].epc.gs_ravg_days-1)/(stratum[0].defaults[0][0].epc.gs_ravg_days)* stratum[0].epv.psi_ravg + 
+	stratum[0].epv.psi_ravg = (stratum[0].defaults[0][0].epc.gs_ravg_days-1)/(stratum[0].defaults[0][0].epc.gs_ravg_days)* stratum[0].epv.psi_ravg +
 	 			1.0/(stratum[0].defaults[0][0].epc.gs_ravg_days) * stratum[0].epv.psi;
 
 	if ( command_line[0].verbose_flag > 1 )
@@ -200,7 +200,7 @@ void	canopy_stratum_daily_I(
 	/*--------------------------------------------------------------*/
 	if (stratum[0].defaults[0][0].epc.Tacclim_days > 0)
        	 stratum[0].cs.Tacc = stratum[0].cs.Tacc*(stratum[0].defaults[0][0].epc.Tacclim_days-1.0)/
-				(stratum[0].defaults[0][0].epc.Tacclim_days) + 
+				(stratum[0].defaults[0][0].epc.Tacclim_days) +
                               zone[0].metv.tavg * 1.0/stratum[0].defaults[0][0].epc.Tacclim_days;
 	else
 		stratum[0].cs.Tacc = zone[0].metv.tavg;
@@ -209,9 +209,9 @@ void	canopy_stratum_daily_I(
 	if (command_line[0].grow_flag > 0)  {
 		cs = &(stratum[0].cs);
 		ns = &(stratum[0].ns);
-	
-	 	
-		stratum[0].cs.preday_totalc = (cs->cpool + cs->cwdc
+
+
+		stratum[0].cs.preday_totalc = (cs->cpool + cs->cwdc + cs->cwdc_bg
 			+ cs->leafc + cs->leafc_store + cs->leafc_transfer
 			+ cs->dead_leafc + cs->gresp_transfer + cs->gresp_store
 			+ cs->frootc + cs->frootc_store + cs->frootc_transfer
@@ -220,11 +220,11 @@ void	canopy_stratum_daily_I(
 			+ cs->live_crootc + cs->livecrootc_store + cs->livecrootc_transfer
 			+ cs->dead_crootc + cs->deadcrootc_store + cs->deadcrootc_transfer);
 
-	
+
 		daily_mortality = stratum[0].defaults[0][0].epc.max_daily_mortality;
 
-		if (cs->age > stratum[0].defaults[0][0].epc.daily_mortality_threshold) 
-			daily_mortality = daily_mortality - daily_mortality*min(1.0, 
+		if (cs->age > stratum[0].defaults[0][0].epc.daily_mortality_threshold)
+			daily_mortality = daily_mortality - daily_mortality*min(1.0,
 				(cs->age-stratum[0].defaults[0][0].epc.daily_mortality_threshold)/100.0);
 
 		daily_mortality = max(daily_mortality, stratum[0].defaults[0][0].epc.min_daily_mortality);
@@ -287,7 +287,7 @@ void	canopy_stratum_daily_I(
 		basin[0].theta_noon,
 		basin[0].defaults[0][0].wyday_start,
 		current_date,
-		command_line[0].grow_flag, 
+		command_line[0].grow_flag,
 		command_line[0].multiscale_flag,
 		patch[0].landuse_defaults[0][0].msr_shading_flag);
 

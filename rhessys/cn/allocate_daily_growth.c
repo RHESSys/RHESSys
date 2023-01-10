@@ -52,18 +52,18 @@ int allocate_daily_growth(int nlimit,
 	/*------------------------------------------------------*/
 	/*	Local function declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	
+
 	int ok=1;
 	double fleaf;          /* RATIO   new leaf C: new total C     */
 	double froot;          /* RATIO   new fine root C : new total C     */
 	double flive, fdead;	/* RATIO  live/dead C : new total C */
 	double fwood;          /* RATIO   wood          */
-	double fcroot;          /* RATIO   new stem C : new croot C */   
-	double f3;		
+	double fcroot;          /* RATIO   new stem C : new croot C */
+	double f3;
 	double g1;          /* RATIO   C respired for growth : C grown  */
 	double cnl;         /* RATIO   leaf C:N      */
 	double cnfr;        /* RATIO   fine root C:N */
@@ -112,8 +112,8 @@ int allocate_daily_growth(int nlimit,
 
 	if (cdf->fcroot > ZERO);
 		fcroot = cdf->fcroot;
-	
-	if ((fleaf + froot) > ZERO) {	
+
+	if ((fleaf + froot) > ZERO) {
 
 
 	if (epc.veg_type == TREE){
@@ -132,6 +132,8 @@ int allocate_daily_growth(int nlimit,
 	/*	by fract_potential_uptake which is calculated in resolve_N_competition */
 	/*	based on available soil mineralized nitrogen				*/
 	/*--------------------------------------------------------------*/
+	if(ndf_patch->plant_potential_ndemand>0 && ndf->potential_N_uptake>0){
+
 	if (nlimit == 1)
 		if (total_soil_frootc > ZERO)
 			soil_nsupply = min(ndf->potential_N_uptake,
@@ -140,8 +142,8 @@ int allocate_daily_growth(int nlimit,
 		else
 			soil_nsupply = ndf->potential_N_uptake;
 	else
-		soil_nsupply = ndf->potential_N_uptake;
-		
+		soil_nsupply = ndf->potential_N_uptake; // this is nlimit == 0
+
 	soil_nsupply = max(soil_nsupply, 0.0);
 		/*----------------------------------------------------------------
 		now compare the combined decomposition immobilization and plant
@@ -196,7 +198,7 @@ int allocate_daily_growth(int nlimit,
 				sminn_to_npool = soil_nsupply;
 				excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 				cost_fix = -0.625*(exp(-3.62 + 0.27 * Tsoil*(1 - 0.5 * Tsoil / 25.15)) - 2);
-				if (cost_fix > ZERO) 
+				if (cost_fix > ZERO)
 					amt_fix = cost_fix/2.0 * excess_c / mean_cn;
 				else
 					amt_fix = 0.0;
@@ -213,8 +215,8 @@ int allocate_daily_growth(int nlimit,
 				}
 				else ns->nlimit=0;
 			}
-			 else {
-				 /* if the plants are not N fixers, no N fixation is applied and previous strategy applies */	 
+			 else { 
+				 /* if the plants are not N fixers, no N fixation is applied and previous strategy applies */
 					sminn_to_npool = soil_nsupply;
 					if (ns->retransn > ZERO)
 						ndf->retransn_to_npool = ns->retransn;
@@ -228,6 +230,15 @@ int allocate_daily_growth(int nlimit,
 				}
 		}
 	}
+	} else{
+
+	  ndf->retransn_to_npool = 0.0;
+	  plant_nalloc = 0.0;
+	  plant_calloc = 0.0;
+	  ns->nlimit = 0;
+	  sminn_to_npool = 0.0;
+
+	}//
 	/* calculate the amount of new leaf C dictated by these allocation
 	decisions, and figure the daily fluxes of C and N to current
 	growth and storage pools */
@@ -235,8 +246,9 @@ int allocate_daily_growth(int nlimit,
 
 	plant_nalloc = max(plant_nalloc, 0.0);
 	plant_calloc = max(plant_calloc, 0.0);
-	
-	
+	plant_calloc = min(cs->availc, plant_calloc);
+
+
 
 	/* pnow is the proportion of this day's growth that is displayed now,
 	the remainder going into storage for display next year through the
@@ -258,33 +270,68 @@ int allocate_daily_growth(int nlimit,
 		cdf->cpool_to_livecrootc_store = plant_calloc * fwood * fcroot * flive  * (1.0-pnow);
 		cdf->cpool_to_deadcrootc         = plant_calloc * fwood * fcroot * fdead *  pnow;
 		cdf->cpool_to_deadcrootc_store = plant_calloc * fwood  * fcroot * fdead *  (1.0-pnow);
+	} else{
+	  cdf->cpool_to_livestemc        = 0.0;
+	  cdf->cpool_to_livestemc_store  = 0.0;
+	  cdf->cpool_to_deadstemc          = 0.0;
+	  cdf->cpool_to_deadstemc_store  = 0.0;
+
+	  cdf->cpool_to_livecrootc         = 0.0;
+	  cdf->cpool_to_livecrootc_store = 0.0;
+	  cdf->cpool_to_deadcrootc         = 0.0;
+	  cdf->cpool_to_deadcrootc_store = 0.0;
 	}
+
 
 	/* daily N fluxes out of npool and into new growth or storage */
 	ndf->sminn_to_npool = sminn_to_npool;
 	ndf_patch->sminn_to_npool += sminn_to_npool * cover_fraction;
 
-
+	if(plant_calloc>0){
 
 	ndf->npool_to_leafn              = cdf->cpool_to_leafc / cnl;
 	ndf->npool_to_leafn_store      = cdf->cpool_to_leafc_store / cnl;
 	ndf->npool_to_frootn              = cdf->cpool_to_frootc / cnfr;
 	ndf->npool_to_frootn_store      = cdf->cpool_to_frootc_store / cnfr;
 	if (epc.veg_type == TREE){
-		ndf->npool_to_livestemn        = cdf->cpool_to_livestemc / cnlw; 
-		ndf->npool_to_livestemn_store  = cdf->cpool_to_livestemc_store / cnlw; 
-		ndf->npool_to_deadstemn        = cdf->cpool_to_deadstemc / cndw; 
-		ndf->npool_to_deadstemn_store  = cdf->cpool_to_deadstemc_store / cndw; 
-		ndf->npool_to_livecrootn        = cdf->cpool_to_livecrootc / cnlw; 
-		ndf->npool_to_livecrootn_store  = cdf->cpool_to_livecrootc_store / cnlw; 
-		ndf->npool_to_deadcrootn        = cdf->cpool_to_deadcrootc / cndw; 
-		ndf->npool_to_deadcrootn_store  = cdf->cpool_to_deadcrootc_store / cndw; 
+		ndf->npool_to_livestemn        = cdf->cpool_to_livestemc / cnlw;
+		ndf->npool_to_livestemn_store  = cdf->cpool_to_livestemc_store / cnlw;
+		ndf->npool_to_deadstemn        = cdf->cpool_to_deadstemc / cndw;
+		ndf->npool_to_deadstemn_store  = cdf->cpool_to_deadstemc_store / cndw;
+		ndf->npool_to_livecrootn        = cdf->cpool_to_livecrootc / cnlw;
+		ndf->npool_to_livecrootn_store  = cdf->cpool_to_livecrootc_store / cnlw;
+		ndf->npool_to_deadcrootn        = cdf->cpool_to_deadcrootc / cndw;
+		ndf->npool_to_deadcrootn_store  = cdf->cpool_to_deadcrootc_store / cndw;
 
+	}else{
+	  ndf->npool_to_livestemn        = 0.0;
+	  ndf->npool_to_livestemn_store  = 0.0;
+	  ndf->npool_to_deadstemn        = 0.0;
+	  ndf->npool_to_deadstemn_store  = 0.0;
+	  ndf->npool_to_livecrootn        = 0.0;
+	  ndf->npool_to_livecrootn_store  = 0.0;
+	  ndf->npool_to_deadcrootn        = 0.0;
+	  ndf->npool_to_deadcrootn_store  = 0.0;
+	}
+
+	} else{
+	  // not enough carbon to make a positive availc due to dormin season or deficit in cpool
+	  ndf->npool_to_leafn              = 0.0;
+	  ndf->npool_to_leafn_store      = 0.0;
+	  ndf->npool_to_frootn              = 0.0;
+	  ndf->npool_to_frootn_store      = 0.0;
+	  ndf->npool_to_livestemn        = 0.0;
+	  ndf->npool_to_livestemn_store  = 0.0;
+	  ndf->npool_to_deadstemn        = 0.0;
+	  ndf->npool_to_deadstemn_store  = 0.0;
+	  ndf->npool_to_livecrootn        = 0.0;
+	  ndf->npool_to_livecrootn_store  = 0.0;
+	  ndf->npool_to_deadcrootn        = 0.0;
+	  ndf->npool_to_deadcrootn_store  = 0.0;
 	}
 
 
-
-	ndf->actual_N_uptake  = 
+	ndf->actual_N_uptake  =
 		ndf->npool_to_leafn +
 		ndf->npool_to_leafn_store+
 		ndf->npool_to_frootn +
@@ -299,13 +346,13 @@ int allocate_daily_growth(int nlimit,
 		ndf->npool_to_deadcrootn_store;
 
 /*
-	printf("\nused %lf sminn_to_npool %lf npool %lf soil %lf ret %lf both %lf uptake %lf  limit %d", 
-			ndf->actual_N_uptake, sminn_to_npool, ns->npool, soil_nsupply, ns->retransn, ns->retransn+soil_nsupply, 
+	printf("\nused %lf sminn_to_npool %lf npool %lf soil %lf ret %lf both %lf uptake %lf  limit %d",
+			ndf->actual_N_uptake, sminn_to_npool, ns->npool, soil_nsupply, ns->retransn, ns->retransn+soil_nsupply,
 				ndf->potential_N_uptake, nlimit);
 
 */
 
-	cdf->actual_C_growth  = 
+	cdf->actual_C_growth  =
 		cdf->cpool_to_leafc +
 		cdf->cpool_to_leafc_store+
 		cdf->cpool_to_frootc +
@@ -319,7 +366,7 @@ int allocate_daily_growth(int nlimit,
 		cdf->cpool_to_deadcrootc         +
 		cdf->cpool_to_deadcrootc_store;
 
-		 
+
 	/* calculate the amount of carbon that needs to go into growth
 	respiration storage to satisfy all of the storage growth demands */
 	if (epc.veg_type == TREE){
@@ -338,9 +385,9 @@ int allocate_daily_growth(int nlimit,
 	/*	create a maximum lai							*/
 	/*---------------------------------------------------------------------------	*/
 
-	excess_lai = (cs->leafc + cs->leafc_transfer + cs->leafc_store + cdf->cpool_to_leafc) * epc.proj_sla - epc.max_lai; 
+	excess_lai = (cs->leafc + cs->leafc_transfer + cs->leafc_store + cdf->cpool_to_leafc) * epc.proj_sla - epc.max_lai;
 
-	if ( excess_lai > ZERO) 
+	if ( excess_lai > ZERO)
 	{
 		excess_c = excess_lai / epc.proj_sla;
 		if (epc.veg_type == TREE) {
@@ -364,7 +411,7 @@ int allocate_daily_growth(int nlimit,
 		     ns->npool += excess_allocation_to_leaf / cnl;
 		}
 	}
-	
+
 	/*---------------------------------------------------------------------------
 	if ((current_date.month == 5) && (current_date.day < 10))
 	printf(" \n %lf %lf %lf %lf %lf %lf ",
@@ -372,7 +419,7 @@ int allocate_daily_growth(int nlimit,
 	cs->leafc_store, cdf->psn_to_cpool);
 	---------------------------------------------------------------------------*/
 
-	
+
 	return(!ok);
 } /* end daily_allocation.c */
 
