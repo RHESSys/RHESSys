@@ -93,7 +93,7 @@ double	compute_N_leached(int verbose_flag,
 	/*------------------------------------------------------*/
 	/* nitrate export only occurs when Qout > 0.0		*/ 
 	/*------------------------------------------------------*/
-	if (Qout > ZERO) {
+	if (Qout > ZERO && total_nitrate > ZERO) {
 	if (s1 < 0.0) s1 = 0.0;
 	if (s2 < s1) s2 = s1;
 	/*------------------------------------------------------*/

@@ -1,5 +1,5 @@
 OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
-VERSION = 7.4
+VERSION = 7
 PGM  = rhessys$(VERSION)
 #CC = gcc
 CC = clang
@@ -14,15 +14,18 @@ netcdf=T
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
-DEFINES       = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID
+DEFINES = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID
 
 ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2
-# -w to supress warnings, feel free to remove
+# this is a dummy variable to be able to modify CFLAGS on the command line, such as "make CMD_OPTS=-w"
+# specifically added to be able to use with -w, to supress warnings
+CMD_OPTS +=
+
+CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2 $(CMD_OPTS)
+CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2 $(CMD_OPTS)
 # -Og for debug
 # -O2 for speed
 
@@ -107,6 +110,7 @@ $(OBJ)/compute_annual_turnover.o \
 $(OBJ)/compute_atm_pres.o \
 $(OBJ)/compute_capillary_rise.o \
 $(OBJ)/compute_cwd_decay.o \
+$(OBJ)/compute_cwd_decay_root.o \
 $(OBJ)/compute_deadleaf_turnover.o \
 $(OBJ)/compute_delta_water.o \
 $(OBJ)/compute_diffuse_radiative_PAR_fluxes.o \
@@ -136,6 +140,7 @@ $(OBJ)/compute_potential_N_uptake_Dickenson.o \
 $(OBJ)/compute_potential_N_uptake_Waring.o \
 $(OBJ)/compute_potential_N_uptake_combined.o \
 $(OBJ)/compute_potential_decomp.o \
+$(OBJ)/compute_potential_decomp_root.o \
 $(OBJ)/compute_potential_exfiltration.o \
 $(OBJ)/compute_potential_rain_interception.o \
 $(OBJ)/compute_potential_snow_interception.o \
@@ -333,6 +338,7 @@ $(OBJ)/update_C_stratum_daily.o \
 $(OBJ)/update_N_stratum_daily.o \
 $(OBJ)/update_basin_patch_accumulator.o \
 $(OBJ)/update_decomp.o \
+$(OBJ)/update_decomp_root.o \
 $(OBJ)/update_denitrif.o \
 $(OBJ)/update_dissolved_organic_losses.o \
 $(OBJ)/update_drainage_land.o \
@@ -966,6 +972,8 @@ $(OBJ)/compute_annual_litfall.o: cn/compute_annual_litfall.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_annual_litfall.c -o $(OBJ)/compute_annual_litfall.o
 $(OBJ)/compute_cwd_decay.o: cn/compute_cwd_decay.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_cwd_decay.c -o $(OBJ)/compute_cwd_decay.o
+$(OBJ)/compute_cwd_decay_root.o: cn/compute_cwd_decay_root.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_cwd_decay_root.c -o $(OBJ)/compute_cwd_decay_root.o
 $(OBJ)/compute_deadleaf_turnover.o: cn/compute_deadleaf_turnover.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_deadleaf_turnover.c -o $(OBJ)/compute_deadleaf_turnover.o
 $(OBJ)/compute_leaf_litfall.o: cn/compute_leaf_litfall.c
@@ -982,6 +990,8 @@ $(OBJ)/compute_prop_alloc_daily.o: cn/compute_prop_alloc_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_prop_alloc_daily.c -o $(OBJ)/compute_prop_alloc_daily.o
 $(OBJ)/compute_potential_decomp.o: cn/compute_potential_decomp.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_decomp.c -o $(OBJ)/compute_potential_decomp.o
+$(OBJ)/compute_potential_decomp_root.o: cn/compute_potential_decomp_root.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_potential_decomp_root.c -o $(OBJ)/compute_potential_decomp_root.o
 $(OBJ)/compute_potential_N_uptake.o: cn/compute_potential_N_uptake.c
 	$(CC) -c $(CFLAGS) -I include cn/compute_potential_N_uptake.c -o $(OBJ)/compute_potential_N_uptake.o
 $(OBJ)/compute_potential_N_uptake_Waring.o: cn/compute_potential_N_uptake_Waring.c
@@ -1016,6 +1026,8 @@ $(OBJ)/update_N_stratum_daily.o: cn/update_N_stratum_daily.c
 	$(CC) -c $(CFLAGS) -I include cn/update_N_stratum_daily.c -o $(OBJ)/update_N_stratum_daily.o
 $(OBJ)/update_decomp.o: cn/update_decomp.c
 	$(CC) -c $(CFLAGS) -I include cn/update_decomp.c -o $(OBJ)/update_decomp.o
+$(OBJ)/update_decomp_root.o: cn/update_decomp_root.c
+	$(CC) -c $(CFLAGS) -I include cn/update_decomp_root.c -o $(OBJ)/update_decomp_root.o
 $(OBJ)/update_shadow_strata.o: cn/update_shadow_strata.c
 	$(CC) -c $(CFLAGS) -I include cn/update_shadow_strata.c -o $(OBJ)/update_shadow_strata.o
 $(OBJ)/update_septic.o: cn/update_septic.c

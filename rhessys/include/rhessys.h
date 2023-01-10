@@ -1243,7 +1243,13 @@ struct  cdayflux_patch_struct
     double do_litr2c_loss;      /* (kgC/m2/day) cellulose DOC loss */
     double do_litr3c_loss;      /* (kgC/m2/day) shielded cellulose DOC loss */
     double do_litr4c_loss;      /* (kgC/m2/day) lignan DOC loss */
+    /* dissolved organic fluxes for under ground litter */
+    double do_litr1c_loss_bg;      /* (kgC/m2/day) labile DOC loss */
+    double do_litr2c_loss_bg;      /* (kgC/m2/day) cellulose DOC loss */
+    double do_litr3c_loss_bg;      /* (kgC/m2/day) shielded cellulose DOC loss */
+    double do_litr4c_loss_bg;      /* (kgC/m2/day) lignan DOC loss */
 
+    /* soil */
     double do_soil1c_loss;      /* (kgC/m2/day) fast soil carbon DOC loss */
     double do_soil2c_loss;      /* (kgC/m2/day) medium soil DOC loss */
     double do_soil3c_loss;      /* (kgC/m2/day) slow DOC loss */
@@ -1257,6 +1263,14 @@ struct  cdayflux_patch_struct
     double plitr2c_loss;        /* (kgC/m2/d) microbial assim. of cellulose lit */
     double plitr3c_loss;        /* (kgC/m2/d) microbial assim. of shielded cellulose lit */
     double plitr4c_loss;        /* (kgC/m2/d) microbial assim. of lignin lit */
+
+    /* potential decomp fluxes for under ground litter */
+    double plitr1c_loss_bg;        /* (kgC/m2/d) microbial assim. of labile lit */
+    double plitr2c_loss_bg;        /* (kgC/m2/d) microbial assim. of cellulose lit */
+    double plitr3c_loss_bg;        /* (kgC/m2/d) microbial assim. of shielded cellulose lit */
+    double plitr4c_loss_bg;        /* (kgC/m2/d) microbial assim. of lignin lit */
+
+    /*soil */
     double psoil1c_loss;         /* (kgC/m2/d) fast microbial recycling */
     double psoil2c_loss;        /* (kgC/m2/d) slow microbial recycling */
     double psoil3c_loss;        /* (kgC/m2/d) release of shielded cellulose */
@@ -1270,10 +1284,12 @@ struct  cdayflux_patch_struct
     double leafc_to_litr2c;  /* (kgC/m2/d) leaf litfall (cell., unshielded) */
     double leafc_to_litr3c;  /* (kgC/m2/d) leaf litfall (cell., shielded) */
     double leafc_to_litr4c;  /* (kgC/m2/d) leaf litfall (lignin) */
-    double frootc_to_litr1c; /* (kgC/m2/d) froot litfall (labile) */
-    double frootc_to_litr2c; /* (kgC/m2/d) froot litfall (cell., unshielded) */
-    double frootc_to_litr3c; /* (kgC/m2/d) froot litfall (cell., shielded) */
-    double frootc_to_litr4c; /* (kgC/m2/d) froot litfall (lignin) */
+
+
+    //double frootc_to_litr1c; /* (kgC/m2/d) froot litfall (labile) */
+    //double frootc_to_litr2c; /* (kgC/m2/d) froot litfall (cell., unshielded) */
+    //double frootc_to_litr3c; /* (kgC/m2/d) froot litfall (cell., shielded) */
+    //double frootc_to_litr4c; /* (kgC/m2/d) froot litfall (lignin) */
     double litr1c_to_soil1c; /* (kgC/m2/d) microbial assim. of labile lit */
     double litr2c_to_soil2c; /* (kgC/m2/d) microbial assim. of cellulose lit */
     double litr3c_to_litr2c; /* (kgC/m2/d) release of shielded cellulose */
@@ -1285,6 +1301,20 @@ struct  cdayflux_patch_struct
     double cwdc_to_litr3c;   /* (kgC/m2/d) CWD to shielded cellulose litter */
     double cwdc_to_litr4c;   /* (kgC/m2/d) CWD to lignin litter */
 
+    /*below ground root to litter and CWD pool turn over*/
+    double frootc_to_litr1c_bg; /* (kgC/m2/d) froot litfall (labile) */
+    double frootc_to_litr2c_bg; /* (kgC/m2/d) froot litfall (cell., unshielded) */
+    double frootc_to_litr3c_bg; /* (kgC/m2/d) froot litfall (cell., shielded) */
+    double frootc_to_litr4c_bg; /* (kgC/m2/d) froot litfall (lignin) */
+    double litr1c_to_soil1c_bg; /* (kgC/m2/d) microbial assim. of labile lit */
+    double litr2c_to_soil2c_bg; /* (kgC/m2/d) microbial assim. of cellulose lit */
+    double litr3c_to_litr2c_bg; /* (kgC/m2/d) release of shielded cellulose */
+    double litr4c_to_soil3c_bg; /* (kgC/m2/d) microbial assim. of lignin lit */
+    double cwdc_to_litr2c_bg;   /* (kgC/m2/d) CWD to unshielded cellulose litter */
+    double cwdc_to_litr3c_bg;   /* (kgC/m2/d) CWD to shielded cellulose litter */
+    double cwdc_to_litr4c_bg;   /* (kgC/m2/d) CWD to lignin litter */
+
+
     /* daily heterotroph respiration fluxes */
     double litr1c_hr;         /* (kgC/m2/d) labile litter respiration */
     double litr2c_hr;         /* (kgC/m2/d) unshielded cellulose litter resp */
@@ -1294,31 +1324,53 @@ struct  cdayflux_patch_struct
     double soil2c_hr;         /* (kgC/m2/d) medium microbial recycling resp */
     double soil3c_hr;         /* (kgC/m2/d) slow microbial recycling resp */
     double soil4c_hr;         /* (kgC/m2/d) recalcitrant SOM respiration */
+
+
+    /* daily heterotroph respiration fluxes of underground carbon */
+    double litr1c_hr_bg;         /* (kgC/m2/d) labile litter respiration */
+    double litr2c_hr_bg;         /* (kgC/m2/d) unshielded cellulose litter resp */
+    double litr3c_hr_bg;         /* (kgC/m2/d) cellulose litter resp */
+    double litr4c_hr_bg;         /* (kgC/m2/d) lignin litter respiration */
+
+
+
     /* daily MORTALITY fluxes */
 
     double m_leafc_to_litr1c;       /* (kgC/m2/d) leaf to labile */
     double m_leafc_to_litr2c;       /* (kgC/m2/d) leaf to unshielded cell. */
     double m_leafc_to_litr3c;       /* (kgC/m2/d) leaf to shielded cell. */
     double m_leafc_to_litr4c;       /* (kgC/m2/d) leaf to lignin */
-    double m_frootc_to_litr1c;      /* (kgC/m2/d) froot to labile */
-    double m_frootc_to_litr2c;      /* (kgC/m2/d) froot to un shielded cell. */
-    double m_frootc_to_litr3c;      /* (kgC/m2/d) froot to shielded cell. */
-    double m_frootc_to_litr4c;      /* (kgC/m2/d) froot to lignin */
+
+   //double m_frootc_to_litr1c;      /* (kgC/m2/d) froot to labile */
+    //double m_frootc_to_litr2c;      /* (kgC/m2/d) froot to un shielded cell. */
+    //double m_frootc_to_litr3c;      /* (kgC/m2/d) froot to shielded cell. */
+    //double m_frootc_to_litr4c;      /* (kgC/m2/d) froot to lignin */
+
+    /* root mortality fluxes go to underground litter pool */
+    double m_frootc_to_litr1c_bg;      /* (kgC/m2/d) froot to labile */
+    double m_frootc_to_litr2c_bg;      /* (kgC/m2/d) froot to un shielded cell. */
+    double m_frootc_to_litr3c_bg;      /* (kgC/m2/d) froot to shielded cell. */
+    double m_frootc_to_litr4c_bg;      /* (kgC/m2/d) froot to lignin */
 
     double m_leafc_store_to_litr1c; /* (kgC/m2/d) leaf store to labile */
-    double m_frootc_store_to_litr1c; /* (kgC/m2/d) froot store to labile */
+    //double m_frootc_store_to_litr1c; /* (kgC/m2/d) froot store to labile */
+    double m_frootc_store_to_litr1c_bg; /* (kgC/m2/d) froot store to labile */
     double m_livestemc_store_to_litr1c; /* (kgC/m2/d) live stem store to labile */
     double m_deadstemc_store_to_litr1c; /* (kgC/m2/d) dead stem store to labile */
-    double m_livecrootc_store_to_litr1c; /* (kgC/m2/d) live coarse root store to labile */
-    double m_deadcrootc_store_to_litr1c; /* (kgC/m2/d) dead coarse root store to labile */
+    //double m_livecrootc_store_to_litr1c; /* (kgC/m2/d) live coarse root store to labile */
+    //double m_deadcrootc_store_to_litr1c; /* (kgC/m2/d) dead coarse root store to labile */
+    double m_livecrootc_store_to_litr1c_bg; /* (kgC/m2/d) live coarse root store to labile */
+    double m_deadcrootc_store_to_litr1c_bg; /* (kgC/m2/d) dead coarse root store to labile */
 
     double m_leafc_transfer_to_litr1c; /* (kgC/m2/d) leaf transfer to labile */
-    double m_frootc_transfer_to_litr1c; /* (kgC/m2/d) froot transfer to labile */
+   // double m_frootc_transfer_to_litr1c; /* (kgC/m2/d) froot transfer to labile */
+    double m_frootc_transfer_to_litr1c_bg; /* (kgC/m2/d) froot transfer to labile */
     double m_livestemc_transfer_to_litr1c; /* (kgC/m2/d) live stem transfer to labile */
     double m_deadstemc_transfer_to_litr1c; /* (kgC/m2/d) dead stem transfer to labile */
-    double m_livecrootc_transfer_to_litr1c; /* (kgC/m2/d) live coarse root transfer to labile */
-    double m_deadcrootc_transfer_to_litr1c; /* (kgC/m2/d) dead coarse root transfer to labile */
-
+    //double m_livecrootc_transfer_to_litr1c; /* (kgC/m2/d) live coarse root transfer to labile */
+    //double m_deadcrootc_transfer_to_litr1c; /* (kgC/m2/d) dead coarse root transfer to labile */
+    double m_livecrootc_transfer_to_litr1c_bg; /* (kgC/m2/d) live coarse root transfer to labile */
+    double m_deadcrootc_transfer_to_litr1c_bg; /* (kgC/m2/d) dead coarse root transfer to labile */
 
     double m_gresp_store_to_litr1c;      /* (kgC/m2/d) */
     double m_gresp_transfer_to_litr1c;     /* (kgC/m2/d) */
@@ -1345,6 +1397,12 @@ struct  ndayflux_patch_struct
     double do_litr3n_loss;      /* (kgN/m2/day) shielded cellulose DON loss */
     double do_litr4n_loss;      /* (kgN/m2/day) lignan DON loss */
 
+    /* dissovled organice fluxes for underground */
+    double do_litr1n_loss_bg;      /* (kgN/m2/day) labile DON loss */
+    double do_litr2n_loss_bg;      /* (kgN/m2/day) cellulose DON loss */
+    double do_litr3n_loss_bg;      /* (kgN/m2/day) shielded cellulose DON loss */
+    double do_litr4n_loss_bg;      /* (kgN/m2/day) lignan DON loss */
+
     double do_soil1n_loss;      /* (kgN/m2/day) fast soil DON loss */
     double do_soil2n_loss;      /* (kgN/m2/day) medium soil DON loss */
     double do_soil3n_loss;      /* (kgN/m2/day) slow DON loss */
@@ -1356,8 +1414,12 @@ struct  ndayflux_patch_struct
     /* potential decomp fluxes */
     double mineralized;         /* (kgN/m2/d) total mineralized N */
     double potential_immob;     /* (kgN/m2/d) potential imobilized N */
-    double net_mineralized;   /* (kgN/m2/d) net mineralization */
+    /*below ground mineralized and potential_immob*/
+    double mineralized_bg;         /* (kgN/m2/d) total mineralized N */
+    double potential_immob_bg;     /* (kgN/m2/d) potential imobilized N */
 
+    double net_mineralized;   /* (kgN/m2/d) net mineralization */
+    double net_mineralized_bg;   /* (kgN/m2/d) net mineralization */
     /* potential mineralization */
     double pmnf_l1s1;           /* (kgN/m2/d) microbial assim. of labile lit */
     double pmnf_l2s2;           /* (kgN/m2/d) microbial assim. of cellulose lit */
@@ -1368,16 +1430,22 @@ struct  ndayflux_patch_struct
     double pmnf_s3s4;           /* (kgN/m2/d) recalcitrant SOM formation */
     double pmnf_s4;             /* (kgN/m2/d) recalcitrant SOM decay */
 
+    /* potential mineralization for underground carbon */
+    double pmnf_l1s1_bg;           /* (kgN/m2/d) microbial assim. of labile lit */
+    double pmnf_l2s2_bg;           /* (kgN/m2/d) microbial assim. of cellulose lit */
+    double pmnf_l3l2_bg;           /* (kgN/m2/d) microbial assim. of cellulose lit */
+    double pmnf_l4s3_bg;           /* (kgN/m2/d) microbial assim. of lignin lit */
+
 
         /* daily turnover fluxes */
     double leafn_to_litr1n;  /* (kgN/m2/d) leaf litfall labile */
     double leafn_to_litr2n;  /* (kgN/m2/d) leaf litfall unshielded cellulose */
     double leafn_to_litr3n;  /* (kgN/m2/d) leaf litfall shielded cellulose */
     double leafn_to_litr4n;  /* (kgN/m2/d) leaf litfall lignin */
-    double frootn_to_litr1n; /* (kgN/m2/d) froot litfall labile */
-    double frootn_to_litr2n; /* (kgN/m2/d) froot litfall unshielded cellulose */
-    double frootn_to_litr3n; /* (kgN/m2/d) froot litfall shielded cellulose */
-    double frootn_to_litr4n; /* (kgN/m2/d) froot litfall lignin */
+    //double frootn_to_litr1n; /* (kgN/m2/d) froot litfall labile */
+    //double frootn_to_litr2n; /* (kgN/m2/d) froot litfall unshielded cellulose */
+    //double frootn_to_litr3n; /* (kgN/m2/d) froot litfall shielded cellulose */
+    //double frootn_to_litr4n; /* (kgN/m2/d) froot litfall lignin */
     double litr1n_to_soil1n; /* (kgN/m2/d) microbial assim. of labile N */
     double litr2n_to_soil2n; /* (kgN/m2/d) microbial assim. of cellulose N */
     double litr4n_to_soil3n; /* (kgN/m2/d) microbial assim. of lignin N */
@@ -1388,6 +1456,19 @@ struct  ndayflux_patch_struct
     double cwdn_to_litr2n;   /* (kgN/m2/d) CWD to unshielded cellulose N */
     double cwdn_to_litr3n;   /* (kgN/m2/d) CWD to shielded cellulose N */
     double cwdn_to_litr4n;   /* (kgN/m2/d) CWD to lignin N */
+
+    /* daily turnover fluxes from root to underground carbon */
+    double frootn_to_litr1n_bg; /* (kgN/m2/d) froot litfall labile */
+    double frootn_to_litr2n_bg; /* (kgN/m2/d) froot litfall unshielded cellulose */
+    double frootn_to_litr3n_bg; /* (kgN/m2/d) froot litfall shielded cellulose */
+    double frootn_to_litr4n_bg; /* (kgN/m2/d) froot litfall lignin */
+    double litr1n_to_soil1n_bg; /* (kgN/m2/d) microbial assim. of labile N */
+    double litr2n_to_soil2n_bg; /* (kgN/m2/d) microbial assim. of cellulose N */
+    double litr4n_to_soil3n_bg; /* (kgN/m2/d) microbial assim. of lignin N */
+    double litr3n_to_litr2n_bg; /* (kgN/m2/d) release of shielded cellulose N */
+    double cwdn_to_litr2n_bg;   /* (kgN/m2/d) CWD to unshielded cellulose N */
+    double cwdn_to_litr3n_bg;   /* (kgN/m2/d) CWD to shielded cellulose N */
+    double cwdn_to_litr4n_bg;   /* (kgN/m2/d) CWD to lignin N */
 
     /* daily N immobilization & mineralization fluxes */
     double plant_potential_ndemand; /* (kgN/m2/d) potential N demand from plants              */
@@ -1403,32 +1484,50 @@ struct  ndayflux_patch_struct
     double soil4n_to_sminn;    /* (kgN/m2/d) N from soil4 to mineral pool */
     double sminn_to_nitrate;     /* (kgN/m2/d) nitrification  */
 
+    /* daily N immobilization & mineralization fluxes for underground carbon */
+    double sminn_to_soil1n_l1_bg; /* (kgN/m2/d) N immob. between litr1 and soil1 */
+    double sminn_to_soil2n_l2_bg; /* (kgN/m2/d) N immob. between litr2 and soil2 */
+    double sminn_to_soil2n_l3_bg; /* (kgN/m2/d) N immob. between litr3 and soil2 */
+    double sminn_to_soil3n_l4_bg; /* (kgN/m2/d) N immob. between litr4 and soil3 */
+
+
+
     /* daily N MORTALITY fluxes */
     double m_leafn_to_litr1n;       /* (kgN/m2/d) leaf to labile */
     double m_leafn_to_litr2n;       /* (kgN/m2/d) leaf to unshielded cell. */
     double m_leafn_to_litr3n;       /* (kgN/m2/d) leaf to shielded cell. */
     double m_leafn_to_litr4n;       /* (kgN/m2/d) leaf to lignin */
-    double m_frootn_to_litr1n;      /* (kgN/m2/d) froot to labile */
-    double m_frootn_to_litr2n;      /* (kgN/m2/d) froot to un shielded cell. */
-    double m_frootn_to_litr3n;      /* (kgN/m2/d) froot to shielded cell. */
-    double m_frootn_to_litr4n;      /* (kgN/m2/d) froot to lignin */
+    //double m_frootn_to_litr1n;      /* (kgN/m2/d) froot to labile */
+    //double m_frootn_to_litr2n;      /* (kgN/m2/d) froot to un shielded cell. */
+    //double m_frootn_to_litr3n;      /* (kgN/m2/d) froot to shielded cell. */
+    //double m_frootn_to_litr4n;      /* (kgN/m2/d) froot to lignin */
+    double m_frootn_to_litr1n_bg;      /* (kgN/m2/d) froot to labile */
+    double m_frootn_to_litr2n_bg;      /* (kgN/m2/d) froot to un shielded cell. */
+    double m_frootn_to_litr3n_bg;      /* (kgN/m2/d) froot to shielded cell. */
+    double m_frootn_to_litr4n_bg;      /* (kgN/m2/d) froot to lignin */
 
     double m_livestemn_to_litr1n;   /*(kgN/m2/d) live stem to labile */
-    double m_livecrootn_to_litr1n;   /*(kgN/m2/d) live coarse root to labile */
+    //double m_livecrootn_to_litr1n;   /*(kgN/m2/d) live coarse root to labile */
+    double m_livecrootn_to_litr1n_bg;   /*(kgN/m2/d) live coarse root to labile */
     double m_leafn_store_to_litr1n; /* (kgN/m2/d) leaf store to labile */
-    double m_frootn_store_to_litr1n; /* (kgN/m2/d) froot store to labile */
+    //double m_frootn_store_to_litr1n; /* (kgN/m2/d) froot store to labile */
+    double m_frootn_store_to_litr1n_bg; /* (kgN/m2/d) froot store to labile */
     double m_livestemn_store_to_litr1n; /* (kgN/m2/d) live stem store to labile */
     double m_deadstemn_store_to_litr1n; /* (kgN/m2/d) dead stem store to labile */
-    double m_livecrootn_store_to_litr1n; /* (kgN/m2/d) live noarse root store to labile */
-    double m_deadcrootn_store_to_litr1n; /* (kgN/m2/d) dead noarse root store to labile */
+    //double m_livecrootn_store_to_litr1n; /* (kgN/m2/d) live noarse root store to labile */
+    //double m_deadcrootn_store_to_litr1n; /* (kgN/m2/d) dead noarse root store to labile */
+    double m_livecrootn_store_to_litr1n_bg; /* (kgN/m2/d) live noarse root store to labile */
+    double m_deadcrootn_store_to_litr1n_bg; /* (kgN/m2/d) dead noarse root store to labile */
 
     double m_leafn_transfer_to_litr1n; /* (kgN/m2/d) leaf transfer to labile */
-    double m_frootn_transfer_to_litr1n; /* (kgN/m2/d) froot transfer to labile */
+    //double m_frootn_transfer_to_litr1n; /* (kgN/m2/d) froot transfer to labile */
+    double m_frootn_transfer_to_litr1n_bg; /* (kgN/m2/d) froot transfer to labile */
     double m_livestemn_transfer_to_litr1n; /* (kgN/m2/d) live stem transfer to labile */
     double m_deadstemn_transfer_to_litr1n; /* (kgN/m2/d) dead stem transfer to labile */
-    double m_livecrootn_transfer_to_litr1n; /* (kgN/m2/d) live coarse root transfer to labile */
-
-    double m_deadcrootn_transfer_to_litr1n; /* (kgN/m2/d) dead coarse root transfer to labile */
+    //double m_livecrootn_transfer_to_litr1n; /* (kgN/m2/d) live coarse root transfer to labile */
+    double m_livecrootn_transfer_to_litr1n_bg; /* (kgN/m2/d) live coarse root transfer to labile */
+    //double m_deadcrootn_transfer_to_litr1n; /* (kgN/m2/d) dead coarse root transfer to labile */
+    double m_deadcrootn_transfer_to_litr1n_bg; /* (kgN/m2/d) dead coarse root transfer to labile */
 
     double m_retransn_to_litr1n;           /* (kgN/m2/d) */
 
@@ -1465,7 +1564,7 @@ struct  litter_object
         double depth;                   /* m */
         double density;                 /* m/kgC */
         double rain_stored;             /* m */
-	double NO3_stored;		/* kg/m2 */
+	    double NO3_stored;		/* kg/m2 */
         double gsurf;
         double proj_pai;
         double rain_capacity;
@@ -1490,6 +1589,20 @@ struct  litter_c_object
     double fire_snk;          /* (kgC/m2) SUM of losses due to fire */
     double t_scalar;    /* (DIM) tempertaure scalar for decomposition */
     double w_scalar;    /* (DIM) tempertaure scalar for decomposition */
+
+    /* below ground litter carbon pool */
+    double litr1c_bg;         /* (kgC/m2) litter labile C */
+    double litr2c_bg;         /* (kgC/m2) litter unshielded cellulose C */
+    double litr3c_bg;         /* (kgC/m2) litter shielded cellulose C */
+    double litr4c_bg;         /* (kgC/m2) litter lignin C */
+    double litr1c_hr_snk_bg;     /* (kgC/m2) SUM of labile litr microbial resp */
+    double litr2c_hr_snk_bg;     /* (kgC/m2) SUM of cellulose litr microbial resp */
+    double litr4c_hr_snk_bg;     /* (kgC/m2) SUM of lignin litr microbial resp */
+   // double fire_snk;          /* (kgC/m2) SUM of losses due to fire */
+    double t_scalar_bg;    /* (DIM) tempertaure scalar for decomposition */
+    double w_scalar_bg;    /* (DIM) tempertaure scalar for decomposition */
+
+
         };
 
 struct  litter_n_object
@@ -1500,6 +1613,14 @@ struct  litter_n_object
     double litr3n;          /* (kgN/m2) litter shielded cellulose N */
     double litr4n;          /* (kgN/m2) litter lignin N */
     double fire_snk;          /* (kgC/m2) SUM of losses due to fire */
+
+    /* below ground litter carbon */
+    double litr1n_bg;          /* (kgN/m2) litter labile N */
+    double litr2n_bg;          /* (kgN/m2) litter unshielded cellulose N */
+    double litr3n_bg;          /* (kgN/m2) litter shielded cellulose N */
+    double litr4n_bg;          /* (kgN/m2) litter lignin N */
+
+
         };
 
 /*----------------------------------------------------------*/
@@ -2339,6 +2460,7 @@ struct cstate_struct
 
     double gresp_store;    /* (kgC/m2) growth respiration C stored from this years growth */
     double cwdc;           /* (kgC/m2) coarse woody debris C*/
+    double cwdc_bg;           /* (kgC/m2) coarse woody debris C below ground*/
 
 /* sink for respiration and fire losses */
     double gpsn_src;       /* (kgC/m2) SUM of gross PSN carbon inputs */
@@ -2579,6 +2701,7 @@ struct epvar_struct
     double frootn_store;    /* (kgN/m2) fine root N  stored from this years growth */
 
     double cwdn;           /* (kgN/m2) coarse woody debris N*/
+    double cwdn_bg;           /* (kgN/m2) coarse woody debris N below ground*/
     double fire_snk;       /* (kgC/m2) SUM of nitrogen loss due to fire */
 };
 

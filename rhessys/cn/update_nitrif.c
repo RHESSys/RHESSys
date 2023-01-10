@@ -164,9 +164,16 @@ int update_nitrif(
 	nitrify = min(nitrify/1000, ns_soil->sminn);
 	nitrify = max(nitrify, 0.0);
 	nitrify = min(nitrify, max_nit_rate);
+	// make sure nitrify is larger than zero and smaller sminn
+	nitrify = min(nitrify, ns_soil->sminn);
+	nitrify = max(nitrify, 0.0);
+	
 	ndf->sminn_to_nitrate = nitrify;
 	ns_soil->sminn -= (nitrify);
 	ns_soil->nitrate += (nitrify);
+	
+	
+	
 	ok = 0;
 	return(ok);
 } /* end update_nitrif */
