@@ -150,6 +150,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].min_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "min_heat_capacity", "%lf", 0.0, 1);
 		default_object_list[i].max_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "max_heat_capacity", "%lf", 0.0, 1);
 		default_object_list[i].epc.allocation_flag = 	parse_alloc_flag(getStrParam(&paramCnt, &paramPtr, "epc.allocation_flag", "%s", "waring", 1));
+		default_object_list[i].frootc_density_scale  = 	getDoubleParam(&paramCnt, &paramPtr, "frootc_density_scale", "%lf", -9999, 1);
 		/*--------------------------------------------------------------*/
 		/*          NOTE: PLACE ANY GROW READING HERE.                  */
 		/*--------------------------------------------------------------*/

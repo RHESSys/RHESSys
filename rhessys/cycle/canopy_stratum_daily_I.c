@@ -128,6 +128,7 @@ void	canopy_stratum_daily_I(
 	struct nstate_struct *ns;
 	struct mortality_struct mort;
 	double leafcloss_perc, daily_mortality;
+	double froot_scale;
 
 	/*--------------------------------------------------------------*/
 	/* no processing at present for non-veg types			*/
@@ -146,14 +147,27 @@ void	canopy_stratum_daily_I(
 /*	stratum[0].Kup_direct = 0.0;
 	stratum[0].Kup_diffuse = 0.0;*/
 
+
+
+/* lets scale by froot coverage */
+
+	froot_scale=1.0;
+
+	if ((stratum[0].rootzone.depth > ZERO) && (stratum[0].defaults[0][0].frootc_density_scale > ZERO))
+		froot_scale = (stratum[0].defaults[0][0].frootc_density_scale * stratum[0].cs.frootc )/ stratum[0].rootzone.depth;
+	
+	froot_scale = min(1.0, froot_scale);
+	froot_scale = max(0, froot_scale);
+
 	if (patch[0].sat_deficit < ZERO)
 		stratum[0].rootzone.S = 1.0;
 
+
 	else if (patch[0].sat_deficit_z > patch[0].rootzone.depth)  	
-		stratum[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
+		stratum[0].rootzone.S = min(patch[0].rz_storage * froot_scale/ patch[0].rootzone.potential_sat, 1.0);	
 	
 	else  
-		stratum[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat 
+		stratum[0].rootzone.S = min((patch[0].rz_storage * froot_scale + patch[0].rootzone.potential_sat 
 			- patch[0].sat_deficit)
 			/ patch[0].rootzone.potential_sat, 1.0);							
 	 /*--------------------------------------------------------------*/

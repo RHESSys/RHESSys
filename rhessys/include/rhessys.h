@@ -2900,6 +2900,7 @@ struct  stratum_default
         double  specific_snow_capacity;                 /* m /  LAI     */
         double  wind_attenuation_coeff;         /* 1/meters     */
         double  ustar_overu;                    /* DIM  */
+	double  frootc_density_scale; 		/* %/kg/m */
         struct  epconst_struct  epc;
         struct  mrconst_struct  mrc;
 	double understory_mort; 		/* Relation between probability of spread and proportion understory mortality */
