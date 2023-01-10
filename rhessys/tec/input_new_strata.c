@@ -80,11 +80,11 @@ void input_new_strata(
 		double);
 
 	double compute_delta_water(
-		int, 
-		double, 
-		double,	
-		double, 
-		double, 
+		int,
+		double,
+		double,
+		double,
+		double,
 		double);
 
 	double	compute_lwp_predawn(
@@ -107,7 +107,7 @@ void input_new_strata(
 
 	param	*readtag_worldfile(int *,
 				  FILE *,
-				  char *);	
+				  char *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -125,7 +125,7 @@ void input_new_strata(
 	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"veg_parm_ID","%d",canopy_strata[0].veg_parm_ID,1);
 	 if (dtmp > 0)  canopy_strata[0].veg_parm_ID = dtmp;
 
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",canopy_strata[0].cover_fraction,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cover_fraction","%lf",canopy_strata[0].cover_fraction,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cover_fraction = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"gap_fraction","%lf",canopy_strata[0].gap_fraction,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].gap_fraction = ltmp;
@@ -183,6 +183,8 @@ void input_new_strata(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.frootc_transfer = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cwdc","%lf",canopy_strata[0].cs.cwdc,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cwdc = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cwdc_bg","%lf",canopy_strata[0].cs.cwdc_bg,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.cwdc_bg = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.prev_leafcalloc","%lf",canopy_strata[0].epv.prev_leafcalloc,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.prev_leafcalloc = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.npool","%lf",canopy_strata[0].ns.npool,1);
@@ -227,10 +229,12 @@ void input_new_strata(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.frootn_transfer = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.cwdn","%lf",canopy_strata[0].ns.cwdn,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.cwdn = ltmp;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.cwdn_bg","%lf",canopy_strata[0].ns.cwdn_bg,1);
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.cwdn_bg = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"ns.retransn","%lf",canopy_strata[0].ns.retransn,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].ns.retransn = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",canopy_strata[0].cs.age,1);
-	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
+	 if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
 
 	/*--------------------------------------------------------------*/
 	/*	intialized annual flux variables			*/
@@ -241,8 +245,8 @@ void input_new_strata(
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.max_fparabs = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",canopy_strata[0].epv.min_vwc,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].epv.min_vwc = ltmp;
-	
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",canopy_strata[0].num_base_stations,0);	
+
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",canopy_strata[0].num_base_stations,0);
 
 		/*--------------------------------------------------------------*/
 		/*	Assign	defaults for this canopy_strata								*/
@@ -307,7 +311,7 @@ void input_new_strata(
 	canopy_strata[0].epv.all_lai = canopy_strata[0].epv.proj_lai *
 		canopy_strata[0].defaults[0][0].epc.lai_ratio;
 	canopy_strata[0].epv.max_proj_lai =  canopy_strata[0].epv.proj_lai;
-	
+
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
 	/* use stem density if included otherwise default to simply stem carbon */
 		if (canopy_strata[0].cs.stem_density < ZERO) {
@@ -332,7 +336,7 @@ void input_new_strata(
 		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
-	
+
 
 	/*--------------------------------------------------------------*/
 	/*	calculate all sided  and project pai from max projected lai	*/
@@ -377,9 +381,9 @@ void input_new_strata(
 	rootc = canopy_strata[0].cs.frootc+canopy_strata[0].cs.live_crootc+canopy_strata[0].cs.dead_crootc;
 	if (rootc > ZERO){
 		if (update_rooting_depth(
-			&(canopy_strata[0].rootzone), 
-			rootc, 
-			canopy_strata[0].defaults[0][0].epc.root_growth_direction, 
+			&(canopy_strata[0].rootzone),
+			rootc,
+			canopy_strata[0].defaults[0][0].epc.root_growth_direction,
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,
 			canopy_strata[0].defaults[0][0].epc.max_root_depth,
 			patch[0].soil_defaults[0][0].effective_soil_depth,
@@ -391,7 +395,7 @@ void input_new_strata(
 	}
 	}
 	patch[0].rootzone.depth = max(patch[0].rootzone.depth, canopy_strata[0].rootzone.depth);
-	
+
 		/*--------------------------------------------------------------*/
 		/*	set phenology timing if static allocation		*/
 		/*--------------------------------------------------------------*/
@@ -449,7 +453,7 @@ void input_new_strata(
 		fprintf(stderr,"\n since dynamic phenology timing not yet implemented");
 		exit(EXIT_FAILURE);
 	}
-		
+
 	/*--------------------------------------------------------------*/
 	/* initialize runnning average of psi using current day psi     */
 	/*--------------------------------------------------------------*/
@@ -460,8 +464,8 @@ void input_new_strata(
 		patch[0].soil_defaults[0][0].porosity_0,
 		patch[0].soil_defaults[0][0].porosity_decay,
 		patch[0].soil_defaults[0][0].soil_depth,
-		canopy_strata[0].rootzone.depth, 
-		0.0);			
+		canopy_strata[0].rootzone.depth,
+		0.0);
 
 	canopy_strata[0].rootzone.S = min(patch[0].rz_storage / canopy_strata[0].rootzone.potential_sat, 1.0);
 
@@ -522,8 +526,8 @@ void input_new_strata(
 		}
 	if(paramPtr!=NULL){
 	  free(paramPtr);
-	}		
-		
+	}
+
 	return;
 } /*end input_new_strata.c*/
 

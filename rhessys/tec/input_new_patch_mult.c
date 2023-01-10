@@ -67,11 +67,11 @@
 		double);
 	void	update_litter_interception_capacity (double, struct litter_c_object *,
 		struct litter_object *);
-	
+
 	void	*alloc(	size_t, char *, char *);
 	param	*readtag_worldfile(int *,
 				  FILE *,
-				  char *);		
+				  char *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -81,44 +81,44 @@
 	double	       ltmp;
 	int		paramCnt=0;
 	param		*paramPtr=NULL;
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the next patch record for this hillslope.			*/
 	/*--------------------------------------------------------------*/
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
 
 
- 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",1,1);		
+ 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].x = ltmp * patch[0].x;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",1,1);		
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].y = ltmp * patch[0].y;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].z = ltmp * patch[0].z;
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].num_base_stations,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"soil_parmID","%d",patch[0].num_base_stations,1);
 	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].soil_parm_ID = dtmp;
 	dtmp  = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
 	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].landuse_parm_ID = dtmp;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",1,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp * patch[0].area;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"slope","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].slope = ltmp * patch[0].slope * DtoR;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",1,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].lna = ltmp * patch[0].lna;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",1,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].Ksat_vertical = ltmp * patch[0].Ksat_vertical;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].mpar = ltmp * patch[0].mpar;
-	
+
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"std","%lf",1,1);
 	if (command_line[0].stdev_flag == 1) {
 		if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].std = ltmp * patch[0].std;
 	}
-		
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"rz_storage","%lf",1,1);	
+
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"rz_storage","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].rz_storage = ltmp * patch[0].rz_storage;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"unsat_storage","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].unsat_storage = ltmp * patch[0].unsat_storage;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"sat_deficit","%lf",1,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"sat_deficit","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].sat_deficit = ltmp * patch[0].sat_deficit;
 
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.water_equivalent_depth","%lf",
@@ -130,7 +130,7 @@
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.water_depth = ltmp * patch[0].snowpack.water_depth;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.T","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.T = ltmp * patch[0].snowpack.T;
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.surface_age","%lf",1,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.surface_age","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.surface_age = ltmp * patch[0].snowpack.surface_age;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"snowpack.energy_deficit","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].snowpack.energy_deficit = ltmp * patch[0].snowpack.energy_deficit;
@@ -160,12 +160,34 @@
 		patch[0].litter_cs.litr3c = ltmp * patch[0].litter_cs.litr3c;
 		patch[0].litter_ns.litr3n = patch[0].litter_cs.litr3c / CEL_CN;
 		}
-	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c","%lf",1,1);	
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].litter_cs.litr4c = ltmp * patch[0].litter_cs.litr4c;
 		patch[0].litter_ns.litr4n = patch[0].litter_cs.litr4c / LIG_CN;
 		}
+    /* below ground litter carbon */
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr1c_bg","%lf",1,1);
+	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_cs.litr1c_bg = ltmp * patch[0].litter_cs.litr1c_bg;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_ns.litr1n_bg","%lf",1,1);
+	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].litter_ns.litr1n_bg = ltmp * patch[0].litter_ns.litr1n_bg;
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr2c_bg","%lf",1,1);
+	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].litter_cs.litr2c_bg = ltmp * patch[0].litter_cs.litr2c_bg;
+		patch[0].litter_ns.litr2n_bg = patch[0].litter_cs.litr2c_bg / CEL_CN;
+		}
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr3c_bg","%lf",1,1);
+	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].litter_cs.litr3c_bg = ltmp * patch[0].litter_cs.litr3c_bg;
+		patch[0].litter_ns.litr3n_bg = patch[0].litter_cs.litr3c_bg / CEL_CN;
+		}
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"litter_cs.litr4c_bg","%lf",1,1);
+	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].litter_cs.litr4c_bg = ltmp * patch[0].litter_cs.litr4c_bg;
+		patch[0].litter_ns.litr4n_bg = patch[0].litter_cs.litr4c_bg / LIG_CN;
+		}
 
+
+    /* soil*/
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil1c","%lf",1,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  {
 		patch[0].soil_cs.soil1c = ltmp * patch[0].soil_cs.soil1c;
@@ -190,11 +212,11 @@
 		patch[0].soil_cs.soil4c = ltmp * patch[0].soil_cs.soil4c;
 		patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
 		}
-		
+
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/
 	/*--------------------------------------------------------------*/
-	
+
 	update_litter_interception_capacity(
 		patch[0].litter.moist_coef,
 		&(patch[0].litter_cs),
@@ -202,21 +224,25 @@
 	/*--------------------------------------------------------------*/
 	/*	initialize sinks					*/
 	/*--------------------------------------------------------------*/
-	
+
 	patch[0].litter_cs.litr1c_hr_snk = 0.0;
 	patch[0].litter_cs.litr2c_hr_snk = 0.0;
 	patch[0].litter_cs.litr4c_hr_snk = 0.0;
-	
+
+	patch[0].litter_cs.litr1c_hr_snk_bg = 0.0; //below ground litter
+	patch[0].litter_cs.litr2c_hr_snk_bg = 0.0;
+	patch[0].litter_cs.litr4c_hr_snk_bg = 0.0;
+
 	patch[0].soil_cs.soil1c_hr_snk = 0.0;
 	patch[0].soil_cs.soil2c_hr_snk = 0.0;
 	patch[0].soil_cs.soil4c_hr_snk = 0.0;
-	
+
 	patch[0].soil_ns.nfix_src = 0.0;
 	patch[0].soil_ns.ndep_src = 0.0;
 	patch[0].soil_ns.nleached_snk = 0.0;
 	patch[0].soil_ns.nvolatilized_snk = 0.0;
 
-	
+
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this patch								*/
 	/*--------------------------------------------------------------*/
@@ -235,7 +261,7 @@
 			exit(EXIT_FAILURE);
 			}
 		} /* end-while */
-	
+
 	patch[0].soil_defaults[0] = &defaults[0].soil[i];
 	}
 
@@ -262,7 +288,7 @@
 	if (patch[0].mpar > ZERO) {
 		patch[0].original_m = patch[0].mpar;
 		patch[0].soil_defaults[0][0].m = patch[0].mpar * command_line[0].sen[M];
-		patch[0].soil_defaults[0][0].m_z = patch[0].mpar * command_line[0].sen[M] / 
+		patch[0].soil_defaults[0][0].m_z = patch[0].mpar * command_line[0].sen[M] /
 				patch[0].soil_defaults[0][0].porosity_0;
 	}
 
@@ -272,20 +298,20 @@
 	/* and m, K parameters defining conductivity < 0.1% original value */
 	/*--------------------------------------------------------------*/
 	patch[0].soil_defaults[0][0].effective_soil_depth = patch[0].soil_defaults[0][0].soil_depth;
-	
+
 	/*  patch[0].soil_defaults[0][0].effective_soil_depth = min(patch[0].soil_defaults[0][0].soil_depth,
-				6.9*patch[0].soil_defaults[0][0].m_z);	
+				6.9*patch[0].soil_defaults[0][0].m_z);
 	*/
 	/*--------------------------------------------------------------*/
 	/* detention store size can vary with both soil and landuse		*/
 	/*	use the maximum of the two									*/
 	/*--------------------------------------------------------------*/
-	patch[0].soil_defaults[0][0].detention_store_size = 
+	patch[0].soil_defaults[0][0].detention_store_size =
 				max(patch[0].landuse_defaults[0][0].detention_store_size,
 				patch[0].soil_defaults[0][0].detention_store_size);
 
 
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",patch[0].num_base_stations,1);	
+	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",patch[0].num_base_stations,1);
 	if (dtmp > 0)  {
 		patch[0].num_base_stations = dtmp;
 		/*--------------------------------------------------------------*/
@@ -312,8 +338,8 @@
 				world_base_stations);
 		} /*end for*/
 	}
-		
-	
+
+
 	/*--------------------------------------------------------------*/
 	/*	compute actual depth to water tablke			*/
 	/*--------------------------------------------------------------*/

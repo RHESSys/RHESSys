@@ -70,6 +70,7 @@ struct fire_object
 	double burn;			/* 0-1 , recrds the value of p_spread for those pixels that experienced fire*/
 	double fuel_veg;  		/* kgC/m2 ; mass of carbon in the vegetation layer, may not be used*/
 	double fuel_litter; 		/* kgC/m2 ; mass of carbon in the litter layer*/
+	double fuel_cwd;		/*mass of carbon in coarse woody debris*/
 	double fuel_moist; 		/* 0-1 ; measure of moisture used in spread calculation. Varies by spread_calc_type*/
 	double soil_moist; 		/* 0-1; soil moisture*/
 	double z; 			/* m  elevation*/

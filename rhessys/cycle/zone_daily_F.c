@@ -154,7 +154,8 @@ void		zone_daily_F(
 	long julday(struct date);
 	void 	compute_patch_family_routing(
   		struct 	zone_object 	*,
-		struct	command_line_object *);
+		struct	command_line_object *,
+		struct	date);
 	void	compute_family_shading(
 		struct	zone_object	*,
 		struct	command_line_object	*);
@@ -723,7 +724,8 @@ void		zone_daily_F(
 		if (command_line[0].verbose_flag == -6) printf("\n---------- Computing patch family routing for zone %d, day %d ----------\n", zone[0].ID, day);
 		compute_patch_family_routing(
 			zone,
-			command_line);
+			command_line,
+			current_date);
 
 		// shading goes here
 		compute_family_shading(

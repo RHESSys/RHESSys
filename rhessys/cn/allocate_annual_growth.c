@@ -97,6 +97,7 @@ int allocate_annual_growth(				int id,
 	cnfr = epc.froot_cn;
 	cnlw = epc.livewood_cn;
 	cndw = epc.deadwood_cn;
+        excess_carbon = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/* carbon store transfers */
@@ -105,6 +106,8 @@ int allocate_annual_growth(				int id,
 	the state_variable update routine.  This is required to have the
 	allocation of excess C and N show up as new growth in the next growing
 	season, instead of two growing seasons from now. */
+
+
 
 
 	/*--------------------------------------------------------------*/
@@ -142,7 +145,11 @@ int allocate_annual_growth(				int id,
                  			ns->leafn -= rem_excess_carbon / epc.leaf_cn;
  					}
  			}
- 
+
+			cs->cpool += excess_carbon;
+			ns->npool += excess_carbon / epc.leaf_cn;
+
+			/* 
                  	cs->deadstemc_store += (1-epc.alloc_livewoodc_woodc)*excess_carbon;
                  	cs->livestemc_store+= epc.alloc_livewoodc_woodc*excess_carbon;
                  	ns->deadstemn_store += (1-epc.alloc_livewoodc_woodc)*excess_carbon / epc.deadwood_cn;
@@ -151,6 +158,7 @@ int allocate_annual_growth(				int id,
  			   (1-epc.alloc_livewoodc_woodc)*excess_carbon / epc.deadwood_cn -
  			    epc.alloc_livewoodc_woodc*excess_carbon / epc.livewood_cn;
  			ns->npool += excess_nitrogen;
+			*/
  		}
  		else {
  			/* remove excess carbon from storage, transfer and then leaf carbon until gone */
@@ -220,6 +228,7 @@ int allocate_annual_growth(				int id,
 			excess_carbon = 1.0 - total_store/(epc.cpool_mort_fract*total_biomass);
 		else
 			excess_carbon = 1.0;
+
 		excess_carbon = max(excess_carbon,0);
 		excess_carbon = min(1.0,excess_carbon);
 		cs->mortality_fract += excess_carbon;
@@ -242,6 +251,27 @@ int allocate_annual_growth(				int id,
 		cs->stem_density = max(cs->stem_density, 0.01);  */
 	}
 		
+
+	if (( vmort_flag == 0) && (cs->cpool < ZERO) && (total_biomass > ZERO) && (-cs->cpool >  total_biomass)) {
+		excess_carbon = 1.0;
+		cs->mortality_fract += excess_carbon;
+                mort.mort_cpool = excess_carbon;
+                mort.mort_leafc = excess_carbon;
+                mort.mort_deadleafc = excess_carbon;
+                mort.mort_livestemc = excess_carbon;
+                mort.mort_deadstemc = excess_carbon;
+                mort.mort_livecrootc = excess_carbon;
+                mort.mort_deadcrootc = excess_carbon;
+                mort.mort_frootc = excess_carbon;
+                update_mortality(epc,
+                                                 cs, cdf, cdf_patch,
+                                                 ns, ndf, ndf_patch,
+                                                 cs_litr, ns_litr, 1,
+                                                 mort);
+		}
+
+
+
 	
 	/*--------------------------------------------------------------*/
 	/*	respiration thinning			*/
@@ -447,6 +477,11 @@ int allocate_annual_growth(				int id,
 		ndf->carbohydrate_transfer = carbohydrate_transfer/(mean_cn)/(1+epc.gr_perc);
 	}
 
+	/*--------------------------------------------------------------*/
+	/* zero out any temporary maintenance respiration deficit 	*/
+	/* this just keeps track of seasonal respiration deficit but can be set to zero without effecting carbon balance */
+	/*--------------------------------------------------------------*/
+		cs->mr_deficit = 0.0;
 	
 	/*--------------------------------------------------------------*/
 	/* finally if there is really nothing restart with small amount of growth   */
