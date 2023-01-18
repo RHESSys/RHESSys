@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:20.04
+FROM ubuntu:latest
 CMD ["/bin/bash"]
 COPY ./rhessys /RHESSys
 WORKDIR /RHESSys
