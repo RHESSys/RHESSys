@@ -10,5 +10,5 @@ RUN DEBIAN_FRONTEND="noninteractive" wget -qO- https://cloud.r-project.org/bin/l
 RUN DEBIAN_FRONTEND="noninteractive" add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 RUN apt-get update
 RUN DEBIAN_FRONTEND="noninteractive" apt-get install --fix-missing -y r-base
-RUN Rscript -e "install.packages(c('chron','dplyr','tidyr','readr','purrr','forcats','stringr','tibble','formattable','ggpubr','readxl','data.table','lubridate','numbers','sensitivity','hydroGOF','parallel','randtoolbox','rlang','tools','yaml','httr','gh','xml2','roxygen','rmarkdown','devtools'), dependencies=TRUE)"
+RUN Rscript -e "install.packages(c('chron','tidyverse','forcats','stringr','tibble','formattable','ggpubr','readxl','data.table','lubridate','lhs','sensitivity','hydroGOF','parallel','randtoolbox','rlang','tools','yaml','httr','gh','xml2','roxygen','rmarkdown','devtools'), dependencies=TRUE)"
 RUN Rscript -e "library('devtools')" -e "install_github('RHESSys/RHESSysIOinR', ref='develop', build_vignettes=FALSE, dependencies=TRUE)"
