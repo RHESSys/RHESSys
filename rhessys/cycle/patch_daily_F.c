@@ -1895,6 +1895,8 @@ void		patch_daily_F(
 		transpiration_reduction_percent = 1.0;
 	}
 
+	transpiration_reduction_percent = max(transpiration_reduction_percent, 0);
+
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n***START: exfil_unsat=%lf exfil_sat=%lf unsatdemand_ini=%lf unsatdemand=%lf satdemand_ini=%lf satdemand=%lf",
 			   patch[0].exfiltration_unsat_zone,
