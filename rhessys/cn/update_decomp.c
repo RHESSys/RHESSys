@@ -471,7 +471,7 @@ int update_decomp(
 	N_uptake = max((min(patch[0].sat_NH4, remaining_uptake)), 0.0);
 	patch[0].sat_NH4 -= N_uptake;
     if(patch[0].sat_NH4 < -0.00001) {
-        printf("Warning update nitrif [sat_NH4 %e] is smaller than ZERO \n", patch[0].sat_NH4);
+        //printf("Warning update nitrif [sat_NH4 %e] is smaller than ZERO \n", patch[0].sat_NH4);
         patch[0].sat_NH4 = 0.0;
     }
 	//patch[0].rtzSatNH4 -= N_uptake; // for tracking
@@ -492,7 +492,7 @@ int update_decomp(
 	remaining_uptake -= N_uptake;
 
 	if (remaining_uptake > ZERO )
-       printf("N balance issue [n_to_npool %e], [[remaining upate %e], [patch ID %d], [totalNO3 %e], [totalNH4 %e], [ratio_NO3 %e], [ratio_NH4 %e], [patch.sat_NH4 %le, rtzSatNH4 %e], [patch.sat_NO3 %e, rtzSatNO3 %e], [ns_NO3 %e]\n",
+       //printf("N balance issue [n_to_npool %e], [[remaining upate %e], [patch ID %d], [totalNO3 %e], [totalNH4 %e], [ratio_NO3 %e], [ratio_NH4 %e], [patch.sat_NH4 %le, rtzSatNH4 %e], [patch.sat_NO3 %e, rtzSatNO3 %e], [ns_NO3 %e]\n",
                                        ndf->sminn_to_npool, remaining_uptake, patch[0].ID, totalNO3, totalNH4, ratio_NO3, ratio_NH4, patch[0].sat_NH4, patch[0].rtzSatNH4, patch[0].sat_NO3, patch[0].rtzSatNO3, ns_soil->nitrate);
 	ndf->net_mineralized = daily_net_nmin;
 	total_N = ns_litr->litr1n + ns_litr->litr2n +  ns_litr->litr3n
@@ -501,7 +501,7 @@ int update_decomp(
 
 	balance = (total_preday_N)  - (total_N + ndf->sminn_to_npool);
 	if (abs(balance) > ZERO)
-		printf("\n Decomp N doesn't balance by %lf ", balance);
+		//printf("\n Decomp N doesn't balance by %lf ", balance);
 
 	/* calculate the fluxes out NREN 20190927 */
     cdf->litterc_to_atmos += cdf->litr1c_hr;
@@ -514,7 +514,7 @@ int update_decomp(
     cdf->litterc_to_soilc += cdf->litr4c_to_soil3c;
 
     if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
-        printf("\nresolve sminn competition NH4 < ZERO");}
+        //printf("\nresolve sminn competition NH4 < ZERO");}
 
 	return (!ok);
 } /* end update_decomp.c */

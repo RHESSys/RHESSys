@@ -322,7 +322,7 @@ int update_nitrif(
 
     if(compare_float(nbalance_pre, nbalance_after))
     {
-         printf("nitrification balance issue [ID %d],[pre %f],[after %f]\n", patch[0].ID, nbalance_pre, nbalance_after);
+         //printf("nitrification balance issue [ID %d],[pre %f],[after %f]\n", patch[0].ID, nbalance_pre, nbalance_after);
     }
 
 
