@@ -398,9 +398,9 @@ int update_decomp(
 		//if (-1.0*daily_net_nmin > ns_soil->sminn + ns_soil->nitrate + ZERO) {
         if (-1.0*daily_net_nmin > (ns_soil->sminn + ns_soil->nitrate + patch[0].sat_NO3 + patch[0].sat_NH4 + ZERO)) {
 			/* this should not happen  but if it does warn user and but let sminn go negative*/
-			printf("In update decomp not enough for mineral N will reduce accordingly for [patchID %d] \n ", patch[0].ID);
+			//printf("In update decomp not enough for mineral N will reduce accordingly for [patchID %d] \n ", patch[0].ID);
 			balance = ns_soil->sminn + ns_soil->nitrate + patch[0].sat_NO3 + patch[0].sat_NH4  + daily_net_nmin;
-			printf("\n [required %e] [balance unmet] %e, [totalNO3 %e], [totalNH4 %e], [ns.nitrate %e], [ns.NH4 %e]", -1.0*daily_net_nmin, balance, totalNO3, totalNH4, ns_soil->nitrate, ns_soil->sminn);
+			//printf("\n [required %e] [balance unmet] %e, [totalNO3 %e], [totalNH4 %e], [ns.nitrate %e], [ns.NH4 %e]", -1.0*daily_net_nmin, balance, totalNO3, totalNH4, ns_soil->nitrate, ns_soil->sminn);
 			daily_net_nmin = -1.0 * (ns_soil->sminn + ns_soil->nitrate + patch[0].sat_NO3 + patch[0].sat_NH4 );
 
 		}
@@ -491,16 +491,16 @@ int update_decomp(
 	patch[0].surface_NH4 -=  N_uptake;
 	remaining_uptake -= N_uptake;
 
-	if (remaining_uptake > ZERO )
+	//if (remaining_uptake > ZERO )
        //printf("N balance issue [n_to_npool %e], [[remaining upate %e], [patch ID %d], [totalNO3 %e], [totalNH4 %e], [ratio_NO3 %e], [ratio_NH4 %e], [patch.sat_NH4 %le, rtzSatNH4 %e], [patch.sat_NO3 %e, rtzSatNO3 %e], [ns_NO3 %e]\n",
-                                       ndf->sminn_to_npool, remaining_uptake, patch[0].ID, totalNO3, totalNH4, ratio_NO3, ratio_NH4, patch[0].sat_NH4, patch[0].rtzSatNH4, patch[0].sat_NO3, patch[0].rtzSatNO3, ns_soil->nitrate);
+                                       //ndf->sminn_to_npool, remaining_uptake, patch[0].ID, totalNO3, totalNH4, ratio_NO3, ratio_NH4, patch[0].sat_NH4, patch[0].rtzSatNH4, patch[0].sat_NO3, patch[0].rtzSatNO3, ns_soil->nitrate);
 	ndf->net_mineralized = daily_net_nmin;
 	total_N = ns_litr->litr1n + ns_litr->litr2n +  ns_litr->litr3n
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n
 		+ ns_soil->soil3n + ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate + patch[0].sat_NO3 + patch[0].sat_NH4;
 
 	balance = (total_preday_N)  - (total_N + ndf->sminn_to_npool);
-	if (abs(balance) > ZERO)
+	//if (abs(balance) > ZERO)
 		//printf("\n Decomp N doesn't balance by %lf ", balance);
 
 	/* calculate the fluxes out NREN 20190927 */
@@ -513,8 +513,9 @@ int update_decomp(
     cdf->litterc_to_soilc += cdf->litr2c_to_soil2c;
     cdf->litterc_to_soilc += cdf->litr4c_to_soil3c;
 
-    if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
-        //printf("\nresolve sminn competition NH4 < ZERO");}
+    //if (patch[0].sat_NH4 != patch[0].sat_NH4 || patch[0].sat_NH4 <  -0.00001){
+        //printf("\nresolve sminn competition NH4 < ZERO");
+      //  }
 
 	return (!ok);
 } /* end update_decomp.c */
