@@ -228,16 +228,26 @@ int update_denitrif(
 
             ns_soil->nvolatilized_snk += denitrify;
             ndf->sminn_to_nvol = denitrify;
-            if(ns_soil->nitrate > ZERO) ns_soil->nitrate *= max(0.0, 1.0-denitrify_soil/ns_soil->nitrate); //here learn
-            if(patch[0].sat_NO3 > ZERO) patch[0].sat_NO3 *= max(0.0, 1.0-denitrify_sat/patch[0].sat_NO3);
+            if(ns_soil->nitrate > ZERO)
+            {
+                ns_soil->nitrate =  max(0.0, ns_soil->nitrate - denitrify_soil);
+            }
+            if(patch[0].sat_NO3 > ZERO)
+            {
+                patch[0].sat_NO3 = max(0.0, patch[0].sat_NO3 - denitrify_sat);
+            }
+
+
             ndf->denitrif = denitrify;
 
         }else if(ndf->Pot_denitrif_SS>ZERO && ndf->Pot_denitrif_CO2>ZERO){
             //limited by resource
             ns_soil->nvolatilized_snk += denitrify;
             ndf->sminn_to_nvol = denitrify;
-            if(ns_soil->nitrate >ZERO) ns_soil->nitrate *= max(0.0, 1.0-denitrify_soil/ns_soil->nitrate);
-            if(patch[0].sat_NO3 >ZERO) patch[0].sat_NO3 *= max(0.0, 1.0-denitrify_sat/patch[0].sat_NO3);
+            //if(ns_soil->nitrate >ZERO) ns_soil->nitrate *= max(0.0, 1.0-denitrify_soil/ns_soil->nitrate);
+            ns_soil->nitrate = max(0.0, ns_soil->nitrate - denitrify_soil);
+            //if(patch[0].sat_NO3 >ZERO) patch[0].sat_NO3 *= max(0.0, 1.0-denitrify_sat/patch[0].sat_NO3);
+            patch[0].sat_NO3 = max(0.0, patch[0].sat_NO3 - denitrify_sat);
             ndf->denitrif = denitrify;
         }else{
             denitrify = 0.0;

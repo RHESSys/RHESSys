@@ -236,7 +236,7 @@ int update_nitrif(
         }
 
 
-       /* if(nitrify_total!=nitrify_total || isinf(nitrify_total) || nitrify_total<0 || nitrify_soil<0 || nitrify_sat<0 || patch[0].sat_NH4<0){
+        /*if(nitrify_total!=nitrify_total || isinf(nitrify_total) || nitrify_total<0 || nitrify_soil<0 || nitrify_sat<0 || patch[0].sat_NH4<0){
             printf("update_nitrif has infinite or nan problem [%d]{%e(sminn),%e,%e(%e[%e %e %e] %e),%e, %e %e %e}\n",
                    patch[0].ID,
                    ns_soil->sminn,
@@ -258,12 +258,12 @@ int update_nitrif(
         ndf->sminn_to_nitrate = nitrify_total;
 
         if(ns_soil->sminn > ZERO)
-        {ns_soil->sminn *= max(0.0, 1.0-nitrify_soil/ns_soil->sminn);
+        {ns_soil->sminn = max(0.0, ns_soil->sminn - nitrify_soil);// this may cause N balance issues
         ns_soil->nitrate += nitrify_soil;
         }
 
         if(patch[0].sat_NH4 > ZERO)
-        {patch[0].sat_NH4 *= max(0.0, 1.0-nitrify_sat/patch[0].sat_NH4);
+        {patch[0].sat_NH4 = max(0.0, patch[0].sat_NH4 - nitrify_sat);
         patch[0].sat_NO3 += nitrify_sat;
         }
         //kg_soil > =0
@@ -308,22 +308,23 @@ int update_nitrif(
         patch[0].sat_NO3 = 0.0;
     } */
 
-    if(patch[0].sat_NH4 < -0.00001) {
-            //printf("Warning update decomp 412 [sat_NH4 %e] is smaller than ZERO", patch[0].sat_NH4);
+    if(patch[0].sat_NH4 < -0.00001 || patch[0].sat_NH4 > 9999) {
+           // printf("Warning: update nitrif 316 [sat_NH4 %e] is smaller than ZERO [nitrif sat %lf], [nitrif soil %lf] \n", patch[0].sat_NH4, nitrify_sat, nitrify_soil);
             patch[0].sat_NH4 = 0.0;
 		}
-	if(patch[0].sat_NO3 < -0.00001) {
+	if(patch[0].sat_NO3 < -0.00001 || patch[0].sat_NO3 > 9999) {
+          //  printf("Warning: update nitrif 316 [sat_NO3 %e] is smaller than ZERO  [nitrif sat %lf], [nitrif soil %lf] \n", patch[0].sat_NO3, nitrify_sat, nitrify_soil);
             patch[0].sat_NO3 = 0.0;
         }
-    if (ns_soil->nitrate < ZERO) ns_soil->nitrate = 0.0;
-    if (ns_soil->sminn < ZERO)  ns_soil->sminn = 0.0;
+    if (ns_soil->nitrate < ZERO || ns_soil->nitrate > 9999) ns_soil->nitrate = 0.0;
+    if (ns_soil->sminn < ZERO || ns_soil->nitrate > 9999)  ns_soil->sminn = 0.0;
 
     nbalance_after = patch[0].sat_NO3 + patch[0].sat_NH4 + ns_soil->nitrate + ns_soil->sminn;
 
-    if(compare_float(nbalance_pre, nbalance_after))
-    {
+    //if(compare_float(nbalance_pre, nbalance_after))
+   //{
          //printf("nitrification balance issue [ID %d],[pre %f],[after %f]\n", patch[0].ID, nbalance_pre, nbalance_after);
-    }
+    //}
 
 
 

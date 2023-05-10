@@ -418,24 +418,26 @@ int update_decomp(
 
 
 		if(ns_soil->nitrate > ZERO) {
-		ns_soil->nitrate *= max((1 - nitrate_immob * ratio_NO3/ns_soil->nitrate), 0.0);
+		ns_soil->nitrate = max(0.0, ns_soil->nitrate - nitrate_immob * ratio_NO3);
 		} // remove immobolized nitrate from soil
 		if(patch[0].sat_NO3 > ZERO) {
-		patch[0].sat_NO3 *= max((1 - nitrate_immob * (1 - ratio_NO3)/patch[0].sat_NO3), 0.0); //remove immobolized nitrate from sat_NO3
+		patch[0].sat_NO3 = max(0.0, patch[0].sat_NO3 - nitrate_immob * (1 - ratio_NO3)); //remove immobolized nitrate from sat_NO3
 		}
 		//patch[0].rtzSatNO3 = max((patch[0].rtzSatNO3 - nitrate_immob *(1 - ratio_NO3)), 0.0); // this pool just for tracking the sat_NO3 is the main pool
 
 		double leftover = max((-1.0*daily_net_nmin - nitrate_immob), 0.0); // so this is daily_net_min - total NO3
 
         if(ns_soil->sminn > ZERO) { // here use wrong ns_soil->nitrate
-		ns_soil->sminn *= max((1- leftover* ratio_NH4/ns_soil->sminn), 0.0);
+        //ratio_flux = max((1- leftover* ratio_NH4/ns_soil->sminn), 0.0);
+		ns_soil->sminn = max(0.0, ns_soil->sminn - leftover*ratio_NH4);
         }
         if(patch[0].sat_NH4 > ZERO) {
-		patch[0].sat_NH4 *= max((1 - leftover * (1 - ratio_NH4)/patch[0].sat_NH4), 0.0);
+       // ratio_flux = max((1 - leftover * (1 - ratio_NH4)/patch[0].sat_NH4), 0.0);
+		patch[0].sat_NH4 = max(0.0, patch[0].sat_NH4 - leftover * (1 - ratio_NH4));
         }
 
-		if(patch[0].sat_NH4 < -0.00001) {
-            //printf("Warning update decomp 412 [sat_NH4 %e] is smaller than ZERO", patch[0].sat_NH4);
+		if(patch[0].sat_NH4< -0.00001 || patch[0].sat_NH4 > 9999) {
+            //printf("Warning update decomp 412 [sat_NH4 %e] is smaller than ZERO or abnormal", patch[0].sat_NH4);
             patch[0].sat_NH4 = 0.0;
 		}
 		//patch[0].rtzSatNH4 = max(patch[0].rtzSatNH4 - leftover * (1 - ratio_NH4), 0.0); // this is just for tracking too
