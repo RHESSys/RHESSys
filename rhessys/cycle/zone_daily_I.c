@@ -226,7 +226,8 @@ void zone_daily_I(
 		/*--------------------------------------------------------------*/
 		/* If netcdf climate data used and no elevation grid provided, assume base station and zone are same z */
         if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
-			z_delta = 0.0;
+			z_delta = 0.0; // because of z_delta is zero, so lapse rate not working for netcdf
+			// z_delta = zone[0].z - zone[0].base_stations[i][0].z;
 		}
 		else z_delta = zone[0].z - zone[0].base_stations[i][0].z;
 		/*--------------------------------------------------------------*/
