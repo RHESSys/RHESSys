@@ -427,6 +427,7 @@ struct accumulate_patch_object
    double snowin;
    double Qin_total;
    double Qout_total;
+   double totalc;
    double soilc;
    double litterc;
    double litterc_bg;
@@ -3157,6 +3158,7 @@ struct  stratum_default
         double lai;
         double lwp;
         double minNSC;
+        double cpool;
         double stemc;
         double rootc;
         double leafc;

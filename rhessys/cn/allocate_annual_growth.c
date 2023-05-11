@@ -210,8 +210,7 @@ int allocate_annual_growth(				int id,
 	/* 	carbohydrate starvation mortality 			*/
 	/*--------------------------------------------------------------*/
 
-	/* cs->mortality_fract = 0.0;*/
-
+	cs->mortality_fract = 0.0;
 
 	if (((total_store < epc.cpool_mort_fract*total_biomass) || (cs->cpool < ZERO))  && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
@@ -222,7 +221,7 @@ int allocate_annual_growth(				int id,
 			excess_carbon = 1.0;
 		excess_carbon = max(excess_carbon,0);
 		excess_carbon = min(1.0,excess_carbon);
-		cs->mortality_fract += excess_carbon;
+		cs->mortality_fract = excess_carbon;
 		mort.mort_cpool = excess_carbon;
 		mort.mort_leafc = excess_carbon;
 		mort.mort_deadleafc = excess_carbon;
@@ -230,7 +229,7 @@ int allocate_annual_growth(				int id,
 		mort.mort_deadstemc = excess_carbon;
 		mort.mort_livecrootc = excess_carbon;
 		mort.mort_deadcrootc = excess_carbon;
-		mort.mort_frootc = excess_carbon;					
+		mort.mort_frootc = excess_carbon;     
 		update_mortality(epc,
 						 cs, cdf, cdf_patch,
 						 ns, ndf, ndf_patch, 

@@ -2041,6 +2041,7 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_month.minNSC = stratum[0].cs.cpool;
 		else
 			stratum[0].acc_month.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_month.minNSC);
+		stratum[0].acc_month.cpool += stratum[0].cs.cpool;
 		stratum[0].acc_month.leafc += stratum[0].cs.leafc;
 		stratum[0].acc_month.rootc += stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
 		stratum[0].acc_month.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
@@ -2063,6 +2064,7 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_year.minNSC = stratum[0].cs.cpool;
 		else
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
+		stratum[0].acc_year.cpool += stratum[0].cs.cpool;
 		stratum[0].acc_year.leafc += stratum[0].cs.leafc;
 		stratum[0].acc_year.rootc += stratum[0].cs.frootc+stratum[0].cs.live_crootc+stratum[0].cs.dead_crootc;
 		stratum[0].acc_year.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
