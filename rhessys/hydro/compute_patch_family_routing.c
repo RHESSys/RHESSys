@@ -140,7 +140,7 @@ void compute_patch_family_routing(struct zone_object *zone,
             zone[0].patch_families[pf][0].patches[i][0].sat_transfer = 0;
 
             // check if sat deficit is >0
-            if (zone[0].patch_families[pf][0].patches[i][0].sat_deficit > ZERO) 
+            if (zone[0].patch_families[pf][0].patches[i][0].sat_deficit > ZERO)
             {
                 incl_unsat[i] = 1;
             }
@@ -156,12 +156,12 @@ void compute_patch_family_routing(struct zone_object *zone,
             {
                 // if sharing coefs > 0, include this patch in subsiquent analyses
                 incl_sat[i] = 1;
-              
+
                 /* for unsat routing only include patches with sat def greater than 0 (incl_unsat > 0) */
                 if (incl_unsat[i] > 0)
                 {
                     // incrament mean wetness based on storage (rz+unsat or sat) * area
-                    wet_unsat[i] = ((zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage) / 
+                    wet_unsat[i] = ((zone[0].patch_families[pf][0].patches[i][0].rz_storage + zone[0].patch_families[pf][0].patches[i][0].unsat_storage) /
                         zone[0].patch_families[pf][0].patches[i][0].sat_deficit);
                     wet_mean_unsat += wet_unsat[i] * zone[0].patch_families[pf][0].patches[i][0].area;
                     // area sum (patch fam without skipped patches)
@@ -244,7 +244,7 @@ void compute_patch_family_routing(struct zone_object *zone,
             wet_mean_sat = 0.0;
         }
 
-        if (command_line[0].verbose_flag == -6) 
+        if (command_line[0].verbose_flag == -6)
         {
             printf("| Mean wetness (z/satdef) | UNSAT: %f | SAT: %f |\n", wet_mean_unsat, wet_mean_sat);
             printf("|| Losing ( > mean) Patches ||\n");
@@ -260,12 +260,12 @@ void compute_patch_family_routing(struct zone_object *zone,
             // if - included and rz + unsat is > mean (losers)
             if ( incl_unsat[i] > 0 && (wet_unsat[i] - wet_mean_unsat) > zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].routing_threshold)
             {
-                dL[i] = (wet_unsat[i] - wet_mean_unsat) * zone[0].patch_families[pf][0].patches[i][0].area * 
+                dL[i] = (wet_unsat[i] - wet_mean_unsat) * zone[0].patch_families[pf][0].patches[i][0].area *
                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l * zone[0].patch_families[pf][0].patches[i][0].sat_deficit;
                 dL_act += dL[i];
                 dL_pot += (wet_unsat[i] - wet_mean_unsat) * zone[0].patch_families[pf][0].patches[i][0].area * zone[0].patch_families[pf][0].patches[i][0].sat_deficit;
             }
-            else if (incl_unsat[i] > 0 && (wet_unsat[i] - wet_mean_unsat) < zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].routing_threshold)
+            else if (incl_unsat[i] > 0 && -(wet_unsat[i] - wet_mean_unsat) > zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].routing_threshold)
             {
                 // is a gaining patch
                 incl_unsat[i] = 2;
@@ -288,7 +288,7 @@ void compute_patch_family_routing(struct zone_object *zone,
             }
 
 
-            if (command_line[0].verbose_flag == -6) 
+            if (command_line[0].verbose_flag == -6)
             {
                 printf("| %4d |  %12d | %6.4f | %2.12f |\n",
                        zone[0].patch_families[pf][0].patches[i][0].ID,
@@ -296,10 +296,10 @@ void compute_patch_family_routing(struct zone_object *zone,
                        zone[0].patch_families[pf][0].patches[i][0].area,
                        dL[i]);
             }
-                
+
         } // end loop 2
 
-        if (command_line[0].verbose_flag == -6) 
+        if (command_line[0].verbose_flag == -6)
         {
             printf("| Total Estimated Losses | Actual: %f | Potential: %f |\n", dL_act, dL_pot);
             printf("|| Gaining ( < mean) Patches ||\n");
@@ -315,9 +315,9 @@ void compute_patch_family_routing(struct zone_object *zone,
             // rz + unsat < mean wetness (gainers)
             if (incl_unsat[i] == 2 && dL_pot > ZERO)
             {
-                dG[i] = (wet_mean_unsat - wet_unsat[i]) * zone[0].patch_families[pf][0].patches[i][0].area * (dL_act / dL_pot) * 
+                dG[i] = (wet_mean_unsat - wet_unsat[i]) * zone[0].patch_families[pf][0].patches[i][0].area * (dL_act / dL_pot) *
                     zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g * rz_z_pct[i] * zone[0].patch_families[pf][0].patches[i][0].sat_deficit;
-                
+
                 dG_pot += (wet_mean_unsat - wet_unsat[i]) * zone[0].patch_families[pf][0].patches[i][0].area * zone[0].patch_families[pf][0].patches[i][0].sat_deficit;
 
                 // Division of gaining water (dG) between rz & unsat
@@ -368,7 +368,7 @@ void compute_patch_family_routing(struct zone_object *zone,
                 }
             } /* end msr_sat_transfer_flag */
 
-            if (command_line[0].verbose_flag == -6) 
+            if (command_line[0].verbose_flag == -6)
             {
                 printf("| %4d |  %12d | %6.4f | %2.12f | %2.12f | %2.12f |\n",
                        zone[0].patch_families[pf][0].patches[i][0].ID,
@@ -397,7 +397,7 @@ void compute_patch_family_routing(struct zone_object *zone,
         {
             dL_adj[i] = 0.0;
 
-            if (incl_unsat[i] == 1) // 
+            if (incl_unsat[i] == 1) //
             {
                 // update loss values for gains less than potential, should have no impact if L actual = G actual
                 if (dL_act > ZERO)
@@ -438,7 +438,7 @@ void compute_patch_family_routing(struct zone_object *zone,
                 }
             } /* end if msr_sat_transfer_flag */
 
-            if (command_line[0].verbose_flag == -6) 
+            if (command_line[0].verbose_flag == -6)
             {
                 printf("| %4d |  %12d | %6.4f | %2.12f | %2.12f | %2.12f |\n",
                        zone[0].patch_families[pf][0].patches[i][0].ID,
@@ -458,16 +458,16 @@ void compute_patch_family_routing(struct zone_object *zone,
         double sat_transfer_sum;        // vol
         rz_unsat_transfer_sum = 0;
         sat_transfer_sum = 0;
-       
+
         for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam ; i++)
         {
-            rz_unsat_transfer_sum += (zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) * 
+            rz_unsat_transfer_sum += (zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) *
                 zone[0].patch_families[pf][0].patches[i][0].area;
 
             sat_transfer_sum += zone[0].patch_families[pf][0].patches[i][0].sat_transfer * zone[0].patch_families[pf][0].patches[i][0].area;
         }
 
-        
+
 
         if (fabs(rz_unsat_transfer_sum) > ZERO)
         {
@@ -482,7 +482,7 @@ void compute_patch_family_routing(struct zone_object *zone,
                     zone[0].patch_families[pf][0].patches[i][0].area,
                     zone[0].patch_families[pf][0].patches[i][0].rz_transfer,
                     zone[0].patch_families[pf][0].patches[i][0].unsat_transfer,
-                    (zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) * 
+                    (zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) *
                     zone[0].patch_families[pf][0].patches[i][0].area
                     );
             }
