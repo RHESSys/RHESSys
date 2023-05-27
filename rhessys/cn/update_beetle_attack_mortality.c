@@ -53,7 +53,7 @@ void update_beetle_attack_mortality(
 					  struct snag_sequence_object *redneedle_sequence,
 					  int inx,
 					  int thintyp,
-					  //int root_alive,
+					  int veg_parm_ID,
 					  //int harvest_dead_root,
 					  struct mortality_struct mort,
 					  struct beetle_default *beetle)
@@ -148,7 +148,9 @@ void update_beetle_attack_mortality(
 
 
 
-   if (epc.veg_type==TREE && thintyp ==5 && epc.max_lai>=beetle[0].max_lai_th && epc.phenology_type == EVERGREEN ) //make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
+   if ((epc.veg_type==TREE && thintyp ==5 && epc.max_lai>=beetle[0].max_lai_th && epc.phenology_type == EVERGREEN ) || 
+	   (veg_parm_ID == beetle[0].veg_ID_attack))
+	//make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
   // if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN  )// this can isolate the understory but can not isolate the shrub due to shrub is evergreen and tree 20181126
    { // if it is the beetle attack and trees
 

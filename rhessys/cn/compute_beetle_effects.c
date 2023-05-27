@@ -56,7 +56,7 @@ void compute_beetle_effects(
 		struct snag_sequence_object *, // this is for leaf
 		int, //this is the index
 		int, // this is thin type
-		//int, //root_alive
+		int, //veg_parm_ID
 		//int, //harvest_dead_root
 		struct mortality_struct,
 		struct beetle_default *);
@@ -132,6 +132,7 @@ void compute_beetle_effects(
 
 					/* if only apply the beetle attack mortality to the overstory trees, then just out of the loop */
 					canopy_strata = patch[0].canopy_strata[patch[0].layers[0].strata[0]];
+					// canopy_strata[0].veg_parm_ID
 					/* track the snag pool sequences NREN 20180630*/
 
                   //  printf("\n updating the beetle mortality for inx %d \n", inx);// the index is the time series of beetle attack mortality 0 is the first one 24 is the second
@@ -149,7 +150,7 @@ void compute_beetle_effects(
 						 &(canopy_strata[0].redneedle_sequence),
 						 inx,
 						 thin_type,
-						// root_alive,
+						 canopy_strata[0].veg_parm_ID,
 						// harvest_dead_root,
 						 mort,
 						 beetle);
