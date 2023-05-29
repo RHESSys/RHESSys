@@ -2077,18 +2077,18 @@ void	canopy_stratum_daily_F(
 
        // clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[0];
 
-        if (inx >-999 && patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == TREE &&
-            patch[0].canopy_strata[0][0].defaults[0][0].epc.phenology_type == EVERGREEN &&
-            patch[0].canopy_strata[0][0].defaults[0][0].epc.max_lai >=10
-            )
-        {
+		if (inx > -999 && patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == TREE &&
+			patch[0].canopy_strata[0][0].defaults[0][0].epc.phenology_type == EVERGREEN &&	// world[0].defaults[0].beetle[0].max_lai_th
+			patch[0].canopy_strata[0][0].defaults[0][0].epc.max_lai >= 10) // nren 20230528 need to fix bug, use OR condition
+		{
 
-        /* add a harvest option to beetle effect model, if current.year == log_year, make snag and readneedlec zero. */
+			/* add a harvest option to beetle effect model, if current.year == log_year, make snag and readneedlec zero. */
 
-        if (current_date.year == world[0].defaults[0].beetle[0].logging_year && current_date.month == 9 && current_date.day == 30 &&
-            world[0].defaults[0].beetle[0].logging_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO ) {
+			if (current_date.year == world[0].defaults[0].beetle[0].logging_year && current_date.month == 9 && current_date.day == 30 &&
+				world[0].defaults[0].beetle[0].logging_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO)
+			{
 
-            if (stratum[0].ID == 7788) printf("\n loging the snags %lf \n", stratum[0].cs.snagc + stratum[0].cs.delay_snagc);
+            if (stratum[0].ID/1000%10 == 1) printf("\n [ID %d], [veg_parm_ID %d] loging the snags %lf \n", stratum[0].ID, stratum[0].veg_parm_ID, stratum[0].cs.snagc + stratum[0].cs.delay_snagc);
 
             if ((stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec) > ZERO)
                 {

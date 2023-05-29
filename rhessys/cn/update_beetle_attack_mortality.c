@@ -153,6 +153,10 @@ void update_beetle_attack_mortality(
 	//make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
   // if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN  )// this can isolate the understory but can not isolate the shrub due to shrub is evergreen and tree 20181126
    { // if it is the beetle attack and trees
+	   if ((int)(cs->live_stemc) % 10 == 1)
+	   {
+		   printf("\n updating the beetle mortality  [veg_parm_ID %d],  [veg_ID_attack %d], [max_lai %lf], [max_lai_th %lf]\n", veg_parm_ID, beetle[0].veg_ID_attack, epc.max_lai, beetle[0].max_lai_th);
+	   } // the index is the time series of beetle attack mortality 0 is the first one 24 is the second
 
 	/******************************************************************/
 	/* beetle attack mortality: stem go to snag pool then cwd pool and leaf go to dead doliage pool then litter pool */
