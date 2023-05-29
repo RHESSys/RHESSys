@@ -2057,8 +2057,7 @@ struct patch_object
         double Tmin;
         double mort;
         double Precip_wy;
-
-
+        int beetle_parm_ID;
         };
 /*----------------------------------------------------------*/
 /*      Define a patch family object                        */

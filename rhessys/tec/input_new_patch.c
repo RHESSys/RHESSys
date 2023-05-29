@@ -101,7 +101,12 @@
 	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].soil_parm_ID = dtmp;
 	dtmp  = getIntWorldfile(&paramCnt,&paramPtr,"landuse_parm_ID","%d",patch[0].landuse_parm_ID,1);
 	if (abs(dtmp - NULLVAL) >= ONE)  patch[0].landuse_parm_ID = dtmp;
-
+	if (command_line[0].beetlespread_flag == 1)
+	{
+		dtmp = getIntWorldfile(&paramCnt, &paramPtr, "beetle_parm_ID", "%d", 1, 1);
+		if (fabs(ltmp - NULLVAL) >= ONE)
+			patch[0].beetle_parm_ID = dtmp;
+	}
 
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"area","%lf",patch[0].area,1);
 	if (fabs(ltmp - NULLVAL) >= ONE)  patch[0].area = ltmp;
