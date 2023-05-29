@@ -101,9 +101,9 @@ struct spinup_default *construct_beetle_defaults(
                 default_object_list[i].beetle_in_buffer =getIntParam(&paramCnt, &paramPtr, "beetle_in_buffer", "%d", 0, 1);
                 printf("beetle_in_buffer: %d\n",default_object_list[i].beetle_in_buffer);
                 default_object_list[i].leaf_year_delay = getDoubleParam(&paramCnt, &paramPtr, "leaf_year_delay", "%lf", 3, 1); // the default delay year is 3
-		        printf("leaf_year_delay: %lf\n",default_object_list[i].leaf_year_delay);
+                printf("leaf_year_delay: %lf\n",default_object_list[i].leaf_year_delay);
                 default_object_list[i].leaf_half_life = getDoubleParam(&paramCnt, &paramPtr, "leaf_half_life", "%lf", 2, 1); // the default delay year is 2
-		        printf("leaf_half_life: %lfn",default_object_list[i].leaf_half_life);
+		        printf("leaf_half_life: %lf\n",default_object_list[i].leaf_half_life);
 		        default_object_list[i].calc_single_attack= getIntParam(&paramCnt, &paramPtr, "calc_single_attack", "%lf", 0, 1); // the default is not calculate single attack
 		        printf("calculate single attack: %d\n",default_object_list[i].calc_single_attack);
 		        default_object_list[i].min_abc= getDoubleParam(&paramCnt, &paramPtr, "min_abc", "%lf", 0.01, 1); // the min carbon g/m2 each patch have that attack happens before is 1000 change to 100 on 20190910
