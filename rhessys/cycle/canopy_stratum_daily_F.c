@@ -2088,7 +2088,7 @@ void	canopy_stratum_daily_F(
 				world[0].defaults[0].beetle[0].logging_flag == 1 && (stratum[0].cs.snagc + stratum[0].cs.delay_snagc) >= ZERO)
 			{
 
-            if (stratum[0].ID/1000%10 == 1) printf("\n [ID %d], [veg_parm_ID %d] loging the snags %lf \n", stratum[0].ID, stratum[0].veg_parm_ID, stratum[0].cs.snagc + stratum[0].cs.delay_snagc);
+            if ((int)(stratum[0].cs.delay_snagc) % 10 == 1) printf("\n [ID %d], [veg_parm_ID %d] loging the snags %lf \n", stratum[0].ID, stratum[0].veg_parm_ID, stratum[0].cs.snagc + stratum[0].cs.delay_snagc);
 
             if ((stratum[0].cs.redneedlec + stratum[0].cs.delay_redneedlec) > ZERO)
                 {

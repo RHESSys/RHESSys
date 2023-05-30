@@ -3296,7 +3296,7 @@ struct beetle_default {
      // for logging
      int logging_flag;
      int logging_year;
-     int max_lai_th; //default 12 to make sure only affects evergreen tree
+     double max_lai_th; //default 12 to make sure only affects evergreen tree
      int veg_ID_attack; //another way to select thinning vegetations, if use this one make max_lai_th 100
 };
 

@@ -136,8 +136,8 @@ struct spinup_default *construct_beetle_defaults(
 		        printf("logging snag flag: %d\n", default_object_list[i].logging_flag);
 		        default_object_list[i].logging_year = getIntParam(&paramCnt, &paramPtr, "logging_year", "%d", 1901, 1); // default is 1901
 		        printf("logging snag year: %d\n", default_object_list[i].logging_year);
-		        default_object_list[i].max_lai_th = getIntParam(&paramCnt, &paramPtr, "max_lai_th", "%d", 10, 1); // default is 10 for distinguish evergreen and shrub
-		        printf("attack trees with LAI larger than: %d\n", default_object_list[i].max_lai_th);
+		        default_object_list[i].max_lai_th = getDoubleParam(&paramCnt, &paramPtr, "max_lai_th", "%lf", 10, 1); // default is 10 for distinguish evergreen and shrub
+		        printf("attack trees with LAI larger than: %lf\n", default_object_list[i].max_lai_th);
                 default_object_list[i].veg_ID_attack = getIntParam(&paramCnt, &paramPtr, "veg_ID_attack", "%d", 1, 1); // default is 1 evergreen
                 printf("attack veg ID is: %d\n", default_object_list[i].veg_ID_attack);
 
