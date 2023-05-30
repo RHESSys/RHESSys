@@ -56,7 +56,7 @@ void update_beetle_attack_mortality(
 					  int veg_parm_ID,
 					  //int harvest_dead_root,
 					  struct mortality_struct mort,
-					  struct beetle_default *beetle)
+					  struct world_object *world)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -146,16 +146,14 @@ void update_beetle_attack_mortality(
     double m_livestemn_transfer_to_litr1n;
 	double m_deadstemn_transfer_to_litr1n; */
 
-
-
-   if ((epc.veg_type==TREE && thintyp ==5 && epc.max_lai>=beetle[0].max_lai_th && epc.phenology_type == EVERGREEN ) || 
-	   (veg_parm_ID == beetle[0].veg_ID_attack))
+	if ((epc.veg_type == TREE && thintyp == 5 && epc.max_lai >= world[0].defaults[0].beetle[0].max_lai_th && epc.phenology_type == EVERGREEN) ||
+		(veg_parm_ID == world[0].defaults[0].beetle[0].veg_ID_attack))
 	//make sure the evergreen tree is attacked, the understory is decidous, the shrub has max_lai is 7
   // if (epc.veg_type==TREE && thintyp ==5 && epc.phenology_type ==EVERGREEN  )// this can isolate the understory but can not isolate the shrub due to shrub is evergreen and tree 20181126
    { // if it is the beetle attack and trees
 	   if ((int)(cs->live_stemc) % 10 == 1)
 	   {
-		   printf("\n updating the beetle mortality  [veg_parm_ID %d],  [veg_ID_attack %d], [max_lai %lf], [max_lai_th %lf]\n", veg_parm_ID, beetle[0].veg_ID_attack, epc.max_lai, beetle[0].max_lai_th);
+		   printf("\n updating the beetle mortality  [veg_parm_ID %d],  [veg_ID_attack %d], [max_lai %lf], [max_lai_th %lf]\n", veg_parm_ID, world[0].defaults[0].beetle[0].veg_ID_attack, epc.max_lai, world[0].defaults[0].beetle[0].max_lai_th);
 	   } // the index is the time series of beetle attack mortality 0 is the first one 24 is the second
 
 	/******************************************************************/
@@ -406,22 +404,24 @@ void update_beetle_attack_mortality(
 	/*two parameters control it, root_alive, and harvest_dead_root, in beetles.def By ning ren 20190908 */
 	/*root_alive =1 is alive =0 is root dead, root_alive ==3 is fine root is dead too, but move to dead_root_beetle pool and then slowly decay to litter pool*/
 	/***************************************************************/
-	if (beetle[0].root_alive == 0.0) { //if the root is dead after attack
-        if(beetle[0].harvest_dead_root == 0.0) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
-	cs_litr->litr1c    += m_frootc_to_litr1c;
-	cs_litr->litr2c    += m_frootc_to_litr2c;
-	cs_litr->litr3c    += m_frootc_to_litr3c;
-	cs_litr->litr4c    += m_frootc_to_litr4c;
-	cs_litr->litr1c    += m_frootc_store_to_litr1c;
-	cs_litr->litr1c    += m_frootc_transfer_to_litr1c;
-		/* Coarse root wood mortality */
-		cs->cwdc       += m_livecrootc_to_cwdc; //live coarse root
-		cs->cwdc       += m_deadcrootc_to_cwdc; // dead coarse root
-		cs_litr->litr1c       += m_livecrootc_store_to_litr1c; //root storage
-		cs_litr->litr1c       += m_deadcrootc_store_to_litr1c; // dead root storage
-		cs_litr->litr1c         += m_livecrootc_transfer_to_litr1c; //live root transfer
-		cs_litr->litr1c         += m_deadcrootc_transfer_to_litr1c; // dead root transfer
-        } // end if harvest_dead_root
+	if (world[0].defaults[0].beetle[0].root_alive == 0.0)
+	{											// if the root is dead after attack
+		if (world[0].defaults[0].beetle[0].harvest_dead_root == 0.0)
+		{ // if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
+			cs_litr->litr1c += m_frootc_to_litr1c;
+			cs_litr->litr2c += m_frootc_to_litr2c;
+			cs_litr->litr3c += m_frootc_to_litr3c;
+			cs_litr->litr4c += m_frootc_to_litr4c;
+			cs_litr->litr1c += m_frootc_store_to_litr1c;
+			cs_litr->litr1c += m_frootc_transfer_to_litr1c;
+			/* Coarse root wood mortality */
+			cs->cwdc += m_livecrootc_to_cwdc;					// live coarse root
+			cs->cwdc += m_deadcrootc_to_cwdc;					// dead coarse root
+			cs_litr->litr1c += m_livecrootc_store_to_litr1c;	// root storage
+			cs_litr->litr1c += m_deadcrootc_store_to_litr1c;	// dead root storage
+			cs_litr->litr1c += m_livecrootc_transfer_to_litr1c; // live root transfer
+			cs_litr->litr1c += m_deadcrootc_transfer_to_litr1c; // dead root transfer
+		}														// end if harvest_dead_root
 
 	cs->frootc         -= m_frootc_to_litr1c;
 	cs->frootc         -= m_frootc_to_litr2c;
@@ -440,11 +440,12 @@ void update_beetle_attack_mortality(
 		cs->livecrootc_transfer -= m_livecrootc_transfer_to_litr1c;
 		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
       /*  printf("updating beetle attack mortality, the index is %d", inx);*/
-        } // end if (root_alive)
+	} // end if (root_alive)
 
-    else if (beetle[0].root_alive ==2 ) {//if root_alive option 2 means the root is dead but moved to a dead_root_beetle pool and slowly decay to the litter pool NREN 20190910
+	else if (world[0].defaults[0].beetle[0].root_alive == 2)
+	{ // if root_alive option 2 means the root is dead but moved to a dead_root_beetle pool and slowly decay to the litter pool NREN 20190910
 
-    cs->dead_rootc_beetle += (m_frootc_to_litr1c + m_frootc_to_litr2c + m_frootc_to_litr3c + m_frootc_to_litr4c + m_frootc_store_to_litr1c + m_frootc_transfer_to_litr1c);
+		cs->dead_rootc_beetle += (m_frootc_to_litr1c + m_frootc_to_litr2c + m_frootc_to_litr3c + m_frootc_to_litr4c + m_frootc_store_to_litr1c + m_frootc_transfer_to_litr1c);
 		/* Coarse root wood mortality */
 		cs->cwdc       += m_livecrootc_to_cwdc; //live coarse root coarse root still go to the cwdc pool
 		cs->cwdc       += m_deadcrootc_to_cwdc; // dead coarse root
@@ -472,69 +473,65 @@ void update_beetle_attack_mortality(
 		cs->livecrootc_transfer -= m_livecrootc_transfer_to_litr1c;
 		cs->deadcrootc_transfer -= m_deadcrootc_transfer_to_litr1c;
 
-        } //end else if root_alive ==2
+	} // end else if root_alive ==2
 	/* ---------------------------------------- */
 	/* NITROGEN mortality state variable update */
 	/* ---------------------------------------- */
-    /**************************************************/
+	/**************************************************/
 	/* ABOVEGROUND N POOLS */
-    /**************************************************/
+	/**************************************************/
 	/* Only add dead leaf and stem n to litter and cwd pools if thintyp   */
 	/* is not 2 (harvest case). If thintyp is 2, harvest aboveground n.   */
 
-		//ns_litr->litr1n         += m_npool; //NREN test 20190908 here is the main reason causing the litter n pool have a spike npool and cpool should go to snag pool
-		/*    Leaf mortality */
-		//ns->redneedlen     += m_leafn_to_redneedlen;
-		redneedle_sequence->seq[inx].Nvalue += m_leafn_to_redneedlen; // this is for tracking
-		ns->delay_redneedlen += m_leafn_to_redneedlen; // for delayed dead leaf pool stay on tree not falling NREN 20180727
+	// ns_litr->litr1n         += m_npool; //NREN test 20190908 here is the main reason causing the litter n pool have a spike npool and cpool should go to snag pool
+	/*    Leaf mortality */
+	// ns->redneedlen     += m_leafn_to_redneedlen;
+	redneedle_sequence->seq[inx].Nvalue += m_leafn_to_redneedlen; // this is for tracking
+	ns->delay_redneedlen += m_leafn_to_redneedlen;				  // for delayed dead leaf pool stay on tree not falling NREN 20180727
 
-        ns_litr->litr1n    += m_leafn_to_litr1n; //NREN debug 20190908 11:30pm extra leafn is another main reason litrn increase pulse
+	ns_litr->litr1n += m_leafn_to_litr1n; // NREN debug 20190908 11:30pm extra leafn is another main reason litrn increase pulse
 
-		/*
-		ns_litr->litr2n    += m_leafn_to_litr2n;
-		ns_litr->litr3n    += m_leafn_to_litr3n;
-		ns_litr->litr4n    += m_leafn_to_litr4n; */
-		ns_litr->litr1n    += m_deadleafn_to_litr1n;
-		ns_litr->litr2n    += m_deadleafn_to_litr2n;
-		ns_litr->litr3n    += m_deadleafn_to_litr3n;
-		ns_litr->litr4n    += m_deadleafn_to_litr4n;  //NREN debug 20190908 11:29
-		/*ns_litr->litr1n    += m_leafn_store_to_litr1n;
-		ns_litr->litr1n    += m_leafn_transfer_to_litr1n; */ //NREN test 20190908 11:29
-		ns_litr->litr1n    += m_retransn_to_litr1n;
+	/*
+	ns_litr->litr2n    += m_leafn_to_litr2n;
+	ns_litr->litr3n    += m_leafn_to_litr3n;
+	ns_litr->litr4n    += m_leafn_to_litr4n; */
+	ns_litr->litr1n += m_deadleafn_to_litr1n;
+	ns_litr->litr2n += m_deadleafn_to_litr2n;
+	ns_litr->litr3n += m_deadleafn_to_litr3n;
+	ns_litr->litr4n += m_deadleafn_to_litr4n; // NREN debug 20190908 11:29
+	/*ns_litr->litr1n    += m_leafn_store_to_litr1n;
+	ns_litr->litr1n    += m_leafn_transfer_to_litr1n; */
+	// NREN test 20190908 11:29
+	ns_litr->litr1n += m_retransn_to_litr1n;
 
-		/*    Stem wood mortality */
-      //  ns_litr->litr1n     += m_livestemn_to_litr1n; //Here is the bug...NREN 20190908
-			/*	  Transfer to CWD if there is leftwover after go to snagn */
+	/*    Stem wood mortality */
+	//  ns_litr->litr1n     += m_livestemn_to_litr1n; //Here is the bug...NREN 20190908
+	/*	  Transfer to CWD if there is leftwover after go to snagn */
 
-        ns->cwdn       += m_livestemn_to_cwdn;
-       /* ns->cwdn       += m_deadstemn_to_cwdn; //NREN here is the bug 20190908 all deadstemn go to snagn pool
+	ns->cwdn += m_livestemn_to_cwdn;
+	/* ns->cwdn       += m_deadstemn_to_cwdn; //NREN here is the bug 20190908 all deadstemn go to snagn pool
 
-              // beetle caused snag pool
-
-
-      /*  ns->snagn       += m_livestemn_to_snagn; // the nitrogen stored in the snag pool not go the cwd pool
-        ns->snagn       += m_deadstemn_to_snagn; */
-
-        snag_sequence->seq[inx].Nvalue += m_livestemn_to_snagn; // for tracking each attack
-        snag_sequence->seq[inx].Nvalue += m_deadstemn_to_snagn;
-        snag_sequence->seq[inx].Nvalue += (m_leafn_store_to_snagn + m_leafn_transfer_to_snagn + m_npool); //assume extra nitrogen is in snag 20190908 NREN
+		   // beetle caused snag pool
 
 
-        ns->delay_snagn += m_livestemn_to_snagn; // the nitrogen stored in the snag pool not go the cwd pool
-        ns->delay_snagn += m_deadstemn_to_snagn; // NREN 20180828
-        ns->delay_snagn += (m_leafn_store_to_snagn + m_leafn_transfer_to_snagn + m_npool); //assume extra nitrogen is in snag 20190908 NREN
+   /*  ns->snagn       += m_livestemn_to_snagn; // the nitrogen stored in the snag pool not go the cwd pool
+	 ns->snagn       += m_deadstemn_to_snagn; */
 
+	snag_sequence->seq[inx].Nvalue += m_livestemn_to_snagn; // for tracking each attack
+	snag_sequence->seq[inx].Nvalue += m_deadstemn_to_snagn;
+	snag_sequence->seq[inx].Nvalue += (m_leafn_store_to_snagn + m_leafn_transfer_to_snagn + m_npool); // assume extra nitrogen is in snag 20190908 NREN
 
+	ns->delay_snagn += m_livestemn_to_snagn;										   // the nitrogen stored in the snag pool not go the cwd pool
+	ns->delay_snagn += m_deadstemn_to_snagn;										   // NREN 20180828
+	ns->delay_snagn += (m_leafn_store_to_snagn + m_leafn_transfer_to_snagn + m_npool); // assume extra nitrogen is in snag 20190908 NREN
 
+	// ns->dead_stemn       += m_livestemn_to_cwdn; // the nitrogen stored in the snag pool not go the cwd pool
+	// ns->dead_stemn       += m_deadstemn_to_cwdn;
 
-       // ns->dead_stemn       += m_livestemn_to_cwdn; // the nitrogen stored in the snag pool not go the cwd pool
-       // ns->dead_stemn       += m_deadstemn_to_cwdn;
-
-
-        ns_litr->litr1n    += m_livestemn_store_to_litr1n;
-        ns_litr->litr1n    += m_deadstemn_store_to_litr1n;
-        ns_litr->litr1n    += m_livestemn_transfer_to_litr1n;
-        ns_litr->litr1n    += m_deadstemn_transfer_to_litr1n;//NREN debug 20190908 11:29
+	ns_litr->litr1n += m_livestemn_store_to_litr1n;
+	ns_litr->litr1n += m_deadstemn_store_to_litr1n;
+	ns_litr->litr1n += m_livestemn_transfer_to_litr1n;
+	ns_litr->litr1n += m_deadstemn_transfer_to_litr1n; // NREN debug 20190908 11:29
 
 	/* Remove aboveground dead n from n stores in all cases. */
         ns->npool -= m_npool;
@@ -574,26 +571,27 @@ void update_beetle_attack_mortality(
 /****************************************************************/
 	/* Belowground dead n goes to litter and cwd in all cases. */
 	/*   Fine root mortality */
-	if (beetle[0].root_alive == 0.0) {
-        if(beetle[0].harvest_dead_root ==0){
+		if (world[0].defaults[0].beetle[0].root_alive == 0.0)
+		{
+		if (world[0].defaults[0].beetle[0].harvest_dead_root == 0)
+		{
 
-	ns_litr->litr1n    += m_frootn_to_litr1n;
-	ns_litr->litr2n    += m_frootn_to_litr2n;
-	ns_litr->litr3n    += m_frootn_to_litr3n;
-	ns_litr->litr4n    += m_frootn_to_litr4n;
-	ns_litr->litr1n         += m_frootn_store_to_litr1n;
-	ns_litr->litr1n         += m_frootn_transfer_to_litr1n;
+			ns_litr->litr1n += m_frootn_to_litr1n;
+			ns_litr->litr2n += m_frootn_to_litr2n;
+			ns_litr->litr3n += m_frootn_to_litr3n;
+			ns_litr->litr4n += m_frootn_to_litr4n;
+			ns_litr->litr1n += m_frootn_store_to_litr1n;
+			ns_litr->litr1n += m_frootn_transfer_to_litr1n;
 
-		/* Coarse root mortality */
-		ns_litr->litr1n     += m_livecrootn_to_litr1n;
-		ns->cwdn       += m_livecrootn_to_cwdn;
-		ns->cwdn       += m_deadcrootn_to_cwdn;
-		ns_litr->litr1n         += m_livecrootn_store_to_litr1n;
-		ns_litr->litr1n         += m_deadcrootn_store_to_litr1n;
-		ns_litr->litr1n         += m_livecrootn_transfer_to_litr1n;
-		ns_litr->litr1n         += m_deadcrootn_transfer_to_litr1n;
-        } // end if harvest dead root
-
+			/* Coarse root mortality */
+			ns_litr->litr1n += m_livecrootn_to_litr1n;
+			ns->cwdn += m_livecrootn_to_cwdn;
+			ns->cwdn += m_deadcrootn_to_cwdn;
+			ns_litr->litr1n += m_livecrootn_store_to_litr1n;
+			ns_litr->litr1n += m_deadcrootn_store_to_litr1n;
+			ns_litr->litr1n += m_livecrootn_transfer_to_litr1n;
+			ns_litr->litr1n += m_deadcrootn_transfer_to_litr1n;
+		} // end if harvest dead root
 
 	ns->frootn         -= m_frootn_to_litr1n;
 	ns->frootn         -= m_frootn_to_litr2n;
@@ -610,12 +608,12 @@ void update_beetle_attack_mortality(
 		ns->deadcrootn_store  -= m_deadcrootn_store_to_litr1n;
 		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
 		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;
-            } // end of the if root_alive
+		} // end of the if root_alive
 
+		else if (world[0].defaults[0].beetle[0].root_alive == 2)
+		{ // condition 2 fine root go to dead_rootn_beetle pool, then slowly decay to litter pool
 
-    else if(beetle[0].root_alive == 2) { // condition 2 fine root go to dead_rootn_beetle pool, then slowly decay to litter pool
-
-    ns->dead_rootn_beetle += (m_frootn_to_litr1n + m_frootn_to_litr2n + m_frootn_to_litr3n + m_frootn_to_litr4n + m_frootn_store_to_litr1n + m_frootn_transfer_to_litr1n);
+		ns->dead_rootn_beetle += (m_frootn_to_litr1n + m_frootn_to_litr2n + m_frootn_to_litr3n + m_frootn_to_litr4n + m_frootn_store_to_litr1n + m_frootn_transfer_to_litr1n);
 
 		/* Coarse root mortality */
 		ns->dead_rootn_beetle     += m_livecrootn_to_litr1n;
@@ -643,15 +641,9 @@ void update_beetle_attack_mortality(
 		ns->deadcrootn_store  -= m_deadcrootn_store_to_litr1n;
 		ns->livecrootn_transfer -= m_livecrootn_transfer_to_litr1n;
 		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n;
+		}
 
-
-
-
-    }
-
-
-
-    /* calculate the above ground litter part NREN 20190926*/
+	/* calculate the above ground litter part NREN 20190926*/
    cdf_patch->leafc_to_litr1c += m_leafc_to_litr1c;
    cdf_patch->leafc_to_litr1c += m_deadleafc_to_litr1c;
    cdf_patch->leafc_to_litr1c += m_gresp_store_to_litr1c;

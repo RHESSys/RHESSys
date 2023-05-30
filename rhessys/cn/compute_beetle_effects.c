@@ -59,7 +59,7 @@ void compute_beetle_effects(
 		int, //veg_parm_ID
 		//int, //harvest_dead_root
 		struct mortality_struct,
-		struct beetle_default *);
+		struct world_object *);
 
     void *alloc(size_t, char *, char *);
 
@@ -157,7 +157,7 @@ void compute_beetle_effects(
 						 canopy_strata[0].veg_parm_ID,
 						// harvest_dead_root,
 						 mort,
-						 &(world[0].defaults[0].beetle));
+						 world);
 				}
 			//}
 //			printf("in update mortality5 for beetle attack\n");
