@@ -399,7 +399,7 @@ void		patch_daily_F(
        // int root_alive,
       //  int harvest_dead_root,
         double,
-        struct beetle_default *);
+        struct world_object *);
 
 
 
@@ -809,7 +809,7 @@ void		patch_daily_F(
 					//root_alive,
 					//harvest_dead_root,
 					attack_mortality,
-					&(world[0].defaults[0].beetle)
+					world
 					);
 					} // if world
 
