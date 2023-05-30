@@ -110,10 +110,10 @@ void compute_beetle_effects(
 	else if (abc * 1000 < world[0].defaults[0].beetle[0].min_abc)
 	{
 	   loss=0; // if the total carbon is less the 55Mg/ha, then there is no mortality in that patch
-	   if (patch[0].ID / 1000 % 10 == 5 )
+	 /* if (patch[0].ID / 1000 % 10 == 5 )
 	   {
 					printf("\n updating the beetle mortality (abc<min_abc) for inx %d,  [abc %lf kg/m2], [min_abc %lf g/m2], [mort %lf]\n", inx, abc, world[0].defaults[0].beetle[0].min_abc, loss);
-	   } // the index is the time series of beetle attack mortality 0 is the first one 24 is the second
+	   } // the index is the time series of beetle attack mortality 0 is the first one 24 is the second */
 	}
 
 	// assign values from loss to the mortality structure
