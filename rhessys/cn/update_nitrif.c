@@ -313,10 +313,13 @@ int update_nitrif(
             patch[0].sat_NH4 = 0.0;
 		}
 	if(patch[0].sat_NO3 < -0.00001 || patch[0].sat_NO3 > 9999) {
-          //  printf("Warning: update nitrif 316 [sat_NO3 %e] is smaller than ZERO  [nitrif sat %lf], [nitrif soil %lf] \n", patch[0].sat_NO3, nitrify_sat, nitrify_soil);
-            patch[0].sat_NO3 = 0.0;
+			//printf("Warning: update nitrif 316 [sat_NO3 %e] is smaller than ZERO  [patchID %d], [nitrate soil %lf] \n", patch[0].sat_NO3, patch[0].ID, ns_soil->nitrate);
+			patch[0].sat_NO3 = 0.0;
         }
-    if (ns_soil->nitrate < ZERO || ns_soil->nitrate > 9999) ns_soil->nitrate = 0.0;
+    if (ns_soil->nitrate < ZERO || ns_soil->nitrate > 9999) {
+		ns_soil->nitrate = 0.0;
+		//printf("Warning: after update nitrif 316 [sat_NO3 %e] is smaller than ZERO  [nitrif sat %lf], [soil nitrate %lf] \n", patch[0].sat_NO3, nitrify_sat, ns_soil->nitrate);
+	}
     if (ns_soil->sminn < ZERO || ns_soil->nitrate > 9999)  ns_soil->sminn = 0.0;
 
     nbalance_after = patch[0].sat_NO3 + patch[0].sat_NH4 + ns_soil->nitrate + ns_soil->sminn;

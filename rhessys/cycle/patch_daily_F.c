@@ -2204,6 +2204,20 @@ void		patch_daily_F(
 			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
 			patch[0].canopy_rain_stored += strata->cover_fraction *	strata->rain_stored;
 			patch[0].canopy_snow_stored += strata->cover_fraction *	strata->snow_stored;
+			//check the negative carbon storage
+			if (strata->cs.leafc < -0.1 || strata->cs.dead_leafc < -0.1 || strata->cs.live_stemc < -0.1 || 
+				strata->cs.dead_stemc < -0.1 || strata->cs.frootc < -0.1 || strata->cs.cwdc < -0.1 || strata->cs.live_crootc < -0.1) 
+			{
+				printf("\n negative carbon for [stratumID %d],  [leafc %lf kg/m2], [stemc %lf g/m2], [rootc %lf]\n", strata->ID, 
+				 strata->cs.leafc + strata->cs.dead_leafc, strata->cs.dead_stemc + strata->cs.live_stemc, strata->cs.frootc + strata->cs.live_crootc );
+				strata->cs.leafc = 0.0;
+				strata->cs.dead_leafc = 0.0;
+				strata->cs.live_stemc = 0.0;
+				strata->cs.dead_stemc = 0.0;
+				strata->cs.frootc = 0.0;
+				strata->cs.cwdc = 0.0;
+				strata->cs.live_crootc = 0.0;
+			}
 		}
 	}
 
