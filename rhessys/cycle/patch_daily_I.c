@@ -163,8 +163,7 @@ void		patch_daily_I(
 		struct  ndayflux_patch_struct *,
 		struct  patch_object *);
 
-	void    sort_patch_layers(struct patch_object *);
-
+	void sort_patch_layers(struct patch_object *, int *);
 
 	void	update_litter_interception_capacity (double,
 		double,
@@ -184,13 +183,16 @@ void		patch_daily_I(
 	int	layer, inx;
 	int	stratum;
 	double	cnt, count, theta;
+	int rec;
 
 	double  edible_leafc, grazing_mean_nc, grazing_Closs;
 	double root_growth, water_transfer;
 	struct  canopy_strata_object *strata;
 	struct  dated_sequence	clim_event;
 
-    /* update sat_deficit reated variables */
+	rec = 0;
+
+	/* update sat_deficit reated variables */
     if(patch[0].sat_deficit >= 0){
         patch[0].sat_deficit = min(patch[0].sat_deficit,patch[0].soil_defaults[0][0].soil_water_cap);
         patch[0].available_soil_water = patch[0].soil_defaults[0][0].soil_water_cap - patch[0].sat_deficit;
@@ -522,7 +524,7 @@ void		patch_daily_I(
 	/*	re-sort patch layers to account for any changes in 	*/
 	/*	height							*/
 	/*------------------------------------------------------------------------*/
-	sort_patch_layers(patch);
+	sort_patch_layers(patch, &rec);
 
 
 	/*------------------------------------------------------------------------*/

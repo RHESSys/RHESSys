@@ -59,12 +59,12 @@ void destroy_patch(
 	/*--------------------------------------------------------------*/
 	/*	destroy the routing list							*/
 	/*--------------------------------------------------------------*/
-	if (patch[0].innundation_list > 0)
-		free(patch[0].innundation_list[0].neighbours);
-	free(patch[0].innundation_list);
+	//if (patch[0].innundation_list > 0)
+	//	free(patch[0].innundation_list[0].neighbours);
+	// free(patch[0].innundation_list);
 
-    if (patch[0].surface_innundation_list > 0)
-		free(patch[0].surface_innundation_list[0].neighbours);
+    //if (patch[0].surface_innundation_list > 0)
+	//	free(patch[0].surface_innundation_list[0].neighbours);
 	free(patch[0].surface_innundation_list);
 	free(patch[0].transmissivity_profile);
 
