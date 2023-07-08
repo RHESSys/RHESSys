@@ -2535,6 +2535,7 @@ struct cstate_struct
     double cpool;           /* (kgC/m2) temporary plant C pool */
     double availc;         /* (kgC/m2) plant C from photosynthesis available for growth*/
     double leafc;           /* (kgC/m2) leaf C */
+    double leafc_stress;       /* (kgC/m2) leaf C target during times of stress */
     double leafc_age1;           /* (kgC/m2) leaf C in first year leaves */
     double leafc_age2;           /* (kgC/m2) leaf C in older leaves */
     double stem_density;     /* number per m2 */;
@@ -3155,12 +3156,19 @@ struct  stratum_default
         int length;
         double resp;
         double gpsn;
+        double mr;
+        double gr;
         double lai;
         double lwp;
         double minNSC;
         double cpool;
         double stemc;
+        double stemc_live;
+        double stemc_dead;
         double rootc;
+        double frootc;
+        double crootc_live;
+        double crootc_dead;
         double leafc;
 	double totalc;
 	double totaln;

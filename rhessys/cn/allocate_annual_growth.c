@@ -360,13 +360,21 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	/* use carbohydrates if stressed				*/
 	/*--------------------------------------------------------------*/
-	
+
+	cs->leafc_stress = max(cs->leafc, cs->leafc_stress);
+
 	if (total_above_biomass > ZERO)
-		 excess_carbon = cdf->leafc_store_to_leafc_transfer - epc.min_percent_leafg*cs->leafc*epc.leaf_turnover;  
+		 excess_carbon = cdf->leafc_store_to_leafc_transfer - epc.min_percent_leafg*cs->leafc_stress*epc.leaf_turnover;  
 		 /* excess_carbon = cdf->leafc_store_to_leafc_transfer - epc.min_percent_leafg*total_biomass;  */
 	else
 		excess_carbon = 0.0;
 
+	/* When no stress, allow leafc_stress to reset */
+	if (excess_carbon > ZERO) {
+		cs->leafc_stress = cs->leafc;
+	}
+
+	/* When stressed, don't allow leafc_stress to reset */
 	if (excess_carbon < -ZERO) {
 
 		carbohydrate_transfer = -1.0*excess_carbon; 
@@ -486,6 +494,7 @@ int allocate_annual_growth(				int id,
 		ns->leafn = 0.0;
 		ns->frootn = 0.0;
 		cs->gresp_transfer = 0.0;
+		cs->leafc_stress = 0.0;
 
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 

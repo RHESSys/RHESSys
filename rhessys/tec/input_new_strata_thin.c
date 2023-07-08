@@ -269,6 +269,7 @@ void input_new_strata_thin(
 		canopy_strata[0].cs.deadcroot_gr_snk = 0.0;
 		canopy_strata[0].cs.froot_mr_snk = 0.0;
 		canopy_strata[0].cs.froot_gr_snk = 0.0;
+		canopy_strata[0].cs.leafc_stress = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*	determine current lai and height  based on current leaf carbon	*/
