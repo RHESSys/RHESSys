@@ -259,6 +259,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.PET = 0.0;
 	patch[0].acc_month.psn = 0.0;
 	patch[0].acc_month.num_threshold = 0;
+	patch[0].acc_month.totalc = 0.0;
 	patch[0].acc_month.soilc = 0.0;
 	patch[0].acc_month.litterc = 0.0;
 	patch[0].acc_month.litterc_bg = 0.0;
@@ -303,6 +304,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.potential_recharge_wyd = 0.0;
 	patch[0].acc_year.recharge = 0.0;
 	patch[0].acc_year.recharge_wyd = 0.0;
+	patch[0].acc_year.totalc = 0.0;
 	patch[0].acc_year.soilc = 0.0;
 	patch[0].acc_year.litterc = 0.0;
 	patch[0].acc_year.litterc_bg = 0.0;

@@ -3163,12 +3163,12 @@ struct  stratum_default
         double minNSC;
         double cpool;
         double stemc;
-        double stemc_live;
-        double stemc_dead;
+        double live_stemc;
+        double dead_stemc;
         double rootc;
         double frootc;
-        double crootc_live;
-        double crootc_dead;
+        double live_crootc;
+        double dead_crootc;
         double leafc;
 	double totalc;
 	double totaln;
