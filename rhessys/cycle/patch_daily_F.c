@@ -1520,6 +1520,7 @@ void		patch_daily_F(
 	patch[0].rain_stored = patch[0].litter.rain_stored;
 	patch[0].snow_stored = 0.0;
 	patch[0].ndf.plant_potential_ndemand = 0.0;
+	patch[0].plant_psn = 0.0;
 	patch[0].net_plant_psn = 0.0;
 	patch[0].totalc = 0.0;
 	patch[0].totaln = 0.0;
@@ -2007,6 +2008,7 @@ void		patch_daily_F(
 			patch[0].PET += strata->cover_fraction * strata->PET;
 			patch[0].totalc += strata->cover_fraction * strata->cs.totalc;
 			patch[0].totaln += strata->cover_fraction * strata->ns.totaln;
+			patch[0].plant_psn += strata->cover_fraction * strata->cdf.psn_to_cpool;
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
 			strata->acc_year.gpsn += strata->cs.net_psn;
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;

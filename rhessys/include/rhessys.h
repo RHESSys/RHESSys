@@ -2106,6 +2106,7 @@ struct patch_object
         double  burn;                           /* 0-1 % burned */
         double  pspread;                        /* pspread 0-1 */
         int 	nburn;				// tally of number of times this patch has burned
+        double  plant_psn;                      /* kgC/m2 gross carbon flux into patch */
 	double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
         double  preday_totalc;                  /* kgC/m2 total carbon */
         double  totalc;                         /* kgC/m2 total carbon */
