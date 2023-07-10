@@ -256,7 +256,8 @@ void		patch_daily_F(
 		struct  litter_n_object *,
 		struct cdayflux_patch_struct *,
 		struct ndayflux_patch_struct *,
-		struct patch_object *);
+		struct patch_object *,
+		int);
 
 	int	update_dissolved_organic_losses(
 		struct	date,
@@ -2207,7 +2208,8 @@ void		patch_daily_F(
 			&(patch[0].litter_ns),
 			&(patch[0].cdf),
 			&(patch[0].ndf),
-			patch) != 0){
+			patch,
+			command_line[0].verbose_flag) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
