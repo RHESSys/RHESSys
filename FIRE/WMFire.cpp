@@ -61,7 +61,8 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 	{
 		if(def.fire_verbose==1)
 			cout<<"Should be set seed = "<<def.ran_seed<<"\n";
-		seed=def.ran_seed+year+month*100;
+		//seed=def.ran_seed+year+month*100;
+		seed=def.ran_seed;
 	}	
 	else
 	{
@@ -533,6 +534,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 			if(fireGrid_[new_row][new_col].pet>0)
 				cur_moist=1-fireGrid_[new_row][new_col].et/(fireGrid_[new_row][new_col].pet); // for now see if fixes
 			else
+				cur_moist=0;
+			if(fireGrid_[new_row][new_col].et>fireGrid_[new_row][new_col].pet)
 				cur_moist=0;
 		}
 	//	cout<<"deficit calculated, et, pet: "<<cur_moist<<"   "<<fireGrid_[new_row][new_col].et<<"   "<<fireGrid_[new_row][new_col].pet<<"\t";
