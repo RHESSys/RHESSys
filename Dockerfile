@@ -22,6 +22,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		libglib2.0-dev \
 		libharfbuzz-dev \
 		libjpeg-dev \
+		libmariadb-dev \
 		libnetcdf-dev \
 		libpq-dev \
 		libpng-dev \
@@ -49,6 +50,6 @@ RUN make clean && make all
 
 # install R packages
 RUN Rscript -e "install.packages(c('chron','data.table','devtools','forcats','formattable','gh','ggpubr','httr','hydroGOF','lhs','lubridate','randtoolbox','readxl','rlang','roxygen2','rmarkdown','sensitivity','stringr','tibble','tidyverse','yaml','xml2'), dependencies=TRUE)"
-RUN Rscript -e "devtools:install_github('RHESSys/RHESSysIOinR', ref='main', build_vignettes=FALSE, dependencies=TRUE)"
+RUN Rscript -e "library('devtools')" -e "install_github('RHESSys/RHESSysIOinR', ref='develop', build_vignettes=FALSE, dependencies=TRUE)"
 
 # Special thanks to Ojas for finding Viruzzo and other excellent people over at the RPS Discord server who donated their time, patience and expertise to help us get this dockerfile fixed and cleaned up, in accordance with good IT practices.
