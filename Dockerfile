@@ -22,7 +22,6 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		libglib2.0-dev \
 		libharfbuzz-dev \
 		libjpeg-dev \
-		libmariadb-dev \
 		libnetcdf-dev \
 		libpq-dev \
 		libpng-dev \
