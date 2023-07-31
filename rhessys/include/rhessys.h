@@ -2809,6 +2809,7 @@ struct epconst_struct
         double int_coef;       /* (kg/m2/LAI/d) canopy precip interception coef */
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
 
+	double mort_start_age;        /* (year)) age at which mortality routines kick ind */
 	double netpabs;         /* (mol/mol) fPAR effectively abosorbed */
         double netpabs_age_mult;                /* (0-1) increase for age < 1 (percent) */
         double netpabs_shade;           /* (mol/mol) fPAR effectively abosorbed */

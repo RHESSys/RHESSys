@@ -143,6 +143,7 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.leaf_turnover = 	getDoubleParam(&paramCnt, &paramPtr, "epc.leaf_turnover", "%lf", 0.27, 1);
 		default_object_list[i].epc.day_leafon = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafon", "%d", 91, 1);
 		default_object_list[i].epc.day_leafoff = 	getIntParam(&paramCnt, &paramPtr, "epc.day_leafoff", "%d", 260, 1);
+		default_object_list[i].epc.mort_start_age = 	getDoubleParam(&paramCnt, &paramPtr, "epc.mort_start_age", "%lf", 1, 1);
 		default_object_list[i].epc.ndays_expand = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_expand", "%d", 30, 1);
 		default_object_list[i].epc.ndays_litfall = 	getIntParam(&paramCnt, &paramPtr, "epc.ndays_litfall", "%d", 30, 1);
 		default_object_list[i].epc.leaf_cn = 		getDoubleParam(&paramCnt, &paramPtr, "epc.leaf_cn", "%lf", 45.0, 1);
