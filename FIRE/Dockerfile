@@ -39,15 +39,21 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz
 RUN mv boost_1_82_0.tar.gz /usr/local/bin
 RUN tar -xzf /usr/local/bin/boost_1_82_0.tar.gz -C /usr/local/bin/
-RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bash_profile
-RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
-RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
-RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bash_profile
-RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bash_profile
-RUN . ~/.bash_profile
 
-RUN ls
-RUN ls /usr/local/bin/boost_1_82_0
+ENV BOOST_ROOT=/usr/local/bin/boost_1_82_0
+ENV CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0/
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0/
+ENV PATH=$PATH:$BOOST_ROOT
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/
+
+RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bashrc
+RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bashrc
+RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bashrc
+RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bashrc
+RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bashrc
+RUN . ~/.bashrc
+
+RUN cd $BOOST_ROOT
 RUN chmod +x /usr/local/bin/boost_1_82_0/bootstrap.sh
 RUN . /usr/local/bin/boost_1_82_0/bootstrap.sh
 RUN . $BOOST_ROOT/b2
