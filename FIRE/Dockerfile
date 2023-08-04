@@ -57,13 +57,10 @@ RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_8
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bash_profile
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bash_profile
-#RUN . ~/.bash_profile
 
 RUN cd $BOOST_ROOT
-#RUN chmod +x bootstrap.sh
-#RUN . ~/.bashrc & bootstrap.sh
 RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/
-RUN . ~/.bash_profile & b2
+RUN . ~/.bash_profile & ./b2 install
 
 # set the working directory
 # copy the build environment to the working dir
