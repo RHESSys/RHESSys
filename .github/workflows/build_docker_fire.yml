@@ -1,5 +1,5 @@
 #workflow file for Github Action on RHESSys Trunk
-name: build_docker_develop
+name: build_docker_fire
 on:
     push:
         branches: [develop]
@@ -21,8 +21,9 @@ jobs:
                         uses: docker/build-push-action@v3
                         with:
                                 push: true
-                                tags: rhessys/rhessys:develop
+                                file: ./Dockerfire
+				tags: rhessys/rhessys:fire
                                 github-token: ${{ secrets.GITHUB_TOKEN }}
                                 builder: ${{ steps.buildx.outputs.name }}
-                                cache-from: type=registry,ref=rhessys/rhessys:buildcachedev
-                                cache-to: type=registry,ref=rhessys/rhessys:buildcachedev,mode=max
+                                cache-from: type=registry,ref=rhessys/rhessys:buildcachefire
+                                cache-to: type=registry,ref=rhessys/rhessys:buildcachefire,mode=max
