@@ -46,8 +46,8 @@ RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bash_profile
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bash_profile
 RUN . ~/.bash_profile
 
-RUN chmod +x $BOOST_ROOT/bootstrap.sh
-RUN . $BOOST_ROOT/bootstrap.sh
+RUN chmod +x /usr/local/bin/boost_1_82_0/bootstrap.sh
+RUN . /usr/local/bin/boost_1_82_0/bootstrap.sh
 RUN . $BOOST_ROOT/b2
 
 # set the working directory
