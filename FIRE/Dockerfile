@@ -47,6 +47,8 @@ RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bash_prof
 RUN . ~/.bash_profile
 
 RUN cd $BOOST_ROOT
+RUN pwd
+RUN ls
 RUN . ./bootstrap.sh
 RUN . ./b2
 
