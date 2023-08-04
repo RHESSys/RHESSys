@@ -60,7 +60,7 @@ RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bashrc
 RUN . ~/.bashrc
 
 RUN cd $BOOST_ROOT
-RUN chmod +x bootstrap.sh
+#RUN chmod +x bootstrap.sh
 RUN . bootstrap.sh
 RUN . $BOOST_ROOT/b2
 
