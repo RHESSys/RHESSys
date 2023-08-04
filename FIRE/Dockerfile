@@ -63,7 +63,7 @@ RUN cd $BOOST_ROOT
 #RUN chmod +x bootstrap.sh
 #RUN . ~/.bashrc & bootstrap.sh
 RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/
-#RUN . $BOOST_ROOT/b2
+RUN . ~/.bash_profile & b2
 
 # set the working directory
 # copy the build environment to the working dir
