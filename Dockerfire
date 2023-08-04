@@ -36,7 +36,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		wget
 		
 # install BOOST libraries for RHESSys FIRE
-wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz
+RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz
 RUN mv boost_1_82_0.tar.gz /usr/local/bin
 RUN sudo tar -xzf boost_1_82_0.tar.gz
 RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bash_profile
