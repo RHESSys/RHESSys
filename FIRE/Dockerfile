@@ -52,12 +52,12 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0/
 ENV PATH=$PATH:$BOOST_ROOT
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/
 
-RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bashrc
-RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bashrc
-RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bashrc
-RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bashrc
-RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bashrc
-RUN . ~/.bashrc
+RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bash_profile
+RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
+RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
+RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bash_profile
+RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bash_profile
+RUN . ~/.bash_profile
 
 RUN cd $BOOST_ROOT
 #RUN chmod +x bootstrap.sh
