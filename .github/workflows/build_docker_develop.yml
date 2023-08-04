@@ -7,14 +7,14 @@ jobs:
         update_build:
                 runs-on: ubuntu-20.04
                 strategy:
-			matrix:
-				include:
-				      - image: rhessys/rhessys:develop
-					dockerfile: ./Dockerfile
-					name: dev
-				      - image: rhessys/rhessys:fire
-					dockerfile: ./Dockerfire
-					name: fire 
+                        matrix:
+                               include:
+                                      - image: rhessys/rhessys:develop
+                                        dockerfile: ./Dockerfile
+                                        name: dev
+                                      - image: rhessys/rhessys:fire
+                                        dockerfile: ./Dockerfire
+                                        name: fire 
 		steps:
                       - name: Login to DockerHub
                         uses: docker/login-action@v2
