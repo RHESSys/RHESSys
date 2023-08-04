@@ -22,7 +22,7 @@ jobs:
                         with:
                                 push: true
                                 file: "Dockerfire"
-				tags: rhessys/rhessys:fire
+                                tags: rhessys/rhessys:fire
                                 github-token: ${{ secrets.GITHUB_TOKEN }}
                                 builder: ${{ steps.buildx.outputs.name }}
                                 cache-from: type=registry,ref=rhessys/rhessys:buildcachefire
