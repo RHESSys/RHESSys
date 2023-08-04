@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:20.04
+CMD ["/bin/bash"]
 # ensures every time we use 20.04 LTS
 # this is the latest known version that does not segfault
 
@@ -55,6 +56,7 @@ RUN . ~/.bashrc
 
 RUN cd $BOOST_ROOT
 RUN chmod +x /usr/local/bin/boost_1_82_0/bootstrap.sh
+CMD /bin/bash -c "source ~/.bashrc && bootstrap.sh"
 RUN . /usr/local/bin/boost_1_82_0/bootstrap.sh
 RUN . $BOOST_ROOT/b2
 
