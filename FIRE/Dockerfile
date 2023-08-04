@@ -61,7 +61,8 @@ RUN . ~/.bashrc
 
 RUN cd $BOOST_ROOT
 #RUN chmod +x bootstrap.sh
-RUN -ic . ~/.bashrc & bootstrap.sh
+#RUN . ~/.bashrc & bootstrap.sh
+RUN . bootstrap.sh --prefix=/usr/
 #RUN . $BOOST_ROOT/b2
 
 # set the working directory
