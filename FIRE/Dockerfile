@@ -57,8 +57,8 @@ RUN . ~/.bashrc
 RUN cd $BOOST_ROOT
 RUN echo $SHELL
 #RUN chmod +x bootstrap.sh
-CMD ["/bin/sh", "bootstrap.sh"]
-RUN . bootstrap.sh
+CMD ["/bin/sh", "~/.bashrc & bootstrap.sh"]
+#RUN . bootstrap.sh
 RUN . $BOOST_ROOT/b2
 
 # set the working directory
