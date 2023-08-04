@@ -57,11 +57,11 @@ RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_8
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bashrc
 RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bashrc
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bashrc
-CMD ["/bin/bash", -ic ". ~/.bashrc"]
+CMD /bin/bash -ic ". ~/.bashrc"
 
 RUN cd $BOOST_ROOT
 #RUN chmod +x bootstrap.sh
-CMD ["/bin/bash", -ic ". ~/.bashrc & bootstrap.sh"]
+CMD /bin/bash -ic ". ~/.bashrc & bootstrap.sh"
 RUN . $BOOST_ROOT/b2
 
 # set the working directory
