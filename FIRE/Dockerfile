@@ -34,11 +34,11 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		software-properties-common \
 		vim \
 		wget
-		
+
 # install BOOST libraries for RHESSys FIRE
-wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz
+RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz
 RUN mv boost_1_82_0.tar.gz /usr/local/bin
-RUN sudo tar -xzf boost_1_82_0.tar.gz
+RUN tar -xzf boost_1_82_0.tar.gz
 RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
@@ -53,7 +53,7 @@ RUN sudo ./b2
 # set the working directory
 # copy the build environment to the working dir
 WORKDIR /RHESSys
-COPY ./ 
+COPY ./ .
 RUN mkdir lib
 
 # finish installing WMFire library

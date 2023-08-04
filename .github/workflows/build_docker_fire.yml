@@ -21,7 +21,7 @@ jobs:
                         uses: docker/build-push-action@v3
                         with:
                                 push: true
-                                file: "Dockerfire"
+                                file: "./FIRE/Dockerfile"
                                 tags: rhessys/rhessys:fire
                                 github-token: ${{ secrets.GITHUB_TOKEN }}
                                 builder: ${{ steps.buildx.outputs.name }}
