@@ -14,7 +14,10 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		dirmngr \
 		flex \
 		git \
+		g++ \
 		libbsd-dev \
+		libbz2-dev \
+		libboost-all-dev \
 		libfreetype6-dev \
 		libfribidi-dev \
 		libfontconfig1-dev \
@@ -22,6 +25,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		libglib2.0 \
 		libglib2.0-dev \
 		libharfbuzz-dev \
+		libicu-dev \
 		libjpeg-dev \
 		libnetcdf-dev \
 		libpq-dev \
@@ -32,6 +36,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		libxml2-dev \
 		pkg-config \
 		python3 \
+		python3-dev \
 		software-properties-common \
 		vim \
 		wget
@@ -55,10 +60,8 @@ RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bashrc
 RUN . ~/.bashrc
 
 RUN cd $BOOST_ROOT
-RUN echo $SHELL
-#RUN chmod +x bootstrap.sh
-CMD ["/bin/sh", "~/.bashrc & bootstrap.sh"]
-#RUN . bootstrap.sh
+RUN chmod +x bootstrap.sh
+RUN . bootstrap.sh
 RUN . $BOOST_ROOT/b2
 
 # set the working directory
