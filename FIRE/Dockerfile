@@ -70,7 +70,7 @@ RUN mkdir lib
 
 # finish installing WMFire library
 WORKDIR /FIRE
-RUN b2
+RUN . & ~/.bash_profile & b2
 RUN b2 clean
 RUN b2 release
 
