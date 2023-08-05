@@ -70,6 +70,7 @@ RUN mkdir lib
 
 # finish installing WMFire library
 RUN cd FIRE
+RUN pwd
 RUN b2
 RUN b2 clean
 RUN b2 release
