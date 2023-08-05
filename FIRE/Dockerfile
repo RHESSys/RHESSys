@@ -67,9 +67,10 @@ RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/
 WORKDIR /RHESSys
 COPY ./ .
 RUN mkdir lib
+RUN ls
 
 # finish installing WMFire library
-RUN cd FIRE
+RUN cd /RHESSys/FIRE
 RUN pwd
 RUN b2
 RUN b2 clean
