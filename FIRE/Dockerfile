@@ -69,13 +69,14 @@ COPY ./ .
 RUN mkdir lib
 
 # finish installing WMFire library
-RUN cd /RHESSys/FIRE & ls & b2
+WORKDIR /FIRE
+RUN b2
 RUN b2 clean
 RUN b2 release
 
 RUN cp build/clang-darwin14/release/threading-multi/libwmfire.dylib ../lib/
 
-RUN cd /RHESSys/rhessys
+WORKDIR ../rhessys
 RUN make wmfire='T'
 
 # install r-base and r-base-dev
