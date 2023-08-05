@@ -59,7 +59,7 @@ RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bash_profile
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bash_profile
 
 RUN cd $BOOST_ROOT
-RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/ & b2
+RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/
 #RUN . ~/.bash_profile & ./b2 install
 
 # set the working directory
