@@ -70,7 +70,7 @@ RUN mkdir lib
 RUN ls
 
 # finish installing WMFire library
-WORKDIR /FIRE
+WORKDIR /RHESSys/FIRE
 RUN pwd
 RUN ls
 RUN . ~/.bash_profile & b2
