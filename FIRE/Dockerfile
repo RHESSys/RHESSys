@@ -74,9 +74,9 @@ RUN b2
 RUN b2 clean
 RUN b2 release
 
-RUN ls build/gcc-9/release
+RUN ls build/gcc-9/release/threading-multi
 
-RUN cp build/gcc-9/release/threading-multi/libwmfire.dylib ../lib/
+RUN cp build/gcc-9/release/threading-multi/libwmfire.so ../lib/
 
 WORKDIR RHESSys/rhessys
 RUN make wmfire='T'
