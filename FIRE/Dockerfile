@@ -74,11 +74,11 @@ RUN b2
 RUN b2 clean
 RUN b2 release
 
-RUN ls build
+RUN ls build/gcc-9
 
-RUN cp build/clang-darwin14/release/threading-multi/libwmfire.dylib ../lib/
+RUN cp build/gcc-9/release/threading-multi/libwmfire.dylib ../lib/
 
-WORKDIR ../rhessys
+WORKDIR RHESSys/rhessys
 RUN make wmfire='T'
 
 # install r-base and r-base-dev
