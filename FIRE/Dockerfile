@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:20.04
-#CMD ["/bin/bash"]
 # ensures every time we use 20.04 LTS
 # this is the latest known version that does not segfault
 
@@ -46,17 +45,20 @@ RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_
 RUN mv boost_1_82_0.tar.gz /usr/local/bin
 RUN tar -xzf /usr/local/bin/boost_1_82_0.tar.gz -C /usr/local/bin/
 
+# local environment variables
 ENV BOOST_ROOT=/usr/local/bin/boost_1_82_0
 ENV CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0/
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0/
 ENV PATH=$PATH:$BOOST_ROOT
 
+# Docker environment variables
 RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bash_profile
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/RHESSys/lib/' >>~/.bash_profile
 
+# build BOOST libraries
 RUN cd $BOOST_ROOT
 RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/
 #RUN . ~/.bash_profile & ./b2 install
@@ -73,8 +75,10 @@ RUN b2
 RUN b2 clean
 RUN b2 release
 
+# make WMFire library accessible
 RUN cp build/gcc-9/release/threading-multi/libwmfire.so ../lib/
 
+# compile RHESSys and WMFire
 WORKDIR ../rhessys
 RUN make wmfire='T'
 
@@ -83,7 +87,7 @@ RUN DEBIAN_FRONTEND="noninteractive" wget -qO- https://cloud.r-project.org/bin/l
 	add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" && \
 	apt-get update && apt-get install --yes r-base r-base-dev
 
-# install R packages
+# install R packages and RHESSysIOinR
 RUN Rscript -e "install.packages(c('chron','data.table','devtools','forcats','formattable','gh','ggpubr','httr','hydroGOF','lhs','lubridate','randtoolbox','readxl','rlang','roxygen2','rmarkdown','sensitivity','stringr','tibble','tidyverse','yaml','xml2'), dependencies=TRUE)"
 RUN Rscript -e "library('devtools')" -e "install_github('RHESSys/RHESSysIOinR', ref='develop', build_vignettes=FALSE, dependencies=TRUE)"
 
