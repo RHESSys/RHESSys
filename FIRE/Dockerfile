@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:20.04
-CMD ["/bin/bash"]
+#CMD ["/bin/bash"]
 # ensures every time we use 20.04 LTS
 # this is the latest known version that does not segfault
 
@@ -47,10 +47,6 @@ RUN mv boost_1_82_0.tar.gz /usr/local/bin
 RUN tar -xzf /usr/local/bin/boost_1_82_0.tar.gz -C /usr/local/bin/
 
 ENV BOOST_ROOT=/usr/local/bin/boost_1_82_0
-ENV CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0/
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0/
-ENV PATH=$PATH:$BOOST_ROOT
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/
 
 RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
@@ -74,13 +70,9 @@ RUN b2
 RUN b2 clean
 RUN b2 release
 
-RUN ls build/gcc-9/release/threading-multi/
-
 RUN cp build/gcc-9/release/threading-multi/libwmfire.so ../lib/
 
 WORKDIR ../rhessys
-RUN pwd
-RUN ls
 RUN make wmfire='T'
 
 # install r-base and r-base-dev
