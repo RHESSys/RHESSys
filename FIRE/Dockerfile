@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:20.04
-CMD ["/bin/bash"]
+#CMD ["/bin/bash"]
 # ensures every time we use 20.04 LTS
 # this is the latest known version that does not segfault
 
@@ -55,7 +55,7 @@ RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export PATH=$PATH:$BOOST_ROOT' >>~/.bash_profile
-RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/RHESSys/lib/' >>~/.bash_profile
+RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/RHESSys/lib/' >>~/.bash_profile
 
 RUN cd $BOOST_ROOT
 RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/
