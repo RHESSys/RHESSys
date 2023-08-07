@@ -78,7 +78,7 @@ RUN ls build/gcc-9/release/threading-multi/
 
 RUN cp build/gcc-9/release/threading-multi/libwmfire.so ../lib/
 
-WORKDIR RHESSys/rhessys
+WORKDIR ../rhessys
 RUN pwd
 RUN ls
 RUN make wmfire='T'
