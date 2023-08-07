@@ -74,11 +74,13 @@ RUN b2
 RUN b2 clean
 RUN b2 release
 
-RUN ls build/gcc-9/release/threading-multi
+RUN ls build/gcc-9/release/threading-multi/
 
 RUN cp build/gcc-9/release/threading-multi/libwmfire.so ../lib/
 
 WORKDIR RHESSys/rhessys
+RUN pwd
+RUN ls
 RUN make wmfire='T'
 
 # install r-base and r-base-dev
