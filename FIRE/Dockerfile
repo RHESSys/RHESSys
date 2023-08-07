@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:20.04
-#CMD ["/bin/bash"]
+CMD ["/bin/bash"]
 # ensures every time we use 20.04 LTS
 # this is the latest known version that does not segfault
 
