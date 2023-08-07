@@ -47,6 +47,9 @@ RUN mv boost_1_82_0.tar.gz /usr/local/bin
 RUN tar -xzf /usr/local/bin/boost_1_82_0.tar.gz -C /usr/local/bin/
 
 ENV BOOST_ROOT=/usr/local/bin/boost_1_82_0
+ENV CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0/
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0/
+ENV PATH=$PATH:$BOOST_ROOT
 
 RUN echo 'export BOOST_ROOT=/usr/local/bin/boost_1_82_0' >>~/.bash_profile
 RUN echo 'export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0' >>~/.bash_profile
