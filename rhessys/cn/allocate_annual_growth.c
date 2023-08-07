@@ -252,7 +252,7 @@ int allocate_annual_growth(				int id,
 	}
 		
 
-	if (( vmort_flag == 0) && (cs->cpool < ZERO) && (total_biomass > ZERO) && (-cs->cpool >  total_biomass) && (cs->age > epc.mort_start_age)) {
+	if (( vmort_flag == 0) && (cs->cpool < ZERO) && (total_biomass > ZERO) && (-cs->cpool >  total_biomass) ) {
 		excess_carbon = 1.0;
 		cs->mortality_fract += excess_carbon;
                 mort.mort_cpool = excess_carbon;
