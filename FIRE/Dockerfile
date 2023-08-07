@@ -67,15 +67,14 @@ RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/
 WORKDIR /RHESSys
 COPY ./ .
 RUN mkdir lib
-RUN ls
 
 # finish installing WMFire library
 WORKDIR /RHESSys/FIRE
-RUN pwd
-RUN ls
-RUN . ~/.bash_profile & b2
+RUN b2
 RUN b2 clean
 RUN b2 release
+
+RUN ls build
 
 RUN cp build/clang-darwin14/release/threading-multi/libwmfire.dylib ../lib/
 
