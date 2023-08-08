@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rhessys.h"
+#include <omp.h>
 
 void		world_daily_I(
 						  long   	day,

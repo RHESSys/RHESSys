@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include <omp.h>
 
 void	basin_hourly(
 					 struct	world_object	*world,
