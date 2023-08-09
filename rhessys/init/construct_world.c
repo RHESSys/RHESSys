@@ -341,7 +341,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#include <omp.h>
+#include <openmp.h>
 #include "rhessys.h"
 
 

@@ -46,7 +46,7 @@
 #include <math.h>
 #include "rhessys.h"
 #include "phys_constants.h"
-#include <omp.h>
+#include <openmp.h>
 
 void		basin_daily_I(
 						  long	day,

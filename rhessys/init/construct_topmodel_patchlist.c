@@ -3,7 +3,7 @@
 
 #include "rhessys.h"
 #include "functions.h"
-#include <omp.h>
+#include <openmp.h>
 
 struct routing_list_object *construct_topmodel_patchlist(struct hillslope_object * const hillslope) {
 
