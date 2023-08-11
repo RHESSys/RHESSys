@@ -101,7 +101,7 @@ void	output_monthly_patch(
 
 
 	check = fprintf(outfile,
-		"%d %d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
+		"%d %d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
 		current_date.month,
 		current_date.year,
 		basinID,
@@ -126,6 +126,7 @@ void	output_monthly_patch(
 		patch[0].soil_ns.nitrate*1000, //+patch[0].surface_NO3,
 		patch[0].soil_ns.sminn*1000,
         //from here is new extra output NREN 20220105
+		
         patch[0].acc_month.trans *1000.0,
         patch[0].acc_month.soil_evap *1000.0,
         patch[0].acc_month.evap_surface *1000.0,
@@ -165,7 +166,8 @@ void	output_monthly_patch(
         patch[0].unsat_storage*1000,
         patch[0].rz_storage*1000,
         patch[0].sat_deficit*1000,
-        patch[0].field_capacity*1000
+        patch[0].field_capacity*1000,
+		patch[0].acc_month.PET * 1000.0 //20230811
 		);
 
 	if (check <= 0) {
@@ -213,6 +215,7 @@ void	output_monthly_patch(
         patch[0].acc_month.unsat_drain_ratio = 0.0;
         patch[0].acc_month.fpi = 0.0;
         patch[0].acc_month.mineralized = 0.0; // this is potential
+		patch[0].acc_month.PET = 0.0; //20230811
 
-	return;
+		return;
 } /*end output_monthly_patch*/

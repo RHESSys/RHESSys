@@ -178,8 +178,9 @@ void update_basin_patch_accumulator(
 					patch[0].acc_month.recharge += patch[0].recharge;
 					patch[0].acc_month.rz_drainage += patch[0].rz_drainage;
 					patch[0].acc_month.unsat_drain += patch[0].unsat_drainage;
-					//patch[0].acc_month.pch_field_cap += patch[0].field_capacity;
-					//patch[0].acc_month.rz_field_cap += patch[0].rootzone.field_capacity;
+					patch[0].acc_month.PET += patch[0].potential_evaporation;
+					// patch[0].acc_month.pch_field_cap += patch[0].field_capacity;
+					// patch[0].acc_month.rz_field_cap += patch[0].rootzone.field_capacity;
 					patch[0].acc_month.overland_flow += patch[0].overland_flow;
 					patch[0].acc_month.theta2 += patch[0].theta; //theta for calculating N process
 					patch[0].acc_month.streamNO3_from_surface += patch[0].streamNO3_from_surface;

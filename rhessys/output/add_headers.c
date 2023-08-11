@@ -440,7 +440,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].monthly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"month",
 		"year",
 		"basinID",
@@ -462,7 +462,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		 "mineralized", "height", "rootdepth", "plantc", "plantn",
 		 "rz_field_capacity", "canopy_N_store", "sat_NO3", "sat_NH4", "surfaceN",
 		 "soilc", "soiln", "litrc", "litrn", "detention_store",
-		 "unsat_storage", "rz_storage", "sat_def", "pch_field_capacity"
+		 "unsat_storage", "rz_storage", "sat_def", "pch_field_capacity", "pet"
 		);
 
 	/*--------------------------------------------------------------*/
