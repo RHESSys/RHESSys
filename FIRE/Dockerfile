@@ -27,6 +27,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		libicu-dev \
 		libjpeg-dev \
 		libnetcdf-dev \
+		libomp-dev \
 		libpq-dev \
 		libpng-dev \
 		libssl-dev \

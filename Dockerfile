@@ -23,6 +23,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 		libharfbuzz-dev \
 		libjpeg-dev \
 		libnetcdf-dev \
+		libomp-dev \
 		libpq-dev \
 		libpng-dev \
 		libssl-dev \
