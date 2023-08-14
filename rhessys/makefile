@@ -463,7 +463,7 @@ ifdef wmfire
 else
 	$(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
 		$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) -c -o $@ $<
-Endif
+endif
 
 
 $(OBJ)/alloc.o: util/alloc.c
