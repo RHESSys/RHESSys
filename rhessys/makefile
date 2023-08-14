@@ -457,8 +457,13 @@ else
 endif
 	cp $@ $(TESTS_ROOTDIR)
 
+ifdef wmfire
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
 	$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) -c -o $@ $<
+else
+$(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
+	$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) -c -o $@ $<
+endif
 
 $(OBJ)/alloc.o: util/alloc.c
 	$(CC) -c $(CFLAGS) -I include util/alloc.c -o $(OBJ)/alloc.o
