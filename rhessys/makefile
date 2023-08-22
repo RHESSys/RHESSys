@@ -1,8 +1,8 @@
 OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 VERSION = 7.4
 PGM  = rhessys$(VERSION)
-CC = gcc
-#CC = clang
+#CC = gcc
+CC = clang
 #CXX = g++
 INCLUDES = -Iinclude
 
