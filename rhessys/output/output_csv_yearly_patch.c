@@ -57,6 +57,7 @@ void	output_csv_yearly_patch(
 			patch[0].acc_year.denitrif * 1000.0,
 			patch[0].acc_year.DOC_loss * 1000.0,
 			patch[0].acc_year.DON_loss * 1000.0,
+			patch[0].acc_year.gpsn * 1000.0,
 			patch[0].acc_year.psn * 1000.0,
 			patch[0].acc_year.et * 1000.0,
 			patch[0].acc_year.lai,
@@ -75,6 +76,7 @@ void	output_csv_yearly_patch(
 	patch[0].acc_year.nitrif = 0.0;
 	patch[0].acc_year.DOC_loss = 0.0;
 	patch[0].acc_year.DON_loss = 0.0;
+	patch[0].acc_year.gpsn = 0.0;
 	patch[0].acc_year.psn = 0.0;
 	patch[0].acc_year.et = 0.0;
 	patch[0].acc_year.lai = 0.0;

@@ -60,6 +60,7 @@ void	output_monthly_patch(
 		patch[0].acc_month.denitrif * 1000.0,
 		patch[0].acc_month.sm_deficit  / patch[0].acc_month.length * 1000.0,
 		patch[0].acc_month.et * 1000.0,
+		patch[0].acc_month.gpsn * 1000.0,
 		patch[0].acc_month.psn * 1000.0,
 		patch[0].acc_month.DOC_loss * 1000.0,
 		patch[0].acc_month.DON_loss * 1000.0,
@@ -86,6 +87,7 @@ void	output_monthly_patch(
 	patch[0].acc_month.burn = 0.0;
 	patch[0].acc_month.sm_deficit = 0.0;
 	patch[0].acc_month.et = 0.0;
+	patch[0].acc_month.gpsn = 0.0;
 	patch[0].acc_month.psn = 0.0;
 	patch[0].acc_month.lai = 0.0;
 	patch[0].acc_month.length = 0;

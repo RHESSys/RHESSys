@@ -413,7 +413,8 @@ struct accumulate_patch_object
    double leach;
    double denitrif;
    double nitrif;
-   double psn;
+   double gpsn;   /* gross photosynthesis */
+   double psn;    /* net photosynthesis */
    double DOC_loss;
    double DON_loss;
    double theta;

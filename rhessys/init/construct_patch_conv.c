@@ -164,6 +164,7 @@ struct patch_object *construct_patch(
 	/*--------------------------------------------------------------*/
 	patch[0].acc_month.snowpack = 0.0;
 	patch[0].acc_month.et = 0.0;
+	patch[0].acc_month.gpsn = 0.0;
 	patch[0].acc_month.psn = 0.0;
 	patch[0].acc_month.denitrif = 0.0;
 	patch[0].acc_month.sm_deficit = 0.0;
@@ -174,6 +175,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.length = 0;
 	patch[0].acc_year.num_threshold = 0;
 	patch[0].acc_year.et = 0.0;	
+	patch[0].acc_year.gpsn = 0.0;	
 	patch[0].acc_year.psn = 0.0;	
 	patch[0].acc_year.denitrif = 0.0;	
 	patch[0].acc_year.leach = 0.0;	

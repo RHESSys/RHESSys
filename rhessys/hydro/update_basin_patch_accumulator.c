@@ -161,6 +161,7 @@ void update_basin_patch_accumulator(
 					patch[0].acc_month.DOC_loss +=
 							(patch[0].soil_cs.DOC_Qout_total
 									- patch[0].soil_cs.DOC_Qout_total);
+					patch[0].acc_month.gpsn += patch[0].plant_psn;
 					patch[0].acc_month.psn += patch[0].net_plant_psn;
 					patch[0].acc_month.snowpack =
 							max(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
@@ -203,6 +204,7 @@ void update_basin_patch_accumulator(
 					patch[0].acc_year.streamflow += patch[0].streamflow;
 					patch[0].acc_year.Qout_total += patch[0].Qout_total;
 					patch[0].acc_year.Qin_total += patch[0].Qin_total;
+					patch[0].acc_year.gpsn += patch[0].plant_psn;
 					patch[0].acc_year.psn += patch[0].net_plant_psn;
 					patch[0].acc_year.PET += (patch[0].PE + patch[0].PET);
 					//patch[0].acc_year.burn += patch[0].pspread;
