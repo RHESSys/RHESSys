@@ -1841,7 +1841,7 @@ void		patch_daily_F(
 	/*	First guess at change in sat storage to meet demand.	*/
 	/*--------------------------------------------------------------*/
 	delta_unsat_zone_storage = min(unsat_zone_patch_demand, patch[0].rz_storage);
-	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO) && (patch[0].psi_max_veg > 0)) {
+	if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > ZERO) && (patch[0].psi_max_veg < 0)) {
 
 		patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry)
 									 * patch[0].soil_defaults[0][0].pore_size_index);
@@ -1897,6 +1897,7 @@ void		patch_daily_F(
 	}
 
 	transpiration_reduction_percent = max(transpiration_reduction_percent, 0);
+	transpiration_reduction_percent = min(transpiration_reduction_percent, 1.0);
 
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n***START: exfil_unsat=%lf exfil_sat=%lf unsatdemand_ini=%lf unsatdemand=%lf satdemand_ini=%lf satdemand=%lf",
@@ -1909,7 +1910,7 @@ void		patch_daily_F(
 	}
 
 
-	if ( unsat_zone_patch_demand_initial > 0 ){
+	if ( unsat_zone_patch_demand_initial > ZERO ){
 		patch[0].exfiltration_unsat_zone = patch[0].exfiltration_unsat_zone
 			* (1 - unsat_zone_patch_demand / unsat_zone_patch_demand_initial );
 		patch[0].transpiration_unsat_zone = patch[0].transpiration_unsat_zone
@@ -1918,7 +1919,7 @@ void		patch_daily_F(
 			printf("\n***CASE1 TRIGGERED: exfil_unsat=%lf demand_ini=%lf demand=%lf",patch[0].exfiltration_unsat_zone,unsat_zone_patch_demand_initial,unsat_zone_patch_demand);
 			}
 		}
-	if ( sat_zone_patch_demand_initial > 0 ) {
+	if ( sat_zone_patch_demand_initial > ZERO ) {
 		patch[0].exfiltration_sat_zone = patch[0].exfiltration_sat_zone
 			* (1 - sat_zone_patch_demand /  sat_zone_patch_demand_initial );
 		patch[0].transpiration_sat_zone = patch[0].transpiration_sat_zone
