@@ -246,7 +246,7 @@ int allocate_daily_growth(int nlimit,
 
 	plant_nalloc = max(plant_nalloc, 0.0);
 	plant_calloc = max(plant_calloc, 0.0);
-	plant_calloc = min(cs->availc, plant_calloc);
+	plant_calloc = min(cs->availc/(1+epc.gr_perc), plant_calloc);
 
 
 
