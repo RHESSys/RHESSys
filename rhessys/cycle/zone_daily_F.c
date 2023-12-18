@@ -602,7 +602,7 @@ void		zone_daily_F(
 	/*	assumes density snow = debsity rain			*/
 	/*	kg/m2 = (m / m2) *( 1000kg/m3)								*/
 	/*--------------------------------------------------------------*/
-	zone[0].metv.prcp = (zone[0].rain + zone[0].snow)*1000.0;
+	zone[0].metv.prcp = (zone[0].rain + zone[0].snow);
 	/*--------------------------------------------------------------*/
 	/*	compute total shortwave flux		(W/m2)		*/
 	/*	W/m2 = Kj/(m2*day) * ( 1 day / dayl s ) * 1000 j / 1kj  */
