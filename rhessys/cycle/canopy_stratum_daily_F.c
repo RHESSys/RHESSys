@@ -2046,7 +2046,9 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
 		stratum[0].acc_month.totalc += stratum[0].cs.totalc;
 		stratum[0].acc_month.totaln += stratum[0].ns.totaln;
-
+		stratum[0].acc_month.fe_prop_c_consumed += stratum[0].fe.canopy_target_prop_c_consumed;
+		stratum[0].acc_month.fe_prop_c_mortality += stratum[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
+		stratum[0].acc_month.fe_prop_c_mortality_leaf += stratum[0].fe.canopy_target_prop_c_remain_adjusted;
 		stratum[0].acc_month.length += 1;
 	}
 	if ((command_line[0].output_flags.yearly == 1) &&
@@ -2065,6 +2067,9 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_year.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
 		stratum[0].acc_year.totalc += stratum[0].cs.totalc;
 		stratum[0].acc_year.totaln += stratum[0].ns.totaln;
+		stratum[0].acc_year.fe_prop_c_consumed += stratum[0].fe.canopy_target_prop_c_consumed;
+		stratum[0].acc_year.fe_prop_c_mortality += stratum[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
+		stratum[0].acc_year.fe_prop_c_mortality_leaf += stratum[0].fe.canopy_target_prop_c_remain_adjusted;
 		stratum[0].acc_year.length += 1;
 	}
 	return;

@@ -424,14 +424,6 @@ struct stratum_default *construct_stratum_defaults(
                 if (default_object_list[i].epc.gl_smax_shade > 9990)
                         default_object_list[i].epc.gl_smax_shade = default_object_list[i].epc.gl_smax;
 
-                printf("\nusing %lf %lf for sunlit shade flnr and %lf and %lf for sun and shade gl_max\n",
-                                default_object_list[i].epc.flnr_sunlit,
-                                default_object_list[i].epc.flnr_shade,
-                                default_object_list[i].epc.gl_smax_sunlit,
-                                default_object_list[i].epc.gl_smax_shade);
-
-
-
 
 		/*--------------------------------------------------------------*/
 		/* have root/leaf turnover stop for new plants 			*/

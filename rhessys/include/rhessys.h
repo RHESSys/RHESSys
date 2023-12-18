@@ -204,7 +204,13 @@
 #define PTYPEHIGH 4
 #define P1HIGH 5
 #define P2HIGH 6
-
+#define D2KM 0 
+#define D5KM 1 
+#define D10KM 2 
+#define HIGH_FIRE 3
+#define MID_FIRE 2
+#define LOW_FIRE 1
+#define NO_FIRE 0
 
 /*----------------------------------------------------------*/
 /*      Define min and max macros                           */
@@ -262,6 +268,28 @@ struct  default_object
         };
 
 
+
+/*----------------------------------------------------------*/
+/*  WUI (wildland urban interface) object 			*/
+/*----------------------------------------------------------*/
+struct patch_object_list {
+	struct patch_object *patch;
+	struct patch_object_list *next;
+	};
+
+struct WUI_object {
+	int ID;
+	struct  patch_object_list *patches_dist2km;//linked list of patches treated if 2km sal event triggered
+	struct  patch_object_list *patches_dist5km;//linked list of patches treated if 5 km sal event triggered
+	struct  patch_object_list *patches_dist10km;//linked list of patches treated if 10 km sal event triggered
+	struct patch_object_list *patches_dist100km;//placeholder for WUI "0" background treatment order. Need to make sure the patch doesn't repeat
+	int  fire_occurence;// just one to take precedence, no need for all three will take value 2, 5, 10, -1[3]; // flag for whether salient fire has occurred this year, array of 3 (one for each dist). 
+	int ntrt[4];// tally of triggered salience events for this WUI, array of 3 (one for each dist). Initialize all with zero
+// This will then match the patch-level trt ord
+	struct WUI_object *next;
+	struct WUI_object *prev;
+	};
+
 /*----------------------------------------------------------*/
 /*      Define the world object.                            */
 /*----------------------------------------------------------*/
@@ -291,6 +319,7 @@ struct world_object
         char    **landuse_default_files;
         char    **stratum_default_files;
         char    **fire_default_files;
+        char    **fire_grid_prefix;
         char    **surface_energy_default_files;
         char    **spinup_default_files;
         char    **spinup_thresholds_files;
@@ -307,9 +336,10 @@ struct world_object
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;
-	struct patch_fire_object **patch_fire_grid;  //mk
-        struct  spinup_thresholds_list_object  *spinup_thresholds ;
-	struct  date			**master_hourly_date;
+	struct  patch_fire_object **patch_fire_grid;  //mk
+        struct  spinup_thresholds_list_object  *spinup_thresholds ;   
+	struct  date			**master_hourly_date;	
+	struct  WUI_object	*WUI_list;
         };
 
 
@@ -532,7 +562,6 @@ struct	snowpack_object
 	double Q_melt;  /* net input for melt in KJ/m2/d */
 	};
 
-
 /*----------------------------------------------------------*/
 /*      Define basin object.                                */
 /*----------------------------------------------------------*/
@@ -704,6 +733,7 @@ struct  dated_input_object
         struct clim_event_sequence  fertilizer_NO3;                                     /* kg/m2/day    */
         struct clim_event_sequence  fertilizer_NH4;                                     /* kg/m2/day    */
         struct clim_event_sequence  irrigation;                                 /* m/day        */
+        struct clim_event_sequence  fueltreatment;                                 /* 1 understory 2 overstory 3 both        */
         struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
         struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */
         struct clim_event_sequence  pspread;   	 	   	                    /* 0-1        */
@@ -1134,7 +1164,24 @@ struct  landuse_default
 {
         int ID;
         int msr_sat_transfer_flag; 			/* 0 OFF 1 ON */
-        int shading_flag; 			        /* 0 OFF 1 ON */
+        int msr_shading_flag; 			        /* 0 OFF 1 ON */
+        int salience_fire_level; 			        /* 0 NONE 1 LOW 2 MID 3 HIGH */
+        int fuel_treatment_type; 			        /* 1 understory, 2 overstory 3 both */
+        double  mid_fire_severity_p;                     /* threshold proportion of C loss for moderate severity fire 0-1    */
+        double  high_fire_severity_p;                     /* threshold proportion of C loss for high severity fire 0-1    */
+	double  salience_fire_area;			/* m2 */
+	
+
+	double  salience_2km2km_prob;			/* 0-1 */
+	double  salience_2km5km_prob;			/* 0-1 */
+	double  salience_2km10km_prob;			/* 0-1 */
+	double  salience_5km2km_prob;			/* 0-1 */
+	double  salience_5km5km_prob;			/* 0-1 */
+	double  salience_5km10km_prob;			/* 0-1 */
+	double  salience_10km2km_prob;			/* 0-1 */
+	double  salience_10km5km_prob;			/* 0-1 */
+	double  salience_10km10km_prob;			/* 0-1 */
+
         double  fertilizer_NO3;                                 /* kg/m2/day    */
         double  fertilizer_NH4;                                 /* kg/m2/day    */
         double  irrigation;                                     /* m/day        */
@@ -1687,10 +1734,13 @@ struct  soil_n_object
 
 struct patch_fire_water_object
 {
+	int severity;	/* 0 none 1 low, 2 mid, 3 high */
         double pet;                     /* mm */
         double et;                      /* mm */
 	double understory_et; /*mm; understory layer et*/
 	double understory_pet; /*mm; understory layer pet*/
+	double litter_c_consumed; /* kg carbon lost in fire */
+	
 
 };
 
@@ -1744,8 +1794,42 @@ struct stratum_spinup_object
 };
 
 /*----------------------------------------------------------*/
-/*      Define an patch object                              */
+/* Define an object to hold fuel treatment information     */
 /*----------------------------------------------------------*/
+
+struct fuel_treatment_intensity_object {
+	double overstory;  /* 0-1 */
+	double understory; /* 0-1 */
+	double litter; /* 0-1 */
+	double stem_density; /* 0-1 */
+	};
+
+struct fuel_treatment_object  {
+
+	double max_salience_prob;  /* 0-1 */
+	double salience_prob[3][3]; /* 0-1 */
+	double fuel_treatment_fixed_effect;  /* 0-1 */
+	double external_fuel_treatment_prob; /* 0-1 or could be larger if used to modify salience probs */
+	double effective_fuel_treatment_prob; /* 0-1 */
+	struct fuel_treatment_intensity_object fuel_treatment_intensity;
+};
+
+
+/*----------------------------------------------------------*/
+/*      Define an patch object                              */      
+/*----------------------------------------------------------*/
+struct wui_dist_list
+{
+	int dist; // dist to wui, as simply 1, 5, 10 or 100 (where 100 is not near wui
+	int wui_id; // wui ID for this dist. To help ensure consistent ordering for the wuis
+	int trt_ord2;
+	int trt_ord5;
+	int trt_ord10;
+	int trt_ord100;
+	struct wui_dist_list *next;
+	struct wui_dist_list *prev; // to help with reordering if necessary
+};
+
 struct patch_object
 
         {
@@ -1762,6 +1846,7 @@ struct patch_object
         int             target_status;
 	int		soil_parm_ID;
 	int		landuse_parm_ID;
+        char            family_role;    /* TREATED/UNTREATED/GAP could change to int ID?  */
 	double		mpar;
 	//int				wuiID;
         double  x;                                                                      /* meters       */
@@ -1958,12 +2043,14 @@ struct patch_object
         struct  patch_object            *shadow_litter;
         struct  patch_hourly_object     *hourly;
         struct  layer_object            *layers;
+        struct  patch_family_object     **patch_family;
         struct  innundation_object      *innundation_list; // Used for subsurface routing, and surface routing when no surface table is provided
         struct  innundation_object      *surface_innundation_list; // Used for surface routing
         struct  neighbour_object        *neighbours;
         struct  patch_object            *next_stream;
         struct  surface_energy_object   *surface_energy_profile;
-        struct  patch_fire_water_object       fire;
+        struct  patch_fire_water_object   fire;
+	struct  fuel_treatment_object   fuel_treatment;
         struct  accumulate_patch_object acc_month;
         struct  accumulate_patch_object acc_year;
         struct  rooting_zone_object     rootzone;
@@ -2014,7 +2101,9 @@ struct patch_object
 /*----------------------------------------------------------*/
 
         double  burn;                           /* 0-1 % burned */
-        double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
+        double  pspread;                        /* pspread 0-1 */
+        int 	nburn;				// tally of number of times this patch has burned
+	double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
         double  preday_totalc;                  /* kgC/m2 total carbon */
         double  totalc;                         /* kgC/m2 total carbon */
         double  carbon_balance;                 /* kgC/m2 */
@@ -2035,7 +2124,10 @@ struct patch_object
         struct  litter_n_object *shadow_litter_ns;
         struct cdayflux_patch_struct    cdf;
         struct ndayflux_patch_struct    ndf;
-        };
+/******************* salience and fire misc**************/
+
+        struct wui_dist_list *wui_dist;
+         };
 
 /*----------------------------------------------------------*/
 /*      Define a patch family object                        */
@@ -2045,8 +2137,15 @@ struct patch_family_object
         {
         int family_ID;
         int num_patches_in_fam;
+        int num_layers;
+        int num_canopy_strata;
+        int strata_patch_index;                 // for each strata, position of the patch containing it within the patch family (eg 0, 0, 1, 1, 2...)
         double area;
+        double  overstory_height_thresh;        /* Defines lower limit of overstory (m) - MIN of patches*/
+	double  understory_height_thresh;       /* Defines upper limit of understory (m) - MAX of patches*/
         struct  patch_object            **patches;
+        struct  layer_object            *layers; // all layers in all patches within family
+        struct  canopy_strata_object    **canopy_strata;
         };
 
 /*----------------------------------------------------------*/
@@ -2260,6 +2359,7 @@ struct  command_line_object
         int             surface_energy_flag;
         int             precip_scale_flag;
         int             snow_scale_flag;
+        int             salience_flag;
         int             noredist_flag;
         int             vmort_flag;
         int             version_flag;
@@ -2268,6 +2368,7 @@ struct  command_line_object
         int             multiscale_flag;
 		int				parallel_flag;
         char    *output_prefix;
+        char    WUI_filename[FILEPATH_LEN]; 
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
         char    stream_routing_filename[FILEPATH_LEN];
@@ -2279,8 +2380,6 @@ struct  command_line_object
         char    vegspinup_filename[FILEPATH_LEN];
         char    ncgridinterp_flag; //for nc grid climate data interpolation
         int     utm_zone;           //for nc grid climate data interpolation
-		char 	firegrid_patch_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
-		char 	firegrid_dem_filename[FILEPATH_LEN]; // MCK: add path to patch and dem grid files
         double  tmp_value;
         double  cpool_mort_fract;
         double  veg_sen1;
@@ -2944,31 +3043,37 @@ struct epconst_struct
 /*      Define accumulator object   for fire effect output  */
 /*----------------------------------------------------------*/
 
-    struct accumulate_fire_object {
+struct accumulate_fire_object
+{
+        int length;
+        double m_cwdc_to_atmos;
+        double m_cwdn_to_atmos;
 
-    int length;
-    double  m_cwdc_to_atmos;
-	double  m_cwdn_to_atmos;
+        //double  canopy_target_height;
+        double canopy_target_height_u_prop;
+        double canopy_target_prop_mort;
+        double canopy_target_prop_mort_consumed;
+        double canopy_target_prop_mort_u_component;
+        double canopy_target_prop_mort_o_component;
+        double canopy_target_prop_c_consumed;
+        double canopy_target_prop_c_remain;
+        double canopy_target_prop_c_remain_adjusted;
+        double canopy_target_prop_c_remain_adjusted_leafc;
 
-	//double  canopy_target_height;
-	double  canopy_target_height_u_prop;
-	double  canopy_target_prop_mort;
-	double  canopy_target_prop_mort_consumed;
-	double  canopy_target_prop_mort_u_component;
-	double  canopy_target_prop_mort_o_component;
-	double  canopy_target_prop_c_consumed;
-	double  canopy_target_prop_c_remain;
-	double  canopy_target_prop_c_remain_adjusted;
-	double  canopy_target_prop_c_remain_adjusted_leafc;
-
-	//double  canopy_subtarget_height;
-	double  canopy_subtarget_height_u_prop;
-	double  canopy_subtarget_prop_mort;
-	double  canopy_subtarget_prop_mort_consumed;
-	double  canopy_subtarget_prop_c_consumed;
-	//double  canopy_subtarget_c;
-	double  understory_c_consumed;
-        };
+        //double  canopy_subtarget_height;
+        double canopy_subtarget_height_u_prop;
+        double canopy_subtarget_prop_mort;
+        double canopy_subtarget_prop_mort_consumed;
+        double canopy_subtarget_prop_c_consumed;
+        //double  canopy_subtarget_c;
+        double understory_c_consumed;
+        // for aggregate under and intr layers with MSR
+        double agg_under_height;
+        double agg_under_carbon;
+        double agg_intr_height;
+        double agg_intr_carbon;
+        
+};
 
 /*----------------------------------------------------------*/
 /*      Define a fire effects object.                                                */
@@ -2996,6 +3101,13 @@ struct  fire_effects_object {
 	double  canopy_subtarget_c;
 	double  understory_c_consumed;
 	struct  accumulate_fire_object acc_year;
+        // these used for aggregate 
+        double agg_under_height;
+        double agg_under_carbon;
+        double agg_under_pct_cover;
+        double agg_intr_height;
+        double agg_intr_carbon;
+        double agg_intr_pct_cover;
 };
 
 
@@ -3053,6 +3165,9 @@ struct  stratum_default
 	double totalc;
 	double totaln;
 	double height;
+	double fe_prop_c_consumed;
+	double fe_prop_c_mortality;
+	double fe_prop_c_mortality_leaf;
         };
 
 
@@ -3065,6 +3180,7 @@ struct  canopy_strata_object
         int             ID;
         int             num_base_stations;
 	int		veg_parm_ID;
+        int             fam_patch_ind;                          /* index of containing patch in patch family */
         double  APAR_direct;                                    /* (umol photon/m2*day) */
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;
@@ -3089,7 +3205,6 @@ struct  canopy_strata_object
         double  Lstar_night;									/* Kj/(m2*day)  */
         double  Lstar_day;										/* Kj/(m2*day)  */
         double  NO3_stored;                                     /* kg/m2        */
-        double  PAR_after_reflection;                           /* (umol photon/m2*day) */
         double  ppfd_sunlit;                    /*  (umol/m2/s) PAR photon flux density */
         double  ppfd_shade;                     /*  (umol/m2/s) PAR photon flux density */
         double  potential_evaporation;                          /*  meters/day  */
@@ -3152,15 +3267,16 @@ struct mortality_struct
 /*******************************************/
 struct patch_fire_object
 {
-	int num_patches;
-	int tmp_patch; // which patch among the num_patches are we on?
-	struct patch_object **patches;
-	double *prop_patch_in_grid; /* proportion of total cell area occupied by this patch, this array matches the patch pointer array, for updating cell fuel and moisture values*/
-	double *prop_grid_in_patch; 	/* 0-1, proportion of total patch area that overlaps with this cell, this array matches the patch pointer array, for updating patch mortality */
-	double occupied_area; /*gives the total patch area in the current grid	*/
-	struct fire_default_object *defaults;
-	double elev; // elevation if read in from grid
-	int wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
+	int     num_patches;
+	int     tmp_patch; // which patch among the num_patches are we on?
+        int     wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
+	double  *prop_patch_in_grid; /* proportion of total cell area occupied by this patch, this array matches the patch pointer array, for updating cell fuel and moisture values*/
+	double  *prop_grid_in_patch; 	/* 0-1, proportion of total patch area that overlaps with this cell, this array matches the patch pointer array, for updating patch mortality */
+	double  occupied_area; /*gives the total patch area in the current grid	*/
+	double  elev; // elevation if read in from grid
+	struct  fire_default_object *defaults;
+        struct  patch_object **patches;
+        struct  patch_family_object     **patch_families;
 };
 
 /*----------------------------------------------------------*/
