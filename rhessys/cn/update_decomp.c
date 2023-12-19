@@ -49,7 +49,8 @@ int update_decomp(
 				  struct  litter_n_object *ns_litr,
 				  struct cdayflux_patch_struct *cdf,
 				  struct ndayflux_patch_struct *ndf,
-				  struct patch_object	*patch)
+				  struct patch_object	*patch,
+				  int	verbose_flag)
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -117,7 +118,8 @@ int update_decomp(
 	} else{ // check which patch has negative litr1c
 	  //        cs_litr->litr1c = 0.0;
 	  //        ns_litr->litr1n = 0.0;
-	  if ((cs_litr->litr1c < ZERO) || (ns_litr->litr1n < ZERO)) printf("update_decomp: lc1=%e, ln1=%e\n",cs_litr->litr1c, ns_litr->litr1n);
+	  if (((cs_litr->litr1c < ZERO) || (ns_litr->litr1n < ZERO)) && verbose_flag == -4) 
+	  	printf("update_decomp: lc1=%e, ln1=%e\n",cs_litr->litr1c, ns_litr->litr1n);
 	  cdf->litr1c_hr = 0.0;
 	  cdf->litr1c_to_soil1c = 0.0;
 	  ndf->litr1n_to_soil1n = 0.0;
@@ -140,7 +142,8 @@ int update_decomp(
 	} else{
 	  //        cs_litr->litr2c = 0.0;
 	  //        ns_litr->litr2n = 0.0;
-	  if ((cs_litr->litr2c < ZERO) || (ns_litr->litr2n < ZERO)) printf("update_decomp: lc2=%e, ln2=%e\n",cs_litr->litr2c, ns_litr->litr2n);
+	  if (((cs_litr->litr2c < ZERO) || (ns_litr->litr2n < ZERO)) && verbose_flag == -4) 
+	  	printf("update_decomp: lc2=%e, ln2=%e\n",cs_litr->litr2c, ns_litr->litr2n);
 	  cdf->litr2c_hr = 0.0;
 	  cdf->litr2c_to_soil2c = 0.0;
 	  ndf->litr2n_to_soil2n = 0.0;
@@ -165,7 +168,8 @@ int update_decomp(
 	} else{
 	  //        cs_litr->litr3c = 0.0;
 	  //        ns_litr->litr3n = 0.0;
-	  if ((cs_litr->litr3c < ZERO) || (ns_litr->litr3n < ZERO)) printf("update_decomp: lc3=%e, ln3=%e\n",cs_litr->litr3c, ns_litr->litr3n);
+	  if (((cs_litr->litr3c < ZERO) || (ns_litr->litr3n < ZERO)) && verbose_flag == -4) 
+	  	printf("update_decomp: lc3=%e, ln3=%e\n",cs_litr->litr3c, ns_litr->litr3n);
 	  cdf->litr3c_hr = 0.0;
 	  cdf->litr3c_to_litr2c = 0.0;
 	  ndf->litr3n_to_litr2n = 0.0;
@@ -188,7 +192,10 @@ int update_decomp(
 	} else{
 	  //        cs_litr->litr4c = 0.0;
 	  //        ns_litr->litr4n = 0.0;
-	  if ((cs_litr->litr4c < ZERO) || (ns_litr->litr4n < ZERO)) printf("update_decomp: lc4=%e, ln4=%e\n",cs_litr->litr4c, ns_litr->litr4n);
+	  
+	  if (((cs_litr->litr4c < ZERO) || (ns_litr->litr4n < ZERO)) && verbose_flag == -4) 
+	  	printf("update_decomp: lc4=%e, ln4=%e\n",cs_litr->litr4c, ns_litr->litr4n);
+
 	  cdf->litr4c_hr = 0.0;
 	  cdf->litr4c_to_soil3c = 0.0;
 	  ndf->litr4n_to_soil3n = 0.0;

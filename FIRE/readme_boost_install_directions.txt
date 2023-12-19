@@ -42,13 +42,18 @@ Updated 6/19/2020
 	This should create the WMFire shared library, 'libwmfire.dylib' (or 'libwmfire.so') in the folder 
 	build/darwin-X/release/threading_multi/ (or gcc-X instead of darwin)
 	
-7)	Make the libwmfire library available when compiling/running RHESSys.
+	IMPORTANT: the libwmfire library must be specific to the RHESSys branch/version being used.
+	Remake libwmfire.dylib if switching to a different branch of RHESSys-WMFire by rerunning the b2, b2 clean, b2 release commands
+	in order to generate a different version of the libwmfire.dylib library - specific to the branch of code that will be used.
+	
+7)	Make the libwmfire library available when compiling/running RHESSys (the libwmfire.dylib associated with the branch it was generated with).
 	Copy libwmfire.dylib (or .so) to <your RHESSys version>/lib
 		* If still in the /RHESSys/util/FIRE folder you can run:
 		cp build/darwin-4.2.1/release/threading-multi/libwmfire.dylib ../lib/
 		* Note: Previously the lib location was located at <your RHESSys version>/rhessys/lib
 
 	Also copy libwmfire.dylib to the directory you run RHESSys from (often a scripts folder)
+	(make sure it is the libwmfire.dylib version associated with the branch/version of the RHESSys-WMFire code being run)
 	OR add it to you PATH in your .bash_profile, eg:
 	export PATH=$PATH:<your rhessys location>/rhessys/rhessys_git/rhessys/lib/"
 

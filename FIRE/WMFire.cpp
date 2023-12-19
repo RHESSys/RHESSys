@@ -534,6 +534,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 				cur_moist=1-fireGrid_[new_row][new_col].et/(fireGrid_[new_row][new_col].pet); // for now see if fixes
 			else
 				cur_moist=0;
+			if(fireGrid_[new_row][new_col].et>fireGrid_[new_row][new_col].pet)
+				cur_moist=0;
 		}
 	//	cout<<"deficit calculated, et, pet: "<<cur_moist<<"   "<<fireGrid_[new_row][new_col].et<<"   "<<fireGrid_[new_row][new_col].pet<<"\t";
 		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use deficit for moisture status

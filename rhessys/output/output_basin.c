@@ -28,6 +28,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
+#include <openmp.h>
 
 void	output_basin(			int routing_flag,
 					 struct	basin_object	*basin,
