@@ -159,24 +159,13 @@ void		zone_daily_F(
 	void	compute_family_shading(
 		struct	zone_object	*,
 		struct	command_line_object	*);
-
-
 	
-	void update_fuel_treatment_effects(struct zone_object *,
-                                   struct command_line_object *);
-
-	void compute_family_fire_effects(
-		struct patch_family_object *,
-		double,
-		struct command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int 	patch, pf, inx;
+	int 	patch;
 	double snow_rain_range;
 	double Tcloud, f8, e8z, tau8;
-	double pspread;
-	struct  dated_sequence	clim_event;
 	/*--------------------------------------------------------------*/
 	/*  Update the forcing functions based on the hourly computation*/
 	/*--------------------------------------------------------------*/
@@ -602,7 +591,7 @@ void		zone_daily_F(
 	/*	assumes density snow = debsity rain			*/
 	/*	kg/m2 = (m / m2) *( 1000kg/m3)								*/
 	/*--------------------------------------------------------------*/
-	zone[0].metv.prcp = (zone[0].rain + zone[0].snow);
+	zone[0].metv.prcp = (zone[0].rain + zone[0].snow)*1000.0;
 	/*--------------------------------------------------------------*/
 	/*	compute total shortwave flux		(W/m2)		*/
 	/*	W/m2 = Kj/(m2*day) * ( 1 day / dayl s ) * 1000 j / 1kj  */
@@ -659,42 +648,7 @@ void		zone_daily_F(
 			   zone[0].Kdown_diffuse/86.4,
 			   zone[0].Ldown/86.4);
 	}
-
-	/*--------------------------------------------------------------*/
-	/* call fire effects on a particular date, based  		*/
-	/* on time series input	-  MSR only					*/
-	/*--------------------------------------------------------------*/
-	if (command_line[0].multiscale_flag == 1)
-	{
-		for (pf = 0; pf < zone[0].num_patch_families; pf++)
-		{
-			// for now lets just use the 1st patch for the base station info
-			if (zone[0].patch_families[pf][0].patches[0][0].base_stations != NULL)
-			{
-				inx = zone[0].patch_families[pf][0].patches[0][0].base_stations[0][0].dated_input[0].pspread.inx;
-				if (inx > -999)
-				{
-					clim_event = zone[0].patch_families[pf][0].patches[0][0].base_stations[0][0].dated_input[0].pspread.seq[inx];
-					while (julday(clim_event.edate) < julday(current_date))
-					{
-						zone[0].patch_families[pf][0].patches[0][0].base_stations[0][0].dated_input[0].pspread.inx += 1;
-						inx = zone[0].patch_families[pf][0].patches[0][0].base_stations[0][0].dated_input[0].pspread.inx;
-						clim_event = zone[0].patch_families[pf][0].patches[0][0].base_stations[0][0].dated_input[0].pspread.seq[inx];
-					}
-					if ((clim_event.edate.year != 0) && (julday(clim_event.edate) == julday(current_date)))
-					{
-						pspread = clim_event.value;
-						printf("\n Implementing fire effects with a pspread of %lf in patch family %d\n", pspread, zone[0].patch_families[pf][0].family_ID);
-						compute_family_fire_effects(
-							zone[0].patch_families[pf],
-							pspread,
-							command_line);
-					}
-				}
-			}
-		}
-	}
-
+	
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches for day end computations		    	*/
 	/*--------------------------------------------------------------*/
@@ -717,7 +671,7 @@ void		zone_daily_F(
 	}
 
 	/*--------------------------------------------------------------*/
-	/*	Compute patch family routing and shading	    			*/
+	/*	Compute patch family routing				    			*/
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].multiscale_flag == 1) {
@@ -734,21 +688,6 @@ void		zone_daily_F(
 		);
 		
 	}
-
-	/*--------------------------------------------------------------*/
-	/*	Update fuels treatments						    			*/
-	/*--------------------------------------------------------------*/
-	// this should be called monthly or annually - add an accumulator var to track
-
-	// for now keeping behind salience flag - in future treatments should probably be allowed outside of salience(?)
-	if (command_line[0].salience_flag == 1) {
-		update_fuel_treatment_effects(
-			zone,
-			command_line
-		);
-	}
-
-
 
 	/*--------------------------------------------------------------*/
 	/*      update accumulator variables                            */

@@ -81,7 +81,6 @@ struct	dated_input_object *construct_dated_input(
 	dated_input[0].fertilizer_NO3.inx = -999;
 	dated_input[0].fertilizer_NH4.inx = -999;
 	dated_input[0].irrigation.inx = -999;
-	dated_input[0].fueltreatment.inx = -999;
 	dated_input[0].snow_melt_input.inx = -999;
 	dated_input[0].biomass_removal_percent.inx = -999;
 	dated_input[0].pspread.inx = -999;
@@ -125,12 +124,6 @@ struct	dated_input_object *construct_dated_input(
 			strcpy(file_name, file_prefix);
 			dated_input[0].irrigation = construct_dated_clim_sequence(
 				(char *)strcat(file_name,".irrigation"),
-				start_date);
-		}
-		else if ( strcmp(sequence_name,"fueltreatment" ) == 0){
-			strcpy(file_name, file_prefix);
-			dated_input[0].fueltreatment = construct_dated_clim_sequence(
-				(char *)strcat(file_name,".fueltreatment"),
 				start_date);
 		}
 		else if ( strcmp(sequence_name,"snow_melt_input" ) == 0){

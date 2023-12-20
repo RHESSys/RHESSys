@@ -755,7 +755,7 @@ double	top_model(
 			patch[0].acc_year.uptake += patch[0].ndf.sminn_to_npool;
 			patch[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss;
 			patch[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss;
-			patch[0].acc_year.burn += patch[0].pspread;
+			patch[0].acc_year.burn += patch[0].burn;
 			patch[0].acc_year.psn += patch[0].net_plant_psn;
 			patch[0].acc_year.snowpack =  max( patch[0].snowpack.water_equivalent_depth, patch[0].acc_year.snowpack);
 			patch[0].acc_year.et += (patch[0].transpiration_unsat_zone

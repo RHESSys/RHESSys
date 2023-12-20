@@ -124,19 +124,12 @@ struct patch_object *construct_patch(
 	paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
 
 	patch[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"patch_ID","%d",-9999,0);
-	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
-	// esentially creates the dummy patch families here by creating unique family IDs if not present in the worldfile
-	// this will be a mess if SOME but not ALL patches have family IDs
-	if (patch[0].family_ID == -9999) {
-		patch[0].family_ID = patch[0].ID;
+	if (command_line[0].multiscale_flag == 1) {
+		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
+	} else {
+		patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
 	}
-	// TODO remove when multiscale flag is fully removed
-	// if (command_line[0].multiscale_flag == 1) {
-	// 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
-	// } else {
-	// 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
-	// }
-	
+
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
 	patch[0].z = getDoubleWorldfile(&paramCnt,&paramPtr,"z","%lf",0.0,1);
@@ -150,8 +143,7 @@ struct patch_object *construct_patch(
 	patch[0].lna  = getDoubleWorldfile(&paramCnt,&paramPtr,"lna","%lf",7,1);
 	patch[0].Ksat_vertical = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",1.0,1);
 	patch[0].mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",0,1);
-	patch[0].family_role = getStrWorldfile(&paramCnt,&paramPtr,"family_role","%s","NONE",1);
-	patch[0].fuel_treatment.fuel_treatment_fixed_effect = getDoubleWorldfile(&paramCnt,&paramPtr,"fixed_effect","%lf",0,1);
+
 
 	if (command_line[0].stdev_flag == 1) {
 		patch[0].std = getDoubleWorldfile(&paramCnt,&paramPtr,"std","%lf",-9999,0);
@@ -309,7 +301,6 @@ struct patch_object *construct_patch(
 		patch[0].fire.pet = 0.0;
 		patch[0].fire.understory_et = 0;
 		patch[0].fire.understory_pet = 0;
-		patch[0].nburn=0;
 		// here set fire.understory_et and fire.understory_pet = 0;
 		}
 	/*--------------------------------------------------------------*/

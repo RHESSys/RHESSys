@@ -58,13 +58,9 @@ g2w/grass2world/g2w
 rhessys/.vscode
 *.code-workspace
 
-#vis studio
-**/.vs
-
 # OS X extended attribute stores
-.DS_Store*
-**/.DS_Store*
 .DS_Store
+.DS_Store*
 
 # Editor leftovers
 *~
@@ -77,6 +73,9 @@ libwmfire.so
 # R
 .Rproj.user
 .Rhistory
+
+# vscode 
+rhessys/.vscode
 
 # made by R func compile_rhessys (should be deleted typically)
 

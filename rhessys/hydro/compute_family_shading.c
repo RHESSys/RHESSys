@@ -73,25 +73,24 @@ void compute_family_shading(    struct zone_object *zone,
             //height = zone[0].patch_families[pf][0].patches[i][0].canopy_strata[0][0].cover_fraction * zone[0].patch_families[pf][0].patches[i][0].canopy_strata[0][0].epv.height;
 
             // get max height of strata
-            maxs = 0;
-            height = 0.0;
-            strata_max_height = 0.0;
+	    maxs=0;
+	    height=0.0;
+	    strata_max_height=0;
             for (s = 0; s < zone[0].patch_families[pf][0].patches[i][0].num_canopy_strata; s++)
             {
                 height = max(height, zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height);
                 strata_max_height = max(strata_max_height, zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height);
-                if (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height >= strata_max_height)
-                    maxs = s;
-                if (command_line[0].verbose_flag == -6)
-                    printf("Strata %d | height %f |\n", s, zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height);
+		if (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height >= strata_max_height)
+			maxs = s;
+                if (command_line[0].verbose_flag == -6) printf("Strata %d | height %f |\n", s, zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height);
+		
             }
 
             // max/avg of family
             max_height = max(max_height, height);
             avg_height += height;
             // if density is 0, either error or come up with a workaround.
-            if (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[maxs][0].cs.stem_density <= 0)
-            {
+            if (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[maxs][0].cs.stem_density <= 0) {
                 fprintf(stderr, "ERROR: cs.stem_density must be set and greater than 0.\n");
                 exit(EXIT_FAILURE);
             }
@@ -111,30 +110,31 @@ void compute_family_shading(    struct zone_object *zone,
         /*--------------------------------------------------------------*/
         /*	Calculate angle for each patch		                        */
         /*--------------------------------------------------------------*/
-        for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam; i++)
+        for (i = 0; i < zone[0].patch_families[pf][0].num_patches_in_fam ; i++)
         {
             // get index of  highest  strata
-            maxs = 0;
-            strata_max_height = 0.0;
+	    maxs=0;
+	    strata_max_height=0.0;
             for (s = 0; s < zone[0].patch_families[pf][0].patches[i][0].num_canopy_strata; s++)
             {
                 strata_max_height = max(strata_max_height, zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height);
-                if (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height >= strata_max_height)
-                    maxs = s;
+		if (zone[0].patch_families[pf][0].patches[i][0].canopy_strata[s][0].epv.height >= strata_max_height)
+			maxs = s;
+		
             }
 
             d_height = avg_height - 0.75 * zone[0].patch_families[pf][0].patches[i][0].canopy_strata[maxs][0].epv.height;
 
-            if (d_height > ZERO)
-                zone[0].patch_families[pf][0].patches[i][0].family_horizon = atan(d_height / dist); // angle to family horizon in radians
-            else
-                zone[0].patch_families[pf][0].patches[i][0].family_horizon = 0; // angle to family horizon in radians
+	    if (d_height > ZERO)
+            	zone[0].patch_families[pf][0].patches[i][0].family_horizon = atan(d_height/dist); // angle to family horizon in radians
+	    else
+            	zone[0].patch_families[pf][0].patches[i][0].family_horizon = 0; // angle to family horizon in radians
+		    
 
-            if (command_line[0].verbose_flag == -6)
-                printf("height diff = %f | ", d_height);
-            if (command_line[0].verbose_flag == -6)
-                printf("family horizon deg = %f\n", zone[0].patch_families[pf][0].patches[i][0].family_horizon * (180 / PI));
 
+            if (command_line[0].verbose_flag == -6) printf("height diff = %f | ", d_height);
+            if (command_line[0].verbose_flag == -6) printf("family horizon deg = %f\n", zone[0].patch_families[pf][0].patches[i][0].family_horizon * (180/PI));
+            
         } // end patch loop
 
     } // end patch family loop

@@ -422,7 +422,8 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Get number + ID of patch families for this zone				*/
 	/*--------------------------------------------------------------*/
-	if (command_line[0].multiscale_flag == 1 || command_line[0].firespread_flag == 1) {
+
+	if (command_line[0].multiscale_flag == 1) {
 
 		// Vars
 		int count;
@@ -430,8 +431,6 @@ struct zone_object *construct_zone(
 		int patch_family_IDs[zone[0].num_patches];
 		
 		zone[0].num_patch_families = 0;
-
-		// dummy patch creation, really just setting the family ID, happens in construct patch now, when the inputs are parsed
 
 		// get number of patch families
 		for (i = 0; i < zone[0].num_patches; i++) freq[i] = -1; // set freq to -1 for all patches
@@ -470,7 +469,6 @@ struct zone_object *construct_zone(
 	/*--------------------------------------------------------------*/
 	/*	Construct patch families									*/
   	/*--------------------------------------------------------------*/
-		//printf("\n===== Construct patch families =====\n");
 		for (i = 0; i < zone[0].num_patch_families; i++)
 		{
 			if (command_line[0].verbose_flag == -6) printf("\nPatch fam ID %d, itr %d \n",patch_family_IDs[i], i);
@@ -478,17 +476,6 @@ struct zone_object *construct_zone(
 			zone,
 			patch_family_IDs[i],
 			command_line);
-
-			//printf("***Patch family %i***\n", zone[0].patch_families[i][0].family_ID);
-			for (j = 0; j < zone[0].patch_families[i][0].num_patches_in_fam; j++)
-			{
-				zone[0].patch_families[i][0].patches[j][0].patch_family = (struct patch_family_object **) 
-					alloc(sizeof(struct patch_family_object *), "patch_family", "construct_zone");
-				zone[0].patch_families[i][0].patches[j][0].patch_family[0] = zone[0].patch_families[i];
-
-				//printf("Patch %i child of family %i\n", zone[0].patch_families[i][0].patches[j][0].ID, 
-				//zone[0].patch_families[i][0].patches[j][0].patch_family[0][0].family_ID);
-			}
 		}
 	} /* end patch family for loop */
 

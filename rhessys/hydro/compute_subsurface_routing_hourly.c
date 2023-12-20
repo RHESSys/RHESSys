@@ -141,7 +141,6 @@ void compute_subsurface_routing_hourly(
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
 			patch = hillslope->route_list->list[i];
 
-
 			patch[0].streamflow = 0.0;
 			patch[0].return_flow = 0.0;
 			patch[0].base_flow = 0.0;

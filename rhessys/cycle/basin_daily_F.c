@@ -117,6 +117,7 @@ void	basin_daily_F(
 	basin[0].snowpack.T /=  basin[0].area_withsnow;
 	basin[0].snowpack.energy_deficit /=  basin[0].area_withsnow;
 
+
 	/*--------------------------------------------------------------*/
 	/*  For stream routing option - route water between patches within     */
 	/*      the basin                                               */

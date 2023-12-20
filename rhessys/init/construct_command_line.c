@@ -94,7 +94,6 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].noredist_flag = 0;
 	command_line[0].surface_energy_flag = 0;
 	command_line[0].firespread_flag = 0;
-	command_line[0].salience_flag = 0;
 	command_line[0].vegspinup_flag = 0;		
 	command_line[0].vgsen_flag = 0;
 	command_line[0].FillSpill_flag=0;	
@@ -143,7 +142,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
-	command_line[0].multiscale_flag = 1;
+	command_line[0].multiscale_flag = 0;
 	command_line[0].cpool_mort_fract = 0;
 	command_line[0].sat_to_gw_coeff_mult = 1;
 	command_line[0].gw_loss_coeff_mult = 1;
@@ -282,32 +281,12 @@ struct	command_line_object	*construct_command_line(
 					command_line[0].fire_grid_res = (double)atof(main_argv[i]);
 					i++;
 				}/*end if*/
+				strncpy(command_line[0].firegrid_patch_filename, main_argv[i], FILEPATH_LEN); // 
+				i++;
+				strncpy(command_line[0].firegrid_dem_filename, main_argv[i], FILEPATH_LEN); // 
+				i++;
 
 			}/* end if */
-
-
-			/*-------------------------------------------------*/
-			/*	salience option and WUI file	  */
-			/*-------------------------------------------------*/
-			else if ( strcmp(main_argv[i],"-salience") == 0 ){
-				printf("\n Running with salience turned on\n");
-				command_line[0].salience_flag = 1;
-				i++;
-				/*--------------------------------------------------------------*/
-				/*			Check that the next arguement exists.				*/
-				/*--------------------------------------------------------------*/
-				if ((i == main_argc) || (valid_option(main_argv[i])==1) ){
-					fprintf(stderr,"FATAL ERROR: Salience file name not specified\n");
-					exit(EXIT_FAILURE);
-				}
-				/*-------------------------------*/
-				/*Read in the WUI definition file		*/
-				/*-------------------------------*/
-				strncpy(command_line[0].WUI_filename, main_argv[i], FILEPATH_LEN);
-				i++;
-printf("%s ",command_line[0].WUI_filename);
-			}/* end if */
-
 
 			/*-------------------------------------------------*/
 			/*	surface energy option */
@@ -330,7 +309,7 @@ printf("%s ",command_line[0].WUI_filename);
 				command_line[0].vegspinup_flag = 1;
 				i++;
      
-      				/*--------------------------------------------------------------*/
+      	/*--------------------------------------------------------------*/
 				/*			Read in the vegspinup file name.						          	*/
 				/*--------------------------------------------------------------*/
 				strncpy(command_line[0].vegspinup_filename, main_argv[i], FILEPATH_LEN);
@@ -1259,15 +1238,15 @@ printf("%s ",command_line[0].WUI_filename);
 				i++;
 			}
 
-			// /*--------------------------------------------------------------*/
-			// /*		Check for multiscale routing flag next				    */
-			// /*--------------------------------------------------------------*/
+			/*--------------------------------------------------------------*/
+			/*		Check for multiscale routing flag next				    */
+			/*--------------------------------------------------------------*/
 
-			// else if (strcmp(main_argv[i],"-msr") == 0) {
-			// 	//printf("-msr flag triggered\n");
-			// 	command_line[0].multiscale_flag = 1;
-			// 	i++;
-			// }
+			else if (strcmp(main_argv[i],"-msr") == 0) {
+				//printf("-msr flag triggered\n");
+				command_line[0].multiscale_flag = 1;
+				i++;
+			}
 
 			/*--------------------------------------------------------------*/
 			/*		Check for parallel flag next.				*/
@@ -1324,18 +1303,6 @@ printf("%s ",command_line[0].WUI_filename);
 			} /*end if*/
 		} /*end if*/
 	} /*end while*/
-
-			/*--------------------------------------------------------------*/
-			/* don;t allow salience to be run without fire spread		*/
-			/* turn off for now for testing					*/
-			/*--------------------------------------------------------------*/
-			/*
-			if (command_line[0].salience_flag && !command_line[0].firespread_flag) {
-				fprintf(stderr,
-                                        "FATAL ERROR: in construct_command_line salience set without fire spread.\n");
-			exit(EXIT_FAILURE); }
-			*/
-
 
 	return(command_line);
 } /*end construct_command_line*/

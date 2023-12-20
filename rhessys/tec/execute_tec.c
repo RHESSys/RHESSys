@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------*
+/*--------------------------------------------------------------*/
 /* 																*/
 /*						execute_tec_file						*/
 /*																*/
@@ -176,14 +176,7 @@ void	execute_tec(
 		struct	world_object	*,
 		struct	command_line_object	*,
 		struct	date);
-
-	void execute_fueltreatment_event(
-									 struct	world_object *world,
-									 struct	command_line_object	*command_line,
-									 struct date	current_date);	
-		void reset_fire_in_WUI(
-		struct WUI_object *);
-
+	
 	void	execute_state_output_event(
 		struct world_object *,
 		struct date,
@@ -419,13 +412,7 @@ void	execute_tec(
 						world,
 						command_line,
 						current_date);
-
-//				if (command_line[0].salience_flag == 1) {
-					/* first determine if fire in 2, 5, 10km buffer of each WUI */
-//					update_fire_in_WUI(
-//						world[0].WUI_list);
-//				}	
-				}
+				}	
 				
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested monthly output				*/
@@ -436,15 +423,6 @@ void	execute_tec(
 						command_line,
 						current_date,
 						outfile);
-				/*--------------------------------------------------------------*/
-				/* following output if fire spread is called reset patch scale burn severity	*/
-				/*--------------------------------------------------------------*/
-				/*
-				if (command_line[0].firespread_flag == 1) {
-						reset_patch_burn_severity(world, command_line);
-					}
-				*/
-
 				/*--------------------------------------------------------------*/
 				/*				increment month 								*/
 				/*--------------------------------------------------------------*/
@@ -458,12 +436,7 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				Do yearly stuff.								*/
 				/*--------------------------------------------------------------*/
-				if (command_line[0].salience_flag == 1) {
-					/* decide which, if any, patches are treated
-					after this year's fire has accumulated*/
-					execute_fueltreatment_event(world,command_line,current_date);
-					reset_fire_in_WUI(world[0].WUI_list);//after salience is updated reset WUI fire areas
-				}	
+				
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/

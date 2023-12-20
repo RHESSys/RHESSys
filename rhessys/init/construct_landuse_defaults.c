@@ -93,9 +93,6 @@ struct landuse_default *construct_landuse_defaults(
 		/*--------------------------------------------------------------*/
 
 		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "landuse_default_ID", "%d", 1, 0);
-		default_object_list[i].high_fire_severity_p= 	getDoubleParam(&paramCnt, &paramPtr, "high_fire_severity_p", "%lf", 0.5, 1);
-		default_object_list[i].mid_fire_severity_p= 	getDoubleParam(&paramCnt, &paramPtr, "mid_fire_severity_p", "%lf", 0.1, 1);
-		default_object_list[i].salience_fire_level = 	getIntParam(&paramCnt, &paramPtr, "salience_fire_level", "%lf", 2, 1);
 		default_object_list[i].irrigation = 		getDoubleParam(&paramCnt, &paramPtr, "irrigation", "%lf", 0.0, 1) / 365;
 		default_object_list[i].fertilizer_NO3 = 	getDoubleParam(&paramCnt, &paramPtr, "fertilizer_NO3", "%lf", 0.0, 1) / 365;
 		default_object_list[i].fertilizer_NH4 = 	getDoubleParam(&paramCnt, &paramPtr, "fertilizer_NH4", "%lf", 0.0, 1) / 365;
@@ -108,34 +105,8 @@ struct landuse_default *construct_landuse_defaults(
         default_object_list[i].sh_g = getDoubleParam(&paramCnt, &paramPtr, "sh_g", "%lf", 0.0, 1);
         default_object_list[i].sh_l = getDoubleParam(&paramCnt, &paramPtr, "sh_l", "%lf", 0.0, 1);
 		default_object_list[i].msr_sat_transfer_flag = 		getIntParam(&paramCnt, &paramPtr, "msr_sat_transfer_flag", "%d", 0, 1);
-        default_object_list[i].msr_shading_flag = 		getIntParam(&paramCnt, &paramPtr, "shading_flag", "%d", 1, 1);
-		default_object_list[i].routing_threshold = getDoubleParam(&paramCnt, &paramPtr, "routing_threshold", "%lf", 0.001, 1);
-
-		/*--------------------------------------------------------------*/
-		/*	fuel treatment parameters 				*/
-		/*	fuel treatment target				*/
-		/* 1 - understory only						*/
-		/* 2 - overstory only						*/
-		/* 3 - both						*/
-		/* 4 - understory + litter 		*/
-		/* 5  - everything (litter, understory, overstory ) 	*/
-		/*--------------------------------------------------------------*/
-        	default_object_list[i].fuel_treatment_type = 		getIntParam(&paramCnt, &paramPtr, "fuel_treatment_type", "%ld", 1, 1);
-
-		/*--------------------------------------------------------------*/
-		/* salience model probabilities */
-		/*--------------------------------------------------------------*/
-		default_object_list[i].salience_2km2km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_2km2km", "%lf", 0.1, 1);
-		default_object_list[i].salience_2km5km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_2km5km", "%lf", 0.1, 1);
-		default_object_list[i].salience_2km10km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_2km10km", "%lf", 0.1, 1);
-
-		default_object_list[i].salience_5km2km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_5km2km", "%lf", 0.1, 1);
-		default_object_list[i].salience_5km5km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_5km5km", "%lf", 0.1, 1);
-		default_object_list[i].salience_5km10km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_5km10km", "%lf", 0.1, 1);
-
-		default_object_list[i].salience_10km2km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_10km2km", "%lf", 0.1, 1);
-		default_object_list[i].salience_10km5km_prob = 	getDoubleParam(&paramCnt, &paramPtr, "salience_10km5km", "%lf", 0.1, 1);
-		default_object_list[i].salience_10km10km_prob = getDoubleParam(&paramCnt, &paramPtr, "salience_10km10km", "%lf", 0.1, 1);
+        default_object_list[i].shading_flag = 		getIntParam(&paramCnt, &paramPtr, "shading_flag", "%d", 1, 1);
+        default_object_list[i].routing_threshold = getDoubleParam(&paramCnt, &paramPtr, "routing_threshold", "%lf", 0.001, 1);
 
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
