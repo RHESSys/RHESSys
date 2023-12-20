@@ -138,7 +138,6 @@ void  update_drainage_road(
 	/*      to account the effect of changes in water table slope 	*/
 	/*--------------------------------------------------------------*/
 	total_gamma = recompute_gamma(patch, patch[0].innundation_list[d].gamma);
-	patch[0].total_gamma = total_gamma;
 
 	available_sat_water = max(((patch[0].soil_defaults[0][0].soil_water_cap
 			- max(patch[0].sat_deficit,0.0))

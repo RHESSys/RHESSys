@@ -32,7 +32,6 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
-#include <openmp.h>
 
 void compute_subsurface_routing(struct command_line_object *command_line,
 		struct hillslope_object *hillslope, int n_timesteps, struct date current_date) {

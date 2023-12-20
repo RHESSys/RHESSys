@@ -128,7 +128,6 @@ void  update_drainage_stream(
 	/*--------------------------------------------------------------*/
 	total_gamma =  patch[0].innundation_list[d].gamma;
 
-	patch[0].total_gamma = total_gamma;
 
 
 	/*------------------------------------------------------------*/

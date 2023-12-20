@@ -1,4 +1,4 @@
-#workflow file for Github Action on RHESSys Trunk
+#workflow file for Github Action on RHESSys Develop
 name: build_docker_develop
 on:
     push:

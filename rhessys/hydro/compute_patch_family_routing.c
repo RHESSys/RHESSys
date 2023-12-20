@@ -69,7 +69,6 @@ void compute_patch_family_routing(struct zone_object *zone,
     double dG_sat_pot;   // sum of (potential) sat zone gains over family w/ sharing coefs
     //double dG_rz;           // delta of gainers root zone, vol water
     //double dG_un;           // delta of gainers unsat zone, vol water
-    double unmet_L;  // unmet unsat loss
     double rz_trans, unsat_trans; //intermediate vars for rz and unsat transfer
 
     // for testing
@@ -420,16 +419,12 @@ void compute_patch_family_routing(struct zone_object *zone,
 
                 // Unsat - removes remainder (if any) thar shouldve been taken from root zone
                 unsat_trans = -1 * max((dL_adj[i] / zone[0].patch_families[pf][0].patches[i][0].area) + zone[0].patch_families[pf][0].patches[i][0].rz_transfer, 0);
-
-
-		// don't remove more than is in unsat 
-		unmet_L = min(0,zone[0].patch_families[pf][0].patches[i][0].unsat_storage + unsat_trans);
-
-                zone[0].patch_families[pf][0].patches[i][0].unsat_transfer = unsat_trans-unmet_L;
+                // if (fabs(unsat_trans) < ZERO)
+                // {
+                //     unsat_trans = 0;
+                // }
+                zone[0].patch_families[pf][0].patches[i][0].unsat_transfer = unsat_trans;
                 zone[0].patch_families[pf][0].patches[i][0].unsat_storage += zone[0].patch_families[pf][0].patches[i][0].unsat_transfer;
-                zone[0].patch_families[pf][0].patches[i][0].sat_deficit -= unmet_L;
-                zone[0].patch_families[pf][0].patches[i][0].sat_transfer += unmet_L;
-		
 
             }
             if (zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].msr_sat_transfer_flag > 0)
@@ -472,13 +467,9 @@ void compute_patch_family_routing(struct zone_object *zone,
             sat_transfer_sum += zone[0].patch_families[pf][0].patches[i][0].sat_transfer * zone[0].patch_families[pf][0].patches[i][0].area;
         }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
 
 
-        if (fabs(rz_unsat_transfer_sum + sat_transfer_sum) > ZERO)
+        if (fabs(rz_unsat_transfer_sum) > ZERO)
         {
             printf("\n===== Transfer Balance Error =====\n");
             printf("Date: %d - %d - %d || ", current_date.year, current_date.month, current_date.day);

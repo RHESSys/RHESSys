@@ -24,8 +24,6 @@
 /*--------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
-#include <openmp.h>
-
 void update_hillslope_accumulator(
 			struct command_line_object *command_line,
 			struct basin_object *basin){

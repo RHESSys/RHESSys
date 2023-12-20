@@ -93,11 +93,7 @@ struct fire_default *construct_fire_defaults(
 		printf("load_k2: %lf\n",default_object_list[i].load_k2);
   		default_object_list[i].slope_k1=getDoubleParam(&paramCnt, &paramPtr, "slope_k1", "%lf", 0.91, 1);
 		printf("slope_k1: %lf\n",default_object_list[i].slope_k1);
-<<<<<<< HEAD
 		default_object_list[i].slope_k2=getDoubleParam(&paramCnt, &paramPtr, "slope_k2", "%lf", 1.0, 1);
-=======
-		default_object_list[i].slope_k2=getDoubleParam(&paramCnt, &paramPtr, "slope_k2", "%lf", 1, 1);
->>>>>>> develop
 		printf("slope_k2: %lf\n",default_object_list[i].slope_k2);
 		default_object_list[i].moisture_k1=getDoubleParam(&paramCnt, &paramPtr, "moisture_k1", "%lf", 3.8, 1);
 		printf("moisture_k1: %lf\n",default_object_list[i].moisture_k1);
@@ -143,11 +139,7 @@ struct fire_default *construct_fire_defaults(
 		printf("kappa1_rvm: %lf\n",default_object_list[i].kappa1_rvm);
 		default_object_list[i].kappa2_rvm=getDoubleParam(&paramCnt, &paramPtr, "kappa2_rvm", "%lf", 2.38, 1);
 		printf("kappa2_rvm: %lf\n",default_object_list[i].kappa2_rvm);
-<<<<<<< HEAD
 		default_object_list[i].p_rvm=getDoubleParam(&paramCnt, &paramPtr, "p_rvm", "%lf", 1 , 0.411);
-=======
-		default_object_list[i].p_rvm=getDoubleParam(&paramCnt, &paramPtr, "p_rvm", "%lf", 0.411 , 1);
->>>>>>> develop
 		printf("p_rvm: %lf\n",default_object_list[i].p_rvm);
 		default_object_list[i].ign_def_mod=getDoubleParam(&paramCnt, &paramPtr, "ign_def_mod", "%lf", 1 , 1);
 		printf("ign_def_mod: %lf\n",default_object_list[i].ign_def_mod);

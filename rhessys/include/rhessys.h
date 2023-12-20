@@ -1883,7 +1883,6 @@ struct patch_object
         double  NO3_throughfall_final;  /* kg/m2 day */
         double  rain_stored;            /* m water      */
 	double	total_water_in;		/* m water */
-	double  total_gamma;		/* area * K */
         double  slope;                  /* degrees              */
         double  S;                      /* m/m          */
         double  sat_zone_storage;       /* m water      */
@@ -2810,7 +2809,6 @@ struct epconst_struct
         double int_coef;       /* (kg/m2/LAI/d) canopy precip interception coef */
         double ext_coef;       /* (DIM) canopy light extinction coefficient */
 
-	double mort_start_age;        /* (year)) age at which mortality routines kick ind */
 	double netpabs;         /* (mol/mol) fPAR effectively abosorbed */
         double netpabs_age_mult;                /* (0-1) increase for age < 1 (percent) */
         double netpabs_shade;           /* (mol/mol) fPAR effectively abosorbed */
