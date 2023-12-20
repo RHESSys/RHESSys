@@ -375,6 +375,9 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	void *alloc(size_t, char *, char *);
 
 	void resemble_hourly_date(struct world_object *);
+
+	
+  	struct WUI_object **construct_WUI_list( char *, struct world_object *, struct	command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -415,7 +418,9 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		}
 		header_file_flag = 1;
 		printf("Reading specified world file header %s\n", command_line->world_header_filename);
-	} else {
+printf("here for sure\n");
+	} 
+ else { printf("not here\n");
 		// Set up file name for Option 2. ${WORLDFILE_NAME}.hdr
 		if ( snprintf(command_line->world_header_filename, FILEPATH_LEN, "%s.hdr", command_line->world_filename) >= FILEPATH_LEN ) {
 			fprintf(stderr,
@@ -440,7 +445,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			printf("\nWARNING\nReading world file header from legacy world file.\nThis feature will be removed from a future release.\nPlease re-run g2w to generate a separate world file header.\nWARNING\n\n");
 		}
 	}
-
+printf("*****line 446***** ");
 	if ( legacy_worldfile ) {
 		/* For backward compatibility read date from worldfile if it is an old-style
 		 * worldfile with an in-line header.
@@ -518,6 +523,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	/*	Allocate world defaults objects.							*/
 	/*--------------------------------------------------------------*/
+printf("line 524 ");
 	world[0].defaults = (struct default_object *)
 		alloc( sizeof(struct default_object ),"defaults","construct_world");
 	
@@ -591,7 +597,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	world[0].stratum_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_stratum_default_files);
-
+printf("just before fire default ");
 	
 	/*--------------------------------------------------------------*/
 	/*	If fire option has been set                             */
@@ -605,6 +611,24 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		/*--------------------------------------------------------------*/
 		world[0].fire_default_files= construct_filename_list( header_file,
 			world[0].defaults[0].num_fire_default_files);
+
+		// Fire grid file (prefix)
+		int 	num_fire_grid_prefix;
+		// including this for continuity but not really needed/shouldn't be more than 1
+		fscanf(header_file,"%d", &num_fire_grid_prefix);
+
+		read_record(header_file, record);
+		world[0].fire_grid_prefix = construct_filename_list( header_file, num_fire_grid_prefix);
+		//printf("Fire grid prefix: %s\n", world[0].fire_grid_prefix[0]);
+
+  		/*--------------------------------------------------------------*/
+  		/* read in WUI file and create WUI structure if salience flag is set */
+  		/*--------------------------------------------------------------*
+  		if ( command_line[0].salience_flag == 1) {
+printf("about to enter construct wui\n");
+			world[0].WUI_list = construct_WUI_list(command_line[0].WUI_filename, world, command_line);
+  		}*/
+
 	}
 	
 	/*--------------------------------------------------------------*/
@@ -901,10 +925,19 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	world[0].num_fire_grid_row = 0;
 	world[0].num_fire_grid_col = 0;
 	if (command_line[0].firespread_flag == 1) {
-		world[0].patch_fire_grid = construct_patch_fire_grid(world, command_line,*(world[0].defaults[0].fire));
-		world[0].fire_grid = construct_fire_grid(world);
+  		/*--------------------------------------------------------------*/
+  		/* read in WUI file and create WUI structure if salience flag is set */
+  		/*--------------------------------------------------------------*/
+  		if ( command_line[0].salience_flag == 1) {
+			world[0].WUI_list = construct_WUI_list(command_line[0].WUI_filename, world, command_line);
+  		}
+                world[0].patch_fire_grid = construct_patch_fire_grid(world, command_line,*(world[0].defaults[0].fire));
+                world[0].fire_grid = construct_fire_grid(world);
+
 
 	}	
+
+	
 	/*--------------------------------------------------------------*/
 	/*	Close the world_file and header (if necessary)	         	*/
 	/*--------------------------------------------------------------*/

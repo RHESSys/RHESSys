@@ -1,5 +1,5 @@
 OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
-VERSION = 7.4
+VERSION = 7.5
 PGM  = rhessys$(VERSION)
 #CC = gcc
 CC = clang
@@ -11,6 +11,9 @@ OBJ = objects
 
 netcdf=T
 
+# IF THIS IS DEFINED NO TESTS WILL RUN - NEEDED IF RUNNING WMFIRE, comment out or remove if you want to run tests
+skiptests=T
+
 #netcdf ?=FALSE
 #wmfire ?=FALSE
 
@@ -20,12 +23,12 @@ ifdef extend_clim
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
-# this is a dummy variable to be able to modify CFLAGS on the command line, such as "make CMD_OPTS=-w"
+# added override directive, can now add # this is a dummy variable to be able to modify CFLAGS on the command line, such as "make CMD_OPTS=-w"
 # specifically added to be able to use with -w, to supress warnings
 CMD_OPTS +=
 
-CFLAGS = -Wall -std=c99 $(DEFINES) -fno-stack-protector -O2 $(CMD_OPTS)
-CFLAGS_NO_C99 =  -Wall $(DEFINES) -fno-stack-protector -O2 $(CMD_OPTS)
+CFLAGS = -g -Wall -std=c99 $(DEFINES) -fno-stack-protector -O
+CFLAGS_NO_C99 = -g -Wall $(DEFINES) -fno-stack-protector -O $(CMD_OPTS)
 # -Og for debug
 # -O2 for speed
 
@@ -75,8 +78,12 @@ SRCS_TESTS := $(shell find $(SRCDIR_TESTS) -name '*.c')
 TESTSDIR = $(TESTS_ROOTDIR)
 OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
 OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
-TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
 TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
+
+
+ifndef skiptests
+	TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
+endif
 
 
 OBJECTS = \
@@ -120,7 +127,7 @@ $(OBJ)/compute_direct_radiative_fluxes.o \
 $(OBJ)/compute_family_shading.o\
 $(OBJ)/compute_farq_psn.o \
 $(OBJ)/compute_field_capacity.o \
-$(OBJ)/compute_fire_effects.o \
+$(OBJ)/compute_family_fire_effects.o \
 $(OBJ)/compute_growingseason_index.o \
 $(OBJ)/compute_layer_field_capacity.o \
 $(OBJ)/compute_froot_litfall.o \
@@ -179,6 +186,7 @@ $(OBJ)/construct_basin_defaults.o \
 $(OBJ)/construct_canopy_strata.o \
 $(OBJ)/construct_clim_sequence.o \
 $(OBJ)/construct_command_line.o \
+$(OBJ)/construct_WUI_list.o \
 $(OBJ)/construct_daily_clim.o \
 $(OBJ)/construct_dated_clim_sequence.o \
 $(OBJ)/construct_dated_input.o \
@@ -240,6 +248,7 @@ $(OBJ)/execute_redefine_world_mult_event.o \
 $(OBJ)/execute_redefine_world_thin_event.o \
 $(OBJ)/execute_road_construction_event.o \
 $(OBJ)/execute_firespread_event.o \
+$(OBJ)/execute_fueltreatment_event.o \
 $(OBJ)/execute_state_output_event.o \
 $(OBJ)/execute_tec.o \
 $(OBJ)/execute_yearly_growth_output_event.o \
@@ -247,6 +256,7 @@ $(OBJ)/execute_yearly_output_event.o \
 $(OBJ)/find_basin.o \
 $(OBJ)/find_hillslope_in_basin.o \
 $(OBJ)/find_patch.o \
+$(OBJ)/find_patch_family.o \
 $(OBJ)/find_patch_in_hillslope.o \
 $(OBJ)/find_patch_in_zone.o \
 $(OBJ)/find_stratum.o \
@@ -331,9 +341,14 @@ $(OBJ)/resolve_sminn_competition.o \
 $(OBJ)/snowpack_daily_F.o \
 $(OBJ)/sort_by_elevation.o \
 $(OBJ)/sort_patch_layers.o \
+$(OBJ)/sort_patch_family_layers.o \
 $(OBJ)/surface_daily_F.o \
 $(OBJ)/surface_hourly.o \
 $(OBJ)/top_model.o \
+$(OBJ)/treat_patch.o \
+$(OBJ)/update_fire_in_WUI.o \
+$(OBJ)/update_salience.o \
+$(OBJ)/reset_fire_in_WUI.o \
 $(OBJ)/update_C_stratum_daily.o \
 $(OBJ)/update_N_stratum_daily.o \
 $(OBJ)/update_basin_patch_accumulator.o \
@@ -344,6 +359,7 @@ $(OBJ)/update_dissolved_organic_losses.o \
 $(OBJ)/update_drainage_land.o \
 $(OBJ)/update_drainage_road.o \
 $(OBJ)/update_drainage_stream.o \
+$(OBJ)/update_fuel_treatment_effects.o \
 $(OBJ)/update_gw_drainage.o \
 $(OBJ)/update_hillslope_accumulator.o \
 $(OBJ)/update_litter_interception_capacity.o \
@@ -509,6 +525,8 @@ else
 $(OBJ)/execute_firespread_event.o: tec/execute_firespread_event_dummy.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event_dummy.c -o $(OBJ)/execute_firespread_event.o
 endif
+$(OBJ)/execute_fueltreatment_event.o: tec/execute_fueltreatment_event.c
+	$(CC) -c $(CFLAGS) -I include tec/execute_fueltreatment_event.c -o $(OBJ)/execute_fueltreatment_event.o
 $(OBJ)/execute_tec.o: tec/execute_tec.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_tec.c -o $(OBJ)/execute_tec.o
 $(OBJ)/construct_command_line.o: init/construct_command_line.c
@@ -669,6 +687,8 @@ $(OBJ)/find_stratum.o: util/find_stratum.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum.c -o $(OBJ)/find_stratum.o
 $(OBJ)/find_stratum_in_patch.o: util/find_stratum_in_patch.c
 	$(CC) -c $(CFLAGS) -I include util/find_stratum_in_patch.c -o $(OBJ)/find_stratum_in_patch.o
+$(OBJ)/find_patch_family.o: util/find_patch_family.c
+	$(CC) -c $(CFLAGS) -I include util/find_patch_family.c -o $(OBJ)/find_patch_family.o	
 $(OBJ)/find_patch_in_hillslope.o: util/find_patch_in_hillslope.c
 	$(CC) -c $(CFLAGS) -I include util/find_patch_in_hillslope.c -o $(OBJ)/find_patch_in_hillslope.o
 $(OBJ)/find_patch_in_zone.o: util/find_patch_in_zone.c
@@ -715,6 +735,8 @@ $(OBJ)/construct_routing_topology.o: init/construct_routing_topology.c
 	$(CC) -c $(CFLAGS) -I include init/construct_routing_topology.c -o $(OBJ)/construct_routing_topology.o
 $(OBJ)/construct_topmodel_patchlist.o: init/construct_topmodel_patchlist.c
 	$(CC) -c $(CFLAGS) -I include init/construct_topmodel_patchlist.c -o $(OBJ)/construct_topmodel_patchlist.o
+$(OBJ)/construct_WUI_list.o: init/construct_WUI_list.c
+	$(CC) -c $(CFLAGS) -I include init/construct_WUI_list.c -o $(OBJ)/construct_WUI_list.o
 $(OBJ)/construct_fire_grid.o: init/construct_fire_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_fire_grid.c -o $(OBJ)/construct_fire_grid.o
 $(OBJ)/construct_hillslope.o: init/construct_hillslope.c
@@ -857,8 +879,8 @@ $(OBJ)/compute_family_shading.o: hydro/compute_family_shading.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_family_shading.c -o $(OBJ)/compute_family_shading.o
 $(OBJ)/compute_field_capacity.o: hydro/compute_field_capacity.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_field_capacity.c -o $(OBJ)/compute_field_capacity.o
-$(OBJ)/compute_fire_effects.o: cn/compute_fire_effects.c
-	$(CC) -c $(CFLAGS) -I include cn/compute_fire_effects.c -o $(OBJ)/compute_fire_effects.o
+$(OBJ)/compute_family_fire_effects.o: cn/compute_family_fire_effects.c
+	$(CC) -c $(CFLAGS) -I include cn/compute_family_fire_effects.c -o $(OBJ)/compute_family_fire_effects.o
 $(OBJ)/compute_transmissivity_curve.o: hydro/compute_transmissivity_curve.c
 	$(CC) -c $(CFLAGS) -I include hydro/compute_transmissivity_curve.c -o $(OBJ)/compute_transmissivity_curve.o
 $(OBJ)/compute_infiltration.o: hydro/compute_infiltration.c
@@ -887,6 +909,10 @@ $(OBJ)/sort_by_elevation.o: util/sort_by_elevation.c
 	$(CC) -c $(CFLAGS) -I include util/sort_by_elevation.c -o $(OBJ)/sort_by_elevation.o
 $(OBJ)/sort_patch_layers.o: util/sort_patch_layers.c
 	$(CC) -c $(CFLAGS) -I include util/sort_patch_layers.c -o $(OBJ)/sort_patch_layers.o
+$(OBJ)/sort_patch_family_layers.o: util/sort_patch_family_layers.c
+	$(CC) -c $(CFLAGS) -I include util/sort_patch_family_layers.c -o $(OBJ)/sort_patch_family_layers.o
+$(OBJ)/treat_patch.o: tec/treat_patch.c
+	$(CC) -c $(CFLAGS) -I include tec/treat_patch.c -o $(OBJ)/treat_patch.o
 $(OBJ)/top_model.o: hydro/top_model.c
 	$(CC) -c $(CFLAGS) -I include hydro/top_model.c -o $(OBJ)/top_model.o
 $(OBJ)/compute_maint_resp.o: cn/compute_maint_resp.c
@@ -1038,6 +1064,14 @@ $(OBJ)/update_denitrif.o: cn/update_denitrif.c
 	$(CC) -c $(CFLAGS) -I include cn/update_denitrif.c -o $(OBJ)/update_denitrif.o
 $(OBJ)/update_dissolved_organic_losses.o: cn/update_dissolved_organic_losses.c
 	$(CC) -c $(CFLAGS) -I include cn/update_dissolved_organic_losses.c -o $(OBJ)/update_dissolved_organic_losses.o
+$(OBJ)/update_salience.o: tec/update_salience.c 
+	$(CC) -c $(CFLAGS) -I include tec/update_salience.c -o $(OBJ)/update_salience.o
+$(OBJ)/update_fire_in_WUI.o: tec/update_fire_in_WUI.c 
+	$(CC) -c $(CFLAGS) -I include tec/update_fire_in_WUI.c -o $(OBJ)/update_fire_in_WUI.o
+$(OBJ)/reset_fire_in_WUI.o: tec/reset_fire_in_WUI.c 
+	$(CC) -c $(CFLAGS) -I include tec/reset_fire_in_WUI.c -o $(OBJ)/reset_fire_in_WUI.o
+$(OBJ)/update_fuel_treatment_effects.o: tec/update_fuel_treatment_effects.c 
+	$(CC) -c $(CFLAGS) -I include tec/update_fuel_treatment_effects.c -o $(OBJ)/update_fuel_treatment_effects.o
 $(OBJ)/update_mortality.o: cn/update_mortality.c
 	$(CC) -c $(CFLAGS) -I include cn/update_mortality.c -o $(OBJ)/update_mortality.o
 $(OBJ)/update_litter_soil_mortality.o: cn/update_litter_soil_mortality.c

@@ -52,7 +52,7 @@ Unless new development changes are being made to the worldfile or flowtable, you
 
 ```{r setrunvars}
 
-rhessys_ver = "/Users/naomitague/Model/RHESSys/rhessys/rhessys7.4"
+rhessys_ver = "/Users/naomitague/scratch/rhessys/rhessys/rhessys7.5"
 worldfile = "worldfiles/w8TC.world"
 header = "worldfiles/w8TC.hdr"
 flowtable = "flowtables/w8TC.flow"
@@ -81,20 +81,7 @@ system(command_line)
 test = read.table("out/test_basin_daily.csv", header=T, sep=",")
 test = add_dates(test)
 test = watbal_basin_of(test)
-
-# note that base cases does not currently work with watbal_basin_of - needs to be updated 
-# we have to make some variables
-test = test %>% mutate(streamflow=1000*(streamflow+gw.Qout), trans=1000*(transpiration_sat_zone+
-                         transpiration_unsat_zone), 
-            evap = 1000*(evaporation+evaporation_surf +exfiltration_sat_zone+exfiltration_unsat_zone), 
-      plantc = cs.frootc+cs.leafc+cs.live_stemc+cs.dead_stemc+cs.live_crootc+cs.dead_crootc,
-      streamflow_NO3 = streamflow_NO3+gw.NO3out, streamflow_DON= streamflow_DON+gw.DONout, 
-      psn   = cs.net_psn,
-      gpsn = cdf.psn_to_cpool,
-      plant_resp = cdf.total_mr + cdf.total_gr, sat_def = sat_deficit*1000, rz_storage=rz_storage*1000, snowpack=snowpack.water_equivalent_depth*1000, unsat_stor=unsat_storage*1000, litter_store=litter.rain_stored*1000,
-    canopy_store=(canopy_rain_stored+canopy_snow_stored)*1000, 
-    precip=total_water_in*1000)
-
+ggplot(test, aes(date, watbal))+geom_point()
 
 ```
 
@@ -102,12 +89,26 @@ In general water balance should be close to zero - there are of course small rou
 We will plot both so you can see if there is a water balance issue with your new code
 
 ```{r waterbalance}
-test = watbal_basin_of(test)
 
 # your results are in red
 ggplot(base, aes(date, watbal))+geom_point()+geom_point(data=test, aes(date, watbal), col="red", alpha=0.4)
-
+# note base needs to be updated
 ```
+
+```{r basec}
+
+# many variables in base have units changed so need to be updated
+a=ggplot(base, aes(date,epv.height))+geom_point()+geom_point(data=test, aes(date, epv.height), col="red", alpha=0.4)
+b=ggplot(base, aes(date,epv.proj_lai))+geom_point()+geom_point(data=test, aes(date, epv.proj_lai), col="red", alpha=0.4)
+c=ggplot(base, aes(date,sat_deficit))+geom_point()+geom_point(data=test, aes(date, sat_deficit), col="red", alpha=0.4)
+d=ggplot(base, aes(date,streamflow))+geom_point()+geom_point(data=test, aes(date, streamflow*1000), col="red", alpha=0.4)
+ggarrange(a,b,c,d)
+
+d=ggplot(base, aes(date,litter_cs.totalc))+geom_point()+geom_point(data=test, aes(date, litter_cs.totalc), col="red", alpha=0.4)
+e=ggplot(base, aes(date,soil_cs.totalc))+geom_point()+geom_point(data=test, aes(date, soil_cs.totalc), col="red", alpha=0.4)
+```
+
+
 ### THIS HAS NOT BEEN ADAPTED TO OURPUT FILTER Variables names YET - IN PROGRESS
 ### Difference between the base and the test scenarios     
 The **percent_diff_mean** object shows the difference in the mean streamflow, transpiration, evaporation, psn, and plant carbon results between the base and test scenarios.     
