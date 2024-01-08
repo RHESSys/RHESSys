@@ -417,9 +417,15 @@ struct accumulate_patch_object
    double DOC_loss;
    double DON_loss;
    double theta;
+   double soilmoist;
+   double rz_storage;
+   double unsat_storage;
+   double sat_deficit;
    double uptake;
    double mineralized;
    double pcp;
+   double rain_thru;
+   double snow_thru;
    double potential_recharge;
    double potential_recharge_wyd;
    double recharge;

@@ -55,6 +55,7 @@ void update_basin_patch_accumulator(
 
 		patch[0].acc_year_trans += (patch[0].transpiration_unsat_zone
 						+ patch[0].transpiration_sat_zone);
+				/*-------------------- Monthly --------------------*/
 				if ((command_line[0].output_flags.monthly == 1)
 						&& (command_line[0].b != NULL )) {
 					scale = patch[0].area / basin[0].area;
@@ -94,7 +95,7 @@ void update_basin_patch_accumulator(
 					basin[0].acc_month.leach += (patch[0].soil_ns.leach
 							+ patch[0].surface_ns_leach) * scale;
 				}
-
+				/*-------------------- Yearly --------------------*/
 				if ((command_line[0].output_flags.yearly == 1)
 						&& (command_line[0].b != NULL )) {
 					scale = patch[0].area / basin[0].area;
@@ -136,20 +137,28 @@ void update_basin_patch_accumulator(
 							* scale;
 					basin[0].acc_year.lai += patch[0].lai * scale;
 				}
-
+				/*-------------------- Monthly + Output Filters --------------------*/
 				if ((command_line[0].output_flags.monthly == 1) &&
 						(command_line[0].output_filter_patch_accum_monthly ||
 								command_line[0].p != NULL)) {
 					patch[0].acc_month.theta += patch[0].rootzone.S;
-					patch[0].acc_month.sm_deficit +=
-							max(0.0,
-									(patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage));
+					patch[0].acc_month.soilmoist += (patch[0].rz_storage + patch[0].unsat_storage) / patch[0].sat_deficit;
+					patch[0].acc_month.rz_storage += patch[0].rz_storage;
+					patch[0].acc_month.unsat_storage += patch[0].unsat_storage;
+					patch[0].acc_month.sat_deficit += patch[0].sat_deficit;
+					patch[0].acc_month.sm_deficit += max(0.0,(patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage));
+					patch[0].acc_month.PET += (patch[0].PET); // previously included patch[0].PE too for some reason, inconsistent with other PET output
 					patch[0].acc_month.et += (patch[0].transpiration_unsat_zone
 							+ patch[0].evaporation_surf
 							+ patch[0].exfiltration_unsat_zone
 							+ patch[0].exfiltration_sat_zone
-							+ +patch[0].transpiration_sat_zone
+							+ patch[0].transpiration_sat_zone
 							+ patch[0].evaporation);
+					patch[0].acc_month.trans += (patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone);
+					patch[0].acc_month.pcp += (patch[0].total_water_in);
+					patch[0].acc_month.rain_thru += patch[0].rain_throughfall;
+					patch[0].acc_month.snow_thru += patch[0].snow_throughfall;
+
 					patch[0].acc_month.denitrif += patch[0].ndf.denitrif;
 					patch[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate;
 					patch[0].acc_month.mineralized +=
@@ -164,6 +173,7 @@ void update_basin_patch_accumulator(
 					patch[0].acc_month.psn += patch[0].net_plant_psn;
 					patch[0].acc_month.snowpack =
 							max(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
+					patch[0].acc_month.streamflow += (patch[0].streamflow);
 					patch[0].acc_month.lai =
 							max(patch[0].acc_month.lai, patch[0].lai);
 					patch[0].acc_month.leach += (patch[0].soil_ns.leach
@@ -174,9 +184,8 @@ void update_basin_patch_accumulator(
 					patch[0].acc_month.littern += patch[0].litter_ns.totaln;
 					patch[0].acc_month.soilc += patch[0].soil_cs.totalc;
 					patch[0].acc_month.litterc += patch[0].litter_cs.totalc;
-			
-
 				}
+				/*-------------------- Yearly + Output Filters --------------------*/
 				if ((command_line[0].output_flags.yearly == 1) &&
 						(command_line[0].output_filter_patch_accum_yearly ||
 								command_line[0].p != NULL )) {
@@ -318,7 +327,7 @@ void update_basin_patch_accumulator(
 						patch[0].acc_year.midsm_wyd = patch[0].acc_year.wyd;
 
 					patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
-		} /* end if */		
+		} /* end if --yearly output filter-- */		
 	} /* end of p*/
 	} /* end of z*/
 	} /* end of h*/
