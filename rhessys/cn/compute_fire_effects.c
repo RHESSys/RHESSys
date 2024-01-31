@@ -159,8 +159,12 @@ void compute_fire_effects(
 			/* Litter consumption is approximated based CONSUME model outputs */
 			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
 			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
-			canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339;
-			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
+			
+			/* Changing cwdc consumption to vary with pspread with same function as used to parameterize understory fire effects. The parameter value 3.8 was selected to provide ~34% consumption at 0.5 pspread. CWD consumption goes to 1 nonlinearly as pspread goes to 1, and similarly, to 0 as pspread goes to 0. */
+			canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * ((pow(3.8,pspread)-1)/(3.8-1));
+			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * ((pow(3.8,pspread)-1)/(3.8-1));
+			/*canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339;*/
+			/*canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;*/
 			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 
