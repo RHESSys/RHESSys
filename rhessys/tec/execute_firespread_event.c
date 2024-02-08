@@ -158,10 +158,10 @@ void execute_firespread_event(
 		    world[0].fire_grid[i][j].ign_available=1;	/* then make this available for ignition */
 		 if(world[0].defaults[0].fire[0].fire_verbose==1)
 			printf("Initialized fire grid patches\n");
-		}
+	//	}
 
 		//printf("Num patches: %d\n", world[0].patch_fire_grid[i][j].num_patches)
-		//printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
+//printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) { // should just be 1 now... - 1 if non MSR, n if MSR where n is patches in patch fam
 			if (world[0].defaults[0].fire[0].fire_verbose == 1)
 			{
@@ -257,6 +257,7 @@ void execute_firespread_event(
 				world[0].fire_grid[i][j].understory_et /= understory_pct_cover;
 				world[0].fire_grid[i][j].understory_pet /= understory_pct_cover;
 			}
+		}
 		}
 
 		if(world[0].patch_fire_grid[i][j].occupied_area>0&&world[0].defaults[0].fire[0].fire_in_buffer==1) // if allowing fire into the buffer (on raster grid outside of watershed boundaries), then fill with mean field values within watershed boundary
