@@ -1571,7 +1571,7 @@ void		patch_daily_F(
 			/*--------------------------------------------------------------*/
 		/* add canopy evaporation and snow sublimation to PET						*/
 			/*--------------------------------------------------------------*/
-		/*patch[0].PET = patch[0].evaporation+patch[0].evaporation_surf;*/
+	patch[0].PET = patch[0].evaporation+patch[0].evaporation_surf;
 
 	if ( command_line[0].verbose_flag > 1 ) {
 		printf("\n%ld %ld %ld  -335.1 ",
@@ -1930,9 +1930,8 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/* add soil evap to PET																					*/
 	/*--------------------------------------------------------------*/
-/*
 	patch[0].PET += (patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone);
-*/
+
 	/*--------------------------------------------------------------*/
 	/* in order to restrict denitri/nitrific on non-veg patches type */
 	/* 	tag vegtype							*/
