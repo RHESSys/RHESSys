@@ -1931,7 +1931,14 @@ void		patch_daily_F(
 	/* in order to restrict denitri/nitrific on non-veg patches type */
 	/* 	tag vegtype							*/
 	/*--------------------------------------------------------------*/
-        patch[0].rootzone.depth = 0.0;
+    patch[0].rootzone.depth = 0.0;
+
+	if (command_line[0].firespread_flag == 1)
+	{
+		// before adding stratum layer transpirations
+		patch[0].fire.understory_et = patch[0].fire_defaults[0][0].ndays_average * patch[0].fire.understory_et;
+		patch[0].fire.understory_pet = patch[0].fire_defaults[0][0].ndays_average * patch[0].fire.understory_pet;
+	}
 
 	vegtype = 0;
   patch[0].target_status = 1;
@@ -2003,9 +2010,26 @@ void		patch_daily_F(
 			patch[0].rootzone.depth = max(patch[0].rootzone.depth,strata->rootzone.depth);
 			patch[0].canopy_rain_stored += strata->cover_fraction *	strata->rain_stored;
 			patch[0].canopy_snow_stored += strata->cover_fraction *	strata->snow_stored;
-		}
+
+			if (command_line[0].firespread_flag == 1)
+			{
+				// add transpirations if is understory layer
+				if (strata[0].epv.height <= patch[0].soil_defaults[0][0].understory_height_thresh ) 
+				{
+					patch[0].fire.understory_et += strata->cover_fraction * (strata[0].transpiration_sat_zone + strata[0].transpiration_unsat_zone) ;
+					patch[0].fire.understory_pet += strata->cover_fraction * (strata[0].PET);
+				}
+			}
+
+		} // end stratum layer iteration
 	}
 
+	if (command_line[0].firespread_flag == 1)
+	{
+		// after adding in strata transpirations
+		patch[0].fire.understory_et = patch[0].fire.understory_et/(patch[0].fire_defaults[0][0].ndays_average + 1);
+		patch[0].fire.understory_pet = patch[0].fire.understory_pet/(patch[0].fire_defaults[0][0].ndays_average + 1);
+	}
 
 
 	/*--------------------------------------------------------------*/
