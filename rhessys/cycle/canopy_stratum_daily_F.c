@@ -1982,23 +1982,23 @@ void	canopy_stratum_daily_F(
 	stratum[0].T_canopy = (zone[0].metv.tavg + deltaT); 
 
 	/* track variables for fire spread */
-	if (command_line[0].firespread_flag == 1) {
-//		printf("***********\n###########\nCurrent stratum height %lf\n***************\n#################\n",stratum[0].epv.height);
-		if(stratum[0].epv.height<=patch[0].soil_defaults[0][0].understory_height_thresh)
-		{
-//			printf("Found an understory stratum!\n");
-			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +
-			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone))/(patch[0].fire_defaults[0][0].ndays_average + 1);
-		//	+ stratum[0].evaporation))/ // MCK: look at et without the evaporation part
+// 	if (command_line[0].firespread_flag == 1) {
+// //		printf("***********\n###########\nCurrent stratum height %lf\n***************\n#################\n",stratum[0].epv.height);
+// 		if(stratum[0].epv.height<=patch[0].soil_defaults[0][0].understory_height_thresh)
+// 		{
+// //			printf("Found an understory stratum!\n");
+// 			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +
+// 			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone))/(patch[0].fire_defaults[0][0].ndays_average + 1);
+// 		//	+ stratum[0].evaporation))/ // MCK: look at et without the evaporation part
 
 
-			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +
-			(stratum[0].PET))/
-			(patch[0].fire_defaults[0][0].ndays_average + 1);
-//		printf("Debugging understory et and pet,stratum PET, stratum transpiration sat and unsat, stratum evaporation: %lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",patch[0].fire.understory_et,patch[0].fire.understory_pet, stratum[0].PET,stratum[0].transpiration_sat_zone, stratum[0].transpiration_unsat_zone,stratum[0].evaporation);
+// 			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +
+// 			(stratum[0].PET))/
+// 			(patch[0].fire_defaults[0][0].ndays_average + 1);
+// //		printf("Debugging understory et and pet,stratum PET, stratum transpiration sat and unsat, stratum evaporation: %lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",patch[0].fire.understory_et,patch[0].fire.understory_pet, stratum[0].PET,stratum[0].transpiration_sat_zone, stratum[0].transpiration_unsat_zone,stratum[0].evaporation);
 
-		}
-	}
+// 		}
+// 	}
 
 	if ( command_line[0].verbose_flag == -5 ){
 	printf("\n          STRATUM DAILY END Kdir=%lf Kdif=%lf Kupdir=%lf Kupdif=%lf Lstar=%lf Lstarpch=%lf Rnet_used=%lf Kstar_can=%lf rnetevap=%lf dayl=%lf Tcan=%lf \n          ??? topt=%lf tcoef=%lf tmax=%lf",

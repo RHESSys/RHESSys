@@ -257,10 +257,11 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 						{
 							// assuming 1 patch family per grid, curpatch is family not patch here
 							fire_grid[i][j].patch_families = (struct patch_family_object **)malloc(sizeof(struct patch_family_object *));
-							//printf("Finding patch family %d\n", curPatchID);
+		//					printf("Finding patch family %lf\n", curPatchID);
 							patch_family = find_patch_family(curPatchID, curZoneID, tmpHillID, world[0].basins[b]);
 							fire_grid[i][j].patch_families[0] = patch_family;
 							fire_grid[i][j].num_patches = patch_family[0].num_patches_in_fam;
+//						printf("Num in family: %d\n", fire_grid[i][j].num_patches);
 
 							fire_grid[i][j].patches = (struct patch_object **)malloc(fire_grid[i][j].num_patches * sizeof(struct patch_object *));
 							fire_grid[i][j].prop_patch_in_grid = (double *)malloc(fire_grid[i][j].num_patches * sizeof(double));

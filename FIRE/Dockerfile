@@ -44,7 +44,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 # install BOOST libraries for RHESSys FIRE
 RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz
 RUN mv boost_1_82_0.tar.gz /usr/local/bin
-RUN tar -xzf /usr/local/bin/boost_1_82_0.tar.gz -C /usr/local/bin/
+RUN tar -xf /usr/local/bin/boost_1_82_0.tar.gz -C /usr/local/bin/
 
 # local environment variables
 ENV BOOST_ROOT=/usr/local/bin/boost_1_82_0
@@ -89,7 +89,7 @@ RUN DEBIAN_FRONTEND="noninteractive" wget -qO- https://cloud.r-project.org/bin/l
 	apt-get update && apt-get install --yes r-base r-base-dev
 
 # install R packages and RHESSysIOinR
-RUN Rscript -e "install.packages(c('chron','data.table','devtools','forcats','formattable','gh','ggpubr','httr','hydroGOF','lhs','lubridate','randtoolbox','readxl','rlang','roxygen2','rmarkdown','sensitivity','stringr','tibble','tidyverse','yaml','xml2'), dependencies=TRUE)"
+RUN Rscript -e "install.packages(c('caret','chron','data.table','devtools','DT','forcats','formattable','gh','ggpubr','here','httr','hydroGOF','kableExtra','lhs','lubridate','party','partykit','patchwork','psych','randomForest','randomForestExplainer','randtoolbox','readxl','rfUtilities','rlang','roxygen2','rmarkdown','sensitivity','spatialRF','stringr','tibble','tidyverse','xml2','yaml','zeallot'), dependencies=TRUE)"
 RUN Rscript -e "library('devtools')" -e "install_github('RHESSys/RHESSysIOinR', ref='develop', build_vignettes=FALSE, dependencies=TRUE)"
 
 # Special thanks to Ojas for finding Viruzzo and other excellent people over at the RPS Discord server who donated their time, patience and expertise to help us get this dockerfile fixed and cleaned up, in accordance with good IT practices.

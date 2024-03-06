@@ -204,9 +204,9 @@ void  update_drainage_land(
 		NO3_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_ns.NO3_Qout += Nout;
 
-		if(Nout<0 || Nout!=Nout || patch[0].soil_ns.nitrate<0 ||
+		if((Nout<0 || Nout!=Nout || patch[0].soil_ns.nitrate<0 ||
      patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     (Nout<0))
+     (Nout<0)) && command_line[0].verbose_flag == -4)
 		  printf("update_drainage_land[%d,%e]: soil NO3 (%e) flux (%e)\n", patch[0].ID, route_to_patch, patch[0].soil_ns.nitrate, Nout);
 
 
@@ -231,7 +231,7 @@ void  update_drainage_land(
 		NH4_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_ns.NH4_Qout += Nout;
 
-		if(Nout<0 || Nout!=Nout )
+		if((Nout<0 || Nout!=Nout ) && command_line[0].verbose_flag == -4)
 		  printf("update_drainage_land[%d,%e]: soil NH4 (%e) flux (%e)\n", patch[0].ID,route_to_patch,patch[0].soil_ns.sminn, Nout);
 
 
@@ -252,7 +252,7 @@ void  update_drainage_land(
 			patch[0].transmissivity_profile);
 		DON_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_ns.DON_Qout += Nout;
-		if(Nout<0 || Nout!=Nout)
+		if((Nout<0 || Nout!=Nout) && command_line[0].verbose_flag == -4)
 		  printf("update_drainage_land[%d,%e]: soil DON (%e) flux (%e)\n", patch[0].ID,route_to_patch,patch[0].soil_ns.DON, Nout);
 
 
@@ -274,7 +274,7 @@ void  update_drainage_land(
 		DOC_leached_to_patch = Nout * patch[0].area;
 		patch[0].soil_cs.DOC_Qout += Nout;
 
-		if(Nout<0 || Nout!=Nout)
+		if((Nout<0 || Nout!=Nout) && command_line[0].verbose_flag == -4)
 		  printf("update_drainage_land[%d,%e]: soil DOC (%e) flux (%e)\n", patch[0].ID,route_to_patch,patch[0].soil_cs.DOC, Nout);
 
 
@@ -332,10 +332,10 @@ void  update_drainage_land(
 			patch[0].surface_NO3 += Nout;
 			patch[0].soil_ns.NO3_Qout += Nout;
 
-			if(Nout<0 || Nout!=Nout ||
+			if((Nout<0 || Nout!=Nout ||
       patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
       patch[0].soil_ns.nitrate<0 || NO3_leached_to_patch<0 ||
-      NO3_leached_to_patch!=NO3_leached_to_patch)
+      NO3_leached_to_patch!=NO3_leached_to_patch) && command_line[0].verbose_flag == -4)
 			  printf("update_drainage_land[%d,%e]: return NO3 (%e,%e) flux (%e)\n",
             patch[0].ID,return_flow,patch[0].soil_ns.nitrate - (NO3_leached_to_patch/patch[0].area),NO3_leached_to_patch, Nout);
 
@@ -357,7 +357,7 @@ void  update_drainage_land(
 				patch[0].transmissivity_profile);
 			patch[0].surface_NH4 += Nout;
 			patch[0].soil_ns.NH4_Qout += Nout;
-			if(Nout<0 || Nout!=Nout)
+			if((Nout<0 || Nout!=Nout) && command_line[0].verbose_flag == -4)
 			  printf("update_drainage_land[%d,%e]: return NH4 (%e) flux (%e)\n", patch[0].ID,return_flow,patch[0].soil_ns.sminn - (NH4_leached_to_patch/patch[0].area), Nout);
 
 
@@ -379,7 +379,7 @@ void  update_drainage_land(
 				patch[0].transmissivity_profile);
 			patch[0].surface_DON += Nout;
 			patch[0].soil_ns.DON_Qout += Nout;
-			if(Nout<0 || Nout!=Nout)
+			if((Nout<0 || Nout!=Nout) && command_line[0].verbose_flag == -4)
 			  printf("update_drainage_land[%d,%e]: return DON (%e) flux (%e)\n", patch[0].ID,return_flow,patch[0].soil_ns.DON - (DON_leached_to_patch/patch[0].area), Nout);
 
 
@@ -400,7 +400,7 @@ void  update_drainage_land(
 				patch[0].transmissivity_profile);
 			patch[0].surface_DOC += Nout;
 			patch[0].soil_cs.DOC_Qout += Nout;
-			if(Nout<0 || Nout!=Nout)
+			if((Nout<0 || Nout!=Nout) && command_line[0].verbose_flag == -4)
 			  printf("update_drainage_land[%d,%e]: return DOC (%e) flux (%e)\n", patch[0].ID,return_flow,patch[0].soil_cs.DOC - (DOC_leached_to_patch/patch[0].area), Nout);
 
 		}
@@ -435,7 +435,7 @@ void  update_drainage_land(
 		}
 
 
-	if (NO3_leached_to_surface < 0.0)
+	if (NO3_leached_to_surface < 0.0 && command_line[0].verbose_flag == -4)
 		printf("WARNING No3 leached to surface is negative  %d %lf",patch[0].ID, NO3_leached_to_surface);
 
 	/*--------------------------------------------------------------*/
@@ -454,7 +454,7 @@ void  update_drainage_land(
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
 		Qin =	(patch[0].innundation_list[d].neighbours[j].gamma * route_to_patch) / neigh[0].area;
-		if (Qin < 0) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);
+		if (Qin < 0 && command_line[0].verbose_flag == -4) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);
 		if (command_line[0].grow_flag > 0) {
 			Nin = (patch[0].innundation_list[d].neighbours[j].gamma * DON_leached_to_patch)
 				/ neigh[0].area;
