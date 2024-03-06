@@ -2013,6 +2013,7 @@ struct patch_object
         double  exfiltration_sat_zone;  /* m water      */
         double  exfiltration_unsat_zone;/* m water      */
         double  unsat_drainage;         /* m water      */
+        double  surface_PET;            /* m water      */
         double  PET;            /* m water      */
         double  PE;             /* m water      */
         double  precip_with_assim;    /* m water */

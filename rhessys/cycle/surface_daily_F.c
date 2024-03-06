@@ -341,6 +341,7 @@ void		surface_daily_F(
 		                * rain_duration_day);
 		detention_store_potential_evaporation = detention_store_potential_evaporation_day + detention_store_potential_evaporation_night;
 
+		patch[0].surface_PET =  detention_store_potential_evaporation;
 		// Avoid over-estimating ET from surfaces with no detention store size
 		//   (e.g. impervious surface) by gating ET by detention_store_size
 		detention_store_evaporation = min(detention_store_potential_evaporation,
@@ -623,6 +624,9 @@ void		surface_daily_F(
 				patch[0].soil_defaults[0][0].gsurf_slope,
 				patch[0].soil_defaults[0][0].gsurf_intercept);
 		}
+
+			/* printf("Gsurf is %lf from %lf %lf \n", patch[0].gsurf,    patch[0].soil_defaults[0][0].gsurf_slope, 
+                                patch[0].soil_defaults[0][0].gsurf_intercept); */
 		/*--------------------------------------------------------------*/
 		/*	COmpute evaporation and exfiltration RATES (m/s)	*/
 		/*	for daylight period .					*/
