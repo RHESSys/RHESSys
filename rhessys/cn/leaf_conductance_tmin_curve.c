@@ -52,5 +52,7 @@ double	leaf_conductance_tmin_curve(	double	Tair_min)
 	else{
 		m_tmin = 1.0 + ( 0.125 * Tair_min );
 	}
+
+	m_tmin = min(m_tmin, 1.0);
 	return(m_tmin);
 } /*end leaf_conductance_tmin_curve*/
