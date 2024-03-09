@@ -200,7 +200,8 @@ void		surface_daily_F(
 	Kup_diffuse_lit = 0.0;
 	
 	patch[0].Kstar_soil = 0.0;
-	
+
+	patch[0].surface_PET = 0.0;	
 	dum = 0.0;
 	litter_NO3 = 0;
 	surface_NO3 = 0;
@@ -341,7 +342,7 @@ void		surface_daily_F(
 		                * rain_duration_day);
 		detention_store_potential_evaporation = detention_store_potential_evaporation_day + detention_store_potential_evaporation_night;
 
-		patch[0].surface_PET =  detention_store_potential_evaporation;
+		patch[0].surface_PET +=  detention_store_potential_evaporation;
 		// Avoid over-estimating ET from surfaces with no detention store size
 		//   (e.g. impervious surface) by gating ET by detention_store_size
 		detention_store_evaporation = min(detention_store_potential_evaporation,
@@ -809,6 +810,7 @@ void		surface_daily_F(
 				+ (PE_rainy_rate_day
 				* rain_duration_day);
 		patch[0].PE = PE_night + PE_day;
+		patch[0].surface_PET += PE_night + PE_day;
 
 		/*--------------------------------------------------------------*/
 		/*	Update rain storage ( this also updates the patch level	*/
@@ -877,6 +879,7 @@ void		surface_daily_F(
 				+ (soil_potential_rainy_evaporation_rate_day
 				* rain_duration_day);
 		soil_potential_evaporation = soil_potential_evaporation_night + soil_potential_evaporation_day;
+		patch[0].surface_PET +=  soil_potential_evaporation;
 
 		/*--------------------------------------------------------------*/
 		/*	BARE SOIL EVAPORATION:									*/
