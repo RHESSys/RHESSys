@@ -491,6 +491,7 @@ void		patch_daily_F(
 
 	patch[0].ga = 0.0;
 	patch[0].gasnow = 0.0;
+	patch[0].surface_PET = 0.0;
 
 	tmpwind = zone[0].wind;
 

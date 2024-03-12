@@ -201,7 +201,6 @@ void		surface_daily_F(
 	
 	patch[0].Kstar_soil = 0.0;
 
-	patch[0].surface_PET = 0.0;	
 	dum = 0.0;
 	litter_NO3 = 0;
 	surface_NO3 = 0;
@@ -342,7 +341,9 @@ void		surface_daily_F(
 		                * rain_duration_day);
 		detention_store_potential_evaporation = detention_store_potential_evaporation_day + detention_store_potential_evaporation_night;
 
+		
 		patch[0].surface_PET +=  detention_store_potential_evaporation;
+
 		// Avoid over-estimating ET from surfaces with no detention store size
 		//   (e.g. impervious surface) by gating ET by detention_store_size
 		detention_store_evaporation = min(detention_store_potential_evaporation,
@@ -663,6 +664,9 @@ void		surface_daily_F(
 						+ patch[0].Lstar_soil_day
 						+ surface_heat_flux_day)
 						/ daylength;
+
+	
+		
 		rnet_evap_litter = rnet_evap_litter_night + rnet_evap_litter_day;
 		if (rnet_evap_litter <= ZERO) rnet_evap_litter = 0.0;
 		if (rnet_evap_litter_night <= ZERO) rnet_evap_litter_night = 0.0;
@@ -811,6 +815,8 @@ void		surface_daily_F(
 				* rain_duration_day);
 		patch[0].PE = PE_night + PE_day;
 		patch[0].surface_PET += PE_night + PE_day;
+						
+						
 
 		/*--------------------------------------------------------------*/
 		/*	Update rain storage ( this also updates the patch level	*/

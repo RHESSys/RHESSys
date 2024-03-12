@@ -714,9 +714,8 @@ void update_phenology(struct zone_object  *zone,
         /*--------------------------------------------------------------*/
 	if (cs->stem_density > ZERO) {
 	if ((multiscale_flag == 0) || (msr_shading_flag == 0)) {	
-        horiz = sin(atan(epv->height/(2.0*1/(cs->stem_density))));
-	zone[0].e_horizon = max(zone[0].e_horizon_topog, horiz);
-	zone[0].w_horizon = max(zone[0].w_horizon_topog, horiz);
+	zone[0].e_horizon = zone[0].e_horizon_topog;
+	zone[0].w_horizon = zone[0].w_horizon_topog;
 	}}
 
 	/*--------------------------------------------------------------*/
