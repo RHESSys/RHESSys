@@ -177,6 +177,9 @@ void		surface_daily_F(
 	struct	litter_object	*litter;
 	double	litter_NO3;
 	double	surface_NO3;
+	double rnet_evap_pond_day, rnet_evap_pond_night;
+	double rnet_evap_litter_day, rnet_evap_litter_night;
+	double rnet_evap_soil_day, rnet_evap_soil_night;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize litter variables.				*/
@@ -272,9 +275,13 @@ void		surface_daily_F(
 
 		/*** Calculate available energy at surface. Assumes Kdowns are partially ***/
 		/*** reflected by water surface based on water albedo. ***/
-		double rnet_evap_pond_night = 1000 * ( patch[0].Lstar_pond_night + surface_heat_flux_night) / nightlength;
-		double rnet_evap_pond_day = 1000 * ( (1 - WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse)
+		rnet_evap_pond_night = 1000 * ( patch[0].Lstar_pond_night + surface_heat_flux_night) / nightlength;
+
+		if (daylength > ZERO)
+			rnet_evap_pond_day = 1000 * ( (1 - WATER_ALBEDO) * (patch[0].Kdown_direct + patch[0].Kdown_diffuse)
 				+ patch[0].Lstar_pond_day + surface_heat_flux_day) / daylength;
+			else rnet_evap_pond_day = 0.0;
+
 		rnet_evap_pond = rnet_evap_pond_night + rnet_evap_pond_day;
 		if (rnet_evap_pond <= ZERO) rnet_evap_pond = 0.0;
 		if (rnet_evap_pond_night <= ZERO) rnet_evap_pond_night = 0.0;
@@ -655,15 +662,18 @@ void		surface_daily_F(
 		/* Assuming net LW for litter is same as soil layer, which is	*/
 		/* a reasonable approximation if litter and soil are same 	*/
 		/* temperature and have same emissivity. */
-		double rnet_evap_litter_night = litter[0].cover_fraction
+		rnet_evap_litter_night = litter[0].cover_fraction
 				* 1000 * (patch[0].Lstar_soil_night
 						+ surface_heat_flux_night)
 						/ nightlength;
-		double rnet_evap_litter_day = litter[0].cover_fraction
+
+		if (daylength > ZERO) 
+		rnet_evap_litter_day = litter[0].cover_fraction
 				* 1000 * (Kstar_direct_lit + Kstar_diffuse_lit
 						+ patch[0].Lstar_soil_day
 						+ surface_heat_flux_day)
 						/ daylength;
+		else rnet_evap_litter_day = 0.0;
 
 	
 		
@@ -672,15 +682,19 @@ void		surface_daily_F(
 		if (rnet_evap_litter_night <= ZERO) rnet_evap_litter_night = 0.0;
 		if (rnet_evap_litter_day <= ZERO) rnet_evap_litter_day = 0.0;
 		/* Assuming net LW for soil is available for soil water evap. */
-		double rnet_evap_soil_night = (1 - litter[0].cover_fraction)
+		rnet_evap_soil_night = (1 - litter[0].cover_fraction)
 															* 1000 * (patch[0].Lstar_soil_night
 																	+ surface_heat_flux_night)
 																	/ nightlength;
-		double rnet_evap_soil_day = (1 - litter[0].cover_fraction)
+
+		if (daylength > ZERO) 
+		rnet_evap_soil_day = (1 - litter[0].cover_fraction)
 													* 1000 * (Kstar_direct_soil + Kstar_diffuse_soil
 															+ patch[0].Lstar_soil_day
 															+ surface_heat_flux_day)
 															/ daylength;
+		else
+			rnet_evap_soil_day = 0.0;
 		rnet_evap_soil = rnet_evap_soil_night + rnet_evap_soil_day;
 		if (rnet_evap_soil <= ZERO) rnet_evap_soil = 0.0;
 		if (rnet_evap_soil_night <= ZERO) rnet_evap_soil_night = 0.0;
