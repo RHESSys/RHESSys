@@ -1153,8 +1153,12 @@ void	canopy_stratum_daily_F(
 	/*	Note if surface heat flux makes evap negative we	*/
 	/*	have condensation.  					*/
 	/*--------------------------------------------------------------*/
-	double rnet_evap_night = 1000 * (stratum[0].Lstar_night + surface_heat_flux_night) / nightlength;
-	double rnet_evap_day = 1000 * (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar_day + surface_heat_flux_day) / daylength;
+	rnet_evap_night = 1000 * (stratum[0].Lstar_night + surface_heat_flux_night) / nightlength;
+
+	if (daylength > ZERO) 
+		rnet_evap_day = 1000 * (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse + stratum[0].Lstar_day + surface_heat_flux_day) / daylength;
+	else
+		rnet_evap_day = 0.0;
 
 	if (rnet_evap_night < ZERO) rnet_evap_night = 0.0;
 	if (rnet_evap_day < ZERO) rnet_evap_night = 0.0;
