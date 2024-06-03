@@ -1958,8 +1958,21 @@ void		patch_daily_F(
 			  if ( (strata[0].defaults[0][0].epc.veg_type != NON_VEG) ){
 
 			   	if (transpiration_reduction_percent < 1.0) {
+
+
+
+			  /* note that if availc is less than zero respiration was transfered to mr_deficit (and any photosynthesis cdf.psn_to_cpool */
+                         /* check for that and if that is the case, reduces cdf.psn_to_cpool contribution to cs.mr_deficit (its a deficit so a negative */
+                        /* contribution */
+                                  if (strata->cs.availc > -ZERO) {
+                                        strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
+                                        strata->cs.availc = max(0, strata->cs.availc);
+                                                }
+                                  else {if (strata->cs.mr_deficit > ZERO)
+                                                strata->cs.mr_deficit -= strata->cdf.psn_to_cpool*(1-transpiration_reduction_percent); }
+
+
 				  strata->cdf.psn_to_cpool = strata->cdf.psn_to_cpool  * transpiration_reduction_percent;
-				  strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
 				  strata->gs_sunlit *= transpiration_reduction_percent;
 				  strata->gs_shade *= transpiration_reduction_percent;
 				  strata->mult_conductance.LWP *= transpiration_reduction_percent;
