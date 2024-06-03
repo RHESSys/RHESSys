@@ -3,7 +3,7 @@
 /*------------------------------
 sort heights in descending order
 -------------------------------*/  
-int key_compare( void * e1,  void *e2 )
+int key_compare( const void * e1,  const void *e2 )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Definition. 							*/

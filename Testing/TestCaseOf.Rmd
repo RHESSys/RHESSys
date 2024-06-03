@@ -52,7 +52,7 @@ Unless new development changes are being made to the worldfile or flowtable, you
 
 ```{r setrunvars}
 
-rhessys_ver = "/Users/naomitague/scratch/rhessys/rhessys/rhessys7.5"
+rhessys_ver = "/Users/ctague/Desktop/Model/RHESSys/rhessys/rhessys7.5"
 worldfile = "worldfiles/w8TC.world"
 header = "worldfiles/w8TC.hdr"
 flowtable = "flowtables/w8TC.flow"

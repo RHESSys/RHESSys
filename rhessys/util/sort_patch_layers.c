@@ -30,7 +30,7 @@ void sort_patch_layers( struct patch_object *patch, int *rec)
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/
-	int key_compare(void *,  void *);
+	int key_compare(const void *,  const void *);
 	void	*alloc( 	size_t, char *, char *);
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
@@ -182,8 +182,8 @@ void sort_patch_layers( struct patch_object *patch, int *rec)
 			patch[0].layers[i].null_cover = 0.0;
 
 			/* recursively call patch layers to fix this - should always work because we are changing the height */
-			rec += 1;
-			sort_patch_layers(patch, *rec);
+			*rec += 1;
+			sort_patch_layers(patch, rec);
 		}
 		else {
 			patch[0].layers[i].null_cover = 1.0 - cover_fraction;
