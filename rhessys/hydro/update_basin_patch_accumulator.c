@@ -158,7 +158,7 @@ void update_basin_patch_accumulator(
 					patch[0].acc_month.pcp += (patch[0].total_water_in);
 					patch[0].acc_month.rain_thru += patch[0].rain_throughfall;
 					patch[0].acc_month.snow_thru += patch[0].snow_throughfall;
-
+					patch[0].acc_month.recharge += patch[0].recharge;
 					patch[0].acc_month.denitrif += patch[0].ndf.denitrif;
 					patch[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate;
 					patch[0].acc_month.mineralized +=

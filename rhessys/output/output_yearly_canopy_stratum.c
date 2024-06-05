@@ -74,6 +74,7 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 	stratum[0].acc_year.resp = 0.0;
 	stratum[0].acc_year.lai = 0.0;
 	stratum[0].acc_year.totalc = 0.0;
+	stratum[0].acc_year.cpool = 0.0;
 	stratum[0].acc_year.height = 0.0;
 	stratum[0].acc_year.lwp = 0.0;
 	stratum[0].acc_year.length = 0;

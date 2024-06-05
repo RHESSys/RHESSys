@@ -69,6 +69,7 @@ void	output_monthly_canopy_stratum( int basinID, int hillID,
 	stratum[0].acc_month.length = 0;
 	stratum[0].acc_month.rootc = 0.0;
 	stratum[0].acc_month.stemc = 0.0;
+	stratum[0].acc_month.cpool = 0.0;
 	stratum[0].acc_month.leafc = 0.0;
 	stratum[0].acc_month.minNSC = 0.0;
 	return;

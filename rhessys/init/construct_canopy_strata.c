@@ -405,6 +405,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_year.resp = 0.0;
 	canopy_strata[0].acc_year.totalc = 0.0;
 	canopy_strata[0].acc_year.totaln = 0.0;
+	canopy_strata[0].acc_year.cpool = 0.0;
 	canopy_strata[0].acc_year.lwp = 0.0;
 	canopy_strata[0].acc_year.height = 0.0;
 	canopy_strata[0].acc_year.minNSC = -999;
@@ -416,6 +417,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_month.leafc = 0.0;
 	canopy_strata[0].acc_month.rootc = 0.0;
 	canopy_strata[0].acc_month.stemc = 0.0;
+	canopy_strata[0].acc_month.cpool = 0.0;
 	//canopy_strata[0].acc_month.psn = 0.0;
 	canopy_strata[0].acc_month.gpsn = 0.0;
 	canopy_strata[0].acc_month.resp = 0.0;

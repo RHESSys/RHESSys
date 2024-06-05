@@ -3169,6 +3169,7 @@ struct  stratum_default
         double stemc;
         double rootc;
         double leafc;
+        double cpool;
 	double totalc;
 	double totaln;
 	double height;
