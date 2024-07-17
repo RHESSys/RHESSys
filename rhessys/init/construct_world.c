@@ -418,7 +418,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		}
 		header_file_flag = 1;
 		printf("Reading specified world file header %s\n", command_line->world_header_filename);
-printf("here for sure\n");
 	} 
  else { printf("not here\n");
 		// Set up file name for Option 2. ${WORLDFILE_NAME}.hdr
@@ -597,7 +596,6 @@ printf("line 524 ");
 	/*--------------------------------------------------------------*/
 	world[0].stratum_default_files = construct_filename_list( header_file,
 		world[0].defaults[0].num_stratum_default_files);
-printf("just before fire default ");
 	
 	/*--------------------------------------------------------------*/
 	/*	If fire option has been set                             */
