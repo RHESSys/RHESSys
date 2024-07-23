@@ -444,7 +444,6 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			printf("\nWARNING\nReading world file header from legacy world file.\nThis feature will be removed from a future release.\nPlease re-run g2w to generate a separate world file header.\nWARNING\n\n");
 		}
 	}
-printf("*****line 446***** ");
 	if ( legacy_worldfile ) {
 		/* For backward compatibility read date from worldfile if it is an old-style
 		 * worldfile with an in-line header.
