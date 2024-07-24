@@ -293,8 +293,16 @@ struct basin_object *construct_basin(
   basin[0].acc_month.PET = 0.0;
   basin[0].acc_month.psn = 0.0;
   basin[0].acc_month.num_threshold = 0;
+  basin[0].acc_month.gw_Qout = 0.0;
+  basin[0].acc_month.gw_storage = 0.0;
+  basin[0].acc_month.sm_deficit = 0.0;
+  basin[0].acc_month.sat_deficit = 0.0;
 
 
+  basin[0].acc_year.gw_Qout = 0.0;
+  basin[0].acc_year.gw_storage = 0.0;
+  basin[0].acc_year.sm_deficit = 0.0;
+  basin[0].acc_year.sat_deficit = 0.0;
   basin[0].acc_year.et = 0.0;
   basin[0].acc_year.snowpack = 0.0;
   basin[0].acc_year.theta = 0.0;

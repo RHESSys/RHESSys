@@ -437,6 +437,8 @@ struct accumulate_patch_object
    double litterc;
    double soiln;
    double littern;
+   double gw_Qout;
+   double gw_storage;
 };
 
 

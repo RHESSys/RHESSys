@@ -48,6 +48,7 @@ void update_basin_patch_accumulator(
 	/*update accumulator variables                                            */
 	/*-----------------------------------------------------------------------*/
 	for (h=0; h < basin->num_hillslopes; ++h) {
+
 		for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
 			for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
 
@@ -136,6 +137,8 @@ void update_basin_patch_accumulator(
 					basin[0].acc_year.streamflow += (patch[0].streamflow)
 							* scale;
 					basin[0].acc_year.lai += patch[0].lai * scale;
+					basin[0].acc_year.sat_deficit += patch[0].sat_deficit * scale;
+					basin[0].acc_year.sm_deficit += max(0.0,(patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage));
 				}
 				/*-------------------- Monthly + Output Filters --------------------*/
 				if ((command_line[0].output_flags.monthly == 1) &&

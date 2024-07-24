@@ -144,6 +144,8 @@ void		hillslope_daily_F(
 	/*----------------------------------------------------------------------*/
 	scale = hillslope[0].area / basin[0].area;
 	if((command_line[0].output_flags.monthly == 1)&&(command_line[0].b != NULL)){
+		basin[0].acc_month.gw_Qout += (hillslope[0].gw.Qout) * scale;
+		basin[0].acc_month.gw_storage += (hillslope[0].gw.storage) * scale;
 		basin[0].acc_month.streamflow += (hillslope[0].base_flow) * scale;
 		basin[0].acc_month.stream_NO3 += (hillslope[0].streamflow_NO3) * scale;
 		basin[0].acc_month.stream_NH4 += (hillslope[0].streamflow_NH4) * scale;
@@ -151,6 +153,8 @@ void		hillslope_daily_F(
 		basin[0].acc_month.stream_DOC += (hillslope[0].streamflow_DOC) * scale;
 		}
 	if((command_line[0].output_flags.yearly == 1)&&(command_line[0].b != NULL)){
+		basin[0].acc_year.gw_Qout += (hillslope[0].gw.Qout) * scale;
+		basin[0].acc_year.gw_storage += (hillslope[0].gw.storage) * scale;
 		basin[0].acc_year.streamflow += (hillslope[0].base_flow) * scale;
 		basin[0].acc_year.stream_NO3 += (hillslope[0].streamflow_NO3) * scale;
 		basin[0].acc_year.stream_NH4 += (hillslope[0].streamflow_NH4) * scale;

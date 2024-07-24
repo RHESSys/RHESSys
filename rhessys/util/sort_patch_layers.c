@@ -146,6 +146,7 @@ void sort_patch_layers( struct patch_object *patch, int *rec)
 		/*         with most stem (tree) or leaf (grass) - if the same (which is likely) */
 		/* 		simply pick the last in the list */
 		/*--------------------------------------------------------------*/
+
 		if (( cover_fraction > 1.0 ) && ( patch[0].layers[i].height > ZERO)){
 
 			maxstemcID = 0;
