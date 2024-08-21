@@ -118,6 +118,9 @@ void input_new_strata_mult(
 	double cwdc_loss;
 	int	paramCnt=0;
 	param	*paramPtr=NULL;
+
+	cwdc_loss = 0.0;
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.		*/
 	/*--------------------------------------------------------------*/

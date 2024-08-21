@@ -130,7 +130,6 @@ void input_new_strata_thin(
 	int	default_object_ID;
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
-	double age_initial, height_initial;
 	double cpool_loss, leafc_loss, deadleafc_loss;
 	double livestemc_loss, deadstemc_loss, livecrootc_loss;
 	double deadcrootc_loss, frootc_loss;
@@ -138,6 +137,15 @@ void input_new_strata_thin(
 	int	paramCnt=0;
 	param	*paramPtr=NULL;
 	
+	cpool_loss = 0.0;
+	leafc_loss = 0.0;
+	deadleafc_loss = 0.0;
+	livestemc_loss = 0.0;
+	deadstemc_loss = 0.0;
+	livecrootc_loss = 0.0;
+	deadcrootc_loss = 0.0;
+	frootc_loss = 0.0;
+
 	mort.mort_cpool = 0.0;
 	mort.mort_leafc = 0.0;
 	mort.mort_deadleafc = 0.0;
@@ -162,10 +170,7 @@ void input_new_strata_thin(
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.stem_density","%lf",canopy_strata[0].cs.stem_density,1);
 	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.stem_density = ltmp;
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.age","%lf",canopy_strata[0].cs.age,1);
-	  if (fabs(ltmp - NULLVAL) >= ONE){
-		age_initial = canopy_strata[0].cs.age;
-		canopy_strata[0].cs.age = ltmp;
-	  }
+	  if (fabs(ltmp - NULLVAL) >= ONE) canopy_strata[0].cs.age = ltmp;
 
 	// thinning vars
 	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"cs.cpool","%lf",NULLVAL,1);
@@ -301,7 +306,6 @@ void input_new_strata_thin(
 	
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
 	/* use stem density if included otherwise default to simply stem carbon */
-		height_initial = canopy_strata[0].epv.height;
 		if (canopy_strata[0].cs.stem_density < ZERO) {
 		canopy_strata[0].epv.height =
 		(canopy_strata[0].defaults[0][0].epc.height_to_stem_coef)
@@ -499,16 +503,16 @@ void input_new_strata_thin(
 			canopy_strata[0].acc_month.redefine_totalc_harvest += cpool_loss + leafc_loss + deadleafc_loss + 
 					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
 			canopy_strata[0].acc_month.redefine_stemc_harvest += livestemc_loss + deadstemc_loss;
-			canopy_strata[0].acc_month.redefine_age = age_initial;
-			canopy_strata[0].acc_month.redefine_height = height_initial;
+			canopy_strata[0].acc_month.redefine_age = canopy_strata[0].cs.age;
+			canopy_strata[0].acc_month.redefine_height = canopy_strata[0].epv.height;
 		}
 		if ((command_line[0].output_flags.yearly == 1) &&
 				(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){	
 			canopy_strata[0].acc_year.redefine_totalc_harvest += cpool_loss + leafc_loss + deadleafc_loss + 
 					livestemc_loss + deadstemc_loss + livecrootc_loss + deadcrootc_loss + frootc_loss;
 			canopy_strata[0].acc_year.redefine_stemc_harvest += livestemc_loss + deadstemc_loss;
-			canopy_strata[0].acc_year.redefine_age = age_initial;
-			canopy_strata[0].acc_year.redefine_height = height_initial;
+			canopy_strata[0].acc_year.redefine_age = canopy_strata[0].cs.age;
+			canopy_strata[0].acc_year.redefine_height = canopy_strata[0].epv.height;
 		}
 	}
 	if (thintyp != 2){ /* Remain on patch */
