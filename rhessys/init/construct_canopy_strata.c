@@ -478,6 +478,9 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].cs.stem_density = min(canopy_strata[0].cs.stem_density,
 			canopy_strata[0].defaults[0][0].epc.max_stem_density);
 
+	if (canopy_strata[0].defaults[0][0].epc.veg_type != TREE) 
+				canopy_stratum[0].cs.stem_density = 0.0;
+
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
 
 	/* tree - use stem density if available */
