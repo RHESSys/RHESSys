@@ -54,13 +54,6 @@ struct canopy_strata_object *construct_empty_shadow_strata(
                 struct cstate_struct *,
                 int);
 
-        int     update_rooting_depth(
-                struct rooting_zone_object *,
-                double,
-                double,
-                double,
-                double);
-
         void    *alloc(size_t, char *, char *);
         /*--------------------------------------------------------------*/
         /*      Local variable definition.                              */

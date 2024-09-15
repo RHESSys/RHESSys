@@ -72,6 +72,7 @@ void input_new_strata(
 
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
+		int,
 		double,
 		double,
 		double,
@@ -382,6 +383,7 @@ void input_new_strata(
 	if (rootc > ZERO){
 		if (update_rooting_depth(
 			&(canopy_strata[0].rootzone),
+			canopy_strata[0].defaults[0][0].epc.veg_type,
 			rootc,
 			canopy_strata[0].defaults[0][0].epc.root_growth_direction,
 			canopy_strata[0].defaults[0][0].epc.root_distrib_parm,

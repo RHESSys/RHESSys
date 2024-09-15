@@ -71,6 +71,7 @@ struct canopy_strata_object *construct_canopy_strata(
 
 	int	update_rooting_depth(
 		struct rooting_zone_object *,
+		int,
 		double,
 		double,
 		double,
@@ -479,7 +480,7 @@ struct canopy_strata_object *construct_canopy_strata(
 			canopy_strata[0].defaults[0][0].epc.max_stem_density);
 
 	if (canopy_strata[0].defaults[0][0].epc.veg_type != TREE) 
-				canopy_strata[0].cs.stem_density = 0.0;
+				canopy_strata[0].cs.stem_density = 3000.0;
 
 	if (canopy_strata[0].defaults[0][0].epc.veg_type == TREE) {
 
@@ -548,6 +549,7 @@ struct canopy_strata_object *construct_canopy_strata(
 		if (rootc > ZERO){
 			if (update_rooting_depth(
 				&(canopy_strata[0].rootzone),
+				canopy_strata[0].defaults[0][0].epc.veg_type,
 				rootc,
 				canopy_strata[0].defaults[0][0].epc.root_growth_direction,
 				canopy_strata[0].defaults[0][0].epc.root_distrib_parm,

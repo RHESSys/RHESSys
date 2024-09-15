@@ -34,6 +34,7 @@
 #include "rhessys.h"
 
 int update_rooting_depth( struct rooting_zone_object *rootzone,
+						   int veg_type,
 						   double rootc,
 						   double root_growth_direction,
 						   double root_distrib_parm,
@@ -53,7 +54,7 @@ int update_rooting_depth( struct rooting_zone_object *rootzone,
 	double biomass_carbon_ratio;
 
 	biomass_carbon_ratio = 2.0;
-	if (stem_density > ZERO) {
+	if (veg_type==TREE) {
 	rootzone->depth = 3.0 * pow((biomass_carbon_ratio*rootc/stem_density), root_growth_direction) 
 				/ root_distrib_parm;
 	}

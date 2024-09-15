@@ -84,6 +84,7 @@ void	canopy_stratum_growth(
 
 	 int     update_rooting_depth(
                 struct rooting_zone_object *,
+		int,
                 double,
                 double,
                 double,
@@ -185,6 +186,7 @@ void	canopy_stratum_growth(
         if ((command_line[0].grow_flag > 0) && (rootc > ZERO)){
                 if ( update_rooting_depth(
                         &(stratum[0].rootzone),
+                        stratum[0].defaults[0][0].epc.veg_type,
 			rootc,
 			stratum[0].defaults[0][0].epc.root_growth_direction, stratum[0].defaults[0][0].epc.root_distrib_parm,
                         stratum[0].defaults[0][0].epc.max_root_depth,
