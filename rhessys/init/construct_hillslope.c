@@ -297,6 +297,8 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].acc_month.stream_NH4 = 0.0;
 	hillslope[0].acc_month.psn = 0.0;
 
+	hillslope[0].acc_year.gw_Qout = 0;
+	hillslope[0].acc_year.gw_storage = 0;
 	hillslope[0].acc_year.num_threshold = 0;
 	hillslope[0].acc_year.et = 0.0;
 	hillslope[0].acc_year.streamflow = 0.0;
