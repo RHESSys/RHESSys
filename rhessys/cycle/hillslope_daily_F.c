@@ -163,5 +163,8 @@ void		hillslope_daily_F(
 		}
 
 
+	hillslope[0].acc_year.gw_Qout += hillslope[0].gw.Qout;
+	hillslope[0].acc_year.gw_storage += hillslope[0].gw.storage;
+
 	return;
 } /*end hillslope_daily_F.c*/
