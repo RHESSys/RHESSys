@@ -304,6 +304,7 @@ void update_basin_patch_accumulator(
 					patch[0].acc_year.lai =
 							max(patch[0].acc_year.lai, patch[0].lai);
 							
+					patch[0].acc_year.sat_deficit += patch[0].sat_deficit;
 
 					patch[0].acc_year.soiln += patch[0].soil_ns.totaln;
 					patch[0].acc_year.littern += patch[0].litter_ns.totaln;
