@@ -297,10 +297,12 @@ void update_basin_patch_accumulator(
 								patch[0].acc_year.length);
 					}
 
-					if ((patch[0].PET + patch[0].PE - tmp)
+					/* if ((patch[0].PET + patch[0].PE - tmp)
 							> patch[0].acc_year.sm_deficit)
 						patch[0].acc_year.sm_deficit = (patch[0].PET
 								+ patch[0].PE - tmp);
+					*/
+					patch[0].acc_year.sm_deficit += max(0.0,(patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage));
 					patch[0].acc_year.lai =
 							max(patch[0].acc_year.lai, patch[0].lai);
 							
