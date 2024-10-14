@@ -27,8 +27,8 @@ endif
 # specifically added to be able to use with -w, to supress warnings
 CMD_OPTS +=
 
-CFLAGS = -g -Wall -std=c99 $(DEFINES) -fno-stack-protector -O
-CFLAGS_NO_C99 = -g -Wall $(DEFINES) -fno-stack-protector -O $(CMD_OPTS)
+CFLAGS = -g -Wall -Wno-implicit-function-pointer-types -std=c99 $(DEFINES) -fno-stack-protector -O
+CFLAGS_NO_C99 = -g -Wno-implicit-function-pointer-types -Wall $(DEFINES) -fno-stack-protector -O $(CMD_OPTS)
 # -Og for debug
 # -O2 for speed
 
