@@ -2536,7 +2536,8 @@ struct cstate_struct
     double  age; /* (num years) */
     double mortality_fract;   /* percentage lost to carbonhydrate storage mortality this year */
     double preday_totalc;   /* (kgC/m2) previous days plant carbon total */
-    double totalc;          /* (kgC/m2) plant carbon total */
+    double totalc;          /* (kgC/m2) plant carbon total + coarse woody debris */
+    double total_plantc;     /* (kgC/m2) plant carbon total */
     double net_psn;         /* (kgC/m2)  net photosynthesis (psn-respiration) */
     double nppcum;          /* (kgC/m2) cumulative daily npp (net_psn) */
     double cpool;           /* (kgC/m2) temporary plant C pool */
@@ -2785,6 +2786,7 @@ struct epvar_struct
     double    nlimit;          /* (0-1) 0 is not limited on that day */
     double preday_totaln;   /* (kgN/m2) previous days plant nitrogen total */
     double totaln;          /* (kgN/m2)  plant nitrogen total */
+    double total_plantn;          /* (kgN/m2)  plant nitrogen total */
     double npool;           /* (kgN/m2) temporary plant N pool */
     double leafn;           /* (kgN/m2) leaf N */
     double dead_leafn;      /* (kgN/m2) standing dead leaf N for grasses */
@@ -3174,6 +3176,8 @@ struct  stratum_default
         double cpool;
 	double totalc;
 	double totaln;
+	double total_plantc;
+	double total_plantn;
 	double height;
 	double fe_prop_c_consumed;
 	double fe_prop_c_mortality;

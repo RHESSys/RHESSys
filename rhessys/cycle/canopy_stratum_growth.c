@@ -238,7 +238,7 @@ void	canopy_stratum_growth(
 
 
 	cs = &(stratum[0].cs);
-	stratum[0].cs.totalc = (cs->cpool + cs->cwdc + cs->dead_leafc + cs->cwdc_bg
+	stratum[0].cs.total_plantc = (cs->cpool + cs->dead_leafc 
 		+ cs->leafc + cs->leafc_store +  cs->leafc_transfer
 		+ cs->gresp_transfer + cs->gresp_store
 		+ cs->frootc + cs->frootc_store +  cs->frootc_transfer
@@ -246,14 +246,17 @@ void	canopy_stratum_growth(
 		+ cs->dead_stemc + cs->deadstemc_store +  cs->deadstemc_transfer
 		+ cs->live_crootc + cs->livecrootc_store +  cs->livecrootc_transfer
 		+ cs->dead_crootc + cs->deadcrootc_store +  cs->deadcrootc_transfer);
+	stratum[0].cs.totalc = stratum[0].cs.total_plantc + cs->cwdc + cs->cwdc_bg;
 	ns = &(stratum[0].ns);
-	stratum[0].ns.totaln = (ns->npool + ns->cwdn + ns->retransn + ns->dead_leafn + ns->cwdn_bg
+	stratum[0].ns.totaln = (ns->npool + ns->retransn + ns->dead_leafn 
 		+ ns->leafn + ns->leafn_store +  ns->leafn_transfer
 		+ ns->frootn + ns->frootn_store +  ns->frootn_transfer
 		+ ns->live_stemn + ns->livestemn_store +  ns->livestemn_transfer
 		+ ns->dead_stemn + ns->deadstemn_store +  ns->deadstemn_transfer
 		+ ns->live_crootn + ns->livecrootn_store +  ns->livecrootn_transfer
 		+ ns->dead_crootn + ns->deadcrootn_store +  ns->deadcrootn_transfer);
+	stratum[0].ns.totaln = stratum[0].ns.total_plantn+ns->cwdn_bg + ns->cwdn;
+
 	stratum[0].acc_month.lai += stratum[0].epv.proj_lai;
 	return;
 } /*end canopy_stratum_daily_growth.c*/
