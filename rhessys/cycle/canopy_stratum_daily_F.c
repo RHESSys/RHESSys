@@ -2050,7 +2050,9 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.stemc += stratum[0].cs.live_stemc+stratum[0].cs.dead_stemc;
 		stratum[0].acc_month.cpool += stratum[0].cs.cpool;
 		stratum[0].acc_month.totalc += stratum[0].cs.totalc;
+		stratum[0].acc_month.total_plantc += stratum[0].cs.total_plantc;
 		stratum[0].acc_month.totaln += stratum[0].ns.totaln;
+		stratum[0].acc_month.total_plantn += stratum[0].ns.total_plantn;
 		stratum[0].acc_month.fe_prop_c_consumed += stratum[0].fe.canopy_target_prop_c_consumed;
 		stratum[0].acc_month.fe_prop_c_mortality += stratum[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
 		stratum[0].acc_month.fe_prop_c_mortality_leaf += stratum[0].fe.canopy_target_prop_c_remain_adjusted;

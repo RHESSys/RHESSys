@@ -248,7 +248,7 @@ void	canopy_stratum_growth(
 		+ cs->dead_crootc + cs->deadcrootc_store +  cs->deadcrootc_transfer);
 	stratum[0].cs.totalc = stratum[0].cs.total_plantc + cs->cwdc + cs->cwdc_bg;
 	ns = &(stratum[0].ns);
-	stratum[0].ns.totaln = (ns->npool + ns->retransn + ns->dead_leafn 
+	stratum[0].ns.total_plantn = (ns->npool + ns->retransn + ns->dead_leafn 
 		+ ns->leafn + ns->leafn_store +  ns->leafn_transfer
 		+ ns->frootn + ns->frootn_store +  ns->frootn_transfer
 		+ ns->live_stemn + ns->livestemn_store +  ns->livestemn_transfer
