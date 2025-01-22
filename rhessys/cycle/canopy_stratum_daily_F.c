@@ -2037,7 +2037,7 @@ void	canopy_stratum_daily_F(
 			(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
 
 		stratum[0].acc_month.gpsn += stratum[0].cdf.psn_to_cpool; 
-		stratum[0].acc_month.resp += stratum[0].cdf.total_mr;
+		stratum[0].acc_month.resp += stratum[0].cdf.total_mr+stratum[0].total_gr;
 		stratum[0].acc_month.lai += stratum[0].epv.proj_lai;
 		stratum[0].acc_month.height += stratum[0].epv.height;
 		stratum[0].acc_month.lwp += stratum[0].epv.psi;
@@ -2061,7 +2061,7 @@ void	canopy_stratum_daily_F(
 	if ((command_line[0].output_flags.yearly == 1) &&
 			(command_line[0].output_filter_strata_accum_yearly || command_line[0].c != NULL || command_line[0].f != NULL)){
 		stratum[0].acc_year.gpsn += stratum[0].cdf.psn_to_cpool; 
-		stratum[0].acc_year.resp += stratum[0].cdf.total_mr;
+		stratum[0].acc_year.resp += stratum[0].cdf.total_mr+stratum[0].cdf.total_gr;
 		stratum[0].acc_year.lai += stratum[0].epv.proj_lai;
 		stratum[0].acc_year.height += stratum[0].epv.height;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
