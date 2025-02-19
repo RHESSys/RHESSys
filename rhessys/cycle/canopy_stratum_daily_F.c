@@ -2037,7 +2037,7 @@ void	canopy_stratum_daily_F(
 			(command_line[0].output_filter_strata_accum_monthly || command_line[0].c != NULL)) {
 
 		stratum[0].acc_month.gpsn += stratum[0].cdf.psn_to_cpool; 
-		stratum[0].acc_month.resp += stratum[0].cdf.total_mr+stratum[0].total_gr;
+		stratum[0].acc_month.resp += stratum[0].cdf.total_mr+stratum[0].cdf.total_gr;
 		stratum[0].acc_month.lai += stratum[0].epv.proj_lai;
 		stratum[0].acc_month.height += stratum[0].epv.height;
 		stratum[0].acc_month.lwp += stratum[0].epv.psi;
