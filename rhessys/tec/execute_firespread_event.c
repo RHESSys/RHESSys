@@ -197,6 +197,12 @@ void execute_firespread_event(
               world[0].fire_grid[i][j].fuel_litter +=(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
                 * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_leafc) *
                 patch_fire_grid[i][j].prop_patch_in_grid[p]; // adds standing dead grass to fuel litter for firespread
+
+/* for really low vegetation add leafc to litter fuel - we really should do this in WMFire by including fuel_veg but for now add here */
+			if (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height < patch[0].soil_defaults[0][0].understory_height_thresh)
+						world[0].fire_grid[i][j].fuel_litter +=(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+                * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc);
+
 					world[0].fire_grid[i][j].fuel_cwd += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction //coarse woody fuels
                                                 * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc) *
                                                  patch_fire_grid[i][j].prop_patch_in_grid[p] ;
