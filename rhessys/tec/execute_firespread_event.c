@@ -342,7 +342,7 @@ void execute_firespread_event(
 	/* Call WMFire	 												*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].verbose_flag <= -7) {printf("\n----- Starting WMFire -----\n");}
-	printf("Calling WMFire on: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);
+	/* printf("Calling WMFire on: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col); */
 	// needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
 	world[0].fire_grid = WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
 	if (command_line[0].verbose_flag <= -7) {printf("----- Finished WMFire -----\n");}
