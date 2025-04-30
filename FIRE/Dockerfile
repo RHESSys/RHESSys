@@ -82,7 +82,7 @@ RUN b2 clean
 RUN b2 release
 
 # make WMFire library accessible
-RUN cp build/gcc-9/release/threading-multi/libwmfire.so ../lib/
+RUN cp build/gcc-11/release/threading-multi/libwmfire.so ../lib/
 
 # compile RHESSys and WMFire
 WORKDIR ../rhessys
