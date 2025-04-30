@@ -3,6 +3,11 @@ FROM ubuntu:22.04
 # ensures every time we use 20.04 LTS
 # this is the latest known version that does not segfault
 
+# make sure that it is non-interactive
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=America/Los_Angeles
+ENV DEBIAN_FRONTEND=${DEBIAN_FRONTEND} \
+    TZ=${TZ}
 # install linux libs
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 	apt-get install --yes \
