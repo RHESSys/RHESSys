@@ -200,8 +200,7 @@ void execute_firespread_event(
 
 /* for really low vegetation add leafc to litter fuel - we really should do this in WMFire by including fuel_veg but for now add here */
 // adding in stem and leaf to litter as a temporary fix
-			if (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height < patch[0].soil_defaults[0][0].understory_height_thresh) && 
-					(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epc.fire_veg_type == SHRUB)
+	if ((patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height < patch[0].soil_defaults[0][0].understory_height_thresh) && (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].defaults[0][0].epc.fire_veg_type == SHRUB))
 						world[0].fire_grid[i][j].fuel_litter +=(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
                 * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_stemc) * 
  							patch_fire_grid[i][j].prop_patch_in_grid[p] ;
