@@ -36,6 +36,9 @@ int	parse_veg_type( char *input_string)
 	if ((strncmp(input_string,"TREE",4) == 0) ||
 		(strncmp(input_string, "tree",4) == 0) )
 		veg_type = TREE;
+	else if ((strncmp(input_string,"shrub",5) == 0) ||
+		(strncmp(input_string, "SHRUB",5) == 0) )
+		veg_type = SHRUB;
 	else if ((strncmp(input_string,"GRASS",5) == 0) ||
 		(strncmp(input_string, "grass",5) == 0) )
 		veg_type = GRASS;

@@ -177,6 +177,7 @@
 #define NON_VEG 20
 #define TREE 1
 #define GRASS 2
+#define SHRUB 5
 #define C4GRASS 3
 #define LITTER 3
 #define DECID 1
@@ -2974,6 +2975,7 @@ struct epconst_struct
         int phenology_flag;     /* (DIM) set as 1 for dynamic phenology */
         int allocation_flag;    /* (DIM) set as 1 for dynamic allocation */
         int veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
+        int fire_veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
         int phenology_type;     /* (DIM) set as 1 for decid; 0 for evergreen    */
         int nfix;               /* (DIM) set a 1 for n-fixers; 0 for not nfixers */
         int psi_curve;          /* (DIM) set to 0 for biome-bgc psi-conductance curve, other values give type of model 1=linear, 2=squared etc */

@@ -94,6 +94,12 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].ID = getIntParam(&paramCnt, &paramPtr, "stratum_default_ID", "%d", 7, 1); // new param name
 		default_object_list[i].epc.veg_type = 		parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.veg.type", "%s", "TREE", 1)); // param name is "epc.veg.type" in param file
+		/*--------------------------------------------------------------*/
+		/*		for now shrubs are treated as trees except for fire so reset as TREE			*/
+		/*--------------------------------------------------------------*/
+		if (default_object_list[i].epc.veg_type == SHRUB) default_object_list[i].epc.veg_type = TREE;
+	
+		default_object_list[i].epc.fire_veg_type = 	parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.fire_veg.type", "%s", "TREE", 1)); // param name is "epc.veg.type" in param file
 		default_object_list[i].K_absorptance = 		getDoubleParam(&paramCnt, &paramPtr, "K_absorptance", "%lf", 0.8, 1); // parameter misspelled in file as "K_apsorbtance"
 		default_object_list[i].K_reflectance = 		getDoubleParam(&paramCnt, &paramPtr, "K_reflectance", "%lf", 0.1, 1);
 		default_object_list[i].K_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "K_transmittance", "%lf", 0.1, 1); 
