@@ -68,7 +68,7 @@ void execute_firespread_event(
 	struct patch_family_object *patch_family;
 //	struct node_fire_wui_dist *tmp_node;
 	int i,j,p,c,layer;
-	double pspread;
+	double pspread, height_prop;
 	double mean_fuel_veg=0,mean_fuel_litter=0, mean_fuel_cwd,mean_soil_moist=0,mean_fuel_moist=0,mean_relative_humidity=0,
 		mean_wind_direction=0,mean_wind=0,mean_z=0,mean_temp=0,mean_et=0,mean_pet=0,mean_understory_et=0,mean_understory_pet=0;
 	double denom_for_mean=0;
@@ -199,12 +199,21 @@ void execute_firespread_event(
                 patch_fire_grid[i][j].prop_patch_in_grid[p]; // adds standing dead grass to fuel litter for firespread
 
 /* for really low vegetation add leafc to litter fuel - we really should do this in WMFire by including fuel_veg but for now add here */
-// adding in stem and leaf to litter as a temporary fix
-			if (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height < patch[0].soil_defaults[0][0].understory_height_thresh) && 
-					(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epc.fire_veg_type == SHRUB)
-						world[0].fire_grid[i][j].fuel_litter +=(patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+// adding in stem and leaf to litter as a temporary fix linearly reducing as it gets taller
+
+	
+	if ((patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height < patch[0].soil_defaults[0][0].understory_height_thresh) && (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].defaults[0][0].epc.fire_veg_type == SHRUB)) {
+
+			if (patch[0].soil_defaults[0][0].understory_height_thresh > ZERO) 
+			height_prop = (patch[0].soil_defaults[0][0].understory_height_thresh - patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height ) /
+							patch[0].soil_defaults[0][0].understory_height_thresh;
+			else height_prop = 0;
+
+						world[0].fire_grid[i][j].fuel_litter += height_prop * (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
                 * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_stemc) * 
- 							patch_fire_grid[i][j].prop_patch_in_grid[p] ;
+ 							patch_fire_grid[i][j].prop_patch_in_grid[p] ; 
+
+		}
 
 					world[0].fire_grid[i][j].fuel_cwd += (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction //coarse woody fuels
                                                 * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc) *

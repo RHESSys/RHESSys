@@ -1,7 +1,5 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:22.04
-# ensures every time we use 20.04 LTS
-# this is the latest known version that does not segfault
 
 # make sure that it is non-interactive
 ARG DEBIAN_FRONTEND=noninteractive
