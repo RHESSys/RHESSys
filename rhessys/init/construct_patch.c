@@ -245,6 +245,7 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.et = 0.0;
 	patch[0].acc_month.snowpack = 0.0;
 	patch[0].acc_month.theta = 0.0;
+	patch[0].acc_month.rootzone_depth = 0.0;
 	patch[0].acc_month.streamflow = 0.0;
 	patch[0].acc_month.length = 0;
 	patch[0].acc_month.denitrif = 0.0;

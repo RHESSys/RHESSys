@@ -418,6 +418,7 @@ struct accumulate_patch_object
    double DOC_loss;
    double DON_loss;
    double theta;
+   double rootzone_depth;
    double soilmoist;
    double rz_storage;
    double unsat_storage;

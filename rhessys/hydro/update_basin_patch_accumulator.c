@@ -145,6 +145,7 @@ void update_basin_patch_accumulator(
 						(command_line[0].output_filter_patch_accum_monthly ||
 								command_line[0].p != NULL)) {
 					patch[0].acc_month.theta += patch[0].rootzone.S;
+					patch[0].acc_month.rootzone_depth += patch[0].rootzone.depth;
 					patch[0].acc_month.soilmoist += (patch[0].rz_storage + patch[0].unsat_storage) / patch[0].sat_deficit;
 					patch[0].acc_month.rz_storage += patch[0].rz_storage;
 					patch[0].acc_month.unsat_storage += patch[0].unsat_storage;
