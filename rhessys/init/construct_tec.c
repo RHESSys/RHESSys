@@ -124,7 +124,7 @@ struct tec_object	*construct_tec(
 	/*--------------------------------------------------------------*/
 	/*	Read a line of the tec file if it exists.					*/
 	/*--------------------------------------------------------------*/
-	check = fscanf(tecfile[0].tfile,"%d %d %d %d %s\n",
+	check = fscanf(tecfile[0].tfile,"%ld %ld %ld %ld %s\n",
 		&(current_date.year),
 		&(current_date.month),
 		&(current_date.day),

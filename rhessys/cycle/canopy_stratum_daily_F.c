@@ -623,7 +623,7 @@ void	canopy_stratum_daily_F(
 		K_reflectance);
 
 
-	if ( command_line[0].verbose_flag >2  )
+	if ( command_line[0].verbose_flag > 2  )
 		printf("\n%d %d %d  -444.3 ",
 		current_date.year, current_date.month, current_date.day);
 	stratum[0].APAR_direct = compute_direct_radiative_fluxes(
@@ -680,7 +680,7 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	stratum[0].epv.min_vwc = min((patch[0].unsat_storage / patch[0].sat_deficit),
 		stratum[0].epv.min_vwc);
-	if ( command_line[0].verbose_flag >2  )
+	if ( command_line[0].verbose_flag > 2  )
 		printf("\n fparabs %f min_vwc %f",stratum[0].epv.max_fparabs,
 		stratum[0].epv.min_vwc);
 	if ( command_line[0].verbose_flag > 1 )
