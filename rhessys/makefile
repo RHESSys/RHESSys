@@ -30,9 +30,10 @@ CMD_OPTS +=
 #CFLAGS = -g -Wall -Wno-incompatible-function-pointer-types -std=c99 $(DEFINES) -fno-stack-protector -O -Wno-implicit-function-declaration -Wno-int-conversion
 
 # -fsanitize=address,undefined
-
-CFLAGS = -std=gnu99 -D_GNU_SOURCE -g -O0 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-CFLAGS_NO_C99 = -D_GNU_SOURCE -g -O0 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+# _POSIX_C_SOURCE=200809L
+# -D_GNU_SOURCE
+CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g -O0 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g -O0 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
 # -Og for debug
 # -O2 for speed
 
