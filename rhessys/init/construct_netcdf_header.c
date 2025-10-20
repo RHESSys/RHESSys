@@ -20,7 +20,11 @@
 #include <float.h>
 #include "rhessys.h"
 
+//unsure why FLT_MAX has been redefined here, default is 10^37 in C99
+#ifndef FLT_MAX
 #define FLT_MAX 1000000000
+#endif
+
 double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); 
 #ifdef LIU_NETCDF_READER
 /*Get the station numbers from station file                         */
