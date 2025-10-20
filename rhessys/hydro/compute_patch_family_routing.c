@@ -482,10 +482,10 @@ void compute_patch_family_routing(struct zone_object *zone,
             {
                 printf("%f          %f\n",
                     zone[0].patch_families[pf][0].patches[i][0].rz_transfer,
-                    zone[0].patch_families[pf][0].patches[i][0].unsat_transfer,
-                    (zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) *
-                    zone[0].patch_families[pf][0].patches[i][0].area,
                     zone[0].patch_families[pf][0].patches[i][0].unsat_transfer
+                    //(zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) *
+                    //zone[0].patch_families[pf][0].patches[i][0].area,
+                    //zone[0].patch_families[pf][0].patches[i][0].unsat_transfer
                     );
             }
             printf("==============================\n");

@@ -51,7 +51,7 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 	/*--------------------------------------------------------------*/
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
-	fprintf(outfile,"%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf \n",
+	fprintf(outfile,"%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf \n",
 		current_date.year,
 		basinID,
 		hillID,
