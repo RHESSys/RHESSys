@@ -52,7 +52,7 @@ void    compute_shaded_kdown(   struct  patch_object    *patch,
     /*--------------------------------------------------------------*/
 	/*  Compare horizons to patch family adjusted horizon           */
 	/*--------------------------------------------------------------*/
-    if (patch[0].family_horizon > asin(zone[0].w_horizon) > 0 || patch[0].family_horizon > asin(zone[0].e_horizon) > 0) {
+    if ((patch[0].family_horizon > asin(zone[0].w_horizon) &&  asin(zone[0].w_horizon) > 0) || (patch[0].family_horizon > asin(zone[0].e_horizon) && asin(zone[0].e_horizon) > 0)) {
         // 180 degrees = pi = 3.141593 rad
         // day length/sky in radians
         dayl_rad = PI - asin(zone[0].w_horizon) - asin(zone[0].e_horizon);
