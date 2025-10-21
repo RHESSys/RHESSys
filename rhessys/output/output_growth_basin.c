@@ -94,7 +94,7 @@ void	output_growth_basin(
 	aarea =  0.0 ;
 	asoilhr = 0.0;
 	alitrc = 0.0;
-	alitrn = 0.0; asoiln = 0.0; asoiln_noslow;
+	alitrn = 0.0; asoiln = 0.0; asoiln_noslow = 0.0;
 	anitrate = 0.0;
 	asurfaceN = 0.0;
 	asoilc = 0.0; asminn=0.0;

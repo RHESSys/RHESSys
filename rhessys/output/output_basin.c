@@ -165,7 +165,7 @@ void	output_basin(			int routing_flag,
 	alitrc = 0.0;
 	acdrip = 0.0;
 	acga = 0.0;
-	
+	alitter_cap = 0.0;
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
