@@ -196,14 +196,14 @@ struct fire_default *construct_fire_defaults(
                 // and "_stratum.params"
                 if (command_line[0].output_prefix != NULL) {
                     strcat(outFilename, command_line[0].output_prefix);
-                    if (filename != NULL) {
+                    if (strcmp(filename, "") != 0) {
                         strcat(outFilename, "_");
                         strcat(outFilename, filename);
                     }
                     strcat(outFilename, "_fire.params");
                 } 
                 else {
-                    if (filename != NULL) {
+                    if (strcmp(filename, "") != 0) {
                         strcat(outFilename, "_");
                         strcat(outFilename, filename);
                     }

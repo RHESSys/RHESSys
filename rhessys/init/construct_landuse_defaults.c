@@ -173,14 +173,14 @@ struct landuse_default *construct_landuse_defaults(
             // and "_landuse.params"
             if (command_line[0].output_prefix != NULL) {
                 strcat(outFilename, command_line[0].output_prefix);
-                if (filename != NULL) {
+                if (strcmp(filename, "") != 0) {
                     strcat(outFilename, "_");
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_landuse.params");
             } 
             else {
-                if (filename != NULL) {
+                if (strcmp(filename, "") != 0) {
                     strcat(outFilename, "_");
                     strcat(outFilename, filename);
                 }

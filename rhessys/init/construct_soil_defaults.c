@@ -313,14 +313,14 @@ struct soil_default *construct_soil_defaults(
             // and "_soil.params"
             if (command_line[0].output_prefix != NULL) {
                 strcat(outFilename, command_line[0].output_prefix);
-                if (filename != NULL) {
+                if (strcmp(filename, "") != 0) {
                     strcat(outFilename, "_");
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_soil.params");
             } 
             else {
-                if (filename != NULL) {
+                if (strcmp(filename, "") != 0) {
                     strcat(outFilename, "_");
                     strcat(outFilename, filename);
                 }

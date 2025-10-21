@@ -191,14 +191,14 @@ struct zone_default *construct_zone_defaults(
             // and "_zone.params"
             if (command_line[0].output_prefix != NULL) {
                 strcat(outFilename, command_line[0].output_prefix);
-                if (filename != NULL) {
+                if (strcmp(filename, "") != 0) {
                     strcat(outFilename, "_");
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_zone.params");
             }
             else {
-                if (filename != NULL) {
+                if (strcmp(filename, "") != 0) {
                     strcat(outFilename, "_");
                     strcat(outFilename, filename);
                 }
