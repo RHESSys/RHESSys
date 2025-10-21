@@ -965,6 +965,9 @@ void print_output_filter(OutputFilter *f) {
 		case OUTPUT_FILTER_BASIN:
 			fprintf(stderr, "\ttype: basin,\n");
 			break;
+		case OUTPUT_FILTER_ZONE:
+			fprintf(stderr, "\ttype: zone,\n");
+			break;
 		case OUTPUT_FILTER_PATCH:
 			fprintf(stderr, "\ttype: patch,\n");
 			break;
