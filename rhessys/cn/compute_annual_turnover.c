@@ -46,7 +46,7 @@ int compute_annual_turnover(
 	/*------------------------------------------------------*/
 	
 	int ok=1;
-	if ( (epc.veg_type == TREE) ){
+	if ( epc.veg_type == TREE ){
 		epv->day_livestem_turnover = (cs->live_stemc
 			+ cs->livestemc_transfer + cs->livestemc_store)
 			* epc.livewood_turnover / 365;

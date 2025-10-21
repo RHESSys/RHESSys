@@ -147,7 +147,7 @@ double compute_potential_N_uptake_combined(
 		fbroot = fleaf * epc.alloc_frootc_leafc *  (1+epc.waring_pb )/ (1.0 + epc.waring_pb * (cdf->psn_to_cpool)/c);
 		ratio = fbroot/fleaf;
 
-		if ((epc.veg_type == TREE)) {
+		if (epc.veg_type == TREE) {
 		if (fbroot+fleaf > 0.95) {
 			fleaf = 0.95/(1+ratio);
 			fbroot = fleaf*ratio;
