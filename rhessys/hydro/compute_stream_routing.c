@@ -149,7 +149,7 @@ double count this way */
 
 		/*calulate water depth for next time step */
 		xarea=alfa*pow(stream_network[i].Qin,0.6);
-		stream_network[i].water_depth=(-stream_network[i].bottom_width+sqrt(abs(stream_network[i].bottom_width*stream_network[i].bottom_width+4*tangent*xarea)))/(2*tangent);
+		stream_network[i].water_depth=(-stream_network[i].bottom_width+sqrt(fabs(stream_network[i].bottom_width*stream_network[i].bottom_width+4*tangent*xarea)))/(2*tangent);
         	
 		
 		/*If there is a reservoir in this reach, do reservoir operation */
@@ -247,14 +247,14 @@ double nonlinear_kimetic_wave(double alfa,double Qin,double initial_flow,double 
 		 Qout=alam*qk1+(1-alam)*qk;
 		 f=(dt/dx)*Qout+alfa*pow(Qout,beta)-c;
         
-		 if(abs(f)<=epsi || abs(f)<=epsi0)
+		 if(fabs(f)<=epsi || fabs(f)<=epsi0)
                     goto _jumpout;
-		 if(abs(f)<abs(fk))
+		 if(fabs(f)<fabs(fk))
 			 break;
 	 }
 	 qk=Qout;
 	 if(k>25)
-		 break;}while(abs(f)>epsi);
+		 break;}while(fabs(f)>epsi);
          _jumpout:
          return(Qout);
 
