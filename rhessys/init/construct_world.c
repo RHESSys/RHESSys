@@ -366,11 +366,11 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		struct base_station_object **, struct default_object *, 
         struct base_station_ncheader_object *,
         struct world_object *);
-	struct fire_patch_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default def);
+	struct fire_patch_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default);
 	struct fire_object **construct_fire_grid(struct world_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
-	struct base_station_object *construct_netcdf_grid(struct base_station_object *, struct base_station_ncheader *, int *, float, float, float, struct date *, struct date *, struct command_line_object *);
+	struct base_station_object *construct_netcdf_grid(struct base_station_object *, struct base_station_ncheader_object *, int *, float, float, float, struct date *, struct date *, struct command_line_object *);
   void *construct_spinup_thresholds(char *, struct world_object *, struct command_line_object *);	
 	void *alloc(size_t, char *, char *);
 
