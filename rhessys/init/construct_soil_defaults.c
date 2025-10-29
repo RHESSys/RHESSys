@@ -119,7 +119,7 @@ struct soil_default *construct_soil_defaults(
 		    default_object_list[i].active_zone_z = default_object_list[i].soil_depth;
 		}
 
-		if (abs(default_object_list[i].active_zone_z - default_object_list[i].soil_depth) > 0.5) {
+		if (fabs(default_object_list[i].active_zone_z - default_object_list[i].soil_depth) > 0.5) {
 			printf("\nNote that soil depth used for biogeochem cycling (active zone z)");
  			printf("\nis more than 0.5 meter different from hydrologic soil depth");
  			printf("\nfor soil default file: %s\n", default_files[i] );
@@ -160,7 +160,7 @@ struct soil_default *construct_soil_defaults(
 		soil =  default_object_list[i].soil_type.sand
 			+ default_object_list[i].soil_type.silt
 			+ default_object_list[i].soil_type.clay;
-		if  (abs(soil - 1.0) > ZERO) {
+		if  (fabs(soil - 1.0) > ZERO) {
 			fprintf(stderr,
 				"FATAL ERROR:in construct_soil_defaults\n proportion sand, silt, clay = %f\n\n", soil);
 			printf("\n %d -  %f %f %f %f \n",
@@ -313,14 +313,14 @@ struct soil_default *construct_soil_defaults(
             // and "_soil.params"
             if (command_line[0].output_prefix != NULL) {
                 strcat(outFilename, command_line[0].output_prefix);
-                if (filename != NULL) {
+                if (strcmp(filename, "") != 0) {
                     strcat(outFilename, "_");
                     strcat(outFilename, filename);
                 }
                 strcat(outFilename, "_soil.params");
             } 
             else {
-                if (filename != NULL) {
+                if (strcmp(filename, "") != 0) {
                     strcat(outFilename, "_");
                     strcat(outFilename, filename);
                 }

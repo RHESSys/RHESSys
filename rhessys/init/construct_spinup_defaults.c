@@ -123,14 +123,14 @@ struct spinup_default *construct_spinup_defaults(
                 // and "_stratum.params"
                 if (command_line[0].output_prefix != NULL) {
                     strcat(outFilename, command_line[0].output_prefix);
-                    if (filename != NULL) {
+                    if (strcmp(filename, "") != 0) {
                         strcat(outFilename, "_");
                         strcat(outFilename, filename);
                     }
                     strcat(outFilename, "_spinup.params");
                 }
                 else {
-                    if (filename != NULL) {
+                    if (strcmp(filename, "") != 0) {
                         strcat(outFilename, "_");
                         strcat(outFilename, filename);
                     }

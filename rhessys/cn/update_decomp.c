@@ -424,7 +424,7 @@ int update_decomp(
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n
 		+ ns_soil->soil3n + ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate;
 	balance = (total_preday_N)  - (total_N + ndf->sminn_to_npool);
-	if (abs(balance) > ZERO)
+	if (fabs(balance) > ZERO)
 		printf("\n Decomp N doesn't balance by %lf ", balance);
 
 	return (!ok);

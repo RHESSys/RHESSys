@@ -127,14 +127,14 @@ void update_fuel_treatment_effects(struct zone_object *zone,
                     // try to build in flexibility to allow multiple of each TREATED or UNTREATED, and areas of them can be scaled appropriately
                     // later..
                     // could do this when initing the patch family obj by adding seperate pointer(s) to the treated and untreated patches
-                    if (zone[0].patch_families[pf][0].patches[p][0].family_role == "TREATED") {
+                    if (strcmp (zone[0].patch_families[pf][0].patches[p][0].family_role,"TREATED") == 0) {
                         trt = p;
                         // taking the probs from the treated patch specifically, though it shouldn't matter
                         // im assuming we want to use the max of these two? could sum them maybe to allow for some interactions, could be confusing
                         max_trt_prob = max(zone[0].patch_families[pf][0].patches[trt][0].fuel_treatment.effective_fuel_treatment_prob, 
                             zone[0].patch_families[pf][0].patches[trt][0].fuel_treatment.external_fuel_treatment_prob);
                     } 
-                    else if (zone[0].patch_families[pf][0].patches[p][0].family_role == "UNTREATED") {
+                    else if (strcmp (zone[0].patch_families[pf][0].patches[p][0].family_role, "UNTREATED") ==0 ) {
                         notrt = p;
                     }
                 }

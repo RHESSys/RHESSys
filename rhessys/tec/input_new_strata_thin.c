@@ -128,7 +128,7 @@ void input_new_strata_thin(
 	/*--------------------------------------------------------------*/
 	int	base_stationID;
 	int	i, dtmp, num_lines;
-	int	default_object_ID;
+	int	default_object_ID = 0;
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
 	struct mortality_struct mort;

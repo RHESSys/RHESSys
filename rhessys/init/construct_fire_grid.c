@@ -42,7 +42,7 @@
 /*double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,double curMaxY,double cellMaxX,
 							double cellMaxY,double cellMinX,double cellMinY,double cell_res);*/
 
-struct fire_object **construct_patch_fire_grid (struct world_object *world, struct command_line_object *command_line,struct fire_default def)
+struct fire_patch_object **construct_patch_fire_grid (struct world_object *world, struct command_line_object *command_line,struct fire_default def)
 
 {
 	/*--------------------------------------------------------------*/

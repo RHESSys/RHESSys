@@ -222,7 +222,7 @@ struct base_station_object *construct_netcdf_grid (
 
         lat = base_station[0].lat;
         lon = base_station[0].lon;
-        if (command_line[0].ncgridinterp_flag != NULL) {
+        if (command_line[0].ncgridinterp_flag != '\0') {
         utm_zone = command_line[0].utm_zone;
         printf("\n Read in the UTM zone from command line for climate data interpolation, the zone is %d \n", utm_zone);
         }

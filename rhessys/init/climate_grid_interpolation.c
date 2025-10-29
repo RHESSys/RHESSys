@@ -97,7 +97,7 @@ void climate_interpolation(
 
         station_search = world_base_stations[i];
 
-    if ( abs(station_search[0].proj_x -zone[0].x_utm) <= search_x && abs(station_search[0].proj_y -zone[0].y_utm) <= search_y)
+    if (fabs(station_search[0].proj_x -zone[0].x_utm) <= search_x && fabs(station_search[0].proj_y -zone[0].y_utm) <= search_y)
        {
 
             rain_found[count] = station_search[0].daily_clim[0].rain[day];

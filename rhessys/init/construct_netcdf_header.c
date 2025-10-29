@@ -20,7 +20,11 @@
 #include <float.h>
 #include "rhessys.h"
 
+//unsure why FLT_MAX has been redefined here, default is 10^37 in C99
+#ifndef FLT_MAX
 #define FLT_MAX 1000000000
+#endif
+
 double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); 
 #ifdef LIU_NETCDF_READER
 /*Get the station numbers from station file                         */
@@ -39,12 +43,10 @@ int get_netcdf_station_number(char *base_station_filename)
     }
     fseek(base_station_file,0,SEEK_SET);
     while (fgets(buffer, sizeof(buffer), base_station_file) != NULL) {
-        if (buffer != NULL) {
-            sscanf(buffer, "%s %s", first, second);
-            if (strcmp(second, "grid_cells") == 0) {
-                account = atoi(first);
-                break;
-            }
+        sscanf(buffer, "%s %s", first, second);
+        if (strcmp(second, "grid_cells") == 0) {
+            account = atoi(first);
+            break;
         }
     }
     fclose(base_station_file);
@@ -115,119 +117,117 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	fseek(base_station_file,0,SEEK_SET);	
 	baseid = -1;
 	while (fgets(buffer, sizeof(buffer), base_station_file) != NULL) {
-		if (buffer != NULL) {
-			sscanf(buffer, "%s %s", first, second);
-            /*if(strcmp(second,"location_searching_distance") == 0){
-            base_station_ncheader[0].sdist = atof(first);
-            } else */
-            if (strcmp(second, "year_start_index") == 0){
-                base_station_ncheader[0].year_start = atoi(first);
-            } else if (strcmp(second, "day_offset") == 0){
-                base_station_ncheader[0].day_offset = atoi(first);
-            } else if (strcmp(second, "leap_year_include") == 0){
-                base_station_ncheader[0].leap_year = atoi(first);
-            } else if (strcmp(second, "precip_multiplier") == 0){
-                base_station_ncheader[0].precip_mult = atof(first);
-            } else if (strcmp(second, "temperature_unit") == 0){
-                base_station_ncheader[0].temperature_unit = first[0];
-            } else if(strcmp(second,"netcdf_var_x") == 0){
-                strcpy(base_station_ncheader[0].netcdf_x_varname,first);
-            } else if(strcmp(second,"netcdf_var_y") == 0){
-                strcpy(base_station_ncheader[0].netcdf_y_varname,first);
-            } else if(strcmp(second,"netcdf_tmax_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_tmax_filename,first);
-            } else if(strcmp(second,"netcdf_var_tmax") == 0){
-                strcpy(base_station_ncheader[0].netcdf_tmax_varname,first);
-            } else if(strcmp(second,"netcdf_tmin_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_tmin_filename,first);
-            } else if(strcmp(second,"netcdf_var_tmin") == 0){
-                strcpy(base_station_ncheader[0].netcdf_tmin_varname,first);
-            } else if(strcmp(second,"netcdf_rain_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_rain_filename,first);
-            } else if(strcmp(second,"netcdf_var_rain") == 0){
-                strcpy(base_station_ncheader[0].netcdf_rain_varname,first);
-            } else if(strcmp(second,"netcdf_elev_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_elev_filename,first);
-            } else if(strcmp(second,"netcdf_var_elev") == 0){
-                strcpy(base_station_ncheader[0].netcdf_elev_varname,first);
-                base_station_ncheader[0].elevflag = 1;
-            }
+        sscanf(buffer, "%s %s", first, second);
+        /*if(strcmp(second,"location_searching_distance") == 0){
+        base_station_ncheader[0].sdist = atof(first);
+        } else */
+        if (strcmp(second, "year_start_index") == 0){
+            base_station_ncheader[0].year_start = atoi(first);
+        } else if (strcmp(second, "day_offset") == 0){
+            base_station_ncheader[0].day_offset = atoi(first);
+        } else if (strcmp(second, "leap_year_include") == 0){
+            base_station_ncheader[0].leap_year = atoi(first);
+        } else if (strcmp(second, "precip_multiplier") == 0){
+            base_station_ncheader[0].precip_mult = atof(first);
+        } else if (strcmp(second, "temperature_unit") == 0){
+            base_station_ncheader[0].temperature_unit = first[0];
+        } else if(strcmp(second,"netcdf_var_x") == 0){
+            strcpy(base_station_ncheader[0].netcdf_x_varname,first);
+        } else if(strcmp(second,"netcdf_var_y") == 0){
+            strcpy(base_station_ncheader[0].netcdf_y_varname,first);
+        } else if(strcmp(second,"netcdf_tmax_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_tmax_filename,first);
+        } else if(strcmp(second,"netcdf_var_tmax") == 0){
+            strcpy(base_station_ncheader[0].netcdf_tmax_varname,first);
+        } else if(strcmp(second,"netcdf_tmin_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_tmin_filename,first);
+        } else if(strcmp(second,"netcdf_var_tmin") == 0){
+            strcpy(base_station_ncheader[0].netcdf_tmin_varname,first);
+        } else if(strcmp(second,"netcdf_rain_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_rain_filename,first);
+        } else if(strcmp(second,"netcdf_var_rain") == 0){
+            strcpy(base_station_ncheader[0].netcdf_rain_varname,first);
+        } else if(strcmp(second,"netcdf_elev_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_elev_filename,first);
+        } else if(strcmp(second,"netcdf_var_elev") == 0){
+            strcpy(base_station_ncheader[0].netcdf_elev_varname,first);
+            base_station_ncheader[0].elevflag = 1;
+        }
 #ifdef LIU_EXTEND_CLIM_VAR
-            else if (strcmp(second, "rhum_multiplier") == 0){
-                           base_station_ncheader[0].rhum_mult = atof(first);
-            } else if(strcmp(second,"netcdf_huss_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_huss_filename,first);
-            } else if(strcmp(second,"netcdf_var_huss") == 0){
-                strcpy(base_station_ncheader[0].netcdf_huss_varname,first);
-            } else if(strcmp(second,"netcdf_rmax_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_rmax_filename,first);
-            } else if(strcmp(second,"netcdf_var_rmax") == 0){
-                strcpy(base_station_ncheader[0].netcdf_rmax_varname,first);
-            } else if(strcmp(second,"netcdf_rmin_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_rmin_filename,first);
-            } else if(strcmp(second,"netcdf_var_rmin") == 0){
-                strcpy(base_station_ncheader[0].netcdf_rmin_varname,first);
-            } else if(strcmp(second,"netcdf_rsds_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_rsds_filename,first);
-            } else if(strcmp(second,"netcdf_var_rsds") == 0){
-                strcpy(base_station_ncheader[0].netcdf_rsds_varname,first);
-            } else if(strcmp(second,"netcdf_was_filename") == 0){
-                strcpy(base_station_ncheader[0].netcdf_was_filename,first);
-            } else if(strcmp(second,"netcdf_var_was") == 0){
-                strcpy(base_station_ncheader[0].netcdf_was_varname,first);
-            }
+        else if (strcmp(second, "rhum_multiplier") == 0){
+                        base_station_ncheader[0].rhum_mult = atof(first);
+        } else if(strcmp(second,"netcdf_huss_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_huss_filename,first);
+        } else if(strcmp(second,"netcdf_var_huss") == 0){
+            strcpy(base_station_ncheader[0].netcdf_huss_varname,first);
+        } else if(strcmp(second,"netcdf_rmax_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_rmax_filename,first);
+        } else if(strcmp(second,"netcdf_var_rmax") == 0){
+            strcpy(base_station_ncheader[0].netcdf_rmax_varname,first);
+        } else if(strcmp(second,"netcdf_rmin_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_rmin_filename,first);
+        } else if(strcmp(second,"netcdf_var_rmin") == 0){
+            strcpy(base_station_ncheader[0].netcdf_rmin_varname,first);
+        } else if(strcmp(second,"netcdf_rsds_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_rsds_filename,first);
+        } else if(strcmp(second,"netcdf_var_rsds") == 0){
+            strcpy(base_station_ncheader[0].netcdf_rsds_varname,first);
+        } else if(strcmp(second,"netcdf_was_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_was_filename,first);
+        } else if(strcmp(second,"netcdf_var_was") == 0){
+            strcpy(base_station_ncheader[0].netcdf_was_varname,first);
+        }
 #endif
+        #ifdef LIU_NETCDF_READER
+        else if (strcmp(second, "base_station_id") == 0) {
+            baseid++;
+            world[0].base_stations[baseid][0].ID = atoi(first);
+        } else if (strcmp(second, "xc"/*"x_coordinate"*/) == 0) {
+            world[0].base_stations[baseid][0].proj_x = atof(first);
+        } else if (strcmp(second, "yc"/*"y_coordinate"*/) == 0) {
+            world[0].base_stations[baseid][0].proj_y = atof(first);
+        } else if (strcmp(second, "z_coordinate") == 0) {
+            world[0].base_stations[baseid][0].z = atof(first);
+        } else if (strcmp(second, "lon") == 0) {
+            world[0].base_stations[baseid][0].lon = atof(first);
+        } else if (strcmp(second, "lat") == 0) {
+            world[0].base_stations[baseid][0].lat = atof(first);
+        }
+        #endif
+        else if (strcmp(second, "effective_lai") == 0) {
             #ifdef LIU_NETCDF_READER
-            else if (strcmp(second, "base_station_id") == 0) {
-                baseid++;
-                world[0].base_stations[baseid][0].ID = atoi(first);
-            } else if (strcmp(second, "xc"/*"x_coordinate"*/) == 0) {
-                world[0].base_stations[baseid][0].proj_x = atof(first);
-            } else if (strcmp(second, "yc"/*"y_coordinate"*/) == 0) {
-                world[0].base_stations[baseid][0].proj_y = atof(first);
-            } else if (strcmp(second, "z_coordinate") == 0) {
-                world[0].base_stations[baseid][0].z = atof(first);
-            } else if (strcmp(second, "lon") == 0) {
-                world[0].base_stations[baseid][0].lon = atof(first);
-            } else if (strcmp(second, "lat") == 0) {
-                world[0].base_stations[baseid][0].lat = atof(first);
-            }
+            world[0].base_stations[baseid][0].effective_lai = atof(first);
+            #else
+            base_station_ncheader[0].effective_lai = atof(first);
             #endif
-            else if (strcmp(second, "effective_lai") == 0) {
-                #ifdef LIU_NETCDF_READER
-                world[0].base_stations[baseid][0].effective_lai = atof(first);
-                #else
-                base_station_ncheader[0].effective_lai = atof(first);
-                #endif
-            }
-            else if (strcmp(second, "screen_height") == 0) {
-                #ifdef LIU_NETCDF_READER
-                world[0].base_stations[baseid][0].screen_height = atof(first);
-                #else
-                base_station_ncheader[0].screen_height = atof(first);
-                #endif
-            }
-			// NEED TO UPDATE THIS SECTION
-			// Checking for optional climate sequences, store those found in the
-			// optional_flag structs for sending to the appropriate create
-			// clim sequence functions.
-			
-			/*} else if (strcmp(second, "number_non_critical_daily_sequences") == 0) {
-				int num_daily_optional = strtod(first, NULL);
-				for ( j=0; j < num_daily_optional; ++j ) {
-					fgets(buffer, sizeof(buffer), base_station_file);
-					if (buffer != NULL) {
-						if (strcmp(buffer, "atm_trans") == 0 ) {
-							daily_flags.atm_trans = 1;
-						} else if (strcmp(buffer, "CO2") == 0) {
-							daily_flags.CO2 = 1;
-						} 
-						else if (strcmp(buffer, "daytime_rain_duration") ) {
-							daily_flags.daytime_rain_duration = 1;
-						} 
-					}  
-				}*/
-		}
+        }
+        else if (strcmp(second, "screen_height") == 0) {
+            #ifdef LIU_NETCDF_READER
+            world[0].base_stations[baseid][0].screen_height = atof(first);
+            #else
+            base_station_ncheader[0].screen_height = atof(first);
+            #endif
+        }
+        // NEED TO UPDATE THIS SECTION
+        // Checking for optional climate sequences, store those found in the
+        // optional_flag structs for sending to the appropriate create
+        // clim sequence functions.
+        
+        /*} else if (strcmp(second, "number_non_critical_daily_sequences") == 0) {
+            int num_daily_optional = strtod(first, NULL);
+            for ( j=0; j < num_daily_optional; ++j ) {
+                fgets(buffer, sizeof(buffer), base_station_file);
+                if (buffer != NULL) {
+                    if (strcmp(buffer, "atm_trans") == 0 ) {
+                        daily_flags.atm_trans = 1;
+                    } else if (strcmp(buffer, "CO2") == 0) {
+                        daily_flags.CO2 = 1;
+                    } 
+                    else if (strcmp(buffer, "daytime_rain_duration") ) {
+                        daily_flags.daytime_rain_duration = 1;
+                    } 
+                }  
+            }*/
 		}//end_read_basestationfile
         base_station_ncheader[0].resolution_dd = calc_resolution(true,world[0].base_stations,world[0].num_base_stations);
         base_station_ncheader[0].resolution_meter = calc_resolution(false,world[0].base_stations,world[0].num_base_stations);
