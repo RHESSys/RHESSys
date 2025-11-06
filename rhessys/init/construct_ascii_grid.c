@@ -147,48 +147,45 @@ struct base_station_object **construct_ascii_grid (
 	/*--------------------------------------------------------------*/
 	
 	while (fgets(buffer, sizeof(buffer), base_station_file) != NULL) {
-		if (buffer != NULL) {
-			sscanf(buffer, "%s %s", first, second);
-			
-			if (strcmp(second, "grid_cells") == 0) {
-				num_base_stations = atoi(first);
-				printf("\nYou have %d base stations \n", num_base_stations);
-			}
-
-			if (strcmp(second, "daily_climate_prefix") == 0) {
-				sscanf(first, "%s", daily_clim_prefix);
-				printf("Daily clim is %s \n", daily_clim_prefix);
-				strcpy(old_prefix, daily_clim_prefix);	//copy into prefix holder for using with strcat to open clim files
-			} else if (strcmp(second, "effective_lai") == 0) {
-					sscanf(first, "%s", eff_lai);		
-			} else if (strcmp(second, "screen_height") == 0) {
-				sscanf(first, "%s", screen_height);
-				// Checking for optional climate sequences, store those found in the
-				// optional_flag structs for sending to the appropriate create
-				// clim sequence functions.
-			} else if (strcmp(second, "number_non_critical_daily_sequences") == 0) {
-				int num_daily_optional = strtod(first, NULL);
-				for ( j=0; j < num_daily_optional; ++j ) {
-					fgets(buffer, sizeof(buffer), base_station_file);
-					if (buffer != NULL) {
-						if (strncmp(buffer, "atm_trans",9) == 0 ) {
-							daily_flags.atm_trans = 1;
-						} else if (strncmp(buffer, "CO2",3) == 0) {
-							daily_flags.CO2 = 1;
-						} 
-						else if (strncmp(buffer, "daytime_rain_duration",21) == 0 ) {
-							daily_flags.daytime_rain_duration = 1;
-						} 
-						else if (strncmp(buffer, "ndep_NH4",8) == 0 ) {
-							daily_flags.ndep_NH4 = 1;
-						} 
-						else if (strncmp(buffer, "ndep_NO3",8) == 0 ) {
-							daily_flags.ndep_NO3 = 1;
-						} 
-					}  
-				}
-			} 
+		sscanf(buffer, "%s %s", first, second);
+		
+		if (strcmp(second, "grid_cells") == 0) {
+			num_base_stations = atoi(first);
+			printf("\nYou have %d base stations \n", num_base_stations);
 		}
+
+		if (strcmp(second, "daily_climate_prefix") == 0) {
+			sscanf(first, "%s", daily_clim_prefix);
+			printf("Daily clim is %s \n", daily_clim_prefix);
+			strcpy(old_prefix, daily_clim_prefix);	//copy into prefix holder for using with strcat to open clim files
+		} else if (strcmp(second, "effective_lai") == 0) {
+				sscanf(first, "%s", eff_lai);		
+		} else if (strcmp(second, "screen_height") == 0) {
+			sscanf(first, "%s", screen_height);
+			// Checking for optional climate sequences, store those found in the
+			// optional_flag structs for sending to the appropriate create
+			// clim sequence functions.
+		} else if (strcmp(second, "number_non_critical_daily_sequences") == 0) {
+			int num_daily_optional = strtod(first, NULL);
+			for ( j=0; j < num_daily_optional; ++j ) {
+				if (fgets(buffer, sizeof(buffer), base_station_file) != NULL) {;
+					if (strncmp(buffer, "atm_trans",9) == 0 ) {
+						daily_flags.atm_trans = 1;
+					} else if (strncmp(buffer, "CO2",3) == 0) {
+						daily_flags.CO2 = 1;
+					} 
+					else if (strncmp(buffer, "daytime_rain_duration",21) == 0 ) {
+						daily_flags.daytime_rain_duration = 1;
+					} 
+					else if (strncmp(buffer, "ndep_NH4",8) == 0 ) {
+						daily_flags.ndep_NH4 = 1;
+					} 
+					else if (strncmp(buffer, "ndep_NO3",8) == 0 ) {
+						daily_flags.ndep_NO3 = 1;
+					} 
+				} 
+			}
+		} 
 	}
 
 	

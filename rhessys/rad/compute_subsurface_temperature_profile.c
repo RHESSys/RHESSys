@@ -26,7 +26,7 @@
 #include "phys_constants.h"
 
 void compute_subsurface_temperature_profile( 
-					  struct surface_energy_profile	*se_profile,
+					  struct surface_energy_object	*se_profile,
 					  struct surface_energy_default	*sedef,
 					  double tsurface,
 					  double rnet,

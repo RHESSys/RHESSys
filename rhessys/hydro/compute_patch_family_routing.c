@@ -152,8 +152,8 @@ void compute_patch_family_routing(struct zone_object *zone,
 
             // if both sh coefficients are not 0, include patch
             if ((zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_g > 0 ||
-                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l > 0) &
-                 zone[0].patch_families[pf][0].num_patches_in_fam > 1 )
+                 zone[0].patch_families[pf][0].patches[i][0].landuse_defaults[0][0].sh_l > 0) &&
+                 zone[0].patch_families[pf][0].num_patches_in_fam > 1)
             {
                 // if sharing coefs > 0, include this patch in subsiquent analyses
                 incl_sat[i] = 1;
@@ -482,10 +482,10 @@ void compute_patch_family_routing(struct zone_object *zone,
             {
                 printf("%f          %f\n",
                     zone[0].patch_families[pf][0].patches[i][0].rz_transfer,
-                    zone[0].patch_families[pf][0].patches[i][0].unsat_transfer,
-                    (zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) *
-                    zone[0].patch_families[pf][0].patches[i][0].area,
                     zone[0].patch_families[pf][0].patches[i][0].unsat_transfer
+                    //(zone[0].patch_families[pf][0].patches[i][0].rz_transfer + zone[0].patch_families[pf][0].patches[i][0].unsat_transfer) *
+                    //zone[0].patch_families[pf][0].patches[i][0].area,
+                    //zone[0].patch_families[pf][0].patches[i][0].unsat_transfer
                     );
             }
             printf("==============================\n");

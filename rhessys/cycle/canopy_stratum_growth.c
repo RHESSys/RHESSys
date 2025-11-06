@@ -155,7 +155,7 @@ void	canopy_stratum_growth(
 	/*	be expressed during leaf out				*/
 	/*--------------------------------------------------------------*/
 	if (command_line[0].grow_flag > 0) {
-	if ( (stratum[0].phen.annual_allocation == 1) ){
+	if ( stratum[0].phen.annual_allocation == 1 ){
 		if (allocate_annual_growth(
 			stratum[0].ID,
 			stratum[0].defaults[0][0].ID,
