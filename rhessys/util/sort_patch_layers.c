@@ -184,6 +184,12 @@ void sort_patch_layers( struct patch_object *patch, int *rec)
 
 			/* recursively call patch layers to fix this - should always work because we are changing the height */
 			*rec += 1;
+			/* Adding recursion depth check for safety - set to 20 but change this if needed */
+			if (*rec >= 20)
+			{
+				fprintf(stderr, "ERROR: sort_patch_layers: max recursion depth %d reached — aborting\n", *rec);
+				exit(EXIT_FAILURE);;
+			}
 			sort_patch_layers(patch, rec);
 		}
 		else {
