@@ -84,7 +84,7 @@ struct base_station_object **construct_ascii_grid (
 	int		j;
 		int tmp;
 
-	long	julday();
+	long	julday(struct date);
 	long	first_date_julian;
 	long	start_date_julian;
 	long	offset;	
