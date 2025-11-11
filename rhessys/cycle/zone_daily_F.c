@@ -542,9 +542,9 @@ void		zone_daily_F(
 		
 		/* Diley with Kimball cloud correction per Flerchinger 2009 */
 		/*if ( (current_date.month>=5) && (current_date.month<=10) )
-			Tcloud = (zone[0].metv.tavg+273.16) - 9; /* summer adjustment for cloud temp */
+			Tcloud = (zone[0].metv.tavg+273.16) - 9; // summer adjustment for cloud temp */
 		/*else 
-			Tcloud = (zone[0].metv.tavg+273.16) - 13; /* winter adjustment for cloud temp */
+			Tcloud = (zone[0].metv.tavg+273.16) - 13; // winter adjustment for cloud temp */
 		/*f8 = -0.6732 + (0.006240*Tcloud) - (0.9140*pow(10,-5)*pow(Tcloud,2));
 		e8z = 0.24 + (2.98*pow(10,-6) * pow(zone[0].e_dewpoint/1000,2) * exp(3000.0/(zone[0].metv.tavg+273.16)));
 		tau8 = 1.0 - e8z*(1.4-0.4*e8z);

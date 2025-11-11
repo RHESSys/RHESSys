@@ -365,7 +365,7 @@ double	snowpack_daily_F(
 	/* Ldown model from Pomeroy et al 2009 */
 	ess_can = 0.98;
 	B = 0.023; /*0.023*/
-	/*Qext = 0.5; /*veg def param*/
+	//Qext = 0.5; /*veg def param*/
 	alb_can = 0.13;
 	Qext = 1.081 * ((3.14159/2) - theta_noon) * cos(((3.14159/2) - theta_noon));
 	tau = exp(-Qext*patch[0].lai / sin((3.14159/2) - theta_noon));

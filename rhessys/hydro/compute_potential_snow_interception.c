@@ -94,8 +94,8 @@ double	compute_potential_snow_interception(
 			- stratum[0].snow_stored));
 	
 	/* Liston & Elder */
-	/*Imax = 4.4 * stratum[0].epv.all_pai / 1000; /* converted from kg/m2 to m */
-	/*potential_interception = 0.7 * (Imax - stratum[0].snow_stored) * (1.0 - exp(-snow/Imax));*/
+	// Imax = 4.4 * stratum[0].epv.all_pai / 1000; // converted from kg/m2 to m
+	// potential_interception = 0.7 * (Imax - stratum[0].snow_stored) * (1.0 - exp(-snow/Imax));
 	
 		
 	potential_interception = max(potential_interception, 0.0);

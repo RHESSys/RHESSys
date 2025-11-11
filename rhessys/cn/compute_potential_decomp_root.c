@@ -205,27 +205,35 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 		plitr4c_loss = kl4 * cs_litr->litr4c_bg;
 		pmnf_l4s3 = (plitr4c_loss * (1.0 - rfl4s3 - (cn_s3/cn_l4)))/cn_s3;
 	}
-	/* 4. fast microbial recycling pool to medium microbial recycling pool */
-	/* no need below calculation of soil potential mineralization rate */
-	/*if ((ns_soil->soil1n > ZERO) && (cs_soil->soil1c > ZERO)) {
+	/* 
+		4. fast microbial recycling pool to medium microbial recycling pool 
+		no need below calculation of soil potential mineralization rate
+	if ((ns_soil->soil1n > ZERO) && (cs_soil->soil1c > ZERO)) {
 		psoil1c_loss = ks1 * cs_soil->soil1c;
 		pmnf_s1s2 = (psoil1c_loss * (1.0 - rfs1s2 - (cn_s2/cn_s1)))/cn_s2;
 	}
-	/* 5. medium microbial recycling pool to slow microbial recycling pool */
-	/*if ((ns_soil->soil2n > ZERO) && (cs_soil->soil2c > ZERO)) {
+		*/
+	/*
+		5. medium microbial recycling pool to slow microbial recycling pool
+	if ((ns_soil->soil2n > ZERO) && (cs_soil->soil2c > ZERO)) {
 		psoil2c_loss = ks2 * cs_soil->soil2c;
 		pmnf_s2s3 = (psoil2c_loss * (1.0 - rfs2s3 - (cn_s3/cn_s2)))/cn_s3;
 	}
-	/* 6. slow microbial recycling pool to recalcitrant SOM pool */
-	/*if ((ns_soil->soil3n > ZERO) && (cs_soil->soil3c > ZERO)) {
+		*/
+	/*
+		6. slow microbial recycling pool to recalcitrant SOM pool
+	if ((ns_soil->soil3n > ZERO) && (cs_soil->soil3c > ZERO)) {
 		psoil3c_loss = ks3 * cs_soil->soil3c;
 		pmnf_s3s4 = (psoil3c_loss * (1.0 - rfs3s4 - (cn_s4/cn_s3)))/cn_s4;
 	}
-	/* 7. mineralization of recalcitrant SOM */
-	/*if ((ns_soil->soil4n > ZERO) && (cs_soil->soil4c > ZERO)) {
+		*/
+	/*
+		7. mineralization of recalcitrant SOM
+	if ((ns_soil->soil4n > ZERO) && (cs_soil->soil4c > ZERO)) {
 		psoil4c_loss = ks4 * cs_soil->soil4c;
 		pmnf_s4 = -psoil4c_loss/cn_s4;
 	}
+	*/
 
 	/* determine if there is sufficient mineral N to support potential
 	immobilization. Immobilization fluxes are positive, mineralization fluxes
@@ -245,7 +253,8 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 	if (pmnf_l4s3 > ZERO) potential_immob += pmnf_l4s3;
 	else mineralized += -pmnf_l4s3;
 
-	/*if (pmnf_s1s2 > ZERO) potential_immob += pmnf_s1s2;
+	/*
+	if (pmnf_s1s2 > ZERO) potential_immob += pmnf_s1s2;
 	else mineralized += -pmnf_s1s2;
 
 	if (pmnf_s2s3 > zERO) potential_immob += pmnf_s2s3;
@@ -254,6 +263,7 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 	if (pmnf_s3s4 > ZERO) potential_immob += pmnf_s3s4;
 	else mineralized += -pmnf_s3s4;
 	mineralized += -pmnf_s4;
+	*/
 
 	/* save the potential fluxes until plant demand has been assessed,
 	to allow competition between immobilization fluxes and plant growth

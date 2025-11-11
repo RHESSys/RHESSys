@@ -54,12 +54,14 @@ void reset_fire_in_WUI(struct WUI_object *WUI_list)
 	/* cycle through patches in each distance list to see if there was a fire */
 	/*--------------------------------------------------------------*/
 
-	/* 2km list */
+	/* 
+	// * 2km list *
 	WUI_ptr->fire_occurence =100;
-	/* 5km list *
+	// * 5km list *
 	WUI_ptr->fire_occurence[D5KM] =0;
-	/* 10km list *
-	WUI_ptr->fire_occurence[D10KM] =0;*/
+	// * 10km list *
+	WUI_ptr->fire_occurence[D10KM] =0;
+	*/
 	WUI_ptr=WUI_ptr->next;
 	
 	}
