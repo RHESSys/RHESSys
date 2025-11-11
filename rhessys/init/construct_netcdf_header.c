@@ -20,9 +20,8 @@
 #include <float.h>
 #include "rhessys.h"
 
-//unsure why FLT_MAX has been redefined here, default is 10^37 in C99
-#ifndef FLT_MAX
-#define FLT_MAX 1000000000
+#ifndef GRID_MAX_FLT
+#define GRID_MAX_FLT 1000000000
 #endif
 
 double calc_resolution(bool geographic_unit, struct  base_station_object **basestations, int station_numbers); 
@@ -270,7 +269,7 @@ double calc_resolution(bool geographic_unit, struct  base_station_object **bases
         }
     }
     //find the nearest distance
-    double mindist = (double)FLT_MAX;
+    double mindist = (double)GRID_MAX_FLT;
     #ifdef CHECK_NCCLIM_DATA
     if (geographic_unit) printf("\nmindist = %e\n",mindist);
     #endif
