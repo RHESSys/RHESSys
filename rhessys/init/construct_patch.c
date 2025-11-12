@@ -151,7 +151,9 @@ struct patch_object *construct_patch(
 	patch[0].Ksat_vertical = getDoubleWorldfile(&paramCnt,&paramPtr,"Ksat_vertical","%lf",1.0,1);
 	patch[0].mpar = getDoubleWorldfile(&paramCnt,&paramPtr,"mpar","%lf",0,1);
 
-	patch[0].family_role = *getStrParam(&paramCnt,&paramPtr,"family_role","%s","NONE",1);
+	// patch[0].family_role = *getStrParam(&paramCnt,&paramPtr,"family_role","%s","NONE",1);
+	strcpy(patch[0].family_role, getStrParam(&paramCnt,&paramPtr,"family_role","%s","NONE",1)); 
+
 	patch[0].fuel_treatment.fuel_treatment_fixed_effect = getDoubleWorldfile(&paramCnt,&paramPtr,"fixed_effect","%lf",0,1);
 
 	if (command_line[0].stdev_flag == 1) {

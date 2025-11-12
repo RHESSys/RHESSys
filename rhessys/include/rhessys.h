@@ -1856,7 +1856,7 @@ struct patch_object
         int             target_status;
 	int		soil_parm_ID;
 	int		landuse_parm_ID;
-        char            family_role;    /* TREATED/UNTREATED/GAP could change to int ID?  */
+        char            family_role[16];    /* TREATED/UNTREATED/GAP could change to int ID? set to len 16 string not char  */
 	double		mpar;
 	//int				wuiID;
         double  x;                                                                      /* meters       */
