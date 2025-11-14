@@ -4,7 +4,7 @@
 /*								*/
 /*								*/
 /*	NAME							*/
-/*		check_zero_stores
+/*		check_zero_stores	*/
 /*								*/
 /*	SYNOPSIS						*/
 /*	double	check_zero_stores(				*/

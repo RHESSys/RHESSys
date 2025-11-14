@@ -133,7 +133,7 @@ double compute_potential_N_uptake_combined(
 		in the dickenson allocation (i.e. old dickenson_pa) 
 		original dickenson allocation was fleaf=exp(-1*k*lai) use  
 		froot = (1-leaf) for simplicity  
-		/* --------------------------------------------------------------- */
+		--------------------------------------------------------------- */
 
 			/* --------------------------------------------------------------- */
 			/* uses approach published in Reyes et al., (2017) Assessing the Impact of...JAMES  */

@@ -9,7 +9,7 @@
 /*																*/
 /*	SYNOPSIS													*/
 /*	void	output_yearly_canopy_stratum(int bainsID, int hillID,*/
-/*					int zoneID, int patchID,
+/*					int zoneID, int patchID,					*/
 /*					struct	canopy_stratum_object	*canopy_stratum,				*/
 /*					struct	date	date,  						*/
 /*					FILE 	*outfile)							*/
