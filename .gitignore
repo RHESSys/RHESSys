@@ -94,3 +94,5 @@ rhessys/test/example
 rhessys/test/example
 rhessys/test/example
 
+# test case output
+Testing/out/test_*
