@@ -129,6 +129,11 @@ void compute_family_fire_effects(
 		 fire_loss);
 
 		patch_family[0].patches[p][0].fire.litter_c_consumed = litter_c_consumed;
+
+		if (command_line[0].ash_deposition_flag == 1){
+				patch_family[0].patches[p][0].ash_C_pool += litter_c_consumed;
+		}
+
 	}
 
 	/*--------------------------------------------------------------*/
@@ -270,6 +275,10 @@ void compute_family_fire_effects(
 			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
 			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
+
+			if (command_line[0].ash_deposition_flag == 1){
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_C_pool += canopy_target[0].fe.m_cwdc_to_atmos;
+			}
 
 			/*--------------------------------------------------------------*/
 			/* Param checks, calc initial mortality							*/
@@ -555,6 +564,28 @@ void compute_family_fire_effects(
 
                 canopy_target[0].fe.acc_year.length +=1;
             }
+
+			/*----------------------------------------------------------------------------------------*/
+            /* Add C consumed to ash deposition storage         */
+            /*----------------------------------------------------------------------------------------*/
+			if (command_line[0].ash_deposition_flag == 1){
+				// patch[0].ash_C_pool += canopy_target[0].fe.understory_c_consumed; // this doesnt go in it actually
+				// Could try to get carbon consumed out of update mortality, but don't want to change that function, adding here for now
+				patch[0].ash_C_pool += (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.dead_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed);
+				// TEHCNICALLY should include the non structural stores and transfers too 
+				// if adding, it would be store and transfer for: leafc, frootc, gresp, live_stemc, dead_stemc, live_crootc, dead_crootc
+
+				if (command_line[0].verbose_flag == -7) {
+					printf("Ash C pool for patch %d is now %f\n", patch[0].ID , patch[0].ash_C_pool);
+				}
+			}
+
 		} // end for at line 137 c
 	}
 	/*--------------------------------------------------------------*/

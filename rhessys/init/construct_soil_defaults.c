@@ -277,6 +277,12 @@ struct soil_default *construct_soil_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].overstory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "overstory_height_thresh", "%lf", 6, 1);
 		default_object_list[i].understory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "understory_height_thresh", "%lf", 4, 1);
+
+		/*--------------------------------------------------------------*/
+		/*      Ash deposition  parameters                          	*/
+		/*--------------------------------------------------------------*/
+		default_object_list[i].ash_transfer_pct = getDoubleParam(&paramCnt, &paramPtr, "ash_transfer_pct", "%lf", 0.01, 1);
+		default_object_list[i].ash_pct_soluble_DOC = getDoubleParam(&paramCnt, &paramPtr, "ash_pct_soluble_DOC", "%lf", 0.05, 1);
 	
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/

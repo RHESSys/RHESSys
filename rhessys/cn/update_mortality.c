@@ -26,8 +26,12 @@
 /*  DESCRIPTION                                                 */
 /*                                                              */
 /*                                                              */
-/*	calculated daily mortality losses and updates 		*/
-/*	carbon and nitrogen pools				*/
+/*	calculated daily mortality losses and updates 				*/
+/*	carbon and nitrogen pools									*/
+/* 																*/
+/* 	thintyp: 1 = redefine_world_thin_remain						*/
+/* 	 		 2 = redefine_world_thin_harvest					*/
+/* 	 		 3 = redefine_world_thin_snags						*/
 /*                                                              */
 /*  PROGRAMMER NOTES                                            */
 /*                                                              */
@@ -116,11 +120,6 @@ void update_mortality(
 	/* mortality fluxes out of leaf and fine root pools */
 	/* carbon depts in cpool have to die with the plant - could result in a carbon balance issue */
 
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-    printf("\n at the beginning of update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n",
-    cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
-
 	m_cpool = mort.mort_cpool * cs->cpool;
 	m_npool = mort.mort_cpool * ns->npool;
 
@@ -137,11 +136,10 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 	m_frootc_to_litr3c_bg = mort.mort_frootc * cs->frootc * epc.frootlitr_fscel;
 	m_frootc_to_litr4c_bg = mort.mort_frootc * cs->frootc * epc.frootlitr_flig;
 
-//m_frootc_to_soil1c = mort.mort_frootc * cs->frootc * epc.frootsoil_flab;
-//m_frootc_to_soil2c = mort.mort_frootc * cs->frootc * epc.frootsoil_fucel;
-//m_frootc_to_soil3c = mort.mort_frootc * cs->frootc * epc.frootsoil_fscel;
-//m_frootc_to_soil4c = mort.mort_frootc * cs->frootc * epc.frootsoil_flig;
-
+	//m_frootc_to_soil1c = mort.mort_frootc * cs->frootc * epc.frootsoil_flab;
+	//m_frootc_to_soil2c = mort.mort_frootc * cs->frootc * epc.frootsoil_fucel;
+	//m_frootc_to_soil3c = mort.mort_frootc * cs->frootc * epc.frootsoil_fscel;
+	//m_frootc_to_soil4c = mort.mort_frootc * cs->frootc * epc.frootsoil_flig;
 
 	/* mortality fluxes out of storage and transfer pools */
 	/* Assumes cpool mortality fraction applies to all non-structural stores and transfers */
@@ -168,10 +166,6 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 		m_deadcrootc_transfer_to_litr1c_bg = mort.mort_cpool * cs->deadcrootc_transfer;
 	}
 
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-    printf("\n at line 171  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n",
-    cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	/* daily nitrogen fluxes due to mortality */
 	/* mortality fluxes out of leaf and fine root pools */
 	if (epc.leaf_cn > ZERO) {
@@ -214,10 +208,6 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 		m_frootn_to_litr4n_bg = 0.0;
 		}
 
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-    printf("\n at line 216  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n",
-    cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	/* mortality fluxes out of storage and transfer pools */
 	/* Assumes same mortality fractions as for c pools */
 	/* Assumes cpool mortality fraction applies to all non-structural stores and transfers */
@@ -247,10 +237,6 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 		m_deadcrootn_transfer_to_litr1n_bg = mort.mort_cpool * ns->deadcrootn_transfer; //root
 	}
 
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-    printf("\n at line 248  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n",
-    cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	/* update state variables */
 
 	/* ---------------------------------------- */
@@ -258,16 +244,16 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 	/* ---------------------------------------- */
 	/* if cpool or npooll has gone negative = just zero it out and add nothing to litter */
 	/* this could cause C balance or N balance issues but best option as Cpool really shouldn't be negative */
-	if ((m_cpool < 0) || (m_npool < 0)) {
+	if ((m_cpool < 0) || (m_npool < 0))
+	{
 		cs->cpool = 0.0;
 		ns->npool = 0.0;
 		/* zero out fluxes to litter */
 		m_cpool = 0.0;
 		m_npool = 0.0;
-		}
+	}
 
 	/* even though its not part of carbon balance we probably want to update any mr_deficit*/
-
 	cs->mr_deficit -= mort.mort_cpool * cs->mr_deficit;
 	cs->mr_deficit = max(0.0, cs->mr_deficit);
 
@@ -275,49 +261,46 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 
 	/* Only add dead leaf and stem c to litter and cwd pools if thintyp   */
 	/* is not 2 (harvest case). If thintyp is 2, harvest aboveground c.   */
-	if (thintyp != 2) {
-		cs_litr->litr1c    += m_cpool;
+	if (thintyp != 2)
+	{
+		cs_litr->litr1c += m_cpool;
 		/*    Leaf mortality */
-		cs_litr->litr1c    += m_leafc_to_litr1c;
-		cs_litr->litr2c    += m_leafc_to_litr2c;
-		cs_litr->litr3c    += m_leafc_to_litr3c;
-		cs_litr->litr4c    += m_leafc_to_litr4c;
-		cs_litr->litr1c    += m_deadleafc_to_litr1c;
-		cs_litr->litr2c    += m_deadleafc_to_litr2c;
-		cs_litr->litr3c    += m_deadleafc_to_litr3c;
-		cs_litr->litr4c    += m_deadleafc_to_litr4c;
-		cs_litr->litr1c    += m_leafc_store_to_litr1c;
-		cs_litr->litr1c    += m_leafc_transfer_to_litr1c;
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-    printf("\n at line 274  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n",
-    cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
-		if (epc.veg_type == TREE) {
+		cs_litr->litr1c += m_leafc_to_litr1c;
+		cs_litr->litr2c += m_leafc_to_litr2c;
+		cs_litr->litr3c += m_leafc_to_litr3c;
+		cs_litr->litr4c += m_leafc_to_litr4c;
+		cs_litr->litr1c += m_deadleafc_to_litr1c;
+		cs_litr->litr2c += m_deadleafc_to_litr2c;
+		cs_litr->litr3c += m_deadleafc_to_litr3c;
+		cs_litr->litr4c += m_deadleafc_to_litr4c;
+		cs_litr->litr1c += m_leafc_store_to_litr1c;
+		cs_litr->litr1c += m_leafc_transfer_to_litr1c;
+
+		if (epc.veg_type == TREE)
+		{
 			/*    Stem wood mortality */
 			/*	  Transfer to DEADWOOD if standing dead */
-			if (thintyp == 3) {
-				cs->dead_stemc       += m_livestemc_to_cwdc;
-				cs->dead_stemc       += m_deadstemc_to_cwdc;
-				}
-			/*	  Transfer to CWD otherwise */
-			else {
-				cs->cwdc       += m_livestemc_to_cwdc;
-				cs->cwdc       += m_deadstemc_to_cwdc;
-				}
-			cs_litr->litr1c    += m_livestemc_store_to_litr1c;
-			cs_litr->litr1c    += m_deadstemc_store_to_litr1c;
-			cs_litr->litr1c    += m_livestemc_transfer_to_litr1c;
-			cs_litr->litr1c    += m_deadstemc_transfer_to_litr1c;
+			if (thintyp == 3)
+			{
+				cs->dead_stemc += m_livestemc_to_cwdc;
+				cs->dead_stemc += m_deadstemc_to_cwdc;
 			}
-		/* gresp... group in with aboveground? */
-		cs_litr->litr1c         += m_gresp_store_to_litr1c;
-		cs_litr->litr1c         += m_gresp_transfer_to_litr1c;
-
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-    printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n",
-    cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
+			/*	  Transfer to CWD otherwise */
+			else
+			{
+				cs->cwdc += m_livestemc_to_cwdc;
+				cs->cwdc += m_deadstemc_to_cwdc;
+			}
+			cs_litr->litr1c += m_livestemc_store_to_litr1c;
+			cs_litr->litr1c += m_deadstemc_store_to_litr1c;
+			cs_litr->litr1c += m_livestemc_transfer_to_litr1c;
+			cs_litr->litr1c += m_deadstemc_transfer_to_litr1c;
 		}
+		/* gresp... group in with aboveground? */
+		cs_litr->litr1c += m_gresp_store_to_litr1c;
+		cs_litr->litr1c += m_gresp_transfer_to_litr1c;
+	}
+
 	/* Remove aboveground dead c from carbon stores in all cases. */
 	cs->cpool -= m_cpool;
 	/*    Leaf mortality */
@@ -339,7 +322,7 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 		cs->deadstemc_store   -= m_deadstemc_store_to_litr1c;
 		cs->livestemc_transfer  -= m_livestemc_transfer_to_litr1c;
 		cs->deadstemc_transfer  -= m_deadstemc_transfer_to_litr1c;
-		}
+	}
 	/* gresp... group in with aboveground? */
 	cs->gresp_store       -= m_gresp_store_to_litr1c;
 	cs->gresp_transfer      -= m_gresp_transfer_to_litr1c;
@@ -427,10 +410,8 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 			ns_litr->litr1n    += m_livestemn_transfer_to_litr1n;
 			ns_litr->litr1n    += m_deadstemn_transfer_to_litr1n;
 			}
-//if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 3) {
-//printf("\n at line 393 update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-//}
-		}
+	}
+
 	/* Remove aboveground dead n from n stores in all cases. */
 	ns->npool -= m_npool;
 	/*    Leaf mortality */
@@ -454,10 +435,9 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 		ns->deadstemn_store   -= m_deadstemn_store_to_litr1n;
 		ns->livestemn_transfer  -= m_livestemn_transfer_to_litr1n;
 		ns->deadstemn_transfer  -= m_deadstemn_transfer_to_litr1n;
-		}
+	}
 
-	 //BELOWGROUND N POOLS
-
+	//BELOWGROUND N POOLS
 	if (thintyp != 2) {
 		//   Fine root mortality
 		ns_litr->litr1n_bg    += m_frootn_to_litr1n_bg;
@@ -500,11 +480,6 @@ if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4
 		ns->deadcrootn_transfer -= m_deadcrootn_transfer_to_litr1n_bg;
 	}
 
-
-if((cs_litr[0].litr1c + cs_litr[0].litr2c + cs_litr[0].litr3c + cs_litr[0].litr4c) > 100) {
-    printf("\n at the end of update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n",
-    cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
-}
 	return;
 }/*end update_mortality*/
 

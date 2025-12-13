@@ -148,6 +148,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].sat_to_gw_coeff_mult = 1;
 	command_line[0].gw_loss_coeff_mult = 1;
 	command_line[0].parallel_flag = 0;
+	command_line[0].ash_deposition_flag = 0;
 	
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -1286,19 +1287,28 @@ printf("%s ",command_line[0].WUI_filename);
 			/*----------------------------------------------------------*/
 			/* climate interpolation UTM zone options  N.R 20190610     */
 			/*----------------------------------------------------------*/
-			else if (strcmp(main_argv[i], "-ncgridinterp") ==0 ) {
-                 printf("\n Netcdf grid climate data interpolation utm zone should combine with necdfgrid command line \n");
-                 command_line[0].ncgridinterp_flag =1;
-                 i++;
-                 command_line[0].utm_zone = 12; // default is utm n 12 zone
-			// read in the utm parameters
-			if ((i != main_argc) && (valid_option(main_argv[i])==0) ){
-			     command_line[0].utm_zone = (double)atof(main_argv[i]);
-			     i++;
-				}/*end if*/
-				 printf("\n The UTM Zone specified by user is UTM N%d \n", command_line[0].utm_zone);
-			}/* end if */
+			else if (strcmp(main_argv[i], "-ncgridinterp") == 0)
+			{
+				printf("\n Netcdf grid climate data interpolation utm zone should combine with necdfgrid command line \n");
+				command_line[0].ncgridinterp_flag = 1;
+				i++;
+				command_line[0].utm_zone = 12; // default is utm n 12 zone
+											   // read in the utm parameters
+				if ((i != main_argc) && (valid_option(main_argv[i]) == 0))
+				{
+					command_line[0].utm_zone = (double)atof(main_argv[i]);
+					i++;
+				} /*end if*/
+				printf("\n The UTM Zone specified by user is UTM N%d \n", command_line[0].utm_zone);
+			} /* end if */
 
+			/*--------------------------------------------------------------*/
+			/*		Check for ash deposition flag next.						*/
+			/*--------------------------------------------------------------*/
+			else if (strcmp(main_argv[i],"-ash_deposition") == 0 ){
+				command_line[0].ash_deposition_flag = 1;
+				i++;
+			}
 
 			/*--------------------------------------------------------------*/
 			/*	NOTE:  ADD MORE OPTION PARSING HERE.						*/

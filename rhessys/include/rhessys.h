@@ -1267,6 +1267,8 @@ struct	soil_default
 	double  theta_mean_std_p2;				/* DIM */
 	double  overstory_height_thresh;        /* Defines lower limit of overstory (m) */
 	double  understory_height_thresh;       /* Defines upper limit of understory (m) */
+        double  ash_transfer_pct;				/* % of ash C available to surface */
+        double  ash_pct_soluble_DOC;				/* % of available ash C that is soluble */
 	struct soil_class	soil_type;
 	};
 
@@ -2043,6 +2045,7 @@ struct patch_object
         double  rz_transfer;            /* m water      */
         double  unsat_transfer;         /* m water      */
         double  sat_transfer;           /* m water      */
+        double  ash_C_pool;       /* kgC/m2 lost in fire */
         struct  base_station_object     **base_stations;
         struct  soil_default            **soil_defaults;
         struct  landuse_default         **landuse_defaults;
@@ -2377,7 +2380,8 @@ struct  command_line_object
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
         int             multiscale_flag;
-		int				parallel_flag;
+	int	        parallel_flag;
+        int             ash_deposition_flag;
         char    *output_prefix;
         char    WUI_filename[FILEPATH_LEN]; 
         char    routing_filename[FILEPATH_LEN];
