@@ -2272,7 +2272,7 @@ void		patch_daily_F(
 
 		// Add ash DOC here -- put into function if needed
 		if (command_line[0].ash_deposition_flag == 1){
-			if (patch[0].ash_C_pool > ZERO){
+			if (patch[0].ash_C_pool > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0 && patch[0].soil_defaults[0][0].ash_pct_soluble_DOC > 0){
 				// Move ash_C_pool to surface, eventually surface_DOC based on ash_transfer_pct param
 				// add that ash C to surface DOC based on ash_pct_soluble_DOC param
 				// Ash C to Soluble C (DOC) - 0.1 t0 0.01
