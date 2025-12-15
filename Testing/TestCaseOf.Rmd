@@ -41,6 +41,7 @@ Now insure you have needed librarier and load results from prior RHESSys simulat
 library(tidyverse)
 library(RHESSysIOinR)
 library(ggpubr)
+library(lubridate)
 load("W8TestCase.RData")
 ```
 
@@ -108,6 +109,21 @@ d=ggplot(base, aes(date,litter_cs.totalc))+geom_point()+geom_point(data=test, ae
 e=ggplot(base, aes(date,soil_cs.totalc))+geom_point()+geom_point(data=test, aes(date, soil_cs.totalc), col="red", alpha=0.4)
 ```
 
+# Comparison with observed streamflow
+```{r obscomp}
+
+cor.test(base$obs_m, base$model_Q)
+
+test$model_Q = test$streamflow + test$gw.Qout
+cor.test(test$obs_m, test$model_Q)
+
+# error/bias
+test_err = (test$model_Q - test$obs_m) %>% mean(na.rm=TRUE)
+base_err = (base$model_Q - base$obs_m) %>% mean(na.rm=TRUE)
+
+test_err/mean(test$obs_m, na.rm=TRUE)*100
+base_err/mean(base$obs_m, na.rm=TRUE)*100
+```
 
 ### THIS HAS NOT BEEN ADAPTED TO OURPUT FILTER Variables names YET - IN PROGRESS
 ### Difference between the base and the test scenarios     
