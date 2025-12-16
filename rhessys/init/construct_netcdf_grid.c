@@ -312,8 +312,17 @@ struct base_station_object *construct_netcdf_grid (
                 break;
 #endif
             default:
+                filename = NULL;
+                var_name = NULL;
                 break;
             } //switch
+            
+            // check for NULL filename or var_name, exit if either of them are NULL
+            if (!filename || !var_name) {
+                printf(stderr,"Invalid or missing filename or var_name in construct_netcdf_grid.c\n");
+                exit(0);
+            }
+
             k = get_netcdf_var_timeserias(filename, var_name, lat_name,
                    lon_name, net_y, net_x,
                    (float)base_station_ncheader[0].resolution_dd, instartday,

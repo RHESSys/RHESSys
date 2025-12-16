@@ -30,7 +30,7 @@ You will also need *tidyverse* and *gpubr* that are available from R mirror site
 
 You don't have to run this if you have already installed RHESSYsIOinR
 ```{r installation}
-devtools::install_github("RHESSys/RHESSysIOinR")
+#devtools::install_github("RHESSys/RHESSysIOinR")
 ```
 
 Make sure you set your working directory to the **Testing** directory
@@ -53,7 +53,7 @@ Unless new development changes are being made to the worldfile or flowtable, you
 
 ```{r setrunvars}
 
-rhessys_ver = "/Users/naomitague/Model/RHESSys/rhessys/rhessys7.5"
+rhessys_ver = "../rhessys/rhessys7.5"
 worldfile = "worldfiles/w8TC.world"
 header = "worldfiles/w8TC.hdr"
 flowtable = "flowtables/w8TC.flow"
@@ -82,6 +82,15 @@ system(command_line)
 test = read.table("out/test_basin_daily.csv", header=T, sep=",")
 test = add_dates(test)
 test = watbal_basin_of(test)
+
+# Add other variables present in base data frame but not in test output, and used in subsequent tests and plots
+test = mutate(test,
+              psn = cs.net_psn,
+              gpsn = cdf.psn_to_cpool,
+              plantc=cs.total_plantc,
+              plant_resp=cdf.total_mr + cdf.total_gr
+              )
+
 ggplot(test, aes(date, watbal))+geom_point()
 
 ```
@@ -132,17 +141,25 @@ If there are large differences - are they reasonable given the changes to functi
 
 ```{r percentmeandiff}
 
-base.mean = base %>% select(streamflow, psn, trans, evap, plantc) %>% summarize_if(is.numeric, mean)
+base.mean = base %>%
+  select(streamflow, psn, trans, evap, plantc, cs.totalc) %>% 
+  summarize_if(is.numeric, mean)
 
-test.mean = test %>% select(streamflow, psn, trans, evap, plantc) %>% summarize_if(is.numeric, mean)
+test.mean = test %>%
+  select(streamflow, psn, trans, evap, plantc, cs.totalc) %>% 
+  summarize_if(is.numeric, mean)
 
 percent_diff_mean = ((test.mean-base.mean)/base.mean)*100
 
 percent_diff_mean
 
 
-base.grow.mean = base %>% select(streamflow_NO3, ndf.sminn_to_nitrate, ndf.denitrif, plant_resp, gpsn, soil_cs.totalc, litter_cs.totalc) %>% summarize_if(is.numeric, mean)
-test.grow.mean = test %>% select(streamflow_NO3, ndf.sminn_to_nitrate, ndf.denitrif, plant_resp, gpsn, soil_cs.totalc, litter_cs.totalc) %>% summarize_if(is.numeric, mean)
+base.grow.mean = base %>% 
+  select(streamflow_NO3, ndf.sminn_to_nitrate, ndf.denitrif, plant_resp, gpsn, soil_cs.totalc, litter_cs.totalc) %>% 
+  summarize_if(is.numeric, mean)
+test.grow.mean = test %>%
+  select(streamflow_NO3, ndf.sminn_to_nitrate, ndf.denitrif, plant_resp, gpsn, soil_cs.totalc, litter_cs.totalc) %>% 
+  summarize_if(is.numeric, mean)
 
 percent_gdiff_mean = ((test.grow.mean-base.grow.mean)/base.grow.mean)*100
 percent_gdiff_mean
