@@ -152,7 +152,8 @@ void update_fuel_treatment_effects(struct zone_object *zone,
                 // with this method the intesity for over and understory has to be the same - using overstory
                 trt_int = zone[0].patch_families[pf][0].patches[trt][0].fuel_treatment.fuel_treatment_intensity.overstory;
 
-                zone[0].patch_families[pf][0].patches[trt][0].fuel_treatment.salience_prob;
+                //Feature not implemented yet
+                //zone[0].patch_families[pf][0].patches[trt][0].fuel_treatment.salience_prob;
                 // IF salience prob 1-9 > som threshold area, -> some static probability
 
                 // ignoring the gap area since it's not really treatable

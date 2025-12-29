@@ -4,7 +4,7 @@
 /*								*/
 /*								*/
 /*	NAME							*/
-/*		zero_patch_daily_flux
+/*		zero_patch_daily_flux	*/
 /*								*/
 /*	SYNOPSIS						*/
 /*	double	zero_patch_daily_flux(				*/

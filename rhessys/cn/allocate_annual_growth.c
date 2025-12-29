@@ -324,7 +324,7 @@ int allocate_annual_growth(				int id,
 
 
 
-	/*--------------------------------------------------------------*
+	/*--------------------------------------------------------------*/
 	/*  we include a delay on storage output so that the
 		veg does not die in a bad year -esp. for Grasses	*/
 	/*--------------------------------------------------------------*/

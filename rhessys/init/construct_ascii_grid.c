@@ -84,7 +84,7 @@ struct base_station_object **construct_ascii_grid (
 	int		j;
 		int tmp;
 
-	long	julday();
+	long	julday(struct date);
 	long	first_date_julian;
 	long	start_date_julian;
 	long	offset;	
@@ -143,7 +143,7 @@ struct base_station_object **construct_ascii_grid (
 	
 	
 	/*--------------------------------------------------------------*/
-	/*	Below reads the base station file like construct_ascii_grid.c, 
+	/*	Below reads the base station file like construct_ascii_grid.c, */
 	/*--------------------------------------------------------------*/
 	
 	while (fgets(buffer, sizeof(buffer), base_station_file) != NULL) {

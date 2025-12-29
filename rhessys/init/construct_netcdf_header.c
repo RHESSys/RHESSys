@@ -20,12 +20,11 @@
 #include <float.h>
 #include "rhessys.h"
 
-//unsure why FLT_MAX has been redefined here, default is 10^37 in C99
-#ifndef FLT_MAX
-#define FLT_MAX 1000000000
+#ifndef GRID_MAX_FLT
+#define GRID_MAX_FLT 1000000000
 #endif
 
-double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers); 
+double calc_resolution(bool geographic_unit, struct  base_station_object **basestations, int station_numbers); 
 #ifdef LIU_NETCDF_READER
 /*Get the station numbers from station file                         */
 int get_netcdf_station_number(char *base_station_filename)
@@ -254,7 +253,7 @@ typedef struct Location{
     double y;
 } Location;
 //_____________________________________________________________________
-double calc_resolution(const bool geographic_unit,const struct  base_station_object **basestations, const int station_numbers)
+double calc_resolution(bool geographic_unit, struct  base_station_object **basestations, int station_numbers)
 {
     Location *sites  = (Location*)calloc(station_numbers, sizeof(Location));
     for (int i = 0; i < station_numbers; i++) {
@@ -270,7 +269,7 @@ double calc_resolution(const bool geographic_unit,const struct  base_station_obj
         }
     }
     //find the nearest distance
-    double mindist = (double)FLT_MAX;
+    double mindist = (double)GRID_MAX_FLT;
     #ifdef CHECK_NCCLIM_DATA
     if (geographic_unit) printf("\nmindist = %e\n",mindist);
     #endif

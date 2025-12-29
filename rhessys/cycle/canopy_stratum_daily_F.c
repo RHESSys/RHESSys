@@ -42,7 +42,7 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
-	long	julday(struct date calendar_date);
+	long	julday(struct date);
 
 
 	double	compute_diffuse_radiative_fluxes(

@@ -16,7 +16,7 @@
 /*								*/
 /*	OPTIONS							*/
 /*	double saturation_vapor_pressure (Pa),
-	double dewpoint_vapor_pressure (Pa)
+	double dewpoint_vapor_pressure (Pa) */
 /*								*/
 /*	DESCRIPTION						*/
 /*								*/

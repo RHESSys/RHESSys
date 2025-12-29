@@ -5,7 +5,7 @@
 /*	execute_fueltreatment_event.c - identifies patches to be treated and calls treatment function					*/
 /*																*/
 /*	NAME														*/
-/*	execute_fueltreatment_event.c
+/*	execute_fueltreatment_event.c								*/
 /*																*/
 /*	SYNOPSIS													*/
 /*																*/
