@@ -210,7 +210,7 @@ void		zone_hourly(
 	/*--------------------------------------------------------------*/
 	if (/*(zone[0].Kdown_direct_flag == 0) ||
 		(zone[0].Kdown_diffuse_flag == 0) ||*/
-		(zone[0].daylength_flag == 0 )){
+		zone[0].daylength_flag == 0 ){
 		/*--------------------------------------------------------------*/
 		/*  Accumulate incoming Kdown if the sun is up.                 */
 		/*                                                              */
