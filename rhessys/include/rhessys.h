@@ -2045,7 +2045,7 @@ struct patch_object
         double  rz_transfer;            /* m water      */
         double  unsat_transfer;         /* m water      */
         double  sat_transfer;           /* m water      */
-        double  ash_C_pool;       /* kgC/m2 lost in fire */
+
         struct  base_station_object     **base_stations;
         struct  soil_default            **soil_defaults;
         struct  landuse_default         **landuse_defaults;
@@ -2126,7 +2126,8 @@ struct patch_object
         double  totaln;                         /* kgC/m2 total nitrogen */
         double  nitrogen_balance;               /* kgC/m2 */
         double  satzone_nitrate;                /* kgN/m2 saturated zone */
-
+        double  ash_C_pool;       /* kgC/m2 lost in fire */
+        
         struct  soil_c_object   soil_cs;
         struct  soil_n_object   soil_ns;
         struct  litter_object   litter;
