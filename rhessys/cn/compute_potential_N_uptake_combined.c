@@ -77,12 +77,15 @@ double compute_potential_N_uptake_combined(
 	cs->availc = cdf->psn_to_cpool-cdf->total_mr;
 
 	/* no allocation when the daily C balance is negative */
-	if (cs->availc < 0.0) { 
+	if (cs->availc < 0.0) 
+	{ 
 		cs->mr_deficit += -cs->availc; 
-			cs->availc = 0.0; }
+		cs->availc = 0.0; 
+	}
 
 	/* test for cpool deficit */
-	if (cs->cpool < 0.0){
+	if (cs->cpool < 0.0)
+	{
 	/*--------------------------------------------------------------
 	running a deficit in cpool, so the first priority
 	is to let today's available C accumulate in cpool.  The actual
@@ -99,12 +102,13 @@ double compute_potential_N_uptake_combined(
 			cs->cpool += transfer;
 	} /* end if negative cpool */
 
-	if (cs->mr_deficit > ZERO) {
-		 transfer = min(cs->availc, cs->mr_deficit);
-                  cs->availc -= transfer;
-                   cs->cpool += transfer;
+	if (cs->mr_deficit > ZERO) 
+	{
+		transfer = min(cs->availc, cs->mr_deficit);
+        cs->availc -= transfer;
+        cs->cpool += transfer;
 		cs->mr_deficit -= transfer;
-		}
+	}
 		
 
 	/* assign local values for the allocation control parameters */
@@ -122,89 +126,86 @@ double compute_potential_N_uptake_combined(
 	/*	constants a and b are taken from Landsberg and Waring, 1997 */
 	/*--------------------------------------------------------------*/
 	
-	if (((cdf->potential_psn_to_cpool) > ZERO) && (cdf->psn_to_cpool > ZERO)) {
-	c = max(cdf->potential_psn_to_cpool, cdf->psn_to_cpool);
-	plant_calloc = cs->availc;
-	if ((plant_calloc > ZERO) && (c > 0)){
+	if (((cdf->potential_psn_to_cpool) > ZERO) && (cdf->psn_to_cpool > ZERO)) 
+	{
+		c = max(cdf->potential_psn_to_cpool, cdf->psn_to_cpool);
+		plant_calloc = cs->availc;
 		
-		/*--------------------------------------------------------------- 
-		combined allocation 
-		waring_pa and waring_pb control the exponential decay constant (k)
-		in the dickenson allocation (i.e. old dickenson_pa) 
-		original dickenson allocation was fleaf=exp(-1*k*lai) use  
-		froot = (1-leaf) for simplicity  
-		/* --------------------------------------------------------------- */
+		if ((plant_calloc > ZERO) && (c > 0))
+		{
+		
+			/*--------------------------------------------------------------- 
+			combined allocation 
+			waring_pa and waring_pb control the exponential decay constant (k)
+			in the dickenson allocation (i.e. old dickenson_pa) 
+			original dickenson allocation was fleaf=exp(-1*k*lai) use  
+			froot = (1-leaf) for simplicity  
+			--------------------------------------------------------------- */
 
 			/* --------------------------------------------------------------- */
 			/* uses approach published in Reyes et al., (2017) Assessing the Impact of...JAMES  */
 			/* adapted for trees here (unpublished) */
 			/* --------------------------------------------------------------- */
 
-		if (epc.veg_type == TREE) {
+			if (epc.veg_type == TREE) 
+			{
+				fleaf = exp(-1.0*epc.waring_pa * epv->proj_lai);
+				fbroot = fleaf * epc.alloc_frootc_leafc *  (1+epc.waring_pb )/ (1.0 + epc.waring_pb * (cdf->psn_to_cpool)/c);
+				ratio = fbroot/fleaf;
 
+				if (fbroot+fleaf > 0.95) 
+				{
+					fleaf = 0.95/(1+ratio);
+					fbroot = fleaf*ratio;
+				}
+				
+				fcroot = fbroot/(1+epc.alloc_frootc_crootc);
+				froot = fbroot-fcroot;
 
-		fleaf = exp(-1.0*epc.waring_pa * epv->proj_lai);
-		fbroot = fleaf * epc.alloc_frootc_leafc *  (1+epc.waring_pb )/ (1.0 + epc.waring_pb * (cdf->psn_to_cpool)/c);
-		ratio = fbroot/fleaf;
-
-		if (epc.veg_type == TREE) {
-		if (fbroot+fleaf > 0.95) {
-			fleaf = 0.95/(1+ratio);
-			fbroot = fleaf*ratio;
+				fstem = 1.0-(froot+fcroot+fleaf);
+				fwood = fstem+fcroot;
+				
 			}
+			else 
+			{
+				dickenson_k = (epc.waring_pa / (1.0 + epc.waring_pb * (cdf->psn_to_cpool) / c));
+				froot = (1-exp(-1.0*dickenson_k * epv->proj_lai));
+				fleaf = 1.0-froot;
+				fcroot=0.0;
+				fwood=0.0;
+			}
+		}
+		else 
+		{
+			froot = 0.0;
+			fleaf = 0.0;
+			fstem=0.0;
+			fcroot=0.0;
+			fwood=0.0;
+			f3 = 0.0;
+		}
+
+		if (epc.veg_type == TREE)
+		{
+			if ((fleaf + froot + fwood) > ZERO) 
+				mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
+			else mean_cn = 1.0;
+		}
+		else
+		{
+			if ((fleaf + froot) > ZERO) 	
+				mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
+			else
+				mean_cn=1.0;
+		}
 		
-		fcroot = fbroot/(1+epc.alloc_frootc_crootc);
-		froot = fbroot-fcroot;
-
-		fstem = 1.0-(froot+fcroot+fleaf);
-		fwood = fstem+fcroot;
-		}
-		else {
-			fleaf = 1.0-fbroot;
-			froot = fbroot;
-		}
-		}
-
-		else {
-		dickenson_k = (epc.waring_pa / (1.0 + epc.waring_pb * (cdf->psn_to_cpool) / c));
-		froot = (1-exp(-1.0*dickenson_k * epv->proj_lai));
-		fleaf = 1.0-froot;
-		fcroot=0.0;
-		fwood=0.0;
-		}
-
+		if (mean_cn > ZERO)
+			plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
+		else
+			plant_ndemand = 0.0;
 	}
-	else {
-		froot = 0.0;
-		fleaf = 0.0;
-		fstem=0.0;
-		fcroot=0.0;
-		fwood=0.0;
-		f3 = 0.0;
-	}
-
-
-
-
-	if (epc.veg_type == TREE){
-		if ((fleaf + froot + fwood) > ZERO) 
-			mean_cn = 1.0 / (fleaf / cnl + froot / cnfr + f4 * fwood / cnlw + fwood * (1.0-f4) / cndw);
-		else mean_cn = 1.0;
-	}
-        else{
-	if ((fleaf + froot) > ZERO) 	
-           mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
-	else
-		mean_cn=1.0;
-        }
-
-	if (mean_cn > ZERO)
-		plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn;
-	else
-		plant_ndemand = 0.0;
-
-	}
-	else {
+	else 
+	{
 		plant_ndemand = 0.0;
 		fleaf = 0.0;
 		froot = 0.0;

@@ -8,7 +8,7 @@
 /*                                                              */
 /*                                                              */
 /*  SYNOPSIS                                                    */
-/* 	void update_mortality(
+/* 	void update_mortality(								*/
 /*                      struct epconst_struct,			*/
 /*                      struct phenology_struct *,		*/
 /*                      struct cstate_struct *,			*/

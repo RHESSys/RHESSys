@@ -15,7 +15,7 @@
 /*	vapor pressure at saturation (Pa)	*/
 /*								*/
 /*	OPTIONS							*/
-/*	double temperature (Celsius)
+/*	double temperature (Celsius)	*/
 /*								*/
 /*	DESCRIPTION						*/
 /*								*/

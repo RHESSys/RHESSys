@@ -140,7 +140,7 @@ double	compute_vascular_stratum_conductance(
 		/*--------------------------------------------------------------*/
 		/*if ((patch[0].rz_storage > ZERO) && (patch[0].sat_deficit > patch[0].rootzone.potential_sat)) { 		*/
 		/*														*/
-		/*	/* Adjust check to make proportional to stratum-specific rooting depth 					*/
+		/*	Adjust check to make proportional to stratum-specific rooting depth 					*/
 		/*	if ( (patch[0].rz_storage * stratum[0].rootzone.depth / patch[0].rootzone.depth ) < wilting_point) {  	*/
 		/*		m_LWP = 0.0;											*/
 		/*	}													*/

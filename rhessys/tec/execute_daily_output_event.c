@@ -291,7 +291,7 @@ void execute_daily_output_event(struct world_object *world,
 										/*------------------------------------------------*/
 										/*	Construct the fire output files		  */
 										/*------------------------------------------------*/
-										/*								if ( command_line[0].f != NULL ){
+										//								if ( command_line[0].f != NULL ){
 										 /*----------------------------------------------*/
 										/*	output fire 								*/
 										/*----------------------------------------------*/
@@ -321,7 +321,7 @@ void execute_daily_output_event(struct world_object *world,
 										 world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 										 date, outfile->fire->daily);
 										 }
-										 } /* end fire (f) for loop */
+										 } // end fire (f) for loop */
 										//								} /* end if options */
 									} /* end patch (p) for loop */
 								} /* end if options */

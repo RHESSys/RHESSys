@@ -100,13 +100,15 @@ double	compute_snow_sublimation(
 	sublim_turb = (86400 * psych * 0.622 * hs * ro * (vp_sat_ice - vp_air) / (pa * ra)) / (1000 * hs * (delta + psych));
 	/***** end Lundberg *****/
 	
-	/***** Dingman *****/
-	/*sublim_rad = 0.0;
-	 /*if (T_snow < 0)
-	 sublim_turb = (-ro * hs * gasnow * stabil_func * 0.622 * (vp_air - vp_sat_ice) / pa) / (1000 * hs) * 86400; /* phase change, so hs */
-	/*else
-	 sublim_turb = (-ro * hv * gasnow * stabil_func * 0.622 * (vp_air - vp_sat_ice) / pa) / (1000 * hv) * 86400; /* melting snowpack so no phase change, just hv */
-	/***** end Dingman *****/
+	// ***** Dingman *****
+	/*
+	sublim_rad = 0.0;
+	 if (T_snow < 0)
+	 sublim_turb = (-ro * hs * gasnow * stabil_func * 0.622 * (vp_air - vp_sat_ice) / pa) / (1000 * hs) * 86400; // phase change, so hs
+	else
+	 sublim_turb = (-ro * hv * gasnow * stabil_func * 0.622 * (vp_air - vp_sat_ice) / pa) / (1000 * hv) * 86400; // melting snowpack so no phase change, just hv
+	*/
+	 //***** end Dingman *****
 	
 	sublim = max(sublim_rad + sublim_turb, 0.0);
 	sublim = min(sublim, snowpack_water_equivalent);
@@ -132,7 +134,7 @@ double	compute_snow_sublimation(
       Qe = min(Qe, net_radiation);				
    else
       Qe = 0.0;
-   sublim_floor_wind = max(Qe*seconds_per_day/hs/1000.0, 0.0); /* (density of H2O = 1000 kg/m3) */
+   sublim_floor_wind = max(Qe*seconds_per_day/hs/1000.0, 0.0); // (density of H2O = 1000 kg/m3) */
    /*--------------------------------------------------------------*/
    /*	don't sublimate more snow than available		*/
    /*--------------------------------------------------------------*/

@@ -7,7 +7,7 @@
 /*                                                              */
 /*                                                              */
 /*  SYNOPSIS                                                    */
-/* 	void update_branch_mortality(
+/* 	void update_branch_mortality(						*/
 /*                      struct epconst_struct,			*/
 /*                      struct phenology_struct *,		*/
 /*                      struct cstate_struct *,			*/
