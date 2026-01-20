@@ -128,7 +128,7 @@ LandScape::LandScape(double cell_res,struct fire_object **fire_grid,struct fire_
 		{
 			if (fireGrid_[i][j].ign_available==1)
 			{
-				IgnitionCells ic = {i, j}; // the cell indices give the current row and column for this pixel available for ignition
+				IgnitionCells ic = {static_cast<double>(i), static_cast<double>(j)}; // the cell indices give the current row and column for this pixel available for ignition
 				ignCells_.push_back(ic);		// 0 indicates that the pixel has not been burned
 				n_ign_++; // this indexes the number of cells available for ignition
 			}

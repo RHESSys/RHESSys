@@ -381,8 +381,8 @@ struct zone_object *construct_zone(
 
 	/*--------------------------------------------------------------*/
 	/*	Allocate list of pointers to patch objects .				*/
-  /*--------------------------------------------------------------*/
-  zone[0].patches = (struct patch_object ** ) 
+  	/*--------------------------------------------------------------*/
+  	zone[0].patches = (struct patch_object ** ) 
 		alloc( zone[0].num_patches * sizeof( struct patch_object *),
 		"patches","construct_zone");
 	/*--------------------------------------------------------------*/

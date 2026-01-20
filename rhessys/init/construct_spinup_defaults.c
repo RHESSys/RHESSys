@@ -96,7 +96,6 @@ struct spinup_default *construct_spinup_defaults(
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
-                char *y = NULL;
                 char *token = NULL;
                 char filename[256];
 
@@ -110,7 +109,6 @@ struct spinup_default *construct_spinup_defaults(
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
-                free(s);
                 s = strbuf;
                 token = strtok(s, ".");
                 if (token != NULL) {
