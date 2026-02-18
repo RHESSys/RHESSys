@@ -304,7 +304,12 @@ void compute_family_fire_effects(
 			{
 				fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
 				exit(EXIT_FAILURE);
-			} 
+			}
+			// echo target prop mort
+			if (command_line[0].verbose_flag <= -7) {
+				printf("Target canopy height: %lf m \n", canopy_target[0].fe.canopy_target_height);
+				printf("Initial target canopy prop mort: %lf \n", canopy_target[0].fe.canopy_target_prop_mort);
+			}
 
 			/*--------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is tall			*/
@@ -455,6 +460,28 @@ void compute_family_fire_effects(
 				}
 			}
 
+						/*----------------------------------------------------------------------------------------*/
+            /* Add C consumed to ash deposition storage         */
+            /*----------------------------------------------------------------------------------------*/
+			if (command_line[0].ash_deposition_flag == 1){
+				// patch[0].ash_C_pool += canopy_target[0].fe.understory_c_consumed; // this doesnt go in it actually
+				// Could try to get carbon consumed out of update mortality, but don't want to change that function, adding here for now
+				patch[0].ash_C_pool += (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.dead_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+									   (canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed);
+				// TEHCNICALLY should include the non structural stores and transfers too 
+				// if adding, it would be store and transfer for: leafc, frootc, gresp, live_stemc, dead_stemc, live_crootc, dead_crootc
+
+				if (command_line[0].verbose_flag == -7) {
+					printf("Ash C pool for patch %d is now %f\n", patch[0].ID , patch[0].ash_C_pool);
+				}
+			}
+
+
 			/*--------------------------------------------------------------*/
 			/* Compute effects												*/
 			/*--------------------------------------------------------------*/
@@ -565,26 +592,6 @@ void compute_family_fire_effects(
                 canopy_target[0].fe.acc_year.length +=1;
             }
 
-			/*----------------------------------------------------------------------------------------*/
-            /* Add C consumed to ash deposition storage         */
-            /*----------------------------------------------------------------------------------------*/
-			if (command_line[0].ash_deposition_flag == 1){
-				// patch[0].ash_C_pool += canopy_target[0].fe.understory_c_consumed; // this doesnt go in it actually
-				// Could try to get carbon consumed out of update mortality, but don't want to change that function, adding here for now
-				patch[0].ash_C_pool += (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.dead_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed);
-				// TEHCNICALLY should include the non structural stores and transfers too 
-				// if adding, it would be store and transfer for: leafc, frootc, gresp, live_stemc, dead_stemc, live_crootc, dead_crootc
-
-				if (command_line[0].verbose_flag == -7) {
-					printf("Ash C pool for patch %d is now %f\n", patch[0].ID , patch[0].ash_C_pool);
-				}
-			}
 
 		} // end for at line 137 c
 	}

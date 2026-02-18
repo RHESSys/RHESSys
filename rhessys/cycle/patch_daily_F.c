@@ -2286,13 +2286,13 @@ void		patch_daily_F(
 				// add transport to outlet stream DOC - LATER
 				// hillslope[0].streamflow_DOC
 
-				if (command_line[0].verbose_flag == -7){
-					printf("| patch %d | ash_C_pool %lf | surface_DOC %lf | surface DOC change %lf |\n",
-						patch[0].ID,
-						patch[0].ash_C_pool,
-						patch[0].surface_DOC,
-						ash_doc_to_surface);
-				}
+				// if (command_line[0].verbose_flag == -7){
+				// 	printf("| patch %d | ash_C_pool %lf | surface_DOC %lf | surface DOC change %lf |\n",
+				// 		patch[0].ID,
+				// 		patch[0].ash_C_pool,
+				// 		patch[0].surface_DOC,
+				// 		ash_doc_to_surface);
+				// }
 			}
 		} // END ash_deposition_flag
 
