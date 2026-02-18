@@ -2127,8 +2127,8 @@ struct patch_object
         double  totaln;                         /* kgC/m2 total nitrogen */
         double  nitrogen_balance;               /* kgC/m2 */
         double  satzone_nitrate;                /* kgN/m2 saturated zone */
-        double  ash_DOC;       /* kgC/m2 */
-        double  ash_DON;       /* kgN/m2 */
+        double  ash_DOC;       /* kgC/m2 lost in fire */
+        double  ash_DON;       /* kgN/m2 lost in fire */
         
         struct  soil_c_object   soil_cs;
         struct  soil_n_object   soil_ns;

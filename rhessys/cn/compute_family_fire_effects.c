@@ -144,6 +144,24 @@ void compute_family_fire_effects(
 			}
 		}
 
+ 		if (command_line[0].ash_deposition_flag == 1){
+			if (command_line[0].verbose_flag == -7) {
+				printf("Starting - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_DOC);
+				printf("Starting - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_DON);
+			}
+			patch_family[0].patches[p][0].ash_DOC += fmax(0.0, litter_c_consumed);
+			// don't need this calculation otherwise, so doing it here for ash dep only
+			patch_family[0].patches[p][0].ash_DON += fmax(0.0, patch_family[0].patches[p][0].litter_ns.litr1n * fire_loss.loss_litr1n +
+														patch_family[0].patches[p][0].litter_ns.litr2n * fire_loss.loss_litr2n +
+														patch_family[0].patches[p][0].litter_ns.litr3n * fire_loss.loss_litr3n +
+														patch_family[0].patches[p][0].litter_ns.litr4n * fire_loss.loss_litr4n);
+
+			if (command_line[0].verbose_flag == -7) {
+				printf("Litter - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_DOC);
+				printf("Litter - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_DON);
+			}
+		}
+
 		update_litter_soil_mortality(
 		 &(patch_family[0].patches[p][0].cdf),
 		 &(patch_family[0].patches[p][0].ndf),

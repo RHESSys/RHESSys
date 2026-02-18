@@ -444,8 +444,8 @@ void		patch_daily_F(
 	double 	rz_drainage,unsat_drainage;
 	double prop_detention_store_infiltrated;
 	double water_transfer, root_growth;
-	double ash_c_transfer, ash_doc_to_surface;
-	double ash_n_transfer, ash_don_to_surface;
+	double ash_c_transfer;
+	double ash_n_transfer;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
