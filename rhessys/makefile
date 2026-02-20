@@ -34,7 +34,7 @@ CMD_OPTS +=
 # -D_GNU_SOURCE
 CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g -O2 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
 CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g -O2 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-# -Og for debug
+# -O0 and -g3 for debug
 # -O2 for speed
 
 ifdef ofdebug
