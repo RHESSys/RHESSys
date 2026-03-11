@@ -521,7 +521,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	/*	Allocate world defaults objects.							*/
 	/*--------------------------------------------------------------*/
-printf("line 524 ");
+	
 	world[0].defaults = (struct default_object *)
 		alloc( sizeof(struct default_object ),"defaults","construct_world");
 	

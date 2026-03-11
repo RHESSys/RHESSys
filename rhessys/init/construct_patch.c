@@ -130,12 +130,6 @@ struct patch_object *construct_patch(
 	if (patch[0].family_ID == -9999) {
 		patch[0].family_ID = patch[0].ID;
 	}
-	// TODO remove when multiscale flag is fully removed
-	// if (command_line[0].multiscale_flag == 1) {
-	// 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
-	// } else {
-	// 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
-	// }
 	
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
@@ -242,7 +236,8 @@ struct patch_object *construct_patch(
 	patch[0].tmp = 0.0;
 	patch[0].detention_store = 0.0;
 
-	patch[0].ash_C_pool = 0.0; // 
+	patch[0].ash_C_pool = 0.0; //
+	patch[0].ash_N_pool = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables for this patch         */

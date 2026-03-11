@@ -119,6 +119,24 @@ void compute_family_fire_effects(
 							  patch_family[0].patches[p][0].litter_cs.litr4c * fire_loss.loss_litr4c) *
 							 patch_family[0].patches[p][0].family_pct_cover;
 
+ 		if (command_line[0].ash_deposition_flag == 1){
+			if (command_line[0].verbose_flag == -7) {
+				printf("Starting - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_C_pool);
+				printf("Starting - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_N_pool);
+			}
+			patch_family[0].patches[p][0].ash_C_pool += fmax(0.0, litter_c_consumed);
+			// don't need this calculation otherwise, so doing it here for ash dep only
+			patch_family[0].patches[p][0].ash_N_pool += fmax(0.0, patch_family[0].patches[p][0].litter_ns.litr1n * fire_loss.loss_litr1n +
+														patch_family[0].patches[p][0].litter_ns.litr2n * fire_loss.loss_litr2n +
+														patch_family[0].patches[p][0].litter_ns.litr3n * fire_loss.loss_litr3n +
+														patch_family[0].patches[p][0].litter_ns.litr4n * fire_loss.loss_litr4n);
+
+			if (command_line[0].verbose_flag == -7) {
+				printf("Litter - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_C_pool);
+				printf("Litter - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_N_pool);
+			}
+		}
+
 		update_litter_soil_mortality(
 		 &(patch_family[0].patches[p][0].cdf),
 		 &(patch_family[0].patches[p][0].ndf),
@@ -130,9 +148,6 @@ void compute_family_fire_effects(
 
 		patch_family[0].patches[p][0].fire.litter_c_consumed = litter_c_consumed;
 
-		if (command_line[0].ash_deposition_flag == 1){
-				patch_family[0].patches[p][0].ash_C_pool += litter_c_consumed;
-		}
 
 	}
 
@@ -184,7 +199,7 @@ void compute_family_fire_effects(
 	intr_ct = 0;
 
 	if(command_line[0].verbose_flag <= -7) {
-		printf("Begin fire effects aggregation loops");
+		printf("Begin fire effects aggregation loops\n");
 	}
 
 	for (layer = 0; layer < patch_family[0].num_layers; layer++)
@@ -248,7 +263,7 @@ void compute_family_fire_effects(
 	/*		Compute effects for each layer							*/
 	/*--------------------------------------------------------------*/
 	if(command_line[0].verbose_flag <= -7) {
-		printf("Begin fire effects computation loops");
+		printf("Begin fire effects computation loops\n");
 	}
 	for ( layer=0 ; layer < patch_family[0].num_layers; layer++ ){
 		for ( c=0 ; c < patch_family[0].layers[layer].count; c++ ){
@@ -277,7 +292,13 @@ void compute_family_fire_effects(
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 
 			if (command_line[0].ash_deposition_flag == 1){
-				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_C_pool += canopy_target[0].fe.m_cwdc_to_atmos;
+				// cwdn is negative sometimes?? add max of 0 to prevent adding negative ash
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_C_pool += fmax(0.0, canopy_target[0].fe.m_cwdc_to_atmos);
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_N_pool += fmax(0.0, canopy_target[0].fe.m_cwdn_to_atmos);
+				if (command_line[0].verbose_flag == -7) {
+					printf("CWD - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_C_pool);
+					printf("CWD - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_N_pool);
+				}
 			}
 
 			/*--------------------------------------------------------------*/
@@ -460,24 +481,40 @@ void compute_family_fire_effects(
 				}
 			}
 
-						/*----------------------------------------------------------------------------------------*/
+			/*----------------------------------------------------------------------------------------*/
             /* Add C consumed to ash deposition storage         */
             /*----------------------------------------------------------------------------------------*/
 			if (command_line[0].ash_deposition_flag == 1){
 				// patch[0].ash_C_pool += canopy_target[0].fe.understory_c_consumed; // this doesnt go in it actually
 				// Could try to get carbon consumed out of update mortality, but don't want to change that function, adding here for now
-				patch[0].ash_C_pool += (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.dead_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-									   (canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed);
-				// TEHCNICALLY should include the non structural stores and transfers too 
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_C_pool += fmax(0.0, (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].cs.dead_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed));
+				// TEHCNICALLY should include the stores and transfers too 
 				// if adding, it would be store and transfer for: leafc, frootc, gresp, live_stemc, dead_stemc, live_crootc, dead_crootc
-
 				if (command_line[0].verbose_flag == -7) {
-					printf("Ash C pool for patch %d is now %f\n", patch[0].ID , patch[0].ash_C_pool);
+					printf("Ash C pool for patch %d is now %lf\n", 
+						patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , 
+						patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_C_pool);
+				}
+
+				// Repeat for nitrogen
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_N_pool += fmax(0.0, (canopy_target[0].ns.leafn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].ns.frootn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].ns.live_stemn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].ns.dead_stemn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].ns.npool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].ns.live_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+																									   (canopy_target[0].ns.dead_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed));
+				if (command_line[0].verbose_flag == -7) {
+					printf("Ash N pool for patch %d is now %lf\n", 
+						patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , 
+						patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_N_pool);
+					printf("\n");
 				}
 			}
 

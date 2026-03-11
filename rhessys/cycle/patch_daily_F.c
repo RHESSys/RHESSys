@@ -445,6 +445,7 @@ void		patch_daily_F(
 	double prop_detention_store_infiltrated;
 	double water_transfer, root_growth;
 	double ash_c_transfer, ash_doc_to_surface;
+	double ash_n_transfer, ash_don_to_surface;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
@@ -2270,29 +2271,28 @@ void		patch_daily_F(
 			patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss + patch[0].ndf.do_litr4n_loss);
 		}
 
-		// Add ash DOC here -- put into function if needed
+		// Ash deposition and transfer to surface DOC/DON
 		if (command_line[0].ash_deposition_flag == 1){
+			// Ash C to Soluble C (DOC) - 0.1 t0 0.01
+			// Only transfer above ZERO
 			if (patch[0].ash_C_pool > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0 && patch[0].soil_defaults[0][0].ash_pct_soluble_DOC > 0){
-				// Move ash_C_pool to surface, eventually surface_DOC based on ash_transfer_pct param
-				// add that ash C to surface DOC based on ash_pct_soluble_DOC param
-				// Ash C to Soluble C (DOC) - 0.1 t0 0.01
-				// above if ZERO should keep from transferring tiny amounts forever
-
 				ash_c_transfer = patch[0].ash_C_pool * patch[0].soil_defaults[0][0].ash_transfer_pct;
 				ash_doc_to_surface = ash_c_transfer * patch[0].soil_defaults[0][0].ash_pct_soluble_DOC;
 				patch[0].ash_C_pool -= ash_c_transfer;
 				patch[0].surface_DOC += ash_doc_to_surface;
-				
+
 				// add transport to outlet stream DOC - LATER
 				// hillslope[0].streamflow_DOC
+			}
+			if (patch[0].ash_N_pool > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0 && patch[0].soil_defaults[0][0].ash_pct_soluble_DON > 0){
+				// Ash N to Soluble N (DON) - 0.01,as a percent of total ash N is hard to calculate 
+				ash_n_transfer = patch[0].ash_N_pool * patch[0].soil_defaults[0][0].ash_transfer_pct;
+				ash_don_to_surface = ash_n_transfer * patch[0].soil_defaults[0][0].ash_pct_soluble_DON;
+				patch[0].ash_N_pool -= ash_n_transfer;
+				patch[0].surface_DON += ash_don_to_surface;
 
-				// if (command_line[0].verbose_flag == -7){
-				// 	printf("| patch %d | ash_C_pool %lf | surface_DOC %lf | surface DOC change %lf |\n",
-				// 		patch[0].ID,
-				// 		patch[0].ash_C_pool,
-				// 		patch[0].surface_DOC,
-				// 		ash_doc_to_surface);
-				// }
+				// add transport to outlet stream DON - LATER
+				// hillslope[0].streamflow_DON
 			}
 		} // END ash_deposition_flag
 
