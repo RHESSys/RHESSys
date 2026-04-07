@@ -2275,21 +2275,19 @@ void		patch_daily_F(
 		if (command_line[0].ash_deposition_flag == 1){
 			// Ash C to Soluble C (DOC) - 0.1 t0 0.01
 			// Only transfer above ZERO
-			if (patch[0].ash_C_pool > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0 && patch[0].soil_defaults[0][0].ash_pct_soluble_DOC > 0){
-				ash_c_transfer = patch[0].ash_C_pool * patch[0].soil_defaults[0][0].ash_transfer_pct;
-				ash_doc_to_surface = ash_c_transfer * patch[0].soil_defaults[0][0].ash_pct_soluble_DOC;
-				patch[0].ash_C_pool -= ash_c_transfer;
-				patch[0].surface_DOC += ash_doc_to_surface;
+			if (patch[0].ash_DOC > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0){
+				ash_c_transfer = patch[0].ash_DOC * patch[0].soil_defaults[0][0].ash_transfer_pct;
+				patch[0].ash_DOC -= ash_c_transfer;
+				patch[0].surface_DOC += ash_c_transfer;
 
 				// add transport to outlet stream DOC - LATER
 				// hillslope[0].streamflow_DOC
 			}
-			if (patch[0].ash_N_pool > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0 && patch[0].soil_defaults[0][0].ash_pct_soluble_DON > 0){
+			if (patch[0].ash_DON > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0){
 				// Ash N to Soluble N (DON) - 0.01,as a percent of total ash N is hard to calculate 
-				ash_n_transfer = patch[0].ash_N_pool * patch[0].soil_defaults[0][0].ash_transfer_pct;
-				ash_don_to_surface = ash_n_transfer * patch[0].soil_defaults[0][0].ash_pct_soluble_DON;
-				patch[0].ash_N_pool -= ash_n_transfer;
-				patch[0].surface_DON += ash_don_to_surface;
+				ash_n_transfer = patch[0].ash_DON * patch[0].soil_defaults[0][0].ash_transfer_pct;
+				patch[0].ash_DON -= ash_n_transfer;
+				patch[0].surface_DON += ash_n_transfer;
 
 				// add transport to outlet stream DON - LATER
 				// hillslope[0].streamflow_DON

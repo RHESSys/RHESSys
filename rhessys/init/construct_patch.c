@@ -236,8 +236,8 @@ struct patch_object *construct_patch(
 	patch[0].tmp = 0.0;
 	patch[0].detention_store = 0.0;
 
-	patch[0].ash_C_pool = 0.0; //
-	patch[0].ash_N_pool = 0.0;
+	patch[0].ash_DOC = 0.0; //
+	patch[0].ash_DON = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables for this patch         */
