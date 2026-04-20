@@ -300,8 +300,8 @@ void compute_family_fire_effects(
 
 			if (command_line[0].ash_deposition_flag == 1){
 				// cwdn is negative sometimes?? add max of 0 to prevent adding negative ash
-				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC += fmax(0.0, canopy_target[0].fe.m_cwdc_to_atmos * combust_remain_pct * patch_family[0].patches[p][0].soil_defaults[0][0].ash_pct_soluble_DOC);
-				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON += fmax(0.0, canopy_target[0].fe.m_cwdn_to_atmos * patch_family[0].patches[p][0].soil_defaults[0][0].ash_pct_soluble_DON);
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC += fmax(0.0, canopy_target[0].fe.m_cwdc_to_atmos * combust_remain_pct * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DOC);
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON += fmax(0.0, canopy_target[0].fe.m_cwdn_to_atmos * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DON);
 				if (command_line[0].verbose_flag == -7) {
 					printf("CWD - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC);
 					printf("CWD - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON);
@@ -501,7 +501,7 @@ void compute_family_fire_effects(
 																									   (canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
 																									   (canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
 																									   (canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed)) * 
-																									   combust_remain_pct * patch_family[0].patches[p][0].soil_defaults[0][0].ash_pct_soluble_DOC);
+																									   combust_remain_pct * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DOC);
 				// TEHCNICALLY should include the stores and transfers too 
 				// if adding, it would be store and transfer for: leafc, frootc, gresp, live_stemc, dead_stemc, live_crootc, dead_crootc
 				if (command_line[0].verbose_flag == -7) {
@@ -518,7 +518,7 @@ void compute_family_fire_effects(
 																									   (canopy_target[0].ns.npool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
 																									   (canopy_target[0].ns.live_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
 																									   (canopy_target[0].ns.dead_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed)) * 
-																									   patch_family[0].patches[p][0].soil_defaults[0][0].ash_pct_soluble_DON);
+																									   patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DON);
 				if (command_line[0].verbose_flag == -7) {
 					printf("Ash N pool for patch %d is now %lf\n", 
 						patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , 
