@@ -521,7 +521,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	/*--------------------------------------------------------------*/
 	/*	Allocate world defaults objects.							*/
 	/*--------------------------------------------------------------*/
-printf("line 524 ");
+	
 	world[0].defaults = (struct default_object *)
 		alloc( sizeof(struct default_object ),"defaults","construct_world");
 	
@@ -832,18 +832,7 @@ printf("about to enter construct wui\n");
                 //printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID ); 
             }
             #endif
-			/*printf("\n  file=%s firstID=%d num=%d numfiles=%d lai=%lf screenht=%lf sdist=%lf startyr=%d dayoffset=%d leapyr=%d precipmult=%lf",
-				   world[0].base_station_ncheader[0].netcdf_tmax_filename,
-				   world[0].ID,
-				   world[0].num_base_stations,
-				   world[0].num_base_station_files,
-				   world[0].base_station_ncheader[0].effective_lai,
-				   world[0].base_station_ncheader[0].screen_height,
-				   world[0].base_station_ncheader[0].sdist,
-				   world[0].base_station_ncheader[0].year_start,
-				   world[0].base_station_ncheader[0].day_offset,
-				   world[0].base_station_ncheader[0].leap_year,
-				   world[0].base_station_ncheader[0].precip_mult);*/
+
 		}
 		else {
 			printf("\nConstructing base stations");

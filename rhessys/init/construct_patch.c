@@ -130,12 +130,6 @@ struct patch_object *construct_patch(
 	if (patch[0].family_ID == -9999) {
 		patch[0].family_ID = patch[0].ID;
 	}
-	// TODO remove when multiscale flag is fully removed
-	// if (command_line[0].multiscale_flag == 1) {
-	// 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,0);
-	// } else {
-	// 	patch[0].family_ID = getIntWorldfile(&paramCnt,&paramPtr,"family_ID","%d",-9999,1);
-	// }
 	
 	patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
 	patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);
@@ -218,6 +212,11 @@ struct patch_object *construct_patch(
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil3c","%lf",0.0,1);
 	patch[0].soil_cs.soil4c =
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",0.0,1);
+	/* Read soil dissolved organic pools if present */
+	patch[0].soil_cs.DOC =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.DOC","%lf",0.0,1);
+	patch[0].soil_ns.DON =
+		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.DON","%lf",0.0,1);
 	patch[0].num_base_stations =
 		      getIntWorldfile(&paramCnt,&paramPtr,"patch_n_basestations","%d",0,0);
 
@@ -236,8 +235,9 @@ struct patch_object *construct_patch(
 	patch[0].snowpack.height = patch[0].snowpack.water_equivalent_depth *10.0;
 	patch[0].tmp = 0.0;
 	patch[0].detention_store = 0.0;
-	patch[0].soil_ns.DON = 0.0;
-	patch[0].soil_cs.DOC = 0.0;
+
+	patch[0].ash_DOC = 0.0; //
+	patch[0].ash_DON = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables for this patch         */

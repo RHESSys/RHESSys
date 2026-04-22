@@ -444,6 +444,8 @@ void		patch_daily_F(
 	double 	rz_drainage,unsat_drainage;
 	double prop_detention_store_infiltrated;
 	double water_transfer, root_growth;
+	double ash_c_transfer;
+	double ash_n_transfer;
 	struct	canopy_strata_object	*strata;
 	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
@@ -2199,7 +2201,6 @@ void		patch_daily_F(
 	/* 	and any septic losses							*/
 	/*------------------------------------------------------------------------*/
 
-
 	// put the update decomp of under ground litter before update_decomp
 
 	//debug
@@ -2213,9 +2214,7 @@ void		patch_daily_F(
           patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC
           );*/
 
-
 	if ((command_line[0].grow_flag > 0) && (vegtype == 1)) {
-
 
 		if ( update_decomp_root( //to make sure update root decomposition first, because everything will add to soil in update_decomp
 			current_date,
@@ -2229,7 +2228,6 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
-
 
 		if ( update_decomp(
 			current_date,
@@ -2256,7 +2254,6 @@ void		patch_daily_F(
            patch[0].soil_ns.nitrate,patch[0].soil_ns.sminn,patch[0].soil_cs.DOC,
            patch[0].soil_ns.DON); */
 
-
 		if (patch[0].soil_defaults[0][0].DON_production_rate > ZERO) {
 			if ( update_dissolved_organic_losses(
 				current_date,
@@ -2270,29 +2267,32 @@ void		patch_daily_F(
 				fprintf(stderr,"fATAL ERROR: in update_decomp() ... Exiting\n");
 				exit(EXIT_FAILURE);
 			}
-		patch[0].surface_DOC += (patch[0].cdf.do_litr1c_loss +
-				patch[0].cdf.do_litr2c_loss + patch[0].cdf.do_litr3c_loss + patch[0].cdf.do_litr4c_loss);
-
-		patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss +
-				 patch[0].ndf.do_litr4n_loss);
-
+			patch[0].surface_DOC += (patch[0].cdf.do_litr1c_loss + patch[0].cdf.do_litr2c_loss + patch[0].cdf.do_litr3c_loss + patch[0].cdf.do_litr4c_loss);
+			patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss + patch[0].ndf.do_litr4n_loss);
 		}
-		//debug
- /*		if(patch[0].soil_ns.nitrate!=patch[0].soil_ns.nitrate ||
-     patch[0].soil_ns.nitrate<0 ||
-     patch[0].soil_ns.sminn!=patch[0].soil_ns.sminn ||
-     patch[0].soil_ns.sminn<0 ||
-     patch[0].soil_ns.DON!=patch[0].soil_ns.DON ||
-     patch[0].soil_ns.DON<0 ||
-     patch[0].soil_cs.DOC!=patch[0].soil_cs.DOC ||
-     patch[0].soil_cs.DOC<0)
-     printf("patch daily F7 DOM decomp [%d,%d]{%e,%e,%e,%e}\n",
-                      patch[0].ID, patch[0].drainage_type,
-                      patch[0].soil_ns.nitrate,
-                      patch[0].soil_ns.sminn,
-                      patch[0].soil_cs.DOC,
-                      patch[0].soil_ns.DON
-                     ); */
+
+		// Ash deposition and transfer to surface DOC/DON
+		if (command_line[0].ash_deposition_flag == 1){
+			// Ash C to Soluble C (DOC) - 0.1 t0 0.01
+			// Only transfer above ZERO
+			if (patch[0].ash_DOC > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0){
+				ash_c_transfer = patch[0].ash_DOC * patch[0].soil_defaults[0][0].ash_transfer_pct;
+				patch[0].ash_DOC -= ash_c_transfer;
+				patch[0].surface_DOC += ash_c_transfer;
+
+				// add transport to outlet stream DOC - LATER
+				// hillslope[0].streamflow_DOC
+			}
+			if (patch[0].ash_DON > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0){
+				// Ash N to Soluble N (DON) - 0.01,as a percent of total ash N is hard to calculate 
+				ash_n_transfer = patch[0].ash_DON * patch[0].soil_defaults[0][0].ash_transfer_pct;
+				patch[0].ash_DON -= ash_n_transfer;
+				patch[0].surface_DON += ash_n_transfer;
+
+				// add transport to outlet stream DON - LATER
+				// hillslope[0].streamflow_DON
+			}
+		} // END ash_deposition_flag
 
 		if ( update_nitrif(
 			&(patch[0].soil_cs),

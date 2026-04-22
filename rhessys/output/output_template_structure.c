@@ -156,6 +156,8 @@ void	output_template_structure()
 	fprintf(outfile,"\n %s","soil_cs.soil2c");
 	fprintf(outfile,"\n %s","soil_cs.soil3c");
 	fprintf(outfile,"\n %s","soil_cs.soil4c");
+	fprintf(outfile,"\n %s","soil_cs.DOC");
+	fprintf(outfile,"\n %s","soil_ns.DON");
 	fprintf(outfile,"\n %s","n_basestations");
 	fprintf(outfile,"\n %s","base_station_ID");
 	fprintf(outfile,"\n %s","num_canopy_strata");
