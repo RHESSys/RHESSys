@@ -56,6 +56,8 @@ double	compute_vapour_conductance(
 								   double	sat_deficit,
 								   double	active_zone_depth )
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

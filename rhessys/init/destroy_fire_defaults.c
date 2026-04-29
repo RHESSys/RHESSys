@@ -29,6 +29,9 @@ void destroy_fire_defaults(int num_default_files,
 							int grow_flag,
 							struct fire_default *default_object_list )
 {
+    /* Unused parameters retained for interface compatibility: num_default_files, grow_flag. */
+    (void)num_default_files;
+    (void)grow_flag;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

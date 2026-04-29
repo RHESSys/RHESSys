@@ -35,6 +35,8 @@ void	execute_state_output_event(
 								   struct	date	end_date,
 								   struct	command_line_object *command_line)
 {
+    /* Unused parameters retained for interface compatibility: end_date. */
+    (void)end_date;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

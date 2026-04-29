@@ -36,6 +36,8 @@ struct WUI_object *construct_WUI_list(
       struct command_line_object  *command_line)
 													  
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 printf("just entered construct wui list\n");
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/

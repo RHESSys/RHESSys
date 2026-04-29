@@ -36,6 +36,10 @@ struct base_station_object
                      #endif
         )
 {
+    /* Unused parameters retained for interface compatibility: x, y, ncheader. */
+    (void)x;
+    (void)y;
+    (void)ncheader;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

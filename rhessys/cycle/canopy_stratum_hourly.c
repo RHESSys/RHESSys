@@ -44,6 +44,12 @@ void	canopy_stratum_hourly(
 							  struct	tec_entry	*event,
 							  struct 	date current_date)
 {
+    /* Unused parameters retained for interface compatibility: world, basin, hillslope, event, current_date. */
+    (void)world;
+    (void)basin;
+    (void)hillslope;
+    (void)event;
+    (void)current_date;
 	/*--------------------------------------------------------------*/
 	/*	Local Function Declaration				*/
 	/*--------------------------------------------------------------*/

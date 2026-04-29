@@ -83,6 +83,8 @@ double	compute_diffuse_radiative_PAR_fluxes(	int	verbose_flag,
 											 double	theta_noon,
 											 double	reflectance_canopy)
 {
+    /* Unused parameters retained for interface compatibility: extinction_coef. */
+    (void)extinction_coef;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

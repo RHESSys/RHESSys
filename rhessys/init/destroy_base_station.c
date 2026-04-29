@@ -23,6 +23,8 @@
 void destroy_base_station( struct command_line_object *command_line,
 						  struct base_station_object *base_station)
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/

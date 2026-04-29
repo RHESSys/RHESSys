@@ -44,6 +44,9 @@ double compute_potential_N_uptake_Waring(
 								  struct nstate_struct *ns,
 								  struct cdayflux_struct *cdf)
 {
+    /* Unused parameters retained for interface compatibility: epv, ns. */
+    (void)epv;
+    (void)ns;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

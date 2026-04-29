@@ -25,6 +25,8 @@ void climate_interpolation(
                             struct	zone_object 	*zone,
                             long    day)
 {
+    /* Unused parameters retained for interface compatibility: world. */
+    (void)world;
 
 
     int search_x =0;

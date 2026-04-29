@@ -45,6 +45,8 @@ double	compute_return_flow(
 							double	sat_deficit,
 							struct	litter_object	*litter )
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
 	/*--------------------------------------------------------------*/

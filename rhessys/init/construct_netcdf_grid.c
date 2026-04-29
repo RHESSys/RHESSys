@@ -37,6 +37,11 @@ struct base_station_object *construct_netcdf_grid(
     struct date *duration,
     struct command_line_object *command_line)
 {
+    /* Unused parameters retained for interface compatibility: num_world_base_stations, zone_x, zone_y, zone_z. */
+    (void)num_world_base_stations;
+    (void)zone_x;
+    (void)zone_y;
+    (void)zone_z;
     /*--------------------------------------------------------------*/
     /*	Local function definition.									*/
     /*--------------------------------------------------------------*/

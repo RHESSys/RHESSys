@@ -49,6 +49,8 @@ double	compute_toc_wind(
 						 double	h,
 						 double	z)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
 	/*--------------------------------------------------------------*/

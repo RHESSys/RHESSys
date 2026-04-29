@@ -34,6 +34,8 @@ double 		compute_prop_alloc_daily(
 		struct cstate_struct *cs,
 		struct epconst_struct epc)
 {
+    /* Unused parameters retained for interface compatibility: epc. */
+    (void)epc;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

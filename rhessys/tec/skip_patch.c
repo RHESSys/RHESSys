@@ -51,6 +51,12 @@
 									 struct	default_object	*defaults,
 									 struct	 patch_object *patch)
 {
+    /* Unused parameters retained for interface compatibility: command_line, num_world_base_stations, world_base_stations, defaults, patch. */
+    (void)command_line;
+    (void)num_world_base_stations;
+    (void)world_base_stations;
+    (void)defaults;
+    (void)patch;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

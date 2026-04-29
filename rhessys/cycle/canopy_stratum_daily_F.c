@@ -39,6 +39,9 @@ void	canopy_stratum_daily_F(
 							   struct	tec_entry		          *event,
 							   struct date 			            current_date)
 {
+    /* Unused parameters retained for interface compatibility: hillslope, event. */
+    (void)hillslope;
+    (void)event;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

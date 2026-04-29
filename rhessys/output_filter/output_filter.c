@@ -116,6 +116,8 @@ static bool stratum_supersedes(const OutputFilterStratum *existing, const Output
  * Returns true of new_var supersedes existing.
  */
 static bool new_var_supersedes(const OutputFilterVariable *existing, const OutputFilterVariable *new_var) {
+    /* Unused parameters retained for interface compatibility: existing. */
+    (void)existing;
 	switch(new_var->variable_type) {
 	case ANY_VAR:
 		// * supersedes all.

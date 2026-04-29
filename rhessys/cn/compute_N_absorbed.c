@@ -40,6 +40,9 @@ double	compute_N_absorbed(int verbose_flag,
 			double n_0) 
 			
 	{ 
+		/* Unused parameters retained for interface compatibility: verbose_flag, p. */
+		(void)verbose_flag;
+		(void)p;
 	/*------------------------------------------------------*/ 
 	/*	Local Function Declarations.						*/ 
 	/*------------------------------------------------------*/

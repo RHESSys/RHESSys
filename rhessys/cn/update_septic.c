@@ -36,6 +36,8 @@ int update_septic(
 				  struct	date	current_date,
 				  struct  patch_object   *patch)
 {
+    /* Unused parameters retained for interface compatibility: current_date. */
+    (void)current_date;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.			*/
 	/*------------------------------------------------------*/

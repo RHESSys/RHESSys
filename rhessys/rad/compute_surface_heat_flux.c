@@ -55,6 +55,8 @@ double	compute_surface_heat_flux(
 								  double	min_heat_cap,
 								  double	max_heat_cap)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

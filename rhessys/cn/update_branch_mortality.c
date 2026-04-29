@@ -51,6 +51,12 @@ void update_branch_mortality(
 					  double	cover_fraction,
 					  double	mort)
 {
+    /* Unused parameters retained for interface compatibility: cdf, cdf_patch, ndf, ndf_patch, cs_litr. */
+    (void)cdf;
+    (void)cdf_patch;
+    (void)ndf;
+    (void)ndf_patch;
+    (void)cs_litr;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

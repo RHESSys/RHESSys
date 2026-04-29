@@ -47,6 +47,8 @@ double compute_potential_N_uptake_combined(
 								  struct nstate_struct *ns,
 								  struct cdayflux_struct *cdf)
 {
+    /* Unused parameters retained for interface compatibility: ns. */
+    (void)ns;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

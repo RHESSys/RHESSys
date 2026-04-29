@@ -49,6 +49,9 @@ int update_decomp_root(
 				  struct ndayflux_patch_struct *ndf,
 				  struct patch_object	*patch)
 {
+    /* Unused parameters retained for interface compatibility: current_date, patch. */
+    (void)current_date;
+    (void)patch;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

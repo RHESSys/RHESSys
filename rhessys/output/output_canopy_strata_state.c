@@ -34,6 +34,9 @@ void	output_canopy_strata_state(
 								   struct	command_line_object	*command_line,
 								   FILE	*outfile)
 {
+    /* Unused parameters retained for interface compatibility: current_date, command_line. */
+    (void)current_date;
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

@@ -42,6 +42,8 @@ double	Ksat_z_curve(
 					 double	z,
 					 double	Ksat_0 )
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
 	/*--------------------------------------------------------------*/

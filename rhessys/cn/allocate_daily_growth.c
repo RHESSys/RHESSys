@@ -49,6 +49,9 @@ int allocate_daily_growth(int nlimit,
 						  struct epconst_struct epc,
 						  struct date current_date)
 {
+    /* Unused parameters retained for interface compatibility: epv, current_date. */
+    (void)epv;
+    (void)current_date;
 	/*------------------------------------------------------*/
 	/*	Local function declarations.						*/
 	/*------------------------------------------------------*/

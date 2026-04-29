@@ -53,6 +53,11 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 							 struct cdayflux_patch_struct *cdf,
 							 struct ndayflux_patch_struct *ndf)
 {
+    /* Unused parameters retained for interface compatibility: maxpsi, minpsi, cs_soil, ns_soil. */
+    (void)maxpsi;
+    (void)minpsi;
+    (void)cs_soil;
+    (void)ns_soil;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

@@ -119,6 +119,9 @@ double	top_model(
 				  struct 	zone_object **zones,
 				  struct	date	current_date)
 {
+    /* Unused parameters retained for interface compatibility: sen1, sen2. */
+    (void)sen1;
+    (void)sen2;
 	/*--------------------------------------------------------------*/
 	/*  Local Function Declarations.                                */
 	/*--------------------------------------------------------------*/

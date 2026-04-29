@@ -48,6 +48,10 @@ double	compute_N_leached(int verbose_flag,
 			double *transmissivity) 
 			
 	{ 
+		/* Unused parameters retained for interface compatibility: m, gamma, transmissivity. */
+		(void)m;
+		(void)gamma;
+		(void)transmissivity;
 	/*------------------------------------------------------*/ 
 	/*	Local Function Declarations.						*/ 
 	/*------------------------------------------------------*/

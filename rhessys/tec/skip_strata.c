@@ -49,6 +49,13 @@ void skip_strata(
 											  struct	patch_object *patch,
 											  struct canopy_strata_object     *canopy_strata)
 {
+    /* Unused parameters retained for interface compatibility: command_line, num_world_base_stations, world_base_stations, defaults, patch, canopy_strata. */
+    (void)command_line;
+    (void)num_world_base_stations;
+    (void)world_base_stations;
+    (void)defaults;
+    (void)patch;
+    (void)canopy_strata;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

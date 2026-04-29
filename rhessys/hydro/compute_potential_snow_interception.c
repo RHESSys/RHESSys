@@ -46,6 +46,9 @@ double	compute_potential_snow_interception(
 											double Tair,
 											struct	canopy_strata_object	*stratum)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag, Tair. */
+    (void)verbose_flag;
+    (void)Tair;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

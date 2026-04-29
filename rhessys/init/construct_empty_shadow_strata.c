@@ -34,6 +34,9 @@ struct canopy_strata_object *construct_empty_shadow_strata(
                                                                                                          struct canopy_strata_object *stratum,
                                                                                                          struct default_object  *defaults)
 {
+    /* Unused parameters retained for interface compatibility: command_line, defaults. */
+    (void)command_line;
+    (void)defaults;
 
       /*--------------------------------------------------------------*/
         /*      Local function definition.                              */

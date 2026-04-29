@@ -41,6 +41,8 @@ double	compute_potential_rain_interception(
 											double	rain,
 											struct	canopy_strata_object	*stratum) 
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

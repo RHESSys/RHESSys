@@ -30,6 +30,8 @@ void	update_soil_moisture(
 					  struct 	command_line_object *command_line,
 					  struct	date 			current_date) 
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

@@ -54,6 +54,12 @@ void skip_hillslope(
 											 struct	default_object	*defaults,
 											 struct hillslope_object *hillslope)
 {
+    /* Unused parameters retained for interface compatibility: command_line, num_world_base_stations, world_base_stations, defaults, hillslope. */
+    (void)command_line;
+    (void)num_world_base_stations;
+    (void)world_base_stations;
+    (void)defaults;
+    (void)hillslope;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

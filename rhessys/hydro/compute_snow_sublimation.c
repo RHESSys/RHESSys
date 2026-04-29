@@ -44,6 +44,8 @@ double	compute_snow_sublimation(
 							double	pa,
 						    double *radsubl)
 {
+    /* Unused parameters retained for interface compatibility: z_obs. */
+    (void)z_obs;
 	/*--------------------------------------------------------------*/
 	/*	Local variable declaration.				*/
 	/*--------------------------------------------------------------*/

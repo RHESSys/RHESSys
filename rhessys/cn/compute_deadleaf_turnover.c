@@ -38,6 +38,8 @@ int	compute_deadleaf_turnover(
 							  struct ndayflux_patch_struct *ndf,
 							  int grow_flag)
 {
+    /* Unused parameters retained for interface compatibility: grow_flag. */
+    (void)grow_flag;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

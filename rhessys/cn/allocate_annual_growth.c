@@ -51,6 +51,10 @@ int allocate_annual_growth(				int id,
 						   struct epconst_struct epc,
 						   struct command_line_object *command_line)
 {
+    /* Unused parameters retained for interface compatibility: default_ID, cover_fraction, command_line. */
+    (void)default_ID;
+    (void)cover_fraction;
+    (void)command_line;
 	/*------------------------------------------------------*/
 	/*	Local function declarations.						*/
 	/*------------------------------------------------------*/

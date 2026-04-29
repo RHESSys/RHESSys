@@ -55,6 +55,9 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 							 struct cdayflux_patch_struct *cdf,
 							 struct ndayflux_patch_struct *ndf)
 {
+    /* Unused parameters retained for interface compatibility: maxpsi, minpsi. */
+    (void)maxpsi;
+    (void)minpsi;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

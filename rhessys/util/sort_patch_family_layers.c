@@ -27,6 +27,8 @@
 
 void sort_patch_family_layers( struct patch_family_object *patch_family, int *rec)
 {
+    /* Unused parameters retained for interface compatibility: rec. */
+    (void)rec;
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/

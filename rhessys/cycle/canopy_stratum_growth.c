@@ -36,6 +36,12 @@ void	canopy_stratum_growth(
 							  struct	tec_entry		*event,
 							  struct 	date 			current_date)
 {
+    /* Unused parameters retained for interface compatibility: world, basin, hillslope, zone, event. */
+    (void)world;
+    (void)basin;
+    (void)hillslope;
+    (void)zone;
+    (void)event;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

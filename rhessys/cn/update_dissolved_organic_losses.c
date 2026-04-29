@@ -53,6 +53,8 @@ int update_dissolved_organic_losses(
 				  struct cdayflux_patch_struct *cdf,
 				  struct ndayflux_patch_struct *ndf)
 {
+    /* Unused parameters retained for interface compatibility: current_date. */
+    (void)current_date;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

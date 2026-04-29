@@ -37,6 +37,8 @@
 int compute_farq_psn( struct psnin_struct *in,
 					 struct psnout_struct* out, int verbose)
 {
+    /* Unused parameters retained for interface compatibility: verbose. */
+    (void)verbose;
 /*-------------------------------------------------------------------
 Farquhar photosynthesis routine
 

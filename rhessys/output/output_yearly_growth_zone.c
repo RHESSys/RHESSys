@@ -34,6 +34,12 @@ void	output_yearly_growth_zone(	int basinID, int hillID,
 				struct	date	current_date,
 				FILE *outfile)
 {
+    /* Unused parameters retained for interface compatibility: basinID, hillID, zone, current_date, outfile. */
+    (void)basinID;
+    (void)hillID;
+    (void)zone;
+    (void)current_date;
+    (void)outfile;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

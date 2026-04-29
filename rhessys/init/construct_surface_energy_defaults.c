@@ -33,6 +33,8 @@ struct surface_energy_default *construct_surface_energy_defaults(
     int grow_flag,
     struct command_line_object *command_line)
 {
+    /* Unused parameters retained for interface compatibility: grow_flag. */
+    (void)grow_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

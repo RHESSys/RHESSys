@@ -24,6 +24,8 @@ void destroy_canopy_stratum(
 							struct	command_line_object	*command_line,
 							struct	canopy_strata_object	**stratum_list)
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/

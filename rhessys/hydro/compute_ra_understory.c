@@ -70,6 +70,8 @@ double	compute_ra_understory(
 							  double  *ga)
 							  
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 
 
 	/*--------------------------------------------------------------*/

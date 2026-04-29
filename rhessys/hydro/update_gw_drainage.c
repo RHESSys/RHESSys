@@ -45,6 +45,9 @@ int update_gw_drainage(
 				  struct  command_line_object *command_line,
 				  struct	date	current_date)
 {
+    /* Unused parameters retained for interface compatibility: command_line, current_date. */
+    (void)command_line;
+    (void)current_date;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.			*/
 	/*------------------------------------------------------*/

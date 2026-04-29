@@ -41,6 +41,9 @@ int resolve_sminn_competition(
 							  double N_decay_rate,
 							  struct ndayflux_patch_struct *ndf)
 {
+    /* Unused parameters retained for interface compatibility: surface_NO3, surface_NH4. */
+    (void)surface_NO3;
+    (void)surface_NH4;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

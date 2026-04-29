@@ -74,6 +74,9 @@ void update_phenology(struct zone_object  *zone,
 					  int   multiscale_flag,
 					  int	msr_shading_flag)
 {
+    /* Unused parameters retained for interface compatibility: cs_soil, ns_soil. */
+    (void)cs_soil;
+    (void)ns_soil;
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/

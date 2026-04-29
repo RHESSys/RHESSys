@@ -56,6 +56,8 @@ double	snowpack_daily_F(
 						 double area_fraction,
 						 int	update_flag)
 {
+    /* Unused parameters retained for interface compatibility: snow_water_capacity. */
+    (void)snow_water_capacity;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
 	/*--------------------------------------------------------------*/

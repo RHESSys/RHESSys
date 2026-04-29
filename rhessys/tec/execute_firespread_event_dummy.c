@@ -32,6 +32,10 @@ void execute_firespread_event(
                                      struct    command_line_object    *command_line,
                                      struct date    current_date)
 {
+    /* Unused parameters retained for interface compatibility: world, command_line, current_date. */
+    (void)world;
+    (void)command_line;
+    (void)current_date;
     /*--------------------------------------------------------------*/
     /*    Local function definition.                                    */
     /*--------------------------------------------------------------*/

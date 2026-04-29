@@ -38,6 +38,8 @@ void input_new_basin(
 									 struct	default_object	*defaults,
 									 struct	basin_object *basin)
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

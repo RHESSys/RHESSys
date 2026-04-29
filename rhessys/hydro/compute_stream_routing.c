@@ -49,6 +49,8 @@ double  compute_stream_routing(struct command_line_object *command_line,
 						 int  num_reaches,
 						 struct	date	current_date)
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/

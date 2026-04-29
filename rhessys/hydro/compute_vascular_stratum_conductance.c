@@ -74,6 +74,9 @@ double	compute_vascular_stratum_conductance(
 											 struct patch_object *patch)
 											 
 {
+    /* Unused parameters retained for interface compatibility: cuticular_cond, ID. */
+    (void)cuticular_cond;
+    (void)ID;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

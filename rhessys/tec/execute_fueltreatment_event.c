@@ -31,6 +31,8 @@ void execute_fueltreatment_event(
 									 struct	command_line_object	*command_line,
 									 struct date	current_date)
 {
+    /* Unused parameters retained for interface compatibility: current_date. */
+    (void)current_date;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

@@ -60,6 +60,8 @@
 								   struct	default_object	*defaults,
 								   struct	zone_object *zone)
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

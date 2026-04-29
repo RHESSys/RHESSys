@@ -37,6 +37,12 @@ void skip_basin(
 									 struct	default_object	*defaults,
 									 struct	basin_object *basin)
 {
+    /* Unused parameters retained for interface compatibility: command_line, num_world_base_stations, world_base_stations, defaults, basin. */
+    (void)command_line;
+    (void)num_world_base_stations;
+    (void)world_base_stations;
+    (void)defaults;
+    (void)basin;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

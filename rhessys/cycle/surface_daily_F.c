@@ -39,6 +39,11 @@ void		surface_daily_F(
 							struct	tec_entry		*event,
 							struct 	date 			current_date)
 {
+    /* Unused parameters retained for interface compatibility: world, hillslope, event, current_date. */
+    (void)world;
+    (void)hillslope;
+    (void)event;
+    (void)current_date;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

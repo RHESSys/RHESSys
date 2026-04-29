@@ -93,6 +93,8 @@ static bool init_hourly_daily_variable(Dictionary_t *struct_index, char *struct_
 }
 
 static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
+    /* Unused parameters retained for interface compatibility: verbose. */
+    (void)verbose;
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_hourly_daily: no variables defined.\n");
 		return false;
@@ -170,6 +172,8 @@ static bool init_monthly_yearly_variable(Dictionary_t *struct_index, char *struc
 }
 
 static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, bool verbose) {
+    /* Unused parameters retained for interface compatibility: verbose. */
+    (void)verbose;
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_monthly_yearly: no variables defined.\n");
 		return false;

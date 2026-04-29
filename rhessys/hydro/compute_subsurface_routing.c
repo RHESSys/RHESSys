@@ -36,6 +36,8 @@
 
 void compute_subsurface_routing(struct command_line_object *command_line,
 		struct hillslope_object *hillslope, int n_timesteps, struct date current_date) {
+			/* Unused parameters retained for interface compatibility: current_date. */
+			(void)current_date;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/

@@ -55,6 +55,8 @@ void input_new_hillslope(
 											 struct	default_object	*defaults,
 											 struct hillslope_object *hillslope)
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/

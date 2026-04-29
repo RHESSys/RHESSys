@@ -68,6 +68,9 @@ double	compute_nonvascular_stratum_conductance(
 												double	gsurf_slope,
 												double	gsurf_intercept)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag, gl_c. */
+    (void)verbose_flag;
+    (void)gl_c;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

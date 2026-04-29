@@ -34,6 +34,8 @@ void	output_growth_hillslope(              int  basinID,
 							struct	date	current_date,
 							FILE *outfile)
 {
+    /* Unused parameters retained for interface compatibility: basinID. */
+    (void)basinID;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
