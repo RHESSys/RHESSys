@@ -2554,7 +2554,7 @@ struct cstate_struct
     double leafc;           /* (kgC/m2) leaf C */
     double leafc_age1;           /* (kgC/m2) leaf C in first year leaves */
     double leafc_age2;           /* (kgC/m2) leaf C in older leaves */
-    double stem_density;     /* number per m2 */;
+    double stem_density;     /* number per m2 */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */
