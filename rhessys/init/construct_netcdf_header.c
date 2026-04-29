@@ -64,8 +64,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-
-	int j;
+    /* Cleanup note: removed unused local j. */
 	
 	//struct	daily_optional_clim_sequence_flags	daily_flags;
 	struct base_station_ncheader_object *base_station_ncheader;

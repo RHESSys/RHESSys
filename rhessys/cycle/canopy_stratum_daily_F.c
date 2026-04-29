@@ -261,11 +261,10 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	double tmid;
+	/* Cleanup note: removed unused locals tmid, APAR_direct_sunlit, and rnet_trans. */
 	double  assim_sunlit;
 	double  assim_shade;
 	double	dC13_sunlit, dC13_shade;
-	double  APAR_direct_sunlit;
 	double	dry_evaporation;
 	double	ga, gasnow;
 	double	Kdown_direct;
@@ -289,7 +288,7 @@ void	canopy_stratum_daily_F(
 	double	rnet_evap;
 	double  rnet_evap_night;
 	double  rnet_evap_day;
-	double	rnet_trans, rnet_trans_sunlit, rnet_trans_shade;
+	double	rnet_trans_sunlit, rnet_trans_shade;
 	double	snow_throughfall;
 	double	transpiration;
 	double	transpiration_rate;

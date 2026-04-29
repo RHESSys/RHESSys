@@ -74,7 +74,8 @@ void input_new_hillslope_mult(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int		i,j, dtmp;
+	/* Cleanup note: removed unused local j. */
+	int		i, dtmp;
 	int		base_stationID;
 	char		record[MAXSTR];
 	double		ltmp;

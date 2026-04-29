@@ -68,13 +68,14 @@ void compute_subsurface_routing_hourly(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused hourly routing scratch locals k/tmp/theta/m/Ksat/return_flow/preday_sat_deficit. */
 	int i, d;
-	int j, k;
+	int j;
 	int grow_flag, verbose_flag;
-	double time_int, tmp;
-	double theta, m, Ksat, Nout;
+	double time_int;
+	double Nout;
 	double NO3_out, NH4_out, DON_out, DOC_out;
-	double return_flow, excess;
+	double excess;
 	double water_balance, infiltration;
 	double innundation_depth;
 	double hillslope_outflow;
@@ -87,7 +88,6 @@ void compute_subsurface_routing_hourly(
 	double preday_hillslope_unsat_storage;
 	double preday_hillslope_rz_storage;
 	double preday_hillslope_sat_deficit;
-	double preday_sat_deficit;
 	double preday_hillslope_return_flow;
 	double preday_hillslope_detention_store;	
 	double add_field_capacity, rz_drainage, unsat_drainage;

@@ -221,7 +221,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
   }
   /*printf("\nstartday=%d duration=%d nday=%d day1=%d dayfin=%d\n",startday,duration,nday,days[0],days[nday-1]);*/
   //int MAX_DATA_SIZE = days[ nday - 1 ];
-  int read_duration = duration;
+  /* Cleanup note: removed unused clim-repeat scratch locals read_duration, target_date/curr_date, and start_date_index. */
 
   //fprintf(stderr, "days being measured: read_duration %d, nday %d\n", read_duration, nday );
 
@@ -291,14 +291,10 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
     float * real_netcdf_data = allActualData;
     float * output_data = data;
     int total_days_in_netcdf_data = nday;
-    struct date target_date;
-    struct date curr_date;
-
     int requested_output_data_length = duration;
 
     // index that says where in the netcdf data array we begin to read from
     int read_start_index = startday - days[0] + day_offset;
-    int start_date_index = read_start_index;
 
     // how many days of existing, sequential, real netcdf data to copy
     // directly into the beginning of our output_data array.

@@ -100,7 +100,7 @@ double	snowpack_daily_F(
 	double	latent_heat_sublimation;
 	double	snow_density;
 	double Q_advected_precip;
-	double Q_radiation_net;
+	/* Cleanup note: removed unused Q_radiation_net (legacy commented melt-path only). */
 	double	rad_melt, melt, T_melt, precip_melt;
 	double	snowpack_total_water_depth;
 	double	total_extinction;

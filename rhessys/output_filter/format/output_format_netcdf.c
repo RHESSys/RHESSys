@@ -372,8 +372,7 @@ bool output_format_netcdf_write_data(char * const error, size_t error_len,
 	size_t curr_idx[] = {meta->index++};
 
 	// Second, output time step variables
-	short hour, day, month;
-	short year;
+	/* Cleanup note: removed unused hour/day/month/year locals; values are written directly from date. */
 	switch (f->timestep) {
 	case TIMESTEP_HOURLY:
 		status = output_byte_to_netcdf(meta->abs_path, ncid, curr_idx,

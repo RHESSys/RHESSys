@@ -82,10 +82,9 @@ double	compute_N_leached(int verbose_flag,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	int didx_bot, didx_top;
+	/* Cleanup note: removed unused locals didx_bot/didx_top, theta/sat_deficit, and Q. */
 	double navail, nleached,nabsorbed;
-	double theta, sat_deficit;
-	double Q, Qtotal;
+	double Qtotal;
 	double z1, z2;
 	double	available_water,septic_depth;
 

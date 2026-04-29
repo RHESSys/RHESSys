@@ -84,26 +84,23 @@ struct base_station_object *construct_netcdf_grid(
     /*--------------------------------------------------------------*/
     /*	Local variable definition.									*/
     /*--------------------------------------------------------------*/
-    int i;
+    /* Cleanup note: removed unused netcdf scratch locals inx/year_start/leap_year/first_date/first-second/buffer* and baseid. */
     int j;
     int k;
-    int inx;
 
-    int year_start, leap_year;
     float net_x, net_y;
     //float sdist, day_offset, precip_mult;
 
     struct daily_optional_clim_sequence_flags daily_flags;
-    struct date first_date;
 
-    char first[MAXSTR]; // I use first & second for the while loop that reads the first base station file
-    char second[MAXSTR];
+    // char first[MAXSTR]; // I use first & second for the while loop that reads the first base station file
+    // char second[MAXSTR];
     //double eff_lai;
     //double screen_height;
-    char buffer[MAXSTR * 100];
-    char buffertmax[MAXSTR * 100];
-    char buffertmin[MAXSTR * 100];
-    char bufferrain[MAXSTR * 100];
+    // char buffer[MAXSTR * 100];
+    // char buffertmax[MAXSTR * 100];
+    // char buffertmin[MAXSTR * 100];
+    // char bufferrain[MAXSTR * 100];
     char *lat_name = "lat";
     char *lon_name = "lon";
     // Temporalily add threshold for tmax and tmin to check for errors in input data
@@ -116,11 +113,8 @@ struct base_station_object *construct_netcdf_grid(
     max_tmax = 50;
     min_tmin = -50;
 
-    FILE *base_station_file;
-
     int instartday;  // days since Jan 1, STARTYEAR
     float *tempdata; // temporary memory to read netcdf data
-    int baseid;
     setvbuf(stdout, NULL, _IONBF, 0);
     /* allocate daily_optional_clim_sequence_flags struct and make sure set to 0 */
 
@@ -130,7 +124,7 @@ struct base_station_object *construct_netcdf_grid(
       base_station_ncheader[0].lastID,
       base_station_ncheader[0].effective_lai);*/
 
-    i = base_station_ncheader[0].lastID + 1;
+    base_station_ncheader[0].lastID + 1;
 
     /* Allocate for the new base station cell */
 #ifdef LIU_NETCDF_READER
@@ -218,7 +212,6 @@ struct base_station_object *construct_netcdf_grid(
     float y_utm;
     float lat;
     float lon;
-    int return_value;
 
     lat = base_station[0].lat;
     lon = base_station[0].lon;
@@ -234,7 +227,7 @@ struct base_station_object *construct_netcdf_grid(
         // printf("\n Not specify the UTM zone in command line, using default zone UTM 12, if you want to change the UTM zone using -ncgridinterp NUM \n");
     }
 
-    return_value = LatLonToUTMXY(lat, lon, utm_zone, &x_utm, &y_utm);
+    (void)LatLonToUTMXY(lat, lon, utm_zone, &x_utm, &y_utm);
     printf(" the utm x and utm y are %f, %f \n", x_utm, y_utm);
     base_station[0].proj_x = (double)x_utm;
     base_station[0].proj_y = (double)y_utm;

@@ -52,15 +52,13 @@ void climate_interpolation(
     double rain_temp =0;
     double tmax_temp =0;
     double tmin_temp =0;
-    double rain_old = 0;
+    /* Cleanup note: removed unused interpolation scratch locals rain_old, isohyet_adjustment, and length. */
     double tmax_old = 0;
     double tmin_old = 0;
     double res_square = 0;
 
     double Tlapse_adjustment1 = 0;
     double Tlapse_adjustment2 = 0;
-    double isohyet_adjustment = 0;
-    int length;
 
 
     double max_tmax = 50;  //for WA ID from http://www.ncdc.noaa.gov/extremes/scec/records

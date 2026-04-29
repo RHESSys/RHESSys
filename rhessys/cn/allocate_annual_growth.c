@@ -76,20 +76,15 @@ int allocate_annual_growth(				int id,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused locals delta_* wood totals and temporary leaf/stem tracking terms. */
 	
 	int ok=1;
 	double storage_transfer_prop;
-	double delta_livestemc, delta_deadstemc;
-	double delta_livecrootc, delta_deadcrootc;
-	double delta_frootc, delta_frootn;
-	double delta_nitrogen, delta_carbon;
 	double cnl, cnlw, cndw, cnfr, mean_cn;
 	double fcroot, flive, fdead, fleaf, froot, fwood;
-	double total_wood_c, total_wood_n, wood_cn;
-	double retransn, rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
+	double rem_excess_carbon, excess_carbon, excess_nitrogen;
 	double unmetn, carbohydrate_transfer_n, excess_n, avg_cn;
-	double plantc, excess_lai, excess_leaf_carbon, stemc, leafc;
-	double delta_leaf, leaf_growth_deficit;
+	double excess_lai;
 	double total_store, ratio, total_above_biomass,total_biomass, carbohydrate_transfer;
 	struct mortality_struct mort;
 

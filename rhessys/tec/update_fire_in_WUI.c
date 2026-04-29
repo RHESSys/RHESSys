@@ -42,14 +42,8 @@ void update_fire_in_WUI(struct WUI_object *WUI_list)
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused fire_area_occur and distance-list/patch scratch pointers from disabled code paths. */
 	struct WUI_object *WUI_ptr;	
-	double fire_area_occur;
- 
-	struct patch_object_list *patches_dist2km_ptr;
-	struct patch_object_list *patches_dist5km_ptr;
-	struct patch_object_list *patches_dist10km_ptr;
-
-	struct patch_object *patch;
 	/*--------------------------------------------------------------*/
 	/* cycle through WUIs  */
 	/*--------------------------------------------------------------*/

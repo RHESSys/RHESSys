@@ -172,9 +172,9 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused atmospheric scratch locals Tcloud/f8/e8z/tau8. */
 	int 	patch, pf, inx;
 	double snow_rain_range;
-	double Tcloud, f8, e8z, tau8;
 	double pspread;
 	struct  dated_sequence	clim_event;
 	/*--------------------------------------------------------------*/

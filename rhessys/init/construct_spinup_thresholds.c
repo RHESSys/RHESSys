@@ -55,19 +55,15 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.							                		*/
 	/*--------------------------------------------------------------*/
-	int	   	i,d,j;
+  int	   	i,j;
 	int		  num_stratum, num_targets;
 	int		  stratum_ID, patch_ID, zone_ID, hill_ID, basin_ID;
 	FILE	  *spinup_thresholds_file;
-	struct  spinup_thresholds_list_object	*stlist;
 	struct	canopy_strata_object	*strata;
 	struct  patch_object            *patch;
 	struct  zone_object             *zone;
 	struct  hillslope_object        *hillslope;
-  double  target_lai;
-  double  target_total_stemc;
-  double  target_height;
-  double  target_age;
+  /* Cleanup note: removed unused target_* temporaries and locals d/stlist; thresholds are read directly into target_array. */
   struct  target_read *target_array;
 	char	  record[MAXSTR];
 

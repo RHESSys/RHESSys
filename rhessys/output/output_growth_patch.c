@@ -47,7 +47,7 @@ void	output_growth_patch(
 	double aheight;
 	double alai, aresp, asoilhr;
 	double aleafc, aleafn, afrootc, afrootn, awoodc, awoodn;
-	double atotalN, apredaytN;
+	/* Cleanup note: removed unused nitrogen total accumulators atotalN and apredaytN. */
 
 	struct	canopy_strata_object 	*strata;
 	apsn = 0.0;
@@ -60,8 +60,8 @@ void	output_growth_patch(
 	afrootc = 0.0;
 	afrootn = 0.0;
 	aheight = 0.0;
-	atotalN = 0.0;
-	apredaytN = 0.0;
+	// atotalN = 0.0;
+	// apredaytN = 0.0;
 
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
@@ -118,8 +118,8 @@ void	output_growth_patch(
 				+ strata->ns.deadstemn_transfer
 				+ strata->ns.cwdn + strata->ns.npool + strata->ns.retransn);			
 
-			apredaytN += strata->cover_fraction * (strata->ns.preday_totaln);
-			atotalN += strata->cover_fraction * (strata->ns.totaln);
+			// apredaytN += strata->cover_fraction * (strata->ns.preday_totaln);
+			// atotalN += strata->cover_fraction * (strata->ns.totaln);
 
 			alai += strata->cover_fraction * (strata->epv.proj_lai) ;
 			aheight += strata->cover_fraction * (strata->epv.height) ;

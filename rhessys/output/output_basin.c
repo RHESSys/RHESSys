@@ -61,7 +61,8 @@ void	output_basin(			int routing_flag,
 	double asublimation, acanopysubl;
 	double asat_area, adetention_store;
 	double apsn, anppcum, alai, acrain, acsnow;
-	double abase_flow, hbase_flow,  hstreamflow_NO3, hstreamflow_NH4;
+	/* Cleanup note: removed unused hillslope stream N scratch locals hstreamflow_NO3 and hstreamflow_NH4. */
+	double abase_flow, hbase_flow;
 	double	aacctrans, var_acctrans, var_trans;
 	double aPET, adC13, amortality_fract, apcp, apcpassim;
 	double	hgw;
@@ -112,8 +113,6 @@ void	output_basin(			int routing_flag,
 	aarea =  0.0 ;
 	abase_flow = 0.0;
 	hbase_flow = 0.0;
-	hstreamflow_NO3 = 0.0;
-	hstreamflow_NH4 = 0.0;
 	hgwQout = 0.0;
 	hgw = 0.0;
 	alai = 0.0;

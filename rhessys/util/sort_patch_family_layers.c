@@ -37,12 +37,10 @@ void sort_patch_family_layers( struct patch_family_object *patch_family, int *re
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int s, i, j,k;
+	/* Cleanup note: removed unused locals s, maxstemcID/maxleafcID, maxstemc/maxleafc, and stratum. */
+	int i, j,k;
 	int list_bottom;
-	int maxstemcID, maxleafcID;
 	double cover_fraction;
-	double maxstemc, maxleafc;
-	struct canopy_strata_object *stratum;
 	/*--------------------------------------------------------------*/
 	/*	free current layer structure				*/
 	/*--------------------------------------------------------------*/

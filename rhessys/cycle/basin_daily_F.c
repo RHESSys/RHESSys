@@ -83,12 +83,7 @@ void	basin_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-  int z, p,inx;
-	double	scale;
-	struct	hillslope_object *hillslope;
-	struct	zone_object *zone;
-	struct	patch_object *patch; 
-	struct	dated_sequence	clim_event;
+	/* Cleanup note: removed unused basin loop scratch locals z, p, inx, scale, patch, clim_event, hillslope, and zone. */
 
 	/*--------------------------------------------------------------*/
 	/* 	track basin scale snow for snow assimilation 			*/
@@ -111,8 +106,8 @@ void	basin_daily_F(
 			current_date );
     }
 
-        hillslope = basin[0].hillslopes[0];
-	zone = hillslope[0].zones[0];
+    // hillslope = basin[0].hillslopes[0];
+	// zone = hillslope[0].zones[0];
 	basin[0].snowpack.surface_age /=  basin[0].area_withsnow;
 	basin[0].snowpack.T /=  basin[0].area_withsnow;
 	basin[0].snowpack.energy_deficit /=  basin[0].area_withsnow;

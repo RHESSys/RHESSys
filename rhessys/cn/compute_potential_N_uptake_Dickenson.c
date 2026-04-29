@@ -54,11 +54,12 @@ double compute_potential_N_uptake_Dickenson(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused allocation fraction local fdead. */
 	double cnl;         /* RATIO   leaf C:N      */
 	double cnfr;        /* RATIO   fine root C:N */
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
-	double fstem, fcroot,fwood, fleaf, froot, fdead, fbroot; 	/* fraction allocate to each component */
+	double fstem, fcroot,fwood, fleaf, froot, fbroot; 	/* fraction allocate to each component */
 	double f4;
 	double mean_cn, ratio;
 	double transfer,plant_ndemand;

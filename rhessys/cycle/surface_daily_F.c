@@ -129,6 +129,7 @@ void		surface_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused unsuffixed evaporation-rate locals; retained day/night variants used in calculations. */
 	double  detention_store_evaporation;
 	double  detention_store_potential_evaporation;
 	double  detention_store_potential_evaporation_night;
@@ -143,23 +144,18 @@ void		surface_daily_F(
 	double	Kstar_diffuse;
 	double	APAR_diffuse;
 	double	APAR_direct;
-	double	potential_evaporation_rate;
 	double	potential_evaporation_rate_night;
 	double	potential_evaporation_rate_day;
-	double	potential_rainy_evaporation_rate;
 	double	potential_rainy_evaporation_rate_night;
 	double	potential_rainy_evaporation_rate_day;
 	double	rainy_evaporation;
 	double	rnet_evap_pond, rnet_evap_litter, rnet_evap_soil;
 	double  rnet;
-	double	PE_rate, PE_rainy_rate;
 	double	PE_rate_night, PE_rainy_rate_night;
 	double	PE_rate_day, PE_rainy_rate_day;
 	double	soil_potential_evaporation;
-	double	soil_potential_dry_evaporation_rate;
 	double	soil_potential_dry_evaporation_rate_night;
 	double	soil_potential_dry_evaporation_rate_day;
-	double	soil_potential_rainy_evaporation_rate;
 	double	soil_potential_rainy_evaporation_rate_night;
 	double	soil_potential_rainy_evaporation_rate_day;
 	double	exfiltration;

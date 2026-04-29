@@ -144,8 +144,7 @@ Farquhar photosynthesis routine
 	static double act25 = 3.6;    /* (umol/mgRubisco/min) Rubisco activity */
 	static double q10act = 2.4;   /* (DIM) Q_10 for Rubisco activity */
 	/* new constant used in calculating Jmax - smitch 2001 */
-	static double pabs = 0.85;    /* (DIM) fPAR effectively absorbed by
-					PSII */
+	/* Cleanup note: removed unused constant pabs. */
 
 	/* local variables  */
 	Rd = in->Rd;

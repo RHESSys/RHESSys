@@ -62,9 +62,9 @@ void resemble_hourly_date(struct world_object *world){
   /*-----------------------------------------------------------------------------
    *  Local variable definition
    *-----------------------------------------------------------------------------*/
+  /* Cleanup note: removed unused local hourly_clim. */
   int i;
   int inx;
-  struct hourly_clim_object *hourly_clim;
 
   /*-----------------------------------------------------------------------------
    *  If there is only one base station, there is no need to resemble the records

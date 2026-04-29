@@ -141,7 +141,7 @@ void		patch_hourly(
 	double  net_inflow, duration, infiltration;
 	double 	rz_drainage, unsat_drainage;
 	double  theta;
-	struct 	litter_object *litter;
+	/* Cleanup note: removed unused local litter pointer. */
 	/*--------------------------------------------------------------*/
 	/*	process any hourly rainfall				*/
 	/*--------------------------------------------------------------*/

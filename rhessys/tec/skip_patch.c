@@ -78,12 +78,10 @@
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int		base_stationID;
+	/* Cleanup note: removed unused locals base_stationID, soil/landuse default IDs, and mpar. */
 	int		i, dtmp;
-	int		soil_default_object_ID;
-	int		landuse_default_object_ID;
 	char		record[MAXSTR];
-	double	mpar, ltmp;
+	double	ltmp;
 	int		paramCnt=0;
 	param		*paramPtr=NULL;
 	

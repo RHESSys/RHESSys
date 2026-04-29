@@ -56,9 +56,10 @@ double	compute_potential_snow_interception(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused local Imax. */
 	double	potential_interception;
 	double interception_coef;
-	double leaf_area_ratio, Imax;
+	double leaf_area_ratio;
 	/*--------------------------------------------------------------*/
 	/*	Compute amount potentially intercepted.			*/
 	/*								*/

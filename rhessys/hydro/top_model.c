@@ -189,9 +189,10 @@ double	top_model(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused lateral-flow scratch locals up_flow and down_flow. */
 	int i,j,k;
 	double	base_flow, total_baseflow;
-	double  mean_sat_deficit, mean_sat_deficit_z, up_flow, down_flow;			/* Taehee Hwang */
+	double  mean_sat_deficit, mean_sat_deficit_z;			/* Taehee Hwang */
 	double  new_mean_sat_deficit, new_mean_rz_storage, new_mean_unsat_storage;		/* Taehee Hwang */
 	double  preday_mean_sat_deficit, preday_mean_unsat_storage, preday_mean_rz_storage; 	/* Taehee Hwang */
 	double  mean_hillslope_lna;

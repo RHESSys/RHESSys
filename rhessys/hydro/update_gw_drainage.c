@@ -64,9 +64,9 @@ int update_gw_drainage(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 			*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused gw-drainage locals sat_store, preday_sat_deficit_z, and add_field_capacity. */
 	int ok = 1;
-	double drainage,sat_store,N_loss;
-	double preday_sat_deficit_z, add_field_capacity;
+	double drainage,N_loss;
 	double sat_to_gw_coeff;
 	/*------------------------------------------------------*/
 	/*		assume percent of incoming precip	*/

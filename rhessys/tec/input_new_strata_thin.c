@@ -126,8 +126,9 @@ void input_new_strata_thin(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused local num_lines. */
 	int	base_stationID;
-	int	i, dtmp, num_lines;
+	int	i, dtmp;
 	int	default_object_ID = 0;
 	char	record[MAXSTR];
 	double 	rootc, ltmp;

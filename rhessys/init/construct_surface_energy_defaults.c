@@ -46,12 +46,9 @@ struct surface_energy_default *construct_surface_energy_defaults(
 	int 	i;
         int strbufLen = 256;
         int filenameLen = 1024;
-	double  ftmp, soil;
 	// FILE	*default_file;
-	char	*newrecord;
         char	outFilename[filenameLen];
         char	strbuf[strbufLen];
-	char	record[MAXSTR];
 	struct	surface_energy_default	*default_object_list;
         param *paramPtr = NULL;
         int paramCnt = 0;
@@ -60,7 +57,8 @@ struct surface_energy_default *construct_surface_energy_defaults(
 	/*	Allocate an array of default objects.						*/
 	/*-------------------------------------------------------------*/
 	default_object_list   = (struct surface_energy_default *)
-		alloc(num_default_files *
+        alloc(num_default_files *
+    /* Cleanup note: removed unused parser scratch locals ftmp/soil/newrecord/record and local y. */
 		sizeof(struct surface_energy_default),"default_object_list",
 		"construct_surface_energy_defaults");
 	
@@ -93,7 +91,6 @@ struct surface_energy_default *construct_surface_energy_defaults(
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
-                char *y = NULL;
                 char *token = NULL;
                 char filename[256];
 

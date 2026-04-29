@@ -348,11 +348,7 @@ struct basin_object *construct_basin(
 
     int num_hillslopes;
     fscanf(routing_file,"%d",&num_hillslopes);
-    struct hillslope_object **list = (struct hillslope_object **) alloc(
-        num_hillslopes * sizeof(struct hillslope_object *), 
-        "hillslope list", //should still be patch list, but rlist needs to be attached to hillslope not the basin
-        "construct_basin"
-        );
+    /* Cleanup note: removed unused hillslope list allocation. */
 
     if( command_line[0].surface_routing_flag == 1 ) {
       if( (surface_routing_file = fopen(command_line[0].surface_routing_filename,"r")) == NULL ){

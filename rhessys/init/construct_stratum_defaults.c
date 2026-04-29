@@ -51,16 +51,14 @@ struct stratum_default *construct_stratum_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	int		i, itmp;
+	/* Cleanup note: removed unused parser scratch locals itmp/record/newrecord/stmp/ftmp and local y; retained fcel and lig_cel_ratio for litter fraction partitioning. */
+	int		i;
         int strbufLen = 256;
         int filenameLen = 1024;
         int paramCnt = 0;
-	char		record[MAXSTR];
-	char		*newrecord;
-	char		stmp[MAXSTR];
         char	strbuf[strbufLen];
         char	outFilename[filenameLen];
-	double		fcel, ftmp, lig_cel_ratio;
+	double		fcel, lig_cel_ratio;
 	//FILE	*default_file;
         param *paramPtr = NULL;
 	struct stratum_default	*default_object_list;
@@ -451,7 +449,6 @@ struct stratum_default *construct_stratum_defaults(
             memset(strbuf, '\0', strbufLen);
             strcpy(strbuf, default_files[i]);
             char *s = strbuf;
-            char *y = NULL;
             char *token = NULL;
             char filename[256];
 

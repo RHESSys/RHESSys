@@ -77,9 +77,8 @@ void skip_hillslope(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int		i,j, dtmp;
-	int		base_stationID;
-	int		default_object_ID;
+	/* Cleanup note: removed unused locals j, base_stationID, and default_object_ID. */
+	int		i, dtmp;
 	char		record[MAXSTR];
 	double		ltmp;
 	int		paramCnt=0;

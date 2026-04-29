@@ -94,11 +94,10 @@ void skip_strata(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int	base_stationID;
-	int	i, dtmp, num_lines;
-	int	default_object_ID;
+	/* Cleanup note: removed unused locals base_stationID, num_lines, default_object_ID, and rootc. */
+	int	i, dtmp;
 	char	record[MAXSTR];
-	double 	rootc, ltmp;
+	double 	ltmp;
 	int	*paramCnt=0;
 	param	*paramPtr=NULL;
 	/*--------------------------------------------------------------*/

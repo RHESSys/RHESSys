@@ -133,7 +133,8 @@ void	canopy_stratum_daily_I(
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
 	struct mortality_struct mort;
-	double leafcloss_perc, daily_mortality;
+	/* Cleanup note: removed unused local leafcloss_perc. */
+	double daily_mortality;
 	double froot_scale;
 
 	/*--------------------------------------------------------------*/

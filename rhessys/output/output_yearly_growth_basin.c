@@ -45,8 +45,8 @@ void	output_yearly_growth_basin(
 	int  layer;
 	double amort, ard, agpsn, aresp;
 	double anewc, asoilhr;
-	double aarea, hill_area;
-	double astreamflow_N;
+	/* Cleanup note: removed unused yearly-output accumulators hill_area and astreamflow_N. */
+	double aarea;
 	double adenitrif;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
@@ -59,10 +59,9 @@ void	output_yearly_growth_basin(
 	aarea =  0.0 ;
 	anewc = 0.0;
 	asoilhr = 0.0;
-	astreamflow_N = 0.0; adenitrif = 0.0;
+	adenitrif = 0.0;
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
-		hill_area = 0.0;
 		for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			for (p=0; p< zone[0].num_patches; p++){
@@ -120,7 +119,6 @@ void	output_yearly_growth_basin(
 					}
 				}
 				aarea +=  patch[0].area;
-				hill_area += patch[0].area;
 			}
 		}
 	}
@@ -129,7 +127,6 @@ void	output_yearly_growth_basin(
 	aresp /= aarea ;
 	anewc /= aarea;
 	asoilhr /= aarea;
-	astreamflow_N /= aarea;
 	adenitrif /= aarea;
 	ard /= aarea;
 	fprintf(outfile,"%d %d %lf %lf %lf %lf %lf %lf %lf %lf \n",

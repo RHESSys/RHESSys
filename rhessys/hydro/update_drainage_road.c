@@ -90,23 +90,20 @@ void  update_drainage_road(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	int i, j,k,d;
+	/* Cleanup note: removed unused road-routing locals i/k, leached_total summaries, route_total/Qstr_total/percent_* terms. */
+	int j,d;
 	double m, Ksat, return_flow;
 	double NO3_leached_to_patch, NO3_leached_to_stream, NO3_surface_leached_to_stream; /* kg/m2 */
 	double NH4_leached_to_patch, NH4_leached_to_stream, NH4_surface_leached_to_stream; /* kg/m2 */
-	double N_leached_total; /* kg/m2 */
 	double DON_leached_to_patch, DON_leached_to_stream, DON_surface_leached_to_stream; /* kg/m2 */
-	double DON_leached_total; /* kg/m2 */
 	double DOC_leached_to_patch, DOC_leached_to_stream, DOC_surface_leached_to_stream; /* kg/m2 */
-	double DOC_leached_total; /* kg/m2 */
 	double route_to_stream;  /* m3 */
 	double route_to_patch;  /* m3 */
 	double road_int_depth;  /* m of H2O */
-	double available_sat_water, route_total; /* m3 */
-	double  Qin, Qout, Qstr_total;  /* m */
-	double total_gamma, percent_loss;
+	double available_sat_water; /* m3 */
+	double  Qin, Qout;  /* m */
+	double total_gamma;
 	double Nin, Nout; /* kg/m2 */ 
-	double percent_tobe_routed;
 
 	struct patch_object *neigh;
 

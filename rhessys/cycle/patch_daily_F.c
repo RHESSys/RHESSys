@@ -405,24 +405,22 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused patch-level scratch locals (pspread, cap_rise/tmp/wilting_point, lhvap, infil init/fin, scale, tmp* wind/aero, litter ptr). */
 	int	layer;
 	int stratum, ch, inx;
 	int	vegtype;
 	int dum;
-	double  pspread;
 	double  biomass_removal_percent;
-	double	cap_rise, tmp, wilting_point, cap_rise_to_rz_storage, cap_rise_to_unsat;
+	double	cap_rise_to_rz_storage, cap_rise_to_unsat;
 	double  rz_deficit, unsat_deficit;
 	double	delta_unsat_zone_storage;
-	double  infiltration, lhvap;
-	double	infiltration_ini;
-	double	infiltration_fin;
+	double  infiltration;
 	double	net_inflow, theta;
 	double	preday_snowpack_height;
 	double	sat_zone_patch_demand;
 	double	sat_zone_patch_demand_initial;
 	double	available_sat_water;
-	double	temp,scale;
+	double	temp;
 	double	unsat_zone_patch_demand;
 	double	unsat_zone_patch_demand_initial;
 	double  add_field_capacity;
@@ -435,7 +433,7 @@ void		patch_daily_F(
 	double 	surfaceN_to_soil;
 	double	FERT_TO_SOIL;
 	double	pond_height;
-	double tmpra, tmpga, tmpgasnow, tmpwind, tmpwindcan, tmpwindsnow, tmpustar;
+	double tmpwind;
 	double Kup_direct_snow, Kup_diffuse_snow;
 	double Kdown_direct_covered, Kdown_diffuse_covered, Kdown_direct_exposed, Kdown_diffuse_exposed;
 	double Kup_direct_snow_covered, Kup_diffuse_snow_covered, Kup_direct_snow_exposed, Kup_diffuse_snow_exposed;
@@ -447,7 +445,6 @@ void		patch_daily_F(
 	double ash_c_transfer;
 	double ash_n_transfer;
 	struct	canopy_strata_object	*strata;
-	struct	litter_object	*litter;
 	struct  dated_sequence	clim_event;
 	struct  mortality_struct mort;
 

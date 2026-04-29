@@ -37,7 +37,7 @@ void	output_template_structure()
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int b,i;
+	/* Cleanup note: removed unused locals b and i. */
 	FILE	*outfile;
 	/*--------------------------------------------------------------*/
 	/*	open output file											*/

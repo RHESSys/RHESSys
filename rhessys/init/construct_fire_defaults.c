@@ -47,10 +47,6 @@ struct fire_default *construct_fire_defaults(
         int paramCnt = 0;
         char	strbuf[strbufLen];
         char	outFilename[filenameLen];
-	double  ftmp, soil;
-	FILE	*default_file;
-	char	*newrecord;
-	char	record[MAXSTR];
 	struct	fire_default	*default_object_list;
         param *paramPtr = NULL;
 	
@@ -59,6 +55,7 @@ struct fire_default *construct_fire_defaults(
 	/*-------------------------------------------------------------*/
 	default_object_list   = (struct fire_default *)
 		alloc(num_default_files *
+	/* Cleanup note: removed unused parser scratch locals ftmp/soil/default_file/newrecord/record and local y. */
 		sizeof(struct fire_default),"default_object_list",
 		"construct_fire_defaults");
 	
@@ -170,7 +167,6 @@ struct fire_default *construct_fire_defaults(
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
-                char *y = NULL;
                 char *token = NULL;
                 char filename[256];
     

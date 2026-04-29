@@ -50,8 +50,9 @@ void	output_hourly_basin(	int routing_flag,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused output locals var_flag and hgwNout. */
 	int h,z,p,c;
-	int var_flag, layer;
+	int layer;
 	double arain_throughfall;
 	//double asnow_throughfall;
 	double alitter_store;
@@ -79,7 +80,7 @@ void	output_hourly_basin(	int routing_flag,
 	double	hgw;
 	//double atmin, atmax, 
 	//double asnow;
-	double	hgwQout, hgwNout;
+	double	hgwQout;
 	double aarea, hill_area, zone_area, basin_area;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;

@@ -59,13 +59,14 @@ int update_decomp_root(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused locals total_N, N_uptake, and remaining_uptake. */
 	int ok = 1;
 	double rfl1s1, rfl2s2,rfl4s3,rfs1s2,rfs2s3,rfs3s4;
 	double cn_l1,cn_l3, cn_l2,cn_l4,cn_s1,cn_s2,cn_s3,cn_s4;
 	double daily_net_nmin;
 	double nlimit, fpi;
-	double total_N, total_preday_N, balance;
-	double nitrate_immob, N_uptake, remaining_uptake;
+	double total_preday_N, balance;
+	double nitrate_immob;
 	
 	//add the below ground litter N
 

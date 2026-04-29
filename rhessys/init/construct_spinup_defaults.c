@@ -40,16 +40,13 @@ struct spinup_default *construct_spinup_defaults(
         /*--------------------------------------------------------------*/
         /*      Local variable definition.                              */
         /*--------------------------------------------------------------*/
+        /* Cleanup note: removed unused parser scratch locals ftmp/soil/default_file/newrecord/record. */
         int     i;
         int strbufLen = 256;
         int filenameLen = 1024;
         int paramCnt = 0;
         char    strbuf[strbufLen];
         char    outFilename[filenameLen];
-        double  ftmp, soil;
-        FILE    *default_file;
-        char    *newrecord;
-        char    record[MAXSTR];
         struct  spinup_default    *default_object_list;
         param *paramPtr = NULL;
 

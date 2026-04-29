@@ -57,6 +57,7 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused grid scratch locals h/z/k/pf and tmp. */
 
 	//MCK: time process
 	clock_t start, end;
@@ -66,9 +67,9 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 	struct patch_object *patch;
 	struct patch_family_object *patch_family;
 
-	int b, h, p, z, i, j, k, pf;
+	int b, p, i, j;
 	//	double maxx, maxy, minx, miny, tmp,halfSideLength,curMinX,curMinY,curMaxX,curMaxY, cell_res;
-	double cell_res, tmp;
+	double cell_res;
 	/*	maxx=-10000; // depends on the origin for the coordinates, this was set for HJA centered at 0,0
 	minx=-10000;
 	maxy=-10000;

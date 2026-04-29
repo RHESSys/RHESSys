@@ -47,8 +47,7 @@ int	compute_deadleaf_turnover(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	
-	int ok=1;
+	/* Cleanup note: removed unused local ok. */
 	double c1,c2,c3,c4;
 	double n1,n2,n3,n4;
 	double turnover;

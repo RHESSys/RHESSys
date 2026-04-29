@@ -36,10 +36,11 @@ void update_basin_patch_accumulator(
 	/*----------------------------------------------------------------------*/
 	/* Local variables definition                                           */
 	/*-----------------------------------------------------------------------*/
+	/* Cleanup note: removed unused loop-index locals b, c, and s. */
 	double scale;
 	double tmp;
 	struct patch_object *patch;
-	int b,h,p,z,c,s;
+	int h,p,z;
 	/*----------------------------------------------------------------------*/
 	/* initializations		                                           */
 	/*----------------------------------------------------------------------*/	

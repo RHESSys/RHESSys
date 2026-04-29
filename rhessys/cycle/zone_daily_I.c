@@ -179,13 +179,14 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused locals tmp and fn_tavg (only referenced in a commented alternative formulation). */
 	int		flag;
 	int		i;
 	double	isohyet_adjustment;
 	int 	patch;
-	double	temp, tmp;
+	double	temp;
 	double	Tlapse_adjustment;
-	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
+	double	trans_coeff1, trans_coeff2, z_delta;
 	int		season;
 	season = 0;
 	int		pf, rec;

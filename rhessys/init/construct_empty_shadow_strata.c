@@ -61,11 +61,8 @@ struct canopy_strata_object *construct_empty_shadow_strata(
         /*--------------------------------------------------------------*/
         /*      Local variable definition.                              */
         /*--------------------------------------------------------------*/
-        int     base_stationID;
+        /* Cleanup note: removed unused shadow-strata locals base_stationID, sai, rootc, default_object_ID, and record. */
         int     i;
-        double  sai, rootc;
-        int     default_object_ID;
-        char    record[MAXSTR];
         struct  canopy_strata_object      *shadow_strata;
 
         /*--------------------------------------------------------------*/

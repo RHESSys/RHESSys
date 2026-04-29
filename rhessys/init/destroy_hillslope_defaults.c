@@ -35,7 +35,7 @@ void destroy_hillslope_defaults(int num_default_files,
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	int 	i;
+	/* Cleanup note: removed unused local i. */
 	/*--------------------------------------------------------------*/
 	/*	Delete the default records (all at once since they were		*/
 	/*	allocated in a contiguous array).							*/

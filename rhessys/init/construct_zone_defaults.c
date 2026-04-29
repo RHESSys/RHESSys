@@ -44,13 +44,10 @@ struct zone_default *construct_zone_defaults(
 	int	i;
         int strbufLen = 256;
         int filenameLen = 1024;
-	FILE	*default_file;
+	/* Cleanup note: removed unused parser scratch locals ftmp/default_file/newrecord/record and local y. */
         char	outFilename[filenameLen];
         char	strbuf[strbufLen];
-	char	record[MAXSTR];
 	struct	zone_default	*default_object_list ;
-	char	*newrecord;
-	double	ftmp;
         param *paramPtr = NULL;
         int paramCnt = 0;
 
@@ -165,7 +162,6 @@ struct zone_default *construct_zone_defaults(
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
-                char *y = NULL;
                 char *token = NULL;
                 char filename[256];
 

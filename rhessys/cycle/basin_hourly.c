@@ -60,19 +60,17 @@ void	basin_hourly(
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
     //int	hillslope;
+	/* Cleanup note: removed unused hourly scratch locals inx/i and patch. */
 	int	ML;
-	int	inx,i;
 	double	air_mass_array[22]  =
 	{0.0, 2.90,3.05,3.21,3.39, 3.69, 3.82, 4.07, 4.37, 4.72, 5.12,
 	5.60,6.18,6.88,7.77,8.90,10.39,12.44,15.36,19.79,26.96,30.00};
-	struct	hillslope_object *hillslope_p;
-	struct	zone_object *zone_p;
-	struct	patch_object *patch;
+	/* Cleanup note: removed unused locals zone_p and hillslope_p. */
 	/*--------------------------------------------------------------*/
 	/*	Initialize the hillslope and zone object.			*/
 	/*--------------------------------------------------------------*/
-	hillslope_p = basin[0].hillslopes[0];
-	zone_p = hillslope_p[0].zones[0];
+	// hillslope_p = basin[0].hillslopes[0];
+	// zone_p = hillslope_p[0].zones[0];
 	
 	basin[0].hourly = (struct basin_hourly_object * ) alloc(
 		sizeof( struct basin_hourly_object),"hourly","basin_hourly");

@@ -24,13 +24,13 @@
 
 param *readtag_worldfile(int *paramCnt, FILE *file,char *key){
     int paramInd = -1;
-    int iParam;
+  /* Cleanup note: removed unused local iParam. */
 
     char line [1024];
     char strbuf1 [128];
     char strbuf2 [128];
     char strbuf3 [128];
-    int argCnt;
+    /* Cleanup note: removed unused parsing scratch local argCnt. */
     param *paramPtr = NULL;
     int num_variables=0;
 
@@ -71,7 +71,7 @@ param *readtag_worldfile(int *paramCnt, FILE *file,char *key){
             strbuf1[0] = '\0';
             strbuf2[0] = '\0';
             strbuf3[0] = '\0';
-            argCnt = sscanf (line, "%s %s %s", strbuf1, strbuf2, strbuf3);
+            (void)sscanf (line, "%s %s %s", strbuf1, strbuf2, strbuf3);
 	    //printf("argCnt=%d, strbuf1=%s, strbuf2=%s,strbuf3=%s\n",argCnt,strbuf1,strbuf2,strbuf3);
             /* Parse the parameter value */
 

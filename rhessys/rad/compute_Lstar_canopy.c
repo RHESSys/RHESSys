@@ -34,11 +34,12 @@ void compute_Lstar_canopy(int	verbose_flag,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused locals ess_can and skyview. */
 	double	daylength;
 	double	nightlength;
 	double Lup_canopy, Ldown_canopy;
 	double Lup_snow, Lup_soil, Lup_pond;
-	double Tss, Tpond, Tcan, Tsoil, ess_can, B, skyview;
+	double Tss, Tpond, Tcan, Tsoil, B;
 	double Lstar, Ldownini;
 	
 	

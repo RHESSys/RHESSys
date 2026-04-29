@@ -49,10 +49,9 @@ double	compute_snow_sublimation(
 	/*--------------------------------------------------------------*/
 	/*	Local variable declaration.				*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused locals Uz/z_rough/von_Karman/sublim_floor_wind. */
 
    double Qe;			/* Latent energy exchange (KJ/m2/s) */
-   double Uz;			/* windspeed (m/sec) at height z_obs */ 
-   double z_rough=0.005;	/* roughness height (m) from Price & Dunne 1976 */
    double De;			/* Exchange coefficient for latent heat (m/s) */
    double hf;			/* latent heat of fusion for water (KJ/kg) */
    double hv, hs;			/* latent heat of vaporization for water (KJ/kg) */
@@ -63,9 +62,6 @@ double	compute_snow_sublimation(
    
    double ro; /* Was set to 2.23... not sure why? Should be density of air in kg/m3 */
    double stabil_func;
-   double von_Karman=0.4;
-
-   double sublim_floor_wind;
 
 	T_air_K = T_air + KELVIN;
 	T_snow_K = T_snow + KELVIN; /* not used */

@@ -8,8 +8,9 @@
 struct routing_list_object *construct_topmodel_patchlist(struct hillslope_object * const hillslope) {
 
 	struct routing_list_object	*patch_list = NULL;
+	/* Cleanup note: removed unused locals z and current_patch_idx. */
 	int num_patches;
-	int z, p, current_patch_idx;
+	int p;
 	
 	// How many patches are there in the basin?
 	num_patches = 0;

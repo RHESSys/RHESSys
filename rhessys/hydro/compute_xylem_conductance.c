@@ -40,8 +40,7 @@ void	compute_xylem_conductance(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-
-	double gxylem;
+	/* Cleanup note: removed unused local gxylem. */
 
 	/*--------------------------------------------------------------*/
 	/* detemine if LWP is low enough to cause reduction in xylem conductance */

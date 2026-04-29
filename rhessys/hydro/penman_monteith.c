@@ -72,6 +72,7 @@ double	penman_monteith(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused resistance scratch locals rr/rhr and unused temperature scratch tk. */
 	double	dt;
 	double	rho;
 	double	lhvap;
@@ -81,14 +82,11 @@ double	penman_monteith(
 	double	pvs1;
 	double	pvs2;
 	double	e;
-	double	tk;
-	double	rr;
-	double	rhr;
 	double	gamma;
 	/*--------------------------------------------------------------*/
 	/*	Assign tk (Kelvins)					*/
 	/*--------------------------------------------------------------*/
-	tk = Tair + 273.15;
+	// tk = Tair + 273.15;
 	/*--------------------------------------------------------------*/
 	/*	Density of air (rho) as a fn. of air temp.		*/
 	/*--------------------------------------------------------------*/

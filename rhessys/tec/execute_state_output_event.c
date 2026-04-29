@@ -48,7 +48,8 @@ void	execute_state_output_event(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int b,i;
+	/* Cleanup note: removed unused local loop index i. */
+	int b;
 	FILE	*outfile;
 	char	filename[MAXSTR+100];
 	char	ext[20];

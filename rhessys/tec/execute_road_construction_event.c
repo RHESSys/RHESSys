@@ -51,7 +51,8 @@ void execute_road_construction_event(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int		i, b;
+	/* Cleanup note: removed unused outer-scope local i; loop uses an inner-scope index. */
+	int		b;
 	char		routing_filename[MAXSTR];
   char    redefine_routing_filename[ MAXSTR ];
 	char		ext[14];

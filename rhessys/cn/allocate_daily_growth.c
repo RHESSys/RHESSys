@@ -59,6 +59,7 @@ int allocate_daily_growth(int nlimit,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused locals nloss/closs/total_wood and extra temporary C-accounting terms. */
 
 	int ok=1;
 	double fleaf;          /* RATIO   new leaf C: new total C     */
@@ -73,8 +74,8 @@ int allocate_daily_growth(int nlimit,
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
 	double nlc;         /* actual new leaf C, minimum of C and N limits   */
-	double nloss, amt_fix, cost_fix, closs;
-	double gresp_store, total_wood;
+	double amt_fix, cost_fix;
+	double gresp_store;
 	double plant_ndemand, mean_cn;
 	double sum_plant_nsupply, soil_nsupply;
 	double plant_nalloc=0.0;
@@ -82,7 +83,7 @@ int allocate_daily_growth(int nlimit,
 	double plant_remaining_ndemand;
 	double excess_allocation_to_leaf, excess_c, excess_lai;
 	double sminn_to_npool;
-	double B,C, totalc_used,total_used; /* working variables */
+	double B; /* working variables */
 	double preday_npool, preday_cpool;
 
 	/* assign local values for the allocation control parameters */

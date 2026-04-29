@@ -48,12 +48,12 @@ printf("just entered construct wui list\n");
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused distance scratch local dist. */
 	int		i, h,z,pf,p,b;
 	int fnd, n_WUI,stop_flag;
 	int		line_n;
 	int		family_ID,patch_ID, WUI_ID, wui_dist,trt_ord2,trt_ord5,trt_ord10,trt_ord100;
 	int iter2km=0,iter5km=0,iter10km=0;
-	double dist;
 
         struct basin_object *basin;
         struct zone_object *zone;

@@ -82,11 +82,12 @@ double  compute_stream_routing(struct command_line_object *command_line,
     double dt;
     double xarea;
     double lateral_input_flow,streamflow;
-	double Qout,Qin,previous_lateral_input,length,initial_flow,sum;
+	/* Cleanup note: removed unused accumulator sum (only written, never consumed). */
+	double Qout,Qin,previous_lateral_input,length,initial_flow;
 	
 
 	struct patch_object *patch;
-	struct hillslope_object *hillslope;
+	/* Cleanup note: removed unused local hillslope. */
 
 	/*--------------------------------------------------------------*/
 	/* route water from top to bottom				*/
@@ -94,7 +95,6 @@ double  compute_stream_routing(struct command_line_object *command_line,
 
 	dt=86400.0;
 	streamflow=0.0;
-	sum=0.0;
 	for (i = 0; i < num_reaches; i++) {
 	/* calculate total lateral input from patches */
 	   lateral_input_flow = 0.0;
@@ -107,7 +107,7 @@ double  compute_stream_routing(struct command_line_object *command_line,
 	            patch=stream_network[i].lateral_inputs[j];
 		   if (patch[0].drainage_type == STREAM  ){
 	      		lateral_input_flow += (patch[0].streamflow)*patch[0].area/dt/(stream_network[i].length); //unit:m2/s
-			   sum+= (patch[0].streamflow)*patch[0].area;}
+			   }
 		   
 	
 	}

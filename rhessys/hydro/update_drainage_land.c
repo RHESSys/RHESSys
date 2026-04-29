@@ -103,8 +103,8 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	int j, d, idx;
-	double tmp;
+	/* Cleanup note: removed unused locals idx/tmp, leached_total summaries, and t1/t2/t3 diagnostics. */
+	int j, d;
 	double m, Ksat, std_scale;
 	double NH4_leached_to_patch, NH4_leached_to_stream;
 	double NO3_leached_to_patch, NO3_leached_to_stream;
@@ -114,9 +114,6 @@ void  update_drainage_land(
 	double NH4_leached_to_surface; /* kg/m2 */
 	double DON_leached_to_surface; /* kg/m2 */
 	double DOC_leached_to_surface; /* kg/m2 */
-	double N_leached_total; /* kg/m2 */
-	double DON_leached_total; /* kg/m2 */
-	double DOC_leached_total; /* kg/m2 */
 	double route_to_surface;  /* m3 */
 	double return_flow,route_to_patch ;  /* m3 */
 	double available_sat_water; /* m3 */
@@ -124,7 +121,6 @@ void  update_drainage_land(
 	double innundation_depth, infiltration; /* m */
 	double total_gamma;
 	double Nin, Nout; /* kg/m2 */
-	double t1,t2,t3;
 
 	struct patch_object *neigh;
 	route_to_patch = 0.0;

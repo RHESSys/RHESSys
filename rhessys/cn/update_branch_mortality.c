@@ -64,23 +64,8 @@ void update_branch_mortality(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	double m_livestemc_store_to_litr1c;
-	double m_deadstemc_store_to_litr1c;
-	double m_livecrootc_store_to_litr1c_bg; // coarse root store to below ground litter
-	double m_deadcrootc_store_to_litr1c_bg; // to below ground
-	double m_livestemc_transfer_to_litr1c;
-	double m_deadstemc_transfer_to_litr1c;
-	double m_livecrootc_transfer_to_litr1c_bg; // to below ground litter pool
-	double m_deadcrootc_transfer_to_litr1c_bg; // to below ground litter pool
+	/* Cleanup note: removed unused store/transfer-to-litter mortality locals; kept active CWD and litter-N terms. */
 	double m_livestemn_to_litr1n, m_livecrootn_to_litr1n_bg;
-	double m_livestemn_store_to_litr1n;
-	double m_deadstemn_store_to_litr1n;
-	double m_livecrootn_store_to_litr1n_bg; // to below ground
-	double m_deadcrootn_store_to_litr1n_bg; // to below ground
-	double m_livestemn_transfer_to_litr1n;
-	double m_deadstemn_transfer_to_litr1n;
-	double m_livecrootn_transfer_to_litr1n_bg; // to below ground
-	double m_deadcrootn_transfer_to_litr1n_bg;
 	double m_livestemc_to_cwdc;
 	double m_deadstemc_to_cwdc;
 	double m_livecrootc_to_cwdc_bg; // to below ground

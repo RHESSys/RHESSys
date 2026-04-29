@@ -60,9 +60,8 @@ void skip_basin(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int	base_stationID;
+	/* Cleanup note: removed unused locals base_stationID and default_object_ID. */
 	int		i,dtmp;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
 	int	paramCnt=0;

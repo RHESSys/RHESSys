@@ -63,9 +63,9 @@ void compute_family_fire_effects(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused canopy_subtarget scratch pointer. */
 
 	struct canopy_strata_object *canopy_target;
-	struct canopy_strata_object *canopy_subtarget;
 	struct mortality_struct mort;
 	struct fire_litter_soil_loss_struct fire_loss;
 	struct patch_object *patch;

@@ -171,7 +171,8 @@ void update_phenology(struct zone_object  *zone,
 	long day, wyday;
 	double perc_sunlit, leaflitfallc, frootlitfallc;
 	double	rootc, sai, new_proj_lai_sunlit;
-	double excess_n, horiz;
+	/* Cleanup note: removed unused local horiz. */
+	double excess_n;
 	int remdays_transfer;
 	int expand_flag, litfall_flag;
 

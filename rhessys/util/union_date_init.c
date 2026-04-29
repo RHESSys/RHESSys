@@ -41,13 +41,13 @@ void union_date_init(struct world_object * world,
   /*-----------------------------------------------------------------------------
    *  Local variable definition
    *-----------------------------------------------------------------------------*/
+  /* Cleanup note: removed unused local prev_date. */
   int i,inx,num_d,base;
   int num_base_stations;
   struct base_station_object *clim_station;
   struct hourly_clim_object *hourly;
   struct date start_date;
   struct date end_date;
-  struct date prev_date;
   /*-----------------------------------------------------------------------------
    *  Initiliaze the local variables
    *-----------------------------------------------------------------------------*/
