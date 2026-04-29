@@ -314,7 +314,7 @@ double	snowpack_daily_F(
 	/*--------------------------------------------------------------*/
 	total_extinction =  (light_ext_coef * optical_depth );
 	if( verbose_flag > 1) {
-		printf("\n%8d -777.0 ",current_date.day);
+		printf("\n%8ld -777.0 ",current_date.day);
 		printf("%8.2f %8.2f %8.2f %8.2f %8.2f ",
 			snowpack[0].K_reflectance, *Kdown_direct_snow,*Kdown_diffuse_snow,
 			*PAR_direct_snow,*PAR_diffuse_snow);
@@ -323,7 +323,7 @@ double	snowpack_daily_F(
 	/*  Intercept direct radiation.                                 */
 	/*--------------------------------------------------------------*/
 	if( verbose_flag > 2)
-		printf("\n%8d -777.1 ",julday(current_date)-2449000);
+		printf("\n%8ld -777.1 ",julday(current_date)-2449000);
 	Kstar_direct = compute_radiative_fluxes(
 		verbose_flag,
 		Kdown_direct_snow,
@@ -332,7 +332,7 @@ double	snowpack_daily_F(
 		K_reflectance,
 		K_absorptance);
 	if( verbose_flag > 2)
-		printf("\n%8d -777.2 ",julday(current_date)-2449000);
+		printf("\n%8ld -777.2 ",julday(current_date)-2449000);
 	APAR_direct = compute_radiative_fluxes(
 		verbose_flag,
 		PAR_direct_snow,
@@ -341,7 +341,7 @@ double	snowpack_daily_F(
 		PAR_reflectance,
 		PAR_absorptance);
 	if( verbose_flag > 2)
-		printf("\n%8d -777.3 ",julday(current_date)-2449000);
+		printf("\n%8ld -777.3 ",julday(current_date)-2449000);
 	Kstar_diffuse = compute_radiative_fluxes(
 		verbose_flag,
 		Kdown_diffuse_snow,
@@ -350,7 +350,7 @@ double	snowpack_daily_F(
 		K_reflectance,
 		K_absorptance);
 	if( verbose_flag > 2)
-		printf("\n%8d -777.4 ",julday(current_date)-2449000);
+		printf("\n%8ld -777.4 ",julday(current_date)-2449000);
 	APAR_diffuse = compute_radiative_fluxes(
 		verbose_flag,
 		PAR_diffuse_snow,
@@ -409,7 +409,7 @@ double	snowpack_daily_F(
 	}
 	
 	if (verbose_flag > 1) {
-		printf("\n%4d %4d %4d -777.5 ",current_date.day, current_date.month,
+		printf("\n%4ld %4ld %4ld -777.5 ",current_date.day, current_date.month,
 			current_date.year);
 		printf("%10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f\n", snowpack[0].Kstar_direct,
 			   snowpack[0].Kstar_diffuse, patch[0].Lstar_snow, T_air, snowpack[0].overstory_fraction, 
@@ -500,7 +500,7 @@ double	snowpack_daily_F(
 	Q_rain = Q_advected_precip;
 	
 	if (verbose_flag > 1) {
-		printf("\n%4d %4d %4d -777.6 ",current_date.day, current_date.month,
+		printf("\n%4ld %4ld %4ld -777.6 ",current_date.day, current_date.month,
 			current_date.year);
 		printf("%10.6f %10.6f %10.6f %10.6f", rad_melt,T_melt, precip_melt,
 			snowpack_total_water_depth);

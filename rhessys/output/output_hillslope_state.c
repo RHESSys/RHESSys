@@ -67,11 +67,11 @@ void	output_hillslope_state(
 	fprintf(outfile,"%-30d %s",hillslope[0].num_base_stations, "hillslope_n_basestations");
 	for (i=0; i < hillslope[0].num_base_stations; i++){
 		fprintf(outfile,"\n     ");
-		fprintf(outfile,"%-30ld %s",hillslope[0].base_stations[i][0].ID,
+		fprintf(outfile,"%-30ld %d",hillslope[0].base_stations[i][0].ID,
 			"hillslope_basestation_ID");
 	}
 	fprintf(outfile,"\n     ");
-	fprintf(outfile,"%-30ld %s",hillslope[0].num_zones, "num_zones");
+	fprintf(outfile,"%-30ld %d",hillslope[0].num_zones, "num_zones");
 	/*--------------------------------------------------------------*/
 	/*	output zones 											*/
 	/*--------------------------------------------------------------*/

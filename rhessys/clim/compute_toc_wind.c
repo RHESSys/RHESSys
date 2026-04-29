@@ -77,7 +77,7 @@ double	compute_toc_wind(
 	/*--------------------------------------------------------------*/
 	if ( h < d_o ){
 		fprintf(stderr,
-			"FATAL ERROR: screen height %d < zero plane of patch highest stratum %d \n", h, d_o);
+			"FATAL ERROR: screen height %lf < zero plane of patch highest stratum %lf \n", h, d_o);
 		exit(EXIT_FAILURE);
 	}
 	u_z  = u_h * log((z-d_o)/z_o) / log((h-d_o)/z_o);

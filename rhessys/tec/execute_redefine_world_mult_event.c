@@ -134,7 +134,7 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 	/*--------------------------------------------------------------*/
 	/*	Try to open the world file in read mode.					*/
 	/*--------------------------------------------------------------*/
-	sprintf(ext,".Y%4dM%dD%dH%d",current_date.year,
+	sprintf(ext,".Y%4ldM%ldD%ldH%ld",current_date.year,
 		current_date.month,
 		current_date.day,
 		current_date.hour);

@@ -50,10 +50,10 @@ void	output_patch_state(
 	/*	output patch information									*/
 	/*--------------------------------------------------------------*/
 	fprintf(outfile,"\n          ");
-	fprintf(outfile,"%-30ld %s",patch[0].ID, "patch_ID");
+	fprintf(outfile,"%-30ld %d",patch[0].ID, "patch_ID");
 	if (command_line[0].multiscale_flag == 1) {
 		fprintf(outfile,"\n          ");
-		fprintf(outfile,"%-30ld %s",patch[0].family_ID, "family_ID");
+		fprintf(outfile,"%-30ld %d",patch[0].family_ID, "family_ID");
 	}
 
 	fprintf(outfile,"\n          ");
@@ -63,18 +63,18 @@ void	output_patch_state(
 	fprintf(outfile,"\n          ");
 	fprintf(outfile,"%-30.8f %s",patch[0].z, "z");
 	fprintf(outfile,"\n          ");
-	fprintf(outfile,"%-30ld %s",patch[0].soil_defaults[0][0].ID, "soil_parm_ID");
+	fprintf(outfile,"%-30ld %d",patch[0].soil_defaults[0][0].ID, "soil_parm_ID");
 	fprintf(outfile,"\n          ");
-	fprintf(outfile,"%-30ld %s",patch[0].landuse_defaults[0][0].ID, "landuse_parm_ID");
+	fprintf(outfile,"%-30ld %d",patch[0].landuse_defaults[0][0].ID, "landuse_parm_ID");
 	fprintf(outfile,"\n          ");
 
 	if (command_line[0].firespread_flag == 1) {
-		fprintf(outfile,"%-30ld %s",patch[0].fire_defaults[0][0].ID, "fire_parm_ID");
+		fprintf(outfile,"%-30ld %d",patch[0].fire_defaults[0][0].ID, "fire_parm_ID");
 		fprintf(outfile,"\n          ");
 	}
 
 	if (command_line[0].surface_energy_flag == 1) {
-		fprintf(outfile,"%-30ld %s",patch[0].surface_energy_defaults[0][0].ID, "surface_energy_parm_ID");
+		fprintf(outfile,"%-30ld %d",patch[0].surface_energy_defaults[0][0].ID, "surface_energy_parm_ID");
 		fprintf(outfile,"\n          ");
 	}
 
@@ -208,14 +208,14 @@ void	output_patch_state(
 	  fprintf(outfile,"\n          ");
   }
 
-	fprintf(outfile,"%-30ld %s",patch[0].num_base_stations, "patch_n_basestations");
+	fprintf(outfile,"%-30ld %d",patch[0].num_base_stations, "patch_n_basestations");
 	for (i=0; i < patch[0].num_base_stations; i++){
 		fprintf(outfile,"\n          ");
-		fprintf(outfile,"%-30ld %s",patch[0].base_stations[i][0].ID,
+		fprintf(outfile,"%-30ld %d",patch[0].base_stations[i][0].ID,
 			"patch_basestation_ID");
 	}
 	fprintf(outfile,"\n          ");
-	fprintf(outfile,"%-30ld %s",patch[0].num_canopy_strata, "num_canopy_strata");
+	fprintf(outfile,"%-30ld %d",patch[0].num_canopy_strata, "num_canopy_strata");
 	/*--------------------------------------------------------------*/
 	/*	output canopy_stratas 											*/
 	/*--------------------------------------------------------------*/

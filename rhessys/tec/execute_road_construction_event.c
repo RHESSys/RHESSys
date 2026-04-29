@@ -69,7 +69,7 @@ void execute_road_construction_event(
 		/*--------------------------------------------------------------*/
 		sprintf(
       ext,
-      ".Y%4dM%dD%dH%d",
+			".Y%4ldM%ldD%ldH%ld",
       current_date.year,
 			current_date.month,
 			current_date.day,

@@ -242,7 +242,7 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*			read in the next tec line.							*/
 			/*--------------------------------------------------------------*/
-			check = fscanf(tecfile[0].tfile,"%d %d %d %d %s\n",
+			check = fscanf(tecfile[0].tfile,"%ld %ld %ld %ld %s\n",
 				&(event[0].cal_date.year),
 				&(event[0].cal_date.month),
 				&(event[0].cal_date.day),
@@ -360,7 +360,7 @@ void	execute_tec(
 
 				if((command_line[0].vegspinup_flag > 0) && (world[0].target_status > 0)) {
 		      execute_state_output_event(world, current_date, world[0].end_date,command_line);
-          printf("\nSpinup completed YEAR %d MONTH %d DAY %d \n", current_date.year,current_date.month,current_date.day);
+		  printf("\nSpinup completed YEAR %ld MONTH %ld DAY %ld \n", current_date.year,current_date.month,current_date.day);
           exit(0);
         } 
 
@@ -400,7 +400,7 @@ void	execute_tec(
 				current_date.day = next_date.day;
 				current_date.hour = next_date.hour;
 				if (command_line[0].verbose_flag > 0)
-					fprintf(stderr,"\n\nYEAR %d MONTH %d DAY %d\n\n",
+					fprintf(stderr,"\n\nYEAR %ld MONTH %ld DAY %ld\n\n",
 					current_date.year,current_date.month,current_date.day);
 			} /*end if*/
 			/*--------------------------------------------------------------*/
@@ -467,7 +467,7 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/
-                printf("\nYear %d\n", current_date.year);
+                printf("\nYear %ld\n", current_date.year);
 				year = year + 1;
 				current_date.year= next_date.year;
 			}  /*end if*/

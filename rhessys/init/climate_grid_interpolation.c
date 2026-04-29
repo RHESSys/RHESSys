@@ -46,7 +46,7 @@ void climate_interpolation(
     double rain_found[num_world_base_stations];
     double tmax_found[num_world_base_stations];
     double tmin_found[num_world_base_stations];
-    double ID_found[num_world_base_stations];
+    long ID_found[num_world_base_stations];
 
 
     double rain_temp =0;
@@ -117,7 +117,7 @@ void climate_interpolation(
             diff_elevation[count] = zone[0].z_utm - station_search[0].z;
 
             if (command_line[0].verbose_flag == -3) {
-                printf("\n there are %d neibourge stations, ID is %d, distance is %lf, weight is %lf\n", count, ID_found[count], distance[count], weight[count]);
+                printf("\n there are %d neibourge stations, ID is %ld, distance is %lf, weight is %lf\n", count, ID_found[count], distance[count], weight[count]);
 
             }
             count++;
@@ -186,23 +186,23 @@ void climate_interpolation(
                     //rain
                     if (rain_temp <0.0)
                     {
-                        printf("\n WARNING, the interpolated rain %lf is smaller than 0 for day :%d \n", rain_temp, day);
+                        printf("\n WARNING, the interpolated rain %lf is smaller than 0 for day :%ld \n", rain_temp, day);
                     }
 
                     if (command_line[0].verbose_flag == -3) {
-                        printf("\n Day: %d rain differences between interpolated value %lf and original value %lf is %lf \n", day, rain_temp, zone[0].base_stations[0][0].daily_clim[0].rain[day],  (rain_temp -zone[0].base_stations[0][0].daily_clim[0].rain[day]));
+                        printf("\n Day: %ld rain differences between interpolated value %lf and original value %lf is %lf \n", day, rain_temp, zone[0].base_stations[0][0].daily_clim[0].rain[day],  (rain_temp -zone[0].base_stations[0][0].daily_clim[0].rain[day]));
                     }
                     //assign value
                     zone[0].rain_interpolate = rain_temp;
                     //tmax
                     if (tmax_temp > max_tmax || tmax_temp < min_tmin)
                     {
-                        printf("\n WARNING, the interpolated tmax %lf is out of range (-50, 50) for day :%d, lapse adjustment is %lf, elevation difference is %lf, \n", tmax_temp, day, Tlapse_adjustment1, diff_elevation[0] );
+                        printf("\n WARNING, the interpolated tmax %lf is out of range (-50, 50) for day :%ld, lapse adjustment is %lf, elevation difference is %lf, \n", tmax_temp, day, Tlapse_adjustment1, diff_elevation[0] );
 
                     }
 
                     if (command_line[0].verbose_flag == -3) {
-                        printf("\n Day: %d tmax differences between original value %lf and interpolated value %f is %lf \n", day, zone[0].base_stations[0][0].daily_clim[0].tmax[day], tmax_temp, (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
+                        printf("\n Day: %ld tmax differences between original value %lf and interpolated value %f is %lf \n", day, zone[0].base_stations[0][0].daily_clim[0].tmax[day], tmax_temp, (tmax_temp -zone[0].base_stations[0][0].daily_clim[0].tmax[day]));
                     }
                     //assign value
                     tmax_old = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
@@ -210,17 +210,17 @@ void climate_interpolation(
                     //tmin
                      if (tmin_temp > max_tmax || tmin_temp < min_tmin)
                     {
-                        printf("\n WARNING, the interpolated tmin %lf is out of range (-50, 50) for day :%d, lapse adjustment is %lf, elevation difference is %lf, \n", tmin_temp, day, Tlapse_adjustment2, diff_elevation[0] );
+                        printf("\n WARNING, the interpolated tmin %lf is out of range (-50, 50) for day :%ld, lapse adjustment is %lf, elevation difference is %lf, \n", tmin_temp, day, Tlapse_adjustment2, diff_elevation[0] );
                     }
                     if (command_line[0].verbose_flag == -3) {
-                        printf("\n Day: %d tmin differences between interpolated value and original value is %lf \n", day, (tmin_temp -zone[0].base_stations[0][0].daily_clim[0].tmin[day]));
+                        printf("\n Day: %ld tmin differences between interpolated value and original value is %lf \n", day, (tmin_temp -zone[0].base_stations[0][0].daily_clim[0].tmin[day]));
                     }
                     //assign value
                     tmin_old = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
                     zone[0].tmin_interpolate = tmin_temp;
 
                     if (tmax_temp < tmin_temp || tmax_old < tmin_old) {
-                       printf("\n WARNING: tmax is smaller than tmin after interpolation, tmax_inter %lf, tmin_inter is %lf, tmax_old %lf, tmin_old %lf, ID %d, num_neiboughors %d for day %d",
+                       printf("\n WARNING: tmax is smaller than tmin after interpolation, tmax_inter %lf, tmin_inter is %lf, tmax_old %lf, tmin_old %lf, ID %d, num_neiboughors %d for day %ld",
                        tmax_temp, tmin_temp, tmax_old, tmin_old, zone[0].ID, count, day);
 
                     }

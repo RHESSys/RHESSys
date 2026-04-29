@@ -114,7 +114,7 @@ void	basin_hourly(
 		+ world[0].sin_declin *	basin[0].sin_latitude;
 	
 	if (command_line[0].verbose_flag == -9) {
-		printf("\nhour= %d | cos_sza= %f", current_date.hour, basin[0].hourly[0].cos_sza);
+		printf("\nhour= %ld | cos_sza= %f", current_date.hour, basin[0].hourly[0].cos_sza);
 	}
 
 	if ( command_line[0].verbose_flag > 5 )

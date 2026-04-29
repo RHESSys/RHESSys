@@ -616,7 +616,7 @@ void		zone_daily_F(
 	zone[0].metv.ppfd = (zone[0].PAR_direct + zone[0].PAR_diffuse)
 		/ zone[0].metv.dayl ;
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -222.1 ",julday(current_date)-2449000);
+		printf("\n%8ld -222.1 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1  )
 		printf("%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f ",
 		zone[0].metv.dayl,
@@ -628,7 +628,7 @@ void		zone_daily_F(
 		zone[0].metv.tsoil,
 		zone[0].tdewpoint);
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -222.2 ",julday(current_date)-2449000);
+		printf("\n%8ld -222.2 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.4f %8.4f %8.2f ",
 		zone[0].rain,
@@ -721,7 +721,7 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 
 	if (command_line[0].multiscale_flag == 1) {
-		if (command_line[0].verbose_flag == -6) printf("\n---------- Computing patch family routing for zone %d, day %d ----------\n", zone[0].ID, day);
+		if (command_line[0].verbose_flag == -6) printf("\n---------- Computing patch family routing for zone %d, day %ld ----------\n", zone[0].ID, day);
 		compute_patch_family_routing(
 			zone,
 			command_line,

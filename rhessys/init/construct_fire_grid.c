@@ -229,8 +229,8 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 				*/
 				if (command_line[0].verbose_flag <= -7) {
 					printf("--------------------\n");
-					printf("Current grid patch id: %d, X: %d  Y: %d\n",tmpPatchID,i,j);
-					printf("Zone: %d | Hill: %d | elev: %lf\n",tmpZoneID,tmpHillID,fire_grid[i][j].elev);
+					printf("Current grid patch id: %.0f, X: %d  Y: %d\n",tmpPatchID,i,j);
+					printf("Zone: %.0f | Hill: %.0f | elev: %lf\n",tmpZoneID,tmpHillID,fire_grid[i][j].elev);
 				}
 
 				if (tmpPatchID >= 0)
@@ -239,7 +239,7 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 					curPatchID = tmpPatchID;
 					curZoneID = tmpZoneID;
 					if (command_line[0].verbose_flag <= -7) {
-						printf("Valid patch id: %d, X: %d  Y: %d\n", curPatchID, j, i);
+						printf("Valid patch id: %.0f, X: %d  Y: %d\n", curPatchID, j, i);
 					}
 
 					//1	#pragma omp parallel for
