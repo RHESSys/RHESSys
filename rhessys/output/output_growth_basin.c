@@ -472,5 +472,9 @@ void	output_growth_basin(
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/
 	/*	basin[0].ID, date.year, date.month, date.day);*/
 	/*------------------------------------------*/
+	/* Cleanup note: basin growth balance scratch variables are retained for diagnostics and intentionally unused. */
+	(void)acarbon_balance;
+	(void)anitrogen_balance;
+	(void)atotaln;
 	return;
 } /*end output_daily_growth_basin*/

@@ -2084,5 +2084,8 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_year.fe_prop_c_mortality_leaf += stratum[0].fe.canopy_target_prop_c_remain_adjusted;
 		stratum[0].acc_year.length += 1;
 	}
+	/* Cleanup note: total_incoming_PAR and windcan are retained for diagnostics and intentionally unused. */
+	(void)total_incoming_PAR;
+	(void)windcan;
 	return;
 } /*end canopy_stratum_daily_F.c*/

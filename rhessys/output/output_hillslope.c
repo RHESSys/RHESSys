@@ -169,5 +169,7 @@ void	output_hillslope(				int basinID,
 		hillslope[0].gw.storage *1000.0,
 		hillslope[0].area
 		);
+	/* Cleanup note: au20 is retained for diagnostics and intentionally unused. */
+	(void)au20;
 	return;
 } /*end output_hillslope*/

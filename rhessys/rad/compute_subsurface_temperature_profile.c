@@ -47,6 +47,8 @@ void compute_subsurface_temperature_profile(
 	double tmp;
 
 	tmp = 	HVAP;
+	/* Cleanup note: tmp is retained for diagnostics and intentionally unused. */
+	(void)tmp;
 
 
 

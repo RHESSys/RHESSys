@@ -90,6 +90,8 @@ double	compute_N_leached(int verbose_flag,
 
 	nleached = 0.0;
 	Qtotal = 0.0;
+	/* Cleanup note: Qtotal is retained for diagnostics and intentionally unused. */
+	(void)Qtotal;
 	nabsorbed = 0.0;
 	navail = 0.0;
 

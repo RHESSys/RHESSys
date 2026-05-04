@@ -2544,6 +2544,11 @@ void		patch_daily_F(
 if ( command_line[0].verbose_flag == -5 ){
 	printf("\n***END PATCH DAILY: exfil_unsat=%lf",patch[0].exfiltration_unsat_zone);
 }
+	/* Cleanup note: selected patch-daily scratch locals are retained for diagnostics and intentionally unused. */
+	(void)ch;
+	(void)dum;
+	(void)water_below_field_cap;
+	(void)tmpwind;
 
 	return;
 } /*end patch_daily_F.c*/

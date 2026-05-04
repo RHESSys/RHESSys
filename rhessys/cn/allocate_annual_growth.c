@@ -597,7 +597,7 @@ int allocate_annual_growth(				int id,
 	/* transfer excess N in npool to retransn */
 	if (ns->npool > ZERO) {
 		avg_cn = cs->cpool/ns->npool;	
-		if (cs->cpool/ns->npool < LIVELAB_CN) {
+		if (avg_cn < LIVELAB_CN) {
 				excess_n = ns->npool - cs->cpool/LIVELAB_CN;
 				ns->npool -= excess_n;
 				ns->retransn += excess_n;

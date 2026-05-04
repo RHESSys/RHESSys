@@ -109,6 +109,8 @@ double compute_potential_N_uptake_Waring(
 	f3 = epc.alloc_stemc_leafc;
 	f4 = epc.alloc_livewoodc_woodc;
 	g1 = epc.gr_perc;
+	/* Cleanup note: g1 is retained for diagnostics and intentionally unused in current logic. */
+	(void)g1;
 	cnl = epc.leaf_cn;
 	cnfr = epc.froot_cn;
 	cnlw = epc.livewood_cn;

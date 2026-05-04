@@ -116,6 +116,9 @@ double compute_potential_N_uptake_combined(
 	f3 = epc.alloc_stemc_leafc;
 	f4 = epc.alloc_livewoodc_woodc;
 	g1 = epc.gr_perc;
+	/* Cleanup note: f2, f3, and g1 are retained for diagnostics and intentionally unused in current logic. */
+	(void)f2;
+	(void)g1;
 	cnl = epc.leaf_cn;
 	cnfr = epc.froot_cn;
 	cnlw = epc.livewood_cn;
@@ -184,6 +187,7 @@ double compute_potential_N_uptake_combined(
 			fwood=0.0;
 			f3 = 0.0;
 		}
+		(void)f3;
 
 		if (epc.veg_type == TREE)
 		{

@@ -994,6 +994,16 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		if (hillslope_outflow <= command_line[0].thresholds[STREAMFLOW])
 			hillslope[0].acc_year.num_threshold += 1;
 	}
+	/* Cleanup note: aggregate diagnostic locals are intentionally unused in this build path. */
+	(void)water_balance;
+	(void)hillslope_rz_storage;
+	(void)hillslope_unsat_storage;
+	(void)hillslope_sat_deficit;
+	(void)hillslope_return_flow;
+	(void)hillslope_detention_store;
+	(void)streamflow;
+	(void)Qin_total;
+	(void)Qstr_total;
 
 	return;
 

@@ -286,6 +286,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	cdf->kl4 = kl4;
 	cdf->decomp_w_scalar = w_scalar;
 	cdf->decomp_t_scalar = t_scalar;
+	/* Cleanup note: nlimit is retained for diagnostics and intentionally unused. */
+	(void)nlimit;
 
 	return(ok);
 } /* end compute_potential_decomp.c */

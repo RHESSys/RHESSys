@@ -377,7 +377,11 @@ if (Tair_mean_day > 0) {
 			   (stratum[0].Kstar_direct+stratum[0].Kstar_diffuse)/86.4,
 			   stratum[0].Lstar/86.4);
 	}
-	
-	
+	/* Cleanup note: tmp/tmp2/tmp3/tmp4 are retained for diagnostics and intentionally unused. */
+	(void)tmp;
+	(void)tmp2;
+	(void)tmp3;
+	(void)tmp4;
+
 	return( snow_storage);
 } /*end compute_snow_stored*/

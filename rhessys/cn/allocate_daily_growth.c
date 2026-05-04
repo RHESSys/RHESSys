@@ -102,6 +102,11 @@ int allocate_daily_growth(int nlimit,
 	plant_ndemand = ndf->potential_N_uptake;
 	preday_npool = ns->npool;
 	preday_cpool = cs->cpool;
+	/* Cleanup note: B, f3, preday_npool, and preday_cpool are retained for diagnostics and intentionally unused. */
+	(void)B;
+	(void)f3;
+	(void)preday_npool;
+	(void)preday_cpool;
 
 
 	/*--------------------------------------------------------------*/

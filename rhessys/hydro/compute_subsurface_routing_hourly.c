@@ -994,6 +994,24 @@ void compute_subsurface_routing_hourly(
 		if (hillslope[0].hillslope_outflow <= command_line[0].thresholds[STREAMFLOW])
 			hillslope[0].acc_year.num_threshold += 1;
 	}
+	/* Cleanup note: aggregate diagnostic locals are intentionally unused in this build path. */
+	(void)water_balance;
+	(void)hillslope_outflow;
+	(void)hillslope_rz_storage;
+	(void)hillslope_unsat_storage;
+	(void)hillslope_sat_deficit;
+	(void)hillslope_return_flow;
+	(void)hillslope_detention_store;
+	(void)hillslope_area;
+	(void)preday_hillslope_unsat_storage;
+	(void)preday_hillslope_rz_storage;
+	(void)preday_hillslope_sat_deficit;
+	(void)preday_hillslope_return_flow;
+	(void)preday_hillslope_detention_store;
+	(void)streamflow;
+	(void)Qin_total;
+	(void)Qstr_total;
+	(void)litter;
 
 	return;
 

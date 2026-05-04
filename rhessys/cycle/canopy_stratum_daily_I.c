@@ -227,6 +227,8 @@ void	canopy_stratum_daily_I(
 	if (command_line[0].grow_flag > 0)  {
 		cs = &(stratum[0].cs);
 		ns = &(stratum[0].ns);
+		/* Cleanup note: ns is retained for diagnostics and intentionally unused as a local alias. */
+		(void)ns;
 
 
 		stratum[0].cs.preday_totalc = (cs->cpool + cs->cwdc + cs->cwdc_bg

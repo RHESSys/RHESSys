@@ -65,6 +65,8 @@ double	compute_snow_sublimation(
 
 	T_air_K = T_air + KELVIN;
 	T_snow_K = T_snow + KELVIN; /* not used */
+	/* Cleanup note: T_snow_K is retained for diagnostics and intentionally unused. */
+	(void)T_snow_K;
 	hf = 334;
 	hv = 2470;
 	stabil_func = 1.0;	/* Assuming neutral stability */

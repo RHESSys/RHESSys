@@ -292,6 +292,18 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 	cdf->psoil4c_loss = psoil4c_loss;
 	ndf->pmnf_s4 = pmnf_s4;
 	cdf->kl4 = kl4;*/
+	/* Cleanup note: selected root-decomp scratch locals are retained for diagnostics and intentionally unused. */
+	(void)rfs1s2;
+	(void)rfs2s3;
+	(void)rfs3s4;
+	(void)ks1;
+	(void)ks2;
+	(void)ks3;
+	(void)ks4;
+	(void)cn_s4;
+	(void)psoil1c_loss;
+	(void)pmnf_s1s2;
+	(void)nlimit;
 
 	return(ok);
 } /* end compute_potential_decomp.c */

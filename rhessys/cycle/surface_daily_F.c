@@ -997,6 +997,18 @@ void		surface_daily_F(
 			patch[0].surface_energy_profile[3].depth;
 		
 	}
+	/* Cleanup note: selected surface energy scratch locals are retained for diagnostics and intentionally unused. */
+	(void)albedo;
+	(void)dry_evaporation;
+	(void)Kstar_direct;
+	(void)Kstar_diffuse;
+	(void)APAR_diffuse;
+	(void)APAR_direct;
+	(void)rainy_evaporation;
+	(void)APAR_diffuse_lit;
+	(void)APAR_diffuse_soil;
+	(void)APAR_direct_lit;
+	(void)APAR_direct_soil;
 	
 	return;
 }/*end surface_daily_F.c*/

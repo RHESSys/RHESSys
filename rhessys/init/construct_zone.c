@@ -134,6 +134,9 @@ struct zone_object *construct_zone(
 	base_y = 0.0;
 	j = 0;
 	k = 0;	
+#ifdef FIND_STATION_BASED_ON_ID
+	(void)k; /* k is only used in the #ifndef FIND_STATION_BASED_ON_ID block */
+#endif
 	sum_patch_area = 0.0;
 
 	/*--------------------------------------------------------------*/

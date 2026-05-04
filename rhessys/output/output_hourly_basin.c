@@ -316,5 +316,7 @@ void	output_hourly_basin(	int routing_flag,
 		//asnow*1000.0 ,
 		basin[0].stream_list.streamflow *1000.0*24*3600/aarea
 		);	
+	/* Cleanup note: arecharge is retained for diagnostics and intentionally unused. */
+	(void)arecharge;
 	return;
 } /*end output_hourly_basin*/

@@ -168,6 +168,8 @@ Farquhar photosynthesis routine
         {
                 Ca *= 10.0;
         }
+	/* Cleanup note: c3 flag is retained for diagnostics and intentionally unused in current path. */
+	(void)c3;
 
 	/* calculate atmospheric O2 in Pa, assumes 21% O2 by volume */
 	O2 = 0.21 * in->pa;

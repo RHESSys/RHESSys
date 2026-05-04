@@ -556,6 +556,15 @@ double	snowpack_daily_F(
 		snowpack[0].surface_age = surface_age;
 		snowpack[0].T = energy_deficit;
 	}
+	/* Cleanup note: selected snowpack scratch locals are retained for diagnostics and intentionally unused. */
+	(void)cp;
+	(void)cs;
+	(void)pho_air;
+	(void)cs_slope;
+	(void)height;
+	(void)snow_thresh;
+	(void)rr;
+	(void)aep;
 	
 	
 	return(melt);

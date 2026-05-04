@@ -473,5 +473,7 @@ void	execute_tec(
 			}  /*end if*/
 			} /*end while*/
 		} /*end while*/
+		/* Cleanup note: hour is retained for diagnostics and intentionally unused in current control flow. */
+		(void)hour;
 		return;
 } /*end execute_tec.c*/

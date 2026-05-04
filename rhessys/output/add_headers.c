@@ -457,6 +457,8 @@ void add_headers(struct world_output_file_object *world_output_files,
 			"ndays_sat", "ndays_sat70", "midsm_wyd",
 			"area","pet","pcp","burn","snowin","pot_recharge","recharge","recharge.wyd","pot_recharge.wyd"
 			);
+		/* Cleanup note: check is assigned from fprintf return values for optional diagnostics and intentionally unused. */
+		(void)check;
 	}
 
 	/*--------------------------------------------------------------*/
