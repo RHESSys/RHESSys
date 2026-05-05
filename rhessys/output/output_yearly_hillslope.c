@@ -48,7 +48,7 @@ void	output_yearly_hillslope(	int basinID,
 
 
 	check = fprintf(outfile,
-		"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d\n",
+		"%ld %d %d %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %lf %lf %lf\n",
 		current_date.year-1,
 		basinID,
 		hillslope[0].ID,

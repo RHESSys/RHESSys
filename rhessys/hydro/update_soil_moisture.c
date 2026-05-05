@@ -56,7 +56,7 @@ void	update_soil_moisture(
 	
 
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%4d %2d %2d  -333.1 ",
+		printf("\n%4ld %2ld %2ld  -333.1 ",
 		current_date.year, current_date.month, current_date.day);
 	/*--------------------------------------------------------------*/
 	/*	Determine if the infifltration will fill up the unsat	*/

@@ -37,7 +37,7 @@ int get_netcdf_station_number(char *base_station_filename)
     if ( (base_station_file = fopen(base_station_filename, "r")) == NULL ){
         fprintf(stderr,
                 "FATAL ERROR:in get_netcdf_station_number unable to open base_station file %s\n",
-                base_station_file);
+                base_station_filename);
         exit(0);
     }
     fseek(base_station_file,0,SEEK_SET);
@@ -90,7 +90,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	if ( (base_station_file = fopen(base_station_filename, "r")) == NULL ){
 		fprintf(stderr,
 				"FATAL ERROR:in construct_netcdf_grid unable to open base_station file %s\n",
-				base_station_file);
+				base_station_filename);
 		exit(0);
 	} /*end if*/
     #ifndef LIU_NETCDF_READER

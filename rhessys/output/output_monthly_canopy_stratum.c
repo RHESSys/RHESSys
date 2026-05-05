@@ -47,7 +47,7 @@ void	output_monthly_canopy_stratum( int basinID, int hillID,
 	/*--------------------------------------------------------------*/
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
-	fprintf(outfile,"%4d %4d %d %d %d %d %d %lf \n",
+	fprintf(outfile,"%4ld %4ld %d %d %d %d %d %lf \n",
 		current_date.month,
 		current_date.year,
 		basinID,

@@ -55,7 +55,7 @@ void	output_monthly_basin(
   basin[0].acc_month.length /= patchCount;
 
 	check = fprintf(outfile,
-		"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%ld %ld %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.month,
 		current_date.year,
 		basin[0].ID,

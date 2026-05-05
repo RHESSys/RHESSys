@@ -129,7 +129,7 @@ void	output_yearly_growth_basin(
 	asoilhr /= aarea;
 	adenitrif /= aarea;
 	ard /= aarea;
-	fprintf(outfile,"%d %d %lf %lf %lf %lf %lf %lf %lf %lf \n",
+	fprintf(outfile,"%ld %d %lf %lf %lf %lf %lf %lf %lf %lf \n",
 		date.year,
 		basin[0].ID,
 		agpsn,

@@ -213,7 +213,7 @@ clim_repeat_flag: command line object that tells RHESSys to recycle through netc
   idlat = locate(lat,nlat,rlat,sd);
   idlont = locate(lont,nlont,rlon,sd);
   if(idlat == -1 || idlont == -1){
-    fprintf(stderr,"rlat:%lf\trlon:%lf\tsd:%lf\tlat[0]:%lf\tlont[0]:%lf\tidlat:%i\tidlont:%i\tnlat:%i\tnlont:%zu\nCan't locate the station get_netcdf_var_timeseries\n",rlat,rlon,sd,lat[0],lont[0],idlat,idlont,nlat,nlont);
+    fprintf(stderr,"rlat:%lf\trlon:%lf\tsd:%lf\tlat[0]:%lf\tlont[0]:%lf\tidlat:%i\tidlont:%i\tnlat:%zu\tnlont:%zu\nCan't locate the station get_netcdf_var_timeseries\n",rlat,rlon,sd,lat[0],lont[0],idlat,idlont,nlat,nlont);
     free(days);
     free(lat);
     free(lont);

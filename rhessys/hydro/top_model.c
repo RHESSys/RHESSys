@@ -670,7 +670,7 @@ double	top_model(
 		water_balance = 0.0;
 
 	if ((water_balance > 0.0000001) || (water_balance < -0.0000001))  
-		printf("\n Hill Water Balance is %12.8f on %d %d %d for Hill %d base %lf return %lf sd %lf %lf un %lf %lf rz %lf %lf litter %lf %lf det %lf %lf\n",
+		printf("\n Hill Water Balance is %12.8f on %ld %ld %ld for Hill %d base %lf return %lf sd %lf %lf un %lf %lf rz %lf %lf litter %lf %lf det %lf %lf\n",
 		water_balance,
 		current_date.day,
 		current_date.month,

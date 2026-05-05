@@ -89,7 +89,7 @@ void skip_basin(
 		/*      Read each base_station ID and then point to that base_statio*/
 		/*--------------------------------------------------------------*/
 		for (i=0 ; i<dtmp; i++) {
-			fscanf(world_file,"%f",&(ltmp));
+			fscanf(world_file,"%lf",&(ltmp));
 			read_record(world_file, record);
 			/*--------------------------------------------------------------*/
 			/*	Point to the appropriate base station in the base       	*/

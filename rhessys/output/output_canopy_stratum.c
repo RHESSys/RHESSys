@@ -43,7 +43,7 @@ void	output_canopy_stratum( int basinID, int hillID, int zoneID, int patchID,
 	/*------------------------------------------------------*/
 	
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d \n",
+		"%ld %ld %ld %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d \n",
 		current_date.day,
 		current_date.month,
 		current_date.year,

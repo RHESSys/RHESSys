@@ -700,7 +700,7 @@ exp: exp '+' exp {
 		$$ = new_of_expr_ast('+', $1, $3);
 	}
 	| exp '-' exp {
-		if (verbose_output) fprintf(stderr, "\t\tEXPR OP: %s - %s\n", $1, $3);
+		if (verbose_output) fprintf(stderr, "\t\tEXPR OP: %p - %p\n", (void*)$1, (void*)$3);
 		$$ = new_of_expr_ast('-', $1, $3);
 	}
 	| exp '*' exp { $$ = new_of_expr_ast('*', $1, $3); }

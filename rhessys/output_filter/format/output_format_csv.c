@@ -8,11 +8,11 @@
 #define FMT_STR_TIMESTAMP_FIELD "%ld%s"
 #define FMT_STR_ID_FIELD "%d%s"
 
-#define FMT_STR_BOOL "%s%h"
+#define FMT_STR_BOOL "%s%d"
 #define FMT_STR_CHAR "%s%c"
 #define FMT_STR_CHAR_ARRAY "%s%s"
 #define FMT_STR_INT "%s%d"
-#define FMT_STR_LONG "%s%l"
+#define FMT_STR_LONG "%s%ld"
 #define FMT_STR_LONG_ARRAY "%s%p"
 #define FMT_STR_FLOAT "%s%f"
 #define FMT_STR_DOUBLE "%s%f"

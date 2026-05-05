@@ -313,7 +313,7 @@ void		patch_hourly(
 	else infiltration = 0.0;
 
 	if (infiltration < 0.0)
-		printf("\nInfiltration %lf < 0 for %d on %d",
+		printf("\nInfiltration %lf < 0 for %d on %ld",
 			infiltration,
 			patch[0].ID, current_date.day);
 	/*--------------------------------------------------------------*/

@@ -78,9 +78,9 @@ void	execute_state_output_event(
 		exit(EXIT_FAILURE);
 	}
 
-	fprintf(outfile, "\n%-30ld %s", world[0].ID,
+	fprintf(outfile, "\n%-30d %s", world[0].ID,
 		"world_ID");
-	fprintf(outfile, "\n%-30ld %s", world[0].num_basin_files,
+	fprintf(outfile, "\n%-30d %s", world[0].num_basin_files,
 		"num_basins");
 	/*--------------------------------------------------------------*/
 	/*	output basins												*/

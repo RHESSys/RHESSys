@@ -46,7 +46,7 @@ void	output_yearly_fire( int basinID, int hillID, int zoneID, int patchID,
         stratum[0].fe.acc_year.length = 1;
 
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d\n",
+		"%ld %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d\n",
 		current_date.year,
 		basinID,
 		hillID,
