@@ -635,6 +635,12 @@ void  update_drainage_road(
 
 
 	}
+	/* Intentionally unused: retained for diagnostics bookkeeping. */
+	(void)Ksat;
+	(void)NO3_surface_leached_to_stream;
+	(void)NH4_surface_leached_to_stream;
+	(void)DON_surface_leached_to_stream;
+	(void)DOC_surface_leached_to_stream;
 
 
 } /*end update_drainage_road.c*/

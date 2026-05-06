@@ -58,6 +58,7 @@ param * readParamFile(int *paramCnt, char *filename)
             strbuf2[0] = '\0';
             strbuf3[0] = '\0';
             argCnt = sscanf (line, "%s %s %s", strbuf1, strbuf2, strbuf3);
+            (void)argCnt; /* Intentionally unused: retained for parsing diagnostics bookkeeping. */
 
             /* Parse the parameter value */
             strcpy(paramPtr[paramInd].strVal, strbuf1);

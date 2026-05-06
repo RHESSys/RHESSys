@@ -74,6 +74,7 @@ int update_decomp_root(
 		+ ns_litr->litr4n + ns_soil->soil1n + ns_soil->soil2n + ns_soil->soil3n
 		+ ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate
         	+ ns_litr->litr1n_bg + ns_litr->litr2n_bg + ns_litr->litr3n_bg + ns_litr->litr4n_bg; 
+	(void)total_preday_N; /* Intentionally unused: retained for diagnostics bookkeeping. */
 
 	nlimit = ns_soil->nlimit;
 	fpi = ns_soil->fract_potential_immob;
@@ -102,6 +103,14 @@ int update_decomp_root(
 	rfs1s2 = 0.28;
 	rfs2s3 = 0.46;
 	rfs3s4 = 0.55;
+	/* Intentionally unused: retained for diagnostics bookkeeping. */
+	(void)rfs1s2;
+	(void)rfs2s3;
+	(void)rfs3s4;
+	(void)cn_s1;
+	(void)cn_s2;
+	(void)cn_s3;
+	(void)cn_s4;
 	daily_net_nmin = 0.0;
 	/* labile litter fluxes */
 	if (cs_litr->litr1c_bg > ZERO) {
@@ -239,6 +248,7 @@ int update_decomp_root(
 		ns_soil->sminn -= (-1.0*daily_net_nmin - nitrate_immob);
 	}
 	ndf->net_mineralized_bg = daily_net_nmin; //use different pool as the above ground litter
+	(void)balance; /* Intentionally unused: retained for optional debug tracing. */
 
 	return (!ok);
 } /* end update_decomp.c */

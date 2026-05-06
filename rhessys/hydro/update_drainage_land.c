@@ -601,6 +601,12 @@ void  update_drainage_land(
 	}
 
 	} /* end if redistribution flag */
+	/* Intentionally unused: retained for diagnostics bookkeeping. */
+	(void)Ksat;
+	(void)NH4_leached_to_stream;
+	(void)NO3_leached_to_stream;
+	(void)DON_leached_to_stream;
+	(void)DOC_leached_to_stream;
 
 	return;
 

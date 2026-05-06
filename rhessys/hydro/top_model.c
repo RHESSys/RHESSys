@@ -668,6 +668,8 @@ double	top_model(
 	 
 	else
 		water_balance = 0.0;
+	(void)mean_sat_deficit_z; /* Intentionally unused: retained for diagnostics bookkeeping. */
+	(void)total_litter_store; /* Intentionally unused: retained for diagnostics bookkeeping. */
 
 	if ((water_balance > 0.0000001) || (water_balance < -0.0000001))  
 		printf("\n Hill Water Balance is %12.8f on %ld %ld %ld for Hill %d base %lf return %lf sd %lf %lf un %lf %lf rz %lf %lf litter %lf %lf det %lf %lf\n",

@@ -57,6 +57,9 @@ void union_date_init(struct world_object * world,
   num_d=0; //inx store the number of days which has hourly precipitation in this station
   start_date = world[0].start_date;
   end_date = world[0].end_date;
+  /* Intentionally unused: retained for optional debug/date bookkeeping. */
+  (void)inx;
+  (void)end_date;
 
 
   /*-----------------------------------------------------------------------------
