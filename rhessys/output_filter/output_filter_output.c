@@ -499,7 +499,7 @@ static bool apply_to_strata_in_patch(char * const error, size_t error_len, bool 
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
 		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < s->patch->num_canopy_strata; i++) {
+	for (int i = 0; i < s->patch->num_canopy_strata; i++) {
 		struct canopy_strata_object *stratum = s->patch->canopy_strata[i];
 		id.canopy_strata_ID = stratum->ID;
 		void *entity = determine_stratum_entity(filter->timestep, stratum, acc_objs_to_reset);
@@ -514,7 +514,7 @@ static bool apply_to_patches_in_zone(char * const error, size_t error_len, bool 
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
 		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < p->zone->num_patches; i++) {
+	for (int i = 0; i < p->zone->num_patches; i++) {
 		struct patch_object *patch = p->zone->patches[i];
 		id.patch_ID = patch->ID;
 		void *entity = determine_patch_entity(filter->timestep, patch, acc_objs_to_reset);
@@ -529,10 +529,10 @@ static bool apply_to_strata_in_zone(char * const error, size_t error_len, bool v
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
 		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < s->zone->num_patches; i++) {
+	for (int i = 0; i < s->zone->num_patches; i++) {
 		struct patch_object *patch = s->zone->patches[i];
 		id.patch_ID = patch->ID;
-		for (size_t j = 0; j < patch->num_canopy_strata; j++) {
+			for (int j = 0; j < patch->num_canopy_strata; j++) {
 			struct canopy_strata_object *stratum = patch->canopy_strata[j];
 			id.canopy_strata_ID = stratum->ID;
 			void *entity = determine_stratum_entity(filter->timestep, stratum, acc_objs_to_reset);
@@ -548,7 +548,7 @@ static bool apply_to_zones_in_hillslope(char * const error, size_t error_len, bo
                                         OutputFilter const * const filter, OutputFilterZone const * const z, EntityID id,
                                         PointerSet **acc_objs_to_reset,
                                         bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < z->hill->num_zones; i++) {
+	for (int i = 0; i < z->hill->num_zones; i++) {
 		struct zone_object *zone = z->hill->zones[i];
 		id.zone_ID = zone->ID;
 		void *entity = determine_zone_entity(filter->timestep, zone, acc_objs_to_reset);
@@ -563,10 +563,10 @@ static bool apply_to_patches_in_hillslope(char * const error, size_t error_len, 
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
 		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < p->hill->num_zones; i++) {
+	for (int i = 0; i < p->hill->num_zones; i++) {
 		struct zone_object *z = p->hill->zones[i];
 		id.zone_ID = z->ID;
-		for (size_t j = 0; j < z->num_patches; j++) {
+			for (int j = 0; j < z->num_patches; j++) {
 			struct patch_object *patch = z->patches[j];
 			id.patch_ID = patch->ID;
 			void *entity = determine_patch_entity(filter->timestep, patch, acc_objs_to_reset);
@@ -582,13 +582,13 @@ static bool apply_to_strata_in_hillslope(char * const error, size_t error_len, b
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
 		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < s->hill->num_zones; i++) {
+	for (int i = 0; i < s->hill->num_zones; i++) {
 		struct zone_object *z = s->hill->zones[i];
 		id.zone_ID = z->ID;
-		for (size_t j = 0; j < z->num_patches; j++) {
+			for (int j = 0; j < z->num_patches; j++) {
 			struct patch_object *patch = z->patches[j];
 			id.patch_ID = patch->ID;
-			for (size_t k = 0; k < patch->num_canopy_strata; k++) {
+					for (int k = 0; k < patch->num_canopy_strata; k++) {
 				struct canopy_strata_object *stratum = patch->canopy_strata[k];
 				id.canopy_strata_ID = stratum->ID;
 				void *entity = determine_stratum_entity(filter->timestep, stratum, acc_objs_to_reset);
@@ -604,10 +604,10 @@ static bool apply_to_zones_in_basin(char * const error, size_t error_len, bool v
 									struct date date, OutputFilter const * const filter, OutputFilterZone const * const z, EntityID id,
 									PointerSet **acc_objs_to_reset,
 									bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < z->basin->num_hillslopes; i++) {
+	for (int i = 0; i < z->basin->num_hillslopes; i++) {
 		struct hillslope_object *h = z->basin->hillslopes[i];
 		id.hillslope_ID = h->ID;
-		for (size_t j = 0; j < h->num_zones; j++) {
+			for (int j = 0; j < h->num_zones; j++) {
 			struct zone_object *zone = h->zones[j];
 			id.zone_ID = zone->ID;
 			void *entity = determine_zone_entity(filter->timestep, zone, acc_objs_to_reset);
@@ -623,13 +623,13 @@ static bool apply_to_patches_in_basin(char * const error, size_t error_len, bool
 		OutputFilter const * const filter, OutputFilterPatch const * const p, EntityID id,
 		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < p->basin->num_hillslopes; i++) {
+	for (int i = 0; i < p->basin->num_hillslopes; i++) {
 		struct hillslope_object *h = p->basin->hillslopes[i];
 		id.hillslope_ID = h->ID;
-		for (size_t j = 0; j < h->num_zones; j++) {
+			for (int j = 0; j < h->num_zones; j++) {
 			struct zone_object *z = h->zones[j];
 			id.zone_ID = z->ID;
-			for (size_t k = 0; k < z->num_patches; k++) {
+					for (int k = 0; k < z->num_patches; k++) {
 				struct patch_object *patch = z->patches[k];
 				id.patch_ID = patch->ID;
 				void *entity = determine_patch_entity(filter->timestep, patch, acc_objs_to_reset);
@@ -646,16 +646,16 @@ static bool apply_to_strata_in_basin(char * const error, size_t error_len, bool 
 		OutputFilter const * const filter, OutputFilterStratum const * const s, EntityID id,
 		PointerSet **acc_objs_to_reset,
 		bool (*output_fn)(char * const, size_t, bool, struct date date, void * const, EntityID, OutputFilter const * const)) {
-	for (size_t i = 0; i < s->basin->num_hillslopes; i++) {
+	for (int i = 0; i < s->basin->num_hillslopes; i++) {
 		struct hillslope_object *h = s->basin->hillslopes[i];
 		id.hillslope_ID = h->ID;
-		for (size_t j = 0; j < h->num_zones; j++) {
+			for (int j = 0; j < h->num_zones; j++) {
 			struct zone_object *z = h->zones[j];
 			id.zone_ID = z->ID;
-			for (size_t k = 0; k < z->num_patches; k++) {
+					for (int k = 0; k < z->num_patches; k++) {
 				struct patch_object *patch = z->patches[k];
 				id.patch_ID = patch->ID;
-				for (size_t l = 0; l < patch->num_canopy_strata; l++) {
+							for (int l = 0; l < patch->num_canopy_strata; l++) {
 					struct canopy_strata_object *stratum = patch->canopy_strata[l];
 					id.canopy_strata_ID = stratum->ID;
 					void *entity = determine_stratum_entity(filter->timestep, stratum, acc_objs_to_reset);
@@ -743,14 +743,14 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 		reset_materialized_variable_array_values(f);
 		id.basin_ID = b->basinID;
 		struct basin_object *basin = b->basin;
-		for (size_t i = 0; i < basin->num_hillslopes; i++) {
+			for (int i = 0; i < basin->num_hillslopes; i++) {
 			struct hillslope_object *hillslope = basin->hillslopes[i];
 			hillslope_area = 0.0;
 
-			for (size_t j = 0; j < hillslope->num_zones; j++) {
+					for (int j = 0; j < hillslope->num_zones; j++) {
 				struct zone_object *z = hillslope->zones[j];
 
-				for (size_t k = 0; k < z->num_patches; k++) {
+							for (int k = 0; k < z->num_patches; k++) {
 					struct patch_object *patch = z->patches[k];
 					// Iterate over filter variables accumulating any patch variables
 					int var_num = 0;
@@ -764,7 +764,7 @@ static bool output_basin(char * const error, size_t error_len, bool verbose,
 							var_num += 1;
 						}
 					}
-					for (size_t l = 0; l < patch->num_canopy_strata; l++) {
+									for (int l = 0; l < patch->num_canopy_strata; l++) {
 						struct canopy_strata_object *stratum = patch->canopy_strata[l];
 						// Iterate over filter variables accumulating any stratum variables
 						int var_num = 0;
