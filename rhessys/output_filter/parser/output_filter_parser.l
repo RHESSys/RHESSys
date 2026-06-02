@@ -7,6 +7,8 @@
 
 %}
 
+%option noinput nounput
+
 %%
 
 "+" { return yytext[0]; }

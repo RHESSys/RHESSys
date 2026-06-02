@@ -6,7 +6,7 @@
 #include "output_filter.h"
 #include "strings.h"
 
-void yyerror(char *s);
+void yyerror(const char *s);
 int yylex(void);
 int set_input_file(char * const file_path);
 
@@ -28,7 +28,7 @@ OutputFilter *curr_filter = NULL;
 
 %}
 
-%error-verbose
+%define parse.error verbose
 
 %union {
 	char *string;
@@ -539,7 +539,7 @@ variable_spec: | VAR_DEF exp {
 			print_of_expr_ast($2, 1);
 		}
 
-		HierarchyLevel level;
+		HierarchyLevel level = OF_HIERARCHY_LEVEL_UNDEFINED;
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable in basin definitions can only be named variables, not expression variables.");
@@ -562,7 +562,7 @@ variable_spec: | VAR_DEF exp {
 	| IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s\n", $1);
 		
-		HierarchyLevel level;
+		HierarchyLevel level = OF_HIERARCHY_LEVEL_UNDEFINED;
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
@@ -584,7 +584,7 @@ variable_spec: | VAR_DEF exp {
 	| IDENTIFIER DOT IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tVARIABLE: %s.%s\n", $1, $3);
 		
-		HierarchyLevel level;
+		HierarchyLevel level = OF_HIERARCHY_LEVEL_UNDEFINED;
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
@@ -712,7 +712,7 @@ exp: exp '+' exp {
 	| IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s\n", $1);
 
-		HierarchyLevel level;
+		HierarchyLevel level = OF_HIERARCHY_LEVEL_UNDEFINED;
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
@@ -730,7 +730,7 @@ exp: exp '+' exp {
 	| IDENTIFIER DOT IDENTIFIER {
 		if (verbose_output) fprintf(stderr, "\t\tEXPR IDENTIFIER: %s.%s\n", $1, $3);
 
-		HierarchyLevel level;
+		HierarchyLevel level = OF_HIERARCHY_LEVEL_UNDEFINED;
 		if (in_basin) {
 			syntax_error = true;
 			yyerror("Variable names in basin definitions must include hierarchy level (e.g. patch.foo).");
@@ -823,7 +823,7 @@ OutputFilter *parse(char * const input, bool verbose) {
 	}
 }
 
-void yyerror(char *s) {
+void yyerror(const char *s) {
 	extern char *yytext;
 	if (*yytext == '\0') {
 		// End of file, do not report the error.

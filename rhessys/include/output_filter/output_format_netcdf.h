@@ -51,7 +51,7 @@ bool output_format_netcdf_init(OutputFilter * const filter);
 bool output_format_netcdf_destroy(OutputFilter * const filter);
 bool output_format_netcdf_write_headers(OutputFilter * const filter);
 bool output_format_netcdf_write_data(char * const error, size_t error_len,
-		struct date date, OutputFilter * const filter,
+		struct date date, OutputFilter const * const filter,
 		EntityID id, MaterializedVariable * const vars, bool flush);
 
 #endif /* INCLUDE_OUTPUT_FILTER_OUTPUT_FORMAT_NETCDF_H_ */

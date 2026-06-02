@@ -312,8 +312,8 @@ int	main( int main_argc, char **main_argv)
 	struct	command_line_object 	*command_line;
 	struct	tec_object				*tec;
 	struct	world_object			*world;
-	struct	world_output_file_object	*output;
-	struct	world_output_file_object	*growth_output;
+	struct	world_output_file_object	*output = NULL;
+	struct	world_output_file_object	*growth_output = NULL;
 	char	*prefix;
 	
 	/*--------------------------------------------------------------*/

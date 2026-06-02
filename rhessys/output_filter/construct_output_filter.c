@@ -25,7 +25,7 @@ struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone
 
 
 static void infer_expr_variable_data_type(OutputFilterVariable * const expr_var, const OutputFilterVariable *sub_var) {
-    if (expr_var->data_type == NULL) {
+	if (expr_var->data_type == DATA_TYPE_UNDEFINED) {
         expr_var->data_type = sub_var->data_type;
     } else if (sub_var->data_type > expr_var->data_type) {
         expr_var->data_type = sub_var->data_type;

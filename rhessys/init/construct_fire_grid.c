@@ -42,7 +42,7 @@
 /*double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,double curMaxY,double cellMaxX,
 							double cellMaxY,double cellMinX,double cellMinY,double cell_res);*/
 
-struct fire_patch_object **construct_patch_fire_grid (struct world_object *world, struct command_line_object *command_line,struct fire_default def)
+struct patch_fire_object **construct_patch_fire_grid (struct world_object *world, struct command_line_object *command_line,struct fire_default def)
 
 {
 	/*--------------------------------------------------------------*/
@@ -370,9 +370,10 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 
 //			}
 //		}
-/*		if(def.include_wui==1) // then readin the wui LUT
+		/*		
+		if(def.include_wui==1) // then readin the wui LUT
 			fclose(wuiIn);
-*/		
+	
 		//		FILE *demIn;
 		//		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
 		//		demIn=fopen("../auxdata/DemGrid.txt","r");
@@ -381,6 +382,7 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 		//for(j=0;j<grid_dimX;j++){				
 		//				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
 		//printf("Which column? %d \n",i);
+		*/
 
 		//close file connections
 		fclose(patchesIn);
@@ -390,7 +392,8 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 
 		printf("--------------------\n");
 
-/*		if(def.include_wui==1) // then readin the wui LUT
+		/*
+		if(def.include_wui==1) // then readin the wui LUT
 		{
 			FILE *wuiIn;
 			wuiIn=fopen("../auxdata/WUILUT.txt","r");
@@ -466,7 +469,7 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 	}
 	fclose(gridout);
 
-*/
+	*/
 	/* done allocating fire grid, return to RHESSys*/
 	end=clock();
 	time_used=((double) (end-start))/CLOCKS_PER_SEC;

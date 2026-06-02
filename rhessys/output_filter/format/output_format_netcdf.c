@@ -66,7 +66,8 @@ static inline bool create_variable(OutputFilterVariable *v, int ncid, int dimids
 
 static inline bool output_byte_to_netcdf(char *abs_path, int ncid, size_t idx[],
 		int varid, char value) {
-	int retval = nc_put_var1_schar(ncid, varid, idx, &value);
+	signed char signed_value = (signed char)value;
+	int retval = nc_put_var1_schar(ncid, varid, idx, &signed_value);
 	if (retval != NC_NOERR) {
 		char *error_mesg = (char *) malloc(MAXSTR * sizeof(char));
 		snprintf(error_mesg, MAXSTR, "output_format_netcdf::output_byte_to_netcdf: error writing output, NetCDF driver error %s encountered when writing variable ID %d to netCDF file %s.\n",
@@ -119,11 +120,17 @@ static bool output_materialized_variable_to_netcdf(char * const error, size_t er
 		rv = nc_put_var1_short(ncid, varid, idx, &(v->u.bool_val));
 		break;
 	case DATA_TYPE_CHAR:
-		rv = nc_put_var1_schar(ncid, varid, idx, &(v->u.char_val));
+	{
+		signed char signed_char_val = (signed char)v->u.char_val;
+		rv = nc_put_var1_schar(ncid, varid, idx, &signed_char_val);
 		break;
+	}
 	case DATA_TYPE_STRING:
-		rv = nc_put_var1_string(ncid, varid, idx, &(v->u.char_array));
+	{
+		const char *str_val = v->u.char_array;
+		rv = nc_put_var1_string(ncid, varid, idx, &str_val);
 		break;
+	}
 	case DATA_TYPE_INT:
 		rv = nc_put_var1_int(ncid, varid, idx, &(v->u.int_val));
 		break;
@@ -362,7 +369,7 @@ bool output_format_netcdf_write_headers(OutputFilter * const f) {
 }
 
 bool output_format_netcdf_write_data(char * const error, size_t error_len,
-		struct date date, OutputFilter * const f,
+		struct date date, OutputFilter const * const f,
 		EntityID id, MaterializedVariable * const vars, bool flush) {
 	bool status = true;
 	OutputFormatNetCDFMetadata *meta = (OutputFormatNetCDFMetadata *)f->output->meta;

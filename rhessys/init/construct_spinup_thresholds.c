@@ -159,6 +159,7 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
      }
   }
 
-
+  fclose(spinup_thresholds_file);
+  return NULL;
 } /*end construct_spinup_thresholds.c*/
 

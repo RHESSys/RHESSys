@@ -2,7 +2,7 @@ OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 VERSION = 7.5
 PGM  = rhessys$(VERSION)
 #CC = gcc
-CC = clang
+CC = clang-20
 #CXX = g++
 INCLUDES = -Iinclude
 
@@ -12,7 +12,7 @@ OBJ = objects
 netcdf=T
 
 # IF THIS IS DEFINED NO TESTS WILL RUN - NEEDED IF RUNNING WMFIRE, comment out or remove if you want to run tests
-skiptests=T
+skiptests=F
 
 #netcdf ?=FALSE
 #wmfire ?=FALSE
@@ -27,15 +27,21 @@ endif
 # specifically added to be able to use with -w, to supress warnings
 CMD_OPTS +=
 
-#CFLAGS = -g -Wall -Wno-incompatible-function-pointer-types -std=c99 $(DEFINES) -fno-stack-protector -O -Wno-implicit-function-declaration -Wno-int-conversion
+# For debug:
+# -O0 -g3
 
+# possibly useful
 # -fsanitize=address,undefined
-# _POSIX_C_SOURCE=200809L
-# -D_GNU_SOURCE
-CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g -O2 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g -O2 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-# -O0 and -g3 for debug
-# -O2 for speed
+# -Wpedantic
+
+# For speed:
+# -O2/O3  -g1
+#  -march=native -mtune=native -flto
+
+CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g1 -O3 -march=native -mtune=native -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g1 -O3 -march=native -mtune=native -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+BISONFLAGS = --report=none 
+# -Wcounterexamples
 
 ifdef ofdebug
 	CFLAGS += -DOF_DEBUG
@@ -1149,7 +1155,7 @@ $(OBJ)/reconstruct_hourly_clim.o: init/reconstruct_hourly_clim.c
 # Generate code
 output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_filter_parser.y output_filter/parser/output_filter_parser.l
 	cd output_filter/parser && \
-	bison --report=none -d output_filter_parser.y && \
+	bison $(BISONFLAGS) -d output_filter_parser.y && \
 	flex output_filter_parser.l
 util/index_struct_fields.c: include/rhessys.h
 	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h \
@@ -1171,6 +1177,7 @@ $(OBJ)/output_filter.o: output_filter/output_filter.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter.c -o $(OBJ)/output_filter.o
 $(OBJ)/output_filter_parser.tab.o: output_filter/parser/output_filter_parser.tab.c
 	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/output_filter_parser.tab.c -o $(OBJ)/output_filter_parser.tab.o
+$(OBJ)/lex.yy.o: output_filter/parser/output_filter_parser.tab.c
 	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/lex.yy.c -o $(OBJ)/lex.yy.o
 $(OBJ)/index_struct_fields.o: util/index_struct_fields.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/index_struct_fields.c -o $(OBJ)/index_struct_fields.o
@@ -1192,9 +1199,9 @@ setversion:
 ifeq ($(OS), Darwin)
 	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' -i '' ./main.c
 else ifeq ($(OS), Linux)
-	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
+	sed -i -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
 else
-	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
+	sed -i -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
 endif
 
 install:

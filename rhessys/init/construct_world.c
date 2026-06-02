@@ -366,7 +366,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		struct base_station_object **, struct default_object *, 
         struct base_station_ncheader_object *,
         struct world_object *);
-	struct fire_patch_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default);
+	struct patch_fire_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default);
 	struct fire_object **construct_fire_grid(struct world_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
@@ -377,7 +377,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	void resemble_hourly_date(struct world_object *);
 
 	
-  	struct WUI_object **construct_WUI_list( char *, struct world_object *, struct	command_line_object *);
+	struct WUI_object *construct_WUI_list( char *, struct world_object *, struct	command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

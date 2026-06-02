@@ -124,7 +124,7 @@ struct base_station_object *construct_netcdf_grid(
       base_station_ncheader[0].lastID,
       base_station_ncheader[0].effective_lai);*/
 
-    base_station_ncheader[0].lastID + 1;
+    // base_station_ncheader[0].lastID + 1; // this doesn't do anything, commented out. maybe should be =+ 1? 
 
     /* Allocate for the new base station cell */
 #ifdef LIU_NETCDF_READER

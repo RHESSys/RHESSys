@@ -8,11 +8,11 @@
 
 
 bool output_format_csv_write_data(char * const error, size_t error_len,
-                struct date date, OutputFilter * const f,
+				struct date date, OutputFilter const * const f,
                 EntityID id, MaterializedVariable * const vars, bool flush);
 
 bool output_format_netcdf_write_data(char * const error, size_t error_len,
-                struct date date, OutputFilter * const f,
+				struct date date, OutputFilter const * const f,
                 EntityID id, MaterializedVariable * const vars, bool flush);
 
 inline static void reset_materialized_variable_array_values(OutputFilter const * const f) {

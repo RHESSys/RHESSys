@@ -168,7 +168,7 @@ static bool output_variable_to_stream(char * const error, size_t error_len,
 }
 
 bool output_format_csv_write_data(char * const error, size_t error_len,
-		struct date date, OutputFilter * const f,
+		struct date date, OutputFilter const * const f,
 		EntityID id, MaterializedVariable * const vars, bool flush) {
 	if (f->num_variables < 1) return true;
 

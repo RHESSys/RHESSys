@@ -288,7 +288,7 @@ OutputFilterExprName *new_of_expr_name(OutputFilterVariable *var) {
     OutputFilterExprName *n = (OutputFilterExprName *) malloc(sizeof(OutputFilterExprName));
     n->nodetype = OF_VAR_EXPR_AST_NODE_NAME;
     n->var = var;
-    return (OutputFilterExprAst *) n;
+	return n;
 }
 
 void free_of_expr_ast(OutputFilterExprAst *a) {
