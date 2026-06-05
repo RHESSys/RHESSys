@@ -9,13 +9,11 @@ INCLUDES = -Iinclude
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
-netcdf=T
-
 # IF THIS IS DEFINED NO TESTS WILL RUN - NEEDED IF RUNNING WMFIRE, comment out or remove if you want to run tests
 skiptests=F
 
-#netcdf ?=FALSE
-#wmfire ?=FALSE
+netcdf ?=T
+# wmfire ?=F
 
 DEFINES = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID
 
@@ -36,10 +34,20 @@ CMD_OPTS +=
 
 # For speed:
 # -O2/O3  -g1
-#  -march=native -mtune=native -flto
+# -march=native -mtune=native -flto
+# march and mtune not a good choice for hpc
 
-CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g1 -O3 -march=native -mtune=native -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g1 -O3 -march=native -mtune=native -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g1 -O3  -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g1 -O3 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+
+# Opt-in native CPU tuning for local performance tests.
+# Keep off by default so container binaries are portable across machines.
+nativeopt ?= F
+ifeq ($(nativeopt),T)
+	CFLAGS += -march=native -mtune=native
+	CFLAGS_NO_C99 += -march=native -mtune=native
+endif
+
 BISONFLAGS = --report=none 
 # -Wcounterexamples
 
