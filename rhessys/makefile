@@ -9,15 +9,22 @@ INCLUDES = -Iinclude
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
-# IF THIS IS DEFINED NO TESTS WILL RUN - NEEDED IF RUNNING WMFIRE, comment out or remove if you want to run tests
-skiptests=F
+# Boolean option handling.
+# Use T/F values on the make command line, e.g. make openmp=T or make openmp='T'.
+bool_true = $(filter T t TRUE true 1,$(strip $(1)))
 
-netcdf ?=T
-# wmfire ?=F
+# Defaults for current boolean options.
+skiptests ?= T
+netcdf ?= T
+wmfire ?= F
+openmp ?= F
+nativeopt ?= F
+extend_clim ?= F
+ofdebug ?= F
 
 DEFINES = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID
 
-ifdef extend_clim
+ifneq ($(call bool_true,$(extend_clim)),)
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
@@ -37,13 +44,12 @@ CMD_OPTS +=
 # -march=native -mtune=native -flto
 # march and mtune not a good choice for hpc
 
-CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g1 -O3  -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g1 -O3 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g3 -O0  -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g3 -O0 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
 
 # Opt-in native CPU tuning for local performance tests.
 # Keep off by default so container binaries are portable across machines.
-nativeopt ?= F
-ifeq ($(nativeopt),T)
+ifneq ($(call bool_true,$(nativeopt)),)
 	CFLAGS += -march=native -mtune=native
 	CFLAGS_NO_C99 += -march=native -mtune=native
 endif
@@ -51,12 +57,12 @@ endif
 BISONFLAGS = --report=none 
 # -Wcounterexamples
 
-ifdef ofdebug
+ifneq ($(call bool_true,$(ofdebug)),)
 	CFLAGS += -DOF_DEBUG
 endif
 
-ifdef openmp
-  CFLAGS += -fopenmp
+ifneq ($(call bool_true,$(openmp)),)
+  CFLAGS += -fopenmp=libomp
 endif
 
 # Retro fitting from CF
@@ -81,7 +87,7 @@ LOCAL_LIBS = -L../lib
 LINK_NETCDF = `pkg-config --libs netcdf`
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
 TEST_FIRE_LIB_PATH = test/$(WMFIRE_SO)
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 LDLIBS_FIRE = -lwmfire
 FIRE_LIB_PATH = ../lib/$(WMFIRE_SO)
 else
@@ -100,7 +106,9 @@ OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS
 TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
 
 
-ifndef skiptests
+ifneq ($(call bool_true,$(skiptests)),)
+	# skiptests is true: do not define TESTS.
+else
 	TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
 endif
 
@@ -432,7 +440,7 @@ $(OBJ)/output_filter_output.o \
 $(OBJ)/output_format_csv.o \
 $(OBJ)/output_format_netcdf.o
 
-ifdef netcdf
+ifneq ($(call bool_true,$(netcdf)),)
 OBJECTS += $(OBJ)/read_netcdf.o
 endif
 
@@ -448,8 +456,8 @@ dir:
 	mkdir -p $(OBJDIR_TESTS)
 	mkdir -p ../lib
 
-ifdef netcdf
-ifdef wmfire
+ifneq ($(call bool_true,$(netcdf)),)
+ifneq ($(call bool_true,$(wmfire)),)
 rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) $(LOCAL_LIBS) $(LDLIBS_FIRE) -v -o $(PGM)
 else
@@ -457,7 +465,7 @@ rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -v -o $(PGM)
 endif
 else
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) $(LDLIBS_FIRE) -v -o $(PGM)
 else
@@ -471,7 +479,7 @@ print-%  : ; @echo $* = $($*)
 
 OBJECTS_NO_MAIN := $(patsubst $(OBJ)/main.o,,$(OBJECTS))
 
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 test: dir $(TESTS)
     # Copy FIRE_LIB to test directory so that tests will run.
 	cp $(FIRE_LIB_PATH) $(TEST_FIRE_LIB_PATH)
@@ -485,19 +493,19 @@ endif
 # $(OBJ)/lex.yy.o $(OBJ)/output_filter_parser.tab.o $(OBJ)/output_filter.o $(OBJ)/string_list.o $(OBJ)/dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS)
 $(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 endif
 else ifeq ($(OS), Linux)
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
 endif
 else
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
@@ -505,7 +513,7 @@ endif
 endif
 	cp $@ $(TESTS_ROOTDIR)
 
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
 	$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) -c -o $@ $<
 else
@@ -555,7 +563,7 @@ $(OBJ)/execute_hourly_growth_output_event.o: tec/execute_hourly_growth_output_ev
 	$(CC) -c $(CFLAGS) -I include tec/execute_hourly_growth_output_event.c -o $(OBJ)/execute_hourly_growth_output_event.o
 $(OBJ)/execute_state_output_event.o: tec/execute_state_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_state_output_event.c -o $(OBJ)/execute_state_output_event.o
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 $(OBJ)/execute_firespread_event.o: tec/execute_firespread_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event.c -o $(OBJ)/execute_firespread_event.o
 else
@@ -1132,7 +1140,7 @@ $(OBJ)/output_template_structure.o: output/output_template_structure.c
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
 
-ifdef netcdf
+ifneq ($(call bool_true,$(netcdf)),)
 $(OBJ)/read_netcdf.o: init/read_netcdf.c
 	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o $(OBJ)/read_netcdf.o
 $(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c

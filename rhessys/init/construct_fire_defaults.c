@@ -152,10 +152,10 @@ struct fire_default *construct_fire_defaults(
 		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
 		default_object_list[i].include_wui=getIntParam(&paramCnt, &paramPtr, "include_wui", "%d", 0, 1);
 		printf("include_wui: %d\n",default_object_list[i].include_wui);
-    		default_object_list[i].fire_size_name=getIntParam(&paramCnt, &paramPtr, "fire_size_name", "%d", 0, 1);
-                printf("fire_size_name: %d\n",default_object_list[i].fire_size_name);
+    	default_object_list[i].fire_size_name=getIntParam(&paramCnt, &paramPtr, "fire_size_name", "%d", 0, 1);
+        printf("fire_size_name: %d\n",default_object_list[i].fire_size_name);
 		default_object_list[i].wind_shift = getDoubleParam(&paramCnt, &paramPtr, "wind_shift", "%lf", 0, 1);
-                printf("wind_shift: %lf\n",default_object_list[i].wind_shift);
+        printf("wind_shift: %lf\n",default_object_list[i].wind_shift);
 
 
 

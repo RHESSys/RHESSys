@@ -28,7 +28,7 @@ OutputFilter *curr_filter = NULL;
 
 %}
 
-%define parse.error verbose
+%error-verbose
 
 %union {
 	char *string;

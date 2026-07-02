@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # make sure that it is non-interactive
 ARG DEBIAN_FRONTEND=noninteractive
@@ -11,37 +11,17 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 	apt-get install --yes \
 		bison \
 		build-essential \
-		clang \
-		cmake \
-		dirmngr \
+		clang-20 \
 		flex \
-		git \
-		g++ \
-		libbsd-dev \
+		lld-20 \
+		# git \
 		libbz2-dev \
 		libboost-all-dev \
-		libfreetype6-dev \
-		libfribidi-dev \
-		libfontconfig1-dev \
-		libgdal-dev \
-		libglib2.0 \
-		libglib2.0-dev \
-		libharfbuzz-dev \
-		libicu-dev \
-		libjpeg-dev \
 		libnetcdf-dev \
-		libomp-dev \
-		libpq-dev \
-		libpng-dev \
-		libssl-dev \
-		libtiff5-dev \
-		libudunits2-dev \
-		libxml2-dev \
+		libomp-20-dev \
 		pkg-config \
 		python3 \
 		python3-dev \
-		software-properties-common \
-		vim \
 		wget
 
 # install BOOST libraries for RHESSys FIRE
@@ -51,8 +31,9 @@ RUN tar -xf /usr/local/bin/boost_1_82_0.tar.gz -C /usr/local/bin/
 
 # local environment variables
 ENV BOOST_ROOT=/usr/local/bin/boost_1_82_0
-ENV CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/bin/boost_1_82_0/
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/boost_1_82_0/
+ENV CPLUS_INCLUDE_PATH=/usr/local/bin/boost_1_82_0/
+ENV LD_LIBRARY_PATH=/usr/local/bin/boost_1_82_0/
+ENV BOOST_BUILD_PATH=/usr/local/bin/boost_1_82_0/boost-build.jam
 ENV PATH=$PATH:$BOOST_ROOT
 
 # Docker environment variables
@@ -71,7 +52,7 @@ RUN . ~/.bash_profile & bootstrap.sh --prefix=/usr/
 # copy the build environment to the working dir
 WORKDIR /RHESSys
 COPY ./ .
-RUN mkdir lib
+RUN mkdir -p lib
 
 # finish installing WMFire library
 WORKDIR /RHESSys/FIRE
@@ -80,19 +61,11 @@ RUN b2 clean
 RUN b2 release
 
 # make WMFire library accessible
-RUN cp build/gcc-11/release/threading-multi/libwmfire.so ../lib/
+RUN set -- build/*/release/threading-multi/libwmfire.so && cp "$1" ../lib/libwmfire.so
 
 # compile RHESSys and WMFire
 WORKDIR ../rhessys
-RUN make wmfire='T'
-
-# install r-base and r-base-dev
-RUN DEBIAN_FRONTEND="noninteractive" wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
-	add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" && \
-	apt-get update && apt-get install --yes r-base r-base-dev
-
-# install R packages and RHESSysIOinR
-RUN Rscript -e "install.packages(c('caret','chron','data.table','devtools','DT','forcats','formattable','gh','ggpubr','here','httr','hydroGOF','kableExtra','lhs','lubridate','party','partykit','patchwork','psych','randomForest','randomForestExplainer','randtoolbox','readxl','rfUtilities','rlang','roxygen2','rmarkdown','sensitivity','spatialRF','stringr','tibble','tidyverse','xml2','yaml','zeallot'), dependencies=TRUE)"
-RUN Rscript -e "library('devtools')" -e "install_github('RHESSys/RHESSysIOinR', ref='develop', build_vignettes=FALSE, dependencies=TRUE)"
+RUN make clean && make wmfire='T'
+# CC=clang-20 CMD_OPTS='-fuse-ld=lld-20'
 
 # Special thanks to Ojas for finding Viruzzo and other excellent people over at the RPS Discord server who donated their time, patience and expertise to help us get this dockerfile fixed and cleaned up, in accordance with good IT practices.

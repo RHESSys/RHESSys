@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # make sure that it is non-interactive
 ARG DEBIAN_FRONTEND=noninteractive
@@ -12,48 +12,23 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 	apt-get install --yes \
 		bison \
 		build-essential \
-		clang \
-		cmake \
-		dirmngr \
+		clang-20 \
 		flex \
-		git \
-		libbsd-dev \
-		libfreetype6-dev \
-		libfribidi-dev \
-		libfontconfig1-dev \
-		libgdal-dev \
-		libglib2.0 \
-		libglib2.0-dev \
-		libharfbuzz-dev \
-		libjpeg-dev \
+		lld-20 \
 		libnetcdf-dev \
-		libomp-dev \
-		libpq-dev \
-		libpng-dev \
-		libssl-dev \
-		libtiff5-dev \
-		libudunits2-dev \
-		libxml2-dev \
+		libomp-20-dev \
 		pkg-config \
 		python3 \
-		software-properties-common \
-		vim \
 		wget
-		
-# install r-base and r-base-dev
-RUN DEBIAN_FRONTEND="noninteractive" wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
-	add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" && \
-	apt-get update && apt-get install --yes r-base r-base-dev
+
+# RUN ln -sf /usr/lib/llvm-20/bin/ld.lld /usr/local/bin/ld.lld
 
 # set the working directory
 # copy the build environment to the working dir
 # make rhessys and install it (install path set in makefile)
 WORKDIR /RHESSys
 COPY ./rhessys .
-RUN make clean && make all
-
-# install R packages
-RUN Rscript -e "install.packages(c('caret','chron','data.table','devtools','DT','forcats','formattable','gh','ggpubr','here','httr','hydroGOF','kableExtra','lhs','lubridate','party','partykit','patchwork','psych','randomForest','randomForestExplainer','randtoolbox','raster','readxl','rfUtilities','rgdal','rlang','roxygen2','rmarkdown','sensitivity','sf','spatialRF','stringr','terra','tibble','tidyverse','tools','xml2','yaml','zeallot','zoo'), dependencies=TRUE)"
-RUN Rscript -e "library('devtools')" -e "install_github('RHESSys/RHESSysIOinR', ref='develop', build_vignettes=FALSE, dependencies=TRUE)"
+RUN make clean && make all openmp='T' 
+#CC=clang-20 CMD_OPTS='-fuse-ld=lld'
 
 # Special thanks to Ojas for finding Viruzzo and other excellent people over at the RPS Discord server who donated their time, patience and expertise to help us get this dockerfile fixed and cleaned up, in accordance with good IT practices.
