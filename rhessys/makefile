@@ -44,8 +44,8 @@ CMD_OPTS +=
 # -march=native -mtune=native -flto
 # march and mtune not a good choice for hpc
 
-CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g3 -O0  -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g3 -O0 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g1 -O2  -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g1 -O2 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
 
 # Opt-in native CPU tuning for local performance tests.
 # Keep off by default so container binaries are portable across machines.
