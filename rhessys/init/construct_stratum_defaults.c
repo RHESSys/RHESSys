@@ -98,6 +98,7 @@ struct stratum_default *construct_stratum_defaults(
 		if (default_object_list[i].epc.veg_type == SHRUB) default_object_list[i].epc.veg_type = TREE;
 	
 		default_object_list[i].epc.fire_veg_type = 	parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.fire.veg.type", "%s", "TREE", 1)); // param name is "epc.veg.type" in param file
+		default_object_list[i].epc.shrub_firespread_flag = 	getIntParam(&paramCnt, &paramPtr, "epc.shrub_firespread", "%d", 0, 1); // true/false should shrubs be trated fully like litter for firespread - eg no height prop penalty
 		default_object_list[i].K_absorptance = 		getDoubleParam(&paramCnt, &paramPtr, "K_absorptance", "%lf", 0.8, 1); // parameter misspelled in file as "K_apsorbtance"
 		default_object_list[i].K_reflectance = 		getDoubleParam(&paramCnt, &paramPtr, "K_reflectance", "%lf", 0.1, 1);
 		default_object_list[i].K_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "K_transmittance", "%lf", 0.1, 1); 

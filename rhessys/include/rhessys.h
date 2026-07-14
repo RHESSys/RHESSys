@@ -2380,6 +2380,7 @@ struct  command_line_object
         int             noredist_flag;
         int             vmort_flag;
         int             version_flag;
+        int             report_run_info_flag;
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
         int             multiscale_flag;
@@ -2984,6 +2985,7 @@ struct epconst_struct
         int allocation_flag;    /* (DIM) set as 1 for dynamic allocation */
         int veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
         int fire_veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
+        int shrub_firespread_flag; /* (DIM) 1/0 true/false should shrubs be treated fully like litter for firespread - eg no height prop penalty */
         int phenology_type;     /* (DIM) set as 1 for decid; 0 for evergreen    */
         int nfix;               /* (DIM) set a 1 for n-fixers; 0 for not nfixers */
         int psi_curve;          /* (DIM) set to 0 for biome-bgc psi-conductance curve, other values give type of model 1=linear, 2=squared etc */
