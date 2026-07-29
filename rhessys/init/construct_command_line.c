@@ -104,6 +104,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].veg_sen3 = 1.0;
 	command_line[0].vmort_flag = 1;
 	command_line[0].version_flag = 0;
+	command_line[0].report_run_info_flag = 0;
 	command_line[0].vsen[M] = 1.0;
 	command_line[0].vsen[K] = 1.0;
 	command_line[0].sen[M] = 1.0;
@@ -158,7 +159,8 @@ struct	command_line_object	*construct_command_line(
 		/*------------------------------------------*/
 		/* Check for the print version flag         */
 		/*------------------------------------------*/
-		if ( strcmp(main_argv[i], "-version") == 0) {
+		if ((strcmp(main_argv[i], "-version") == 0)
+			|| (strcmp(main_argv[i], "--version") == 0)) {
 			command_line[0].version_flag = 1;
 			++i;
 		}
@@ -198,6 +200,13 @@ struct	command_line_object	*construct_command_line(
 				printf("\n Outputting template file structure and Exiting\n");
 				output_template_structure();
 				exit(EXIT_FAILURE);
+			}
+			/*------------------------------------------*/
+			/* Optional post-construction run summary   */
+			/*------------------------------------------*/
+			else if (strcmp(main_argv[i], "--report-run-info") == 0) {
+				command_line[0].report_run_info_flag = 1;
+				i++;
 			}
 			/*------------------------------------------*/
 			/*Check if the no redistribution flag is next.           */
