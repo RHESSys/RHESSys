@@ -784,13 +784,13 @@ printf("about to enter construct wui\n");
 		/*	Construct the base_stations.				*/
 		/*--------------------------------------------------------------*/
 		if ( command_line[0].gridded_ascii_flag == 1) {
-			printf("\nConstructing base stations from ASCII GRID");
+			printf("\nConstructing base stations from ASCII GRID\n");
 			world[0].base_stations = construct_ascii_grid( world[0].base_station_files[0],
 												world[0].start_date, 
 												world[0].duration);
 		}
 		else if(command_line[0].gridded_netcdf_flag == 1){
-			printf("\nConstructing base stations from NETCDF GRID");
+			printf("\nConstructing base stations from NETCDF GRID\n");
             #ifdef LIU_NETCDF_READER
             world[0].num_base_stations = get_netcdf_station_number(world[0].base_station_files[0]);
             #endif
@@ -835,7 +835,7 @@ printf("about to enter construct wui\n");
 
 		}
 		else {
-			printf("\nConstructing base stations");
+			printf("\nConstructing base stations\n");
 			world[0].base_stations = (struct base_station_object **)
 			alloc(world[0].num_base_stations *
 				  sizeof(struct base_station_object *),"base_stations","construct_world" );
