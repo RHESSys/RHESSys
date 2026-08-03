@@ -158,6 +158,12 @@ struct base_station_object *construct_netcdf_grid(
     base_station[0].daily_clim[0].tmax = (double *)alloc(duration->day * sizeof(double), "tmax", "construct_netcdf_grid");
     base_station[0].daily_clim[0].tmin = (double *)alloc(duration->day * sizeof(double), "tmin", "construct_netcdf_grid");
     base_station[0].daily_clim[0].rain = (double *)alloc(duration->day * sizeof(double), "rain", "construct_netcdf_grid");
+    base_station[0].daily_clim[0].pspread = NULL;
+    if (base_station_ncheader[0].netcdf_pspread_filename[0] != '\0' &&
+        base_station_ncheader[0].netcdf_pspread_varname[0] != '\0')
+    {
+        base_station[0].daily_clim[0].pspread = (double *)alloc(duration->day * sizeof(double), "pspread", "construct_netcdf_grid");
+    }
 #ifdef LIU_EXTEND_CLIM_VAR
     base_station[0].daily_clim[0].relative_humidity_max = (double *)alloc(duration->day * sizeof(double), "relative_humidity_max", "construct_netcdf_grid");
     base_station[0].daily_clim[0].relative_humidity_min = (double *)alloc(duration->day * sizeof(double), "relative_humidity_min", "construct_netcdf_grid");
@@ -271,6 +277,7 @@ struct base_station_object *construct_netcdf_grid(
         CLM_TMAX,
         CLM_TMIN,
         CLM_RAIN,
+        CLM_PSPREAD,
 #ifdef LIU_EXTEND_CLIM_VAR
         CLM_HUSS,
         CLM_RMAX,
@@ -297,6 +304,10 @@ struct base_station_object *construct_netcdf_grid(
         case CLM_RAIN:
             filename = base_station_ncheader[0].netcdf_rain_filename;
             var_name = base_station_ncheader[0].netcdf_rain_varname;
+            break;
+        case CLM_PSPREAD:
+            filename = base_station_ncheader[0].netcdf_pspread_filename;
+            var_name = base_station_ncheader[0].netcdf_pspread_varname;
             break;
 #ifdef LIU_EXTEND_CLIM_VAR
         case CLM_HUSS:
@@ -325,6 +336,13 @@ struct base_station_object *construct_netcdf_grid(
             var_name = NULL;
             break;
         } // switch
+
+        if (var == CLM_PSPREAD &&
+            (base_station_ncheader[0].netcdf_pspread_filename[0] == '\0' ||
+             base_station_ncheader[0].netcdf_pspread_varname[0] == '\0'))
+        {
+            continue;
+        }
 
         // check for NULL filename or var_name, exit if either of them are NULL
         if (!filename || !var_name)
@@ -363,6 +381,10 @@ struct base_station_object *construct_netcdf_grid(
             {
                 base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult;
                 //fprintf(stdout, "itr %d | raw precip: %f \n", j, tempdata[j]);
+            }
+            else if (var == CLM_PSPREAD)
+            {
+                base_station[0].daily_clim[0].pspread[j] = (double)tempdata[j];
             }
 #ifdef LIU_EXTEND_CLIM_VAR
             else if (var == CLM_HUSS)

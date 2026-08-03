@@ -690,6 +690,8 @@ typedef struct base_station_ncheader_object
         char    netcdf_tmin_varname[MAXSTR];    /* variable name for tmin in nc file */
         char    netcdf_rain_varname[MAXSTR];    /* variable name for rain in nc file */
         char    netcdf_elev_varname[MAXSTR];    /* variable name for elev in nc file */
+        char    netcdf_pspread_filename[MAXSTR]; /* filename for pspread nc file */
+        char    netcdf_pspread_varname[MAXSTR];  /* variable name for pspread in nc file */
 #ifdef LIU_EXTEND_CLIM_VAR
         double  rhum_mult;                    /* multiplier for relative humidity to 0-1 */
         char    netcdf_huss_filename[MAXSTR];   /* filename for specific humidity nc file */
@@ -810,6 +812,7 @@ struct  daily_clim_object
         double  *vpd;                           /*      Pa              */
         double  *wind;                          /*      m/s             */
         double  *wind_direction;                /*      degrees         */
+        double  *pspread;                      /*      0 - 1           */
 #ifdef LIU_EXTEND_CLIM_VAR
         double  *relative_humidity_max;         /*      0 - 1                 */
         double  *relative_humidity_min;         /*      0 - 1                 */

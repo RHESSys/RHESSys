@@ -53,6 +53,7 @@ CMD_OPTS +=
 # -Wpedantic
 
 # For speed:
+# -g1 -O2
 # -O2/O3  -g1
 # -march=native -mtune=native -flto
 # march and mtune not a good choice for hpc

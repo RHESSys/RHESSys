@@ -491,7 +491,7 @@ int allocate_annual_growth(				int id,
 	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) <= epc.min_leaf_carbon) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
-		printf("\n Resprouting stratum %d", id);
+		printf("Resprouting stratum %d\n", id);
 
 		/*cs->stem_density = epc.resprout_stem_density;*/
 		cs->mortality_fract = 1.0;

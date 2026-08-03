@@ -145,6 +145,10 @@ struct base_station_ncheader_object *construct_netcdf_header (
             strcpy(base_station_ncheader[0].netcdf_rain_filename,first);
         } else if(strcmp(second,"netcdf_var_rain") == 0){
             strcpy(base_station_ncheader[0].netcdf_rain_varname,first);
+        } else if(strcmp(second,"netcdf_pspread_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_pspread_filename,first);
+        } else if(strcmp(second,"netcdf_var_pspread") == 0){
+            strcpy(base_station_ncheader[0].netcdf_pspread_varname,first);
         } else if(strcmp(second,"netcdf_elev_filename") == 0){
             strcpy(base_station_ncheader[0].netcdf_elev_filename,first);
         } else if(strcmp(second,"netcdf_var_elev") == 0){

@@ -61,6 +61,7 @@ void destroy_base_station( struct command_line_object *command_line,
 	if(base_station[0].daily_clim[0].tsoil!=NULL) free( base_station[0].daily_clim[0].tsoil);
 	if(base_station[0].daily_clim[0].vpd!=NULL) free( base_station[0].daily_clim[0].vpd);
 	if(base_station[0].daily_clim[0].wind!=NULL) free( base_station[0].daily_clim[0].wind);
+	if(base_station[0].daily_clim[0].pspread!=NULL) free( base_station[0].daily_clim[0].pspread);
 	if(base_station[0].daily_clim[0].wind_direction!=NULL) free( base_station[0].daily_clim[0].wind_direction);
 	if(base_station[0].daily_clim[0].ndep_NO3!=NULL) free( base_station[0].daily_clim[0].ndep_NO3);
 	if(base_station[0].daily_clim[0].ndep_NH4!=NULL) free( base_station[0].daily_clim[0].ndep_NH4);
