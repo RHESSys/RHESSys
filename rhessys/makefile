@@ -2,7 +2,7 @@ OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 VERSION = 7.5
 PGM  = rhessys$(VERSION)
 #CC = gcc
-CC = clang
+CC = clang-20
 #CXX = g++
 INCLUDES = -Iinclude
 
@@ -22,20 +22,7 @@ nativeopt ?= F
 extend_clim ?= F
 ofdebug ?= F
 
-RHESSYS_BUILD_WMFIRE = 0
-RHESSYS_BUILD_OPENMP = 0
-
-ifneq ($(call bool_true,$(wmfire)),)
-	RHESSYS_BUILD_WMFIRE = 1
-endif
-
-ifneq ($(call bool_true,$(openmp)),)
-	RHESSYS_BUILD_OPENMP = 1
-endif
-
 DEFINES = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID
-DEFINES += -DRHESSYS_BUILD_WMFIRE=$(RHESSYS_BUILD_WMFIRE) -DRHESSYS_BUILD_OPENMP=$(RHESSYS_BUILD_OPENMP)
-DEFINES += -DRHESSYS_VERSION_STRING=\"$(VERSION)\"
 
 ifneq ($(call bool_true,$(extend_clim)),)
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
@@ -100,7 +87,6 @@ endif
 LOCAL_LIBS = -L../lib
 LINK_NETCDF = `pkg-config --libs netcdf`
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
-LDLIBS_DLOPEN = -ldl
 TEST_FIRE_LIB_PATH = test/$(WMFIRE_SO)
 ifneq ($(call bool_true,$(wmfire)),)
 LDLIBS_FIRE = -lwmfire
@@ -474,7 +460,7 @@ dir:
 ifneq ($(call bool_true,$(netcdf)),)
 ifneq ($(call bool_true,$(wmfire)),)
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) $(LOCAL_LIBS) $(LDLIBS_DLOPEN) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) $(LOCAL_LIBS) $(LDLIBS_FIRE) -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -v -o $(PGM)
@@ -482,7 +468,7 @@ endif
 else
 ifneq ($(call bool_true,$(wmfire)),)
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) $(LDLIBS_FIRE) -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) -v -o $(PGM)
@@ -496,8 +482,8 @@ OBJECTS_NO_MAIN := $(patsubst $(OBJ)/main.o,,$(OBJECTS))
 
 ifneq ($(call bool_true,$(wmfire)),)
 test: dir $(TESTS)
-    # Copy FIRE_LIB to test directory if it exists so that tests can run without failing on a missing library.
-	if [ -f "$(FIRE_LIB_PATH)" ]; then cp $(FIRE_LIB_PATH) $(TEST_FIRE_LIB_PATH); fi
+    # Copy FIRE_LIB to test directory so that tests will run.
+	cp $(FIRE_LIB_PATH) $(TEST_FIRE_LIB_PATH)
 	# Run each unit test
 	$(patsubst test/%,cd test; ./%; cd -;,$(TESTS_TO_RUN))
 else
@@ -515,7 +501,7 @@ else
 endif
 else ifeq ($(OS), Linux)
 ifneq ($(call bool_true,$(wmfire)),)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
 endif
@@ -530,7 +516,7 @@ endif
 
 ifneq ($(call bool_true,$(wmfire)),)
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
-	$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) -c -o $@ $<
+	$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) -c -o $@ $<
 else
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
 	$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) -c -o $@ $<

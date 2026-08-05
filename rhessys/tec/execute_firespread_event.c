@@ -24,82 +24,7 @@
 /*--------------------------------------------------------------*/
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <dlfcn.h>
 #include "rhessys.h"
-
-static struct fire_object **run_wmfire(
-	double cell_res,
-	int nrow,
-	int ncol,
-	long year,
-	long month,
-	struct fire_object **fire_grid,
-	struct fire_default def)
-{
-	typedef struct fire_object **(*wmfire_entrypoint_t)(
-		double,
-		int,
-		int,
-		long,
-		long,
-		struct fire_object **,
-		struct fire_default);
-
-	static wmfire_entrypoint_t wmfire_entrypoint = NULL;
-	static int wmfire_lookup_attempted = 0;
-
-#if defined(RHESSYS_BUILD_WMFIRE) && RHESSYS_BUILD_WMFIRE
-	if (!wmfire_lookup_attempted) {
-		const char *candidate_names[] = {
-			"libwmfire.so",
-			"libwmfire.dylib",
-			"../lib/libwmfire.so",
-			"../lib/libwmfire.dylib",
-			"./libwmfire.so",
-			"./libwmfire.dylib",
-			NULL
-		};
-		void *wmfire_handle = NULL;
-		int i;
-
-		wmfire_lookup_attempted = 1;
-		for (i = 0; candidate_names[i] != NULL; ++i) {
-			wmfire_handle = dlopen(candidate_names[i], RTLD_NOW | RTLD_LOCAL);
-			if (wmfire_handle != NULL) {
-				break;
-			}
-		}
-
-		if (wmfire_handle == NULL) {
-			fprintf(stderr,
-				"FATAL ERROR: WMFire support was requested, but the WMFire shared library could not be loaded. Tried: ");
-			for (i = 0; candidate_names[i] != NULL; ++i) {
-				fprintf(stderr, "%s%s", candidate_names[i], (candidate_names[i + 1] != NULL) ? ", " : "");
-			}
-			fprintf(stderr, "\n");
-			exit(EXIT_FAILURE);
-		}
-
-		dlerror();
-		wmfire_entrypoint = (wmfire_entrypoint_t)dlsym(wmfire_handle, "WMFire");
-		if (wmfire_entrypoint == NULL) {
-			const char *error = dlerror();
-			fprintf(stderr,
-				"FATAL ERROR: WMFire was found but the WMFire entrypoint could not be resolved: %s\n",
-				error ? error : "unknown error");
-			dlclose(wmfire_handle);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	return wmfire_entrypoint(cell_res, nrow, ncol, year, month, fire_grid, def);
-#else
-	fprintf(stderr,
-		"FATAL ERROR: WMFire support was requested, but this build was not compiled with WMFire enabled.\n");
-	exit(EXIT_FAILURE);
-#endif
-}
 
 void execute_firespread_event(
 	struct world_object *world,
@@ -122,7 +47,7 @@ void execute_firespread_event(
 		double,
 		struct command_line_object *);
 
-	struct fire_object **run_wmfire(
+	struct fire_object **WMFire(
 		double cell_res,
 		int nrow,
 		int ncol,
@@ -443,7 +368,7 @@ void execute_firespread_event(
 	}
 	/* printf("Calling WMFire on: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col); */
 	// needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
-	world[0].fire_grid = run_wmfire(command_line[0].fire_grid_res, world[0].num_fire_grid_row, world[0].num_fire_grid_col, current_date.year, current_date.month, world[0].fire_grid, *(world[0].defaults[0].fire));
+	world[0].fire_grid = WMFire(command_line[0].fire_grid_res, world[0].num_fire_grid_row, world[0].num_fire_grid_col, current_date.year, current_date.month, world[0].fire_grid, *(world[0].defaults[0].fire));
 	if (command_line[0].verbose_flag <= -7)
 	{
 		printf("----- Finished WMFire -----\n");

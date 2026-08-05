@@ -57,8 +57,6 @@
         -str    Streamflow routing option. Gives name of stream_table to define explicit streamflow routing connectivit.     
         -stro   Streamflow routing output option. Print out streamflow for specified stream reaches.
 		-version Prints the RHESSys version number, then exits immediately
-		--version Prints the RHESSys version and build features, then exits immediately
-		--report-run-info Prints a post-construction run summary before simulation starts
 
 	DESCRIPTION
 
@@ -297,95 +295,9 @@
 #include "output_filter/construct_output_filter.h"
 #include "output_filter/destroy_output_filter.h"
 
-#ifndef RHESSYS_VERSION_STRING
-#define RHESSYS_VERSION_STRING "unknown"
-#endif
-
-const char RHESSYS_VERSION[] = RHESSYS_VERSION_STRING;
-
-#ifndef RHESSYS_BUILD_WMFIRE
-#define RHESSYS_BUILD_WMFIRE 0
-#endif
-
-#ifndef RHESSYS_BUILD_OPENMP
-#define RHESSYS_BUILD_OPENMP 0
-#endif
-
-static const char *feature_enabled(int flag)
-{
-	return flag ? "enabled" : "disabled";
-}
-
-static void print_build_configuration(FILE *stream)
-{
-	fprintf(stream,
-		"RHESSys build: version=%s, wmfire=%s, openmp=%s\n",
-		RHESSYS_VERSION,
-		feature_enabled(RHESSYS_BUILD_WMFIRE),
-		feature_enabled(RHESSYS_BUILD_OPENMP));
-}
-
-static void print_post_construct_summary(FILE *stream, struct world_object *world)
-{
-	int basin_i;
-	long total_hillslopes = 0;
-	long total_zones = 0;
-	long total_patches = 0;
-
-	for (basin_i = 0; basin_i < world[0].num_basin_files; basin_i++) {
-		struct basin_object *basin;
-		int hill_i;
-
-		if (world[0].basins[basin_i] == NULL) {
-			continue;
-		}
-
-		basin = world[0].basins[basin_i];
-		total_hillslopes += basin[0].num_hillslopes;
-
-		for (hill_i = 0; hill_i < basin[0].num_hillslopes; hill_i++) {
-			struct hillslope_object *hillslope;
-			int zone_i;
-
-			if (basin[0].hillslopes[hill_i] == NULL) {
-				continue;
-			}
-
-			hillslope = basin[0].hillslopes[hill_i];
-			total_zones += hillslope[0].num_zones;
-
-			for (zone_i = 0; zone_i < hillslope[0].num_zones; zone_i++) {
-				struct zone_object *zone;
-
-				if (hillslope[0].zones[zone_i] == NULL) {
-					continue;
-				}
-
-				zone = hillslope[0].zones[zone_i];
-				total_patches += zone[0].num_patches;
-			}
-		}
-	}
-
-	fprintf(stream,
-		"Run summary: start=%d-%02d-%02d %02d:00, end=%d-%02d-%02d %02d:00, duration=(%d y, %d m, %d d, %d h), basins=%d, hillslopes=%ld, zones=%ld, patches=%ld\n",
-		world[0].start_date.year,
-		world[0].start_date.month,
-		world[0].start_date.day,
-		world[0].start_date.hour,
-		world[0].end_date.year,
-		world[0].end_date.month,
-		world[0].end_date.day,
-		world[0].end_date.hour,
-		world[0].duration.year,
-		world[0].duration.month,
-		world[0].duration.day,
-		world[0].duration.hour,
-		world[0].num_basin_files,
-		total_hillslopes,
-		total_zones,
-		total_patches);
-}
+// The $$RHESSYS_VERSION$$ string will be replaced by the make
+// script to reflect the current RHESSys version.
+const char RHESSYS_VERSION[] = "5.14.3";
 
 /*--------------------------------------------------------------*/
 /*	Main line of code.											*/
@@ -473,11 +385,8 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
 	if (command_line[0].version_flag > 0 ) {
 		printf("RHESSys Version: %s\n", RHESSYS_VERSION);
-		print_build_configuration(stdout);
 		return(EXIT_SUCCESS);
 	}
-
-	print_build_configuration(stderr);
 
 
 	if (command_line[0].verbose_flag > 0 )
@@ -489,10 +398,6 @@ int	main( int main_argc, char **main_argv)
 	world = construct_world( command_line );
 	if (command_line[0].verbose_flag > 0  )
 		fprintf(stderr,"FINISHED CON WORLD ***\n");
-
-	if (command_line[0].report_run_info_flag > 0) {
-		print_post_construct_summary(stderr, world);
-	}
 	/*--------------------------------------------------------------*/
 	/*	Construct the output file objects.							*/
 	/*--------------------------------------------------------------*/
