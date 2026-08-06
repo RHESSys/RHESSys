@@ -2,7 +2,7 @@ OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 VERSION = 7.5
 PGM  = rhessys$(VERSION)
 #CC = gcc
-CC = clang-20
+CC = clang
 #CXX = g++
 INCLUDES = -Iinclude
 
@@ -93,6 +93,35 @@ LDLIBS_FIRE = -lwmfire
 FIRE_LIB_PATH = ../lib/$(WMFIRE_SO)
 else
 LDLIBS_FIRE = ''
+endif
+
+# Runtime library search paths (rpath), baked directly into the binary at
+# link time. This makes the *runtime* search for libwmfire match the
+# *build-time* -L../lib search, regardless of where the binary is later
+# run from, and regardless of LD_LIBRARY_PATH / DYLD_LIBRARY_PATH being set
+# in the caller's environment (DYLD_LIBRARY_PATH in particular is
+# unreliable on macOS due to SIP and hardened-runtime restrictions).
+#
+# $ORIGIN (Linux) / @executable_path (macOS) are expanded by the OS loader
+# at run time to the directory containing the executable itself -- not the
+# caller's current working directory. Multiple -rpath entries are tried by
+# the loader in the order given, so each list below doubles as a fallback
+# search chain.
+#
+# RPATH_MAIN targets the main rhessys binary, which is built in the same
+# directory make is invoked from, matching the ../lib relative layout used
+# by LOCAL_LIBS above.
+#
+# RPATH_TESTS targets the unit test binaries, which the `test` rule copies
+# into test/ alongside a copy of libwmfire itself (see FIRE_LIB_PATH /
+# TEST_FIRE_LIB_PATH below) -- so for those, "same directory as the binary"
+# is the primary location, with ../lib kept as a fallback.
+ifeq ($(OS), Darwin)
+	RPATH_MAIN  = -Wl,-rpath,'@executable_path/../lib' -Wl,-rpath,'@executable_path'
+	RPATH_TESTS = -Wl,-rpath,'@executable_path' -Wl,-rpath,'@executable_path/../lib'
+else
+	RPATH_MAIN  = -Wl,-rpath,'$$ORIGIN/../lib' -Wl,-rpath,'$$ORIGIN'
+	RPATH_TESTS = -Wl,-rpath,'$$ORIGIN' -Wl,-rpath,'$$ORIGIN/../lib'
 endif
 
 SRCS := $(shell find clim cn cycle hydro init rad tec util output_filter -name '*.c')
@@ -460,7 +489,7 @@ dir:
 ifneq ($(call bool_true,$(netcdf)),)
 ifneq ($(call bool_true,$(wmfire)),)
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) $(LOCAL_LIBS) $(LDLIBS_FIRE) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(RPATH_MAIN) -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -v -o $(PGM)
@@ -468,7 +497,7 @@ endif
 else
 ifneq ($(call bool_true,$(wmfire)),)
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) $(LDLIBS_FIRE) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) $(LDLIBS_FIRE) $(RPATH_MAIN) -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) -v -o $(PGM)
@@ -495,19 +524,19 @@ endif
 $(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
 ifneq ($(call bool_true,$(wmfire)),)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) $(RPATH_TESTS) -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 endif
 else ifeq ($(OS), Linux)
 ifneq ($(call bool_true,$(wmfire)),)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) $(RPATH_TESTS) -lbsd -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
 endif
 else
 ifneq ($(call bool_true,$(wmfire)),)
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) $(RPATH_TESTS) -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 endif
