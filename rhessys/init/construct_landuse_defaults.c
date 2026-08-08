@@ -81,7 +81,7 @@ struct landuse_default *construct_landuse_defaults(
 		/*--------------------------------------------------------------*/
 		/*		Try to open the ith default file.		*/
 		/*--------------------------------------------------------------*/
-		printf("Reading %s\n", default_files[i]);
+		printf("Reading Landuse file %s %d of %d \n", default_files[i],i, num_default_files);
                 paramCnt = 0;
                 if (paramPtr != NULL)
                     free(paramPtr);
@@ -95,7 +95,7 @@ struct landuse_default *construct_landuse_defaults(
 		default_object_list[i].ID = 			getIntParam(&paramCnt, &paramPtr, "landuse_default_ID", "%d", 1, 0);
 		default_object_list[i].high_fire_severity_p= 	getDoubleParam(&paramCnt, &paramPtr, "high_fire_severity_p", "%lf", 0.5, 1);
 		default_object_list[i].mid_fire_severity_p= 	getDoubleParam(&paramCnt, &paramPtr, "mid_fire_severity_p", "%lf", 0.1, 1);
-		default_object_list[i].salience_fire_level = 	getIntParam(&paramCnt, &paramPtr, "salience_fire_level", "%lf", 2, 1);
+		default_object_list[i].salience_fire_level = 	getIntParam(&paramCnt, &paramPtr, "salience_fire_level", "%d", 2, 1); 
 		default_object_list[i].irrigation = 		getDoubleParam(&paramCnt, &paramPtr, "irrigation", "%lf", 0.0, 1) / 365;
 		default_object_list[i].fertilizer_NO3 = 	getDoubleParam(&paramCnt, &paramPtr, "fertilizer_NO3", "%lf", 0.0, 1) / 365;
 		default_object_list[i].fertilizer_NH4 = 	getDoubleParam(&paramCnt, &paramPtr, "fertilizer_NH4", "%lf", 0.0, 1) / 365;
@@ -120,7 +120,7 @@ struct landuse_default *construct_landuse_defaults(
 		/* 4 - understory + litter 		*/
 		/* 5  - everything (litter, understory, overstory ) 	*/
 		/*--------------------------------------------------------------*/
-        	default_object_list[i].fuel_treatment_type = 		getIntParam(&paramCnt, &paramPtr, "fuel_treatment_type", "%ld", 1, 1);
+        	default_object_list[i].fuel_treatment_type = 		getIntParam(&paramCnt, &paramPtr, "fuel_treatment_type", "%d", 1, 1);
 
 		/*--------------------------------------------------------------*/
 		/* salience model probabilities */

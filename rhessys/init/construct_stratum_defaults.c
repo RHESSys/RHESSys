@@ -78,6 +78,8 @@ struct stratum_default *construct_stratum_defaults(
 	/*	Loop through the default files list.			*/
 	/*--------------------------------------------------------------*/
 	for (i=0 ; i<num_default_files; i++) {
+
+	printf("\n Start reading stratum");
 		epc = &(default_object_list[i].epc);
 
 		/*--------------------------------------------------------------*/

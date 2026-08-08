@@ -87,7 +87,7 @@ struct spinup_default *construct_spinup_defaults(
                 default_object_list[i].max_years = getDoubleParam(&paramCnt, &paramPtr, "max_years", "%lf", 500, 1);
 
                 /* add one paramter to control the target type, type = 1 is use stratum LAI and type = 2 use patch LAI, type =3 use zone LAI*/
-                default_object_list[i].target_type = getIntParam(&paramCnt, &paramPtr, "target_type", "%ld", 1, 1);
+                default_object_list[i].target_type = getIntParam(&paramCnt, &paramPtr, "target_type", "%d", 1, 1);
 
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */
