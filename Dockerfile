@@ -54,6 +54,8 @@ RUN make clean && make all
 
 # install R packages
 RUN Rscript -e "install.packages(c('caret','chron','data.table','devtools','DT','forcats','formattable','gh','ggpubr','here','httr','hydroGOF','kableExtra','lhs','lubridate','party','partykit','patchwork','psych','randomForest','randomForestExplainer','randtoolbox','raster','readxl','rfUtilities','rgdal','rlang','roxygen2','rmarkdown','sensitivity','sf','spatialRF','stringr','terra','tibble','tidyverse','tools','xml2','yaml','zeallot','zoo'), dependencies=TRUE)"
-RUN Rscript -e "library('devtools')" -e "install_github('RHESSys/RHESSysIOinR', ref='develop', build_vignettes=FALSE, dependencies=TRUE)"
+RUN Rscript -e "install.packages('pak', repos='https://cloud.r-project.org')"
+RUN Rscript -e "pak::pak('RHESSys/RHESSysIOinR@develop')"
+
 
 # Special thanks to Ojas for finding Viruzzo and other excellent people over at the RPS Discord server who donated their time, patience and expertise to help us get this dockerfile fixed and cleaned up, in accordance with good IT practices.
