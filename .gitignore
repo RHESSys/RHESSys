@@ -64,4 +64,6 @@ rhessys/test/example
 
 # test case output
 Testing/out/test_*
+
 *.sif
+.clang-format

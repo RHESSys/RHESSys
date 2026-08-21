@@ -80,6 +80,8 @@ void compute_family_fire_effects(
 	double agg_intr_height, agg_intr_carbon, intr_pct_area;
 	double intr_height_u_prop, intr_c_consumed, under_c_consumed;
 	double combust_remain_pct;
+	double canopy_c_consumed = 0.0;
+	double canopy_n_consumed = 0.0;
 
 	if (command_line[0].ash_deposition_flag == 1){
 		// Assume combustion completeness is 85% for now, can parameterize later
@@ -90,6 +92,7 @@ void compute_family_fire_effects(
 	/*	Compute litter and soil removed.							*/
 	/*--------------------------------------------------------------*/
 	if (pspread > 0) {
+
 
 	/* Litter consumption is approximated based CONSUME model outputs */
 	/* Consumption 1hr-fuel = 1 * 1hr-fuel */
@@ -119,6 +122,9 @@ void compute_family_fire_effects(
 
 	for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
 	{
+		// Track nburn days
+		patch_family[0].patches[p][0].nburn += 1;
+
 		litter_c_consumed += (patch_family[0].patches[p][0].litter_cs.litr1c * fire_loss.loss_litr1c +
 							  patch_family[0].patches[p][0].litter_cs.litr2c * fire_loss.loss_litr2c +
 							  patch_family[0].patches[p][0].litter_cs.litr3c * fire_loss.loss_litr3c +
@@ -297,6 +303,8 @@ void compute_family_fire_effects(
 			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
 			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_consumed += canopy_target[0].fe.m_cwdc_to_atmos;
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_mortality += canopy_target[0].fe.m_cwdc_to_atmos;
 
 			if (command_line[0].ash_deposition_flag == 1){
 				// cwdn is negative sometimes?? add max of 0 to prevent adding negative ash
@@ -488,20 +496,41 @@ void compute_family_fire_effects(
 				}
 			}
 
+			/*--------------------------------------------------------------*/
+			/* Compute effects												*/
+			/*--------------------------------------------------------------*/
+			/* Determine the proportion of total target canopy carbon that is consumed by fire */
+			canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_prop_mort_consumed;
+
 			/*----------------------------------------------------------------------------------------*/
-            /* Add C consumed to ash deposition storage         */
+            /* Add C consumed to ash deposition storage and fire severity vars         */
             /*----------------------------------------------------------------------------------------*/
-			if (command_line[0].ash_deposition_flag == 1){
-				// patch[0].ash_C_pool += canopy_target[0].fe.understory_c_consumed; // this doesnt go in it actually
-				// Could try to get carbon consumed out of update mortality, but don't want to change that function, adding here for now
-				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC += fmax(0.0, ((canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].cs.dead_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed)) * 
-																									   combust_remain_pct * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DOC);
+			canopy_c_consumed = (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].cs.dead_leafc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].cs.dead_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_consumed);
+
+			canopy_n_consumed = (canopy_target[0].ns.leafn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].ns.dead_leafn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].ns.frootn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].ns.live_stemn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].ns.dead_stemn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].ns.npool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].ns.live_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
+								(canopy_target[0].ns.dead_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed);
+
+			// Add to patch fire consumption output
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_consumed += canopy_c_consumed;
+			// patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_n_consumed += canopy_n_consumed;
+
+            if (command_line[0].ash_deposition_flag == 1){
+				// Could try to get carbon consumed out of update mortality, but don't want to change that function, adding here
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC += fmax(
+					0.0, canopy_c_consumed * combust_remain_pct * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DOC);
 				// TEHCNICALLY should include the stores and transfers too 
 				// if adding, it would be store and transfer for: leafc, frootc, gresp, live_stemc, dead_stemc, live_crootc, dead_crootc
 				if (command_line[0].verbose_flag == -7) {
@@ -509,16 +538,9 @@ void compute_family_fire_effects(
 						patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , 
 						patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC);
 				}
-
 				// Repeat for nitrogen
-				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON += fmax(0.0, ((canopy_target[0].ns.leafn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].ns.frootn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].ns.live_stemn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].ns.dead_stemn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].ns.npool * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].ns.live_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed) +
-																									   (canopy_target[0].ns.dead_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed)) * 
-																									   patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DON);
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON += fmax(
+					0.0, canopy_n_consumed * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DON);
 				if (command_line[0].verbose_flag == -7) {
 					printf("Ash N pool for patch %d is now %lf\n", 
 						patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , 
@@ -526,13 +548,6 @@ void compute_family_fire_effects(
 					printf("\n");
 				}
 			}
-
-
-			/*--------------------------------------------------------------*/
-			/* Compute effects												*/
-			/*--------------------------------------------------------------*/
-			/* Determine the proportion of total target canopy carbon that is consumed by fire */
-			canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_prop_mort_consumed;
 
 			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_consumed;
 			mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_consumed;
@@ -580,6 +595,16 @@ void compute_family_fire_effects(
 			canopy_target[0].fe.canopy_target_height_u_prop = max(min((patch_family[0].overstory_height_thresh - canopy_target[0].fe.canopy_target_height)/(patch_family[0].overstory_height_thresh-patch_family[0].understory_height_thresh),1.0),0);
 			canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc = (canopy_target[0].fe.canopy_target_prop_c_remain_adjusted * (1 - canopy_target[0].fe.canopy_target_height_u_prop)) + canopy_target[0].fe.canopy_target_height_u_prop;
 
+			// Add to patch fire mortality output
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_mortality += (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc) +
+												(canopy_target[0].cs.dead_leafc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc) +
+												(canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
+												(canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
+												(canopy_target[0].cs.dead_stemc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
+												(canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
+												(canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
+												(canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted);
+
 			/* Determine the portion of mortality that remains on landscape */
 			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
 			mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
@@ -590,7 +615,8 @@ void compute_family_fire_effects(
 			mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
 			mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
 
-			thin_type =1;
+			thin_type =1; // redefine_world_thin_remain
+
 			update_mortality(
 				canopy_target[0].defaults[0][0].epc,
 				&(canopy_target[0].cs),
@@ -664,34 +690,6 @@ void compute_family_fire_effects(
 	} /* end if(pspread > 0 ) */
     else 
 	{
-//		for (layer = 0; layer < patch_family[0].num_layers; layer++)
-//		{
-//			for (c = 0; c < patch_family[0].layers[layer].count; c++)
-//			{
-				/* Calculates metrics for targer canopy */
-//				canopy_target = patch_family[0].canopy_strata[(patch_family[0].layers[layer].strata[c])];
-//				canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
-
-//				/* Calculates metrics for next lowest canopy (subtarget canopy) */
-//				if (patch_family[0].num_layers > (layer + 1))
-//				{
-//					if(c<patch_family[0].layers[layer+1].count)
-//					{
-//						canopy_subtarget = patch_family[0].canopy_strata[(patch_family[0].layers[layer + 1].strata[c])];
-//						canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
-//						canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc +
-//															 canopy_subtarget[0].cs.live_stemc +
-//															 canopy_subtarget[0].cs.dead_stemc;
-//					}
-//				}
-//				else
-//				{
-//					canopy_target[0].fe.canopy_subtarget_height = 0;
-//					canopy_target[0].fe.canopy_subtarget_c = 0;
-//				}
-//			} // end for c=0
-//		} //end for layer =0
-
 		for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
 		{
 			patch_family[0].patches[p][0].fire.severity = NO_FIRE;

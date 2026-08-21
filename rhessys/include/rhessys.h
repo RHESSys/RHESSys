@@ -395,6 +395,7 @@ struct accumulate_patch_object
    int ndays_sat;
    int ndays_sat70;
    int midsm_wyd;
+   int nburn;
    double burn;
    double et;
    double trans;
@@ -417,6 +418,8 @@ struct accumulate_patch_object
    double psn;
    double DOC_loss;
    double DON_loss;
+   double fire_c_consumed;
+   double fire_c_mortality;
    double theta;
    double rootzone_depth;
    double soilmoist;
@@ -2126,12 +2129,14 @@ struct patch_object
         double  totalc;                         /* kgC/m2 total carbon */
         double  carbon_balance;                 /* kgC/m2 */
 
-        double  preday_totaln;                  /* kgC/m2 total nitrogen */
-        double  totaln;                         /* kgC/m2 total nitrogen */
-        double  nitrogen_balance;               /* kgC/m2 */
+        double  preday_totaln;                  /* kgN/m2 total nitrogen */
+        double  totaln;                         /* kgN/m2 total nitrogen */
+        double  nitrogen_balance;               /* kgN/m2 */
         double  satzone_nitrate;                /* kgN/m2 saturated zone */
-        double  ash_DOC;       /* kgC/m2 lost in fire */
-        double  ash_DON;       /* kgN/m2 lost in fire */
+        double  ash_DOC;                        /* kgC/m2 lost in fire */
+        double  ash_DON;                        /* kgN/m2 lost in fire */
+        double  fire_c_consumed;                /* kgC/m2 consumed in fire */
+        double  fire_c_mortality;               /* kgC/m2 mortality due to fire */
         
         struct  soil_c_object   soil_cs;
         struct  soil_n_object   soil_ns;

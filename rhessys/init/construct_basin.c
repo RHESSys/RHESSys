@@ -297,6 +297,9 @@ struct basin_object *construct_basin(
   basin[0].acc_month.gw_storage = 0.0;
   basin[0].acc_month.sm_deficit = 0.0;
   basin[0].acc_month.sat_deficit = 0.0;
+  basin[0].acc_month.fire_c_consumed = 0.0;
+  basin[0].acc_month.fire_c_mortality = 0.0;
+  basin[0].acc_month.nburn = 0;
 
 
   basin[0].acc_year.gw_Qout = 0.0;
@@ -316,6 +319,9 @@ struct basin_object *construct_basin(
   basin[0].acc_year.leach = 0.0;
   basin[0].acc_year.DOC_loss = 0.0;
   basin[0].acc_year.DON_loss = 0.0;
+  basin[0].acc_year.fire_c_consumed = 0.0;
+  basin[0].acc_year.fire_c_mortality = 0.0;
+  basin[0].acc_year.nburn = 0;
   basin[0].acc_year.stream_NO3 = 0.0;
   basin[0].acc_year.stream_NH4 = 0.0;
   basin[0].acc_year.stream_DON = 0.0;

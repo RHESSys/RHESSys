@@ -238,6 +238,9 @@ struct patch_object *construct_patch(
 
 	patch[0].ash_DOC = 0.0; //
 	patch[0].ash_DON = 0.0;
+	patch[0].fire_c_consumed = 0.0;
+	patch[0].fire_c_mortality = 0.0;
+	patch[0].nburn = 0;
 
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables for this patch         */
@@ -267,6 +270,9 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.litterc = 0.0;
 	patch[0].acc_month.soiln = 0.0;
 	patch[0].acc_month.littern = 0.0;
+	patch[0].acc_month.fire_c_consumed = 0.0;
+	patch[0].acc_month.fire_c_mortality = 0.0;
+	patch[0].acc_month.nburn = 0;
 
 
 	patch[0].acc_year.burn = 0.0;
@@ -307,13 +313,17 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.litterc = 0.0;
 	patch[0].acc_year.soiln = 0.0;
 	patch[0].acc_year.littern = 0.0;
+	patch[0].acc_year.fire_c_consumed = 0.0;
+	patch[0].acc_year.fire_c_mortality = 0.0;
+	patch[0].acc_year.fire_c_mortality = 0.0;
+	patch[0].acc_year.nburn = 0;
 
 	if (command_line[0].firespread_flag == 1) {
 		patch[0].fire.et = 0.0;
 		patch[0].fire.pet = 0.0;
 		patch[0].fire.understory_et = 0;
 		patch[0].fire.understory_pet = 0;
-		patch[0].nburn=0;
+		// patch[0].nburn=0;
 		// here set fire.understory_et and fire.understory_pet = 0;
 		}
 	/*--------------------------------------------------------------*/

@@ -62,6 +62,11 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	/*--------------------------------------------------------------*/
 
 	patch[0].fire.litter_c_consumed = 0.0;
+	patch[0].fire_c_consumed = 0.0;
+	patch[0].fire_c_mortality = 0.0;
+	// not exactly a flux but zeroing it here to track the n burn correctly
+	patch[0].nburn = 0;
+
 	/*--------------------------------------------------------------*/
 	/* daily carbon fluxes */
 	/*--------------------------------------------------------------*/
