@@ -3202,6 +3202,7 @@ struct  stratum_default
 	double fe_prop_c_consumed;
 	double fe_prop_c_mortality;
 	double fe_prop_c_mortality_leaf;
+        double rootzone_depth;
         };
 
 
