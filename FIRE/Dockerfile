@@ -11,14 +11,14 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 	apt-get install --yes \
 		bison \
 		build-essential \
-		clang-20 \
+		clang \
 		flex \
-		lld-20 \
+		lld \
 		# git \
 		libbz2-dev \
 		libboost-all-dev \
 		libnetcdf-dev \
-		libomp-20-dev \
+		libomp-dev \
 		pkg-config \
 		python3 \
 		python3-dev \

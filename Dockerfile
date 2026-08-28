@@ -12,15 +12,16 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 	apt-get install --yes \
 		bison \
 		build-essential \
-		clang-20 \
+		clang \
 		flex \
-		lld-20 \
+		lld \
 		libnetcdf-dev \
-		libomp-20-dev \
+		libomp-dev \
 		pkg-config \
 		python3 \
 		wget
 
+# lld is possibly not needed		
 # RUN ln -sf /usr/lib/llvm-20/bin/ld.lld /usr/local/bin/ld.lld
 
 # set the working directory
@@ -28,7 +29,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 # make rhessys and install it (install path set in makefile)
 WORKDIR /RHESSys
 COPY ./rhessys .
-RUN make clean && make all openmp='T' 
+RUN make clean && make openmp='T' 
 #CC=clang-20 CMD_OPTS='-fuse-ld=lld'
 
 # Special thanks to Ojas for finding Viruzzo and other excellent people over at the RPS Discord server who donated their time, patience and expertise to help us get this dockerfile fixed and cleaned up, in accordance with good IT practices.

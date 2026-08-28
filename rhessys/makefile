@@ -133,7 +133,7 @@ SRCS_TESTS := $(shell find $(SRCDIR_TESTS) -name '*.c')
 TESTSDIR = $(TESTS_ROOTDIR)
 OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
 OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
-TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
+TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm /111 -maxdepth 1)
 
 
 ifneq ($(call bool_true,$(skiptests)),)
