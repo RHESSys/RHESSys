@@ -133,7 +133,8 @@ SRCS_TESTS := $(shell find $(SRCDIR_TESTS) -name '*.c')
 TESTSDIR = $(TESTS_ROOTDIR)
 OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
 OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
-TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm /111 -maxdepth 1)
+# Only treat compiled test binaries as cleanup targets; preserve executable scripts such as .py helper files.
+TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -maxdepth 1 -type f -perm /111 ! -name '*.py')
 
 
 ifneq ($(call bool_true,$(skiptests)),)

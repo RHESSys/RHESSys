@@ -149,7 +149,8 @@ void	execute_redefine_world_thin_event(struct world_object *world,
 		exit(EXIT_FAILURE);
 	} /*end if*/
 
-	printf("\n Redefine using %s", world_input_filename);
+	printf("Executing thinning redefine world (type %d) using file %s on date %ld-%ld-%ld-%ld \n", thintyp, world_input_filename, current_date.year, current_date.month, current_date.day, current_date.hour);
+	printf("Type 1 = thin_remain, type 2 = thin_harvest, type 3 = thin_snags\n");
 	/*--------------------------------------------------------------*/
 	/*	Read in the world ID.							*/
 	/*--------------------------------------------------------------*/

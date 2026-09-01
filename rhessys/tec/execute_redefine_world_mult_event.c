@@ -147,6 +147,8 @@ void	execute_redefine_world_mult_event(struct world_object *world,
 		exit(EXIT_FAILURE);
 	} /*end if*/
 
+	printf("Executing redefine world multiplier using file %s on date %ld-%ld-%ld-%ld \n", world_input_filename, current_date.year, current_date.month, current_date.day, current_date.hour);
+
 	/*--------------------------------------------------------------*/
 	/*	Read in the world ID.							*/
 	/*--------------------------------------------------------------*/

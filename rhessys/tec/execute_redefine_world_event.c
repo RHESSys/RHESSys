@@ -148,7 +148,7 @@ void	execute_redefine_world_event(struct world_object *world,
 		exit(EXIT_FAILURE);
 	} /*end if*/
 
-	printf("\n Redefine using %s\n", world_input_filename);
+	printf("Executing redefine world using file %s on date %ld-%ld-%ld-%ld \n", world_input_filename, current_date.year, current_date.month, current_date.day, current_date.hour);
 	/*--------------------------------------------------------------*/
 	/*	Read in the world ID.							*/
 	/*--------------------------------------------------------------*/
