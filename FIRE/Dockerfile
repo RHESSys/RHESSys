@@ -65,7 +65,7 @@ RUN set -- build/*/release/threading-multi/libwmfire.so && cp "$1" ../lib/libwmf
 
 # compile RHESSys and WMFire
 WORKDIR ../rhessys
-RUN make clean && make wmfire='T'
+RUN make clean && make wmfire='T' openmp='T'
 # CC=clang-20 CMD_OPTS='-fuse-ld=lld-20'
 
 # Special thanks to Ojas for finding Viruzzo and other excellent people over at the RPS Discord server who donated their time, patience and expertise to help us get this dockerfile fixed and cleaned up, in accordance with good IT practices.
