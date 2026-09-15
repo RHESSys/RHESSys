@@ -93,11 +93,12 @@ double 	*compute_transmissivity_curve(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused locals start and potential_sat. */
 
 	int didx,initial;
 	double	lower, depth, m;
 	double	lower_z, depth_z;
-	double start, fclayer, potential_sat;
+	double fclayer;
 	double transmissivity_layer;
 	double *transmissivity;
 

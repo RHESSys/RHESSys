@@ -36,6 +36,7 @@ void	update_shadow_strata(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+  /* Cleanup note: removed unused target/layer scratch locals canopy_target, canopy_subtarget, c, and layer. */
 
 	/*------------------------------------------------------------------------*/
 	/*	Check whether the target.met flag is set                              */
@@ -43,10 +44,6 @@ void	update_shadow_strata(
 	/*	then check if targets have been met. If so, set target.met flag to 1 	*/
 	/*------------------------------------------------------------------------*/
 
-   struct canopy_strata_object *canopy_target;
-	struct canopy_strata_object *canopy_subtarget;
-	int c;
-	int layer;
  // printf("\ntarget met: %d", stratum[0].target.met);
 
   if(stratum[0].target.met != 1){

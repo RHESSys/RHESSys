@@ -38,17 +38,13 @@
 #include <math.h>
 
 
-
-
-
-
-
-
 double  compute_stream_routing(struct command_line_object *command_line,
 						 struct stream_network_object *stream_network,
 						 int  num_reaches,
 						 struct	date	current_date)
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
@@ -80,11 +76,12 @@ double  compute_stream_routing(struct command_line_object *command_line,
     double dt;
     double xarea;
     double lateral_input_flow,streamflow;
-	double Qout,Qin,previous_lateral_input,length,initial_flow,sum;
+	/* Cleanup note: removed unused accumulator sum (only written, never consumed). */
+	double Qout,Qin,previous_lateral_input,length,initial_flow;
 	
 
 	struct patch_object *patch;
-	struct hillslope_object *hillslope;
+	/* Cleanup note: removed unused local hillslope. */
 
 	/*--------------------------------------------------------------*/
 	/* route water from top to bottom				*/
@@ -92,7 +89,6 @@ double  compute_stream_routing(struct command_line_object *command_line,
 
 	dt=86400.0;
 	streamflow=0.0;
-	sum=0.0;
 	for (i = 0; i < num_reaches; i++) {
 	/* calculate total lateral input from patches */
 	   lateral_input_flow = 0.0;
@@ -105,7 +101,7 @@ double  compute_stream_routing(struct command_line_object *command_line,
 	            patch=stream_network[i].lateral_inputs[j];
 		   if (patch[0].drainage_type == STREAM  ){
 	      		lateral_input_flow += (patch[0].streamflow)*patch[0].area/dt/(stream_network[i].length); //unit:m2/s
-			   sum+= (patch[0].streamflow)*patch[0].area;}
+			   }
 		   
 	
 	}
@@ -261,8 +257,7 @@ double nonlinear_kimetic_wave(double alfa,double Qin,double initial_flow,double 
 
 }
 
-	
-	double reservoir_operation(struct reservoir_object *current_reservoir,double inflow,double dt,struct date current_date)
+double reservoir_operation(struct reservoir_object *current_reservoir, double inflow, double dt, struct date current_date)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
@@ -271,45 +266,44 @@ double nonlinear_kimetic_wave(double alfa,double Qin,double initial_flow,double 
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	
-	
+
 	double storage;
 	double outflow;
 
 	/* change inflow to m3/day from m3/s */
-	inflow = inflow*dt;
+	inflow = inflow * dt;
 
-	storage=current_reservoir->initial_storage;
-	outflow=current_reservoir->min_outflow;
-	storage=current_reservoir->initial_storage+inflow-outflow;
+	storage = current_reservoir->initial_storage;
+	outflow = current_reservoir->min_outflow;
+	storage = current_reservoir->initial_storage + inflow - outflow;
 
-	/* check to see if maximum storage has been exceeded */	
-        if(storage > current_reservoir->month_max_storage[current_date.month-1]){
-            outflow=outflow+(storage-current_reservoir->month_max_storage[current_date.month-1]);
-	    storage=current_reservoir->month_max_storage[current_date.month-1];
+	/* check to see if maximum storage has been exceeded */
+	if (storage > current_reservoir->month_max_storage[current_date.month - 1])
+	{
+		outflow = outflow + (storage - current_reservoir->month_max_storage[current_date.month - 1]);
+		storage = current_reservoir->month_max_storage[current_date.month - 1];
 	}
 
 	/* check to see if minimum storage not reached */
-	if(storage < current_reservoir->min_storage){
+	if (storage < current_reservoir->min_storage)
+	{
 		/*min_flow has higher priority*/
-		if(current_reservoir->flag_min_flow_storage==0 && storage<0)
+		if (current_reservoir->flag_min_flow_storage == 0 && storage < 0)
 		{
-			outflow=min(current_reservoir->initial_storage+inflow, current_reservoir->min_outflow);
-			storage= current_reservoir->initial_storage+inflow-outflow;
+			outflow = min(current_reservoir->initial_storage + inflow, current_reservoir->min_outflow);
+			storage = current_reservoir->initial_storage + inflow - outflow;
 		}
-		 /*min_storage has higher priority*/
-		if(current_reservoir->flag_min_flow_storage!=0) {
-			storage= min(current_reservoir->min_storage, current_reservoir->initial_storage+inflow);
-			outflow = (current_reservoir->initial_storage-storage) + inflow;
+		/*min_storage has higher priority*/
+		if (current_reservoir->flag_min_flow_storage != 0)
+		{
+			storage = min(current_reservoir->min_storage, current_reservoir->initial_storage + inflow);
+			outflow = (current_reservoir->initial_storage - storage) + inflow;
 		}
-		
 	}
-	current_reservoir->initial_storage=storage;
+	current_reservoir->initial_storage = storage;
 
-	/* change outflow to m3/s */	
-	outflow = outflow/dt;
+	/* change outflow to m3/s */
+	outflow = outflow / dt;
 
-	return(outflow);
-
-
-	 }
+	return (outflow);
+}

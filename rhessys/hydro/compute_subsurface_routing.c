@@ -36,6 +36,8 @@
 
 void compute_subsurface_routing(struct command_line_object *command_line,
 		struct hillslope_object *hillslope, int n_timesteps, struct date current_date) {
+			/* Unused parameters retained for interface compatibility: current_date. */
+			(void)current_date;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
@@ -66,13 +68,14 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused routing scratch locals tmp/theta/m/Ksat/return_flow/preday_sat_deficit. */
 	int i, d;
 	int j, k;
 	int grow_flag, verbose_flag;
-	double time_int, tmp;
-	double theta, m, Ksat, Nout;
+	double time_int;
+	double Nout;
 	double NO3_out, NH4_out, DON_out, DOC_out;
-	double return_flow, excess;
+	double excess;
 	double water_balance, infiltration;
 	double innundation_depth;
 	double hillslope_outflow;
@@ -85,7 +88,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	double preday_hillslope_unsat_storage;
 	double preday_hillslope_rz_storage;
 	double preday_hillslope_sat_deficit;
-	double preday_sat_deficit;
 	double preday_hillslope_return_flow;
 	double preday_hillslope_detention_store;
 	double add_field_capacity, rz_drainage, unsat_drainage;
@@ -992,6 +994,16 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		if (hillslope_outflow <= command_line[0].thresholds[STREAMFLOW])
 			hillslope[0].acc_year.num_threshold += 1;
 	}
+	/* Cleanup note: aggregate diagnostic locals are intentionally unused in this build path. */
+	(void)water_balance;
+	(void)hillslope_rz_storage;
+	(void)hillslope_unsat_storage;
+	(void)hillslope_sat_deficit;
+	(void)hillslope_return_flow;
+	(void)hillslope_detention_store;
+	(void)streamflow;
+	(void)Qin_total;
+	(void)Qstr_total;
 
 	return;
 

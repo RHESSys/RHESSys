@@ -141,7 +141,7 @@ void		patch_hourly(
 	double  net_inflow, duration, infiltration;
 	double 	rz_drainage, unsat_drainage;
 	double  theta;
-	struct 	litter_object *litter;
+	/* Cleanup note: removed unused local litter pointer. */
 	/*--------------------------------------------------------------*/
 	/*	process any hourly rainfall				*/
 	/*--------------------------------------------------------------*/
@@ -313,7 +313,7 @@ void		patch_hourly(
 	else infiltration = 0.0;
 
 	if (infiltration < 0.0)
-		printf("\nInfiltration %lf < 0 for %d on %d",
+		printf("\nInfiltration %lf < 0 for %d on %ld",
 			infiltration,
 			patch[0].ID, current_date.day);
 	/*--------------------------------------------------------------*/

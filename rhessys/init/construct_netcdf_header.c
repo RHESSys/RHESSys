@@ -37,7 +37,7 @@ int get_netcdf_station_number(char *base_station_filename)
     if ( (base_station_file = fopen(base_station_filename, "r")) == NULL ){
         fprintf(stderr,
                 "FATAL ERROR:in get_netcdf_station_number unable to open base_station file %s\n",
-                base_station_file);
+                base_station_filename);
         exit(0);
     }
     fseek(base_station_file,0,SEEK_SET);
@@ -64,8 +64,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-
-	int j;
+    /* Cleanup note: removed unused local j. */
 	
 	//struct	daily_optional_clim_sequence_flags	daily_flags;
 	struct base_station_ncheader_object *base_station_ncheader;
@@ -91,7 +90,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
 	if ( (base_station_file = fopen(base_station_filename, "r")) == NULL ){
 		fprintf(stderr,
 				"FATAL ERROR:in construct_netcdf_grid unable to open base_station file %s\n",
-				base_station_file);
+				base_station_filename);
 		exit(0);
 	} /*end if*/
     #ifndef LIU_NETCDF_READER
@@ -146,6 +145,10 @@ struct base_station_ncheader_object *construct_netcdf_header (
             strcpy(base_station_ncheader[0].netcdf_rain_filename,first);
         } else if(strcmp(second,"netcdf_var_rain") == 0){
             strcpy(base_station_ncheader[0].netcdf_rain_varname,first);
+        } else if(strcmp(second,"netcdf_pspread_filename") == 0){
+            strcpy(base_station_ncheader[0].netcdf_pspread_filename,first);
+        } else if(strcmp(second,"netcdf_var_pspread") == 0){
+            strcpy(base_station_ncheader[0].netcdf_pspread_varname,first);
         } else if(strcmp(second,"netcdf_elev_filename") == 0){
             strcpy(base_station_ncheader[0].netcdf_elev_filename,first);
         } else if(strcmp(second,"netcdf_var_elev") == 0){

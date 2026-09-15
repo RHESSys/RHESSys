@@ -153,7 +153,7 @@ struct tec_object	*construct_tec(
 		/*--------------------------------------------------------------*/
 		if ( cal_date_lt(current_date,old_date)){
 			fprintf(stderr,
-					"FATAL ERROR: in construct_tec: dates not in sequence: %d/%d/%d %d; %d/%d/%d %d\n",
+					"FATAL ERROR: in construct_tec: dates not in sequence: %ld/%ld/%ld %ld; %ld/%ld/%ld %ld\n",
 					current_date.year, current_date.month, current_date.day, current_date.hour,
 					old_date.year, old_date.month, old_date.day, old_date.hour);
 			exit(EXIT_FAILURE);
@@ -193,7 +193,7 @@ struct tec_object	*construct_tec(
 			(strcmp(command,"roads_off") != 0) &&
 			(strcmp(command,"output_current_state") != 0)  ){
 			fprintf(stderr,
-				"\nFATAL ERROR: in construct_tec bad command %s for date %d %d %d %d\n ",
+				"\nFATAL ERROR: in construct_tec bad command %s for date %ld %ld %ld %ld\n ",
 				command, current_date.year,
 				current_date.month, current_date.day,
 				current_date.hour);
@@ -202,7 +202,7 @@ struct tec_object	*construct_tec(
 		/*--------------------------------------------------------------*/
 		/*	Read a line of the tec file if it exists.					*/
 		/*--------------------------------------------------------------*/
-		check = fscanf(tecfile[0].tfile,"%d %d %d %d %s\n",
+		check = fscanf(tecfile[0].tfile,"%ld %ld %ld %ld %s\n",
 			&(current_date.year),
 			&(current_date.month),
 			&(current_date.day),

@@ -44,6 +44,9 @@ double compute_potential_N_uptake_Waring(
 								  struct nstate_struct *ns,
 								  struct cdayflux_struct *cdf)
 {
+    /* Unused parameters retained for interface compatibility: epv, ns. */
+    (void)epv;
+    (void)ns;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
@@ -51,8 +54,7 @@ double compute_potential_N_uptake_Waring(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	double day_gpp;     /* daily gross production */
-	double day_mresp;   /* daily total maintenance respiration */
+	/* Cleanup note: removed unused locals day_gpp/day_mresp, cnmax, c_allometry/n_allometry, and k2. */
 	double froot, fleaf, fwood;          /* RATIO   new fine root C : new leaf C     */
 	double f2;          /* RATIO   fraction to leaf and fraction to root*/
 	double f4;          /* RATIO   new live wood C : new wood C     */
@@ -62,10 +64,9 @@ double compute_potential_N_uptake_Waring(
 	double cnfr;        /* RATIO   fine root C:N */
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
-	double cnmax;       /* RATIO   max of root and leaf C:N      */
-	double c_allometry, n_allometry, mean_cn, transfer;
+	double mean_cn, transfer;
 	double plant_calloc, plant_ndemand;
-	double k2, c; /* working variables */
+	double c; /* working variables */
 	/*---------------------------------------------------------------
 	Assess the carbon availability on the basis of this day's
 	gross production and maintenance respiration costs
@@ -108,6 +109,8 @@ double compute_potential_N_uptake_Waring(
 	f3 = epc.alloc_stemc_leafc;
 	f4 = epc.alloc_livewoodc_woodc;
 	g1 = epc.gr_perc;
+	/* Cleanup note: g1 is retained for diagnostics and intentionally unused in current logic. */
+	(void)g1;
 	cnl = epc.leaf_cn;
 	cnfr = epc.froot_cn;
 	cnlw = epc.livewood_cn;

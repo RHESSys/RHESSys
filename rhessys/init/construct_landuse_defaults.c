@@ -53,15 +53,12 @@ struct landuse_default *construct_landuse_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused parser scratch locals landuse/ftmp/default_file/newrecord/record and local y. */
 	int	i;
         int strbufLen = 256;
         int filenameLen = 1024;
-	double 	landuse, ftmp;
-	FILE	*default_file;
         char	strbuf[strbufLen];
         char	outFilename[filenameLen];
-	char	record[MAXSTR];
-	char	*newrecord;
 	struct 	landuse_default *default_object_list;
         param *paramPtr = NULL;
         int paramCnt = 0;
@@ -144,7 +141,6 @@ struct landuse_default *construct_landuse_defaults(
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
-                char *y = NULL;
                 char *token = NULL;
                 char filename[256];
     

@@ -51,16 +51,14 @@ struct stratum_default *construct_stratum_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	int		i, itmp;
+	/* Cleanup note: removed unused parser scratch locals itmp/record/newrecord/stmp/ftmp and local y; retained fcel and lig_cel_ratio for litter fraction partitioning. */
+	int		i;
         int strbufLen = 256;
         int filenameLen = 1024;
         int paramCnt = 0;
-	char		record[MAXSTR];
-	char		*newrecord;
-	char		stmp[MAXSTR];
         char	strbuf[strbufLen];
         char	outFilename[filenameLen];
-	double		fcel, ftmp, lig_cel_ratio;
+	double		fcel, lig_cel_ratio;
 	//FILE	*default_file;
         param *paramPtr = NULL;
 	struct stratum_default	*default_object_list;
@@ -102,6 +100,7 @@ struct stratum_default *construct_stratum_defaults(
 		if (default_object_list[i].epc.veg_type == SHRUB) default_object_list[i].epc.veg_type = TREE;
 	
 		default_object_list[i].epc.fire_veg_type = 	parse_veg_type(getStrParam(&paramCnt, &paramPtr, "epc.fire.veg.type", "%s", "TREE", 1)); // param name is "epc.veg.type" in param file
+		default_object_list[i].epc.shrub_firespread_flag = 	getIntParam(&paramCnt, &paramPtr, "epc.shrub_firespread", "%d", 0, 1); // true/false should shrubs be trated fully like litter for firespread - eg no height prop penalty
 		default_object_list[i].K_absorptance = 		getDoubleParam(&paramCnt, &paramPtr, "K_absorptance", "%lf", 0.8, 1); // parameter misspelled in file as "K_apsorbtance"
 		default_object_list[i].K_reflectance = 		getDoubleParam(&paramCnt, &paramPtr, "K_reflectance", "%lf", 0.1, 1);
 		default_object_list[i].K_transmittance = 	getDoubleParam(&paramCnt, &paramPtr, "K_transmittance", "%lf", 0.1, 1); 
@@ -453,7 +452,6 @@ struct stratum_default *construct_stratum_defaults(
             memset(strbuf, '\0', strbufLen);
             strcpy(strbuf, default_files[i]);
             char *s = strbuf;
-            char *y = NULL;
             char *token = NULL;
             char filename[256];
 

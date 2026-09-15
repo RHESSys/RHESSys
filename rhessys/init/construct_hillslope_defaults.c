@@ -47,15 +47,12 @@ struct hillslope_default *construct_hillslope_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
+    /* Cleanup note: removed unused parser scratch local ftmp. */
 	int 	i;
         int strbufLen = 256;
         int filenameLen = 1024;
-	FILE	*default_file;
         char	strbuf[strbufLen];
         char	outFilename[filenameLen];
-	char	record[MAXSTR];
-	char	*newrecord;
-	double	ftmp;
 	struct	hillslope_default	*default_object_list;
         param *paramPtr = NULL;
         int paramCnt = 0;
@@ -102,7 +99,6 @@ struct hillslope_default *construct_hillslope_defaults(
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
-                char *y = NULL;
                 char *token = NULL;
                 char filename[256];
     

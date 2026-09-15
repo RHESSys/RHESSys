@@ -224,6 +224,14 @@
 		patch[0].soil_cs.soil4c = ltmp;
 		patch[0].soil_ns.soil4n = patch[0].soil_cs.soil4c / SOIL4_CN;
 		}
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.DOC","%lf",patch[0].soil_cs.DOC,1);
+	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].soil_cs.DOC = ltmp;
+		}
+	ltmp = getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.DON","%lf",patch[0].soil_ns.DON,1);
+	if (fabs(ltmp - NULLVAL) >= ONE)  {
+		patch[0].soil_ns.DON = ltmp;
+		}
 
 	/*--------------------------------------------------------------*/
 	/*	initialize litter capacity				*/

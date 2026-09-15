@@ -45,7 +45,7 @@ void	output_monthly_hillslope(	int basinID,
 	if (hillslope[0].acc_month.length == 0) hillslope[0].acc_month.length = 1;
 
 	check = fprintf(outfile,
-		"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+		"%ld %ld %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.month,
 		current_date.year,
 		basinID,

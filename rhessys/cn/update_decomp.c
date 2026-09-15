@@ -52,6 +52,8 @@ int update_decomp(
 				  struct patch_object	*patch,
 				  int	verbose_flag)
 {
+    /* Unused parameters retained for interface compatibility: current_date. */
+    (void)current_date;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

@@ -33,6 +33,9 @@ double	compute_stability_correction(
 									 double	Tair,
 									 double	uair)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag, usurf. */
+    (void)verbose_flag;
+    (void)usurf;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
 	/*--------------------------------------------------------------*/

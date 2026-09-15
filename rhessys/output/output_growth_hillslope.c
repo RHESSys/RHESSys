@@ -34,6 +34,8 @@ void	output_growth_hillslope(              int  basinID,
 							struct	date	current_date,
 							FILE *outfile)
 {
+    /* Unused parameters retained for interface compatibility: basinID. */
+    (void)basinID;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
@@ -317,5 +319,13 @@ void	output_growth_hillslope(              int  basinID,
 	/*printf("\n Hill %d Output %4d %3d %3d \n",*/ 
 	/*	hillslope[0].ID, date.year, date.month, date.day);*/
 	/*------------------------------------------*/
+	/* Cleanup note: hillslope growth balance/stream scratch variables are retained for diagnostics and intentionally unused. */
+	(void)acarbon_balance;
+	(void)anitrogen_balance;
+	(void)atotaln;
+	(void)hstreamflow_NO3;
+	(void)hstreamflow_NH4;
+	(void)hstreamflow_DON;
+	(void)hstreamflow_DOC;
 	return;
 } /*end output_daily_growth_hillslope*/

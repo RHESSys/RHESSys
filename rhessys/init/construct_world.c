@@ -366,7 +366,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		struct base_station_object **, struct default_object *, 
         struct base_station_ncheader_object *,
         struct world_object *);
-	struct fire_patch_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default);
+	struct patch_fire_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default);
 	struct fire_object **construct_fire_grid(struct world_object *);
 	struct base_station_object **construct_ascii_grid(char *, struct date, struct date);
 	struct base_station_ncheader_object *construct_netcdf_header(struct world_object *, char *);
@@ -377,7 +377,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	void resemble_hourly_date(struct world_object *);
 
 	
-  	struct WUI_object **construct_WUI_list( char *, struct world_object *, struct	command_line_object *);
+	struct WUI_object *construct_WUI_list( char *, struct world_object *, struct	command_line_object *);
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -784,13 +784,13 @@ printf("about to enter construct wui\n");
 		/*	Construct the base_stations.				*/
 		/*--------------------------------------------------------------*/
 		if ( command_line[0].gridded_ascii_flag == 1) {
-			printf("\nConstructing base stations from ASCII GRID");
+			printf("\nConstructing base stations from ASCII GRID\n");
 			world[0].base_stations = construct_ascii_grid( world[0].base_station_files[0],
 												world[0].start_date, 
 												world[0].duration);
 		}
 		else if(command_line[0].gridded_netcdf_flag == 1){
-			printf("\nConstructing base stations from NETCDF GRID");
+			printf("\nConstructing base stations from NETCDF GRID\n");
             #ifdef LIU_NETCDF_READER
             world[0].num_base_stations = get_netcdf_station_number(world[0].base_station_files[0]);
             #endif
@@ -835,7 +835,7 @@ printf("about to enter construct wui\n");
 
 		}
 		else {
-			printf("\nConstructing base stations");
+			printf("\nConstructing base stations\n");
 			world[0].base_stations = (struct base_station_object **)
 			alloc(world[0].num_base_stations *
 				  sizeof(struct base_station_object *),"base_stations","construct_world" );

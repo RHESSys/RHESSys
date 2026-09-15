@@ -37,6 +37,13 @@ void		surface_hourly(
 							struct	tec_entry		*event,
 							struct 	date 			current_date)
 {
+    /* Unused parameters retained for interface compatibility: world, basin, hillslope, zone, event, current_date. */
+    (void)world;
+    (void)basin;
+    (void)hillslope;
+    (void)zone;
+    (void)event;
+    (void)current_date;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

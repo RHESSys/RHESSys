@@ -51,6 +51,10 @@ int allocate_annual_growth(				int id,
 						   struct epconst_struct epc,
 						   struct command_line_object *command_line)
 {
+    /* Unused parameters retained for interface compatibility: default_ID, cover_fraction, command_line. */
+    (void)default_ID;
+    (void)cover_fraction;
+    (void)command_line;
 	/*------------------------------------------------------*/
 	/*	Local function declarations.						*/
 	/*------------------------------------------------------*/
@@ -72,20 +76,15 @@ int allocate_annual_growth(				int id,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused locals delta_* wood totals and temporary leaf/stem tracking terms. */
 	
 	int ok=1;
 	double storage_transfer_prop;
-	double delta_livestemc, delta_deadstemc;
-	double delta_livecrootc, delta_deadcrootc;
-	double delta_frootc, delta_frootn;
-	double delta_nitrogen, delta_carbon;
 	double cnl, cnlw, cndw, cnfr, mean_cn;
 	double fcroot, flive, fdead, fleaf, froot, fwood;
-	double total_wood_c, total_wood_n, wood_cn;
-	double retransn, rem_excess_carbon, excess_carbon, transfer_carbon, excess_nitrogen;
+	double rem_excess_carbon, excess_carbon, excess_nitrogen;
 	double unmetn, carbohydrate_transfer_n, excess_n, avg_cn;
-	double plantc, excess_lai, excess_leaf_carbon, stemc, leafc;
-	double delta_leaf, leaf_growth_deficit;
+	double excess_lai;
 	double total_store, ratio, total_above_biomass,total_biomass, carbohydrate_transfer;
 	struct mortality_struct mort;
 
@@ -492,7 +491,7 @@ int allocate_annual_growth(				int id,
 	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) <= epc.min_leaf_carbon) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
-		printf("\n Resprouting stratum %d", id);
+		printf("Resprouting stratum %d\n", id);
 
 		/*cs->stem_density = epc.resprout_stem_density;*/
 		cs->mortality_fract = 1.0;
@@ -598,7 +597,7 @@ int allocate_annual_growth(				int id,
 	/* transfer excess N in npool to retransn */
 	if (ns->npool > ZERO) {
 		avg_cn = cs->cpool/ns->npool;	
-		if (cs->cpool/ns->npool < LIVELAB_CN) {
+		if (avg_cn < LIVELAB_CN) {
 				excess_n = ns->npool - cs->cpool/LIVELAB_CN;
 				ns->npool -= excess_n;
 				ns->retransn += excess_n;

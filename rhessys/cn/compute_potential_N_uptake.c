@@ -44,6 +44,9 @@ double compute_potential_N_uptake(
 								  struct nstate_struct *ns,
 								  struct cdayflux_struct *cdf)
 {
+    /* Unused parameters retained for interface compatibility: epv, ns. */
+    (void)epv;
+    (void)ns;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
@@ -51,8 +54,7 @@ double compute_potential_N_uptake(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	double day_gpp;     /* daily gross production */
-	double day_mresp;   /* daily total maintenance respiration */
+	/* Cleanup note: removed unused locals day_gpp/day_mresp and cnmax. */
 	double f1;          /* RATIO   new fine root C : new leaf C     */
 	double f2;          /* RATIO   new coarse root C : new stem C   */
 	double f3;          /* RATIO   new stem C : new leaf C          */
@@ -62,7 +64,6 @@ double compute_potential_N_uptake(
 	double cnfr;        /* RATIO   fine root C:N */
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
-	double cnmax;       /* RATIO   max of root and leaf C:N      */
 	double c_allometry, n_allometry;
 	double plant_ndemand;
 	double transfer;

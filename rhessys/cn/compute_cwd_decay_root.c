@@ -38,6 +38,8 @@ int	compute_cwd_decay_root(
 					  struct ndayflux_patch_struct *ndf,
 					  struct ndayflux_struct *ndf_stratum)
 {
+    /* Unused parameters retained for interface compatibility: ndf_stratum. */
+    (void)ndf_stratum;
 	/*------------------------------------------------------*/
 	/*	Local function declarations.						*/
 	/*------------------------------------------------------*/

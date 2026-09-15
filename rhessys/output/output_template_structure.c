@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include "rhessys.h"
 
-void	output_template_structure()
+void	output_template_structure(void)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
@@ -37,7 +37,7 @@ void	output_template_structure()
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int b,i;
+	/* Cleanup note: removed unused locals b and i. */
 	FILE	*outfile;
 	/*--------------------------------------------------------------*/
 	/*	open output file											*/

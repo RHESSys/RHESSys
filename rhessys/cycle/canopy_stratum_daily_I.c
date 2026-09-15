@@ -38,6 +38,10 @@ void	canopy_stratum_daily_I(
 							   struct	tec_entry		*event,
 							   struct 	date 			current_date)
 {
+    /* Unused parameters retained for interface compatibility: world, hillslope, event. */
+    (void)world;
+    (void)hillslope;
+    (void)event;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
@@ -129,7 +133,8 @@ void	canopy_stratum_daily_I(
 	struct cstate_struct *cs;
 	struct nstate_struct *ns;
 	struct mortality_struct mort;
-	double leafcloss_perc, daily_mortality;
+	/* Cleanup note: removed unused local leafcloss_perc. */
+	double daily_mortality;
 	double froot_scale;
 
 	/*--------------------------------------------------------------*/
@@ -222,6 +227,8 @@ void	canopy_stratum_daily_I(
 	if (command_line[0].grow_flag > 0)  {
 		cs = &(stratum[0].cs);
 		ns = &(stratum[0].ns);
+		/* Cleanup note: ns is retained for diagnostics and intentionally unused as a local alias. */
+		(void)ns;
 
 
 		stratum[0].cs.preday_totalc = (cs->cpool + cs->cwdc + cs->cwdc_bg

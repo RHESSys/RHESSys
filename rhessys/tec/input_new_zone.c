@@ -60,6 +60,8 @@
 								   struct	default_object	*defaults,
 								   struct	zone_object *zone)
 {
+    /* Unused parameters retained for interface compatibility: command_line. */
+    (void)command_line;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
@@ -77,8 +79,9 @@
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused local j. */
 	int		base_stationID;
-	int		i,j,dtmp;
+	int		i,dtmp;
 	char		record[MAXSTR];
 	double		ltmp;
 	int		paramCnt=0;

@@ -216,22 +216,22 @@ OutputFilterExprName *new_of_expr_name(OutputFilterVariable *var);
 void free_of_expr_ast(OutputFilterExprAst *ast);
 void print_of_expr_ast(OutputFilterExprAst *ast, int level);
 
-OutputFilterBasin *create_new_output_filter_basin();
+OutputFilterBasin *create_new_output_filter_basin(void);
 OutputFilterBasin *add_to_output_filter_basin_list(OutputFilterBasin * const head,
 		OutputFilterBasin * const new_basin);
 void free_output_filter_basin_list(OutputFilterBasin *head);
 
-OutputFilterZone *create_new_output_filter_zone();
+OutputFilterZone *create_new_output_filter_zone(void);
 OutputFilterZone *add_to_output_filter_zone_list(OutputFilterZone * const head,
                                                  OutputFilterZone * const new_zone);
 void free_output_filter_zone_list(OutputFilterZone *head);
 
-OutputFilterPatch *create_new_output_filter_patch();
+OutputFilterPatch *create_new_output_filter_patch(void);
 OutputFilterPatch *add_to_output_filter_patch_list(OutputFilterPatch * const head,
 		OutputFilterPatch * const new_patch);
 void free_output_filter_patch_list(OutputFilterPatch *head);
 
-OutputFilterStratum *create_new_output_filter_stratum();
+OutputFilterStratum *create_new_output_filter_stratum(void);
 OutputFilterStratum *add_to_output_filter_stratum_list(OutputFilterStratum * const head,
 		OutputFilterStratum * const new_stratum);
 void free_output_filter_stratum_list(OutputFilterStratum *head);
@@ -239,17 +239,17 @@ void free_output_filter_stratum_list(OutputFilterStratum *head);
 OutputFilterVariable *create_new_output_filter_variable(HierarchyLevel level, char *name);
 OutputFilterVariable *create_new_output_filter_sub_struct_variable(HierarchyLevel level, char *name,
                                                                    char *sub_struct_varname);
-OutputFilterVariable *create_new_output_filter_variable_any();
+OutputFilterVariable *create_new_output_filter_variable_any(void);
 OutputFilterVariable *create_new_output_filter_expr_variable(HierarchyLevel level, char *name,
                                                              OutputFilterExprAst *expr);
 OutputFilterVariable *add_to_output_filter_variable_list(OutputFilterVariable * const head,
 		OutputFilterVariable * const new_var);
 void free_output_filter_variable_list(OutputFilterVariable *head);
 
-OutputFilterOutput *create_new_output_filter_output();
+OutputFilterOutput *create_new_output_filter_output(void);
 void free_output_filter_output(OutputFilterOutput *output);
 
-OutputFilter *create_new_output_filter();
+OutputFilter *create_new_output_filter(void);
 OutputFilter *add_to_output_filter_list(OutputFilter * const head,
 		OutputFilter * const new_filter);
 void free_output_filter(OutputFilter *filter);

@@ -94,7 +94,7 @@ void		hillslope_hourly(
 	/*--------------------------------------------------------------*/
 	for ( zone=0 ; zone < hillslope[0].num_zones ; zone++ ){
 		if ( hillslope[0].zones[zone][0].Kdown_diffuse > 1.0e100)
-			printf("\n Date %d %d %d %d is Zone Hourly Diffuse is %10.6f",
+			printf("\n Date %ld %ld %ld %ld is Zone Hourly Diffuse is %10.6f",
 			current_date.year,
 			current_date.month,
 			current_date.day,

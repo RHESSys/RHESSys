@@ -91,6 +91,9 @@ double	compute_direct_radiative_PAR_fluxes(	int	verbose_flag,
 						double	reflectance_canopy,
 						double	reflectance_bkgd)
 {
+    /* Unused parameters retained for interface compatibility: proj_lai, reflectance_bkgd. */
+    (void)proj_lai;
+    (void)reflectance_bkgd;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

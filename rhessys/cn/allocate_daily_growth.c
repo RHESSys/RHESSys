@@ -49,6 +49,9 @@ int allocate_daily_growth(int nlimit,
 						  struct epconst_struct epc,
 						  struct date current_date)
 {
+    /* Unused parameters retained for interface compatibility: epv, current_date. */
+    (void)epv;
+    (void)current_date;
 	/*------------------------------------------------------*/
 	/*	Local function declarations.						*/
 	/*------------------------------------------------------*/
@@ -56,6 +59,7 @@ int allocate_daily_growth(int nlimit,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused locals nloss/closs/total_wood and extra temporary C-accounting terms. */
 
 	int ok=1;
 	double fleaf;          /* RATIO   new leaf C: new total C     */
@@ -70,8 +74,8 @@ int allocate_daily_growth(int nlimit,
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
 	double nlc;         /* actual new leaf C, minimum of C and N limits   */
-	double nloss, amt_fix, cost_fix, closs;
-	double gresp_store, total_wood;
+	double amt_fix, cost_fix;
+	double gresp_store;
 	double plant_ndemand, mean_cn;
 	double sum_plant_nsupply, soil_nsupply;
 	double plant_nalloc=0.0;
@@ -79,7 +83,7 @@ int allocate_daily_growth(int nlimit,
 	double plant_remaining_ndemand;
 	double excess_allocation_to_leaf, excess_c, excess_lai;
 	double sminn_to_npool;
-	double B,C, totalc_used,total_used; /* working variables */
+	double B; /* working variables */
 	double preday_npool, preday_cpool;
 
 	/* assign local values for the allocation control parameters */
@@ -98,6 +102,11 @@ int allocate_daily_growth(int nlimit,
 	plant_ndemand = ndf->potential_N_uptake;
 	preday_npool = ns->npool;
 	preday_cpool = cs->cpool;
+	/* Cleanup note: B, f3, preday_npool, and preday_cpool are retained for diagnostics and intentionally unused. */
+	(void)B;
+	(void)f3;
+	(void)preday_npool;
+	(void)preday_cpool;
 
 
 	/*--------------------------------------------------------------*/

@@ -49,13 +49,13 @@ STRUCT_NAMES = [
 	'metvar_struct'
 ]
 
-COMMENT_PATT = re.compile('^\s*//.*')
-START_STRUCT_PATT = re.compile('^\s*struct\s+(\S+)\s*{\s*$')
-STRUCT_KW_PATT = re.compile('^\s*struct\s+(\S+)\s*$')
-OPEN_BRACE_PATT = re.compile('^\s*{\s*$')
-END_STRUCT_PATT = re.compile('^\s*}\s*;\s*$')
-STRUCT_MEM_PATT = re.compile('^\s*(\S+\s+\**)(\S+)\s*;\s*.*$')
-STRUCT_MEM_STRUCT_PATT = re.compile('^\s*(struct\s+\S+\s+\**)(\S+)\s*;\s*.*$')
+COMMENT_PATT = re.compile(r'^\s*//.*')
+START_STRUCT_PATT = re.compile(r'^\s*struct\s+(\S+)\s*{\s*$')
+STRUCT_KW_PATT = re.compile(r'^\s*struct\s+(\S+)\s*$')
+OPEN_BRACE_PATT = re.compile(r'^\s*{\s*$')
+END_STRUCT_PATT = re.compile(r'^\s*}\s*;\s*$')
+STRUCT_MEM_PATT = re.compile(r'^\s*(\S+\s+\**)(\S+)\s*;\s*.*$')
+STRUCT_MEM_STRUCT_PATT = re.compile(r'^\s*(struct\s+\S+\s+\**)(\S+)\s*;\s*.*$')
 
 parser = argparse.ArgumentParser(description='Create C source for indexing structs in header files for dynamic lookup')
 parser.add_argument('--headers', nargs='+', type=str, help='Header files to read structs from')
@@ -110,11 +110,11 @@ StructIndex_t *new_struct_index() {
 	i->phenology_struct = NULL;
 	i->fire_effects_object = NULL;
 	i->mult_conduct_struct = NULL;
-	i->hillslope_object == NULL;
-	i->gw_object == NULL;
-	i->zone_object == NULL;
-	i->accumulate_zone_object == NULL;
-	i->metvar_struct == NULL;
+	i->hillslope_object = NULL;
+	i->gw_object = NULL;
+	i->zone_object = NULL;
+	i->accumulate_zone_object = NULL;
+	i->metvar_struct = NULL;
 	
 	return i;
 }

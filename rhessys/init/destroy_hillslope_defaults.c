@@ -29,10 +29,13 @@ void destroy_hillslope_defaults(int num_default_files,
 								int grow_flag,
 								struct hillslope_default *default_object_list )
 {
+    /* Unused parameters retained for interface compatibility: num_default_files, grow_flag. */
+    (void)num_default_files;
+    (void)grow_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	int 	i;
+	/* Cleanup note: removed unused local i. */
 	/*--------------------------------------------------------------*/
 	/*	Delete the default records (all at once since they were		*/
 	/*	allocated in a contiguous array).							*/

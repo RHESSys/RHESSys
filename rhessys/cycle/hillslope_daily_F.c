@@ -89,9 +89,9 @@ void		hillslope_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	int	i,j,zone;
-	double slow_store, fast_store,scale;
-	struct patch_object *patch;
+	/* Cleanup note: removed unused hillslope locals i/j, slow_store/fast_store, and patch. */
+	int	zone;
+	double scale;
 	
 	
 	for ( zone=0 ; zone<hillslope[0].num_zones; zone++ ){

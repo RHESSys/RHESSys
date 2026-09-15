@@ -62,13 +62,13 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 		if(def.fire_verbose==1)
 			cout<<"Should be set seed = "<<def.ran_seed<<"\n";
 		//seed=def.ran_seed+year+month*100;
-                char str[100];
-                sprintf(str, "%ld%ld%ld", year, month, def.ran_seed);
-                seed=strtol(str, NULL, 10);
-                cout<<"New seed: "<<seed<<"\n";
+		char str[100];
+		sprintf(str, "%ld%ld%ld", year, month, def.ran_seed);
+		seed=strtol(str, NULL, 10);
+		cout<<"New seed: "<<seed<<"\n";
 //                                                              //
 //		seed=def.ran_seed;
-	}	
+	}
 	else
 	{
 		#if defined(_WIN32) || defined(__WIN32__)

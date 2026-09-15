@@ -69,6 +69,8 @@ double	compute_ra_overstory(
 							 double  h_u,
 							 double  *ga)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
 	/*--------------------------------------------------------------*/

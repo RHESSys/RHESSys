@@ -56,6 +56,11 @@ void update_mortality(
 					  int thintyp,
 					  struct mortality_struct mort)
 {
+    /* Unused parameters retained for interface compatibility: cdf, cdf_patch, ndf, ndf_patch. */
+    (void)cdf;
+    (void)cdf_patch;
+    (void)ndf;
+    (void)ndf_patch;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

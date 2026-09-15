@@ -67,6 +67,8 @@ double	compute_infiltration(int verbose_flag,
 							 double duration,
 							 double psi_air_entry)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

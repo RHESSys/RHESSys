@@ -53,6 +53,11 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 							 struct cdayflux_patch_struct *cdf,
 							 struct ndayflux_patch_struct *ndf)
 {
+    /* Unused parameters retained for interface compatibility: maxpsi, minpsi, cs_soil, ns_soil. */
+    (void)maxpsi;
+    (void)minpsi;
+    (void)cs_soil;
+    (void)ns_soil;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
@@ -60,6 +65,7 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused moisture-distribution scratch locals weight1/weight2/theta1/theta2. */
 	int ok;
 	double rate_scalar, t_scalar, w_scalar;
 	double a,b,c,d;
@@ -72,7 +78,6 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 	double psoil1c_loss, psoil2c_loss, psoil3c_loss, psoil4c_loss;
 	double pmnf_l1s1,pmnf_l2s2,pmnf_l3l2, pmnf_l4s3,pmnf_s1s2,pmnf_s2s3,pmnf_s3s4,pmnf_s4;
 	double potential_immob,mineralized;
-	double weight1, weight2, theta1, theta2;
 	int nlimit, i;
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
 	double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
@@ -287,6 +292,18 @@ int compute_potential_decomp_root(double tsoil, double maxpsi,
 	cdf->psoil4c_loss = psoil4c_loss;
 	ndf->pmnf_s4 = pmnf_s4;
 	cdf->kl4 = kl4;*/
+	/* Cleanup note: selected root-decomp scratch locals are retained for diagnostics and intentionally unused. */
+	(void)rfs1s2;
+	(void)rfs2s3;
+	(void)rfs3s4;
+	(void)ks1;
+	(void)ks2;
+	(void)ks3;
+	(void)ks4;
+	(void)cn_s4;
+	(void)psoil1c_loss;
+	(void)pmnf_s1s2;
+	(void)nlimit;
 
 	return(ok);
 } /* end compute_potential_decomp.c */

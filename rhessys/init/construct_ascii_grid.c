@@ -79,10 +79,10 @@ struct base_station_object **construct_ascii_grid (
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused local tmp. */
 	int 	num_base_stations;
 	int		i;
 	int		j;
-		int tmp;
 
 	long	julday(struct date);
 	long	first_date_julian;

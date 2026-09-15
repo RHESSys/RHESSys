@@ -48,7 +48,7 @@ struct	command_line_object	*construct_command_line(
 	/*--------------------------------------------------------------*/
 	int	valid_option( char * );
 	void	*alloc( size_t, char *, char * );
-	void	output_template_structure();
+	void	output_template_structure(void);
 	
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

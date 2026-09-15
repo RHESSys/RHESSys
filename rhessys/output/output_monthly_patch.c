@@ -49,7 +49,7 @@ void	output_monthly_patch(
 		patch[0].acc_month.leach = log(patch[0].acc_month.leach*1000.0*1000.0);
 		
 	check = fprintf(outfile,
-		"%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %8.3f %f %f %f %f %f %f %f \n",
+		"%ld %ld %d %d %d %d %f %f %f %f %f %f %f %f %f %8.3f %f %f %f %f %f %f %f \n",
 		current_date.month,
 		current_date.year,
 		basinID,

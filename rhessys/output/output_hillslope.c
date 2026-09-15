@@ -144,7 +144,7 @@ void	output_hillslope(				int basinID,
 	abase_flow += hillslope[0].base_flow;
 
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%ld %ld %ld %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -169,5 +169,7 @@ void	output_hillslope(				int basinID,
 		hillslope[0].gw.storage *1000.0,
 		hillslope[0].area
 		);
+	/* Cleanup note: au20 is retained for diagnostics and intentionally unused. */
+	(void)au20;
 	return;
 } /*end output_hillslope*/

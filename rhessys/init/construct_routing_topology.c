@@ -58,7 +58,8 @@ struct routing_list_object *construct_routing_topology(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int		i,d,j;
+	/* Cleanup note: removed unused local j from routing topology parser. */
+	int		i,d;
 	int		num_patches, num_neighbours;
 	int		patch_ID, zone_ID, hill_ID;
 	int		drainage_type;

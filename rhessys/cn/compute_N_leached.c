@@ -48,6 +48,10 @@ double	compute_N_leached(int verbose_flag,
 			double *transmissivity) 
 			
 	{ 
+		/* Unused parameters retained for interface compatibility: m, gamma, transmissivity. */
+		(void)m;
+		(void)gamma;
+		(void)transmissivity;
 	/*------------------------------------------------------*/ 
 	/*	Local Function Declarations.						*/ 
 	/*------------------------------------------------------*/
@@ -78,15 +82,16 @@ double	compute_N_leached(int verbose_flag,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	int didx_bot, didx_top;
+	/* Cleanup note: removed unused locals didx_bot/didx_top, theta/sat_deficit, and Q. */
 	double navail, nleached,nabsorbed;
-	double theta, sat_deficit;
-	double Q, Qtotal;
+	double Qtotal;
 	double z1, z2;
 	double	available_water,septic_depth;
 
 	nleached = 0.0;
 	Qtotal = 0.0;
+	/* Cleanup note: Qtotal is retained for diagnostics and intentionally unused. */
+	(void)Qtotal;
 	nabsorbed = 0.0;
 	navail = 0.0;
 

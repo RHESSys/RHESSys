@@ -56,6 +56,7 @@ void update_fuel_treatment_effects(struct zone_object *zone,
     /*--------------------------------------------------------------*/
     /*	Local variable definition.			                        */
     /*--------------------------------------------------------------*/
+    /* Cleanup note: removed unused locals lose_pct_chg and tmp. */
     int p, pf, s;
     int trt, notrt;
     int gain, lose;
@@ -63,14 +64,12 @@ void update_fuel_treatment_effects(struct zone_object *zone,
     double comb_area; // combined treated and untreated areas
     double gain_area_add;
     double gain_area_old;
-    double lose_pct_chg;
     double max_trt_prob;
     double new_trt_area;
     double new_notrt_area;
     double notrt_area;
     double r; // random 0-1
     double thr; // treatment threshold
-    double tmp;
     double trt_int; // 0-1 treatment intensity
     double trt_area;
     bool stoch;

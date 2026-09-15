@@ -116,6 +116,8 @@ static bool stratum_supersedes(const OutputFilterStratum *existing, const Output
  * Returns true of new_var supersedes existing.
  */
 static bool new_var_supersedes(const OutputFilterVariable *existing, const OutputFilterVariable *new_var) {
+    /* Unused parameters retained for interface compatibility: existing. */
+    (void)existing;
 	switch(new_var->variable_type) {
 	case ANY_VAR:
 		// * supersedes all.
@@ -286,7 +288,7 @@ OutputFilterExprName *new_of_expr_name(OutputFilterVariable *var) {
     OutputFilterExprName *n = (OutputFilterExprName *) malloc(sizeof(OutputFilterExprName));
     n->nodetype = OF_VAR_EXPR_AST_NODE_NAME;
     n->var = var;
-    return (OutputFilterExprAst *) n;
+	return n;
 }
 
 void free_of_expr_ast(OutputFilterExprAst *a) {
@@ -358,7 +360,7 @@ void print_of_expr_ast(OutputFilterExprAst *a, int level) {
 }
 
 // output_filter_basin_list
-OutputFilterBasin *create_new_output_filter_basin() {
+OutputFilterBasin *create_new_output_filter_basin(void) {
 	OutputFilterBasin *new_basin = (OutputFilterBasin *) malloc(sizeof(OutputFilterBasin));
 	new_basin->next = NULL;
 	return new_basin;
@@ -395,7 +397,7 @@ void free_output_filter_basin_list(OutputFilterBasin *head) {
 }
 
 // output_filter_zone_list
-OutputFilterZone *create_new_output_filter_zone() {
+OutputFilterZone *create_new_output_filter_zone(void) {
 	OutputFilterZone *new_zone = (OutputFilterZone *) malloc(sizeof(OutputFilterZone));
 	new_zone->next = NULL;
 	return new_zone;
@@ -440,7 +442,7 @@ void free_output_filter_zone_list(OutputFilterZone *head) {
 }
 
 // output_filter_patch_list
-OutputFilterPatch *create_new_output_filter_patch() {
+OutputFilterPatch *create_new_output_filter_patch(void) {
 	OutputFilterPatch *new_patch = (OutputFilterPatch *) malloc(sizeof(OutputFilterPatch));
 	new_patch->next = NULL;
 	return new_patch;
@@ -488,7 +490,7 @@ void free_output_filter_patch_list(OutputFilterPatch *head) {
 }
 
 // output_filter_canopy_strata_list
-OutputFilterStratum *create_new_output_filter_stratum() {
+OutputFilterStratum *create_new_output_filter_stratum(void) {
 	OutputFilterStratum *new_stratum = (OutputFilterStratum *) malloc(sizeof(OutputFilterStratum));
 	new_stratum->next = NULL;
 	return new_stratum;
@@ -646,7 +648,7 @@ void free_output_filter_variable_list(OutputFilterVariable *head) {
 	free(head);
 }
 
-OutputFilterOutput *create_new_output_filter_output() {
+OutputFilterOutput *create_new_output_filter_output(void) {
 	OutputFilterOutput *output = (OutputFilterOutput *) malloc(sizeof(OutputFilter));
 	output->filename = NULL;
 	output->path = NULL;
@@ -664,7 +666,7 @@ void free_output_filter_output(OutputFilterOutput *output) {
 	free(output);
 }
 
-OutputFilter *create_new_output_filter() {
+OutputFilter *create_new_output_filter(void) {
 	OutputFilter *new_filter = (OutputFilter *) malloc(sizeof(OutputFilter));
 	new_filter->type = OUTPUT_FILTER_UNDEFINED;
 	new_filter->timestep = TIMESTEP_UNDEFINED;

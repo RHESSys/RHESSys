@@ -81,6 +81,8 @@ int assign_neighbours( struct neighbour_object *neighbours,
 		}
 		else	new_num_neighbours -= 1;
 	}
+	/* Cleanup note: sum_gamma is retained for routing diagnostics and intentionally unused. */
+	(void)sum_gamma;
 
 
 	return(new_num_neighbours);

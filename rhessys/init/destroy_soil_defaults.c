@@ -29,6 +29,9 @@ void destroy_soil_defaults(int num_default_files,
 							int grow_flag,
 							struct soil_default *default_object_list )
 {
+    /* Unused parameters retained for interface compatibility: num_default_files, grow_flag. */
+    (void)num_default_files;
+    (void)grow_flag;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

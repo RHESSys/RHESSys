@@ -42,7 +42,7 @@ void	output_hourly_zone(	int basinID, int hillID,
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	fprintf(outfile,
-		"%d %d %d %d %d %d %d %f %f %f %f %f %f %f %f %f \n ",
+		"%ld %ld %ld %ld %d %d %d %f %f %f %f %f %f %f %f %f \n ",
 		current_date.day,
 		current_date.month,
 		current_date.year,

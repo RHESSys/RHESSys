@@ -55,6 +55,9 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 							 struct cdayflux_patch_struct *cdf,
 							 struct ndayflux_patch_struct *ndf)
 {
+    /* Unused parameters retained for interface compatibility: maxpsi, minpsi. */
+    (void)maxpsi;
+    (void)minpsi;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
@@ -62,6 +65,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused moisture-distribution scratch locals weight1/weight2/theta1/theta2. */
 	int ok;
 	double rate_scalar, t_scalar, w_scalar;
 	double a,b,c,d;
@@ -74,7 +78,6 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	double psoil1c_loss, psoil2c_loss, psoil3c_loss, psoil4c_loss;
 	double pmnf_l1s1,pmnf_l2s2,pmnf_l3l2, pmnf_l4s3,pmnf_s1s2,pmnf_s2s3,pmnf_s3s4,pmnf_s4;
 	double potential_immob,mineralized;
-	double weight1, weight2, theta1, theta2;
 	int nlimit, i;
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
 	double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
@@ -283,6 +286,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	cdf->kl4 = kl4;
 	cdf->decomp_w_scalar = w_scalar;
 	cdf->decomp_t_scalar = t_scalar;
+	/* Cleanup note: nlimit is retained for diagnostics and intentionally unused. */
+	(void)nlimit;
 
 	return(ok);
 } /* end compute_potential_decomp.c */

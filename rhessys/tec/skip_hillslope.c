@@ -54,6 +54,12 @@ void skip_hillslope(
 											 struct	default_object	*defaults,
 											 struct hillslope_object *hillslope)
 {
+    /* Unused parameters retained for interface compatibility: command_line, num_world_base_stations, world_base_stations, defaults, hillslope. */
+    (void)command_line;
+    (void)num_world_base_stations;
+    (void)world_base_stations;
+    (void)defaults;
+    (void)hillslope;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
@@ -71,9 +77,8 @@ void skip_hillslope(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int		i,j, dtmp;
-	int		base_stationID;
-	int		default_object_ID;
+	/* Cleanup note: removed unused locals j, base_stationID, and default_object_ID. */
+	int		i, dtmp;
 	char		record[MAXSTR];
 	double		ltmp;
 	int		paramCnt=0;
@@ -99,7 +104,7 @@ void skip_hillslope(
 		/*	Read each base_station ID and then point to that base_statio*/
 		/*--------------------------------------------------------------*/
 		for (i=0 ; i<dtmp; i++){
-			fscanf(world_file,"%d",&(ltmp));
+			fscanf(world_file,"%lf",&(ltmp));
 			read_record(world_file, record);
 			/*--------------------------------------------------------------*/
 			/*		Point to the appropriate base station in the base       */

@@ -37,6 +37,12 @@ void skip_basin(
 									 struct	default_object	*defaults,
 									 struct	basin_object *basin)
 {
+    /* Unused parameters retained for interface compatibility: command_line, num_world_base_stations, world_base_stations, defaults, basin. */
+    (void)command_line;
+    (void)num_world_base_stations;
+    (void)world_base_stations;
+    (void)defaults;
+    (void)basin;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
@@ -54,9 +60,8 @@ void skip_basin(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int	base_stationID;
+	/* Cleanup note: removed unused locals base_stationID and default_object_ID. */
 	int		i,dtmp;
-	int		default_object_ID;
 	char		record[MAXSTR];
 	double		ltmp;
 	int	paramCnt=0;
@@ -84,7 +89,7 @@ void skip_basin(
 		/*      Read each base_station ID and then point to that base_statio*/
 		/*--------------------------------------------------------------*/
 		for (i=0 ; i<dtmp; i++) {
-			fscanf(world_file,"%d",&(ltmp));
+			fscanf(world_file,"%lf",&(ltmp));
 			read_record(world_file, record);
 			/*--------------------------------------------------------------*/
 			/*	Point to the appropriate base station in the base       	*/

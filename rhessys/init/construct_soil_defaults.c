@@ -54,15 +54,13 @@ struct soil_default *construct_soil_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused parser scratch locals ftmp/default_file/newrecord/record and local y; retained soil for texture-sum validation. */
         int strbufLen = 256;
         int filenameLen = 1024;
 	int	i;
-	double 	ftmp,soil;
-	FILE	*default_file;
+	double 	soil;
         char	strbuf[strbufLen];
         char	outFilename[filenameLen];
-	char	*newrecord;
-	char	record[MAXSTR];
 	struct 	soil_default *default_object_list;
 	void	*alloc(	size_t, char *, char *);
         param *paramPtr = NULL;
@@ -292,7 +290,6 @@ struct soil_default *construct_soil_defaults(
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
-                char *y = NULL;
                 char *token = NULL;
                 char filename[256];
     

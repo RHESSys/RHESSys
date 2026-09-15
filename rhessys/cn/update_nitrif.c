@@ -66,6 +66,10 @@ int update_nitrif(
 				  double nitrif_prop, 
 				  double std)
 {
+    /* Unused parameters retained for interface compatibility: cs_soil, cdf, nitrif_prop. */
+    (void)cs_soil;
+    (void)cdf;
+    (void)nitrif_prop;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

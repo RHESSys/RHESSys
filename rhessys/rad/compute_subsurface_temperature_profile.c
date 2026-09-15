@@ -32,6 +32,12 @@ void compute_subsurface_temperature_profile(
 					  double rnet,
 					  double *percent_soil_water_unfrozen)
 {
+    /* Unused parameters retained for interface compatibility: se_profile, sedef, tsurface, rnet, percent_soil_water_unfrozen. */
+    (void)se_profile;
+    (void)sedef;
+    (void)tsurface;
+    (void)rnet;
+    (void)percent_soil_water_unfrozen;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
@@ -41,6 +47,8 @@ void compute_subsurface_temperature_profile(
 	double tmp;
 
 	tmp = 	HVAP;
+	/* Cleanup note: tmp is retained for diagnostics and intentionally unused. */
+	(void)tmp;
 
 
 

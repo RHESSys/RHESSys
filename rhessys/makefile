@@ -9,17 +9,22 @@ INCLUDES = -Iinclude
 RHESSYS_BIN = /usr/local/bin
 OBJ = objects
 
-netcdf=T
+# Boolean option handling.
+# Use T/F values on the make command line, e.g. make openmp=T or make openmp='T'.
+bool_true = $(filter T t TRUE true 1,$(strip $(1)))
 
-# IF THIS IS DEFINED NO TESTS WILL RUN - NEEDED IF RUNNING WMFIRE, comment out or remove if you want to run tests
-skiptests=T
-
-#netcdf ?=FALSE
-#wmfire ?=FALSE
+# Defaults for current boolean options.
+skiptests ?= T
+netcdf ?= T
+wmfire ?= F
+openmp ?= F
+nativeopt ?= F
+extend_clim ?= F
+ofdebug ?= F
 
 DEFINES = -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID
 
-ifdef extend_clim
+ifneq ($(call bool_true,$(extend_clim)),)
   DEFINES +=  -DLIU_EXTEND_CLIM_VAR  -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
 endif
 
@@ -27,22 +32,38 @@ endif
 # specifically added to be able to use with -w, to supress warnings
 CMD_OPTS +=
 
-#CFLAGS = -g -Wall -Wno-incompatible-function-pointer-types -std=c99 $(DEFINES) -fno-stack-protector -O -Wno-implicit-function-declaration -Wno-int-conversion
+# For debug:
+# -O0 -g3
 
+# possibly useful
 # -fsanitize=address,undefined
-# _POSIX_C_SOURCE=200809L
-# -D_GNU_SOURCE
-CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g -O2 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g -O2 -Wall -fno-stack-protector -fno-omit-frame-pointer -Wextra -Wpedantic -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-# -O0 and -g3 for debug
-# -O2 for speed
+# -Wpedantic
 
-ifdef ofdebug
+# For speed:
+# -g1 -O2
+# -O2/O3  -g1
+# -march=native -mtune=native -flto
+# march and mtune not a good choice for hpc
+
+CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g1 -O2 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g1 -O2 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+
+# Opt-in native CPU tuning for local performance tests.
+# Keep off by default so container binaries are portable across machines.
+ifneq ($(call bool_true,$(nativeopt)),)
+	CFLAGS += -march=native -mtune=native
+	CFLAGS_NO_C99 += -march=native -mtune=native
+endif
+
+BISONFLAGS = --report=none 
+# -Wcounterexamples
+
+ifneq ($(call bool_true,$(ofdebug)),)
 	CFLAGS += -DOF_DEBUG
 endif
 
-ifdef openmp
-  CFLAGS += -fopenmp
+ifneq ($(call bool_true,$(openmp)),)
+  CFLAGS += -fopenmp=libomp
 endif
 
 # Retro fitting from CF
@@ -67,11 +88,40 @@ LOCAL_LIBS = -L../lib
 LINK_NETCDF = `pkg-config --libs netcdf`
 LDLIBS_TESTS = `pkg-config --libs glib-2.0` -lm
 TEST_FIRE_LIB_PATH = test/$(WMFIRE_SO)
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 LDLIBS_FIRE = -lwmfire
 FIRE_LIB_PATH = ../lib/$(WMFIRE_SO)
 else
 LDLIBS_FIRE = ''
+endif
+
+# Runtime library search paths (rpath), baked directly into the binary at
+# link time. This makes the *runtime* search for libwmfire match the
+# *build-time* -L../lib search, regardless of where the binary is later
+# run from, and regardless of LD_LIBRARY_PATH / DYLD_LIBRARY_PATH being set
+# in the caller's environment (DYLD_LIBRARY_PATH in particular is
+# unreliable on macOS due to SIP and hardened-runtime restrictions).
+#
+# $ORIGIN (Linux) / @executable_path (macOS) are expanded by the OS loader
+# at run time to the directory containing the executable itself -- not the
+# caller's current working directory. Multiple -rpath entries are tried by
+# the loader in the order given, so each list below doubles as a fallback
+# search chain.
+#
+# RPATH_MAIN targets the main rhessys binary, which is built in the same
+# directory make is invoked from, matching the ../lib relative layout used
+# by LOCAL_LIBS above.
+#
+# RPATH_TESTS targets the unit test binaries, which the `test` rule copies
+# into test/ alongside a copy of libwmfire itself (see FIRE_LIB_PATH /
+# TEST_FIRE_LIB_PATH below) -- so for those, "same directory as the binary"
+# is the primary location, with ../lib kept as a fallback.
+ifeq ($(OS), Darwin)
+	RPATH_MAIN  = -Wl,-rpath,'@executable_path/../lib' -Wl,-rpath,'@executable_path'
+	RPATH_TESTS = -Wl,-rpath,'@executable_path' -Wl,-rpath,'@executable_path/../lib'
+else
+	RPATH_MAIN  = -Wl,-rpath,'$$ORIGIN/../lib' -Wl,-rpath,'$$ORIGIN'
+	RPATH_TESTS = -Wl,-rpath,'$$ORIGIN' -Wl,-rpath,'$$ORIGIN/../lib'
 endif
 
 SRCS := $(shell find clim cn cycle hydro init rad tec util output_filter -name '*.c')
@@ -83,10 +133,13 @@ SRCS_TESTS := $(shell find $(SRCDIR_TESTS) -name '*.c')
 TESTSDIR = $(TESTS_ROOTDIR)
 OBJDIR_TESTS = $(TESTS_ROOTDIR)/objects
 OBJECTS_TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%.o,$(SRCS_TESTS))
-TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -type f -perm +111 -maxdepth 1)
+# Only treat compiled test binaries as cleanup targets; preserve executable scripts such as .py helper files.
+TESTS_TO_RUN = $(shell find $(TESTS_ROOTDIR) -maxdepth 1 -type f -perm /111 ! -name '*.py')
 
 
-ifndef skiptests
+ifneq ($(call bool_true,$(skiptests)),)
+	# skiptests is true: do not define TESTS.
+else
 	TESTS := $(patsubst $(SRCDIR_TESTS)/%.c,$(OBJDIR_TESTS)/%,$(SRCS_TESTS))
 endif
 
@@ -418,7 +471,7 @@ $(OBJ)/output_filter_output.o \
 $(OBJ)/output_format_csv.o \
 $(OBJ)/output_format_netcdf.o
 
-ifdef netcdf
+ifneq ($(call bool_true,$(netcdf)),)
 OBJECTS += $(OBJ)/read_netcdf.o
 endif
 
@@ -434,18 +487,18 @@ dir:
 	mkdir -p $(OBJDIR_TESTS)
 	mkdir -p ../lib
 
-ifdef netcdf
-ifdef wmfire
+ifneq ($(call bool_true,$(netcdf)),)
+ifneq ($(call bool_true,$(wmfire)),)
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) $(LOCAL_LIBS) $(LDLIBS_FIRE) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(RPATH_MAIN) -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LINK_NETCDF) $(LINK_FLEX) -v -o $(PGM)
 endif
 else
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 rhessys: $(OBJECTS) test
-	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) $(LDLIBS_FIRE) -v -o $(PGM)
+	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) $(LDLIBS_FIRE) $(RPATH_MAIN) -v -o $(PGM)
 else
 rhessys: $(OBJECTS) test
 	$(CC) $(OBJECTS) $(CFLAGS) -I include -lm $(LOCAL_LIBS) $(LINK_FLEX) -v -o $(PGM)
@@ -457,7 +510,7 @@ print-%  : ; @echo $* = $($*)
 
 OBJECTS_NO_MAIN := $(patsubst $(OBJ)/main.o,,$(OBJECTS))
 
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 test: dir $(TESTS)
     # Copy FIRE_LIB to test directory so that tests will run.
 	cp $(FIRE_LIB_PATH) $(TEST_FIRE_LIB_PATH)
@@ -471,27 +524,27 @@ endif
 # $(OBJ)/lex.yy.o $(OBJ)/output_filter_parser.tab.o $(OBJ)/output_filter.o $(OBJ)/string_list.o $(OBJ)/dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS)
 $(TESTS): $(OBJECTS_NO_MAIN) $(OBJECTS_TESTS)
 ifeq ($(OS), Darwin)
-ifdef wmfire
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
+ifneq ($(call bool_true,$(wmfire)),)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) $(RPATH_TESTS) -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 endif
 else ifeq ($(OS), Linux)
-ifdef wmfire
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
+ifneq ($(call bool_true,$(wmfire)),)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) $(RPATH_TESTS) -lbsd -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -lbsd -o $@
 endif
 else
-ifdef wmfire
-	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
+ifneq ($(call bool_true,$(wmfire)),)
+	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) $(RPATH_TESTS) -o $@
 else
 	$(CC) $(OBJECTS_NO_MAIN) $@.o $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_TESTS) $(LINK_NETCDF) $(LINK_FLEX) -o $@
 endif
 endif
 	cp $@ $(TESTS_ROOTDIR)
 
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 $(OBJDIR_TESTS)/%.o: $(SRCDIR_TESTS)/%.c
 	$(CC) $(CFLAGS_TESTS) $(INCLUDES) $(LOCAL_LIBS) $(LDLIBS_FIRE) -c -o $@ $<
 else
@@ -541,7 +594,7 @@ $(OBJ)/execute_hourly_growth_output_event.o: tec/execute_hourly_growth_output_ev
 	$(CC) -c $(CFLAGS) -I include tec/execute_hourly_growth_output_event.c -o $(OBJ)/execute_hourly_growth_output_event.o
 $(OBJ)/execute_state_output_event.o: tec/execute_state_output_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_state_output_event.c -o $(OBJ)/execute_state_output_event.o
-ifdef wmfire
+ifneq ($(call bool_true,$(wmfire)),)
 $(OBJ)/execute_firespread_event.o: tec/execute_firespread_event.c
 	$(CC) -c $(CFLAGS) -I include tec/execute_firespread_event.c -o $(OBJ)/execute_firespread_event.o
 else
@@ -1118,7 +1171,7 @@ $(OBJ)/output_template_structure.o: output/output_template_structure.c
 $(OBJ)/construct_ascii_grid.o: init/construct_ascii_grid.c
 	$(CC) -c $(CFLAGS) -I include init/construct_ascii_grid.c -o $(OBJ)/construct_ascii_grid.o
 
-ifdef netcdf
+ifneq ($(call bool_true,$(netcdf)),)
 $(OBJ)/read_netcdf.o: init/read_netcdf.c
 	$(CC) -c $(CFLAGS) -I include init/read_netcdf.c -o $(OBJ)/read_netcdf.o
 $(OBJ)/construct_netcdf_grid.o: init/construct_netcdf_grid.c
@@ -1149,7 +1202,7 @@ $(OBJ)/reconstruct_hourly_clim.o: init/reconstruct_hourly_clim.c
 # Generate code
 output_filter/parser/output_filter_parser.tab.c: output_filter/parser/output_filter_parser.y output_filter/parser/output_filter_parser.l
 	cd output_filter/parser && \
-	bison --report=none -d output_filter_parser.y && \
+	bison $(BISONFLAGS) -d output_filter_parser.y && \
 	flex output_filter_parser.l
 util/index_struct_fields.c: include/rhessys.h
 	python3 bin/dynamic_field_lookup.py --headers include/rhessys.h \
@@ -1171,6 +1224,7 @@ $(OBJ)/output_filter.o: output_filter/output_filter.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c output_filter/output_filter.c -o $(OBJ)/output_filter.o
 $(OBJ)/output_filter_parser.tab.o: output_filter/parser/output_filter_parser.tab.c
 	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/output_filter_parser.tab.c -o $(OBJ)/output_filter_parser.tab.o
+$(OBJ)/lex.yy.o: output_filter/parser/output_filter_parser.tab.c
 	$(CC) $(CFLAGS_NO_C99) $(INCLUDES) -c output_filter/parser/lex.yy.c -o $(OBJ)/lex.yy.o
 $(OBJ)/index_struct_fields.o: util/index_struct_fields.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c util/index_struct_fields.c -o $(OBJ)/index_struct_fields.o
@@ -1192,9 +1246,9 @@ setversion:
 ifeq ($(OS), Darwin)
 	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' -i '' ./main.c
 else ifeq ($(OS), Linux)
-	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
+	sed -i -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
 else
-	sed -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
+	sed -i -e 's/<<RHESSYS_VERSION>>/$(VERSION)/g' ./main.c
 endif
 
 install:

@@ -25,7 +25,7 @@ struct canopy_strata_object *find_stratum(int stratum_ID, int patch_ID, int zone
 
 
 static void infer_expr_variable_data_type(OutputFilterVariable * const expr_var, const OutputFilterVariable *sub_var) {
-    if (expr_var->data_type == NULL) {
+	if (expr_var->data_type == DATA_TYPE_UNDEFINED) {
         expr_var->data_type = sub_var->data_type;
     } else if (sub_var->data_type > expr_var->data_type) {
         expr_var->data_type = sub_var->data_type;
@@ -93,6 +93,8 @@ static bool init_hourly_daily_variable(Dictionary_t *struct_index, char *struct_
 }
 
 static bool init_variables_hourly_daily(OutputFilter *f, StructIndex_t *i, bool verbose) {
+    /* Unused parameters retained for interface compatibility: verbose. */
+    (void)verbose;
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_hourly_daily: no variables defined.\n");
 		return false;
@@ -170,6 +172,8 @@ static bool init_monthly_yearly_variable(Dictionary_t *struct_index, char *struc
 }
 
 static bool init_variables_monthly_yearly(OutputFilter *f, StructIndex_t *i, bool verbose) {
+    /* Unused parameters retained for interface compatibility: verbose. */
+    (void)verbose;
 	if (f->variables == NULL) {
 		fprintf(stderr, "init_variables_monthly_yearly: no variables defined.\n");
 		return false;

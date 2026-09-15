@@ -96,6 +96,8 @@ double	compute_soil_water_potential(
 							double  p,
 							double	S)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/

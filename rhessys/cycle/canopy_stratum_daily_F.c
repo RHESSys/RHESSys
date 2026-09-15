@@ -39,6 +39,9 @@ void	canopy_stratum_daily_F(
 							   struct	tec_entry		          *event,
 							   struct date 			            current_date)
 {
+    /* Unused parameters retained for interface compatibility: hillslope, event. */
+    (void)hillslope;
+    (void)event;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
@@ -258,11 +261,10 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
-	double tmid;
+	/* Cleanup note: removed unused locals tmid, APAR_direct_sunlit, and rnet_trans. */
 	double  assim_sunlit;
 	double  assim_shade;
 	double	dC13_sunlit, dC13_shade;
-	double  APAR_direct_sunlit;
 	double	dry_evaporation;
 	double	ga, gasnow;
 	double	Kdown_direct;
@@ -286,7 +288,7 @@ void	canopy_stratum_daily_F(
 	double	rnet_evap;
 	double  rnet_evap_night;
 	double  rnet_evap_day;
-	double	rnet_trans, rnet_trans_sunlit, rnet_trans_shade;
+	double	rnet_trans_sunlit, rnet_trans_shade;
 	double	snow_throughfall;
 	double	transpiration;
 	double	transpiration_rate;
@@ -335,7 +337,7 @@ void	canopy_stratum_daily_F(
 	struct mortality_struct mort;
 
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -444.1 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.1 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.2f %8.2f %8.2f %8.2f ",
 		patch[0].Kdown_direct,
@@ -554,7 +556,7 @@ void	canopy_stratum_daily_F(
 	/*      mixed.                                                  */
 	/*--------------------------------------------------------------*/
 	if ( command_line[0].verbose_flag > 2 ){
-		printf("\n%4d %4d %4d -444.4 \n",
+		printf("\n%4ld %4ld %4ld -444.4 \n",
 			current_date.day, current_date.month, current_date.year);
 		printf("\n %f %f %f %f %f %f %f",
 			Kdown_diffuse,
@@ -564,7 +566,7 @@ void	canopy_stratum_daily_F(
 			stratum[0].epv.proj_pai,
 			basin[0].theta_noon,
 			K_reflectance);
-		printf("\n%4d %4d %4d -444.4b \n",
+		printf("\n%4ld %4ld %4ld -444.4b \n",
 			current_date.day, current_date.month, current_date.year);
 	}
 	stratum[0].Kstar_diffuse = compute_diffuse_radiative_fluxes(
@@ -578,7 +580,7 @@ void	canopy_stratum_daily_F(
 		basin[0].theta_noon,
 		K_reflectance);
 	if ( command_line[0].verbose_flag > 2 )
-		printf("\n%8d -444.5 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.5 ",julday(current_date)-2449000);
 	stratum[0].APAR_diffuse = compute_diffuse_radiative_PAR_fluxes(
 		command_line[0].verbose_flag,
 		&(PAR_diffuse),
@@ -610,7 +612,7 @@ void	canopy_stratum_daily_F(
 	/*      mixed.                                                  */
 	/*--------------------------------------------------------------*/
 	if ( command_line[0].verbose_flag > 2 )
-		printf("\n%8d -444.2 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.2 ",julday(current_date)-2449000);
 	stratum[0].Kstar_direct = compute_direct_radiative_fluxes(
 		command_line[0].verbose_flag,
 		&(Kdown_direct),
@@ -624,7 +626,7 @@ void	canopy_stratum_daily_F(
 
 
 	if ( command_line[0].verbose_flag > 2  )
-		printf("\n%d %d %d  -444.3 ",
+		printf("\n%ld %ld %ld  -444.3 ",
 		current_date.year, current_date.month, current_date.day);
 	stratum[0].APAR_direct = compute_direct_radiative_fluxes(
 		command_line[0].verbose_flag,
@@ -684,7 +686,7 @@ void	canopy_stratum_daily_F(
 		printf("\n fparabs %f min_vwc %f",stratum[0].epv.max_fparabs,
 		stratum[0].epv.min_vwc);
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -444.6 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.6 ",julday(current_date)-2449000);
 
 	/*--------------------------------------------------------------*/
 	/*	Compute conductance aerodynamic.			*/
@@ -804,7 +806,7 @@ void	canopy_stratum_daily_F(
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.6f ",stratum[0].ga);
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -444.8 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.8 ",julday(current_date)-2449000);
 
 	/*--------------------------------------------------------------*/
 	/*	Determine non-vascular condductance to evaporation.		*/
@@ -842,14 +844,14 @@ void	canopy_stratum_daily_F(
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.6f ",stratum[0].gs);
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%4d %4d %4d -444.9 \n ",
+		printf("\n%4ld %4ld %4ld -444.9 \n ",
 		current_date.day, current_date.month, current_date.year);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.4f %8.4f %8.4f %8.4f \n ",
 		stratum[0].Kstar_direct,stratum[0].Kstar_diffuse,
 		stratum[0].APAR_direct,stratum[0].APAR_diffuse);
 	if ( command_line[0].verbose_flag > 1 ) {
-		printf("\n%4d %4d %4d -444.9.1 \n ",current_date.day, current_date.month,
+		printf("\n%4ld %4ld %4ld -444.9.1 \n ",current_date.day, current_date.month,
 			current_date.year);
 		printf(" %f\n", stratum[0].snow_stored);
 	}
@@ -878,7 +880,7 @@ void	canopy_stratum_daily_F(
 	if ( command_line[0].verbose_flag > 1 )
 		printf("\n%8.4f %f ",stratum[0].snow_stored, stratum[0].sublimation);
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -444.10 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.10 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.4f %8.4f %8.4f %8.4f ",stratum[0].Kstar_direct,
 		stratum[0].Kstar_diffuse,stratum[0].APAR_direct,
@@ -1145,7 +1147,7 @@ void	canopy_stratum_daily_F(
 	double surface_heat_flux_night = patch[0].surface_heat_flux - surface_heat_flux_day;
 
 	if ( command_line[0].verbose_flag > 2 )
-		printf("\n%8d -444.11 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.11 ",julday(current_date)-2449000);
 	/*--------------------------------------------------------------*/
 	/*	Compute evaporation and transpiration RATES (m/s)	*/
 	/*	for daylight period .					*/
@@ -1238,7 +1240,7 @@ void	canopy_stratum_daily_F(
 	}
 
 	if ( command_line[0].verbose_flag > 2  )
-		printf("\n%8d -444.12 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.12 ",julday(current_date)-2449000);
 	/*--------------------------------------------------------------*/
 	/*	Transpiration rate.					*/
 	/*--------------------------------------------------------------*/
@@ -1376,12 +1378,12 @@ void	canopy_stratum_daily_F(
 		}
 	}
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -444.13 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.13 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.6f %8.6f %8.6f ",potential_evaporation_rate*1000,
 		transpiration_rate*1000, stratum[0].potential_evaporation*1000 );
 	if ( command_line[0].verbose_flag > 2 )
-		printf("\n%4d %4d %4d -444.14 ",current_date.day, current_date.month,
+		printf("\n%4ld %4ld %4ld -444.14 ",current_date.day, current_date.month,
 		current_date.year);
 	/*--------------------------------------------------------------*/
 	/*	Update rain storage ( this also updates the patch level	*/
@@ -1437,7 +1439,7 @@ void	canopy_stratum_daily_F(
 	}
 
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -444.15 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.15 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.4f %8.4f %8.4f %8.4f ",stratum[0].Kstar_direct,
 		stratum[0].Kstar_diffuse,stratum[0].APAR_direct,
@@ -1680,7 +1682,7 @@ void	canopy_stratum_daily_F(
 		/*--------------------------------------------------------------*/
 
 	if ( command_line[0].verbose_flag > 1 )
-		printf("\n%8d -444.16 ",julday(current_date)-2449000);
+		printf("\n%8ld -444.16 ",julday(current_date)-2449000);
 	if ( command_line[0].verbose_flag > 1 )
 		printf("%8.6f ", transpiration);
 	/*--------------------------------------------------------------*/
@@ -2056,6 +2058,7 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_month.fe_prop_c_consumed += stratum[0].fe.canopy_target_prop_c_consumed;
 		stratum[0].acc_month.fe_prop_c_mortality += stratum[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
 		stratum[0].acc_month.fe_prop_c_mortality_leaf += stratum[0].fe.canopy_target_prop_c_remain_adjusted;
+		stratum[0].acc_month.rootzone_depth += stratum[0].rootzone.depth;
 		stratum[0].acc_month.length += 1;
 	}
 	if ((command_line[0].output_flags.yearly == 1) &&
@@ -2080,7 +2083,11 @@ void	canopy_stratum_daily_F(
 		stratum[0].acc_year.fe_prop_c_consumed += stratum[0].fe.canopy_target_prop_c_consumed;
 		stratum[0].acc_year.fe_prop_c_mortality += stratum[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
 		stratum[0].acc_year.fe_prop_c_mortality_leaf += stratum[0].fe.canopy_target_prop_c_remain_adjusted;
+		stratum[0].acc_year.rootzone_depth += stratum[0].rootzone.depth;
 		stratum[0].acc_year.length += 1;
 	}
+	/* Cleanup note: total_incoming_PAR and windcan are retained for diagnostics and intentionally unused. */
+	(void)total_incoming_PAR;
+	(void)windcan;
 	return;
 } /*end canopy_stratum_daily_F.c*/

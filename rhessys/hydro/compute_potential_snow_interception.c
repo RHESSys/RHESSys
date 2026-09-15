@@ -46,6 +46,9 @@ double	compute_potential_snow_interception(
 											double Tair,
 											struct	canopy_strata_object	*stratum)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag, Tair. */
+    (void)verbose_flag;
+    (void)Tair;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
@@ -53,9 +56,10 @@ double	compute_potential_snow_interception(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+	/* Cleanup note: removed unused local Imax. */
 	double	potential_interception;
 	double interception_coef;
-	double leaf_area_ratio, Imax;
+	double leaf_area_ratio;
 	/*--------------------------------------------------------------*/
 	/*	Compute amount potentially intercepted.			*/
 	/*								*/

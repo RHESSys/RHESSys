@@ -43,7 +43,7 @@ void	output_growth_zone(	int basinID, int hillID,
 	/*------------------------------------------------------*/
 	
 	fprintf(outfile,
-		"%4d %4d %4d %3d %3d %3d %8.5f %8.5f %8.3f %8.3f %8.5f %f %f %f %f \n ",
+		"%4ld %4ld %4ld %3d %3d %3d %8.5f %8.5f %8.3f %8.3f %8.5f %f %f %f %f \n ",
 		current_date.day,
 		current_date.month,
 		current_date.year,

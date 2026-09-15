@@ -30,6 +30,8 @@
 int compute_growth_resp(int alloc, struct epconst_struct epc,
 						struct cdayflux_struct* cdf)
 {
+    /* Unused parameters retained for interface compatibility: alloc. */
+    (void)alloc;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

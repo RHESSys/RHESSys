@@ -91,7 +91,7 @@ struct routing_list_object *construct_ddn_routing_topology(
 			&zone_ID,
 			&hill_ID);
 		fscanf(routing_file,"%lf %lf %lf", &x,&y,&z);
-		fscanf(routing_file,"%lf %d %d %d", 
+		fscanf(routing_file,"%lf %lf %d %d", 
 			&area,
 			&area,
 			&drainage_type,

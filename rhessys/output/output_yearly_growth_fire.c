@@ -42,7 +42,7 @@ void	output_yearly_growth_fire( int basinID, int hillID, int zoneID,
 	/*--------------------------------------------------------------*/
 
   	fprintf(outfile,
-       		 "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+       		 "%ld %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 
         	current_date.year,
         	basinID,

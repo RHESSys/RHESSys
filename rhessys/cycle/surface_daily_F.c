@@ -39,6 +39,11 @@ void		surface_daily_F(
 							struct	tec_entry		*event,
 							struct 	date 			current_date)
 {
+    /* Unused parameters retained for interface compatibility: world, hillslope, event, current_date. */
+    (void)world;
+    (void)hillslope;
+    (void)event;
+    (void)current_date;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
 	/*--------------------------------------------------------------*/
@@ -124,6 +129,7 @@ void		surface_daily_F(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused unsuffixed evaporation-rate locals; retained day/night variants used in calculations. */
 	double  detention_store_evaporation;
 	double  detention_store_potential_evaporation;
 	double  detention_store_potential_evaporation_night;
@@ -138,23 +144,18 @@ void		surface_daily_F(
 	double	Kstar_diffuse;
 	double	APAR_diffuse;
 	double	APAR_direct;
-	double	potential_evaporation_rate;
 	double	potential_evaporation_rate_night;
 	double	potential_evaporation_rate_day;
-	double	potential_rainy_evaporation_rate;
 	double	potential_rainy_evaporation_rate_night;
 	double	potential_rainy_evaporation_rate_day;
 	double	rainy_evaporation;
 	double	rnet_evap_pond, rnet_evap_litter, rnet_evap_soil;
 	double  rnet;
-	double	PE_rate, PE_rainy_rate;
 	double	PE_rate_night, PE_rainy_rate_night;
 	double	PE_rate_day, PE_rainy_rate_day;
 	double	soil_potential_evaporation;
-	double	soil_potential_dry_evaporation_rate;
 	double	soil_potential_dry_evaporation_rate_night;
 	double	soil_potential_dry_evaporation_rate_day;
-	double	soil_potential_rainy_evaporation_rate;
 	double	soil_potential_rainy_evaporation_rate_night;
 	double	soil_potential_rainy_evaporation_rate_day;
 	double	exfiltration;
@@ -996,6 +997,18 @@ void		surface_daily_F(
 			patch[0].surface_energy_profile[3].depth;
 		
 	}
+	/* Cleanup note: selected surface energy scratch locals are retained for diagnostics and intentionally unused. */
+	(void)albedo;
+	(void)dry_evaporation;
+	(void)Kstar_direct;
+	(void)Kstar_diffuse;
+	(void)APAR_diffuse;
+	(void)APAR_direct;
+	(void)rainy_evaporation;
+	(void)APAR_diffuse_lit;
+	(void)APAR_diffuse_soil;
+	(void)APAR_direct_lit;
+	(void)APAR_direct_soil;
 	
 	return;
 }/*end surface_daily_F.c*/

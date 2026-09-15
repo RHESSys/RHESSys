@@ -42,7 +42,7 @@
 /*double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,double curMaxY,double cellMaxX,
 							double cellMaxY,double cellMinX,double cellMinY,double cell_res);*/
 
-struct fire_patch_object **construct_patch_fire_grid (struct world_object *world, struct command_line_object *command_line,struct fire_default def)
+struct patch_fire_object **construct_patch_fire_grid (struct world_object *world, struct command_line_object *command_line,struct fire_default def)
 
 {
 	/*--------------------------------------------------------------*/
@@ -57,6 +57,7 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused grid scratch locals h/z/k/pf and tmp. */
 
 	//MCK: time process
 	clock_t start, end;
@@ -66,9 +67,9 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 	struct patch_object *patch;
 	struct patch_family_object *patch_family;
 
-	int b, h, p, z, i, j, k, pf;
+	int b, p, i, j;
 	//	double maxx, maxy, minx, miny, tmp,halfSideLength,curMinX,curMinY,curMaxX,curMaxY, cell_res;
-	double cell_res, tmp;
+	double cell_res;
 	/*	maxx=-10000; // depends on the origin for the coordinates, this was set for HJA centered at 0,0
 	minx=-10000;
 	maxy=-10000;
@@ -229,8 +230,8 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 				*/
 				if (command_line[0].verbose_flag <= -7) {
 					printf("--------------------\n");
-					printf("Current grid patch id: %d, X: %d  Y: %d\n",tmpPatchID,i,j);
-					printf("Zone: %d | Hill: %d | elev: %lf\n",tmpZoneID,tmpHillID,fire_grid[i][j].elev);
+					printf("Current grid patch id: %.0f, X: %d  Y: %d\n",tmpPatchID,i,j);
+					printf("Zone: %.0f | Hill: %.0f | elev: %lf\n",tmpZoneID,tmpHillID,fire_grid[i][j].elev);
 				}
 
 				if (tmpPatchID >= 0)
@@ -239,7 +240,7 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 					curPatchID = tmpPatchID;
 					curZoneID = tmpZoneID;
 					if (command_line[0].verbose_flag <= -7) {
-						printf("Valid patch id: %d, X: %d  Y: %d\n", curPatchID, j, i);
+						printf("Valid patch id: %.0f, X: %d  Y: %d\n", curPatchID, j, i);
 					}
 
 					//1	#pragma omp parallel for
@@ -369,9 +370,10 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 
 //			}
 //		}
-/*		if(def.include_wui==1) // then readin the wui LUT
+		/*		
+		if(def.include_wui==1) // then readin the wui LUT
 			fclose(wuiIn);
-*/		
+	
 		//		FILE *demIn;
 		//		demIn=fopen(command_line[0].firegrid_dem_filename,"r");
 		//		demIn=fopen("../auxdata/DemGrid.txt","r");
@@ -380,6 +382,7 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 		//for(j=0;j<grid_dimX;j++){				
 		//				fscanf(demIn,"%lf\t",&fire_grid[i][j].elev);
 		//printf("Which column? %d \n",i);
+		*/
 
 		//close file connections
 		fclose(patchesIn);
@@ -389,7 +392,8 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 
 		printf("--------------------\n");
 
-/*		if(def.include_wui==1) // then readin the wui LUT
+		/*
+		if(def.include_wui==1) // then readin the wui LUT
 		{
 			FILE *wuiIn;
 			wuiIn=fopen("../auxdata/WUILUT.txt","r");
@@ -465,7 +469,7 @@ struct fire_patch_object **construct_patch_fire_grid (struct world_object *world
 	}
 	fclose(gridout);
 
-*/
+	*/
 	/* done allocating fire grid, return to RHESSys*/
 	end=clock();
 	time_used=((double) (end-start))/CLOCKS_PER_SEC;

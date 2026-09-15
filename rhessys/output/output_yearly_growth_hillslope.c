@@ -36,6 +36,11 @@ void	output_yearly_growth_hillslope(
 				struct	date	date,
 				FILE *outfile)
 {
+    /* Unused parameters retained for interface compatibility: basinID, hillslope, date, outfile. */
+    (void)basinID;
+    (void)hillslope;
+    (void)date;
+    (void)outfile;
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

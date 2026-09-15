@@ -119,6 +119,9 @@ double	top_model(
 				  struct 	zone_object **zones,
 				  struct	date	current_date)
 {
+    /* Unused parameters retained for interface compatibility: sen1, sen2. */
+    (void)sen1;
+    (void)sen2;
 	/*--------------------------------------------------------------*/
 	/*  Local Function Declarations.                                */
 	/*--------------------------------------------------------------*/
@@ -186,9 +189,10 @@ double	top_model(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused lateral-flow scratch locals up_flow and down_flow. */
 	int i,j,k;
 	double	base_flow, total_baseflow;
-	double  mean_sat_deficit, mean_sat_deficit_z, up_flow, down_flow;			/* Taehee Hwang */
+	double  mean_sat_deficit, mean_sat_deficit_z;			/* Taehee Hwang */
 	double  new_mean_sat_deficit, new_mean_rz_storage, new_mean_unsat_storage;		/* Taehee Hwang */
 	double  preday_mean_sat_deficit, preday_mean_unsat_storage, preday_mean_rz_storage; 	/* Taehee Hwang */
 	double  mean_hillslope_lna;
@@ -664,9 +668,11 @@ double	top_model(
 	 
 	else
 		water_balance = 0.0;
+	(void)mean_sat_deficit_z; /* Intentionally unused: retained for diagnostics bookkeeping. */
+	(void)total_litter_store; /* Intentionally unused: retained for diagnostics bookkeeping. */
 
 	if ((water_balance > 0.0000001) || (water_balance < -0.0000001))  
-		printf("\n Hill Water Balance is %12.8f on %d %d %d for Hill %d base %lf return %lf sd %lf %lf un %lf %lf rz %lf %lf litter %lf %lf det %lf %lf\n",
+		printf("\n Hill Water Balance is %12.8f on %ld %ld %ld for Hill %d base %lf return %lf sd %lf %lf un %lf %lf rz %lf %lf litter %lf %lf det %lf %lf\n",
 		water_balance,
 		current_date.day,
 		current_date.month,

@@ -47,7 +47,7 @@ void	output_stream_routing(
 	/*--------------------------------------------------------------*/
 	
 
-	fprintf(outfile, "%d %d %d %d %lf %lf %lf %lf %lf\n", 
+	fprintf(outfile, "%ld %ld %ld %d %lf %lf %lf %lf %lf\n", 
                 date.day,
 		date.month,
 		date.year,

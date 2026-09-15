@@ -30,6 +30,8 @@ void	compute_Lstar(int	verbose_flag,
 					  struct	zone_object	*zone,
 					  struct	patch_object	*patch)
 {
+    /* Unused parameters retained for interface compatibility: basin. */
+    (void)basin;
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/

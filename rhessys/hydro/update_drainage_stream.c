@@ -93,20 +93,18 @@ void  update_drainage_stream(
 	/*--------------------------------------------------------------*/ 
 	/*	Local variable definition.				*/ 
 	/*--------------------------------------------------------------*/ 
-	int i, j,k, d; 
+	/* Cleanup note: removed unused stream-routing locals i/j/k totals, patch_int_depth, route_to_surface, Qin, and t1/t2/t3. */
+	int d; 
 	double m, Ksat; 
 	double return_flow;  /* m */ 
-	double NO3_leached_total, NO3_leached_to_stream; /* kg/m2 */ 
-	double NH4_leached_total, NH4_leached_to_stream; /* kg/m2 */ 
-	double DON_leached_total, DON_leached_to_stream; /* kg/m2 */ 
-	double DOC_leached_total, DOC_leached_to_stream; /* kg/m2 */ 
-	double patch_int_depth;  /* m of H2O */
+	double NO3_leached_to_stream; /* kg/m2 */ 
+	double NH4_leached_to_stream; /* kg/m2 */ 
+	double DON_leached_to_stream; /* kg/m2 */ 
+	double DOC_leached_to_stream; /* kg/m2 */ 
 	double  route_to_stream; /* m3 */
-	double route_to_surface;
-	double  Qin, Qout,Qstr_total;  /* m */
-	double gamma, total_gamma, percent_tobe_routed;
-	double Nin, Nout;  /* kg/m2 */
-	double t1,t2,t3;
+	double  Qout;  /* m */
+	double gamma, total_gamma;
+	double Nout;  /* kg/m2 */
 	
 	d=0;
 	route_to_stream = 0.0;

@@ -62,9 +62,9 @@ void resemble_hourly_date(struct world_object *world){
   /*-----------------------------------------------------------------------------
    *  Local variable definition
    *-----------------------------------------------------------------------------*/
+  /* Cleanup note: removed unused local hourly_clim. */
   int i;
   int inx;
-  struct hourly_clim_object *hourly_clim;
 
   /*-----------------------------------------------------------------------------
    *  If there is only one base station, there is no need to resemble the records
@@ -98,6 +98,9 @@ void resemble_hourly_date(struct world_object *world){
 			  world[0].duration.day);
   
   inx=0;
+  /* Intentionally unused: retained for optional debug iteration bookkeeping. */
+  (void)i;
+  (void)inx;
   /*hourly_clim=world[0].base_stations[1][0].hourly_clim;
   while(hourly_clim[0].rain.seq[inx].edate.year!=0){
     printf("year = %d, month=%d, day=%d,hour=%d,value=%f\n",

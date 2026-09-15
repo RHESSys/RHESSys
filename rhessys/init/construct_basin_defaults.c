@@ -41,9 +41,8 @@ struct basin_default *construct_basin_defaults(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused parser locals default_file and record. */
 	int 	i;
-	FILE	*default_file;
-	char	record[MAXSTR];
 	struct	basin_default	*default_object_list;
         param *paramPtr = NULL;
         int paramCnt = 0;

@@ -395,6 +395,7 @@ struct accumulate_patch_object
    int ndays_sat;
    int ndays_sat70;
    int midsm_wyd;
+   int nburn;
    double burn;
    double et;
    double trans;
@@ -417,6 +418,8 @@ struct accumulate_patch_object
    double psn;
    double DOC_loss;
    double DON_loss;
+   double fire_c_consumed;
+   double fire_c_mortality;
    double theta;
    double rootzone_depth;
    double soilmoist;
@@ -690,6 +693,8 @@ typedef struct base_station_ncheader_object
         char    netcdf_tmin_varname[MAXSTR];    /* variable name for tmin in nc file */
         char    netcdf_rain_varname[MAXSTR];    /* variable name for rain in nc file */
         char    netcdf_elev_varname[MAXSTR];    /* variable name for elev in nc file */
+        char    netcdf_pspread_filename[MAXSTR]; /* filename for pspread nc file */
+        char    netcdf_pspread_varname[MAXSTR];  /* variable name for pspread in nc file */
 #ifdef LIU_EXTEND_CLIM_VAR
         double  rhum_mult;                    /* multiplier for relative humidity to 0-1 */
         char    netcdf_huss_filename[MAXSTR];   /* filename for specific humidity nc file */
@@ -810,6 +815,7 @@ struct  daily_clim_object
         double  *vpd;                           /*      Pa              */
         double  *wind;                          /*      m/s             */
         double  *wind_direction;                /*      degrees         */
+        double  *pspread;                      /*      0 - 1           */
 #ifdef LIU_EXTEND_CLIM_VAR
         double  *relative_humidity_max;         /*      0 - 1                 */
         double  *relative_humidity_min;         /*      0 - 1                 */
@@ -2123,12 +2129,14 @@ struct patch_object
         double  totalc;                         /* kgC/m2 total carbon */
         double  carbon_balance;                 /* kgC/m2 */
 
-        double  preday_totaln;                  /* kgC/m2 total nitrogen */
-        double  totaln;                         /* kgC/m2 total nitrogen */
-        double  nitrogen_balance;               /* kgC/m2 */
+        double  preday_totaln;                  /* kgN/m2 total nitrogen */
+        double  totaln;                         /* kgN/m2 total nitrogen */
+        double  nitrogen_balance;               /* kgN/m2 */
         double  satzone_nitrate;                /* kgN/m2 saturated zone */
-        double  ash_DOC;       /* kgC/m2 lost in fire */
-        double  ash_DON;       /* kgN/m2 lost in fire */
+        double  ash_DOC;                        /* kgC/m2 lost in fire */
+        double  ash_DON;                        /* kgN/m2 lost in fire */
+        double  fire_c_consumed;                /* kgC/m2 consumed in fire */
+        double  fire_c_mortality;               /* kgC/m2 mortality due to fire */
         
         struct  soil_c_object   soil_cs;
         struct  soil_n_object   soil_ns;
@@ -2380,6 +2388,7 @@ struct  command_line_object
         int             noredist_flag;
         int             vmort_flag;
         int             version_flag;
+        int             report_run_info_flag;
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
         int             multiscale_flag;
@@ -2554,7 +2563,7 @@ struct cstate_struct
     double leafc;           /* (kgC/m2) leaf C */
     double leafc_age1;           /* (kgC/m2) leaf C in first year leaves */
     double leafc_age2;           /* (kgC/m2) leaf C in older leaves */
-    double stem_density;     /* number per m2 */;
+    double stem_density;     /* number per m2 */
     double dead_leafc;      /* (kgC/m2) standing dead leaf C for grasses */
     double live_stemc;      /* (kgC/m2) live stem C */
     double dead_stemc;      /* (kgC/m2) dead stem C */
@@ -2984,6 +2993,7 @@ struct epconst_struct
         int allocation_flag;    /* (DIM) set as 1 for dynamic allocation */
         int veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
         int fire_veg_type;           /* (DIM) set as 1 for tree; 0 for grass */
+        int shrub_firespread_flag; /* (DIM) 1/0 true/false should shrubs be treated fully like litter for firespread - eg no height prop penalty */
         int phenology_type;     /* (DIM) set as 1 for decid; 0 for evergreen    */
         int nfix;               /* (DIM) set a 1 for n-fixers; 0 for not nfixers */
         int psi_curve;          /* (DIM) set to 0 for biome-bgc psi-conductance curve, other values give type of model 1=linear, 2=squared etc */
@@ -3192,6 +3202,7 @@ struct  stratum_default
 	double fe_prop_c_consumed;
 	double fe_prop_c_mortality;
 	double fe_prop_c_mortality_leaf;
+        double rootzone_depth;
         };
 
 

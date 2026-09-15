@@ -36,6 +36,9 @@ void update_litter_soil_mortality(
 					  struct litter_n_object *ns_litr,
 					  struct fire_litter_soil_loss_struct fire_loss)
 {
+    /* Unused parameters retained for interface compatibility: cdf_patch, ndf_patch. */
+    (void)cdf_patch;
+    (void)ndf_patch;
 
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/

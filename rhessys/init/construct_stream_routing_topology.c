@@ -163,6 +163,8 @@ struct stream_list_object construct_stream_routing_topology(
 		else if(neighbour_hill_count_0==1)stream_network_ini[i].neighbour_hill[0] = find_hillslope_in_basin(stream_network_ini[i].reach_ID-1,basin);
 		else stream_network_ini[i].neighbour_hill[0] = find_hillslope_in_basin(stream_network_ini[i].reach_ID,basin);
         hillslope=stream_network_ini[i].neighbour_hill[0];
+		/* Cleanup note: hillslope is retained for diagnostics and intentionally unused. */
+		(void)hillslope;
         stream_network_ini[i].num_neighbour_hills=neighbour_hill_num;
 		
 		fscanf(stream_file,"%d",&(stream_network_ini[i].num_upstream_neighbours));

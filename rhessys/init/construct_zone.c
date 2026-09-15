@@ -134,6 +134,9 @@ struct zone_object *construct_zone(
 	base_y = 0.0;
 	j = 0;
 	k = 0;	
+#ifdef FIND_STATION_BASED_ON_ID
+	(void)k; /* k is only used in the #ifndef FIND_STATION_BASED_ON_ID block */
+#endif
 	sum_patch_area = 0.0;
 
 	/*--------------------------------------------------------------*/
@@ -412,11 +415,11 @@ struct zone_object *construct_zone(
 		sum_patch_area += zone[0].patches[i][0].area;
 	} /*end for*/
 
-	// check that zone area is equal to sum of patch areas
-	if ( fabs(sum_patch_area -zone[0].area) > 0.01)
+	// check that zone area is equal to sum of patch areas - can have floating point issues when check is 0.01 or less
+	if ( fabs(sum_patch_area -zone[0].area) > 1)
 	{
 		fprintf(stderr,"patch areas do not sum to zone area %lf for zone %d\n", sum_patch_area, zone[0].ID);
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 
 	/*--------------------------------------------------------------*/

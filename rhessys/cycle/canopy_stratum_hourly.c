@@ -44,6 +44,12 @@ void	canopy_stratum_hourly(
 							  struct	tec_entry	*event,
 							  struct 	date current_date)
 {
+    /* Unused parameters retained for interface compatibility: world, basin, hillslope, event, current_date. */
+    (void)world;
+    (void)basin;
+    (void)hillslope;
+    (void)event;
+    (void)current_date;
 	/*--------------------------------------------------------------*/
 	/*	Local Function Declaration				*/
 	/*--------------------------------------------------------------*/
@@ -117,6 +123,9 @@ void	canopy_stratum_hourly(
 	patch[0].hourly[0].NO3_throughfall_final += NO3_throughfall 
 		* stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
+	/* Cleanup note: tmp1/tmp2 are retained for diagnostics and intentionally unused. */
+	(void)tmp1;
+	(void)tmp2;
 
 	
 	/*--------------------------------------------------------------*/

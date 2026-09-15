@@ -49,6 +49,13 @@ void skip_strata(
 											  struct	patch_object *patch,
 											  struct canopy_strata_object     *canopy_strata)
 {
+    /* Unused parameters retained for interface compatibility: command_line, num_world_base_stations, world_base_stations, defaults, patch, canopy_strata. */
+    (void)command_line;
+    (void)num_world_base_stations;
+    (void)world_base_stations;
+    (void)defaults;
+    (void)patch;
+    (void)canopy_strata;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
@@ -87,21 +94,20 @@ void skip_strata(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int	base_stationID;
-	int	i, dtmp, num_lines;
-	int	default_object_ID;
+	/* Cleanup note: removed unused locals base_stationID, num_lines, default_object_ID, and rootc. */
+	int	i, dtmp;
 	char	record[MAXSTR];
-	double 	rootc, ltmp;
+	double 	ltmp;
 	int	*paramCnt=0;
 	param	*paramPtr=NULL;
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.		*/
 	/*--------------------------------------------------------------*/
-	paramPtr = readtag_worldfile(&paramCnt,world_file,"Canopy_Strata");
+	paramPtr = readtag_worldfile(paramCnt,world_file,"Canopy_Strata");
 		/*--------------------------------------------------------------*/
 		/*	Read in the number of  strata base stations 					*/
 		/*--------------------------------------------------------------*/
-	dtmp = getIntWorldfile(&paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",0,1);
+	dtmp = getIntWorldfile(paramCnt,&paramPtr,"canopy_strata_n_basestations","%d",0,1);
 	
 		if (dtmp > 0) {
 			/*canopy_strata[0].num_base_stations = dtmp;*/
@@ -116,7 +122,7 @@ void skip_strata(
 			/*      Read each base_station ID and then point to that base_statio*/
 			/*--------------------------------------------------------------*/
 			for (i=0 ; i<dtmp; i++){
-				fscanf(world_file,"%d",&(ltmp));
+				fscanf(world_file,"%lf",&(ltmp));
 				read_record(world_file, record);
 				/*--------------------------------------------------------------*/
 				/*	Point to the appropriate base station in the base       	*/

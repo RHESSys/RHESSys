@@ -87,8 +87,7 @@ double	compute_diffuse_radiative_fluxes(	int	verbose_flag,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	
-	double	flux_reflected;
+	/* Cleanup note: removed unused local flux_reflected. */
 	double	flux_transmitted;
 	double	flux_absorbed;
 	double	S;

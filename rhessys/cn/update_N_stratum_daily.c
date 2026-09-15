@@ -32,6 +32,8 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 						   struct nstate_struct *ns, struct ndayflux_struct *ndf,
 						   struct soil_n_object *ns_soil)
 {
+    /* Unused parameters retained for interface compatibility: ns_soil. */
+    (void)ns_soil;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/

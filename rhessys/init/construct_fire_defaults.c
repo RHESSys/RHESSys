@@ -47,10 +47,6 @@ struct fire_default *construct_fire_defaults(
         int paramCnt = 0;
         char	strbuf[strbufLen];
         char	outFilename[filenameLen];
-	double  ftmp, soil;
-	FILE	*default_file;
-	char	*newrecord;
-	char	record[MAXSTR];
 	struct	fire_default	*default_object_list;
         param *paramPtr = NULL;
 	
@@ -59,6 +55,7 @@ struct fire_default *construct_fire_defaults(
 	/*-------------------------------------------------------------*/
 	default_object_list   = (struct fire_default *)
 		alloc(num_default_files *
+	/* Cleanup note: removed unused parser scratch locals ftmp/soil/default_file/newrecord/record and local y. */
 		sizeof(struct fire_default),"default_object_list",
 		"construct_fire_defaults");
 	
@@ -150,15 +147,15 @@ struct fire_default *construct_fire_defaults(
 		default_object_list[i].mean_ign=getDoubleParam(&paramCnt, &paramPtr, "mean_ign", "%lf", 1, 1);
 		printf("mean_ign: %lf\n",default_object_list[i].mean_ign);
 		default_object_list[i].ran_seed=getIntParam(&paramCnt, &paramPtr, "ran_seed", "%d", 0, 1);
-		printf("ran_seed: %d\n",default_object_list[i].ran_seed);
+		printf("ran_seed: %ld\n",default_object_list[i].ran_seed);
 		default_object_list[i].calc_fire_effects=getIntParam(&paramCnt, &paramPtr, "calc_fire_effects", "%d", 0, 1);
 		printf("calc_fire_effects: %d\n",default_object_list[i].calc_fire_effects);
 		default_object_list[i].include_wui=getIntParam(&paramCnt, &paramPtr, "include_wui", "%d", 0, 1);
 		printf("include_wui: %d\n",default_object_list[i].include_wui);
-    		default_object_list[i].fire_size_name=getIntParam(&paramCnt, &paramPtr, "fire_size_name", "%d", 0, 1);
-                printf("fire_size_name: %d\n",default_object_list[i].fire_size_name);
+    	default_object_list[i].fire_size_name=getIntParam(&paramCnt, &paramPtr, "fire_size_name", "%d", 0, 1);
+        printf("fire_size_name: %d\n",default_object_list[i].fire_size_name);
 		default_object_list[i].wind_shift = getDoubleParam(&paramCnt, &paramPtr, "wind_shift", "%lf", 0, 1);
-                printf("wind_shift: %lf\n",default_object_list[i].wind_shift);
+        printf("wind_shift: %lf\n",default_object_list[i].wind_shift);
 
 
 
@@ -170,7 +167,6 @@ struct fire_default *construct_fire_defaults(
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
-                char *y = NULL;
                 char *token = NULL;
                 char filename[256];
     

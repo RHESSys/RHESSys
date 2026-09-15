@@ -23,7 +23,7 @@ bool output_format_csv_init(OutputFilter * const filter);
 bool output_format_csv_destroy(OutputFilter * const filter);
 bool output_format_csv_write_headers(OutputFilter * const filter);
 bool output_format_csv_write_data(char * const error, size_t error_len,
-		struct date date, OutputFilter * const filter,
+		struct date date, OutputFilter const * const filter,
 		EntityID id, MaterializedVariable * const vars, bool flush);
 
 #endif /* INCLUDE_OUTPUT_FILTER_OUTPUT_FORMAT_CSV_H_ */

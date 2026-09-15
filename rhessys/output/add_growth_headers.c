@@ -316,6 +316,8 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"nfix",
 		"grazingC",
 		"area");
+	/* Cleanup note: check is assigned from fprintf return values for optional diagnostics and intentionally unused. */
+	(void)check;
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/

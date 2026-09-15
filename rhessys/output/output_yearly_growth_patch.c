@@ -43,7 +43,7 @@ void	output_yearly_growth_patch(
 	/*--------------------------------------------------------------*/
 
      fprintf(outfile,
-        "%4d %4d %4d %4d %3d %lf %lf %lf %lf %lf %lf %lf  \n",
+        "%4ld %4d %4d %4d %3d %lf %lf %lf %lf %lf %lf %lf  \n",
         current_date.year,
         basinID,
         hillID,

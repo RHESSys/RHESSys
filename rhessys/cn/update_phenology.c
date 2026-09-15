@@ -74,6 +74,9 @@ void update_phenology(struct zone_object  *zone,
 					  int   multiscale_flag,
 					  int	msr_shading_flag)
 {
+    /* Unused parameters retained for interface compatibility: cs_soil, ns_soil. */
+    (void)cs_soil;
+    (void)ns_soil;
 	/*--------------------------------------------------------------*/
 	/*  Local function declaration                                  */
 	/*--------------------------------------------------------------*/
@@ -168,7 +171,8 @@ void update_phenology(struct zone_object  *zone,
 	long day, wyday;
 	double perc_sunlit, leaflitfallc, frootlitfallc;
 	double	rootc, sai, new_proj_lai_sunlit;
-	double excess_n, horiz;
+	/* Cleanup note: removed unused local horiz. */
+	double excess_n;
 	int remdays_transfer;
 	int expand_flag, litfall_flag;
 

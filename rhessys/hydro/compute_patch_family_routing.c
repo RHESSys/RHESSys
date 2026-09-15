@@ -35,6 +35,8 @@ void compute_patch_family_routing(struct zone_object *zone,
                                   struct command_line_object *command_line,
 		                          struct date current_date)
 {
+    /* Unused parameters retained for interface compatibility: current_date. */
+    (void)current_date;
 
     /*--------------------------------------------------------------*/
     /*	Local function definition.	                          	    */
@@ -492,6 +494,13 @@ void compute_patch_family_routing(struct zone_object *zone,
         }
 
     } // end patch family loop
+
+    /* Cleanup note: selected patch-family routing scratch locals are retained for diagnostics and intentionally unused. */
+    (void)p_ct_incl_sat;
+    (void)p_ct_incl_unsat;
+    (void)wp_mean;
+    (void)area_sum_g;
+    (void)dG_sat_pot;
 
     return;
 }

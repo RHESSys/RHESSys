@@ -42,8 +42,8 @@ void	output_hourly_growth_basin(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	int h,z,p,c;
-	int  layer;
+	/* Cleanup note: removed unused output traversal locals c/layer and strata pointer. */
+	int h,z,p;
 	//double agpsn, aresp;
 	//double alai;
 	//double aleafc, afrootc, awoodc;
@@ -69,7 +69,6 @@ void	output_hourly_growth_basin(
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
-	struct  canopy_strata_object    *strata;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -230,7 +229,7 @@ void	output_hourly_growth_basin(
 	hgwDONout = hgwDONout / basin_area;
 	hgwDOCout = hgwDOCout / basin_area;
 
-	fprintf(outfile,"%d %d %d %d %d %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf \n",
+	fprintf(outfile,"%ld %ld %ld %ld %d %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf \n",
 		current_date.hour,
 		current_date.day,
 		current_date.month,

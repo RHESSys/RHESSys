@@ -49,6 +49,8 @@ struct	hourly_clim_object *construct_hourly_clim(
 												  struct	date	start_date,
 												  long	duration)
 {
+    /* Unused parameters retained for interface compatibility: duration. */
+    (void)duration;
 	/*--------------------------------------------------------------*/
 	/*	local function declarations.								*/
 	/*--------------------------------------------------------------*/

@@ -47,6 +47,8 @@ double compute_potential_N_uptake_combined(
 								  struct nstate_struct *ns,
 								  struct cdayflux_struct *cdf)
 {
+    /* Unused parameters retained for interface compatibility: ns. */
+    (void)ns;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
@@ -54,8 +56,7 @@ double compute_potential_N_uptake_combined(
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
-	double day_gpp;     /* daily gross production */
-	double day_mresp;   /* daily total maintenance respiration */
+	/* Cleanup note: removed unused locals day_gpp/day_mresp, cnmax, and k2. */
 	double fbroot, fcroot, fstem, froot, fleaf, fwood;          /* RATIO   new fine root C : new leaf C     */
 	double f2;          /* RATIO   fraction to leaf and fraction to root*/
 	double f4;          /* RATIO   new live wood C : new wood C     */
@@ -65,10 +66,9 @@ double compute_potential_N_uptake_combined(
 	double cnfr;        /* RATIO   fine root C:N */
 	double cnlw;        /* RATIO   live wood C:N */
 	double cndw;        /* RATIO   dead wood C:N */
-	double cnmax;       /* RATIO   max of root and leaf C:N      */
 	double mean_cn, transfer, ratio;
 	double plant_calloc, plant_ndemand;
-	double k2, c; /* working variables */
+	double c; /* working variables */
 	double dickenson_k; /* working variable for LAI exponential decay constant */
 	/*---------------------------------------------------------------
 	Assess the carbon availability on the basis of this day's
@@ -116,6 +116,9 @@ double compute_potential_N_uptake_combined(
 	f3 = epc.alloc_stemc_leafc;
 	f4 = epc.alloc_livewoodc_woodc;
 	g1 = epc.gr_perc;
+	/* Cleanup note: f2, f3, and g1 are retained for diagnostics and intentionally unused in current logic. */
+	(void)f2;
+	(void)g1;
 	cnl = epc.leaf_cn;
 	cnfr = epc.froot_cn;
 	cnlw = epc.livewood_cn;
@@ -184,6 +187,7 @@ double compute_potential_N_uptake_combined(
 			fwood=0.0;
 			f3 = 0.0;
 		}
+		(void)f3;
 
 		if (epc.veg_type == TREE)
 		{

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "params.h"
 
+/* Cleanup note: removed previously unused locals in read/get* helpers (iParam, sLen, outFormat, paramInd variants). */
+
 param * readParamFile(int *paramCnt, char *filename)
 {
 
@@ -21,7 +23,6 @@ param * readParamFile(int *paramCnt, char *filename)
     */
    
     int paramInd = -1;
-    int iParam;
 
     char line [1024];
     char strbuf1 [128];
@@ -57,6 +58,7 @@ param * readParamFile(int *paramCnt, char *filename)
             strbuf2[0] = '\0';
             strbuf3[0] = '\0';
             argCnt = sscanf (line, "%s %s %s", strbuf1, strbuf2, strbuf3);
+            (void)argCnt; /* Intentionally unused: retained for parsing diagnostics bookkeeping. */
 
             /* Parse the parameter value */
             strcpy(paramPtr[paramInd].strVal, strbuf1);
@@ -144,7 +146,6 @@ int getIntParam(int *paramCnt, param **paramPtr , char *paramName, char *readFor
 
     int iParam;
     int paramInd;
-    int sLen;
     int intVal;
     int found = 0;
     param *params;
@@ -195,7 +196,6 @@ float getFloatParam(int *paramCnt, param **paramPtr , char *paramName, char *rea
 
     int iParam;
     int paramInd;
-    int sLen;
     float floatVal;
     int found = 0;
     param *params;
@@ -238,6 +238,7 @@ float getFloatParam(int *paramCnt, param **paramPtr , char *paramName, char *rea
         return defaultVal;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -245,7 +246,6 @@ double getDoubleParam(int *paramCnt, param **paramPtr, char *paramName, char *re
 
     int iParam;
     int paramInd;
-    int sLen;
     double doubleVal;
     int found = 0;
     param *params;
@@ -303,7 +303,6 @@ void printParams(int paramCnt, param *params, char *outFilename) {
 
 
     int iParam;
-    char outFormat[64];
 
     FILE *outFile;
 
@@ -343,7 +342,6 @@ char * getStrWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *r
     int sLen;
     char *outStr;
     int found = 0;
-    int paramInd;
 
     param *params;
     params = *paramPtr;
@@ -377,8 +375,6 @@ char * getStrWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *r
 int getIntWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, int defaultVal, int useDefaultVal) {
 
     int iParam;
-    int paramInd;
-    int sLen;
     int intVal;
     int found = 0;
     param *params;
@@ -401,14 +397,13 @@ int getIntWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *rea
         return defaultVal;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+        exit(EXIT_FAILURE);
     }
 }
 
 float getFloatWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, float defaultVal, int useDefaultVal) {
 
     int iParam;
-    int paramInd;
-    int sLen;
     float floatVal;
     int found = 0;
     param *params;
@@ -438,8 +433,6 @@ float getFloatWorldfile(int *paramCnt, param **paramPtr , char *paramName, char 
 double getDoubleWorldfile(int *paramCnt, param **paramPtr, char *paramName, char *readFormat, double defaultVal, int useDefaultVal) {
 
     int iParam;
-    int paramInd;
-    int sLen;
     double doubleVal;
     int found = 0;
     param *params;
@@ -462,5 +455,6 @@ double getDoubleWorldfile(int *paramCnt, param **paramPtr, char *paramName, char
         return defaultVal;
     } else {
         printf("\nNo parameter value found for %s and 'useDefault' flag set to false\n", paramName);
+        exit(EXIT_FAILURE);
     }
 }

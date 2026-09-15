@@ -35,6 +35,8 @@ void	execute_state_output_event(
 								   struct	date	end_date,
 								   struct	command_line_object *command_line)
 {
+    /* Unused parameters retained for interface compatibility: end_date. */
+    (void)end_date;
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
@@ -46,7 +48,8 @@ void	execute_state_output_event(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	int b,i;
+	/* Cleanup note: removed unused local loop index i. */
+	int b;
 	FILE	*outfile;
 	char	filename[MAXSTR+100];
 	char	ext[20];
@@ -54,7 +57,7 @@ void	execute_state_output_event(
 	/*--------------------------------------------------------------*/
 	/*	Try to open the world file in read mode.					*/
 	/*--------------------------------------------------------------*/
-	sprintf(ext,".Y%4dM%dD%dH%d",current_date.year,
+	sprintf(ext,".Y%4ldM%ldD%ldH%ld",current_date.year,
 		current_date.month,
 		current_date.day,
 		current_date.hour);
@@ -75,9 +78,9 @@ void	execute_state_output_event(
 		exit(EXIT_FAILURE);
 	}
 
-	fprintf(outfile, "\n%-30ld %s", world[0].ID,
+	fprintf(outfile, "\n%-30d %s", world[0].ID,
 		"world_ID");
-	fprintf(outfile, "\n%-30ld %s", world[0].num_basin_files,
+	fprintf(outfile, "\n%-30d %s", world[0].num_basin_files,
 		"num_basins");
 	/*--------------------------------------------------------------*/
 	/*	output basins												*/

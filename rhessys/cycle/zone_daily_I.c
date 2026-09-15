@@ -179,13 +179,14 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused locals tmp and fn_tavg (only referenced in a commented alternative formulation). */
 	int		flag;
 	int		i;
 	double	isohyet_adjustment;
 	int 	patch;
-	double	temp, tmp;
+	double	temp;
 	double	Tlapse_adjustment;
-	double	trans_coeff1, trans_coeff2, z_delta, fn_tavg;
+	double	trans_coeff1, trans_coeff2, z_delta;
 	int		season;
 	season = 0;
 	int		pf, rec;
@@ -564,7 +565,7 @@ void zone_daily_I(
 	/* but warn user of problem with their climate inputs		*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].Delta_T < -ZERO) {
-		printf("\n WARNING: Maximum temperature is less than minimum temperature on %d %d %d, for basestation %d",
+		printf("\n WARNING: Maximum temperature is less than minimum temperature on %ld %ld %ld, for basestation %d",
 			current_date.day, current_date.month, current_date.year, zone[0].base_stations[0][0].ID);
 		printf("\n WARNING: differences are %lf, tmax is %lf, tmin is %lf, ID is %d",
 			zone[0].Delta_T, zone[0].metv.tmax, zone[0].metv.tmin, zone[0].ID);

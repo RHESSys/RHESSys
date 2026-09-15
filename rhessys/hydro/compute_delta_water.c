@@ -56,6 +56,8 @@ double	compute_delta_water(
 							double	z_initial,
 							double	z_final)
 {
+    /* Unused parameters retained for interface compatibility: verbose_flag. */
+    (void)verbose_flag;
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
 	/*--------------------------------------------------------------*/

@@ -197,12 +197,12 @@ void		patch_daily_I(
 	/*--------------------------------------------------------------*/
 	/*  Local variable definition.                                  */
 	/*--------------------------------------------------------------*/
+	/* Cleanup note: removed unused locals root_growth, water_transfer, and count. */
 	int	layer, inx, rec;
 	int	stratum;
-	double	cnt, count, theta;
+	double	cnt, theta;
 
 	double  edible_leafc, grazing_mean_nc, grazing_Closs;
-	double root_growth, water_transfer;
 	struct  canopy_strata_object *strata;
 	struct  dated_sequence	clim_event;
 
@@ -496,7 +496,6 @@ void		patch_daily_I(
 	patch[0].height = 0.0;
 	patch[0].soil_cs.frootc = 0.0;
 	patch[0].rootzone.depth = 0.0;
-	count = 0.0;
 	for ( stratum=0 ; stratum<patch[0].num_canopy_strata; stratum++){
 		patch[0].effective_lai += patch[0].canopy_strata[stratum][0].epv.proj_lai;
 	  patch[0].total_stemc += patch[0].canopy_strata[stratum][0].cover_fraction //new

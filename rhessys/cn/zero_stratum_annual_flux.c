@@ -31,6 +31,10 @@ int zero_stratum_annual_flux(struct cstate_struct *cs,
 							 struct cannflux_struct* caf,
 							 struct nannflux_struct* naf)
 {
+    /* Unused parameters retained for interface compatibility: cs, caf, naf. */
+    (void)cs;
+    (void)caf;
+    (void)naf;
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
