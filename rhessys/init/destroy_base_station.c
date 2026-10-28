@@ -33,7 +33,10 @@ void destroy_base_station( struct command_line_object *command_line,
 	/*--------------------------------------------------------------*/
 	/*--------------------------------------------------------------*/
 	/*	Destroy the base station clim objects.						*/
+	/*	patch type base stations (NULL climate prefixes, dated		*/
+	/*	inputs only) have no daily or hourly clim objects		*/
 	/*--------------------------------------------------------------*/
+	if (base_station[0].daily_clim != NULL) {
 	if(base_station[0].daily_clim[0].tmin!=NULL) free( base_station[0].daily_clim[0].tmin);
 	if(base_station[0].daily_clim[0].tmax!=NULL) free( base_station[0].daily_clim[0].tmax);
 	if(base_station[0].daily_clim[0].rain!=NULL) free( base_station[0].daily_clim[0].rain);
@@ -76,11 +79,14 @@ void destroy_base_station( struct command_line_object *command_line,
     if(base_station[0].daily_clim[0].surface_shortwave_rad!=NULL) free( base_station[0].daily_clim[0].surface_shortwave_rad);
 #endif
 	free( base_station[0].daily_clim );
+	}
 	free( base_station[0].monthly_clim );
+	if (base_station[0].hourly_clim != NULL) {
 	free( base_station[0].hourly_clim[0].rain.seq);
 	free( base_station[0].hourly_clim[0].rain_duration.seq);
-	
+
 	free( base_station[0].hourly_clim );
+	}
 	free( base_station[0].yearly_clim );
 	/*--------------------------------------------------------------*/
 	/*	Destroy the base station object's array.					*/
