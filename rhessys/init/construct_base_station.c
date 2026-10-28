@@ -198,7 +198,16 @@ struct	base_station_object *construct_base_station(
 	base_station = (struct base_station_object *)
 		alloc(1 * sizeof(struct base_station_object ),
 		"base_station","construct_base_station");
-	
+	/*--------------------------------------------------------------*/
+	/*	clim objects are only constructed if their prefix is not	*/
+	/*	NULL - initialize so unused ones can be tested/freed		*/
+	/*--------------------------------------------------------------*/
+	base_station[0].yearly_clim = NULL;
+	base_station[0].monthly_clim = NULL;
+	base_station[0].daily_clim = NULL;
+	base_station[0].hourly_clim = NULL;
+	base_station[0].dated_input = NULL;
+
 	/*--------------------------------------------------------------*/
 	/*	Try to open the base station file.							*/
 	/*--------------------------------------------------------------*/
