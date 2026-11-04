@@ -142,6 +142,7 @@ void		hillslope_hourly(
 	hillslope[0].hourly_streamflow_NH4 = 0.0;
 	hillslope[0].hourly_streamflow_DOC = 0.0;
 	hillslope[0].hourly_streamflow_DON = 0.0;
+	hillslope[0].gw.hourly_Qout_riparian = 0.0;
 
 	if ((command_line[0].gw_flag > 0) && (hillslope[0].gw.storage > ZERO) && (command_line[0].gwtoriparian_flag==0)) {
 	    if (hillslope[0].defaults[0][0].gw_loss_fast_threshold < ZERO) {	
@@ -209,7 +210,9 @@ void		hillslope_hourly(
 		gw_Qout_ratio = hillslope[0].gw.hourly_Qout/hillslope[0].gw.storage;
 
 		if (hillslope[0].riparian_area > ZERO){
-			hourly_gw_Qout = hillslope[0].gw.hourly_Qout * hillslope[0].area / hillslope[0].riparian_area;
+			// hourly_gw_Qout = hillslope[0].gw.hourly_Qout * hillslope[0].area / hillslope[0].riparian_area; // old version, revised below
+			hillslope[0].gw.hourly_Qout_riparian = hillslope[0].gw.hourly_Qout * hillslope[0].riparian_area / hillslope[0].area;
+			hillslope[0].gw.hourly_Qout -= hillslope[0].gw.hourly_Qout_riparian;
 		}
 		else {
 			hillslope[0].hourly_streamflow_NO3 += hillslope[0].gw.hourly_NO3out;
@@ -218,24 +221,29 @@ void		hillslope_hourly(
 			hillslope[0].hourly_streamflow_DOC += hillslope[0].gw.hourly_DOCout;
 			
 			hillslope[0].hourly_base_flow += hillslope[0].gw.hourly_Qout;
-			hourly_gw_Qout = 0.0;
+			hillslope[0].gw.hourly_Qout_riparian = 0.0;
 		}
 
-  		for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
-			for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
+		for (i = 0; i < hillslope[0].num_zones; i++)
+		{
+			for (j = 0; j < hillslope[0].zones[i][0].num_patches; j++)
+			{
 				patch = hillslope[0].zones[i][0].patches[j];
-				if (patch[0].soil_defaults[0][0].ID == 42) {
-						patch[0].sat_deficit -= hourly_gw_Qout;
-						patch[0].soil_ns.sminn += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.NH4;
-						patch[0].soil_ns.nitrate += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.NO3;
-						patch[0].soil_ns.DON += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.DON;
-						patch[0].soil_cs.DOC += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.DOC;
-						}
+				if (patch[0].soil_defaults[0][0].ID == 42)
+				{
+					patch[0].sat_deficit -= hillslope[0].gw.hourly_Qout_riparian;
+					patch[0].soil_ns.sminn += hillslope[0].gw.hourly_Qout_riparian * gw_Qout_ratio * hillslope[0].gw.NH4;
+					patch[0].soil_ns.nitrate += hillslope[0].gw.hourly_Qout_riparian * gw_Qout_ratio * hillslope[0].gw.NO3;
+					patch[0].soil_ns.DON += hillslope[0].gw.hourly_Qout_riparian * gw_Qout_ratio * hillslope[0].gw.DON;
+					patch[0].soil_cs.DOC += hillslope[0].gw.hourly_Qout_riparian * gw_Qout_ratio * hillslope[0].gw.DOC;
+				}
 			}
 		}
 
-
-		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;	
+		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;
+		if (hillslope[0].riparian_area > ZERO) {
+			hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout_riparian;
+		}
 		hillslope[0].gw.NH4 -= hillslope[0].gw.hourly_NH4out;
 		hillslope[0].gw.NO3 -= hillslope[0].gw.hourly_NO3out;
 		hillslope[0].gw.DON -= hillslope[0].gw.hourly_DONout;

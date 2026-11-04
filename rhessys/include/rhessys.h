@@ -879,6 +879,7 @@ struct  gw_object
         double  hourly_NH4out;          /* kgN/m2/day   */
         double  hourly_DONout;          /* kgN/m2/day   */
         double  hourly_DOCout;          /* kgC/m2/day   */
+        double  hourly_Qout_riparian;   /* m/m2/day     */
 
         };
 /*----------------------------------------------------------*/
