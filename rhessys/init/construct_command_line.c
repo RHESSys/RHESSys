@@ -148,7 +148,6 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].sat_to_gw_coeff_mult = 1;
 	command_line[0].gw_loss_coeff_mult = 1;
 	command_line[0].parallel_flag = 0;
-	command_line[0].ash_deposition_flag = 0;
 	
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -1302,13 +1301,6 @@ printf("%s ",command_line[0].WUI_filename);
 				printf("\n The UTM Zone specified by user is UTM N%d \n", command_line[0].utm_zone);
 			} /* end if */
 
-			/*--------------------------------------------------------------*/
-			/*		Check for ash deposition flag next.						*/
-			/*--------------------------------------------------------------*/
-			else if (strcmp(main_argv[i],"-ash_deposition") == 0 ){
-				command_line[0].ash_deposition_flag = 1;
-				i++;
-			}
 
 			/*--------------------------------------------------------------*/
 			/*	NOTE:  ADD MORE OPTION PARSING HERE.						*/

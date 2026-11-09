@@ -69,3 +69,6 @@ Testing/*.params
 
 *.sif
 .clang-format
+callgrind.out
+gmon.out
+output.png

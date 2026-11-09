@@ -34,6 +34,7 @@ CMD_OPTS +=
 
 # For debug:
 # -O0 -g3
+# for profiling with gprof: -pg -fno-omit-frame-pointer
 
 # possibly useful
 # -fsanitize=address,undefined

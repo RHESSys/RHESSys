@@ -2269,7 +2269,7 @@ void		patch_daily_F(
 		}
 
 		// Ash deposition and transfer to surface DOC/DON
-		if (command_line[0].ash_deposition_flag == 1){
+		if (patch[0].soil_defaults[0][0].ash_deposition_flag == 1){
 			// Ash C to Soluble C (DOC) - 0.1 t0 0.01
 			// Only transfer above ZERO
 			if (patch[0].ash_DOC > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0){

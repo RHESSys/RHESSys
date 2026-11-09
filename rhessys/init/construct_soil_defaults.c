@@ -279,6 +279,7 @@ struct soil_default *construct_soil_defaults(
 		/*--------------------------------------------------------------*/
 		/*      Ash deposition  parameters                          	*/
 		/*--------------------------------------------------------------*/
+		default_object_list[i].ash_deposition_flag = getIntParam(&paramCnt, &paramPtr, "ash_deposition_flag", "%d", 0, 1);
 		default_object_list[i].ash_transfer_pct = getDoubleParam(&paramCnt, &paramPtr, "ash_transfer_pct", "%lf", 0.01, 1);
 		default_object_list[i].ash_pct_soluble_DOC = getDoubleParam(&paramCnt, &paramPtr, "ash_pct_soluble_DOC", "%lf", 0.05, 1);
 		default_object_list[i].ash_pct_soluble_DON = getDoubleParam(&paramCnt, &paramPtr, "ash_pct_soluble_DON", "%lf", 0.05, 1);
