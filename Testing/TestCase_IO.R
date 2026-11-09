@@ -9,6 +9,9 @@ load("W8TestCase.RData")
 
 # name <- "TestCase"
 
+library(RHESSysPreprocessing)
+bstats = basin_hillslope_stats(worldfile = "worldfiles/w8TC.world")
+
 # Basic RHESSys inputs
 rhessys_input <- IOin_rhessys_input(
   version = "../rhessys/rhessys7.5",
@@ -18,23 +21,119 @@ rhessys_input <- IOin_rhessys_input(
   flowtable = "flowtables/w8TC.flow",
   tec_file = "tecfiles/tec.test",
   start = "1988 10 1 1",
-  end = "2000 10 1 1",
+  # end = "2000 10 1 1",
+  end = "2189 10 1 1",
   output_prefix = NULL,
   output_folder = NULL,
-  commandline_options = "-g -s 0.355794 651.390265 -sv 0.355794 651.390265 -svalt 1.083102 1.193924 -gw 0.116316 0.916922"
+  commandline_options = "-g -s 0.355794 651.390265 -sv 0.355794 651.390265 -svalt 1.083102 1.193924 -gw 0.116316 0.916922 -climrepeat"
 )
 
 header <- "worldfiles/w8TC.hdr"
 # hdr <- read.table(header)
-offile <- "tecfiles/testing_filter.yml"
+# offile <- "tecfiles/testing_filter.yml"
+outfilter1 <- build_output_filter(
+  timestep = "daily",
+  output_format = "netcdf",
+  output_path = "out",
+  output_filename = c("W8TestCase_basin"),
+  spatial_level = "basin",
+  spatial_ID = 1,
+  variables = c(
+    "patch.soil_cs.totalc",
+    "patch.soil_ns.totaln",
+    "stratum.cs.net_psn",
+    "patch.lai",
+    "patch.totalc",
+    "patch.evaporation",
+    "patch.streamflow",
+    "patch.snowpack.water_equivalent_depth",
+    "patch.rootzone.depth",
+    "patch.transpiration_unsat_zone",
+    "patch.transpiration_sat_zone",
+    "patch.litter_cs.totalc",
+    "stratum.cs.gresp_transfer"
+  )
+)
+output_filter_nc <- IOin_output_filters(outfilter1, file_name = paste0("out/filter_w8TC_nc.yml"))
+
+outfilter2 <- build_output_filter(
+  timestep = "daily",
+  output_format = "csv",
+  output_path = "out",
+  output_filename = c("W8TestCase_basin"),
+  spatial_level = "basin",
+  spatial_ID = 1,
+  variables = c(
+    "patch.soil_cs.totalc",
+    "patch.soil_ns.totaln",
+    "stratum.cs.net_psn",
+    "patch.lai",
+    "patch.totalc",
+    "patch.evaporation",
+    "patch.streamflow",
+    "patch.snowpack.water_equivalent_depth",
+    "patch.rootzone.depth",
+    "patch.transpiration_unsat_zone",
+    "patch.transpiration_sat_zone",
+    "patch.litter_cs.totalc",
+    "stratum.cs.gresp_transfer"
+  )
+)
+output_filter_csv <- IOin_output_filters(outfilter2, file_name = paste0("out/filter_w8TC_csv.yml"))
+
+
+
+
+library(microbenchmark)
+
+mout1 = microbenchmark(
+  rh_cmd <- run_rhessys_single(
+    input_rhessys = rhessys_input,
+    hdr_files = "worldfiles/w8TC.hdr",
+    output_filter = output_filter_csv
+  ),
+  times = 10
+)
+
+mout2 = microbenchmark(
+  rh_cmd <- run_rhessys_single(
+    input_rhessys = rhessys_input,
+    hdr_files = "worldfiles/w8TC.hdr",
+    output_filter = output_filter_nc
+  ),
+  times = 10
+)
 
 rh_cmd <- run_rhessys_single(
   input_rhessys = rhessys_input,
-  hdr_files = "worldfiles/w8TC.hdr",  
-  output_filter = "tecfiles/testing_filter.yml"
+  hdr_files = "worldfiles/w8TC.hdr",
+  output_filter = output_filter_csv
+)
+
+rh_cmd <- run_rhessys_single(
+  input_rhessys = rhessys_input,
+  hdr_files = "worldfiles/w8TC.hdr",
+  output_filter = output_filter_nc
 )
 
 # ========================= Output =========================
+
+test2 = read.table("out/W8TestCase_basin.csv", header = T, sep = ",")
+names(test2)
+nrow(test2)
+test2 = add_dates(test2)
+cat("Min Date:", as.character(min(test2$date)), "\n")
+cat("Max Date:", as.character(max(test2$date)), "\n")
+
+library(ncdf4)
+
+testnc = nc_open("out/W8TestCase_basin.nc")
+nc_close(testnc)
+
+
+library(arrow)
+#convert netcdf to parquet
+arrow::write_parquet(test2, "out/W8TestCase_basin.parquet")
 
 ### Read in the test results and plot the water balance results
 test <- read.table("out/test_basin_daily.csv", header = T, sep = ",")
