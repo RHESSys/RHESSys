@@ -83,16 +83,13 @@ void compute_family_fire_effects(
 	double canopy_c_consumed = 0.0;
 	double canopy_n_consumed = 0.0;
 
-	if (command_line[0].ash_deposition_flag == 1){
-		// Assume combustion completeness is 85% for now, can parameterize later
-		combust_remain_pct = 0.15; //inverse of combustion completeness
-	}
+	// Assume combustion completeness is 85% for now, can parameterize later if needed
+	combust_remain_pct = 0.15; //inverse of combustion completeness
 
 	/*--------------------------------------------------------------*/
 	/*	Compute litter and soil removed.							*/
 	/*--------------------------------------------------------------*/
 	if (pspread > 0) {
-
 
 	/* Litter consumption is approximated based CONSUME model outputs */
 	/* Consumption 1hr-fuel = 1 * 1hr-fuel */
@@ -125,13 +122,14 @@ void compute_family_fire_effects(
 		// Track nburn days
 		patch_family[0].patches[p][0].nburn += 1;
 
-		litter_c_consumed += (patch_family[0].patches[p][0].litter_cs.litr1c * fire_loss.loss_litr1c +
+		litter_c_consumed = (patch_family[0].patches[p][0].litter_cs.litr1c * fire_loss.loss_litr1c +
 							  patch_family[0].patches[p][0].litter_cs.litr2c * fire_loss.loss_litr2c +
 							  patch_family[0].patches[p][0].litter_cs.litr3c * fire_loss.loss_litr3c +
-							  patch_family[0].patches[p][0].litter_cs.litr4c * fire_loss.loss_litr4c) *
-							  patch_family[0].patches[p][0].family_pct_cover;
+							  patch_family[0].patches[p][0].litter_cs.litr4c * fire_loss.loss_litr4c);
 
- 		if (command_line[0].ash_deposition_flag == 1){
+//							  patch_family[0].patches[p][0].family_pct_cover; // if using aggregate litter - add this back to above, set above to +=
+
+ 		if (patch_family[0].patches[p][0].soil_defaults[0][0].ash_deposition_flag == 1){
 			if (command_line[0].verbose_flag == -7) {
 				printf("Starting - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_DOC);
 				printf("Starting - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[p][0].ID , patch_family[0].patches[p][0].ash_DON);
@@ -160,8 +158,6 @@ void compute_family_fire_effects(
 		 fire_loss);
 
 		patch_family[0].patches[p][0].fire.litter_c_consumed = litter_c_consumed;
-
-
 	}
 
 	/*--------------------------------------------------------------*/
@@ -247,14 +243,6 @@ void compute_family_fire_effects(
 	}
 
 	// normalize by coverage
-	agg_under_height /= under_pct_area;
-	agg_under_carbon /= under_pct_area;
-	agg_intr_height /= intr_pct_area;
-	agg_intr_carbon /= intr_pct_area;
-
-
-
-	// normalize by coverage
 	if (under_pct_area > ZERO) {
         agg_under_height /= under_pct_area;
         agg_under_carbon /= under_pct_area;
@@ -306,13 +294,17 @@ void compute_family_fire_effects(
 			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_consumed += canopy_target[0].fe.m_cwdc_to_atmos;
 			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_mortality += canopy_target[0].fe.m_cwdc_to_atmos;
 
-			if (command_line[0].ash_deposition_flag == 1){
+			if (patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_deposition_flag == 1)
+			{
 				// cwdn is negative sometimes?? add max of 0 to prevent adding negative ash
-				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC += fmax(0.0, canopy_target[0].fe.m_cwdc_to_atmos * combust_remain_pct * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DOC);
-				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON += fmax(0.0, canopy_target[0].fe.m_cwdn_to_atmos * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DON);
-				if (command_line[0].verbose_flag == -7) {
-					printf("CWD - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC);
-					printf("CWD - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID , patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON);
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC += fmax(0.0, canopy_target[0].fe.m_cwdc_to_atmos * combust_remain_pct * 
+																							patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DOC);
+				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON += fmax(0.0, canopy_target[0].fe.m_cwdn_to_atmos * 
+																							patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DON);
+				if (command_line[0].verbose_flag == -7)
+				{
+					printf("CWD - Ash C pool for patch %d is now %lf\n", patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID, patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC);
+					printf("CWD - Ash N pool for patch %d is now %lf\n", patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ID, patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DON);
 				}
 			}
 
@@ -355,7 +347,7 @@ void compute_family_fire_effects(
 				/* Determine the amount of understory carbon consumed understory_c_consumed, which is used to compute how well fire is propogated to overstory */
 				if (under_ct == 0 && intr_ct == 0) // if no under or intr stories
 				{
-					canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire.litter_c_consumed;
 				}
 				if (under_ct > 0) // there is at least 1 understory
 				{
@@ -371,7 +363,7 @@ void compute_family_fire_effects(
 					// Determine the amount of carbon consumed in the understory based on aggregate understory
 					under_c_consumed = (canopy_target[0].fe.agg_under_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed);
 					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
-					canopy_target[0].fe.understory_c_consumed = under_c_consumed + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = under_c_consumed + patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire.litter_c_consumed;
 				}
 				if (intr_ct > 0) // there's at least 1 intr story
 				{
@@ -389,13 +381,13 @@ void compute_family_fire_effects(
 					/* Determine the amount of carbon consumed in the intmediate story */
 					intr_c_consumed = canopy_target[0].fe.agg_intr_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
 					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
-					canopy_target[0].fe.understory_c_consumed = intr_c_consumed + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = intr_c_consumed + patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire.litter_c_consumed;
 				}
 				if (under_ct > 0 && intr_ct > 0)
 				{
 					// Combine understory and intermediate story consumptions, weighted by area(?), add litter in
 					canopy_target[0].fe.understory_c_consumed = (under_c_consumed * canopy_target[0].fe.agg_under_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) +
-																(intr_c_consumed * canopy_target[0].fe.agg_intr_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) + litter_c_consumed;
+																(intr_c_consumed * canopy_target[0].fe.agg_intr_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) + patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire.litter_c_consumed;
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
@@ -415,7 +407,7 @@ void compute_family_fire_effects(
 			/*----------------------------------------------------------------------*/
 			}
 			else if (canopy_target[0].fe.canopy_target_height <= patch_family[0].overstory_height_thresh &&
-					 canopy_target[0].fe.canopy_target_height >= patch_family[0].overstory_height_thresh)
+					 canopy_target[0].fe.canopy_target_height >= patch_family[0].understory_height_thresh)
 			{
 				/* Determine the proportion of target canopy attributed to understory. Proportion overstory is 1 - canopy_target_height_u_prop */
 				canopy_target[0].fe.canopy_target_height_u_prop = (patch_family[0].overstory_height_thresh - canopy_target[0].fe.canopy_target_height) /
@@ -437,7 +429,7 @@ void compute_family_fire_effects(
 					// Determine the amount of carbon consumed in the understory based on aggregate understory
 					under_c_consumed = (canopy_target[0].fe.agg_under_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed);
 					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
-					canopy_target[0].fe.understory_c_consumed = under_c_consumed + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = under_c_consumed + patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire.litter_c_consumed;
 				}
 				if (intr_ct > 0) // there's at least 1 intr story
 				{
@@ -455,13 +447,14 @@ void compute_family_fire_effects(
 					/* Determine the amount of carbon consumed in the intmediate story */
 					intr_c_consumed = canopy_target[0].fe.agg_intr_carbon * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
 					// combine with litter and set to understory_c_consumed, if both under and intr stories are present, will be overwritten.
-					canopy_target[0].fe.understory_c_consumed = intr_c_consumed + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = intr_c_consumed + patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire.litter_c_consumed;
 				}
 				if (under_ct > 0 && intr_ct > 0)
 				{
 					// Combine understory and intermediate story consumptions, weighted by area(?), add litter in
 					canopy_target[0].fe.understory_c_consumed = (under_c_consumed * canopy_target[0].fe.agg_under_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) +
-																(intr_c_consumed * canopy_target[0].fe.agg_intr_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) + litter_c_consumed;
+																(intr_c_consumed * canopy_target[0].fe.agg_intr_pct_cover / (canopy_target[0].fe.agg_under_pct_cover + canopy_target[0].fe.agg_intr_pct_cover)) + 
+																patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire.litter_c_consumed;
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship)
@@ -527,7 +520,7 @@ void compute_family_fire_effects(
 			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_consumed += canopy_c_consumed;
 			// patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_n_consumed += canopy_n_consumed;
 
-            if (command_line[0].ash_deposition_flag == 1){
+            if (patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_deposition_flag == 1){
 				// Could try to get carbon consumed out of update mortality, but don't want to change that function, adding here
 				patch_family[0].patches[canopy_target[0].fam_patch_ind][0].ash_DOC += fmax(
 					0.0, canopy_c_consumed * combust_remain_pct * patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_pct_soluble_DOC);
