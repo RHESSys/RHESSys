@@ -136,8 +136,8 @@ struct base_station_object *construct_netcdf_grid(
 
 #ifndef LIU_NETCDF_READER
     base_station[0].ID = base_station_ncheader[0].lastID + 1;
-    base_station[0].x = zone_x;
-    base_station[0].y = zone_y;
+    base_station[0].proj_x = zone_x;
+    base_station[0].proj_y = zone_y;
     base_station[0].effective_lai = base_station_ncheader[0].effective_lai;
     base_station[0].screen_height = base_station_ncheader[0].screen_height;
     net_x = zone_x;

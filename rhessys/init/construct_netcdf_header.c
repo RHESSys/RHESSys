@@ -106,7 +106,8 @@ struct base_station_ncheader_object *construct_netcdf_header (
         basestation[0].screen_height    = -9999;
         basestation[0].proj_x           = -9999;
         basestation[0].proj_y           = -9999;
-        basestation[0].lat              = -9999;
+        basestation[0].z                = -9999;  /* sentinel: no elevation given (z_coordinate or netcdf elev) */
+        basestation[0].lat             = -9999;
         basestation[0].lon              = -9999;
         //basestation[0].has_constructed  = 0;
     }
