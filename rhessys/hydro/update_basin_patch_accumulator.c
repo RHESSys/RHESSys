@@ -177,8 +177,8 @@ void update_basin_patch_accumulator(
 					patch[0].acc_month.littern += patch[0].litter_ns.totaln;
 					patch[0].acc_month.soilc += patch[0].soil_cs.totalc;
 					patch[0].acc_month.litterc += patch[0].litter_cs.totalc;
-					patch[0].acc_month.fire_c_consumed += patch[0].fire_c_consumed;
-					patch[0].acc_month.fire_c_mortality += patch[0].fire_c_mortality;
+					patch[0].acc_month.fire_c_veg_consumed  += patch[0].fire_c_veg_consumed ;
+					patch[0].acc_month.fire_c_veg_mortality += patch[0].fire_c_veg_mortality;
 					patch[0].acc_month.nburn += patch[0].nburn;
 				}
 				/*-------------------- Yearly + Output Filters --------------------*/
@@ -267,8 +267,8 @@ void update_basin_patch_accumulator(
 					(patch[0].acc_year.midsm_wyd == 0) && (patch[0].snowpack.water_equivalent_depth <= 0.0))
 						patch[0].acc_year.midsm_wyd = patch[0].acc_year.wyd;
 					patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
-					patch[0].acc_year.fire_c_consumed += patch[0].fire_c_consumed;
-					patch[0].acc_year.fire_c_mortality += patch[0].fire_c_mortality;
+					patch[0].acc_year.fire_c_veg_consumed  += patch[0].fire_c_veg_consumed ;
+					patch[0].acc_year.fire_c_veg_mortality += patch[0].fire_c_veg_mortality;
 					patch[0].acc_year.nburn += patch[0].nburn;
 				} /* end if --yearly output filter-- */
 			} /* end of p*/

@@ -418,8 +418,8 @@ struct accumulate_patch_object
    double psn;
    double DOC_loss;
    double DON_loss;
-   double fire_c_consumed;
-   double fire_c_mortality;
+   double fire_c_veg_consumed ;
+   double fire_c_veg_mortality;
    double theta;
    double rootzone_depth;
    double soilmoist;
@@ -2137,8 +2137,8 @@ struct patch_object
         double  satzone_nitrate;                /* kgN/m2 saturated zone */
         double  ash_DOC;                        /* kgC/m2 lost in fire */
         double  ash_DON;                        /* kgN/m2 lost in fire */
-        double  fire_c_consumed;                /* kgC/m2 consumed in fire */
-        double  fire_c_mortality;               /* kgC/m2 mortality due to fire */
+        double  fire_c_veg_consumed ;                /* kgC/m2 consumed in fire */
+        double  fire_c_veg_mortality;               /* kgC/m2 mortality due to fire */
         
         struct  soil_c_object   soil_cs;
         struct  soil_n_object   soil_ns;

@@ -291,8 +291,8 @@ void compute_family_fire_effects(
 			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
 			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
-			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_consumed += canopy_target[0].fe.m_cwdc_to_atmos;
-			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_mortality += canopy_target[0].fe.m_cwdc_to_atmos;
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_consumed  += canopy_target[0].fe.m_cwdc_to_atmos;
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_mortality += canopy_target[0].fe.m_cwdc_to_atmos;
 
 			if (patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_deposition_flag == 1)
 			{
@@ -517,7 +517,7 @@ void compute_family_fire_effects(
 								(canopy_target[0].ns.dead_crootn * canopy_target[0].fe.canopy_target_prop_c_consumed);
 
 			// Add to patch fire consumption output
-			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_consumed += canopy_c_consumed;
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_consumed  += canopy_c_consumed;
 			// patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_n_consumed += canopy_n_consumed;
 
             if (patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_deposition_flag == 1){
@@ -589,7 +589,7 @@ void compute_family_fire_effects(
 			canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc = (canopy_target[0].fe.canopy_target_prop_c_remain_adjusted * (1 - canopy_target[0].fe.canopy_target_height_u_prop)) + canopy_target[0].fe.canopy_target_height_u_prop;
 
 			// Add to patch fire mortality output
-			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_mortality += (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc) +
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_mortality += (canopy_target[0].cs.leafc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc) +
 												(canopy_target[0].cs.dead_leafc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc) +
 												(canopy_target[0].cs.frootc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
 												(canopy_target[0].cs.live_stemc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
