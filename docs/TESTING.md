@@ -10,9 +10,10 @@ How RHESSys is tested, what each test covers, and how to run it. The dev plan an
 | Regression: `w8_fast` | regression, bitwise | `Testing/regression/regress.sh check w8_fast` | ~8 s run | script | golden blessed |
 | Regression: `w8_fire_nc` | regression, bitwise | `Testing/regression/regress.sh check w8_fire_nc` | ~16 s run | script | golden blessed |
 | Regression: `ward_1y` | regression, bitwise (large basin, 12,045 patches) | `regress.sh check ward_1y` | ~3 min | script | golden blessed |
-| Regression: `ward_long` | regression, bitwise (Ward full climate record) | `regress.sh check ward_long` | ~2 h | script (nightly / on demand) | see Baseline |
+| Regression: `ward_long` | regression, bitwise (Ward full climate record) | `regress.sh check ward_long` | 1 h 47 m (608 MB RSS) | script (nightly / on demand) | golden blessed 2026-11-19; determinism re-run in progress |
 | Water-balance invariant (`invariants.py`) | invariant | runs inside `regress.sh compare`/`check` | seconds | script | passing (all cases) |
-| Sanitizers: ASan + UBSan | memory / UB | `regress.sh sanitize <case>` | ~3x a normal run | script, CI | clean (W8 cases) |
+| Sanitizers: ASan + UBSan | memory / UB | `regress.sh sanitize <case>` | ~3x a normal run | script, CI | clean: `w8_fast`, `w8_fire_nc`, `ward_1y` (leaks at exit only) |
+| valgrind memcheck (incl. uninitialized reads) | memory | manual (see DEV_LOG) | ~50x | no | clean: `w8_fast` (0 errors) |
 | Coverage (clang source-based) | coverage | `regress.sh coverage <case>...` | ~2-3x a normal run | script | 45% lines (W8) |
 | Python functional test (`rhessys/test/test_mass_balance.py`, `make functest`) | functional | `make functest` | ? | no | superseded by `invariants.py`. The legacy version needs numpy and Python-2-era I/O, and uses legacy `-b` output from `test/data/W8.zip`. (`errno` import fixed.) |
 | `travis.sh` | build + tests | `./travis.sh` | ~2 min | script | updated: unit tests + `w8_fast` determinism + invariants |
@@ -74,7 +75,7 @@ regress.sh list
 | `ward_1y` | default | Ward ASCII gridmet clim (+10% rain) | no | 1979-01-01 .. 1979-12-30 | basin daily csv, state (70 MB) |
 | `ward_long` | default | same | no | 1979-01-01 .. 2022-08-07 (full record) | basin daily csv, state |
 
-The Ward cases use the best calibrated run as of 2026-11-19, **RunID296_345** (composite 0.305, NSE 0.45, KGE 0.50), with `-g -vmort_off`.
+The Ward cases use the best calibrated run as of 2026-11-19, **RunID296_345** (composite 0.305, NSE 0.45, KGE 0.50), with `-g -vmort_off`. The snapshot reproduces the calibration batch exactly: `ward_long` basin streamflow is bitwise identical to `output/CAL_RunID296_.../Wardsoil_cal_basin_RunID296_345.csv` on all 14,244 days.
 - Inputs are a snapshot made by `Testing/regression/ward/make_ward_best_inputs.R`. It copies the base inputs and rebuilds the defs from the archived parameter values with `RHESSysIOinR::change_def_file`, because the per-ParSetID def copies in Ward are overwritten by every batch.
 - Provenance: `$INPUTS/ward_best/SNAPSHOT_INFO.txt`.
 - The Ward project itself is only read, never written.
