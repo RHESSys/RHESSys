@@ -10,7 +10,7 @@ How RHESSys is tested, what each test covers, and how to run it. The dev plan an
 | Regression: `w8_fast` | regression, bitwise | `Testing/regression/regress.sh check w8_fast` | ~8 s run | script | golden blessed |
 | Regression: `w8_fire_nc` | regression, bitwise | `Testing/regression/regress.sh check w8_fire_nc` | ~16 s run | script | golden blessed |
 | Regression: `ward_1y` | regression, bitwise (large basin, 12,045 patches) | `regress.sh check ward_1y` | ~3 min | script | golden blessed |
-| Regression: `ward_long` | regression, bitwise (Ward full climate record) | `regress.sh check ward_long` | 1 h 47 m (608 MB RSS) | script (nightly / on demand) | golden blessed 2026-11-19; determinism re-run in progress |
+| Regression: `ward_long` | regression, bitwise (Ward full climate record) | `regress.sh check ward_long` | 1 h 47 m (608 MB RSS) | script (nightly / on demand) | golden blessed 2026-11-19; determinism verified (2 runs of the same binary, 11/11 files bitwise identical, 1 h 52 m) |
 | Water-balance invariant (`invariants.py`) | invariant | runs inside `regress.sh compare`/`check` | seconds | script | passing (all cases) |
 | Sanitizers: ASan + UBSan | memory / UB | `regress.sh sanitize <case>` | ~3x a normal run | script, CI | clean: `w8_fast`, `w8_fire_nc`, `ward_1y` (leaks at exit only) |
 | valgrind memcheck (incl. uninitialized reads) | memory | manual (see DEV_LOG) | ~50x | no | clean: `w8_fast` (0 errors) |
