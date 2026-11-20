@@ -272,7 +272,7 @@ void		patch_hourly(
 		/*      melt  assume full daytime duration                      */
 		/*--------------------------------------------------------------*/
 		if (zone[0].hourly[0].rain_duration <= ZERO)
-			duration = 60*60/(86400);
+			duration = 3600.0/86400.0; /* one hour in days; was integer 0 (DEV_LOG #25) */
 		else
 			duration = zone[0].hourly[0].rain_duration/(86400);
 		

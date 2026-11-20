@@ -703,8 +703,8 @@ double	top_model(
 			basin[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
 			basin[0].acc_month.mineralized += patch[0].ndf.net_mineralized*scale;
 			basin[0].acc_month.uptake += patch[0].ndf.sminn_to_npool*scale;
-			basin[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
-			basin[0].acc_month.DON_loss+= patch[0].ndf.total_DON_loss * scale;
+			basin[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total) * scale;
+			basin[0].acc_month.DON_loss+= (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total) * scale;
 			basin[0].acc_month.psn += patch[0].net_plant_psn * scale;
 			basin[0].acc_month.lai += patch[0].lai * scale;
 			basin[0].acc_month.length += (1*scale);
@@ -716,8 +716,8 @@ double	top_model(
 			basin[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate*scale;
 			basin[0].acc_year.mineralized += patch[0].ndf.net_mineralized*scale;
 			basin[0].acc_year.uptake += patch[0].ndf.sminn_to_npool*scale;
-			basin[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
-			basin[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss * scale;
+			basin[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total) * scale;
+			basin[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total) * scale;
 			basin[0].acc_year.psn += patch[0].net_plant_psn * scale;
 			basin[0].acc_year.et += (patch[0].evaporation + patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone)
 						* scale;
@@ -739,8 +739,8 @@ double	top_model(
 			patch[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate;
 			patch[0].acc_month.mineralized += patch[0].ndf.net_mineralized;
 			patch[0].acc_month.uptake += patch[0].ndf.sminn_to_npool;
-			patch[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss;
-			patch[0].acc_month.DON_loss += patch[0].ndf.total_DON_loss;
+			patch[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total);
+			patch[0].acc_month.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total);
 			patch[0].acc_month.psn += patch[0].net_plant_psn;
 			patch[0].acc_month.snowpack =  max( patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
 			patch[0].acc_month.lai = max(patch[0].acc_month.lai, patch[0].lai);
@@ -759,8 +759,8 @@ double	top_model(
 			patch[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate;
 			patch[0].acc_year.mineralized += patch[0].ndf.net_mineralized;
 			patch[0].acc_year.uptake += patch[0].ndf.sminn_to_npool;
-			patch[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss;
-			patch[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss;
+			patch[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total);
+			patch[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total);
 			patch[0].acc_year.burn += patch[0].burn; /* burn fraction of fire events this day (not the persistent pspread) */
 			patch[0].acc_year.psn += patch[0].net_plant_psn;
 			patch[0].acc_year.snowpack =  max( patch[0].snowpack.water_equivalent_depth, patch[0].acc_year.snowpack);

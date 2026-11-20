@@ -496,6 +496,23 @@ void		patch_daily_I(
 	patch[0].height = 0.0;
 	patch[0].soil_cs.frootc = 0.0;
 	patch[0].rootzone.depth = 0.0;
+	if (command_line[0].grow_flag > 0) {
+		/* DEV_LOG #18: preday totals were never reset (added to every day) and held only the
+		   vegetation, while patch totalc/totaln (patch_daily_F) also include soil and litter. */
+		patch[0].preday_totalc = patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c
+			+ patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c
+			+ patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c
+			+ patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c
+			+ patch[0].litter_cs.litr1c_bg + patch[0].litter_cs.litr2c_bg
+			+ patch[0].litter_cs.litr3c_bg + patch[0].litter_cs.litr4c_bg;
+		patch[0].preday_totaln = patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n
+			+ patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n
+			+ patch[0].soil_ns.nitrate + patch[0].soil_ns.sminn
+			+ patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n
+			+ patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n
+			+ patch[0].litter_ns.litr1n_bg + patch[0].litter_ns.litr2n_bg
+			+ patch[0].litter_ns.litr3n_bg + patch[0].litter_ns.litr4n_bg;
+	}
 	for ( stratum=0 ; stratum<patch[0].num_canopy_strata; stratum++){
 		patch[0].effective_lai += patch[0].canopy_strata[stratum][0].epv.proj_lai;
 	  patch[0].total_stemc += patch[0].canopy_strata[stratum][0].cover_fraction //new

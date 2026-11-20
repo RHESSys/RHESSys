@@ -57,8 +57,8 @@ void update_hillslope_accumulator(
 					hillslope[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate * scale;
 					hillslope[0].acc_month.mineralized += patch[0].ndf.net_mineralized * scale;
 					hillslope[0].acc_month.uptake += patch[0].ndf.sminn_to_npool * scale;
-					hillslope[0].acc_month.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
-					hillslope[0].acc_month.DON_loss+= patch[0].ndf.total_DON_loss * scale;
+					hillslope[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total) * scale;
+					hillslope[0].acc_month.DON_loss+= (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total) * scale;
 					hillslope[0].acc_month.stream_NO3 += patch[0].streamflow_NO3 * scale;
 					hillslope[0].acc_month.stream_NH4 += patch[0].streamflow_NH4 * scale;
 					hillslope[0].acc_month.psn += patch[0].net_plant_psn * scale;
@@ -72,8 +72,8 @@ void update_hillslope_accumulator(
 					hillslope[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate * scale;
 					hillslope[0].acc_year.mineralized += patch[0].ndf.net_mineralized * scale;
 					hillslope[0].acc_year.uptake += patch[0].ndf.sminn_to_npool * scale;
-					hillslope[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
-					hillslope[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss * scale;
+					hillslope[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total) * scale;
+					hillslope[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total) * scale;
 					hillslope[0].acc_year.psn += patch[0].net_plant_psn * scale;
 					hillslope[0].acc_year.et += (patch[0].evaporation 
 						+ patch[0].evaporation_surf + 

@@ -164,8 +164,8 @@ void update_basin_patch_accumulator(
 					patch[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate;
 					patch[0].acc_month.mineralized += patch[0].ndf.net_mineralized;
 					patch[0].acc_month.uptake += patch[0].ndf.sminn_to_npool;
-					patch[0].acc_month.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qout_total);
-					patch[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qout_total);
+					patch[0].acc_month.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total); /* was X - X (DEV_LOG #23) */
+					patch[0].acc_month.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total); /* was X - X (DEV_LOG #23) */
 					patch[0].acc_month.psn += patch[0].net_plant_psn;
 					patch[0].acc_month.snowpack = max(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
 					patch[0].acc_month.streamflow += (patch[0].streamflow);
@@ -195,8 +195,8 @@ void update_basin_patch_accumulator(
 					patch[0].acc_year.mineralized += patch[0].ndf.net_mineralized;
 					patch[0].acc_year.uptake += patch[0].ndf.sminn_to_npool;
 					patch[0].acc_year.leach += (patch[0].soil_ns.leach + patch[0].surface_ns_leach);
-					patch[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qout_total);
-					patch[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qout_total);
+					patch[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total); /* was X - X (DEV_LOG #23) */
+					patch[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total); /* was X - X (DEV_LOG #23) */
 					patch[0].acc_year.streamflow += patch[0].streamflow;
 					patch[0].acc_year.Qout_total += patch[0].Qout_total;
 					patch[0].acc_year.Qin_total += patch[0].Qin_total;
@@ -223,8 +223,8 @@ void update_basin_patch_accumulator(
 											 patch[0].transpiration_sat_zone + patch[0].evaporation);
 					tmp = (patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone);
 					patch[0].acc_year.trans += tmp;
-					patch[0].acc_year.day7trans = (tmp / 14 + 13 / 14 * patch[0].acc_year.day7trans);
-					patch[0].acc_year.day7pet = (patch[0].PET + patch[0].PE) / 14 + 13 / 14 * patch[0].acc_year.day7pet;
+					patch[0].acc_year.day7trans = (tmp / 14.0 + 13.0 / 14.0 * patch[0].acc_year.day7trans); /* was 13 / 14 = 0 (DEV_LOG #24) */
+					patch[0].acc_year.day7pet = (patch[0].PET + patch[0].PE) / 14.0 + 13.0 / 14.0 * patch[0].acc_year.day7pet; /* DEV_LOG #24 */
 					if (patch[0].acc_year.day7pet > patch[0].acc_year.maxpet)
 					{
 						patch[0].acc_year.maxpet = patch[0].acc_year.day7pet;
