@@ -196,6 +196,7 @@ int update_decomp_root(
 	cs_soil->soil2c       += cdf->litr2c_to_soil2c_bg;
 	cs_litr->litr2c_bg       -= cdf->litr2c_to_soil2c_bg;
 	/* Fluxes from shielded to unshielded cellulose pools */
+	cs_litr->litr3c_bg    -= cdf->litr3c_hr_bg; /* DEV_LOG #22 */
 	if (cs_litr->litr3c_bg - cdf->litr3c_to_litr2c_bg < ZERO) {
 		cdf->litr3c_to_litr2c_bg = max(cs_litr->litr3c_bg,0.0);
 		ndf->litr3n_to_litr2n_bg = max(ns_litr->litr3n_bg,0.0);

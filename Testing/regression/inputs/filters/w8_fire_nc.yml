@@ -33,4 +33,4 @@ filter:
 		filename: "basin_carbon_daily"
 	basin:
 		ids: 1
-		variables: patch.totalc, patch.net_plant_psn, patch.cdf.litr1c_hr, patch.cdf.litr2c_hr, patch.cdf.litr3c_hr, patch.cdf.litr4c_hr, patch.cdf.litr1c_hr_bg, patch.cdf.litr2c_hr_bg, patch.cdf.litr4c_hr_bg, patch.cdf.soil1c_hr, patch.cdf.soil2c_hr, patch.cdf.soil3c_hr, patch.cdf.soil4c_hr, patch.soil_cs.DOC, patch.surface_DOC, patch.ash_DOC, patch.streamflow_DOC, hill.gw.DOC, hill.gw.DOCout, patch.fire_c_veg_consumed, stratum.cs.mr_deficit, stratum.cs.cpool
+		variables: patch.totalc, patch.net_plant_psn, patch.cdf.litr1c_hr, patch.cdf.litr2c_hr, patch.cdf.litr3c_hr, patch.cdf.litr4c_hr, patch.cdf.litr1c_hr_bg, patch.cdf.litr2c_hr_bg, patch.cdf.litr4c_hr_bg, patch.cdf.soil1c_hr, patch.cdf.soil2c_hr, patch.cdf.soil3c_hr, patch.cdf.soil4c_hr, patch.soil_cs.DOC, patch.surface_DOC, patch.ash_DOC, patch.streamflow_DOC, hill.gw.DOC, hill.gw.DOCout, patch.fire_c_veg_consumed, stratum.cs.mr_deficit, stratum.cs.cpool, patch.cdf.litr3c_hr_bg

@@ -150,7 +150,7 @@ void	output_growth_hillslope(              int  basinID,
 
 				asoilhr += (
 					patch[0].cdf.litr1c_hr + 
-					patch[0].cdf.litr2c_hr + 
+					patch[0].cdf.litr2c_hr + patch[0].cdf.litr3c_hr + 
 					patch[0].cdf.litr4c_hr + 
 					patch[0].cdf.soil1c_hr + 
 					patch[0].cdf.soil2c_hr + 

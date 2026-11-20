@@ -78,8 +78,8 @@ def water_balance(path, max_daily, max_cum_frac):
     return ok
 
 
-CARBON_HR = ["cdf.litr1c_hr", "cdf.litr2c_hr", "cdf.litr4c_hr", "cdf.litr1c_hr_bg", "cdf.litr2c_hr_bg",
-             "cdf.litr4c_hr_bg", "cdf.soil1c_hr", "cdf.soil2c_hr", "cdf.soil3c_hr", "cdf.soil4c_hr"]
+CARBON_HR = ["cdf.litr1c_hr", "cdf.litr2c_hr", "cdf.litr3c_hr", "cdf.litr4c_hr", "cdf.litr1c_hr_bg",
+             "cdf.litr2c_hr_bg", "cdf.litr3c_hr_bg", "cdf.litr4c_hr_bg", "cdf.soil1c_hr", "cdf.soil2c_hr", "cdf.soil3c_hr", "cdf.soil4c_hr"]
 CARBON_OUT = ["streamflow_DOC", "gw.DOCout", "fire_c_veg_consumed"]
 CARBON_STORE = ["totalc", "soil_cs.DOC", "surface_DOC", "ash_DOC", "gw.DOC"]
 CARBON_REQUIRED = ["net_plant_psn"] + CARBON_HR + CARBON_OUT + CARBON_STORE

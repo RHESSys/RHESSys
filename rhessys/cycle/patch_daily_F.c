@@ -2412,7 +2412,7 @@ void		patch_daily_F(
 		+ patch[0].cdf.litr4c_hr + patch[0].cdf.soil1c_hr
 		+ patch[0].cdf.soil2c_hr + patch[0].cdf.soil3c_hr
 		+ patch[0].cdf.soil4c_hr + patch[0].cdf.litr1c_hr_bg + patch[0].cdf.litr2c_hr_bg
-		+ patch[0].cdf.litr4c_hr_bg );
+		+ patch[0].cdf.litr4c_hr_bg + patch[0].cdf.litr3c_hr + patch[0].cdf.litr3c_hr_bg ); /* DEV_LOG #22 */
 
 	/*patch[0].carbon_balance = patch[0].preday_totalc + patch[0].net_plant_psn
 		- patch[0].totalc - (patch[0].cdf.litr1c_hr + patch[0].cdf.litr2c_hr
