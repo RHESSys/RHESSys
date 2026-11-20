@@ -38,6 +38,7 @@
           1175.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.51357651                    slope
           7.00000000                     lna
@@ -145,6 +146,7 @@
           1168.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           17.95937347                    slope
           7.00000000                     lna
@@ -252,6 +254,7 @@
           1161.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.77076912                    slope
           7.00000000                     lna
@@ -359,6 +362,7 @@
           1157.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.54441261                    slope
           7.00000000                     lna
@@ -466,6 +470,7 @@
           1156.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           22.90209961                    slope
           7.00000000                     lna
@@ -573,6 +578,7 @@
           1153.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.37084389                    slope
           7.00000000                     lna
@@ -680,6 +686,7 @@
           1151.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           24.09484291                    slope
           7.00000000                     lna
@@ -787,6 +794,7 @@
           1146.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.73873138                    slope
           7.00000000                     lna
@@ -894,6 +902,7 @@
           1145.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           22.61986542                    slope
           7.00000000                     lna
@@ -1001,6 +1010,7 @@
           1143.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.00178337                    slope
           7.00000000                     lna
@@ -1108,6 +1118,7 @@
           1143.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           24.06887245                    slope
           7.00000000                     lna
@@ -1215,6 +1226,7 @@
           1141.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.02378559                    slope
           7.00000000                     lna
@@ -1322,6 +1334,7 @@
           1139.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.99413109                    slope
           7.00000000                     lna
@@ -1429,6 +1442,7 @@
           1137.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           22.75354958                    slope
           7.00000000                     lna
@@ -1536,6 +1550,7 @@
           1136.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           6.62914038                     slope
           7.00000000                     lna
@@ -1643,6 +1658,7 @@
           1135.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           11.49159670                    slope
           7.00000000                     lna
@@ -1750,6 +1766,7 @@
           1132.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.44166183                    slope
           7.00000000                     lna
@@ -1857,6 +1874,7 @@
           1131.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           21.42820740                    slope
           7.00000000                     lna
@@ -1964,6 +1982,7 @@
           1130.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           11.84913349                    slope
           7.00000000                     lna
@@ -2071,6 +2090,7 @@
           1130.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.93200302                    slope
           7.00000000                     lna
@@ -2178,6 +2198,7 @@
           1129.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.51879120                    slope
           7.00000000                     lna
@@ -2285,6 +2306,7 @@
           1128.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           14.57291603                    slope
           7.00000000                     lna
@@ -2392,6 +2414,7 @@
           1127.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.71328163                    slope
           7.00000000                     lna
@@ -2499,6 +2522,7 @@
           1124.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           10.02498817                    slope
           7.00000000                     lna
@@ -2606,6 +2630,7 @@
           1122.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.81423664                    slope
           7.00000000                     lna
@@ -2713,6 +2738,7 @@
           1122.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           8.18616009                     slope
           7.00000000                     lna
@@ -2820,6 +2846,7 @@
           1121.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.70978642                    slope
           7.00000000                     lna
@@ -2927,6 +2954,7 @@
           1121.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.84516716                    slope
           7.00000000                     lna
@@ -3034,6 +3062,7 @@
           1120.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           2700.00000000                  area
           13.98756154                    slope
           7.00000000                     lna
@@ -3141,6 +3170,7 @@
           1120.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.05431557                    slope
           7.00000000                     lna
@@ -3248,6 +3278,7 @@
           1120.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.85106277                    slope
           7.00000000                     lna
@@ -3355,6 +3386,7 @@
           1120.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.44221020                    slope
           7.00000000                     lna
@@ -3462,6 +3494,7 @@
           1119.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.51969242                    slope
           7.00000000                     lna
@@ -3569,6 +3602,7 @@
           1118.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.52360249                    slope
           7.00000000                     lna
@@ -3676,6 +3710,7 @@
           1116.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.15421963                    slope
           7.00000000                     lna
@@ -3783,6 +3818,7 @@
           1116.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           8.54372597                     slope
           7.00000000                     lna
@@ -3890,6 +3926,7 @@
           1115.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.30377102                    slope
           7.00000000                     lna
@@ -3997,6 +4034,7 @@
           1114.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           2700.00000000                  area
           12.39360968                    slope
           7.00000000                     lna
@@ -4104,6 +4142,7 @@
           1114.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           14.26409721                    slope
           7.00000000                     lna
@@ -4211,6 +4250,7 @@
           1113.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           13.61624289                    slope
           7.00000000                     lna
@@ -4318,6 +4358,7 @@
           1113.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.50637245                    slope
           7.00000000                     lna
@@ -4425,6 +4466,7 @@
           1113.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           2.78188634                     slope
           7.00000000                     lna
@@ -4532,6 +4574,7 @@
           1113.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           2.88218117                     slope
           7.00000000                     lna
@@ -4639,6 +4682,7 @@
           1112.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           6.62068987                     slope
           7.00000000                     lna
@@ -4746,6 +4790,7 @@
           1112.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           4.82254219                     slope
           7.00000000                     lna
@@ -4853,6 +4898,7 @@
           1111.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.65658951                    slope
           7.00000000                     lna
@@ -4960,6 +5006,7 @@
           1111.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           5.73025560                     slope
           7.00000000                     lna
@@ -5067,6 +5114,7 @@
           1110.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.73873138                    slope
           7.00000000                     lna
@@ -5174,6 +5222,7 @@
           1110.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.29941654                    slope
           7.00000000                     lna
@@ -5281,6 +5330,7 @@
           1109.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.12188721                    slope
           7.00000000                     lna
@@ -5388,6 +5438,7 @@
           1109.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.72657585                    slope
           7.00000000                     lna
@@ -5495,6 +5546,7 @@
           1109.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.94526863                    slope
           7.00000000                     lna
@@ -5602,6 +5654,7 @@
           1108.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           2700.00000000                  area
           14.51943556                    slope
           7.00000000                     lna
@@ -5709,6 +5762,7 @@
           1107.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.35044765                    slope
           7.00000000                     lna
@@ -5816,6 +5870,7 @@
           1107.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.94240856                    slope
           7.00000000                     lna
@@ -5923,6 +5978,7 @@
           1106.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.92277908                    slope
           7.00000000                     lna
@@ -6030,6 +6086,7 @@
           1106.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.80831528                    slope
           7.00000000                     lna
@@ -6137,6 +6194,7 @@
           1105.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           2700.00000000                  area
           16.77921232                    slope
           7.00000000                     lna
@@ -6244,6 +6302,7 @@
           1105.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.36220074                    slope
           7.00000000                     lna
@@ -6351,6 +6410,7 @@
           1103.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.19351768                    slope
           7.00000000                     lna
@@ -6458,6 +6518,7 @@
           1103.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.26473808                    slope
           7.00000000                     lna
@@ -6565,6 +6626,7 @@
           1102.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.51262474                    slope
           7.00000000                     lna
@@ -6672,6 +6734,7 @@
           1102.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.93200302                    slope
           7.00000000                     lna
@@ -6779,6 +6842,7 @@
           1102.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.60846901                    slope
           7.00000000                     lna
@@ -6886,6 +6950,7 @@
           1102.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.93147659                    slope
           7.00000000                     lna
@@ -6993,6 +7058,7 @@
           1100.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.05009079                    slope
           7.00000000                     lna
@@ -7100,6 +7166,7 @@
           1100.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           16.39053583                    slope
           7.00000000                     lna
@@ -7207,6 +7274,7 @@
           1099.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.22118568                    slope
           7.00000000                     lna
@@ -7314,6 +7382,7 @@
           1099.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.29190350                    slope
           7.00000000                     lna
@@ -7421,6 +7490,7 @@
           1097.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.92096519                    slope
           7.00000000                     lna
@@ -7528,6 +7598,7 @@
           1097.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.15781021                    slope
           7.00000000                     lna
@@ -7635,6 +7706,7 @@
           1097.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.58315277                    slope
           7.00000000                     lna
@@ -7742,6 +7814,7 @@
           1096.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.20656681                    slope
           7.00000000                     lna
@@ -7849,6 +7922,7 @@
           1096.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.37590599                    slope
           7.00000000                     lna
@@ -7956,6 +8030,7 @@
           1095.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           14.06753540                    slope
           7.00000000                     lna
@@ -8063,6 +8138,7 @@
           1095.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           21.85491180                    slope
           7.00000000                     lna
@@ -8170,6 +8246,7 @@
           1094.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           21.27147484                    slope
           7.00000000                     lna
@@ -8277,6 +8354,7 @@
           1093.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.09079933                    slope
           7.00000000                     lna
@@ -8384,6 +8462,7 @@
           1093.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.56861115                    slope
           7.00000000                     lna
@@ -8491,6 +8570,7 @@
           1091.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.77992058                    slope
           7.00000000                     lna
@@ -8598,6 +8678,7 @@
           1091.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           15.16963434                    slope
           7.00000000                     lna
@@ -8705,6 +8786,7 @@
           1091.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           10.37309647                    slope
           7.00000000                     lna
@@ -8812,6 +8894,7 @@
           1090.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.36040497                    slope
           7.00000000                     lna
@@ -8919,6 +9002,7 @@
           1090.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           12.03768206                    slope
           7.00000000                     lna
@@ -9026,6 +9110,7 @@
           1090.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           10.68350792                    slope
           7.00000000                     lna
@@ -9133,6 +9218,7 @@
           1089.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.85049438                    slope
           7.00000000                     lna
@@ -9240,6 +9326,7 @@
           1088.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.26648903                    slope
           7.00000000                     lna
@@ -9347,6 +9434,7 @@
           1086.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.93380737                    slope
           7.00000000                     lna
@@ -9454,6 +9542,7 @@
           1085.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.53638840                    slope
           7.00000000                     lna
@@ -9561,6 +9650,7 @@
           1085.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.80992889                    slope
           7.00000000                     lna
@@ -9668,6 +9758,7 @@
           1084.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.33230019                    slope
           7.00000000                     lna
@@ -9775,6 +9866,7 @@
           1084.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.26254940                    slope
           7.00000000                     lna
@@ -9882,6 +9974,7 @@
           1084.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.65096855                    slope
           7.00000000                     lna
@@ -9989,6 +10082,7 @@
           1084.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.17311287                    slope
           7.00000000                     lna
@@ -10096,6 +10190,7 @@
           1084.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.63215446                    slope
           7.00000000                     lna
@@ -10203,6 +10298,7 @@
           1083.50000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           13.53795958                    slope
           7.00000000                     lna
@@ -10310,6 +10406,7 @@
           1083.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.05273819                    slope
           7.00000000                     lna
@@ -10417,6 +10514,7 @@
           1083.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           14.14898825                    slope
           7.00000000                     lna
@@ -10524,6 +10622,7 @@
           1082.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           2700.00000000                  area
           10.89816252                    slope
           7.00000000                     lna
@@ -10631,6 +10730,7 @@
           1081.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.39565468                    slope
           7.00000000                     lna
@@ -10738,6 +10838,7 @@
           1080.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           8.73569107                     slope
           7.00000000                     lna
@@ -10845,6 +10946,7 @@
           1080.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.54953671                    slope
           7.00000000                     lna
@@ -10952,6 +11054,7 @@
           1080.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.72962952                    slope
           7.00000000                     lna
@@ -11059,6 +11162,7 @@
           1079.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.48341465                    slope
           7.00000000                     lna
@@ -11166,6 +11270,7 @@
           1079.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.90987587                    slope
           7.00000000                     lna
@@ -11273,6 +11378,7 @@
           1078.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           8.14874840                     slope
           7.00000000                     lna
@@ -11380,6 +11486,7 @@
           1078.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.93838024                    slope
           7.00000000                     lna
@@ -11487,6 +11594,7 @@
           1077.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           10.55538082                    slope
           7.00000000                     lna
@@ -11594,6 +11702,7 @@
           1076.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.00800037                    slope
           7.00000000                     lna
@@ -11701,6 +11810,7 @@
           1076.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.61612988                    slope
           7.00000000                     lna
@@ -11808,6 +11918,7 @@
           1075.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           15.83914423                    slope
           7.00000000                     lna
@@ -11915,6 +12026,7 @@
           1075.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.28532600                    slope
           7.00000000                     lna
@@ -12022,6 +12134,7 @@
           1074.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           3600.00000000                  area
           11.23995566                    slope
           7.00000000                     lna
@@ -12129,6 +12242,7 @@
           1074.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.27865696                    slope
           7.00000000                     lna
@@ -12236,6 +12350,7 @@
           1074.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.85106277                    slope
           7.00000000                     lna
@@ -12343,6 +12458,7 @@
           1074.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.17970562                    slope
           7.00000000                     lna
@@ -12450,6 +12566,7 @@
           1073.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.03624344                    slope
           7.00000000                     lna
@@ -12557,6 +12674,7 @@
           1071.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.77257824                    slope
           7.00000000                     lna
@@ -12664,6 +12782,7 @@
           1070.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.02629089                    slope
           7.00000000                     lna
@@ -12771,6 +12890,7 @@
           1070.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.02150440                    slope
           7.00000000                     lna
@@ -12878,6 +12998,7 @@
           1069.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.07363415                    slope
           7.00000000                     lna
@@ -12985,6 +13106,7 @@
           1069.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.59255028                    slope
           7.00000000                     lna
@@ -13092,6 +13214,7 @@
           1068.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.99465942                    slope
           7.00000000                     lna
@@ -13199,6 +13322,7 @@
           1068.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.48007870                    slope
           7.00000000                     lna
@@ -13306,6 +13430,7 @@
           1068.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.91580868                    slope
           7.00000000                     lna
@@ -13413,6 +13538,7 @@
           1067.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.96462822                    slope
           7.00000000                     lna
@@ -13520,6 +13646,7 @@
           1067.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.84827995                    slope
           7.00000000                     lna
@@ -13627,6 +13754,7 @@
           1067.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.20656681                    slope
           7.00000000                     lna
@@ -13734,6 +13862,7 @@
           1066.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.12950325                    slope
           7.00000000                     lna
@@ -13841,6 +13970,7 @@
           1065.50000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           17.39118767                    slope
           7.00000000                     lna
@@ -13948,6 +14078,7 @@
           1064.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.18653393                    slope
           7.00000000                     lna
@@ -14055,6 +14186,7 @@
           1064.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.65679359                    slope
           7.00000000                     lna
@@ -14162,6 +14294,7 @@
           1063.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.19676876                    slope
           7.00000000                     lna
@@ -14269,6 +14402,7 @@
           1063.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.94651890                    slope
           7.00000000                     lna
@@ -14376,6 +14510,7 @@
           1062.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.72355843                    slope
           7.00000000                     lna
@@ -14483,6 +14618,7 @@
           1062.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.13388252                    slope
           7.00000000                     lna
@@ -14590,6 +14726,7 @@
           1061.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.05617046                    slope
           7.00000000                     lna
@@ -14697,6 +14834,7 @@
           1060.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.98068905                    slope
           7.00000000                     lna
@@ -14804,6 +14942,7 @@
           1059.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.27199554                    slope
           7.00000000                     lna
@@ -14911,6 +15050,7 @@
           1059.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.56473160                    slope
           7.00000000                     lna
@@ -15018,6 +15158,7 @@
           1058.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.83147621                    slope
           7.00000000                     lna
@@ -15125,6 +15266,7 @@
           1058.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.25121784                    slope
           7.00000000                     lna
@@ -15232,6 +15374,7 @@
           1057.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.47122002                    slope
           7.00000000                     lna
@@ -15339,6 +15482,7 @@
           1057.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.11483002                    slope
           7.00000000                     lna
@@ -15446,6 +15590,7 @@
           1056.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.85667610                    slope
           7.00000000                     lna
@@ -15553,6 +15698,7 @@
           1056.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.45641899                    slope
           7.00000000                     lna
@@ -15660,6 +15806,7 @@
           1056.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.00008392                    slope
           7.00000000                     lna
@@ -15767,6 +15914,7 @@
           1056.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.82244301                    slope
           7.00000000                     lna
@@ -15874,6 +16022,7 @@
           1052.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.15688133                    slope
           7.00000000                     lna
@@ -15981,6 +16130,7 @@
           1052.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.19676876                    slope
           7.00000000                     lna
@@ -16088,6 +16238,7 @@
           1052.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.03624344                    slope
           7.00000000                     lna
@@ -16195,6 +16346,7 @@
           1050.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.26818657                    slope
           7.00000000                     lna
@@ -16302,6 +16454,7 @@
           1050.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.31023884                    slope
           7.00000000                     lna
@@ -16409,6 +16562,7 @@
           1049.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.93470669                    slope
           7.00000000                     lna
@@ -16516,6 +16670,7 @@
           1048.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.44437027                    slope
           7.00000000                     lna
@@ -16623,6 +16778,7 @@
           1048.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           21.83781052                    slope
           7.00000000                     lna
@@ -16730,6 +16886,7 @@
           1048.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.43998718                    slope
           7.00000000                     lna
@@ -16837,6 +16994,7 @@
           1047.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.90701580                    slope
           7.00000000                     lna
@@ -16944,6 +17102,7 @@
           1046.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           17.81157970                    slope
           7.00000000                     lna
@@ -17051,6 +17210,7 @@
           1046.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.82114983                    slope
           7.00000000                     lna
@@ -17158,6 +17318,7 @@
           1046.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.10607338                    slope
           7.00000000                     lna
@@ -17265,6 +17426,7 @@
           1046.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.67175102                    slope
           7.00000000                     lna
@@ -17372,6 +17534,7 @@
           1046.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.81850624                    slope
           7.00000000                     lna
@@ -17479,6 +17642,7 @@
           1044.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.83352566                    slope
           7.00000000                     lna
@@ -17586,6 +17750,7 @@
           1044.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.47125721                    slope
           7.00000000                     lna
@@ -17693,6 +17858,7 @@
           1044.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           9.97026157                     slope
           7.00000000                     lna
@@ -17800,6 +17966,7 @@
           1042.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.51856613                    slope
           7.00000000                     lna
@@ -17907,6 +18074,7 @@
           1042.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.05273819                    slope
           7.00000000                     lna
@@ -18014,6 +18182,7 @@
           1042.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.40776348                    slope
           7.00000000                     lna
@@ -18121,6 +18290,7 @@
           1041.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.35942554                    slope
           7.00000000                     lna
@@ -18228,6 +18398,7 @@
           1041.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.97935009                    slope
           7.00000000                     lna
@@ -18335,6 +18506,7 @@
           1039.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.31534386                    slope
           7.00000000                     lna
@@ -18442,6 +18614,7 @@
           1039.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           14.92096519                    slope
           7.00000000                     lna
@@ -18549,6 +18722,7 @@
           1038.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.96231842                    slope
           7.00000000                     lna
@@ -18656,6 +18830,7 @@
           1038.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.93889141                    slope
           7.00000000                     lna
@@ -18763,6 +18938,7 @@
           1037.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.65879631                    slope
           7.00000000                     lna
@@ -18870,6 +19046,7 @@
           1037.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.08314323                    slope
           7.00000000                     lna
@@ -18977,6 +19154,7 @@
           1037.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.25386238                    slope
           7.00000000                     lna
@@ -19084,6 +19262,7 @@
           1035.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.72256470                    slope
           7.00000000                     lna
@@ -19191,6 +19370,7 @@
           1034.50000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           21.87723351                    slope
           7.00000000                     lna
@@ -19298,6 +19478,7 @@
           1033.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.18643761                    slope
           7.00000000                     lna
@@ -19405,6 +19586,7 @@
           1032.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.29804039                    slope
           7.00000000                     lna
@@ -19512,6 +19694,7 @@
           1029.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.37084389                    slope
           7.00000000                     lna
@@ -19619,6 +19802,7 @@
           1027.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.53131104                    slope
           7.00000000                     lna
@@ -19726,6 +19910,7 @@
           1025.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.52330589                    slope
           7.00000000                     lna
@@ -19833,6 +20018,7 @@
           1024.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           19.52115440                    slope
           7.00000000                     lna
@@ -19940,6 +20126,7 @@
           1023.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.54330444                    slope
           7.00000000                     lna
@@ -20047,6 +20234,7 @@
           1023.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           14.33562326                    slope
           7.00000000                     lna
@@ -20154,6 +20342,7 @@
           1023.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           20.34763908                    slope
           7.00000000                     lna
@@ -20261,6 +20450,7 @@
           1022.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           18.37304306                    slope
           7.00000000                     lna
@@ -20368,6 +20558,7 @@
           1021.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.18139458                    slope
           7.00000000                     lna
@@ -20475,6 +20666,7 @@
           1021.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.42886162                    slope
           7.00000000                     lna
@@ -20582,6 +20774,7 @@
           1020.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.90468788                    slope
           7.00000000                     lna
@@ -20689,6 +20882,7 @@
           1020.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.37130690                     slope
           7.00000000                     lna
@@ -20796,6 +20990,7 @@
           1020.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.87454033                    slope
           7.00000000                     lna
@@ -20903,6 +21098,7 @@
           1019.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           8.22273064                     slope
           7.00000000                     lna
@@ -21010,6 +21206,7 @@
           1018.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.53532600                    slope
           7.00000000                     lna
@@ -21117,6 +21314,7 @@
           1018.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           21.62244415                    slope
           7.00000000                     lna
@@ -21224,6 +21422,7 @@
           1017.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.95884228                    slope
           7.00000000                     lna
@@ -21331,6 +21530,7 @@
           1016.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           10.89007092                    slope
           7.00000000                     lna
@@ -21438,6 +21638,7 @@
           1016.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.21066856                     slope
           7.00000000                     lna
@@ -21545,6 +21746,7 @@
           1016.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.53334236                    slope
           7.00000000                     lna
@@ -21652,6 +21854,7 @@
           1015.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.82552576                     slope
           7.00000000                     lna
@@ -21759,6 +21962,7 @@
           1014.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           9.56623554                     slope
           7.00000000                     lna
@@ -21866,6 +22070,7 @@
           1014.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           8.54372597                     slope
           7.00000000                     lna
@@ -21973,6 +22178,7 @@
           1014.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.05719280                    slope
           7.00000000                     lna
@@ -22080,6 +22286,7 @@
           1013.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.36374044                     slope
           7.00000000                     lna
@@ -22187,6 +22394,7 @@
           1012.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.90468788                    slope
           7.00000000                     lna
@@ -22294,6 +22502,7 @@
           1011.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.80418491                     slope
           7.00000000                     lna
@@ -22401,6 +22610,7 @@
           1011.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           16.41954613                    slope
           7.00000000                     lna
@@ -22508,6 +22718,7 @@
           1010.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           10.82504368                    slope
           7.00000000                     lna
@@ -22615,6 +22826,7 @@
           1010.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           8.45722437                     slope
           7.00000000                     lna
@@ -22722,6 +22934,7 @@
           1010.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.14210510                    slope
           7.00000000                     lna
@@ -22829,6 +23042,7 @@
           1009.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.80418491                     slope
           7.00000000                     lna
@@ -22936,6 +23150,7 @@
           1008.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.35155678                    slope
           7.00000000                     lna
@@ -23043,6 +23258,7 @@
           1007.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.66757727                     slope
           7.00000000                     lna
@@ -23150,6 +23366,7 @@
           1006.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.05273819                    slope
           7.00000000                     lna
@@ -23257,6 +23474,7 @@
           1006.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           8.11127949                     slope
           7.00000000                     lna
@@ -23364,6 +23582,7 @@
           1005.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.77120209                    slope
           7.00000000                     lna
@@ -23471,6 +23690,7 @@
           1005.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.21066856                     slope
           7.00000000                     lna
@@ -23578,6 +23798,7 @@
           1004.50000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           10.00873661                    slope
           7.00000000                     lna
@@ -23685,6 +23906,7 @@
           1004.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           7.54314995                     slope
           7.00000000                     lna
@@ -23792,6 +24014,7 @@
           1003.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           17.75560760                    slope
           7.00000000                     lna
@@ -23899,6 +24122,7 @@
           1002.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.82254982                    slope
           7.00000000                     lna
@@ -24006,6 +24230,7 @@
           1002.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           8.28042984                     slope
           7.00000000                     lna
@@ -24113,6 +24338,7 @@
           1000.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           8.98487663                     slope
           7.00000000                     lna
@@ -24220,6 +24446,7 @@
           1000.00000000                  z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           8.47871304                     slope
           7.00000000                     lna
@@ -24327,6 +24554,7 @@
           999.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.81850624                    slope
           7.00000000                     lna
@@ -24434,6 +24662,7 @@
           999.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           9.97026157                     slope
           7.00000000                     lna
@@ -24541,6 +24770,7 @@
           999.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.42994404                    slope
           7.00000000                     lna
@@ -24648,6 +24878,7 @@
           998.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           9.20898724                     slope
           7.00000000                     lna
@@ -24755,6 +24986,7 @@
           996.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           9.74803257                     slope
           7.00000000                     lna
@@ -24862,6 +25094,7 @@
           995.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.65578556                    slope
           7.00000000                     lna
@@ -24969,6 +25202,7 @@
           993.50000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           11.03764009                    slope
           7.00000000                     lna
@@ -25076,6 +25310,7 @@
           993.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           9.42157936                     slope
           7.00000000                     lna
@@ -25183,6 +25418,7 @@
           991.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           15.42324543                    slope
           7.00000000                     lna
@@ -25290,6 +25526,7 @@
           991.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           10.76968288                    slope
           7.00000000                     lna
@@ -25397,6 +25634,7 @@
           988.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.48836327                    slope
           7.00000000                     lna
@@ -25504,6 +25742,7 @@
           987.50000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           11.61977291                    slope
           7.00000000                     lna
@@ -25611,6 +25850,7 @@
           986.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           11.76828861                    slope
           7.00000000                     lna
@@ -25718,6 +25958,7 @@
           982.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.10607338                    slope
           7.00000000                     lna
@@ -25825,6 +26066,7 @@
           981.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           13.42150879                    slope
           7.00000000                     lna
@@ -25932,6 +26174,7 @@
           981.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           12.26014709                    slope
           7.00000000                     lna
@@ -26039,6 +26282,7 @@
           976.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           10.53989124                    slope
           7.00000000                     lna
@@ -26146,6 +26390,7 @@
           974.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           9.73792410                     slope
           7.00000000                     lna
@@ -26253,6 +26498,7 @@
           971.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           1800.00000000                  area
           7.16259575                     slope
           7.00000000                     lna
@@ -26360,6 +26606,7 @@
           966.00000000                   z
           3                              soil_parm_ID
           1                              landuse_parm_ID
+          1                              fire_parm_ID
           900.00000000                   area
           9.01550961                     slope
           7.00000000                     lna

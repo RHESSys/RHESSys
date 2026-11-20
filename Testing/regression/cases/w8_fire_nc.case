@@ -1,0 +1,11 @@
+# Medium tier: W8, netcdf gridded climate + WMFire spread/effects, fire build, 10 water years.
+CASE_DESC="W8 netcdf clim + WMFire (-firespread 30), fire build (netcdf=T wmfire=T), 1988-10-01..1998-10-01"
+CASE_BUILD=fire
+CASE_WORLD=worldfiles/w8TC.world
+CASE_HDR=regression/inputs/hdr/w8TC_fire_nc.hdr
+CASE_FLOW=flowtables/w8TC.flow
+CASE_TEC=regression/inputs/tec/w8_10y.tec
+CASE_FILTER=regression/inputs/filters/w8_fire_nc.yml
+CASE_START="1988 10 1 1"
+CASE_END="1998 10 1 1"
+CASE_FLAGS="-g -netcdfgrid -firespread 30 -s 0.355794 651.390265 -sv 0.355794 651.390265 -svalt 1.083102 1.193924 -gw 0.116316 0.916922"
