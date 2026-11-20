@@ -8,6 +8,10 @@
 #   regress.sh check <case>...          build (if needed) + run + compare
 #   regress.sh determinism <case>...    run a case twice and compare the two runs
 #   regress.sh bless <case>...          copy $WORK/runs/<case> to $GOLDEN/<case> (refuses to overwrite unless FORCE=1)
+#   regress.sh sanitize <case>...       run with the ASan/UBSan build, summarize findings
+#   regress.sh coverage <case>...       run with the coverage build, write $WORK/coverage/report.txt
+#   regress.sh profile <case>...        run under callgrind with the profile build; summary in $WORK/profile/<case>.txt
+#   regress.sh bench <case>...          run N times (BENCH_N, default 3) with the case's build; report median wall time
 #   regress.sh list                     list cases
 #
 # Environment:
@@ -17,6 +21,8 @@
 #   REBUILD=1             force rebuild in `check`
 #   FORCE=1               allow `bless` to overwrite an existing golden case
 #   TOL_ABS / TOL_REL     tolerances passed to compare.py (default 0 = bitwise)
+#   RUN_WRAP              command prefix for the model run (e.g. "valgrind --tool=memcheck")
+#   BENCH_N               number of runs for `bench` (default 3)
 #
 # Notes:
 #   - `build` runs `make clean` in rhessys/, so it discards the objects in your working build.
@@ -47,7 +53,12 @@ config_flags() {
     # clang source-based coverage; profiles written per run to LLVM_PROFILE_FILE
     coverage) printf '%s\n' "skiptests=T" "LTO_FLAGS=" "CMD_OPTS=-O0 -g -fprofile-instr-generate -fcoverage-mapping" ;;
     coverage_fire) printf '%s\n' "skiptests=T" "wmfire=T" "LTO_FLAGS=" "CMD_OPTS=-O0 -g -fprofile-instr-generate -fcoverage-mapping" ;;
-    *) die "unknown build config '$1' (known: default fire asan asan_fire coverage coverage_fire)" ;;
+    # default flags (-O2, LTO) plus full debug info, for callgrind/perf profiles
+    # OpenMP build (hillslope-parallel loops); thread count from OMP_NUM_THREADS at run time
+    openmp)   printf '%s\n' "skiptests=T" "openmp=T" ;;
+    profile)  printf '%s\n' "skiptests=T" "CMD_OPTS=-g" ;;
+    profile_fire) printf '%s\n' "skiptests=T" "wmfire=T" "CMD_OPTS=-g" ;;
+    *) die "unknown build config '$1' (known: default fire asan asan_fire coverage coverage_fire openmp profile profile_fire)" ;;
   esac
 }
 
@@ -102,7 +113,7 @@ safe_rm_dir() {  # only removes dirs under $WORK
 # Files in a run dir that are outputs (everything except inputs, symlinks and logs)
 list_outputs() {
   ( cd "$1" && find . -type f ! -path './inputs/*' ! -path './prof/*' ! -name 'rhessys.log' ! -name 'time.log' ! -name 'cmd.txt' \
-      ! -name 'run_info.txt' ! -name 'MANIFEST.sha256' | sed 's|^\./||' | LC_ALL=C sort )
+      ! -name 'run_info.txt' ! -name 'MANIFEST.sha256' ! -name 'callgrind.out*' | sed 's|^\./||' | LC_ALL=C sort )
 }
 
 do_run() {
@@ -130,7 +141,7 @@ do_run() {
   local rc=0
   # shellcheck disable=SC2086
   ( cd "$dest" && LLVM_PROFILE_FILE="$dest/prof/%p.profraw" ASAN_OPTIONS="${ASAN_OPTIONS:-detect_leaks=1}" \
-      UBSAN_OPTIONS="${UBSAN_OPTIONS:-print_stacktrace=1}" /usr/bin/time -v -o time.log $cmd > rhessys.log 2>&1 ) || rc=$?
+      UBSAN_OPTIONS="${UBSAN_OPTIONS:-print_stacktrace=1}" /usr/bin/time -v -o time.log ${RUN_WRAP:-} $cmd > rhessys.log 2>&1 ) || rc=$?
   local wall rss
   wall="$(grep 'Elapsed (wall clock)' "$dest/time.log" | awk '{print $NF}')"
   rss="$(grep 'Maximum resident set size' "$dest/time.log" | awk '{print $NF}')"
@@ -220,6 +231,32 @@ case "$cmd" in
     "$LLVM_BIN/llvm-cov" report "${objs[@]:1}" -instr-profile="$out/merged.profdata" > "$out/report.txt" 2>"$out/report.err" || true
     "$LLVM_BIN/llvm-cov" export -format=text -summary-only "${objs[@]:1}" -instr-profile="$out/merged.profdata" > "$out/summary.json" 2>/dev/null || true
     echo "== coverage report: $out/report.txt (cases: $*)"; tail -1 "$out/report.txt" ;;
+  profile)
+    # callgrind instruction-level profile (deterministic; perf sampling is unavailable under WSL here)
+    out="$WORK/profile"; mkdir -p "$out"
+    for c in "$@"; do
+      load_case "$c"; cfg=profile; [ "$CASE_BUILD" = fire ] && cfg=profile_fire
+      [ -x "$WORK/bin/$cfg/rhessys" ] || do_build "$cfg"
+      d="$WORK/runs/$c.$cfg"
+      RUN_WRAP="valgrind --tool=callgrind --callgrind-out-file=$d/callgrind.out" BUILD=$cfg do_run "$c" "$d"
+      # full annotate output to file (piping into head trips pipefail via SIGPIPE)
+      callgrind_annotate --inclusive=no --threshold=99 "$d/callgrind.out" > "$out/$c.self.txt" 2>/dev/null || true
+      callgrind_annotate --inclusive=yes --threshold=99 "$d/callgrind.out" > "$out/$c.inclusive.txt" 2>/dev/null || true
+      cp "$d/callgrind.out" "$out/$c.callgrind.out"
+      echo "== profile $c: $out/$c.self.txt, $out/$c.inclusive.txt"; sed -n '1,45p' "$out/$c.self.txt" || true
+    done ;;
+  bench)
+    # wall-clock benchmark: median of BENCH_N runs of the case's build (outputs not compared)
+    n="${BENCH_N:-3}"
+    for c in "$@"; do
+      load_case "$c"; ts=()
+      for i in $(seq 1 "$n"); do
+        do_run "$c" "$WORK/runs/$c.bench" >/dev/null
+        ts+=("$(grep 'Elapsed (wall clock)' "$WORK/runs/$c.bench/time.log" | awk '{print $NF}' | awk -F: '{s=0; for(i=1;i<=NF;i++) s=s*60+$i; print s}')")
+      done
+      med="$(printf '%s\n' "${ts[@]}" | sort -g | awk '{a[NR]=$1} END {print (NR%2)? a[(NR+1)/2] : (a[NR/2]+a[NR/2+1])/2}')"
+      echo "== bench $c (build $CASE_BUILD, $(grep binary_sha256 "$WORK/bin/$CASE_BUILD/build_info.txt" | cut -c16-27)): runs=${ts[*]} s  median=${med} s"
+    done ;;
   list) for f in "$HERE"/cases/*.case; do n="$(basename "$f" .case)"; load_case "$n"; printf '%-14s %s\n' "$n" "$CASE_DESC"; done ;;
-  *) sed -n '2,22p' "$0"; exit 1 ;;
+  *) sed -n '2,31p' "$0"; exit 1 ;;
 esac

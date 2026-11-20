@@ -66,6 +66,13 @@ regress.sh list
 - Fails on: missing or extra files, any difference beyond tolerance, and new NaN/Inf values that the reference doesn't have.
 - Default tolerance is 0 (bitwise). Use `TOL_ABS` / `TOL_REL` only for changes approved as tolerance changes. Note that CSV/state values are printed to about 6 significant figures, so tiny floating-point changes may not show up in them.
 
+### Profiling, benchmark, OpenMP
+
+- `regress.sh profile <case>`: callgrind run with the `profile`/`profile_fire` build (`-O2 -flto -g`, outputs bitwise identical to `default`). Annotated self/inclusive costs go to `$WORK/profile/`. The `ward_1m` case (Ward, 1 month, 22 s) exists for this: callgrind on it takes about 13 min.
+- `regress.sh bench <case>`: median wall time of `BENCH_N` (default 3) runs with the case's build. `BUILD=openmp OMP_NUM_THREADS=N` benchmarks the OpenMP build.
+- `openmp` build config: `ward_1m` is bitwise identical to the serial build at 1 and 3 threads (2026-11-20).
+- `RUN_WRAP="valgrind --tool=memcheck ..."` runs any case under a wrapper.
+
 ### Invariants (`invariants.py`)
 
 Run by `regress.sh compare`/`check` on every case:
