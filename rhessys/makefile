@@ -46,8 +46,12 @@ CMD_OPTS +=
 # -march=native -mtune=native -flto
 # march and mtune not a good choice for hpc
 
-CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g1 -O2 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
-CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g1 -O2 -flto -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+# Link-time optimization. Objects built with -flto are LLVM bitcode, so every
+# link step that consumes $(OBJECTS) (including the unit tests) must pass it too.
+LTO_FLAGS = -flto
+
+CFLAGS = -std=gnu99 -D_POSIX_C_SOURCE=200809L -g1 -O2 $(LTO_FLAGS) -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
+CFLAGS_NO_C99 = -D_POSIX_C_SOURCE=200809L -g1 -O2 $(LTO_FLAGS) -Wall -fno-stack-protector -Wextra -Werror=implicit-function-declaration $(DEFINES) $(CMD_OPTS)
 
 # Opt-in native CPU tuning for local performance tests.
 # Keep off by default so container binaries are portable across machines.
@@ -69,17 +73,17 @@ endif
 
 # Retro fitting from CF
 ifeq ($(OS), Darwin)
-	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99 $(LTO_FLAGS)
 	# Linker flag for flex and bison
 	LINK_FLEX = -ll
 	WMFIRE_SO = libwmfire.dylib
 else ifeq ($(OS), Linux)
-	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99 $(LTO_FLAGS)
 	# Linker flag for flex and bison
 	LINK_FLEX = -lfl
 	WMFIRE_SO = libwmfire.so
 else
-	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99
+	CFLAGS_TESTS = `pkg-config --cflags glib-2.0` -g -Wall -std=c99 $(LTO_FLAGS)
 	# Linker flag for flex and bison
 	LINK_FLEX = -lfl
 	WMFIRE_SO = libwmfire.so
@@ -515,11 +519,12 @@ ifneq ($(call bool_true,$(wmfire)),)
 test: dir $(TESTS)
     # Copy FIRE_LIB to test directory so that tests will run.
 	cp $(FIRE_LIB_PATH) $(TEST_FIRE_LIB_PATH)
-	# Run each unit test
-	$(patsubst test/%,cd test; ./%; cd -;,$(TESTS_TO_RUN))
+	# Run each unit test; stop and fail the build on the first failing test
+	$(foreach t,$(notdir $(TESTS)),(cd $(TESTS_ROOTDIR) && ./$(t)) &&) true
 else
 test: dir $(TESTS)
-	$(patsubst test/%,cd test; ./%; cd -;,$(TESTS_TO_RUN))
+	# Run each unit test; stop and fail the build on the first failing test
+	$(foreach t,$(notdir $(TESTS)),(cd $(TESTS_ROOTDIR) && ./$(t)) &&) true
 endif
 
 # $(OBJ)/lex.yy.o $(OBJ)/output_filter_parser.tab.o $(OBJ)/output_filter.o $(OBJ)/string_list.o $(OBJ)/dictionary.o $(CFLAGS_TESTS) $(INCLUDES) $(LDLIBS_TESTS)

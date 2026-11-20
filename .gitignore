@@ -60,6 +60,7 @@ rhessys/test/test_isodate
 rhessys/test/test_output*
 rhessys/test/test_pointer_set
 rhessys/test/test_string_list
+rhessys/test/test_strings
 rhessys/test/example
 
 # test case output
