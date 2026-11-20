@@ -1479,22 +1479,14 @@ void		patch_daily_F(
 		/* allow infiltration of surface N				*/
 		/*--------------------------------------------------------------*/
 		if ((command_line[0].grow_flag > 0) && (infiltration > ZERO)) {
-			patch[0].soil_ns.DON += ((infiltration
-					/ prop_detention_store_infiltrated) * patch[0].surface_DON);
-			patch[0].soil_cs.DOC += ((infiltration
-					/ prop_detention_store_infiltrated) * patch[0].surface_DOC);
-			patch[0].soil_ns.nitrate += ((infiltration
-					/ prop_detention_store_infiltrated) * patch[0].surface_NO3);
-			patch[0].surface_NO3 -= ((infiltration
-					/ prop_detention_store_infiltrated) * patch[0].surface_NO3);
-			patch[0].soil_ns.sminn += ((infiltration
-					/ prop_detention_store_infiltrated) * patch[0].surface_NH4);
-			patch[0].surface_NH4 -= ((infiltration
-					/ prop_detention_store_infiltrated) * patch[0].surface_NH4);
-			patch[0].surface_DOC -= ((infiltration
-							/ prop_detention_store_infiltrated) * patch[0].surface_DOC);
-			patch[0].surface_DON -= ((infiltration
-							/ prop_detention_store_infiltrated) * patch[0].surface_DON);
+			patch[0].soil_ns.DON += (prop_detention_store_infiltrated * patch[0].surface_DON);
+			patch[0].soil_cs.DOC += (prop_detention_store_infiltrated * patch[0].surface_DOC);
+			patch[0].soil_ns.nitrate += (prop_detention_store_infiltrated * patch[0].surface_NO3);
+			patch[0].surface_NO3 -= (prop_detention_store_infiltrated * patch[0].surface_NO3);
+			patch[0].soil_ns.sminn += (prop_detention_store_infiltrated * patch[0].surface_NH4);
+			patch[0].surface_NH4 -= (prop_detention_store_infiltrated * patch[0].surface_NH4);
+			patch[0].surface_DOC -= (prop_detention_store_infiltrated * patch[0].surface_DOC);
+			patch[0].surface_DON -= (prop_detention_store_infiltrated * patch[0].surface_DON);
 				}
 
 	} // end if hourly rain flag
