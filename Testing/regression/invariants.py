@@ -19,18 +19,16 @@ Outputs are printed with 6 decimals, so the daily residual is limited by roundin
 (~1e-6 per term). Defaults: max |daily residual| <= 2e-5 m and
 |cumulative residual| <= 0.1% of cumulative input.
 
-Carbon balance (report only; the model's C budget is known not to close, DEV_LOG #17):
+Carbon balance (report only). Before the #17 and #22 fixes (2026-11-20) it did not close; now
+it closes to ~1e-4 kgC/m2 on w8_fast and ward_1y. Fire cases leave a residual (see below):
 
   residual(day) = net_plant_psn                       (GPP - MR - GR, cover-weighted)
-                  - heterotrophic resp                (litr1,2,4 + litr1,2,4_bg + soil1-4 hr;
-                                                       litr3c_hr is not a loss in the model)
+                  - heterotrophic resp                (litr1-4 + litr1-4_bg + soil1-4 hr)
                   - streamflow_DOC - gw.DOCout - fire_c_veg_consumed
                   - d(totalc + soil_cs.DOC + surface_DOC + ash_DOC + gw.DOC)
   patch.totalc = cover-weighted stratum totalc (plant + CWD) + soil + litter (incl. below ground).
 
-  Also reported: carbon added to cpool by repaying stratum mr_deficit, which the N-uptake
-  routines add to cpool on top of the day's psn already credited in update_C_stratum_daily,
-  and the residual left after removing it. fire.litter_c_consumed is not output-filterable,
+  fire.litter_c_consumed is not output-filterable,
   so fire days show the litter consumed (and ash double counting) as residual.
 
 Exit 0 = pass (or check not applicable: required columns missing), 1 = fail.
@@ -95,24 +93,17 @@ def carbon_balance(path):
         return
     v = lambda x, c: float(x[c])
     store = lambda x: sum(v(x, c) for c in CARBON_STORE)
-    has_mrd = "cs.mr_deficit" in rows[0]
-    res, npp, hr, repaid, worst = 0.0, 0.0, 0.0, 0.0, (0.0, None)
-    worst_adj = 0.0
+    res, npp, hr, worst = 0.0, 0.0, 0.0, (0.0, None)
     for prev, x in zip(rows, rows[1:]):
         h = sum(v(x, c) for c in CARBON_HR)
         r = v(x, "net_plant_psn") - h - sum(v(x, c) for c in CARBON_OUT) - (store(x) - store(prev))
-        rep = max(0.0, v(prev, "cs.mr_deficit") - v(x, "cs.mr_deficit")) if has_mrd else 0.0
-        res += r; npp += v(x, "net_plant_psn"); hr += h; repaid += rep
+        res += r; npp += v(x, "net_plant_psn"); hr += h
         if abs(r) > abs(worst[0]):
             worst = (r, f"{x.get('year')}-{x.get('month')}-{x.get('day')}")
-        worst_adj = max(worst_adj, abs(r + rep))
     ndays = len(rows) - 1
     print(f"  carbon balance (report only): days={ndays} cumulative residual={res:+.4f} kgC/m2 "
           f"(sum net_psn {npp:.4f}, sum hetero resp {hr:.4f}, d(store) {store(rows[-1]) - store(rows[0]):+.4f}); "
           f"max|daily|={abs(worst[0]):.2e} on {worst[1]}")
-    if has_mrd:
-        print(f"    mr_deficit repaid into cpool={repaid:.4f} kgC/m2; residual without it={res + repaid:+.4f} kgC/m2, "
-              f"max|daily|={worst_adj:.2e}")
 
 
 def main():
