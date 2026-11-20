@@ -78,14 +78,16 @@ regress.sh list
 Run by `regress.sh compare`/`check` on every case:
 
 - **Water balance** (pass/fail): basin daily residual of input − outputs − Δstorage from `out/basin_daily.csv`. Limits: every day ≤ 2e-5 m and cumulative ≤ 0.1% of input.
-- **Carbon balance** (report only, added 2026-11-20): from `out/basin_carbon_daily.csv` (a second filter block in each case's yml). Residual = `net_plant_psn` − heterotrophic respiration − `streamflow_DOC` − `gw.DOCout` − `fire_c_veg_consumed` − Δ(`totalc` + soil, surface, ash and gw DOC). It prints the cumulative residual, the worst day, and the carbon added by `mr_deficit` repayment (DEV_LOG #17), with the residual left after removing it. It is meant to be read subjectively for now. Results on the current goldens:
+- **Carbon balance** (report only, added 2026-11-20): from `out/basin_carbon_daily.csv` (a second filter block in each case's yml). Residual = `net_plant_psn` − heterotrophic respiration − `streamflow_DOC` − `gw.DOCout` − `fire_c_veg_consumed` − Δ(`totalc` + soil, surface, ash and gw DOC). It prints the cumulative residual and the worst day. It is still report only (fire cases don't close). Results on the current goldens:
 
-  | Case | Cumulative residual (kgC/m²) | `mr_deficit` repaid | Residual without it | Notes |
-  |---|---|---|---|---|
-  | `w8_fast` (5 yr) | −1.327 | 1.325 | −0.002 | closes once #17 is removed |
-  | `w8_fire_nc` (10 yr) | −2.131 | 2.471 | +0.340 | remainder is fire litter consumption, which can't be output-filtered (`fire.litter_c_consumed`); large fire days |
-  | `ward_1y` | −0.072 | 0.086 | +0.015 | several strata per patch: basin-average `mr_deficit` hides opposite changes, so the daily repayment estimate is approximate |
-  | `ward_long` (43.6 yr) | −1.309 | 1.686 | +0.377 | same caveat as `ward_1y`; max daily residual without the repayment 3.2e-02 |
+  | Case | Before fixes (kgC/m²) | After #17 and #22 (2026-11-20) | Notes |
+  |---|---|---|---|
+  | `w8_fast` (5 yr) | −1.327 | +0.0001 | closes; max daily 4e-06 |
+  | `w8_fire_nc` (10 yr) | −2.131 | +0.276 | remainder is on fire days: fire litter consumption can't be output-filtered (`fire.litter_c_consumed`) |
+  | `ward_1y` | −0.072 | −0.002 | max daily 1e-03 on one day (1979-10-1) |
+  | `ward_long` (43.6 yr) | −1.309 | −0.041 | same worst day as `ward_1y` |
+
+  Before the fixes, 99.8% of the `w8_fast` residual was `mr_deficit` repayment (#17).
 
 - Nitrogen balance: not checked yet (expected to fail; known issue).
 
@@ -120,6 +122,6 @@ The W8 cases use the command-line parameters from `TestCase_IO.R` (`-g -s/-sv/-s
 
 ### Baseline
 
-Golden outputs were first blessed on 2026-11-19 from commit `80e63a72`. `w8_fire_nc` was re-blessed after the fire output fix (see DEV_LOG); `w8_fast` was unaffected.
+Golden outputs were first blessed on 2026-11-19 from commit `80e63a72`. `w8_fire_nc` was re-blessed after the fire output fix (see DEV_LOG); `w8_fast` was unaffected. **All four cases were re-blessed on 2026-11-20 on branch `develop-fixes` after the model fixes #17, #21 and #22** (commit `a3fa6141`); the previous goldens are kept as `<case>.replaced.*` in the golden dir.
 
 Original blessing: 2026-11-19 from commit `80e63a72` (branch `develop-test-perf`). The only local changes were to the makefile and a unit test, with no model code changes. Each golden case's `run_info.txt` records the commit, diff hash, binary sha256 and compiler. Both cases pass the run-twice determinism check, netcdf output included.
