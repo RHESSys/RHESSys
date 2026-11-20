@@ -1271,6 +1271,7 @@ clean:
 clobber:
 	rm -f $(OBJECTS) $(PGM)
 
-functest: rhessys
-	# Run Python-based functional testing
-	RHESSYS_BIN=$(PGM) python -m unittest discover -s test
+functest:
+	# Functional test: W8 fast case through the regression harness (build, run, golden compare + invariants).
+	# The legacy Python test (test_mass_balance.py, W8.zip) was retired 2026-11-20; see docs/TESTING.md.
+	cd .. && Testing/regression/regress.sh check w8_fast

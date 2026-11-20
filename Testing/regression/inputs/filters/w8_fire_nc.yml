@@ -25,3 +25,12 @@ filter:
 	basin:
 		ids: 1
 		variables: patch.total_water_in, patch.streamflow, patch.return_flow, patch.base_flow, hill.gw.Qout, hill.gw.storage, patch.transpiration_sat_zone, patch.transpiration_unsat_zone, patch.evaporation, patch.evaporation_surf, patch.exfiltration_sat_zone, patch.exfiltration_unsat_zone, patch.sat_deficit, patch.sat_deficit_z, patch.unsat_storage, patch.rz_storage, patch.detention_store, patch.litter.rain_stored, patch.snowpack.water_equivalent_depth, patch.canopy_rain_stored, patch.canopy_snow_stored, stratum.rain_stored, stratum.snow_stored, stratum.cs.frootc, stratum.cs.leafc, stratum.cs.live_stemc, stratum.cs.dead_stemc, stratum.cs.live_crootc, stratum.cs.dead_crootc, stratum.cs.cpool, stratum.cs.totalc, stratum.cs.total_plantc, stratum.cs.net_psn, stratum.epv.height, stratum.epv.proj_lai, stratum.cdf.total_mr, stratum.cdf.total_gr, stratum.cdf.psn_to_cpool, patch.litter_cs.totalc, patch.soil_cs.totalc, patch.soil_ns.totaln, patch.soil_ns.nitrate, patch.soil_ns.sminn, patch.ndf.denitrif, patch.ndf.sminn_to_nitrate, patch.streamflow_NO3, patch.streamflow_DON, patch.streamflow_DOC, hill.gw.NO3out, hill.gw.DONout, patch.burn, patch.pspread, patch.nburn, patch.fire_c_veg_consumed, patch.fire_c_veg_mortality, patch.ash_DOC, patch.ash_DON
+filter:
+	timestep: daily
+	output:
+		format: csv
+		path: "out"
+		filename: "basin_carbon_daily"
+	basin:
+		ids: 1
+		variables: patch.totalc, patch.net_plant_psn, patch.cdf.litr1c_hr, patch.cdf.litr2c_hr, patch.cdf.litr3c_hr, patch.cdf.litr4c_hr, patch.cdf.litr1c_hr_bg, patch.cdf.litr2c_hr_bg, patch.cdf.litr4c_hr_bg, patch.cdf.soil1c_hr, patch.cdf.soil2c_hr, patch.cdf.soil3c_hr, patch.cdf.soil4c_hr, patch.soil_cs.DOC, patch.surface_DOC, patch.ash_DOC, patch.streamflow_DOC, hill.gw.DOC, hill.gw.DOCout, patch.fire_c_veg_consumed, stratum.cs.mr_deficit, stratum.cs.cpool

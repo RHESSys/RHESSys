@@ -4,23 +4,24 @@ How RHESSys is tested, what each test covers, and how to run it. The dev plan an
 
 ## Summary
 
-| Test | Type | How to run | Runtime | Automated | Status |
-|---|---|---|---|---|---|
-| C unit tests (`rhessys/test/src`, 16 tests) | unit (glib) | `make skiptests=F` in `rhessys/` | ~1 min (with build) | runs during the build; a failure fails the build | passing |
-| Regression: `w8_fast` | regression, bitwise | `Testing/regression/regress.sh check w8_fast` | ~8 s run | script | golden blessed |
-| Regression: `w8_fire_nc` | regression, bitwise | `Testing/regression/regress.sh check w8_fire_nc` | ~16 s run | script | golden blessed |
-| Regression: `ward_1y` | regression, bitwise (large basin, 12,045 patches) | `regress.sh check ward_1y` | ~3 min | script | golden blessed |
-| Regression: `ward_long` | regression, bitwise (Ward full climate record) | `regress.sh check ward_long` | 1 h 47 m (608 MB RSS) | script (nightly / on demand) | golden blessed 2026-11-19; determinism verified (2 runs of the same binary, 11/11 files bitwise identical, 1 h 52 m) |
-| Water-balance invariant (`invariants.py`) | invariant | runs inside `regress.sh compare`/`check` | seconds | script | passing (all cases) |
-| Sanitizers: ASan + UBSan | memory / UB | `regress.sh sanitize <case>` | ~3x a normal run | script, CI | clean: `w8_fast`, `w8_fire_nc`, `ward_1y` (leaks at exit only) |
-| valgrind memcheck (incl. uninitialized reads) | memory | manual (see DEV_LOG) | ~50x | no | clean: `w8_fast` (0 errors) |
-| Coverage (clang source-based) | coverage | `regress.sh coverage <case>...` | ~2-3x a normal run | script | 45% lines (W8) |
-| Python functional test (`rhessys/test/test_mass_balance.py`, `make functest`) | functional | `make functest` | ? | no | superseded by `invariants.py`. The legacy version needs numpy and Python-2-era I/O, and uses legacy `-b` output from `test/data/W8.zip`. (`errno` import fixed.) |
-| `travis.sh` | build + tests | `./travis.sh` | ~2 min | script (local) | unit tests + `w8_fast` determinism + invariants. Travis CI itself is disabled (`.travis.yml.disabled`, see the comments there to re-enable); CI is GitHub Actions only |
-| `Testing/TestCase*.Rmd`, `TestCase_IO.R`, `TestCase_new.ipynb` | manual R workflow / plots | interactive | `TestCase_IO.R` runs 1988-2189 | no | manual |
-| RHESSys calibration test kit (`Projects/CodeDev/rhessys_calibration_tests`) | R package / calibration scripts | `./run_tests.sh` in Git Bash | ~6 min | script (outside this repo) | used for RHESSysIOinR / rhutils / calibration script changes |
-| GitHub Actions: `build_docker_*.yml` | Docker image build | on push | - | yes | unchanged |
-| GitHub Actions: `tests.yml` | unit tests, `w8_fast` determinism + invariants, ASan/UBSan | PR, push to develop(-test-perf) | ~5 min | yes (once pushed) | new; no golden comparison or fire build in CI |
+| Test                                                                          | Type                                                       | How to run                                       | Runtime                        | Automated                                        | Status                                                                                                                                                                 |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------ | ------------------------------ | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C unit tests (`rhessys/test/src`, 16 tests)                                   | unit (glib)                                                | `make skiptests=F` in `rhessys/`                 | ~1 min (with build)            | runs during the build; a failure fails the build | passing                                                                                                                                                                |
+| Regression: `w8_fast`                                                         | regression, bitwise                                        | `Testing/regression/regress.sh check w8_fast`    | ~8 s run                       | script                                           | golden blessed                                                                                                                                                         |
+| Regression: `w8_fire_nc`                                                      | regression, bitwise                                        | `Testing/regression/regress.sh check w8_fire_nc` | ~16 s run                      | script                                           | golden blessed                                                                                                                                                         |
+| Regression: `ward_1y`                                                         | regression, bitwise (large basin, 12,045 patches)          | `regress.sh check ward_1y`                       | ~3 min                         | script                                           | golden blessed                                                                                                                                                         |
+| Regression: `ward_long`                                                       | regression, bitwise (Ward full climate record)             | `regress.sh check ward_long`                     | 1 h 47 m (608 MB RSS)          | script (nightly / on demand)                     | golden blessed 2026-11-19; determinism verified (2 runs of the same binary, 11/11 files bitwise identical, 1 h 52 m)                                                   |
+| Water-balance invariant (`invariants.py`)                                     | invariant                                                  | runs inside `regress.sh compare`/`check`         | seconds                        | script                                           | passing (all cases)                                                                                                                                                    |
+| Carbon-balance report (`invariants.py`) | invariant, **report only** | runs inside `regress.sh compare`/`check` (needs `out/basin_carbon_daily.csv`) | seconds | script | never fails. Known not to close: DEV_LOG #17 (`mr_deficit` repayment double counted) and #18 |
+| Sanitizers: ASan + UBSan                                                      | memory / UB                                                | `regress.sh sanitize <case>`                     | ~3x a normal run               | script, CI                                       | clean: `w8_fast`, `w8_fire_nc`, `ward_1y` (leaks at exit only)                                                                                                         |
+| valgrind memcheck (incl. uninitialized reads)                                 | memory                                                     | manual (see DEV_LOG)                             | ~50x                           | no                                               | clean: `w8_fast` (0 errors)                                                                                                                                            |
+| Coverage (clang source-based)                                                 | coverage                                                   | `regress.sh coverage <case>...`                  | ~2-3x a normal run             | script                                           | 45% lines (W8)                                                                                                                                                         |
+| `make functest` | functional | `make functest` | ~10 s | script | now runs `regress.sh check w8_fast`. The legacy Python test (`test_mass_balance.py`, `test/data/W8.zip`) was retired 2026-11-20; its only real check (basin water balance) is covered by `invariants.py` |
+| `travis.sh`                                                                   | build + tests                                              | `./travis.sh`                                    | ~2 min                         | script (local)                                   | unit tests + `w8_fast` determinism + invariants. Travis CI itself is disabled (`.travis.yml.disabled`, see the comments there to re-enable); CI is GitHub Actions only |
+| `Testing/TestCase*.Rmd`, `TestCase_IO.R`, `TestCase_new.ipynb`                | manual R workflow / plots                                  | interactive                                      | `TestCase_IO.R` runs 1988-2189 | no                                               | manual                                                                                                                                                                 |
+| RHESSys calibration test kit (`Projects/CodeDev/rhessys_calibration_tests`)   | R package / calibration scripts                            | `./run_tests.sh` in Git Bash                     | ~6 min                         | script (outside this repo)                       | used for RHESSysIOinR / rhutils / calibration script changes                                                                                                           |
+| GitHub Actions: `build_docker_*.yml`                                          | Docker image build                                         | on push                                          | -                              | yes                                              | unchanged                                                                                                                                                              |
+| GitHub Actions: `tests.yml`                                                   | unit tests, `w8_fast` determinism + invariants, ASan/UBSan | PR, push to develop(-test-perf)                  | ~5 min                         | yes (once pushed)                                | new; no golden comparison or fire build in CI                                                                                                                          |
 
 ## C unit tests
 
@@ -65,15 +66,29 @@ regress.sh list
 - Fails on: missing or extra files, any difference beyond tolerance, and new NaN/Inf values that the reference doesn't have.
 - Default tolerance is 0 (bitwise). Use `TOL_ABS` / `TOL_REL` only for changes approved as tolerance changes. Note that CSV/state values are printed to about 6 significant figures, so tiny floating-point changes may not show up in them.
 
+### Invariants (`invariants.py`)
+
+Run by `regress.sh compare`/`check` on every case:
+
+- **Water balance** (pass/fail): basin daily residual of input − outputs − Δstorage from `out/basin_daily.csv`. Limits: every day ≤ 2e-5 m and cumulative ≤ 0.1% of input.
+- **Carbon balance** (report only, added 2026-11-20): from `out/basin_carbon_daily.csv` (a second filter block in each case's yml). Residual = `net_plant_psn` − heterotrophic respiration − `streamflow_DOC` − `gw.DOCout` − `fire_c_veg_consumed` − Δ(`totalc` + soil, surface, ash and gw DOC). It prints the cumulative residual, the worst day, and the carbon added by `mr_deficit` repayment (DEV_LOG #17), with the residual left after removing it. It is meant to be read subjectively for now. Results on the current goldens:
+
+  | Case | Cumulative residual (kgC/m²) | `mr_deficit` repaid | Residual without it | Notes |
+  |---|---|---|---|---|
+  | `w8_fast` (5 yr) | −1.327 | 1.325 | −0.002 | closes once #17 is removed |
+  | `w8_fire_nc` (10 yr) | −2.131 | 2.471 | +0.340 | remainder is fire litter consumption, which can't be output-filtered (`fire.litter_c_consumed`); large fire days |
+  | `ward_1y` | −0.072 | 0.086 | +0.015 | several strata per patch: basin-average `mr_deficit` hides opposite changes, so the daily repayment estimate is approximate |
+
+- Nitrogen balance: not checked yet (expected to fail; known issue).
+
 ### Cases
 
-| Case | Build | Climate | Fire | Period | Outputs |
-|---|---|---|---|---|---|
-| `w8_fast` | default | ASCII base station `clim/w8_base` | no | 1988-10-01 .. 1993-10-01 | basin daily csv (50 vars), patch yearly csv (23 vars), state |
-| `w8_fire_nc` | fire | netcdf `clim/w8_netcdf.base` (`-netcdfgrid`) | `-firespread 30`, `defs/fire.def`, `fire_grid/w8_fire30m.*`; ash on (`defs/soil_sandyloam_ash.def`) | 1988-10-01 .. 1998-10-01 | the above plus fire vars, basin daily netcdf, FireSizes |
-
-| `ward_1y` | default | Ward ASCII gridmet clim (+10% rain) | no | 1979-01-01 .. 1979-12-30 | basin daily csv, state (70 MB) |
-| `ward_long` | default | same | no | 1979-01-01 .. 2022-08-07 (full record) | basin daily csv, state |
+| Case         | Build   | Climate                                      | Fire                                                                                                | Period                                 | Outputs                                                      |
+| ------------ | ------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------ |
+| `w8_fast`    | default | ASCII base station `clim/w8_base`            | no                                                                                                  | 1988-10-01 .. 1993-10-01               | basin daily csv (50 vars), patch yearly csv (23 vars), state |
+| `w8_fire_nc` | fire    | netcdf `clim/w8_netcdf.base` (`-netcdfgrid`) | `-firespread 30`, `defs/fire.def`, `fire_grid/w8_fire30m.*`; ash on (`defs/soil_sandyloam_ash.def`) | 1988-10-01 .. 1998-10-01               | the above plus fire vars, basin daily netcdf, FireSizes      |
+| `ward_1y`    | default | Ward ASCII gridmet clim (+10% rain)          | no                                                                                                  | 1979-01-01 .. 1979-12-30               | basin daily csv, state (70 MB)                               |
+| `ward_long`  | default | same                                         | no                                                                                                  | 1979-01-01 .. 2022-08-07 (full record) | basin daily csv, state                                       |
 
 The Ward cases use the best calibrated run as of 2026-11-19, **RunID296_345** (composite 0.305, NSE 0.45, KGE 0.50), with `-g -vmort_off`. The snapshot reproduces the calibration batch exactly: `ward_long` basin streamflow is bitwise identical to `output/CAL_RunID296_.../Wardsoil_cal_basin_RunID296_345.csv` on all 14,244 days.
 - Inputs are a snapshot made by `Testing/regression/ward/make_ward_best_inputs.R`. It copies the base inputs and rebuilds the defs from the archived parameter values with `RHESSysIOinR::change_def_file`, because the per-ParSetID def copies in Ward are overwritten by every batch.

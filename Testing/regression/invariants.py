@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Physical invariant checks on a RHESSys regression run directory.
 
-Currently: basin water balance on out/basin_daily.csv (replaces the legacy
-rhessys/test/test_mass_balance.py check, which needed numpy and legacy -b output).
+Checks:
+  - basin water balance on out/basin_daily.csv (pass/fail; replaces the retired legacy
+    rhessys/test/test_mass_balance.py check)
+  - basin carbon balance on out/basin_carbon_daily.csv (REPORT ONLY, never fails; see below)
 
   residual(day) = total_water_in
                   - (streamflow + gw.Qout + evaporation + evaporation_surf
@@ -16,6 +18,20 @@ rhessys/test/test_mass_balance.py check, which needed numpy and legacy -b output
 Outputs are printed with 6 decimals, so the daily residual is limited by rounding
 (~1e-6 per term). Defaults: max |daily residual| <= 2e-5 m and
 |cumulative residual| <= 0.1% of cumulative input.
+
+Carbon balance (report only; the model's C budget is known not to close, DEV_LOG #17):
+
+  residual(day) = net_plant_psn                       (GPP - MR - GR, cover-weighted)
+                  - heterotrophic resp                (litr1,2,4 + litr1,2,4_bg + soil1-4 hr;
+                                                       litr3c_hr is not a loss in the model)
+                  - streamflow_DOC - gw.DOCout - fire_c_veg_consumed
+                  - d(totalc + soil_cs.DOC + surface_DOC + ash_DOC + gw.DOC)
+  patch.totalc = cover-weighted stratum totalc (plant + CWD) + soil + litter (incl. below ground).
+
+  Also reported: carbon added to cpool by repaying stratum mr_deficit, which the N-uptake
+  routines add to cpool on top of the day's psn already credited in update_C_stratum_daily,
+  and the residual left after removing it. fire.litter_c_consumed is not output-filterable,
+  so fire days show the litter consumed (and ash double counting) as residual.
 
 Exit 0 = pass (or check not applicable: required columns missing), 1 = fail.
 """
@@ -62,6 +78,43 @@ def water_balance(path, max_daily, max_cum_frac):
     return ok
 
 
+CARBON_HR = ["cdf.litr1c_hr", "cdf.litr2c_hr", "cdf.litr4c_hr", "cdf.litr1c_hr_bg", "cdf.litr2c_hr_bg",
+             "cdf.litr4c_hr_bg", "cdf.soil1c_hr", "cdf.soil2c_hr", "cdf.soil3c_hr", "cdf.soil4c_hr"]
+CARBON_OUT = ["streamflow_DOC", "gw.DOCout", "fire_c_veg_consumed"]
+CARBON_STORE = ["totalc", "soil_cs.DOC", "surface_DOC", "ash_DOC", "gw.DOC"]
+CARBON_REQUIRED = ["net_plant_psn"] + CARBON_HR + CARBON_OUT + CARBON_STORE
+
+
+def carbon_balance(path):
+    """Report-only basin carbon budget. Returns nothing; never fails the run."""
+    with open(path) as f:
+        rows = list(csv.DictReader(f))
+    if not rows or any(c not in rows[0] for c in CARBON_REQUIRED):
+        missing = [c for c in CARBON_REQUIRED if rows and c not in rows[0]]
+        print(f"  carbon balance (report only): SKIP ({os.path.basename(path)} missing columns {missing})")
+        return
+    v = lambda x, c: float(x[c])
+    store = lambda x: sum(v(x, c) for c in CARBON_STORE)
+    has_mrd = "cs.mr_deficit" in rows[0]
+    res, npp, hr, repaid, worst = 0.0, 0.0, 0.0, 0.0, (0.0, None)
+    worst_adj = 0.0
+    for prev, x in zip(rows, rows[1:]):
+        h = sum(v(x, c) for c in CARBON_HR)
+        r = v(x, "net_plant_psn") - h - sum(v(x, c) for c in CARBON_OUT) - (store(x) - store(prev))
+        rep = max(0.0, v(prev, "cs.mr_deficit") - v(x, "cs.mr_deficit")) if has_mrd else 0.0
+        res += r; npp += v(x, "net_plant_psn"); hr += h; repaid += rep
+        if abs(r) > abs(worst[0]):
+            worst = (r, f"{x.get('year')}-{x.get('month')}-{x.get('day')}")
+        worst_adj = max(worst_adj, abs(r + rep))
+    ndays = len(rows) - 1
+    print(f"  carbon balance (report only): days={ndays} cumulative residual={res:+.4f} kgC/m2 "
+          f"(sum net_psn {npp:.4f}, sum hetero resp {hr:.4f}, d(store) {store(rows[-1]) - store(rows[0]):+.4f}); "
+          f"max|daily|={abs(worst[0]):.2e} on {worst[1]}")
+    if has_mrd:
+        print(f"    mr_deficit repaid into cpool={repaid:.4f} kgC/m2; residual without it={res + repaid:+.4f} kgC/m2, "
+              f"max|daily|={worst_adj:.2e}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("rundir")
@@ -74,6 +127,9 @@ def main():
         ok = water_balance(p, a.max_daily, a.max_cum_frac) and ok
     else:
         print("  water balance: SKIP (no out/basin_daily.csv)")
+    p = os.path.join(a.rundir, "out", "basin_carbon_daily.csv")
+    if os.path.exists(p):
+        carbon_balance(p)
     print("  INVARIANTS:", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 
