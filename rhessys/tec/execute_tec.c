@@ -92,6 +92,35 @@
 #include <stdlib.h>
 #include "rhessys.h"
 
+/*--------------------------------------------------------------*/
+/*	Reset patch fire fluxes once they have been accumulated	*/
+/*	and output for the day. Fire effects are applied either	*/
+/*	mid-day (prescribed pspread, zone_daily_F) or at month end	*/
+/*	after the day's output (WMFire, execute_firespread_event);	*/
+/*	resetting here, after output, means both are reported		*/
+/*	exactly once (month-end fires on the following day).		*/
+/*--------------------------------------------------------------*/
+static void zero_patch_fire_fluxes(struct world_object *world)
+{
+	int b, h, z, p;
+	struct patch_object *patch;
+	for (b = 0; b < world[0].num_basin_files; ++b) {
+		struct basin_object *basin = world[0].basins[b];
+		for (h = 0; h < basin[0].num_hillslopes; ++h) {
+			for (z = 0; z < basin[0].hillslopes[h][0].num_zones; ++z) {
+				for (p = 0; p < basin[0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
+					patch = basin[0].hillslopes[h][0].zones[z][0].patches[p];
+					patch[0].fire.litter_c_consumed = 0.0;
+					patch[0].fire_c_veg_consumed = 0.0;
+					patch[0].fire_c_veg_mortality = 0.0;
+					patch[0].burn = 0.0;
+					patch[0].nburn = 0;
+				}
+			}
+		}
+	}
+}
+
 void	execute_tec(
 					struct	tec_object *tecfile ,
 					struct command_line_object *command_line,
@@ -387,6 +416,10 @@ void	execute_tec(
 					command_line,
 					current_date,
 					growth_outfile);
+				/*--------------------------------------------------------------*/
+				/*	Fire fluxes have now been accumulated and output for today	*/
+				/*--------------------------------------------------------------*/
+				zero_patch_fire_fluxes(world);
 				/*--------------------------------------------------------------*/
 				/*				Determine the new calendar date if we add 1 day.*/
 				/*				Do this by first conversting the current cal	*/

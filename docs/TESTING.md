@@ -60,7 +60,7 @@ regress.sh list
 | Case | Build | Climate | Fire | Period | Outputs |
 |---|---|---|---|---|---|
 | `w8_fast` | default | ASCII base station `clim/w8_base` | no | 1988-10-01 .. 1993-10-01 | basin daily csv (50 vars), patch yearly csv (23 vars), state |
-| `w8_fire_nc` | fire | netcdf `clim/w8_netcdf.base` (`-netcdfgrid`) | `-firespread 30`, `defs/fire.def`, `fire_grid/w8_fire30m.*` | 1988-10-01 .. 1998-10-01 | the above plus fire vars, basin daily netcdf, FireSizes |
+| `w8_fire_nc` | fire | netcdf `clim/w8_netcdf.base` (`-netcdfgrid`) | `-firespread 30`, `defs/fire.def`, `fire_grid/w8_fire30m.*`; ash on (`defs/soil_sandyloam_ash.def`) | 1988-10-01 .. 1998-10-01 | the above plus fire vars, basin daily netcdf, FireSizes |
 
 Both cases use the command-line parameters from `TestCase_IO.R` (`-g -s/-sv/-svalt/-gw ...`). `w8_fire_nc` has 5 fires in 10 years (sizes 7-48 cells, with `ran_seed 1`), and fire effects remove/transfer carbon at the month boundary after each one.
 
@@ -78,4 +78,6 @@ Both cases use the command-line parameters from `TestCase_IO.R` (`-g -s/-sv/-sva
 
 ### Baseline
 
-Golden outputs were blessed on 2026-11-19 from commit `80e63a72` (branch `develop-test-perf`). The only local changes were to the makefile and a unit test, with no model code changes. Each golden case's `run_info.txt` records the commit, diff hash, binary sha256 and compiler. Both cases pass the run-twice determinism check, netcdf output included.
+Golden outputs were first blessed on 2026-11-19 from commit `80e63a72`. `w8_fire_nc` was re-blessed after the fire output fix (see DEV_LOG); `w8_fast` was unaffected.
+
+Original blessing: 2026-11-19 from commit `80e63a72` (branch `develop-test-perf`). The only local changes were to the makefile and a unit test, with no model code changes. Each golden case's `run_info.txt` records the commit, diff hash, binary sha256 and compiler. Both cases pass the run-twice determinism check, netcdf output included.

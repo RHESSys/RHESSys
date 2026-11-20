@@ -119,8 +119,9 @@ void compute_family_fire_effects(
 
 	for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
 	{
-		// Track nburn days
+		// Track nburn days, and the burn fraction of this fire event (reset after daily output)
 		patch_family[0].patches[p][0].nburn += 1;
+		patch_family[0].patches[p][0].burn = pspread;
 
 		litter_c_consumed = (patch_family[0].patches[p][0].litter_cs.litr1c * fire_loss.loss_litr1c +
 							  patch_family[0].patches[p][0].litter_cs.litr2c * fire_loss.loss_litr2c +

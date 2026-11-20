@@ -241,6 +241,8 @@ struct patch_object *construct_patch(
 	patch[0].fire_c_veg_consumed  = 0.0;
 	patch[0].fire_c_veg_mortality = 0.0;
 	patch[0].nburn = 0;
+	patch[0].burn = 0.0;
+	patch[0].pspread = 0.0;
 
 	/*--------------------------------------------------------------*/
 	/*      initialize accumulator variables for this patch         */
