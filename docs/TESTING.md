@@ -9,12 +9,17 @@ How RHESSys is tested, what each test covers, and how to run it. The dev plan an
 | C unit tests (`rhessys/test/src`, 16 tests) | unit (glib) | `make skiptests=F` in `rhessys/` | ~1 min (with build) | runs during the build; a failure fails the build | passing |
 | Regression: `w8_fast` | regression, bitwise | `Testing/regression/regress.sh check w8_fast` | ~8 s run | script | golden blessed |
 | Regression: `w8_fire_nc` | regression, bitwise | `Testing/regression/regress.sh check w8_fire_nc` | ~16 s run | script | golden blessed |
-| Regression: Ward long case | regression | not defined yet | long | - | to do |
-| Python functional test (`rhessys/test/test_mass_balance.py`, `make functest`) | functional | `make functest` | ? | no | stale: `errno` is used without being imported; not checked against the current CLI |
-| `travis.sh` | build + tests | - | - | - | stale: it does `cd cf`, but cf now lives in `util/deprecated/cf` |
+| Regression: `ward_1y` | regression, bitwise (large basin, 12,045 patches) | `regress.sh check ward_1y` | ~3 min | script | golden blessed |
+| Regression: `ward_long` | regression, bitwise (Ward full climate record) | `regress.sh check ward_long` | ~2 h | script (nightly / on demand) | see Baseline |
+| Water-balance invariant (`invariants.py`) | invariant | runs inside `regress.sh compare`/`check` | seconds | script | passing (all cases) |
+| Sanitizers: ASan + UBSan | memory / UB | `regress.sh sanitize <case>` | ~3x a normal run | script, CI | clean (W8 cases) |
+| Coverage (clang source-based) | coverage | `regress.sh coverage <case>...` | ~2-3x a normal run | script | 45% lines (W8) |
+| Python functional test (`rhessys/test/test_mass_balance.py`, `make functest`) | functional | `make functest` | ? | no | superseded by `invariants.py`. The legacy version needs numpy and Python-2-era I/O, and uses legacy `-b` output from `test/data/W8.zip`. (`errno` import fixed.) |
+| `travis.sh` | build + tests | `./travis.sh` | ~2 min | script | updated: unit tests + `w8_fast` determinism + invariants |
 | `Testing/TestCase*.Rmd`, `TestCase_IO.R`, `TestCase_new.ipynb` | manual R workflow / plots | interactive | `TestCase_IO.R` runs 1988-2189 | no | manual |
 | RHESSys calibration test kit (`Projects/CodeDev/rhessys_calibration_tests`) | R package / calibration scripts | `./run_tests.sh` in Git Bash | ~6 min | script (outside this repo) | used for RHESSysIOinR / rhutils / calibration script changes |
-| GitHub Actions (`.github/workflows`) | Docker image build only | on push | - | yes | no tests run in CI yet |
+| GitHub Actions: `build_docker_*.yml` | Docker image build | on push | - | yes | unchanged |
+| GitHub Actions: `tests.yml` | unit tests, `w8_fast` determinism + invariants, ASan/UBSan | PR, push to develop(-test-perf) | ~5 min | yes (once pushed) | new; no golden comparison or fire build in CI |
 
 ## C unit tests
 
@@ -31,11 +36,15 @@ regress.sh compare <case>         # compare the run against the golden copy (com
 regress.sh check <case>           # build if needed, then run + compare
 regress.sh determinism <case>     # run twice, compare the two runs
 regress.sh bless <case>           # copy the run to golden (FORCE=1 to replace; the old copy is kept as .replaced.<time>)
+regress.sh sanitize <case>...     # run with the asan / asan_fire build; memory errors/UB fail, leaks are reported
+regress.sh coverage <case>...     # run with the coverage builds; report in $WORK/coverage/report.txt
+BUILD=<config> regress.sh run <case>   # run any case with another build config
 regress.sh list
 ```
 
 - `WORK` = `$RHESSYS_REGRESS_WORK`, default `~/rhessys_regress`. Use the WSL filesystem, which is much faster than `/mnt/c`.
 - `GOLDEN` = `$RHESSYS_GOLDEN`, default `<repo>/../RHESSys-regression-golden`. Golden outputs stay local and are not in git.
+- `INPUTS` = `$RHESSYS_REGRESS_INPUTS`, default `<repo>/../RHESSys-regression-inputs`. This holds snapshots of large external inputs (Ward), referenced by `CASE_ROOT` in the case files.
 - `build` runs `make clean` in `rhessys/`.
 - Build configs:
   - `default` = `skiptests=F` (netcdf=T, wmfire=F)
@@ -62,7 +71,16 @@ regress.sh list
 | `w8_fast` | default | ASCII base station `clim/w8_base` | no | 1988-10-01 .. 1993-10-01 | basin daily csv (50 vars), patch yearly csv (23 vars), state |
 | `w8_fire_nc` | fire | netcdf `clim/w8_netcdf.base` (`-netcdfgrid`) | `-firespread 30`, `defs/fire.def`, `fire_grid/w8_fire30m.*`; ash on (`defs/soil_sandyloam_ash.def`) | 1988-10-01 .. 1998-10-01 | the above plus fire vars, basin daily netcdf, FireSizes |
 
-Both cases use the command-line parameters from `TestCase_IO.R` (`-g -s/-sv/-svalt/-gw ...`). `w8_fire_nc` has 5 fires in 10 years (sizes 7-48 cells, with `ran_seed 1`), and fire effects remove/transfer carbon at the month boundary after each one.
+| `ward_1y` | default | Ward ASCII gridmet clim (+10% rain) | no | 1979-01-01 .. 1979-12-30 | basin daily csv, state (70 MB) |
+| `ward_long` | default | same | no | 1979-01-01 .. 2022-08-07 (full record) | basin daily csv, state |
+
+The Ward cases use the best calibrated run as of 2026-11-19, **RunID296_345** (composite 0.305, NSE 0.45, KGE 0.50), with `-g -vmort_off`.
+- Inputs are a snapshot made by `Testing/regression/ward/make_ward_best_inputs.R`. It copies the base inputs and rebuilds the defs from the archived parameter values with `RHESSysIOinR::change_def_file`, because the per-ParSetID def copies in Ward are overwritten by every batch.
+- Provenance: `$INPUTS/ward_best/SNAPSHOT_INFO.txt`.
+- The Ward project itself is only read, never written.
+- The last output day is the day before `-ed` (see DEV_LOG #15).
+
+The W8 cases use the command-line parameters from `TestCase_IO.R` (`-g -s/-sv/-svalt/-gw ...`). `w8_fire_nc` has 5 fires in 10 years (sizes 7-48 cells, with `ran_seed 1`), and fire effects remove/transfer carbon at the month boundary after each one.
 
 ### W8 inputs added for these cases
 

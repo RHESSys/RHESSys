@@ -1,0 +1,38 @@
+name: tests
+# PR tier: unit tests, fast regression determinism + invariants, sanitizer run.
+# Golden-output comparisons need the local golden dir (not in git), so they are not run here;
+# see docs/TESTING.md. Fire builds need WMFire (boost b2) and are not built here yet.
+on:
+  pull_request:
+  push:
+    branches: [develop, develop-test-perf]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes bison flex clang lld libnetcdf-dev libglib2.0-dev libbsd-dev pkg-config python3 time
+      - name: Build with unit tests
+        working-directory: rhessys
+        run: make skiptests=F
+      - name: Regression - w8_fast determinism + invariants
+        run: |
+          Testing/regression/regress.sh build default
+          Testing/regression/regress.sh determinism w8_fast
+          python3 Testing/regression/invariants.py "$HOME/rhessys_regress/runs/w8_fast"
+      - name: Sanitizers (ASan + UBSan) - w8_fast
+        run: Testing/regression/regress.sh sanitize w8_fast
+      - name: Upload run logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regress-logs
+          path: |
+            ~/rhessys_regress/runs/*/rhessys.log
+            ~/rhessys_regress/runs/*/run_info.txt
+            ~/rhessys_regress/bin/*/build.log

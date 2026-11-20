@@ -1,0 +1,14 @@
+# Long/large tier: Ward (CARB), best calibrated run, full climate record. Inputs are a snapshot
+# made by ward/make_ward_best_inputs.R (see $INPUTS/ward_best/SNAPSHOT_INFO.txt).
+CASE_DESC="Ward best calibrated run (RunID296_345), ASCII gridmet clim (+10% rain), default build, 1979-01-01..2022-08-08"
+CASE_BUILD=default
+CASE_ROOT="$INPUTS/ward_best"
+CASE_LINKS="defs clim flowtables"
+CASE_WORLD=worldfiles/Ward_msr90m_soil_psu_covfrac1_stabveg.world
+CASE_HDR=worldfiles/ward_best.hdr
+CASE_FLOW=flowtables/Ward_msr90m_thin1.flow
+CASE_TEC=regression/inputs/tec/ward_full.tec
+CASE_FILTER=regression/inputs/filters/ward_long.yml
+CASE_START="1979 1 1 1"
+CASE_END="2022 8 8 24"
+CASE_FLAGS="-g -vmort_off"

@@ -1,5 +1,5 @@
 from unittest import TestCase
-import os, sys
+import os, sys, errno
 from zipfile import ZipFile
 from shutil import rmtree
 import subprocess, shlex

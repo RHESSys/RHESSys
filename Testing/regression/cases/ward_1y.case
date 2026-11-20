@@ -1,0 +1,14 @@
+# Large-basin, short: Ward best calibrated run for 1 year. Same inputs as ward_long.
+# made by ward/make_ward_best_inputs.R (see $INPUTS/ward_best/SNAPSHOT_INFO.txt).
+CASE_DESC="Ward best calibrated run (RunID296_345), 1 year 1979-01-01..1979-12-31 (large-basin smoke + perf benchmark), default build"
+CASE_BUILD=default
+CASE_ROOT="$INPUTS/ward_best"
+CASE_LINKS="defs clim flowtables"
+CASE_WORLD=worldfiles/Ward_msr90m_soil_psu_covfrac1_stabveg.world
+CASE_HDR=worldfiles/ward_best.hdr
+CASE_FLOW=flowtables/Ward_msr90m_thin1.flow
+CASE_TEC=regression/inputs/tec/ward_1y.tec
+CASE_FILTER=regression/inputs/filters/ward_long.yml
+CASE_START="1979 1 1 1"
+CASE_END="1979 12 31 24"
+CASE_FLAGS="-g -vmort_off"
