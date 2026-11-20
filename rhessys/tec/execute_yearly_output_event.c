@@ -77,6 +77,7 @@ void execute_yearly_output_event(int reset_flag, struct world_object *world,
 					of_error);
 			exit(EXIT_FAILURE);
 		}
+		free(of_error);
 	} else if (command_line[0].legacy_output_flag) {
 		/*----------------------------------------------------------------------*/
 		/*  Handle legacy output.                                               */

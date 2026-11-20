@@ -411,6 +411,7 @@ int	main( int main_argc, char **main_argv)
 			fprintf(stderr, "construct_output_filter failed with error: %s\n", of_error);
 			exit(EXIT_FAILURE);
 		}
+		free(of_error);
 		if(command_line->verbose_flag) fprintf(stderr,"FINISHED CON OUTPUT_FILTER\n");
 	} else if (command_line[0].legacy_output_flag) {
 		/*--------------------------------------------------------------*/
@@ -477,6 +478,7 @@ int	main( int main_argc, char **main_argv)
 			fprintf(stderr, "destroy_output_filter failed with error: %s\n", of_error);
 			exit(EXIT_FAILURE);
 		}
+		free(of_error);
 	} else if (command_line[0].legacy_output_flag) {
 		destroy_output_files( command_line, output );
 

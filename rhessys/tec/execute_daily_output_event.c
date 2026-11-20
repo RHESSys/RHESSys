@@ -90,6 +90,7 @@ void execute_daily_output_event(struct world_object *world,
 			fprintf(stderr, "output_filter_output_daily failed with error: %s\n", of_error);
 			exit(EXIT_FAILURE);
 		}
+		free(of_error);
 	} else if (command_line[0].legacy_output_flag) {
 		/*----------------------------------------------------------------------*/
 		/*  Handle legacy output: Make up the prefix for the output files.      */

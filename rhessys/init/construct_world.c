@@ -779,6 +779,16 @@ printf("about to enter construct wui\n");
 	/*	Construct the list of base stations.			*/
 	/*--------------------------------------------------------------*/
 
+	/*--------------------------------------------------------------*/
+	/*	Climate is indexed by day: when the run ends after hour 1	*/
+	/*	of the end date, that (partial) day is simulated too, so	*/
+	/*	the daily climate sequences need duration.day + 1 values.	*/
+	/*	(Previously the last partial day read one value past the	*/
+	/*	end of every daily clim array.)								*/
+	/*--------------------------------------------------------------*/
+	struct date clim_duration = world[0].duration;
+	if (world[0].end_date.hour > 1) clim_duration.day += 1;
+
 	if (command_line[0].dclim_flag == 0) {
 		/*--------------------------------------------------------------*/
 		/*	Construct the base_stations.				*/
@@ -787,7 +797,7 @@ printf("about to enter construct wui\n");
 			printf("\nConstructing base stations from ASCII GRID\n");
 			world[0].base_stations = construct_ascii_grid( world[0].base_station_files[0],
 												world[0].start_date, 
-												world[0].duration);
+												clim_duration);
 		}
 		else if(command_line[0].gridded_netcdf_flag == 1){
 			printf("\nConstructing base stations from NETCDF GRID\n");
@@ -817,7 +827,7 @@ printf("about to enter construct wui\n");
             for (int i = 0; i < world[0].num_base_stations; i++) {
                 //printf("station %d ID:%d\n",i,world[0].base_stations[i]->ID);
                 //fprintf(stderr,"\ni:%d\tstart_year:%d\tx:%lf\ty:%lf\tduration_days:%d\n",
-                //        i,world[0].start_date.year,world[0].base_stations[i][0].x,world[0].base_stations[i][0].y,world[0].duration.day);
+                //        i,world[0].start_date.year,world[0].base_stations[i][0].x,world[0].base_stations[i][0].y,clim_duration.day);
                 world[0].base_stations[i] = construct_netcdf_grid(
                                                            world[0].base_stations[i],
                                                            world[0].base_station_ncheader,
@@ -826,7 +836,7 @@ printf("about to enter construct wui\n");
                                                            world[0].base_stations[i][0].proj_y,
                                                            world[0].base_stations[i][0].z,
                                                            &world[0].start_date,
-                                                           &world[0].duration,
+                                                           &clim_duration,
 							                                             command_line);
 
                 //printf("new station %d ID:%d\n", i, world[0].base_stations[i][0].ID ); 
@@ -844,7 +854,7 @@ printf("about to enter construct wui\n");
 			for (i=0; i<world[0].num_base_stations; i++ ) {
 				world[0].base_stations[i] = construct_base_station(
 								world[0].base_station_files[i],
-								world[0].start_date, world[0].duration,
+								world[0].start_date, clim_duration,
 								command_line[0].clim_repeat_flag);
 			} /*end for*/
 
