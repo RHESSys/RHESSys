@@ -292,8 +292,8 @@ void compute_family_fire_effects(
 			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
 			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
+			/* CWD burned goes to the atmosphere: consumption only (it was also being added to mortality) */
 			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_consumed  += canopy_target[0].fe.m_cwdc_to_atmos;
-			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_mortality += canopy_target[0].fe.m_cwdc_to_atmos;
 
 			if (patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_deposition_flag == 1)
 			{

@@ -16,7 +16,7 @@ How RHESSys is tested, what each test covers, and how to run it. The dev plan an
 | valgrind memcheck (incl. uninitialized reads) | memory | manual (see DEV_LOG) | ~50x | no | clean: `w8_fast` (0 errors) |
 | Coverage (clang source-based) | coverage | `regress.sh coverage <case>...` | ~2-3x a normal run | script | 45% lines (W8) |
 | Python functional test (`rhessys/test/test_mass_balance.py`, `make functest`) | functional | `make functest` | ? | no | superseded by `invariants.py`. The legacy version needs numpy and Python-2-era I/O, and uses legacy `-b` output from `test/data/W8.zip`. (`errno` import fixed.) |
-| `travis.sh` | build + tests | `./travis.sh` | ~2 min | script | updated: unit tests + `w8_fast` determinism + invariants |
+| `travis.sh` | build + tests | `./travis.sh` | ~2 min | script (local) | unit tests + `w8_fast` determinism + invariants. Travis CI itself is disabled (`.travis.yml.disabled`, see the comments there to re-enable); CI is GitHub Actions only |
 | `Testing/TestCase*.Rmd`, `TestCase_IO.R`, `TestCase_new.ipynb` | manual R workflow / plots | interactive | `TestCase_IO.R` runs 1988-2189 | no | manual |
 | RHESSys calibration test kit (`Projects/CodeDev/rhessys_calibration_tests`) | R package / calibration scripts | `./run_tests.sh` in Git Bash | ~6 min | script (outside this repo) | used for RHESSysIOinR / rhutils / calibration script changes |
 | GitHub Actions: `build_docker_*.yml` | Docker image build | on push | - | yes | unchanged |

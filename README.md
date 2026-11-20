@@ -26,13 +26,13 @@ yearly).
 Continuous Build and Test
 -------------------------
 
-We are using Travis-CI (http://travis-ci.org) to host our continuous integration efforts.  Continuous integration helps us run our test suite upon every commit to this repository and let us know if and when we break the build.
+Continuous integration runs on GitHub Actions (`.github/workflows/tests.yml`) for pull requests and pushes to `develop`:
+unit tests (`make skiptests=F`), a determinism and water-balance check on the W8 regression case, and an
+AddressSanitizer/UndefinedBehaviorSanitizer run. See `docs/TESTING.md` for the full test inventory, including the
+golden-output regression cases that are run locally.
 
-The current build status is: [![Build Status](https://travis-ci.org/RHESSys/RHESSys.png?branch=develop)](https://travis-ci.org/RHESSys/RHESSys)
-
-The above icon should be clickable and point to the latest build at Travis-CI: https://travis-ci.org/RHESSys/RHESSys
-
-The `.travis.yml` configuration file defines how this project is hooked to Travis-CI.  Github has a post-commit hook that is fired upon every commit to this repository.  This post-commit hook uses an authentication token to login to Travis-CI and run the configured steps on a virtual machine.  A return value of 0 means success and generates a 'green' status indicator (hopefully illustrated in the previous paragraph).
+Travis CI is no longer used. Its configuration is kept as `.travis.yml.disabled` (running the same checks via
+`travis.sh`); see that file for how to re-enable it.
 
 While the code is successfully compiling and running, there are a significant number of compiler warnings at this time:
 

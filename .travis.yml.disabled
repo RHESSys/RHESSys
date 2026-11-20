@@ -1,0 +1,14 @@
+# Travis CI is DISABLED for this repository: CI runs on GitHub Actions (.github/workflows/tests.yml).
+# Travis only reads a file named .travis.yml, so this file has no effect.
+#
+# To re-enable Travis CI later:
+#   1. git mv .travis.yml.disabled .travis.yml
+#   2. connect the repository at https://app.travis-ci.com (travis-ci.org is shut down)
+# It runs the same checks as the GitHub Actions workflow via ./travis.sh
+# (unit tests, w8_fast determinism + water-balance invariant).
+dist: noble
+language: c
+addons:
+  apt:
+    packages: [bison, flex, clang, lld, libnetcdf-dev, libglib2.0-dev, libbsd-dev, pkg-config, python3, time]
+script: "./travis.sh"
