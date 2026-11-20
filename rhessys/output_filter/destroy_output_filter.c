@@ -6,9 +6,10 @@
 #include "output_filter/output_format_netcdf.h"
 
 
-static bool returnWithError(char * const error, size_t error_len, char *error_mesg) {
+static bool returnWithError(char * const error, size_t error_len, const char *error_mesg) {
+	/* error_mesg is not freed: callers pass string literals or stack buffers (DEV_LOG #26) */
 	strncpy(error, error_mesg, error_len);
-	free(error_mesg);
+	if (error_len > 0) error[error_len - 1] = '\0';
 	return false;
 }
 
@@ -38,7 +39,7 @@ bool destroy_output_filter(char * const error, size_t error_len,
 		}
 		bool status = destroy_output(f);
 		if (!status) {
-			char *destroy_error = (char *) calloc(MAXSTR, sizeof(char));
+			char destroy_error[MAXSTR];
 			snprintf(destroy_error, MAXSTR, "unable to destroy output %s/%s for output filter.",
 					f->output->path, f->output->filename);
 			return returnWithError(error, error_len, destroy_error);

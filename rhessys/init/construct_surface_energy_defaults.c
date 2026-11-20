@@ -85,14 +85,14 @@ struct surface_energy_default *construct_surface_energy_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].N_thermal_nodes     = getIntParam(&paramCnt, &paramPtr, "N_thermal_nodes", "%d", 10, 1);
 		default_object_list[i].exp_dist            = getIntParam(&paramCnt, &paramPtr, "exp_dist", "%d", 0, 1);
-		default_object_list[i].damping_depth       = getDoubleParam(&paramCnt, &paramPtr, "damping_depth", "%d", 4, 1);
+		default_object_list[i].damping_depth       = getDoubleParam(&paramCnt, &paramPtr, "damping_depth", "%lf", 4, 1); /* was "%d" into a double (DEV_LOG #28) */
 		default_object_list[i].iteration_threshold = getDoubleParam(&paramCnt, &paramPtr, "iteration_threshold", "%lf", 0.01, 1);
 
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, default_files[i]);
                 char *s = strbuf;
                 char *token = NULL;
-                char filename[256];
+                char filename[256] = "";
 
                 // Store filename portion of path in 't'
                 while ((token = strtok(s, "/")) != NULL) {
@@ -104,7 +104,6 @@ struct surface_energy_default *construct_surface_energy_defaults(
                 // Remove the file extension, if one exists
                 memset(strbuf, '\0', strbufLen);
                 strcpy(strbuf, filename);
-                free(s);
                 s = strbuf;
                 token = strtok(s, ".");
                 if (token != NULL) {

@@ -147,6 +147,18 @@ double	compute_N_leached(int verbose_flag,
 	/*	now for regular subsurface flow			*/
 	/*	integrate through the saturated zone		*/
 	/*------------------------------------------------------*/
+	/* P1 (DEV_LOG): update_drainage_* call this 4 times per patch and step (NO3, NH4, DON,
+	   DOC) with the same depths, so z1, z2 and available_water (and the decay exponentials
+	   for the pair of solutes sharing a decay rate) are memoized per thread. A cached value
+	   is reused only when every input is exactly equal, so results are bitwise identical. */
+	static _Thread_local int z_valid = 0, e_valid = 0;
+	static _Thread_local double zk_n0, zk_p, zk_z2w, zk_s1, zk_s2, zc_z1, zc_z2, zc_aw;
+	static _Thread_local double ek_d, ek_zN, ek_z1, ek_z2, ec_zN, ec_z1, ec_z2;
+	if (z_valid && n_0 == zk_n0 && p == zk_p && z2_water == zk_z2w && s1 == zk_s1 && s2 == zk_s2) {
+		z1 = zc_z1;
+		z2 = zc_z2;
+	}
+	else {
 	z2 = compute_z_final(
 			verbose_flag,
 			n_0,
@@ -161,11 +173,25 @@ double	compute_N_leached(int verbose_flag,
 			z2_water,		
 			0.0,
 			-s1);
+		zc_aw = compute_delta_water(
+			verbose_flag,
+			n_0,p,z2_water,
+			z2,
+			z1);
+		zk_n0 = n_0; zk_p = p; zk_z2w = z2_water; zk_s1 = s1; zk_s2 = s2;
+		zc_z1 = z1; zc_z2 = z2; z_valid = 1;
+	}
 	if (N_decay_rate > 0.0) {	
+		if (!(e_valid && N_decay_rate == ek_d && z2_N == ek_zN && z1 == ek_z1 && z2 == ek_z2)) {
+			ec_zN = exp(-1.0 * N_decay_rate * z2_N);
+			ec_z1 = exp(-1.0 * N_decay_rate * z1);
+			ec_z2 = exp(-1.0 * N_decay_rate * (z2));
+			ek_d = N_decay_rate; ek_zN = z2_N; ek_z1 = z1; ek_z2 = z2; e_valid = 1;
+		}
 		navail = total_nitrate
-			/ (1.0 - exp(-1.0 * N_decay_rate * z2_N) )
-			* (exp(-1.0 * N_decay_rate * z1)
-			- exp(-1.0 * N_decay_rate * (z2)));
+			/ (1.0 - ec_zN )
+			* (ec_z1
+			- ec_z2);
 
 		}
 
@@ -184,11 +210,7 @@ double	compute_N_leached(int verbose_flag,
 	/* i.e n_avail / theta * outflow			*/
 	/*------------------------------------------------------*/
 
-		available_water = compute_delta_water(
-			verbose_flag,
-			n_0,p,z2_water,
-			z2,
-			z1);
+		available_water = zc_aw;
 
 		
 		nabsorbed=compute_N_absorbed(verbose_flag,

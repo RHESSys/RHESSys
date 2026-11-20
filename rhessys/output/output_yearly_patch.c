@@ -132,5 +132,5 @@ void	output_yearly_patch(
 
 	return;
 
-} /*end output_csv_yearly_patch*/
+} /*end output_yearly_patch*/
 

@@ -36,7 +36,7 @@ void update_hillslope_accumulator(
 	/*--------------------------------------------------------------------------------------*/
 	/* update hillslope accumulator								*/
 	/*--------------------------------------------------------------------------------------*/
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic, 1)
     for (int h = 0 ; h < basin[0].num_hillslopes; h++ ){
         struct hillslope_object *hillslope = basin[0].hillslopes[h];
 		hillslope[0].acc_month.length += 1;

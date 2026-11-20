@@ -649,7 +649,7 @@ void free_output_filter_variable_list(OutputFilterVariable *head) {
 }
 
 OutputFilterOutput *create_new_output_filter_output(void) {
-	OutputFilterOutput *output = (OutputFilterOutput *) malloc(sizeof(OutputFilter));
+	OutputFilterOutput *output = (OutputFilterOutput *) calloc(1, sizeof(OutputFilterOutput));
 	output->filename = NULL;
 	output->path = NULL;
 	output->meta = NULL;

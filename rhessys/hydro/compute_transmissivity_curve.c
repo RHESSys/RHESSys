@@ -45,6 +45,19 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 
+/* P4 (DEV_LOG): the per-interval field capacity depends only on the soil default
+   parameters and the depth sequence, not on the patch, so it is computed once per
+   distinct parameter set and reused. Keys are compared exactly, so results are
+   bitwise identical. Only called during (serial) initialization. */
+struct fc_cache_entry {
+	int theta_psi_curve, num_intervals;
+	double psi_air_entry, pore_size_index, p3, p4, porosity_0, porosity_decay,
+		soil_depth, soil_water_cap, interval_size;
+	double *fc;
+	struct fc_cache_entry *next;
+};
+static struct fc_cache_entry *fc_cache = NULL;
+
 double 	*compute_transmissivity_curve( 
 					double  gamma,
 					struct patch_object *patch,
@@ -117,11 +130,36 @@ double 	*compute_transmissivity_curve(
 		depth = patch[0].soil_defaults[0][0].soil_water_cap;
 		transmissivity[initial]=0.0;
 		initial = initial-1;
+		struct soil_default *sd = patch[0].soil_defaults[0];
+		struct fc_cache_entry *ce;
+		for (ce = fc_cache; ce != NULL; ce = ce->next) {
+			if (ce->theta_psi_curve == sd->theta_psi_curve && ce->num_intervals == patch[0].num_soil_intervals
+				&& ce->psi_air_entry == sd->psi_air_entry && ce->pore_size_index == sd->pore_size_index
+				&& ce->p3 == sd->p3 && ce->p4 == sd->p4 && ce->porosity_0 == sd->porosity_0
+				&& ce->porosity_decay == sd->porosity_decay && ce->soil_depth == sd->soil_depth
+				&& ce->soil_water_cap == sd->soil_water_cap && ce->interval_size == sd->interval_size)
+				break;
+		}
+		int fc_cached = (ce != NULL);
+		if (!fc_cached) {
+			ce = (struct fc_cache_entry *) alloc(sizeof(struct fc_cache_entry), "fc_cache", "compute_transmissivity_curve");
+			ce->theta_psi_curve = sd->theta_psi_curve; ce->num_intervals = patch[0].num_soil_intervals;
+			ce->psi_air_entry = sd->psi_air_entry; ce->pore_size_index = sd->pore_size_index;
+			ce->p3 = sd->p3; ce->p4 = sd->p4; ce->porosity_0 = sd->porosity_0;
+			ce->porosity_decay = sd->porosity_decay; ce->soil_depth = sd->soil_depth;
+			ce->soil_water_cap = sd->soil_water_cap; ce->interval_size = sd->interval_size;
+			ce->fc = (double *) alloc((patch[0].num_soil_intervals+1) * sizeof(double), "fc_cache", "compute_transmissivity_curve");
+			ce->next = fc_cache;
+			fc_cache = ce;
+		}
 		for (didx=initial; didx >= 0; didx -= 1) {
 			lower = depth;
 			depth = depth-patch[0].soil_defaults[0][0].interval_size;
 
-			
+			if (fc_cached) {
+				fclayer = ce->fc[didx];
+			}
+			else {
 			lower_z = compute_z_final(
 				command_line[0].verbose_flag,
 				patch[0].soil_defaults[0][0].porosity_0,
@@ -150,6 +188,8 @@ double 	*compute_transmissivity_curve(
 				patch[0].soil_defaults[0][0].soil_depth,
 				lower_z,
 				depth_z);
+			ce->fc[didx] = fclayer;
+			}
 
 
 		if (m > ZERO)
