@@ -164,7 +164,16 @@ double	compute_field_capacity(
 		/* Changed field capacity to eqn in Dingman p. 235 using fixed pressure head */
 		/* of -340cm (constant over depth) vs. older method that varied field capacity */
 		/* with depth and overshot (field capacity sat > 1) close to sat zone. */
-		field_capacity = p_0 * ( pow((psi_air_entry / 3.4),pore_size_index) ) * (z - z_surface);
+		/* P3 (DEV_LOG): pow(psi_air_entry / 3.4, pore_size_index) is a per-soil constant;
+		   it is memoized per thread and reused only when both inputs are exactly equal,
+		   so results are bitwise identical. */
+		static _Thread_local int fc_valid = 0;
+		static _Thread_local double fc_psi, fc_b, fc_pow;
+		if (!(fc_valid && psi_air_entry == fc_psi && pore_size_index == fc_b)) {
+			fc_pow = pow((psi_air_entry / 3.4),pore_size_index);
+			fc_psi = psi_air_entry; fc_b = pore_size_index; fc_valid = 1;
+		}
+		field_capacity = p_0 * ( fc_pow ) * (z - z_surface);
 		/*field_capacity = 1.0 / (1.0 - pore_size_index) * p_0
 			* pow( psi_air_entry, pore_size_index)
 			* (pow( z - z_surface, 1-pore_size_index));*/
