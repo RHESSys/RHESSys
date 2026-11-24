@@ -1,7 +1,7 @@
 name: tests
 # PR tier: unit tests, fast regression determinism + invariants, sanitizer run.
-# Golden-output comparisons need the local golden dir (not in git), so they are not run here;
-# see docs/TESTING.md. Fire builds need WMFire (boost b2) and are not built here yet.
+# Before/after output comparisons (regress.sh baseline + check) are run by the developer; see
+# docs/TESTING.md. Fire builds need WMFire (boost b2) and are not built here yet.
 on:
   pull_request:
   push:
@@ -20,11 +20,10 @@ jobs:
       - name: Build with unit tests
         working-directory: rhessys
         run: make skiptests=F
-      - name: Regression - w8_fast determinism + invariants
+      - name: Regression - w8_fast determinism + water balance
         run: |
           Testing/regression/regress.sh build default
           Testing/regression/regress.sh determinism w8_fast
-          python3 Testing/regression/invariants.py "$HOME/rhessys_regress/runs/w8_fast"
       - name: Sanitizers (ASan + UBSan) - w8_fast
         run: Testing/regression/regress.sh sanitize w8_fast
       - name: Upload run logs on failure

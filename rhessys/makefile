@@ -1272,6 +1272,6 @@ clobber:
 	rm -f $(OBJECTS) $(PGM)
 
 functest:
-	# Functional test: W8 fast case through the regression harness (build, run, golden compare + invariants).
-	# The legacy Python test (test_mass_balance.py, W8.zip) was retired 2026-11-20; see docs/TESTING.md.
-	cd .. && Testing/regression/regress.sh check w8_fast
+	# Functional test: W8 fast case through the regression harness (build, run twice, determinism +
+	# water balance). Needs no reference outputs; for a before/after comparison see docs/TESTING.md.
+	cd .. && Testing/regression/regress.sh build default && Testing/regression/regress.sh determinism w8_fast

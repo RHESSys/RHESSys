@@ -1,127 +1,193 @@
 # RHESSys testing
 
-How RHESSys is tested, what each test covers, and how to run it. The dev plan and its decisions are kept outside this repo; findings and changes go in [DEV_LOG.md](DEV_LOG.md).
+The tests that come with RHESSys, when each one runs, and how to run the ones you start yourself.
 
 ## Summary
 
-| Test                                                                          | Type                                                       | How to run                                       | Runtime                        | Automated                                        | Status                                                                                                                                                                 |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------ | ------------------------------ | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| C unit tests (`rhessys/test/src`, 16 tests)                                   | unit (glib)                                                | `make skiptests=F` in `rhessys/`                 | ~1 min (with build)            | runs during the build; a failure fails the build | passing                                                                                                                                                                |
-| Regression: `w8_fast`                                                         | regression, bitwise                                        | `Testing/regression/regress.sh check w8_fast`    | ~8 s run                       | script                                           | golden blessed                                                                                                                                                         |
-| Regression: `w8_fire_nc`                                                      | regression, bitwise                                        | `Testing/regression/regress.sh check w8_fire_nc` | ~16 s run                      | script                                           | golden blessed                                                                                                                                                         |
-| Regression: `ward_1y`                                                         | regression, bitwise (large basin, 12,045 patches)          | `regress.sh check ward_1y`                       | ~3 min                         | script                                           | golden blessed                                                                                                                                                         |
-| Regression: `ward_long`                                                       | regression, bitwise (Ward full climate record)             | `regress.sh check ward_long`                     | 1 h 47 m (608 MB RSS)          | script (nightly / on demand)                     | golden blessed 2026-11-19, re-blessed 2026-11-20 with the carbon output added (existing 11 files unchanged); determinism verified (2 runs of the same binary, 11/11 files bitwise identical, 1 h 52 m)                                                   |
-| Water-balance invariant (`invariants.py`)                                     | invariant                                                  | runs inside `regress.sh compare`/`check`         | seconds                        | script                                           | passing (all cases)                                                                                                                                                    |
-| Carbon-balance report (`invariants.py`) | invariant, **report only** | runs inside `regress.sh compare`/`check` (needs `out/basin_carbon_daily.csv`) | seconds | script | never fails. Known not to close: DEV_LOG #17 (`mr_deficit` repayment double counted) and #18 |
-| Sanitizers: ASan + UBSan                                                      | memory / UB                                                | `regress.sh sanitize <case>`                     | ~3x a normal run               | script, CI                                       | clean: `w8_fast`, `w8_fire_nc`, `ward_1y` (leaks at exit only)                                                                                                         |
-| valgrind memcheck (incl. uninitialized reads)                                 | memory                                                     | manual (see DEV_LOG)                             | ~50x                           | no                                               | clean: `w8_fast` (0 errors)                                                                                                                                            |
-| Coverage (clang source-based)                                                 | coverage                                                   | `regress.sh coverage <case>...`                  | ~2-3x a normal run             | script                                           | 45% lines (W8)                                                                                                                                                         |
-| `make functest` | functional | `make functest` | ~10 s | script | now runs `regress.sh check w8_fast`. The legacy Python test (`test_mass_balance.py`, `test/data/W8.zip`) was retired 2026-11-20; its only real check (basin water balance) is covered by `invariants.py` |
-| `travis.sh`                                                                   | build + tests                                              | `./travis.sh`                                    | ~2 min                         | script (local)                                   | unit tests + `w8_fast` determinism + invariants. Travis CI itself is disabled (`.travis.yml.disabled`, see the comments there to re-enable); CI is GitHub Actions only |
-| `Testing/TestCase*.Rmd`, `TestCase_IO.R`, `TestCase_new.ipynb`                | manual R workflow / plots                                  | interactive                                      | `TestCase_IO.R` runs 1988-2189 | no                                               | manual                                                                                                                                                                 |
-| RHESSys calibration test kit (`Projects/CodeDev/rhessys_calibration_tests`)   | R package / calibration scripts                            | `./run_tests.sh` in Git Bash                     | ~6 min                         | script (outside this repo)                       | used for RHESSysIOinR / rhutils / calibration script changes                                                                                                           |
-| GitHub Actions: `build_docker_*.yml`                                          | Docker image build                                         | on push                                          | -                              | yes                                              | unchanged                                                                                                                                                              |
-| GitHub Actions: `tests.yml`                                                   | unit tests, `w8_fast` determinism + invariants, ASan/UBSan | PR, push to develop(-test-perf)                  | ~5 min                         | yes (once pushed)                                | new; no golden comparison or fire build in CI                                                                                                                          |
+| When it runs                                                      | Test                                             | What it checks                                                                                                              | How to run                                      |
+| ----------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| **During the build** (opt-in)                                     | [[#C unit tests]]                                | Small functions and the output filter parser                                                                                | `make skiptests=F` in `rhessys/`                |
+| **CI** (GitHub Actions, every pull request and push to `develop`) | [CI workflow](#ci)                               | Unit tests; the `w8_fast` case runs, gives the same result twice, and conserves water; no memory errors (ASan/UBSan)        | automatic                                       |
+| **Manual**: before you merge a code change                        | [[#Regression comparison]]                       | Your change's outputs against the unchanged code's outputs, plus water balance (pass/fail) and carbon balance (report only) | `regress.sh baseline`, then `regress.sh check`  |
+| **Manual**: quick checks, no reference needed                     | [[#Determinism and sanitizers]], `make functest` | Same result twice and water balance; memory errors and undefined behavior                                                   | `regress.sh determinism`, `regress.sh sanitize` |
+| **Interactive**                                                   | [[#Interactive W8 example scripts]]              | Runs and plots the W8 test watershed in R; an introduction to running RHESSys                                               | open in RStudio / Jupyter                       |
+
+`regress.sh` is `Testing/regression/regress.sh`, run from the repository root.
 
 ## C unit tests
 
-- `make skiptests=F` builds each `rhessys/test/src/*.c` against all the model objects except `main.o`, then runs it. The `test` rule stops at the first failing test and fails the build.
-- Default is `skiptests=T`, so a plain `make` skips them.
-- Every link step that uses the model objects needs `$(LTO_FLAGS)`, because objects built with `-flto` are LLVM bitcode.
+- `rhessys/test/src/*.c`, built against the model objects and run by `make skiptests=F` in `rhessys/`.
+- A plain `make` skips them (the default is `skiptests=T`).
+- **Pass:** the build finishes. **Fail:** the build stops at the first failing test, with `not ok` in the output.
 
-## Regression harness (`Testing/regression/`)
+## CI
+
+`.github/workflows/tests.yml` runs on every pull request and on pushes to `develop`:
+
+1. Build with unit tests (`make skiptests=F`).
+2. `regress.sh determinism w8_fast`: run the case twice; both runs must be bitwise identical and the water balance must pass.
+3. `regress.sh sanitize w8_fast`: run with AddressSanitizer and UndefinedBehaviorSanitizer; any memory error or undefined behavior fails.
+
+CI does not compare against reference outputs and does not build the fire model; run the [[#Regression comparison]] for that.
+
+## Regression comparison
+
+This is the main test for a code change. It runs a test case twice: once with the code before your change (the **baseline**), once with your change, and compares every output file.
+
+### Requirements
+
+- Linux or WSL (the harness uses GNU `time`), `bash`, `git`, `python3` (standard library only), and the RHESSys build dependencies (see the `apt-get install` line in `.github/workflows/tests.yml`).
+- For `w8_fire_nc`: the WMFire library at `lib/libwmfire.so` (not in git; build it as in the Dockerfile).
+- Work files go to `~/rhessys_regress` (set `RHESSYS_REGRESS_WORK` to change it). On WSL, keep it on the Linux filesystem; `/mnt/c` is much slower.
+
+### Test cases
+
+Both cases use the W8 watershed (HJ Andrews, `Testing/`).
+
+| Case | Build | What it adds | Period | Run time |
+|---|---|---|---|---|
+| `w8_fast` | `default` | ASCII base-station climate | 5 water years, 1988-10-01 to 1993-10-01 | ~10 s |
+| `w8_fire_nc` | `fire` (WMFire) | netCDF gridded climate, fire spread and effects (`-firespread 30`), ash | 10 water years, 1988-10-01 to 1998-10-01 | ~20 s |
+
+Each case writes basin daily and patch yearly CSVs, a basin daily carbon CSV, and the end-of-run `.state` file; `w8_fire_nc` adds fire variables, a basin netCDF file and WMFire's `FireSizes_*.txt`. All of them are compared.
+
+### Workflow
 
 ```
-regress.sh build [default|fire]   # make clean + make; binary -> $WORK/bin/<config>/rhessys (+ build_info.txt)
-regress.sh run <case>             # run into $WORK/runs/<case>; writes MANIFEST.sha256 + run_info.txt (wall time, max RSS)
-regress.sh compare <case>         # compare the run against the golden copy (compare.py)
-regress.sh check <case>           # build if needed, then run + compare
-regress.sh determinism <case>     # run twice, compare the two runs
-regress.sh bless <case>           # copy the run to golden (FORCE=1 to replace; the old copy is kept as .replaced.<time>)
-regress.sh sanitize <case>...     # run with the asan / asan_fire build; memory errors/UB fail, leaks are reported
-regress.sh coverage <case>...     # run with the coverage builds; report in $WORK/coverage/report.txt
-BUILD=<config> regress.sh run <case>   # run any case with another build config
-regress.sh list
+# 1. Make the reference from the code you started from
+Testing/regression/regress.sh baseline w8_fast w8_fire_nc
+
+# 2. Build your working tree, run, and compare
+Testing/regression/regress.sh check w8_fast w8_fire_nc
 ```
 
-- `WORK` = `$RHESSYS_REGRESS_WORK`, default `~/rhessys_regress`. Use the WSL filesystem, which is much faster than `/mnt/c`.
-- `GOLDEN` = `$RHESSYS_GOLDEN`, default `<repo>/../RHESSys-regression-golden`. Golden outputs stay local and are not in git.
-- `INPUTS` = `$RHESSYS_REGRESS_INPUTS`, default `<repo>/../RHESSys-regression-inputs`. This holds snapshots of large external inputs (Ward), referenced by `CASE_ROOT` in the case files.
-- `build` runs `make clean` in `rhessys/`.
-- Build configs:
-  - `default` = `skiptests=F` (netcdf=T, wmfire=F)
-  - `fire` = `skiptests=F wmfire=T`. This uses the existing `lib/libwmfire.so`, whose sha256 is recorded in `build_info.txt`. WMFire is built with boost `b2` (see the Dockerfile); `FIRE/makefile` does not work as-is.
-- Run dir layout: `defs`, `clim`, `flowtables` and `fire_grid` are symlinked from `Testing/`. The worldfile, hdr, tec and filter are copied into the run dir, so `.state` output lands in the run dir and never in the repo.
-- Outputs compared: every file the run writes, which covers:
-  - filter outputs (`out/*.csv`, `out/*.nc`)
-  - the end-of-run `.state` file (full model state)
-  - the `_*.params` echo files
-  - WMFire's `FireSizes_*.txt`
+1. **Pick the base** (the code to compare against). `baseline` builds a git commit in a temporary copy of the repository, so your working tree and build are not touched.
+   - Your change is not committed yet: use the default, `HEAD`.
+   - Your change is committed on a branch: name the commit it started from, for example `BASE_REF=develop regress.sh baseline w8_fast`, or `BASE_REF=$(git merge-base develop HEAD)`.
+   - The base is built with that commit's makefile. If the makefile or compiler settings differ between the base and your branch, outputs can differ even when the model code didn't change.
+   - The test inputs (case files, worldfile, climate) always come from your working tree, so both runs use the same inputs.
+2. **Pick the cases.** Run `w8_fast` for every change. Add `w8_fire_nc` if you changed fire, ash, netCDF climate or WMFire code, or anything that fire calls.
+3. **Run `check`.** It rebuilds your working tree, runs the case and compares it with the baseline. After more edits, run `check` again; the baseline stays until you replace it.
+4. **Read the result** (below), then decide.
 
-### Comparison (`compare.py`)
+### Reading the result
 
-- Files with equal sha256 are identical.
-- Text files that differ are compared token by token. CSVs get a per-column report (`n_diff`, `max_abs`, `max_rel`, first row).
-- Binary files (netcdf) are reported only as differing.
-- Fails on: missing or extra files, any difference beyond tolerance, and new NaN/Inf values that the reference doesn't have.
-- Default tolerance is 0 (bitwise). Use `TOL_ABS` / `TOL_REL` only for changes approved as tolerance changes. Note that CSV/state values are printed to about 6 significant figures, so tiny floating-point changes may not show up in them.
+`check` prints a report for each case and exits 0 when every case passes, 1 otherwise.
 
-### Profiling, benchmark, OpenMP
+**Pass:** every output identical and the water balance closes.
 
-- `regress.sh profile <case>`: callgrind run with the `profile`/`profile_fire` build (`-O2 -flto -g`, outputs bitwise identical to `default`). Annotated self/inclusive costs go to `$WORK/profile/`. The `ward_1m` case (Ward, 1 month, 22 s) exists for this: callgrind on it takes about 13 min.
-- `regress.sh bench <case>`: median wall time of `BENCH_N` (default 3) runs with the case's build. `BUILD=openmp OMP_NUM_THREADS=N` benchmarks the OpenMP build.
-- `openmp` build config: `ward_1m` is bitwise identical to the serial build at 1 and 3 threads (2026-11-20).
-- `RUN_WRAP="valgrind --tool=memcheck ..."` runs any case under a wrapper.
+```
+== compare w8_fast: reference=/home/you/rhessys_regress/golden/w8_fast run=/home/you/rhessys_regress/runs/w8_fast
+  9/9 files bitwise identical (tol_abs=0.0, tol_rel=0.0)
+  RESULT: PASS
+  water balance: PASS days=1825 max|daily|=5.00e-06 m on 1992-2-7 (limit 2e-05); cumulative=7.000e-05 m of input 5.504 m (limit 5.50e-03)
+  carbon balance (report only): days=1825 cumulative residual=+0.0001 kgC/m2 (sum net_psn 5.9442, sum hetero resp 8.2568, d(store) -2.3127); max|daily|=4.00e-06 on 1991-8-10
+  INVARIANTS: PASS
+```
 
-### Invariants (`invariants.py`)
+**Fail: outputs differ.** Each differing CSV gets one line per column that changed: how many rows differ, the largest absolute and relative difference, and the first row that differs.
 
-Run by `regress.sh compare`/`check` on every case:
+```
+  5/9 files bitwise identical (tol_abs=0.0, tol_rel=0.0)
+  DIFF: out/basin_carbon_daily.csv
+    totalc            n_diff=1825   max_abs=1.305e+00 max_rel=9.895e-03 first_row=2
+    net_plant_psn     n_diff=1238   max_abs=3.220e-04 max_rel=2.807e-01 first_row=209
+  ...
+  RESULT: FAIL
+```
 
-- **Water balance** (pass/fail): basin daily residual of input − outputs − Δstorage from `out/basin_daily.csv`. Limits: every day ≤ 2e-5 m and cumulative ≤ 0.1% of input.
-- **Carbon balance** (report only, added 2026-11-20): from `out/basin_carbon_daily.csv` (a second filter block in each case's yml). Residual = `net_plant_psn` − heterotrophic respiration − `streamflow_DOC` − `gw.DOCout` − `fire_c_veg_consumed` − Δ(`totalc` + soil, surface, ash and gw DOC). It prints the cumulative residual and the worst day. It is still report only (fire cases don't close). Results on the current goldens:
+Other failure lines: `MISSING in test` / `EXTRA in test` (an output file appeared or disappeared), `NONFINITE` (new NaN or Inf values), `DIFF (binary)` (the netCDF file differs; there is no per-variable detail).
 
-  | Case | Before fixes (kgC/m²) | After #17 and #22 (2026-11-20) | Notes |
-  |---|---|---|---|
-  | `w8_fast` (5 yr) | −1.327 | +0.0001 | closes; max daily 4e-06 |
-  | `w8_fire_nc` (10 yr) | −2.131 | +0.276 | remainder is on fire days: fire litter consumption can't be output-filtered (`fire.litter_c_consumed`) |
-  | `ward_1y` | −0.072 | −0.002 | max daily 1e-03 on one day (1979-10-1) |
-  | `ward_long` (43.6 yr) | −1.309 | −0.041 | same worst day as `ward_1y` |
+**Fail: water balance.** `water balance: FAIL` and `INVARIANTS: FAIL`; see [[#Water balance]].
 
-  Before the fixes, 99.8% of the `w8_fast` residual was `mr_deficit` repayment (#17).
+### What to do with the result
 
-- Nitrogen balance: not checked yet (expected to fail; known issue).
+- **PASS, and you expected no output change** (refactoring, speed-up, clean-up): done.
+- **Outputs differ, and you expected no change:** your change affects the model. Use `first_row` and the variables listed to find where it starts; the runs are in `~/rhessys_regress/runs/<case>` (yours) and `~/rhessys_regress/golden/<case>` (the baseline).
+- **Outputs differ, and you meant to change them** (a bug fix or new process): check that the variables that changed, and the size of the change, are what you expected, and describe them in your pull request.
+- **Differences are tiny, from floating point** (for example a reordered sum): you can accept them within a tolerance you choose, `TOL_ABS=<value>` and/or `TOL_REL=<value>` before `check` or `compare`. A value counts as different only if it is beyond both. Files that differ only within tolerance are listed as `DIFF (within tolerance)` and the result is `PASS`. There is no built-in tolerance; the default is bitwise.
+- **Water balance fails:** water is being created or lost, so treat it as a bug even if the outputs were meant to change.
+- **Carbon balance changed:** it never fails the test. Compare the residual with the baseline's (run `python3 Testing/regression/invariants.py ~/rhessys_regress/golden/<case>`); a residual that grew means carbon is being created or lost somewhere.
 
-### Cases
+### Water balance
 
-| Case         | Build   | Climate                                      | Fire                                                                                                | Period                                 | Outputs                                                      |
-| ------------ | ------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------ |
-| `w8_fast`    | default | ASCII base station `clim/w8_base`            | no                                                                                                  | 1988-10-01 .. 1993-10-01               | basin daily csv (50 vars), patch yearly csv (23 vars), state |
-| `w8_fire_nc` | fire    | netcdf `clim/w8_netcdf.base` (`-netcdfgrid`) | `-firespread 30`, `defs/fire.def`, `fire_grid/w8_fire30m.*`; ash on (`defs/soil_sandyloam_ash.def`) | 1988-10-01 .. 1998-10-01               | the above plus fire vars, basin daily netcdf, FireSizes      |
-| `ward_1y`    | default | Ward ASCII gridmet clim (+10% rain)          | no                                                                                                  | 1979-01-01 .. 1979-12-30               | basin daily csv, state (70 MB)                               |
-| `ward_long`  | default | same                                         | no                                                                                                  | 1979-01-01 .. 2022-08-07 (full record) | basin daily csv, state                                       |
+Pass/fail, from `out/basin_daily.csv` (basin averages, m of water). For each day:
 
-The Ward cases use the best calibrated run as of 2026-11-19, **RunID296_345** (composite 0.305, NSE 0.45, KGE 0.50), with `-g -vmort_off`. The snapshot reproduces the calibration batch exactly: `ward_long` basin streamflow is bitwise identical to `output/CAL_RunID296_.../Wardsoil_cal_basin_RunID296_345.csv` on all 14,244 days.
-- Inputs are a snapshot made by `Testing/regression/ward/make_ward_best_inputs.R`. It copies the base inputs and rebuilds the defs from the archived parameter values with `RHESSysIOinR::change_def_file`, because the per-ParSetID def copies in Ward are overwritten by every batch.
-- Provenance: `$INPUTS/ward_best/SNAPSHOT_INFO.txt`.
-- The Ward project itself is only read, never written.
-- The last output day is the day before `-ed` (see DEV_LOG #15).
+```
+residual = input − outputs − (storage today − storage yesterday)
+```
 
-The W8 cases use the command-line parameters from `TestCase_IO.R` (`-g -s/-sv/-svalt/-gw ...`). `w8_fire_nc` has 5 fires in 10 years (sizes 7-48 cells, with `ran_seed 1`), and fire effects remove/transfer carbon at the month boundary after each one.
+| Role | Output variables (filter names) |
+|---|---|
+| Input | `patch.total_water_in` |
+| Outputs | `patch.streamflow`, `hill.gw.Qout`, `patch.evaporation`, `patch.evaporation_surf`, `patch.transpiration_sat_zone`, `patch.transpiration_unsat_zone`, `patch.exfiltration_sat_zone`, `patch.exfiltration_unsat_zone` |
+| Storage: soil | −(`patch.sat_deficit` − `patch.rz_storage` − `patch.unsat_storage`) |
+| Storage: other | `patch.detention_store`, `patch.litter.rain_stored`, `patch.canopy_rain_stored`, `patch.canopy_snow_stored`, `patch.snowpack.water_equivalent_depth`, `hill.gw.storage` |
 
-### W8 inputs added for these cases
+- **Pass:** every day |residual| ≤ 2e-5 m, and the total over the run ≤ 0.1% of total input. The limits allow for the 6 decimal places in the CSV; set them with `--max-daily` and `--max-cum-frac` when running `invariants.py` directly.
+- In the CSV header the `patch.` / `hill.` prefixes are dropped (`gw.Qout`, `litter.rain_stored`).
 
-- `Testing/clim/make_w8_netcdf.R`: builds `w8_netcdf_{tmax,tmin,rain}.nc` and `w8_netcdf.base` from the ASCII W8 clim, using the Ward gridmet layout:
-  - dims lon×lat×time, with 2 lon cells
-  - time as int days since 1900
-  - temperature in C, precip in mm × 0.001
+### Carbon balance (report only)
 
-  An ASCII run and a netcdf run of the same model differ only by input float rounding (total C rel diff ≤ 1.3e-5), which confirms the date and unit alignment.
-- `Testing/fire_grid/w8_fire30m.{dem,hillslope,zone,patch}`: a 28×18 grid at 30 m, made with `RHESSysPreprocessing::write_fire_grids` on the W8 template and rasters. The NA values it wrote (4294957297, from the unsigned rasters) were replaced with -9999.
-- `Testing/defs/fire.def`: `n_rows 28`, `n_cols 18`.
-- `Testing/worldfiles/w8TC.world`: `1 fire_parm_ID` added under every `landuse_parm_ID`. Non-fire outputs are bitwise identical with and without it.
+From `out/basin_carbon_daily.csv` (basin averages, kgC/m²). Same form: residual = input − outputs − change in storage. It prints the total residual over the run and the worst day, and never fails.
 
-### Baseline
+| Role | Output variables (filter names) |
+|---|---|
+| Input | `patch.net_plant_psn` (photosynthesis minus maintenance and growth respiration, cover-weighted) |
+| Outputs: heterotrophic respiration | `patch.cdf.litr1c_hr` to `litr4c_hr`, `patch.cdf.litr1c_hr_bg` to `litr4c_hr_bg`, `patch.cdf.soil1c_hr` to `soil4c_hr` |
+| Outputs: other | `patch.streamflow_DOC`, `hill.gw.DOCout`, `patch.fire_c_veg_consumed` |
+| Storage | `patch.totalc` (plants including coarse woody debris, litter and soil), `patch.soil_cs.DOC`, `patch.surface_DOC`, `patch.ash_DOC`, `hill.gw.DOC` |
 
-Golden outputs were first blessed on 2026-11-19 from commit `80e63a72`. `w8_fire_nc` was re-blessed after the fire output fix (see DEV_LOG); `w8_fast` was unaffected. **All four cases were re-blessed on 2026-11-20 on branch `develop-fixes` after the model fixes #17, #21 and #22** (commit `a3fa6141`); the previous goldens are kept as `<case>.replaced.*` in the golden dir.
+What to expect on the current code:
 
-Original blessing: 2026-11-19 from commit `80e63a72` (branch `develop-test-perf`). The only local changes were to the makefile and a unit test, with no model code changes. Each golden case's `run_info.txt` records the commit, diff hash, binary sha256 and compiler. Both cases pass the run-twice determinism check, netcdf output included.
+- `w8_fast` closes: total residual about +0.0001 kgC/m² over 5 years.
+- `w8_fire_nc` leaves about +0.28 kgC/m², all on fire days, because the litter carbon burned by fire is not an output variable yet.
+
+Nitrogen balance is not checked.
+
+### Determinism and sanitizers
+
+Neither needs a baseline.
+
+- `regress.sh determinism <case>`: runs the case twice with the same build. **Pass:** `RESULT: PASS` (both runs bitwise identical) and `INVARIANTS: PASS`. A difference means the model depends on something other than its inputs, such as uninitialized memory.
+- `regress.sh sanitize <case>`: builds with AddressSanitizer and UndefinedBehaviorSanitizer and runs the case (about 3× slower). **Fail:** any `runtime error:` or `ERROR: AddressSanitizer` line. Memory leaks are listed but do not fail; they are structures not freed at exit.
+- `make functest` (in `rhessys/`): builds and runs `determinism w8_fast`.
+
+### All commands
+
+```
+regress.sh baseline <case>...     build BASE_REF (default HEAD) in a temporary worktree, run, save as the reference
+regress.sh check <case>...        rebuild the working tree, run, compare with the reference
+regress.sh build <config>...      build only (default | fire | asan | asan_fire); runs `make clean` in rhessys/
+regress.sh run <case>...          run only, into ~/rhessys_regress/runs/<case>
+regress.sh compare <case>...      compare the last run with the reference, without rerunning
+regress.sh bless <case>...        save the last run as the reference (see below)
+regress.sh determinism <case>...
+regress.sh sanitize <case>...
+regress.sh list                   list cases
+```
+
+| Setting | Meaning |
+|---|---|
+| `BASE_REF` | commit, branch or tag for `baseline` (default `HEAD`) |
+| `TOL_ABS`, `TOL_REL` | tolerances for `check` / `compare` (default 0, bitwise) |
+| `REBUILD=0` | `check` reuses the existing build instead of rebuilding |
+| `RHESSYS_REGRESS_WORK` | work directory (default `~/rhessys_regress`) |
+| `RHESSYS_GOLDEN` | reference directory (default `~/rhessys_regress/golden`) |
+| `FORCE=1` | let `bless` or `baseline` replace a blessed reference (the old one is kept as `<case>.replaced.<time>`) |
+| `RUN_WRAP` | prefix for the model command, for example `RUN_WRAP="valgrind --tool=memcheck"` |
+| `RHESSYS_REGRESS_EXT` | a directory of extra cases and commands (`cases/*.case`, `regress_ext.sh`) kept outside the repository |
+
+**Baseline or bless.** A `baseline` reference is temporary and is replaced by the next `baseline`. `bless` saves a run you want to keep as a fixed reference across many changes; it is not replaced unless you set `FORCE=1`. Reference outputs are bitwise results for one compiler and machine, so they are not kept in git.
+
+**Run directory** (`~/rhessys_regress/runs/<case>`): `out/` (outputs), `rhessys.log`, `cmd.txt` (the command line), `run_info.txt` (build, git commit, run time and memory), `MANIFEST.sha256` (hashes of the compared files).
+
+**Adding a case:** copy `Testing/regression/cases/w8_fast.case` and change the worldfile, dates, flags, tec and output filter (`Testing/regression/inputs/`). The filter must write `out/basin_daily.csv` (and `out/basin_carbon_daily.csv`) with the variables above for the balance checks to run; without them they are skipped.
+
+## Interactive W8 example scripts
+
+`Testing/` has R scripts that run the W8 watershed and plot the results. They are a good introduction to running RHESSys and a place to explore a change visually; they are not pass/fail tests.
+
+- `TestCase_IO.R`: runs W8 with `RHESSysIOinR` and plots the output. Run it with `Testing/` as the working directory.
+- `TestCase.Rmd`, `TestCaseOf.Rmd`, `TestCase_new.ipynb`: the same test case as a walkthrough, comparing a run with saved earlier results (`W8TestCase.RData`).
+- `run_RHESSysPreprocess_w8TC.R`: rebuilds the W8 worldfile and flow table with `RHESSysPreprocessing`.

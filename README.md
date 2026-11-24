@@ -28,8 +28,8 @@ Continuous Build and Test
 
 Continuous integration runs on GitHub Actions (`.github/workflows/tests.yml`) for pull requests and pushes to `develop`:
 unit tests (`make skiptests=F`), a determinism and water-balance check on the W8 regression case, and an
-AddressSanitizer/UndefinedBehaviorSanitizer run. See `docs/TESTING.md` for the full test inventory, including the
-golden-output regression cases that are run locally.
+AddressSanitizer/UndefinedBehaviorSanitizer run. See `docs/TESTING.md` for all the tests, including the before/after
+regression comparison to run on a code change (`Testing/regression/regress.sh baseline` then `check`).
 
 Travis CI is no longer used. Its configuration is kept as `.travis.yml.disabled` (running the same checks via
 `travis.sh`); see that file for how to re-enable it.

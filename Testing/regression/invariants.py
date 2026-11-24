@@ -20,7 +20,7 @@ Outputs are printed with 6 decimals, so the daily residual is limited by roundin
 |cumulative residual| <= 0.1% of cumulative input.
 
 Carbon balance (report only). Before the #17 and #22 fixes (2026-11-20) it did not close; now
-it closes to ~1e-4 kgC/m2 on w8_fast and ward_1y. Fire cases leave a residual (see below):
+it closes to ~1e-4 kgC/m2 on w8_fast. Fire cases leave a residual (see below):
 
   residual(day) = net_plant_psn                       (GPP - MR - GR, cover-weighted)
                   - heterotrophic resp                (litr1-4 + litr1-4_bg + soil1-4 hr)
