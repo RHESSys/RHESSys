@@ -8,7 +8,7 @@ The tests that come with RHESSys, when each one runs, and how to run the ones yo
 | ----------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | **During the build** (opt-in)                                     | [[#C unit tests]]                                | Small functions and the output filter parser                                                                                | `make skiptests=F` in `rhessys/`                |
 | **CI** (GitHub Actions, every pull request and push to `develop`) | [CI workflow](#ci)                               | Unit tests; the `w8_fast` case runs, gives the same result twice, and conserves water; no memory errors (ASan/UBSan)        | automatic                                       |
-| **Manual**: before you merge a code change                        | [[#Regression comparison]]                       | Your change's outputs against the unchanged code's outputs, plus water balance (pass/fail) and carbon balance (report only) | `regress.sh baseline`, then `regress.sh check`  |
+| **Manual**: before you merge a code change                        | [[#Regression comparison]]                       | Your change's outputs against the unchanged code's outputs, plus water balance (pass/fail) and carbon and nitrogen balances (report only) | `regress.sh baseline`, then `regress.sh check`  |
 | **Manual**: quick checks, no reference needed                     | [[#Determinism and sanitizers]], `make functest` | Same result twice and water balance; memory errors and undefined behavior                                                   | `regress.sh determinism`, `regress.sh sanitize` |
 | **Interactive**                                                   | [[#Interactive W8 example scripts]]              | Runs and plots the W8 test watershed in R; an introduction to running RHESSys                                               | open in RStudio / Jupyter                       |
 
@@ -49,7 +49,7 @@ Both cases use the W8 watershed (HJ Andrews, `Testing/`).
 | `w8_fast` | `default` | ASCII base-station climate | 5 water years, 1988-10-01 to 1993-10-01 | ~10 s |
 | `w8_fire_nc` | `fire` (WMFire) | netCDF gridded climate, fire spread and effects (`-firespread 30`), ash | 10 water years, 1988-10-01 to 1998-10-01 | ~20 s |
 
-Each case writes basin daily and patch yearly CSVs, a basin daily carbon CSV, and the end-of-run `.state` file; `w8_fire_nc` adds fire variables, a basin netCDF file and WMFire's `FireSizes_*.txt`. All of them are compared.
+Each case writes basin daily and patch yearly CSVs, basin daily carbon and nitrogen CSVs, and the end-of-run `.state` file; `w8_fire_nc` adds fire variables, a basin netCDF file and WMFire's `FireSizes_*.txt`. All of them are compared.
 
 ### Workflow
 
@@ -81,7 +81,8 @@ Testing/regression/regress.sh check w8_fast w8_fire_nc
   9/9 files bitwise identical (tol_abs=0.0, tol_rel=0.0)
   RESULT: PASS
   water balance: PASS days=1825 max|daily|=5.00e-06 m on 1992-2-7 (limit 2e-05); cumulative=7.000e-05 m of input 5.504 m (limit 5.50e-03)
-  carbon balance (report only): days=1825 cumulative residual=+0.0001 kgC/m2 (sum net_psn 5.9442, sum hetero resp 8.2568, d(store) -2.3127); max|daily|=4.00e-06 on 1991-8-10
+  carbon balance (report only): days=1825 cumulative residual=+0.0001 kgC/m2 (sum in 5.9442, sum out 8.2568, d(store) -2.3127); max|daily|=4.00e-06 on 1991-8-10
+  nitrogen balance (report only): days=1825 cumulative residual=+0.030440 kgN/m2 (sum in 0.158775, sum out 0.104074, d(store) +0.024261); max|daily|=6.21e-04 on 1992-9-5
   INVARIANTS: PASS
 ```
 
@@ -107,7 +108,7 @@ Other failure lines: `MISSING in test` / `EXTRA in test` (an output file appeare
 - **Outputs differ, and you meant to change them** (a bug fix or new process): check that the variables that changed, and the size of the change, are what you expected, and describe them in your pull request.
 - **Differences are tiny, from floating point** (for example a reordered sum): you can accept them within a tolerance you choose, `TOL_ABS=<value>` and/or `TOL_REL=<value>` before `check` or `compare`. A value counts as different only if it is beyond both. Files that differ only within tolerance are listed as `DIFF (within tolerance)` and the result is `PASS`. There is no built-in tolerance; the default is bitwise.
 - **Water balance fails:** water is being created or lost, so treat it as a bug even if the outputs were meant to change.
-- **Carbon balance changed:** it never fails the test. Compare the residual with the baseline's (run `python3 Testing/regression/invariants.py ~/rhessys_regress/golden/<case>`); a residual that grew means carbon is being created or lost somewhere.
+- **Carbon or nitrogen balance changed:** neither fails the test. Compare the residuals with the baseline's (run `python3 Testing/regression/invariants.py ~/rhessys_regress/golden/<case>`); a residual that grew means carbon or nitrogen is being created or lost somewhere.
 
 ### Water balance
 
@@ -143,7 +144,23 @@ What to expect on the current code:
 - `w8_fast` closes: total residual about +0.0001 kgC/m² over 5 years.
 - `w8_fire_nc` leaves about +0.28 kgC/m², all on fire days, because the litter carbon burned by fire is not an output variable yet.
 
-Nitrogen balance is not checked.
+### Nitrogen balance (report only)
+
+From `out/basin_nitrogen_daily.csv` (basin averages, kgN/m²). Same form and output as the carbon balance; it never fails.
+
+| Role | Output variables (filter names) |
+|---|---|
+| Inputs | `zone.ndep_NO3`, `zone.ndep_NH4` (deposition), `patch.ndf.nfix_to_sminn` (fixation), `patch.fertilizer_NO3_in`, `patch.fertilizer_NH4_in` |
+| Outputs | `patch.ndf.denitrif`, `patch.streamflow_NO3`, `patch.streamflow_NH4`, `patch.streamflow_DON`, `hill.gw.NO3out`, `hill.gw.NH4out`, `hill.gw.DONout` |
+| Storage: plants, litter, soil | `patch.totaln` (plants including coarse woody debris, litter, soil organic N, `nitrate` and `sminn`, the NH4 pool) |
+| Storage: dissolved and surface | `patch.soil_ns.DON`, `patch.surface_NO3`, `patch.surface_NH4`, `patch.surface_DON`, `patch.litter.NO3_stored`, `stratum.NO3_stored` (canopy), `patch.fertilizer_NO3`, `patch.fertilizer_NH4` (fertilizer on the surface), `patch.ash_DON` |
+| Storage: groundwater | `hill.gw.NO3`, `hill.gw.NH4`, `hill.gw.DON` |
+
+What to expect on the current code:
+
+- The balance does not close yet. `w8_fast` leaves +0.030 kgN/m² over 5 years, about 19% of the 0.159 kgN/m² deposited. Most of it is NO3 in the litter being overwritten each day (DEV_LOG #31); the rest is a smaller amount of N created, which is not located yet (#32).
+- `w8_fire_nc` leaves +0.059 kgN/m²; fire days add residual because the nitrogen burned by fire is not an output variable yet (#34).
+- Daily N fluxes are small (1e-6 to 1e-4 kgN/m²) and the CSV has 6 decimal places, so single days are coarse; the total over the run is the useful number.
 
 ### Determinism and sanitizers
 
@@ -182,7 +199,7 @@ regress.sh list                   list cases
 
 **Run directory** (`~/rhessys_regress/runs/<case>`): `out/` (outputs), `rhessys.log`, `cmd.txt` (the command line), `run_info.txt` (build, git commit, run time and memory), `MANIFEST.sha256` (hashes of the compared files).
 
-**Adding a case:** copy `Testing/regression/cases/w8_fast.case` and change the worldfile, dates, flags, tec and output filter (`Testing/regression/inputs/`). The filter must write `out/basin_daily.csv` (and `out/basin_carbon_daily.csv`) with the variables above for the balance checks to run; without them they are skipped.
+**Adding a case:** copy `Testing/regression/cases/w8_fast.case` and change the worldfile, dates, flags, tec and output filter (`Testing/regression/inputs/`). The filter must write `out/basin_daily.csv` (and `out/basin_carbon_daily.csv`, `out/basin_nitrogen_daily.csv`) with the variables above for the balance checks to run; without them they are skipped.
 
 ## Interactive W8 example scripts
 

@@ -5,6 +5,7 @@ Checks:
   - basin water balance on out/basin_daily.csv (pass/fail; replaces the retired legacy
     rhessys/test/test_mass_balance.py check)
   - basin carbon balance on out/basin_carbon_daily.csv (REPORT ONLY, never fails; see below)
+  - basin nitrogen balance on out/basin_nitrogen_daily.csv (REPORT ONLY, never fails; see below)
 
   residual(day) = total_water_in
                   - (streamflow + gw.Qout + evaporation + evaporation_surf
@@ -19,17 +20,31 @@ Outputs are printed with 6 decimals, so the daily residual is limited by roundin
 (~1e-6 per term). Defaults: max |daily residual| <= 2e-5 m and
 |cumulative residual| <= 0.1% of cumulative input.
 
-Carbon balance (report only). Before the #17 and #22 fixes (2026-11-20) it did not close; now
-it closes to ~1e-4 kgC/m2 on w8_fast. Fire cases leave a residual (see below):
+Carbon and nitrogen balances (REPORT ONLY, never fail): same form,
+  residual(day) = inputs - outputs - d(storage), summed over the run.
 
-  residual(day) = net_plant_psn                       (GPP - MR - GR, cover-weighted)
-                  - heterotrophic resp                (litr1-4 + litr1-4_bg + soil1-4 hr)
-                  - streamflow_DOC - gw.DOCout - fire_c_veg_consumed
-                  - d(totalc + soil_cs.DOC + surface_DOC + ash_DOC + gw.DOC)
+Carbon, out/basin_carbon_daily.csv (kgC/m2). Closes to ~1e-4 on w8_fast since the #17 and #22
+fixes (2026-11-20):
+  inputs  = net_plant_psn                             (GPP - MR - GR, cover-weighted)
+  outputs = heterotrophic resp (litr1-4 + litr1-4_bg + soil1-4 hr)
+            + streamflow_DOC + gw.DOCout + fire_c_veg_consumed
+  storage = totalc + soil_cs.DOC + surface_DOC + ash_DOC + gw.DOC
   patch.totalc = cover-weighted stratum totalc (plant + CWD) + soil + litter (incl. below ground).
+  fire.litter_c_consumed is not output-filterable, so fire days show the litter consumed
+  (and ash double counting) as residual.
 
-  fire.litter_c_consumed is not output-filterable,
-  so fire days show the litter consumed (and ash double counting) as residual.
+Nitrogen, out/basin_nitrogen_daily.csv (kgN/m2). Does not close yet (DEV_LOG #31, #32):
+  inputs  = ndep_NO3 + ndep_NH4 + ndf.nfix_to_sminn + fertilizer_NO3_in + fertilizer_NH4_in
+  outputs = ndf.denitrif + streamflow_NO3 + streamflow_NH4 + streamflow_DON
+            + gw.NO3out + gw.NH4out + gw.DONout
+  storage = totaln + soil_ns.DON + surface_NO3 + surface_NH4 + surface_DON + litter.NO3_stored
+            + NO3_stored (canopy) + fertilizer_NO3 + fertilizer_NH4 (surface fertilizer)
+            + ash_DON + gw.NO3 + gw.NH4 + gw.DON
+  patch.totaln = cover-weighted stratum totaln (plant incl. npool/retransn + CWD) + soil organic
+  + nitrate + sminn (NH4) + litter (incl. below ground). Fire N losses (fe.m_*n_to_atmos) are
+  not output-filterable at patch level, so fire days show as residual.
+  Daily N fluxes are ~1e-6..1e-4 kgN/m2 and the CSV has 6 decimals, so single days are coarse;
+  the cumulative residual is the useful number.
 
 Exit 0 = pass (or check not applicable: required columns missing), 1 = fail.
 """
@@ -78,31 +93,40 @@ def water_balance(path, max_daily, max_cum_frac):
 
 CARBON_HR = ["cdf.litr1c_hr", "cdf.litr2c_hr", "cdf.litr3c_hr", "cdf.litr4c_hr", "cdf.litr1c_hr_bg",
              "cdf.litr2c_hr_bg", "cdf.litr3c_hr_bg", "cdf.litr4c_hr_bg", "cdf.soil1c_hr", "cdf.soil2c_hr", "cdf.soil3c_hr", "cdf.soil4c_hr"]
-CARBON_OUT = ["streamflow_DOC", "gw.DOCout", "fire_c_veg_consumed"]
-CARBON_STORE = ["totalc", "soil_cs.DOC", "surface_DOC", "ash_DOC", "gw.DOC"]
-CARBON_REQUIRED = ["net_plant_psn"] + CARBON_HR + CARBON_OUT + CARBON_STORE
+CARBON = dict(name="carbon", unit="kgC/m2", decimals=4,
+              inputs=["net_plant_psn"],
+              outputs=CARBON_HR + ["streamflow_DOC", "gw.DOCout", "fire_c_veg_consumed"],
+              stores=["totalc", "soil_cs.DOC", "surface_DOC", "ash_DOC", "gw.DOC"])
+NITROGEN = dict(name="nitrogen", unit="kgN/m2", decimals=6,
+                inputs=["ndep_NO3", "ndep_NH4", "ndf.nfix_to_sminn", "fertilizer_NO3_in", "fertilizer_NH4_in"],
+                outputs=["ndf.denitrif", "streamflow_NO3", "streamflow_NH4", "streamflow_DON",
+                         "gw.NO3out", "gw.NH4out", "gw.DONout"],
+                stores=["totaln", "soil_ns.DON", "surface_NO3", "surface_NH4", "surface_DON", "litter.NO3_stored",
+                        "NO3_stored", "fertilizer_NO3", "fertilizer_NH4", "ash_DON", "gw.NO3", "gw.NH4", "gw.DON"])
 
 
-def carbon_balance(path):
-    """Report-only basin carbon budget. Returns nothing; never fails the run."""
+def budget_report(path, spec):
+    """Report-only basin budget: inputs - outputs - d(storage). Never fails the run."""
+    label = f"{spec['name']} balance (report only)"
     with open(path) as f:
         rows = list(csv.DictReader(f))
-    if not rows or any(c not in rows[0] for c in CARBON_REQUIRED):
-        missing = [c for c in CARBON_REQUIRED if rows and c not in rows[0]]
-        print(f"  carbon balance (report only): SKIP ({os.path.basename(path)} missing columns {missing})")
+    need = spec["inputs"] + spec["outputs"] + spec["stores"]
+    if not rows or any(c not in rows[0] for c in need):
+        missing = [c for c in need if rows and c not in rows[0]]
+        print(f"  {label}: SKIP ({os.path.basename(path)} missing columns {missing})")
         return
-    v = lambda x, c: float(x[c])
-    store = lambda x: sum(v(x, c) for c in CARBON_STORE)
-    res, npp, hr, worst = 0.0, 0.0, 0.0, (0.0, None)
+    v = lambda x, cols: sum(float(x[c]) for c in cols)
+    res, tin, tout, worst = 0.0, 0.0, 0.0, (0.0, None)
     for prev, x in zip(rows, rows[1:]):
-        h = sum(v(x, c) for c in CARBON_HR)
-        r = v(x, "net_plant_psn") - h - sum(v(x, c) for c in CARBON_OUT) - (store(x) - store(prev))
-        res += r; npp += v(x, "net_plant_psn"); hr += h
+        i, o = v(x, spec["inputs"]), v(x, spec["outputs"])
+        r = i - o - (v(x, spec["stores"]) - v(prev, spec["stores"]))
+        res += r; tin += i; tout += o
         if abs(r) > abs(worst[0]):
             worst = (r, f"{x.get('year')}-{x.get('month')}-{x.get('day')}")
-    ndays = len(rows) - 1
-    print(f"  carbon balance (report only): days={ndays} cumulative residual={res:+.4f} kgC/m2 "
-          f"(sum net_psn {npp:.4f}, sum hetero resp {hr:.4f}, d(store) {store(rows[-1]) - store(rows[0]):+.4f}); "
+    d = spec["decimals"]
+    dstore = v(rows[-1], spec["stores"]) - v(rows[0], spec["stores"])
+    print(f"  {label}: days={len(rows) - 1} cumulative residual={res:+.{d}f} {spec['unit']} "
+          f"(sum in {tin:.{d}f}, sum out {tout:.{d}f}, d(store) {dstore:+.{d}f}); "
           f"max|daily|={abs(worst[0]):.2e} on {worst[1]}")
 
 
@@ -118,9 +142,10 @@ def main():
         ok = water_balance(p, a.max_daily, a.max_cum_frac) and ok
     else:
         print("  water balance: SKIP (no out/basin_daily.csv)")
-    p = os.path.join(a.rundir, "out", "basin_carbon_daily.csv")
-    if os.path.exists(p):
-        carbon_balance(p)
+    for fname, spec in (("basin_carbon_daily.csv", CARBON), ("basin_nitrogen_daily.csv", NITROGEN)):
+        p = os.path.join(a.rundir, "out", fname)
+        if os.path.exists(p):
+            budget_report(p, spec)
     print("  INVARIANTS:", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 

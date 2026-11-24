@@ -34,3 +34,12 @@ filter:
 	basin:
 		ids: 1
 		variables: patch.totalc, patch.net_plant_psn, patch.cdf.litr1c_hr, patch.cdf.litr2c_hr, patch.cdf.litr3c_hr, patch.cdf.litr4c_hr, patch.cdf.litr1c_hr_bg, patch.cdf.litr2c_hr_bg, patch.cdf.litr4c_hr_bg, patch.cdf.soil1c_hr, patch.cdf.soil2c_hr, patch.cdf.soil3c_hr, patch.cdf.soil4c_hr, patch.soil_cs.DOC, patch.surface_DOC, patch.ash_DOC, patch.streamflow_DOC, hill.gw.DOC, hill.gw.DOCout, patch.fire_c_veg_consumed, stratum.cs.mr_deficit, stratum.cs.cpool, patch.cdf.litr3c_hr_bg
+filter:
+	timestep: daily
+	output:
+		format: csv
+		path: "out"
+		filename: "basin_nitrogen_daily"
+	basin:
+		ids: 1
+		variables: patch.totaln, patch.soil_ns.DON, patch.surface_NO3, patch.surface_NH4, patch.surface_DON, patch.litter.NO3_stored, stratum.NO3_stored, patch.fertilizer_NO3, patch.fertilizer_NH4, patch.ash_DON, hill.gw.NO3, hill.gw.NH4, hill.gw.DON, zone.ndep_NO3, zone.ndep_NH4, patch.ndf.nfix_to_sminn, patch.fertilizer_NO3_in, patch.fertilizer_NH4_in, patch.ndf.denitrif, patch.streamflow_NO3, patch.streamflow_NH4, patch.streamflow_DON, hill.gw.NO3out, hill.gw.NH4out, hill.gw.DONout
