@@ -454,7 +454,8 @@ void		surface_daily_F(
 	if ( patch[0].detention_store <= (max(litter[0].rain_capacity - litter[0].rain_stored, 0.0))){
 			//| (patch[0].soil_defaults[0][0].detention_store_size == 0.0)) {
 		
-		litter[0].NO3_stored = patch[0].surface_NO3;
+		/* Add (not assign): litter may already hold NO3 from earlier days (DEV_LOG #31) */
+		litter[0].NO3_stored += patch[0].surface_NO3;
 		patch[0].surface_NO3 = 0;
 		
 		/*--------------------------------------------------------------*/
