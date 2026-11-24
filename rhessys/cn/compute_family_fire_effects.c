@@ -149,6 +149,16 @@ void compute_family_fire_effects(
 			}
 		}
 
+		/* Output-only N and soil counterparts (litter and soil1 lost to the atmosphere), before pools are reduced */
+		patch_family[0].patches[p][0].fire.litter_n_consumed = patch_family[0].patches[p][0].litter_ns.litr1n * fire_loss.loss_litr1n +
+			patch_family[0].patches[p][0].litter_ns.litr2n * fire_loss.loss_litr2n +
+			patch_family[0].patches[p][0].litter_ns.litr3n * fire_loss.loss_litr3n +
+			patch_family[0].patches[p][0].litter_ns.litr4n * fire_loss.loss_litr4n;
+		patch_family[0].patches[p][0].fire.soil_c_consumed = patch_family[0].patches[p][0].soil_cs.soil1c * fire_loss.loss_soil1c + patch_family[0].patches[p][0].soil_cs.soil2c * fire_loss.loss_soil2c +
+			patch_family[0].patches[p][0].soil_cs.soil3c * fire_loss.loss_soil3c + patch_family[0].patches[p][0].soil_cs.soil4c * fire_loss.loss_soil4c;
+		patch_family[0].patches[p][0].fire.soil_n_consumed = patch_family[0].patches[p][0].soil_ns.soil1n * fire_loss.loss_soil1n + patch_family[0].patches[p][0].soil_ns.soil2n * fire_loss.loss_soil2n +
+			patch_family[0].patches[p][0].soil_ns.soil3n * fire_loss.loss_soil3n + patch_family[0].patches[p][0].soil_ns.soil4n * fire_loss.loss_soil4n;
+
 		update_litter_soil_mortality(
 		 &(patch_family[0].patches[p][0].cdf),
 		 &(patch_family[0].patches[p][0].ndf),
@@ -294,6 +304,7 @@ void compute_family_fire_effects(
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 			/* CWD burned goes to the atmosphere: consumption only (it was also being added to mortality) */
 			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_consumed  += canopy_target[0].fe.m_cwdc_to_atmos;
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_n_veg_consumed  += canopy_target[0].fe.m_cwdn_to_atmos;
 
 			if (patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_deposition_flag == 1)
 			{
@@ -519,7 +530,7 @@ void compute_family_fire_effects(
 
 			// Add to patch fire consumption output
 			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_consumed  += canopy_c_consumed;
-			// patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_n_consumed += canopy_n_consumed;
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_n_veg_consumed  += canopy_n_consumed;
 
             if (patch_family[0].patches[canopy_target[0].fam_patch_ind][0].soil_defaults[0][0].ash_deposition_flag == 1){
 				// Could try to get carbon consumed out of update mortality, but don't want to change that function, adding here
@@ -598,6 +609,10 @@ void compute_family_fire_effects(
 												(canopy_target[0].cs.cpool * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
 												(canopy_target[0].cs.live_crootc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted) +
 												(canopy_target[0].cs.dead_crootc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted);
+			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_n_veg_mortality += (canopy_target[0].ns.leafn + canopy_target[0].ns.dead_leafn) * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc +
+												(canopy_target[0].ns.frootn + canopy_target[0].ns.live_stemn + canopy_target[0].ns.dead_stemn +
+												 canopy_target[0].ns.npool + canopy_target[0].ns.live_crootn + canopy_target[0].ns.dead_crootn) *
+												canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
 
 			/* Determine the portion of mortality that remains on landscape */
 			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;

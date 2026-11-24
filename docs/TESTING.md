@@ -4,13 +4,13 @@ The tests that come with RHESSys, when each one runs, and how to run the ones yo
 
 ## Summary
 
-| When it runs                                                      | Test                                             | What it checks                                                                                                              | How to run                                      |
-| ----------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| **During the build** (opt-in)                                     | [[#C unit tests]]                                | Small functions and the output filter parser                                                                                | `make skiptests=F` in `rhessys/`                |
-| **CI** (GitHub Actions, every pull request and push to `develop`) | [CI workflow](#ci)                               | Unit tests; the `w8_fast` case runs, gives the same result twice, and conserves water; no memory errors (ASan/UBSan)        | automatic                                       |
+| When it runs                                                      | Test                                             | What it checks                                                                                                                            | How to run                                      |
+| ----------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| **During the build** (opt-in)                                     | [[#C unit tests]]                                | Small functions and the output filter parser                                                                                              | `make skiptests=F` in `rhessys/`                |
+| **CI** (GitHub Actions, every pull request and push to `develop`) | [CI workflow](#ci)                               | Unit tests; the `w8_fast` case runs, gives the same result twice, and conserves water; no memory errors (ASan/UBSan)                      | automatic                                       |
 | **Manual**: before you merge a code change                        | [[#Regression comparison]]                       | Your change's outputs against the unchanged code's outputs, plus water balance (pass/fail) and carbon and nitrogen balances (report only) | `regress.sh baseline`, then `regress.sh check`  |
-| **Manual**: quick checks, no reference needed                     | [[#Determinism and sanitizers]], `make functest` | Same result twice and water balance; memory errors and undefined behavior                                                   | `regress.sh determinism`, `regress.sh sanitize` |
-| **Interactive**                                                   | [[#Interactive W8 example scripts]]              | Runs and plots the W8 test watershed in R; an introduction to running RHESSys                                               | open in RStudio / Jupyter                       |
+| **Manual**: quick checks, no reference needed                     | [[#Determinism and sanitizers]], `make functest` | Same result twice and water balance; memory errors and undefined behavior                                                                 | `regress.sh determinism`, `regress.sh sanitize` |
+| **Interactive**                                                   | [[#Interactive W8 example scripts]]              | Runs and plots the W8 test watershed in R; an introduction to running RHESSys                                                             | open in RStudio / Jupyter                       |
 
 `regress.sh` is `Testing/regression/regress.sh`, run from the repository root.
 
@@ -136,7 +136,8 @@ From `out/basin_carbon_daily.csv` (basin averages, kgC/m²). Same form: residual
 |---|---|
 | Input | `patch.net_plant_psn` (photosynthesis minus maintenance and growth respiration, cover-weighted) |
 | Outputs: heterotrophic respiration | `patch.cdf.litr1c_hr` to `litr4c_hr`, `patch.cdf.litr1c_hr_bg` to `litr4c_hr_bg`, `patch.cdf.soil1c_hr` to `soil4c_hr` |
-| Outputs: other | `patch.streamflow_DOC`, `hill.gw.DOCout`, `patch.fire_c_veg_consumed` |
+| Outputs: other | `patch.streamflow_DOC`, `hill.gw.DOCout` |
+| Outputs: fire | `patch.fire_c_veg_consumed` (plants and coarse woody debris burned), `patch.fire.litter_c_consumed`, `patch.fire.soil_c_consumed` |
 | Storage | `patch.totalc` (plants including coarse woody debris, litter and soil), `patch.soil_cs.DOC`, `patch.surface_DOC`, `patch.ash_DOC`, `hill.gw.DOC` |
 
 What to expect on the current code:
@@ -152,6 +153,7 @@ From `out/basin_nitrogen_daily.csv` (basin averages, kgN/m²). Same form and out
 |---|---|
 | Inputs | `zone.ndep_NO3`, `zone.ndep_NH4` (deposition), `patch.ndf.nfix_to_sminn` (fixation), `patch.fertilizer_NO3_in`, `patch.fertilizer_NH4_in` |
 | Outputs | `patch.ndf.denitrif`, `patch.streamflow_NO3`, `patch.streamflow_NH4`, `patch.streamflow_DON`, `hill.gw.NO3out`, `hill.gw.NH4out`, `hill.gw.DONout` |
+| Outputs: fire | `patch.fire_n_veg_consumed` (plants and coarse woody debris burned), `patch.fire.litter_n_consumed`, `patch.fire.soil_n_consumed` |
 | Storage: plants, litter, soil | `patch.totaln` (plants including coarse woody debris, litter, soil organic N, `nitrate` and `sminn`, the NH4 pool) |
 | Storage: dissolved and surface | `patch.soil_ns.DON`, `patch.surface_NO3`, `patch.surface_NH4`, `patch.surface_DON`, `patch.litter.NO3_stored`, `stratum.NO3_stored` (canopy), `patch.fertilizer_NO3`, `patch.fertilizer_NH4` (fertilizer on the surface), `patch.ash_DON` |
 | Storage: groundwater | `hill.gw.NO3`, `hill.gw.NH4`, `hill.gw.DON` |

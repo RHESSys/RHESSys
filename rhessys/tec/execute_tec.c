@@ -111,8 +111,13 @@ static void zero_patch_fire_fluxes(struct world_object *world)
 				for (p = 0; p < basin[0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
 					patch = basin[0].hillslopes[h][0].zones[z][0].patches[p];
 					patch[0].fire.litter_c_consumed = 0.0;
+					patch[0].fire.litter_n_consumed = 0.0;
+					patch[0].fire.soil_c_consumed = 0.0;
+					patch[0].fire.soil_n_consumed = 0.0;
 					patch[0].fire_c_veg_consumed = 0.0;
 					patch[0].fire_c_veg_mortality = 0.0;
+					patch[0].fire_n_veg_consumed = 0.0;
+					patch[0].fire_n_veg_mortality = 0.0;
 					patch[0].burn = 0.0;
 					patch[0].nburn = 0;
 				}

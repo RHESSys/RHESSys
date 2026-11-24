@@ -95,14 +95,21 @@ CARBON_HR = ["cdf.litr1c_hr", "cdf.litr2c_hr", "cdf.litr3c_hr", "cdf.litr4c_hr",
              "cdf.litr2c_hr_bg", "cdf.litr3c_hr_bg", "cdf.litr4c_hr_bg", "cdf.soil1c_hr", "cdf.soil2c_hr", "cdf.soil3c_hr", "cdf.soil4c_hr"]
 CARBON = dict(name="carbon", unit="kgC/m2", decimals=4,
               inputs=["net_plant_psn"],
-              outputs=CARBON_HR + ["streamflow_DOC", "gw.DOCout", "fire_c_veg_consumed"],
+              outputs=CARBON_HR + ["streamflow_DOC", "gw.DOCout", "fire_c_veg_consumed",
+                                    "fire.litter_c_consumed", "fire.soil_c_consumed"],
               stores=["totalc", "soil_cs.DOC", "surface_DOC", "ash_DOC", "gw.DOC"])
 NITROGEN = dict(name="nitrogen", unit="kgN/m2", decimals=6,
                 inputs=["ndep_NO3", "ndep_NH4", "ndf.nfix_to_sminn", "fertilizer_NO3_in", "fertilizer_NH4_in"],
                 outputs=["ndf.denitrif", "streamflow_NO3", "streamflow_NH4", "streamflow_DON",
-                         "gw.NO3out", "gw.NH4out", "gw.DONout"],
+                         "gw.NO3out", "gw.NH4out", "gw.DONout",
+                         "fire_n_veg_consumed", "fire.litter_n_consumed", "fire.soil_n_consumed"],
                 stores=["totaln", "soil_ns.DON", "surface_NO3", "surface_NH4", "surface_DON", "litter.NO3_stored",
                         "NO3_stored", "fertilizer_NO3", "fertilizer_NH4", "ash_DON", "gw.NO3", "gw.NH4", "gw.DON"])
+
+
+# Fire terms added 2026-11-24; older filters and references without them still get a report.
+OPTIONAL = {"fire.litter_c_consumed", "fire.soil_c_consumed",
+            "fire_n_veg_consumed", "fire.litter_n_consumed", "fire.soil_n_consumed"}
 
 
 def budget_report(path, spec):
@@ -111,11 +118,12 @@ def budget_report(path, spec):
     with open(path) as f:
         rows = list(csv.DictReader(f))
     need = spec["inputs"] + spec["outputs"] + spec["stores"]
-    if not rows or any(c not in rows[0] for c in need):
-        missing = [c for c in need if rows and c not in rows[0]]
+    missing = [c for c in need if rows and c not in rows[0]]
+    if not rows or any(c not in OPTIONAL for c in missing):
         print(f"  {label}: SKIP ({os.path.basename(path)} missing columns {missing})")
         return
-    v = lambda x, cols: sum(float(x[c]) for c in cols)
+    note = f" [not in file, counted as 0: {', '.join(missing)}]" if missing else ""
+    v = lambda x, cols: sum(float(x[c]) for c in cols if c in x)
     res, tin, tout, worst = 0.0, 0.0, 0.0, (0.0, None)
     for prev, x in zip(rows, rows[1:]):
         i, o = v(x, spec["inputs"]), v(x, spec["outputs"])
@@ -127,7 +135,7 @@ def budget_report(path, spec):
     dstore = v(rows[-1], spec["stores"]) - v(rows[0], spec["stores"])
     print(f"  {label}: days={len(rows) - 1} cumulative residual={res:+.{d}f} {spec['unit']} "
           f"(sum in {tin:.{d}f}, sum out {tout:.{d}f}, d(store) {dstore:+.{d}f}); "
-          f"max|daily|={abs(worst[0]):.2e} on {worst[1]}")
+          f"max|daily|={abs(worst[0]):.2e} on {worst[1]}{note}")
 
 
 def main():

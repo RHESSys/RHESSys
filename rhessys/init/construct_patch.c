@@ -240,6 +240,8 @@ struct patch_object *construct_patch(
 	patch[0].ash_DON = 0.0;
 	patch[0].fire_c_veg_consumed  = 0.0;
 	patch[0].fire_c_veg_mortality = 0.0;
+	patch[0].fire_n_veg_consumed  = 0.0;
+	patch[0].fire_n_veg_mortality = 0.0;
 	patch[0].nburn = 0;
 	patch[0].burn = 0.0;
 	patch[0].pspread = 0.0;
@@ -274,6 +276,8 @@ struct patch_object *construct_patch(
 	patch[0].acc_month.littern = 0.0;
 	patch[0].acc_month.fire_c_veg_consumed  = 0.0;
 	patch[0].acc_month.fire_c_veg_mortality = 0.0;
+	patch[0].acc_month.fire_n_veg_consumed  = 0.0;
+	patch[0].acc_month.fire_n_veg_mortality = 0.0;
 	patch[0].acc_month.nburn = 0;
 
 
@@ -317,6 +321,8 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.littern = 0.0;
 	patch[0].acc_year.fire_c_veg_consumed  = 0.0;
 	patch[0].acc_year.fire_c_veg_mortality = 0.0;
+	patch[0].acc_year.fire_n_veg_consumed  = 0.0;
+	patch[0].acc_year.fire_n_veg_mortality = 0.0;
 	patch[0].acc_year.nburn = 0;
 
 	if (command_line[0].firespread_flag == 1) {

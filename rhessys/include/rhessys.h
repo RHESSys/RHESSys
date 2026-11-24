@@ -420,6 +420,8 @@ struct accumulate_patch_object
    double DON_loss;
    double fire_c_veg_consumed ;
    double fire_c_veg_mortality;
+   double fire_n_veg_consumed ;
+   double fire_n_veg_mortality;
    double theta;
    double rootzone_depth;
    double soilmoist;
@@ -1761,6 +1763,9 @@ struct patch_fire_water_object
 	double understory_et; /*mm; understory layer et*/
 	double understory_pet; /*mm; understory layer pet*/
 	double litter_c_consumed; /* kg carbon lost in fire */
+	double litter_n_consumed; /* kgN/m2 litter nitrogen lost in fire */
+	double soil_c_consumed;   /* kgC/m2 soil carbon (soil1c) lost in fire */
+	double soil_n_consumed;   /* kgN/m2 soil nitrogen (soil1n) lost in fire */
 	
 
 };
@@ -2139,6 +2144,8 @@ struct patch_object
         double  ash_DON;                        /* kgN/m2 lost in fire */
         double  fire_c_veg_consumed ;                /* kgC/m2 consumed in fire */
         double  fire_c_veg_mortality;               /* kgC/m2 mortality due to fire */
+        double  fire_n_veg_consumed ;                /* kgN/m2 consumed in fire */
+        double  fire_n_veg_mortality;               /* kgN/m2 mortality due to fire */
         
         struct  soil_c_object   soil_cs;
         struct  soil_n_object   soil_ns;

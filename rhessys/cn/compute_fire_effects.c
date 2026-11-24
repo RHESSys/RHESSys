@@ -112,6 +112,15 @@ void compute_fire_effects(
 	patch[0].nburn += 1;
 	patch[0].burn = pspread;
 	patch[0].fire.litter_c_consumed = litter_c_consumed;
+	/* Output-only N and soil counterparts (litter and soil1 lost to the atmosphere) */
+	patch[0].fire.litter_n_consumed = patch[0].litter_ns.litr1n * fire_loss.loss_litr1n +
+			patch[0].litter_ns.litr2n * fire_loss.loss_litr2n +
+			patch[0].litter_ns.litr3n * fire_loss.loss_litr3n +
+			patch[0].litter_ns.litr4n * fire_loss.loss_litr4n;
+	patch[0].fire.soil_c_consumed = patch[0].soil_cs.soil1c * fire_loss.loss_soil1c + patch[0].soil_cs.soil2c * fire_loss.loss_soil2c +
+			patch[0].soil_cs.soil3c * fire_loss.loss_soil3c + patch[0].soil_cs.soil4c * fire_loss.loss_soil4c;
+	patch[0].fire.soil_n_consumed = patch[0].soil_ns.soil1n * fire_loss.loss_soil1n + patch[0].soil_ns.soil2n * fire_loss.loss_soil2n +
+			patch[0].soil_ns.soil3n * fire_loss.loss_soil3n + patch[0].soil_ns.soil4n * fire_loss.loss_soil4n;
 
 	/* Ash from consumed litter (before litter pools are reduced) */
 	if (patch[0].soil_defaults[0][0].ash_deposition_flag == 1) {
@@ -182,6 +191,7 @@ void compute_fire_effects(
 			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 			patch[0].fire_c_veg_consumed += canopy_target[0].fe.m_cwdc_to_atmos;
+			patch[0].fire_n_veg_consumed += canopy_target[0].fe.m_cwdn_to_atmos;
 			if (patch[0].soil_defaults[0][0].ash_deposition_flag == 1) {
 				patch[0].ash_DOC += fmax(0.0, canopy_target[0].fe.m_cwdc_to_atmos * combust_remain_pct * patch[0].soil_defaults[0][0].ash_pct_soluble_DOC);
 				patch[0].ash_DON += fmax(0.0, canopy_target[0].fe.m_cwdn_to_atmos * patch[0].soil_defaults[0][0].ash_pct_soluble_DON);
@@ -362,6 +372,7 @@ void compute_fire_effects(
 					canopy_target[0].ns.live_crootn + canopy_target[0].ns.dead_crootn) *
 					canopy_target[0].fe.canopy_target_prop_c_consumed;
 			patch[0].fire_c_veg_consumed += canopy_c_consumed;
+			patch[0].fire_n_veg_consumed += canopy_n_consumed;
 			if (patch[0].soil_defaults[0][0].ash_deposition_flag == 1) {
 				patch[0].ash_DOC += fmax(0.0, canopy_c_consumed * combust_remain_pct * patch[0].soil_defaults[0][0].ash_pct_soluble_DOC);
 				patch[0].ash_DON += fmax(0.0, canopy_n_consumed * patch[0].soil_defaults[0][0].ash_pct_soluble_DON);
@@ -413,6 +424,11 @@ void compute_fire_effects(
 				(canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc) * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc +
 				(canopy_target[0].cs.frootc + canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
 				 canopy_target[0].cs.cpool + canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc) *
+				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
+			patch[0].fire_n_veg_mortality +=
+				(canopy_target[0].ns.leafn + canopy_target[0].ns.dead_leafn) * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc +
+				(canopy_target[0].ns.frootn + canopy_target[0].ns.live_stemn + canopy_target[0].ns.dead_stemn +
+				 canopy_target[0].ns.npool + canopy_target[0].ns.live_crootn + canopy_target[0].ns.dead_crootn) *
 				canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
 
 			/* Determine the portion of mortality that remains on landscape */

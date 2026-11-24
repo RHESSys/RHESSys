@@ -179,6 +179,8 @@ void update_basin_patch_accumulator(
 					patch[0].acc_month.litterc += patch[0].litter_cs.totalc;
 					patch[0].acc_month.fire_c_veg_consumed  += patch[0].fire_c_veg_consumed ;
 					patch[0].acc_month.fire_c_veg_mortality += patch[0].fire_c_veg_mortality;
+					patch[0].acc_month.fire_n_veg_consumed  += patch[0].fire_n_veg_consumed ;
+					patch[0].acc_month.fire_n_veg_mortality += patch[0].fire_n_veg_mortality;
 					patch[0].acc_month.nburn += patch[0].nburn;
 				}
 				/*-------------------- Yearly + Output Filters --------------------*/
@@ -269,6 +271,8 @@ void update_basin_patch_accumulator(
 					patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
 					patch[0].acc_year.fire_c_veg_consumed  += patch[0].fire_c_veg_consumed ;
 					patch[0].acc_year.fire_c_veg_mortality += patch[0].fire_c_veg_mortality;
+					patch[0].acc_year.fire_n_veg_consumed  += patch[0].fire_n_veg_consumed ;
+					patch[0].acc_year.fire_n_veg_mortality += patch[0].fire_n_veg_mortality;
 					patch[0].acc_year.nburn += patch[0].nburn;
 				} /* end if --yearly output filter-- */
 			} /* end of p*/
