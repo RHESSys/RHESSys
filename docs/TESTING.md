@@ -143,7 +143,7 @@ From `out/basin_carbon_daily.csv` (basin averages, kgC/m²). Same form: residual
 What to expect on the current code:
 
 - `w8_fast` closes: total residual about +0.0001 kgC/m² over 5 years.
-- `w8_fire_nc` leaves about +0.28 kgC/m², all on fire days, because the litter carbon burned by fire is not an output variable yet.
+- `w8_fire_nc` leaves about +0.011 kgC/m², on fire days: part of the burned material goes to ash, which is counted as storage, and a remainder on three fire days is not explained yet (DEV_LOG #36, #37).
 
 ### Nitrogen balance (report only)
 
@@ -160,8 +160,8 @@ From `out/basin_nitrogen_daily.csv` (basin averages, kgN/m²). Same form and out
 
 What to expect on the current code:
 
-- The balance does not close yet. `w8_fast` leaves +0.030 kgN/m² over 5 years, about 19% of the 0.159 kgN/m² deposited. Most of it is NO3 in the litter being overwritten each day (DEV_LOG #31); the rest is a smaller amount of N created, which is not located yet (#32).
-- `w8_fire_nc` leaves +0.059 kgN/m²; fire days add residual because the nitrogen burned by fire is not an output variable yet (#34).
+- `w8_fast` leaves −0.0007 kgN/m² over 5 years (0.159 kgN/m² deposited): a small amount of N created that is not located yet (DEV_LOG #32).
+- `w8_fire_nc` leaves −0.0016 kgN/m²; fire days each add about −(ash N added), because burned N that goes to ash is counted both as burned and as storage (#37).
 - Daily N fluxes are small (1e-6 to 1e-4 kgN/m²) and the CSV has 6 decimal places, so single days are coarse; the total over the run is the useful number.
 
 ### Determinism and sanitizers

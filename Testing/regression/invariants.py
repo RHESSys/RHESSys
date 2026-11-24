@@ -27,22 +27,25 @@ Carbon, out/basin_carbon_daily.csv (kgC/m2). Closes to ~1e-4 on w8_fast since th
 fixes (2026-11-20):
   inputs  = net_plant_psn                             (GPP - MR - GR, cover-weighted)
   outputs = heterotrophic resp (litr1-4 + litr1-4_bg + soil1-4 hr)
-            + streamflow_DOC + gw.DOCout + fire_c_veg_consumed
+            + streamflow_DOC + gw.DOCout
+            + fire_c_veg_consumed + fire.litter_c_consumed + fire.soil_c_consumed
   storage = totalc + soil_cs.DOC + surface_DOC + ash_DOC + gw.DOC
   patch.totalc = cover-weighted stratum totalc (plant + CWD) + soil + litter (incl. below ground).
-  fire.litter_c_consumed is not output-filterable, so fire days show the litter consumed
-  (and ash double counting) as residual.
+  The fire consumed terms are gross and ash is storage, so fire days show -(ash added) as
+  residual (DEV_LOG #37); w8_fire_nc also has an unexplained remainder on fire days (#36).
 
-Nitrogen, out/basin_nitrogen_daily.csv (kgN/m2). Does not close yet (DEV_LOG #31, #32):
+Nitrogen, out/basin_nitrogen_daily.csv (kgN/m2). Closes to ~1e-3 on the W8 cases since the #31 fix
+(2026-11-24); the remainder is #32:
   inputs  = ndep_NO3 + ndep_NH4 + ndf.nfix_to_sminn + fertilizer_NO3_in + fertilizer_NH4_in
   outputs = ndf.denitrif + streamflow_NO3 + streamflow_NH4 + streamflow_DON
             + gw.NO3out + gw.NH4out + gw.DONout
+            + fire_n_veg_consumed + fire.litter_n_consumed + fire.soil_n_consumed
   storage = totaln + soil_ns.DON + surface_NO3 + surface_NH4 + surface_DON + litter.NO3_stored
             + NO3_stored (canopy) + fertilizer_NO3 + fertilizer_NH4 (surface fertilizer)
             + ash_DON + gw.NO3 + gw.NH4 + gw.DON
   patch.totaln = cover-weighted stratum totaln (plant incl. npool/retransn + CWD) + soil organic
-  + nitrate + sminn (NH4) + litter (incl. below ground). Fire N losses (fe.m_*n_to_atmos) are
-  not output-filterable at patch level, so fire days show as residual.
+  + nitrate + sminn (NH4) + litter (incl. below ground). Fire days show -(ash N added) (#37).
+  The fire columns (added 2026-11-24) are optional: if a filter lacks them they count as 0.
   Daily N fluxes are ~1e-6..1e-4 kgN/m2 and the CSV has 6 decimals, so single days are coarse;
   the cumulative residual is the useful number.
 
