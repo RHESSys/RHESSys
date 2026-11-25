@@ -93,6 +93,9 @@ void update_basin_patch_accumulator(
 					basin[0].acc_month.lai += patch[0].lai * scale;
 					basin[0].acc_month.leach += (patch[0].soil_ns.leach
 							+ patch[0].surface_ns_leach) * scale;
+
+					basin[0].acc_month.fire_c_consumed += patch[0].fire_c_consumed;	
+					basin[0].acc_month.fire_c_mortality += patch[0].fire_c_mortality;	
 				}
 				/*-------------------- Yearly --------------------*/
 				if ((command_line[0].output_flags.yearly == 1)
@@ -137,6 +140,8 @@ void update_basin_patch_accumulator(
 					basin[0].acc_year.lai += patch[0].lai * scale;
 					basin[0].acc_year.sat_deficit += patch[0].sat_deficit * scale;
 					basin[0].acc_year.sm_deficit += max(0.0,(patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage));
+					basin[0].acc_year.fire_c_consumed += patch[0].fire_c_consumed * scale;	
+					basin[0].acc_year.fire_c_mortality += patch[0].fire_c_mortality * scale;	
 				}
 				/*-------------------- Monthly + Output Filters --------------------*/
 				if ((command_line[0].output_flags.monthly == 1) &&
