@@ -44,10 +44,10 @@ This is the main test for a code change. It runs a test case twice: once with th
 
 Both cases use the W8 watershed (HJ Andrews, `Testing/`).
 
-| Case | Build | What it adds | Period | Run time |
-|---|---|---|---|---|
-| `w8_fast` | `default` | ASCII base-station climate | 5 water years, 1988-10-01 to 1993-10-01 | ~10 s |
-| `w8_fire_nc` | `fire` (WMFire) | netCDF gridded climate, fire spread and effects (`-firespread 30`), ash | 10 water years, 1988-10-01 to 1998-10-01 | ~20 s |
+| Case         | Build           | What it adds                                                            | Period                                   | Run time |
+| ------------ | --------------- | ----------------------------------------------------------------------- | ---------------------------------------- | -------- |
+| `w8_fast`    | `default`       | ASCII base-station climate                                              | 5 water years, 1988-10-01 to 1993-10-01  | ~10 s    |
+| `w8_fire_nc` | `fire` (WMFire) | netCDF gridded climate, fire spread and effects (`-firespread 30`), ash | 10 water years, 1988-10-01 to 1998-10-01 | ~20 s    |
 
 Each case writes basin daily and patch yearly CSVs, basin daily carbon and nitrogen CSVs, and the end-of-run `.state` file; `w8_fire_nc` adds fire variables, a basin netCDF file and WMFire's `FireSizes_*.txt`. All of them are compared.
 
@@ -61,14 +61,123 @@ Testing/regression/regress.sh baseline w8_fast w8_fire_nc
 Testing/regression/regress.sh check w8_fast w8_fire_nc
 ```
 
-1. **Pick the base** (the code to compare against). `baseline` builds a git commit in a temporary copy of the repository, so your working tree and build are not touched.
-   - Your change is not committed yet: use the default, `HEAD`.
-   - Your change is committed on a branch: name the commit it started from, for example `BASE_REF=develop regress.sh baseline w8_fast`, or `BASE_REF=$(git merge-base develop HEAD)`.
-   - The base is built with that commit's makefile. If the makefile or compiler settings differ between the base and your branch, outputs can differ even when the model code didn't change.
-   - The test inputs (case files, worldfile, climate) always come from your working tree, so both runs use the same inputs.
+1. **Pick the base**, the commit to compare against (see "Picking the base" below). By default it is `HEAD`, which is right only while your change is uncommitted.
 2. **Pick the cases.** Run `w8_fast` for every change. Add `w8_fire_nc` if you changed fire, ash, netCDF climate or WMFire code, or anything that fire calls.
 3. **Run `check`.** It rebuilds your working tree, runs the case and compares it with the baseline. After more edits, run `check` again; the baseline stays until you replace it.
 4. **Read the result** (below), then decide.
+
+#### Picking the base
+
+The base is the code *without* your change. `baseline` checks out that commit in a temporary git worktree, builds it and runs it, so your working tree and your build are not touched. `check` always builds your working tree, committed or not. You choose the base with `BASE_REF`, which takes any commit, branch, tag or expression that `git rev-parse` understands.
+
+| Your situation                                          | Base                             | Command                                                             |
+| ------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------- |
+| Change not committed yet                                | `HEAD` (the default)             | `regress.sh baseline w8_fast`                                       |
+| Change is your last commit                              | the commit before it             | `BASE_REF=HEAD~1 regress.sh baseline w8_fast`                       |
+| Several commits on a branch, plus any uncommitted edits | where the branch left its parent | `BASE_REF=$(git merge-base trunk HEAD) regress.sh baseline w8_fast` |
+| Testing one commit in the history                       | that commit's parent             | `BASE_REF=a3a7dc33~1 regress.sh baseline w8_fast`                   |
+
+Examples:
+
+```
+# Uncommitted edits: the base is HEAD, the test is your working tree.
+Testing/regression/regress.sh baseline w8_fast
+Testing/regression/regress.sh check w8_fast
+
+# A branch made from trunk, with commits on it. Use the merge base,
+# not `trunk`: if trunk has moved since you branched, comparing against
+# its tip would mix other people's changes into your diff.
+BASE_REF=$(git merge-base trunk HEAD) Testing/regression/regress.sh baseline w8_fast w8_fire_nc
+Testing/regression/regress.sh check w8_fast w8_fire_nc
+
+# One commit you want to look at on its own: check it out, base on its parent.
+git switch --detach a3a7dc33
+BASE_REF=HEAD~1 Testing/regression/regress.sh baseline w8_fast
+Testing/regression/regress.sh check w8_fast
+git switch -          # back to your branch
+
+# Several commits: which one changed the outputs? Base on the oldest's
+# parent once, then check each commit in turn (the base stays put).
+branch=$(git branch --show-current)
+base=$(git merge-base trunk HEAD)
+BASE_REF=$base Testing/regression/regress.sh baseline w8_fast
+for c in $(git rev-list --reverse "$base"..HEAD); do
+  git switch --quiet --detach "$c"
+  echo "### $(git log -1 --format='%h %s')"
+  Testing/regression/regress.sh check w8_fast | grep -E 'RESULT|DIFF'
+done
+git switch "$branch"
+```
+
+The last loop needs a clean working tree, since it switches commits. It returns to the branch by name, because `git switch -` would only go back one commit.
+
+**Common mistake: a base that already has your change.** If you commit and then run `baseline` with the default `HEAD`, the base includes your change, and `check` passes without testing anything. The compare report prints the base it used, so check that line:
+
+```
+== compare w8_fast: reference=/home/you/rhessys_regress/golden/w8_fast run=/home/you/rhessys_regress/runs/w8_fast
+   baseline: code from HEAD~1 (f4ff45e2...), test inputs from the working tree; made 2026-11-24T10:12:03-08:00
+```
+
+To see what lies between the base and your working tree, run `git diff <base> -- rhessys/`. If that shows nothing, `check` will pass.
+
+**What comes from where:**
+- **Model code and makefile** come from the base commit. If the makefile or compiler settings differ between the base and your branch, outputs can differ even when the model code didn't change.
+- **Test inputs** (case files, tec, output filters, worldfile, climate) always come from your working tree, so both runs read the same inputs. A new output variable in a filter will be requested from the base build too; if the base doesn't have it, the base run fails. Add the variable to the filter in a separate step after the base is made, or base on a commit that already has it.
+
+**Keeping the base.** The base stays in `~/rhessys_regress/golden` until the next `baseline`, so you can edit, rerun `check` as often as you like, and only rebuild the base when the code you're comparing against changes (for example after rebasing onto a newer trunk).
+
+#### Baseline or bless: which reference `check` uses
+
+`check` and `compare` don't choose between a baseline and a blessed run. Each case has one reference, the directory `~/rhessys_regress/golden/<case>` (or `$RHESSYS_GOLDEN/<case>`), and they compare against whatever is in it. `baseline` and `bless` are two ways of filling that directory:
+
+|               | `baseline`                                                                                              | `bless`                                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| What it saves | a fresh build and run of `BASE_REF`                                                                     | your **last run** of the case (`~/rhessys_regress/runs/<case>`), from your working tree                           |
+| Use it for    | comparing a change with the code before it                                                              | keeping a known-good result as a fixed reference across many changes, for example after an intended output change |
+| Marked as     | baseline (it holds a `BASELINE_INFO.txt`; the compare report prints its `baseline: code from ...` line) | blessed (no marker, so the report prints no `baseline:` line; `run_info.txt` in the reference records the commit) |
+| Replaced by   | the next `baseline` or `bless`, without asking                                                          | nothing, unless you set `FORCE=1`; the old copy is then kept as `<case>.replaced.<time>`                          |
+
+So a blessed reference is protected: `baseline` refuses to overwrite it, and `bless` over it needs `FORCE=1`.
+
+Examples:
+
+```
+# Everyday: base on the code before your change. Nothing is blessed.
+BASE_REF=$(git merge-base trunk HEAD) Testing/regression/regress.sh baseline w8_fast
+Testing/regression/regress.sh check w8_fast
+
+# You meant to change the outputs (a bug fix) and have reviewed the differences.
+# Bless your run so later work is compared with the fixed code.
+Testing/regression/regress.sh check w8_fast           # shows the expected DIFFs
+Testing/regression/regress.sh bless w8_fast           # saves runs/w8_fast, the working-tree run
+Testing/regression/regress.sh check w8_fast           # now PASS
+
+# Re-bless later, after another intended change. FORCE keeps the old one.
+FORCE=1 Testing/regression/regress.sh bless w8_fast
+ls ~/rhessys_regress/golden          # w8_fast  w8_fast.replaced.20261124153012
+
+# Go back to an ordinary baseline while a blessed reference exists:
+Testing/regression/regress.sh baseline w8_fast        # ERROR: ... is a blessed reference
+FORCE=1 Testing/regression/regress.sh baseline w8_fast   # blessed copy kept as .replaced.<time>
+
+# Keep a blessed set and a working baseline side by side, in separate directories.
+RHESSYS_GOLDEN=~/rhessys_regress/blessed Testing/regression/regress.sh bless w8_fast
+Testing/regression/regress.sh baseline w8_fast        # default directory, for everyday checks
+RHESSYS_GOLDEN=~/rhessys_regress/blessed Testing/regression/regress.sh compare w8_fast
+```
+
+Things to know:
+- **`bless` saves the last run, whatever made it.** Normally that is your last `check` or `run`. It is not the baseline run: `baseline` runs into `runs/<case>.baseline`. Run `check` right before `bless`, so you bless what you just reviewed.
+- **Bless only a run you have checked.** A blessed reference is the standard every later change is held to, so look at the differences first (see "What to do with the result").
+- **`compare` reruns nothing.** It compares the last run with the current reference, so after `bless` or a new `baseline` you can rerun `compare` without waiting for the model.
+- **To see which kind of reference you have**, look for the `baseline:` line in the compare report, or run `cat ~/rhessys_regress/golden/<case>/BASELINE_INFO.txt` (missing means blessed). For either kind, `run_info.txt` in the reference records the commit it was built from, the branch and whether the source had uncommitted changes:
+
+  ```
+  grep git_ ~/rhessys_regress/golden/w8_fast/run_info.txt
+  # git_commit: 822f26baec07...
+  # git_branch: develop-fixes
+  # git_dirty_rhessys_src: 0 modified tracked files
+  ```
 
 ### Reading the result
 
@@ -118,12 +227,12 @@ Pass/fail, from `out/basin_daily.csv` (basin averages, m of water). For each day
 residual = input − outputs − (storage today − storage yesterday)
 ```
 
-| Role | Output variables (filter names) |
-|---|---|
-| Input | `patch.total_water_in` |
-| Outputs | `patch.streamflow`, `hill.gw.Qout`, `patch.evaporation`, `patch.evaporation_surf`, `patch.transpiration_sat_zone`, `patch.transpiration_unsat_zone`, `patch.exfiltration_sat_zone`, `patch.exfiltration_unsat_zone` |
-| Storage: soil | −(`patch.sat_deficit` − `patch.rz_storage` − `patch.unsat_storage`) |
-| Storage: other | `patch.detention_store`, `patch.litter.rain_stored`, `patch.canopy_rain_stored`, `patch.canopy_snow_stored`, `patch.snowpack.water_equivalent_depth`, `hill.gw.storage` |
+| Role           | Output variables (filter names)                                                                                                                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Input          | `patch.total_water_in`                                                                                                                                                                                              |
+| Outputs        | `patch.streamflow`, `hill.gw.Qout`, `patch.evaporation`, `patch.evaporation_surf`, `patch.transpiration_sat_zone`, `patch.transpiration_unsat_zone`, `patch.exfiltration_sat_zone`, `patch.exfiltration_unsat_zone` |
+| Storage: soil  | −(`patch.sat_deficit` − `patch.rz_storage` − `patch.unsat_storage`)                                                                                                                                                 |
+| Storage: other | `patch.detention_store`, `patch.litter.rain_stored`, `patch.canopy_rain_stored`, `patch.canopy_snow_stored`, `patch.snowpack.water_equivalent_depth`, `hill.gw.storage`                                             |
 
 - **Pass:** every day |residual| ≤ 2e-5 m, and the total over the run ≤ 0.1% of total input. The limits allow for the 6 decimal places in the CSV; set them with `--max-daily` and `--max-cum-frac` when running `invariants.py` directly.
 - In the CSV header the `patch.` / `hill.` prefixes are dropped (`gw.Qout`, `litter.rain_stored`).
@@ -132,13 +241,13 @@ residual = input − outputs − (storage today − storage yesterday)
 
 From `out/basin_carbon_daily.csv` (basin averages, kgC/m²). Same form: residual = input − outputs − change in storage. It prints the total residual over the run and the worst day, and never fails.
 
-| Role | Output variables (filter names) |
-|---|---|
-| Input | `patch.net_plant_psn` (photosynthesis minus maintenance and growth respiration, cover-weighted) |
-| Outputs: heterotrophic respiration | `patch.cdf.litr1c_hr` to `litr4c_hr`, `patch.cdf.litr1c_hr_bg` to `litr4c_hr_bg`, `patch.cdf.soil1c_hr` to `soil4c_hr` |
-| Outputs: other | `patch.streamflow_DOC`, `hill.gw.DOCout` |
-| Outputs: fire | `patch.fire_c_veg_consumed` (plants and coarse woody debris burned), `patch.fire.litter_c_consumed`, `patch.fire.soil_c_consumed` |
-| Storage | `patch.totalc` (plants including coarse woody debris, litter and soil), `patch.soil_cs.DOC`, `patch.surface_DOC`, `patch.ash_DOC`, `hill.gw.DOC` |
+| Role                               | Output variables (filter names)                                                                                                                  |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Input                              | `patch.net_plant_psn` (photosynthesis minus maintenance and growth respiration, cover-weighted)                                                  |
+| Outputs: heterotrophic respiration | `patch.cdf.litr1c_hr` to `litr4c_hr`, `patch.cdf.litr1c_hr_bg` to `litr4c_hr_bg`, `patch.cdf.soil1c_hr` to `soil4c_hr`                           |
+| Outputs: other                     | `patch.streamflow_DOC`, `hill.gw.DOCout`                                                                                                         |
+| Outputs: fire                      | `patch.fire_c_veg_consumed` (plants and coarse woody debris burned), `patch.fire.litter_c_consumed`, `patch.fire.soil_c_consumed`                |
+| Storage                            | `patch.totalc` (plants including coarse woody debris, litter and soil), `patch.soil_cs.DOC`, `patch.surface_DOC`, `patch.ash_DOC`, `hill.gw.DOC` |
 
 What to expect on the current code:
 
@@ -149,19 +258,19 @@ What to expect on the current code:
 
 From `out/basin_nitrogen_daily.csv` (basin averages, kgN/m²). Same form and output as the carbon balance; it never fails.
 
-| Role | Output variables (filter names) |
-|---|---|
-| Inputs | `zone.ndep_NO3`, `zone.ndep_NH4` (deposition), `patch.ndf.nfix_to_sminn` (fixation), `patch.fertilizer_NO3_in`, `patch.fertilizer_NH4_in` |
-| Outputs | `patch.ndf.denitrif`, `patch.streamflow_NO3`, `patch.streamflow_NH4`, `patch.streamflow_DON`, `hill.gw.NO3out`, `hill.gw.NH4out`, `hill.gw.DONout` |
-| Outputs: fire | `patch.fire_n_veg_consumed` (plants and coarse woody debris burned), `patch.fire.litter_n_consumed`, `patch.fire.soil_n_consumed` |
-| Storage: plants, litter, soil | `patch.totaln` (plants including coarse woody debris, litter, soil organic N, `nitrate` and `sminn`, the NH4 pool) |
+| Role                           | Output variables (filter names)                                                                                                                                                                                                           |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inputs                         | `zone.ndep_NO3`, `zone.ndep_NH4` (deposition), `patch.ndf.nfix_to_sminn` (fixation), `patch.fertilizer_NO3_in`, `patch.fertilizer_NH4_in`                                                                                                 |
+| Outputs                        | `patch.ndf.denitrif`, `patch.streamflow_NO3`, `patch.streamflow_NH4`, `patch.streamflow_DON`, `hill.gw.NO3out`, `hill.gw.NH4out`, `hill.gw.DONout`                                                                                        |
+| Outputs: fire                  | `patch.fire_n_veg_consumed` (plants and coarse woody debris burned), `patch.fire.litter_n_consumed`, `patch.fire.soil_n_consumed`                                                                                                         |
+| Storage: plants, litter, soil  | `patch.totaln` (plants including coarse woody debris, litter, soil organic N, `nitrate` and `sminn`, the NH4 pool)                                                                                                                        |
 | Storage: dissolved and surface | `patch.soil_ns.DON`, `patch.surface_NO3`, `patch.surface_NH4`, `patch.surface_DON`, `patch.litter.NO3_stored`, `stratum.NO3_stored` (canopy), `patch.fertilizer_NO3`, `patch.fertilizer_NH4` (fertilizer on the surface), `patch.ash_DON` |
-| Storage: groundwater | `hill.gw.NO3`, `hill.gw.NH4`, `hill.gw.DON` |
+| Storage: groundwater           | `hill.gw.NO3`, `hill.gw.NH4`, `hill.gw.DON`                                                                                                                                                                                               |
 
 What to expect on the current code:
 
 - `w8_fast` leaves −0.0007 kgN/m² over 5 years (0.159 kgN/m² deposited): a small amount of N created that is not located yet (DEV_LOG #32).
-- `w8_fire_nc` leaves −0.0016 kgN/m²; fire days each add about −(ash N added), because burned N that goes to ash is counted both as burned and as storage (#37).
+- `w8_fire_nc` leaves −0.0012 kgN/m²; fire days each add about −(ash N added), because burned N that goes to ash is counted both as burned and as storage (#37).
 - Daily N fluxes are small (1e-6 to 1e-4 kgN/m²) and the CSV has 6 decimal places, so single days are coarse; the total over the run is the useful number.
 
 ### Determinism and sanitizers
@@ -186,18 +295,18 @@ regress.sh sanitize <case>...
 regress.sh list                   list cases
 ```
 
-| Setting | Meaning |
-|---|---|
-| `BASE_REF` | commit, branch or tag for `baseline` (default `HEAD`) |
-| `TOL_ABS`, `TOL_REL` | tolerances for `check` / `compare` (default 0, bitwise) |
-| `REBUILD=0` | `check` reuses the existing build instead of rebuilding |
-| `RHESSYS_REGRESS_WORK` | work directory (default `~/rhessys_regress`) |
-| `RHESSYS_GOLDEN` | reference directory (default `~/rhessys_regress/golden`) |
-| `FORCE=1` | let `bless` or `baseline` replace a blessed reference (the old one is kept as `<case>.replaced.<time>`) |
-| `RUN_WRAP` | prefix for the model command, for example `RUN_WRAP="valgrind --tool=memcheck"` |
-| `RHESSYS_REGRESS_EXT` | a directory of extra cases and commands (`cases/*.case`, `regress_ext.sh`) kept outside the repository |
+| Setting                | Meaning                                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- |
+| `BASE_REF`             | commit, branch or tag for `baseline` (default `HEAD`)                                                   |
+| `TOL_ABS`, `TOL_REL`   | tolerances for `check` / `compare` (default 0, bitwise)                                                 |
+| `REBUILD=0`            | `check` reuses the existing build instead of rebuilding                                                 |
+| `RHESSYS_REGRESS_WORK` | work directory (default `~/rhessys_regress`)                                                            |
+| `RHESSYS_GOLDEN`       | reference directory (default `~/rhessys_regress/golden`)                                                |
+| `FORCE=1`              | let `bless` or `baseline` replace a blessed reference (the old one is kept as `<case>.replaced.<time>`) |
+| `RUN_WRAP`             | prefix for the model command, for example `RUN_WRAP="valgrind --tool=memcheck"`                         |
+| `RHESSYS_REGRESS_EXT`  | a directory of extra cases and commands (`cases/*.case`, `regress_ext.sh`) kept outside the repository  |
 
-**Baseline or bless.** A `baseline` reference is temporary and is replaced by the next `baseline`. `bless` saves a run you want to keep as a fixed reference across many changes; it is not replaced unless you set `FORCE=1`. Reference outputs are bitwise results for one compiler and machine, so they are not kept in git.
+**Baseline or bless.** See "Baseline or bless: which reference `check` uses" under Workflow. Reference outputs are bitwise results for one compiler and machine, so they are not kept in git.
 
 **Run directory** (`~/rhessys_regress/runs/<case>`): `out/` (outputs), `rhessys.log`, `cmd.txt` (the command line), `run_info.txt` (build, git commit, run time and memory), `MANIFEST.sha256` (hashes of the compared files).
 

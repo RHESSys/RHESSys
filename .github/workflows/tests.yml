@@ -5,7 +5,7 @@ name: tests
 on:
   pull_request:
   push:
-    branches: [develop, develop-test-perf]
+    branches: [develop, develop-fixes]
   workflow_dispatch:
 
 jobs:
