@@ -125,7 +125,7 @@ void compute_fire_effects(
 	/* Ash from consumed litter (before litter pools are reduced) */
 	if (patch[0].soil_defaults[0][0].ash_deposition_flag == 1) {
 		patch[0].ash_DOC += fmax(0.0, litter_c_consumed * combust_remain_pct * patch[0].soil_defaults[0][0].ash_pct_soluble_DOC);
-		patch[0].ash_DON += fmax(0.0, (patch[0].litter_ns.litr1n * fire_loss.loss_litr1n +
+		patch[0].ash_DON += fmax(0.0, combust_remain_pct * (patch[0].litter_ns.litr1n * fire_loss.loss_litr1n +
 				patch[0].litter_ns.litr2n * fire_loss.loss_litr2n +
 				patch[0].litter_ns.litr3n * fire_loss.loss_litr3n +
 				patch[0].litter_ns.litr4n * fire_loss.loss_litr4n) * patch[0].soil_defaults[0][0].ash_pct_soluble_DON);
@@ -194,7 +194,7 @@ void compute_fire_effects(
 			patch[0].fire_n_veg_consumed += canopy_target[0].fe.m_cwdn_to_atmos;
 			if (patch[0].soil_defaults[0][0].ash_deposition_flag == 1) {
 				patch[0].ash_DOC += fmax(0.0, canopy_target[0].fe.m_cwdc_to_atmos * combust_remain_pct * patch[0].soil_defaults[0][0].ash_pct_soluble_DOC);
-				patch[0].ash_DON += fmax(0.0, canopy_target[0].fe.m_cwdn_to_atmos * patch[0].soil_defaults[0][0].ash_pct_soluble_DON);
+				patch[0].ash_DON += fmax(0.0, canopy_target[0].fe.m_cwdn_to_atmos * combust_remain_pct * patch[0].soil_defaults[0][0].ash_pct_soluble_DON);
 			}
 
 			/*--------------------------------------------------------------*/
@@ -375,7 +375,7 @@ void compute_fire_effects(
 			patch[0].fire_n_veg_consumed += canopy_n_consumed;
 			if (patch[0].soil_defaults[0][0].ash_deposition_flag == 1) {
 				patch[0].ash_DOC += fmax(0.0, canopy_c_consumed * combust_remain_pct * patch[0].soil_defaults[0][0].ash_pct_soluble_DOC);
-				patch[0].ash_DON += fmax(0.0, canopy_n_consumed * patch[0].soil_defaults[0][0].ash_pct_soluble_DON);
+				patch[0].ash_DON += fmax(0.0, canopy_n_consumed * combust_remain_pct * patch[0].soil_defaults[0][0].ash_pct_soluble_DON);
 			}
 
 			mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_consumed;
