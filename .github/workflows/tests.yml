@@ -16,7 +16,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes bison flex clang lld libnetcdf-dev libglib2.0-dev libbsd-dev pkg-config python3 time
+          sudo apt-get install --yes bison flex libfl-dev clang libclang-rt-dev lld libnetcdf-dev libglib2.0-dev libbsd-dev pkg-config python3 time
       - name: Build with unit tests
         working-directory: rhessys
         run: make skiptests=F
