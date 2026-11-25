@@ -1,6 +1,72 @@
 # RHESSys dev log
 
-Findings and changes from the automated dev effort. For each finding: location, category, evidence, whether fixing it **changes outputs**, and status. Changes are split into those that alter model outputs (with the finding, commit, code lines and why the old code was wrong) and those that don't.
+Findings and changes from the automated dev effort. For each finding: location, category, evidence, whether fixing it **changes outputs**, and status. A summary of `develop-fixes` against `develop` comes first. Changes are split into those that alter model outputs (with the finding, commit, code lines and why the old code was wrong) and those that don't.
+
+## develop-fixes vs develop: carbon and nitrogen (2026-11-25)
+
+All four regression cases, run with `develop` and with `develop-fixes` (`a63cc510`), same inputs.
+
+- **Base:** `80e63a72`, the commit `develop-fixes` branched from. Current `develop` (`ea31779e`, 2026-11-25) does not compile: `update_basin_patch_accumulator.c:97-98, 143-144` use `patch.fire_c_consumed` / `acc_month.fire_c_consumed` (and `fire_c_mortality`), which are not fields of `patch_object` or `accumulate_patch_object` (the patch fields are `fire_c_veg_consumed` / `fire_c_veg_mortality`; the monthly lines also lack `* scale`). That commit only adds those accumulator lines, which none of the outputs below use.
+- **Filters:** both versions ran the same copies of the case filters, without the five fire variables `develop` lacks (`fire_n_veg_consumed`, `fire_n_veg_mortality`, `fire.litter_n_consumed`, `fire.soil_c_consumed`, `fire.soil_n_consumed`).
+- **Units:** fluxes are kgC/m²/yr or kgN/m²/yr (mean annual sum over the run). "(end)" is the stock on the last day (kg/m²); LAI is the mean over the run.
+- **Water balance** passes on every case in both versions. Fire sizes on `w8_fire_nc` are identical.
+
+### Changes, `develop` → `develop-fixes`
+
+|       | Variable                        | `w8_fast` (5 yr)  | `w8_fire_nc` (10 yr) | `ward_1y`             | `ward_long` (43.6 yr): develop → develop-fixes |
+| ----- | ------------------------------- | ----------------- | -------------------- | --------------------- | ---------------------------------------------- |
+| C     | net_plant_psn (GPP − MR − GR)   | +15.5%            | +18.9%               | +8.0%                 | 0.1728 → 0.2433 (+40.8%)                       |
+| C     | maintenance respiration         | +2.0%             | +5.6%                | +0.2%                 | 0.3034 → 0.3472 (+14.4%)                       |
+| C     | growth respiration              | +11.4%            | +16.1%               | +8.9%                 | 0.03726 → 0.04893 (+31.3%)                     |
+| C     | heterotrophic respiration       | −8.1%             | −10.8%               | −0.5%                 | 0.1827 → 0.1817 (−0.5%)                        |
+| C     | total C (end)                   | −0.6%             | +2.4%                | −0.4%                 | 16.27 → 17.27 (+6.1%)                          |
+| C     | total C change over run (kg/m²) | −1.19 → −2.04     | −8.44 → −5.44        | +0.169 → +0.104       | +1.66 → +2.66                                  |
+| C     | plant C (end)                   | −0.6%             | +4.7%                | −0.5%                 | 10.73 → 11.6 (+8.1%)                           |
+| C     | leaf C (end)                    | +2.5%             | +11.4%               | +1.1%                 | 0.224 → 0.2561 (+14.3%)                        |
+| C     | cpool (end)                     | −5.5%             | −5.4%                | −1.1%                 | 3.983 → 3.244 (−18.6%)                         |
+| C     | litter C (end)                  | −14.5%            | −31.6%               | −3.4%                 | 0.5127 → 0.515 (+0.5%)                         |
+| C     | soil C (end)                    | −0.4%             | −1.0%                | +0.0%                 | 4.766 → 4.878 (+2.4%)                          |
+| C     | LAI (mean)                      | +1.8%             | +5.2%                | +0.2%                 | 2.485 → 2.827 (+13.8%)                         |
+| C     | stream DOC                      | –                 | −92.3%               | +0.0%                 | 0.001055 → 0.001045 (−1.0%)                    |
+| N     | nitrification                   | +25.8%            | +24.3%               | +3.2%                 | 4.801e-05 → 7.179e-05 (+49.5%)                 |
+| N     | denitrification                 | +38.2%            | +38.9%               | –                     | 5.551e-06 → 7.684e-06 (+38.4%)                 |
+| N     | stream NO3                      | +21.0%            | +18.7%               | +0.0%                 | 3.427e-05 → 3.619e-05 (+5.6%)                  |
+| N     | stream DON                      | −36.4%            | −26.0%               | –                     | 9.913e-05 → 9.767e-05 (−1.5%)                  |
+| N     | total N (end)                   | −0.1%             | +0.4%                | +0.0%                 | 0.6928 → 0.7025 (+1.4%)                        |
+| N     | total N change over run (kg/m²) | +0.0208 → +0.0175 | +0.0179 → +0.0364    | +0.000725 → +0.000922 | +0.0326 → +0.0424                              |
+| N     | soil N (end)                    | −0.2%             | −0.4%                | +0.0%                 | 0.5991 → 0.6133 (+2.4%)                        |
+| N     | soil nitrate (end)              | +129.0%           | +223.2%              | +0.2%                 | 0.02824 → 0.02775 (−1.7%)                      |
+| N     | soil NH4 (end)                  | +14.0%            | +12.3%               | +9.7%                 | 3.2e-05 → 4e-05 (+25.0%)                       |
+| N     | ash N (max)                     | –                 | −92.8%               | –                     | –                                              |
+| N     | groundwater N out               | –                 | –                    | n/a                   | 2.064e-07 → 4.083e-06 (+1877.8%)               |
+| water | streamflow (m/yr)               | −0.1%             | −0.7%                | +0.0%                 | 0.833 → 0.8147 (−2.2%)                         |
+
+"–": zero in both versions, or not in that case's output. The fire terms are not in the table: fire C consumed was always 0 in `develop`'s output (#2) and is reported now (`w8_fire_nc`: veg 0.149, litter 0.027 kgC/m²/yr).
+
+### Balance residuals, `develop` → `develop-fixes`
+
+Cumulative residual over the run (`invariants.py` as of `a63cc510`, applied to both versions' outputs; `develop-fixes` values from its normal filters, which include the fire soil and N terms).
+
+| Case         | Carbon (kgC/m²)  | Nitrogen (kgN/m²)   |
+| ------------ | ---------------- | ------------------- |
+| `w8_fast`    | −2.433 → +0.0001 | +0.0320 → −0.0007   |
+| `w8_fire_nc` | +0.707 → +0.011  | +0.0877 → −0.0012   |
+| `ward_1y`    | −0.087 → −0.0016 | +0.00018 → −0.00002 |
+| `ward_long`  | −2.157 → −0.041  | +0.0072 → −0.0032   |
+
+`develop`'s residuals mix real conservation errors with output errors. Real: carbon created when the `mr_deficit` was repaid (#17, about 1.3 kgC/m² on `w8_fast`), litter 3 respiration reported but never removed from the pool (#22, about 0.9 kgC/m²), litter NO3 overwritten (#31, about 19% of N deposition on W8). Output only: fire consumed C and N not reported (#2), so the fire case shows burned material as unexplained loss. The remaining `develop-fixes` residuals are #32 (N), #36 and #37a (fire days). The earlier `ward_long` figure of −1.309 kgC/m² for the pre-fix golden was computed before `litr3c_hr` was added to the report (`5a4c6805`); with today's definitions it is −2.157.
+
+### What drives the changes
+
+- **More plant growth** (net_plant_psn, growth and maintenance respiration, leaf C, LAI): more mineral N reaches the plants, so they are less N-limited. Litter NO3 is no longer lost (#31), litter 3 → litter 2 mineralization is no longer always immobilization (#21), and surface N infiltrates at the right rate (#19). Largest on `ward_long` (net_plant_psn +41%, LAI +14%); earlier steps measured +29% from #17-#22 and +8.8% from #31.
+- **Lower cpool:** the carbon created during `mr_deficit` repayment (#17) is gone.
+- **Lower litter C and heterotrophic respiration on W8:** litter 3 now actually loses its respiration (#22), so litter 3 is smaller; `develop`'s reported respiration included the phantom part. Small on Ward (−0.5%).
+- **Total C over the run:** on `w8_fast` the ecosystem now loses more C (−1.19 → −2.04 kgC/m²) because #17's created carbon is gone; on `w8_fire_nc` and `ward_long` the extra growth outweighs it.
+- **Faster N cycling** (nitrification, denitrification, soil nitrate, soil NH4, stream NO3): mostly #31 and #19. On `ward_long`, groundwater N export goes from 2e-7 to 4e-6 kgN/m²/yr, still small next to stream DON and NO3.
+- **Lower stream DON on W8:** #31 alone gave −12.5% on `w8_fast`; the rest is probably #19 (surface DON infiltrates instead of staying on the surface). Not separated further.
+- **Stream DOC −92% on `w8_fire_nc`:** almost all of `develop`'s stream DOC there was fire-related; most likely #19 (ash DOC on the surface now infiltrates). Not separated further.
+- **Ash N −93% (peak):** #37b (factor 0.15), plus the changed fire-year pools.
+- **Streamflow:** −2.2% on `ward_long` (more growth, more evapotranspiration), ≤ 0.7% on W8. RunID296_345 was calibrated with `develop`'s code, so its fit will shift; recalibration may be warranted.
 
 ## Changes
 
