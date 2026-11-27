@@ -272,7 +272,7 @@ void		patch_hourly(
 		/*      melt  assume full daytime duration                      */
 		/*--------------------------------------------------------------*/
 		if (zone[0].hourly[0].rain_duration <= ZERO)
-			duration = 3600.0/86400.0; /* one hour in days; was integer 0 (DEV_LOG #25) */
+			duration = 3600.0/86400.0;
 		else
 			duration = zone[0].hourly[0].rain_duration/(86400);
 		
@@ -322,7 +322,6 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 	infiltration=min(infiltration,patch[0].detention_store);
 
-	/* DEV_LOG #20: fraction of detention infiltrated, taken before detention_store is reduced */
 	double prop_detention_store_infiltrated = ((infiltration > ZERO) && (patch[0].detention_store > ZERO))
 		? infiltration / patch[0].detention_store : 0.0;
 	patch[0].detention_store -= infiltration;

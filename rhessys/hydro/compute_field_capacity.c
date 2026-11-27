@@ -63,6 +63,8 @@
 /*			theta_actual given theta_min 	 	*/
 /*								*/
 /*	PROGRAMMER NOTES					*/
+/*	pow(psi_air_entry / 3.4, pore_size_index) is memoized	*/
+/*	per thread (exact-key cache).				*/
 /*								*/
 /*	This is essential a numerical integration exercise.	*/
 /*	We use constant intervals given that, while the		*/
@@ -164,9 +166,6 @@ double	compute_field_capacity(
 		/* Changed field capacity to eqn in Dingman p. 235 using fixed pressure head */
 		/* of -340cm (constant over depth) vs. older method that varied field capacity */
 		/* with depth and overshot (field capacity sat > 1) close to sat zone. */
-		/* P3 (DEV_LOG): pow(psi_air_entry / 3.4, pore_size_index) is a per-soil constant;
-		   it is memoized per thread and reused only when both inputs are exactly equal,
-		   so results are bitwise identical. */
 		static _Thread_local int fc_valid = 0;
 		static _Thread_local double fc_psi, fc_b, fc_pow;
 		if (!(fc_valid && psi_air_entry == fc_psi && pore_size_index == fc_b)) {

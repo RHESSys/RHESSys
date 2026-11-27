@@ -761,7 +761,7 @@ double	top_model(
 			patch[0].acc_year.uptake += patch[0].ndf.sminn_to_npool;
 			patch[0].acc_year.DOC_loss += (patch[0].soil_cs.DOC_Qout_total - patch[0].soil_cs.DOC_Qin_total);
 			patch[0].acc_year.DON_loss += (patch[0].soil_ns.DON_Qout_total - patch[0].soil_ns.DON_Qin_total);
-			patch[0].acc_year.burn += patch[0].burn; /* burn fraction of fire events this day (not the persistent pspread) */
+			patch[0].acc_year.burn += patch[0].burn;
 			patch[0].acc_year.psn += patch[0].net_plant_psn;
 			patch[0].acc_year.snowpack =  max( patch[0].snowpack.water_equivalent_depth, patch[0].acc_year.snowpack);
 			patch[0].acc_year.et += (patch[0].transpiration_unsat_zone

@@ -24,6 +24,8 @@
 /*                                                              */
 /*								*/
 /*  PROGRAMMER NOTES                                            */
+/*  z1, z2, available_water and the decay exponentials are	*/
+/*  memoized per thread (exact-key cache).			*/
 /*                                                              */
 /*                                                              */
 /*--------------------------------------------------------------*/
@@ -147,10 +149,6 @@ double	compute_N_leached(int verbose_flag,
 	/*	now for regular subsurface flow			*/
 	/*	integrate through the saturated zone		*/
 	/*------------------------------------------------------*/
-	/* P1 (DEV_LOG): update_drainage_* call this 4 times per patch and step (NO3, NH4, DON,
-	   DOC) with the same depths, so z1, z2 and available_water (and the decay exponentials
-	   for the pair of solutes sharing a decay rate) are memoized per thread. A cached value
-	   is reused only when every input is exactly equal, so results are bitwise identical. */
 	static _Thread_local int z_valid = 0, e_valid = 0;
 	static _Thread_local double zk_n0, zk_p, zk_z2w, zk_s1, zk_s2, zc_z1, zc_z2, zc_aw;
 	static _Thread_local double ek_d, ek_zN, ek_z1, ek_z2, ec_zN, ec_z1, ec_z2;

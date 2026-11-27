@@ -38,6 +38,9 @@
 /*								*/
 /*								*/
 /*	PROGRAMMER NOTES					*/
+/*	Field capacity per interval is cached per soil	*/
+/*	parameter set (fc_cache); not thread safe, called	*/
+/*	only during serial initialization.			*/
 /*								*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
@@ -45,10 +48,6 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 
-/* P4 (DEV_LOG): the per-interval field capacity depends only on the soil default
-   parameters and the depth sequence, not on the patch, so it is computed once per
-   distinct parameter set and reused. Keys are compared exactly, so results are
-   bitwise identical. Only called during (serial) initialization. */
 struct fc_cache_entry {
 	int theta_psi_curve, num_intervals;
 	double psi_air_entry, pore_size_index, p3, p4, porosity_0, porosity_decay,

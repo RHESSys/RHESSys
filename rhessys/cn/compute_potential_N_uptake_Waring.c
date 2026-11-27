@@ -91,8 +91,6 @@ double compute_potential_N_uptake_Waring(
 			-----------------------------------------------*/
 			transfer = min(cs->availc, -cs->cpool);
 			cs->availc -= transfer;
-			/* DEV_LOG #17: no cpool += transfer; today's psn - mr is already added to cpool in
-			   update_C_stratum_daily, so repaying only reduces availc (as in Biome-BGC) */
 	} /* end if negative cpool */
 
 	/*---------------------------------------------------------------
@@ -101,8 +99,6 @@ double compute_potential_N_uptake_Waring(
 	 if (cs->mr_deficit > ZERO) {
                  transfer = min(cs->availc, cs->mr_deficit);
                   cs->availc -= transfer;
-                   /* DEV_LOG #17: no cpool += transfer; today's psn - mr is already added to cpool in
-                      update_C_stratum_daily, so repaying only reduces availc (as in Biome-BGC) */
                 cs->mr_deficit -= transfer;
                 }
 

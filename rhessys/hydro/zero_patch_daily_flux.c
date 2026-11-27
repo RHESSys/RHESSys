@@ -58,14 +58,8 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	patch[0].Kup_diffuse = 0.0;
 
 	/*--------------------------------------------------------------*/
-	/* daily fire fluxes 						*/
+	/* daily fire fluxes are reset after output (execute_tec)	*/
 	/*--------------------------------------------------------------*/
-
-	/* Fire fluxes (fire.litter_c/n_consumed, fire.soil_c/n_consumed, fire_c/n_veg_consumed,
-	   fire_c/n_veg_mortality, burn, nburn) are NOT zeroed here. WMFire fire effects run at month end, after
-	   that day's accumulation/output, so zeroing them at the start of the next day
-	   discarded them before they were ever accumulated or output. They are reset
-	   after each day's output instead (zero_patch_fire_fluxes in execute_tec.c). */
 
 	/*--------------------------------------------------------------*/
 	/* daily carbon fluxes */

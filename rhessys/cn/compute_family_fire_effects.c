@@ -119,7 +119,7 @@ void compute_family_fire_effects(
 
 	for (p = 0; p < patch_family[0].num_patches_in_fam; p++)
 	{
-		// Track nburn days, and the burn fraction of this fire event (reset after daily output)
+		// Track nburn days
 		patch_family[0].patches[p][0].nburn += 1;
 		patch_family[0].patches[p][0].burn = pspread;
 
@@ -149,7 +149,6 @@ void compute_family_fire_effects(
 			}
 		}
 
-		/* Output-only N and soil counterparts (litter and soil1 lost to the atmosphere), before pools are reduced */
 		patch_family[0].patches[p][0].fire.litter_n_consumed = patch_family[0].patches[p][0].litter_ns.litr1n * fire_loss.loss_litr1n +
 			patch_family[0].patches[p][0].litter_ns.litr2n * fire_loss.loss_litr2n +
 			patch_family[0].patches[p][0].litter_ns.litr3n * fire_loss.loss_litr3n +
@@ -302,7 +301,6 @@ void compute_family_fire_effects(
 			canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
 			canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
 			canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
-			/* CWD burned goes to the atmosphere: consumption only (it was also being added to mortality) */
 			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_c_veg_consumed  += canopy_target[0].fe.m_cwdc_to_atmos;
 			patch_family[0].patches[canopy_target[0].fam_patch_ind][0].fire_n_veg_consumed  += canopy_target[0].fe.m_cwdn_to_atmos;
 

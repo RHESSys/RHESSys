@@ -777,14 +777,7 @@ printf("about to enter construct wui\n");
 
 	/*--------------------------------------------------------------*/
 	/*	Construct the list of base stations.			*/
-	/*--------------------------------------------------------------*/
-
-	/*--------------------------------------------------------------*/
-	/*	Climate is indexed by day: when the run ends after hour 1	*/
-	/*	of the end date, that (partial) day is simulated too, so	*/
-	/*	the daily climate sequences need duration.day + 1 values.	*/
-	/*	(Previously the last partial day read one value past the	*/
-	/*	end of every daily clim array.)								*/
+	/*	Includes the partial end day if the run ends after hour 1.	*/
 	/*--------------------------------------------------------------*/
 	struct date clim_duration = world[0].duration;
 	if (world[0].end_date.hour > 1) clim_duration.day += 1;

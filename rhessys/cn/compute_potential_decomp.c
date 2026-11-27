@@ -149,7 +149,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	if ((cs_litr->litr2c > ZERO) && (ns_litr->litr2n > ZERO))	cn_l2 = cs_litr->litr2c/ns_litr->litr2n;
 		else cn_l2 = CEL_CN;
 	if ((cs_litr->litr3c > ZERO) && (ns_litr->litr3n > ZERO))	cn_l3 = cs_litr->litr3c/ns_litr->litr3n;
-		else cn_l3 = LIG_CN; /* same fallback as update_decomp */
+		else cn_l3 = LIG_CN;
 	if ((cs_litr->litr4c > ZERO) && (ns_litr->litr4n > ZERO))	cn_l4 = cs_litr->litr4c/ns_litr->litr4n;
 		else cn_l4 = LIG_CN;
 	cn_s1 = SOIL1_CN;
@@ -208,7 +208,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	/* respiration fractions not available to assume the same as for lignan (the "shield") */
 	if ((ns_litr->litr3n > ZERO) && (cs_litr->litr3c > ZERO)) {
 		plitr3c_loss = kl4 * cs_litr->litr3c;
-		pmnf_l3l2 = (plitr3c_loss * (1.0 - rfl4s3 - (cn_l2/cn_l3)))/cn_l2; /* was cn_l2/cn_l2 (DEV_LOG #21) */
+		pmnf_l3l2 = (plitr3c_loss * (1.0 - rfl4s3 - (cn_l2/cn_l3)))/cn_l2;
 	}
 	/* 3. lignin litter to slow microbial recycling pool */
 	if ((ns_litr->litr4n > ZERO) && (cs_litr->litr4c > ZERO)) {

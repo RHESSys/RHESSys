@@ -71,8 +71,6 @@ void	canopy_stratum_hourly(
 	NO3_stored = 0;
 	NO3_throughfall=0;
 
-	/* stratum[0].hourly is no longer allocated here: it was calloc'd and freed every hour
-	   for every stratum but never used in between (DEV_LOG P2). */
 	rain_throughfall = patch[0].hourly[0].rain_throughfall;
 	if ((zone[0].hourly_rain_flag == 1) && ( rain_throughfall > 0.0)) {
 		stratum[0].rain_stored = compute_hourly_rain_stored(

@@ -93,12 +93,7 @@
 #include "rhessys.h"
 
 /*--------------------------------------------------------------*/
-/*	Reset patch fire fluxes once they have been accumulated	*/
-/*	and output for the day. Fire effects are applied either	*/
-/*	mid-day (prescribed pspread, zone_daily_F) or at month end	*/
-/*	after the day's output (WMFire, execute_firespread_event);	*/
-/*	resetting here, after output, means both are reported		*/
-/*	exactly once (month-end fires on the following day).		*/
+/*	Reset patch fire fluxes after the day's output		*/
 /*--------------------------------------------------------------*/
 static void zero_patch_fire_fluxes(struct world_object *world)
 {
@@ -421,9 +416,6 @@ void	execute_tec(
 					command_line,
 					current_date,
 					growth_outfile);
-				/*--------------------------------------------------------------*/
-				/*	Fire fluxes have now been accumulated and output for today	*/
-				/*--------------------------------------------------------------*/
 				zero_patch_fire_fluxes(world);
 				/*--------------------------------------------------------------*/
 				/*				Determine the new calendar date if we add 1 day.*/

@@ -7,7 +7,6 @@
 
 
 static bool returnWithError(char * const error, size_t error_len, const char *error_mesg) {
-	/* error_mesg is not freed: callers pass string literals or stack buffers (DEV_LOG #26) */
 	strncpy(error, error_mesg, error_len);
 	if (error_len > 0) error[error_len - 1] = '\0';
 	return false;
